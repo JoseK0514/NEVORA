@@ -6,7 +6,7 @@
  * rules compete (specificity, then load order). See DESIGN.MD "CSS layering (review batch B8)". */
 @layer nv-b {
   @media (max-width: 767px) {
-    :is(#c-root, html) body .app-shell[data-nv-b] .c-page:has(> .b-screen) { padding: 0 !important; gap: 0 !important; background: #F2F5F4 !important; }
+    :is(#c-root, html) body .app-shell[data-nv-b] .c-page:has(> .b-screen) { padding: 0 !important; gap: 0 !important; background: var(--b-canvas) !important; }
     html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > :not(.b-screen, .b-keep) { display: none !important; }
   }
 
@@ -83,7 +83,7 @@
 @media (max-width: 767px) {
   :is(#c-root, html) body .app-shell[data-nv-b] .c-page:has(> .b-screen) { min-height: 100%; }
   html:has(.app-shell[data-nv-b] .b-screen), html:has(.app-shell[data-nv-b] .b-screen) body,
-  :is(#c-root, html) body .app-shell[data-nv-b]:has(.b-screen) :is(.app-main, .page-frame) { background: #F2F5F4 !important; }
+  :is(#c-root, html) body .app-shell[data-nv-b]:has(.b-screen) :is(.app-main, .page-frame) { background: var(--b-canvas) !important; }
 }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen {
   --b-teal: #0B6E69; --b-teal-50: #E8F3F1; --b-ink: #111517; --b-ink2: #3F464B; --b-grey: #6A7176; --b-line: #ECEEEF; --b-canvas: #F2F5F4;
@@ -95,7 +95,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen :where(ul) { list-style: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen :where(a) { color: inherit; text-decoration: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen :where(button) { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; text-align: inherit; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen :where(a, button):focus-visible { outline: 2px solid #0B6E69; outline-offset: 2px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen :where(a, button):focus-visible { outline: 2px solid var(--b-teal); outline-offset: 2px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-hero :where(a, button):focus-visible { outline-color: #FFFFFF; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-hero .b-live__a:focus-visible { outline-offset: -2px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card :is(.b-row--link, .b-add):focus-visible { outline-offset: -2px; }
@@ -143,13 +143,13 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: none; min-height: 36px; padding: 0 14px; border-radius: 999px;
   font-size: 14px; line-height: 1; font-weight: 600; white-space: nowrap; transition-property: scale, background-color; transition-duration: 150ms; transition-timing-function: ease-out; position: relative; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn::after { content: ""; position: absolute; inset: -4px 0; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-btn--teal { background: #0B6E69; color: #FFFFFF; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-btn--ghost { background: #E8F3F1; color: #0B6E69; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-btn--quiet { background: #F0F2F3; color: #111517; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn--teal { background: var(--b-teal); color: #FFFFFF; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn--ghost { background: var(--b-teal-50); color: var(--b-teal); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn--quiet { background: var(--b-quiet); color: var(--b-ink); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn--white { min-height: 40px; padding: 0 16px; border-radius: 999px; background: #FFFFFF; color: #0B3B38; font-size: 14.5px; font-weight: 700; box-shadow: 0 8px 18px -8px rgb(0 0 0 / 0.45); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn--glass { color: #FFFFFF; background: rgb(255 255 255 / 0.12); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn--full { display: flex; width: 100%; min-height: 52px; border-radius: 999px; font-size: 16px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-btn--big { min-height: 56px; border-radius: 999px; font-size: 17px; font-weight: 700; box-shadow: 0 12px 24px -10px rgb(11 110 105 / 0.7); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn--big { min-height: 56px; border-radius: 999px; font-size: 17px; font-weight: 700; box-shadow: var(--b-elev-glow); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn:is(:disabled, [aria-disabled="true"]) { opacity: 1; background: var(--b-disabled-bg); color: var(--b-disabled-ink); box-shadow: none; scale: 1; cursor: not-allowed; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-ib { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 22px; color: #FFFFFF; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-stack { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 12px; margin-top: -40px; padding: 0 14px 22px; }
@@ -157,13 +157,13 @@
   box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-card__h { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 44px; padding: 12px 18px 2px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-card__h h2 { display: flex; align-items: center; gap: 8px; font-size: 17px; line-height: 22px; font-weight: 700; letter-spacing: -0.01em; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-card__a { display: inline-flex; align-items: center; min-height: 44px; margin: -10px -6px -10px 0; padding: 0 6px; font-size: 14px; font-weight: 600; color: #0B6E69; white-space: nowrap; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-card__a { display: inline-flex; align-items: center; min-height: 44px; margin: -10px -6px -10px 0; padding: 0 6px; font-size: 14px; font-weight: 600; color: var(--b-teal); white-space: nowrap; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-card__meta { font-size: 14px; color: var(--b-grey); white-space: nowrap; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-pill { display: inline-grid; place-items: center; min-width: 24px; height: 22px; padding: 0 8px; border-radius: 11px; background: #E8F3F1; color: #0B6E69; font-size: 12.5px; font-weight: 700; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-pill { display: inline-grid; place-items: center; min-width: 24px; height: 22px; padding: 0 8px; border-radius: 11px; background: var(--b-teal-50); color: var(--b-teal); font-size: 12.5px; font-weight: 700; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-card__body { padding: 4px 18px 16px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-note { padding: 2px 6px; font-size: 13px; line-height: 18px; color: var(--b-grey); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-state { padding: 6px 18px 16px; font-size: 14px; color: var(--b-grey); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-li + .b-li { box-shadow: inset 0 1px 0 #ECEEEF; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-li + .b-li { box-shadow: inset 0 1px 0 var(--b-line); }
 :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row, .b-row__hit) { display: flex; align-items: center; gap: 12px; min-width: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-row { min-height: 64px; padding: 12px 18px; width: 100%; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-row__hit { flex: 1; align-self: stretch; }
@@ -187,11 +187,11 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-row__trail { display: flex; gap: 8px; align-items: center; flex: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-chev { flex: none; color: #B5BBBF; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-bar { display: block; height: 6px; margin-top: 6px; border-radius: 3px; background: #EDF0F0; overflow: hidden; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-bar > i { display: block; height: 100%; border-radius: 3px; background: #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-bar > i { display: block; height: 100%; border-radius: 3px; background: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-bar--amber > i { background: #E2A13B; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-add { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 10px 18px 14px; box-shadow: inset 0 1px 0 #ECEEEF; color: #0B6E69; font-size: 15px; font-weight: 600; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-add { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 10px 18px 14px; box-shadow: inset 0 1px 0 var(--b-line); color: var(--b-teal); font-size: 15px; font-weight: 600; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-add .b-ico { width: 32px; height: 32px; border-radius: 16px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-link { display: inline-flex; align-items: center; gap: 2px; flex: none; min-height: 44px; font-size: 14px; font-weight: 600; color: #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-link { display: inline-flex; align-items: center; gap: 2px; flex: none; min-height: 44px; font-size: 14px; font-weight: 600; color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-day { display: flex; flex-direction: column; flex: none; width: 44px; text-align: center; line-height: 1.1; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-day span { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--b-grey); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-day b { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
@@ -205,26 +205,26 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-faces .b-av + .b-av { margin-left: -6px; position: relative; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-ico { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 18px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-ico svg { width: 18px; height: 18px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-ico--teal { background: #E8F3F1; color: #0B6E69; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-ico--amber { background: #FDF3E4; color: #8A4B00; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-ico--red { background: #FDECEA; color: #B42318; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-ico--green { background: #E7F4EC; color: #1D6B45; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-ico--grey { background: #F0F2F3; color: #3F464B; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-ico--teal { background: var(--b-teal-50); color: var(--b-teal); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-ico--amber { background: var(--b-amber-50); color: var(--b-amber); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-ico--red { background: var(--b-red-50); color: var(--b-red); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-ico--green { background: var(--b-green-50); color: var(--b-green); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-ico--grey { background: var(--b-quiet); color: var(--b-ink2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-chip { display: inline-flex; align-items: center; gap: 5px; flex: none; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 12px; line-height: 1; font-weight: 600; white-space: nowrap; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-chip--grey { background: #F0F2F3; color: #3F464B; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-chip--amber { background: #FDF3E4; color: #8A4B00; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-chip--red { background: #FDECEA; color: #B42318; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-chip--green { background: #E7F4EC; color: #1D6B45; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-chip--teal { background: #E8F3F1; color: #0B6E69; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-chip--glass { background: #FFFFFF; color: #0B6E69; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-chip--due { background: #FFFFFF; color: #8A4B00; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-chip--ok { background: #FFFFFF; color: #1D6B45; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip--grey { background: var(--b-quiet); color: var(--b-ink2); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip--amber { background: var(--b-amber-50); color: var(--b-amber); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip--red { background: var(--b-red-50); color: var(--b-red); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip--green { background: var(--b-green-50); color: var(--b-green); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip--teal { background: var(--b-teal-50); color: var(--b-teal); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-chip--glass { background: #FFFFFF; color: var(--b-teal); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-chip--due { background: #FFFFFF; color: var(--b-amber); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-chip--ok { background: #FFFFFF; color: var(--b-green); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-filters { display: flex; gap: 6px; padding: 14px 18px 4px; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-filters::-webkit-scrollbar { display: none; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-filters button { display: inline-flex; align-items: center; gap: 6px; flex: none; padding: 0 12px; background: #F0F2F3; color: #3F464B; font-size: 13.5px; font-weight: 600; position: relative; transition-property: background-color, color; transition-duration: 150ms; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-filters button { display: inline-flex; align-items: center; gap: 6px; flex: none; padding: 0 12px; background: var(--b-quiet); color: var(--b-ink2); font-size: 13.5px; font-weight: 600; position: relative; transition-property: background-color, color; transition-duration: 150ms; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-filters button::after { content: ""; position: absolute; inset: -6px 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-filters button b { font-weight: 700; opacity: 0.7; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-filters button[aria-pressed="true"] { background: #E8F3F1; color: #0B6E69; box-shadow: inset 0 0 0 1.5px #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-filters button[aria-pressed="true"] { background: var(--b-teal-50); color: var(--b-teal); box-shadow: inset 0 0 0 1.5px var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-ink { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 14px; padding: 18px; border-radius: 22px; color: #FFFFFF;
   background: radial-gradient(80% 120% at 100% 0%, rgb(63 179 168 / 0.35), transparent 60%), linear-gradient(150deg, #152A28 0%, #0C1918 100%);
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06), 0 18px 36px -18px rgb(5 30 28 / 0.7); }
@@ -242,17 +242,17 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-kv { display: flex; gap: 22px; padding: 4px 18px 16px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-kv b { display: block; font-size: 24px; line-height: 30px; font-weight: 700; letter-spacing: -0.02em; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-kv span { font-size: 13px; color: var(--b-grey); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-kv em { font-style: normal; font-size: 12.5px; font-weight: 600; color: #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-kv em { font-style: normal; font-size: 12.5px; font-weight: 600; color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); align-items: end; gap: 6px; height: 64px; padding: 0 18px 16px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-days i { display: block; border-radius: 4px 4px 2px 2px; background: #D3E9E5; min-height: 4px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-days i.today { background: #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-days i.today { background: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-days-l { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; padding: 0 18px 14px; margin-top: -10px; font-size: 12px; color: var(--b-grey); text-align: center; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-steps { display: flex; flex-direction: column; padding: 4px 18px 16px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-step { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-step + .b-step { box-shadow: inset 0 1px 0 #ECEEEF; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-step__n { display: grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 14px; background: #F0F2F3; color: #3F464B; font-size: 13px; font-weight: 700; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-step--done .b-step__n { background: #0B6E69; color: #FFFFFF; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-step--now .b-step__n { background: #E8F3F1; color: #0B6E69; box-shadow: inset 0 0 0 1.5px #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-step + .b-step { box-shadow: inset 0 1px 0 var(--b-line); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-step__n { display: grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 14px; background: var(--b-quiet); color: var(--b-ink2); font-size: 13px; font-weight: 700; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-step--done .b-step__n { background: var(--b-teal); color: #FFFFFF; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-step--now .b-step__n { background: var(--b-teal-50); color: var(--b-teal); box-shadow: inset 0 0 0 1.5px var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-step__tx { flex: 1; min-width: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] :is(.b-step__t, .b-step__s) { display: block; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-step__t { font-size: 15px; line-height: 20px; font-weight: 600; }
@@ -273,9 +273,9 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-week__d i { width: 5px; height: 5px; border-radius: 3px; background: transparent; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-week__d i.has { background: rgb(255 255 255 / 0.55); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-week__d i.gap { background: #FFC46B; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-week__d[aria-current="date"], :is(#c-root, html) .app-shell[data-nv-b] .b-week__d[aria-pressed="true"] { background: #FFFFFF; color: #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-week__d[aria-current="date"], :is(#c-root, html) .app-shell[data-nv-b] .b-week__d[aria-pressed="true"] { background: #FFFFFF; color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-week__d:is([aria-current="date"], [aria-pressed="true"]) b { color: #0B3B38; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-week__d:is([aria-current="date"], [aria-pressed="true"]) i.has { background: #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-week__d:is([aria-current="date"], [aria-pressed="true"]) i.has { background: var(--b-teal); }
 
 :is(#c-root, html) .app-shell[data-nv-b] .b-cover { display: block; padding: 0 18px 6px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-cover .b-bar { margin-top: 0; }
@@ -296,8 +296,8 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-row__t:not(:has(.b-chip)) .b-row__tt { white-space: normal; text-wrap: pretty; }
 :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row__s, .b-notice__s, .b-step__s, .b-sub, .b-note) { text-wrap: pretty; }
 :is(#c-root, html) .app-shell[data-nv-b] :is(.b-notice__t, .b-step__t) { text-wrap: balance; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-row__end .b-link { font-size: 14px; line-height: 20px; color: #0B6E69; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-btn--teal { box-shadow: 0 4px 10px -6px rgb(11 110 105 / 0.55); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-row__end .b-link { font-size: 14px; line-height: 20px; color: var(--b-teal); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn--teal { box-shadow: var(--b-elev-glow); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn:disabled { box-shadow: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-title__right .b-ib { position: relative; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-title__right .b-ib::after { content: ""; position: absolute; inset: -2px; }
@@ -347,11 +347,9 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-stack > :nth-child(1) { animation-delay: 100ms; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-stack > :nth-child(2) { animation-delay: 200ms; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-stack > :nth-child(n + 3) { animation-delay: 300ms; }
-  @keyframes b-enter { from { opacity: 0; translate: 0 12px; filter: blur(4px); } to { opacity: 1; translate: 0 0; filter: blur(0); } }
 }
 @media (prefers-reduced-motion: reduce) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-hero > .b-title, :is(#c-root, html) .app-shell[data-nv-b] .b-stack > * { animation: b-fade 200ms linear both; }
-  @keyframes b-fade { from { opacity: 0; } to { opacity: 1; } }
 }
 @media (max-width: 767px) {
   :is(#c-root, html) .app-shell[data-nv-b] #b-tc-team .b-row__t > .b-row__tt { flex-basis: 100%; }

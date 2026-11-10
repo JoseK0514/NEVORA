@@ -178,7 +178,7 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-note[data-tone="urgent"] .q-note__title, :is(#q-root, html) .q-note[data-tone="urgent"] { color: var(--q-red); }
 :is(#q-root, html) .q-note__action { margin-top: 8px; }
 :is(#q-root, html) .q-emptyblock { margin-top: 24px; }
-:is(#q-root, html) .q-emptyblock__title { margin: 0 20px; font-size: 17px; line-height: 22px; font-weight: 600; color: var(--q-ink); letter-spacing: -.2px; }
+:is(#q-root, html) .q-emptyblock__title { margin: 0 20px; font-size: 16px; line-height: 22px; font-weight: 600; color: var(--q-ink); letter-spacing: -0.012em; } /* Review F3 (NV-230): the one empty-state title, 16/22 600. */
 :is(#q-root, html) .q-emptyblock__action { margin-top: 8px; }
 :is(#q-root, html) .q-actions { display: flex; flex-direction: column; }
 :is(#q-root, html) .q-actions > .q-btn + .q-btn { margin-top: 12px; }
@@ -190,7 +190,7 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-page dialog.wc-dialog::backdrop { background: rgba(17, 20, 19, .42); }
 :is(#q-root, html) .q-page .wc-dialog__head { display: flex; align-items: flex-start; gap: 12px; padding: 20px 20px 0; }
 :is(#q-root, html) .q-page .wc-dialog__head > div { flex: 1; min-width: 0; }
-:is(#q-root, html) .q-page .wc-dialog__title { margin: 0; font-size: 20px; line-height: 25px; font-weight: 600; letter-spacing: -.4px; color: var(--q-ink); }
+:is(#q-root, html) .q-page .wc-dialog__title { margin: 0; font-size: 20px; line-height: 26px; font-weight: 700; letter-spacing: -0.02em; color: var(--q-ink); } /* Review F3 (NV-230): the one sheet and dialog title, 20/26 700. */
 :is(#q-root, html) .q-page .wc-dialog__text { margin: 4px 0 0; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
 :is(#q-root, html) .q-page .wc-dialog__close { display: grid; place-items: center; width: 44px; height: 44px; margin: -10px -12px 0 0; padding: 0; border: 0; background: none; color: var(--q-grey); cursor: pointer; }
 :is(#q-root, html) .q-page .wc-dialog__close svg { width: 22px; height: 22px; }
@@ -685,8 +685,11 @@ html[data-q-sheet] { overflow: hidden; }
   :is(#q-root, html) .q-sheet__grab { display: none; }
   :is(#q-root, html) .q-sheet .q-nav { top: 8px; }
 }
+/* Review F3 (NV-329): under reduced motion the sheet cross-fades in over 160ms (no travel), as the desktop panel does. */
 @media (prefers-reduced-motion: reduce) {
-  :is(#q-root, html) dialog.q-sheet, :is(#q-root, html) dialog.q-sheet::backdrop { transition: none; }
+  :is(#q-root, html) dialog.q-sheet, :is(#q-root, html) dialog.q-sheet[data-closing] { transform: none; transition: opacity 160ms ease-out; }
+  :is(#q-root, html) dialog.q-sheet::backdrop { transition: opacity 160ms ease-out; }
+  @starting-style { :is(#q-root, html) dialog.q-sheet[open] { transform: none; opacity: 0; } }
 }
 
 /* Choice rows: a native radio, drawn as the kit's ring (teal disc when chosen). */

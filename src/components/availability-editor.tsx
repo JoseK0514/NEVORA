@@ -73,7 +73,8 @@ function AvailabilityFields({ initialAvailability, weekStart, locked }: {
       <p role="status" aria-live="polite">{pending ? "Saving your availability…" : locked ? "This week is closed for changes." : dirty ? "You have unsaved changes." : weekStart ? "Submit these hours for this week." : "Your saved usual week."}</p>
       <div className="av-form-actions">
         <button className="av-button secondary" type="button" disabled={disabled || !dirty} onClick={() => setAvailability(initialAvailability)}><ArrowCounterClockwiseIcon size={18} aria-hidden="true" />Reset changes</button>
-        <EmployeeSubmitButton className="av-button primary" pendingText="Saving…" disabled={locked || (!weekStart && !dirty)}>{locked ? <LockSimpleIcon size={18} aria-hidden="true" /> : null}{weekStart ? "Submit weekly availability" : "Save usual week"}{!locked ? <ArrowRightIcon size={18} aria-hidden="true" /> : null}</EmployeeSubmitButton>
+        {/* Review F3 (NV-102): Save shows once something changed; a due week and a closed week keep their button. */}
+        {!locked && !weekStart && !dirty ? null : <EmployeeSubmitButton className="av-button primary" pendingText="Saving…" disabled={locked}>{locked ? <LockSimpleIcon size={18} aria-hidden="true" /> : null}{weekStart ? "Submit weekly availability" : "Save usual week"}{!locked ? <ArrowRightIcon size={18} aria-hidden="true" /> : null}</EmployeeSubmitButton>}
       </div>
     </footer>
   </>;

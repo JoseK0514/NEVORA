@@ -1,3 +1,5 @@
+import Link from 'next/link';
+import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {schedulingIssueMessage} from '@/lib/scheduling/validate-shift';
 
 const scheduleErrors:Record<string,string>={
@@ -41,10 +43,23 @@ function knownMessage(messages:Record<string,string>,code:string){
 /** Route hints explain a redirect; they are not transaction receipts. Scoped
  * destinations therefore prompt review instead of certifying a save from a URL.
  */
-export function ScheduleRouteFeedback({destination='schedule',error,warning,scoped=false,reviewChange=false}:{destination?:'schedule'|'editor';error?:string;warning?:string;scoped?:boolean;reviewChange?:boolean}){
+export function ScheduleRouteFeedback({destination='schedule',error,warning,scoped=false,reviewChange=false,dismissHref}:{destination?:'schedule'|'editor';error?:string;warning?:string;scoped?:boolean;reviewChange?:boolean;
+ /** Review F3 (NV-090): the same page without ?error, so the note can be dismissed. */ dismissHref?:string}){
  return <>
-  {error&&<p className="form-error" role="alert">{knownMessage(destination==='editor'?editorErrors:scheduleErrors,error)??(destination==='editor'?'The shift could not be updated.':'The schedule could not be updated.')}</p>}
+  {/* Review F3 (NV-090): a route error is a white note under the band (a red warning in a tinted circle, the message, and
+    Dismiss), not a pink banner inside it. The message and its alert role are unchanged. */}
+  {error&&<div className="c-route-note" role="alert"><span className="c-route-note__icon" aria-hidden="true"><WarningCircleIcon weight="bold"/></span>
+   <p className="c-route-note__text">{knownMessage(destination==='editor'?editorErrors:scheduleErrors,error)??(destination==='editor'?'The shift could not be updated.':'The schedule could not be updated.')}</p>
+   {dismissHref?<Link className="c-route-note__dismiss" href={dismissHref} scroll={false}>Dismiss</Link>:null}</div>}
   {warning&&<p className="form-warning" role="status">{knownMessage(scoped?scopedWarnings:companyWarnings,warning)??(scoped?'Review the current schedule for any scheduling warnings.':'Shift saved with a scheduling warning.')}</p>}
   {scoped&&reviewChange&&!error&&!warning&&<p className="form-warning" role="status">Review the current schedule to confirm your change.</p>}
  </>;
+}
+
+/** The page's URL with only the given (already checked) parameters, for the note's Dismiss; ?error is never kept. */
+export function withoutRouteError(path:string,params:Record<string,string|undefined>){
+ const query=new URLSearchParams();
+ for(const [key,value] of Object.entries(params))if(key!=='error'&&typeof value==='string')query.set(key,value);
+ const text=query.toString();
+ return text?`${path}?${text}`:path;
 }

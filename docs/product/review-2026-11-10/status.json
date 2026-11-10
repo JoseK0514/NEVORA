@@ -1,0 +1,2963 @@
+[
+ {
+  "id": "NV-001",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-002",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-003",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-004",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "owner-b-shell.css:51 inactive tab label #6A7176",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-005",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-kit.tsx:47-56 BLive renders ul/li/a/span; b-foundation.css:87-89",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-006",
+  "severity": "High",
+  "status": "partly",
+  "remainder": "server",
+  "by": "F1",
+  "note": "UI done (Attention filters, real-issue count); one shared count selector is Codex.",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-007",
+  "severity": "High",
+  "status": "partly",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "home-b.tsx:144-155 'Before payroll', segments removed; overdue period needs readNextPay.overdue (CODEX-HANDOFF \u00a71)",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-008",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-foundation.css:20-43 44px ::after on arrows/segs/filters, q-acts 44x96, coarse-tablet 44/48 floor + 48x48 rail; auth-b.css:241,251,434; b-btn::after owner-b.css:84. Switch/checkbox rows not re-measured",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-009",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "manager-inbox-corp.tsx:138 value 'Not assigned', valueTone amber",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-010",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "quiet.css:594-596 refresh button display:none while checking; team-b.tsx:49 and employee-directory.tsx:79 Apply search tabIndex=-1",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-011",
+  "severity": "High",
+  "status": "partly",
+  "remainder": "ui",
+  "by": "F2",
+  "note": "\"\u2039 More\" hidden where the rail has no More; an optional desktop More group not added.",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-012",
+  "severity": "High",
+  "status": "partly",
+  "remainder": "ui",
+  "by": "F2/F3",
+  "note": "Copy fixed, segment on the band; harness still sometimes shows \"didn't load\" (not reproducible live).",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-013",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "schedule/page.tsx:379 Add shift + Build and publish in the \u2026 menu; :413,:457 band pill Publish/Add shift",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-014",
+  "severity": "High",
+  "status": "partly",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "b-foundation.css:29-34 q-bs 44px/96px, right-aligned >=768; policy line once needs shift-changes.ts:275 read change (CODEX-HANDOFF \u00a71)",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-015",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-foundation.css:237-240 c-pub__body margin-top 56px under the band run-on (542e5122); not re-checked visually",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-016",
+  "severity": "High",
+  "status": "partly",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "#C8322B gone; owner-b-desktop.css:52 8px coral dot; sidebar teal count; one source for bell+sidebar count in CODEX-HANDOFF \u00a71",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-017",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-018",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "owner-b.css:90-91,193 .b-btn--full/--big/.b-ink__btn 999px; auth-b.css:233-235 every auth .q-btn a pill (overrides mobile-access.css:41 12px); owner-b-desktop.css:149/owner-b-pages.css:135 app q-btn",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-019",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "no #8C9397 text left in owner-b-desktop.css/employee-b-desktop.css except a decorative menu chevron (:320); b-foundation.css:53 select caret #6A7176",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-020",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "04f1a003: timecards/corrections/exports jargon replaced (timecards.tsx:85,269; QA scripts updated). Leftover 'Refresh a current protected read before reviewing.' in legacy manager-action-center.tsx:105 (component render path likely unused)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-021",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "assisted-recovery.tsx:65 'On the sign-in page they choose Forgot password?, then I have a recovery code'",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-022",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-023",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "corp.tsx:220-223 CorpNote announce -> role=status; schedule/page.tsx:433-437 use announce",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-024",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-025",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "owner-b.css:304-305 .b-row__s:has(.b-leave-note) unclamped",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-026",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-foundation.css:13 selected day focus teal, offset -3px",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-027",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-028",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "timecards.tsx:465-470 batch controls only for selection/review/results/unknown outcome",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-029",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-030",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "use-operational-navigation.ts:18 menus from last current scope; app-shell.tsx:223",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-031",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "inbox-b.tsx:77-88 LaterB BScreen/BHero back 'Things to do'",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-032",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "app-shell.tsx:551 separate card removed; scoped-read-frame.tsx:182,202-210 one BState with Try again that re-checks menus",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-033",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "requests/page.tsx:74-75 + time-off-withdrawal.tsx:11-15 red-outline Withdraw with confirm; employee-mobile/timeoff.tsx:118. Fixture UUID note in CODEX-HANDOFF \u00a71",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-034",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "requests-b.tsx:99 Waiting counts own requests; incoming swap gets its own card",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-035",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "04f1a003: 'Your correction requests', 'Request a correction', receipts 'Correction request sent'; 'Earlier fix'/'proposal'/'submission' gone from time-b.tsx (button 'Fix a missed punch' kept)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-036",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "time-b.tsx:251, hours-corp.tsx:299, hours-corrections.tsx:40 'Correction request sent'",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-037",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b/home-b.tsx:225-226 link 'All notifications' / aria 'See all notifications'",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-038",
+  "severity": "High",
+  "status": "open",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "src/lib/notifications/payloads.ts:16-24 and apns.ts:58/fcm.ts:47 unchanged; in CODEX-HANDOFF \u00a74/\u00a75",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-039",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b/home-b.tsx:136-142 green 'Clocked in at\u2026' / amber 'Not clocked in yet'; b-foundation.css:157-159",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-040",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b/time.css:194 form one lifted white card 40px over the hero (80c6bea6; B6 evidence emp/state-corrections-filled-390)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-041",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-b.css:331 tablet card with ink title (d0412b4f)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-042",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-back-nav.tsx:9 top bar with wordmark and language switch on every auth page; auth-b.css:281",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-043",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "sidebar-rail-tooltip.tsx:84-91 touch-and-hold shows tip; app-shell.tsx:476 Pay uses receipt icon",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-044",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-045",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-copy.ts Spanish for every current server message, fallback English with lang=en (clocker-copy.ts:276, clocker-language.tsx:35), clocker-copy.test.tsx; stable error codes are CODEX-HANDOFF \u00a73 P2",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-046",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-copy.ts:119,217 'pide ayuda a tu gerente'",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-047",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-copy.ts:64,82,166,169; clocker-punch-panel.tsx:111,143; punch-photo-flow.tsx:19-20 kiosk remap. Server-side punch-command wording is CODEX-HANDOFF \u00a73 P3",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-048",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker.module.css:56 band is a size container; clock sized to the band (690b0d36)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-049",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-shell.tsx:10, clocker-pin-gate.tsx:119, clocker-punch-panel.tsx:154 band status follows the card",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-050",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker.module.css:234 empty ring #7A8489, :237 error ring #C2554A",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-051",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-pin-gate.tsx:124-130 one action per cause (Try Again / Check again / Check Connection); clocker.module.css:258 instruction line",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-052",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-pin-gate.tsx:142 'This tablet is paused' + copy; per-person scope and real retryAfter are CODEX-HANDOFF \u00a73 P1/P2 (decision: ship screen now)",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-053",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker.module.css:367 privacy pill wraps and stays in view (690b0d36)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-054",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-receipt.tsx:9 one receipt shared; punch-photo-flow.tsx:48",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-055",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "activation-invitation.tsx:87, activation-passwords.tsx:31 strings from AUTH_COPY",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-056",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-copy.ts Spanish block has no 'Owner' left (lines 140-277); 'el due\u00f1o' (d0412b4f/04f1a003)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-057",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-copy.ts:57,193 and mobile-access/copy.ts:64,280 'Forgot password'/'\u00bfOlvidaste tu contrase\u00f1a?'; resetPassword 'Restablecer contrase\u00f1a' in both",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-058",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "support/page.tsx:30 group name sr-only, nothing clipped",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-059",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "quiet.css:511,550 legal line #6A7176, links darker; auth-b.css:325; not-found.css:55",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-060",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "device-settings.tsx:28-32 error branch; device-settings.css:43 failure message in card amber (B6 evidence native/native-error-390)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-061",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "manager-profile.tsx:49 'Alerts on this phone' row opens portal-device-settings in the app; employee-b-desktop.css:649",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-062",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "command-finder.tsx:177 scrollIntoView on current; portal-gusto.css:392 overscroll-behavior: contain",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-063",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "corp-shell.css:695-696 inset 3px teal bar + teal 600 label",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-064",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "schedule-corp.css:205 B band menus take grouped sheet rows",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-065",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-foundation.css:101-103 .tof-pick:has(> input:focus-visible) shows the native segments",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-066",
+  "severity": "High",
+  "status": "partly",
+  "remainder": "ui",
+  "by": "B8",
+  "note": "!important moved into @layer nv-b and most fake-id ladders removed; older eras' !important must go before the count drops.",
+  "inCodexHandoff": null
+ },
+ {
+  "id": "NV-067",
+  "severity": "High",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "theme.ts:8-10 THEME_SCRIPT forces light and clears nv-theme. Dead dark blocks remain (quiet.css:617, signature/dark.css) but can no longer apply",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-068",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "duration-format.ts:1 one client formatter; home-b.tsx:51, inbox-b.tsx:99 (04f1a003). Server durationText ('8h 30m') still feeds timecards/time/Insights: CODEX-HANDOFF \u00a75 NV-068",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-069",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "keep-whole.ts:12, employee-b.css:208, employee-b/home-b.tsx:132, employee-b-desktop.css:492 (80c6bea6)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-070",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-071",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-072",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "team-overview.tsx:20 amber 'N h over'/grey 'N h under' chips; reports.tsx:283-285 + reports-corp.css:85 teal to plan, amber excess, amber over chip",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-073",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "owner-b/home-b.tsx:81-82 dot from value: Missed warn only when >0; Open shifts warn when gaps",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-074",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "ui",
+  "by": "F2/F3",
+  "note": "B placeholder draws band and cards; exact per-route band heights not practical (depend on role and data).",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-075",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-076",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "src/app/app/not-found.tsx:9 phones draw it as a B page",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-077",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-078",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-079",
+  "severity": "Medium",
+  "status": "open",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "manager-inbox-corp.tsx:149-150 swap/can't-work rows use the generic itemRow; ActionRequestFacts (src/lib/data/action-request-facts.server.ts:12) has no counterpart or shift time, so 'Swap Sat 12 PM with James Ortiz' can't be built client-side. Not in CODEX-HANDOFF",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-080",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "manager-time-corrections.tsx:91, time-correction-context.tsx:26, corrections.css:36 Recorded/Asked for tiles with +N min chip (80c6bea6)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-081",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-082",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-083",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "photo-settings.tsx:59 children disabled while photos off; b-foundation.css:249-252",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-084",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-085",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "schedule-shift-form.tsx:138-139 + b-foundation.css:254-257 one read-only look (lock + reason); edit location shows Clocker link row, not an input (edit-location-form.tsx:110)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-086",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b-desktop.css:602 Edit shift title aligned to its sub-line",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-087",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-foundation.css:204-208 person column >=200px, names clamp to 2 lines (but see NV-044 tablet conflict)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-088",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-089",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "manager-weekly-roster.tsx:456 legend; b-foundation.css:110-112",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-090",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-091",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-092",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "employees/[employeeId]/page.tsx:95,133 ID moved to Access and sign-in, position chips, 44px circles (team-forms.css:120); Today/This week values need a per-person hours read (CODEX-HANDOFF \u00a71)",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-093",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "manager-time-off.tsx:95,116 one request card + decision footer; employee timeoff-b.tsx:65 dates lead, amber Waiting",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-094",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-095",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-096",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-097",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-updates.tsx:92 amber 'Needs reply' chip on the row",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-098",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-099",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-100",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-101",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-102",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "decision",
+  "by": "F3",
+  "note": "Save shows only after a change; Settings Save placement and tablet bar widths need Jose.",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-103",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "ui",
+  "by": "F3",
+  "note": "Notifications and Availability segments on the band; one segmented geometry not unified.",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-104",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-105",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-106",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-tokens --b-grey-on-fill #5E666B; b-foundation.css:63-66 .q-rt i/.q-rv/.c-row__value--soft/.c-row__detail -> --b-grey; :114-127 palette mapping",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-107",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "owner-b/home-b.tsx:172-178 caption, per-day values, three-letter days; b-foundation.css:96-99",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-108",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "coverage-minutes.tsx:24 + coverage-minutes.css:22 unconfigured obligations fold into one grey line",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-109",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "manager-dashboard.tsx:183 newest first, Today on top, future items in an amber 'Coming up' card (schedule-activity.css:13); read should drop/mark upcoming gaps (CODEX-HANDOFF \u00a71)",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-110",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "portal-account-menu.tsx:7 280px; b-foundation.css:233-235 name and detail wrap; sidebar tile title on hover",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-111",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-112",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-113",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b-desktop.css:528 reading pages one 812px column with the band action (80c6bea6)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-114",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "decision",
+  "by": "F2/F3",
+  "note": "Employee fields at #8C9397; Owner/Manager fields still #D5D8DA (darkening every Owner form needs Jose).",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-115",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "decision",
+  "by": "F3",
+  "note": "Sign-in and 404 use the one band; the Clocker keeps its approved glow; phone hero and desktop band built from pieces.",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-116",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "corp.css:14 normal figures; b-foundation.css:76-78 tabular only on number classes",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-117",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "owner-b/home-b.tsx:76 + b-foundation.css:80-81 date is plain text on the band",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-118",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "nav-icon.tsx:94 bold default, fill active; notification-bell.tsx:46-48 bold bells; password eye bold (password-input.tsx:9-10). Chevron size set (16/18/20) not audited",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-119",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "04f1a003 glossary: Team (navigation.ts:203), Withdraw request, Can't work, Time off; Owner Home card 'Things to do'. 'Needs you' only in legacy employee-home-quiet.tsx:256 and ui-preview",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-120",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "app/app/error.tsx:16-18 and signature/system-state.tsx:38-41 'This page didn't load'; 404 'Page not found'; no 'Reports/Payroll exports unavailable' left",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-121",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "04f1a003: 'Changes published. Each person\u2026 can see it' (schedule/page.tsx:433), 'Saved. Check the status below.'; time-off review still 'Decision saved.' (requests/page.tsx:54, manager-time-off.tsx:183) until the redirect carries decided=\u2026 (CODEX-HANDOFF \u00a75 NV-121)",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-122",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "04f1a003: 'revision/retained/operational access/Revoke invitation' gone from the panels; 'Receipt transport unavailable' is only a thrown internal Error caught before display (employee-invitation-panel.tsx:54, manager-operational-scope-panel.tsx:32)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-123",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-124",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "04f1a003 payroll plain-language pass ('Bank and file type', 'Publish pay statements\u2026'); audit phrases gone from payroll components (decision: unlocked)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-125",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "inbox-b.tsx:135-148 Decline asks once (Keep / red Decline), Approve one tap; b-foundation.css:91-92 red action",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-126",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-127",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-foundation.css:20-28 .b-filters button ::after -6px hit, 18px end padding, mask-image fade",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-128",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-foundation.css:66 .c-stat__value--none -> --b-grey #6A7176",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-129",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-foundation.css:129-135 white question rows, CaretDown, answers 15/22 #3F464B",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-130",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-131",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "manager-weekly-roster.tsx:80,366 position line + legend; b-foundation.css:186-202 published teal-50, draft grey, open amber dashed",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-132",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-133",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "timecards.tsx:430 'Review correction' inside the amber note, Approve stays disabled",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-134",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-135",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-136",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-137",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "owner-only-notice.tsx:12-31 lock in grey circle, reason as title, names Owners (payroll-route.tsx:24, settings/layout.tsx:10); a 'Message Jose' action needs a person-to-person or request-access path (CODEX-HANDOFF \u00a71)",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-138",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "team-overview.tsx:29,50 viewer row 'You', sorted by name; dropping/tagging Owners needs role in the hours read (CODEX-HANDOFF \u00a71)",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-139",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "timeoff-b.tsx:105 shared state card with a 'Back to Time off' pill",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-140",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "timeoff-b.tsx:99, employee-mobile/requests.tsx:139, requests/page.tsx:59 waiting soonest first, decided newest first",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-141",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b-desktop.css:534 Updates search on the band's text edge",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-142",
+  "severity": "Medium",
+  "status": "open",
+  "remainder": "server",
+  "by": "F2",
+  "note": "Needs a notification subject from the server (CODEX-HANDOFF).",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-143",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "account-deletion-form.tsx:128, account-deletion.css:22, account.css:282,300 one flow (checkbox, red-tint icon, red pill, single card)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-144",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-145",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-foundation.css:13-17 inset box-shadow ring on .b-live__a with z-index; first/last row rings follow the card radius",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-146",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "schedule-b.tsx:60, employee-b-desktop.css:502 one chip row at the block's foot, equal block heights",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-147",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b-desktop.css:536 one 22px inner inset on desktop",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-148",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-149",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "account-b-client.tsx:69 'Sign-in pages only. The rest of NEVORA is in English for now.'; app/app/page.tsx:80 guide rendered lang='en'",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-150",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-schedule-corp.tsx:185 footer keeps only the publication sentence; employee-b-desktop.css:512 Coming up shows today and next shift",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-151",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b-desktop.css:499 Confirm this week leads the page across its width",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-152",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "Confirm keeps size, green 'Week confirmed' card (80c6bea6); 'What changed' after confirm and acknowledgedAt need the schedule read (CODEX-HANDOFF \u00a71)",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-153",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-foundation.css:105-108 tinted circles on phones; employee-shift-sheet.tsx:108-116 icons weight bold",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-154",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b/pay.css:6, employee-b-desktop.css:546 title 'Pay' leads, date a 28/34 figure",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-155",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "pay-b.tsx:31, pay.css:35 correction 'Corrected', replaced muted 'Replaced'",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-156",
+  "severity": "Medium",
+  "status": "open",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "not verified; hub read limit/total needed (CODEX-HANDOFF \u00a71); UI sorted soonest first",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-157",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "Dotted used for sub-lines: messages-b.tsx:120,174,187, own-leave-note.tsx:31 (B6 status fixed)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-158",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "requests-b.tsx:61-66 'device' wording; link only where this device can get alerts. A deviceAlerts read flag is an optional CODEX-HANDOFF \u00a71 item",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-159",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "account.css:275-282, account-b-client.tsx:233 form hides tab bar/bell/avatar; red pill enabled; 48px checkbox row",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-160",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b/home-b.tsx:215 one message entry in Today's team",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-161",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b/home-b.tsx:126 'Your shift' with Shift lead chip only (decision: trim)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-162",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b/home-b.tsx:222-223 Things to do before Today's team",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-163",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b/home-b.tsx:174, employee-schedule-corp.tsx:139 'Shift lead' leads the sub-line",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-164",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "timeoff-b.tsx:46 Request time off is the band's white action at every width, outside the list read",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-165",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "count pills at every width, For you amber, 44px segments (80c6bea6); counts on every tab need exchangeCounts (CODEX-HANDOFF \u00a71)",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-166",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b/messages-b.tsx:153-157 Write an update = band pill (pencil, glass on phone); home-b.tsx:109 pencil for compose",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-167",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-168",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b-desktop.css:619-626 (768-1023): Payday/This week stretch, button at foot, cov__list one-column compact lines (B6)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-169",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-170",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "ui",
+  "by": "F3",
+  "note": "Employee field focus fixed; the rail count badge still overlaps the focus ring.",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-171",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-icon.tsx:26-32 break=Coffee, resume=Play, wait=Hourglass, lockout=Pause; clocker-pin-gate.tsx ring uses pause",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-172",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-foundation.css:46-51 one guarded press (.96, 150ms ease-out) for .b-btn/.c-btn/.q-btn/.q-bs/.wc-btn, transform none, disabled never scales; owner-b.css:336",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-173",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "decision",
+  "by": "B1-B7",
+  "note": "Spanish \"marcaci\u00f3n\", \"\u00bfTodo listo para la foto?\", \"Suggested:\", one \"Saved {time}.\" string, \"Connect tablet\"/\"Tablet connected\" one verb (clocker-copy.ts:6-139, clocker-receipt.tsx, clocker-setup.tsx:89-106). Kiosk buttons/headings stay Title Case (\"Check Action Status\", \"Retry Same Action\", \"Return to PIN\", \"Refresh Clock State\", \"Verify Your PIN Again\") \u2014 DESIGN.MD:751 and :1637 record keeping kiosk Title Case",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-174",
+  "severity": "Medium",
+  "status": "open",
+  "remainder": "decision",
+  "by": "F2",
+  "note": "Dev-only warning from the layout's two inline head scripts; moving them changes before-paint timing.",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-175",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker.module.css:244 .key inset 1px var(--ck-field) #D3D9DB; :246 tool keys 2px ck-field; :229 PIN field 2px ck-field ring",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-176",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker.module.css:229 neutral resting ring; :232 .pin:focus-within teal + 4px outer ring",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-177",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-pin-gate.tsx: <p id=\"clocker-pin-error\" role=alert> always rendered; clocker.module.css:242 .pinMsg min-height 2.8em",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-178",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-pin-gate.tsx typed() clears error on key() and input onChange",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-179",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-pin-gate.tsx Continue shows spinner + \"Checking\u2026\" (checking state); status line is .sr",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-180",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "reserved error line (NV-177) + clocker.module.css:98 keyh clamp((100dvh - 740px)/4)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-181",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker.module.css:361 `.content:has(> .privacy) .clears {visibility:hidden}`; .clears on select-break and confirm-out (clocker-punch-panel.tsx)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-182",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-pin-gate.tsx: visible count aria-hidden; always-present .sr status written at 10 s and 3 s only",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-183",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-receipt.tsx clockTime(): Intl month/day + \" \u00b7 \" + time",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-184",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-punch-panel.tsx: leave rendered as .link inside the same .stack when state has actions (withActions)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-185",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "clocker-recovery.tsx: panel max-height 40dvh scroll (clocker.module.css:336-337), Copy reference removed, others behind \"Show N more\"; \"current person first\" only works for the pending commandId \u2014 per-person references need ClockerJournal.references(location, subject)",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-186",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "decision",
+  "by": "B4/F2",
+  "note": "sloganEs in brand.ts read by the copy; Jose to confirm the wording \"Un trabajo m\u00e1s brillante por delante\".",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-187",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "mobile-access/copy.ts: activateTitle ES \"Configura tu cuenta\", inviteTitle \"Crea tu contrase\u00f1a\", helpInvite \"Es mi primera vez\", ownerEntry \"No hay otro due\u00f1o\", workspaceUnavailable :432; brand-legal.tsx:7 \"(en ingl\u00e9s)\"",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-188",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "Client jargon gone (auth-copy.ts, mobile-access copy; MESSAGES_ES entry added). Server reply route.ts:10 and email account-email-copy.ts:15-16 unchanged (CODEX-HANDOFF \u00a75)",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-189",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "login/page.tsx:39 fieldsInvalid -> aria-invalid on both inputs; WarningCircle in alert; auth-b.css NV-189 rules",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-190",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-validation.tsx sets form.noValidate and shows localized messages under fields (login, recovery, reset, activation)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-191",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-b.css:243-244 .q-auth__links flex-wrap + nowrap links",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-192",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "login/page.tsx:41-49 greeting + workspace on the band above the card when Mobile Access is on (mock 7)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-193",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "password-input.tsx Phosphor bold 20px, constant label + aria-pressed; auth-b.css NV-193 grey",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-194",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "recovery-request.tsx:57-58 outlined pill \"I have a recovery code\", summary with CaretDown; auth-b.css:242 600 weight",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-195",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "recovery-reset.tsx:64,71,83 code hint, \"Show passwords\", PasswordRules on desktop",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-196",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "activation-invitation.tsx:110-121 one card: teal \"Get invitation help\" pill, note, \"Already activated? Sign in\"; grey duplicate removed",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-197",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-b.css (NV-197 rules, lines ~110 and ~150): art in brand panel on desktop, on the band on phones",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-198",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-b.css NV-198 rules: bold glyph in teal-tinted circle, no inner box border",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-199",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-b.css NV-199/NV-202 one card edge; single Sign in",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-200",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "legal-document.tsx DocBrand wordmark on band; support/page.tsx:32",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-201",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "legal-document.tsx:77-80 toc only >6 sections; sections open from 1024 (OpenOnDesktop)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-202",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-b.css NV-202 one row edge",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-203",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-b.css NV-203 68ch, 15px, teal info note, body-size address",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-204",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "legal-document.tsx q-doc__action on title row; auth-b.css NV-204",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-205",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "legal-document.tsx:96 open for account-deletion index 0",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-206",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "not-found.tsx footer = poweredBy + QuietLegal; not-found.css 13px #6A7176",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-207",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-b.css (B4 \"Inter on every width\" rule) on main.q-page.q-auth incl. policy pages",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-208",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "native-shell/device-settings.tsx:70-71 busy ring tone grey",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-209",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-210",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "device-settings.tsx:101-110 confirm cards with h2 + aria-labelledby; off excludes recover; scrollIntoView center (Employee app Alerts page). Owner popover card view (:51, :55) still uses aria-label groups",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-211",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "device-settings.tsx:87-90 \"This device\" as centred grey eyebrow; device-settings.css:43-46",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-212",
+  "severity": "Medium",
+  "status": "open",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "Needs a native bridge to open notification settings (CODEX-HANDOFF \u00a74); UI slot ready in device-settings.tsx blocked state",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-213",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-214",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "unsupported-role.tsx:17-19 copy explains employees/owners vs leads/managers; one wordmark (NV-321). Lead gate + \"Open NEVORA in your browser\" bridge are native/server (CODEX-HANDOFF \u00a74)",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-215",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "No 10/11px sizes left in B layers except approved 10.5px tab labels (owner-b-shell.css:51); owner-b-desktop.css:33 counts 12px/700; corp.css:519 .c-ampm .85em",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-216",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "command-finder.tsx:99-103 perGroup 16 for Employee/Lead; finder.ts:135 finderOverflow -> \"6 of 11 people \u00b7 keep typing to narrow\"",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-217",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "command-finder.tsx:206-207 each option aria-describedby its group heading",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-218",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "command-finder.tsx:209 bolt/page/initials/pin in 28px circle; b-foundation.css:224-231",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-219",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-220",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "action-menu.tsx:97-109 sheet makes siblings inert while open, released on close",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-221",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-222",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b-desktop.css:147 ::backdrop inset 0",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-223",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-foundation.css:178-182 phone dialog.q-sheet fixed bottom:0 (code only; not re-tested on a device)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-224",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "quiet/quiet-sheet.tsx:56-61 keyboard open focuses the panel heading",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-225",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-226",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "schedule-publication-change.tsx:32-46 sorted by date/start, green/amber/grey chip; b-foundation.css:184-186 12px rows",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-227",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "server",
+  "by": "F1",
+  "note": "\"+ Add\" passes a start; a location opening time for plain Add shift is Codex.",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-228",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-229",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "ui",
+  "by": "F3",
+  "note": "410 colour literals in B files tokenised (pixel-identical); older eras still use literals.",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-230",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "ui",
+  "by": "F3",
+  "note": "Empty-state and dialog titles done; page-by-page half-pixel sweep not done.",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-231",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-232",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-233",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-234",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B8",
+  "note": "",
+  "inCodexHandoff": null
+ },
+ {
+  "id": "NV-235",
+  "severity": "Medium",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B8",
+  "note": "",
+  "inCodexHandoff": null
+ },
+ {
+  "id": "NV-236",
+  "severity": "Medium",
+  "status": "partly",
+  "remainder": "ui",
+  "by": "B8",
+  "note": "data-nv-clean still needed (280-1,630 elements depend on it); dependency audit in DESIGN.MD.",
+  "inCodexHandoff": null
+ },
+ {
+  "id": "NV-237",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-238",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-239",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-240",
+  "severity": "Low",
+  "status": "partly",
+  "remainder": "server",
+  "by": "F1",
+  "note": "Time corrections accordion removed; per-person \"late\" status is Codex.",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-241",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-242",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "owner-b/inbox-b.tsx:125 cant-work rows amber",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-243",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "manager-inbox-corp.tsx:82-83 period title without trailing period; :274 footer links to Who's working; Later and done rows via GroupCard/BRow with icons (inbox-b.tsx:77-91)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-244",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "timecards.tsx phone rows: \"Recorded\" caption removed (04f1a003), status stays as chip/sub",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-245",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-foundation.css:211-215 AM/PM full size in Days list, issue note 22px; timecards.tsx:431 \"Review correction\" action in the note",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-246",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-foundation.css:76-78 page font-variant-numeric normal, tabular only on number elements",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-247",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-248",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-249",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-250",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-foundation.css:277-280 sticky #b-todo-more; inbox-b.tsx:65-70 one-line sub-lines",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-251",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-252",
+  "severity": "Low",
+  "status": "partly",
+  "remainder": "server",
+  "by": "F1",
+  "note": "Single no-time person folds; the weekly hours limit is Codex.",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-253",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-254",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "payroll-runs.tsx:65 + owner-b/b-kit.tsx:197 BState card, left-aligned (B5)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-255",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-256",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-257",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-258",
+  "severity": "Low",
+  "status": "partly",
+  "remainder": "ui",
+  "by": "B1-B7",
+  "note": "employee-updates.tsx:82-85 \"Needs reply 1\" (B5). Detail unchanged: Read by is a separate list (communication-detail.tsx:139), Withdraw is a full-width q-btn--danger (:152)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-259",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "manager-profile-live.tsx:181-184 Phone links with chevron for Owners, lock when read-only",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-260",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-261",
+  "severity": "Low",
+  "status": "partly",
+  "remainder": "server",
+  "by": "F1",
+  "note": "Segment on the band; the Remind command is Codex.",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-262",
+  "severity": "Low",
+  "status": "partly",
+  "remainder": "server",
+  "by": "B1-B7",
+  "note": "Trailing period trimmed client-side (action-center/present.ts:81-82). Location split reason needs the location in the timecard read (CODEX-HANDOFF \u00a75)",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-263",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "timecards.tsx:521-525 Time tools rows with icon + sub-line at every width",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-264",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "payroll-export.tsx:226-227 non-payroll roles see \"Export history \u00b7 Files you've downloaded\"",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-265",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-266",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "owner-b.css:177 selected filter chip teal-50 with teal",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-267",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-268",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F1",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-269",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "No change: the finding was mistaken; Delete my account is under Privacy and terms and the back link is right.",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-270",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-271",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b/messages-b.tsx:114-125 Earlier: date once on the right, time in sub, chevron",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-272",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "command-finder.tsx: kbd empty on SSR, filled on mount; employee-b-desktop.css:570-573 hidden under pointer:coarse and when empty",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-273",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b/home-b.tsx:178 not-published note is Coming up's footer",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-274",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B8",
+  "note": "",
+  "inCodexHandoff": null
+ },
+ {
+  "id": "NV-275",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b/schedule-b.tsx:116-117 zero open shifts = static row, no chevron",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-276",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-277",
+  "severity": "Low",
+  "status": "partly",
+  "remainder": "decision",
+  "by": "F2",
+  "note": "Clock glyphs done; merging the two time-field components changes picker behaviour.",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-278",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b-desktop.css:552-553 Pay row align-items stretch",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-279",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b/requests-b.tsx:121-126 phones get Pick up and swap + \"Swap or give away a shift\"",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-280",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b/timeoff-b.tsx:60-61 no chip on Waiting rows",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-281",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b-desktop.css:585-588 count pill at every width; messages-b.tsx:99, requests-b.tsx:162",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-282",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "app/app/exchange/swap/page.tsx:36-38 bare link redirects to /app/schedule?intent=swap",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-283",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "One title \"Why other shifts aren't available\" (exchange-b.tsx:55, schedule-b.tsx:148, blocked-open-shifts.tsx:17 with count)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-284",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "messages-b.tsx:209-211 H1 = update title, \"Team update \u00b7 \u2026\" sub; one verb Acknowledge",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-285",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "account.css:287-289 44px tap area on language segment; profile.tsx:37 name from session",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-286",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "account-b.tsx:93-95 one reply-time line + lock note; account.css:292-294",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-287",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b-desktop.css:489 .b-list + .b-list inset divider",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-288",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b-desktop.css:406-407 left column then right; home-b.tsx:222 DOM order",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-289",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-schedule-corp.tsx:194-196 \"You lead all N shifts\" once, chip only on today (Jose approved, DESIGN.MD:1773)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-290",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "exchange-b.tsx:137 For you card \"Needs your answer\"; swap/callout bare links -> Schedule intent (swap/page.tsx:36, callout/page.tsx:30)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-291",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b-desktop.css:559-562 Save full width, hint centred, 22px edge, numeric normal",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-292",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "messages-b.tsx:177,184 meta via Dotted; one verb Acknowledge; 22px inset (employee-b-desktop.css NV-147)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-293",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "account-b-client.tsx:81-82 \"Account\" when only deletion; account.css:287-289 44px; Alerts row standard b-row (:78) (code only; B6 did not re-scan the geometry)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-294",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-295",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b-desktop.css:484-487 shift info line without fill",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-296",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "requests-b.tsx:67 and employee-schedule-corp.tsx:64 \"Get alerts on this device\"",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-297",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "navigation.ts:177-178 and :253-259 Availability lights Schedule on phone and desktop for Employee/Lead",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-298",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker.module.css:220 .hint left; clocker-setup.tsx:99 NBSP \"Settings \u2192 Clocker tablets\"; busy line .sr (:111-112)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-299",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker.module.css:368-370 no 66px indent \u2264599px; detail \"Since 10:43 PM \u00b7 \u2026 ago\" (clocker-punch-panel.tsx)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-300",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-punch-panel.tsx notice on ready screens = .note with info icon",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-301",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-punch-panel.tsx KIOSK_TINTS excludes red/amber FACE_TINTS (indices 3,4)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-302",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-punch-panel.tsx handoff() excludes select-break and confirm-out",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-303",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker.module.css:317 .saved text-wrap pretty; clocker-receipt.tsx savedAt = shortTime (date only when not today)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-304",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker.module.css:345-356 reduce: .progress > i hidden, countdown steps(8)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-305",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "clocker-punch-panel.tsx leave = primary when only action (auth/storage); storage ring = warning",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-306",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "photo-notice.tsx caret; photo.module.css:77-86 summary list-style none, marker hidden, caret rotates, description centred",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-307",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "Band border-image layers paint var(--b-band-solid) beneath (owner-b-desktop.css:61, employee-b-desktop.css:31); auth band background #0C726C (auth-b.css:20). Axe re-run not done here",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-308",
+  "severity": "Low",
+  "status": "partly",
+  "remainder": "decision",
+  "by": "B1-B7",
+  "note": "UI uses \"d\u00edas libres\" (auth-copy.ts:154, mobile-access/copy.ts:289; B7). Pay statement PDF still \"Importe/Importes\" (paystub-document.ts:239,242,498): frozen-bytes test, needs Jose's call on template versioning (CODEX-HANDOFF \u00a77)",
+  "inCodexHandoff": true
+ },
+ {
+  "id": "NV-309",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-b.css (B4 NV-309 block ~line 93): card padding 32/32, top fixed",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-310",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-b.css (B4 NV-310 block ~line 107): clamp size, nowrap halves",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-311",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-b.css (B4 line ~18): text-wrap balance on buttons/summaries",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-312",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "password-pair.tsx + password-rules.tsx Direction B marks; auth-b.css NV-312",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-313",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "mobile-access.css:147-151 header grid without :has(.ma-card)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-314",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "mobile-access.css ma-welcome h1 text-wrap balance, 13ch cap removed (d0412b4f)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-315",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-shell.tsx footerHelp flag; auth-b.css NV-315 footer margin",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-316",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F2",
+  "note": "",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-317",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "brand-legal + legal-document.tsx:121-126 each link wrapped with its dot (q-legal__item nowrap)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-318",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-back-nav.tsx one back control; auth-b.css NV-318 600/15px links",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-319",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "auth-b.css NV-319 block; recovery/reset alerts above fields",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-320",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "device-settings.tsx:97-102 Check again teal (primary), Review app setup quiet, Turn off alerts red outline last",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-321",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "unsupported-role.tsx:22-23 footer only poweredBy",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-322",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "b-foundation.css:174-176 finder 22px radius, no border, --b-elev-2, B scrim",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-323",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "command-finder.tsx:149-151 hint filled once on mount; dialog aria-label role-specific; finder.ts:66-80 three Employee actions (Jose: rec)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-324",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "action-menu.tsx:171-175 non-sheet popover role=\"group\"; no title on trigger",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-325",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "schedule-shift-form.tsx:122-123 UserIcon before a person is chosen",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-326",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "employee-b-desktop.css:575-578 hero never animates, entrance once per session; b-entrance.tsx; layout.tsx:137",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-327",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B1-B7",
+  "note": "leave-staffing/leave-staffing.css: repair edge var(--b-amber), ring var(--b-green) (285ed97a)",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-328",
+  "severity": "Low",
+  "status": "open",
+  "remainder": "ui",
+  "by": "F3",
+  "note": "Phone band extensions still use shadows and border-image; needs its own visual-diff pass.",
+  "inCodexHandoff": false
+ },
+ {
+  "id": "NV-329",
+  "severity": "Low",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F3",
+  "note": "",
+  "inCodexHandoff": false
+ }
+]

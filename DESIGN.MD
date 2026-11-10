@@ -1875,3 +1875,27 @@ handler or contract changed. Proved with a before/after pixel diff of every Owne
   Retiring them is page-by-page work: move each dependency into `b-tokens.css` or an `nv-b` rule, then check the page with
   the computed-style comparison before dropping the older rule. Don't delete the large files wholesale.
 
+
+## Closing pass F3 (review, Nov 10, 2026)
+Source: `docs/product/review-2026-11-10/` (closing F3). Presentation only; reads, handlers, authorization and contracts are
+unchanged. New `!important` rules are in `@layer nv-b`; the F3 rules are at the end of `b-foundation.css`.
+- **Schedule week grid (NV-044, NV-087).** The person column is 200px on a desktop grid (B5) and 148px when the grid card is
+  under 820px wide (tablets, B6), where long times take two lines. A table cell ignores `min-width`, so both are widths.
+  The three-chip legend sits inside the card's top-right corner on the "Covered this week" line.
+- **Route errors (NV-090).** A schedule route error is a white note under the band (red warning in a tinted circle, the
+  message, Dismiss, which drops `?error`), above the grid; never a pink banner inside the band.
+- **Glass on the band:** Notifications' All / Unread (tablets and desktop), Clocker PINs' search and filter (every width),
+  and Hours this week's week stepper (phones) join the band like Team's search and Updates' tabs.
+- **One menu (NV-219)** on tablets and desktop: white, 16px corners, the popover elevation, 6px in, 44px items with 8px
+  corners; a chosen option's check trails its label. **One panel header (NV-221)** for every role: title 20/26 700 at the
+  left, Done a teal text button with a 44px target. An inspector panel leaves by fading 150ms while moving 12px right, and
+  the page re-flows after (NV-251).
+- **Tokens (NV-229, partly):** in the Direction B files a colour literal that equals a `--b-*` value is written as the token.
+  Teal glows are `--b-elev-glow`; disabled controls use the one pair; empty-state titles are 16/22 600 and sheet and dialog
+  titles 20/26 700; row hovers are `--b-hover` inside `@media (hover: hover)`.
+- **Bands (NV-115, partly):** sign-in and the 404 band read `--b-band`; the Clocker keeps its approved band glow (round 2) until Jose decides. The phone hero keeps its 180deg
+  piece-by-piece gradient and the desktop band its solid top under the flat top bar, so the pieces meet without a seam.
+- **Small rules:** the Settings hub starts 24px under the band and ends on Home's right edge; tabbed Payroll pages have no
+  back link on tablets and desktop; payroll money is ink 600 and a replaced payroll nests under its correction on every
+  width; Availability's Save appears once something changed; Time's Right now is the first cell on desktop; Update detail's
+  title is in the phone band; the Branding preview's tag sits inside the preview.

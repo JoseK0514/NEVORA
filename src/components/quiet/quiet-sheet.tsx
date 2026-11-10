@@ -38,10 +38,12 @@ export function QuietSheet({open, onClose, label, labelledBy, children, modal = 
     if (!node || closing.current) return;
     closing.current = true;
     const done = () => { closing.current = false; node.removeAttribute('data-closing'); node.style.transform = ''; if (node.open) node.close(); onClose(); };
-    if (reducedMotion()) { done(); return; }
+    // An inspector still cross-fades under reduced motion (opacity only, no travel); every other sheet closes at once.
+    if (reducedMotion() && !node.hasAttribute('data-inspector')) { done(); return; }
     node.setAttribute('data-closing', '');
     node.style.transform = '';
-    window.setTimeout(done, 240);
+    // Review F3 (NV-251): a right-hand inspector fades out over 150ms, 12px to the right; the page behind re-flows only after.
+    window.setTimeout(done, node.hasAttribute('data-inspector') ? 150 : 240);
   }, [onClose]);
 
   useEffect(() => {

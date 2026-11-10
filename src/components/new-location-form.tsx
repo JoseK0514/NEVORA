@@ -30,8 +30,9 @@ export function NewLocationForm({
   const nameInput = useRef<HTMLInputElement & HTMLSelectElement & HTMLTextAreaElement>(null);
   const success = Boolean(result.success && !result.error);
   const { errors, handlers, clear } = useFieldErrors({
-    name: { missing: `Enter a ${place} name.` },
-    shortName: { missing: "Enter a short name." },
+    // Review F3 (NV-112): a name of only spaces is flagged like an empty one, so both name fields are marked together.
+    name: { missing: `Enter a ${place} name.`, pattern: `Enter a ${place} name.` },
+    shortName: { missing: "Enter a short name.", pattern: "Enter a short name." },
     clockerKey: { pattern: "Use lowercase letters, numbers and single hyphens, like downtown-office." },
   });
 
@@ -83,9 +84,9 @@ export function NewLocationForm({
       <fieldset disabled={pending || success} className="q-fieldset">
         <FieldErrors errors={errors}>
           {/* Quiet (v4, approved Oct 23): three fields and one line under them. The page's Add (top right) submits. */}
-          <Field label="Name" fieldClassName="q-first" inputRef={nameInput} id="new-location-name" name="name" required maxLength={160} value={name} onChange={(event) => setName(event.target.value)}
+          <Field label="Name" fieldClassName="q-first" inputRef={nameInput} id="new-location-name" name="name" required pattern=".*\S.*" maxLength={160} value={name} onChange={(event) => setName(event.target.value)}
             placeholder="e.g. Harbor Point" autoComplete="off" autoCapitalize="words" enterKeyHint="next" />
-          <Field label="Short name" id="new-location-short-name" name="shortName" required maxLength={48} value={shortName} onChange={(event) => setShortName(event.target.value)}
+          <Field label="Short name" id="new-location-short-name" name="shortName" required pattern=".*\S.*" maxLength={48} value={shortName} onChange={(event) => setShortName(event.target.value)}
             placeholder="e.g. Harbor" autoComplete="off" autoCapitalize="words" enterKeyHint="next" />
           <Field label="Clocker key" helpId="location-clocker-help"
             help={`The Clocker key can’t be changed later.`}

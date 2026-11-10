@@ -121,7 +121,7 @@
 /* Secondary, neutral and danger are one secondary style; danger keeps red words (the screen's one red, a destructive act). */
 :is(#c-root, html) .c-btn:is(.c-btn--secondary, .c-btn--neutral, .c-btn--danger) { height: 44px; padding: 0 16px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink) !important; font-size: 15px; line-height: 20px; font-weight: 500; }
 :is(#c-root, html) .c-btn.c-btn--danger { color: var(--c-red) !important; }
-@media (hover: hover) { :is(#c-root, html) .c-btn:is(.c-btn--secondary, .c-btn--neutral, .c-btn--danger):hover:not(:disabled):not([aria-disabled="true"]) { background: #F7F8F8; } }
+@media (hover: hover) { :is(#c-root, html) .c-btn:is(.c-btn--secondary, .c-btn--neutral, .c-btn--danger):hover:not(:disabled):not([aria-disabled="true"]) { background: var(--b-hover); } }
 :is(#c-root, html) .c-btn:is(.c-btn--secondary, .c-btn--neutral, .c-btn--danger):active:not(:disabled):not([aria-disabled="true"]) { background: #EDEEEF; }
 :is(#c-root, html) .c-btn:disabled, :is(#c-root, html) .c-btn[aria-disabled="true"] { background: var(--c-neutral-bg); box-shadow: none; color: var(--c-faint) !important; cursor: default; }
 :is(#c-root, html) .c-btns { display: flex; gap: 8px; }
@@ -373,7 +373,7 @@
 /* Empty state (A10; Nov 1 upscale, kit consistency 6): one pattern. A left-aligned card: a 15/600 title, one 13/18 grey
  * line, an optional teal next-step link. Inside a list card, one 56px row of 15/400 grey text (.c-empty, .c-empty--row). */
 :is(#c-root, html) .c-empty--card { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 2px; min-height: 0; padding: 16px; text-align: left; }
-:is(#c-root, html) .c-empty__title { display: block; margin: 0; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-empty__title { display: block; margin: 0; font-size: 16px; line-height: 22px; font-weight: 600; color: var(--c-ink); } /* Review F3 (NV-230): 16/22, the one empty-state title. */
 :is(#c-root, html) .c-empty__body { display: block; max-width: 560px; font-size: 13px; line-height: 18px; font-weight: 400; color: var(--c-grey); }
 :is(#c-root, html) .c-empty__next { display: block; margin-top: 4px; }
 :is(#c-root, html) .c-empty__next > .c-link { margin-top: -13px; margin-bottom: -13px; }

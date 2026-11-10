@@ -165,7 +165,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav > :not(.q-nav__r) { display: none; }
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav > .q-nav__r { display: inline-flex; align-items: center; justify-content: center; height: 40px; min-height: 40px; margin: 2px 0; padding: 0 16px;
     border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #1A1C1E !important; font: 500 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; text-decoration: none; }
-  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav > .q-nav__r:hover { background: #F7F8F8; }
+  @media (hover: hover) { :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav > .q-nav__r:hover { background: var(--b-hover); } }
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .pmp-content { max-width: 736px; }
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .q-who { margin: 0 16px; min-height: 40px; }
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .q-who > .q-av { display: none; }

@@ -100,7 +100,7 @@
   /* ---------- Schedule grid (review B5, NV-087): the person column at least 200px (names stay on one line more often; two at
    * most), the days share the rest. ---------- */
   @media (min-width: 768px) {
-    html body .app-shell[data-nv-b] .cm-grid thead th.cm-grid__corner { width: 210px !important; min-width: 200px !important; }
+    html body .app-shell[data-nv-b] .cm-grid thead th.cm-grid__corner { width: 210px !important; min-width: 200px !important; } /* the week grid sets its own 200 / 148px (owner-b-desktop.css, employee-b-desktop.css) */
   }
 
   /* ---------- Timecard sheet (review B5, NV-245): AM and PM at full size in the Days list, as on every other phone screen;
@@ -198,8 +198,10 @@
 :is(#c-root, html) body .app-shell[data-nv-b] :is(main.page-frame, .c-page, .q-page) { font-variant-numeric: normal; }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.c-num, .b-live__v, .b-kv b, td, time, .b-pill, .nav-count, .q-count, .b-tab-badge, .c-count, .b-week__d b, .b-step__n) { font-variant-numeric: tabular-nums; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-hero .b-date { display: inline-flex; align-items: center; gap: 6px; min-height: 0; padding: 0; background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; font-size: 14px; font-weight: 600; color: var(--b-on-band); scale: 1; }
-@keyframes b-enter { from { opacity: 0; transform: translateY(8px); } }
-@keyframes b-fade { from { opacity: 0; } }
+/* Review F3 (NV-329): the only b-enter and b-fade (owner-b.css no longer repeats them inside its motion queries); b-enter is
+ * DESIGN.MD's first-load entrance: opacity, a 4px blur and a 12px rise. */
+@keyframes b-enter { from { opacity: 0; translate: 0 12px; filter: blur(4px); } to { opacity: 1; translate: 0 0; filter: blur(0); } }
+@keyframes b-fade { from { opacity: 0; } to { opacity: 1; } }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-live { list-style: none; padding: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-live :is(.b-live__v, .b-live__m) { display: block; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn--danger { background: var(--b-red); color: #FFFFFF; }
@@ -217,6 +219,8 @@
   --c-ink: var(--b-ink); --c-ink2: var(--b-ink2); --c-grey: var(--b-grey); --c-line: var(--b-line); --c-bg: var(--b-canvas);
   --c-teal: var(--b-teal); --c-tint: var(--b-teal-50); --c-amber: var(--b-amber); --c-amber-bg: var(--b-amber-50); --c-red: var(--b-red); --c-red-bg: var(--b-red-50);
   --c-field: var(--b-field-edge);
+  /* Review F3 (NV-167): one row hover inside white cards. */
+  --c-row-hover: var(--b-hover);
 }
 :is(#c-root, html) body .app-shell[data-nv-b] .q-page {
   --q-ink: var(--b-ink); --q-grey: var(--b-grey); --q-soft: var(--b-grey); --q-chev: var(--b-grey); --q-line: var(--b-line); --q-fill: var(--b-quiet);
@@ -296,10 +300,121 @@
 :is(#c-root, html) body .app-shell[data-nv-b] .q-radio[data-on] { border-color: var(--b-teal); background: radial-gradient(circle, var(--b-teal) 0 5px, #FFFFFF 5.5px); }
 :is(#c-root, html) body .app-shell[data-nv-b] label:has(> input[type="radio"]:focus-visible) .q-radio { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .wc-preview:not(#nv-none) { position: relative; outline: 1.5px dashed var(--b-field-edge); outline-offset: 6px; }
-:is(#c-root, html) body .app-shell[data-nv-b] .wc-preview::before { content: "Preview"; position: absolute; top: -16px; right: 12px; z-index: 1; padding: 2px 8px; border-radius: 999px; background: var(--b-quiet); color: var(--b-grey-on-fill); font-size: 12px; line-height: 16px; font-weight: 600; }
+:is(#c-root, html) body .app-shell[data-nv-b] .wc-preview::before { content: "Preview"; position: absolute; top: 12px; right: 14px; z-index: 1; padding: 2px 8px; border-radius: 999px; background: var(--b-quiet); color: var(--b-grey-on-fill); font-size: 12px; line-height: 16px; font-weight: 600; }
 @media (min-width: 1024px) {
   :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] #b-todo-more:not(#nv-none) { position: sticky; top: 84px; align-self: start; }
 }
 @media (hover: hover) and (min-width: 768px) {
   :is(#c-root, html) body .app-shell[data-nv-b] .c-tc-desk table tbody tr:hover > td { background: var(--b-hover); }
 }
+
+/* ---------- Review closing pass F3 (Nov 10, 2026). Normal declarations here; the !important ones are in the nv-b block
+ * below. ---------- */
+/* NV-219: the Insights period menu's check trails the label, as in the Location and Schedule menus. */
+:is(#c-root, html) body .app-shell[data-nv-b] .cm-insights__menu-item > .cm-insights__menu-check { margin-left: auto; }
+
+@layer nv-b {
+  /* NV-221: the Employee and Lead phone shift sheet takes the one panel header: the day 20/26 700 at the left, Done (teal
+   * text, 44px) at the right, as the Owner and Manager sheets and the desktop panel. */
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-sheet.c-esheet .c-sheet__nav { grid-template-columns: minmax(0, 1fr) auto !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-sheet.c-esheet .c-sheet__nav > span:empty { display: none !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-sheet.c-esheet .c-sheet__title { justify-self: start !important; text-align: left !important; font: 700 20px/26px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.01em !important; color: var(--b-ink) !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-sheet.c-esheet .c-sheet__done { justify-self: end !important; display: inline-flex !important; align-items: center !important; min-height: 44px !important; min-width: 44px !important; padding: 0 4px !important; }
+  }
+  /* NV-082 (left by closing F1): on tablets and desktop a payroll's money is ink 600, tabular, at the row's end, and a payroll a
+   * correction replaced sits under it, its icon indented 44px (x66 in the card, the phone's nesting). */
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b] .c-pay .c-row__value.c-row__value--ink { color: var(--b-ink) !important; font-weight: 600 !important; font-variant-numeric: tabular-nums !important; text-align: right !important; }
+    html body .app-shell[data-nv-b] .c-pay li.c-pay__replaced > .c-row > .c-row__icon { margin-left: 44px !important; }
+  }
+  /* …and on phones (closing F1's 44px row padding loses to the phone rows' padding there), 32px in. */
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b] .c-pay li.c-pay__replaced > .c-row > .c-row__icon { margin-left: 32px !important; }
+  }
+  /* NV-130 (left by closing F1): Clocker PINs' search and its No PIN / PIN set filter join the band on glass, as Team's search
+   * and the band tabs do; the people card follows under the band. */
+  @media (max-width: 767px) {
+    /* One painted rectangle behind the search and the filter carries the band under the hero (no rounded shadow spreads):
+     * from the content's 16px top margin to 16px past the filter. */
+    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins { position: relative !important; padding-top: 0 !important; }
+    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins::before { content: "" !important; position: absolute !important; top: -16px !important; left: 0 !important; right: 0 !important; height: 150px !important; z-index: 0 !important; background: #08504C !important; pointer-events: none !important; }
+    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search { margin: 0 !important; height: 46px !important; min-height: 46px !important; padding: 0 14px !important; border: 0 !important; border-radius: 14px !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; color: var(--b-on-band) !important; }
+    html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] { margin: 12px 0 0 !important; padding: 4px !important; border: 0 !important; border-radius: 14px !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
+    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg + * { margin-top: 40px !important; }
+  }
+  @media (min-width: 768px) {
+    /* (id steps: it orders after owner-b-desktop.css's band rule, which has them) */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page > .q-hd:has(~ .wc-content > .c-pins > .c-pins__search) { border-image-outset: 240px 100vw 130px 100vw !important; }
+    html body .app-shell[data-nv-b] .q-page > .wc-content:has(> .c-pins > .c-pins__search) { margin-top: 52px !important; }
+    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins { display: flex !important; flex-flow: row wrap !important; align-items: flex-start !important; column-gap: 12px !important; row-gap: 12px !important; padding: 0 !important; }
+    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > * { flex: 1 1 100% !important; min-width: 0 !important; }
+    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search { flex: 0 1 520px !important; height: 46px !important; min-height: 46px !important; margin: 0 !important; padding: 0 16px !important; border: 0 !important; border-radius: 23px !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; color: var(--b-on-band) !important; }
+    html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] { flex: none !important; width: auto !important; height: 46px !important; margin: 0 0 36px 12px !important; padding: 4px !important; border: 0 !important; border-radius: 16px !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
+    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg > button { height: 38px !important; min-height: 38px !important; padding: 0 16px !important; border-radius: 12px !important; }
+  }
+  html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search :is(.c-ic, input) { color: var(--b-on-band) !important; }
+  html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search input::placeholder { color: var(--b-on-band) !important; opacity: 1 !important; }
+  html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search input:focus-visible { outline: none !important; }
+  html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search:focus-within { outline: 2px solid var(--b-focus-on-band) !important; outline-offset: 2px !important; }
+  html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] > button { background: transparent !important; box-shadow: none !important; color: var(--b-on-band) !important; font-weight: 600 !important; }
+  html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg > button .c-pins__count { color: inherit !important; opacity: .86; }
+  html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] > button[aria-pressed="true"] { background: #FFFFFF !important; color: #0B3B38 !important; box-shadow: 0 2px 6px rgb(0 0 0 / .18) !important; }
+  html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg > button:focus-visible { outline: 2px solid var(--b-focus-on-band) !important; outline-offset: 2px !important; }
+  html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg[data-slide]::before, html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg > button::before { display: none !important; }
+  /* NV-265: on phones the form band's Save / Next pill (36px drawn) gets a 44px target. */
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b] :is(.c-formhead > :last-child :is(a, button), .c-shift__save) { position: relative !important; }
+    html body .app-shell[data-nv-b] :is(.c-formhead > :last-child :is(a, button), .c-shift__save)::after { content: "" !important; position: absolute !important; inset: -4px 0 !important; }
+  }
+  /* NV-267: on phones Hours this week's week stepper is the band's glass stepper (as Schedule and Activity), not a white pill
+   * on the band's edge. The band is one rectangle behind it (::before: 32px above, 16px each side, 60px below, so the first
+   * card lifts over the teal), the glass pill another (::after); spread shadows would follow the pill's round corners. */
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week { isolation: isolate !important; display: flex !important; align-items: center !important; justify-content: space-between !important; height: 44px !important; min-height: 44px !important; padding: 0 6px !important; border: 0 !important; border-radius: 22px !important; background: none !important; box-shadow: none !important; color: var(--b-on-band) !important; }
+    html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week::before { content: "" !important; position: absolute !important; inset: -32px -16px -60px !important; z-index: -1 !important; background: #08504C !important; }
+    html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week::after { content: "" !important; position: absolute !important; inset: 0 !important; z-index: -1 !important; border-radius: 22px !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
+    html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week :is(a, span, b, svg) { color: var(--b-on-band) !important; }
+    html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week .c-week__arrow { display: grid !important; place-items: center !important; width: 32px !important; height: 32px !important; min-height: 32px !important; padding: 0 !important; border: 0 !important; border-radius: 16px !important; background: transparent !important; box-shadow: none !important; }
+    html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week .c-week__label { font-size: 15px !important; font-weight: 600 !important; }
+    html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week :focus-visible { outline: 2px solid var(--b-focus-on-band) !important; outline-offset: 2px !important; }
+  }
+  /* NV-251: a right-hand inspector (the timecard panel) leaves the way it came: it fades over 150ms while moving 12px to the
+   * right; reduced motion fades only. quiet-sheet.tsx closes it (and the table re-flows) when the fade ends. */
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b] dialog.q-sheet[data-inspector][data-closing] { transform: translateX(12px) !important; opacity: 0 !important; transition: opacity 150ms ease-out, transform 150ms ease-out !important; }
+  }
+  @media (min-width: 768px) and (prefers-reduced-motion: reduce) {
+    html body .app-shell[data-nv-b] dialog.q-sheet[data-inspector][data-closing] { transform: none !important; transition: opacity 150ms ease-out !important; }
+  }
+  /* NV-096: on phones Update detail's title and its date line sit in the band under "‹ Updates", like every other pushed
+   * page's hero (they were 28px ink on the canvas under an empty bar). */
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child { position: relative !important; z-index: 1 !important; margin: 0 calc(50% - 50vw) !important; padding: 0 16px 18px !important; border: 0 !important; border-radius: 0 !important; background: #08504C !important; box-shadow: 0 -16px 0 #08504C !important; color: var(--b-on-band-2) !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child h1 { margin: 0 !important; font: 700 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child p { margin: 2px 0 0 !important; font-size: 14px !important; line-height: 19px !important; color: var(--b-on-band-2) !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child + * { margin-top: 16px !important; }
+  }
+  /* NV-090: the route note's Dismiss stays the teal text link wherever the note sits (list links are painted ink). */
+  html body .app-shell[data-nv-b] .c-route-note > a.c-route-note__dismiss { color: var(--b-teal) !important; text-decoration: none !important; }
+  /* NV-219: one menu look on tablets and desktop (account, Location, Schedule options, Insights period and Export): white,
+   * 16px corners, the popover elevation, 6px in; 44px items with 8px corners, 15/400 ink; the hover tint only where a pointer
+   * hovers. Phones keep their bottom sheets. */
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b] :is(.nevora-action-menu-popover, .cm-insights__menu):not(#manager-more-navigation) { background: #FFFFFF !important; border: 0 !important; border-radius: 16px !important; box-shadow: var(--b-elev-2) !important; padding: 6px !important; }
+    html body .app-shell[data-nv-b] :is(.nevora-action-menu-popover, .cm-insights__menu) :is(.nevora-action-menu-item, .cm-insights__menu-item) { min-height: 44px !important; border-radius: 8px !important; }
+    html body .app-shell[data-nv-b] .cm-insights__menu .cm-insights__menu-item { color: var(--b-ink) !important; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; }
+    html body .app-shell[data-nv-b] .cm-insights__menu .cm-insights__menu-item[aria-pressed="true"] { font-weight: 500 !important; }
+    @media (hover: hover) {
+      html body .app-shell[data-nv-b] :is(.nevora-action-menu-popover, .cm-insights__menu) :is(.nevora-action-menu-item, .cm-insights__menu-item):not(:disabled):hover,
+      html body .app-shell[data-nv-b] header.mobile-header .portal-account-menu .nevora-action-menu-popover .nevora-action-menu-item:hover { background: var(--b-hover) !important; }
+    }
+  }
+}
+/* NV-090: a schedule route error is a white note under the band: a red warning in a tinted circle, the message, Dismiss. */
+html body .app-shell[data-nv-b] .c-route-note { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; padding: 12px 18px; border-radius: var(--b-radius-card); background: #FFFFFF; box-shadow: var(--b-elev-1); color: var(--b-ink); }
+html body .app-shell[data-nv-b] .c-route-note__icon { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; background: var(--b-red-50); color: var(--b-red); }
+html body .app-shell[data-nv-b] .c-route-note__icon svg { width: 20px; height: 20px; }
+html body .app-shell[data-nv-b] .c-route-note__text { flex: 1; min-width: 0; margin: 0; font-size: 15px; line-height: 21px; color: var(--b-ink); text-wrap: pretty; }
+html body .app-shell[data-nv-b] .c-route-note__dismiss { flex: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; color: var(--b-teal); font-size: 15px; font-weight: 600; text-decoration: none; }
+html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); border-radius: 8px; }

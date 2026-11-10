@@ -10,7 +10,7 @@
 
 /* ---------- every width: the band and the card ---------- */
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth {
-  --ab-teal: #0C726C; --ab-band: linear-gradient(180deg, #0E7A74 0%, #0B6E69 60%, #08504C 100%);
+  --ab-teal: #0C726C; --ab-band: var(--b-band); /* Review F3 (NV-115): the one band (no lighter #0E7A74 start). */
   background: #F2F5F4 !important; color: #111517;
 }
 /* The band (phones and tablets; on a desktop the policy pages only, the sign-in pages have the brand panel). */
@@ -26,7 +26,7 @@
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__col > .q-hd, .q-auth__col > div > .q-hd, .q-auth__col > form > .q-hd) { padding-bottom: 64px !important; margin-bottom: -40px !important; border-image-outset: 24px 100vw 0 100vw !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__top, .q-nav, .q-hd) :is(h1, h2, p, a, span, b, button, svg) { color: #FFFFFF !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-hd h1 { font-size: 30px !important; line-height: 36px !important; font-weight: 700 !important; letter-spacing: -0.03em !important; }
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-hd p { margin-top: 10px !important; font-size: 14.5px !important; color: rgb(255 255 255 / .92) !important; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-hd p { margin-top: 10px !important; font-size: 14.5px !important; color: var(--b-on-band-2) !important; }
 /* The workspace under the greeting is a glass chip. */
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__hd > p { display: inline-flex !important; align-items: center !important; height: 34px !important; padding: 0 14px !important; border-radius: 17px !important;
   background: rgb(255 255 255 / .12) !important; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .18) !important; font-weight: 600 !important; color: #FFFFFF !important; }
@@ -48,7 +48,7 @@
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc :is(.q-auth__col > .q-hd, .q-auth__col > div > .q-hd, .q-auth__col > form > .q-hd) { padding-bottom: 64px !important; margin-bottom: -40px !important; border-image-outset: 24px 100vw 0 100vw !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc :is(.q-auth__top, .q-nav, .q-hd) :is(h1, h2, p, a, span, b, button, svg) { color: #FFFFFF !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .q-hd h1 { font-weight: 700 !important; letter-spacing: -0.03em !important; }
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .q-hd p { margin-top: 10px !important; font-size: 14.5px !important; color: rgb(255 255 255 / .92) !important; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .q-hd p { margin-top: 10px !important; font-size: 14.5px !important; color: var(--b-on-band-2) !important; }
 /* The workspace under the greeting is a glass chip. */
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .q-auth__hd > p { display: inline-flex !important; align-items: center !important; height: 34px !important; padding: 0 14px !important; border-radius: 17px !important;
   background: rgb(255 255 255 / .12) !important; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .18) !important; font-weight: 600 !important; color: #FFFFFF !important; }
@@ -92,10 +92,10 @@
   :is(#q-root, html) .q-auth__brandmark { display: block; width: 134px; }
   :is(#q-root, html) .q-auth__brandmark svg { display: block; width: 134px !important; height: auto !important; }
   :is(#q-root, html) .q-auth__brandmark :is(img, span, svg) { filter: brightness(0) invert(1); }
-  :is(#q-root, html) .q-auth__eyebrow { margin: 0 0 12px; font-size: 15px; font-weight: 600; color: rgb(255 255 255 / .8); }
+  :is(#q-root, html) .q-auth__eyebrow { margin: 0 0 12px; font-size: 15px; font-weight: 600; color: var(--b-on-band-2); } /* Review F3 (NV-003): the band's two whites only. */
   :is(#q-root, html) .q-auth__line { margin: 0; line-height: 1.12; font-weight: 700; letter-spacing: -0.035em; }
-  :is(#q-root, html) .q-auth__support { max-width: 30ch; margin: 18px 0 0; font-size: 17px; line-height: 1.6; color: rgb(255 255 255 / .82); }
-  :is(#q-root, html) .q-auth__powered { font-size: 13.5px; color: rgb(255 255 255 / .7); }
+  :is(#q-root, html) .q-auth__support { max-width: 30ch; margin: 18px 0 0; font-size: 17px; line-height: 1.6; color: var(--b-on-band-2); }
+  :is(#q-root, html) .q-auth__powered { font-size: 13.5px; color: var(--b-on-band); }
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col { grid-column: 2; grid-row: 1; align-self: center; justify-self: center; position: relative; box-sizing: border-box; width: 440px !important; max-width: calc(100% - 48px) !important;
     margin: 96px auto 72px !important; padding: 32px !important; border-radius: 22px !important; background: #FFFFFF !important;
     box-shadow: 0 0 0 1px rgb(16 40 38 / .05), 0 1px 2px rgb(16 40 38 / .06), 0 24px 48px -24px rgb(16 40 38 / .24) !important; }

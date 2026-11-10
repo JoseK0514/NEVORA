@@ -18,7 +18,7 @@
   /* Time off draws its first frame inside its own page, so that page's "Loading…" line gives way too. */
   html body .app-shell[data-nv-b] .page-frame > .c-page:has(> .b-screen) ~ .em-requests-mobile:not(:has(.b-screen)) { display: none !important; }
   /* The canvas under a B screen is the kit's, to the tab bar (the request sheet's grey and white give way). */
-  html body .app-shell[data-nv-b] .em-requests-mobile:has(.b-screen) { background: #F2F5F4 !important; }
+  html body .app-shell[data-nv-b] .em-requests-mobile:has(.b-screen) { background: var(--b-canvas) !important; }
   /* ---------- a form's page: no tab bar, no bell or avatar while it shows ---------- */
   /* Request time off is a full page here, not the bottom sheet the corporate phone layout draws. */
   /* ---------- inside the B screens ---------- */
@@ -50,17 +50,17 @@
   html body .app-shell[data-nv-b] .c-page > .b-screen:not(:has(> .b-stack)) ~ .b-keep.b-keep { margin-top: -40px !important; }
   /* Buttons: full-width pills, teal primary, quiet grey secondary, a soft red for withdraw and can't work. */
   html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn { height: auto !important; padding: 0 16px !important;
-    border-radius: 16px !important; background: #0B6E69 !important; color: #FFFFFF !important; box-shadow: 0 4px 10px -6px rgb(11 110 105 / 0.55) !important;
+    border-radius: 16px !important; background: var(--b-teal) !important; color: #FFFFFF !important; box-shadow: var(--b-elev-glow) !important;
     font-size: 16px !important; line-height: 20px !important; font-weight: 600 !important;
   }
-  html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn:is(.c-btn--secondary, .c-btn--neutral) { background: #F0F2F3 !important; color: #111517 !important; box-shadow: none !important; font-size: 15.5px !important; }
-  html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn.c-btn--danger { background: #FDECEA !important; color: #B42318 !important; box-shadow: none !important; }
+  html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn:is(.c-btn--secondary, .c-btn--neutral) { background: var(--b-quiet) !important; color: var(--b-ink) !important; box-shadow: none !important; font-size: 15.5px !important; }
+  html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn.c-btn--danger { background: var(--b-red-50) !important; color: var(--b-red) !important; box-shadow: none !important; }
   /* Can't work's Send to manager is the form's primary action: solid red, as it stops a shift. */
-  html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep .c-xs-form .c-btn.c-btn--danger { background: #B42318 !important; color: #FFFFFF !important; box-shadow: 0 4px 10px -6px rgb(180 35 24 / 0.55) !important; }
-  html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn.c-btn.c-btn:is(:disabled, [aria-disabled="true"]) { background: #F0F2F3 !important; color: #A7ACB1 !important; box-shadow: none !important; }
-  html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn:focus-visible { outline: 2px solid #0B6E69 !important; outline-offset: 2px !important; }
+  html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep .c-xs-form .c-btn.c-btn--danger { background: var(--b-red) !important; color: #FFFFFF !important; box-shadow: 0 4px 10px -6px rgb(180 35 24 / 0.55) !important; }
+  html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn.c-btn.c-btn:is(:disabled, [aria-disabled="true"]) { background: var(--b-quiet) !important; color: #A7ACB1 !important; box-shadow: none !important; }
+  html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn:focus-visible { outline: 2px solid var(--b-teal) !important; outline-offset: 2px !important; }
   /* Fields: 13.5px grey labels 6px above 48px fields (1px #8C9397, 3:1, 14px corners); a 96px reason; 13px grey hints. */
-  html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep :is(.c-field__label, .c-xs-group > legend) { font-size: 13.5px !important; line-height: 18px !important; font-weight: 600 !important; color: #6A7176 !important; }
+  html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep :is(.c-field__label, .c-xs-group > legend) { font-size: 13.5px !important; line-height: 18px !important; font-weight: 600 !important; color: var(--b-grey) !important; }
   /* Time off's form: All day / Part of day on a light track with a white thumb, the midnight hint right under it, From
    * and To side by side, the reason, the approval notice, then Send request. */
   /* The request sheet's own layout (a scrolling body, a pinned footer) gives way to the card. */
@@ -107,12 +107,12 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 22px 18px 20px; text-align: center; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty .b-ico { width: 48px; height: 48px; border-radius: 24px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty .b-ico svg { width: 22px; height: 22px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__t { font-size: 16px; line-height: 21px; font-weight: 600; text-wrap: balance; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__t { font-size: 16px; line-height: 22px; font-weight: 600; text-wrap: balance; } /* Review F3 (NV-230): 16/22, the one empty-state title. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__s { max-width: 30ch; font-size: 13.5px; color: var(--b-grey); text-wrap: balance; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-inline { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 8px 18px; font-size: 13.5px; line-height: 18px; color: var(--b-ink2); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-inline + .b-list > .b-li:first-child, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-list + .eb-inline { box-shadow: inset 0 1px 0 #ECEEEF; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-inline__a { font-weight: 600; color: #0B6E69; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-inline__b { flex: none; min-height: 44px; font-size: 14px; font-weight: 600; color: #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-inline + .b-list > .b-li:first-child, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-list + .eb-inline { box-shadow: inset 0 1px 0 var(--b-line); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-inline__a { font-weight: 600; color: var(--b-teal); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-inline__b { flex: none; min-height: 44px; font-size: 14px; font-weight: 600; color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-inline__b:disabled { opacity: 0.55; cursor: default; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__acts > .eb-pickup, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status > .eb-pickup { display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; line-height: 18px; color: var(--b-ink2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pickup .b-btn--full { min-height: 44px; border-radius: 999px; font-size: 15px; }
@@ -120,21 +120,21 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why > summary { list-style: none; cursor: pointer; transition-property: background-color; transition-duration: 150ms; transition-timing-function: ease-out; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why > summary::-webkit-details-marker { display: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why > summary:active { background-color: rgb(16 24 32 / 0.04); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why > summary:focus-visible { outline: 2px solid #0B6E69; outline-offset: -2px; border-radius: 22px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why > summary:focus-visible { outline: 2px solid var(--b-teal); outline-offset: -2px; border-radius: 22px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why[open] .eb-why__chev { rotate: 180deg; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why__list { display: flex; flex-direction: column; margin: 0; padding: 0 18px 8px 66px; list-style: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why__list > li { display: flex; flex-direction: column; gap: 2px; padding: 10px 0; font-size: 13.5px; line-height: 18px; color: var(--b-grey); overflow-wrap: anywhere; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why__list > li + li { box-shadow: inset 0 1px 0 #ECEEEF; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why__list > li + li { box-shadow: inset 0 1px 0 var(--b-line); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why__list strong { font-size: 14.5px; line-height: 20px; font-weight: 600; color: var(--b-ink); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why__list p { color: var(--b-ink2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tof-empty { display: flex; flex-direction: column; gap: 2px; padding: 16px 18px 14px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tof-empty__t { font-size: 15.5px; line-height: 21px; font-weight: 600; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tof-empty__s { font-size: 13.5px; line-height: 18px; color: var(--b-grey); text-wrap: pretty; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-empty + .b-list > .b-li:first-child .b-add { box-shadow: inset 0 1px 0 #ECEEEF; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-empty + .b-list > .b-li:first-child .b-add { box-shadow: inset 0 1px 0 var(--b-line); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tof-req { display: flex; flex-direction: column; gap: 4px; padding: 2px 18px 16px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tof-req__d { font-size: 24px; line-height: 30px; font-weight: 700; letter-spacing: -0.02em; text-wrap: balance; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tof-req__l { font-size: 14px; line-height: 19px; color: var(--b-grey); overflow-wrap: anywhere; text-wrap: pretty; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tof-req + .b-list > .b-li:first-child { box-shadow: inset 0 1px 0 #ECEEEF; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tof-req + .b-list > .b-li:first-child { box-shadow: inset 0 1px 0 var(--b-line); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-resp-card:has(> .eb-resp:empty) { display: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-resp { display: flex; flex-direction: column; gap: 10px; padding: 16px 18px 18px; font-size: 14px; line-height: 20px; color: var(--b-ink2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-resp .b-btn--full { min-height: 48px; font-size: 15.5px; }
@@ -142,12 +142,16 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-resp .b-link { align-self: flex-start; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep.b-keep:not(.c-avail--phone) {
   position: relative; z-index: 2; display: flex; flex-direction: column; gap: 16px;
-  color: #111517; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; text-align: left;
+  color: var(--b-ink); font: 400 15px/20px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; text-align: left;
 }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > p.b-keep.b-keep { display: block; font-size: 14px; line-height: 20px; color: #3F464B; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > p.b-keep.b-keep { display: block; font-size: 14px; line-height: 20px; color: var(--b-ink2); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep:focus:not(:focus-visible) { outline: none; }
 @media (prefers-reduced-motion: no-preference) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep { animation: b-enter 300ms ease-out 100ms both; }
+}
+/* Review F3 (NV-329): under reduced motion the kept form cross-fades like the cards. */
+@media (prefers-reduced-motion: reduce) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep { animation: b-fade 160ms ease-out both; }
 }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn {
   display: flex; align-items: center; justify-content: center; width: 100%; min-height: 52px; margin: 0; border: 0; text-align: center; transition-property: scale, background-color; transition-duration: 150ms; transition-timing-function: ease-out;
@@ -157,66 +161,66 @@
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btns { display: flex; gap: 8px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btns > .c-btn { flex: 1; min-width: 0; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep .c-in {
-  height: 48px; padding: 0 14px; border: 0; border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397); color: #111517; font-size: 15.5px; line-height: 20px;
+  height: 48px; padding: 0 14px; border: 0; border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397); color: var(--b-ink); font-size: 15.5px; line-height: 20px;
 }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep textarea.c-in { display: block; height: 96px; padding: 13px 14px; font-size: 16px; resize: none; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep :is(.c-in:focus, .c-in:focus-within, .tof-pick:has(> input:focus)) { box-shadow: inset 0 0 0 2px #0B6E69; outline: none; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep :is(.c-in[aria-invalid="true"], .tof-pick:has(> input[aria-invalid="true"])) { box-shadow: inset 0 0 0 2px #B42318; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep .c-in::placeholder { color: #6A7176; opacity: 1; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep :is(.c-field__help, .c-xs-foot, .c-xs-notice, .tof-feedback) { margin: 0; font-size: 13px; line-height: 18px; color: #6A7176; text-wrap: pretty; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep :is(.c-in:focus, .c-in:focus-within, .tof-pick:has(> input:focus)) { outline: 2px solid var(--b-teal); outline-offset: 2px; } /* Review F3 (NV-170): the one field ring (teal, 2px out); the 1px resting edge stays. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep :is(.c-in[aria-invalid="true"], .tof-pick:has(> input[aria-invalid="true"])) { box-shadow: inset 0 0 0 2px var(--b-red); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep .c-in::placeholder { color: var(--b-grey); opacity: 1; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep :is(.c-field__help, .c-xs-foot, .c-xs-notice, .tof-feedback) { margin: 0; font-size: 13px; line-height: 18px; color: var(--b-grey); text-wrap: pretty; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep .tof-feedback :is(p, a) { font-size: inherit; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep .c-error { margin: 0; font-size: 13.5px; line-height: 18px; font-weight: 500; color: #B42318; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep .c-error { margin: 0; font-size: 13.5px; line-height: 18px; font-weight: 500; color: var(--b-red); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep { gap: 16px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-fields { gap: 16px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-fields > * { order: 2; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-fields > .tof-seg { order: 0; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-fields > .tof-midnight { order: 1; margin-top: -8px; padding: 0 2px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-seg {
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); height: auto; padding: 4px; border-radius: 14px; background: #F0F2F3; box-shadow: none;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); height: auto; padding: 4px; border-radius: 14px; background: var(--b-quiet); box-shadow: none;
 }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-seg > button { height: 50px; min-height: 0; margin: -6px 0; padding: 0 8px; font-size: 14.5px; line-height: 20px; font-weight: 600; color: #3F464B; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-seg > button { height: 50px; min-height: 0; margin: -6px 0; padding: 0 8px; font-size: 14.5px; line-height: 20px; font-weight: 600; color: var(--b-ink2); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-seg > button::before { border-radius: 10px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-seg > button[aria-pressed="true"] { color: #0B3B38; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-seg > button[aria-pressed="true"]::before { background: #FFFFFF; box-shadow: 0 2px 6px rgb(0 0 0 / 0.12); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-row { gap: 10px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-pick { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-pick__ph { color: #6A7176; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-pick__ic { display: block; flex: none; width: 18px; height: 18px; color: #6A7176; pointer-events: none; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-pick__ph { color: var(--b-grey); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-pick__ic { display: block; flex: none; width: 18px; height: 18px; color: var(--b-grey); pointer-events: none; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-approve { display: none; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: 14px; background: #F4F7F6; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve > span:last-child { display: flex; flex-direction: column; min-width: 0; padding-top: 0; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve b { font-size: 14.5px; line-height: 20px; font-weight: 600; color: #111517; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve b + span { font-size: 13.5px; color: #6A7176; text-wrap: pretty; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve b { font-size: 14.5px; line-height: 20px; font-weight: 600; color: var(--b-ink); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve b + span { font-size: 13.5px; color: var(--b-grey); text-wrap: pretty; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-foot {
   position: static; margin: 0; padding: 0; background: none; box-shadow: none;
 }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.tof-frame--sheet:has(> .b-screen) > .tof-form.b-keep { flex: none; min-height: 0; overflow: visible; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > :is(.tof-done, .tof-withdraw).b-keep { gap: 12px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-done.b-keep h2 { font-size: 17px; line-height: 22px; font-weight: 700; letter-spacing: -0.01em; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-done.b-keep p { font-size: 14.5px; line-height: 20px; color: #3F464B; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-done.b-keep p { font-size: 14.5px; line-height: 20px; color: var(--b-ink2); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-withdraw.b-keep .tof-ask { font-size: 15.5px; line-height: 21px; font-weight: 600; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-withdraw.b-keep .c-note { font-size: 13px; line-height: 18px; color: #6A7176; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-withdraw.b-keep .tof-feedback a { color: #0B6E69; font-weight: 600; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-withdraw.b-keep .c-note { font-size: 13px; line-height: 18px; color: var(--b-grey); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-withdraw.b-keep .tof-feedback a { color: var(--b-teal); font-weight: 600; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .c-sheet-body.b-keep { gap: 14px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-fields { gap: 16px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep :is(.c-xs-shift, .c-xs-who) { padding: 12px 14px; border-radius: 14px; background: #F4F7F6; box-shadow: none; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-shift__label { font-size: 13px; line-height: 18px; font-weight: 600; color: #6A7176; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-shift__time { font-size: 15.5px; line-height: 21px; font-weight: 600; color: #111517; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep :is(.c-xs-shift__place, .c-xs-option__main span) { font-size: 13.5px; line-height: 18px; color: #6A7176; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-shift__label { font-size: 13px; line-height: 18px; font-weight: 600; color: var(--b-grey); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-shift__time { font-size: 15.5px; line-height: 21px; font-weight: 600; color: var(--b-ink); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep :is(.c-xs-shift__place, .c-xs-option__main span) { font-size: 13.5px; line-height: 18px; color: var(--b-grey); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-options { border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397); overflow: hidden; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-option { min-height: 56px; padding: 10px 14px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-option--one { min-height: 48px; padding-top: 4px; padding-bottom: 4px; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-options > li + li > .c-xs-option { box-shadow: inset 0 1px 0 #ECEEEF; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-options > li + li > .c-xs-option { box-shadow: inset 0 1px 0 var(--b-line); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-option:has(.c-xs-radio:focus-visible) { border-radius: 14px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-option__main b { font-size: 15.5px; line-height: 21px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-option--one .c-xs-option__main b { font-weight: 500; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-callout { border-radius: 14px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-callout .c-btn { width: auto; min-height: 40px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-note { height: 96px; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep a.c-xs-alt { font-size: 14.5px; font-weight: 600; color: #0B6E69; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-state p { font-size: 14px; line-height: 20px; color: #6A7176; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep a.c-xs-alt { font-size: 14.5px; font-weight: 600; color: var(--b-teal); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-state p { font-size: 14px; line-height: 20px; color: var(--b-grey); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-receipt h2 { font-size: 17px; line-height: 22px; font-weight: 700; letter-spacing: -0.01em; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-receipt p { font-size: 14.5px; line-height: 20px; color: #3F464B; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-receipt p { font-size: 14.5px; line-height: 20px; color: var(--b-ink2); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xsk { border-radius: 14px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve b { text-wrap: balance; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__s { line-height: 19px; }

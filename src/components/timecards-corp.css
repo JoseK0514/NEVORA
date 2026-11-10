@@ -108,6 +108,12 @@
   @container (max-width: 760px) { :is(#c-root, html) .c-tc-desk .c-tc-table [data-col="role"] { display: none; } }
   /* Breaks folds away only under 520px, so the table beside the open panel at 1280 (548px) keeps every column. */
   @container (max-width: 520px) { :is(#c-root, html) .c-tc-desk .c-tc-table [data-col="breaks"] { display: none; } }
+  /* Review F3 (NV-132): on a wide table the name column stops at 360px and Status takes the rest, so a person's hours sit
+   * about 250px from their name (they were 600px away at 1440). The tinted row hover stays (b-foundation.css). */
+  @container (min-width: 900px) {
+    :is(#c-root, html) .c-tc-desk .c-tc-table [data-col="person"] { width: 360px; max-width: 360px; }
+    :is(#c-root, html) .c-tc-desk .c-tc-table [data-col="status"] { width: 100%; }
+  }
 
   /* The reviewed batch: one white card above the table, buttons at their own width. */
   :is(#c-root, html) .c-tc-desk .c-tc-dbulk { padding: 16px; display: flex; flex-direction: column; gap: 16px; }

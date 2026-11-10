@@ -27,7 +27,7 @@ html:has(body .nf-page), body:has(.nf-page) { background: #F7F6F3; }
  * 860px reading card holding the message, the Clocker hint and the way back. */
 .nf-page { background: #F2F5F4; color: #111517; font-family: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; }
 html:has(body .nf-page), body:has(.nf-page) { background: #F2F5F4; }
-.nf-band { padding: max(44px, env(safe-area-inset-top)) 20px 84px; background: linear-gradient(180deg, #0E7A74 0%, #0B6E69 60%, #08504C 100%); }
+.nf-band { padding: max(44px, env(safe-area-inset-top)) 20px 84px; background: var(--b-band); } /* Review F3 (NV-115): the one band. */
 .nf-mark { display: none; }
 .nf-band h1 { font: 700 30px/36px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: -.03em; }
 .nf-eyebrow { margin: 6px 0 0; font-size: 15px; line-height: 21px; font-weight: 500; letter-spacing: 0; text-transform: none; color: rgba(255, 255, 255, .78); }

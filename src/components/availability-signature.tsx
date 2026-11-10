@@ -64,7 +64,9 @@ function Fields({ initialAvailability, weekStart, locked, card, note }: { initia
     </CorpCard>
     {weekStart && availableDays === 0 ? <p className="c-note c-note--warn">Submitting with every day unavailable tells your manager you cannot work this week.</p> : null}
     <p className="c-note c-avail__note" role="status" aria-live="polite">{pending ? "Saving your availability…" : dirty && !locked ? "You have unsaved changes." : note}</p>
-    {locked ? null : <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Saving…" disabled={!weekStart && !dirty}>{weekStart ? "Submit this week" : "Save"}</EmployeeSubmitButton>}
+    {/* Review F3 (NV-102): the usual week's Save appears once something changed (no disabled bar at rest); a week that is
+      due always shows Submit. */}
+    {locked || (!weekStart && !dirty) ? null : <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Saving…">{weekStart ? "Submit this week" : "Save"}</EmployeeSubmitButton>}
     {dirty && !disabled ? <button type="button" className="c-avail__link" onClick={() => setAvailability(initialAvailability)}>Reset changes</button> : null}
     {open && value ? <AvailabilityDaySheet open={!!sheet?.open} onClose={() => setSheet(previous => previous ? { ...previous, open: false } : previous)} day={open.label} closeHref="/app/availability"
       available={value.available} onAvailable={available => updateDay(open.dayOfWeek, { available })} switchLabel={`${open.label} availability`} disabled={disabled}

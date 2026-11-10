@@ -21,16 +21,16 @@
 
     /* ---------- sidebar: calm white, the phone tab bar's teal pill marks where you are ---------- */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] aside.sidebar { border: 0 !important; box-shadow: inset -1px 0 0 #E4E8E8 !important; z-index: 40 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] aside.sidebar .nav-link { height: 40px !important; min-height: 40px !important; border-radius: 12px !important; gap: 12px !important; color: #3F464B !important; font-size: 14.5px !important; font-weight: 500 !important; box-shadow: none !important; }
-    html body .app-shell[data-nv-b] aside.sidebar .nav-link .nav-icon { color: #6A7176 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] aside.sidebar .nav-link.active { color: #0B6E69 !important; font-weight: 600 !important; }
-    html body .app-shell[data-nv-b] aside.sidebar .nav-link.active .nav-icon { color: #0B6E69 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] aside.sidebar .nav-link { height: 40px !important; min-height: 40px !important; border-radius: 12px !important; gap: 12px !important; color: var(--b-ink2) !important; font-size: 14.5px !important; font-weight: 500 !important; box-shadow: none !important; }
+    html body .app-shell[data-nv-b] aside.sidebar .nav-link .nav-icon { color: var(--b-grey) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] aside.sidebar .nav-link.active { color: var(--b-teal) !important; font-weight: 600 !important; }
+    html body .app-shell[data-nv-b] aside.sidebar .nav-link.active .nav-icon { color: var(--b-teal) !important; }
     html body .app-shell[data-nv-b] aside.sidebar .nav-link::before, html body .app-shell[data-nv-b] aside.sidebar .nav-link::after { display: none !important; }
-    html body .app-shell[data-nv-b] aside.sidebar .nav-count { min-width: 20px !important; height: 20px !important; padding: 0 6px !important; border-radius: 10px !important; background: #B42318 !important; color: #fff !important; font-size: 12px !important; font-weight: 700 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] aside.sidebar .sidebar-group-label { font-size: 12px !important; font-weight: 600 !important; color: #6A7176 !important; letter-spacing: .02em !important; text-transform: none !important; }
+    html body .app-shell[data-nv-b] aside.sidebar .nav-count { min-width: 20px !important; height: 20px !important; padding: 0 6px !important; border-radius: 10px !important; background: var(--b-red) !important; color: #fff !important; font-size: 12px !important; font-weight: 700 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] aside.sidebar .sidebar-group-label { font-size: 12px !important; font-weight: 600 !important; color: var(--b-grey) !important; letter-spacing: .02em !important; text-transform: none !important; }
     html body .app-shell[data-nv-b] aside.sidebar .cm-org { padding: 8px 10px !important; border-radius: 14px !important; background: #fff !important; box-shadow: 0 0 0 1px rgb(16 40 38 / .06), 0 1px 2px rgb(16 40 38 / .05) !important; }
-    html body .app-shell[data-nv-b] aside.sidebar .cm-org__mark { border-radius: 10px !important; background: linear-gradient(150deg, #0C726C, #08504C) !important; color: #fff !important; font-weight: 700 !important; }
-    html body .app-shell[data-nv-b] aside.sidebar .cm-org__name { font-size: 13.5px !important; font-weight: 600 !important; color: #111517 !important; }
+    html body .app-shell[data-nv-b] aside.sidebar .cm-org__mark { border-radius: 10px !important; background: linear-gradient(150deg, var(--b-band-solid), #08504C) !important; color: #fff !important; font-weight: 700 !important; }
+    html body .app-shell[data-nv-b] aside.sidebar .cm-org__name { font-size: 13.5px !important; font-weight: 600 !important; color: var(--b-ink) !important; }
 
     /* ---------- top bar: flat teal, the first slice of the band ---------- */
     html body .app-shell[data-nv-b] header.mobile-header { height: 64px !important; min-height: 64px !important; padding: 0 40px !important; background: var(--nvd-teal) !important; border: 0 !important; box-shadow: none !important; color: #fff !important; z-index: 30 !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
@@ -48,8 +48,8 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] header.mobile-header .portal-notification-bell :is(.nav-count, .portal-notification-count) { position: absolute !important; top: 8px !important; right: 8px !important; left: auto !important; display: block !important; width: 8px !important; height: 8px !important; min-width: 0 !important; padding: 0 !important; margin: 0 !important; border-radius: 4px !important; background: var(--b-coral) !important; box-shadow: 0 0 0 2px var(--nvd-teal, #0C726C) !important; font-size: 0 !important; line-height: 0 !important; color: transparent !important; overflow: hidden !important; transform: none !important; } /* Review B1 (NV-016): a coral dot on the bell at every width; the count stays in its label. */
     html body .app-shell[data-nv-b] header.mobile-header .portal-account-menu .nevora-action-menu > :is(button, summary) { height: 40px !important; border-radius: 20px !important; padding: 0 12px 0 4px !important; background: rgb(255 255 255 / .12) !important; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .16) !important; border: 0 !important; color: #fff !important; }
     html body .app-shell[data-nv-b] header.mobile-header .portal-account-menu .nevora-action-menu > :is(button, summary) :is(span, svg, strong) { color: #fff !important; }
-    html body .app-shell[data-nv-b] header.mobile-header .portal-account-menu .nevora-action-menu > :is(button, summary) :is(.avatar, [class*="avatar"]) { background: #fff !important; color: #0B6E69 !important; }
-    html body .app-shell[data-nv-b] header.mobile-header .portal-account-menu .nevora-action-menu-popover :is(a, button, span, svg, strong) { color: #111517 !important; text-decoration: none !important; }
+    html body .app-shell[data-nv-b] header.mobile-header .portal-account-menu .nevora-action-menu > :is(button, summary) :is(.avatar, [class*="avatar"]) { background: #fff !important; color: var(--b-teal) !important; }
+    html body .app-shell[data-nv-b] header.mobile-header .portal-account-menu .nevora-action-menu-popover :is(a, button, span, svg, strong) { color: var(--b-ink) !important; text-decoration: none !important; }
 
     /* ---------- the band: each page's own title paints it ---------- */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > header.c-title, .q-page > .q-hd) {
@@ -117,13 +117,13 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-card, .q-list, .q-card, .wc-card) :is(.c-card, .q-list, .q-card) { box-shadow: none !important; border: 0 !important; border-radius: 0 !important; margin: 0 !important; background-color: transparent !important; }
     html body .app-shell[data-nv-b] .c-page .c-section:has(> :is(.c-section__label, .c-section__head)) > :is(.c-section__label, .c-section__head), html body .app-shell[data-nv-b] .q-page section:has(> .q-grp):has(> .q-list) > .q-grp { margin: 0 !important; padding: 18px 22px 8px !important; }
     html body .app-shell[data-nv-b] .c-page .c-section > .c-section__head > .c-section__label { padding: 0 !important; margin: 0 !important; }
-    html body .app-shell[data-nv-b] .c-page :is(.c-section__label, .c-card__label), html body .app-shell[data-nv-b] .q-page :is(section:has(> .q-list) > .q-grp h2, .wc-cardhead > :first-child, .wc-cardhead :is(h2, b)) { font: 700 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -.01em !important; color: #111517 !important; text-transform: none !important; }
+    html body .app-shell[data-nv-b] .c-page :is(.c-section__label, .c-card__label), html body .app-shell[data-nv-b] .q-page :is(section:has(> .q-list) > .q-grp h2, .wc-cardhead > :first-child, .wc-cardhead :is(h2, b)) { font: 700 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -.01em !important; color: var(--b-ink) !important; text-transform: none !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page .c-card__head { min-height: 56px !important; padding: 16px 22px 6px !important; }
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.c-card__aside, .q-sec__aside) :is(a, .c-link) { color: #0B6E69 !important; font-weight: 600 !important; font-size: 14px !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.c-card__aside, .q-sec__aside) :is(a, .c-link) { color: var(--b-teal) !important; font-weight: 600 !important; font-size: 14px !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-card__foot, .c-card__body, .c-empty--card, .c-error-card, .wc-cardhead, .q-list .q-empty, .c-card > .c-note) { padding-left: 22px !important; padding-right: 22px !important; }
     /* Sections stack 20px apart; a hub page flows into two columns. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page > :is(.c-section, .c-card) + :is(.c-section, .c-card) { margin-top: 20px !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-settings { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 20px !important; align-items: start !important; max-width: 1104px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-settings { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 20px !important; align-items: start !important; max-width: 1128px !important; } /* Review F3 (NV-134): the columns end on Home's right edge (x1376 at 1440). */
     html body .app-shell[data-nv-b] main.page-frame .c-page.c-settings > :not(.c-section, .c-card) { grid-column: 1 / -1 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-settings > :is(.c-section, .c-card) { margin-top: 0 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-settings > header.c-title { margin-bottom: 32px !important; }
@@ -131,12 +131,12 @@
 
     /* ---------- rows: 64px, 22px sides, one inset divider ---------- */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-row, .q-row) { min-height: 60px !important; padding-left: 22px !important; padding-right: 22px !important; }
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.c-row__title, .q-rt b) { font-size: 15px !important; line-height: 21px !important; font-weight: 600 !important; color: #111517 !important; }
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.c-row__detail, .q-rt span, .q-rt small, .q-rt i) { font-size: 13.5px !important; line-height: 19px !important; color: #6A7176 !important; }
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.c-row__value, .q-rv) { font-size: 14px !important; color: #6A7176 !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.c-row__title, .q-rt b) { font-size: 15px !important; line-height: 21px !important; font-weight: 600 !important; color: var(--b-ink) !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.c-row__detail, .q-rt span, .q-rt small, .q-rt i) { font-size: 13.5px !important; line-height: 19px !important; color: var(--b-grey) !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.c-row__value, .q-rv) { font-size: 14px !important; color: var(--b-grey) !important; }
     @media (hover: hover) { :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(a.c-row, a.q-row, button.c-row, button.q-row, label.q-row):hover { background-color: var(--b-hover) !important; } }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-list > li { border-top: 0 !important; border-bottom: 0 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-list, .c-rows, .c-coprof) > li + li { box-shadow: none !important; border-top: 0 !important; background: linear-gradient(#ECEEEF, #ECEEEF) 22px 0 / calc(100% - 22px) 1px no-repeat !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-list, .c-rows, .c-coprof) > li + li { box-shadow: none !important; border-top: 0 !important; background: linear-gradient(var(--b-line), var(--b-line)) 22px 0 / calc(100% - 22px) 1px no-repeat !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-list, .c-rows) > li > :is(*, details > summary) { border-top: 0 !important; border-bottom: 0 !important; box-shadow: none !important; }
     html body .app-shell[data-nv-b] .q-row::after, html body .app-shell[data-nv-b] .c-row::after { display: none !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) .c-row__chev, :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.q-chev, .c-chev) { color: #B5BBBF !important; }
@@ -144,18 +144,18 @@
     /* ---------- chips, buttons, fields ---------- */
     html body .app-shell[data-nv-b] :is(.c-page, .q-page) .c-pill { height: 24px !important; padding: 0 9px !important; border-radius: 12px !important; font-size: 12.5px !important; font-weight: 600 !important; border: 0 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-btn, .q-btn, .wc-btn, .button):not(header.c-title *) { min-height: 40px !important; border-radius: 999px !important; font-weight: 600 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-btn:not(.c-btn--secondary, .c-btn--neutral, .c-btn--danger, .c-btn--link), .q-btn:not(.q-btn--sec, .q-btn--quiet, .q-btn--danger), .wc-btn:not(.wc-btn--sec)):not(:disabled, [aria-disabled="true"]):not(header.c-title *) { box-shadow: 0 6px 14px -6px rgb(11 110 105 / .6) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-btn:not(.c-btn--secondary, .c-btn--neutral, .c-btn--danger, .c-btn--link), .q-btn:not(.q-btn--sec, .q-btn--quiet, .q-btn--danger), .wc-btn:not(.wc-btn--sec)):not(:disabled, [aria-disabled="true"]):not(header.c-title *) { box-shadow: var(--b-elev-glow) !important; }
     /* Round 5 (Nov 7) D6: Approve (.q-bs--go) keeps its teal; only plain .q-bs is the grey secondary. */
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-btn--secondary, .c-btn--neutral, .q-btn--sec, .q-btn--quiet, .q-bs:not(.q-bs--go), .wc-btn--sec, .button.secondary):not(header.c-title *) { border-color: transparent !important; background: #EDF0F0 !important; color: #111517 !important; box-shadow: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-btn--secondary, .c-btn--neutral, .q-btn--sec, .q-btn--quiet, .q-bs:not(.q-bs--go), .wc-btn--sec, .button.secondary):not(header.c-title *) { border-color: transparent !important; background: #EDF0F0 !important; color: var(--b-ink) !important; box-shadow: none !important; }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(button, .c-btn, .q-btn, .wc-btn):is(:disabled, [aria-disabled="true"]) { box-shadow: none !important; }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.c-in, .q-in, input[type="text"], input[type="search"], input[type="email"], input[type="tel"], input[type="number"], input[type="password"], input[type="date"], input[type="time"], select, textarea):not([type="checkbox"], [type="radio"]):not(header.c-title *, form.c-team-search *) { min-height: 46px !important; border-radius: 14px !important; border-color: #D5DADC !important; }
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.q-fl__label, .c-field__label) { font-size: 13.5px !important; font-weight: 600 !important; color: #3F464B !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.q-fl__label, .c-field__label) { font-size: 13.5px !important; font-weight: 600 !important; color: var(--b-ink2) !important; }
     /* Segmented controls in content: a soft track and a white thumb. */
     html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.q-seg, .c-seg):not(.c-page > header.c-title + *, .q-page > .q-hd + *) { border-radius: 14px !important; padding: 4px !important; background: #EBEEEE !important; box-shadow: inset 0 0 0 1px #E3E6E7 !important; border: 0 !important; }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.q-seg, .c-seg):not(.c-page > header.c-title + *, .q-page > .q-hd + *) > :is(a, button) { border-radius: 10px !important; font-weight: 600 !important; }
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) .q-seg > :is([aria-pressed="true"], [aria-selected="true"], [aria-current="page"]) { background: #fff !important; box-shadow: 0 1px 3px rgb(16 40 38 / .14) !important; color: #111517 !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) .q-seg > :is([aria-pressed="true"], [aria-selected="true"], [aria-current="page"]) { background: #fff !important; box-shadow: 0 1px 3px rgb(16 40 38 / .14) !important; color: var(--b-ink) !important; }
     /* Notes and footers under cards line up with the row text. */
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.wc-foot, .wc-intro, .c-coprof__note) { padding-left: 22px !important; padding-right: 22px !important; color: #6A7176 !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.wc-foot, .wc-intro, .c-coprof__note) { padding-left: 22px !important; padding-right: 22px !important; color: var(--b-grey) !important; }
     /* Empty states are cards too. */
     html body .app-shell[data-nv-b] :is(.q-page > .q-empty, .q-page > * > .q-empty) { border: 1px solid transparent !important; border-radius: 22px !important; background: #fff !important; box-shadow: var(--nvd-card) !important; }
 
@@ -165,7 +165,7 @@
     html body .app-shell[data-nv-b] .c-coprof .c-coprof__field:first-child .q-fl .q-in { display: block !important; width: 100% !important; height: 46px !important; padding: 0 14px !important; border: 1px solid #D5DADC !important; border-radius: 14px !important; background: #fff !important; text-align: left !important; }
     html body .app-shell[data-nv-b] .c-coprof .c-coprof__note { padding: 0 22px 16px !important; margin: 0 !important; }
     /* Text that sits directly in a section card lines up with the rows. */
-    html body .app-shell[data-nv-b] .c-page .c-section:has(> :is(.c-section__label, .c-section__head)) > p { margin: 0 !important; padding: 4px 22px 18px !important; font-size: 13.5px !important; line-height: 20px !important; color: #6A7176 !important; }
+    html body .app-shell[data-nv-b] .c-page .c-section:has(> :is(.c-section__label, .c-section__head)) > p { margin: 0 !important; padding: 4px 22px 18px !important; font-size: 13.5px !important; line-height: 20px !important; color: var(--b-grey) !important; }
     /* Corporate pages that aren't wide read in the same 860px column. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page:not(.c-page--wide, .c-settings, .c-sched, .c-tc, .c-ins, .c-home) { max-width: 860px !important; width: 100% !important; margin-left: 0 !important; }
 
@@ -268,10 +268,13 @@
     html body .app-shell[data-nv-b] header.mobile-header :focus-visible { outline: 2px solid #fff !important; outline-offset: 2px !important; }
     html body .app-shell[data-nv-b] :is(.c-page > header.c-title, .q-page > .q-hd, .q-page > .q-nav, .c-page > .c-nav--phone, .c-shift__head, .c-formhead, .b-hero, .q-who) :focus-visible { outline: 2px solid #fff !important; outline-offset: 2px !important; }
     html body .app-shell[data-nv-b] :is(.c-page > header.c-title, .q-page > .q-hd) ~ :is(nav.c-pay-tabs, nav.c-week, nav.c-seg, .c-tc-seg, form.c-team-search, .c-act__sub, .c-ins__range) :focus-visible { outline: 2px solid #fff !important; outline-offset: 2px !important; }
-    html body .app-shell[data-nv-b] :is(.q-list, .c-rows, .c-card, .c-section, .wc-card, .b-card) :is(a, button, summary, label, select):focus-visible { outline: 2px solid #0B6E69 !important; outline-offset: -2px !important; }
-    html body .app-shell[data-nv-b] .q-row:has(.q-sr:focus-visible), .q-row:has(input.q-sr:focus-visible) { outline: 2px solid #0B6E69 !important; outline-offset: -2px !important; }
+    html body .app-shell[data-nv-b] :is(.q-list, .c-rows, .c-card, .c-section, .wc-card, .b-card) :is(a, button, summary, label, select):focus-visible { outline: 2px solid var(--b-teal) !important; outline-offset: -2px !important; }
+    html body .app-shell[data-nv-b] .q-row:has(.q-sr:focus-visible), .q-row:has(input.q-sr:focus-visible) { outline: 2px solid var(--b-teal) !important; outline-offset: -2px !important; }
     html body .app-shell[data-nv-b] .c-coprof :is(.c-coprof__field, .q-fl):focus-within { outline: 0 !important; box-shadow: none !important; }
     /* Corporate pushed pages: the back link is a row above the title on the band (it was drawn under the title). */
+    /* Review F3 (NV-253): a page with the Payroll tabs on its band (Payroll, Time exports, Payroll settings) has no back link
+     * above them on tablets and desktop: the tabs are its navigation. */
+    html body .app-shell[data-nv-b] .c-page:has(> nav.c-pay-tabs) > .c-nav--phone:has(> .c-nav__back) { display: none !important; }
     html body .app-shell[data-nv-b] .c-page > .c-nav--phone:has(> .c-nav__back) { display: flex !important; position: static !important; align-items: center !important; height: 32px !important; min-height: 32px !important; margin: 0 0 10px !important; padding: 0 !important; background: none !important; box-shadow: none !important; border: 0 !important; border-image: none !important; }
     html body .app-shell[data-nv-b] .c-page > .c-nav--phone:has(> .c-nav__back) > :not(.c-nav__back) { display: none !important; }
     html body .app-shell[data-nv-b] .c-page > .c-nav--phone > .c-nav__back { position: static !important; display: inline-flex !important; align-items: center !important; gap: 6px !important; height: 32px !important; min-height: 32px !important; padding: 0 12px 0 6px !important; margin: 0 0 0 -6px !important; border-radius: 16px !important; color: var(--b-on-band-2) !important; font-size: 14px !important; font-weight: 600 !important; background: none !important; transform: none !important; }
@@ -287,21 +290,23 @@
     html body .app-shell[data-nv-b] .q-page:has(> .q-hd) > .q-nav > .q-nav__r svg { color: inherit !important; }
     html body .app-shell[data-nv-b] .q-page:has(> .q-hd > p) > .q-nav > .q-nav__r { top: 50px !important; }
     /* Danger rows keep their red. */
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.c-row--danger, .c-row--danger .c-row__title, .q-row--danger, .q-row--danger b) { color: #B42318 !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.c-row--danger, .c-row--danger .c-row__title, .q-row--danger, .q-row--danger b) { color: var(--b-red) !important; }
     /* Cards stack 20px apart wherever they sit. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame :is(.c-page, .q-page, .wc-content, .wc-main, .c-ins__body, .pmp-content, .q-deletion, .c-tc-hold, .c-who, .c-act, .c-teamweek) > :is(.c-section, .c-card, .q-list, section, .wc-card, .q-card, .c-pay__group):not(.c-page > header.c-title ~ *:first-of-type) + :is(.c-section, .c-card, .q-list, section, .wc-card, .q-card, .c-pay__group):not(#nvd-none) { margin-top: 20px !important; }
     /* A label + card pair (payroll pages, Pay history, Features) is one card with the label as its header. */
     html body .app-shell[data-nv-b] .c-page :is(section, div):has(> .c-sec-label):has(> :is(.c-card, .c-rows, ul)) { border: 1px solid transparent !important; border-radius: 22px !important; background: #fff !important; box-shadow: var(--nvd-card) !important; overflow: hidden !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page :is(section, div):has(> .c-sec-label):has(> :is(.c-card, .c-rows, ul)) > :is(.c-card, .c-rows, ul):not(#nvd-none) { box-shadow: none !important; border: 0 !important; border-radius: 0 !important; margin: 0 !important; background: transparent !important; }
     html body .app-shell[data-nv-b] .c-page :is(section, div):has(> .c-sec-label):has(> :is(.c-card, .c-rows, ul)) > .c-sec-label { display: flex !important; align-items: center !important; justify-content: space-between !important; margin: 0 !important; padding: 18px 22px 8px !important; }
-    html body .app-shell[data-nv-b] .c-page :is(section, div):has(> .c-sec-label) > .c-sec-label :is(h2, h3, span:first-child) { font: 700 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -.01em !important; color: #111517 !important; text-transform: none !important; margin: 0 !important; padding: 0 !important; }
+    /* Review F3 (NV-255): only the label's own heading or first span is the title; a count pill inside the heading keeps the
+     * teal-50 12.5px pill. */
+    html body .app-shell[data-nv-b] .c-page :is(section, div):has(> .c-sec-label) > .c-sec-label > :is(h2, h3, span:first-child) { font: 700 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -.01em !important; color: var(--b-ink) !important; text-transform: none !important; margin: 0 !important; padding: 0 !important; }
     html body .app-shell[data-nv-b] .q-page section:has(> .q-grp):has(> [role="radiogroup"] > .q-list) { border: 1px solid transparent !important; border-radius: 22px !important; background: #fff !important; box-shadow: var(--nvd-card) !important; overflow: hidden !important; }
     html body .app-shell[data-nv-b] .q-page section:has(> .q-grp):has(> [role="radiogroup"] > .q-list) > .q-grp { margin: 0 !important; padding: 18px 22px 8px !important; }
     html body .app-shell[data-nv-b] .q-page section:has(> .q-grp):has(> [role="radiogroup"] > .q-list) .q-list { box-shadow: none !important; border: 0 !important; border-radius: 0 !important; margin: 0 !important; background: transparent !important; }
     /* One header rule for every in-card header; no full-width line under it. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-card__head, .c-section__head, .wc-cardhead):not(#nvd-none) { min-height: 0 !important; padding-top: 18px !important; padding-bottom: 8px !important; border-bottom: 0 !important; box-shadow: none !important; }
     html body .app-shell[data-nv-b] :is(.c-card, .c-section, .c-rows) summary.c-row, :is(.c-card, .c-section) > details { box-shadow: none !important; border-top: 0 !important; border-bottom: 0 !important; }
-    html body .app-shell[data-nv-b] :is(.c-card, .c-section) > details + details, :is(.c-card, .c-section) > :is(a.c-row, .c-row) + :is(a.c-row, .c-row, details) { background: linear-gradient(#ECEEEF, #ECEEEF) 22px 0 / calc(100% - 22px) 1px no-repeat !important; }
+    html body .app-shell[data-nv-b] :is(.c-card, .c-section) > details + details, :is(.c-card, .c-section) > :is(a.c-row, .c-row) + :is(a.c-row, .c-row, details) { background: linear-gradient(var(--b-line), var(--b-line)) 22px 0 / calc(100% - 22px) 1px no-repeat !important; }
     html body .app-shell[data-nv-b] :is(.c-card, .c-section) details > summary { padding-left: 22px !important; padding-right: 22px !important; }
     /* Empty states: a card on the canvas, plain inside a card. */
     html body .app-shell[data-nv-b] :is(.q-list, .wc-card, .c-card) .q-empty { box-shadow: none !important; border: 0 !important; border-radius: 0 !important; background: none !important; margin: 0 !important; }
@@ -320,33 +325,33 @@
     html body .app-shell[data-nv-b] .c-page > header.c-title .cm-insights__button :is(svg, span) { color: inherit !important; }
     html body .app-shell[data-nv-b] .c-page > header.c-title .cm-insights__button:last-child { background: #fff !important; color: #0B3B38 !important; font-weight: 700 !important; border: 0 !important; box-shadow: 0 8px 18px -8px rgb(0 0 0 / .45) !important; }
     /* Round 5 (Nov 7) D6: Approve (.q-bs--go) excluded; see the Round 5 block for its teal pill. */
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) .q-bs:not(.q-bs--go) { min-height: 38px !important; padding: 0 16px !important; border-radius: 999px !important; border: 0 !important; background: #EDF0F0 !important; color: #111517 !important; box-shadow: none !important; font-weight: 600 !important; }
-    html body .app-shell[data-nv-b] .c-person__act { width: 40px !important; height: 40px !important; border-radius: 20px !important; border: 0 !important; box-shadow: none !important; background: #E8F3F1 !important; color: #0B6E69 !important; }
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.q-btn, .c-btn, .wc-btn):is(:disabled, [aria-disabled="true"]):not(header.c-title *) { color: #7E868B !important; background: #E4E8E8 !important; box-shadow: none !important; }
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) .q-select-row__control { font-size: 14px !important; color: #6A7176 !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) .q-bs:not(.q-bs--go) { min-height: 38px !important; padding: 0 16px !important; border-radius: 999px !important; border: 0 !important; background: #EDF0F0 !important; color: var(--b-ink) !important; box-shadow: none !important; font-weight: 600 !important; }
+    html body .app-shell[data-nv-b] .c-person__act { width: 40px !important; height: 40px !important; border-radius: 20px !important; border: 0 !important; box-shadow: none !important; background: var(--b-teal-50) !important; color: var(--b-teal) !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.q-btn, .c-btn, .wc-btn):is(:disabled, [aria-disabled="true"]):not(header.c-title *) { color: var(--b-disabled-ink) !important; background: var(--b-disabled-bg) !important; box-shadow: none !important; } /* Review F3 (NV-232): the one disabled pair. */
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) .q-select-row__control { font-size: 14px !important; color: var(--b-grey) !important; }
     /* Profile: the sub line reads like every other sub line. */
     html body .app-shell[data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who :is(span, p, small, i):not(:has(b, strong)) { font-size: 15px !important; color: var(--b-on-band-2) !important; }
     /* A person's page: the title row spans the column so Edit ends at the card edge. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > header.c-title .c-title__row:not(#nvd-none) { width: 100% !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > header.c-title .c-title__actions:not(#nvd-none) { margin-left: auto !important; }
     /* Schedule's error line is a proper notice. */
-    html body .app-shell[data-nv-b] .c-page.c-sched > p.form-error { margin: 28px 0 0 !important; padding: 12px 16px !important; border-radius: 14px !important; background: #FDECEA !important; color: #8F1C13 !important; font-size: 14px !important; position: relative !important; z-index: 1 !important; }
+    html body .app-shell[data-nv-b] .c-page.c-sched > p.form-error { margin: 28px 0 0 !important; padding: 12px 16px !important; border-radius: 14px !important; background: var(--b-red-50) !important; color: #8F1C13 !important; font-size: 14px !important; position: relative !important; z-index: 1 !important; }
 
     /* ---------- Inspection round 1b: main screens and shell ---------- */
     /* Menus that open from the band read dark on white (their labels were painted white). */
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(header.c-title, .b-hero) .nevora-action-menu-popover :is(a, button, span, strong, b, p, svg):not(#nvd-none) { color: #111517 !important; text-decoration: none !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(header.c-title, .b-hero) .nevora-action-menu-popover :is(.c-menu-label, .c-menu-value, .c-menu-head__title):not(#nvd-none) { color: #6A7176 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(header.c-title, .b-hero) .nevora-action-menu-popover :is(.c-menu-chev, [aria-current] svg):not(#nvd-none) { color: #8C9397 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(header.c-title, .b-hero) .nevora-action-menu-popover [aria-current="true"]:not(#nvd-none), :is(header.c-title, .b-hero) .nevora-action-menu-popover [aria-current="true"] *:not(#nvd-none) { color: #0B6E69 !important; }
-    html body .app-shell[data-nv-b] header.mobile-header .portal-account-menu .nevora-action-menu-popover :is(.nevora-action-menu-item) { height: auto !important; min-height: 44px !important; padding: 0 16px !important; border-radius: 10px !important; background: transparent !important; box-shadow: none !important; justify-content: flex-start !important; }
-    html body .app-shell[data-nv-b] header.mobile-header .portal-account-menu .nevora-action-menu-popover .portal-account-signout, header.mobile-header .portal-account-menu .nevora-action-menu-popover .portal-account-signout * { color: #111517 !important; } /* Review B1 (NV-098): Sign out in ink; red stays for Delete and Turn off. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(header.c-title, .b-hero) .nevora-action-menu-popover :is(a, button, span, strong, b, p, svg):not(#nvd-none) { color: var(--b-ink) !important; text-decoration: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(header.c-title, .b-hero) .nevora-action-menu-popover :is(.c-menu-label, .c-menu-value, .c-menu-head__title):not(#nvd-none) { color: var(--b-grey) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(header.c-title, .b-hero) .nevora-action-menu-popover :is(.c-menu-chev, [aria-current] svg):not(#nvd-none) { color: var(--b-field-edge) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(header.c-title, .b-hero) .nevora-action-menu-popover [aria-current="true"]:not(#nvd-none), :is(header.c-title, .b-hero) .nevora-action-menu-popover [aria-current="true"] *:not(#nvd-none) { color: var(--b-teal) !important; }
+    html body .app-shell[data-nv-b] header.mobile-header .portal-account-menu .nevora-action-menu-popover :is(.nevora-action-menu-item) { height: auto !important; min-height: 44px !important; padding: 0 16px !important; border-radius: 8px !important; background: transparent !important; box-shadow: none !important; justify-content: flex-start !important; }
+    html body .app-shell[data-nv-b] header.mobile-header .portal-account-menu .nevora-action-menu-popover .portal-account-signout, header.mobile-header .portal-account-menu .nevora-action-menu-popover .portal-account-signout * { color: var(--b-ink) !important; } /* Review B1 (NV-098): Sign out in ink; red stays for Delete and Turn off. */
     /* Top bar controls: one 40px height; the bell is a circle. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] header.mobile-header .portal-notification-bell:not(#nvd-none) { width: 40px !important; min-width: 40px !important; height: 40px !important; margin: 0 !important; }
     html body .app-shell[data-nv-b] header.mobile-header .portal-account-menu .nevora-action-menu > :is(button, summary) { min-height: 40px !important; height: 40px !important; }
     html body .app-shell[data-nv-b] header.mobile-header .mobile-header-actions { gap: 10px !important; align-items: center !important; }
     /* Sidebar: the logo sits on the top bar's line; the group label is readable. */
     html body .app-shell[data-nv-b] aside.sidebar .sidebar-heading { margin-top: -14px !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] aside.sidebar .sidebar-group-label:not(#nvd-none) { color: #6A7176 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] aside.sidebar .sidebar-group-label:not(#nvd-none) { color: var(--b-grey) !important; }
     /* Team search: one glass field, not a pill inside a pill. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] form.c-team-search .c-team-search__field:not(#nvd-none) { display: flex !important; align-items: center !important; gap: 10px !important; height: 46px !important; padding: 0 18px !important; border-radius: 23px !important; background: rgb(255 255 255 / .12) !important; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .16) !important; color: #fff !important; border: 0 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] form.c-team-search .c-team-search__field input:not(#nvd-none) { flex: 1 !important; height: 44px !important; min-height: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; color: #fff !important; }
@@ -371,11 +376,11 @@
     /* Round 5 (Nov 7): corporate lists (Activity, Who's working, Team) use the same slot: a 32px avatar or 36px icon, then text at 80px. */
     html body .app-shell[data-nv-b] .c-page .c-row > :is(.c-av:not(.c-av--l), .c-act__icon):first-child { margin-right: 14px !important; }
     html body .app-shell[data-nv-b] .c-page .c-row > .c-act__icon:first-child { margin-right: 10px !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-list > :is(li, .b-row) + :is(li, .b-row):not(#nvd-none), .b-screen .b-row + .b-row:not(#nvd-none) { box-shadow: none !important; background-image: linear-gradient(#ECEEEF, #ECEEEF) !important; background-position: 22px 0 !important; background-size: calc(100% - 22px) 1px !important; background-repeat: no-repeat !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-list > :is(li, .b-row) + :is(li, .b-row):not(#nvd-none), .b-screen .b-row + .b-row:not(#nvd-none) { box-shadow: none !important; background-image: linear-gradient(var(--b-line), var(--b-line)) !important; background-position: 22px 0 !important; background-size: calc(100% - 22px) 1px !important; background-repeat: no-repeat !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-ink:not(#nvd-none) { padding: 22px !important; }
     html body .app-shell[data-nv-b] .b-screen .b-ink__btn { border-radius: 24px !important; }
     /* Band actions share one 42px height. */
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > header.c-title :is(.c-title__actions, .c-title__subrow) :is(a, button):not(.nevora-action-menu-popover *):not(#nvd-none) { height: 42px !important; min-height: 42px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > header.c-title :is(.c-title__actions, .c-title__subrow) :is(a, button):not(.nevora-action-menu-popover *, .cm-insights__menu *):not(#nvd-none) { height: 42px !important; min-height: 42px !important; }
     html body .app-shell[data-nv-b] .c-page > header.c-title :is(.c-title__actions, .c-title__subrow) :is(.c-icon-btn, .c-sched-more) { width: 42px !important; padding: 0 !important; border-radius: 21px !important; }
     /* Activity's week arrows are glass circles. */
     html body .app-shell[data-nv-b] .c-page > header.c-title ~ .c-act__sub :is(a, button) { display: inline-grid !important; place-items: center !important; background: rgb(255 255 255 / .12) !important; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .16) !important; color: #fff !important; border: 0 !important; }
@@ -411,9 +416,9 @@
     html body .app-shell[data-nv-b] .c-shift-page > .c-shift > .c-shift__head .c-shift__cancel { min-height: 42px !important; height: 42px !important; }
     /* Build and publish: its groups are sections of the one card, not cards inside it. */
     html body .app-shell[data-nv-b] .c-pub__body > :is(.c-card, details.c-card) { box-shadow: none !important; border: 0 !important; border-radius: 0 !important; margin-left: -22px !important; margin-right: -22px !important; background: transparent !important; }
-    html body .app-shell[data-nv-b] .c-pub__body > :is(.c-card, details.c-card) + :is(.c-card, details.c-card) { background: linear-gradient(#ECEEEF, #ECEEEF) 22px 0 / calc(100% - 22px) 1px no-repeat !important; }
+    html body .app-shell[data-nv-b] .c-pub__body > :is(.c-card, details.c-card) + :is(.c-card, details.c-card) { background: linear-gradient(var(--b-line), var(--b-line)) 22px 0 / calc(100% - 22px) 1px no-repeat !important; }
     /* Lists whose rows aren't list items (Scheduling rules) still get one inset divider. */
-    html body .app-shell[data-nv-b] .q-list > .q-row + .q-row { background-image: linear-gradient(#ECEEEF, #ECEEEF) !important; background-position: 22px 0 !important; background-size: calc(100% - 22px) 1px !important; background-repeat: no-repeat !important; }
+    html body .app-shell[data-nv-b] .q-list > .q-row + .q-row { background-image: linear-gradient(var(--b-line), var(--b-line)) !important; background-position: 22px 0 !important; background-size: calc(100% - 22px) 1px !important; background-repeat: no-repeat !important; }
     /* Hover reads on white. */
     @media (hover: hover) { :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(a.c-row, a.q-row, button.c-row, button.q-row, label.q-row, summary.c-row):hover:not(#nvd-none), .b-screen :is(a.b-row, .b-row--link):hover:not(#nvd-none) { background-color: var(--b-hover) !important; } }
     /* One field height. */
@@ -437,7 +442,7 @@
     /* Band strips sit on the title's edge (a 16px side margin leaked from the lists layer). */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > header.c-title, .q-page > .q-hd) ~ :is(nav.c-pay-tabs, nav.c-week, nav.c-seg, .c-seg, .c-tc-seg, form.c-team-search, .c-act__sub, .c-ins__range):not(#nvd-none) { margin-left: 0 !important; margin-right: 0 !important; }
     /* Insights: Export is the band's white action; it is a top-level page, so no back link. */
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-ins > header.c-title .c-title__actions > :last-child :is(.cm-insights__button, button, a):not(.nevora-action-menu-popover *):not(#nvd-none), .c-page.c-ins > header.c-title .c-title__actions > .cm-insights__button:last-child:not(#nvd-none) { background: #fff !important; color: #0B3B38 !important; font-weight: 700 !important; box-shadow: 0 8px 18px -8px rgb(0 0 0 / .45) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-ins > header.c-title .c-title__actions > :last-child :is(.cm-insights__button, button, a):not(.nevora-action-menu-popover *, .cm-insights__menu *):not(#nvd-none), .c-page.c-ins > header.c-title .c-title__actions > .cm-insights__button:last-child:not(#nvd-none) { background: #fff !important; color: #0B3B38 !important; font-weight: 700 !important; box-shadow: 0 8px 18px -8px rgb(0 0 0 / .45) !important; }
     html body .app-shell[data-nv-b] .c-page.c-ins > .c-nav--phone { display: none !important; }
     /* Activity: the week arrows sit apart, end on the column edge. */
     html body .app-shell[data-nv-b] .c-page > header.c-title ~ .c-act__sub { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 8px !important; }
@@ -459,7 +464,7 @@
     html body .app-shell[data-nv-b] .c-page:is(.c-settings, .c-ins) > .c-nav--phone { display: none !important; }
     html body .app-shell[data-nv-b] .c-page .c-section > :is(.c-section__label, .c-section__head) + :is(.c-card, .c-rows, ul) { margin-top: 0 !important; padding-top: 0 !important; }
     /* Features: the terms card's head reads like every card head. */
-    html body .app-shell[data-nv-b] .q-page section:has(> .q-grp):has(> [role="radiogroup"] > .q-list) > .q-grp :is(h2, h3) { font: 700 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -.01em !important; color: #111517 !important; }
+    html body .app-shell[data-nv-b] .q-page section:has(> .q-grp):has(> [role="radiogroup"] > .q-list) > .q-grp :is(h2, h3) { font: 700 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -.01em !important; color: var(--b-ink) !important; }
     /* Disclosure rows in lists keep their divider (their own background covered it). */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-list > li > details > summary:not(#nvd-none), .q-list > li > details:not(#nvd-none) { background-color: transparent !important; }
     /* Notes under cards line up with the row text; buttons outside cards end on the card edge. */
@@ -469,7 +474,7 @@
     html body .app-shell[data-nv-b] .q-page .wc-addrow { padding-left: 22px !important; }
     /* Form rows: one 60px height; the date row shows its focus. */
     html body .app-shell[data-nv-b] :is(.q-select-row, .q-picker-row) { min-height: 60px !important; padding-top: 0 !important; padding-bottom: 0 !important; }
-    html body .app-shell[data-nv-b] :is(.q-picker-row, .q-select-row):has(:is(input, select):focus-visible) { outline: 2px solid #0B6E69 !important; outline-offset: -2px !important; }
+    html body .app-shell[data-nv-b] :is(.q-picker-row, .q-select-row):has(:is(input, select):focus-visible) { outline: 2px solid var(--b-teal) !important; outline-offset: -2px !important; }
     /* Card heads with a button (Clocker recovery's Refresh) keep the 49px head. */
     html body .app-shell[data-nv-b] .wc-cardhead :is(button, a) { min-height: 40px !important; height: 40px !important; margin-top: -4px !important; margin-bottom: -4px !important; }
     /* Add shift: no hidden space above the first field; Build and publish's Cancel ends on the card edge. */
@@ -508,12 +513,12 @@
     /* Section cards stack their head and rows without a flex gap (Help and the hub heads were 12px taller). */
     html body .app-shell[data-nv-b] .c-page .c-section { gap: 0 !important; row-gap: 0 !important; }
     /* Disclosure rows directly in a card keep their inset divider. */
-    html body .app-shell[data-nv-b] .q-page :is(section, .wc-card, .q-list, .q-card) > details + details { background-image: linear-gradient(#ECEEEF, #ECEEEF) !important; background-position: 22px 0 !important; background-size: calc(100% - 22px) 1px !important; background-repeat: no-repeat !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page .q-list > * + *:not(#nvd-none) { background-image: linear-gradient(#ECEEEF, #ECEEEF) !important; background-position: 22px 0 !important; background-size: calc(100% - 22px) 1px !important; background-repeat: no-repeat !important; }
+    html body .app-shell[data-nv-b] .q-page :is(section, .wc-card, .q-list, .q-card) > details + details { background-image: linear-gradient(var(--b-line), var(--b-line)) !important; background-position: 22px 0 !important; background-size: calc(100% - 22px) 1px !important; background-repeat: no-repeat !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page .q-list > * + *:not(#nvd-none) { background-image: linear-gradient(var(--b-line), var(--b-line)) !important; background-position: 22px 0 !important; background-size: calc(100% - 22px) 1px !important; background-repeat: no-repeat !important; }
     /* Time corrections: its card's shadow isn't clipped. */
     html body .app-shell[data-nv-b] :is(.manager-corrections, .c-tcx, .c-tcx > *):has(.manager-corrections-empty) { overflow: visible !important; }
     /* Insights: the period picker is glass; only Export is white. */
-    html body .app-shell[data-nv-b] .c-page.c-ins > header.c-title .c-title__actions :is([aria-haspopup], [class*="trigger"]):not(.nevora-action-menu-popover *) { background: rgb(255 255 255 / .12) !important; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .16) !important; color: #fff !important; font-weight: 600 !important; }
+    html body .app-shell[data-nv-b] .c-page.c-ins > header.c-title .c-title__actions :is([aria-haspopup], [class*="trigger"]):not(.nevora-action-menu-popover *, .cm-insights__menu *) { background: rgb(255 255 255 / .12) !important; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .16) !important; color: #fff !important; font-weight: 600 !important; }
     html body .app-shell[data-nv-b] .c-page.c-ins > header.c-title .c-title__actions :is([aria-haspopup], [class*="trigger"]) :is(svg, span) { color: #fff !important; }
     /* Activity: the line sits under the title; the arrows end on the column edge. */
     html body .app-shell[data-nv-b] .c-page > header.c-title ~ .c-act__sub { margin-top: 0 !important; margin-right: 0 !important; padding-right: 0 !important; }
@@ -552,7 +557,9 @@
     @container c-sched (min-width: 560px) {
       /* Round 5 (Nov 7) D2: a 180px person column gives the days their room, and a long range wraps between its two times
        * ("12:30p –" / "8:30p") instead of ending in "…". Times are never cut. */
-      html body .app-shell[data-nv-b] .c-sched .cm-sched-slot .cm-grid thead th.cm-grid__corner { width: 180px !important; }
+      /* Review F3 (NV-044, NV-087): DESIGN.MD B5's 200px person column (min-width alone does not size a table cell); under
+       * 820px of grid employee-b-desktop.css takes it to 148px. */
+      html body .app-shell[data-nv-b] .c-sched .cm-sched-slot .cm-grid thead th.cm-grid__corner { width: 200px !important; }
       html body .app-shell[data-nv-b] .c-sched .cm-sched-slot .cm-grid :is(.cm-block, .cm-open-past) { height: auto !important; min-height: 28px !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: normal !important; }
       html body .app-shell[data-nv-b] .c-sched .cm-sched-slot .cm-grid :is(.cm-block, .cm-open-past) .c-time { white-space: normal !important; }
       /* Round 5 (Nov 7) D14: the grid's name column starts at the card's 22px inset ("11 people", names). */
@@ -590,27 +597,27 @@
     /* Round 5 (Nov 7) D3: Time corrections with requests. Each request is a B card (the queue's own white card was stripped
      * above, leaving rows on the canvas); "Pending" is the amber chip; Decline and Approve are pills; a date never breaks. */
     html body .app-shell[data-nv-b] .c-tcx .manager-corrections-header { min-height: 0 !important; padding: 0 0 12px !important; box-shadow: none !important; }
-    html body .app-shell[data-nv-b] .c-tcx .manager-corrections-header h2 { font: 700 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -.01em !important; color: #111517 !important; }
-    html body .app-shell[data-nv-b] .c-tcx .manager-corrections-count { display: inline-grid !important; place-items: center !important; min-width: 24px !important; height: 24px !important; padding: 0 8px !important; border-radius: 12px !important; background: #E8F3F1 !important; color: #0B6E69 !important; font-size: 12.5px !important; font-weight: 700 !important; line-height: 1 !important; }
+    html body .app-shell[data-nv-b] .c-tcx .manager-corrections-header h2 { font: 700 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -.01em !important; color: var(--b-ink) !important; }
+    html body .app-shell[data-nv-b] .c-tcx .manager-corrections-count { display: inline-grid !important; place-items: center !important; min-width: 24px !important; height: 24px !important; padding: 0 8px !important; border-radius: 12px !important; background: var(--b-teal-50) !important; color: var(--b-teal) !important; font-size: 12.5px !important; font-weight: 700 !important; line-height: 1 !important; }
     html body .app-shell[data-nv-b] .c-tcx .manager-corrections-list { display: flex !important; flex-direction: column !important; gap: 20px !important; border: 0 !important; }
     html body .app-shell[data-nv-b] .c-tcx .manager-correction-row { gap: 14px !important; padding: 22px !important; border: 1px solid transparent !important; border-radius: 22px !important; background: #fff !important; box-shadow: var(--nvd-card) !important; }
-    html body .app-shell[data-nv-b] .c-tcx .manager-correction-topline > span { display: inline-flex !important; align-items: center !important; height: 24px !important; padding: 0 9px !important; border-radius: 12px !important; background: #FDF3E4 !important; color: #8A4B00 !important; font-size: 12.5px !important; font-weight: 600 !important; line-height: 1 !important; }
+    html body .app-shell[data-nv-b] .c-tcx .manager-correction-topline > span { display: inline-flex !important; align-items: center !important; height: 24px !important; padding: 0 9px !important; border-radius: 12px !important; background: var(--b-amber-50) !important; color: var(--b-amber) !important; font-size: 12.5px !important; font-weight: 600 !important; line-height: 1 !important; }
     html body .app-shell[data-nv-b] .c-tcx .correction-comparison > div { padding: 12px 14px !important; border: 0 !important; border-radius: 14px !important; background: #F4F6F6 !important; }
     html body .app-shell[data-nv-b] .c-tcx .correction-comparison strong time { white-space: nowrap !important; }
     html body .app-shell[data-nv-b] .c-tcx .manager-correction-actions { gap: 8px !important; }
-    html body .app-shell[data-nv-b] .c-tcx .manager-correction-actions button { height: 42px !important; min-width: 112px !important; padding: 0 20px !important; border: 0 !important; border-radius: 21px !important; background: #EDF0F0 !important; box-shadow: none !important; color: #111517 !important; font-size: 14.5px !important; font-weight: 600 !important; }
-    html body .app-shell[data-nv-b] .c-tcx .manager-correction-actions button.primary { background: #0B6E69 !important; color: #fff !important; box-shadow: 0 6px 14px -6px rgb(11 110 105 / .6) !important; }
+    html body .app-shell[data-nv-b] .c-tcx .manager-correction-actions button { height: 42px !important; min-width: 112px !important; padding: 0 20px !important; border: 0 !important; border-radius: 21px !important; background: #EDF0F0 !important; box-shadow: none !important; color: var(--b-ink) !important; font-size: 14.5px !important; font-weight: 600 !important; }
+    html body .app-shell[data-nv-b] .c-tcx .manager-correction-actions button.primary { background: var(--b-teal) !important; color: #fff !important; box-shadow: var(--b-elev-glow) !important; }
     html body .app-shell[data-nv-b] .c-tcx .manager-correction-actions button:disabled { box-shadow: none !important; }
 
     /* Round 5 (Nov 7) D5: a band tab's count ("Waiting 5") sits beside its label: the label colour at 72% on glass, teal on
      * the selected white tab (it was grey on teal, about 1.1:1). */
     html body .app-shell[data-nv-b] :is(nav.c-pay-tabs, nav.c-seg, .c-tc-seg):is(.c-page > header.c-title ~ *, .q-page > .q-hd + *) > :is(a, button) span.c-count { margin: 0 !important; color: inherit !important; font-size: 13px !important; }
-    html body .app-shell[data-nv-b] :is(nav.c-pay-tabs, nav.c-seg, .c-tc-seg):is(.c-page > header.c-title ~ *, .q-page > .q-hd + *) > :is([aria-current="page"], [aria-pressed="true"], [aria-selected="true"]) span.c-count { color: #0B6E69 !important; }
+    html body .app-shell[data-nv-b] :is(nav.c-pay-tabs, nav.c-seg, .c-tc-seg):is(.c-page > header.c-title ~ *, .q-page > .q-hd + *) > :is([aria-current="page"], [aria-pressed="true"], [aria-selected="true"]) span.c-count { color: var(--b-teal) !important; }
 
     /* Round 5 (Nov 7) D6: Approve (.q-bs--go) is the teal pill everywhere (Shift requests drew it grey like Decline), as on
      * Time off; Decline and Approve share 40px. */
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) .q-bs.q-bs--go:not(#nvd-none):not(#nvd-none2) { min-height: 40px !important; height: 40px !important; padding: 0 18px !important; border: 0 !important; border-radius: 999px !important; background: #0B6E69 !important; color: #fff !important; box-shadow: 0 6px 14px -6px rgb(11 110 105 / .6) !important; font-weight: 600 !important; }
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) .q-bs.q-bs--go:is(:disabled, [aria-disabled="true"]) { background: #E4E8E8 !important; color: #7E868B !important; box-shadow: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) .q-bs.q-bs--go:not(#nvd-none):not(#nvd-none2) { min-height: 40px !important; height: 40px !important; padding: 0 18px !important; border: 0 !important; border-radius: 999px !important; background: var(--b-teal) !important; color: #fff !important; box-shadow: var(--b-elev-glow) !important; font-weight: 600 !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) .q-bs.q-bs--go:is(:disabled, [aria-disabled="true"]) { background: var(--b-disabled-bg) !important; color: var(--b-disabled-ink) !important; box-shadow: none !important; }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page) .q-acts .q-bs { height: 40px !important; min-height: 40px !important; }
 
     /* Round 5 (Nov 7) D18: everything in an opened request starts at the row's text (66px: 22 + 32px avatar + 12): the facts,
@@ -634,14 +641,14 @@
     html body .app-shell[data-nv-b] .q-page > article > .q-hd h1 { font-size: 32px !important; line-height: 38px !important; font-weight: 700 !important; letter-spacing: -.03em !important; color: #fff !important; margin: 0 !important; }
     html body .app-shell[data-nv-b] .q-page > article > .q-hd > p { display: block !important; margin: 4px 0 0 !important; font-size: 15px !important; line-height: 21px !important; color: var(--b-on-band-2) !important; }
     html body .app-shell[data-nv-b] .q-page > article > .q-hd + * { margin-top: 52px !important; }
-    html body .app-shell[data-nv-b] .q-page > article > .q-body { margin-left: 0 !important; margin-right: 0 !important; padding: 18px 22px !important; border: 1px solid transparent !important; border-radius: 22px !important; background: #fff !important; box-shadow: var(--nvd-card) !important; font-size: 15px !important; line-height: 22px !important; color: #111517 !important; }
+    html body .app-shell[data-nv-b] .q-page > article > .q-body { margin-left: 0 !important; margin-right: 0 !important; padding: 18px 22px !important; border: 1px solid transparent !important; border-radius: 22px !important; background: #fff !important; box-shadow: var(--nvd-card) !important; font-size: 15px !important; line-height: 22px !important; color: var(--b-ink) !important; }
     html body .app-shell[data-nv-b] .q-page > article > .q-body ~ p.q-help { margin: 12px 0 0 !important; padding: 0 22px !important; }
     html body .app-shell[data-nv-b] .q-page > article > .q-body ~ :is(.q-list, section, .q-note, .q-btn, [role="group"]) { margin-top: 20px !important; margin-left: 0 !important; margin-right: 0 !important; }
     html body .app-shell[data-nv-b] .q-page > article > .q-body ~ .q-btn { width: 100% !important; box-sizing: border-box !important; }
 
     /* Round 5 (Nov 7) D11: a card head's count is the teal chip of Home and Things to do (it was a small grey number on
      * corporate cards and bold ink on Prepare payroll). */
-    html body .app-shell[data-nv-b] .c-page :is(.c-card__label, .c-section__label, .c-sec-label) :is(span.c-count, .c-pay__count) { display: inline-grid !important; place-items: center !important; min-width: 24px !important; height: 24px !important; margin-left: 8px !important; padding: 0 8px !important; border-radius: 12px !important; background: #E8F3F1 !important; color: #0B6E69 !important; font-size: 12.5px !important; line-height: 1 !important; font-weight: 700 !important; letter-spacing: 0 !important; vertical-align: 1px !important; }
+    html body .app-shell[data-nv-b] .c-page :is(.c-card__label, .c-section__label, .c-sec-label) :is(span.c-count, .c-pay__count) { display: inline-grid !important; place-items: center !important; min-width: 24px !important; height: 24px !important; margin-left: 8px !important; padding: 0 8px !important; border-radius: 12px !important; background: var(--b-teal-50) !important; color: var(--b-teal) !important; font-size: 12.5px !important; line-height: 1 !important; font-weight: 700 !important; letter-spacing: 0 !important; vertical-align: 1px !important; }
     html body .app-shell[data-nv-b] .c-page :is(.c-card__label, .c-section__label, .c-sec-label) .c-pay__count * { color: inherit !important; font: inherit !important; }
 
     /* Round 5 (Nov 7) D13: the collapsed rail (1024–1279 by default, or when chosen from 1280): the toggle and the org tile
@@ -692,6 +699,16 @@
     html body .app-shell[data-nv-b] .q-page.premium-updates .updates-inbox > .q-seg > button:focus-visible { outline: 2px solid #fff !important; outline-offset: 2px !important; }
     html body .app-shell[data-nv-b] .q-page.premium-updates .updates-inbox > .q-seg + * { margin-top: 56px !important; }
     html body .app-shell[data-nv-b] .q-page.premium-updates .cm-updates-hold .updates-list { margin-top: 0 !important; }
+    /* Review F3 (NV-012, NV-103): Notifications' All / Unread joins the band on glass like Updates' tabs (it sat grey on the
+     * canvas); the list starts 24px under the band (the section sits 52px under the title, the band runs 32px past the control, and
+     * the control's 56px bottom margin places the list). Without items there is no control and the band keeps its usual tail. The outset rule takes the band rule's
+     * id steps so it orders after it (both are Direction B). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page > .q-hd:has(+ section[data-private-view="notifications"] > .q-seg:first-child) { border-image-outset: 240px 100vw 128px 100vw !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-hd + section[data-private-view="notifications"] > .q-seg:first-child { position: relative !important; z-index: 1 !important; width: fit-content !important; height: 44px !important; gap: 0 !important; margin: 0 0 56px !important; padding: 4px !important; border: 0 !important; border-radius: 16px !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-hd + section[data-private-view="notifications"] > .q-seg:first-child > button { height: 36px !important; min-height: 36px !important; margin: 0 !important; padding: 0 16px !important; border: 0 !important; border-radius: 12px !important; background: transparent !important; box-shadow: none !important; color: var(--b-on-band) !important; font-size: 14px !important; font-weight: 600 !important; white-space: nowrap !important; opacity: 1 !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-hd + section[data-private-view="notifications"] > .q-seg:first-child > button[aria-pressed="true"] { background: #fff !important; color: #0B3B38 !important; box-shadow: 0 2px 6px rgb(0 0 0 / .18) !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-hd + section[data-private-view="notifications"] > .q-seg:first-child > button:focus-visible { outline: 2px solid #fff !important; outline-offset: 2px !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-hd + section[data-private-view="notifications"] > .q-seg:first-child + .q-sr + * { margin-top: 0 !important; }
     html body .app-shell[data-nv-b] .q-page.premium-updates .cm-updates-hold .q-help + .updates-list { margin-top: 12px !important; }
     /* Round 5 (Nov 7) D17: segmented controls on the canvas are as wide as their labels (Availability's ran 480px, Clocker
      * PINs' the whole column); equal segments, so the sliding thumb still lines up. */
@@ -700,24 +717,24 @@
 
     /* Round 5 (Nov 7) D19: one card footer: a full-bleed divider, 16px above and below, 42px pills (Add employee had an
      * inset 12/35 footer, Add shift 16/23, Clocker tablets and Punch photos 12/13 with 40px buttons). */
-    html body .app-shell[data-nv-b] :is(form.c-teamform, .c-shift__form) .c-form-foot { margin: 22px -22px -22px !important; padding: 16px 22px !important; border: 0 !important; box-shadow: inset 0 1px 0 #ECEEEF !important; gap: 8px !important; }
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) .c-card > .c-card__foot { margin: 0 !important; padding: 16px 22px !important; border: 0 !important; box-shadow: inset 0 1px 0 #ECEEEF !important; gap: 8px !important; }
+    html body .app-shell[data-nv-b] :is(form.c-teamform, .c-shift__form) .c-form-foot { margin: 22px -22px -22px !important; padding: 16px 22px !important; border: 0 !important; box-shadow: inset 0 1px 0 var(--b-line) !important; gap: 8px !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) .c-card > .c-card__foot { margin: 0 !important; padding: 16px 22px !important; border: 0 !important; box-shadow: inset 0 1px 0 var(--b-line) !important; gap: 8px !important; }
     html body .app-shell[data-nv-b] :is(.c-form-foot, .c-card__foot) > :is(.c-btn, button) { height: 42px !important; min-height: 42px !important; padding: 0 20px !important; border-radius: 21px !important; }
 
     /* Round 5 (Nov 7) D20: Company policies' Labor settings: the values are a quiet two-column list on the 22px inset with
      * the system's hairline (the corporate grey lines, inset and doubled divider are gone; the intro reads as one line). */
     html body .app-shell[data-nv-b] .policy-private-review > .q-rule__body { margin: 0 !important; padding: 0 22px 16px !important; border: 0 !important; box-shadow: none !important; }
-    html body .app-shell[data-nv-b] .policy-private-review > .q-rule__body > p { max-width: none !important; margin: 0 0 6px !important; padding: 0 !important; font-size: 13.5px !important; line-height: 20px !important; color: #6A7176 !important; }
+    html body .app-shell[data-nv-b] .policy-private-review > .q-rule__body > p { max-width: none !important; margin: 0 0 6px !important; padding: 0 !important; font-size: 13.5px !important; line-height: 20px !important; color: var(--b-grey) !important; }
     html body .app-shell[data-nv-b] .policy-private-review dl { margin: 0 !important; padding: 0 !important; border: 0 !important; }
     html body .app-shell[data-nv-b] .policy-private-review dl > div { display: grid !important; grid-template-columns: minmax(0, 220px) minmax(0, 1fr) !important; gap: 16px !important; margin: 0 !important; padding: 12px 0 !important; border: 0 !important; box-shadow: none !important; background: none !important; }
-    html body .app-shell[data-nv-b] .policy-private-review dl > div + div { box-shadow: inset 0 1px 0 #ECEEEF !important; }
+    html body .app-shell[data-nv-b] .policy-private-review dl > div + div { box-shadow: inset 0 1px 0 var(--b-line) !important; }
     html body .app-shell[data-nv-b] .policy-private-review :is(dt, dd) { margin: 0 !important; padding: 0 !important; border: 0 !important; font-size: 14px !important; line-height: 20px !important; }
-    html body .app-shell[data-nv-b] .policy-private-review dt { color: #6A7176 !important; font-weight: 500 !important; }
-    html body .app-shell[data-nv-b] .policy-private-review dd { color: #111517 !important; }
+    html body .app-shell[data-nv-b] .policy-private-review dt { color: var(--b-grey) !important; font-weight: 500 !important; }
+    html body .app-shell[data-nv-b] .policy-private-review dd { color: var(--b-ink) !important; }
 
     /* Round 5 (Nov 7) D21: Punch photos is one card with one kind of divider: every block is separated by the 22px inset line
      * (switches, the label, the days field, the two closed rows and Review had full-bleed lines or none). */
-    html body .app-shell[data-nv-b] .c-photos :is(.c-photos__fields > .c-photos__switch, .c-photos__label, .c-photos__keep, .c-photos__more, .c-photos__help, .c-card > .c-row, .c-card > a.c-row, .c-photos__helperror) { box-shadow: none !important; border-top: 0 !important; background-image: linear-gradient(#ECEEEF, #ECEEEF) !important; background-position: 22px 0 !important; background-size: calc(100% - 22px) 1px !important; background-repeat: no-repeat !important; }
+    html body .app-shell[data-nv-b] .c-photos :is(.c-photos__fields > .c-photos__switch, .c-photos__label, .c-photos__keep, .c-photos__more, .c-photos__help, .c-card > .c-row, .c-card > a.c-row, .c-photos__helperror) { box-shadow: none !important; border-top: 0 !important; background-image: linear-gradient(var(--b-line), var(--b-line)) !important; background-position: 22px 0 !important; background-size: calc(100% - 22px) 1px !important; background-repeat: no-repeat !important; }
     html body .app-shell[data-nv-b] .c-photos .c-photos__fields .c-rows > li > .c-row { box-shadow: none !important; }
 
     /* Round 5 (Nov 7) D22: Profile's Edit is the band's white pill centred on the title (like Updates), not on the back
@@ -727,7 +744,7 @@
 
     /* Round 5 (Nov 7) D24: Scheduling rules: rules inside the save form keep the inset divider between them; the open
      * body's own grey line goes (it doubled the next divider). */
-    html body .app-shell[data-nv-b] .q-rule-list :is(details.q-rule + details.q-rule, form + details.q-rule) { background-image: linear-gradient(#ECEEEF, #ECEEEF) !important; background-position: 22px 0 !important; background-size: calc(100% - 22px) 1px !important; background-repeat: no-repeat !important; }
+    html body .app-shell[data-nv-b] .q-rule-list :is(details.q-rule + details.q-rule, form + details.q-rule) { background-image: linear-gradient(var(--b-line), var(--b-line)) !important; background-position: 22px 0 !important; background-size: calc(100% - 22px) 1px !important; background-repeat: no-repeat !important; }
     html body .app-shell[data-nv-b] .q-rule-list .q-rule__body { border-bottom: 0 !important; }
 
     /* Round 5 (Nov 7) D25: Payroll settings: Pay schedule and Reminders sit 20px apart (the form's 12px gap stacked on 20). */
@@ -736,7 +753,7 @@
 
     /* Round 5 (Nov 7) D26: an unchosen select ("Choose someone", "Choose one") is grey like every placeholder; Company
      * profile's field text starts 12px in like the other fields. */
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) select:has(> option[value=""][disabled]:checked) { color: #6A7176 !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) select:has(> option[value=""][disabled]:checked) { color: var(--b-grey) !important; }
     html body .app-shell[data-nv-b] .c-coprof .c-coprof__field:first-child .q-fl .q-in { padding: 0 11px !important; }
 
     /* Round 5 (Nov 7) D27: chips are 24px on desktop (Break types' category chip and the count pill were 22). */
@@ -762,9 +779,10 @@
   /* ---------- Round 5 verification fixes (Nov 7) ---------- */
   @media (min-width: 768px) {
     /* Timecards table: an approved card ("Ready to finalize") or a finalized one reads green, as on phones. */
-    html body .app-shell[data-nv-b] .c-tc-cue[data-done] { color: #1D6B45 !important; }
-    /* Settings hub: the title keeps the usual 24px to the first cards (the columns dropped the first card's top margin). */
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-settings > header.c-title:not(#nvd-none):not(#nvd-none2):not(#nvd-none3) { margin-bottom: 24px !important; }
+    html body .app-shell[data-nv-b] .c-tc-cue[data-done] { color: var(--b-green) !important; }
+    /* Settings hub: the first cards start 24px under the band, as on every secondary page (review F3, NV-134: the band runs
+     * 28px under the title, so the title keeps 52px; at 24px the cards overlapped the band's edge by 4px). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-settings > header.c-title:not(#nvd-none):not(#nvd-none2):not(#nvd-none3) { margin-bottom: 52px !important; }
     /* Footers centre their actions on one line (Edit shift's Delete sat 8px above Save). */
     html body .app-shell[data-nv-b] :is(.c-form-foot, .c-card__foot) { align-items: center !important; }
     /* Labor settings rows centre their two values in the row. */
@@ -847,14 +865,14 @@
 /* Unlayered: normal declarations (they keep the cascade they had) and the !important declarations that must stay outside
  * nv-b. See DESIGN.MD "CSS layering (review batch B8)". */
 @media (min-width: 768px) {
-  :root { --nvd-teal: #0C726C; --nvd-band: linear-gradient(180deg, #0C726C 0, #0C726C 236px, #08504C 100%); --nvd-canvas: #F2F5F4; --nvd-line: #ECEEEF; --nvd-card: 0 0 0 1px rgb(16 40 38 / .05), 0 1px 2px rgb(16 40 38 / .06), 0 12px 28px -12px rgb(16 40 38 / .18); }
+  :root { --nvd-teal: var(--b-band-solid); --nvd-band: linear-gradient(180deg, var(--b-band-solid) 0, var(--b-band-solid) 236px, #08504C 100%); --nvd-canvas: var(--b-canvas); --nvd-line: var(--b-line); --nvd-card: 0 0 0 1px rgb(16 40 38 / .05), 0 1px 2px rgb(16 40 38 / .06), 0 12px 28px -12px rgb(16 40 38 / .18); }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b],
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .app-main,
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame { background: var(--nvd-canvas) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] aside.sidebar { background: #FBFCFC !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] aside.sidebar .nav-link { background: transparent !important; }
   @media (hover: hover) { :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] aside.sidebar .nav-link:not(.active):hover { background: var(--b-hover) !important; } }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] aside.sidebar .nav-link.active { background: #E8F3F1 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] aside.sidebar .nav-link.active { background: var(--b-teal-50) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] header.mobile-header .portal-notification-bell svg { stroke: currentColor; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > header.c-title, .q-page > .q-hd) ~ :is(nav.c-pay-tabs, nav.c-week, nav.c-seg, .c-tc-seg, form.c-team-search, .c-act__sub, .c-ins__range):not(:is(.c-page > header.c-title, .q-page > .q-hd) ~ :not(.c-phone-sub, .c-pay__feedback:empty, :empty, .c-sr, .q-sr, [hidden], .b-screen, .c-nav--phone, dialog, script, style, template, .q-nav) ~ *) { max-width: 860px; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-card, .q-list, .q-card, .wc-card, .q-group-card) { overflow: hidden;
@@ -863,7 +881,7 @@
   }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page section:has(> .q-grp):has(> .q-list) { overflow: hidden;
   }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-av, .q-av) { background: #E8F3F1 !important; color: #0B6E69 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-av, .q-av) { background: var(--b-teal-50) !important; color: var(--b-teal) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(.app-shell[data-nv-b][data-employee-mobile] .b-screen, .app-shell[data-nv-b]:not([data-employee-mobile]) .c-page:is(.c-home, .c-todo) > .b-screen):not(#nvd-none) .b-stack:not(#e-none):not(#e-none2) { margin-top: -52px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay:not(.c-exp--time) { --nvd-band: linear-gradient(180deg, #17302D 0, #17302D 236px, #0C1918 100%); }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen :is(.b-row, .b-row__hit) > .b-av:first-child:not(#nvd-none) { --b-lead-w: var(--s, 36px); }
@@ -877,5 +895,5 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(nav.c-pay-tabs, nav.c-seg, .c-tc-seg):is(.c-page > header.c-title ~ *, .q-page > .q-hd + *) > :is([aria-current="page"], [aria-pressed="true"], [aria-selected="true"]) span.c-count:not(#nvd-none):not(#nvd-none2) { opacity: 1; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-ink__r2 > :last-child:not(:first-child):not(#nvd-none) { text-align: right; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .policy-private-review > .q-rule__body > p:not(#nvd-none):not(#nvd-none2) { text-wrap: pretty; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) select:has(> option[value=""][disabled]:checked) option:not([value=""]):not(#nvd-none) { color: #111517; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) select:has(> option[value=""][disabled]:checked) option:not([value=""]):not(#nvd-none) { color: var(--b-ink); }
 }

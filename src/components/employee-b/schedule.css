@@ -17,7 +17,7 @@
   /* Inspection round 1: the confirmation's button is the kit's 36px teal pill (the corporate button rules carry ids, so this
    * matches their weight); on narrow phones it drops under the words. Past days in the week strip stay full white, as in the mock. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action) { min-height: 36px !important; height: 36px !important; padding: 0 14px !important; border-radius: 18px !important; border: 0 !important;
-    background: #0B6E69 !important; color: #FFFFFF !important; font: 600 14px/1 Inter, "Inter Fallback", sans-serif !important; box-shadow: 0 4px 10px -6px rgb(11 110 105 / 0.55) !important; width: auto !important; }
+    background: var(--b-teal) !important; color: #FFFFFF !important; font: 600 14px/1 Inter, "Inter Fallback", sans-serif !important; box-shadow: var(--b-elev-glow) !important; width: auto !important; }
   @media (max-width: 359px) {
     html body .app-shell[data-nv-b] .b-screen .es-confirm { flex-wrap: wrap !important; }
     html body .app-shell[data-nv-b] .b-screen .es-confirm .b-row__s { display: block !important; -webkit-line-clamp: unset !important; overflow: visible !important; }
@@ -38,9 +38,9 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d[aria-current="date"]:not(.is-on) { background: transparent; color: var(--b-on-band); box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.45); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d[aria-current="date"]:not(.is-on) b { color: #FFFFFF; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d[aria-current="date"]:not(.is-on) i.has { background: rgb(255 255 255 / 0.55); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d.is-on { background: #FFFFFF; color: #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d.is-on { background: #FFFFFF; color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d.is-on b { color: #0B3B38; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d.is-on i.has { background: #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d.is-on i.has { background: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d.is-past:not(.is-on) > :is(span, b) { opacity: 0.6; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d:focus-visible { outline: 2px solid #FFFFFF; outline-offset: -2px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-today { display: inline-flex; align-items: center; min-height: 36px; padding: 0 6px; font-size: 14px; font-weight: 600; color: #FFFFFF; }
@@ -49,22 +49,22 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act { flex: none; display: flex; align-items: center; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act .employee-weekly-confirmation { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action) {
-  display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 0 14px; border: 0; border-radius: 18px; background: #0B6E69; color: #FFFFFF;
-  font: 600 14px/1 Inter, "Inter Fallback", sans-serif; box-shadow: 0 4px 10px -6px rgb(11 110 105 / 0.55); cursor: pointer; }
+  display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 0 14px; border: 0; border-radius: 18px; background: var(--b-teal); color: #FFFFFF;
+  font: 600 14px/1 Inter, "Inter Fallback", sans-serif; box-shadow: var(--b-elev-glow); cursor: pointer; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action) { min-width: 112px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action)[aria-busy="true"] { cursor: progress; box-shadow: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action)[aria-disabled="true"]:not([aria-busy="true"]) { opacity: 0.55; box-shadow: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act p:not(.b-sr) { flex-basis: 100%; font-size: 13px; line-height: 18px; color: var(--b-grey); text-align: right; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act .employee-quiet-status { font-size: 13.5px; font-weight: 600; color: var(--b-grey); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act .employee-quiet-status.success { color: #1D6B45; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act .employee-quiet-status.success { color: var(--b-green); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-changes:empty { display: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-changes .schedule-publication-change { margin: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-changes summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; padding: 12px 18px;
   font-size: 15.5px; font-weight: 600; color: var(--b-ink); list-style: none; cursor: pointer; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-changes summary::-webkit-details-marker { display: none; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-changes summary svg { flex: none; color: #6A7176; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-changes summary svg { flex: none; color: var(--b-grey); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-changes ul { margin: 0; padding: 0 18px 14px; list-style: none; font-size: 14px; line-height: 19px; color: var(--b-ink2); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-error { padding: 14px 18px; font-size: 14px; line-height: 19px; color: #B42318; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-error { padding: 14px 18px; font-size: 14px; line-height: 19px; color: var(--b-red); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.es-state) { display: flex; flex-direction: column; gap: 12px; padding: 6px 18px 18px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-state .b-state { padding: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-empty { padding: 6px 18px 18px; }
@@ -73,12 +73,12 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-empty-state .b-ico svg { width: 22px; height: 22px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-empty-state__t { font-size: 16px; line-height: 21px; font-weight: 600; color: var(--b-ink); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-empty-state__s { max-width: 30ch; font-size: 13.5px; line-height: 18px; color: var(--b-grey); text-wrap: balance; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-empty-state__a { display: inline-flex; align-items: center; gap: 2px; min-height: 44px; font-size: 14px; font-weight: 600; color: #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-empty-state__a { display: inline-flex; align-items: center; gap: 2px; min-height: 44px; font-size: 14px; font-weight: 600; color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-blocked { display: flex; align-items: flex-start; gap: 12px; padding: 14px 18px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-blocked .blocked-open-shifts { flex: 1; min-width: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-blocked summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 36px; font-size: 15.5px; font-weight: 600; color: var(--b-ink); list-style: none; cursor: pointer; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-blocked summary::-webkit-details-marker { display: none; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-blocked summary svg { flex: none; color: #6A7176; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-blocked summary svg { flex: none; color: var(--b-grey); }
 @media (max-width: 359px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm { row-gap: 10px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm .b-row__s { display: block; -webkit-line-clamp: unset; overflow: visible; }

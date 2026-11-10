@@ -18,7 +18,7 @@
   :is(#c-root, html) .c-ins .c-ins__tools .cm-insights__button::after { content: none; }
   :is(#c-root, html) .c-ins .c-ins__tools .cm-insights__button > svg { flex: none; color: var(--c-grey); }
   :is(#c-root, html) .c-ins .c-ins__tools .cm-insights__export-text { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }
-  @media (hover: hover) and (pointer: fine) { :is(#c-root, html) .c-ins .c-ins__tools .cm-insights__button:hover { background: #F7F8F8; } }
+  @media (hover: hover) and (pointer: fine) { :is(#c-root, html) .c-ins .c-ins__tools .cm-insights__button:hover { background: var(--b-hover); } }
   :is(#c-root, html) .c-ins .c-ins__tools .cm-insights__button:active { background: #EDEEEF; transition: none; }
   :is(#c-root, html) .c-ins .c-ins__tools .cm-insights__button:focus-visible { outline: 2px solid var(--c-teal); outline-offset: 2px; }
   /* The menus: cool greys, the kit's 8px radius inside a 12px panel, opening under their button towards the page. */
@@ -26,7 +26,7 @@
   :is(#c-root, html) .c-ins .c-ins__tools .cm-insights__menu-item { min-height: 40px; border-radius: 8px; color: var(--c-ink); font: 400 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; }
   :is(#c-root, html) .c-ins .c-ins__tools .cm-insights__menu-item[aria-pressed="true"] { font-weight: 500; }
   :is(#c-root, html) .c-ins .c-ins__tools .cm-insights__menu-item > svg { color: var(--c-teal); }
-  :is(#c-root, html) .c-ins .c-ins__tools .cm-insights__menu-item:not(:disabled):hover { background: #F7F8F8; }
+  @media (hover: hover) { :is(#c-root, html) .c-ins .c-ins__tools .cm-insights__menu-item:not(:disabled):hover { background: var(--b-hover); } }
   :is(#c-root, html) .c-ins .c-ins__tools .cm-insights__menu-note { border-top: 1px solid var(--c-line); font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-grey); }
   @supports (anchor-name: --c-ins-a) {
     :is(#c-root, html) .c-ins .c-ins__tools .cm-insights__menu { position-area: bottom span-left; margin-top: 6px; position-try-fallbacks: flip-block; }

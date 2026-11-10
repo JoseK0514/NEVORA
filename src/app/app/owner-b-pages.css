@@ -13,14 +13,14 @@
 @layer nv-b {
   @media (max-width: 767px) {
     /* ---------- canvas ---------- */
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) { background: #F2F5F4 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) { background: var(--b-canvas) !important; }
 
     /* ---------- the hero: a page's back bar and the title lines right under it ---------- */
     html body .app-shell[data-nv-b] :is(.c-page > .c-nav.c-nav--phone, .q-page > .q-nav, .c-shift__head, .c-formhead) {
       position: relative !important; z-index: 1 !important;
       margin: 0 -16px !important; padding: calc(var(--q-safe-top, env(safe-area-inset-top, 0px)) + 6px) 16px 14px !important;
       min-height: 0 !important; height: auto !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
-      background: linear-gradient(180deg, #0C726C 0%, #0B6E69 40%, #08504C 100%) !important; /* Review B1 (NV-003, C8): DESIGN's band; no lighter start or highlight under the text. */
+      background: linear-gradient(180deg, var(--b-band-solid) 0%, var(--b-teal) 40%, #08504C 100%) !important; /* Review B1 (NV-003, C8): DESIGN's band; no lighter start or highlight under the text. */
       color: #FFFFFF !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
     }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-page.q-page.q-page > :is(.q-nav, .q-hd) { margin-left: 0 !important; margin-right: 0 !important; padding-left: 16px !important; padding-right: 16px !important; }
@@ -107,7 +107,7 @@
       min-height: 36px !important; padding: 0 16px !important; border: 0 !important; border-radius: 18px !important; background: #FFFFFF !important; color: #0B3B38 !important; font: 700 14.5px/1 Inter, "Inter Fallback", sans-serif !important;
       box-shadow: 0 8px 18px -8px rgb(0 0 0 / 0.45) !important;
     }
-    html body .app-shell[data-nv-b] :is(.c-shift__save, .c-formhead > :last-child :is(a, button)):disabled { opacity: 0.6 !important; }
+    html body .app-shell[data-nv-b] :is(.c-shift__save, .c-formhead > :last-child :is(a, button)):disabled { opacity: 1 !important; background: var(--b-disabled-bg) !important; color: var(--b-disabled-ink) !important; box-shadow: none !important; cursor: not-allowed !important; } /* Review F3 (NV-232): the one disabled pair, no fade. */
     html body .app-shell[data-nv-b] :is(.c-shift__form, .c-sheetpage form:not(.c-formhead form)) {
       position: relative !important; z-index: 2 !important; margin: 0 -2px !important; padding: 18px 16px !important; border-radius: 22px !important; background: #FFFFFF !important;
       box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18) !important;
@@ -120,7 +120,7 @@
     }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-card, .q-list, .q-card, .wc-card) :is(.c-card, .q-list, .q-card) { box-shadow: none !important; border-radius: 0 !important; }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .c-card__head { min-height: 48px !important; padding-left: 18px !important; padding-right: 18px !important; }
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .c-card__label { font: 700 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.01em !important; color: #111517 !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .c-card__label { font: 700 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.01em !important; color: var(--b-ink) !important; }
 
     /* Rows: 15.5px titles, 13.5px lines, 18px sides, a soft press. */
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-row, .q-row) { padding-left: 18px !important; padding-right: 18px !important; }
@@ -133,11 +133,11 @@
      * only the soft shadow waits for it to be enabled. */
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-btn:not(.c-btn--secondary):not(.c-btn--neutral):not(.c-btn--danger), .q-btn:not(.q-btn--sec):not(.q-btn--quiet)) { border-radius: 999px !important; }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-btn:not(.c-btn--secondary):not(.c-btn--neutral):not(.c-btn--danger):not(:disabled):not([aria-disabled="true"]), .q-btn:not(.q-btn--sec):not(.q-btn--quiet):not(:disabled):not([aria-disabled="true"])) {
-      box-shadow: 0 8px 18px -8px rgb(11 110 105 / 0.6) !important;
+      box-shadow: var(--b-elev-glow) !important;
     }
     /* Round 5 (Nov 7): .q-bs--go (Approve) is the teal primary, so the grey pill skips it. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-btn--secondary, .c-btn--neutral, .q-btn--sec, .q-btn--quiet, .q-bs:not(.q-bs--go)) {
-      border-radius: 999px !important; border-color: transparent !important; color: #111517 !important; box-shadow: none !important;
+      border-radius: 999px !important; border-color: transparent !important; color: var(--b-ink) !important; box-shadow: none !important;
     }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-in, .q-in, input[type="text"], input[type="search"], input[type="email"], input[type="tel"], select, textarea):not([type="checkbox"]):not([type="radio"]) { border-radius: 14px !important; }
   }
@@ -183,11 +183,11 @@
     html body .app-shell[data-nv-b] .c-page > :is(.c-note, p:not(.c-sr):not(.c-phone-sub)), html body .app-shell[data-nv-b] .c-section > p { padding-left: 18px !important; padding-right: 18px !important; }
     html body .app-shell[data-nv-b] .q-page :is(.wc-foot, .c-coprof__note, .wc-intro) { padding-left: 18px !important; padding-right: 18px !important; }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-card__head, .c-card__body, .c-empty--card, .c-error-card, .wc-cardhead, .q-list .q-empty, .c-card > .c-note) { padding-left: 18px !important; padding-right: 18px !important; }
-    html body .app-shell[data-nv-b] .q-page :is(.wc-cardhead > :first-child, .wc-cardhead :is(h2, b), .q-list .q-grp h2) { font: 700 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif !important; color: #111517 !important; letter-spacing: -0.01em !important; }
+    html body .app-shell[data-nv-b] .q-page :is(.wc-cardhead > :first-child, .wc-cardhead :is(h2, b), .q-list .q-grp h2) { font: 700 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif !important; color: var(--b-ink) !important; letter-spacing: -0.01em !important; }
 
     /* One divider: 1px, inset to the row text. */
     html body .app-shell[data-nv-b] .q-list > li { border-top: 0 !important; border-bottom: 0 !important; }
-    html body .app-shell[data-nv-b] :is(.q-list, .c-rows, .c-coprof) > li + li { box-shadow: none !important; border-top: 0 !important; background: linear-gradient(#ECEEEF, #ECEEEF) 18px 0 / calc(100% - 18px) 1px no-repeat !important; }
+    html body .app-shell[data-nv-b] :is(.q-list, .c-rows, .c-coprof) > li + li { box-shadow: none !important; border-top: 0 !important; background: linear-gradient(var(--b-line), var(--b-line)) 18px 0 / calc(100% - 18px) 1px no-repeat !important; }
     html body .app-shell[data-nv-b] :is(.q-list, .c-rows) > li > :is(*, details > summary) { border-top: 0 !important; border-bottom: 0 !important; }
     html body .app-shell[data-nv-b] :is(.q-list, .c-rows) > li > :is(.q-row, .c-row, details > summary) { box-shadow: none !important; }
     html body .app-shell[data-nv-b] .q-row::after { display: none !important; }
@@ -205,11 +205,11 @@
     }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.q-seg, .c-seg):not(.q-page > .q-nav + .q-hd + *, .c-page > .c-nav--phone + * + .c-seg, .c-page > .c-nav--phone + .c-seg, .q-page > .q-hd + section > .q-seg:first-child) > :is(a, button) { border-radius: 9px !important; font-weight: 600 !important; }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .c-seg[data-slide]::before { border-radius: 9px !important; }
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .q-seg > :is([aria-pressed="true"], [aria-selected="true"], [aria-current="page"]) { background: #FFFFFF !important; box-shadow: 0 1px 3px rgb(16 24 32 / 0.14) !important; color: #111517 !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .q-seg > :is([aria-pressed="true"], [aria-selected="true"], [aria-current="page"]) { background: #FFFFFF !important; box-shadow: 0 1px 3px rgb(16 24 32 / 0.14) !important; color: var(--b-ink) !important; }
 
     /* Buttons: pills everywhere; secondary grey visible on the canvas too; disabled never glows. */
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.wc-btn, .button) { border-radius: 999px !important; }
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.wc-btn--sec, .button.secondary) { border-color: transparent !important; background: #E6EBEA !important; color: #111517 !important; box-shadow: none !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.wc-btn--sec, .button.secondary) { border-color: transparent !important; background: #E6EBEA !important; color: var(--b-ink) !important; box-shadow: none !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-btn--secondary, .c-btn--neutral, .q-btn--sec, .q-btn--quiet, .q-bs:not(.q-bs--go)) { background: #E6EBEA !important; }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(button, .c-btn, .q-btn, .wc-btn):is(:disabled, [aria-disabled="true"]) { box-shadow: none !important; }
 
@@ -218,7 +218,7 @@
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-row__value, .q-rv) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; max-width: 50% !important; flex-shrink: 0 !important; text-align: right !important; }
 
     /* Field labels: one dark grey on every form. */
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.q-fl__label, .c-field__label) { color: #3F464B !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.q-fl__label, .c-field__label) { color: var(--b-ink2) !important; }
 
     /* Sheets: the band starts at the top; Cancel, the title and the action on one line, the title centred on the screen. */
     html body .app-shell[data-nv-b] .c-sheetpage { padding-top: 0 !important; }
@@ -262,7 +262,7 @@
     }
     /* Selects in rows end in an ellipsis instead of being cut; icon buttons lose the old hairline. */
     html body .app-shell[data-nv-b] :is(.c-page, .q-page) .q-row select { text-overflow: ellipsis !important; }
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) .c-icon-btn { border-color: transparent !important; background: #E8F3F1 !important; color: #0B6E69 !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) .c-icon-btn { border-color: transparent !important; background: var(--b-teal-50) !important; color: var(--b-teal) !important; }
   }
   @media (max-width: 767px) {
     /* Updates: the section holding the hero's tabs starts right under the title (its tabs' teal frame closes the gap). */
@@ -288,7 +288,7 @@
     html body .app-shell[data-nv-b] :is(.c-exp__ready, .c-exp__body, .c-exp__person, .c-pset__body, .c-help__a, .wc-emptyrow, .c-ins__reason, .wc-tcard__body, .c-photos__label, .c-photos__keep, .c-photos__moretext, .c-photos__helpform) { padding-left: 18px !important; padding-right: 18px !important; }
     html body .app-shell[data-nv-b] .c-exp__people { margin-left: -18px !important; margin-right: -18px !important; }
     /* Rows that aren't list items (rules, questions) get the same inset divider; their own lines go. */
-    html body .app-shell[data-nv-b] :is(.q-rule-list, .c-card, .q-list) > :is(details, .q-rule, .c-row, a.c-row, button.c-row) + :is(details, .q-rule, .c-row, a.c-row, button.c-row) { box-shadow: none !important; border-top: 0 !important; background: linear-gradient(#ECEEEF, #ECEEEF) 18px 0 / calc(100% - 18px) 1px no-repeat !important; }
+    html body .app-shell[data-nv-b] :is(.q-rule-list, .c-card, .q-list) > :is(details, .q-rule, .c-row, a.c-row, button.c-row) + :is(details, .q-rule, .c-row, a.c-row, button.c-row) { box-shadow: none !important; border-top: 0 !important; background: linear-gradient(var(--b-line), var(--b-line)) 18px 0 / calc(100% - 18px) 1px no-repeat !important; }
     html body .app-shell[data-nv-b] :is(.q-rule-list > .q-rule, .c-card > details) > summary { box-shadow: none !important; border: 0 !important; }
     html body .app-shell[data-nv-b] .q-list > li:first-child { border-top: 0 !important; box-shadow: none !important; background-image: none !important; }
     /* Hero to content: 16px on every page (a corporate page's own 12px gap counts toward it). */
@@ -305,7 +305,7 @@
     html body .app-shell[data-nv-b] .q-row:has(select) .q-rt { flex: 1 1 45% !important; min-width: 0 !important; }
     html body .app-shell[data-nv-b] .q-row:has(select) select { max-width: 55% !important; }
     /* The person page's call and message buttons: soft tinted circles, no hairline. */
-    html body .app-shell[data-nv-b] .c-person__act { border-color: transparent !important; background: #E8F3F1 !important; color: #0B6E69 !important; box-shadow: none !important; }
+    html body .app-shell[data-nv-b] .c-person__act { border-color: transparent !important; background: var(--b-teal-50) !important; color: var(--b-teal) !important; box-shadow: none !important; }
   }
   @media (max-width: 359px) {
     /* Four tabs on the hero (Insights): every label keeps padding and never touches its neighbour. */
@@ -353,7 +353,7 @@
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page .q-acts { padding: 0 18px 16px 64px !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page :is(.q-acts-form--page .q-acts, .q-acts.q-acts--flush) { padding-left: 18px !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page .q-acts > *, html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page .q-acts .q-bs { flex: 1 1 0 !important; min-width: 0 !important; }
-    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page .q-bs.q-bs--go { border-color: transparent !important; border-radius: 999px !important; background: #0B6E69 !important; color: #FFFFFF !important; box-shadow: 0 4px 10px -6px rgb(11 110 105 / 0.55) !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page .q-bs.q-bs--go { border-color: transparent !important; border-radius: 999px !important; background: var(--b-teal) !important; color: #FFFFFF !important; box-shadow: var(--b-elev-glow) !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page .q-bs.q-bs--go:is(:disabled, [aria-disabled="true"]) { box-shadow: none !important; }
     /* Round 5 (Nov 7) P14: a request's shifts, its note and its form messages start at the row text (64px), like its buttons. */
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page .q-requests > li :is(.q-acts-note, .q-acts-form .form-error, .q-acts-form .form-success, .q-acts-form .wa-target) { margin: 0 !important; padding: 0 18px 12px 64px !important; }
@@ -396,11 +396,11 @@
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) :is(.c-page, .q-page):not(:has(> .b-screen)) .c-card__head { box-shadow: none !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) :is(.c-page, .q-page):not(:has(> .b-screen)) .c-card__head span.c-count.c-count, html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-corrections-count {
       display: inline-grid !important; min-width: 24px !important; height: 22px !important; margin-left: 8px !important; padding: 0 8px !important; border-radius: 11px !important;
-      background: #E8F3F1 !important; color: #0B6E69 !important; font-size: 12.5px !important; line-height: 22px !important; font-weight: 700 !important; }
+      background: var(--b-teal-50) !important; color: var(--b-teal) !important; font-size: 12.5px !important; line-height: 22px !important; font-weight: 700 !important; }
 
     /* Round 5 (Nov 7) P12: Scheduling rules has one inset divider between every rule (the first two sit in their save form,
      * the third follows it); a long value wraps beside the title instead of squeezing it. */
-    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-rule-list .configuration-fields > details + details, html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-rule-list > form + details { border-top: 0 !important; box-shadow: none !important; background: linear-gradient(#ECEEEF, #ECEEEF) 18px 0 / calc(100% - 18px) 1px no-repeat !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-rule-list .configuration-fields > details + details, html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-rule-list > form + details { border-top: 0 !important; box-shadow: none !important; background: linear-gradient(var(--b-line), var(--b-line)) 18px 0 / calc(100% - 18px) 1px no-repeat !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-rule-list :is(details, .q-rule) > summary.q-row > .q-rv { flex: 0 1 auto !important; min-width: 0 !important; max-width: 45% !important; }
 
     /* Round 5 (Nov 7) P13: forms are one system. A sheet's bar (New location, New update, Clocker PIN) is the compact band
@@ -436,13 +436,13 @@
      * an amber "Pending" chip, and Decline (grey) and Approve (teal) as pills. */
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-corrections { border: 1px solid transparent !important; border-radius: 22px !important; background: #FFFFFF !important; box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18) !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-corrections-header { min-height: 44px !important; padding: 12px 18px 2px !important; box-shadow: none !important; }
-    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-corrections-header h2 { font: 700 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.01em !important; color: #111517 !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-corrections-header h2 { font: 700 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.01em !important; color: var(--b-ink) !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx :is(.manager-corrections-notice, .manager-corrections-empty) { padding-left: 18px !important; padding-right: 18px !important; }
-    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-row { padding: 14px 18px 16px !important; box-shadow: none !important; background: linear-gradient(#ECEEEF, #ECEEEF) 18px 0 / calc(100% - 18px) 1px no-repeat !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-row { padding: 14px 18px 16px !important; box-shadow: none !important; background: linear-gradient(var(--b-line), var(--b-line)) 18px 0 / calc(100% - 18px) 1px no-repeat !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-row:first-child { background: none !important; }
-    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-topline > span { display: inline-flex !important; align-items: center !important; height: 22px !important; padding: 0 8px !important; border-radius: 11px !important; background: #FDF3E4 !important; color: #8A4B00 !important; font-size: 12px !important; line-height: 1 !important; font-weight: 600 !important; }
-    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-actions button { height: 40px !important; border-radius: 20px !important; border: 0 !important; background: #E6EBEA !important; color: #111517 !important; box-shadow: none !important; }
-    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-actions button.primary { background: #0B6E69 !important; color: #FFFFFF !important; box-shadow: 0 4px 10px -6px rgb(11 110 105 / 0.55) !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-topline > span { display: inline-flex !important; align-items: center !important; height: 22px !important; padding: 0 8px !important; border-radius: 11px !important; background: var(--b-amber-50) !important; color: var(--b-amber) !important; font-size: 12px !important; line-height: 1 !important; font-weight: 600 !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-actions button { height: 40px !important; border-radius: 20px !important; border: 0 !important; background: #E6EBEA !important; color: var(--b-ink) !important; box-shadow: none !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-actions button.primary { background: var(--b-teal) !important; color: #FFFFFF !important; box-shadow: var(--b-elev-glow) !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-actions button:disabled { box-shadow: none !important; }
 
     /* Round 5 (Nov 7) P20: a row's trailing value is one size (15.5px, as on Scheduling rules) on Positions and Locations. */
@@ -458,7 +458,7 @@
 
     /* Round 5 (Nov 7) P26: Pay history's amounts are bold ink like Payroll's Recent payrolls, and "Payday Fri, Oct 23"
      * never breaks inside the date. */
-    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-page.c-pay #payroll-all .c-row__value { font-weight: 700 !important; color: #111517 !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-page.c-pay #payroll-all .c-row__value { font-weight: 700 !important; color: var(--b-ink) !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-page.c-pay :is(#payroll-all, #payroll-recent) .c-row__detail .c-num { white-space: nowrap !important; }
 
     /* Round 5 (Nov 7) P27: the branding preview's button is a full-width pill with its words centred (at 320px it shrank
@@ -469,7 +469,7 @@
     /* Round 5 (Nov 7) P12: on narrow phones a rule's value moves under its title (the titles were squeezed to two lines). */
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-rule-list :is(details, .q-rule) > summary.q-row { display: grid !important; grid-template-columns: minmax(0, 1fr) auto !important; column-gap: 12px !important; align-items: center !important; padding-top: 12px !important; padding-bottom: 12px !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-rule-list :is(details, .q-rule) > summary.q-row > .q-rt { grid-column: 1 !important; grid-row: 1 !important; }
-    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-rule-list :is(details, .q-rule) > summary.q-row > .q-rv { grid-column: 1 !important; grid-row: 2 !important; justify-self: start !important; max-width: none !important; margin-top: 2px !important; text-align: left !important; font-size: 13.5px !important; line-height: 18px !important; font-weight: 600 !important; color: #3F464B !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-rule-list :is(details, .q-rule) > summary.q-row > .q-rv { grid-column: 1 !important; grid-row: 2 !important; justify-self: start !important; max-width: none !important; margin-top: 2px !important; text-align: left !important; font-size: 13.5px !important; line-height: 18px !important; font-weight: 600 !important; color: var(--b-ink2) !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-rule-list :is(details, .q-rule) > summary.q-row > :is(.q-chev, svg) { grid-column: 2 !important; grid-row: 1 / 3 !important; }
     /* Round 5 (Nov 7) P27: the preview button's words fit one line at 320px. */
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page .wc-preview .wc-preview__btn { font-size: 14px !important; }
@@ -532,7 +532,7 @@
 /* Unlayered: normal declarations (they keep the cascade they had) and the !important declarations that must stay outside
  * nv-b. See DESIGN.MD "CSS layering (review batch B8)". */
 @media (max-width: 767px) {
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:has(.page-frame :is(.c-page, .q-page)) :is(.app-main, .page-frame) { background: #F2F5F4 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:has(.page-frame :is(.c-page, .q-page)) :is(.app-main, .page-frame) { background: var(--b-canvas) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > .c-nav.c-nav--phone, .q-page > .q-nav, .c-shift__head, .c-formhead) {
     --b-end: #08504C; isolation: isolate;
   }
@@ -546,17 +546,17 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) > :not(.c-nav, .q-nav, .c-phone-sub, .q-hd, .c-shift__head, .c-formhead) { position: relative; z-index: 2; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-card, .q-list, .q-card, .wc-card, .q-group-card) { overflow: hidden;
   }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-av, .q-av) { background: #E8F3F1 !important; color: #0B6E69 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-av, .q-av) { background: var(--b-teal-50) !important; color: var(--b-teal) !important; }
 }
 @media (max-width: 767px) {
-  html:is(:root, [data-theme]):has(.app-shell[data-nv-b] .page-frame :is(.c-page, .q-page)), html:is(:root, [data-theme]):has(.app-shell[data-nv-b] .page-frame :is(.c-page, .q-page)) body { background: #F2F5F4 !important; }
+  html:is(:root, [data-theme]):has(.app-shell[data-nv-b] .page-frame :is(.c-page, .q-page)), html:is(:root, [data-theme]):has(.app-shell[data-nv-b] .page-frame :is(.c-page, .q-page)) body { background: var(--b-canvas) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > :is(.c-nav--phone, .c-phone-sub, .c-title--wide, .c-seg) + :not(.c-phone-sub, .c-title--wide, .c-seg), .q-page > :is(.q-nav, .q-hd, .q-seg, .c-seg) + :not(.q-hd, .q-seg, .c-seg)) { margin-top: 16px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page > .q-hd + section > .q-seg:first-child ~ * { position: relative; z-index: 2; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-row__title, .c-row__detail, .c-row__detail > span, .q-rt b, .q-rt i, .q-rt span, .q-rt small) { text-wrap: pretty; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-row__value, .q-rv) { overflow-wrap: anywhere; }
 }
 @media (max-width: 767px) {
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:has(.page-frame :is(.c-page, .q-page)), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:has(.page-frame :is(.c-page, .q-page)) :is(.app-main, .page-frame) { background: #F2F5F4 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:has(.page-frame :is(.c-page, .q-page)), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:has(.page-frame :is(.c-page, .q-page)) :is(.app-main, .page-frame) { background: var(--b-canvas) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-row__value, .q-rv) { text-wrap: balance; }
 }
 @media (max-width: 767px) {

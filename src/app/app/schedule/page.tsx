@@ -15,7 +15,7 @@ import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import { SchedulePublicationChange } from "@/components/schedule-publication-change";
 import { listCapturedShiftPositions } from "@/lib/data/publication-revisions";
-import {ScheduleRouteFeedback} from '@/components/company-access/schedule-route-feedback';
+import {ScheduleRouteFeedback, withoutRouteError} from '@/components/company-access/schedule-route-feedback';
 import Link from "next/link";
 import { Fragment, type ReactNode } from "react";
 import { CorpBody, CorpButtonLink, CorpCard, CorpLink, CorpNote, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
@@ -115,6 +115,10 @@ export default async function SchedulePage({
   const workspace = await getWorkspace();
   const manager = isManagerRole(session.role);
   const params = await searchParams;
+  // Review F3 (NV-090): a route error's note can be dismissed: the same week and location without ?error (only those two,
+  // checked, so no other query text is echoed into the page).
+  const dismissHref = params.error ? withoutRouteError("/app/schedule", { week: validWeek(params.week) ? params.week : undefined,
+    location: params.location && /^[A-Za-z0-9_-]{1,100}$/.test(params.location) ? params.location : undefined }) : undefined;
   const observedAt = new Date();
   const today = businessDate(observedAt, workspace.timeZone);
   const currentWeek = weekStartFor(today);
@@ -133,7 +137,7 @@ export default async function SchedulePage({
       const source=await readOperationalSchedule(proof,{weekStart,...(params.location===undefined||params.location==='all'?{}:{locationId:params.location})});
       if(source.state==='unavailable')return <OperationalUnavailable title="Schedule unavailable" reason={source.reason} scoped/>;
       if(source.authority!==access.authority)return <OperationalUnavailable title="Schedule unavailable" reason="source_changed" scoped/>;
-      return withRepair(<ScopedOperationalSchedule data={source.data} observation={source} feedback={<>{repairNote("corp")}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'}/></>}/>);
+      return withRepair(<ScopedOperationalSchedule data={source.data} observation={source} feedback={<>{repairNote("corp")}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/></>}/>);
     }
   }
   async function renderSchedule(){
@@ -426,7 +430,7 @@ export default async function SchedulePage({
     }),
     notes: <>
       {repairNote("b")}
-      <ScheduleRouteFeedback error={params.error} warning={params.warning}/>
+      <ScheduleRouteFeedback error={params.error} warning={params.warning} dismissHref={dismissHref}/>
       {params.published ? <div role="status" className="b-sched-done"><b>{locations.find((location) => location.id === params.published)?.shortName ?? "Schedule"} published.</b>
         <span>Your team can now see their {formatWeekRange(weekStart)} shifts.</span>
         {updatesOn ? <BButtonLink href="/app/updates/compose" kind="ghost">Send an update</BButtonLink> : null}</div> : null}
@@ -459,7 +463,6 @@ export default async function SchedulePage({
           </span>
         </>}
         sub={<><span className="c-sched-sub__long">{todayLong}</span><span className="c-sched-sub__short">{todayShort}</span></>} />
-      <ScheduleRouteFeedback error={params.error} warning={params.warning}/>
       {params.published ? (
         <CorpCard as="div" ariaLabel="Published">
           <CorpBody>
@@ -496,6 +499,8 @@ export default async function SchedulePage({
           todayHref: weekStart === currentWeek ? undefined : `/app/schedule?week=${currentWeek}${locationQuery}`, observedAt: observedAt.toISOString() }}
         b={bSchedule}
         notices={<>
+          {/* Review F3 (NV-090): route errors and warnings sit under the band, above the grid, not inside the band. */}
+          <ScheduleRouteFeedback error={params.error} warning={params.warning} dismissHref={dismissHref}/>
           {repairNote("corp")}
           {toPlan.length ? <CorpCard label="Not published yet" ariaLabel="Locations the team can’t see yet">
             <CorpRows label="Locations the team can’t see yet">{toPlan.map(location => {

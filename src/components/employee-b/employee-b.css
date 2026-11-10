@@ -17,7 +17,7 @@
   @media (max-width: 767px) {
     html body .app-shell.nevora-portal[data-nv-corp][data-nv-b][data-employee-mobile]:has(.c-page > .b-screen) .mobile-header .portal-notification-count {
       position: absolute !important; top: 11px !important; right: 12px !important; left: auto !important; display: block !important; width: 8px !important; height: 8px !important; min-width: 0 !important; padding: 0 !important; margin: 0 !important;
-      border: 0 !important; border-radius: 4px !important; background: #FF6B5E !important; box-shadow: 0 0 0 2px #0B6E69 !important; font-size: 0 !important; line-height: 0 !important; color: transparent !important; overflow: hidden !important; transform: none !important;
+      border: 0 !important; border-radius: 4px !important; background: var(--b-coral) !important; box-shadow: 0 0 0 2px var(--b-teal) !important; font-size: 0 !important; line-height: 0 !important; color: transparent !important; overflow: hidden !important; transform: none !important;
     }
     html body .app-shell.nevora-portal[data-nv-corp][data-nv-b][data-employee-mobile]:has(.c-page > .b-screen--ink) .mobile-header .portal-notification-count { box-shadow: 0 0 0 2px #152A28 !important; }
   }
@@ -28,7 +28,7 @@
 
   /* Inspection round 1: notes under cards line up with the cards' text (18px in from the card edge). */
   /* The unread count beside a title: the kit's teal pill (the corporate shell forces its own grey with ids). */
-  html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-row__t .q-count { background: #E8F3F1 !important; color: #0B6E69 !important; min-width: 22px !important; height: 22px !important; padding: 0 7px !important; border-radius: 11px !important; font: 700 12px/22px Inter, "Inter Fallback", sans-serif !important; }
+  html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-row__t .q-count { background: var(--b-teal-50) !important; color: var(--b-teal) !important; min-width: 22px !important; height: 22px !important; padding: 0 7px !important; border-radius: 11px !important; font: 700 12px/22px Inter, "Inter Fallback", sans-serif !important; }
 
   /* Inspection round 1, measured in the browser: the hero's rhythm and the page's ends match the mock on every Employee
    * screen. Older phone layers add an 8px margin above a hero subtitle, a 4px gap above some screens, 17px links and 76px of
@@ -108,9 +108,9 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status { display: flex; flex-direction: column; gap: 12px; padding: 6px 18px 18px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status .b-state { padding: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .eb-status:first-child { padding-top: 18px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-list + .b-list > .b-li:first-child { box-shadow: inset 0 1px 0 #ECEEEF; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-list + .b-list > .b-li:first-child { box-shadow: inset 0 1px 0 var(--b-line); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-day { width: 36px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-day--today b { color: #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-day--today b { color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-day--past { opacity: 0.55; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-cardnote { padding: 0 18px 16px; font-size: 13px; line-height: 18px; color: var(--b-grey); text-wrap: pretty; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-cardnote--center { text-align: center; }
@@ -119,7 +119,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add:active { background-color: rgb(16 24 32 / 0.04); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add .b-ico svg { width: 16px; height: 16px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .b-list + .eb-cardnote { padding-top: 0; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__t .q-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 11px; background: #E8F3F1; color: #0B6E69; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__t .q-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 11px; background: var(--b-teal-50); color: var(--b-teal); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
 @media (max-width: 359px) {
   :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-seg { margin-left: 16px; margin-right: 16px; }
   :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-seg:has(> :nth-child(3)) > * { font-size: 13px; letter-spacing: -0.01em; padding: 0 4px; }
@@ -148,11 +148,11 @@
   :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen.b-screen .b-seg { margin-left: 20px; margin-right: 20px; }
 }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-employee-mobile] .c-page > .b-screen:not(#nvd-none):not(#nvd-none2) { margin-top: 0 !important; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-empty-state__a { display: inline-flex; align-items: center; gap: 2px; min-height: 44px; font-size: 14px; font-weight: 600; color: #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-empty-state__a { display: inline-flex; align-items: center; gap: 2px; min-height: 44px; font-size: 14px; font-weight: 600; color: var(--b-teal); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-seg > * { line-height: 19.6px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-empty + .b-list > .b-li:first-child .b-add { box-shadow: inset 0 1px 0 #ECEEEF; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-empty + .b-list > .b-li:first-child .b-add { box-shadow: inset 0 1px 0 var(--b-line); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__s { line-height: 19px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-empty .b-ico { margin-bottom: 5px; color: #3F464B; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-empty .b-ico { margin-bottom: 5px; color: var(--b-ink2); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-week__d { line-height: 1.4; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-week__h { padding-bottom: 8px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-changes summary { text-wrap: balance; }
@@ -195,10 +195,10 @@
   }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-header .c-top-avatar > .c-top-avatar__more {
     position: absolute; right: -2px; bottom: 0; display: grid; place-items: center; width: 16px; height: 16px; border-radius: 8px;
-    background: #FFFFFF; color: #0B6E69; box-shadow: 0 1px 3px rgb(16 40 38 / 0.28); pointer-events: none;
+    background: #FFFFFF; color: var(--b-teal); box-shadow: 0 1px 3px rgb(16 40 38 / 0.28); pointer-events: none;
   }
   @layer nv-b {
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-header .c-top-avatar > .c-top-avatar__more svg { position: static !important; width: 10px !important; height: 10px !important; color: #0B6E69 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-header .c-top-avatar > .c-top-avatar__more svg { position: static !important; width: 10px !important; height: 10px !important; color: var(--b-teal) !important; }
   }
 }
 /* NV-011, NV-070: on tablets and desktop More is not a sidebar or rail entry (it opens from the account menu), so a
@@ -218,7 +218,7 @@
 
 /* Review F2 (NV-074): the access check's placeholder in Direction B: the band with a title bar, then 22px cards holding
  * #ECEEEF bars (static; no shimmer), in place of the old white header and warm Quiet skeleton. */
-:is(#c-root, html) .app-shell[data-nv-b] .c-route-state--checking .b-skel { display: block; height: 14px; border-radius: 7px; background: #ECEEEF; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-route-state--checking .b-skel { display: block; height: 14px; border-radius: 7px; background: var(--b-line); }
 :is(#c-root, html) .app-shell[data-nv-b] .c-route-state--checking .b-hero .b-skel--title { width: min(220px, 60%); height: 30px; margin: 3px 0; border-radius: 15px; background: rgb(255 255 255 / 0.18); }
 :is(#c-root, html) .app-shell[data-nv-b] .c-route-state--checking .b-skel-card { display: grid; gap: 14px; padding: 20px 18px 22px; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-route-state--checking .b-skel--head { width: 40%; height: 18px; border-radius: 9px; }

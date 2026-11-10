@@ -458,7 +458,7 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
    <div className="cm-insights__tools c-ins__tools">
     <button type="button" className="cm-insights__button cm-insights__picker" popoverTarget="report-period-menu"><span><span className="nv-sr">Report period: </span>{current.long}</span><CaretDownIcon size={16} weight="bold" aria-hidden="true"/></button>
     <div id="report-period-menu" className="cm-insights__menu" popover="auto" role="group" aria-label="Report period">
-     {MODES.map(item=><button key={item.mode} type="button" className="cm-insights__menu-item" aria-pressed={mode===item.mode} disabled={item.mode!=='custom'&&(!presets||held)} onClick={()=>choose(item.mode)}>{mode===item.mode?<CheckIcon size={16} weight="bold" aria-hidden="true"/>:<span className="cm-insights__menu-gap" aria-hidden="true"/>}{item.mode==='custom'?'Custom period…':item.long}</button>)}
+     {MODES.map(item=><button key={item.mode} type="button" className="cm-insights__menu-item" aria-pressed={mode===item.mode} disabled={item.mode!=='custom'&&(!presets||held)} onClick={()=>choose(item.mode)}>{item.mode==='custom'?'Custom period…':item.long}{mode===item.mode?<CheckIcon className="cm-insights__menu-check" size={16} weight="bold" aria-hidden="true"/>:null}</button>)}
     </div>
     <button type="button" className="cm-insights__button cm-insights__export" popoverTarget="report-export-menu" aria-busy={exporting||undefined}><ExportIcon size={18} aria-hidden="true"/><span className="cm-insights__export-text">Export</span></button>
     <div id="report-export-menu" className="cm-insights__menu" popover="auto" role="group" aria-label="Export this period">
