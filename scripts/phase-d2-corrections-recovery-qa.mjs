@@ -5,6 +5,7 @@ import {join} from 'node:path';
 import {Temporal} from '@js-temporal/polyfill';
 import {EMPLOYEE_DESKTOP_VIEWPORT} from './phase-d2-phone-hours-geometry.mjs';
 import {installD2NativeRetryTrace,captureD2NativeRetry,observeD2ManagerPostOutcomes} from './d2-native-retry-diagnostics.mjs';
+import {pressFocusedD2Retry} from './d2-native-retry-focus.mjs';
 import {MISSED_SHIFT_PATH,accessChanged,checkSubmission,clockText,correctionPayload,fillMissedShiftForm,fixForm,hoursPage,hoursPaused,isCorrectionAction,recordedReceipt,sendFix,whatToFix} from './employee-fix-time-browser.mjs';
 
 const WIDTHS=[320,375,390,430,768,1024,1440];
@@ -140,14 +141,12 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
      await page.setViewportSize({width,height:width<=430?844:1000});await geometry(page,'.manager-corrections','manager uncertain decision',engine,width);
      const shot=join(evidence,`${engine}-manager-recovery-${width}.png`);await page.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
     }
-    // Retry is disabled whenever the queue is not ready (manager-time-corrections: mode!=='ready'), for example while
-    // its snapshot renews; the seven screenshots above take over 10 s in WebKit and can overlap that. Press it only
-    // once it is enabled again, as UX-04 requires.
-    await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(button=>button.textContent==='Retry same decision'&&!button.disabled));
+    // Snapshot renewal can disable retry between an enabled poll and focus().
+    // Acquire enabled foreground focus within one bounded pre-input window.
     await captureD2NativeRetry(nativeReceipt,page,'before-focus',commands.length);
     try{
-     await retry.focus();await captureD2NativeRetry(nativeReceipt,page,'focused',commands.length);
-     await page.keyboard.press('Enter');await captureD2NativeRetry(nativeReceipt,page,'key-sent',commands.length);
+     await pressFocusedD2Retry(retry,page,nativeReceipt,commands.length,performance.now()+15000);
+     await captureD2NativeRetry(nativeReceipt,page,'key-sent',commands.length);
      await page.getByText(decision==='APPROVE'?'Correction approved. The original recorded punch remains unchanged.':'Correction declined. The original recorded punch remains unchanged.',{exact:true}).waitFor();
      await captureD2NativeRetry(nativeReceipt,page,'confirmed',commands.length);
     }catch(error){await captureD2NativeRetry(nativeReceipt,page,'failed',commands.length);throw error;}
