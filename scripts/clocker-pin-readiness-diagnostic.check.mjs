@@ -54,11 +54,11 @@ test('removes listeners and disables exposed callbacks on repeated cleanup',asyn
  for(const emitter of [f.browser,f.context,f.page])assert.equal(emitter.eventNames().length,0);
 });
 
-function browserHarness(){
+function browserHarness(receive=()=>{}){
  const handlers=new Map(),timers=new Map(),received=[];let timer=0;
  const target={addEventListener:(name,fn)=>{handlers.set(name,fn);},removeEventListener:(name,fn)=>{if(handlers.get(name)===fn)handlers.delete(name);}};
  const document={...target,hasFocus:()=>true,visibilityState:'visible',readyState:'complete',querySelector:()=>null};
- const window={...target,__nevoraPinDiagnostic:async value=>{received.push(value);}};window.top=window;
+ const window={...target,__nevoraPinDiagnostic:async value=>{received.push(value);receive(value);}};window.top=window;
  runInNewContext('('+installPinReadinessObserver.toString()+')()',{window,document,navigator:{onLine:true},setTimeout:fn=>{timers.set(++timer,fn);return timer;},clearTimeout:id=>timers.delete(id)});
  return {window,handlers,timers,received,dispatch(prevent){const event={target:{matches:()=>true,querySelector:()=>({})},defaultPrevented:false};handlers.get('submit')(event);event.defaultPrevented=prevent;for(const [id,fn] of timers){timers.delete(id);fn();}return event;}};
 }
@@ -68,7 +68,7 @@ test('native submit observation sees after-dispatch prevention and leaves submit
 });
 
 test('browser observer bounds pending timers and cancels pending observations during cleanup',()=>{
- const f=browserHarness();for(let i=0;i<200;i++)f.handlers.get('submit')({target:{matches:()=>true,querySelector:()=>({})},defaultPrevented:false});assert(f.timers.size<=64);assert(f.received.length<=64);f.window.__nevoraPinDiagnosticCleanup();assert.equal(f.timers.size,0);assert.equal(f.handlers.size,0);
+ const f=browserHarness();for(let i=0;i<200;i++)f.handlers.get('submit')({target:{matches:()=>true,querySelector:()=>({})},defaultPrevented:false});assert(f.timers.size<=64);assert(f.received.length<=65);f.window.__nevoraPinDiagnosticCleanup();assert.equal(f.timers.size,0);assert.equal(f.handlers.size,0);
 });
 
 test('flushes redacted incremental JSONL and upload-compatible JSON even with a dead page',async()=>{
@@ -109,4 +109,50 @@ test('cleanup retires a pending installation before its binding resolves',async(
  f.context.exposeBinding=async(name,receive)=>{binding=receive;await new Promise(resolve=>{releaseBinding=resolve;});};f.context.addInitScript=async()=>{initCalls++;};
  const installing=f.observer.install();await new Promise(resolve=>setTimeout(resolve,0));await f.observer.close();const disposed=f.observer.snapshot();releaseBinding();await installing;
  binding({page:f.page,frame:f.frame},{kind:'focus',focused:true});assert.equal(initCalls,0);assert.deepEqual(f.observer.snapshot(),disposed);
+});
+
+test('serialized browser saturation persists independently of a full Node browser lane',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'nevora-pin-saturation-'));let f;
+ try{
+  const base=join(dir,'pin');f=fixture({artifactBase:base});await f.observer.install();
+  f.receive({kind:'browser-saturated',saturated:'private-value'});assert.equal(f.observer.snapshot().browserLocalSaturated===true,false);
+  for(let i=0;i<64;i++)f.receive({kind:'focus',focused:true});
+  const b=browserHarness(value=>f.receive({...value,private:'private-value'}));
+  for(let i=0;i<200;i++)b.handlers.get('focus')({});
+  assert.equal(b.received.length,65);assert.equal(b.received.filter(x=>x.kind==='browser-saturated').length,1);assert.equal(b.timers.size,0);
+  const before=f.observer.snapshot();assert.equal(before.browserLocalSaturated,true);assert.equal(before.omittedEvents,64);assert.equal(before.events.filter(x=>x.kind==='browser-saturated').length,1);assert.equal(before.events.length,65);
+  const deadline=performance.now()+1000;let incremental;
+  while(performance.now()<deadline){try{incremental=JSON.parse(await readFile(base+'.json','utf8'));}catch{}if(incremental?.browserLocalSaturated)break;await new Promise(resolve=>setTimeout(resolve,5));}
+  assert.equal(incremental?.browserLocalSaturated,true);assert.equal(incremental.omittedEvents,64);
+  f.receive({kind:'browser-saturated',saturated:true,private:'private-value'});assert.deepEqual(f.observer.snapshot(),before);
+  b.window.__nevoraPinDiagnosticCleanup();assert.equal(b.handlers.size,0);assert.equal(b.timers.size,0);await f.observer.close();
+  const final=JSON.parse(await readFile(base+'.json','utf8')),journal=await readFile(base+'.jsonl','utf8');assert.equal(final.browserLocalSaturated,true);assert.equal(final.omittedEvents,64);assert(journal.includes('browser-saturated'));assert(!JSON.stringify(final).includes('private-value'));assert(!journal.includes('private-value'));
+ }finally{if(f)await f.observer.close();await rm(dir,{recursive:true,force:true});}
+});
+
+test('local capacity signal is conservative and does not invent Node omissions or exact drops',async()=>{
+ const f=fixture();await f.observer.install();const b=browserHarness(value=>f.receive(value));
+ for(let i=0;i<63;i++)b.handlers.get('focus')({});assert.equal(f.observer.snapshot().browserLocalSaturated===true,false);
+ b.handlers.get('focus')({});assert.equal(f.observer.snapshot().browserLocalSaturated,true);assert.equal(f.observer.snapshot().omittedEvents,0);
+ const saturated=f.observer.snapshot();for(let i=0;i<100;i++)b.handlers.get('submit')({target:{matches:()=>true,querySelector:()=>({})},defaultPrevented:false});assert.equal(b.received.length,65);assert.equal(b.timers.size,0);assert.deepEqual(f.observer.snapshot(),saturated);
+ b.window.__nevoraPinDiagnosticCleanup();assert.equal(b.handlers.size,0);await f.observer.close();
+});
+
+test('liveness-first installation expiry emits one timeout before the timer callback',async t=>{
+ let clock=100,releaseBinding,binding,initCalls=0;const callbacks=[];
+ t.mock.method(performance,'now',()=>clock);
+ t.mock.method(globalThis,'setTimeout',fn=>{callbacks.push(fn);return callbacks.length;});t.mock.method(globalThis,'clearTimeout',()=>{});
+ const f=fixture();f.context.exposeBinding=async(name,receive)=>{binding=receive;await new Promise(resolve=>{releaseBinding=resolve;});};f.context.addInitScript=async()=>{initCalls++;};
+ const installing=f.observer.install();await Promise.resolve();assert.equal(typeof releaseBinding,'function');clock=1101;releaseBinding();await installing;
+ const expired=f.observer.snapshot();assert.equal(initCalls,0);assert.deepEqual(expired.events.map(x=>[x.operation,x.category]),[['install','timeout']]);
+ binding({page:f.page,frame:f.frame},{kind:'focus',focused:true});binding({page:f.page,frame:f.frame},{kind:'browser-saturated',saturated:true});for(const callback of [...callbacks])callback();await Promise.resolve();
+ assert.deepEqual(f.observer.snapshot(),expired);assert.equal(initCalls,0);await f.observer.close();
+});
+
+test('cleanup retirement does not manufacture an installation timeout when the timer fires',async t=>{
+ let clock=100,releaseBinding;const callbacks=[];
+ t.mock.method(performance,'now',()=>clock);t.mock.method(globalThis,'setTimeout',fn=>{callbacks.push(fn);return callbacks.length;});t.mock.method(globalThis,'clearTimeout',()=>{});
+ const f=fixture();f.context.exposeBinding=async()=>new Promise(resolve=>{releaseBinding=resolve;});
+ const installing=f.observer.install();await Promise.resolve();await f.observer.close();const disposed=f.observer.snapshot();clock=1101;for(const callback of [...callbacks])callback();releaseBinding();await installing;
+ assert.deepEqual(f.observer.snapshot(),disposed);assert.equal(disposed.events.filter(x=>x.operation==='install').length,0);
 });
