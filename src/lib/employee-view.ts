@@ -1,3 +1,4 @@
+import {isValidIsoDate} from './date-utils';
 import {safeNotificationOpenPath} from './notifications/destinations';
 export type EmployeeViewKind = 'profile'|'notifications';
 export type EmployeeViewUnavailable = {state:'unavailable';reason:'access_denied'|'read_failed'};
@@ -5,7 +6,8 @@ type Lifetime = {state:'ready';observedAt:string;validForMs:number};
 export type EmployeeProfile = Lifetime & {kind:'profile';profile:{name:string;role:'Employee'|'Lead';workspace:string;timeZone:string;locations:string[]}};
 export type NotificationReviewState='unread'|'read'|'confirmed'|'unavailable';
 export type NotificationActionState='required'|'available'|'complete'|'none'|'unavailable';
-export type EmployeeNotificationItem = {id:string;label:string;at:string;href:string;reviewState?:NotificationReviewState;actionState?:NotificationActionState};
+export type EmployeeNotificationSubject={kind:'scheduleWeek'|'requestDate';startDate:string;endDate:string};
+export type EmployeeNotificationItem = {subject?:EmployeeNotificationSubject|null;id:string;label:string;at:string;href:string;reviewState?:NotificationReviewState;actionState?:NotificationActionState};
 export type EmployeeNotifications = Lifetime & {kind:'notifications';coverage:'complete'|'partial';items:EmployeeNotificationItem[]};
 export type EmployeeViewSnapshot = EmployeeViewUnavailable|EmployeeProfile|EmployeeNotifications;
 const record=(value:unknown):Record<string,unknown>=>{if(!value||typeof value!=='object'||Array.isArray(value))throw Error('Unavailable view');return value as Record<string,unknown>;};
@@ -27,6 +29,8 @@ export function parseEmployeeView(value:unknown,kind:EmployeeViewKind):EmployeeV
   const row=record(value),id=text(row.id,128),href=safeNotificationOpenPath(id);if(!href||row.href!==href)throw Error('Unavailable view');
   const reviewState=row.reviewState??'unavailable',actionState=row.actionState??'unavailable';
   if(!['unread','read','confirmed','unavailable'].includes(String(reviewState))||!['required','available','complete','none','unavailable'].includes(String(actionState)))throw Error('Unavailable view');
-  return {id,label:text(row.label),at:instant(row.at),href,reviewState:reviewState as NotificationReviewState,actionState:actionState as NotificationActionState};
+  let subject:EmployeeNotificationSubject|null=null;
+  if(row.subject!==undefined&&row.subject!==null){const s=record(row.subject);if(!['scheduleWeek','requestDate'].includes(String(s.kind))||typeof s.startDate!=='string'||typeof s.endDate!=='string'||!isValidIsoDate(s.startDate)||!isValidIsoDate(s.endDate)||s.endDate<s.startDate)throw Error('Unavailable view');subject={kind:s.kind as EmployeeNotificationSubject['kind'],startDate:s.startDate,endDate:s.endDate};}
+  return {...(row.subject!==undefined?{subject}:{}),id,label:text(row.label),at:instant(row.at),href,reviewState:reviewState as NotificationReviewState,actionState:actionState as NotificationActionState};
  })};
 }

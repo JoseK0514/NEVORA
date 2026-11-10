@@ -28,12 +28,15 @@ it('keeps an incoming swap out of own recent requests until the request is decid
  expect(recipient.state).toBe('ready');expect(sender.state).toBe('ready');
  if(recipient.state!=='ready'||sender.state!=='ready')throw Error('Requests projection was unavailable');
  expect(recipient.incoming).toBe(1);
+ expect(recipient.exchangeCounts).toEqual({open:0,forYou:1});
+ const {readEmployeeExchange}=await import('../../lib/data/employee-exchange.server');
+ for(const selection of [null,offered.requestId]){const exchange=await readEmployeeExchange(proof('e2'),db.executor,selection);expect(exchange).toMatchObject({state:'ready',exchangeCounts:{open:0,forYou:1}});}
  expect(recipient.recent?.filter(row=>row.id===offered.requestId)).toEqual([]);
  expect(sender.recent?.filter(row=>row.id===offered.requestId)).toHaveLength(1);
  expect((await executeShiftChange(proof('e1'),{kind:'CANCEL',operationId:randomUUID(),requestId:offered.requestId,expectedRevision:1},db.executor)).status).toBe('closed');
  const decided=await readEmployeeRequests(proof('e2'),db.executor);
  expect(decided.state).toBe('ready');if(decided.state!=='ready')throw Error('Decided requests projection was unavailable');
- expect(decided.incoming).toBe(0);
+ expect(decided.incoming).toBe(0);expect(decided.exchangeCounts).toEqual({open:0,forYou:0});
  expect(decided.recent?.filter(row=>row.id===offered.requestId)).toEqual([expect.objectContaining({kind:'shift',status:'CANCELLED'})]);
 });
 it.each(['incoming-first','history-first'])('keeps a swap in exactly one Requests section when cancellation races the read (%s)',async(order)=>{
@@ -290,7 +293,7 @@ it.each(['manual-policy','recorded-policy','overtime'] as const)('H12 manager ge
  if(reason==='recorded-policy')await q("UPDATE workspaces SET shift_change_policy=jsonb_set(shift_change_policy,'{coverage,mode}','\"AUTOMATIC_WHEN_VALID\"')");
  const command={kind:'MANAGER_APPROVE' as const,operationId:randomUUID(),requestId:r.requestId,expectedRevision:2};
  const view=await readShiftChangeAvailability(proof('owner'),command,db.executor);
- expect(view).toEqual({allowed:true,notice:reason==='overtime'?'Projected scheduled overtime needs manager review.':reason==='manual-policy'?'Current workflow policy requires manager review.':'This request was submitted under manager review.'});
+ expect(view).toEqual({allowed:true,notice:reason==='overtime'?'Projected scheduled overtime needs manager review.':reason==='manual-policy'?null:'This request was submitted under manager review.',policy:{managerReviewRequired:reason==='manual-policy',rulePath:'Scheduling rules › Trades'}});
  expect(JSON.stringify(view)).not.toMatch(/weeklyMinutes|operational|reviewedBy|classification|WALL_CLOCK/);
  expect(await readShiftChangeAvailability(proof('e3'),command,db.executor)).toMatchObject({allowed:false});
  await q("UPDATE employee_scheduling_settings SET operational_rule_profile=jsonb_set(operational_rule_profile,'{minimumRest}','{\"status\":\"UNKNOWN\"}') WHERE employee_id='e2'");
@@ -329,4 +332,12 @@ it('H13 failed final transaction rolls back decision metadata with assignments a
  const executor={...db.executor,transaction:(statements:Parameters<typeof db.executor.transaction>[0])=>db.executor.transaction([...statements,{text:'SELECT 1/0',values:[]}])};
  await expect(executeShiftChange(proof('e2'),{kind:'ACCEPT',operationId,requestId:r.requestId,expectedRevision:1},executor)).rejects.toMatchObject({code:'22012'});
  expect(await q('SELECT * FROM shift_change_events')).toEqual(before);expect(await q("SELECT employee_id FROM shifts WHERE id='source'")).toEqual([{employee_id:'e1'}]);expect(await findShiftChangeOperation(proof('e2'),operationId,db.executor)).toBeNull();
+});
+
+it('shared exchange counts preserve an unavailable open-cover source rather than fabricating zero',async()=>{
+ const failing:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
+  if(statements.some(s=>s.text.includes("x.kind = 'COVERAGE'")&&s.text.includes('source.date >= $2')))throw Error('Fictional cover outage');
+  return db.executor.transaction(statements,signal);
+ }};
+ expect(await readEmployeeRequests(proof('e2'),failing)).toMatchObject({state:'ready',exchangeCounts:{open:null,forYou:0}});
 });

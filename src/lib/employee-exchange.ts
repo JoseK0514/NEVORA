@@ -1,3 +1,4 @@
+import {parseExchangeCounts,type ExchangeCounts} from './exchange-counts';
 import type {ExchangeRecord,ExchangeShift} from './data/exchanges';
 import type {CalloutRecord} from './data/callouts';
 import {marketplaceDisplayName} from './exchange-marketplace';
@@ -9,7 +10,7 @@ export type HistorySlot=Pick<RequestSlot,'date'|'startTime'|'endTime'>;
 export type RequestEvent={revision:number;label:string;at:string;offered:HistorySlot|null;requested:HistorySlot|null};
 export type ResponseCheck={kind:EmployeeResponseKind;allowed:boolean;notice:string|null;outcome:'completed'|'pending'|null};
 export type EmployeeRequestDetail={summary:RequestSummary;offered:RequestSlot|null;requested:RequestSlot|null;history:RequestEvent[]|null;checks:ResponseCheck[];notice:string|null;reason:string|null};
-export type EmployeeExchangeSnapshot={state:'ready';kind:'exchange';authority:string;observedAt:string;validForMs:number;timeZone:string;enabled:boolean;selection:string|null;incoming:RequestSummary[]|null;activity:RequestSummary[]|null;detail:EmployeeRequestDetail|null}|{state:'unavailable';reason:'read_failed'|'access_denied'};
+export type EmployeeExchangeSnapshot={state:'ready';kind:'exchange';exchangeCounts?:ExchangeCounts;authority:string;observedAt:string;validForMs:number;timeZone:string;enabled:boolean;selection:string|null;incoming:RequestSummary[]|null;activity:RequestSummary[]|null;detail:EmployeeRequestDetail|null}|{state:'unavailable';reason:'read_failed'|'access_denied'};
 const object=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 const keys=(v:Record<string,unknown>,names:string[])=>Object.keys(v).length===names.length&&names.every(k=>Object.hasOwn(v,k));
 const text=(v:unknown,max=4000):v is string=>typeof v==='string'&&v.length>0&&v.length<=max;
@@ -59,8 +60,9 @@ function check(value:unknown):value is ResponseCheck {
 const failed=():EmployeeExchangeSnapshot=>({state:'unavailable',reason:'read_failed'});
 export function parseEmployeeExchange(value:unknown):EmployeeExchangeSnapshot {
  if(!object(value))return failed();
+ if(Object.hasOwn(value,'exchangeCounts')){try{parseExchangeCounts(value.exchangeCounts);}catch{return failed();}}
  if(value.state==='unavailable')return keys(value,['state','reason'])&&['read_failed','access_denied'].includes(String(value.reason))?value as Extract<EmployeeExchangeSnapshot,{state:'unavailable'}>:failed();
- if(!keys(value,['state','kind','authority','observedAt','validForMs','timeZone','enabled','selection','incoming','activity','detail'])||value.state!=='ready'||value.kind!=='exchange'||typeof value.authority!=='string'||!/^[a-f0-9]{64}$/.test(value.authority)||!instant(value.observedAt)||!revision(value.validForMs)||value.validForMs>45000||!text(value.timeZone,100)||typeof value.enabled!=='boolean'||value.selection!==null&&!employeeRequestId(value.selection))return failed();
+ if(!keys(value,['state','kind',...(Object.hasOwn(value,'exchangeCounts')?['exchangeCounts']:[]),'authority','observedAt','validForMs','timeZone','enabled','selection','incoming','activity','detail'])||value.state!=='ready'||value.kind!=='exchange'||typeof value.authority!=='string'||!/^[a-f0-9]{64}$/.test(value.authority)||!instant(value.observedAt)||!revision(value.validForMs)||value.validForMs>45000||!text(value.timeZone,100)||typeof value.enabled!=='boolean'||value.selection!==null&&!employeeRequestId(value.selection))return failed();
  try{new Intl.DateTimeFormat('en-US',{timeZone:value.timeZone});}catch{return failed();}
  const list=(v:unknown)=>v===null||Array.isArray(v)&&v.every(summary);
  if(!list(value.incoming)||!list(value.activity))return failed();
@@ -70,6 +72,7 @@ export function parseEmployeeExchange(value:unknown):EmployeeExchangeSnapshot {
   if(d.reason!==null&&d.summary.kind!=='callout')return failed();
  }
  if(value.selection===null?value.detail!==null:value.incoming!==null||value.activity!==null)return failed();
+ if(!value.enabled&&value.exchangeCounts!==undefined){const counts=parseExchangeCounts(value.exchangeCounts);if(counts.open!==0||counts.forYou!==0)return failed();}
  if(!value.enabled&&(value.detail!==null||Array.isArray(value.incoming)&&value.incoming.length||Array.isArray(value.activity)&&value.activity.length))return failed();
  return value as EmployeeExchangeSnapshot;
 }

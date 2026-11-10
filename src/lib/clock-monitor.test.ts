@@ -46,3 +46,13 @@ describe('live monitor public boundary',()=>{
  it('rejects impossible durations in otherwise plausible responses',()=>{const v=projectClockMonitor(source());if(v.state!=='ready')throw Error();v.employees[0].elapsedMinutes=-1;expect(()=>parseClockMonitor(v)).toThrow();});
  it('formats elapsed time without rounding up or claiming payroll hours',()=>{expect(formatMonitorDuration(7)).toBe('7m');expect(formatMonitorDuration(61)).toBe('1h 1m');expect(formatMonitorDuration(1500)).toBe('25h 0m');});
 });
+it('adds canonical Today lateness only for an unambiguous matching current punch',async()=>{
+ const {withMonitorLateness}=await import('./clock-monitor');
+ const monitor=projectClockMonitor(source());if(monitor.state!=='ready')throw Error('fixture');
+ const shift={employeeId:'worker',locationId:'loc-1',status:'clocked_in',firstClockInAt:row().clock_in_at,late:true};
+ const today={state:'ready',observedAt:source().observedAt,validForMs:45000,timeZone:'America/Puerto_Rico',shifts:[shift]} as never;
+ expect(withMonitorLateness(monitor,today).employees[0].late).toBe(true);
+ expect(withMonitorLateness(monitor,{...today as object,shifts:[{...shift,firstClockInAt:'2030-10-06T22:00:00Z'}]} as never).employees[0].late).toBeNull();
+ expect(withMonitorLateness(monitor,{state:'unavailable',reason:'read_failed'}).employees[0].late).toBeNull();
+ expect(parseClockMonitor(withMonitorLateness(monitor,today))).toMatchObject({employees:[{late:true}]});
+});

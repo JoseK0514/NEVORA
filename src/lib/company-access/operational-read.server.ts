@@ -1,3 +1,4 @@
+import {projectPersonHours,type PersonHours,type PersonHoursSource} from '../person-hours';
 import 'server-only';
 import {createHash} from 'node:crypto';
 import type {Employee,Workspace} from '@/lib/domain';
@@ -10,7 +11,8 @@ import {neonNotificationExecutor,pendingPublicationChanges,readNotificationWeekS
 import {buildSchedulePendingChanges,type PendingHistoryRow,type SchedulePendingChangesData} from '@/lib/scheduling/pending-changes';
 import {currentCalloutReleaseSql} from '@/lib/data/shift-change-release';
 import {clockMonitorSnapshotStatement} from '@/lib/data/clock-monitor.server';
-import {projectClockMonitor} from '@/lib/clock-monitor';
+import {readToday} from '../data/today.server';
+import {projectClockMonitor,withMonitorLateness} from '@/lib/clock-monitor';
 import {durationMinutes,isValidWeekStart} from '@/lib/date-utils';
 import {normalizeAssignmentOrigin} from '@/lib/scheduling/generation-provenance';
 import {readOperationalAuthority,readOwnerOperationalScope,operationalScopeStatements} from './operational-scope.server';
@@ -184,7 +186,9 @@ export async function readOperationalClockMonitor(proof:SessionMutationProof,ex:
   const [row]=await ex.query<{snapshot:{rows:unknown[]}}>(clockMonitorSnapshotStatement(ctx.workspace,proof.sessionTokenHash,ctx.ids,true));
   if(!row||!Array.isArray(row.snapshot?.rows))throw new ReadFailure('read_failed');bounded(row.snapshot.rows);
   const monitor=projectClockMonitor(row.snapshot);if(monitor.state!=='ready')throw new ReadFailure('read_failed');
-  return {data:{timeZone:monitor.timeZone,employees:monitor.employees},observedAt:monitor.observedAt,validForMs:monitor.validForMs};
+  const today=await readToday(proof,ex);
+  const combined=withMonitorLateness(monitor,today);
+  return {data:{timeZone:combined.timeZone,employees:combined.employees},observedAt:monitor.observedAt,validForMs:today.state==='ready'?Math.min(monitor.validForMs,today.validForMs):monitor.validForMs};
  },ex);
 }
 /** Company-only full profile read. Owners additionally receive scope controls
@@ -201,4 +205,30 @@ export async function readOperationalEmployeeProfile(proof:SessionMutationProof,
   }
   return {data:{profile,locations:catalog,ownerScope}};
  },ex,true);
+}
+
+/** Person-level hours use the directory's current company/location authority.
+ * Published revisions supply planned time; canonical effective timecard source supplies actual time. */
+export async function readOperationalEmployeeHours(proof:SessionMutationProof,employeeId:string,ex:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<PersonHours>>{
+ return read(proof,async ctx=>{
+  if(!id(employeeId))return deny();
+  const members=ctx.ids===null?await ctx.ex.query<{id:string}>({text:'SELECT e.id FROM employees e JOIN locations l ON l.id=e.primary_location_id WHERE e.id=$1 AND l.workspace_id=$2',values:[employeeId,ctx.workspace.id]}):await roster(ctx,ctx.ids);
+  if(!members.some(e=>e.id===employeeId))return deny();
+  const [source]=await ctx.ex.query<PersonHoursSource>({text:`/* operational person hours */
+   WITH clock AS MATERIALIZED(SELECT clock_timestamp() AS at), period AS MATERIALIZED(
+    SELECT at,(at AT TIME ZONE $3)::date AS today,date_trunc('week',at AT TIME ZONE $3)::date AS week FROM clock
+   ), latest AS MATERIALIZED(
+    SELECT DISTINCT ON(r.week_start) r.id,r.week_start FROM schedule_publication_revisions r CROSS JOIN period p
+    WHERE r.week_start IN(p.week-7,p.week) ORDER BY r.week_start,r.revision_number DESC
+   ), planned AS(
+    SELECT sh.employee_id AS "employeeId",sh.location_id AS "locationId",sh.date::text,sh.start_time::text AS "startTime",sh.end_time::text AS "endTime",sh.is_callout_approved AS "isCalloutApproved"
+    FROM schedule_publication_revision_shifts sh JOIN latest r ON r.id=sh.revision_id JOIN locations l ON l.id=sh.location_id CROSS JOIN period p
+    WHERE sh.employee_id=$2 AND l.workspace_id=$1 AND ($4::text[] IS NULL OR l.id=ANY($4::text[])) AND sh.date BETWEEN p.week-1 AND p.week+6
+    ORDER BY sh.date,sh.start_time,sh.id LIMIT 5001
+   ) SELECT $2::text AS "employeeId",$3::text AS "timeZone",p.at::text AS "observedAt",p.today::text,p.week::text AS "weekStart",
+    EXISTS(SELECT 1 FROM latest WHERE week_start=p.week) AND NOT EXISTS(SELECT 1 FROM schedules s JOIN locations l ON l.id=s.location_id WHERE l.workspace_id=$1 AND ($4::text[] IS NULL OR l.id=ANY($4::text[])) AND s.status='PUBLISHED' AND s.week_start=p.week-7 AND NOT EXISTS(SELECT 1 FROM latest WHERE week_start=s.week_start)) AS "scheduledComplete",
+    COALESCE((SELECT jsonb_agg(planned) FROM planned),'[]'::jsonb) AS shifts,nevora_timecard_source($1,$2,p.week,p.week+6) AS "timecardSource" FROM period p`,values:[ctx.workspace.id,employeeId,ctx.workspace.timeZone,ctx.ids]});
+  if(!source)throw new ReadFailure('read_failed');
+  return {data:projectPersonHours(source,ctx.ids),observedAt:source.observedAt};
+ },ex);
 }

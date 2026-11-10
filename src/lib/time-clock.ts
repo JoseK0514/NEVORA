@@ -7,6 +7,8 @@ export type TimeEntry = {
 export type BreakEntry = { id: string; timeEntryId: string; breakStartAt: string; breakEndAt?: string };
 export type ClockerDevice = { id: string; locationId: string; name: string; active: boolean; lastSeenAt?: string };
 export type ClockMonitorEmployee = {
+  /** Canonical Today timing status; null when no unambiguous current match exists. */
+  late?:boolean|null;
   timeEntryId: string; employeeId: string; employeeName: string;
   locationId: string; locationName: string; deviceId: string;
   clockInAt: string; breakStartAt?: string; state: "ON_FLOOR" | "ON_BREAK";

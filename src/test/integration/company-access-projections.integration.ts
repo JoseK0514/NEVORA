@@ -107,3 +107,38 @@ it('out-of-scope rows do not consume the permitted roster query limit',async()=>
   expect(result.data.employees.some(e=>e.id==='target')).toBe(true);expect(result.data.employees.some(e=>e.id.startsWith('outside-'))).toBe(false);
  }finally{await f.db.dispose();}
 });
+it('person hours reuse current directory scope and published snapshots, withholding foreign people and revoked sessions',async()=>{
+ const f=await fixture();try{
+  const {readOperationalEmployeeHours}=await import('../../lib/company-access/operational-read.server');
+  const [{week}]=await f.q<{week:string}>("SELECT date_trunc('week',clock_timestamp() AT TIME ZONE 'America/Puerto_Rico')::date::text AS week");
+  await f.q(`INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) VALUES('hours-r',$1,1,'PUBLISH','owner')`,[week]);
+  await f.q(`INSERT INTO schedule_publication_revision_shifts(id,revision_id,location_id,employee_id,date,start_time,end_time) VALUES('hours-a','hours-r','loc-1','target',$1,'08:00','09:00'),('hours-b','hours-r','loc-2','target',$1,'10:00','13:00')`,[week]);
+  const scoped=await readOperationalEmployeeHours(f.restricted,'target',f.db.executor);expect(scoped.state).toBe('ready');if(scoped.state!=='ready')throw Error(JSON.stringify(scoped));
+  expect(scoped.data).toMatchObject({employeeId:'target',weekStart:week,scheduledWeekMinutes:60,workedWeekMinutes:0});
+  expect(JSON.stringify(scoped.data)).not.toMatch(/sourceHash|entries|Private|phone|reason/);
+  const company=await readOperationalEmployeeHours(f.owner,'target',f.db.executor);expect(company.state).toBe('ready');if(company.state==='ready')expect(company.data.scheduledWeekMinutes).toBe(240);
+  expect((await readOperationalEmployeeHours(f.restricted,'private-b',f.db.executor)).state).toBe('unavailable');
+  await f.q("DELETE FROM employee_sessions WHERE employee_id='restricted'");expect((await readOperationalEmployeeHours(f.restricted,'target',f.db.executor)).state).toBe('unavailable');
+ }finally{await f.db.dispose();}
+});
+it('owner names expose active in-workspace owners only and refuse expired sessions',async()=>{
+ const f=await fixture();try{
+  const {readActiveOwnerNames}=await import('../../lib/data/owner-names.server');
+  await f.q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id,active) VALUES('inactive-owner','Inactive','Owner','555009','OWNER','loc-1',false)");
+  const result=await readActiveOwnerNames(f.restricted,f.db.executor);expect(result).toMatchObject({state:'ready',owners:['Owner QA']});expect(JSON.stringify(result)).not.toMatch(/555|example.invalid|inactive-owner/);
+  await f.q("UPDATE employee_sessions SET expires_at=clock_timestamp()-interval '1 second' WHERE employee_id='restricted'");
+  expect(await readActiveOwnerNames(f.restricted,f.db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+ }finally{await f.db.dispose();}
+});
+it('the operational monitor adds canonical Today lateness for the matching open punch',async()=>{
+ const f=await fixture();try{
+  await f.q(`INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by)
+   SELECT 'late-r',date_trunc('week',(clock_timestamp()-interval '2 hours') AT TIME ZONE 'America/Puerto_Rico')::date,99,'PUBLISH','owner'`);
+  await f.q(`INSERT INTO schedule_publication_revision_shifts(id,revision_id,location_id,employee_id,date,start_time,end_time)
+   SELECT 'late-shift','late-r','loc-1','target',((clock_timestamp()-interval '2 hours') AT TIME ZONE 'America/Puerto_Rico')::date,
+    ((clock_timestamp()-interval '2 hours') AT TIME ZONE 'America/Puerto_Rico')::time,((clock_timestamp()+interval '6 hours') AT TIME ZONE 'America/Puerto_Rico')::time`);
+  await f.q(`INSERT INTO clocker_devices(id,location_id,name,active) VALUES('late-device','loc-1','Owned',true);
+   INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES('late-entry','target','loc-1','late-device',clock_timestamp()-interval '1 hour','CLOCKED_IN')`);
+  const monitor=await readOperationalClockMonitor(f.restricted,f.db.executor);expect(monitor).toMatchObject({state:'ready',data:{employees:[{employeeId:'target',late:true}]}});
+ }finally{await f.db.dispose();}
+});

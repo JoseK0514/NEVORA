@@ -1,3 +1,4 @@
+import {readEmployeeExchangeCounts} from './employee-exchange-counts.server';
 import 'server-only';
 import {randomUUID} from 'node:crypto';
 import type {SessionMutationProof} from '../shift-changes/types';
@@ -89,9 +90,10 @@ export async function readEmployeeExchange(proof:SessionMutationProof,executor:S
     detail={summary:{id:selection,kind:isReport?'callout':first.requested?'swap':'coverage',viewer:isReport?'reporter':participants?.requesterEmployeeId===own?'requester':'recipient',status:'RECORDED',date:first.offered?.date??first.at.slice(0,10),createdAt:first.at,counterparty:null,revision:null,releaseApplies:isReport?false:null},offered:slot(first.offered),requested:slot(first.requested),history,checks:[],notice:'This request is available as recorded history. No current response can be submitted.',reason:null};
    }
   }
+  const exchangeCounts=await readEmployeeExchangeCounts(proof,workspace,guarded,enabled);
   const current=await readActivePresentation(workspace.id,guarded,{strict:true});
   if(current.revision!==presentation.revision)throw Error('Modules changed');
   const [lease]=await guarded.query<{observedAt:string;validForMs:number}>({text:`SELECT clock_timestamp()::text AS "observedAt",LEAST(45000,FLOOR(EXTRACT(EPOCH FROM (expires_at-clock_timestamp()))*1000))::integer AS "validForMs" FROM employee_sessions WHERE employee_id=$1 AND token_hash=$2`,values:[own,proof.sessionTokenHash]});
-  return parseEmployeeExchange({state:'ready',kind:'exchange',authority:employeeViewAuthority(proof,'exchange'),...lease,timeZone:workspace.timeZone,enabled,selection,incoming,activity,detail});
+  return parseEmployeeExchange({state:'ready',kind:'exchange',authority:employeeViewAuthority(proof,'exchange'),...lease,exchangeCounts,timeZone:workspace.timeZone,enabled,selection,incoming,activity,detail});
  }catch(error){return {state:'unavailable',reason:isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
 }

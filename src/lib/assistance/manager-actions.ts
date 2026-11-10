@@ -31,6 +31,8 @@ export type ManagerActionItem = {
   detail: string;
   href: string;
   dateTime?: string;
+  /** Future coverage is a planning obligation, not a past activity event. */
+  upcoming?: boolean;
   /** A coverage gap's end, workspace-local ("YYYY-MM-DDTHH:MM"; an overnight window ends the next day). */
   endDateTime?: string;
   employeeId?: string;
@@ -295,4 +297,9 @@ export function buildManagerActionItems(
 
     return a.id.localeCompare(b.id);
   });
+}
+
+/** Coverage dateTime is workspace-local; compare calendar dates without a UTC conversion. */
+export function markUpcomingCoverage(items:ManagerActionItem[],today:string):ManagerActionItem[]{
+ return items.map(item=>({...item,upcoming:item.type==='COVERAGE_GAP'&&!!item.dateTime&&item.dateTime.slice(0,10)>today}));
 }
