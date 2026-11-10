@@ -5,11 +5,12 @@ export function installD2NativeRetryTrace(){
  const state={events:[],eventCount:0};
  Object.defineProperty(window,'__nevoraD2RetryTrace',{value:state,configurable:true});
  const record=event=>{
-  if((event.type==='keydown'||event.type==='keyup')&&event.key!=='Enter')return;
+  const type=event.type;
+  if((type==='keydown'||type==='keyup')&&event.key!=='Enter')return;
   const button=document.querySelector('.manager-corrections-retry');
   state.eventCount++;
   if(state.events.length===32)state.events.shift();
-  state.events.push({type:event.type,trusted:event.isTrusted===true,targetIsRetry:!!button&&event.target?.closest?.('.manager-corrections-retry')===button,documentFocused:document.hasFocus(),buttonFocused:!!button&&document.activeElement===button,enabled:!!button&&!button.disabled,visible:document.visibilityState==='visible',atMs:Math.round(performance.now())});
+  state.events.push({type,trusted:event.isTrusted===true,targetIsRetry:!!button&&event.target?.closest?.('.manager-corrections-retry')===button,documentFocused:document.hasFocus()===true,buttonFocused:!!button&&document.activeElement===button,enabled:!!button&&!button.disabled,visible:document.visibilityState==='visible',atMs:Math.round(performance.now())});
  };
  for(const name of ['keydown','keyup','click','visibilitychange'])document.addEventListener(name,record,{capture:true,passive:true});
  for(const name of ['focus','blur'])window.addEventListener(name,record,{capture:true,passive:true});
@@ -26,41 +27,45 @@ export function readD2NativeRetryTrace(){
  if(state&&Object.keys(state).some(key=>!['events','eventCount'].includes(key)))tainted=true;
  const flag=value=>{if(typeof value==='boolean')return value;tainted=true;return null;};
  const count=value=>{if(Number.isInteger(value)&&value>=0&&value<=10000)return value;tainted=true;return null;};
- const raw=Array.isArray(state?.events)?state.events:[],rawSize=raw.length,size=Number.isInteger(rawSize)&&rawSize>=0&&rawSize<=4294967295?rawSize:0;if(!Array.isArray(state?.events)||size!==rawSize||size>32)tainted=true;
+ const inputEvents=state?.events,raw=Array.isArray(inputEvents)?inputEvents:[],rawSize=raw.length,size=Number.isInteger(rawSize)&&rawSize>=0&&rawSize<=4294967295?rawSize:0;if(!Array.isArray(inputEvents)||size!==rawSize||size>32)tainted=true;
  const events=[],keys=['type','trusted','targetIsRetry','documentFocused','buttonFocused','enabled','visible','atMs'];
  for(let index=Math.max(0,size-32);index<size;index++){
   const value=raw[index];if(!value||typeof value!=='object'||Array.isArray(value)){tainted=true;continue;}
   if(Object.keys(value).some(key=>!keys.includes(key)))tainted=true;
-  const type=['focus','blur','visibilitychange','keydown','keyup','click'].includes(value.type)?value.type:'other';if(type==='other')tainted=true;
-  const atMs=Number.isInteger(value.atMs)&&value.atMs>=0&&value.atMs<=86400000?value.atMs:null;if(atMs===null)tainted=true;
+  const inputType=value.type,inputTime=value.atMs;
+  const type=['focus','blur','visibilitychange','keydown','keyup','click'].includes(inputType)?inputType:'other';if(type==='other')tainted=true;
+  const atMs=Number.isInteger(inputTime)&&inputTime>=0&&inputTime<=86400000?inputTime:null;if(atMs===null)tainted=true;
   events.push({type,trusted:flag(value.trusted),targetIsRetry:flag(value.targetIsRetry),documentFocused:flag(value.documentFocused),buttonFocused:flag(value.buttonFocused),enabled:flag(value.enabled),visible:flag(value.visible),atMs});
  }
  const eventCount=count(state?.eventCount);
  if(eventCount!==null&&eventCount<size)tainted=true;
- return {documentFocused:document.hasFocus(),visible:document.visibilityState==='visible',buttonPresent:!!button,buttonFocused:!!button&&document.activeElement===button,enabled:!!button&&!button.disabled,notice,eventCount,truncated:eventCount!==null&&eventCount>32,events,tainted};
+ return {documentFocused:document.hasFocus()===true,visible:document.visibilityState==='visible',buttonPresent:!!button,buttonFocused:!!button&&document.activeElement===button,enabled:!!button&&!button.disabled,notice,eventCount,truncated:eventCount!==null&&eventCount>32,events,tainted};
 }
 
 /** Independently validate the serialized browser result before persistence. */
 export function sanitizeD2RetrySnapshot(input){
  const value=input&&typeof input==='object'&&!Array.isArray(input)?input:{};
- let tainted=value.tainted===true;
- if(typeof value.tainted!=='boolean')tainted=true;
+ const inputTainted=value.tainted;
+ let tainted=inputTainted===true;
+ if(typeof inputTainted!=='boolean')tainted=true;
  const allowed=['documentFocused','visible','buttonPresent','buttonFocused','enabled','notice','eventCount','truncated','events','tainted'];
  if(Object.keys(value).some(key=>!allowed.includes(key)))tainted=true;
  const flag=raw=>{if(typeof raw==='boolean')return raw;tainted=true;return null;};
  const count=raw=>{if(Number.isInteger(raw)&&raw>=0&&raw<=10000)return raw;tainted=true;return null;};
  const result={documentFocused:flag(value.documentFocused),visible:flag(value.visible),buttonPresent:flag(value.buttonPresent),buttonFocused:flag(value.buttonFocused),enabled:flag(value.enabled)};
- result.notice=[null,'approved','rejected','unconfirmed','other'].includes(value.notice)?value.notice:null;if(result.notice!==value.notice)tainted=true;
+ const inputNotice=value.notice;
+ result.notice=[null,'approved','rejected','unconfirmed','other'].includes(inputNotice)?inputNotice:null;if(result.notice!==inputNotice)tainted=true;
  result.eventCount=count(value.eventCount);result.truncated=flag(value.truncated);
- const events=Array.isArray(value.events)?value.events:[],rawSize=events.length,size=Number.isInteger(rawSize)&&rawSize>=0&&rawSize<=4294967295?rawSize:0;if(!Array.isArray(value.events)||size!==rawSize||size>32)tainted=true;
+ const inputEvents=value.events,events=Array.isArray(inputEvents)?inputEvents:[],rawSize=events.length,size=Number.isInteger(rawSize)&&rawSize>=0&&rawSize<=4294967295?rawSize:0;if(!Array.isArray(inputEvents)||size!==rawSize||size>32)tainted=true;
  result.events=[];
  for(let index=Math.max(0,size-32);index<size;index++){
   const event=events[index];
   if(!event||typeof event!=='object'||Array.isArray(event)){tainted=true;continue;}
   const keys=['type','trusted','targetIsRetry','documentFocused','buttonFocused','enabled','visible','atMs'];
   if(Object.keys(event).some(key=>!keys.includes(key)))tainted=true;
-  const type=['focus','blur','visibilitychange','keydown','keyup','click'].includes(event.type)?event.type:'other';if(type==='other')tainted=true;
-  const atMs=Number.isInteger(event.atMs)&&event.atMs>=0&&event.atMs<=86400000?event.atMs:null;if(atMs===null)tainted=true;
+  const inputType=event.type,inputTime=event.atMs;
+  const type=['focus','blur','visibilitychange','keydown','keyup','click'].includes(inputType)?inputType:'other';if(type==='other')tainted=true;
+  const atMs=Number.isInteger(inputTime)&&inputTime>=0&&inputTime<=86400000?inputTime:null;if(atMs===null)tainted=true;
   result.events.push({type,trusted:flag(event.trusted),targetIsRetry:flag(event.targetIsRetry),documentFocused:flag(event.documentFocused),buttonFocused:flag(event.buttonFocused),enabled:flag(event.enabled),visible:flag(event.visible),atMs});
  }
  if(result.eventCount!==null&&result.eventCount<size)tainted=true;

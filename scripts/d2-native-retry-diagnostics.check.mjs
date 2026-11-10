@@ -69,3 +69,19 @@ test('a forged non-array-sized proxy length cannot create an unbounded projectio
  const receipt={phases:[]};await captureD2NativeRetry(receipt,{evaluate:async()=>s.read()},'focused',1);
  assert.equal(receipt.phases[0].tainted,true);assert.deepEqual(receipt.phases[0].events,[]);
 });
+test('snapshots accessor values once before validation and output on both sides of serialization',async()=>{
+ const flip=(first,later)=>{let reads=0;return()=>reads++===0?first:later;};
+ const event=()=>({type:'keydown',trusted:true,targetIsRetry:true,documentFocused:true,buttonFocused:true,enabled:true,visible:true,atMs:1});
+ const results=[];
+ for(const property of ['type','atMs']){
+  const s=surface(),row=event();Object.defineProperty(row,property,{enumerable:true,get:flip(property==='type'?'keydown':1,'PRIVATE accessor')});s.window.__nevoraD2RetryTrace.events=[row];s.window.__nevoraD2RetryTrace.eventCount=1;
+  results.push(s.read());
+  const forged={...surface().read(),events:[event()],eventCount:1};Object.defineProperty(forged.events[0],property,{enumerable:true,get:flip(property==='type'?'keydown':1,'PRIVATE accessor')});
+  const receipt={phases:[]};await captureD2NativeRetry(receipt,{evaluate:async()=>forged},'focused',1);results.push(receipt);
+ }
+ const forged=surface().read();Object.defineProperty(forged,'notice',{enumerable:true,get:flip('approved','PRIVATE notice')});
+ const receipt={phases:[]};await captureD2NativeRetry(receipt,{evaluate:async()=>forged},'focused',1);results.push(receipt);
+ assert(!JSON.stringify(results).includes('PRIVATE'));
+ const rows=results.flatMap(value=>value.phases?value.phases.flatMap(phase=>phase.events):value.events??[]);
+ assert(rows.every(row=>row.type==='keydown'&&row.atMs===1));assert.equal(receipt.phases[0].notice,'approved');
+});
