@@ -178,7 +178,7 @@ it('retains the exact displayed own changes and canonical acknowledgement time a
  expect(Object.keys(result).sort()).toEqual(['id','operationId','status','version']);
  const confirmed=await readEmployeeWeeklyReview(proof,week,db.executor);
  expect(confirmed.publicationChanges).toEqual(before.publicationChanges);
- const [ack]=await q('SELECT acknowledged_at::text AS acknowledged_at FROM schedule_acknowledgements WHERE employee_id=$1',[actor]);
+ const [ack]=await db.executor.query<{acknowledged_at:string}>({text:'SELECT acknowledged_at::text AS acknowledged_at FROM schedule_acknowledgements WHERE employee_id=$1',values:[actor]});
  expect(confirmed.acknowledgement.acknowledgedAt).toBe(new Date(String(ack.acknowledged_at)).toISOString());
  expect(await acknowledgeScheduleWeek(input,db.executor)).toEqual(result);
  await publish(3,'10:00');const newer=await readEmployeeWeeklyReview(proof,week,db.executor);
