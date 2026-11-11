@@ -59,6 +59,10 @@ product UI; coordinate a contract before changing that surface.
 - **Reviewed versions:** preserve expected revisions, source fingerprints and
   review tokens. Do not refresh tokens behind the user to force a stale command
   through. Drafts, published schedule snapshots and acknowledgements are separate.
+- **SQL versions:** preserve microsecond timestamp text under the owning
+  transaction’s UTC, ISO/YMD and READ COMMITTED contract. Follow the
+  [upgrade compatibility procedure](../../handoffs/2026-11-11-r14-timestamp-contract.md)
+  for Owner invitation reissue and fresh review. A merge performs no hosted migration.
 - **Time and money:** calendar labels differ from instants and elapsed time.
   Use the workspace timezone and existing helpers. End-of-day `24:00` differs
   from the start-of-day `00:00`. Preserve exact payroll minor units, rounding and
@@ -122,10 +126,3 @@ distribution with its checked-in tooling. Do not relabel an older PDF or hosted
 receipt with a newer source. Keep secrets and private test content out of Git,
 logs and support records. See the [operations guide](operations.md) for deployment
 custody and incident boundaries.
-
-The selected SQL transports establish UTC, ISO/YMD timestamp text and READ
-COMMITTED within the owning transaction. Preserve exact microsecond version text;
-do not parse it through JavaScript Date or rewrite historical proof versions.
-Use the [timestamp contract and compatibility procedure](../../handoffs/2026-11-11-r14-timestamp-contract.md)
-when preparing a hosted upgrade. Older refused invitations require explicit
-current-Owner verification and reissue; a source merge performs no migration.
