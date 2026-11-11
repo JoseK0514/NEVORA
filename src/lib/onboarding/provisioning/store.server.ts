@@ -23,7 +23,11 @@ export async function requestWorkspace(session:VerifiedSignupSession,value:unkno
   if(registration.version!==command.expectedVersion)return {state:'conflict',reason:'version_changed'};
   if(registration.verified_terms_version!==config.termsVersion||registration.verified_privacy_version!==config.privacyVersion)return {state:'invalid',fieldErrors:[{field:'policies',code:'CURRENT_POLICY_ACCEPTANCE_REQUIRED'}]};
   if(registration.state!=='EMAIL_VERIFIED')return unavailable('BUSINESS_ALREADY_RESERVED');
-  await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))",['nevora-project-quota:'+config.environment+':'+config.providerAccountRef]);
+  await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))",['nevora-project-quota:'+config.providerAccountRef]);
+  if(config.maxTotalProjects!==undefined){
+   const total=await client.query('SELECT count(*)::int AS count FROM nevora_onboarding.provisioning_operations WHERE account_ref=$1',[config.providerAccountRef]);
+   if(total.rows[0].count>=config.maxTotalProjects)return unavailable('PROVISIONING_CAPACITY');
+  }
   const quota=await client.query("SELECT count(*)::int AS count FROM nevora_onboarding.provisioning_operations WHERE environment=$1 AND account_ref=$2 AND created_at>=(date_trunc('day',clock_timestamp() AT TIME ZONE 'UTC') AT TIME ZONE 'UTC')",[config.environment,config.providerAccountRef]);
   if(quota.rows[0].count>=config.maxNewProjectsPerDay)return {state:'limited',retryAfterMs:86400000};
   const workspaceId=randomUUID(),origin='https://'+command.payload.requestedSlug+'.'+config.portalBaseDomain;
