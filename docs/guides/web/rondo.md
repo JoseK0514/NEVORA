@@ -82,15 +82,9 @@ lost response does not prove that server work or provider use never occurred.
 
 ## Understand the action boundary
 
-Rondo's model tools investigate read-only company evidence. Explicit coverage
-commands can save the Owner-reviewed draft described above. The current workflow
-does not independently publish schedules, notify people, pay employees, file
-taxes or run unattended company management. The Owner still reviews the normal
-workflow's evidence and outcome.
-
-For source-level capability limits and future direction, consult the
-[Rondo operating contract](../../product/rondo-operating-contract.md). Its dated
-evaluation records are historical evidence, not certification of every answer or
-this distribution's hosted provider state. Report unavailable or contradictory
-results through **Help**, without forwarding private conversation or employee
-records unnecessarily.
+Rondo investigates company evidence. Your reviewed coverage commands can save
+drafts; the model does not publish schedules, notify people, pay employees,
+file taxes or run unattended management. Review the normal workflow’s result.
+See the [operating contract](../../product/rondo-operating-contract.md).
+Report unavailable or contradictory results through **Help** with minimal private
+context. Past evaluations do not certify current answers or provider access.

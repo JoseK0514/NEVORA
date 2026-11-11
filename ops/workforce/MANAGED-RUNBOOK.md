@@ -8,7 +8,7 @@ Use `ops/workforce/render.workforce.yaml` in Jose's selected Render workspace `t
 
 The build refuses dirty source and compiles its Git SHA into the host. Runtime requires that SHA to equal Render's documented `RENDER_GIT_COMMIT`. An optional `NEVORA_WORKFORCE_SOURCE_SHA` must also match. The monitor ZIP independently embeds its own clean SHA and checks both source labels; deploy matching host/monitor builds as one reviewed candidate. The closed host can answer `/ready` without a database or any secret. This proves process readiness only.
 
-Alert destination is **support@thevelani.com**. Jose is the initial responder and release decision maker. Mailbox access, backup coverage and a response target remain unverified/unassigned; do not describe the address as a staffed on-call service. Use the [renewal/on-call handoff](../../docs/runbooks/renewal-and-on-call.md) and [finite staging acceptance packet](../../docs/runbooks/web-notification-acceptance.md) before unattended activation.
+Alert destination is **support@thevelani.com**. Jose is primary and Ilianis Soto is secondary, with Owner-assigned 24/7 coverage. Approved internal acknowledgement targets are 15 minutes for critical incidents and one hour for lower severity; these mean ownership and triage, not resolution or a public SLA. Mailbox/responder access, actual alert receipt and a response drill remain unverified; assignment alone does not establish tested coverage. Use the [renewal/on-call handoff](../../docs/runbooks/renewal-and-on-call.md) and [finite staging acceptance packet](../../docs/runbooks/web-notification-acceptance.md) before unattended activation.
 
 ## Credentials and profiles
 

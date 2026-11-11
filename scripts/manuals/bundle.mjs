@@ -80,7 +80,9 @@ async function qualifiedHash(root, sourceSha, path) {
   return {path, sha256: hash};
 }
 function isApplication(path) {
-  return /^(src|db|services|ops|public)\//.test(path) || /(^|\/)(package(?:-lock)?\.json|npm-shrinkwrap\.json)$/.test(path);
+  return /^(src|db|services|ops|public|scripts|functions)\//.test(path) ||
+    /(^|\/)(package(?:-lock)?\.json|npm-shrinkwrap\.json)$/.test(path) ||
+    /^(?:next\.config\.[cm]?[jt]s|next-env\.d\.ts|tsconfig\.json|vercel\.json|postcss\.config\.[cm]?[jt]s)$/.test(path);
 }
 function sourceApplicationRows(root, sourceSha) {
   return git(root, ['ls-tree', '-r', '-z', sourceSha]).split('\0').filter(Boolean).map(line => {

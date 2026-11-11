@@ -38,7 +38,9 @@ The schema-version-1 manifest records:
 
 - `sourceSha`: the full build commit, which must remain an ancestor of HEAD.
 - `applicationHash`: SHA-256 over the sorted path-and-Git-blob-ID inventory of
-  tracked `src/`, `db/`, `services/`, `ops/`, `public/` and package metadata.
+  tracked `src/`, `db/`, `services/`, `ops/`, `public/`, `scripts/`, `functions/`,
+  package metadata and root web runtime/build settings (`next.config.*`,
+  `next-env.d.ts`, `tsconfig.json`, `vercel.json`, `postcss.config.*`).
   Git blob IDs bind file contents; the inventory additionally binds file names,
   additions and removals. The verifier recomputes both source and current
   application identities.
