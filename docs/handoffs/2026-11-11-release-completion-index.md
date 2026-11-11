@@ -63,6 +63,17 @@ raw/injected timestamp parity and fault-hook changes, with actual142+60 passing
 SQL cases. Those scoped results do not substitute for the final frozen combined
 default/database/browser/build gates. All earlier failures remain recorded.
 
+The [generation/management fixture follow-up](2026-11-11-r14-generation-management-fixtures.md)
+then passes45 actual SQL checks, including five added late generation no-op
+refusals. Its fault hooks observe the real post-proof/planning boundary; manual
+assignment fixtures explicitly establish Company access and assert the intended
+conflict/retry rather than swallowing an unrelated admission failure. The owned
+SQL runner now selects the exact generation/exchange database namespaces for
+those existing cohort configs without relaxing database custody checks.
+R14 additionally has three actual legacy financial compatibility checks allocated
+to the existing payroll-source SQL gate; see its timestamp-contract handoff for
+pending-review, finalized-card and frozen approved-payroll behavior.
+
 ## Release boundary
 
 After local and independent gates, publish a unique immutable candidate tag,

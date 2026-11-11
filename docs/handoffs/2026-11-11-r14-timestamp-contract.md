@@ -42,6 +42,16 @@ External evidence: `/Users/josek0514/.codex/release-completion-20261111/`.
   against a future prior token, with and without the passkey trigger; prepared
   stale sign-in is refused. Earlier meaningful RED receipts are retained.
 - `r14-bootstrap-final.log`:21 actual fresh bootstrap checks with0060.
+- `r14-financial-compat-sql.log`:3 actual PostgreSQL compatibility checks using
+  legitimate legacy America/Puerto_Rico ISO/MDY timestamp text and current UTC
+  ISO/YMD text. An old-format pending approval becomes NEEDS_REVIEW; its stale
+  finalize request is refused and explicit fresh review appends a revision.
+  Recorded instants, nanoseconds and old revision rows remain unchanged. A
+  finalized card keeps its frozen source/hash and can be explicitly reopened
+  through existing frozen authority. An already-approved legacy payroll retains
+  its source and amounts while the current worker renders and publishes its
+  private PDF. No payment or external delivery occurs. These cases are allocated
+  to `vitest.payroll-source-pagination-integration.config.mts` for combined/CI runs.
 - Full TypeScript, scoped ESLint, manifest and diff checks passed. This packet
   still requires frozen-candidate independent review and combined release gates.
 
@@ -60,6 +70,14 @@ must verify the intended employee and registered email, then explicitly reissue
 using the existing invitation workflow. Existing expiry, issuer generation,
 single-use and authority checks remain. No automatic token conversion, bypass,
 delivery or customer-data mutation is authorized by this document.
+
+Timecards still awaiting finalization can require fresh review when canonical
+timestamp text changes their live source hash. The authorized reviewer must review
+the current source and approve it explicitly; do not rewrite historical hashes or
+reuse an old approval to finalize. Finalized cards and approved payroll retain
+their frozen source, amounts and revision history. The compatibility evidence
+covers the tested legacy ISO/MDY format; it is not a blanket certification of
+arbitrary historic formats or a hosted-data migration.
 
 Rollback requires the matching source/schema contract and current environment
 backup. Do not merely restore locale-dependent readers against newly issued
