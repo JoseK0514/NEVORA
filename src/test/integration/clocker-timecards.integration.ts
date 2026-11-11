@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Temporal } from '@js-temporal/polyfill';
 import { createPunchFixture } from './clocker-punch-fixture';
-import { readTimecards, mutateTimecard } from '../../lib/timecards/service';
+import { readTimecards, mutateTimecard, timecardReadSql } from '../../lib/timecards/service';
 import { submitTimeCorrection } from '../../lib/time-corrections/service';
 import type { SessionMutationProof } from '../../lib/shift-changes/types';
 
@@ -142,8 +142,10 @@ describe('D3 owned timecard protocol', () => {
   });
   it('D8 bounds the authorized snapshot by the current session deadline and refuses logout after projection',async()=>{
     await f.q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '10 seconds' WHERE employee_id='c34-owner'");const result=await readTimecards(owner,period,f.db.executor);expect(result.state).toBe('ready');if(result.state==='ready'){expect(result.validForMs).toBeGreaterThan(0);expect(result.validForMs).toBeLessThanOrEqual(10000);}
-    const executor={...f.db.executor,transaction:async(statements:Parameters<typeof f.db.executor.transaction>[0])=>{const result=await f.db.executor.transaction(statements);if(statements.some(statement=>statement.text.includes('WITH scope AS')))await f.q("DELETE FROM employee_sessions WHERE employee_id='c34-owner'");return result;}};
+    let revoked=false;
+    const executor={...f.db.executor,transaction:async(statements:Parameters<typeof f.db.executor.transaction>[0])=>{const result=await f.db.executor.transaction(statements);if(statements.some(statement=>statement.text===timecardReadSql)){await f.q("DELETE FROM employee_sessions WHERE employee_id='c34-owner'");revoked=true;}return result;}};
     expect(await readTimecards(owner,period,executor)).toEqual({state:'unavailable',reason:'access_denied'});
+    expect(revoked).toBe(true);
   });
   it('refuses expired or revoked sessions without exposing card data', async () => {
     await f.q("UPDATE employee_sessions SET expires_at=clock_timestamp()-interval '1 second' WHERE employee_id='c34-owner'");

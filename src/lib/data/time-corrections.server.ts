@@ -2,12 +2,14 @@ import {readCompanyResult} from '../company-access/company-result.server';
 import {correctionAuthority} from '../time-corrections/authority.server';
 import 'server-only';
 import { parseCorrectionActionCapture, type CorrectionActionCapture } from '../action-center/canonical-source';
+import { assembleCompleteReadPages } from '../complete-read-pages';
 
 import type { SqlExecutor } from '../notifications/types';
 import type { SessionMutationProof } from '../shift-changes/types';
 import {
   parseEmployeeTimeCorrections,
   parseManagerTimeCorrections,
+  CORRECTION_READ_PAGE_SIZE,
   type EmployeeTimeCorrections,
   type ManagerTimeCorrections,
 } from '../time-corrections/read-model';
@@ -258,7 +260,8 @@ const managerSqlFor = (includeInternalCapture = false) => `WITH observed AS MATE
 ), pending AS MATERIALIZED (
   SELECT r.*,trim(concat_ws(' ',emp.first_name,emp.last_name)) AS employee_name,
     COALESCE(NULLIF(trim(loc.short_name),''),trim(loc.name)) AS location_name,
-    latest.revision,latest.event_kind
+    latest.revision,latest.event_kind,
+    ((row_number() OVER (ORDER BY r.created_at,r.id)-1)/${CORRECTION_READ_PAGE_SIZE})::integer AS page_index
   FROM nevora_pending_time_corrections r
   JOIN employees emp ON emp.id=r.employee_id
   JOIN locations loc ON loc.id=r.location_id
@@ -274,7 +277,7 @@ const managerSqlFor = (includeInternalCapture = false) => `WITH observed AS MATE
 ), rows AS MATERIALIZED (
   SELECT (${publicRequestJson('r')} ||
     jsonb_build_object('employeeName',r.employee_name,'isSelf',r.employee_id=$2)) AS value,
-    ${includeInternalCapture ? 'internal_source.capture,' : ''}r.created_at,r.id
+    ${includeInternalCapture ? 'internal_source.capture,' : ''}r.created_at,r.id,r.page_index
   FROM pending r
   JOIN locations loc ON loc.id=r.location_id
   JOIN LATERAL (
@@ -287,22 +290,15 @@ const managerSqlFor = (includeInternalCapture = false) => `WITH observed AS MATE
   ${contextJoins('r.workspace_id','r.employee_id','r.kind','r.time_entry_id','r.break_entry_id','r.id')}
   ${includeInternalCapture ? internalCorrectionJoins : ''}
   ORDER BY r.created_at,r.id
-  LIMIT 100
+), pages AS (
+  SELECT page_index,jsonb_agg(value ORDER BY created_at,id) AS requests${includeInternalCapture ? `,
+    jsonb_agg(capture ORDER BY created_at,id) AS "internalCapture"` : ''}
+  FROM rows GROUP BY page_index
 )
-SELECT
-  (SELECT count(*)::integer FROM pending) AS "pendingCount",
-  CASE WHEN (SELECT count(*) FROM pending)>100 THEN NULL ELSE
-    jsonb_build_object(
-      'state','ready',
-      'observedAt',o.at::text,
-      'timeZone',$3::text,
-      'requests',COALESCE((SELECT jsonb_agg(value ORDER BY created_at,id) FROM rows),'[]'::jsonb)
-    )
-  END AS snapshot${includeInternalCapture ? `,
-  CASE WHEN (SELECT count(*) FROM pending)>100 THEN NULL ELSE
-    COALESCE((SELECT jsonb_agg(capture ORDER BY created_at,id) FROM rows),'[]'::jsonb)
-  END AS "internalCapture"` : ''}
-FROM observed o`;
+SELECT o.at::text AS "observedAt",$3::text AS "timeZone",(SELECT count(*)::integer FROM pending) AS "totalRows",
+  COALESCE(p.page_index,0) AS "pageIndex",COALESCE(p.requests,'[]'::jsonb) AS requests${includeInternalCapture ? `,
+  COALESCE(p."internalCapture",'[]'::jsonb) AS "internalCapture"` : ''}
+FROM observed o LEFT JOIN pages p ON true ORDER BY p.page_index`;
 const managerSql = managerSqlFor();
 
 function schemaMissing(error: unknown) {
@@ -379,11 +375,13 @@ async function readManagerTimeCorrectionsCore(
       {text:capture ? managerSqlFor(true) : managerSql,values:[workspace.id,proof.employee.id,workspace.timeZone]},
       ...managementSessionStatements(proof,proof.employee.id,managerRoles),
     ]);
-    const row=result[guards.length]?.[0] as {pendingCount?:number;snapshot?:unknown|null;internalCapture?:unknown}|undefined;
-    if (!row || !Number.isSafeInteger(row.pendingCount)) return {state:'unavailable',reason:'read_failed'};
-    if ((row.pendingCount ?? 0)>100) return {state:'unavailable',reason:'source_limit'};
-    if (!row.snapshot) return {state:'unavailable',reason:'read_failed'};
-    const source=parseManagerTimeCorrections({...row.snapshot as object,validForMs:45000});
+    const pages=result[guards.length];
+    const complete=assembleCompleteReadPages(pages,'requests',CORRECTION_READ_PAGE_SIZE);
+    if (pages.some(page=>!page || typeof page!=='object' || !('timeZone' in page) || page.timeZone!==workspace.timeZone)) {
+      return {state:'unavailable',reason:'read_failed'};
+    }
+    const source=parseManagerTimeCorrections({state:'ready',observedAt:complete.observedAt,timeZone:workspace.timeZone,
+      requests:complete.rows,validForMs:45000,...(complete.rows.length>CORRECTION_READ_PAGE_SIZE?{paging:complete.paging}:{})});
     const started=performance.now();
     const [final]=await executor.query<{validForMs:number}>({text:`SELECT floor(LEAST(45000,
       EXTRACT(epoch FROM(s.expires_at-clock_timestamp()))*1000,
@@ -394,7 +392,8 @@ async function readManagerTimeCorrectionsCore(
     if(!final)return {state:'unavailable',reason:'access_denied'};
     const remaining=final.validForMs-Math.ceil(performance.now()-started);
     if(source.state!=='ready'||remaining<1)return {state:'unavailable',reason:'read_failed'};
-    if (capture) capture(parseCorrectionActionCapture(row.internalCapture, source, workspace.id, proof.employee.id, remaining));
+    if (capture) capture(parseCorrectionActionCapture(assembleCompleteReadPages(pages,'internalCapture',CORRECTION_READ_PAGE_SIZE).rows,
+      source, workspace.id, proof.employee.id, remaining));
     return {...source,validForMs:remaining,authority:correctionAuthority(proof)};
   } catch (error) {
     if (isManagementAuthorizationError(error)) return {state:'unavailable',reason:'access_denied'};
