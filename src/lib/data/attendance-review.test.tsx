@@ -1,3 +1,4 @@
+vi.mock('./sql-session-contract',()=>import('../../test/fixtures/business-sql-session'));
 import {beforeEach,expect,it,vi} from 'vitest';
 import {requireSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {getDb} from '@/lib/db';

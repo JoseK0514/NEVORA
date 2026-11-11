@@ -95,7 +95,7 @@ export async function submitDeletionRequest(input: {
       { text: "DELETE FROM employee_sessions WHERE employee_id = $1", values: [input.employeeId] },
       // Fences a sign-in that verified the password before this commit (session issuance compares updated_at),
       // without relying only on the 0035 trigger, which does the same.
-      { text: "UPDATE employees SET updated_at = clock_timestamp() WHERE id = $1", values: [input.employeeId] },
+      { text: "UPDATE employees SET updated_at = GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE id = $1", values: [input.employeeId] },
       { text: `UPDATE calendar_subscriptions SET revoked_at = clock_timestamp(), revocation_reason = 'account_loss'
           WHERE employee_id = $1 AND revoked_at IS NULL`, values: [input.employeeId] },
       { text: `SELECT reference, status, confirmed_at::text AS confirmed_at, (id = $2) AS created FROM account_deletion_requests

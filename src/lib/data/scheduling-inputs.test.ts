@@ -1,3 +1,4 @@
+vi.mock('./sql-session-contract',()=>import('../../test/fixtures/business-sql-session'));
 import { managementProof } from '../../test/fixtures/management';
 import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({

@@ -14,10 +14,18 @@ vi.mock('@/lib/db',()=>{
 });
 vi.mock('next/headers',()=>({cookies:async()=>{const cookie=context.device.getStore()??context.cookie;return {get:(n:string)=>n==='fuel_session'&&cookie?{value:cookie}:undefined};},headers:async()=>new Headers({'x-forwarded-for':'198.51.100.7'})}));
 // The accepting transaction commits; only its reply is lost when `lose` is set. That is the Neon HTTP case.
-vi.mock('@/lib/data/notification-transactions',async original=>({...await original<Record<string,unknown>>(),neonNotificationExecutor:()=>({
- query:(s:SqlStatement)=>context.executor!.query(s),
- transaction:async(s:SqlStatement[])=>{if(s.some(x=>x.text.includes('INSERT INTO account_deletion_requests'))){const before=context.beforeAccept;context.beforeAccept=null;await before?.();}const rows=await context.executor!.transaction(s);if(context.lose&&s.some(x=>x.text.includes('INSERT INTO account_deletion_requests'))){context.lose=false;throw new TypeError('fetch failed');}return rows;},
-})}));
+vi.mock('@/lib/data/notification-transactions',async original=>{
+ const implementation=await original<typeof import('../../lib/data/notification-transactions')>();
+ return {...implementation,neonNotificationExecutor:()=>{
+  // Keep the actual session-contract adapter for reads and mutations; only its
+  // installed-application transport above is substituted with owned PostgreSQL.
+  const actual=implementation.neonNotificationExecutor();
+  return {query:<T>(s:SqlStatement,signal?:AbortSignal)=>actual.query<T>(s,signal),transaction:async(s:SqlStatement[],signal?:AbortSignal)=>{
+   if(s.some(x=>x.text.includes('INSERT INTO account_deletion_requests'))){const before=context.beforeAccept;context.beforeAccept=null;await before?.();}
+   const rows=await actual.transaction(s,signal);if(context.lose&&s.some(x=>x.text.includes('INSERT INTO account_deletion_requests'))){context.lose=false;throw new TypeError('fetch failed');}return rows;
+  }};
+ }};
+});
 vi.mock('next/navigation',()=>({redirect:(destination:string)=>{throw Object.assign(new Error('redirect'),{destination});},notFound:()=>{throw new Error('notFound');}}));
 import {createDisposableExchangeDatabase} from './local-postgres';
 import {seedOwnedApp,TEST_PASSWORD} from './owned-app-fixture';
@@ -133,6 +141,14 @@ it('fences a sign-in verified before acceptance even without the 0035 trigger',a
  expect(await requestAccountDeletion(idle,form())).toMatchObject({kind:'received'});
  await expect(db.executor.transaction([...issuance.guards,issuance.insert])).rejects.toThrow(/session_login_changed/);
  expect(await q("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='DEL-OWN'")).toEqual([{n:0}]);
+});
+it.each([true,false])('keeps the employee login fence strictly monotonic from a future prior token, passkey trigger=%s',async trigger=>{
+ if(!trigger)await q('DROP TRIGGER auth_passkey_deletion_loss ON account_deletion_requests');
+ await q("UPDATE employees SET updated_at=clock_timestamp()+interval '1 day' WHERE id='DEL-OWN'");
+ const [reviewed]=await q<{updated_at:string;password_hash:string;password_updated_at:string}>("SELECT e.updated_at::text,c.password_hash,c.password_updated_at::text FROM employees e JOIN employee_credentials c ON c.employee_id=e.id WHERE e.id='DEL-OWN'"),issuance=prepareSession('DEL-OWN',reviewed);
+ as(await session('DEL-OWN','future-token-fence'));expect(await requestAccountDeletion(idle,form())).toMatchObject({kind:'received'});
+ expect(await q("SELECT updated_at>$1::timestamptz AS advanced FROM employees WHERE id='DEL-OWN'",[reviewed.updated_at])).toEqual([{advanced:true}]);
+ await expect(db.executor.transaction([...issuance.guards,issuance.insert])).rejects.toThrow(/session_login_changed/);expect(await q("SELECT count(*)::int AS n FROM employee_sessions WHERE employee_id='DEL-OWN'")).toEqual([{n:0}]);
 });
 
 it('is unavailable, not lost, before migration 0034',async()=>{

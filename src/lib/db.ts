@@ -1,6 +1,6 @@
 import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
 
-let database: ReturnType<typeof neon> | null = null;
+let database: NeonQueryFunction<false,false> | null = null;
 const tenantRuntimeTransports = new Map<'APP' | 'WORKER', NeonQueryFunction<false, false>>();
 
 /** Dedicated runtime principals only; the legacy/bootstrap URL is never a

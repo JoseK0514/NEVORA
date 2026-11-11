@@ -1,3 +1,4 @@
+vi.mock('./sql-session-contract',()=>import('../../test/fixtures/business-sql-session'));
 vi.mock('server-only',()=>({}));
 import { expect, it, vi } from "vitest";
 import { acknowledgeScheduleWeek, getAcknowledgementSummary, listUnacknowledgedEmployeeIds } from "./acknowledgements";

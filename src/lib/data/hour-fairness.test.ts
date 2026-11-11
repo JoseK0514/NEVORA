@@ -1,3 +1,4 @@
+vi.mock('./sql-session-contract',()=>import('../../test/fixtures/business-sql-session'));
 import { expect, it, vi } from "vitest";
 const query = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/db", () => ({

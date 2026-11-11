@@ -1,3 +1,4 @@
+vi.mock('./sql-session-contract',()=>import('../../test/fixtures/business-sql-session'));
 import { expect, it, vi } from "vitest";
 import { listTeamExchangeActivity } from "./exchanges";
 import {readShiftChangeHistoryView} from "./shift-change-views";
