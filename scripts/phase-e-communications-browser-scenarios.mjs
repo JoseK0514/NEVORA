@@ -9,6 +9,7 @@ import {safeBrowserFailure,safeEvaluationFailure} from './release-browser-diagno
 import {observeCommunicationRead,finalizeCommunicationRead} from './communication-read-diagnostics.mjs';
 import {observeCommunicationPreview} from './communication-preview-diagnostics.mjs';
 import {measureCommunicationActions} from './communication-action-geometry.mjs';
+import {diagnoseCommunicationLogin} from './communication-login-diagnostics.mjs';
 export async function runScenario({app,browser,context,page,engine,width,evidenceDirectory,axeFile,runtimeErrors}){
  const label=`U${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
  const scenario=await seedOwnedScenario(app.database.executor,label,index+28),actor=scenario.actors[0],q=(text,values=[])=>app.database.executor.query({text,values}),
@@ -19,7 +20,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  await q("UPDATE employees SET role='EMPLOYEE' WHERE id=$1",[actor]);
  const tabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',backTabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
  const details={engine,width,checks,screenshots,managerErrors,managerNetworkFailures:[]},shot=async name=>{const path=join(evidenceDirectory,`updates-${engine}-${width}-${name}.png`);await page.screenshot({path,fullPage:true});screenshots.push(path);};
- const login=async(target,id)=>{await target.bringToFront();await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app',{waitUntil:'commit'}),target.getByRole('button',{name:'Sign in',exact:true}).click()]);await target.locator('.app-shell.nevora-portal').waitFor();await target.waitForLoadState('networkidle');};
+ const login=async(target,id)=>diagnoseCommunicationLogin({target,app,id,persist:async attempt=>{(details.loginAttempts??=[]).push({stage,target:target===page?'primary':target===manager?'manager':'replacement',...attempt});await writeFile(join(evidenceDirectory,`communications-login-${engine}-${width}-report.json`),JSON.stringify({engine,width,attempts:details.loginAttempts},null,2));},login:async()=>{await target.bringToFront();await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app',{waitUntil:'commit'}),target.getByRole('button',{name:'Sign in',exact:true}).click()]);await target.locator('.app-shell.nevora-portal').waitFor();await target.waitForLoadState('networkidle');}});
  const measureActions=async(name,expectedBody,expectedId)=>{
   const [current]=await q('SELECT head_revision_id::text AS revision FROM communications WHERE id=$1',[expectedId]);
   assert(current,'Expected fictional update exists');
