@@ -462,6 +462,8 @@ jobs:
         run: node scripts/payroll-postgres.mjs vitest.native-payroll-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/native-payroll.json"
       - name: Configurable payroll isolated PostgreSQL integration gate
         run: node scripts/payroll-postgres.mjs vitest.configurable-payroll-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/configurable-payroll.json"
+      - name: Timestamp token and account-deletion SQL gate
+        run: node scripts/payroll-postgres.mjs vitest.timestamp-token-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/timestamp-token.json"
       - name: Complete payroll source and contention SQL gate
         env:
           NEVORA_CAPACITY_EVIDENCE: ${{ runner.temp }}/capacity-evidence
@@ -474,6 +476,7 @@ jobs:
           path: |
             ${{ runner.temp }}/native-payroll.json
             ${{ runner.temp }}/configurable-payroll.json
+            ${{ runner.temp }}/timestamp-token.json
             ${{ runner.temp }}/payroll-source.json
             ${{ runner.temp }}/capacity-evidence/*.json
           if-no-files-found: error

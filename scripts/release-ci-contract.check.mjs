@@ -112,6 +112,28 @@ test('mandatory release SQL runs both dedicated payroll suites and retains actua
  assert(upload.with.path.includes('${{ runner.temp }}/native-payroll.json'));
  assert(upload.with.path.includes('${{ runner.temp }}/configurable-payroll.json'));
 });
+test('mandatory release SQL selects the timestamp-fence regressions and retains their results',()=>{
+ const config=readFileSync('vitest.timestamp-token-integration.config.mts','utf8');
+ const verify=job=>{
+  assert.equal(job.if,undefined);assert.equal(job['continue-on-error'],undefined);
+  const step=job.steps.find(s=>s.run==='node scripts/payroll-postgres.mjs vitest.timestamp-token-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/timestamp-token.json"');
+  assert(step,'Timestamp-fence SQL gate missing');
+  assert.equal(step.if,undefined);assert.equal(step['continue-on-error'],undefined);
+  const upload=job.steps.find(s=>s.name==='Upload dedicated payroll SQL evidence');
+  assert(upload);assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
+  assert(upload.with.path.includes('${{ runner.temp }}/timestamp-token.json'));
+ };
+ assert.match(config,/include:\['src\/test\/integration\/employee-mobile-deletion-sql\.integration\.ts'\]/);
+ const job=workflow.jobs['release-postgres'];verify(job);
+ for(const mutation of ['remove','condition','allow-failure','drop-artifact']){
+  const broken=structuredClone(job),index=broken.steps.findIndex(s=>s.run?.includes('vitest.timestamp-token-integration.config.mts'));
+  if(mutation==='remove')broken.steps.splice(index,1);
+  if(mutation==='condition')broken.steps[index].if='false';
+  if(mutation==='allow-failure')broken.steps[index]['continue-on-error']=true;
+  if(mutation==='drop-artifact')broken.steps.find(s=>s.name==='Upload dedicated payroll SQL evidence').with.path='${{ runner.temp }}/native-payroll.json';
+  assert.throws(()=>verify(broken),undefined,mutation);
+ }
+});
 test('mandatory browser job runs Owner advisor without a model connection and retains evidence',()=>{
  const steps=workflow.jobs['phase-d-attendance-ui'].steps;
  const step=steps.find(s=>s.run==='node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts');

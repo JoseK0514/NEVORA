@@ -74,6 +74,17 @@ R14 additionally has three actual legacy financial compatibility checks allocate
 to the existing payroll-source SQL gate; see its timestamp-contract handoff for
 pending-review, finalized-card and frozen approved-payroll behavior.
 
+Independent R14-ALLOCATION-1 identified that the17 account-deletion SQL checks,
+including future-token monotonic fencing, were locally selected but absent from
+mandatory CI. The required release-postgres job now invokes their dedicated owned
+timestamp-token config unconditionally and always retains its JSON result.
+The regression contract fails against the earlier workflow and rejects removed,
+conditional, allowed-failure or artifact-omitted variants. This is an allocation
+repair, not a runtime/schema change; independent closure and the updated frozen
+combined qualification remain required. The earlier e31 combined run passed all
+767 release SQL cases and then stopped source-unchanged for this correction;
+its unexecuted later stages remain unexecuted.
+
 ## Release boundary
 
 After local and independent gates, publish a unique immutable candidate tag,
