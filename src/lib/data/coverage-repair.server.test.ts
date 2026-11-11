@@ -28,6 +28,7 @@ function fixture() {
 it('uses current exact health and AUTOMATIC hard qualification for a position plus Lead repair', () => {
   const r = fixture(); const result = deriveCoverageRepair(r.source, r.locator);
   expect(result.status).toBe('READY');
+  expect(result.targets.find(target=>target.target==='LEAD')).toEqual({target:'LEAD',count:1,label:'Shift lead needed'});
   expect(result.candidates.map(c => c.employeeId)).toEqual(['E']);
   expect(result.candidates[0].rules.candidate).toMatchObject({ positionId: 'barista', isDesignatedLead: true, startTime: '08:00', endTime: '12:00', locationId: 'loc-1' });
 });

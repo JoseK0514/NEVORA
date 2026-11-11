@@ -32,6 +32,7 @@ vi.mock('pg', () => {
       this.record.statements.push(text);
       if (this.record.database !== '/postgres') {
         if (text === state.failSql) throw Error('fixture-migration-failed');
+        if(text.startsWith("SELECT pg_backend_pid() AS pid,current_setting"))return {rows:[{pid:2,statement_timeout:'5s'}]};
         return { rows: text === 'SELECT pg_backend_pid() AS pid' ? [{ pid: state.clients.indexOf(this.record) + 1 }] : [] };
       }
       if (text.startsWith('SELECT 1 FROM pg_database')) return { rowCount: state.exists ? 1 : 0, rows: [] };
@@ -90,7 +91,7 @@ it('runs exact migration files sequentially on one closed bootstrap connection, 
   const db = await createDisposableFoundationDatabase({ mode: 'current-runtime' });
   try {
     expect(state.clients).toHaveLength(2);
-    expect(state.clients[1].statements).toEqual(sql);
+    expect(state.clients[1].statements).toEqual(["SELECT pg_backend_pid() AS pid,current_setting('statement_timeout') AS statement_timeout",...sql]);
     expect(state.clients[1].ended).toBe(true);
     expect(state.clients[0].ended).toBe(false);
     expect(state.clients[0].statements.filter(text => text.startsWith('SELECT shobj_description'))).toHaveLength(sql.length + 1);
@@ -165,7 +166,7 @@ it('closes a failed bootstrap connection before dropping its owned database and 
   state.failSql = await readFile(`db/migrations/${CURRENT_MIGRATIONS[1]}`, 'utf8');
   await expect(createDisposableFoundationDatabase({ mode: 'current-runtime' })).rejects.toThrow('fixture-migration-failed');
   expect(state.clients).toHaveLength(2);
-  expect(state.clients[1].statements).toHaveLength(2);
+  expect(state.clients[1].statements).toHaveLength(3);
   expect(state.events).toEqual(['end:/nevora_foundation_test_bootstrap', 'drop', 'end:/postgres']);
   expect(state.exists).toBe(false);
 });

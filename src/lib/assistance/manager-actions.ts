@@ -31,6 +31,8 @@ export type ManagerActionItem = {
   detail: string;
   href: string;
   dateTime?: string;
+  /** Future coverage is a planning obligation, not a past activity event. */
+  upcoming?: boolean;
   /** A coverage gap's end, workspace-local ("YYYY-MM-DDTHH:MM"; an overnight window ends the next day). */
   endDateTime?: string;
   employeeId?: string;
@@ -116,7 +118,7 @@ function coverageAction(
   if (missingPositions.length) return {
     id: `COVERAGE:${gap.key}`, type: 'COVERAGE_GAP', priority: 'URGENT',
     title: `Position not covered at ${gap.locationName}`,
-    detail: `${gapWhen(gap)} · ${missingPositions.map(position => `${position.positionName}: ${position.missing} open`).join('; ')}${gap.gap > 0 ? ` · Need ${gap.gap} employees overall` : ''}${gap.requiresLead ? ' · Designated lead required' : ''}`,
+    detail: `${gapWhen(gap)} · ${missingPositions.map(position => `${position.positionName}: ${position.missing} open`).join('; ')}${gap.gap > 0 ? ` · Need ${gap.gap} employees overall` : ''}${gap.requiresLead ? ' · Shift lead required' : ''}`,
     href: repairHref,
     dateTime: `${gap.date}T${gap.startTime}`, endDateTime: gapEnd(gap), locationId: gap.locationId,
   };
@@ -131,7 +133,7 @@ function coverageAction(
       ? `No lead scheduled at ${gap.locationName}`
       : `Coverage gap at ${gap.locationName}`,
     detail: leadOnly
-      ? `${gapWhen(gap)} · Designated lead required`
+      ? `${gapWhen(gap)} · Shift lead required`
       : `${gapWhen(gap)} · Need ${people}`,
     href: repairHref,
     dateTime: `${gap.date}T${gap.startTime}`,
@@ -295,4 +297,9 @@ export function buildManagerActionItems(
 
     return a.id.localeCompare(b.id);
   });
+}
+
+/** Coverage dateTime is workspace-local; compare calendar dates without a UTC conversion. */
+export function markUpcomingCoverage(items:ManagerActionItem[],today:string):ManagerActionItem[]{
+ return items.map(item=>({...item,upcoming:item.type==='COVERAGE_GAP'&&!!item.dateTime&&item.dateTime.slice(0,10)>today}));
 }

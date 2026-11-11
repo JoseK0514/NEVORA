@@ -1,5 +1,9 @@
+import {CLOCKER_TRANSPORT_ERRORS,type ClockerTransportErrorCode} from '../lib/clocker/transport-errors';
 export type ClockerLocale='en'|'es';
 export const CLOCKER_COPY:Record<string,string>={
+ "Your PIN check changed. Enter your PIN again; nothing was punched twice.":"La verificación de tu PIN cambió. Ingresa tu PIN de nuevo; no se registró ninguna marcación dos veces.",
+ "This punch reference belongs to a different punch. Ask your manager to check it.":"Esta referencia pertenece a otra marcación. Pide a tu gerente que la revise.",
+ "We couldn't confirm your punch. Tap Check Action Status before trying again.":"No pudimos confirmar tu marcación. Toca Verificar estado de la acción antes de volver a intentarlo.",
  "Photo capture is unavailable":"La captura de fotos no está disponible",
  "Photo for {action}":"Foto para {action}",
  "Opening the camera…":"Abriendo la cámara…",
@@ -277,4 +281,11 @@ export function clockerHasText(locale:ClockerLocale,key:string):boolean{return l
 export function clockerText(locale:ClockerLocale,key:string,params:Record<string,string|number>={}):string{
  const text=locale==='es'&&Object.hasOwn(CLOCKER_COPY,key)?CLOCKER_COPY[key]:key;
  return text.replace(/\{([a-zA-Z]+)\}/g,(match,name)=>String(params[name]??match));
+}
+
+/** Prefer stable codes while accepting older servers that send only an error message. */
+export function clockerErrorText(locale:ClockerLocale,failure:{code?:unknown;error?:unknown}):string{
+ const code=typeof failure.code==='string'&&Object.hasOwn(CLOCKER_TRANSPORT_ERRORS,failure.code)?failure.code as ClockerTransportErrorCode:null;
+ const message=code?CLOCKER_TRANSPORT_ERRORS[code]:typeof failure.error==='string'?failure.error:'We could not confirm this information. Ask your Owner for help.';
+ return clockerText(locale,message);
 }

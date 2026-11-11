@@ -22,3 +22,12 @@ test('refuses an external parent symlink that redirects output into the checkout
  try{const r=spawnSync(process.execPath,[builder,join(link,name),'--allow-dirty'],{cwd:root,encoding:'utf8',timeout:30000});assert.notEqual(r.status,0);assert.equal(existsSync(join(root,name)),false,'must reject before creating source files');}
  finally{rmSync(parent,{recursive:true,force:true});if(existsSync(join(root,name)))rmSync(join(root,name),{recursive:true,force:true});}
 });
+test('builds only the requested provisioner archive and verifies its closed enrollment callback from the extracted ZIP',()=>{
+ const parent=mkdtempSync(join(tmpdir(),'nv-enrollment-provisioner-')),destination=join(parent,'bundle');
+ try{
+  const build=spawnSync(process.execPath,[builder,'--provisioner-only','--allow-dirty',destination],{cwd:root,env:{PATH:process.env.PATH,HOME:process.env.HOME},encoding:'utf8',timeout:60000});assert.equal(build.status,0,build.stderr);
+  const receipt=JSON.parse(readFileSync(join(destination,'receipt.json'),'utf8'));assert.deepEqual(receipt.artifacts.map(a=>a.slug),['provisioner']);
+  const verify=spawnSync(process.execPath,[join(root,'scripts/verify-neon-onboarding.mjs'),'--provisioner-only','--allow-dirty',destination],{cwd:root,env:{PATH:process.env.PATH,HOME:process.env.HOME},encoding:'utf8',timeout:60000});assert.equal(verify.status,0,verify.stderr);
+  assert.equal(JSON.parse(verify.stdout.trim().split('\n').at(-1)).enrollmentModeClosedVerified,true);
+ }finally{rmSync(parent,{recursive:true,force:true});}
+});

@@ -1,3 +1,5 @@
+import {readNotificationConfig} from '../notifications/config';
+import {readEmployeeExchangeCounts} from './employee-exchange-counts.server';
 import 'server-only';
 import {randomUUID} from 'node:crypto';
 import type {SessionMutationProof} from '../shift-changes/types';
@@ -44,15 +46,17 @@ export async function readEmployeeRequests(proof:SessionMutationProof,executor:S
    return {id:row.id,revision:row.requestRevision!,date:row.sourceShift.date,startTime:row.sourceShift.startTime,endTime:row.sourceShift.endTime,location:row.sourceShift.locationName,position:row.sourceShift.positionName??null,
     check:eligible?'eligible' as const:check?.refusal?'refused' as const:'unavailable' as const,notice:check?.notice??(eligible?null:'Eligibility could not be checked. Refresh before continuing.'),outcome:eligible?check.outcome as 'completed'|'pending':null};
   }));
+  // Keep the combined recent eight, plus every own time-off request still awaiting a decision.
   const recent:OwnRequest[]|null=exchanges===null||timeOff===null||callouts===null?null:[
    ...timeOff.filter(row=>row.employeeId===own).map(row=>({id:row.id,kind:'timeOff' as const,status:row.status,date:row.startDate,endDate:row.endDate,startTime:row.startTime&&row.endTime?row.startTime:null,endTime:row.startTime&&row.endTime?row.endTime:null,createdAt:row.createdAt})),
    ...exchanges.recent.map(row=>({id:row.id,kind:'shift' as const,status:row.status,date:row.sourceShift.date,endDate:null,startTime:null,endTime:null,createdAt:row.createdAt})),
    ...callouts.filter(row=>row.employeeId===own).map(row=>({id:row.id,kind:'callout' as const,status:row.status,date:row.date,endDate:null,startTime:null,endTime:null,createdAt:row.createdAt})),
-  ].sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt)).slice(0,8);
+  ].sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt)).filter((row,index)=>index<8||(row.kind==='timeOff'&&row.status==='PENDING'));
   // Recheck current module revision after all independent reads; mixed policy observations never escape.
+  const exchangeCounts=await readEmployeeExchangeCounts(proof,workspace,guarded,modules.marketplace);
   const current=await readActivePresentation(workspace.id,guarded,{strict:true});
   if(current.revision!==presentation.revision)throw Error('Requests modules changed');
   const [lease]=await guarded.query<{observedAt:string;validForMs:number}>({text:`SELECT clock_timestamp()::text AS "observedAt",LEAST(45000,FLOOR(EXTRACT(EPOCH FROM (expires_at-clock_timestamp()))*1000))::integer AS "validForMs" FROM employee_sessions WHERE employee_id=$1 AND token_hash=$2`,values:[own,proof.sessionTokenHash]});
-  return parseEmployeeRequests({state:'ready',kind:'requests',authority:employeeViewAuthority(proof,'requests'),...lease,timeZone:workspace.timeZone,modules:{timeOff:modules.timeOff,marketplace:modules.marketplace},open,recent,incoming:exchanges?.incoming??null});
+  return parseEmployeeRequests({state:'ready',kind:'requests',authority:employeeViewAuthority(proof,'requests'),...lease,exchangeCounts,deviceAlerts:null,deviceAlertsAvailable:readNotificationConfig(process.env).featureEnabled,timeZone:workspace.timeZone,modules:{timeOff:modules.timeOff,marketplace:modules.marketplace},open,recent,incoming:exchanges?.incoming??null});
  }catch(error){return {state:'unavailable',reason:isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
 }

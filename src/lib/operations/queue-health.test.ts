@@ -1,8 +1,7 @@
 import {expect,it,vi} from 'vitest';
-import {readQueueHealth,assessQueueHealth} from './queue-health';
-import type {SqlExecutor} from '../notifications/types';
+import {readQueueHealth,assessQueueHealth,type QueueHealthReader} from './queue-health';
 const row=()=>({workspace_id:'11111111-1111-4111-8111-111111111111',observed_at:new Date().toISOString(),payroll_due:'0',payroll_failed:'0',payroll_expired_leases:'0',payroll_invalid_leases:'0',payroll_oldest_due_seconds:'0',notification_due_intents:'0',notification_due_deliveries:'0',notification_failed:'0',notification_expired_leases:'0',notification_oldest_due_seconds:'0'});
-const executor=(rows:unknown[])=>({query:vi.fn(async()=>rows),transaction:vi.fn(async()=>{throw Error('No mutation/transaction allowed');})}) as unknown as SqlExecutor;
+const executor=(rows:unknown[]):QueueHealthReader&{transaction:ReturnType<typeof vi.fn>}=>({query:vi.fn(async()=>rows),transaction:vi.fn(async()=>{throw Error('No mutation/transaction allowed');})});
 it('strictly decodes actual numeric/string counters and returns only queue aggregates',async()=>{
  const ex=executor([row()]),health=await readQueueHealth(ex,'test');expect(health).toMatchObject({workspaceId:row().workspace_id,payroll:{due:0,failed:0,expiredLeases:0,oldestDueSeconds:0},notifications:{dueIntents:0,dueDeliveries:0,failed:0,expiredLeases:0,oldestDueSeconds:0}});expect(assessQueueHealth(health,60)).toEqual({healthy:true,reasons:[]});expect(ex.transaction).not.toHaveBeenCalled();
 });

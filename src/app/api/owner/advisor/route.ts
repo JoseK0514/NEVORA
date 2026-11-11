@@ -9,6 +9,7 @@ import {
 } from "@/lib/time-corrections/http.server";
 import { advisorService } from "@/lib/owner-advisor/service.server";
 import { AdvisorError } from "@/lib/owner-advisor/contracts";
+import { logProviderFailure } from "@/lib/owner-advisor/provider-failure.server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -118,6 +119,7 @@ async function handle(request: Request, write: boolean) {
       }),
     ]);
   } catch (error) {
+    logProviderFailure(error);
     if (isRedirectError(error))
       return correctionJson({ state: "error", code: "forbidden" }, 401);
     if (

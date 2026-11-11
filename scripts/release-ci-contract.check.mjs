@@ -96,6 +96,22 @@ test('mandatory release SQL job always runs the isolated Owner advisor integrati
  assert.equal(step.if,undefined);
  assert.equal(step['continue-on-error'],undefined);
 });
+test('mandatory release SQL runs both dedicated payroll suites and retains actual result files',()=>{
+ const steps=workflow.jobs['release-postgres'].steps;
+ for(const suite of ['native','configurable']){
+  const config=suite==='native'?'vitest.native-payroll-integration.config.mts':'vitest.configurable-payroll-integration.config.mts';
+  const step=steps.find(s=>s.run===`node scripts/payroll-postgres.mjs ${config} --reporter=json --outputFile="$RUNNER_TEMP/${suite}-payroll.json"`);
+  assert(step,`${suite} payroll SQL gate missing`);
+  assert.equal(step.if,undefined);
+  assert.equal(step['continue-on-error'],undefined);
+ }
+ const upload=steps.find(s=>s.name==='Upload dedicated payroll SQL evidence');
+ assert(upload,'Payroll SQL evidence upload missing');
+ assert.equal(upload.if,'always()');
+ assert.equal(upload.with['if-no-files-found'],'error');
+ assert(upload.with.path.includes('${{ runner.temp }}/native-payroll.json'));
+ assert(upload.with.path.includes('${{ runner.temp }}/configurable-payroll.json'));
+});
 test('mandatory browser job runs Owner advisor without a model connection and retains evidence',()=>{
  const steps=workflow.jobs['phase-d-attendance-ui'].steps;
  const step=steps.find(s=>s.run==='node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts');

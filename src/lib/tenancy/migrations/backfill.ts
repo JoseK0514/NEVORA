@@ -236,6 +236,7 @@ function preflightCapturedData(capture:BackfillCapture):BackfillPlan{
    if(a.kind==='TYPED_SCOPE'){
     const scope=n.row.values[a.discriminator];
     if(scope==='DEVICE'){target='clocker_devices';columns=['id'];key=[n.row.values[a.identifier]];}
+    else if(scope==='PERSON'){target='employees';columns=['id'];key=[n.row.values[a.identifier]];}
     else if(scope==='WORKSPACE'){target='workspaces';columns=['id'];key=[n.row.values[a.identifier]];}
     else{diagnostics.push(problem('UNSUPPORTED_SCOPE','Unknown typed PIN scope.',n));continue;}
    }
@@ -395,6 +396,7 @@ export function planNewOwnershipWrite(rule:TableOwnership,request:NewWriteReques
  }
  if(a.kind==='TYPED_SCOPE'){
   if(request.values[a.discriminator]==='DEVICE')check('clocker_devices',['id'],[request.values[a.identifier]],false,a.identifier);
+  else if(request.values[a.discriminator]==='PERSON')check('employees',['id'],[request.values[a.identifier]],false,a.identifier);
   else if(request.values[a.discriminator]==='WORKSPACE')check('workspaces',['id'],[request.values[a.identifier]],false,a.identifier);
   else diagnostics.push(problem('UNSUPPORTED_SCOPE','Unknown typed PIN limiter scope.',node));
  }

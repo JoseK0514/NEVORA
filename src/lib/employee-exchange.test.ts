@@ -25,3 +25,8 @@ it('an enabled Accept requires a known planner outcome and never accepts a manag
   expect(parseEmployeeExchange({...value,detail:{...value.detail,checks:[check]}})).toEqual({state:'unavailable',reason:'read_failed'});
  }
 });
+it('keeps shared counts on details and rejects unknown private count payloads',()=>{
+ const value={state:'ready',kind:'exchange',authority:'a'.repeat(64),observedAt:'2026-10-27T12:00:00Z',validForMs:45000,timeZone:'America/Puerto_Rico',enabled:true,selection:row.id,incoming:null,activity:null,detail:null};
+ expect(parseEmployeeExchange({...value,exchangeCounts:{open:null,forYou:2}})).toMatchObject({state:'ready',exchangeCounts:{open:null,forYou:2}});
+ expect(parseEmployeeExchange({...value,exchangeCounts:{open:1,forYou:-1}})).toEqual({state:'unavailable',reason:'read_failed'});
+});

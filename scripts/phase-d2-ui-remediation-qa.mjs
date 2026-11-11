@@ -9,6 +9,9 @@ import {TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {safeD2Error,safeD2Text,unexpectedD2Runtime,d2NavigationCancellation} from './d2-runtime-failures.mjs';
 import {finishD2ForegroundRecovery,waitForD2RscQuiescence} from './d2-foreground-recovery.mjs';
 import {clockText,fixForm,fixValues,hoursPage,whatToFix} from './employee-fix-time-browser.mjs';
+import {verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
+import {verifyReloadFetchDiagnostic} from './browser-reload-diagnostic.mjs';
+import {observeBrowserCell} from './phase-e-browser-qa.mjs';
 
 // Runs only inside the existing owned PostgreSQL / exact-clean-SHA D2 gate.
 export async function verifyD2UiRemediation({app,browser,engine,evidence,report,checked,context,login,geometry,widths}){
@@ -30,10 +33,17 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
    RETURNING break_start_at::text AS start,break_end_at::text AS finish,break_type_id,break_type_snapshot,version`,[breakId,entryId,raw.start]);
  const employee=await context(browser),owner=await context(browser);
  await login(employee,employeeId);await login(owner,'QAOWNER');
+ const navigationProbe=engine==='webkit'?await verifyNavigationFetchDiagnostic(browser):null;
+ const reloadProbe=engine==='webkit'?await verifyReloadFetchDiagnostic(browser):null;
+ const runtimeErrors=[],execution={engine,navigationDiagnostics:[]};
+ const cell=observeBrowserCell(execution,runtimeErrors,{navigationDiagnosticVerified:navigationProbe?.verified===true,reloadDiagnosticVerified:reloadProbe?.verified===true,navigationReadKinds:['notification-read'],requireNotificationGetWitness:true});
+ const assertWindowClean=()=>assert.deepEqual(runtimeErrors.filter(event=>['window-javascript-error','unproven-notification-read'].includes(event.type)),[],'Browser attribution cannot hide window exceptions or unproved notification methods');
+ await cell.observeContext(employee,'primary');await cell.observeContext(owner,'manager');
  const ep=await employee.newPage(),mp=await owner.newPage();
  ep.setDefaultTimeout(15000);mp.setDefaultTimeout(15000);
  let phase='normal',stage='initial',requestSequence=0,managerRscVersion=0;
  const observations={engine,console:[],runtime:[],failedRequests:[],injectedFailures:[],keyboard:[],states:[],network:[]};
+ observations.nativeDocumentNavigation={navigationProbe,reloadProbe,execution,runtimeErrors};
  const startedAt=performance.now(),requests=new WeakMap(),consoleDetails=[],managerRscRequests=new Set();
  const clean=safeD2Text;
  const record=value=>{observations.network.push({atMs:Math.round(performance.now()-startedAt),stage,phase,...value});if(observations.network.length>300)observations.network.shift();};
@@ -43,7 +53,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
    const entry={role,phase,stage,atMs:Math.round(performance.now()-startedAt),text:clean(message.text()),reactBoundary:message.text().includes('The above error occurred in the <'),extractionFailed:false,errors:[]};observations.console.push(entry);
    consoleDetails.push(Promise.all(message.args().map(arg=>arg.evaluate(value=>value instanceof Error?{name:value.name,message:value.message,stack:value.stack}:null).then(error=>{if(error)entry.errors.push(safeD2Error(error));},()=>{entry.extractionFailed=true;}))));
   }});
-  page.on('pageerror',error=>observations.runtime.push({role,phase,stage,atMs:Math.round(performance.now()-startedAt),...safeD2Error(error)}));
+  page.on('pageerror',error=>{if(phase!=='normal'||!cell.isNavigationDiagnostic(error))observations.runtime.push({role,phase,stage,atMs:Math.round(performance.now()-startedAt),...safeD2Error(error)});});
   page.on('request',request=>{
    const url=new URL(request.url());if(url.origin!==app.url||!(url.pathname==='/app'||url.pathname.startsWith('/api/')||url.pathname==='/__nextjs_original-stack-frames'))return;
    if(role==='manager'&&url.pathname==='/app'&&request.headers().rsc==='1'){managerRscRequests.add(request);managerRscVersion++;}
@@ -251,16 +261,21 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.locator('.manager-corrections').waitFor({state:'detached'});assert.equal(await mp.locator('.manager-correction-row').count(),0);
   assert.equal((await owner.request.get(app.url+'/api/manager/time-corrections',{headers})).status(),403);
   await q("UPDATE employees SET role='OWNER' WHERE id='QAOWNER'");
-  // Record all native errors. Only explicitly injected transport failures may be classified.
+  // Proven browser navigation events remain recorded separately; window/React
+  // exceptions and unproven native failures remain fatal.
   await Promise.all(consoleDetails);
   observations.navigationCancellations=observations.runtime.filter(d2NavigationCancellation);
   const unexpected=unexpectedD2Runtime(observations);
   observations.unexpectedRuntime=unexpected.runtime;observations.unexpectedConsole=unexpected.console;
   assert.deepEqual(observations.unexpectedRuntime,[]);
   assert.deepEqual(observations.unexpectedConsole,[],'React-handled JavaScript exceptions remain fatal');
+  // Unclassified page events still pass through the existing D2 injected-fault
+  // and foreground-read policy above; genuine window exceptions have no exemption.
+  assertWindowClean();
   checked(`${engine}: 006 canonical comparisons/defaults/history, 008 lifecycle states and privacy`);
  }catch(error){
   observations.failureState=await mp.evaluate(()=>({visibility:document.visibilityState,focused:document.hasFocus(),routeState:document.querySelector('.portal-route-state h2')?.textContent??null,correctionRows:document.querySelectorAll('.manager-correction-row').length,correctionStatus:document.querySelector('.manager-corrections-empty')?.textContent??null})).catch(()=>null);
   await mp.screenshot({path:join(evidence,`${engine}-ui-manager-failure.png`),fullPage:true}).catch(()=>{});throw error;
- }finally{await employee.close();await owner.close();}
+ }finally{cell.setPhase('context-close');await employee.close();await owner.close();}
+ assertWindowClean();
 }

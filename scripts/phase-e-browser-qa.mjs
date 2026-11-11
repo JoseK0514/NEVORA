@@ -8,6 +8,8 @@ import { pathToFileURL } from 'node:url';
 import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER_SUITES, captureSource, ENGINES, externalEvidence, installTerminationHandlers, parseSuiteArguments, raceOwnedAbort, registerOwnedProcess, safeEnvironment, selectSuites, verifyBrowserExecutions, verifySourceManifest, WIDTHS } from './phase-e-owned.mjs';
 import { safeBrowserFailure } from './release-browser-diagnostics.mjs';
 import {navigationFetchDiagnostic,observeDocumentNavigation,observeWindowExceptions,verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
+import {observeNotificationReadWitness} from './notification-read-witness.mjs';
+import {verifyCommunicationActionGeometry} from './communication-action-geometry-probe.mjs';
 
 const nativeErrorNames = new Set(['Error', 'TypeError', 'RangeError', 'ReferenceError', 'SyntaxError', 'EvalError', 'URIError', 'AggregateError', 'AbortError', 'InvalidStateError', 'NetworkError', 'NotAllowedError', 'NotFoundError', 'NotSupportedError', 'OperationError', 'QuotaExceededError', 'SecurityError', 'TimeoutError', 'DataCloneError', 'EncodingError']);
 const canonicalRuntimeMessages = new Set(['ResizeObserver loop completed with undelivered notifications.', 'ResizeObserver loop limit exceeded', 'Connection closed.']);
@@ -64,7 +66,7 @@ function originalRuntimeDiagnostic(name, message, page) {
 }
 
 /** Window exceptions and unproven native events remain fatal. */
-export function observeBrowserCell(execution, errors, {navigationDiagnosticVerified=false}={}) {
+export function observeBrowserCell(execution, errors, {navigationDiagnosticVerified=false,reloadDiagnosticVerified=false,navigationReadKinds,requireNotificationGetWitness=false}={}) {
   const start = errors.length;
   const classified=new WeakSet(),pages=new WeakMap();
   let phase = 'scenario', readStage = () => null, pageIndex = 0;
@@ -72,11 +74,12 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
   return {
     setStageReader(reader) { readStage = reader; },
     setPhase(value) { assert(['scenario', 'axe', 'context-close'].includes(value)); phase = value; },
-    observeContext(context, role) {
+    async observeContext(context, role) {
       assert(['primary', 'manager'].includes(role));
+      let witness;
       context.on('page', page => {
         const index = pageIndex++;
-        const state={index,role,navigation:observeDocumentNavigation(page)};pages.set(page,state);
+        const state={index,role,navigation:observeDocumentNavigation(page,undefined,{allowSameUrlReload:reloadDiagnosticVerified===true})};pages.set(page,state);
         page.on('pageerror', error => {
           const originalMessage = readable(() => error?.message), name = readable(() => error?.name);
           const message = typeof originalMessage === 'string' ? originalMessage : '';
@@ -86,15 +89,21 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
               : /chunkloaderror|loading chunk/i.test(message) ? 'Module load failure'
                 : 'Unclassified page runtime error';
           const stage = readable(readStage);
-          if(navigationFetchDiagnostic(execution,diagnostic,state.navigation.pending(),navigationDiagnosticVerified,phase)){
+          const reload=state.navigation.snapshot().phase==='reload-requested';
+          const methodWitness=witness?.snapshot(page);
+          const scoped=navigationReadKinds===undefined||navigationReadKinds.includes(diagnostic.resourceKind);
+          const methodProven=!requireNotificationGetWitness||(diagnostic.resourceKind==='notification-read'&&methodWitness?.verified===true);
+          const verified=scoped&&methodProven&&(reload?reloadDiagnosticVerified===true&&diagnostic.resourceKind==='notification-read':navigationDiagnosticVerified);
+          if(navigationFetchDiagnostic(execution,diagnostic,state.navigation.pending(),verified,phase)&&(!requireNotificationGetWitness||witness.consume(page))){
             classified.add(error);execution.navigationDiagnostics??=[];
-            execution.navigationDiagnostics.push({type:'navigation-fetch-diagnostic',role,pageIndex:index,phase,diagnostic,pendingMainFrameNavigation:true,documentNavigation:state.navigation.snapshot(),stage:stages.has(stage)?stage:null});return;
+            execution.navigationDiagnostics.push({type:'navigation-fetch-diagnostic',role,pageIndex:index,phase,diagnostic,...(requireNotificationGetWitness?{methodWitness}:{}),pendingMainFrameNavigation:true,documentNavigation:state.navigation.snapshot(),stage:stages.has(stage)?stage:null});return;
           }
           errors.push({ type: 'page-runtime-error', role, pageIndex: index, phase, diagnostic,pendingMainFrameNavigation:state.navigation.pending(),documentNavigation:state.navigation.snapshot(),
             failure: safeBrowserFailure({ name, message: summary }, execution, { stage: stages.has(stage) ? stage : null }) });
         });
       });
-      if(navigationDiagnosticVerified)return observeWindowExceptions(context,(page,kind)=>{const state=pages.get(page);errors.push({type:'window-javascript-error',kind,role:state?.role??role,pageIndex:state?.index??null,phase});});
+      if(requireNotificationGetWitness)witness=await observeNotificationReadWitness(context,page=>{const state=pages.get(page);errors.push({type:'unproven-notification-read',role:state?.role??role,pageIndex:state?.index??null,phase});});
+      if(navigationDiagnosticVerified||reloadDiagnosticVerified)return observeWindowExceptions(context,(page,kind)=>{const state=pages.get(page);errors.push({type:'window-javascript-error',kind,role:state?.role??role,pageIndex:state?.index??null,phase});});
     },
     isNavigationDiagnostic(error) {return classified.has(error);},
     assertClean() { assert.equal(errors.length, start, 'Browser runtime/network errors recorded in current cell'); },
@@ -198,6 +207,11 @@ async function main() {
       try {
         let navigationDiagnosticVerified=false;
         if(engine==='webkit'){const probe=await raceOwnedAbort(verifyNavigationFetchDiagnostic(browser),controller.signal);report.navigationDiagnosticProbe=probe;navigationDiagnosticVerified=probe.verified;}
+        if(suites.includes('communications')){
+          const probe=await raceOwnedAbort(verifyCommunicationActionGeometry(browser),controller.signal);
+          (report.communicationActionGeometryProbes??=[]).push({engine,...probe});
+          assert.equal(probe.verified,true,'Communications sampler controls must pass before app geometry');
+        }
         for (const [item, runScenario] of modules) for (const width of WIDTHS) {
           controller.signal.throwIfAborted();
           const record = { suite: item, engine, width, status: 'failed', checks: [] }; report.executions.push(record);

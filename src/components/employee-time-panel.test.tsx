@@ -26,7 +26,7 @@ it('removes the corporate record disclosure and all earlier private data on paus
   expect(html).not.toContain('Record details');
   expect(html).not.toContain('2030-10-07T16:00:00Z');
   expect(html).not.toContain('Actual Office');
-  expect(html).not.toMatch(/[>\s]4h[<\s]/);
+  expect(html).not.toMatch(/[>\s]4[\s\u00a0]h[<\s]/);
  }
 });
 it('never displays Off Clock or healthy zero metrics before a successful read',()=>{const html=render(null);expect(html).toContain('Loading recorded time');expect(html).not.toMatch(/Off Clock|0m|No recorded punches/);});
@@ -34,7 +34,7 @@ it('distinguishes empty actual time from disconnected timekeeping',()=>{const ht
 it('a failed read clears current state, counters and history',()=>{const html=render({state:'unavailable',reason:'read_failed'});expect(html).toContain('Couldn’t load your time records');expect(html).not.toMatch(/Off Clock|0m|Actual Office/);});
 it('a paused page exposes none of its earlier private history',()=>{const html=render(ready([raw()]),false,true);expect(html).toContain('Updates paused');expect(html).not.toContain('Actual Office');});
 it('offers reauthentication rather than stale activity after denial',()=>{const html=render({state:'unavailable',reason:'access_denied'});expect(html).toContain('Your session ended');expect(html).toContain('href="/login"');});
-it('shows actual status, location, recorded durations and non-payroll clarification',()=>{const html=render(ready([raw()]));expect(html).toContain('Clocked in');expect(html).toContain('Actual Office');expect(html).toMatch(/[>\s]4h[<\s]/);expect(html).toContain('aren’t payroll hours');expect(html).toContain('Break time');});
+it('shows actual status, location, recorded durations and non-payroll clarification',()=>{const html=render(ready([raw()]));expect(html).toContain('Clocked in');expect(html).toContain('Actual Office');expect(html).toMatch(/[>\s]4[\s\u00a0]h[<\s]/);expect(html).toContain('aren’t payroll hours');expect(html).toContain('Break time');});
 it('on-break state includes the original break name and open end',()=>{const html=render(ready([raw({status:'ON_BREAK',breaks:[{id:'b',break_start_at:'2030-10-07T15:45:00Z',break_end_at:null,break_type_id:'t',break_type_snapshot:{id:'t',version:1,name:'Meal break',category:'MEAL',targetMinutes:30}}]})]));expect(html).toContain('On break');expect(html).toContain('Meal break');expect(html).toContain('In progress');});
 it('compact Home mode retains navigation but does not duplicate the full history view',()=>{const html=render(ready([raw()]),true);expect(html).toContain('href="/app/my-time"');expect(html).toContain('Clocked in');expect(html).not.toContain('Recent entries');});
 it('labels the earlier history limit and its actual available total',()=>{const rows=Array.from({length:20},(_,n)=>raw({id:'old'+n,clock_in_at:`2030-09-${String(n+1).padStart(2,'0')}T12:00Z`,clock_out_at:`2030-09-${String(n+1).padStart(2,'0')}T16:00Z`,status:'CLOCKED_OUT'}));const html=render(ready(rows,25));expect(html).toContain('20 of 25');expect(html).toContain('most recent');});

@@ -1,0 +1,38 @@
+diff --git a/zz-scan/owner-mobile-scan.integration.ts b/zz-scan/owner-mobile-scan.integration.ts
+index 92c4ecd..9976bfa 100644
+--- a/zz-scan/owner-mobile-scan.integration.ts
++++ b/zz-scan/owner-mobile-scan.integration.ts
+@@ -63,7 +63,7 @@ it('captures Owner mobile screens',async()=>{
+    log.push({tabs,tabLabels});
+    const runIds=((await q('SELECT id::text AS id FROM payroll_runs ORDER BY end_date DESC,(correction_of IS NULL) DESC').catch((e:unknown)=>{log.push('runs '+String(e));return {rows:[]};})) as unknown as {id:string}[]|{rows:{id:string}[]});const runList=(Array.isArray(runIds)?runIds:runIds.rows).map(r=>r.id);
+    const only=process.env.NEVORA_SCAN_ONLY==='1';
+-   const routes=[...new Set([...(only?[]:['/app',...tabs,'/app/inbox']),...(process.env.NEVORA_SCAN_EXTRA??'').split(',').filter(Boolean).map(r=>r.replace('{leaveMaria}','scan-leave-maria').replace('{leaveJames}','scan-leave-james').replace('{leaveAna}','scan-leave-ana').replace('{actor}',f.actors[0]).replace(/\{run(\d)\}/,(_,i)=>runList[Number(i)]??'none'))])];
++   const routes=[...new Set([...(only?[]:['/app',...tabs,'/app/inbox']),...(process.env.NEVORA_SCAN_EXTRA??'').split(',').filter(Boolean).map(r=>r.replace('{leaveMaria}','03300000-0000-4000-8000-000000000001').replace('{leaveJames}','03300000-0000-4000-8000-000000000002').replace('{leaveAna}','03300000-0000-4000-8000-000000000003').replace('{actor}',f.actors[0]).replace(/\{run(\d)\}/,(_,i)=>runList[Number(i)]??'none'))])];
+    log.push({runList});
+    for(const route of routes){
+     await page.goto(app.url+route);await page.waitForLoadState('networkidle').catch(()=>{});await page.waitForTimeout(2500);
+@@ -133,7 +133,7 @@ it('captures Owner mobile screens',async()=>{
+      return publishScheduleChanges({locationId:'loc-1',weekStart:w,managerId:'QAOWNER'} as never,app.database.executor).catch(async(e:unknown)=>{log.push('publish changes: '+String(e).slice(0,200));return publishScheduleWithRevision({locationId:'loc-1',weekStart:w,managerId:'QAOWNER'},app.database.executor);});}}).catch(e=>log.push('leave flow: '+String(e?.stack??e)));
+    if(process.env.NEVORA_SCAN_LEAVE_NEG==='1'){
+     // A staffing read the app made on this page carries the view binding; open a page that reads it if none was seen.
+-    if(!staffingView){await page.goto(app.url+(process.env.NEVORA_SCAN_AS==='emp'?'/app/requests?requestId='+(process.env.NEVORA_SCAN_ACTOR==='2'?'scan-leave-ana':'scan-leave-maria'):'/app/requests?tab=pending&requestId=scan-leave-james'));await page.waitForLoadState('networkidle').catch(()=>{});await page.waitForTimeout(3500);}
++    if(!staffingView){await page.goto(app.url+(process.env.NEVORA_SCAN_AS==='emp'?'/app/requests?requestId='+(process.env.NEVORA_SCAN_ACTOR==='2'?'03300000-0000-4000-8000-000000000003':'03300000-0000-4000-8000-000000000001'):'/app/requests?tab=pending&requestId=03300000-0000-4000-8000-000000000002'));await page.waitForLoadState('networkidle').catch(()=>{});await page.waitForTimeout(3500);}
+     await runLeaveNegatives(page,app.url,evidence,log,{scope:process.env.NEVORA_SCAN_AS==='emp'?'employee':'management',actorId,view:staffingView,colleague:process.env.NEVORA_SCAN_AS==='emp'?f.actors.find(a=>a!==actorId):undefined,week,q,revoke:process.env.NEVORA_SCAN_LEAVE_REVOKE==='1'}).catch(e=>log.push('leave negatives: '+String(e?.stack??e)));
+    }
+    if(process.env.NEVORA_SCAN_NATIVE_FLOW==='1')await runNativeFlow(page,app.url,evidence,log).catch(e=>log.push('native flow: '+String(e?.stack??e)));
+diff --git a/zz-scan/leave-flow.ts b/zz-scan/leave-flow.ts
+index 7ef9398..ce5f944 100644
+--- a/zz-scan/leave-flow.ts
++++ b/zz-scan/leave-flow.ts
+@@ -14,8 +14,8 @@ export async function seedLeave(q:Q,actors:string[],week:string,today:string,log
+    AND p.revision_number=(SELECT max(revision_number) FROM schedule_publication_revisions WHERE week_start=$1) ORDER BY sh.date,sh.start_time LIMIT 1`,[week,employee,today]))[0];
+  const m=await next(actors[0]),j=await next(actors[1]),a=await next(actors[2]);
+  log.push({leaveShifts:{m,j,a}});
+- if(m){await q(`INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,status,created_at) VALUES('scan-leave-maria',$1,$2,$2,'Family visit','PENDING',now()-interval '3 hours')`,[actors[0],m.date]);seed.maria={id:'scan-leave-maria',date:m.date,shiftId:m.shift};}
+- if(j){await q(`INSERT INTO time_off_requests(id,employee_id,start_date,end_date,start_time,end_time,reason,status,created_at) VALUES('scan-leave-james',$1,$2,$2,'13:00','17:00','Dentist','PENDING',now()-interval '1 hour')`,[actors[1],j.date]);seed.james={id:'scan-leave-james',date:j.date};}
+- if(a){await q(`INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,status,reviewed_by,reviewed_at,created_at) VALUES('scan-leave-ana',$1,$2,$2,'Appointment','APPROVED',NULL,now()-interval '2 days',now()-interval '3 days')`,[actors[2],a.date]);seed.ana={id:'scan-leave-ana',date:a.date};}
++ if(m){await q(`INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,status,created_at) VALUES('03300000-0000-4000-8000-000000000001',$1,$2,$2,'Family visit','PENDING',now()-interval '3 hours')`,[actors[0],m.date]);seed.maria={id:'03300000-0000-4000-8000-000000000001',date:m.date,shiftId:m.shift};}
++ if(j){await q(`INSERT INTO time_off_requests(id,employee_id,start_date,end_date,start_time,end_time,reason,status,created_at) VALUES('03300000-0000-4000-8000-000000000002',$1,$2,$2,'13:00','17:00','Dentist','PENDING',now()-interval '1 hour')`,[actors[1],j.date]);seed.james={id:'03300000-0000-4000-8000-000000000002',date:j.date};}
++ if(a){await q(`INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,status,reviewed_by,reviewed_at,created_at) VALUES('03300000-0000-4000-8000-000000000003',$1,$2,$2,'Appointment','APPROVED',NULL,now()-interval '2 days',now()-interval '3 days')`,[actors[2],a.date]);seed.ana={id:'03300000-0000-4000-8000-000000000003',date:a.date};}
+  return seed;
+ }

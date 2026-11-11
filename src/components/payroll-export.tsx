@@ -8,6 +8,7 @@ import {CorpNav,CorpTitle} from './corp/corp';
 import './payroll/payroll-corp.css';
 import {neutralProfile,parseExportProfile,type ExportProfile} from '@/lib/payroll-export/model';
 import {type TimecardItem} from '@/lib/timecards/read-model';
+import {summarizeTimecardReview} from '@/lib/timecards/review-summary';
 import {parseCurrentTimecards} from '@/lib/timecards/client';
 import {parsePeriod,type Period} from '@/lib/timecards/project';
 import {hoursText,periodRange} from './payroll/payroll-format';
@@ -136,8 +137,9 @@ export function PayrollExport({initialPeriod,actorId,tabs=null}:{initialPeriod:P
  const ready=state==='ready'&&currentActor;
  const exportAll=()=>{const ids=visibleSelection.selected;setSelected(ids);setResult(null);generate(ids);};
  const stateText=state==='Loading finalized time'?'Loading timecards…':state==='ready'?'Checking export access…':state;
- const approvedOnly=cards?.filter(c=>c.state==='APPROVED').length??0;
- const unapproved=cards?.filter(c=>c.state!=='FINALIZED'&&c.state!=='APPROVED'&&(c.card.entries.length>0||c.history.length>0||c.card.recordedNanoseconds!=='0')).length??0;
+ const reviewSummary=ready&&cards?summarizeTimecardReview({period,cards}):null;
+ const approvedOnly=reviewSummary?.counts.awaitingFinalization??0;
+ const unapproved=reviewSummary?.counts.awaitingApproval??0;
  const readyHours=finalized.reduce((sum,c)=>sum+BigInt(c.card.recordedNanoseconds),BigInt(0)).toString();
  // R7: what to do next, in grey with the way to Timecards. Export takes finalized timecards only, so finalizing is
  // still named when approved cards are waiting for it (Timecards' own action is "Finalize").

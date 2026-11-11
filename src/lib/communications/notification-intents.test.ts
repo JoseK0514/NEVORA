@@ -21,7 +21,7 @@ it('allows only exact update UUID paths and current immutable grants',()=>{
  expect(destinationForSource(source,recipient)).toBe('/app/updates/'+id);expect(destinationForSource(source,{...recipient,employeeId:'foreign'})).toBeNull();
 });
 it('uses generic lock-screen payload and rejects obsolete or revoked communication',()=>{
- const payload=buildPushEnvelope(intent,'generation');expect(payload.title).toBe('NEVORA update');expect(payload.body).toBe('Open NEVORA to review an update.');expect(JSON.stringify(payload)).not.toContain('Secret');
+ const payload=buildPushEnvelope(intent,'generation');expect(payload.title).toBe('New team update');expect(payload.body).toBe('Open NEVORA to read it.');expect(JSON.stringify(payload)).not.toContain('Secret');
  expect(evaluateNotificationSource(intent,recipient,source,now,policy).deliverable).toBe(true);
  expect(evaluateNotificationSource({...intent,effectiveVersion:id},recipient,source,now,policy).deliverable).toBe(false);
  expect(evaluateNotificationSource(intent,{...recipient,employeeId:'foreign'},source,now,policy).deliverable).toBe(false);

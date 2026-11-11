@@ -85,5 +85,5 @@ export function parseEmployeeTime(source:unknown):EmployeeTime{
 }
 export function formatRecordedDuration(value:number):string{
  if(!integer(value))return fail();const minutes=Math.floor(value/60);
- return value>0&&minutes===0?'<1m':durationText(minutes);
+ return value>0&&minutes===0?'<1 min':durationText(minutes);
 }

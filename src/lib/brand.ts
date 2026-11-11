@@ -3,7 +3,6 @@ export const NUVORA_BRAND = {
   platformLabel: "NEVORA",
   module: "Workforce",
   slogan: "Brighter work ahead",
-  /** Spanish slogan (NV-186). The wording is pending Jose's confirmation; keep it in one place. */
   sloganEs: "Un trabajo más brillante por delante",
   parentCompany: "VELANI LLC",
   copyright: "© 2026 VELANI LLC. All rights reserved.",

@@ -1,0 +1,18 @@
+import {expect,it} from 'vitest';
+import {readWorkerEnrollmentIssuerConfig} from './worker-enrollment-issuer';
+import {managedDestinations} from './managed-destinations';
+const sha='a'.repeat(40),d=managedDestinations.test,root=Buffer.alloc(32,51).toString('base64url'),workerRoot=Buffer.alloc(32,52).toString('base64url'),selected=[{id:'11111111-1111-4111-8111-111111111111',requestHash:'b'.repeat(64)}];
+export const issuerEnv={NEVORA_WORKFORCE_ENROLLMENT_ENABLED:'true',NEVORA_WORKFORCE_ENROLLMENT_REQUESTS:JSON.stringify(selected),NEVORA_NEON_SOURCE_SHA:sha,NEVORA_NEON_HOST_ENABLED:'true',NEVORA_NEON_BRANCH_ID:'br-hidden-mud-bbnc2fxk',NEON_BRANCH_ID:'br-hidden-mud-bbnc2fxk',NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_WORKSPACE_MODE:'isolated',NEVORA_PROVISIONER_WORKER_ENABLED:'false',NEVORA_ONBOARDING_ENABLED:'false',NEVORA_ONBOARDING_PROVIDER_ENABLED:'false',NEVORA_ONBOARDING_COMMERCE_ENABLED:'false',NEVORA_PROVISIONER_CONTROL_DATABASE_URL:`postgresql://nv_control_provision_${'a'.repeat(24)}:fictional@${d.controlHostname}/${d.controlDatabase}?sslmode=verify-full`,NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:root,NEVORA_COMMERCE_WORKER_BINDING_KEY:workerRoot};
+it('defaults closed and keeps ordinary provisioner compatibility with no enrollment fields',()=>{expect(readWorkerEnrollmentIssuerConfig({},sha)).toBeNull();expect(readWorkerEnrollmentIssuerConfig({NEVORA_WORKFORCE_ENROLLMENT_ENABLED:'false'},sha)).toBeNull();});
+it('admits only pinned test control custody and at most two independently hashed requests',()=>{
+ expect(readWorkerEnrollmentIssuerConfig(issuerEnv,sha)).toMatchObject({requests:selected,sourceSha:sha});
+ expect(JSON.stringify(readWorkerEnrollmentIssuerConfig({...issuerEnv,NEVORA_WORKFORCE_ENROLLMENT_REQUESTS:JSON.stringify([...selected,{id:'22222222-2222-4222-8222-222222222222',requestHash:'c'.repeat(64)}])},sha))).not.toContain('NEVORA_COMMERCE_BINDING_KEY');
+});
+it.each(['NEVORA_PROVISIONER_WORKER_ENABLED','NEVORA_ONBOARDING_ENABLED','NEVORA_ONBOARDING_PROVIDER_ENABLED','NEVORA_ONBOARDING_COMMERCE_ENABLED'])('rejects normal %s mode even if only absent',field=>{for(const value of ['true',undefined])expect(()=>readWorkerEnrollmentIssuerConfig({...issuerEnv,[field]:value},sha)).toThrow('worker_enrollment_invalid');});
+it.each([
+ {NEVORA_WORKFORCE_ENROLLMENT_ENABLED:'TRUE'}, {NEVORA_NEON_SOURCE_SHA:'b'.repeat(40)}, {NEON_BRANCH_ID:'br-other'}, {NEVORA_NEON_BRANCH_ID:'br-other',NEON_BRANCH_ID:'br-other'}, {NEVORA_ONBOARDING_ENVIRONMENT:'production'}, {NEVORA_COMMERCE_ENVIRONMENT:'production'}, {NEVORA_COMMERCE_WORKER_BINDING_KEY:root}, {NEVORA_COMMERCE_BINDING_KEY:workerRoot},
+ {NEVORA_PROVISIONER_CONTROL_DATABASE_URL:issuerEnv.NEVORA_PROVISIONER_CONTROL_DATABASE_URL.replace(d.controlHostname,'ep-other.neon.tech')},
+ {NEVORA_PROVISIONER_CONTROL_DATABASE_URL:issuerEnv.NEVORA_PROVISIONER_CONTROL_DATABASE_URL+'&host=foreign.invalid'},
+ {NEVORA_WORKFORCE_ENROLLMENT_REQUESTS:'[]'}, {NEVORA_WORKFORCE_ENROLLMENT_REQUESTS:JSON.stringify([selected[0],selected[0]])}, {NEVORA_WORKFORCE_ENROLLMENT_REQUESTS:JSON.stringify([{...selected[0],privateKey:'forbidden'}])},
+])('refuses wrong source, target or mixed capability %j',patch=>{expect(()=>readWorkerEnrollmentIssuerConfig({...issuerEnv,...patch},sha)).toThrow('worker_enrollment_invalid');});
+it('does not treat dangling requests or a missing compiled source as ordinary mode',()=>{expect(()=>readWorkerEnrollmentIssuerConfig({NEVORA_WORKFORCE_ENROLLMENT_REQUESTS:JSON.stringify(selected)},sha)).toThrow('worker_enrollment_invalid');expect(()=>readWorkerEnrollmentIssuerConfig(issuerEnv,undefined)).toThrow('worker_enrollment_invalid');});

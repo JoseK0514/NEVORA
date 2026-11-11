@@ -101,7 +101,7 @@ export async function reviewTimeOffAction(formData: FormData) {
     const back = filter === "all" ? "" : ["now", "requests", "planning"].includes(filter) ? `filter=${filter}&` : "filter=requests&";
     redirect(origin === "home" ? `/app?decided=timeoff-${outcome}` : `/app/inbox?${back}decided=timeoff-${outcome}`);
   }
-  redirect("/app/requests?tab=pending&reviewed=1");
+  redirect(`/app/requests?tab=pending&reviewed=1&decided=timeoff-${decision === "APPROVED" ? "approved" : "declined"}`);
 }
 
 

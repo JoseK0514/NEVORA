@@ -1,4 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { createElement, Fragment } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { BlockView } from "@/components/legal/legal-document";
 import { POLICY_DOCUMENTS, POLICY_FACTS, SUPPORT_EMAIL, policiesVisible, unresolvedFacts } from "./policies";
 
 const filled = Object.fromEntries(Object.keys(POLICY_FACTS).map(key => [key, "Confirmed by Jose"]));
@@ -31,4 +34,14 @@ describe("NEVORA public policies", () => {
     expect(text).not.toMatch(/Report content|HIPAA|SOC 2|[Ee]nd-to-end|30 days|[Nn]ever sell/);
     expect(text).not.toMatch(/\[CONFIRM_/);
   });
+});
+
+// The public and authenticated renderers consume these same canonical document blocks.
+it.each(['support', 'account-deletion'])('keeps the %s recovery link destination while naming the password action', slug => {
+  const doc = POLICY_DOCUMENTS.find(document => document.slug === slug)!;
+  for (const context of [undefined, 'employee'] as const) {
+    const html = renderToStaticMarkup(createElement(Fragment, null, ...doc.sections.flatMap(section => section.blocks).map((block, i) => createElement(BlockView, { key: i, block, context }))));
+    expect(html).toContain('href="/forgot-access">Forgot password?</a>');
+    expect(html).not.toContain('Forgot access');
+  }
 });

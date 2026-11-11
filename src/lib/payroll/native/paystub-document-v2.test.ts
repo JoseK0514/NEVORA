@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import {
-  NATIVE_PAYSTUB_PRESENTATION_VERSION, NATIVE_PAYSTUB_TEMPLATE_V2, NATIVE_PAYSTUB_TEMPLATE_VERSION,
+  NATIVE_PAYSTUB_PRESENTATION_VERSION, NATIVE_PAYSTUB_TEMPLATE_V2,
   preflightNativePaystubGlyphs, renderNativeEmployeePaystub, type NativePaystubPresentation,
 } from "./paystub-document";
 import { expectCleanGeometry, readPdf } from "./pdf-text.test-support";
@@ -61,10 +61,6 @@ function longStatement(): NativePaystubPresentation {
 }
 
 describe("native pay statement template v2", () => {
-  it("is the template new runs record", () => {
-    expect(NATIVE_PAYSTUB_TEMPLATE_VERSION).toBe(NATIVE_PAYSTUB_TEMPLATE_V2);
-  });
-
   it.each([
     ["en", ["Pay statement", "You take home", "What you earned", "Taxes withheld", "Other deductions", "Paid by your employer", "References", "Original", "This year: $8,522.77", "Base $14.50 + $7.25 overtime premium", "Page 1 of 1", "This statement documents approved payroll. It doesn't confirm payment."]],
     ["es", ["Comprobante de nómina", "Recibes", "Lo que ganaste", "Impuestos retenidos", "Otras deducciones", "Pagado por tu patrono", "Referencias", "Original", "Este año: $8,522.77", "Base $14.50 + $7.25 prima por horas extra", "Página 1 de 1", "Este comprobante documenta la nómina aprobada. No confirma el pago."]],

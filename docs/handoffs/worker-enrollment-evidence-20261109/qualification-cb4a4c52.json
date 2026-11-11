@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "sourceSha": "cb4a4c52d1bb999ceeda08ab8e5f108eb57955c8",
+  "sourceClean": true,
+  "scope": "local backend source; no hosted or Production certification",
+  "defaultSuite": {
+    "command": "npm test -- --maxWorkers=2",
+    "passed": 11677,
+    "failed": 0,
+    "skipped": 857,
+    "pendingAssertionRecords": 55,
+    "filesPassed": 791,
+    "filesSkipped": 32
+  },
+  "typecheck": 0,
+  "lint": {
+    "exitCode": 0,
+    "errors": 0,
+    "knownDeferredWarnings": 1
+  },
+  "webBuild": 0,
+  "ownedAcceptance": {
+    "path": "/Users/josek0514/.codex/worker-enrollment-20261109/acceptance/cb4a4c52d1bb999ceeda08ab8e5f108eb57955c8-d3788ab4-c429-4659-9f52-b7b8c83295b2/report.json",
+    "status": "backend_passed",
+    "steps": [
+      {
+        "name": "inventory-contract",
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 310,
+        "log": "inventory-contract.log"
+      },
+      {
+        "name": "manifest",
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 61,
+        "log": "manifest.log"
+      },
+      {
+        "name": "owned-onboarding",
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 118434,
+        "log": "owned-onboarding.log"
+      },
+      {
+        "name": "company-access-foundation",
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 251585,
+        "log": "company-access-foundation.log"
+      },
+      {
+        "name": "company-access-exchange",
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 20044,
+        "log": "company-access-exchange.log"
+      },
+      {
+        "name": "worker-enrollment",
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 952,
+        "log": "worker-enrollment.log"
+      },
+      {
+        "name": "managed-workforce",
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 1110,
+        "log": "managed-workforce.log"
+      }
+    ],
+    "onboardingTests": 208,
+    "companyAccessTests": 505,
+    "exchangeTests": 36
+  },
+  "independentClosures": {
+    "F1": "f6e2cd4e",
+    "F2": "f6e2cd4e",
+    "F3": "f6e2cd4e",
+    "F4": "f6e2cd4e",
+    "F5": "cb4a4c52",
+    "F6": "f6e2cd4e"
+  },
+  "sha256": {
+    "default-suite-cb4a4c52-bounded.log": "0674ef319e7dc8e671731db9a6b86e1e1de1c2d66ee7ec6206f6f3b1b8287a31",
+    "typecheck-cb4a4c52.log": "a12318be798fbfe982f3307107c280a32f686008ee2f55b5636d8d8ae7a769ec",
+    "lint-cb4a4c52.log": "260de16f9ac4acfa041c37f279ba17bfe7c798ef4c0bc30b25434ed7591d614c",
+    "build-cb4a4c52.log": "37d4ac5a52d9fc9645af3a78811e8025bee26e11062bd72314829a4f093620f7",
+    "independent-review-fdd83020.md": "c91aef21ab825bc44cb4a7f61af1ccd38ee87a36ce9515fc2956470065a4bf49",
+    "independent-closure-f6e2cd4e.md": "a0ac4fde6d49fd64625410a080f32cae173da1cef8d92d2d645690202d9a4d52",
+    "independent-F5-closure-cb4a4c52.md": "7c80a83be6f56f788f544da9846d43718b29fc4a3f3235ccb4d2c5158fd8b80c",
+    "independent-host-functional-cb4a4c52.md": "28f949a92ef972bdd995a8e0a8100c82efcbf9f35cfb1fc72b4ae99b82a96948"
+  },
+  "hosted": false,
+  "production": false,
+  "mailSent": false,
+  "newLiveModelCalls": 0
+}

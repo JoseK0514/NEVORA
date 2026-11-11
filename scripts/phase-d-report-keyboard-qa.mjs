@@ -14,7 +14,7 @@ await mkdir(evidence,{recursive:true});
 const checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim();
 const sourceClean=execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim()==='';
 if(process.env.PHASE_D_EXPECTED_SHA){assert.equal(checkpoint,process.env.PHASE_D_EXPECTED_SHA);assert(sourceClean);}
-const report={checkpoint,tree,sourceClean,checks:[],errors:[],geometry:[],keyPaths:[],accessibility:[],networkCancellations:[],navigation:[]};
+const report={checkpoint,tree,sourceClean,runtime:{playwright:runtime('playwright/package.json').version,axe:runtime('axe-core/package.json').version,node:process.version},checks:[],errors:[],geometry:[],keyPaths:[],accessibility:[],navigation:[],diagnostics:[]};
 let app,browser;
 async function check(name,fn){try{await fn();report.checks.push(name);console.log('PASS '+name);}catch(error){report.errors.push({name,error:String(error.stack??error)});console.log('FAIL '+name);}await writeFile(join(evidence,'report.json'),JSON.stringify(report,null,2));}
 async function until(fn){const deadline=Date.now()+2000;while(!await fn()){if(Date.now()>deadline)throw Error('Native keyboard scrolling did not reach the expected column');await new Promise(r=>setTimeout(r,20));}}
@@ -26,8 +26,42 @@ try{
  await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES('KEY-T','KEY-E','loc-1','key-device','2026-09-22T12:00:00Z','2026-09-22T20:00:00Z','CLOCKED_OUT',1)");
  for(const engine of ['webkit','chromium']){
   browser=await pw[engine].launch({headless:true});const context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block'});
-  await context.route('**/*',r=>new URL(r.request().url()).origin!==app.url?r.abort():r.continue());const page=await context.newPage();page.setDefaultTimeout(15000);page.on('pageerror',e=>{if(e.message.endsWith('due to access control checks.')&&e.message.includes(new URL(app.url).host+'/api/'))report.networkCancellations.push({engine,error:String(e)});else report.errors.push({name:engine+' runtime',error:String(e)});});
-  await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click()]);
+  await context.route('**/*',r=>new URL(r.request().url()).origin!==app.url?r.abort():r.continue());const page=await context.newPage();page.setDefaultTimeout(15000);
+  const diagnostic=(type,value)=>report.diagnostics.push({engine,type,at:Date.now(),...value});
+  page.on('console',message=>{diagnostic('console',{level:message.type(),text:message.text(),location:message.location()});if(message.type()==='error')report.errors.push({name:engine+' console',error:message.text()});});
+  page.on('request',request=>diagnostic('request',{url:request.url(),method:request.method(),resource:request.resourceType(),...(request.url().includes('/__nextjs_original-stack-frames')?{body:request.postData()}: {})}));
+  page.on('requestfailed',request=>diagnostic('requestfailed',{url:request.url(),failure:request.failure()}));
+  page.on('framenavigated',frame=>{if(frame===page.mainFrame())diagnostic('navigation',{url:frame.url()});});
+  await page.addInitScript(()=>{
+   const witness=(type,value)=>console.debug('OWNED_REPORT_WITNESS '+JSON.stringify({type,at:Date.now(),url:location.href,...value}));
+   for(const type of ['pagehide','pageshow','beforeunload','DOMContentLoaded','load'])addEventListener(type,event=>witness(type,{persisted:event.persisted}));
+   addEventListener('unhandledrejection',event=>witness('unhandledrejection',{message:String(event.reason),stack:event.reason?.stack}));
+   addEventListener('error',event=>witness('error',{message:event.message,stack:event.error?.stack}));
+  });
+  page.on('pageerror',e=>{diagnostic('pageerror',{message:e.message,stack:e.stack});report.errors.push({name:engine+' runtime',error:String(e)});});
+  // The login return-path allowlist intentionally excludes Reports. Finish Home's
+  // real client reads before a hard navigation; a URL change alone does not mean
+  // its lazy modules have loaded. The negative control retains the old precondition.
+  const prematureHome=process.env.PHASE_D_REPORT_PREMATURE_HOME_NEGATIVE_CONTROL==='1';
+  const homeReads=['/api/company-access/operational-authority','/api/manager/inbox-count','/api/notifications','/api/manager/today','/api/manager/clock-monitor','/api/manager/action-center'];
+  await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
+  const readyReads=prematureHome?[]:homeReads.map(async path=>{
+   const response=await page.waitForResponse(response=>new URL(response.url()).pathname===path&&response.ok());
+   assert.equal(await response.finished(),null,'The Home client read must finish before navigation: '+path);
+   const body=await response.json();assert.equal(body.state,'ready','The Home client read must verify its state: '+path);
+   return {path,status:response.status(),state:body.state};
+  });
+  const authentication=await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click(),...readyReads]);
+  if(!prematureHome){
+   await page.locator('.c-page.c-home').waitFor();
+   await page.waitForFunction(()=>{const home=document.querySelector('.c-page.c-home');return home&&!home.querySelector('[aria-busy="true"],.c-error-card');});
+  }
+  report.authentication??=[];report.authentication.push({engine,destination:'/app',precondition:prematureHome?'premature URL-only negative control':'actual Home rendered and client reads ready',reads:authentication.slice(2)});
+  if(process.env.PHASE_D_REPORT_RUNTIME_NEGATIVE_CONTROL==='1'&&engine==='webkit'){
+   const observed=page.waitForEvent('pageerror',error=>error.message.includes('Owned report runtime negative control'));
+   await page.evaluate(()=>{setTimeout(()=>{throw new Error('Owned report runtime negative control');},0);});await observed;
+   report.runtimeNegativeControl={injected:true,errorObserved:true};
+  }
   // The report responds before WebKit's load event settles in this owned dev
   // runtime. DOM readiness plus the real Labor hours figure is the test precondition.
   const navigationStarted=Date.now();
@@ -84,7 +118,7 @@ try{
      const scrolls=printed.locator('.wb-table-scroll[role="region"]');assert.deepEqual(await scrolls.evaluateAll(nodes=>nodes.map(e=>e.getAttribute('aria-label'))),['Scheduled vs recorded columns','Hours by employee columns','Hours by location columns','Hours by position columns']);
      // Print expands the report's disclosures on the media change; wait for each table's rows to show.
      for(let index=0;index<2;index++)await scrolls.nth(index).locator('tbody th,tbody td').filter({hasText:'LongReportEmployee'.repeat(4)+' QA'}).first().waitFor({timeout:5000});
-     for(let index=0;index<4;index++)await scrolls.nth(index).locator('.wb-cell-value').filter({hasText:/^8h$/}).first().waitFor({timeout:5000});}
+     for(let index=0;index<4;index++)await scrolls.nth(index).locator('.wb-cell-value').filter({hasText:/^8 h$/}).first().waitFor({timeout:5000});}
     finally{await page.emulateMedia({media:'screen'});}
     report.keyPaths.push({engine,viewportWidth:width,order,forwardAndReverseKeyboard:true,reverseEngineSkips:engineSkips,countedDisclosure:true,exportMenu:exportShown,printedTables:true});
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+2),'No page overflow');

@@ -1,0 +1,56 @@
+{
+  "sourceRef": "4d3a0be630eea3cf013550d5e1eefccaf82993a3",
+  "sourcePath": "tools/ui-scan/zz-scan.tar.gz",
+  "sourceBlob": "3e214c104b83b409216803c7d02992aa61404172",
+  "sourceSha256": "d8fd1d1dd73a3be8c642bac8715aed2fd19ddf3577395a19794314ae29d60948",
+  "patchedSha256": "6471f10e1be034857792e2062057cfe1ecb8543a93ce4bcc014e66d5958ea797",
+  "members": 22,
+  "changedMembers": [
+    {
+      "member": "zz-scan/owner-mobile-scan.integration.ts",
+      "replacements": {
+        "scan-leave-maria": 2,
+        "scan-leave-james": 2,
+        "scan-leave-ana": 2
+      },
+      "before": "e84c3338b6d415d7917ccf815e8901c28fa53d1d9e46851e3333feb8d049a901",
+      "after": "d4ead9f77f8ff58923d0910f3bb8b85c3967950d425215099a76cab72c684a6b"
+    },
+    {
+      "member": "zz-scan/leave-flow.ts",
+      "replacements": {
+        "scan-leave-maria": 2,
+        "scan-leave-james": 2,
+        "scan-leave-ana": 2
+      },
+      "before": "b08fcc63f4278fe3fef91bae931270aa07b68e6770b4254a5dfac57fe26670a8",
+      "after": "4032ef418cc96f769417e5c7c61c18e22611d22854c94dfb48c610ae812ea3d1"
+    }
+  ],
+  "mapping": {
+    "scan-leave-maria": "03300000-0000-4000-8000-000000000001",
+    "scan-leave-james": "03300000-0000-4000-8000-000000000002",
+    "scan-leave-ana": "03300000-0000-4000-8000-000000000003"
+  },
+  "patchRoundTrip": true,
+  "otherMemberContentsUnchanged": true,
+  "archiveImportedIntoDevelopment": false,
+  "guardsChanged": false,
+  "target": "Claude-held UI source; apply during UI integration, no active UI branch mutation",
+  "patchKind": "archived-member-source",
+  "applyWithin": "isolated extracted tools/ui-scan/zz-scan.tar.gz source directory",
+  "memberPatchRoundTrip": true,
+  "withdrawalParserProof": "All three repaired IDs accepted and all three old synthetic IDs rejected by unchanged real parseWithdrawalCommand",
+  "withdrawalParserSourceBlob": "1310b95017580d4c5254036e9bd2969c88117aac",
+  "latestRecheck": {
+    "sourceRef": "ff5a267f9fff147942273f3df362458ee04c1573",
+    "sourceSha256": "984762e4307f8c2e72f7794e71fd0cb4fdc3a445280db3b24cfa79605314810c",
+    "patchSha256": "dd00df44250a69c33b3da52e3104b22ac9202fe740152a312a535ba005c3c267",
+    "membersPatchApplies": true,
+    "onlyExactUuidReplacement": true,
+    "memberHashes": {
+      "zz-scan/owner-mobile-scan.integration.ts": "e84c3338b6d415d7917ccf815e8901c28fa53d1d9e46851e3333feb8d049a901",
+      "zz-scan/leave-flow.ts": "b08fcc63f4278fe3fef91bae931270aa07b68e6770b4254a5dfac57fe26670a8"
+    }
+  }
+}

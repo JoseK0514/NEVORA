@@ -28,12 +28,15 @@ it('keeps an incoming swap out of own recent requests until the request is decid
  expect(recipient.state).toBe('ready');expect(sender.state).toBe('ready');
  if(recipient.state!=='ready'||sender.state!=='ready')throw Error('Requests projection was unavailable');
  expect(recipient.incoming).toBe(1);
+ expect(recipient.exchangeCounts).toEqual({open:0,forYou:1});
+ const {readEmployeeExchange}=await import('../../lib/data/employee-exchange.server');
+ for(const selection of [null,offered.requestId]){const exchange=await readEmployeeExchange(proof('e2'),db.executor,selection);expect(exchange).toMatchObject({state:'ready',exchangeCounts:{open:0,forYou:1}});}
  expect(recipient.recent?.filter(row=>row.id===offered.requestId)).toEqual([]);
  expect(sender.recent?.filter(row=>row.id===offered.requestId)).toHaveLength(1);
  expect((await executeShiftChange(proof('e1'),{kind:'CANCEL',operationId:randomUUID(),requestId:offered.requestId,expectedRevision:1},db.executor)).status).toBe('closed');
  const decided=await readEmployeeRequests(proof('e2'),db.executor);
  expect(decided.state).toBe('ready');if(decided.state!=='ready')throw Error('Decided requests projection was unavailable');
- expect(decided.incoming).toBe(0);
+ expect(decided.incoming).toBe(0);expect(decided.exchangeCounts).toEqual({open:0,forYou:0});
  expect(decided.recent?.filter(row=>row.id===offered.requestId)).toEqual([expect.objectContaining({kind:'shift',status:'CANCELLED'})]);
 });
 it.each(['incoming-first','history-first'])('keeps a swap in exactly one Requests section when cancellation races the read (%s)',async(order)=>{
@@ -75,6 +78,60 @@ it('keeps sent and decided history visible behind twenty pending offers, includi
   expect.objectContaining({id:'sent-old',status:'CANCELLED'}),expect.objectContaining({id:'decided-old',status:'DENIED'}),expect.objectContaining({id:'pending-21',status:'EXPIRED'}),
  ]));
  expect(result.recent).toHaveLength(3);
+});
+it('retains older waiting time-off requests beyond the latest eight own requests',async()=>{
+ await fixtureShift(db.executor,'waiting-history-shift','e2','2035-10-03');
+ await q("INSERT INTO shift_exchanges(id,kind,source_shift_id,requested_by_employee_id,status,created_at) VALUES('waiting-recent-shift','COVERAGE','waiting-history-shift','e2','CANCELLED',now())");
+ await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,status,created_at) SELECT 'waiting-decided-'||n,'e2','2035-10-10','2035-10-10','OWN PRIVATE REASON','APPROVED',now()-n*interval '1 hour' FROM generate_series(1,9)n");
+ await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,status,created_at) VALUES('waiting-recent','e2','2035-10-11','2035-10-11','OWN PRIVATE REASON','PENDING',now()-interval '30 minutes'),('waiting-old-1','e2','2035-10-12','2035-10-12','OWN PRIVATE REASON','PENDING',now()-interval '2 days'),('waiting-old-2','e2','2035-10-13','2035-10-13','OWN PRIVATE REASON','PENDING',now()-interval '3 days'),('waiting-peer','e1','2035-10-14','2035-10-14','PEER PRIVATE REASON','PENDING',now()+interval '1 hour')");
+ const result=await readEmployeeRequests(proof('e2'),db.executor);
+ expect(result.state).toBe('ready');if(result.state!=='ready')throw Error('Crowded time-off Requests read was unavailable');
+ expect(result.recent?.filter(row=>row.kind==='timeOff'&&row.status==='PENDING').map(row=>row.id)).toEqual(['waiting-recent','waiting-old-1','waiting-old-2']);
+ // The original latest eight across request kinds stay intact; only older waiting time off is added.
+ expect(result.recent?.map(row=>row.id)).toEqual(['waiting-recent-shift','waiting-recent','waiting-decided-1','waiting-decided-2','waiting-decided-3','waiting-decided-4','waiting-decided-5','waiting-decided-6','waiting-old-1','waiting-old-2']);
+ expect(new Set(result.recent?.map(row=>row.kind+':'+row.id)).size).toBe(result.recent?.length);
+ expect(JSON.stringify(result)).not.toMatch(/waiting-peer|PRIVATE REASON|employeeId|reviewerName|sessionTokenHash/);
+ const repeated=await readEmployeeRequests(proof('e2'),db.executor);
+ expect(repeated.state).toBe('ready');if(repeated.state!=='ready')throw Error('Repeated Requests read was unavailable');
+ expect(repeated.recent).toEqual(result.recent);
+});
+it('keeps time-off source failure explicit and skips that source when its module is disabled',async()=>{
+ let timeOffReads=0;
+ const failing:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
+  if(statements.some(s=>s.text.includes('FROM time_off_requests r'))){timeOffReads++;throw Error('Fictional private time-off outage');}
+  return db.executor.transaction(statements,signal);
+ }};
+ const partial=await readEmployeeRequests(proof('e2'),failing);
+ expect(partial.state).toBe('ready');if(partial.state!=='ready')throw Error('Partial time-off read was unavailable');
+ expect(partial.recent).toBeNull();expect(partial.incoming).toBe(0);expect(partial.open).toEqual([]);expect(timeOffReads).toBe(1);
+ expect(JSON.stringify(partial)).not.toContain('private time-off outage');
+ await q("SELECT nevora_set_workspace_presentation($1,'workspace-fuel','owner',0,$2,repeat('a',64))",[randomUUID(),JSON.stringify({version:1,brand:{},modules:{disabled:['timeOff']}})]);
+ const disabled=await readEmployeeRequests(proof('e2'),failing);
+ expect(disabled.state).toBe('ready');if(disabled.state!=='ready')throw Error('Disabled time-off read was unavailable');
+ expect(disabled.modules.timeOff).toBe(false);expect(disabled.recent).toEqual([]);expect(timeOffReads).toBe(1);
+});
+it('does not release Requests under a module revision changed during the source reads',async()=>{
+ let changed=false;
+ const changing:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
+  const rows=await db.executor.transaction(statements,signal);
+  if(!changed&&statements.some(s=>s.text.includes('FROM time_off_requests r'))){
+   changed=true;
+   await q("SELECT nevora_set_workspace_presentation($1,'workspace-fuel','owner',0,$2,repeat('b',64))",[randomUUID(),JSON.stringify({version:1,brand:{},modules:{disabled:['timeOff']}})]);
+  }
+  return rows;
+ }};
+ expect(await readEmployeeRequests(proof('e2'),changing)).toEqual({state:'unavailable',reason:'read_failed'});expect(changed).toBe(true);
+});
+it('refuses retained time-off history after the actual employee role or session loses authority',async()=>{
+ await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,status) VALUES('guarded-waiting','e2','2035-10-10','2035-10-10','PRIVATE REASON','PENDING')");
+ const authorized=await readEmployeeRequests(proof('e2'),db.executor);
+ expect(authorized.state).toBe('ready');if(authorized.state!=='ready')throw Error('Authorized Requests read was unavailable');
+ expect(authorized.recent?.map(row=>row.id)).toEqual(['guarded-waiting']);
+ await q("UPDATE employees SET role='OWNER' WHERE id='e2'");
+ expect(await readEmployeeRequests(proof('e2'),db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+ expect(await readEmployeeRequests({...proof('e2'),employee:{...proof('e2').employee,role:'OWNER'}},db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+ await q("UPDATE employees SET role='EMPLOYEE' WHERE id='e2'; UPDATE employee_sessions SET expires_at=now()-interval '1 minute' WHERE employee_id='e2'");
+ expect(await readEmployeeRequests(proof('e2'),db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
 });
 it('keeps a failed swap source explicit while retaining other available Requests sections',async()=>{
  const failing:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
@@ -213,7 +270,7 @@ it('H06 sparse history facts are explicitly unknown and current camelCase facts 
  await fixtureShift(db.executor,'source');
  await q("INSERT INTO shift_change_events(workspace_id,request_kind,request_id,request_revision,event_kind,source_terms,target_terms,participants) VALUES('workspace-fuel','EXCHANGE','sparse',1,'LEGACY_IMPORTED',$1,$2,$3)",[JSON.stringify({date:'2035-10-02'}),JSON.stringify({date:'2035-10-03',startTime:'08:00',endTime:'16:00',locationId:'loc-1',positionId:null,isDesignatedLead:false}),JSON.stringify({requesterEmployeeId:'e1'})]);
  const {readShiftChangeHistoryView}=await import('../../lib/data/shift-change-views');const [row]=await readShiftChangeHistoryView(proof('e1'),'sparse',db.executor);
- expect(row.source).toContain('Unknown time');expect(row.source).toContain('Position unknown');expect(row.source).toContain('Lead designation unknown');expect(row.target).toContain('08:00 – 16:00');expect(row.target).toContain('No assigned position · No designated lead');
+ expect(row.source).toContain('Unknown time');expect(row.source).toContain('Position unknown');expect(row.source).toContain('Lead designation unknown');expect(row.target).toContain('08:00 – 16:00');expect(row.target).toContain('No assigned position · No shift lead');
 });
 
 it('H11 invalid OTHER details never persist any report or transaction; three characters permit report',async()=>{
@@ -236,7 +293,7 @@ it.each(['manual-policy','recorded-policy','overtime'] as const)('H12 manager ge
  if(reason==='recorded-policy')await q("UPDATE workspaces SET shift_change_policy=jsonb_set(shift_change_policy,'{coverage,mode}','\"AUTOMATIC_WHEN_VALID\"')");
  const command={kind:'MANAGER_APPROVE' as const,operationId:randomUUID(),requestId:r.requestId,expectedRevision:2};
  const view=await readShiftChangeAvailability(proof('owner'),command,db.executor);
- expect(view).toEqual({allowed:true,notice:reason==='overtime'?'Projected scheduled overtime needs manager review.':reason==='manual-policy'?'Current workflow policy requires manager review.':'This request was submitted under manager review.'});
+ expect(view).toEqual({allowed:true,notice:reason==='overtime'?'Projected scheduled overtime needs manager review.':reason==='manual-policy'?null:'This request was submitted under manager review.',policy:{managerReviewRequired:reason==='manual-policy',rulePath:'Scheduling rules › Trades'}});
  expect(JSON.stringify(view)).not.toMatch(/weeklyMinutes|operational|reviewedBy|classification|WALL_CLOCK/);
  expect(await readShiftChangeAvailability(proof('e3'),command,db.executor)).toMatchObject({allowed:false});
  await q("UPDATE employee_scheduling_settings SET operational_rule_profile=jsonb_set(operational_rule_profile,'{minimumRest}','{\"status\":\"UNKNOWN\"}') WHERE employee_id='e2'");
@@ -275,4 +332,12 @@ it('H13 failed final transaction rolls back decision metadata with assignments a
  const executor={...db.executor,transaction:(statements:Parameters<typeof db.executor.transaction>[0])=>db.executor.transaction([...statements,{text:'SELECT 1/0',values:[]}])};
  await expect(executeShiftChange(proof('e2'),{kind:'ACCEPT',operationId,requestId:r.requestId,expectedRevision:1},executor)).rejects.toMatchObject({code:'22012'});
  expect(await q('SELECT * FROM shift_change_events')).toEqual(before);expect(await q("SELECT employee_id FROM shifts WHERE id='source'")).toEqual([{employee_id:'e1'}]);expect(await findShiftChangeOperation(proof('e2'),operationId,db.executor)).toBeNull();
+});
+
+it('shared exchange counts preserve an unavailable open-cover source rather than fabricating zero',async()=>{
+ const failing:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
+  if(statements.some(s=>s.text.includes("x.kind = 'COVERAGE'")&&s.text.includes('source.date >= $2')))throw Error('Fictional cover outage');
+  return db.executor.transaction(statements,signal);
+ }};
+ expect(await readEmployeeRequests(proof('e2'),failing)).toMatchObject({state:'ready',exchangeCounts:{open:null,forYou:0}});
 });

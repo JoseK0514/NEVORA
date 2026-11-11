@@ -166,7 +166,7 @@ it('counts Need review as the Inbox does, names the reason on the row and keeps 
  vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json({...ready(),cards:[{...timed,source:{...timed.source,entries:[entry]}},card('E2'),card('OWNER')]});commands.push(JSON.parse(String(init?.body)));return Response.json({status:'approved'});});
  await mount();const rendered=html();
  expect(rendered).toContain('aria-label="Period overview"');
- expect(rendered).toContain('aria-label="Need review, 1"');
+ expect(rendered).toContain('aria-label="Needs review, 1"');
  expect(rendered).toContain('aria-label="Approved, 0"');
  expect(rendered).toContain('Missing clock-out');
  expect(rendered).toContain('Front desk');
@@ -395,4 +395,16 @@ it('says “no time recorded” once when no ready card has time',async()=>{
  await mount();const rendered=html();
  expect(rendered).toContain('2 ready · no time recorded');
  expect(rendered).not.toMatch(/0 min recorded/);
+});
+
+it('separates recorded-time approval and finalization counts without treating approved cards as awaiting approval',async()=>{
+ const recorded=(id:string)=>{const item=card(id);return {...item,source:{...item.source,entries:[{id:'entry-'+id,locationId:'fixture-office',locationName:'Fixture office',positionId:null,positionName:null,sourceKind:'RECORDED',adjustmentId:null,recordedVersion:1,startAt:'2026-09-22T08:00:00Z',endAt:'2026-09-22T09:00:00Z',rawStartAt:'2026-09-22T08:00:00Z',rawEndAt:'2026-09-22T09:00:00Z',breaks:[]}]}};};
+ const approved=recorded('APPROVED');
+ const history={operationId:'22222222-2222-4222-8222-222222222222',revision:1,action:'APPROVE',occurredAt:'2026-09-28T12:00:00Z',actorName:'Fictional Reviewer',note:null,sourceHash:'a'.repeat(32),snapshot:approved.source};
+ vi.stubGlobal('fetch',async()=>Response.json({...ready(),cards:[recorded('DRAFT'),{...approved,state:'APPROVED',revision:1,history:[history]},card('BLANK')]}));
+ await mount();const rendered=html();
+ expect(rendered).toContain('1 awaiting approval');expect(rendered).toContain('1 awaiting finalization');
+ expect(control(n=>n.type==='button'&&n.props['aria-label']==='Needs review, 2')).toBeDefined();
+ // Closing F1 (NV-252): one person with no time folds into a row of its own.
+ expect(rendered).toContain('1 person with no time yet');expect(commands).toHaveLength(0);
 });

@@ -36,7 +36,7 @@ export type ScheduleSourceSnapshot = SnapshotBase<'SCHEDULE'> & {
   employeePublications?: Readonly<Record<string, EmployeePublicationProjection>>;
 };
 export type SourceSnapshot =
-  | (SnapshotBase<'COMMUNICATION'> & {kind:'COMMUNICATION';recipientIds:readonly string[];expiresAt:string|null})
+  | (SnapshotBase<'COMMUNICATION'> & {kind:'COMMUNICATION';recipientIds:readonly string[];missingAcknowledgementRecipientIds?:readonly string[];expiresAt:string|null})
   | ScheduleSourceSnapshot
   | (SnapshotBase<'TIME_OFF'> & { kind: 'TIME_OFF'; record: TimeOffListItem })
   | (SnapshotBase<'EXCHANGE'> & { kind: 'EXCHANGE'; record: ExchangeRecord; eligibleEmployeeIds?:readonly string[]; completionDeadline?:string|null; semanticNeedKey?:string; attentionReason?:string })

@@ -1,3 +1,4 @@
+import {approvalAvailability,type ApprovalPolicy} from '../shift-changes/availability-policy';
 import {readShiftChangeCompany,shiftChangeCompanyStatements,shiftChangeCompanyFence,isShiftChangeAuthorizationError} from './shift-change-authority';
 import { createHash, randomUUID } from 'node:crypto';
 import type { SessionMutationProof, ShiftChangeCommand, ShiftChangeResult, ShiftTerms, ConsentSnapshot, ShiftChangeEvaluation } from '../shift-changes/types';
@@ -261,21 +262,19 @@ import { isShiftChangeCommand } from '../shift-changes/command-parser';
 /** Read-only UI availability uses the same command plan as final guarded writes.
  * Return a finite safe projection, never the private snapshot or SQL statements. */
 /** reasons and refusal are additive: older callers read allowed and notice only. */
-export type ShiftChangeAvailability={allowed:boolean;notice:string|null;outcome?:'completed'|'pending'|'closed';reasons?:EligibilityReason[];refusal?:'rules'|'review'|'stale'|'other'};
+export type ShiftChangeAvailability={policy?:ApprovalPolicy;allowed:boolean;notice:string|null;outcome?:'completed'|'pending'|'closed';reasons?:EligibilityReason[];refusal?:'rules'|'review'|'stale'|'other'};
 export async function readShiftChangeAvailability(proof:SessionMutationProof,command:ShiftChangeCommand,executor:SqlExecutor=neonNotificationExecutor()):Promise<ShiftChangeAvailability> {
  try {
   const snapshot=await readShiftChangeSnapshot(proof,command,executor);
   const plan=planCommand(snapshot,command),result='result' in plan?plan.result:plan;
   if(['completed','pending','closed'].includes(result.status)){
-   const reasons:string[]=[];
+   let approval:ReturnType<typeof approvalAvailability>|undefined;
    if(command.kind==='MANAGER_APPROVE'&&['OWNER','MANAGER'].includes(snapshot.actor.employee.role)) {
     const evaluation=evaluateShiftChange(snapshot,command);
-    if(evaluation.issues.some(issue=>issue.code==='PROJECTED_OVERTIME_REVIEW'))reasons.push('Projected scheduled overtime needs manager review.');
     const current=snapshot.policy?.[snapshot.request?.kind==='SWAP'?'swap':'coverage'];
-    if(current?.mode==='MANAGER_REVIEW')reasons.push('Current workflow policy requires manager review.');
-    else if(snapshot.request?.recordedApprovalMode==='MANAGER_REVIEW')reasons.push('This request was submitted under manager review.');
+    approval=approvalAvailability(current?.mode,snapshot.request?.recordedApprovalMode,evaluation.issues.some(issue=>issue.code==='PROJECTED_OVERTIME_REVIEW'));
    }
-   return {allowed:true,notice:reasons.length?reasons.join(' '):null,
+   return {allowed:true,notice:approval?.notice??null,...(approval?{policy:approval.policy}:{}),
     ...(command.kind==='ACCEPT'&&['EMPLOYEE','LEAD'].includes(snapshot.actor.employee.role)?{outcome:result.status as 'completed'|'pending'|'closed'}:{})};
   }
   // Reloading cannot clear a held edit; the Owner is told the step that does.

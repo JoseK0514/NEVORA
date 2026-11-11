@@ -13,7 +13,8 @@ import {listEmployees,listLocations} from './employees';
 import {getLatestPublicationRevision} from './publication-revisions';
 import {calculateScheduleHealth} from '../scheduling/schedule-health';
 import {buildManagerDashboardStatus} from '../dashboard-status';
-import {buildManagerActionItems} from '../assistance/manager-actions';
+import {businessDate} from '../business-time';
+import {buildManagerActionItems,markUpcomingCoverage} from '../assistance/manager-actions';
 import {getWorkspace,workspaceReadGuard} from './workspaces';
 import {managementSessionStatements} from './management-session';
 import {neonNotificationExecutor} from './notification-transactions';
@@ -217,7 +218,7 @@ async function loadManagerDashboardDataCore(weekStart:string,proof:SessionMutati
     availabilityDeadlineSet: Boolean(weekSettings?.availabilityDeadline),
     coverageRulesConfigured,
   };
-  const managerActions = buildManagerActionItems(actionInput);
+  const managerActions = markUpcomingCoverage(buildManagerActionItems(actionInput),businessDate(new Date(),workspace.timeZone));
 
   const dashboard = buildManagerDashboardStatus({
     locations: health.locationCoverage,
@@ -271,6 +272,7 @@ async function loadManagerDashboardDataCore(weekStart:string,proof:SessionMutati
     return {
       employeeId: employee.employeeId,
       employeeName: employee.employeeName,
+      role: employee.role,
       scheduledHours,
       targetHours: employee.targetWeeklyHours,
       status: balance

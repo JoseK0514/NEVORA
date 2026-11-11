@@ -6,6 +6,8 @@ import {
 export type EmployeeAcknowledgementState = {
   acknowledged: boolean;
   acknowledgedRevisionId?: string;
+  /** Actual canonical receipt time; never the read time or publication time. */
+  acknowledgedAt?: string;
   latestRevisionId?: string;
   needsAcknowledgement: boolean;
 };

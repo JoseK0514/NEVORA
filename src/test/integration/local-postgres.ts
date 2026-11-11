@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { Client, Pool } from 'pg';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
+import {ownedMigrationObserver,traceOwnedMigration} from './owned-migration-diagnostics';
 
 /** Keep this a literal equal to db/migrations/order.ts BASE_MIGRATIONS: the
  * PR16 database-restore rehearsal parses it from this file's source, and
@@ -53,6 +54,7 @@ export const CURRENT_MIGRATIONS = [
   '0053_onboarding_worker_capabilities.sql',
   '0054_onboarding_commerce_binding.sql',
   '0055_onboarding_commerce_worker_scope.sql',
+  '0056_clocker_identified_person_limits.sql',
   '0046_owner_advisor_memory.sql',
 ] as const;
 
@@ -167,13 +169,26 @@ async function createOwnedDatabase(prefix: 'fuel_phase3_test_' | 'nevora_foundat
       // file's transaction boundaries while avoiding a connection per file.
       // Close this connection before returning the independent runtime executor.
       const bootstrap = new Client({ connectionString: target.href, connectionTimeoutMillis: 3000, statement_timeout: 5000 });
+      let observer:ReturnType<typeof ownedMigrationObserver>|undefined;
+      let bootstrapFailed=false;
       try {
         await bootstrap.connect();
-        for (const file of CURRENT_MIGRATIONS.slice(0, migrations)) {
+        const [{pid,statement_timeout:statementTimeout}]=(await bootstrap.query("SELECT pg_backend_pid() AS pid,current_setting('statement_timeout') AS statement_timeout")).rows;
+        observer=ownedMigrationObserver(target.href,pid);
+        for (const [offset,file] of CURRENT_MIGRATIONS.slice(0, migrations).entries()) {
           await assertOwned();
-          await bootstrap.query(await readFile(resolve('db/migrations', file), 'utf8'), []);
+          const sql=await readFile(resolve('db/migrations',file),'utf8');
+          await traceOwnedMigration({file,index:offset+1,total:migrations,sql,pid,statementTimeout,execute:()=>bootstrap.query(sql,[]),sample:()=>observer!.sample()});
         }
-      } finally { await bootstrap.end(); }
+      } catch(error){bootstrapFailed=true;throw error;}
+      finally {
+        try{
+          try{await observer?.close();}catch{
+            if(!bootstrapFailed)throw Error('Owned migration observer closure failed.');
+            try{process.stderr.write('[OWNED_MIGRATION_OBSERVER_CLOSE_FAILED]\n');}catch{/* Preserve the bootstrap error. */}
+          }
+        }finally{await bootstrap.end();}
+      }
     }
   } catch (error) { await dispose(); throw error; }
   return { executor, connectionString: target.href, dispose };

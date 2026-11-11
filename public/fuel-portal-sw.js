@@ -83,9 +83,14 @@ async function closeGeneration(generation) {
 self.addEventListener('install', event => {
   if (RETIRE) return;
   event.waitUntil((async () => {
-    // Fetch and validate the complete public set before writing any entry.
-    const responses = await Promise.all(PUBLIC_ASSETS.map(path => fetch(path, { cache: 'no-store', credentials: 'omit', redirect: 'error' })));
-    if (responses.some(response => !response.ok || response.redirected || response.type === 'opaque')) throw new Error('Public offline assets unavailable');
+    // Read each public body promptly to release installing-browser fetch slots.
+    // Keep the original response metadata and validate the full set before writes.
+    const responses = await Promise.all(PUBLIC_ASSETS.map(async path => {
+      const response = await fetch(path, { cache: 'no-store', credentials: 'omit', redirect: 'error' });
+      if (!response.ok || response.redirected || response.type === 'opaque') throw new Error('Public offline assets unavailable');
+      await response.clone().arrayBuffer();
+      return response;
+    }));
     const cache = await caches.open(CACHE_NAME);
     await Promise.all(PUBLIC_ASSETS.map((path, index) => cache.put(path, responses[index])));
   })());
@@ -186,6 +191,20 @@ function validEnvelope(value) {
     title = 'Coverage Needs Attention'; body = 'Open NEVORA to review coverage.';
   } else if (['TIME_OFF_APPROVED', 'TIME_OFF_DENIED', 'CALLOUT_APPROVED', 'CALLOUT_DENIED', 'SWAP_RESPONSE_REQUIRED', 'SWAP_APPROVED', 'SWAP_DENIED', 'COVERAGE_APPROVED', 'COVERAGE_DENIED', 'COVERAGE_INVITATION', 'COVERAGE_CANCELLED', 'COVERAGE_EXPIRED', 'SWAP_CANCELLED', 'SWAP_EXPIRED', 'AVAILABILITY_REMINDER', 'AVAILABILITY_SUMMARY', 'PAYROLL_PREPARATION', 'PAYROLL_STATEMENT', 'MANAGER_REVIEW', 'SELF_TEST'].includes(value.kind)) {
     title = 'NEVORA Request Update'; body = 'Open NEVORA to review your pending task.';
+  } else return false;
+  // Keep each legacy pair for workers receiving already-queued envelopes. New
+  // copy is also exact and kind-bound; a title/body from different pairs fails.
+  if (value.title === title && value.body === body) return true;
+  if (value.kind === 'COMMUNICATION') {
+    title = 'New team update'; body = 'Open NEVORA to read it.';
+  } else if (['SCHEDULE_PUBLISHED', 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER'].includes(value.kind)) {
+    title = 'Your schedule is ready'; body = 'Open NEVORA to see it.';
+  } else if (value.kind === 'SCHEDULE_CHANGED') {
+    title = 'Your schedule changed'; body = 'Open NEVORA to see what changed.';
+  } else if (value.kind === 'COVERAGE_ATTENTION') {
+    title = 'A shift needs cover'; body = 'Open NEVORA to find cover.';
+  } else if (/^(TIME_OFF|CALLOUT|SWAP|COVERAGE)_/.test(value.kind)) {
+    title = 'Your request has an update'; body = 'Open NEVORA to see it.';
   } else return false;
   return value.title === title && value.body === body;
 }

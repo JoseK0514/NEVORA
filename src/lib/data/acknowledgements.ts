@@ -40,9 +40,9 @@ export async function getEmployeeAcknowledgementState(
   }
 
   const sql = applicationSql();
-  const rows = queryRows<{ publication_revision_id: string | null }>(
+  const rows = queryRows<{ publication_revision_id: string | null; acknowledged_at:string }>(
     await sql.query(
-      `SELECT publication_revision_id
+      `SELECT publication_revision_id,acknowledged_at::text
        FROM schedule_acknowledgements
        WHERE week_start = $1
          AND employee_id = $2
@@ -51,16 +51,19 @@ export async function getEmployeeAcknowledgementState(
     ),
   );
   const acknowledgedRevisionId = rows[0]?.publication_revision_id ?? undefined;
+  const withTime=(state:EmployeeAcknowledgementState):EmployeeAcknowledgementState=>({
+    ...state,...(acknowledgedRevisionId&&rows[0]?.acknowledged_at?{acknowledgedAt:new Date(rows[0].acknowledged_at).toISOString()}:{})
+  });
 
   if (
     !acknowledgedRevisionId ||
     acknowledgedRevisionId === latest.id
   ) {
-    return buildAcknowledgementState({
+    return withTime(buildAcknowledgementState({
       employeeId,
       acknowledgementRevisionId: acknowledgedRevisionId,
       latestRevisionId: latest.id,
-    });
+    }));
   }
 
   const [acknowledgedRevisionShifts, latestRevisionShifts] = await Promise.all([
@@ -68,13 +71,13 @@ export async function getEmployeeAcknowledgementState(
     listRevisionShifts(latest.id),
   ]);
 
-  return buildAcknowledgementState({
+  return withTime(buildAcknowledgementState({
     employeeId,
     acknowledgementRevisionId: acknowledgedRevisionId,
     latestRevisionId: latest.id,
     acknowledgedRevisionShifts,
     latestRevisionShifts,
-  });
+  }));
 }
 
 export async function hasAcknowledgedScheduleWeek(

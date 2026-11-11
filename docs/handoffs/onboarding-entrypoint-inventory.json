@@ -99,6 +99,11 @@
       "reason": "Owned QA/bootstrap test harness; not a deployed application or onboarding invocation."
     },
     {
+      "path": "scripts/managed-workforce-host.mts",
+      "status": "CONVERTED",
+      "reason": "Dedicated health-only workforce host. Compiled/deployed source equality, fixed scoped profiles and child environments, private disk singleton, authenticated read-only cached health; no public execution route. Disabled initial deployment."
+    },
+    {
       "path": "scripts/native-owned.mjs",
       "tags": [
         "runtime-boundary-audit"
@@ -494,6 +499,11 @@
       "status": "CONVERTED",
       "reason": "Native Neon staging receiver verifies compiled source, exact test branch/environment, closed feature gate, least-privilege named catalog DSN and Stripe signature before queue IO; injected default database capability is inert. No Owner/provisioner/Stripe API capability.",
       "isolatedBehavior": "GUARDED_STAGING_CATALOG"
+    },
+    {
+      "path": "services/hosted/neon/workforcemonitor.entry.ts",
+      "status": "CONVERTED",
+      "reason": "Fixed authenticated native Neon schedule only. Strict monitor capability allowlist, inert injected credentials, compiled-source/branch/test gates before monitor construction. Independent restricted journal DSN and fenced support SMTP only; host and mail initially disabled."
     },
     {
       "path": "src/app/access-help/[[...topic]]/page.tsx",
@@ -961,6 +971,15 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/app/api/employee/time-off-staffing/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Protected read-only staffing endpoint uses the shared host-bound application SQL executor; current session/actor/view, role, workspace and scoped/own authorization remain enforced before and after source reads. The bounded selector cannot choose a workspace or database.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
       "path": "src/app/api/internal/notifications/dispatch/route.ts",
       "tags": [
         "request-entrypoint"
@@ -1114,12 +1133,39 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/app/api/manager/reminders/operations/[id]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Session-bound reminder recovery uses current Owner/Manager Company authority, mutation proof and the shared host-bound notification SQL executor. Workspace/session fences and original operation authority are revalidated; public results omit target/content and no provider is called.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/manager/reminders/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Bounded same-origin reminder command uses current Owner/Manager Company authority and the shared host-bound notification SQL executor. Current source/recipient checks, workspace/session fences, atomic audit/operation/queue writes, idempotency and daily budgets remain enforced. Existing development activation hold is retained; no direct provider send or caller-selected database.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
       "path": "src/app/api/manager/time-corrections/route.ts",
       "tags": [
         "request-entrypoint"
       ],
       "status": "CONVERTED",
       "reason": "Business data uses shared scoped SQL/applicationSql; auth/device cookie transports use company/incarnation/purpose envelopes. Public presentation reads remain registered-host scoped; caches are per render, private or disabled. Existing domain authorization remains required.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/manager/time-off-staffing/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Protected read-only staffing endpoint uses the shared host-bound application SQL executor; current session/actor/view, role, workspace and scoped/own authorization remain enforced before and after source reads. The bounded selector cannot choose a workspace or database.",
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
@@ -3653,6 +3699,16 @@
       "isolatedBehavior": "BOUND_ORIGIN"
     },
     {
+      "path": "src/lib/operations/monitor-store.ts",
+      "status": "CONVERTED",
+      "reason": "Independent aggregate-only incident journal under a dedicated non-owner LOGIN role and forced session-user RLS; no company, onboarding, employee or provisioning access. Setup grants are operator-only; ambiguous SMTP sends are retained."
+    },
+    {
+      "path": "src/lib/operations/principal-policy.ts",
+      "status": "CONVERTED",
+      "reason": "Shared metadata-only admission for fixed monitor or company WORKER-reader policies; effective PUBLIC/role privileges, all object ownership, routines, sequences, large objects and supported PG maintenance rights checked before admission. No runtime DSN, grants, credential retrieval or business mutation."
+    },
+    {
       "path": "src/lib/operations/routing-reader.ts",
       "tags": [
         "setup-only",
@@ -4220,6 +4276,46 @@
       ],
       "status": "PROVEN_NON_RUNTIME",
       "reason": "Test, fictional fixture or owned QA scenario; not a deployed application boundary."
+    },
+    {
+      "path": "src/lib/operations/worker-enrollment-company.ts",
+      "tags": [
+        "worker-enrollment",
+        "private-machine-boundary"
+      ],
+      "status": "CONVERTED",
+      "reason": "Fixed read-only SDK proof uses the original company WORKER URI only after strict identity/TLS validation and matches current Worker commerce hash before sealing. No Owner capability or provider API.",
+      "isolatedBehavior": "BOUND_WORKER"
+    },
+    {
+      "path": "src/lib/operations/worker-enrollment-issuer.ts",
+      "tags": [
+        "worker-enrollment",
+        "private-machine-boundary"
+      ],
+      "status": "CONVERTED",
+      "reason": "Private test-only issuer pins selected control target, source, branch, <=2 independently hashed public requests and closed normal provisioning flags. Uses original private roots inside provisioner custody only.",
+      "isolatedBehavior": "BOUND_WORKER"
+    },
+    {
+      "path": "scripts/worker-enrollment-operator.mts",
+      "tags": [
+        "worker-enrollment",
+        "private-machine-boundary"
+      ],
+      "status": "CONVERTED",
+      "reason": "Explicit private-file operator boundary; creates separated fresh recipient/public request or curated payroll-only host profiles. No SQL, network, shared-root output or credential arguments.",
+      "isolatedBehavior": "BOUND_WORKER"
+    },
+    {
+      "path": "src/lib/operations/worker-enrollment-runtime.server.ts",
+      "tags": [
+        "worker-enrollment",
+        "private-machine-boundary"
+      ],
+      "status": "CONVERTED",
+      "reason": "Canonical enrolled WORKER material read audits actual scoped machine principal and current encrypted view, identity, expiry and unique recipient before every use. No browser/Owner purpose or plaintext cache.",
+      "isolatedBehavior": "BOUND_WORKER"
     }
   ],
   "routingEvidence": "Task2: actual owned A/B PostgreSQL databases through installed Neon HTTP protocol; not hosted Neon evidence.",

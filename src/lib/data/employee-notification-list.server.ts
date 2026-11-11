@@ -1,10 +1,11 @@
+import {addDays,isValidIsoDate} from '../date-utils';
 import 'server-only';
 import {activePresentationSql,readActivePresentation} from '../workspace-presentation/service';
 import {ALL_MODULES_ON,moduleForPath} from '../workspace-presentation/modules';
 import {encodeMessageCursor,parseMessageCursor,type MessagePage} from '../employee-message-page';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {NotificationIntent,SqlExecutor,SqlStatement,SourceSnapshot} from '../notifications/types';
-import {parseEmployeeView,type EmployeeNotificationItem,type EmployeeViewSnapshot} from '../employee-view';
+import {parseEmployeeView,type EmployeeNotificationItem,type EmployeeNotificationSubject,type EmployeeViewSnapshot} from '../employee-view';
 import {safeNotificationOpenPath,safeReturnTo} from '../notifications/destinations';
 import {notificationReadSql,sqlNotificationStateRepository} from './notification-state';
 import {timeOffReadSql} from './requests';
@@ -55,6 +56,14 @@ export function projectNotificationDisplayState(source:SourceSnapshot,employeeId
  }
  if(source.kind==='AVAILABILITY')return {reviewState,actionState:source.submissions.some(s=>s.employeeId===employeeId&&s.submitted)?'complete':'required'};
  return {reviewState,actionState:'none'};
+}
+/** Called only after current intent/source authorization; no private description enters this DTO. */
+export function notificationSubject(source:SourceSnapshot):EmployeeNotificationSubject|null{
+ const startDate=source.kind==='SCHEDULE'?source.revision.weekStart:source.kind==='TIME_OFF'?source.record.startDate:source.kind==='EXCHANGE'?source.record.sourceShift.date:source.kind==='CALLOUT'?source.record.date:null;
+ if(!startDate||!isValidIsoDate(startDate))return null;
+ const endDate=source.kind==='SCHEDULE'?addDays(startDate,6):source.kind==='TIME_OFF'?source.record.endDate:startDate;
+ if(!isValidIsoDate(endDate)||endDate<startDate)return null;
+ return {kind:source.kind==='SCHEDULE'?'scheduleWeek':'requestDate',startDate,endDate};
 }
 type Template={name:string;args:number;sql:(args:string[])=>string;clockField?:'observed_at'|'observedAt'};
 /** Finite canonical SELECT templates only. No SQL rewriting, arbitrary query
@@ -207,7 +216,7 @@ async function readNotificationObservation(proof:SessionMutationProof,environmen
     const read=receiptKind?receipts.some(row=>row.source_kind===receiptKind&&row.source_id===source.source.id&&row.source_version===receiptVersion):null;
     const communication=source.kind==='COMMUNICATION'?statuses.find(row=>row.sourceId===source.source.id)??null:null;
     const display=projectNotificationDisplayState(source,proof.employee.id,read,communication);if(display.actionState==='unavailable')partial=true;
-    items.push({id:intent.id,label:labels[intent.source.kind as typeof supported[number]],at:intent.dueAt,href,...display});
+    items.push({id:intent.id,label:labels[intent.source.kind as typeof supported[number]],at:intent.dueAt,href,subject:notificationSubject(source),...display});
    }
    return {items,coverage:partial?'partial' as const:'complete' as const,expires};
   }

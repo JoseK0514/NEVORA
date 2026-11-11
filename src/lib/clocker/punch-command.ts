@@ -5,14 +5,14 @@ const messages:Record<PunchErrorCode,string>={
  BREAK_TYPE_CHANGED:'This break type changed or is inactive. Reload and choose an available break type.',
  INVALID_INPUT:'Check the clock action and reload its current state.',
  AUTH_REQUIRED:'Verify your PIN again on this registered tablet.',
- CONTEXT_CHANGED:'Tablet verification changed. Do not replay the previous action.',
+ CONTEXT_CHANGED:"Your PIN check changed. Enter your PIN again; nothing was punched twice.",
  STALE_STATE:'Your clock state changed. Reload before choosing an action.',
- COMMAND_REUSED:'This command ID already belongs to a different action. Check its saved receipt.',
+ COMMAND_REUSED:"This punch reference belongs to a different punch. Ask your manager to check it.",
  INVALID_TRANSITION:'This clock action is not available in the current state.',
  OTHER_LOCATION:'This shift is open at another location. Use a registered tablet at that location.',
  INTEGRITY:'Recorded clock data is inconsistent. No time was changed. Ask your manager for assistance.',
  CLOCK_INVALID:'The server clock does not agree with recorded time. No time was changed.',
- UNAVAILABLE:'The clock result could not be confirmed. Check the original command receipt before retrying.',
+ UNAVAILABLE:"We couldn't confirm your punch. Tap Check Action Status before trying again.",
 };
 export class ClockerPunchError extends Error {
  constructor(public readonly code:PunchErrorCode){super(messages[code]);this.name='ClockerPunchError';}

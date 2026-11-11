@@ -163,8 +163,8 @@ export function validateTypedSnapshotOwnership(snapshot:unknown,observedAssignme
     if(a.kind==='PARENT'){target=a.target;columns=a.targetColumns;refKey=physicalKey(n,a.columns);types=a.columns.map(c=>cell(n,c).type);}
     else if(a.kind==='TYPED_SCOPE'){
      const scope=scalar(n,a.discriminator);
-     if(scope!=='DEVICE'&&scope!=='WORKSPACE')fail('UNSUPPORTED_TYPED_SCOPE');
-     target=scope==='DEVICE'?'clocker_devices':'workspaces';columns=['id'];refKey=physicalKey(n,[a.identifier]);types=[cell(n,a.identifier).type];
+     if(scope!=='DEVICE'&&scope!=='WORKSPACE'&&scope!=='PERSON')fail('UNSUPPORTED_TYPED_SCOPE');
+     target=scope==='DEVICE'?'clocker_devices':scope==='PERSON'?'employees':'workspaces';columns=['id'];refKey=physicalKey(n,[a.identifier]);types=[cell(n,a.identifier).type];
     }else continue;
     const parents=find(target,columns,refKey,types);
     if(parents.length!==1)fail('CURRENT_REFERENCE_MISSING_OR_AMBIGUOUS');

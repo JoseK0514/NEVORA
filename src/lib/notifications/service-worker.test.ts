@@ -123,6 +123,60 @@ describe('portal service worker source', () => {
     const other = harness(); other.network.mockResolvedValue(Object.defineProperty(new Response('login'), 'redirected', { value: true }));
     await expect(other.dispatch('install')).rejects.toThrow(); expect(other.writes).toEqual([]);
   });
+  it('finishes public response bodies before waiting for all throttled install fetches', async () => {
+    const h = harness();
+    const pending: (() => void)[] = [];
+    let active = 0;
+    let completed = 0;
+    // Installing browsers can hold a request slot until its response body is read.
+    h.network.mockImplementation(request => new Promise<Response>(resolve => {
+      const start = () => {
+        active++;
+        const body = new ReadableStream<Uint8Array>({
+          pull(controller) {
+            expect(h.writes).toEqual([]);
+            controller.enqueue(new TextEncoder().encode(`public ${request}`));
+            controller.close();
+            completed++;
+            active--;
+            pending.shift()?.();
+          },
+        }, { highWaterMark: 0 });
+        resolve(new Response(body, { headers: { 'X-Public-Asset': String(request) } }));
+      };
+      if (active < 2) start(); else pending.push(start);
+    }));
+    let deadline: ReturnType<typeof setTimeout> | undefined;
+    try {
+      await Promise.race([
+        h.dispatch('install'),
+        new Promise((_, reject) => { deadline = setTimeout(() => reject(new Error('Install blocked behind unread public bodies')), 1000); }),
+      ]);
+    } finally { clearTimeout(deadline); }
+    expect(completed).toBe(assets.length);
+    expect(h.writes.slice().sort()).toEqual(assets.slice().sort());
+    const cache = await h.caches.open('fuel-portal-public-v5');
+    for (const path of assets) {
+      const response = await cache.match(path);
+      expect(response?.headers.get('X-Public-Asset')).toBe(path);
+      expect(await response?.text()).toBe(`public ${path}`);
+    }
+  });
+  it('refuses the complete public set before cache writes when any response body fails', async () => {
+    const h = harness();
+    h.network.mockImplementation(async request => request === assets[assets.length - 1]
+      ? new Response(new ReadableStream({ start(controller) { controller.error(new Error('Public body truncated')); } }))
+      : new Response(`public ${request}`));
+    await expect(h.dispatch('install')).rejects.toThrow('Public body truncated');
+    expect(h.writes).toEqual([]);
+    expect(h.stores.size).toBe(0);
+  });
+  it('refuses opaque public responses before body reads or cache writes', async () => {
+    const h = harness();
+    h.network.mockResolvedValue(Object.defineProperty(new Response('unreadable'), 'type', { value: 'opaque' }));
+    await expect(h.dispatch('install')).rejects.toThrow();
+    expect(h.writes).toEqual([]);
+  });
   it('valid owner displays only the generic envelope with fixed icon and tag', async () => {
     const h = harness(); await h.message('SET_OWNER'); await h.push();
     expect(h.self.registration.showNotification).toHaveBeenCalledWith(envelope.title, expect.objectContaining({ body: envelope.body, tag: envelope.tag, icon: '/icons/fuel-192.png', data: envelope }));
@@ -132,6 +186,29 @@ describe('portal service worker source', () => {
     const intent: NotificationIntent = { id: envelope.notificationId, employeeId: 'fictional-person', type: kind, title: 'private title', body: 'private detail', actionHref: '/private', eventKey: 'event-key', environment: 'test', source: kind === 'COMMUNICATION' ? { kind: 'COMMUNICATION', id: 'update', version: 'v1' } : { kind: 'SCHEDULE', id: 'week', version: 'v1' }, effectiveVersion: 'v1', purpose: 'EVENT', urgency: 'normal', dueAt: '2098-01-01T00:00:00Z', expiresAt: envelope.expiresAt };
     const h = harness(); await h.message('SET_OWNER'); await h.push(buildPushEnvelope(intent, generation));
     expect(h.notices).toHaveLength(1); expect(JSON.stringify(h.notices[0].data)).not.toContain('private');
+  });
+  it.each([...PUSH_KINDS])('retains exact legacy copy pairs for queued %s envelopes',async kind=>{
+    const pair=kind==='COMMUNICATION'?['NEVORA update','Open NEVORA to review an update.']
+      :['SCHEDULE_PUBLISHED','SCHEDULE_ACKNOWLEDGEMENT_REMINDER'].includes(kind)?['Your NEVORA Schedule Is Ready','Open NEVORA to review your schedule.']
+      :kind==='SCHEDULE_CHANGED'?['Your NEVORA Schedule Changed','Open NEVORA to review your schedule.']
+      :kind==='COVERAGE_ATTENTION'?['Coverage Needs Attention','Open NEVORA to review coverage.']
+      :['NEVORA Request Update','Open NEVORA to review your pending task.'];
+    const h=harness();await h.message('SET_OWNER');await h.push({...envelope,kind,title:pair[0],body:pair[1]});
+    expect(h.notices).toHaveLength(1);
+  });
+  it.each([
+    ['SCHEDULE_CHANGED','Your schedule changed','Open NEVORA to review your schedule.'],
+    ['SCHEDULE_CHANGED','Your NEVORA Schedule Changed','Open NEVORA to see what changed.'],
+    ['COMMUNICATION','New team update','Open NEVORA to review an update.'],
+    ['CALLOUT_APPROVED','Your request has an update','Open NEVORA to review your pending task.'],
+    ['AVAILABILITY_REMINDER','Your request has an update','Open NEVORA to see it.'],
+    ['PAYROLL_STATEMENT','Your request has an update','Open NEVORA to see it.'],
+    ['MANAGER_REVIEW','Your request has an update','Open NEVORA to see it.'],
+    ['SELF_TEST','Your request has an update','Open NEVORA to see it.'],
+    ['CALLOUT_UNSUPPORTED','Your request has an update','Open NEVORA to see it.'],
+    ['SCHEDULE_CHANGED','Your schedule changed','Private medical details'],
+  ])('rejects mixed, private or wrong-kind approved copy for %s: %s',async(kind,title,body)=>{
+    const h=harness();await h.message('SET_OWNER');await h.push({...envelope,kind,title,body});expect(h.notices).toEqual([]);
   });
   it.each([null, {}, { ...envelope, ownershipGeneration: 'other' }, { ...envelope, expiresAt: '2000-01-01' }, { ...envelope, expiresAt: 'invalid' }, { ...envelope, notificationId: '//evil.example' }, { ...envelope, kind: 'UNKNOWN' }, { ...envelope, title: 'Private medical details' }, { ...envelope, body: 'Private detail' }, { ...envelope, tag: 'unowned' }, { ...envelope, url: 'https://evil.example' }])('suppresses malformed, expired, private or wrong-generation push %#', async value => {
     const h = harness(); await h.message('SET_OWNER'); await h.push(value); expect(h.notices).toEqual([]);

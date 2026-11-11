@@ -169,3 +169,37 @@ it('weekly employee detail retains the captured position after the catalog name 
  await q("UPDATE schedule_publication_revision_shifts SET position_id='historical-position',position_name='Barista at publication' WHERE revision_id='revision-1'");
  const review=await readEmployeeWeeklyReview(proof,week,db.executor);expect(review.shifts[0]).toMatchObject({positionId:'historical-position',positionName:'Barista at publication'});
 });
+
+it('retains the exact displayed own changes and canonical acknowledgement time after confirmation and replay',async()=>{
+ expect((await acknowledgeScheduleWeek(await reviewed(),db.executor)).status).toBe('committed');
+ await publish(2,'09:00');const before=await readEmployeeWeeklyReview(proof,week,db.executor);
+ expect(before.publicationChanges.length).toBeGreaterThan(0);const input=await reviewed();
+ const result=await acknowledgeScheduleWeek(input,db.executor);expect(result.status).toBe('committed');
+ expect(Object.keys(result).sort()).toEqual(['id','operationId','status','version']);
+ const confirmed=await readEmployeeWeeklyReview(proof,week,db.executor);
+ expect(confirmed.publicationChanges).toEqual(before.publicationChanges);
+ const [ack]=await db.executor.query<{acknowledged_at:string}>({text:'SELECT acknowledged_at::text AS acknowledged_at FROM schedule_acknowledgements WHERE employee_id=$1',values:[actor]});
+ expect(confirmed.acknowledgement.acknowledgedAt).toBe(new Date(String(ack.acknowledged_at)).toISOString());
+ expect(await acknowledgeScheduleWeek(input,db.executor)).toEqual(result);
+ await publish(3,'10:00');const newer=await readEmployeeWeeklyReview(proof,week,db.executor);
+ expect(newer.acknowledgement.needsAcknowledgement).toBe(true);expect(newer.publicationChanges).not.toEqual(before.publicationChanges);
+});
+
+it('action request facts name only an active current counterpart and withhold stale swap terms',async()=>{
+ const {withActionRequestFacts}=await import('../../lib/data/action-request-facts.server');
+ const {currentShiftTermsSql}=await import('../../lib/data/shift-change-release');
+ const {getWorkspace}=await import('../../lib/data/workspaces');
+ await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('QAPEER','Ana','Example','555-0188','EMPLOYEE','loc-1')");
+ await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('peer-shift','attention-schedule','QAPEER',$1,'16:00','20:00')",[week]);
+ await q(`INSERT INTO shift_exchanges(id,kind,source_shift_id,requested_by_employee_id,target_employee_id,target_shift_id,status,legacy_manual,source_terms,target_terms)
+ SELECT 'fact-swap','SWAP',s.id,s.employee_id,ts.employee_id,ts.id,'EMPLOYEE_PENDING',false,${currentShiftTermsSql('s','sc')},${currentShiftTermsSql('ts','tsc')}
+ FROM shifts s JOIN schedules sc ON sc.id=s.schedule_id CROSS JOIN shifts ts JOIN schedules tsc ON tsc.id=ts.schedule_id WHERE s.id='attention-shift' AND ts.id='peer-shift'`);
+ await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('a',64),'QAOWNER',clock_timestamp()+interval '1 hour')");
+ const owner={employee:{id:'QAOWNER',role:'OWNER',firstName:'Fictional',lastName:'Owner',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)} as SessionMutationProof;
+ const items=[{id:'EXCHANGE:fact-swap',type:'EXCHANGE'}] as Parameters<typeof withActionRequestFacts>[2],workspace=await getWorkspace(db.executor);
+ expect((await withActionRequestFacts(owner,workspace,items,db.executor))[0].request).toMatchObject({counterpartName:'Ana Example'});
+ await q("UPDATE shifts SET start_time='17:00' WHERE id='peer-shift'");
+ expect((await withActionRequestFacts(owner,workspace,items,db.executor))[0].request).not.toHaveProperty('counterpartName');
+ await q("DELETE FROM employee_sessions WHERE employee_id='QAOWNER'");
+ expect(await withActionRequestFacts(owner,workspace,items,db.executor)).toEqual(items);
+});

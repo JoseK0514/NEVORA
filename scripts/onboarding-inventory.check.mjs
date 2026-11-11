@@ -24,6 +24,7 @@ test('commerce server/catalog/worker boundaries cannot evade the runtime invento
 });
 test('the private workforce command and every tracked transport boundary have an explicit reviewed disposition',()=>{
  assert.throws(()=>validateOnboardingInventory(['scripts/workforce-operations.mts'],{entries:[]},()=>''),/Unclassified runtime entrypoint/);
+ assert.throws(()=>validateOnboardingInventory(['scripts/managed-workforce-host.mts'],{entries:[]},()=>''),/Unclassified runtime entrypoint/);
  const files=execFileSync('git',['ls-files','-z'],{encoding:'utf8',maxBuffer:32*1024*1024}).split('\0').filter(Boolean),inventory=JSON.parse(readFileSync('docs/handoffs/onboarding-entrypoint-inventory.json','utf8'));
  assert.doesNotThrow(()=>validateOnboardingInventory(files,inventory,path=>/\.[cm]?[jt]sx?$/.test(path)?readFileSync(path,'utf8'):''));
 });

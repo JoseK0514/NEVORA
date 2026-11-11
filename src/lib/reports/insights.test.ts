@@ -18,8 +18,8 @@ const byId = (report: PeriodReports) => Object.fromEntries(periodInsights(report
 describe('period insights', () => {
   it('answers from the loaded report only', () => {
     const i = byId(base());
-    expect(i.hours).toMatchObject({ value: '20h', detail: '2 people · breaks included' });
-    expect(i.plan).toMatchObject({ value: '+2h', detail: '16h scheduled · 18h recorded' });
+    expect(i.hours).toMatchObject({ value: '20 h', detail: '2 people · breaks included' });
+    expect(i.plan).toMatchObject({ value: '+2 h', detail: '16 h scheduled · 18 h recorded' });
     expect(i.requests).toMatchObject({ value: '3', detail: '2 time-off requests · 1 unable to work' });
     expect(i.coverage.value).toBe('1 of 2');
     expect(i.approvals).toMatchObject({ value: '1', tone: 'attention' });
@@ -32,7 +32,7 @@ describe('period insights', () => {
   });
   it('reads under-scheduled time as a negative difference and empty coverage as a dash', () => {
     const i = byId(base({ scheduleVsActual: [{ employeeId: 'a', employeeName: 'A', scheduledNanoseconds: H(10), recordedNanoseconds: H(8), differenceNanoseconds: '-' + H(2), unresolvedScheduleCount: 0 }], coverageReliability: { completedCoverageRequests: 0, observedCoverageRequests: 0, unclassifiedEvents: 0, score: null, definition: '' } } as Partial<PeriodReports>));
-    expect(i.plan.value).toBe('−2h');
+    expect(i.plan.value).toBe('−2 h');
     expect(i.coverage).toMatchObject({ value: '—', detail: 'No coverage requests' });
   });
 });

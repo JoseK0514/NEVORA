@@ -37,9 +37,9 @@ it("shows the three best fits first and the rest on request", () => {
 
 it("keeps missing targets distinct from zero targets", () => {
   const html = render();
-  expect(html).toContain("12h of 32h this week"); expect(html).toContain("18h this week · No target set");
+  expect(html).toContain("12 h of 32 h this week"); expect(html).toContain("18 h this week · No target set");
   const zero = render({ candidates: [{ ...props.candidates[1], targetHours: 0 }] });
-  expect(zero).not.toContain("No target set"); expect(zero).toContain("18h this week");
+  expect(zero).not.toContain("No target set"); expect(zero).toContain("18 h this week");
 });
 
 it.each(["STALE", "RESOLVED", "CHOOSE"] as const)("%s never exposes retained candidate review links", status => {

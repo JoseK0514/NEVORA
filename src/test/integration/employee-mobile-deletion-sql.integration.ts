@@ -26,6 +26,8 @@ import {requestAccountDeletion,type DeletionFormState} from '../../app/app/accou
 import {login} from '../../app/login/actions';
 import {LOGIN_LIMITS} from '../../lib/auth/login-limits.server';
 import {prepareSession} from '../../lib/auth/session-issuance';
+import {submitDeletionRequest} from '../../lib/account-deletion/requests.server';
+import {POLICY_VERSION} from '../../lib/legal/policies';
 
 let db:Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
 const q=<T=Record<string,unknown>>(text:string,values:readonly unknown[]=[])=>db.executor.query<T>({text,values});
@@ -182,4 +184,24 @@ it('refuses the runbook withdrawal once processing started',async()=>{
  await q("UPDATE account_deletion_requests SET status='processing' WHERE reference=$1",[accepted.reference]);
  expect(await q(statement,[accepted.reference,'workspace-fuel','DEL-OWN'])).toEqual([]);
  expect(await open()).toMatchObject([{reference:accepted.reference,status:'processing'}]);
+});
+
+// A display-copy revision must not restart consent, replace acceptance evidence or strand an existing request.
+it('continues a deletion accepted under the prior legal version after the display-copy revision',async()=>{
+ const token=await session('DEL-OWN','prior-policy-own');as(token);
+ const accepted=await submitDeletionRequest({employeeId:'DEL-OWN',sessionTokenHash:hash(token),password:TEST_PASSWORD,channel:'web',policyVersion:'2026-11-04'});
+ expect(accepted.outcome).toBe('received');if(accepted.outcome!=='received')throw Error('Missing historical receipt');
+ const reference=accepted.request.reference;
+ const before=await q("SELECT id::text,reference,policy_version,verified_at::text,confirmed_at::text FROM account_deletion_requests WHERE reference=$1",[reference]);
+ expect(before).toMatchObject([{reference,policy_version:'2026-11-04'}]);
+ // The old cookie has been revoked; the actual current action recovers the same receipt after password proof.
+ expect(await requestAccountDeletion({kind:'uncertain'},form({retry:'1'}))).toMatchObject({kind:'received',reference,confirmedAt:accepted.request.confirmedAt});
+ // A duplicate confirmation carrying the current display version cannot rewrite the original acceptance.
+ expect(await submitDeletionRequest({employeeId:'DEL-OWN',sessionTokenHash:hash(token),password:TEST_PASSWORD,channel:'web',policyVersion:POLICY_VERSION})).toMatchObject({outcome:'duplicate',request:{reference}});
+ await q("UPDATE account_deletion_requests SET status='processing' WHERE reference=$1",[reference]);
+ expect(await open()).toMatchObject([{reference,status:'processing'}]);
+ expect(await requestAccountDeletion({kind:'uncertain'},form({retry:'1'}))).toMatchObject({kind:'received',reference,confirmedAt:accepted.request.confirmedAt});
+ expect(await q("SELECT id::text,reference,policy_version,verified_at::text,confirmed_at::text FROM account_deletion_requests WHERE reference=$1",[reference])).toEqual(before);
+ expect(await q("SELECT count(*)::int n FROM account_deletion_requests WHERE employee_id='DEL-OWN'")).toEqual([{n:1}]);
+ expect(await q("SELECT token_hash FROM employee_sessions WHERE employee_id='DEL-OWN'")).toEqual([]);
 });

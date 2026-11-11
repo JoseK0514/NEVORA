@@ -4,6 +4,8 @@ import {randomUUID} from 'node:crypto';
 import {join} from 'node:path';
 import {Temporal} from '@js-temporal/polyfill';
 import {EMPLOYEE_DESKTOP_VIEWPORT} from './phase-d2-phone-hours-geometry.mjs';
+import {installD2NativeRetryTrace,captureD2NativeRetry,observeD2ManagerPostOutcomes} from './d2-native-retry-diagnostics.mjs';
+import {pressFocusedD2Retry} from './d2-native-retry-focus.mjs';
 import {MISSED_SHIFT_PATH,accessChanged,checkSubmission,clockText,correctionPayload,fillMissedShiftForm,fixForm,hoursPage,hoursPaused,isCorrectionAction,recordedReceipt,sendFix,whatToFix} from './employee-fix-time-browser.mjs';
 
 const WIDTHS=[320,375,390,430,768,1024,1440];
@@ -105,8 +107,12 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    const submitted=await boundCorrectionPost(employee.request,app.url+'/api/employee/time-corrections',{headers,data:entryCommand()});
    assert.equal(submitted.status(),202);const pending=await submitted.json();await employee.close();
    const c=await context(browser,{width:390,height:844});await login(c,'QAOWNER',{reuseSession:true});
+   const nativeReceipt={engine,decision,loss,phases:[],transport:[]};
+   observations.managerNativeRetries??=[];observations.managerNativeRetries.push(nativeReceipt);
+   let stopObserving=()=>{};
    try{
     const page=await c.newPage();page.setDefaultTimeout(15000);watch(page);
+    await page.addInitScript(installD2NativeRetryTrace);stopObserving=observeD2ManagerPostOutcomes(page,nativeReceipt,app.url);
     const attendanceNavigation=await page.goto(app.url+'/app?view=attendance#review',{waitUntil:'domcontentloaded'});assert(attendanceNavigation?.ok());await page.bringToFront();
     const commands=[];
     await page.route('**/api/manager/time-corrections',async route=>{
@@ -136,18 +142,22 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
      await page.setViewportSize({width,height:width<=430?844:1000});await geometry(page,'.manager-corrections','manager uncertain decision',engine,width);
      const shot=join(evidence,`${engine}-manager-recovery-${width}.png`);await page.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
     }
-    // Retry is disabled whenever the queue is not ready (manager-time-corrections: mode!=='ready'), for example while
-    // its snapshot renews; the seven screenshots above take over 10 s in WebKit and can overlap that. Press it only
-    // once it is enabled again, as UX-04 requires.
-    await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(button=>button.textContent==='Retry same decision'&&!button.disabled));
-    await retry.focus();await page.keyboard.press('Enter');
-    await page.getByText(decision==='APPROVE'?'Correction approved. The original recorded punch remains unchanged.':'Correction declined. The original recorded punch remains unchanged.',{exact:true}).waitFor();
+    // Snapshot renewal can disable retry between an enabled poll and focus().
+    // Acquire enabled foreground focus within one bounded pre-input window.
+    await captureD2NativeRetry(nativeReceipt,page,'before-focus',commands.length);
+    try{
+     await pressFocusedD2Retry(retry,page,nativeReceipt,commands.length,performance.now()+15000);
+     await captureD2NativeRetry(nativeReceipt,page,'key-sent',commands.length);
+     await page.getByText(decision==='APPROVE'?'Correction approved. The original recorded punch remains unchanged.':'Correction declined. The original recorded punch remains unchanged.',{exact:true}).waitFor();
+     await captureD2NativeRetry(nativeReceipt,page,'confirmed',commands.length);
+    }catch(error){await captureD2NativeRetry(nativeReceipt,page,'failed',commands.length);throw error;}
+    assert.equal(nativeReceipt.phases.length,4);assert(nativeReceipt.phases.every(phase=>phase.tainted===false&&phase.diagnosticFailed!==true),'Native retry diagnostics must be complete and untainted');
     assert.equal(commands.length,2);assert.deepEqual(commands[1],commands[0]);
     assert.deepEqual(await q("SELECT count(*)::int AS count FROM time_correction_events WHERE request_id=$1 AND event_kind IN ('APPROVED','REJECTED')",[pending.requestId]),[{count:1}]);
     assert.deepEqual(await q('SELECT count(*)::int AS count FROM time_correction_adjustments WHERE request_id=$1',[pending.requestId]),[{count:decision==='APPROVE'?1:0}]);
     observations.cases.push({engine,role:'Manager',decision,loss,operationId:commands[0].operationId,postCalls:commands.length,sameCommand:true,queueRowPresent:loss==='before'});
     checked(`${engine}: ${decision} ${loss} delivery recovers same operation independent of queue row`);
-   }finally{await c.close();}
+   }finally{stopObserving();await c.close();}
   }
 
   const employee=await context(browser);await login(employee,'D2-E');

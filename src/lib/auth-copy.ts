@@ -288,7 +288,6 @@ export const AUTH_COPY: Record<AuthLang, AuthCopy> = { en, es };
 /** Messages that come from the recovery request/reset flow (AccountRecovery and /api/auth/recovery), in Spanish.
  * Matched exactly; anything unknown is shown as it arrives. */
 const MESSAGES_ES: Record<string, string> = {
-  // Review B7 (NV-188): the plain-language recovery reply, ready for the server change (codex-B7). The old key stays until then.
   "If the details match an active account, we’ll email recovery steps. Can’t use that email? Ask your manager or Owner for help.":
     "Si los datos coinciden con una cuenta activa, te enviaremos por correo los pasos para recuperarla. ¿No puedes usar ese correo? Pide ayuda a tu gerente o al dueño.",
   "If these details match an active account and its registered recovery channel is available, recovery instructions will be sent. If you cannot use that channel, contact your manager or Owner for assisted recovery.":

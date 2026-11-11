@@ -5,7 +5,7 @@ export function onboardingRuntimeEntrypoint(path,source){
  if(/(?:^|\/)(?:test|tests|__tests__|fixtures)\//.test(path)||/\.(?:test|check|spec)\.[cm]?[jt]sx?$/.test(path))return false;
  if(/^src\/app\/.*\/route\.[jt]s$/.test(path)||/^functions\/.*\.[cm]?[jt]s$/.test(path)||/^(?:src\/)?(?:middleware|proxy)\.[jt]s$/.test(path))return true;
  if(/^services\/commerce\/(?:server|worker|worker-cli|operator)\.ts$/.test(path))return true;
- if(path==='scripts/workforce-operations.mts')return true;
+ if(['scripts/workforce-operations.mts','scripts/managed-workforce-host.mts'].includes(path))return true;
  if(/^(?:scripts|src\/lib)\/.*(?:^|[-/])worker(?:\.[cm]?[jt]s|\/)/.test(path))return true;
  if(!/^(?:src|functions|scripts|services)\/.*\.[cm]?[jt]sx?$/.test(path))return false;
  if(source.includes('use server')){

@@ -17,5 +17,5 @@ it('A061 invitation includes known position and Lead responsibility with shift c
  const coverage={...requestSnapshot('EXCHANGE',{...record,kind:'COVERAGE' as const,status:'OPEN' as const,targetEmployeeId:undefined}),eligibleEmployeeIds:['b']};
  coverage.record.sourceShift={...coverage.record.sourceShift,positionId:'position',positionName:'Barista',isDesignatedLead:true} as typeof coverage.record.sourceShift;
  const result=buildNotificationIntents({after:coverage,recipients:[{employeeId:'b',role:'LEAD',active:true,allowedLocationIds:['L']}],environment:'test',now:new Date('2035-10-01T12:00:00Z'),policy:notificationPolicyFor('America/Puerto_Rico')});
- expect(result).toHaveLength(1);expect(result[0].body).toContain('Barista');expect(result[0].body).toContain('Designated lead');
+ expect(result).toHaveLength(1);expect(result[0].body).toContain('Barista');expect(result[0].body).toContain('Shift lead');
 });

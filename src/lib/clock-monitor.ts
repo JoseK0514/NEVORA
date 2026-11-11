@@ -1,3 +1,4 @@
+import type {Today} from './today/project';
 import { Temporal } from '@js-temporal/polyfill';
 import type { ClockMonitor, ClockMonitorEmployee } from './time-clock';
 
@@ -59,6 +60,7 @@ export function parseClockMonitor(value:unknown):ClockMonitor{
  const employees=value.employees.map((r):ClockMonitorEmployee=>{
   if(!object(r)||!text(r.timeEntryId)||!text(r.employeeId)||!text(r.employeeName)||!text(r.locationId)||!text(r.locationName)||!text(r.deviceId)||
    !integer(r.elapsedMinutes)||!(r.positionName===null||text(r.positionName,80))||![null,'MATCHED','UNMATCHED','AMBIGUOUS'].includes(r.scheduleMatch as string|null))return fail();
+  if(r.late!==undefined&&r.late!==null&&typeof r.late!=='boolean')return fail();
   if(seen.has(r.employeeId))return fail();seen.add(r.employeeId);
   if(instant(r.clockInAt).epochNanoseconds>at.epochNanoseconds||r.elapsedMinutes!==minutes(r.clockInAt,value.observedAt))return fail();
   if(r.scheduleMatch!=='MATCHED'&&r.positionName!==null)return fail();
@@ -66,7 +68,7 @@ export function parseClockMonitor(value:unknown):ClockMonitor{
    if(!integer(r.breakElapsedMinutes)||instant(r.breakStartAt).epochNanoseconds<instant(r.clockInAt).epochNanoseconds||
     instant(r.breakStartAt).epochNanoseconds>at.epochNanoseconds||r.breakElapsedMinutes!==minutes(r.breakStartAt,value.observedAt))return fail();
   }else if(r.state!=='ON_FLOOR'||r.breakElapsedMinutes!==null||r.breakStartAt!==undefined)return fail();
-  return {timeEntryId:r.timeEntryId,employeeId:r.employeeId,employeeName:r.employeeName,locationId:r.locationId,locationName:r.locationName,
+  return {...(r.late!==undefined?{late:r.late as boolean|null}:{}),timeEntryId:r.timeEntryId,employeeId:r.employeeId,employeeName:r.employeeName,locationId:r.locationId,locationName:r.locationName,
    deviceId:r.deviceId,clockInAt:r.clockInAt as string,...(r.state==='ON_BREAK'?{breakStartAt:r.breakStartAt as string}:{}),
    state:r.state,elapsedMinutes:r.elapsedMinutes,breakElapsedMinutes:r.breakElapsedMinutes as number|null,positionName:r.positionName,
    scheduleMatch:r.scheduleMatch as ClockMonitorEmployee['scheduleMatch']};
@@ -75,4 +77,13 @@ export function parseClockMonitor(value:unknown):ClockMonitor{
 }
 export function formatMonitorDuration(value:number):string{
  if(!integer(value))return fail();return value<60?`${value}m`:`${Math.floor(value/60)}h ${value%60}m`;
+}
+
+/** Reuse Today rather than creating a second grace or lateness policy. */
+export function withMonitorLateness(monitor:Extract<ClockMonitor,{state:'ready'}>,today:Today):Extract<ClockMonitor,{state:'ready'}>{
+ const matches=today.state==='ready'&&today.timeZone===monitor.timeZone?today.shifts:[];
+ return {...monitor,employees:monitor.employees.map(employee=>{
+  const shifts=matches.filter(s=>s.employeeId===employee.employeeId&&s.locationId===employee.locationId&&['clocked_in','on_break'].includes(s.status)&&s.firstClockInAt!==null&&Date.parse(s.firstClockInAt)===Date.parse(employee.clockInAt));
+  return {...employee,late:shifts.length===1?shifts[0].late:null};
+ })};
 }

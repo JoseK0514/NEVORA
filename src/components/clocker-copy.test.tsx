@@ -61,3 +61,23 @@ it('orders the receipt date for each language and writes one Saved sentence',()=
  const en=renderToStaticMarkup(<ClockerReceipt action="CLOCK_OUT" performedAt={new Date().toISOString()} timeZone="UTC" locale="en-US" firstName="James"/>);
  expect(en).toMatch(/Saved <time[^>]*>\d{1,2}:\d{2}\s[AP]M<\/time>\. This screen clears in 8 seconds\./);expect(en).toContain('See you next time, James.');expect(en).not.toContain('Action reference');
 });
+it.each([
+ ['This punch reference belongs to a different punch. Ask your manager to check it.','Esta referencia pertenece a otra marcación. Pide a tu gerente que la revise.'],
+ ['Your PIN check changed. Enter your PIN again; nothing was punched twice.','La verificación de tu PIN cambió. Ingresa tu PIN de nuevo; no se registró ninguna marcación dos veces.'],
+ ["We couldn't confirm your punch. Tap Check Action Status before trying again.",'No pudimos confirmar tu marcación. Toca Verificar estado de la acción antes de volver a intentarlo.'],
+])('translates the paired punch recovery message %s', (en,es)=>{expect(clockerText('es',en)).toBe(es);});
+it('translates stable PIN/setup codes with legacy-message fallback',async()=>{
+ const {clockerErrorText}=await import('./clocker-copy');
+ expect(clockerErrorText('es',{code:'PIN_DENIED',error:'Changed wording'})).toBe('PIN no reconocido para esta ubicación. Inténtalo de nuevo o pide ayuda a tu gerente.');
+ expect(clockerErrorText('es',{error:'Enter exactly four PIN digits.'})).toBe('Ingresa exactamente los cuatro dígitos del PIN.');
+ expect(clockerErrorText('es',{code:'FUTURE_CODE',error:'Enter exactly four PIN digits.'})).toBe('Ingresa exactamente los cuatro dígitos del PIN.');
+});
+it('has explicit Spanish entries for every stable PIN/setup failure',async()=>{
+ const {CLOCKER_TRANSPORT_ERRORS}=await import('../lib/clocker/transport-errors');
+ const {clockerErrorText}=await import('./clocker-copy');
+ for(const [code,message] of Object.entries(CLOCKER_TRANSPORT_ERRORS)){
+  expect(CLOCKER_COPY[message],code).toBeTruthy();
+  expect(clockerErrorText('en',{code,error:'ignored'})).toBe(message);
+  expect(clockerErrorText('es',{code})).toBe(CLOCKER_COPY[message]);
+ }
+});

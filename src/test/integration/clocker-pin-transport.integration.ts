@@ -45,8 +45,21 @@ it.each([{Origin:'https://evil.invalid'},{'X-Nevora-Clocker':'0'},{'Content-Type
  const result=await call({action:'verify',pin:'0246'},headers);expect(result.status).toBe(403);
  expect(await q('SELECT * FROM clocker_pin_sessions')).toEqual([]);expect(await q('SELECT * FROM clocker_pin_limits')).toEqual([]);
 });
-it.each([{action:'verify',pin:246},{action:'verify',pin:'0246',employeeId:'pin-owner'},{action:'verify',pin:'0246\n'},{action:'verify',pin:'x'.repeat(5000)},{action:'clear',token:'forged'}])('rejects malformed or forged bodies',async body=>{
+it.each([{action:'verify',pin:246},{action:'verify',pin:'0246',employeeId:'pin-owner',forged:true},{action:'verify',pin:'0246\n'},{action:'verify',pin:'x'.repeat(5000)},{action:'clear',token:'forged'}])('rejects malformed or forged bodies',async body=>{
  expect((await call(body)).status).toBe(400);expect(await q('SELECT * FROM clocker_pin_sessions')).toEqual([]);
+});
+it.each([42,null,{},'x'.repeat(129),'\u0000bad',''])('denies malformed employee identity %j through the same bounded failure path',async employeeId=>{
+ const response=await call({action:'verify',employeeId,pin:'0246'});
+ expect(response.status).toBe(401);expect(await response.json()).toEqual({state:'denied',code:'PIN_DENIED',error:'PIN not recognized for this location. Try again or ask your manager.'});
+ expect(await q("SELECT scope,failures,attempts FROM clocker_pin_limits ORDER BY scope")).toEqual([{scope:'DEVICE',failures:1,attempts:1},{scope:'WORKSPACE',failures:1,attempts:1}]);
+});
+it('accepts normalized Employee ID plus PIN and returns personal wait scope without disclosing identity',async()=>{
+ for(let n=0;n<5;n++)expect((await call({action:'verify',employeeId:' pin-OWNER ',pin:'9999'})).status).toBe(401);
+ const response=await call({action:'verify',employeeId:'pin-owner',pin:'0246'});const body=await response.json();
+ expect(response.status).toBe(429);expect(body).toMatchObject({state:'limited',limitScope:'person'});
+ expect(response.headers.get('Retry-After')).toBe(String(body.retryAfterSeconds));
+ expect(JSON.stringify(body)).not.toMatch(/Private|pin-owner|0246|nev_pin/);
+ expect(cookies.get('nevora_clocker_identity')).toBe('');
 });
 it('denies a missing or wrong-location device without identifying an employee',async()=>{
  expect((await call({action:'verify',pin:'0246'}, {},'110')).status).toBe(401);
@@ -54,11 +67,20 @@ it('denies a missing or wrong-location device without identifying an employee',a
  expect(await q('SELECT * FROM clocker_pin_limits')).toEqual([]);
 });
 it('returns indistinguishable invalid PIN errors and a persistent 429 budget',async()=>{
- for(let n=0;n<5;n++){const r=await call({action:'verify',pin:'9999'});expect(r.status).toBe(401);expect(await r.json()).toEqual({state:'denied',error:'PIN not recognized for this location. Try again or ask your manager.'});}
+ for(let n=0;n<5;n++){const r=await call({action:'verify',pin:'9999'});expect(r.status).toBe(401);expect(await r.json()).toEqual({state:'denied',code:'PIN_DENIED',error:'PIN not recognized for this location. Try again or ask your manager.'});}
  const r=await call({action:'verify',pin:'0246'});expect(r.status).toBe(429);expect(Number(r.headers.get('retry-after'))).toBeGreaterThan(0);
 });
 it('does not expose SQL errors or return idle on a database outage',async()=>{
  await call({action:'verify',pin:'0246'});await q('ALTER TABLE clocker_pin_sessions RENAME TO failed_sessions');
  const response=await call({action:'status'});expect(response.status).toBe(503);
  expect(JSON.stringify(await response.json())).not.toMatch(/failed_sessions|SELECT|token|Private|0246/);
+});
+
+it('returns the database remaining wait consistently in the JSON contract and Retry-After',async()=>{
+ await call({action:'verify',pin:'0246'});
+ await q("UPDATE clocker_pin_limits SET failures=5,failure_window=clock_timestamp()-interval '4 minutes' WHERE scope='DEVICE'");
+ const response=await call({action:'verify',pin:'0246'});const body=await response.json();
+ expect(response.status).toBe(429);expect(body.code).toBe('PIN_LIMITED');
+ expect(body.retryAfterSeconds).toBeGreaterThanOrEqual(58);expect(body.retryAfterSeconds).toBeLessThanOrEqual(60);
+ expect(response.headers.get('Retry-After')).toBe(String(body.retryAfterSeconds));
 });

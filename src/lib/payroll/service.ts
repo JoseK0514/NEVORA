@@ -4,8 +4,7 @@
  * and a prior read never replace the permission/source checks at commit time.
  */
 import { compatibleManagerScopeSql, payrollObjectScopeSql } from "./native/scope";
-import { payrollHistorySql } from "./history";
-import { missingPayrollPeriods } from "./backlog";
+import { readPayrollBacklog } from "./backlog-read";
 import { payrollNoticeDelivery } from "./notices";
 import { randomUUID } from "node:crypto";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
@@ -229,27 +228,7 @@ export async function runs(proof: SessionMutationProof, ex: SqlExecutor = neonNo
         published: boolean;
     }>(proof, "REVIEW", q(`SELECT d.id::text,d.run_id::text,d.kind,d.employee_id,d.filename,d.sha256,EXISTS(SELECT 1 FROM payroll_publications p WHERE p.workspace_id=d.workspace_id AND p.run_id=d.run_id) AS published FROM payroll_documents d WHERE workspace_id=${ws} AND d.run_id=ANY($1::uuid[]) AND ${payrollObjectScopeSql(proof, "(d.payload->'coverage')", "d.workspace_id")} AND (d.kind='EMPLOYEE_STATEMENT' OR ${payrollObjectScopeSql(proof, "NULL::jsonb", "d.workspace_id", "review", true)})`, rows.map((r) => r.payload.id)), ex);
     const jobs = await guarded<PayrollJob>(proof, "REVIEW", q(`SELECT id::text,run_id::text AS "runId",kind,status,attempts,error,CASE WHEN kind='REMINDER' AND status='SUCCEEDED' THEN (SELECT CASE WHEN n.payload->>'delivery'='NOT_SENT' THEN 'NOT_SENT_STUB' ELSE n.payload->>'delivery' END FROM payroll_notice_receipts n WHERE n.workspace_id=payroll_jobs.workspace_id AND n.business_key=payroll_jobs.business_key) ELSE NULL END AS outcome FROM payroll_jobs WHERE workspace_id=${ws} AND (${payrollObjectScopeSql(proof, "NULL::jsonb", ws, "review", true)} OR EXISTS(SELECT 1 FROM payroll_runs_current current_run WHERE current_run.workspace_id=payroll_jobs.workspace_id AND current_run.run_id=payroll_jobs.run_id AND ${payrollObjectScopeSql(proof, "(current_run.payload->'coverage')", "current_run.workspace_id")})) ORDER BY available_at DESC LIMIT 300`), ex);
-    const [history] = await guarded<{
-        today: string;
-        history: PayrollSettingsRevision[];
-        originals: {
-            startDate: string;
-            endDate: string;
-        }[];
-        overflow: boolean;
-    }>(proof, "REVIEW", q(proof.employee.role === "MANAGER" ? "SELECT CURRENT_DATE::text AS today,'[]'::jsonb AS history,'[]'::jsonb AS originals,false AS overflow" : payrollHistorySql), ex);
-    const backlog = missingPayrollPeriods(history.history, history.originals, history.today);
-    if (history.overflow) {
-        backlog.missingPeriods = [];
-        backlog.backlog = {
-            ...backlog.backlog,
-            missingCount: null,
-            remainingCount: null,
-            ambiguousCount: null,
-            returnedCount: 0,
-            overflow: true,
-        };
-    }
+    const backlog = await readPayrollBacklog(proof, ex);
     const responseCapabilities = await capabilities(proof, ex);
     await guarded(proof, "REVIEW", check(`(SELECT count(*) FROM payroll_runs_current current_run WHERE current_run.workspace_id=${ws} AND current_run.run_id=ANY($1::uuid[]) AND ${payrollObjectScopeSql(proof, "(current_run.payload->'coverage')", "current_run.workspace_id")})=cardinality($1::uuid[]) AND (SELECT count(*) FROM payroll_jobs final_job WHERE final_job.workspace_id=${ws} AND final_job.id=ANY($2::uuid[]) AND (${payrollObjectScopeSql(proof, "NULL::jsonb", ws, "review", true)} OR EXISTS(SELECT 1 FROM payroll_runs_current current_run WHERE current_run.workspace_id=final_job.workspace_id AND current_run.run_id=final_job.run_id AND ${payrollObjectScopeSql(proof, "(current_run.payload->'coverage')", "current_run.workspace_id")})))=cardinality($2::uuid[]) AND (SELECT count(*) FROM payroll_documents final_doc WHERE final_doc.workspace_id=${ws} AND final_doc.id=ANY($3::uuid[]) AND ${payrollObjectScopeSql(proof, "(final_doc.payload->'coverage')", "final_doc.workspace_id")} AND (final_doc.kind='EMPLOYEE_STATEMENT' OR ${payrollObjectScopeSql(proof, "NULL::jsonb", "final_doc.workspace_id", "review", true)}))=cardinality($3::uuid[])`, rows.map(r => r.payload.id), jobs.map(j => j.id), documents.map(d => d.id)), ex);
     return {

@@ -21,12 +21,14 @@ export function groupNotifications(items:EmployeeNotificationItem[]){
 export function notificationPresentation(label:string){
  switch(label){
   case 'Schedule update':return {icon:'schedule' as const,destination:'Review your current schedule',action:'Review schedule'};
+  case 'Time-off update':
   case 'Time off update':return {icon:'timeOff' as const,destination:'Review your time-off request',action:'View request'};
   case 'Shift request update':return {icon:'exchange' as const,destination:'Review your shift request',action:'View request'};
   case 'Team update':return {icon:'update' as const,destination:'Read the current team update',action:'Read update'};
   case 'Availability update':return {icon:'availability' as const,destination:'Review your availability',action:'View availability'};
+  case 'Can’t-work update':
   case 'Callout update':
-  case 'Unable to work update':return {icon:'callout' as const,destination:'Review your can’t-work request',action:'View request'};
+  case 'Unable to work update':return {icon:'callout' as const,destination:'Review your can’t-work request',action:'View can’t-work request'};
   case 'Operations need review':return {icon:'operations' as const,destination:'Review current operational actions',action:'Review actions'};
   case 'Payroll preparation update':return {icon:'payroll' as const,destination:'Review the current payroll period',action:'Review payroll'};
   case 'Pay statement update':return {icon:'statement' as const,destination:'Open your current pay statement',action:'View statement'};

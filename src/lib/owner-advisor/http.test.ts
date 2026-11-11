@@ -13,9 +13,20 @@ vi.mock("@/lib/data/sql-executor", () => ({
 }));
 vi.mock("./service.server", () => ({ advisorService: mocks.service }));
 import { POST } from "@/app/api/owner/advisor/route";
+import { AdvisorProviderFailure } from "./provider-failure.server";
 afterEach(() => {
   vi.restoreAllMocks();
   mocks.service.mockClear();
+});
+it("logs safe provider diagnosis without adding upstream metadata to the public response", async () => {
+  const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+  mocks.service.mockRejectedValueOnce(new AdvisorProviderFailure(400, "safety_filter"));
+  const request = new Request("http://localhost/api/owner/advisor", { method: "POST",
+    headers: { "x-nevora-owner-advisor": "1", "content-type": "application/json", origin: "http://localhost" }, body: "{}" });
+  const response = await POST(request);
+  expect(response.status).toBe(503);
+  expect(await response.json()).toEqual({ state: "error", code: "provider_failed" });
+  expect(warn).toHaveBeenCalledWith("owner_advisor_provider_failure", { code: "provider_failed", providerStatus: 400, providerHint: "safety_filter" });
 });
 function openRequest(signal?: AbortSignal) {
   let streamController!: ReadableStreamDefaultController<Uint8Array>;

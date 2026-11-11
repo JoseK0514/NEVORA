@@ -6,7 +6,7 @@
 export const SUPPORT_EMAIL = "support@thevelani.com";
 export const POLICY_OPERATOR = "VELANI LLC";
 /** Bump when the published wording changes; deletion requests record the version they were accepted under. */
-export const POLICY_VERSION = "2026-11-04";
+export const POLICY_VERSION = "2026-11-10";
 
 /* Confirmed by Jose on October 20, 2026 (Neon and Vercel verified in the connected accounts). Backup expiry
  * follows the production database Codex set up on November 1, 2026: a seven-day restore history, independently

@@ -11,6 +11,41 @@ const dependencies = () => ({
 });
 afterEach(() => vi.restoreAllMocks());
 
+it("retains bounded safe HTTP diagnostics and cancels a rejected provider body without retrying", async () => {
+  const d = dependencies(), cancel = vi.fn();
+  const fetch = vi.fn(async () => new Response(new ReadableStream({
+    start(stream) { stream.enqueue(new TextEncoder().encode(JSON.stringify({ error: { code: "content_filter", message: "private payroll and secret-key" } }))); stream.close(); },
+    cancel,
+  }), { status: 400 }));
+  try {
+    await investigate(config, [], "", "Investigate", { ...d, fetch });
+    expect.fail("Expected a sanitized provider failure");
+  } catch (error) {
+    expect(error).toMatchObject({ code: "provider_failed", providerStatus: 400, providerHint: "safety_filter" });
+    expect(JSON.stringify(error)).not.toMatch(/private|secret-key|payroll/);
+    expect((error as Error).cause).toBeUndefined();
+  }
+  expect(fetch).toHaveBeenCalledTimes(1);
+});
+
+it("cancels an oversized rejected body and retains only HTTP status", async () => {
+  const cancel = vi.fn();
+  const fetch = vi.fn(async () => new Response(new ReadableStream({
+    start(stream) { stream.enqueue(new Uint8Array(5000)); }, cancel,
+  }), { status: 429 }));
+  await expect(investigate(config, [], "", "Investigate", { ...dependencies(), fetch }))
+    .rejects.toMatchObject({ code: "provider_failed", providerStatus: 429, providerHint: "rate_limit" });
+  expect(cancel).toHaveBeenCalledTimes(1);
+  expect(fetch).toHaveBeenCalledTimes(1);
+});
+
+it("sanitizes transport exceptions instead of exposing private network diagnostics", async () => {
+  const fetch = vi.fn(async () => { throw new Error("secret-key private-payroll network diagnostics"); });
+  await expect(investigate(config, [], "", "Investigate", { ...dependencies(), fetch }))
+    .rejects.toMatchObject({ code: "provider_failed", providerHint: "network", message: "provider_failed" });
+  expect(fetch).toHaveBeenCalledTimes(1);
+});
+
 it.each([401, 403, 429, 500, 503])("does not retry or expose HTTP %i provider bodies", async (status) => {
   const fetch = vi.fn(async () => new Response("PRIVATE PROVIDER DETAIL", { status }));
   await expect(investigate(config, [], "", "Investigate", { ...dependencies(), fetch })).rejects.toThrow("provider_failed");

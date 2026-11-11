@@ -7,3 +7,7 @@ it('maps each row label back to exactly its kind, and nothing else',()=>{
  // Near-misses are not guessed from words in the label.
  for(const label of ['Schedule','Your schedule update','Pay statement','team update'])expect(notificationKind(label)).toBeNull();
 });
+
+it.each([['Can’t-work update','CALLOUT'],['Unable to work update','CALLOUT'],['Callout update','CALLOUT'],['Time-off update','TIME_OFF'],['Time off update','TIME_OFF']])('recognizes current and legacy row label %s', (label,kind)=>{
+ expect(notificationKind(label)).toBe(kind);
+});

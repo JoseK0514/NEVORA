@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "checkpoint": "cb4a4c52d1bb999ceeda08ab8e5f108eb57955c8",
+  "tree": "1a0294520f6c4c426bfcb7c1abad497684e80b78",
+  "sourceClean": true,
+  "runtime": "v24.19.0",
+  "status": "backend_passed",
+  "scope": "backend-only",
+  "steps": [
+    {
+      "name": "inventory-contract",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 310,
+      "log": "inventory-contract.log"
+    },
+    {
+      "name": "manifest",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 61,
+      "log": "manifest.log"
+    },
+    {
+      "name": "owned-onboarding",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 118434,
+      "log": "owned-onboarding.log"
+    },
+    {
+      "name": "company-access-foundation",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 251585,
+      "log": "company-access-foundation.log"
+    },
+    {
+      "name": "company-access-exchange",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 20044,
+      "log": "company-access-exchange.log"
+    },
+    {
+      "name": "worker-enrollment",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 952,
+      "log": "worker-enrollment.log"
+    },
+    {
+      "name": "managed-workforce",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 1110,
+      "log": "managed-workforce.log"
+    }
+  ],
+  "inventoryCount": 482,
+  "manifestArtifactSha256": "0840e7bbab30607efd844543de2d51923679e5ce149ebd3a46ffeb68fafaf3bf",
+  "ui": {
+    "status": "not_run",
+    "surfaceCandidates": []
+  },
+  "hosted": {
+    "status": "not_run"
+  },
+  "production": {
+    "status": "not_authorized"
+  }
+}

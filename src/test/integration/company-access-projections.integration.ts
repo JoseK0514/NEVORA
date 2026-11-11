@@ -107,3 +107,94 @@ it('out-of-scope rows do not consume the permitted roster query limit',async()=>
   expect(result.data.employees.some(e=>e.id==='target')).toBe(true);expect(result.data.employees.some(e=>e.id.startsWith('outside-'))).toBe(false);
  }finally{await f.db.dispose();}
 });
+it('person hours reuse current directory scope and published snapshots, withholding foreign people and revoked sessions',async()=>{
+ const f=await fixture();try{
+  const {readOperationalEmployeeHours}=await import('../../lib/company-access/operational-read.server');
+  const [{week}]=await f.q<{week:string}>("SELECT date_trunc('week',clock_timestamp() AT TIME ZONE 'America/Puerto_Rico')::date::text AS week");
+  await f.q(`UPDATE schedules SET week_start=$1,status='PUBLISHED' WHERE id IN('scope-a','scope-b')`,[week]);
+  await f.q(`UPDATE shifts SET date=$1,start_time=CASE id WHEN 'shift-a' THEN time '08:00' ELSE time '10:00' END,
+   end_time=CASE id WHEN 'shift-a' THEN time '09:00' ELSE time '13:00' END WHERE id IN('shift-a','shift-b')`,[week]);
+  await f.q(`INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) VALUES('hours-r',$1,1,'PUBLISH','owner')`,[week]);
+  await f.q(`INSERT INTO schedule_publication_revision_shifts(id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time)
+   SELECT 'hours-'||sh.id,'hours-r',sh.id,sh.schedule_id,s.location_id,sh.employee_id,sh.date,sh.start_time,sh.end_time
+   FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id IN('shift-a','shift-b')`);
+  const scoped=await readOperationalEmployeeHours(f.restricted,'target',f.db.executor);expect(scoped.state).toBe('ready');if(scoped.state!=='ready')throw Error(JSON.stringify(scoped));
+  expect(scoped.data).toMatchObject({employeeId:'target',weekStart:week,scheduledWeekMinutes:60,workedWeekMinutes:0});
+  expect(JSON.stringify(scoped.data)).not.toMatch(/sourceHash|entries|Private|phone|reason/);
+  const company=await readOperationalEmployeeHours(f.owner,'target',f.db.executor);expect(company.state).toBe('ready');if(company.state==='ready')expect(company.data.scheduledWeekMinutes).toBe(240);
+  expect((await readOperationalEmployeeHours(f.restricted,'private-b',f.db.executor)).state).toBe('unavailable');
+  await f.q("DELETE FROM employee_sessions WHERE employee_id='restricted'");expect((await readOperationalEmployeeHours(f.restricted,'target',f.db.executor)).state).toBe('unavailable');
+ }finally{await f.db.dispose();}
+});
+async function partlyPublishedHoursFixture(){
+ const f=await fixture();
+ try{
+  const [{week}]=await f.q<{week:string}>("SELECT date_trunc('week',clock_timestamp() AT TIME ZONE 'America/Puerto_Rico')::date::text AS week");
+  await f.q("UPDATE schedules SET week_start=$1,status=CASE id WHEN 'scope-a' THEN 'PUBLISHED' ELSE 'DRAFT' END WHERE id IN('scope-a','scope-b')",[week]);
+  await f.q("UPDATE shifts SET date=$1 WHERE id IN('shift-a','shift-b')",[week]);
+  await f.q("INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) VALUES('partial-hours-r',$1,1,'PUBLISH','owner')",[week]);
+  await f.q(`INSERT INTO schedule_publication_revision_shifts(id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time)
+   SELECT 'partial-hours-a','partial-hours-r',sh.id,sh.schedule_id,s.location_id,sh.employee_id,sh.date,sh.start_time,sh.end_time
+   FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id='shift-a'`);
+  return {...f,week};
+ }catch(error){await f.db.dispose();throw error;}
+}
+it.each(['draft','absent'] as const)('an unrelated publication cannot confirm zero person hours for a %s target schedule',async(state)=>{
+ const f=await partlyPublishedHoursFixture();try{
+  const {readOperationalEmployeeHours}=await import('../../lib/company-access/operational-read.server');
+  if(state==='absent')await f.q("DELETE FROM shifts WHERE schedule_id='scope-b'; DELETE FROM schedules WHERE id='scope-b'");
+  const context=await readOwnerOperationalScope(f.owner,'restricted',f.db.executor);if(context.state!=='ready')throw Error('Scope context');const c=context.data.current;
+  expect((await assignOperationalScope(f.owner,'restricted',{action:'ASSIGN',operationId:randomUUID(),expectedEmployeeVersion:c.employeeUpdatedAt,expectedRoleGeneration:c.roleGeneration,expectedScopeRevision:c.scopeRevision,scope:{mode:'LOCATIONS',locationIds:['loc-2']}},f.db.executor)).state).toBe('saved');
+  expect(await readOperationalEmployeeHours(f.restricted,'private-b',f.db.executor)).toMatchObject({state:'ready',data:{scheduledTodayMinutes:null,scheduledWeekMinutes:null,workedWeekMinutes:0}});
+ }finally{await f.db.dispose();}
+});
+it('mixed published and draft person locations keep company totals unknown while restricted published coverage stays complete',async()=>{
+ const f=await partlyPublishedHoursFixture();try{
+  const {readOperationalEmployeeHours}=await import('../../lib/company-access/operational-read.server');
+  expect(await readOperationalEmployeeHours(f.owner,'target',f.db.executor)).toMatchObject({state:'ready',data:{scheduledTodayMinutes:null,scheduledWeekMinutes:null,workedWeekMinutes:0}});
+  expect(await readOperationalEmployeeHours(f.restricted,'target',f.db.executor)).toMatchObject({state:'ready',data:{scheduledWeekMinutes:60,workedWeekMinutes:0}});
+ }finally{await f.db.dispose();}
+});
+it('a genuinely published empty target schedule confirms zero without requiring unrelated or inactive locations',async()=>{
+ const f=await partlyPublishedHoursFixture();try{
+  const {readOperationalEmployeeHours}=await import('../../lib/company-access/operational-read.server');
+  await f.q("UPDATE schedules SET status='PUBLISHED' WHERE id='scope-b'; UPDATE schedules SET status='DRAFT' WHERE id='scope-a'; INSERT INTO employee_location_eligibility VALUES('private-b','loc-3')");
+  expect(await readOperationalEmployeeHours(f.owner,'private-b',f.db.executor)).toMatchObject({state:'ready',data:{scheduledTodayMinutes:0,scheduledWeekMinutes:0,workedWeekMinutes:0}});
+ }finally{await f.db.dispose();}
+});
+it('a missing previous-week capture still withholds person totals until the overnight publication is captured',async()=>{
+ const f=await partlyPublishedHoursFixture();try{
+  const {readOperationalEmployeeHours}=await import('../../lib/company-access/operational-read.server');
+  await f.q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('hours-prior','loc-1',$1::date-7,'PUBLISHED','owner')",[f.week]);
+  expect(await readOperationalEmployeeHours(f.restricted,'target',f.db.executor)).toMatchObject({state:'ready',data:{scheduledTodayMinutes:null,scheduledWeekMinutes:null}});
+  await f.q("INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) VALUES('hours-prior-r',$1::date-7,1,'PUBLISH','owner')",[f.week]);
+  await f.q(`INSERT INTO schedule_publication_revision_shifts(id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time)
+   VALUES('hours-overnight','hours-prior-r','hours-overnight','hours-prior','loc-1','target',$1::date-1,'22:00','02:00')`,[f.week]);
+  expect(await readOperationalEmployeeHours(f.restricted,'target',f.db.executor)).toMatchObject({state:'ready',data:{scheduledWeekMinutes:180}});
+ }finally{await f.db.dispose();}
+});
+it('owner names expose active in-workspace owners only and refuse expired sessions',async()=>{
+ const f=await fixture();try{
+  const {readActiveOwnerNames}=await import('../../lib/data/owner-names.server');
+  await f.q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id,active) VALUES('inactive-owner','Inactive','Owner','555009','OWNER','loc-1',false)");
+  const result=await readActiveOwnerNames(f.restricted,f.db.executor);expect(result).toMatchObject({state:'ready',owners:['Owner QA']});expect(JSON.stringify(result)).not.toMatch(/555|example.invalid|inactive-owner/);
+  await f.q("UPDATE employee_sessions SET expires_at=clock_timestamp()-interval '1 second' WHERE employee_id='restricted'");
+  expect(await readActiveOwnerNames(f.restricted,f.db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+ }finally{await f.db.dispose();}
+});
+it('the operational monitor adds canonical Today lateness for the matching open punch',async()=>{
+ const f=await fixture();try{
+  await f.q(`UPDATE shifts SET date=((clock_timestamp()-interval '2 hours') AT TIME ZONE 'America/Puerto_Rico')::date,
+   start_time=((clock_timestamp()-interval '2 hours') AT TIME ZONE 'America/Puerto_Rico')::time,
+   end_time=((clock_timestamp()+interval '6 hours') AT TIME ZONE 'America/Puerto_Rico')::time WHERE id='shift-a'`);
+  await f.q(`UPDATE schedules SET week_start=(SELECT date_trunc('week',date::timestamp)::date FROM shifts WHERE id='shift-a'),status='PUBLISHED' WHERE id='scope-a'`);
+  await f.q(`INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by)
+   SELECT 'late-r',week_start,99,'PUBLISH','owner' FROM schedules WHERE id='scope-a'`);
+  await f.q(`INSERT INTO schedule_publication_revision_shifts(id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time)
+   SELECT 'late-shift','late-r',sh.id,sh.schedule_id,s.location_id,sh.employee_id,sh.date,sh.start_time,sh.end_time
+   FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id='shift-a'`);
+  await f.q(`INSERT INTO clocker_devices(id,location_id,name,active) VALUES('late-device','loc-1','Owned',true);
+   INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES('late-entry','target','loc-1','late-device',clock_timestamp()-interval '1 hour','CLOCKED_IN')`);
+  const monitor=await readOperationalClockMonitor(f.restricted,f.db.executor);expect(monitor).toMatchObject({state:'ready',data:{employees:[{employeeId:'target',late:true}]}});
+ }finally{await f.db.dispose();}
+});

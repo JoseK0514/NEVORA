@@ -7,8 +7,9 @@ import {createHash} from 'node:crypto';
 import {BASE_MIGRATIONS,FINAL_MIGRATIONS} from '../db/migrations/order.ts';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
-const args=process.argv.slice(2),allowDirty=args.includes('--allow-dirty');
-const destination=args.filter(x=>x!=='--allow-dirty');
+const args=process.argv.slice(2),allowDirty=args.includes('--allow-dirty'),monitorOnly=args.includes('--workforce-monitor-only'),provisionerOnly=args.includes('--provisioner-only');
+if(monitorOnly&&provisionerOnly)throw Error('Select only one artifact group');
+const destination=args.filter(x=>!['--allow-dirty','--workforce-monitor-only','--provisioner-only'].includes(x));
 if(destination.length!==1||!isAbsolute(destination[0]))throw Error('Supply one absolute, unused output directory outside the repository.');
 const output=resolve(destination[0]);
 const relation=relative(root,output);
@@ -20,7 +21,7 @@ const before={commit:git('rev-parse','HEAD'),tree:git('rev-parse','HEAD^{tree}')
 if(before.status&&!allowDirty)throw Error('Refuse deployable bundles from a dirty checkout; --allow-dirty is local-only.');
 await mkdir(output,{recursive:false});
 const artifacts=[];
-for(const slug of ['stripewebhook','commercequeue','commercereconcile','provisioner','commerceauthority','commerceapi']){
+for(const slug of monitorOnly?['workforcemonitor']:provisionerOnly?['provisioner']:['stripewebhook','commercequeue','commercereconcile','provisioner','commerceauthority','commerceapi']){
  const dir=join(output,slug);await mkdir(dir,{recursive:false});
  const bundled=await build({entryPoints:[join(root,'services/hosted/neon/'+slug+'.entry.ts')],outfile:join(dir,'src/lib/company-bootstrap/bundle.mjs'),bundle:true,define:{__NEVORA_NEON_BUILD_SOURCE_SHA__:JSON.stringify(before.status?'':before.commit)},format:'esm',platform:'node',target:'node24',metafile:true,alias:{'server-only':join(root,'node_modules/next/dist/compiled/server-only/empty.js')},banner:{js:"import{createRequire as __cr}from'node:module';import{fileURLToPath as __fu}from'node:url';import{dirname as __dn}from'node:path';const require=__cr(import.meta.url);const __filename=__fu(import.meta.url);const __dirname=__dn(__filename);"},logLevel:'silent'});
  await writeFile(join(dir,'index.mjs'),"export {default} from './src/lib/company-bootstrap/bundle.mjs';\nexport * from './src/lib/company-bootstrap/bundle.mjs';\n");

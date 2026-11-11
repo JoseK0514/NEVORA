@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {markReportNavigationStage,observeReportNavigation,openPeriodReports} from './phase-d-report-navigation.mjs';
 import {runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
-import {assignOwnedManagerCompanyAccess} from '../src/test/integration/owned-app-fixture.ts';
+import {assignOwnedManagerCompanyAccess,setOwnedEmployeeRole} from '../src/test/integration/owned-app-fixture.ts';
 
 // Time exports' private ready content (board O-TimeExports): the "Send to" list exists only with a current finalized-time read.
 const exportSendTo=page=>page.getByRole('list',{name:'Send to',exact:true});
@@ -117,7 +117,7 @@ async function verifyRoleRedirect(page,app,engine,report,managerId){
  let attempted=false,changed=false,used=false,mutation;
  const handler=async route=>{
   if(used||route.request().headers().rsc!=='1')return route.continue();used=true;
-  attempted=true;mutation=app.database.executor.query({text:"UPDATE employees SET role='EMPLOYEE' WHERE id=$1",values:[managerId]});await mutation;changed=true;row.roleChanged=true;
+  attempted=true;mutation=setOwnedEmployeeRole(app.database.executor,managerId,'EMPLOYEE');await mutation;changed=true;row.roleChanged=true;
   mark('role-changed-destination-release');
   await page.evaluate(()=>window.dispatchEvent(new Event('storage')));
   row.storageTriggered=true;
@@ -144,7 +144,7 @@ async function verifyRoleRedirect(page,app,engine,report,managerId){
  finally{
   try{
    try{await page.unroute('**/app/reports?*',handler);}
-   finally{try{await mutation;}finally{if(attempted){await app.database.executor.query({text:"UPDATE employees SET role='MANAGER' WHERE id=$1",values:[managerId]});await assignOwnedManagerCompanyAccess(app.database.executor,managerId);row.cleanupRestored=true;}}}
+   finally{try{await mutation;}finally{if(attempted){await setOwnedEmployeeRole(app.database.executor,managerId,'MANAGER');await assignOwnedManagerCompanyAccess(app.database.executor,managerId);row.cleanupRestored=true;}}}
   }catch(error){row.status='failed';throw error;}
  }
  }finally{stopTrace();}

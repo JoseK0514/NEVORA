@@ -13,6 +13,7 @@ import {runShiftChangeMaintenance} from '../../lib/data/shift-change-maintenance
 import {notificationIntentStatements} from '../../lib/data/notifications';
 import {sqlNotificationStateRepository} from '../../lib/data/notification-state';
 import {loadWorkspaceNotificationConfig} from '../../lib/notifications/config';
+import {nextRoutineTime} from '../../lib/notifications/policy';
 import {runReminders} from '../../lib/notifications/reminders';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import type {NotificationIntent,SqlExecutor,SqlStatement} from '../../lib/notifications/types';
@@ -119,7 +120,10 @@ it('current Company filtering precedes manager LIMIT and reaches the Owner behin
 });
 it('real availability account/day budget survives a changed deadline and repeated scanner invocation',async()=>{
  const f=await companyAccessFixture();try{
-  await f.q("INSERT INTO schedule_week_settings(week_start,availability_deadline) SELECT date_trunc('week',clock_timestamp() AT TIME ZONE time_zone)::date,date_trunc('second',clock_timestamp())+interval '6 hours' FROM workspaces WHERE singleton");const config={...await loadWorkspaceNotificationConfig({PUSH_ENVIRONMENT:'test'},f.db.executor),featureEnabled:true},run=()=>runReminders({executor:f.db.executor,state:sqlNotificationStateRepository(f.db.executor),config,clock:()=>new Date()});
+  const config={...await loadWorkspaceNotificationConfig({PUSH_ENVIRONMENT:'test'},f.db.executor),featureEnabled:true},now=new Date(),deadline=new Date(nextRoutineTime(now,config.policy).getTime()+6*3600000);
+  // Keep this budget scenario eligible under the real quiet-hour policy. A
+  // wall-clock +6h deadline can expire before 07:00 and correctly yields no intent.
+  await f.q("INSERT INTO schedule_week_settings(week_start,availability_deadline) SELECT date_trunc('week',$1::timestamptz AT TIME ZONE time_zone)::date,$2::timestamptz FROM workspaces WHERE singleton",[now.toISOString(),deadline.toISOString()]);const run=()=>runReminders({executor:f.db.executor,state:sqlNotificationStateRepository(f.db.executor),config,clock:()=>new Date(now)});
   await run();const first=await f.q("SELECT id,event_key,effective_version FROM notifications WHERE employee_id='target' AND purpose='REMINDER'");expect(first).toHaveLength(1);await f.q("UPDATE schedule_week_settings SET availability_deadline=availability_deadline+interval '30 minutes'");await run();await run();expect(await f.q("SELECT id,event_key,effective_version FROM notifications WHERE employee_id='target' AND purpose='REMINDER'")).toEqual(first);
  }finally{await f.db.dispose();}
 });

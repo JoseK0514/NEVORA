@@ -4,7 +4,7 @@ export type TimecardHistory = { operationId: string; revision: number; action:'A
   occurredAt:string; actorName:string; note:string|null; sourceHash:string; snapshot:TimecardSource };
 export type TimecardItem = { source:TimecardSource; card:Timecard; sourceHash:string; revision:number;
   state:'DRAFT'|'APPROVED'|'FINALIZED'|'REOPENED'|'NEEDS_REVIEW'; history:TimecardHistory[] };
-export type TimecardProjection = {state:'ready';observedAt:string;period:Period;cards:TimecardItem[]};
+export type TimecardProjection = {weeklyHoursLimit?:number|null;state:'ready';observedAt:string;period:Period;cards:TimecardItem[]};
 export type TimecardsResult = (TimecardProjection & {validForMs:number})|{
   state:'unavailable';reason:'access_denied'|'source_limit'|'read_failed'|'schema_missing'};
 const object = (v:unknown):v is Record<string,unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
@@ -40,6 +40,8 @@ export function parseTimecardsResponse(v:unknown,period:Period):TimecardProjecti
     return {source:raw.source as TimecardSource,card,sourceHash:raw.sourceHash,revision:Number(raw.revision),state:raw.state as TimecardItem['state'],history};
   });
   if(new Set(cards.map(c=>c.card.employeeId)).size!==cards.length)throw new Error('Duplicate timecards');
-  return {state:'ready',observedAt:v.observedAt,period,cards};
+  // No persisted company weekly-hours ceiling exists. Scheduling personal maxima and
+  // overtime-risk thresholds are different contracts; neither defines this limit.
+  return {state:'ready',observedAt:v.observedAt,period,cards,weeklyHoursLimit:null};
 }
 

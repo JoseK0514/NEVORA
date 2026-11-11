@@ -70,10 +70,10 @@ export function buildCalloutOutcomeNotification(input: {
   return {
     employeeId: input.employeeId,
     type: approved ? "CALLOUT_APPROVED" : "CALLOUT_DENIED",
-    title: approved ? "Unable to work approved" : "Unable to work declined",
+    title: approved ? "Can’t-work request approved" : "Can’t-work request declined",
     body: approved
-      ? "Your Unable to work request was approved and coverage is open."
-      : "Your Unable to work request was declined.",
+      ? "Your can’t-work request was approved. The shift is now open for cover."
+      : "Your can’t-work request was declined. It’s still your shift.",
     actionHref: "/app/exchange?tab=requests",
     eventKey: eventKey(
       "callout",
@@ -92,7 +92,7 @@ export function buildSwapResponseRequestedNotification(input: {
   return {
     employeeId: input.employeeId,
     type: "SWAP_RESPONSE_REQUIRED",
-    title: "Shift swap request",
+    title: "Swap request",
     body: `${input.requesterName.trim() || 'A teammate'} asked to trade shifts with you.`,
     actionHref: "/app/exchange?tab=requests",
     eventKey: eventKey("swap-response", input.exchangeId, input.employeeId),
@@ -144,6 +144,6 @@ export function buildSelfTestNotification(employeeId: string, sourceId: string):
 
 /** Peer invitation uses reviewed shift context only, never an absence reason. */
 export function buildCoverageInvitationNotification(input:{employeeId:string;date:string;startTime:string;endTime:string;locationName:string;positionName?:string;isDesignatedLead?:boolean}):NotificationEvent {
- const context=[input.date,`${input.startTime}–${input.endTime}`,input.locationName,input.positionName,input.isDesignatedLead?'Designated lead':undefined].filter(Boolean).join(' · ');
+ const context=[input.date,`${input.startTime}–${input.endTime}`,input.locationName,input.positionName,input.isDesignatedLead?'Shift lead':undefined].filter(Boolean).join(' · ');
  return {employeeId:input.employeeId,type:'COVERAGE_INVITATION',title:'Coverage available',body:`${context}. View shift details before volunteering.`,eventKey:''};
 }

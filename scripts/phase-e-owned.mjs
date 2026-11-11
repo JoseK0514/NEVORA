@@ -80,7 +80,10 @@ function processIdentity(pid) {
   if (result.status !== 0 || !result.stdout?.trim()) throw Error('Cannot verify owned process identity');
   const parts = result.stdout.trim().split(/\s+/);
   if (parts[8]?.startsWith('Z')) return undefined;
-  return { pid, ppid: Number(parts[1]), pgid: Number(parts[2]), started: parts.slice(3, 8).join(' '), commandHash: hash(parts.slice(9).join(' ')) };
+  const command=parts.slice(9).join(' ');
+  // procps reports [name] when argv is unavailable. It is an observation of a
+  // lifetime, not a final command identity that can establish a resource lease.
+  return { pid, ppid: Number(parts[1]), pgid: Number(parts[2]), started: parts.slice(3, 8).join(' '), commandHash: hash(command), commandUnavailable:!command||/^\[[\s\S]*\]$/.test(command) };
 }
 const retiredProcess = Symbol('retired-process');
 function environmentFailure(pid, phase, reason, code) {
@@ -176,7 +179,7 @@ function pinnedNodeEnvironment(env, ownerId) {
 export async function superviseOwnedChild({ command, args, cwd, env, ownerId, timeoutMs, graceMs = 7500, signal }) {
   if (!/^[a-f0-9]{32}$/.test(ownerId) || !Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || !Number.isSafeInteger(graceMs) || graceMs < 1) throw Error('Invalid owned supervision contract');
   const childEnv = command === process.execPath ? pinnedNodeEnvironment(env, ownerId) : env;
-  const leases = new Map(), child = spawn(command, args, { cwd, env: { ...childEnv, NEVORA_OWNED_PROCESS_OWNER: ownerId }, detached: process.platform !== 'win32', stdio: ['ignore', 'inherit', 'inherit', 'ipc'] });
+  const leases = new Map(), rejectedInitial = new Set(), child = spawn(command, args, { cwd, env: { ...childEnv, NEVORA_OWNED_PROCESS_OWNER: ownerId }, detached: process.platform !== 'win32', stdio: ['ignore', 'inherit', 'inherit', 'ipc'] });
   let failure, observationFailure, escalation, rootLease, initialRootExit, stopping = false;
   // Keep only our bounded reason codes and identity hashes, never argv/env.
   const retainObservationFailure = error => {
@@ -208,12 +211,43 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
     return actual;
   };
   const remember = (pid, kind, table = processTable(), observedIdentity) => {
+    if (rejectedInitial.has(pid)) throw Error('Owned initial process proof was already rejected');
     if (!child.pid || pid === child.pid || !isDescendant(pid, child.pid, table)) throw Error('Process is not an owned child descendant');
     // Only snapshot supplies this current independently collected identity.
     // Registration always reads fresh; cached leases/IPC/receipts cannot supply it.
-    const identity = observedIdentity ?? ownedProcessIdentity(pid, ownerId);
+    let identity = observedIdentity ?? ownedProcessIdentity(pid, ownerId);
     if (!identity) throw Error('Process lacks invocation ownership');
     const previous = leases.get(pid);
+    const awaitingCommand=candidate=>candidate.commandUnavailable||(candidate.ppid===child.pid&&candidate.pid===candidate.pgid&&candidate.commandHash===rootLease?.commandHash);
+    if (!previous && rootLease && awaitingCommand(identity)) {
+      // A poll can see inherited parent argv or Linux's bracketed fallback
+      // before command arguments are available. Neither can create a first lease.
+      // Collect a bounded post-exec proof BEFORE creating its first lease;
+      // an established lease can never take this path or change its command.
+      const birth = identity, by = performance.now() + 250, pause = new Int32Array(new SharedArrayBuffer(4));
+      const unresolved = () => Object.assign(Error('Owned child exec identity unresolved'), {
+        observationFailure: { reason: 'EXEC_IDENTITY_UNRESOLVED', pid, phase: 'initial-binding' },
+      });
+      try {
+        do {
+          rootGroupProof();
+          if (performance.now() >= by) throw unresolved();
+          Atomics.wait(pause, 0, 0, 5);
+          const fresh = ownedProcessIdentity(pid, ownerId, true);
+          if (!fresh) throw Error('Process lacks invocation ownership');
+          if (fresh.pid !== birth.pid || fresh.started !== birth.started || fresh.ppid !== birth.ppid || fresh.pgid !== birth.pgid) throw continuityFailure(birth, fresh);
+          identity = fresh;
+        } while (awaitingCommand(identity));
+        rootGroupProof();
+        table = processTable();
+        if (!isDescendant(pid, child.pid, table) || table.get(pid)?.ppid !== birth.ppid) throw continuityFailure(birth, identity);
+        if (performance.now() >= by) throw unresolved();
+      } catch (error) {
+        // A failed first proof must never become fresh cleanup or registration
+        // authority when stop() rescans or an already-queued IPC message arrives.
+        rejectedInitial.add(pid); retainObservationFailure(error); throw error;
+      }
+    }
     const rootMember = rootLease && identity.pgid === rootLease.pid;
     if (rootMember && kind === 'owned-descendant' && (!previous || previous.kind === 'owned-descendant') && rootGroupProof(identity) === retiredProcess) return;
     if (previous) {
@@ -256,7 +290,7 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
       if (rootGroupProof(actual) === retiredProcess) continue;
       ownedProcessIdentity(lease.pid, ownerId, true, { allowRetirement: true, phase: 'member-environment' });
     }
-    for (const pid of table.keys()) if (pid !== child.pid && isDescendant(pid, child.pid, table)) {
+    for (const pid of table.keys()) if (pid !== child.pid && !rejectedInitial.has(pid) && isDescendant(pid, child.pid, table)) {
       const identity = ownedProcessIdentity(pid, ownerId);
       if (identity) remember(pid, 'owned-descendant', table, identity);
     }
@@ -300,7 +334,7 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
     if (message?.type !== 'register-owned-process') return;
     let accepted = false;
     try {
-      if (message.ownerId !== ownerId || !['next', 'browser-chromium', 'browser-webkit'].includes(message.kind)) throw Error('Invalid resource registration');
+      if (stopping || message.ownerId !== ownerId || !['next', 'browser-chromium', 'browser-webkit'].includes(message.kind)) throw Error('Invalid resource registration');
       remember(message.pid, message.kind); accepted = true;
     } catch { stop('Owned process registration refused', 1); }
     if (child.connected) child.send({ type: 'owned-process-registered', requestId: message.requestId, accepted }, () => {});

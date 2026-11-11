@@ -12,14 +12,16 @@ export function buildPushEnvelope(intent: NotificationIntent, ownershipGeneratio
   if (!/^[A-Za-z0-9_-]{1,128}$/.test(ownershipGeneration) || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(intent.id) || !Number.isFinite(Date.parse(intent.expiresAt))) throw new Error('Invalid push envelope metadata');
   let title: string;
   let body: string;
-  if (intent.type === 'COMMUNICATION' && intent.source.kind === 'COMMUNICATION' && intent.purpose === 'EVENT') {
-    title='NEVORA update'; body='Open NEVORA to review an update.';
+  if (intent.type === 'COMMUNICATION' && intent.source.kind === 'COMMUNICATION' && (intent.purpose === 'EVENT' || intent.purpose === 'REMINDER')) {
+    title='New team update'; body='Open NEVORA to read it.';
   } else if (intent.type === 'SCHEDULE_PUBLISHED' || intent.type === 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER') {
-    title=`Your ${NUVORA_BRAND.platformLabel} Schedule Is Ready`; body=`Open ${NUVORA_BRAND.platformLabel} to review your schedule.`;
+    title='Your schedule is ready'; body='Open NEVORA to see it.';
   } else if (intent.type === 'SCHEDULE_CHANGED') {
-    title=`Your ${NUVORA_BRAND.platformLabel} Schedule Changed`; body=`Open ${NUVORA_BRAND.platformLabel} to review your schedule.`;
+    title='Your schedule changed'; body='Open NEVORA to see what changed.';
   } else if (intent.type === 'COVERAGE_ATTENTION') {
-    title='Coverage Needs Attention'; body=`Open ${NUVORA_BRAND.platformLabel} to review coverage.`;
+    title='A shift needs cover'; body='Open NEVORA to find cover.';
+  } else if (REQUEST_TYPES.has(intent.type) && /^(TIME_OFF|CALLOUT|SWAP|COVERAGE)_/.test(intent.type)) {
+    title='Your request has an update'; body='Open NEVORA to see it.';
   } else if (REQUEST_TYPES.has(intent.type)) {
     title=`${NUVORA_BRAND.platformLabel} Request Update`; body=`Open ${NUVORA_BRAND.platformLabel} to review your pending task.`;
   } else throw new Error('Unsupported notification kind');

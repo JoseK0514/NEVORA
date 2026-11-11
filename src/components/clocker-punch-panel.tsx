@@ -67,7 +67,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
    try{
     const fresh=parseClockView(await postPunch(locationKey,{operation:'state'}));
     if(!current)return;
-    try{const store=await recoveryJournal();saved=await store.read(locationKey,fresh.subject);const refs=await store.references(locationKey);if(!current)return;setReferences(refs);}
+    try{const store=await recoveryJournal();saved=await store.read(locationKey,fresh.subject);const {references:refs}=await store.references(locationKey,fresh.subject);if(!current)return;setReferences(refs);}
     catch{setMode('storage');setMessage('This tablet can’t read its saved punches right now. Ask your manager to check the tablet.');return;}
     setView(fresh);setPending(saved);setMode(saved?'recovery':resumeContinuation(resume,fresh));
    }catch(error){if(current){setPending(saved);failed(error,Boolean(saved));}}
@@ -83,7 +83,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
  async function confirmed(value:unknown,saved:PendingPunch){
   const result=parseReceiptReply(value,saved.command);
   let storageWarning:string|null=null;
-  try{const store=await recoveryJournal();await store.resolveExact(locationKey,saved,'recorded');if(!alive.current)return;setPending(null);setReferences(await store.references(locationKey));}
+  try{const store=await recoveryJournal();await store.resolveExact(locationKey,saved,'recorded');if(!alive.current)return;setPending(null);setReferences((await store.references(locationKey,saved.subject)).references);}
   catch{storageWarning='The action was recorded, but this browser could not clear its recovery data. Check it again after allowing browser storage.';}
   if(alive.current){setReceipt(result);setMessage(storageWarning);setMode('success');}
  }
@@ -147,7 +147,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
  async function reviewCurrent(){
   const proof=reviewProof.current;if(busy.current||mode!=='review-current'||!pending||!view||!proof||proof.commandId!==pending.command.commandId||proof.subject!==view.subject||proof.verificationId!==view.verificationId||!canRetirePendingPunch(pending.command,view))return;
   busy.current=true;
-  try{const store=await recoveryJournal();await store.resolveExact(locationKey,pending,'reviewed-context');if(!alive.current)return;setPending(null);setReferences(await store.references(locationKey));reviewProof.current=null;setMode('ready');setMessage('The earlier punch was kept for review. Nothing was punched again.');}
+  try{const store=await recoveryJournal();await store.resolveExact(locationKey,pending,'reviewed-context');if(!alive.current)return;setPending(null);setReferences((await store.references(locationKey,pending.subject)).references);reviewProof.current=null;setMode('ready');setMessage('The earlier punch was kept for review. Nothing was punched again.');}
   catch{if(alive.current){setMode('storage');setMessage('This tablet can’t read its saved punches right now. Ask your manager to check the tablet.');}}
   finally{busy.current=false;}
  }
@@ -182,7 +182,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
  const tint=kioskTint(first);
  const face=(size?:'sm')=>first?<span className={styles.face} data-size={size} style={{background:tint[0],color:tint[1]}} aria-hidden="true">{first.slice(0,1).toUpperCase()}</span>:null;
  // Saved-action help stays off the two decision screens (Nov 10 review, NV-302).
- const handoff=(inline:boolean)=>references.length>0&&!waiting&&!['success','select-break','confirm-out'].includes(mode)?<ClockerRecoveryHandoff inline={inline} key={pending?.command.commandId??'tablet-assistance'} references={references} locationKey={locationKey} commandId={pending?.command.commandId??null}/>:null;
+ const handoff=(inline:boolean)=>references.length>0&&view&&(!pending||pending.subject===view.subject)&&!waiting&&!['success','select-break','confirm-out','auth','other-person'].includes(mode)?<ClockerRecoveryHandoff inline={inline} key={pending?.command.commandId??'tablet-assistance'} references={references} locationKey={locationKey} commandId={pending?.command.commandId??null}/>:null;
  /* Leaving (Nov 10 review, NV-184, NV-305): beside the state's own actions it is a text link in the same stack; when it is
   * the only way on, it is the primary button. The receipt keeps its grey Done. */
  const withActions=['recovery','retry','unavailable','review-current'].includes(mode);

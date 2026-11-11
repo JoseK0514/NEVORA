@@ -15,5 +15,5 @@ export function communicationRecipientAllowedSql(actor='$2'):string{return `EXIS
 /** Closed metadata-only source check used at outbox materialization/lease time. */
 export function communicationIntentAllowedSql(intent='n'){return `EXISTS(SELECT 1 FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id JOIN workspaces w ON w.id=c.workspace_id AND w.singleton AND w.active
  WHERE c.id::text=${intent}.source_id AND r.id::text=${intent}.source_version AND r.id::text=${intent}.effective_version AND c.state='PUBLISHED'
- AND (r.expires_at IS NULL OR r.expires_at>clock_timestamp()) AND ${intent}.environment='test' AND ${intent}.type='COMMUNICATION' AND ${intent}.purpose='EVENT'
+ AND (r.expires_at IS NULL OR r.expires_at>clock_timestamp()) AND ${intent}.environment='test' AND ${intent}.type='COMMUNICATION' AND (${intent}.purpose='EVENT' OR (${intent}.purpose='REMINDER' AND r.acknowledgement='REQUIRED' AND NOT EXISTS(SELECT 1 FROM communication_receipts receipt WHERE receipt.workspace_id=c.workspace_id AND receipt.communication_id=c.id AND receipt.revision_id=r.id AND receipt.employee_id=${intent}.employee_id)))
  AND ${communicationDevelopmentAllowedSql()} AND ${communicationRecipientAllowedSql(intent+'.employee_id')})`;}

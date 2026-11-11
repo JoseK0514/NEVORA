@@ -187,7 +187,7 @@ describe("buildManagerActionItems", () => {
     expect(item).toMatchObject({
       type: "COVERAGE_GAP",
       title: "No lead scheduled at FUEL - 2",
-      detail: "Wed, Sep 30 · 8:00 AM–12:00 PM · Designated lead required",
+      detail: "Wed, Sep 30 · 8:00 AM–12:00 PM · Shift lead required",
     });
   });
 
@@ -216,5 +216,11 @@ it('position-only shortage names the required position without claiming a missin
  expect(url.pathname).toBe('/app/schedule/coverage');
  expect(Object.fromEntries(url.searchParams)).toMatchObject({ week: '2026-10-05', locationId: 'l', date: '2026-10-05', start: '08:00', end: '12:00', positionId: 'b' });
  expect(parseCoverageRepairLocator(url.searchParams.get('repair'))).toMatchObject({ target: 'POSITION', positionId: 'b', reported: { missingStaff: 0, requiresLead: false, positions: [{positionId:'b',missing:1}] } });
- expect(item.detail).not.toContain('Designated lead');
+ expect(item.detail).not.toContain('Shift lead');
+});
+
+it('marks only future coverage obligations upcoming using the workspace calendar date',async()=>{
+ const {markUpcomingCoverage}=await import('./manager-actions');
+ const base={id:'gap',type:'COVERAGE_GAP' as const,priority:'URGENT' as const,title:'Coverage',detail:'Coverage',href:'/app/schedule'};
+ expect(markUpcomingCoverage([ {...base,dateTime:'2026-11-09T23:00'}, {...base,dateTime:'2026-11-10T23:00'}, {...base,dateTime:'2026-11-11T00:00'}, {...base,type:'TIME_OFF',dateTime:'2026-11-11T00:00'} ],'2026-11-10').map(x=>x.upcoming)).toEqual([false,false,true,false]);
 });

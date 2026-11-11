@@ -38,3 +38,10 @@ it('communication read cannot complete required acknowledgement and old acknowle
  expect(m.projectNotificationDisplayState(source as never,'self',false,{version:'old',requirement:'REQUIRED',acknowledged:true})).toEqual({reviewState:'unavailable',actionState:'unavailable'});
  expect(m.projectNotificationDisplayState(source as never,'self',false,{version:'new',requirement:'REQUIRED',acknowledged:true})).toEqual({reviewState:'confirmed',actionState:'complete'});
 });
+it('adds only authorized calendar subject facts, never private request text',async()=>{
+ const {notificationSubject}=await import('./employee-notification-list.server');
+ expect(notificationSubject({kind:'SCHEDULE',revision:{weekStart:'2026-11-16'}} as never)).toEqual({kind:'scheduleWeek',startDate:'2026-11-16',endDate:'2026-11-22'});
+ expect(notificationSubject({kind:'TIME_OFF',record:{startDate:'2026-11-16',endDate:'2026-11-17',reason:'PRIVATE'}} as never)).toEqual({kind:'requestDate',startDate:'2026-11-16',endDate:'2026-11-17'});
+ expect(notificationSubject({kind:'COMMUNICATION',private:'PRIVATE'} as never)).toBeNull();
+ expect(notificationSubject({kind:'CALLOUT',record:{date:'invalid',reasonNote:'PRIVATE'}} as never)).toBeNull();
+});
