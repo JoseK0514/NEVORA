@@ -9,11 +9,11 @@ branch push, main commit or production deployment occurred in this step.
 ## Applied and read back
 
 Prepared exact payloads: `docs/security/repository-controls/{development,main}.json`.
-Live API PUT followed by independent GET readback succeeded for both branches:
+Live API PUT followed by separate GET readback succeeded for both branches:
 
 - Strict required statuses, bound to the verified GitHub Actions App15368:
   validate, clocker-postgres, phase-d-attendance-ui, management-review-ui,
-  release-postgres, phase-e-postgres, phase-e-ui, phase-e-evidence, onboarding-backend.
+  release-postgres, phase-e-postgres, phase-e-ui, phase-e-evidence, onboarding-backend, mobile-access.
 - Administrator enforcement; linear history and conversation resolution required.
 - Force pushes and branch deletion disabled. Repository remains private.
 
@@ -41,7 +41,7 @@ compares the exact context/App pairs independent of presentation order.
 ## Actions before development, preserving three branches
 
 Jose requires all implementation, local checks and independent review complete
-before Actions, then development publication. The CI workflow now supports an
+before Actions, then development publication. The CI and web Mobile Access workflows now support an
 explicit `candidate/backend-completion/**` tag push. This permits an immutable
 candidate SHA to run the full unchanged required graph without a fourth branch,
 touching held Claude's branch or first updating development. All checkouts and

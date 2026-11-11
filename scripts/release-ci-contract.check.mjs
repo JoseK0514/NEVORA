@@ -262,3 +262,11 @@ test('management review and complete payroll sources are mandatory candidate gat
  for(const step of job.steps)assert.equal(step['continue-on-error'],undefined);
  const upload=job.steps.find(s=>s.name==='Upload management review browser evidence');assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
 });
+
+test('the same immutable candidate runs the existing web Mobile Access gate',()=>{
+ const mobile=require('js-yaml').load(readFileSync('.github/workflows/mobile-access.yml','utf8'));
+ assert.deepEqual(mobile.on.push.tags,['candidate/backend-completion/**']);
+ const job=mobile.jobs['mobile-access'];assert(job);assert.equal(job.if,undefined);assert.equal(job['continue-on-error'],undefined);
+ assert(job.steps.some(s=>s.name==='Checkout exact candidate'&&s.with.ref==='${{ github.sha }}'));
+ for(const step of job.steps)assert.equal(step['continue-on-error'],undefined);
+});

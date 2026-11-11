@@ -37,6 +37,10 @@
       {
         "context": "onboarding-backend",
         "app_id": 15368
+      },
+      {
+        "context": "mobile-access",
+        "app_id": 15368
       }
     ]
   },
