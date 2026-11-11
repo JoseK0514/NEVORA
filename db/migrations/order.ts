@@ -61,6 +61,7 @@ export const BASE_MIGRATIONS = [
   '0054_onboarding_commerce_binding.sql',
   '0055_onboarding_commerce_worker_scope.sql',
   '0056_clocker_identified_person_limits.sql',
+  '0057_management_time_close.sql',
   '0046_owner_advisor_memory.sql',
 ] as const;
 
