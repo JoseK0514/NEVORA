@@ -13,7 +13,7 @@ export function useOperationalNavigation(employeeId:string,role:UserRole,initial
  const [state,setState]=useState<PrivatePanelState<OperationalAuthorityView>>({snapshot:initial??null,refreshing:false,paused:false});
  const controllerRef=useRef<ReturnType<typeof createPrivateSnapshotController<OperationalAuthorityView>>|null>(null);
  useEffect(()=>{
-  if(role!=='MANAGER')return;
+  if(role!=='MANAGER'&&role!=='OWNER')return;
   let mounted=true,changed=false,baseline=initial?.state==='ready'?scopeIdentity(initial):null;
   function identityChanged(){if(!changed){changed=true;onAccessChange('identity');}}
   const controller=createPrivateSnapshotController<OperationalAuthorityView>(setState,async signal=>{
