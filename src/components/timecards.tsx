@@ -139,7 +139,7 @@ function TimecardsState({title,message,failed,signIn,onRetry,className}:{title:s
   </div>;
 }
 
-export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false,today,signature=false}:{initialPeriod:Period;manager:boolean;actorId:string;employeeCorporate?:boolean;
+export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false,today,signature=false,managementRecoveryScope}:{initialPeriod:Period;manager:boolean;actorId:string;employeeCorporate?:boolean;managementRecoveryScope?:string;
   /** Employee Signature (phase 1, approved Oct 20, 2026; target docs/product/specs/employee-style/signature/phase-1/p1c-timecards.png). */
   signature?:boolean;
   /** The workspace's date (manager view): sets This week and Last week and whether approvals are open yet. */
@@ -402,7 +402,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             <details className="c-tc-sheet__more"><summary>Clock-ins and fixes</summary><Details card={openItem.card}/></details>
           </CorpCard>
           <div className="c-tc-sheet__actions">
-            {!own?<ManagementCloseForm key={actorId+':'+openItem.card.employeeId} actorId={actorId} timeZone={openItem.card.timeZone}
+            {!own&&managementRecoveryScope?<ManagementCloseForm key={managementRecoveryScope+':'+actorId+':'+openItem.card.employeeId} recoveryScope={managementRecoveryScope} actorId={actorId} timeZone={openItem.card.timeZone}
               timeEntryId={openItem.card.entries.find(entry=>entry.sourceKind==='RECORDED'&&!entry.endAt&&!entry.rawEndAt)?.id} onClosed={()=>void refresh(period,true)}/>:null}
             {pending?.employeeId===openItem.card.employeeId?<button type="button" className={btn('primary')} disabled={busy} onClick={()=>void act(openItem,pending.action)}>Retry pending action</button>:
               openItem.state==='FINALIZED'?<><label className="c-field"><span className="c-field__label">Reopen reason</span><input className="c-in" value={notes[openItem.card.employeeId]??''} maxLength={500} enterKeyHint="done" autoComplete="off" onChange={e=>setNotes({...notes,[openItem.card.employeeId]:e.target.value})}/></label>

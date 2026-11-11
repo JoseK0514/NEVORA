@@ -25,6 +25,10 @@ it('offers an audited management close in real desktop/mobile timecards with rec
    const active=await runtime[engine].launch({headless:true});browser=active;
    for(const [index,actor] of ['QAOWNER','R10UIMANAGER'].entries()){
     const target=await seed(),context=await active.newContext({viewport:{width:index?390:1440,height:1000},reducedMotion:'reduce',serviceWorkers:'block'}),page=await context.newPage();page.setDefaultTimeout(20000);
+    if(engine==='chromium'&&actor==='QAOWNER'){
+     await q("UPDATE time_entries SET status='ON_BREAK' WHERE id=$1",[target.entry]);
+     await q("INSERT INTO break_entries(id,time_entry_id,break_start_at) VALUES('UI-OPEN-BREAK',$1,clock_timestamp()-interval '1 hour')",[target.entry]);
+    }
     let surfacePhase='login';
     page.on('pageerror',(e:Error)=>errors.push(engine+' '+actor+' '+surfacePhase+': '+e.message+' '+(e.stack??'')));
     page.on('requestfailed',(r:{url():string;failure():unknown})=>network.push({engine,actor,phase:surfacePhase,path:new URL(r.url()).pathname,failure:r.failure()}));
@@ -37,6 +41,7 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     const end=page.getByLabel('Confirmed end time (America/Puerto_Rico)',{exact:true}),reason=page.getByLabel('Reason for closing',{exact:true});await end.waitFor();
     expect(await end.inputValue()).toBe('');expect(await reason.inputValue()).toBe('');expect(await end.evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);
     expect(await page.getByRole('button',{name:'Record close',exact:true}).isDisabled()).toBe(true);
+    if(engine==='chromium'&&actor==='QAOWNER')await page.getByText('The open break ends at the same selected time.',{exact:true}).waitFor();
     // The existing page and form both retire private drafts on a real browser lifecycle event.
     surfacePhase='privacy-retirement';await reason.fill('PRIVATE-RETIRED-DRAFT');await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
     expect(await page.locator('textarea').count()).toBe(0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
@@ -82,6 +87,7 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     await page.getByText('Punch closed. The selected end time and reason are recorded.',{exact:true}).waitFor();
     expect(await q('SELECT status,clock_out_at=$2::timestamptz AS correct_end FROM time_entries WHERE id=$1',[target.entry,localDateTimeToInstant(chosen,'America/Puerto_Rico')])).toEqual([{status:'CLOCKED_OUT',correct_end:true}]);
     expect(await q('SELECT count(*)::int AS n FROM management_time_closes WHERE time_entry_id=$1',[target.entry])).toEqual([{n:1}]);
+    if(engine==='chromium'&&actor==='QAOWNER')expect(await q('SELECT b.break_end_at=t.clock_out_at AS same_end FROM break_entries b JOIN time_entries t ON t.id=b.time_entry_id WHERE t.id=$1',[target.entry])).toEqual([{same_end:true}]);
     checks.push(engine+' '+actor+': keyboard-open, explicit blank fields, privacy retirement,320/390/1440reflow and200%text, real inactive worker/location/tablet close');
     surfacePhase='teardown';await context.close();
    }
