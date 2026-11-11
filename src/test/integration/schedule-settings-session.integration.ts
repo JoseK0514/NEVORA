@@ -32,6 +32,8 @@ type Operation = typeof operations[number];
 const hash = createHash('sha256').update('owned-settings-current-session').digest('hex');
 let database: Awaited<ReturnType<typeof createDisposableFoundationDatabase>>;
 const q = (text: string, values: readonly unknown[] = []) => database.executor.query<Record<string, unknown>>({ text, values });
+const businessMutation = (statements: readonly SqlStatement[]) => statements.some(statement => /^\s*(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\b/.test(statement.text));
+const guardedAuthority = (statements: readonly SqlStatement[]) => statements.some(statement => statement.text.includes("'management_authorization'"));
 const snapshot = async () => { await installFixtureCompanyAccess(database.executor); return (await q(`SELECT jsonb_build_object(
  'staffing',(SELECT jsonb_agg(to_jsonb(t) ORDER BY location_id) FROM location_staffing_settings t),
  'hours',(SELECT jsonb_agg(to_jsonb(t) ORDER BY employee_id) FROM employee_scheduling_settings t),
@@ -87,9 +89,9 @@ async function invalidate(kind: string) {
   else await q("UPDATE employees SET role='EMPLOYEE' WHERE id='owner'");
 }
 
-// Removing final session/current-role authority makes each family commit.
+// Invalidate after entry and require the actual configuration authority denial.
 it.each(operations.flatMap(operation => ['revoked', 'expired', 'foreign', 'inactive', 'demoted'].map(kind => ({ operation, kind }))))('actual $operation rejects $kind authority changed after entry', async ({ operation, kind }) => {
-  const before = await snapshot(); let invalidations = 0;
+  const before = await snapshot(); let invalidations = 0, guardAttempts = 0, sqlDenial: unknown, guardResult: unknown[][] | undefined;
   context.executor = {
     query: async <T>(statement: SqlStatement) => {
       // The original DELETE was a standalone query. Keep this old boundary in
@@ -98,12 +100,23 @@ it.each(operations.flatMap(operation => ['revoked', 'expired', 'foreign', 'inact
       return database.executor.query<T>(statement);
     },
     transaction: async statements => {
-      invalidations++; await invalidate(kind); return database.executor.transaction(statements);
+      // Entry session reads also use HTTP batches. Invalidate at the actual
+      // guarded configuration admission, after the action captured its proof.
+      if (!guardedAuthority(statements)) return database.executor.transaction(statements);
+      guardAttempts++;
+      invalidations++; await invalidate(kind);
+      try { return guardResult = await database.executor.transaction(statements); }
+      catch (error) { sqlDenial = error; throw error; }
     },
   };
   const result = await action(operation);
   expect(await snapshot()).toEqual(before);
   expect(invalidations).toBeGreaterThan(0);
+  expect(guardAttempts).toBe(1);
+  // The authority reader intentionally admits Employee sessions to report their
+  // current scope. A demoted actor is denied Company admission by that real row.
+  if (kind === 'demoted') expect(guardResult?.flat()).toContainEqual(expect.objectContaining({employeeId:'owner',role:'EMPLOYEE'}));
+  else expect(String(sqlDenial)).toMatch(/(?:management|operational)_authorization/);
   expect(result.value).not.toMatchObject({ success: expect.any(String) });
   expect(JSON.stringify(result)).not.toContain(hash);
 });
@@ -148,7 +161,7 @@ async function controlled(defer: (cleanup: () => void | Promise<unknown>) => voi
   const released = new Promise<void>(resolve => { release = resolve; });
   defer(() => release());
   const executor: SqlExecutor = { query: database.executor.query, transaction: async statements => {
-    const mutation = statements.some(statement => /^\s*(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\b/.test(statement.text));
+    const mutation = businessMutation(statements);
     await client.query('BEGIN');
     try {
       const results = [];
@@ -173,22 +186,30 @@ it.each(operations.flatMap(operation => ['session', 'input'].map(lock => ({ oper
   const before = await snapshot();
   await withOwnedTestResources(async defer => {
     const blocker = await controlled(defer), writer = await controlled(defer);
+    let mutationAttempts = 0, sqlDenial: unknown;
     context.executor = { query: database.executor.query, transaction: async statements => {
+      if (!businessMutation(statements)) return database.executor.transaction(statements);
+      mutationAttempts++;
       await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '600 milliseconds' WHERE token_hash=$1", [hash]);
       await blocker.client.query('BEGIN');
       const input = operation === 'SAVE' ? "SELECT employee_id FROM employee_scheduling_settings WHERE employee_id='owner' FOR UPDATE"
         : operation === 'ADD' ? "SELECT id FROM locations WHERE id='loc-1' FOR UPDATE"
         : "SELECT id FROM location_coverage_windows WHERE id='window' FOR UPDATE";
       await blocker.client.query(lock === 'session' ? 'SELECT token_hash FROM employee_sessions WHERE token_hash=$1 FOR UPDATE' : input, lock === 'session' ? [hash] : []);
-      return writer.executor.transaction(statements);
+      try { return await writer.executor.transaction(statements); }
+      catch (error) { sqlDenial = error; throw error; }
     } };
     defer(() => blocker.client.query('ROLLBACK'));
     const writing = action(operation); defer(() => writing);
     await blocked(writer.pid, blocker.pid);
+    expect(mutationAttempts).toBe(1);
+    const [{ query }] = await q('SELECT query FROM pg_stat_activity WHERE pid=$1', [writer.pid]);
+    expect(query).toMatch(lock === 'session' ? /FROM employee_sessions[\s\S]*FOR SHARE/ : /FROM (?:employee_scheduling_settings|locations|location_coverage_windows)[\s\S]*FOR UPDATE/);
     await q('SELECT pg_sleep(GREATEST(0,extract(epoch FROM expires_at-clock_timestamp()))::double precision+0.03) FROM employee_sessions WHERE token_hash=$1', [hash]);
     expect(await q('SELECT expires_at<=clock_timestamp() expired FROM employee_sessions WHERE token_hash=$1', [hash])).toEqual([{expired:true}]);
     await blocker.client.query('COMMIT');
     const result = await writing;
+    expect(String(sqlDenial)).toMatch(/(?:management|operational)_authorization/);
     expect(result.value).not.toMatchObject({success:expect.any(String)});
     expect(await snapshot()).toEqual(before);
   });
@@ -340,15 +361,22 @@ it.each(operations)('actual %s rolls back expiry during a later SQL write lock w
   });
 });
 
-// The native action must recover a recognized current-authority failure through
-// existing login/role routing; the transactional guard still rolls everything back.
+// The HTML form action routes guarded configuration denial to ACCESS_DENIED.
+// The separate expiry/lock probes above cover the later business write guards.
 it.each(['revoked','expired','foreign','inactive','demoted'])('native Remove redirects safely after actual %s final-authority denial', async kind => {
-  const before=await snapshot(); let invalidated=false;
+  const before=await snapshot(); let invalidated=false, guardAttempts=0, sqlDenial: unknown, guardResult: unknown[][] | undefined;
   context.executor={query:database.executor.query,transaction:async statements=>{
-    invalidated=true; await invalidate(kind); return database.executor.transaction(statements);
+    if(!guardedAuthority(statements))return database.executor.transaction(statements);
+    guardAttempts++;
+    invalidated=true; await invalidate(kind);
+    try{return guardResult=await database.executor.transaction(statements);}
+    catch(error){sqlDenial=error;throw error;}
   }};
   const result=await action('DELETE');
   expect(await snapshot()).toEqual(before); expect(invalidated).toBe(true);
+  expect(guardAttempts).toBe(1);
+  if(kind==='demoted')expect(guardResult?.flat()).toContainEqual(expect.objectContaining({employeeId:'owner',role:'EMPLOYEE'}));
+  else expect(String(sqlDenial)).toMatch(/(?:management|operational)_authorization/);
   expect(result.error).toMatchObject({destination:'/app/schedule/settings?error=ACCESS_DENIED'});
   expect(result.value).toBeUndefined();
 });

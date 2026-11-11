@@ -62,6 +62,7 @@ async function fixture(status: 'DRAFT' | 'PUBLISHED' = 'DRAFT', credential = tru
   return { ...db, owner, actor };
 }
 const q = <T = Record<string, unknown>>(db: Fixture, text: string, values: unknown[] = []) => db.executor.query<T>({ text, values });
+const businessMutation = (statements: readonly SqlStatement[]) => statements.some(statement => /^\s*(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\b/.test(statement.text));
 it.each(['DRAFT', 'PUBLISHED'].flatMap(status => ['create', 'edit'].map(operation => ({ status: status as 'DRAFT' | 'PUBLISHED', operation }))))('$status $operation action recovers a real final SQL overlap without an invalid shift/revision/intent commit', async ({ status, operation }) => {
   const db = await fixture(status);
   try {
@@ -342,10 +343,15 @@ describe('Phase B authenticated employee writes and reviewed replacement sets', 
       const login = await reviewedLogin('owner'); await login.issue();
       const token = context.cookies.get('fuel_session')!, hash = createHash('sha256').update(token).digest('hex');
       const employee = (await getEmployeeManagementProfile('worker', db.executor))!;
-      let revoked = false;
+      let revoked = false, mutationAttempts = 0, sqlDenial: unknown;
       context.executor = { query: db.executor.query, transaction: async (statements, signal) => {
-        if (!revoked) { revoked = true; await q(db, 'DELETE FROM employee_sessions WHERE token_hash=$1', [hash]); }
-        return db.executor.transaction(statements, signal);
+        const mutation = businessMutation(statements);
+        if (mutation) mutationAttempts++;
+        // Session reads also use HTTP batches. Revoke only after the real action
+        // captured its proof and prepared the guarded employee mutation.
+        if (mutation && !revoked) { revoked = true; await q(db, 'DELETE FROM employee_sessions WHERE token_hash=$1', [hash]); }
+        try { return await db.executor.transaction(statements, signal); }
+        catch (error) { if (mutation) sqlDenial = error; throw error; }
       } };
       const data=kind==='scheduling'?coreForm(employee):new FormData();
       if(kind==='scheduling'){data.set('positionIds','p1');data.set('eligibleLocationIds','loc-1');data.set('id','new');}
@@ -355,6 +361,8 @@ describe('Phase B authenticated employee writes and reviewed replacement sets', 
       }:{operationId:randomUUID(),employee:{id:'NEW',firstName:'Fictional',lastName:'New',phone:'5550000004',email:null,role:'EMPLOYEE',primaryLocationId:'loc-1',eligibleLocationIds:['loc-1'],positionIds:['p1']}}));
       const result=await(kind==='core'?saveEmployeeCoreProfileAction(data):kind==='scheduling'?saveEmployeeSchedulingProfileAction(data):createEmployeeFormAction(data));
       expect(revoked).toBe(true);
+      expect(mutationAttempts).toBe(1);
+      expect(String(sqlDenial)).toMatch(/(?:management|operational)_authorization/);
       if(kind==='scheduling')expect(result).toHaveProperty('error');else expect(result).toEqual({state:'unavailable'});
       expect((await getEmployeeManagementProfile('worker', db.executor))!.firstName).toBe(employee.firstName);
       expect(await q(db, 'SELECT employee_id FROM employee_positions')).toEqual([]);
