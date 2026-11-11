@@ -96,6 +96,12 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     expect(await q('SELECT status,clock_out_at=$2::timestamptz AS correct_end FROM time_entries WHERE id=$1',[target.entry,localDateTimeToInstant(chosen,'America/Puerto_Rico')])).toEqual([{status:'CLOCKED_OUT',correct_end:true}]);
     expect(await q('SELECT count(*)::int AS n FROM management_time_closes WHERE time_entry_id=$1',[target.entry])).toEqual([{n:1}]);
     if(engine==='chromium'&&actor==='QAOWNER')expect(await q('SELECT b.break_end_at=t.clock_out_at AS same_end FROM break_entries b JOIN time_entries t ON t.id=b.time_entry_id WHERE t.id=$1',[target.entry])).toEqual([{same_end:true}]);
+    if(engine==='chromium'&&actor==='QAOWNER'){
+     await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES('UI-NEW-PUNCH',$1,'loc-2','ui-retired-tablet',clock_timestamp()-interval '10 minutes','CLOCKED_IN')",[target.id]);
+     await page.getByRole('button',{name:'Review new open punch',exact:true}).waitFor({timeout:45000});await page.getByRole('button',{name:'Review new open punch',exact:true}).click();
+     await end.waitFor();expect(await end.inputValue()).toBe('');expect(await reason.inputValue()).toBe('');expect(await page.getByRole('button',{name:'Record close',exact:true}).isDisabled()).toBe(true);
+     await page.getByRole('button',{name:'Cancel close',exact:true}).click();checks.push('Later recorded punch gets a new blank review; prior receipt cannot hide or pre-confirm it');
+    }
     checks.push(engine+' '+actor+': keyboard-open, explicit blank fields, privacy retirement,320/390/1440reflow and200%text, real inactive worker/location/tablet close');
     surfacePhase='teardown';await context.close();
    }

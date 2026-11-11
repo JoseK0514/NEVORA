@@ -1,5 +1,5 @@
 'use client';
-import {useEffect,useRef,useState,type FormEvent} from 'react';
+import {useEffect,useId,useRef,useState,type FormEvent} from 'react';
 import {localDateTimeToInstant,formatBusinessDateTime} from '@/lib/business-time';
 import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import {parseCloseContext,parseCloseReceipt} from '@/lib/management-close/client';
@@ -14,6 +14,7 @@ const blocked:Record<string,string>={self_review:'A different manager must close
 
 /** Recovery is memory-only and bound to this actor/screen, never a new operation. */
 export function ManagementCloseForm({timeEntryId,actorId,timeZone,recoveryScope,onClosed}:{timeEntryId?:string;actorId:string;timeZone:string;recoveryScope:string;onClosed:()=>void}){
+ const fieldId=useId(),completedEntry=useRef<string|null>(null);
  const journalScope=(typeof window==='undefined'?'':window.location.origin)+'|'+recoveryScope;
  const [attempt,setAttempt]=useState<CloseAttempt|null>(()=>pendingClose(journalScope,actorId));
  const [opened,setOpened]=useState(!!attempt),[view,setView]=useState<View|null>(null),[localEnd,setLocalEnd]=useState(''),[reason,setReason]=useState(''),[confirmed,setConfirmed]=useState(false);
@@ -55,6 +56,7 @@ export function ManagementCloseForm({timeEntryId,actorId,timeZone,recoveryScope,
  async function submit(event?:FormEvent){
   event?.preventDefault();if(running.current||!focused())return;
   let selected=pending.current;
+  if(!selected){const previous=pendingClose(journalScope,actorId);if(previous){pending.current=previous;setAttempt(previous);setPhase('unknown');current.current=null;setView(null);setLocalEnd('');setReason('');setConfirmed(false);setMessage('Reconcile the original close before starting another.');return;}}
   if(!selected){
    if(current.current?.state!=='ready'||'closed'in current.current||!confirmed)return;
    try{selected={authority:current.current.authority,command:parseManagementCloseCommand({operationId:crypto.randomUUID(),timeEntryId:current.current.target.timeEntryId,expectedSourceHash:current.current.sourceHash,closedAt:localDateTimeToInstant(localEnd,timeZone),reason:reason.trim()})};}
@@ -71,14 +73,17 @@ export function ManagementCloseForm({timeEntryId,actorId,timeZone,recoveryScope,
    if(own!==sequence.current||!focused())return;
    if(response.status===401||response.status===403){setView(null);current.current=null;setLocalEnd('');setReason('');setConfirmed(false);setPhase('unknown');setMessage('Your access changed. Refresh your current session.');controller.current?.pause();return;}
    const body=await response.json();if(own!==sequence.current)return;
-   if(response.ok&&body.state==='closed'){parseCloseReceipt(body.receipt,original.command);forgetClose(journalScope,actorId,original.command.operationId);pending.current=null;setAttempt(null);setPhase('saved');setLocalEnd('');setReason('');setConfirmed(false);setMessage('Punch closed. The selected end time and reason are recorded.');onClosed();return;}
+   if(response.ok&&body.state==='closed'){parseCloseReceipt(body.receipt,original.command);forgetClose(journalScope,actorId,original.command.operationId);pending.current=null;setAttempt(null);completedEntry.current=original.command.timeEntryId;setPhase('saved');setLocalEnd('');setReason('');setConfirmed(false);setMessage('Punch closed. The selected end time and reason are recorded.');onClosed();return;}
    if(response.status===409&&(body.state==='blocked'||body.state==='conflict')){forgetClose(journalScope,actorId,original.command.operationId);pending.current=null;setAttempt(null);setPhase('idle');setConfirmed(false);setMessage(body.state==='blocked'?(blocked[String(body.reason)]??'Review the current punch before continuing.'):'The original operation conflicts. Refresh and review the current punch.');controller.current?.refresh();return;}
    throw Error('Unconfirmed');
   }catch{if(own===sequence.current&&focused()){setPhase('unknown');setMessage('The result is unconfirmed. Retry the same close to check its saved result.');}}
   finally{if(timer)clearTimeout(timer);if(own===sequence.current){running.current=false;post.current=null;}}
  }
  if(!timeEntryId&&!attempt&&!saved)return null;
- if(saved)return <p role="status" className="c-tc-sheet__note">{message}</p>;
+ if(saved){
+  if(timeEntryId&&timeEntryId!==completedEntry.current)return <div className={styles.form}><p className="c-tc-sheet__note">A new punch is open. Review its current time before another close.</p><button type="button" className="c-btn c-btn--secondary" onClick={()=>{setPhase('idle');setOpened(true);setView(null);current.current=null;setMessage('Checking the new punch…');}}>Review new open punch</button></div>;
+  return <p role="status" className="c-tc-sheet__note">{message}</p>;
+ }
  if(!opened)return <button type="button" className="c-btn c-btn--secondary c-btn--full" onClick={()=>{setOpened(true);setMessage('Checking current punch…');}}>Close open punch</button>;
  return <section className={styles.form} aria-label="Close open punch">
   <h3>{attempt?'Confirm original close':'Close open punch'}</h3>
@@ -86,8 +91,8 @@ export function ManagementCloseForm({timeEntryId,actorId,timeZone,recoveryScope,
    <p className="c-tc-sheet__note">{view.target.employeeName} · {view.target.locationName}. Started {formatBusinessDateTime(view.target.clockInAt,timeZone)}.</p>
    {view.target.openBreakStartedAt?<p className="c-tc-sheet__note">The open break ends at the same selected time.</p>:null}
    <fieldset className={styles.fields} disabled={!!attempt||phase==='saving'}>
-    <label className="c-field"><span className="c-field__label">Confirmed end time ({timeZone})</span><input ref={endField} className="c-in" type="datetime-local" value={localEnd} onChange={e=>{setLocalEnd(e.target.value);setConfirmed(false);}} step={60} required autoComplete="off"/></label>
-    <label className="c-field"><span className="c-field__label">Reason for closing</span><textarea className="c-in" rows={3} maxLength={500} value={reason} onChange={e=>{setReason(e.target.value);setConfirmed(false);}} required autoComplete="off"/></label>
+    <div className="c-field"><label className="c-field__label" htmlFor={fieldId+'-end'}>Confirmed end time ({timeZone})</label><input id={fieldId+'-end'} ref={endField} className="c-in" type="datetime-local" value={localEnd} onChange={e=>{setLocalEnd(e.target.value);setConfirmed(false);}} step={60} required autoComplete="off"/></div>
+    <div className="c-field"><label className="c-field__label" htmlFor={fieldId+'-reason'}>Reason for closing</label><textarea id={fieldId+'-reason'} className="c-in" rows={3} maxLength={500} value={reason} onChange={e=>{setReason(e.target.value);setConfirmed(false);}} required autoComplete="off"/></div>
     <label className={styles.confirmation}><input className="c-tc-box" type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/><span>I verified this end time and reason.</span></label>
    </fieldset>
    {!attempt?<button type="submit" className="c-btn c-btn--full" disabled={!confirmed||!localEnd||!reason.trim()}>Record close</button>:null}
