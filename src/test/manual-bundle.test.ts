@@ -10,6 +10,7 @@ const {collectBundleInputs, pdfSubject, renderGuideHtml, renderMarkdown, safePat
 const ids = ['owner', 'manager-lead', 'employee', 'rondo', 'developer', 'operations'];
 const date = '2026-11-11';
 const publication = 'docs/guides/web/publication';
+const runtimeInputs = ['next.config.ts', 'next-env.d.ts', 'tsconfig.json', 'vercel.json', 'postcss.config.mjs', 'scripts/operations-case-readiness.mts', 'functions/fixture.ts'];
 const sha256 = (value: Uint8Array | string) => createHash('sha256').update(value).digest('hex');
 type FileHash = {path: string; sha256: string};
 type Guide = {id: string; title: string; markdown: FileHash; evidence: FileHash[]; pdf: FileHash & {pageCount: number}};
@@ -49,6 +50,7 @@ beforeEach(async () => {
   await put('services/worker.ts', '// fictional worker\n');
   await put('ops/runbook.md', '# Fictional operations\n');
   await put('public/font.ttf', 'fictional asset bytes');
+  for (const path of runtimeInputs) await put(path, 'fictional runtime input\n');
   await put('package.json', '{"private":true}\n');
   await put('package-lock.json', '{"lockfileVersion":3}\n');
   await put('docs/evidence.md', '# Fictional source evidence\n');
@@ -201,6 +203,15 @@ describe('source-bound guide publication', () => {
     const foreign = git('rev-parse', 'HEAD'); git('checkout', 'development');
     manifest.sourceSha = foreign; await saveManifest();
     await expect(verifyBundle({repoRoot: root})).rejects.toThrow(/ancestor|source/i);
+  });
+  it.each(runtimeInputs)('rejects dirty and committed runtime/configuration drift: %s', async path => {
+    await put(path, 'changed fictional runtime input\n');
+    await expect(collectBundleInputs({repoRoot: root, date, requireCleanApplication: true})).rejects.toThrow(/Commit application inputs/);
+    await expect(verifyBundle({repoRoot: root})).rejects.toThrow(/application/i);
+    git('add', path); git('commit', '-m', 'Fictional runtime change');
+    const next = await collectBundleInputs({repoRoot: root, date, requireCleanApplication: true});
+    expect(next.applicationHash).not.toBe(manifest.applicationHash);
+    await expect(verifyBundle({repoRoot: root})).rejects.toThrow(/application/i);
   });
   it('rejects invalid publication dates and an altered application hash', async () => {
     await expect(collectBundleInputs({repoRoot: root, date: '2026-02-30', requireCleanApplication: true})).rejects.toThrow(/date/i);
