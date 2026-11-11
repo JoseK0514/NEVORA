@@ -12,6 +12,19 @@ Alert destination is **support@thevelani.com**. Jose is the initial responder an
 
 ## Credentials and profiles
 
+For the new finite staging pilot, follow [company-specific enrollment](ENROLLMENT-RUNBOOK.md).
+That implemented path keeps shared onboarding/commerce roots inside the existing
+private provisioner. The host receives only each selected company's restricted
+control reader and recipient private key through the protected operator handoff.
+Generate its profile with the enrollment operator; do not hand-author a root-backed
+profile or copy a Vercel/browser environment to bypass missing recoverable custody.
+Local implementation and configuration preflight do not establish hosted enrollment,
+database access, issuer/reader grants or pilot approval.
+
+The environment/root-backed profile description below documents the retained legacy
+format only. It is not the credential prescription for the enrolled pilot; use only
+the format explicitly selected in the reviewed source-bound activation packet.
+
 Do not paste keys into chat, source, commands, build logs or checked-in files. Do not copy a Vercel/browser environment into this service. Obtain existing worker roots through their approved secure store and install only the required managed secret values. A credential existing only in a write-only provider store is not a recoverable handoff; report that limitation instead of adding an export endpoint or resetting enrolled identities.
 
 `NEVORA_WORKFORCE_ENABLED=false` is the initial state. Activation additionally requires:
