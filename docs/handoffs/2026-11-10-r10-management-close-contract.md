@@ -1,6 +1,6 @@
 # R10 management close: backend and Claude integration contract
 
-Status: local proposal on detached development0317598; no push, GitHub Actions, hosted migration or deployment authorized for this packet. Native applications are excluded. This contract does not certify the held combined UI source.
+Status: locally qualified in the [R08–R10 packet](2026-11-10-r08-r10-local-qualification.md), based on detached development0317598; no push, GitHub Actions, hosted migration or deployment authorized for this packet. Native applications are excluded. This contract does not certify the held combined UI source.
 
 Jose selected **Owner and Manager, within their existing permissions**. Current cookie, active actor, active company and current operational grant remain mandatory. Both the recorded entry location and worker's current primary location must be in scope. An inactive grant location still invalidates a location grant under existing Company Access rules; Company-scoped management can recover an inactive target location. The target employee/tablet may be inactive; this command does not reactivate either. A person cannot close their own punch through this management path.
 
@@ -24,10 +24,10 @@ Send `x-nevora-management-close: 1`, cookie credentials and no query string. A r
 
 Headers: `x-nevora-management-close: 1`, `x-nevora-management-close-authority: <ready authority>`, `Content-Type: application/json`. Do not send actor, workspace, employee, location or active-state claims in the body. The path and body entry ID must agree. Unknown fields and actual request bodies over8192 bytes are rejected. Reason must be trimmed,1–500 characters and free of control/format characters. The explicit offset instant retains microsecond precision; offset-free local times are rejected.
 
--200 `{state:'closed',receipt:{status:'closed',operationId,timeEntryId,closedAt,recordedAt,entryVersion,clockRevision,endedBreakId}}`.
--409 `{state:'blocked',reason}` where reason is `self_review`, `stale_source`, `invalid_interval`, `overlap`, `finalized_period` or `payroll_approved`; or `{state:'conflict'}` for operation reuse/retry exhaustion.
--503 `{state:'outcome_unknown',operationId}` means the write may have committed. Reconcile with the **same operation, source, end time and reason**. A retry returns the original durable receipt after current scope checks. Never create another operation to recover an uncertain one.
--401/403 means authentication/transport access was denied;503 `{state:'unavailable'}` means no confirmed public result. All infrastructure diagnostics stay server-side.
+- 200 `{state:'closed',receipt:{status:'closed',operationId,timeEntryId,closedAt,recordedAt,entryVersion,clockRevision,endedBreakId}}`.
+- 409 `{state:'blocked',reason}` where reason is `self_review`, `stale_source`, `invalid_interval`, `overlap`, `finalized_period` or `payroll_approved`; or `{state:'conflict'}` for operation reuse/retry exhaustion.
+- 503 `{state:'outcome_unknown',operationId}` means the write may have committed. Reconcile with the **same operation, source, end time and reason**. A retry returns the original durable receipt after current scope checks. Never create another operation to recover an uncertain one.
+- 401/403 means authentication/transport access was denied;503 `{state:'unavailable'}` means no confirmed public result. All infrastructure diagnostics stay server-side.
 
 ## Required management interaction
 
