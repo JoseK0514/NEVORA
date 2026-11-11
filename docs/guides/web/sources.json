@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "guides": [
+    {
+      "id": "owner",
+      "title": "NEVORA Owner web guide",
+      "markdown": "docs/guides/web/owner.md",
+      "evidence": [
+        "src/lib/navigation.ts",
+        "src/lib/company-access/operational-scope.server.ts",
+        "src/app/app/settings/page.tsx",
+        "src/app/app/employees/page.tsx",
+        "src/app/app/employees/new/page.tsx",
+        "src/app/app/employees/[employeeId]/page.tsx",
+        "src/components/company-access/employee-invitation-panel.tsx",
+        "src/components/company-access/manager-operational-scope-panel.tsx",
+        "src/app/app/schedule/page.tsx",
+        "src/app/app/schedule/publish/page.tsx",
+        "src/app/app/schedule/settings/page.tsx",
+        "src/app/app/reports/page.tsx",
+        "src/components/payroll/payroll-runs.tsx",
+        "src/lib/payroll/service.ts",
+        "src/lib/payroll/access.ts",
+        "src/app/app/help/page.tsx",
+        "src/lib/onboarding/admission.server.ts"
+      ]
+    },
+    {
+      "id": "manager-lead",
+      "title": "NEVORA Manager and Lead web guide",
+      "markdown": "docs/guides/web/manager-lead.md",
+      "evidence": [
+        "src/lib/auth/permissions.ts",
+        "src/lib/navigation.ts",
+        "src/lib/company-access/model.ts",
+        "src/lib/company-access/operational-scope.server.ts",
+        "src/components/company-access/scoped-operational-views.tsx",
+        "src/app/app/schedule/new/page.tsx",
+        "src/app/app/employees/[employeeId]/page.tsx",
+        "src/app/app/schedule/settings/page.tsx",
+        "src/lib/payroll/service.ts",
+        "src/lib/payroll/native/scope.ts",
+        "src/app/app/my-time/page.tsx",
+        "src/app/app/ai-manager/page.tsx"
+      ]
+    },
+    {
+      "id": "employee",
+      "title": "NEVORA Employee web guide",
+      "markdown": "docs/guides/web/employee.md",
+      "evidence": [
+        "src/lib/navigation.ts",
+        "src/app/activate/page.tsx",
+        "src/app/activate/activation-invitation.tsx",
+        "src/app/app/schedule/page.tsx",
+        "src/app/app/availability/page.tsx",
+        "src/app/app/requests/hub/page.tsx",
+        "src/app/app/requests/page.tsx",
+        "src/app/app/exchange/page.tsx",
+        "src/app/app/exchange/swap/page.tsx",
+        "src/app/app/exchange/callout/page.tsx",
+        "src/app/app/my-time/page.tsx",
+        "src/components/employee-time-panel.tsx",
+        "src/app/app/my-pay/page.tsx",
+        "src/lib/payroll/access.ts",
+        "src/components/employee-mobile/profile.tsx",
+        "src/app/app/account/delete/page.tsx",
+        "src/app/app/help/page.tsx"
+      ]
+    },
+    {
+      "id": "rondo",
+      "title": "Rondo web guide",
+      "markdown": "docs/guides/web/rondo.md",
+      "evidence": [
+        "src/app/app/ai-manager/page.tsx",
+        "src/lib/owner-advisor/authority.server.ts",
+        "src/lib/owner-advisor/config.server.ts",
+        "src/lib/owner-advisor/contracts.ts",
+        "src/lib/owner-advisor/loop.server.ts",
+        "src/lib/owner-advisor/notebook.server.ts",
+        "src/lib/owner-advisor/memory.server.ts",
+        "src/lib/owner-advisor/coverage-actions.server.ts",
+        "src/components/owner-advisor/advisor.tsx",
+        "src/components/owner-advisor/notebook-panel.tsx",
+        "src/components/owner-advisor/coverage-actions.tsx",
+        "src/components/owner-advisor/coverage-plans.tsx",
+        "src/components/owner-advisor/workflows.tsx",
+        "docs/product/rondo-operating-contract.md"
+      ]
+    },
+    {
+      "id": "developer",
+      "title": "NEVORA web developer guide",
+      "markdown": "docs/guides/web/developer.md",
+      "evidence": [
+        "AGENTS.md",
+        "package.json",
+        ".github/workflows/ci.yml",
+        "docs/development/developer-guide.md",
+        "docs/handoffs/2026-10-21-development-assembly-sources.json",
+        "src/lib/company-access/operational-scope.server.ts",
+        "src/lib/payroll/native/scope.ts",
+        "src/lib/private-snapshot-client.ts",
+        "src/lib/workspace-presentation/service.ts",
+        "src/lib/onboarding/admission.server.ts",
+        "src/lib/onboarding/config.server.ts",
+        "src/lib/onboarding/provisioning/store.server.ts",
+        "src/lib/communications/service.server.ts",
+        "src/lib/owner-advisor/coverage-actions.server.ts",
+        "db/migrations/order.ts",
+        "scripts/release-build.mjs"
+      ]
+    },
+    {
+      "id": "operations",
+      "title": "NEVORA web operations guide",
+      "markdown": "docs/guides/web/operations.md",
+      "evidence": [
+        "docs/runbooks/self-service-onboarding.md",
+        "ops/workforce/ENROLLMENT-RUNBOOK.md",
+        "ops/workforce/MANAGED-RUNBOOK.md",
+        "docs/runbooks/workforce-operations.md",
+        "docs/runbooks/web-notification-acceptance.md",
+        "docs/runbooks/renewal-and-on-call.md",
+        "docs/compliance/account-deletion-runbook.md",
+        "src/lib/legal/policies.ts",
+        "src/lib/onboarding/admission.server.ts",
+        "src/lib/onboarding/config.server.ts",
+        "src/lib/onboarding/provisioning/store.server.ts",
+        "src/lib/operations/worker-enrollment.ts",
+        "src/lib/operations/managed-host.ts",
+        "src/lib/operations/monitor.ts",
+        "src/lib/operations/case-readiness.ts",
+        "src/lib/communications/service.server.ts"
+      ]
+    }
+  ]
+}
