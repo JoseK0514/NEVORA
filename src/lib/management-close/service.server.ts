@@ -52,7 +52,7 @@ export async function readManagementCloseContext(proof:SessionMutationProof,time
     const validForMs=Math.min(15000,access.validForMs-(Date.now()-Date.parse(access.observedAt)));
     if(!row||validForMs<=0||!row.sourceHash)return {state:'unavailable',reason:'access_denied'};
     if(row.closed)return {state:'closed'};
-    return {state:'ready',target:{timeEntryId:row.timeEntryId,employeeName:row.employeeName,locationName:row.locationName,clockInAt:row.clockInAt,openBreakStartedAt:row.openBreakStartedAt},sourceHash:row.sourceHash,authority:intent(proof,access),validForMs};
+    return {state:'ready',observedAt:access.observedAt,target:{timeEntryId:row.timeEntryId,employeeName:row.employeeName,locationName:row.locationName,clockInAt:row.clockInAt,openBreakStartedAt:row.openBreakStartedAt},sourceHash:row.sourceHash,authority:intent(proof,access),validForMs};
   } catch(error){return {state:'unavailable',reason:denied(error)?'access_denied':['42P01','42883'].includes(code(error))?'schema_missing':'read_failed'};}
 }
 

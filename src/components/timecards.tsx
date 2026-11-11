@@ -1,6 +1,7 @@
 'use client';
 
 import {classifyTimecardReview,summarizeTimecardReview} from '@/lib/timecards/review-summary';
+import {ManagementCloseForm} from './management-close-form';
 import {keepWhole} from '@/lib/keep-whole';
 import Link from 'next/link';
 import {useSearchParams} from 'next/navigation';
@@ -401,6 +402,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             <details className="c-tc-sheet__more"><summary>Clock-ins and fixes</summary><Details card={openItem.card}/></details>
           </CorpCard>
           <div className="c-tc-sheet__actions">
+            {!own?<ManagementCloseForm key={actorId+':'+openItem.card.employeeId} actorId={actorId} timeZone={openItem.card.timeZone}
+              timeEntryId={openItem.card.entries.find(entry=>entry.sourceKind==='RECORDED'&&!entry.endAt&&!entry.rawEndAt)?.id} onClosed={()=>void refresh(period,true)}/>:null}
             {pending?.employeeId===openItem.card.employeeId?<button type="button" className={btn('primary')} disabled={busy} onClick={()=>void act(openItem,pending.action)}>Retry pending action</button>:
               openItem.state==='FINALIZED'?<><label className="c-field"><span className="c-field__label">Reopen reason</span><input className="c-in" value={notes[openItem.card.employeeId]??''} maxLength={500} enterKeyHint="done" autoComplete="off" onChange={e=>setNotes({...notes,[openItem.card.employeeId]:e.target.value})}/></label>
                 <button type="button" className={btn('secondary')} disabled={locked||own||!notes[openItem.card.employeeId]?.trim()} onClick={()=>void act(openItem,'REOPEN')}>Reopen period</button></>:

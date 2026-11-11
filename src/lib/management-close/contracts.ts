@@ -24,6 +24,7 @@ export type ManagementCloseResult = ManagementCloseReceipt
 
 export type ManagementCloseContext = {
   state: 'ready';
+  observedAt: string;
   target: { timeEntryId: string; employeeName: string; locationName: string; clockInAt: string; openBreakStartedAt: string | null };
   sourceHash: string;
   authority: string;
