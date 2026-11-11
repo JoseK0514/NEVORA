@@ -451,6 +451,8 @@ jobs:
           test -x "$PG_BIN/pg_ctl"
           echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
       - name: Release PostgreSQL integration gates
+        env:
+          NEVORA_CAPACITY_EVIDENCE: ${{ runner.temp }}/capacity-evidence
         run: npm run test:release:postgres
       - name: Owner advisor isolated PostgreSQL integration gate
         run: node scripts/payroll-postgres.mjs vitest.owner-advisor-integration.config.mts

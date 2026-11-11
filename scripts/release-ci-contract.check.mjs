@@ -259,6 +259,7 @@ test('management review and complete payroll sources are mandatory candidate gat
  assert(job.steps.some(s=>s.run?.startsWith('node scripts/management-review-evidence.mjs')));
  assert(workflow.jobs['phase-e-evidence'].needs.includes('management-review-ui'));
  const step=workflow.jobs['release-postgres'].steps.find(s=>s.run?.includes('vitest.payroll-source-pagination-integration.config.mts'));assert(step);assert.equal(step.if,undefined);assert.equal(step['continue-on-error'],undefined);
+ const baseSql=workflow.jobs['release-postgres'].steps.find(s=>s.run==='npm run test:release:postgres');assert.equal(baseSql.env.NEVORA_CAPACITY_EVIDENCE,'${{ runner.temp }}/capacity-evidence');
  for(const step of job.steps)assert.equal(step['continue-on-error'],undefined);
  const upload=job.steps.find(s=>s.name==='Upload management review browser evidence');assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
 });

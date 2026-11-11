@@ -208,9 +208,9 @@ it('executed_engine_width_requirement_check rejects missing, skipped or failed b
   }
 });
 it('a skipped required E or D job fails CI evidence acceptance on the exact candidate', () => {
-  const jobs: Record<string, { result: string }> = Object.fromEntries(['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui'].map(name => [name, { result: 'success' }]));
+  const jobs: Record<string, { result: string }> = Object.fromEntries(['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'management-review-ui', 'phase-e-postgres', 'phase-e-ui'].map(name => [name, { result: 'success' }]));
   expect(evaluate(runner, `api.verifyRequiredJobs(${JSON.stringify(jobs)});`).status).toBe(0);
-  for (const name of ['phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui']) {
+  for (const name of ['phase-d-attendance-ui', 'management-review-ui', 'phase-e-postgres', 'phase-e-ui']) {
     const skipped = { ...jobs, [name]: { result: 'skipped' } };
     expect(evaluate(runner, `api.verifyRequiredJobs(${JSON.stringify(skipped)});`).status).not.toBe(0);
   }
@@ -324,14 +324,14 @@ it.each(['development', 'main'])('workflow verifies integrated push ref %s', bra
 it.each(['phase-c/punch', 'phase-d/timecards', 'codex/phase-d-audit', 'fix/authority', 'release/candidate', 'phase-e/employee', 'codex/phase-e-employee-experience-20261008', 'phase-f/tenancy', 'codex/phase-f-inventory', 'codex/par-001-remediation-20261008'])('candidate %s runs every mandatory gate through its PR without a duplicate push', branch => {
   expect(eventMatches('push', branch)).toBe(false);
   expect(eventMatches('pull_request', 'development')).toBe(true);
-  for (const job of ['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui']) {
+  for (const job of ['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'management-review-ui', 'phase-e-postgres', 'phase-e-ui']) {
     expect(jobMatches(job, 'refs/pull/23/merge', branch, 'development'), job).toBe(true);
   }
 });
 it('workflow ignores unrelated pushes and schedules every E/D/regression job for E push and E PR', () => {
   expect(eventMatches('push', 'feature/unrelated')).toBe(false); expect(eventMatches('pull_request', 'development')).toBe(true);
   for (const [ref, head, base] of [['refs/heads/codex/phase-e-employee-experience-20261008', '', ''], ['refs/heads/phase-e/employee', '', ''], ['refs/pull/12/merge', 'codex/phase-e-employee-experience-20261008', 'development']]) {
-    for (const job of ['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui']) expect(jobMatches(job, ref, head, base), job).toBe(true);
+    for (const job of ['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'management-review-ui', 'phase-e-postgres', 'phase-e-ui']) expect(jobMatches(job, ref, head, base), job).toBe(true);
   }
   expect(jobMatches('phase-e-ui', 'refs/heads/fix/unrelated')).toBe(true);
 });
@@ -347,7 +347,7 @@ it.each([
   ['refs/pull/12/merge', 'codex/phase-e-example', 'development'],
   ['refs/pull/13/merge', 'codex/phase-f-inventory', 'main'],
 ])('requires every SQL/browser regression for triggered %s head=%s base=%s', (ref, head, base) => {
-  for (const name of ['validate', 'clocker-postgres', 'clocker-postgres-suite', 'release-postgres', 'phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui', 'phase-e-ui-suite']) {
+  for (const name of ['validate', 'clocker-postgres', 'clocker-postgres-suite', 'release-postgres', 'phase-d-attendance-ui', 'management-review-ui', 'phase-e-postgres', 'phase-e-ui', 'phase-e-ui-suite']) {
     expect(workflow.jobs[name].if, name+' must not skip branches').toBe(['phase-e-ui','clocker-postgres'].includes(name) ? '${{ always() }}' : undefined);
     expect(jobMatches(name, ref, head, base), name).toBe(true);
   }
@@ -359,7 +359,7 @@ it('all jobs checkout the exact candidate (the PR head, else github.sha) and acc
     expect(checkout?.with?.['persist-credentials'], name).toBe(false);
   }
   expect(workflow.jobs['phase-e-evidence'].if).toBe('${{ always() }}');
-  expect(workflow.jobs['phase-e-evidence'].needs).toEqual(['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui']);
+  expect(workflow.jobs['phase-e-evidence'].needs).toEqual(['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'management-review-ui', 'phase-e-postgres', 'phase-e-ui']);
 });
 it('source safeguards hold all Git deployments through quarantine and integration', () => {
   const config = JSON.parse(readFileSync('vercel.json', 'utf8'));
@@ -380,6 +380,7 @@ it.each(['omitted-suite', 'budget', 'skip-aggregate', 'missing-verifier', 'dupli
   if (mutation === 'ignore-failure') leaf['continue-on-error'] = true;
   const root = directory();
   put(root, '.github/workflows/ci.yml', require('js-yaml').dump(changed));
+  put(root, '.github/workflows/mobile-access.yml', readFileSync('.github/workflows/mobile-access.yml','utf8'));
   put(root, 'vercel.json', readFileSync('vercel.json', 'utf8'));
   // Keep the unrelated Clocker contract baseline complete while mutating E.
   put(root, 'vitest.clocker-integration.config.mts', readFileSync('vitest.clocker-integration.config.mts', 'utf8'));

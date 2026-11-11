@@ -8,5 +8,6 @@ export function employeeMobileEvidence(root, suite) {
     ...Object.fromEntries(journeys.map(name=>['NEVORA_EMPLOYEE_'+name+'_EVIDENCE',join(root,suite,name.toLowerCase())])),
     PHASE_E_EVIDENCE_DIR:join(root,suite,'canonical'),
     NEVORA_PASSKEY_NETWORK_EVIDENCE:join(root,suite,'passkey-network'),
+    NEVORA_CAPACITY_EVIDENCE:join(root,suite,'capacity'),
   };
 }
