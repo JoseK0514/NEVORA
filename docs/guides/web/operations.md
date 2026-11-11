@@ -53,6 +53,15 @@ is not a total resource limit. Reconcile an ambiguous provider create against th
 exact original operation and immutable resource identity before proceeding.
 Never create another project or delete/recreate a company as compensation.
 
+The production signup provisioner uses the explicit `production-signup-v1`
+profile with its fixed signup/portal destinations; other production worker or
+billing roles and workforce enrollment are excluded from that profile. Its
+tenant/trial commerce binding is part of company setup and does not charge a
+customer. Explicit resource-policy limits must match the provider's returned
+project/endpoint settings. See the [source integration handoff](../../handoffs/2026-11-11-r26-admission-capacity.md)
+before replacing any separately deployed signup artifact. Source integration
+does not deploy that artifact or open admission.
+
 Owner grants and invitations have distinct lifetimes and recovery contracts.
 Provider acceptance is not inbox receipt. After a lost response, inspect the
 original operation rather than sending a new invitation or resetting a password.
@@ -82,9 +91,14 @@ An empty alert inbox is never proof of health.
 
 ## Alerts, incidents and public uptime
 
-The selected future failure-alert inbox is `support@thevelani.com`; Jose is the
-initial responder. Verify mailbox access, backup coverage and response targets
-before unattended use. A support response aim is not an incident SLA. Keep a
+The selected future failure-alert inbox is `support@thevelani.com`. Jose assigned
+himself as primary and Ilianis Soto as secondary with24/7 coverage. The
+[on-call handoff](../../runbooks/renewal-and-on-call.md) records the approved
+internal acknowledgement targets:15minutes for critical incidents and1hour for
+lower-severity incidents. These are ownership/triage targets, not resolution
+guarantees or a public SLA. Verify responder
+access, actual receipt and the response process before unattended use. A support
+response aim is not an incident SLA. Keep a
 current private renewal/expiry/cost register; no runbook approves a purchase,
 upgrade or new subscription.
 
