@@ -140,3 +140,64 @@ test('workflow allocates tests normally and failure-only capture/artifact withou
  for(const required of ['Management close browser gate','Delegated correction browser gate','Verify management browser source and closure','Upload management review browser evidence'])assert.ok(job.includes(required));
  assert.equal(text.replace(/^  management-review-ui:\n[\s\S]*?(?=^  phase-d-attendance-ui:)/m,'').includes('runner-network-failure'),false);
 });
+
+test('source metadata omits unsupported URI schemes without retaining userinfo or query values',()=>{
+ for(const scheme of ['ftp','sftp','mirror+ftp','ssh','file','git+ssh','custom+v1']){
+  const uri=scheme+'://fictional-user:FictionalCredential123@archive.ubuntu.com/ubuntu/?token=FictionalCredential123';
+  const parsed=selectMetadata('sources','URIs: '+uri+'\nSuites: noble\nComponents: main\n');
+  const text=JSON.stringify(parsed);assert.ok(!text.includes('FictionalCredential123'),text);assert.ok(!text.includes('fictional-user'),text);
+  assert.match(parsed[0].URIs,/omitted/);assert.equal(parsed[0].Suites,'noble');assert.equal(parsed[0].Components,'main');
+ }
+});
+
+test('supported HTTP URI userinfo is removed while retaining useful archive host/path metadata',()=>{
+ for(const scheme of ['http','https']){
+  const r=selectMetadata('sources','URIs: '+scheme+'://fictional-user:FictionalCredential123@archive.ubuntu.com/ubuntu/?token=FictionalCredential123\nSuites: noble\n');
+  assert.ok(!JSON.stringify(r).includes('FictionalCredential123'));assert.match(r[0].URIs,new RegExp('^'+scheme+'://archive\\.ubuntu\\.com/ubuntu/'));
+ }
+});
+
+test('unsupported or malformed legacy URI rows are omitted as a whole rather than reclassifying credential fragments',()=>{
+ for(const uri of ['ftp://fictional-user:FictionalCredential123@archive.ubuntu.com/ubuntu/','sftp://fictional-user:FictionalCredential123@','mirror+ftp://fictional-user:FictionalCredential123 part@archive.ubuntu.com/','file://fictional-user:FictionalCredential123@archive.ubuntu.com/','ssh://fictional-user:FictionalCredential123@archive.ubuntu.com/','git+ssh://fictional-user:FictionalCredential123@archive.ubuntu.com/']){
+  const data=selectMetadata('legacy','deb '+uri+' noble main\n');const text=JSON.stringify(data);
+  assert.ok(!text.includes('FictionalCredential123')&&!text.includes('fictional-user')&&!text.includes('part@'),text);
+  assert.match(data[0].error,/omitted/);
+ }
+});
+
+test('generic sanitizer covers composite, non-HTTP and malformed URI authority text across error/log strings',()=>{
+ for(const uri of [
+  'ftp://fictional-user:FictionalCredential123@archive.ubuntu.com/path?token=FictionalCredential123',
+  'sftp://fictional-user:FictionalCredential123@',
+  'mirror+ftp://fictional-user:FictionalCredential123 part@archive.ubuntu.com/',
+  'ssh://fictional-user:FictionalCredential123@archive.ubuntu.com/',
+  'file://fictional-user:FictionalCredential123@archive.ubuntu.com/',
+  'ftp:/fictional-user:FictionalCredential123@archive.ubuntu.com/',
+  'ssh:fictional-user:FictionalCredential123@archive.ubuntu.com/',
+  'custom-v1://fictional-user:FictionalCredential123@archive.ubuntu.com/',
+  'git+ssh://fictional-user:FictionalCredential123@archive.ubuntu.com/',
+  '7ftp://fictional-user%3AFictionalCredential123@archive.ubuntu.com/',
+  'mirror%2bftp://fictional-user%3AFictionalCredential123@archive.ubuntu.com/',
+  'https://archive.ubuntu.com/ '+ 'ftp://fictional-user:FictionalCredential123@archive.ubuntu.com/',
+ ]){
+  const text=sanitize('error: '+uri+'\nDNS archive.ubuntu.com failed; status=124');
+  assert.ok(!text.includes('FictionalCredential123')&&!text.includes('fictional-user'),text);
+  assert.match(text,/DNS archive\.ubuntu\.com failed; status=124/);assert.ok(text.length<=9000);
+ }
+});
+
+test('persisted selected fields, links, stderr and validation errors never retain unsupported URI credentials',()=>{
+ const uri='sftp://fictional-user:FictionalCredential123@archive.ubuntu.com/path?token=FictionalCredential123';
+ const f=fixture({link:uri,run:()=>({status:124,stdout:'DNS failed',stderr:'error '+uri+'\nDNS archive.ubuntu.com failed'})}),read=f.options.read;
+ f.options.read=p=>p==='/etc/apt/sources.list.d/ubuntu.sources'?'URIs: '+uri+'\nSuites: noble\nSigned-By: '+uri+'\n':p==='/etc/nsswitch.conf'?'hosts: files dns '+uri+'\n':read(p);
+ assert.equal(captureFailure(f.options).exitCode,124);const r=f.receipt(),text=JSON.stringify(r);
+ assert.equal(r.probes.length,12);assert.equal(r.probes[0].status,124);assert.ok(!text.includes('FictionalCredential123')&&!text.includes('fictional-user'),text);
+ assert.match(r.probes[0].stderr,/DNS archive\.ubuntu\.com failed/);
+ for(const bad of [...['ftp','sftp','mirror+ftp','ssh','file','git+ssh'].map(s=>s+'://fictional-user:FictionalCredential123@archive.ubuntu.com/'),'not-a-uri-FictionalCredential123']){
+  const rejected=fixture({mirrors:mirror.replace('http://azure.archive.ubuntu.com/ubuntu/',bad)});
+  assert.equal(captureFailure(rejected.options).exitCode,1);assert.equal(rejected.calls.length,0);
+  assert.equal(rejected.receipt().error,'Unexpected Ubuntu mirror inventory; unvalidated values omitted');
+  assert.ok(!JSON.stringify(rejected.receipt()).includes('FictionalCredential123'));
+  assert.ok(!JSON.stringify(rejected.receipt()).includes('fictional-user'));
+ }
+});

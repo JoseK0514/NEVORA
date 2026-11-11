@@ -5,9 +5,29 @@ import {isIP} from 'node:net';
 import {pathToFileURL} from 'node:url';
 import {prioritizeUbuntuArchive} from '../../scripts/ci-ubuntu-mirrors.mjs';
 
-// Reviewed b43d9035 sanitizer, copied because the combined source has no diagnostic helper.
+// Based on b43d9035; omit unsupported/malformed URI text before HTTP sanitization.
 export function sanitize(value,limit=8192){
  let text=String(value??'').replace(/\x1b\[[0-?]*[ -/]*[@-~]/g,'').replace(/[\x00-\x08\x0b-\x1f\x7f]/g,'');
+ text=text.split('\n').map(line=>{
+  let skipUntil=0;
+  for(const match of line.matchAll(/:[\\/]+|\b(?:ftp|sftp|ssh|file|mirror\+ftp|git\+ssh):(?=[^\\/])/gi)){
+   const slashes=match[0].startsWith(':')?match[0].slice(1):'';
+   let start=match.index;
+   if(slashes)while(start>0&&/[A-Za-z0-9+._%~-]/.test(line[start-1]))start--;
+   if(start<skipUntil)continue;
+   const scheme=(slashes?line.slice(start,match.index):match[0].slice(0,-1)).toLowerCase(),tail=line.slice(start);
+   const http=['http','https'].includes(scheme)&&slashes==='//';
+   const local=scheme==='mirror+file'&&/^mirror\+file:\/etc\/apt\/apt-mirrors\.txt(?=$|[\s"'<>])/i.test(tail);
+   if(http){
+    const token=tail.match(/^[^\s"'<>]+/)[0];
+    try{new URL(token);}catch{return line.slice(0,start)+'[malformed URI omitted]';}
+    skipUntil=start+token.length;continue;
+   }
+   // Omit through line end: malformed authorities may contain spaces/quotes.
+   if(!local)return line.slice(0,start)+'[unsupported or malformed URI omitted]';
+  }
+  return line;
+ }).join('\n');
  text=text.replace(/https?:\/\/[^\s"'<>]+/gi,raw=>{
   try{const url=new URL(raw);url.username='';url.password='';if(url.search)url.search='[REDACTED]';if(url.hash)url.hash='[REDACTED]';return url.toString();}
   catch{return '[REDACTED URL]';}
@@ -24,6 +44,13 @@ const PERMISSIONS=[...CONTENT,...RESOLVERS,'/','/etc','/etc/apt','/etc/apt/sourc
 const FIELDS=['URIs','Suites','Components','Signed-By'];
 const HEAD_FORMAT='http_status=%{http_code}\nremote_ip=%{remote_ip}\ntime_namelookup=%{time_namelookup}\ntime_connect=%{time_connect}\ntime_appconnect=%{time_appconnect}\ntime_total=%{time_total}\ntls_verify_result=%{ssl_verify_result}\n';
 
+function selectedURI(raw){
+ if(raw==='mirror+file:/etc/apt/apt-mirrors.txt')return raw;
+ if(!/^https?:\/\/[^/\\\s]/i.test(raw))return null;
+ try{const uri=new URL(raw);return ['http:','https:'].includes(uri.protocol)&&uri.hostname?sanitize(raw,2048):null;}
+ catch{return null;}
+}
+
 export function selectMetadata(kind,input){
  const text=String(input);if(Buffer.byteLength(text)>32768)throw Error('Selected metadata exceeds 32768 bytes');
  if(kind==='resolver'){
@@ -39,7 +66,8 @@ export function selectMetadata(kind,input){
  if(kind==='legacy')return text.split(/\r?\n/).filter(l=>/^\s*deb(?:-src)?\s/.test(l)).slice(0,16).map(line=>{
   const m=line.split('#')[0].match(/^\s*deb(?:-src)?\s+(?:\[([^\]]*)\]\s+)?(\S+)\s+(\S+)(?:\s+(.*))?$/);
   if(!m)return {error:'Unparsed legacy row; raw content omitted'};
-  const row={URIs:sanitize(m[2],2048),Suites:sanitize(m[3],1024),Components:sanitize(m[4]??'',1024)};
+  const uri=selectedURI(m[2]);if(uri===null)return {error:'Unsupported or malformed URI row omitted'};
+  const row={URIs:uri,Suites:sanitize(m[3],1024),Components:sanitize(m[4]??'',1024)};
   const key=m[1]?.match(/\bsigned-by=([^\s\]]+)/)?.[1];if(key)row['Signed-By']=sanitize(key,1024);
   return row;
  });
@@ -52,7 +80,13 @@ export function selectMetadata(kind,input){
    if(m){current=FIELDS.includes(m[1])?m[1]:null;if(current)fields[current]=m[2];}
    else if(current&&/^[ \t]/.test(line))fields[current]+='\n'+line.trim();
   }
-  return Object.fromEntries(Object.entries(fields).map(([key,value])=>[key,key==='Signed-By'&&(/[\r\n]/.test(value)||value.includes('-----BEGIN'))?'[inline signing key omitted]':sanitize(value.replace(/\s+/g,' ').trim(),2048)]));
+  return Object.fromEntries(Object.entries(fields).map(([key,value])=>{
+   if(key==='URIs'){
+    const uris=value.trim().split(/\s+/).map(selectedURI);
+    return [key,uris.every(uri=>uri!==null)?uris.join(' '):'[unsupported or malformed URI omitted]'];
+   }
+   return [key,key==='Signed-By'&&(/[\r\n]/.test(value)||value.includes('-----BEGIN'))?'[inline signing key omitted]':sanitize(value.replace(/\s+/g,' ').trim(),2048)];
+  }));
  }).filter(row=>Object.keys(row).length);
 }
 
@@ -133,7 +167,10 @@ export function captureFailure(options={}){
   }
   persist();
   const mirrors=selectedRead('/etc/apt/apt-mirrors.txt');if(Buffer.byteLength(mirrors)>4096)throw Error('Mirror inventory exceeds limit');
-  const canonical=prioritizeUbuntuArchive(mirrors),urls=canonical.trim().split('\n').map(line=>line.split(/\s+/)[0]);
+  let canonical;
+  try{canonical=prioritizeUbuntuArchive(mirrors);}
+  catch{throw Error('Unexpected Ubuntu mirror inventory; unvalidated values omitted');}
+  const urls=canonical.trim().split('\n').map(line=>line.split(/\s+/)[0]);
   receipt.mirrors={validatedInventory:sanitize(mirrors),probeOrder:urls};persist();
   const command=(name,file,args,seconds)=>{
    receipt.pendingCommand=name;persist();const started=now(),r=run({name,file,args,seconds});
