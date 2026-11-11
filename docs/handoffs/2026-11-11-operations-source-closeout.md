@@ -12,7 +12,8 @@ alone grants no hosted or release authority.
 Started from development `0317598ae6886bc964bbd6bb5c1bbbd3add46069` in an isolated
 detached checkout. The bounded operations commits were rebased onto the published,
 independently locally-qualified R08–R16/R33 candidate
-`8ee99de2f1569444c12eb3da6f6d922f2b9f79b7`. Its Actions/development disposition is
+`f093b19770903a828d4f1102e42e83aa29c1e8f2`, including the independently reviewed
+R12 duplicate-export UI integration follow-up. Its Actions/development disposition is
 separate. Only the held-source inventory needed conflict resolution: the detailed
 upstream history was retained, with an operations reconciliation appended. New
 canonical privilege tests and our capacity tests both remain. No held Claude
@@ -73,6 +74,26 @@ application/source/evidence/PDF bytes. Its source commit can precede a later
 publication-only commit. The verifier checks ancestry and all bound inputs; never
 edit a manifest to relabel an older application or PDF.
 
+## CI follow-up and combined-source qualification
+
+The first operations candidate `dcd77e7a8544bd314382f641a90a1e6abb5740fd`
+was not delivered to development. Its CI communications seed timed out waiting
+for Owner login; the existing R12 browser consumer also required the upstream
+duplicate-export repair. Original failures and artifacts remain retained. The
+R12 owner qualified that repair with 99 focused tests, 211 whole Phase D browser
+checks and independent approval before publishing `f093b1977`.
+
+A bounded communications diagnostic wrapper preserves the login sequence and
+15-second deadline. It records sanitized attempt/server/page/wait evidence and
+retains the original error; no password, cookie, token, address or database URL
+is emitted. Its 31 focused checks and separate source review passed. The actual
+14-cell communications replay passed on `06550f7fefe5b2544e6e431fb4d05be6f3eba7b8`
+before combining the R12 follow-up. The original CI timeout has not reproduced
+locally; its cause remains unproven. Instrumentation is not a claimed login fix.
+Current combined-source local qualification and a new immutable Actions run are
+required; neither old candidate results nor upstream checks are relabelled as
+executions of this combined source.
+
 ## Hosted readback and release boundary
 
 Read-only public signup configuration returned `signupEnabled:false`. Render's
@@ -87,6 +108,11 @@ preview inventory. Its only service was the excluded native staging service
 `srv-dbmsjuui0phs73co1oq0`, free and not suspended. No dedicated web workforce
 service exists in that inventory. Native was left untouched. Metadata receipts
 are in `hosted-readonly-20261111.json`; no environment values were retrieved.
+
+Fresh metadata readback also found both existing fictional company projects
+past their configured active-time quotas (A: 7,420/7,200 seconds; B:
+5,544/3,600 seconds). No SQL, quota extension, company creation or pilot was
+attempted. The prepared web workforce Blueprint still has no applied resources.
 
 The existing small-host Blueprint/cost ceiling is a prepared plan, not permission
 to apply it. Actual quote, private credentials/custody, selected scope and an
