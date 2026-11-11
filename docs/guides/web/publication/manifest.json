@@ -1,0 +1,503 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-11",
+  "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
+  "sourceSha": "67ec19db594b713c37370139aa2ea210a97f6959",
+  "applicationHash": "fd1bf05c43d03ad2d7360a87d242429f850830c75d78a652a7737d12a6dfa43c",
+  "sourceIndex": {
+    "path": "docs/guides/web/sources.json",
+    "sha256": "e6f0dd06bf791aa40406b1c0bb861e6ee862d5228203b996d22e46487c54cc31"
+  },
+  "guides": [
+    {
+      "id": "owner",
+      "title": "NEVORA Owner web guide",
+      "markdown": {
+        "path": "docs/guides/web/owner.md",
+        "sha256": "d1f6a5cf7345afce677c15558948b665f13c18eb25b15c972e55a75766ba6539"
+      },
+      "evidence": [
+        {
+          "path": "src/lib/navigation.ts",
+          "sha256": "8a78bfbe7011c8a54e700f2a08d6ad27912fc10723c014587dcb4ce4944a85f6"
+        },
+        {
+          "path": "src/lib/company-access/operational-scope.server.ts",
+          "sha256": "2a313cc928775b042cbb6e5472636435916385bee6503a5d444a83d21409724a"
+        },
+        {
+          "path": "src/app/app/settings/page.tsx",
+          "sha256": "c63346e4d335cad9057e705c3cc3de1f4818d3fca92957e4ed9c380df39c8c38"
+        },
+        {
+          "path": "src/app/app/employees/page.tsx",
+          "sha256": "1f4e5b3ef10f9d418bdf1d5bb4cc3ef4e775295ef1cb5f9a5c2420eb652fc25f"
+        },
+        {
+          "path": "src/app/app/employees/new/page.tsx",
+          "sha256": "f02c492ab01bc39954adfb2c8c83ccd87a13b0e4dc36650c2f24d4afdd31c0a7"
+        },
+        {
+          "path": "src/app/app/employees/[employeeId]/page.tsx",
+          "sha256": "1c12c52c5a5141db5d9b07fa63e62afbf03403a06e9c12527c71e54b927e0423"
+        },
+        {
+          "path": "src/components/company-access/employee-invitation-panel.tsx",
+          "sha256": "06d5c44f997a0ef0ef7ba65886bef0e47d6aa39d9ded5702127e1c7f3e014754"
+        },
+        {
+          "path": "src/components/company-access/manager-operational-scope-panel.tsx",
+          "sha256": "0aab3b5cca6a2fe737783ef203de1ce0f5ecbdf0489ee6490358aefa7fd3e3bb"
+        },
+        {
+          "path": "src/app/app/schedule/page.tsx",
+          "sha256": "6621e869d8b8c2b335b2c94f308f1c72e4da9117f3124988d6da04b55d26793f"
+        },
+        {
+          "path": "src/app/app/schedule/publish/page.tsx",
+          "sha256": "9627d4f62b990163c94f8b362bdd574c5c03ace729340534cc9a032e83eafe13"
+        },
+        {
+          "path": "src/app/app/schedule/settings/page.tsx",
+          "sha256": "6bc34797b8e438ec376b85101988b33fa421df3b81accd1cdc4613a6d4b88e09"
+        },
+        {
+          "path": "src/app/app/reports/page.tsx",
+          "sha256": "f03a4d62295f539d1bdf646e32f18768fed571a9de605ed2bce00543b808d7ed"
+        },
+        {
+          "path": "src/components/payroll/payroll-runs.tsx",
+          "sha256": "9616aff214e4947a1d977f82a7a39ec83a860807bbfc7f07320cfc311efa20b5"
+        },
+        {
+          "path": "src/lib/payroll/service.ts",
+          "sha256": "ae3396f784074feba1b3a3c8067e568c0e892a29a3238ace11a1f5a1fde6dd5a"
+        },
+        {
+          "path": "src/lib/payroll/access.ts",
+          "sha256": "92348feb6c842e5b313a89423aed882f2af50d07c2c5e19641085dd83fc026b2"
+        },
+        {
+          "path": "src/app/app/help/page.tsx",
+          "sha256": "4f32a46551e9f22f66e862a0e4eea42be000501186f3d24ae2f3a6c264ced5c8"
+        },
+        {
+          "path": "src/lib/onboarding/admission.server.ts",
+          "sha256": "50fbd78f645542940ed5ab204b3d059b84061538f5a051b1cd6dea5ac77d0194"
+        }
+      ],
+      "pdf": {
+        "path": "docs/guides/web/publication/owner.pdf",
+        "sha256": "03f38f4ad26dd2902a8816d876a45eb7114092362ba80a6cc93d93d26c2db4bb",
+        "pageCount": 3
+      }
+    },
+    {
+      "id": "manager-lead",
+      "title": "NEVORA Manager and Lead web guide",
+      "markdown": {
+        "path": "docs/guides/web/manager-lead.md",
+        "sha256": "3dd0a5f7564e1de01ace39570c0e5de16e903d72a6798b8c2d2ecdd08a00caa5"
+      },
+      "evidence": [
+        {
+          "path": "src/lib/auth/permissions.ts",
+          "sha256": "5997b09a307e4fc3bb4a2979520530a415205f4d38fb8e469aa1f008597d6edd"
+        },
+        {
+          "path": "src/lib/navigation.ts",
+          "sha256": "8a78bfbe7011c8a54e700f2a08d6ad27912fc10723c014587dcb4ce4944a85f6"
+        },
+        {
+          "path": "src/lib/company-access/model.ts",
+          "sha256": "1aaf53d78f8d5ba8d7666dc4e70e8e956fe1c37b31fa068a3d1dca879f250ad5"
+        },
+        {
+          "path": "src/lib/company-access/operational-scope.server.ts",
+          "sha256": "2a313cc928775b042cbb6e5472636435916385bee6503a5d444a83d21409724a"
+        },
+        {
+          "path": "src/components/company-access/scoped-operational-views.tsx",
+          "sha256": "81e3652223e8052fef305eebf6713f04f5e9325103bce11cff3074942e8b9dd1"
+        },
+        {
+          "path": "src/app/app/schedule/new/page.tsx",
+          "sha256": "9b9b7a8076bc40cf696dc33278c6c320e8c69bf1eb37e374454d5c221f08f921"
+        },
+        {
+          "path": "src/app/app/employees/[employeeId]/page.tsx",
+          "sha256": "1c12c52c5a5141db5d9b07fa63e62afbf03403a06e9c12527c71e54b927e0423"
+        },
+        {
+          "path": "src/app/app/schedule/settings/page.tsx",
+          "sha256": "6bc34797b8e438ec376b85101988b33fa421df3b81accd1cdc4613a6d4b88e09"
+        },
+        {
+          "path": "src/lib/payroll/service.ts",
+          "sha256": "ae3396f784074feba1b3a3c8067e568c0e892a29a3238ace11a1f5a1fde6dd5a"
+        },
+        {
+          "path": "src/lib/payroll/native/scope.ts",
+          "sha256": "a7fe335ce030c1d616c26adb2fd9ae6237dcbe2f8af4393b5c66655c07748a6c"
+        },
+        {
+          "path": "src/app/app/my-time/page.tsx",
+          "sha256": "f7a5c35ac32c59e674ba8602dcba7a36e7b24741e971be0ac258574219ee10f4"
+        },
+        {
+          "path": "src/app/app/ai-manager/page.tsx",
+          "sha256": "a17f87de442488b3b9db1b34ada877ec63ac4d3bd4f2ce47210ba5a3bbe8bcd6"
+        }
+      ],
+      "pdf": {
+        "path": "docs/guides/web/publication/manager-lead.pdf",
+        "sha256": "76d2485ca79475b9b65c9e7ceee09331675cb6781b05d304d6de9b3e3d082c1d",
+        "pageCount": 3
+      }
+    },
+    {
+      "id": "employee",
+      "title": "NEVORA Employee web guide",
+      "markdown": {
+        "path": "docs/guides/web/employee.md",
+        "sha256": "42013ef57d36643619e65fc13c33441a3b74aec2061e9125b98477a19ef4095d"
+      },
+      "evidence": [
+        {
+          "path": "src/lib/navigation.ts",
+          "sha256": "8a78bfbe7011c8a54e700f2a08d6ad27912fc10723c014587dcb4ce4944a85f6"
+        },
+        {
+          "path": "src/app/activate/page.tsx",
+          "sha256": "83a6192e03d8b91f8051e3dba569a39b50d322e37ef35c1f2fc550983a751021"
+        },
+        {
+          "path": "src/app/activate/activation-invitation.tsx",
+          "sha256": "9dda14faef61739dcde986d481bca31cf435ec7a8b7f460b8ec1a7b450354216"
+        },
+        {
+          "path": "src/app/app/schedule/page.tsx",
+          "sha256": "6621e869d8b8c2b335b2c94f308f1c72e4da9117f3124988d6da04b55d26793f"
+        },
+        {
+          "path": "src/app/app/availability/page.tsx",
+          "sha256": "0b5160ad0f5c6f9daae134821e4c943787b8858e2d318fc4474710f67983ff74"
+        },
+        {
+          "path": "src/app/app/requests/hub/page.tsx",
+          "sha256": "22104b77be8ef6d99d8c8404eb9a0f048649fbf76cd543b969349ef64efc2bbf"
+        },
+        {
+          "path": "src/app/app/requests/page.tsx",
+          "sha256": "eb66707a560688e4d7f54eb53df8367a4067bd50ccb28b622ec2a28f0be4d9cc"
+        },
+        {
+          "path": "src/app/app/exchange/page.tsx",
+          "sha256": "494c7fb8151cd50db7530de88b232cf2ce37fc9499cef8a115530062e6305641"
+        },
+        {
+          "path": "src/app/app/exchange/swap/page.tsx",
+          "sha256": "d9a2607c69976a6e1537e3791b630b5231f4cadef90db1dff29267fac9a64234"
+        },
+        {
+          "path": "src/app/app/exchange/callout/page.tsx",
+          "sha256": "6b942962b952ce50ea5d8240f178ea267a148f6bddcab8894bdfb6ac48a8ce2a"
+        },
+        {
+          "path": "src/app/app/my-time/page.tsx",
+          "sha256": "f7a5c35ac32c59e674ba8602dcba7a36e7b24741e971be0ac258574219ee10f4"
+        },
+        {
+          "path": "src/components/employee-time-panel.tsx",
+          "sha256": "d0a4e949a09403ce7cdf1c5ab30ae8a793967162209ec824304183098cb2e849"
+        },
+        {
+          "path": "src/app/app/my-pay/page.tsx",
+          "sha256": "ec0e583675a034981f99fdf03dee24a6163fd9676fd5f54207b50d58b193fb6b"
+        },
+        {
+          "path": "src/lib/payroll/access.ts",
+          "sha256": "92348feb6c842e5b313a89423aed882f2af50d07c2c5e19641085dd83fc026b2"
+        },
+        {
+          "path": "src/components/employee-mobile/profile.tsx",
+          "sha256": "7828b7714dbc331d7841ea8e835fac8b6177a18ae5a6b097a181a33919833c99"
+        },
+        {
+          "path": "src/app/app/account/delete/page.tsx",
+          "sha256": "889dbafa437f841a06d29beed75cf3c63512e3ffc772797d27e8768aeee9e63b"
+        },
+        {
+          "path": "src/app/app/help/page.tsx",
+          "sha256": "4f32a46551e9f22f66e862a0e4eea42be000501186f3d24ae2f3a6c264ced5c8"
+        }
+      ],
+      "pdf": {
+        "path": "docs/guides/web/publication/employee.pdf",
+        "sha256": "1ce3ef994a649f2e738c8c45ce03d18e8292ce670277504b593bf84eb1f03150",
+        "pageCount": 3
+      }
+    },
+    {
+      "id": "rondo",
+      "title": "Rondo web guide",
+      "markdown": {
+        "path": "docs/guides/web/rondo.md",
+        "sha256": "1b9482628d539ab8b2932ec4dc7f28ebf6110bd77ce0442b9617ed0638e2999e"
+      },
+      "evidence": [
+        {
+          "path": "src/app/app/ai-manager/page.tsx",
+          "sha256": "a17f87de442488b3b9db1b34ada877ec63ac4d3bd4f2ce47210ba5a3bbe8bcd6"
+        },
+        {
+          "path": "src/lib/owner-advisor/authority.server.ts",
+          "sha256": "f95ee294420ab0ea33a73578c30ef1698768f7c89efa646ef728b2d6aecbdf83"
+        },
+        {
+          "path": "src/lib/owner-advisor/config.server.ts",
+          "sha256": "8311a607af35bce7b68eb70621aebc0d0f49fefb2b6c4ca02900704e4f5c84ab"
+        },
+        {
+          "path": "src/lib/owner-advisor/contracts.ts",
+          "sha256": "622578c3b593de860f61a119648558bef7091f2d780ff40f0dd6a033317151af"
+        },
+        {
+          "path": "src/lib/owner-advisor/loop.server.ts",
+          "sha256": "5d59d5fd259a8c5a5a60f58ea16bdf3be3e376399ef661b84a7d9f423507a88c"
+        },
+        {
+          "path": "src/lib/owner-advisor/notebook.server.ts",
+          "sha256": "ee8b9ed0e769bb8f8d3cda5e5de1757e73cadafb669e4c78130ab7aaac81fb83"
+        },
+        {
+          "path": "src/lib/owner-advisor/memory.server.ts",
+          "sha256": "c55e60bb7ee392d0a298e05fda515a1a612affb73997f162c999dddb710fc86b"
+        },
+        {
+          "path": "src/lib/owner-advisor/coverage-actions.server.ts",
+          "sha256": "b5297da4457d2b4d37885ee6d02d1391b713cb640d69ed88cd5dadc667738e49"
+        },
+        {
+          "path": "src/components/owner-advisor/advisor.tsx",
+          "sha256": "c3335a842a7311dd406db0850df92cb07deb26df3f1f1a6cdd475e340d803613"
+        },
+        {
+          "path": "src/components/owner-advisor/notebook-panel.tsx",
+          "sha256": "56518637bc7d50d40c67bf1a28eac6bb1de7a968a4d5ee68de5590293e8d6d0f"
+        },
+        {
+          "path": "src/components/owner-advisor/coverage-actions.tsx",
+          "sha256": "697cf7855277f7cfa6f500468befbba0951859a859f1fa336cc37dbae3d9e5ca"
+        },
+        {
+          "path": "src/components/owner-advisor/coverage-plans.tsx",
+          "sha256": "241c9c08af5bb1b888f3fa1f01f91578bff96de3bfe4c95c6bc13e35204f23f2"
+        },
+        {
+          "path": "src/components/owner-advisor/workflows.tsx",
+          "sha256": "1c7207506fbddc8427c015ea8691b2e154ef99c04a066c233d8642a46a65e831"
+        },
+        {
+          "path": "docs/product/rondo-operating-contract.md",
+          "sha256": "773c86d00212ac0ddbf97f58c49014db71c026d87c112f9089d8f0e29ee649f9"
+        }
+      ],
+      "pdf": {
+        "path": "docs/guides/web/publication/rondo.pdf",
+        "sha256": "707915db4ead72bf39742b62c772b8cb99377dfe565e754e86ac7bcac196dc5f",
+        "pageCount": 3
+      }
+    },
+    {
+      "id": "developer",
+      "title": "NEVORA web developer guide",
+      "markdown": {
+        "path": "docs/guides/web/developer.md",
+        "sha256": "d722e553cac48ba8272eb23dfe5e58a0642c5d27ef2e66ad97db8aeec0a1e1a4"
+      },
+      "evidence": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "3e7096e6044160105f441fa88c36890566d9b5e2a45c46c843fce97400ef5d9e"
+        },
+        {
+          "path": "package.json",
+          "sha256": "79aae0a323df71b46a2b5cdeb74aacfff345d7e09c91332f65fa16d3e5475627"
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "sha256": "7cf73eb1ef4cb10a35ab338d9958241a39f97b84fb485fbf32a33e6d42ea50a4"
+        },
+        {
+          "path": "docs/development/developer-guide.md",
+          "sha256": "dbc2dbfb0ca8a50d7375984a1f0b21c798ba5c2f6ae7b3cfad742238d842fab2"
+        },
+        {
+          "path": "docs/handoffs/2026-10-21-development-assembly-sources.json",
+          "sha256": "65fa2cb22413a11b0dd43762e816607fb1dbab8ea84dd723e1565bd4696f0d31"
+        },
+        {
+          "path": "src/lib/company-access/operational-scope.server.ts",
+          "sha256": "2a313cc928775b042cbb6e5472636435916385bee6503a5d444a83d21409724a"
+        },
+        {
+          "path": "src/lib/payroll/native/scope.ts",
+          "sha256": "a7fe335ce030c1d616c26adb2fd9ae6237dcbe2f8af4393b5c66655c07748a6c"
+        },
+        {
+          "path": "src/lib/private-snapshot-client.ts",
+          "sha256": "1703fdd69d282590c603d3dd4b2472d75ff529dacab102984c27eb52e4e3445a"
+        },
+        {
+          "path": "src/lib/workspace-presentation/service.ts",
+          "sha256": "fe59ac3176474f1576ae28a2765db55c3005de93e4ae66356fd169ff6ddff56b"
+        },
+        {
+          "path": "src/lib/onboarding/admission.server.ts",
+          "sha256": "50fbd78f645542940ed5ab204b3d059b84061538f5a051b1cd6dea5ac77d0194"
+        },
+        {
+          "path": "src/lib/onboarding/config.server.ts",
+          "sha256": "da40f1ddc9aec762d77bf1d1747c9bc3a0a62e82323f1d10106b9555ac47edee"
+        },
+        {
+          "path": "src/lib/onboarding/provisioning/store.server.ts",
+          "sha256": "0f65a926daf64d3199cad6c0f41d54e05cfee9ed149e688faf1b0caddcad004c"
+        },
+        {
+          "path": "src/lib/communications/service.server.ts",
+          "sha256": "a867e3fb6e71634f7b7d3c366c49bd4ea2edc89d5f41b193451a90985e591f0d"
+        },
+        {
+          "path": "src/lib/owner-advisor/coverage-actions.server.ts",
+          "sha256": "b5297da4457d2b4d37885ee6d02d1391b713cb640d69ed88cd5dadc667738e49"
+        },
+        {
+          "path": "db/migrations/order.ts",
+          "sha256": "8962367b498c3991c74892065886b35eedcf0359fc4ff00c7b2bcef0512b65b4"
+        },
+        {
+          "path": "scripts/release-build.mjs",
+          "sha256": "fbcbe2da6f8dcb737332ed7c482528faf2fc13d3c621410c48a8ab1088f08ee3"
+        },
+        {
+          "path": "services/hosted/neon/runtime-profile.ts",
+          "sha256": "cae18e7e15f247812c92cd6ee9e57c0be6251dc71351e5172f43e76ee7f35b46"
+        },
+        {
+          "path": "src/lib/onboarding/provisioning/neon-provider.server.ts",
+          "sha256": "29dcbc34ab4cdb3c5e1d2124226fd9fb0ff7feb7ec915f5e6fe4622cee868e5c"
+        },
+        {
+          "path": "src/lib/onboarding/provisioning/runtime.server.ts",
+          "sha256": "3a44d476f1ef2a7e0b24f83d20780bfc5040419b67af8cace3120f2850a703fd"
+        },
+        {
+          "path": "docs/handoffs/2026-11-11-r26-admission-capacity.md",
+          "sha256": "01426bba1ddd191b660a0e2015aa9625a0683e9dba87c20f608e8054e98ab60f"
+        }
+      ],
+      "pdf": {
+        "path": "docs/guides/web/publication/developer.pdf",
+        "sha256": "64be454c6d25cacf4fd99bdb253de9a2f63f399dd895993f643ed2546a064e3d",
+        "pageCount": 3
+      }
+    },
+    {
+      "id": "operations",
+      "title": "NEVORA web operations guide",
+      "markdown": {
+        "path": "docs/guides/web/operations.md",
+        "sha256": "358d2318635644ad9e1c989129d3ed0b17d7e264713ae6597ff2eea28671f455"
+      },
+      "evidence": [
+        {
+          "path": "docs/runbooks/self-service-onboarding.md",
+          "sha256": "e9dd1c95a0d3b20742d02f9c6547e4d3b7d61be77938fb5406c737834a245dad"
+        },
+        {
+          "path": "ops/workforce/ENROLLMENT-RUNBOOK.md",
+          "sha256": "961a9e340dec164cd27f976bfa4ad5ec11f8425bc90cd1843489b88715672d34"
+        },
+        {
+          "path": "ops/workforce/MANAGED-RUNBOOK.md",
+          "sha256": "474ddd3a4531763a7192889eb9028a97710682aa8d21e23f7f18ef123c22fdfd"
+        },
+        {
+          "path": "docs/runbooks/workforce-operations.md",
+          "sha256": "37dc0a20486dc133f64c799baf056706ec8fc30ee62a8ea186fc489c99214461"
+        },
+        {
+          "path": "docs/runbooks/web-notification-acceptance.md",
+          "sha256": "241cb6e7be2e13147bd85c2e17e537257f756962774b8f74098cc3863406a078"
+        },
+        {
+          "path": "docs/runbooks/renewal-and-on-call.md",
+          "sha256": "9633a8a554a7bbdd7452bd2092ed253b5f8027d533ccb2560caf0e4477ae4895"
+        },
+        {
+          "path": "docs/compliance/account-deletion-runbook.md",
+          "sha256": "fa88b5f9657a0c1d0c9c140f85add88aaaa442338da398917c7a424889c8968c"
+        },
+        {
+          "path": "src/lib/legal/policies.ts",
+          "sha256": "0e1b3432a4da3684ae84e804756f54ed7b6ee796093b002e6c9fa4200b78724e"
+        },
+        {
+          "path": "src/lib/onboarding/admission.server.ts",
+          "sha256": "50fbd78f645542940ed5ab204b3d059b84061538f5a051b1cd6dea5ac77d0194"
+        },
+        {
+          "path": "src/lib/onboarding/config.server.ts",
+          "sha256": "da40f1ddc9aec762d77bf1d1747c9bc3a0a62e82323f1d10106b9555ac47edee"
+        },
+        {
+          "path": "src/lib/onboarding/provisioning/store.server.ts",
+          "sha256": "0f65a926daf64d3199cad6c0f41d54e05cfee9ed149e688faf1b0caddcad004c"
+        },
+        {
+          "path": "src/lib/operations/worker-enrollment.ts",
+          "sha256": "b48bdceb95266a293e1898cfa8025f7e52a861fb20639cf5a3e761d71165cda0"
+        },
+        {
+          "path": "src/lib/operations/managed-host.ts",
+          "sha256": "6a2cb70d5e04e2268aa37e8bc95d695e7c4a8988b3498ec97e51d76b57dbe920"
+        },
+        {
+          "path": "src/lib/operations/monitor.ts",
+          "sha256": "b5fe6a4f0fa49b5d0ed24fa8e6fdc14ff43f5ca8453ac5d51080ce5cb6f51017"
+        },
+        {
+          "path": "src/lib/operations/case-readiness.ts",
+          "sha256": "46022b17e65dcbf2c91ecc7cc9a4ae6828b6388f9f8e9b8e44c628eccf29525e"
+        },
+        {
+          "path": "src/lib/communications/service.server.ts",
+          "sha256": "a867e3fb6e71634f7b7d3c366c49bd4ea2edc89d5f41b193451a90985e591f0d"
+        },
+        {
+          "path": "services/hosted/neon/runtime-profile.ts",
+          "sha256": "cae18e7e15f247812c92cd6ee9e57c0be6251dc71351e5172f43e76ee7f35b46"
+        },
+        {
+          "path": "src/lib/onboarding/provisioning/neon-provider.server.ts",
+          "sha256": "29dcbc34ab4cdb3c5e1d2124226fd9fb0ff7feb7ec915f5e6fe4622cee868e5c"
+        },
+        {
+          "path": "src/lib/onboarding/provisioning/runtime.server.ts",
+          "sha256": "3a44d476f1ef2a7e0b24f83d20780bfc5040419b67af8cace3120f2850a703fd"
+        },
+        {
+          "path": "docs/handoffs/2026-11-11-r26-admission-capacity.md",
+          "sha256": "01426bba1ddd191b660a0e2015aa9625a0683e9dba87c20f608e8054e98ab60f"
+        }
+      ],
+      "pdf": {
+        "path": "docs/guides/web/publication/operations.pdf",
+        "sha256": "8ecd43565514b4dee54a2981a08a8fa864ee34cba603c34e72cf7aea23fc1d7b",
+        "pageCount": 4
+      }
+    }
+  ]
+}
