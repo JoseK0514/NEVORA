@@ -201,3 +201,43 @@ test('persisted selected fields, links, stderr and validation errors never retai
   assert.ok(!JSON.stringify(rejected.receipt()).includes('fictional-user'));
  }
 });
+
+test('typed HTTP metadata rejects unsafe authority delimiters and malformed legacy fragments',()=>{
+ for(const delimiter of ["'",'"','<','>',' ','\t']){
+  const uri='https://user:123'+delimiter+'FictionalCredential123@archive.ubuntu.com/ubuntu/';
+  const source=selectMetadata('sources','URIs: '+uri+'\nSuites: noble\nComponents: main\n');
+  const legacy=selectMetadata('legacy','deb '+uri+' noble main\n');
+  assert.ok(!JSON.stringify(source).includes('FictionalCredential123'));assert.match(source[0].URIs,/omitted/);
+  assert.ok(!JSON.stringify(legacy).includes('FictionalCredential123'));assert.match(legacy[0].error,/omitted/);
+ }
+ const encoded=selectMetadata('sources','URIs: https://user:123%27FictionalCredential123@archive.ubuntu.com/ubuntu/?password=FictionalCredential123\nSuites: noble\n');
+ assert.ok(!JSON.stringify(encoded).includes('FictionalCredential123'));assert.match(encoded[0].URIs,/^https:\/\/archive\.ubuntu\.com\/ubuntu\//);
+});
+
+test('legacy rows reject path-bearing authority fragments rather than retaining them as package fields',()=>{
+ const r=selectMetadata('legacy','deb https://user:123 fictionalcredential123 archive.ubuntu.com/ubuntu/ noble main\n');
+ assert.ok(!JSON.stringify(r).includes('fictionalcredential123'));assert.match(r[0].error,/omitted/);
+});
+
+test('arbitrary log URI text is omitted as a span, including numeric-port quotes and angle delimiters',()=>{
+ for(const delimiter of ["'",'"','<','>',' ','\t']){
+  const uri='https://user:123'+delimiter+'FictionalCredential123@archive.ubuntu.com/ubuntu/';
+  const out=sanitize('fetch failed: '+uri+'\nDNS archive.ubuntu.com failed; status=124');
+  assert.ok(!out.includes('FictionalCredential123'),out);assert.match(out,/DNS archive\.ubuntu\.com failed; status=124/);
+  assert.ok(out.length<=9000);
+ }
+});
+
+test('actual receipt persistence does not leak accepted-HTTP delimiter credentials through any captured sink',()=>{
+ for(const delimiter of ["'",'"','<','>',' ']){
+  const uri='https://user:123'+delimiter+'FictionalCredential123@archive.ubuntu.com/ubuntu/';
+  const f=fixture({link:uri,run:()=>({status:124,stdout:'fetch '+uri,stderr:'failure '+uri+'\nDNS archive.ubuntu.com failed'})}),read=f.options.read;
+  f.options.read=p=>p==='/etc/apt/sources.list.d/ubuntu.sources'?'URIs: '+uri+'\nSuites: noble\nSigned-By: '+uri+'\n':p==='/etc/nsswitch.conf'?'hosts: files dns '+uri+'\n':read(p);
+  assert.equal(captureFailure(f.options).exitCode,124);const r=f.receipt();
+  assert.ok(!JSON.stringify(r).includes('FictionalCredential123'));assert.equal(r.probes.length,12);
+  assert.match(r.probes[0].stderr,/DNS archive\.ubuntu\.com failed/);assert.equal(r.originalInstallerFailure,true);
+  const bad=fixture({mirrors:mirror.replace('http://azure.archive.ubuntu.com/ubuntu/',uri)});
+  assert.equal(captureFailure(bad.options).exitCode,1);assert.equal(bad.calls.length,0);
+  assert.ok(!JSON.stringify(bad.receipt()).includes('FictionalCredential123'));
+ }
+});

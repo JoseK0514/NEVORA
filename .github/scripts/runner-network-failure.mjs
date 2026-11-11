@@ -5,33 +5,16 @@ import {isIP} from 'node:net';
 import {pathToFileURL} from 'node:url';
 import {prioritizeUbuntuArchive} from '../../scripts/ci-ubuntu-mirrors.mjs';
 
-// Based on b43d9035; omit unsupported/malformed URI text before HTTP sanitization.
+// Typed URI metadata is parsed separately; arbitrary URI log tails are omitted.
 export function sanitize(value,limit=8192){
  let text=String(value??'').replace(/\x1b\[[0-?]*[ -/]*[@-~]/g,'').replace(/[\x00-\x08\x0b-\x1f\x7f]/g,'');
  text=text.split('\n').map(line=>{
-  let skipUntil=0;
-  for(const match of line.matchAll(/:[\\/]+|\b(?:ftp|sftp|ssh|file|mirror\+ftp|git\+ssh):(?=[^\\/])/gi)){
-   const slashes=match[0].startsWith(':')?match[0].slice(1):'';
-   let start=match.index;
-   if(slashes)while(start>0&&/[A-Za-z0-9+._%~-]/.test(line[start-1]))start--;
-   if(start<skipUntil)continue;
-   const scheme=(slashes?line.slice(start,match.index):match[0].slice(0,-1)).toLowerCase(),tail=line.slice(start);
-   const http=['http','https'].includes(scheme)&&slashes==='//';
-   const local=scheme==='mirror+file'&&/^mirror\+file:\/etc\/apt\/apt-mirrors\.txt(?=$|[\s"'<>])/i.test(tail);
-   if(http){
-    const token=tail.match(/^[^\s"'<>]+/)[0];
-    try{new URL(token);}catch{return line.slice(0,start)+'[malformed URI omitted]';}
-    skipUntil=start+token.length;continue;
-   }
-   // Omit through line end: malformed authorities may contain spaces/quotes.
-   if(!local)return line.slice(0,start)+'[unsupported or malformed URI omitted]';
-  }
-  return line;
+  const match=line.match(/:[\\/]+|\b(?:https?|ftp|sftp|ssh|file|mirror\+ftp|git\+ssh):(?=[^\\/])/i);
+  if(!match)return line;
+  let start=match.index;
+  if(match[0].startsWith(':'))while(start>0&&/[A-Za-z0-9+._%~-]/.test(line[start-1]))start--;
+  return line.slice(0,start)+'[URI text omitted]';
  }).join('\n');
- text=text.replace(/https?:\/\/[^\s"'<>]+/gi,raw=>{
-  try{const url=new URL(raw);url.username='';url.password='';if(url.search)url.search='[REDACTED]';if(url.hash)url.hash='[REDACTED]';return url.toString();}
-  catch{return '[REDACTED URL]';}
- });
  text=text.replace(/^(\s*(?:authorization|proxy-authorization|cookie|set-cookie)\s*:).*$/gim,'$1 [REDACTED]');
  text=text.replace(/\b([\w-]*(?:token|password|secret|credential|api[-_]?key)[\w-]*[ \t]*[=:][ \t]*)[^\r\n]*/gi,'$1[REDACTED]');
  text=text.replace(/\b(?:gh[pousr]_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+)\b/g,'[REDACTED]');
@@ -46,9 +29,12 @@ const HEAD_FORMAT='http_status=%{http_code}\nremote_ip=%{remote_ip}\ntime_namelo
 
 function selectedURI(raw){
  if(raw==='mirror+file:/etc/apt/apt-mirrors.txt')return raw;
- if(!/^https?:\/\/[^/\\\s]/i.test(raw))return null;
- try{const uri=new URL(raw);return ['http:','https:'].includes(uri.protocol)&&uri.hostname?sanitize(raw,2048):null;}
- catch{return null;}
+ if(raw.length>2048||/[\s"'<>\\\x00-\x1f\x7f]/.test(raw)||!/^https?:\/\/[^/\\\s]/i.test(raw))return null;
+ try{
+  const uri=new URL(raw);if(!['http:','https:'].includes(uri.protocol)||!uri.hostname)return null;
+  uri.username='';uri.password='';uri.search='';uri.hash='';
+  return uri.toString();
+ }catch{return null;}
 }
 
 export function selectMetadata(kind,input){
@@ -67,7 +53,9 @@ export function selectMetadata(kind,input){
   const m=line.split('#')[0].match(/^\s*deb(?:-src)?\s+(?:\[([^\]]*)\]\s+)?(\S+)\s+(\S+)(?:\s+(.*))?$/);
   if(!m)return {error:'Unparsed legacy row; raw content omitted'};
   const uri=selectedURI(m[2]);if(uri===null)return {error:'Unsupported or malformed URI row omitted'};
-  const row={URIs:uri,Suites:sanitize(m[3],1024),Components:sanitize(m[4]??'',1024)};
+  const components=(m[4]??'').trim().split(/\s+/).filter(Boolean);
+  if(!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(m[3])||components.length>16||!components.every(c=>/^[a-z0-9][a-z0-9+._-]{0,63}$/.test(c)))return {error:'Malformed legacy suite/components row omitted'};
+  const row={URIs:uri,Suites:m[3],Components:components.join(' ')};
   const key=m[1]?.match(/\bsigned-by=([^\s\]]+)/)?.[1];if(key)row['Signed-By']=sanitize(key,1024);
   return row;
  });
@@ -171,7 +159,9 @@ export function captureFailure(options={}){
   try{canonical=prioritizeUbuntuArchive(mirrors);}
   catch{throw Error('Unexpected Ubuntu mirror inventory; unvalidated values omitted');}
   const urls=canonical.trim().split('\n').map(line=>line.split(/\s+/)[0]);
-  receipt.mirrors={validatedInventory:sanitize(mirrors),probeOrder:urls};persist();
+  // The pure validator has already proved every URI and priority token here.
+  const validatedInventory=mirrors.trim().split(/\r?\n/).map(line=>line.trim().split(/\s+/).join('\t')).join('\n')+'\n';
+  receipt.mirrors={validatedInventory,probeOrder:urls};persist();
   const command=(name,file,args,seconds)=>{
    receipt.pendingCommand=name;persist();const started=now(),r=run({name,file,args,seconds});
    const status=Number.isInteger(r.status)?r.status:r.error?.code==='ETIMEDOUT'?124:1;
