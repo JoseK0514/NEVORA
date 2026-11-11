@@ -54,18 +54,23 @@ export async function runProvisioningJob(lease:ProvisioningLease,deps:Provisioni
   }else{
    if(attempt&&attempt.outcome!=='REJECTED')return await defer('CREATION_UNCONFIRMED',60);
    if(attempt&&(attempt.http_status!==429||attempt.attempt>=3))return await quarantine('PROVIDER_REJECTED');
+   let dispatchLimit='DAILY_PROJECT_LIMIT';
    await alive();attempt=await store.transaction(async client=>{
     const locked=await client.query('SELECT operation_id FROM nevora_onboarding.provisioning_operations WHERE operation_id=$1 AND lease_token=$2 AND lease_expires_at>clock_timestamp() FOR UPDATE',[row.operation_id,facts.token]);if(locked.rowCount!==1)throw new LeaseLost();
     // Dispatch budget is account-wide across environments and UTC days. Unknown
     // attempts keep their slot; only a confirmed provider rejection releases it.
     await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))',['nevora-provider-dispatch:'+config.providerAccountRef]);
+    if(config.maxTotalProjects!==undefined){
+     const total=(await client.query("SELECT count(DISTINCT a.operation_id)::int AS count FROM nevora_onboarding.provisioning_attempts a JOIN nevora_onboarding.provisioning_operations p ON p.operation_id=a.operation_id WHERE p.account_ref=$1 AND a.outcome<>'REJECTED'",[config.providerAccountRef])).rows[0];
+     if(total.count>=config.maxTotalProjects){dispatchLimit='TOTAL_PROJECT_LIMIT';return null;}
+    }
     const quota=(await client.query(`SELECT count(*)::int AS count FROM nevora_onboarding.provisioning_attempts a JOIN nevora_onboarding.provisioning_operations p ON p.operation_id=a.operation_id WHERE p.account_ref=$1 AND a.outcome<>'REJECTED' AND a.dispatched_at>=(date_trunc('day',clock_timestamp() AT TIME ZONE 'UTC') AT TIME ZONE 'UTC')`,[config.providerAccountRef])).rows[0];
     if(quota.count>=config.maxNewProjectsPerDay)return null;
     const next=(attempt?.attempt??0)+1,id=randomUUID();
     const a=await client.query("INSERT INTO nevora_onboarding.provisioning_attempts(id,operation_id,attempt,outcome) VALUES($1,$2,$3,'PENDING') RETURNING *,dispatched_at::text AS dispatched_text",[id,row.operation_id,next]);
     await client.query("UPDATE nevora_onboarding.provisioning_operations SET state='CREATING',version=version+1 WHERE operation_id=$1",[row.operation_id]);return a.rows[0];
    });
-   if(!attempt)return await defer('DAILY_PROJECT_LIMIT',60);
+   if(!attempt)return await defer(dispatchLimit,60);
    row=await alive();request=requestIdentity(row,new Date(attempt.dispatched_text).toISOString());
    try{resource=await provider.create(request,identity);}
    catch(error){

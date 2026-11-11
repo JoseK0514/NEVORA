@@ -5,11 +5,12 @@ import {verificationDelivery,type VerificationDelivery} from './verification-del
 import {requestRegistration,verifyRegistration} from './registration.server';
 import {isClosedRecord,onboardingHttpStatus,type PublicOnboardingConfig} from './contracts';
 import {onboardingJson,validateOnboardingWrite,readOnboardingJson,onboardingHttpFailure} from './http.server';
+import {readSignupAdmission,signupAdmissionAllows,type SignupAdmission} from './admission.server';
 
 export const SIGNUP_COOKIE='nevora_signup';
-type Dependencies={config:EnabledConfig|DisabledConfig;store?:ControlStore;delivery?:VerificationDelivery|null};
-export function publicOnboardingConfig(config:EnabledConfig|DisabledConfig,senderConfigured:boolean):PublicOnboardingConfig{
- if(!config.enabled||!senderConfigured)return {schemaVersion:1,signupEnabled:false,locales:['en','es']};
+type Dependencies={config:EnabledConfig|DisabledConfig;store?:ControlStore;delivery?:VerificationDelivery|null;admission?:SignupAdmission};
+export function publicOnboardingConfig(config:EnabledConfig|DisabledConfig,senderConfigured:boolean,publicAdmission=config.enabled&&config.environment!=='production'):PublicOnboardingConfig{
+ if(!config.enabled||!senderConfigured||!publicAdmission)return {schemaVersion:1,signupEnabled:false,locales:['en','es']};
  return {schemaVersion:1,signupEnabled:true,locales:['en','es'],terms:{version:config.termsVersion,url:config.signupOrigin+'/terms'},privacy:{version:config.privacyVersion,url:config.signupOrigin+'/privacy'}};
 }
 export function registrationHttpHandlers(deps:Dependencies){
@@ -17,8 +18,12 @@ export function registrationHttpHandlers(deps:Dependencies){
   async request(request:Request):Promise<Response>{
    const c=deps.config;if(!c.enabled)return onboardingJson({state:'unavailable',reasonCode:'ONBOARDING_DISABLED'},503);
    const admission=validateOnboardingWrite(request,c.signupOrigin);if(admission)return admission;
-   if(!deps.store)return onboardingJson({state:'unavailable',reasonCode:'SOURCE_UNAVAILABLE'},503);
-   try{const body=await readOnboardingJson(request,4096);const r=await requestRegistration(body,deps.store,deps.delivery??null,c);return onboardingJson(r,r.state==='verification_requested'?202:onboardingHttpStatus(r));}catch(error){return onboardingHttpFailure(error);}
+   const policy=deps.admission??readSignupAdmission({NEVORA_ONBOARDING_ENVIRONMENT:c.environment});
+   if(policy.mode==='closed')return onboardingJson({state:'unavailable',reasonCode:'ONBOARDING_DISABLED'},503);
+   try{const body=await readOnboardingJson(request,4096);
+    if(!signupAdmissionAllows(policy,body&&typeof body==='object'&&'email'in body?body.email:undefined))return onboardingJson({state:'unavailable',reasonCode:'ONBOARDING_DISABLED'},503);
+    if(!deps.store)return onboardingJson({state:'unavailable',reasonCode:'SOURCE_UNAVAILABLE'},503);
+    const r=await requestRegistration(body,deps.store,deps.delivery??null,c);return onboardingJson(r,r.state==='verification_requested'?202:onboardingHttpStatus(r));}catch(error){return onboardingHttpFailure(error);}
   },
   async verify(request:Request):Promise<Response>{
    const c=deps.config;if(!c.enabled)return onboardingJson({state:'unavailable',reasonCode:'ONBOARDING_DISABLED'},503);
@@ -33,4 +38,4 @@ export function registrationHttpHandlers(deps:Dependencies){
   },
  };
 }
-export function runtimeRegistrationHandlers(){const config=readOnboardingConfig();return registrationHttpHandlers(config.enabled?{config,store:runtimeControlStore(config),delivery:verificationDelivery(process.env,config)}:{config});}
+export function runtimeRegistrationHandlers(){const config=readOnboardingConfig();return registrationHttpHandlers(config.enabled?{config,store:runtimeControlStore(config),delivery:verificationDelivery(process.env,config),admission:readSignupAdmission()}:{config});}
