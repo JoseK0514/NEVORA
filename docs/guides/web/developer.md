@@ -114,21 +114,15 @@ Never point tests at customer databases or use real SMTP/push as a fixture. A
 worker invocation can create jobs, documents or deliveries; it is not a harmless
 health probe. Do not run migrations by filename order.
 
-Release builds and required suites follow
-[CI](../../../.github/workflows/ci.yml), including the source-bound build runner
-and applicable SQL/browser/package gates. Preserve failures, skips and
-independent findings. Record source SHA, environment class, command, result and
-artifact identity. Local passing checks, exact-candidate CI, development
-integration, hosted acceptance and production release are separate states.
+Follow [CI](../../../.github/workflows/ci.yml) for source-bound builds and
+SQL/browser/package gates. Phase E requires six leaves and all 70 combinations:
+separate Home engines run seven widths each; other suites run both. Existing
+limits apply; missing, duplicate or mismatched evidence fails aggregation.
+Preserve failures, skips and independent findings. Record source SHA,
+environment, command, result and artifact identity; distinguish local, CI,
+development, hosted and production acceptance.
 
-Phase E Home runs in separate Chromium and WebKit CI leaves, each covering all
-seven viewport widths. The other four suites run both engines in their own
-leaves. Aggregation requires all six leaves and all 70 unique combinations;
-missing, duplicate or mismatched engine evidence fails the gate. The existing
-execution and job limits still apply.
-
-For guide changes, validate local links/evidence paths and regenerate/verify the
-distribution with its checked-in tooling. Do not relabel an older PDF or hosted
-receipt with a newer source. Keep secrets and private test content out of Git,
-logs and support records. See the [operations guide](operations.md) for deployment
-custody and incident boundaries.
+For guides, validate links/evidence, rebuild and verify PDFs with checked-in
+tooling. Never relabel older PDFs or hosted receipts. Keep secrets and private
+test content out of Git, logs and support records. See the
+[operations guide](operations.md) for deployment custody and incident boundaries.
