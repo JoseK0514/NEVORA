@@ -17,8 +17,16 @@ detached `260edee35` on development baseline
   bounded ownership so the public response reflects the real admission policy.
   Approved-recipient acceptance does not advertise public registration.
 - Adapted only the provisioner role's capacity variable in the hosted allowlist;
-  preserved the current commerce role fields. No signup assembly, page/UI,
-  rewrite, legal-policy, production hosted-profile, schema or grant import.
+  preserved the current commerce role fields.
+- Follow-up source audit at `35f0fc30c` identified two backend gaps: explicit
+  resource policies were sent without verifying returned settings, and hosted
+  handlers admitted only the staging profile. Ported the four provider/runtime
+  source/test files from `3922df940deef009b3a357ed2788cc7bb28e3fed`, and only the
+  hosted profile, handler/tests and runtime-profile capability name from
+  `c256b249fd51d4560d002dc6a7fa40dc7331e6ff`. Source behavior is faithful to those
+  commits; existing total-capacity and commerce-role fields remain intact.
+- No signup assembly, page/UI, rewrite, legal-policy, schema or grant import.
+  The hosted production profile is source code only; it was not activated.
 
 ## Preserved controls
 
@@ -36,6 +44,23 @@ release dispatch capacity. A lowered dispatch cap does not delete reservations.
 These counters cover the control plane's managed operations, not independently
 created provider projects or a provider's external quota inventory.
 
+Explicit resource policies now verify returned project and endpoint compute,
+suspension, history and quota settings; production provisioner runtime requires
+`suspensionMode: explicit`. The production-signup-v1 hosted profile admits only
+the provisioner role with exact `https://signup.nevora.team`, `portal.nevora.team`
+and `nevora-production-provisioner` schedule. It preserves compiled-source,
+branch, isolated-mode, inert-default-credential and role-capability gates, and
+rejects workforce enrollment. Production billing/workforce roles remain denied.
+
+Reviewed scope correction: an additional proposed restriction on the existing
+commerce trial-binding fields was discarded after tracing
+`readEnrollmentRuntime` -> `runProvisionerOnce` -> `runProvisioningJob` ->
+`CommerceStore.enrollWorkspace`. This path records a ready company, installation
+binding and 30-day trial, without a Stripe call or queued billing/message job.
+Removing that proposed restriction preserves the approved onboarding contract;
+it does not weaken product tests. A positive admission regression retains this
+binding while negative role and workforce-enrollment checks remain in place.
+
 ## Evidence obtained
 
 All commands below used local source and fixtures, with no real email or provider
@@ -50,6 +75,9 @@ request. Receipts are in `/tmp/nevora-r26-20261111/` for this local work session
 | `npx --no-install vitest run src/lib/onboarding services/hosted/neon/capabilities.test.ts --maxWorkers=1` | 14 files, 181 tests passed; `onboarding-units-green.log`. |
 | ESLint for all owned TypeScript files | Exit 0; `eslint.log`. |
 | Owned-path `git diff --check` | Exit 0. |
+| Follow-up provider/runtime/hosted tests before source port | RED: 3 files failed, 11 failed and 111 passed; `provider-profile-red.log`. |
+| `npx --no-install vitest run src/lib/onboarding services/hosted/neon --maxWorkers=1` after follow-up | 19 files, 345 tests passed; `provider-profile-focused-green.log`. |
+| Follow-up owned TypeScript ESLint and whitespace checks | Exit 0; `provider-profile-eslint.log`. |
 
 Added SQL regressions cover concurrent total reservations, the shared-account
 cross-environment lock, lowered-cap concurrent dispatch and a prior-day UNKNOWN

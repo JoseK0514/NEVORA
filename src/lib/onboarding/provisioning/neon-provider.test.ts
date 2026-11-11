@@ -75,6 +75,27 @@ it('supports an explicitly selected Free provider-default suspension policy with
  const provider=new NeonProvisioningProvider({apiKey:'fictional-api-key-never-live',policy:selected,fetch:fetcher});expect((await provider.create(request,identity)).databaseName).toBe(identity.databaseName);expect(sent).toBeTruthy();
  expect(readProvisionerPolicy({NEVORA_PROVISIONER_RESOURCE_POLICY:JSON.stringify({...selected,maxComputeUnits:1})})).toBeNull();
 });
+it.each(['matching','project_compute','endpoint_compute','suspension','history','quota','missing_settings'])('verifies actual resources against an explicit production capacity policy: %s',async change=>{
+ const selected={...policy,suspensionMode:'explicit' as const};const f=fixture();
+ const fetcher:typeof fetch=async(input,init={})=>{
+  const response=await f.fetcher(input,init),data=await response.json(),path=new URL(String(input)).pathname;
+  if(path==='/api/v2/projects/fictional-project'){
+   Object.assign(data.project,{default_endpoint_settings:{autoscaling_limit_min_cu:0.25,autoscaling_limit_max_cu:0.25,suspend_timeout_seconds:60},history_retention_seconds:86400,settings:{quota:{...policy.quota}}});
+   if(change==='project_compute')data.project.default_endpoint_settings.autoscaling_limit_max_cu=1;
+   if(change==='history')data.project.history_retention_seconds=0;
+   if(change==='quota')data.project.settings.quota.compute_time_seconds=999999;
+   if(change==='missing_settings')delete data.project.settings;
+  }
+  if(path.endsWith('/endpoints')){
+   Object.assign(data.endpoints[0],{autoscaling_limit_min_cu:0.25,autoscaling_limit_max_cu:0.25,suspend_timeout_seconds:60});
+   if(change==='endpoint_compute')data.endpoints[0].autoscaling_limit_max_cu=1;
+   if(change==='suspension')data.endpoints[0].suspend_timeout_seconds=-1;
+  }
+  return Response.json(data,{status:response.status});
+ };
+ const provider=new NeonProvisioningProvider({apiKey:'fictional-api-key-never-live',policy:selected,fetch:fetcher});
+ if(change==='matching')expect(await provider.find(request,identity)).toHaveLength(1);else await expect(provider.find(request,identity)).rejects.toThrow();
+});
 
 it.each([37,{unexpected:true}])('rejects a malformed cursor on an empty project page: %j',async bad=>{const provider=new NeonProvisioningProvider({apiKey:'fictional-api-key-never-live',policy,fetch:async()=>Response.json({projects:[],pagination:{cursor:bad}})});await expect(provider.find(request,identity)).rejects.toThrow();});
 it('follows a new cursor on an empty project page instead of authorizing a negative lookup',async()=>{const f=fixture();let pages=0;const provider=new NeonProvisioningProvider({apiKey:'fictional-api-key-never-live',policy,fetch:async(input,init)=>{const u=new URL(String(input));if(u.pathname==='/api/v2/projects'){pages++;if(!u.searchParams.has('cursor'))return Response.json({projects:[],pagination:{cursor:'new-page'}});return f.fetcher(input,init);}return f.fetcher(input,init);}});expect(await provider.find(request,identity)).toHaveLength(1);expect(pages).toBe(2);});
