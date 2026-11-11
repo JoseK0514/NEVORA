@@ -74,9 +74,9 @@ describe('manual Markdown boundary', () => {
   });
   it('makes PDF repository references clickable at the exact documented source', () => {
     const html = renderGuideHtml({guide: {id: 'owner', title: 'Owner', markdown: {path: 'docs/guides/web/owner.md'}}, markdown: '[Operations](operations.md) and [Runbook](../../runbooks/workforce-operations.md) and [Root](/src/app.ts) and [Support](mailto:support@example.invalid)', date, sourceSha: 'a'.repeat(40), applicationHash: 'b'.repeat(64), assets: {inter: '', mono: '', wordmark: ''}});
-    expect(html).toContain('href="https://github.com/JoseK0514/Fuel-Scheduler-/blob/' + 'a'.repeat(40) + '/docs/guides/web/operations.md"');
-    expect(html).toContain('href="https://github.com/JoseK0514/Fuel-Scheduler-/blob/' + 'a'.repeat(40) + '/docs/runbooks/workforce-operations.md"');
-    expect(html).toContain('href="https://github.com/JoseK0514/Fuel-Scheduler-/blob/' + 'a'.repeat(40) + '/src/app.ts"');
+    expect(html).toContain('href="https://github.com/JoseK0514/NEVORA/blob/' + 'a'.repeat(40) + '/docs/guides/web/operations.md"');
+    expect(html).toContain('href="https://github.com/JoseK0514/NEVORA/blob/' + 'a'.repeat(40) + '/docs/runbooks/workforce-operations.md"');
+    expect(html).toContain('href="https://github.com/JoseK0514/NEVORA/blob/' + 'a'.repeat(40) + '/src/app.ts"');
     expect(html).toContain('href="mailto:support@example.invalid"');
   });
   it('renders headings, multiline lists, tables and safe links without interpreting raw HTML', () => {

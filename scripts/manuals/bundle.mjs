@@ -317,7 +317,7 @@ export function renderMarkdown(markdown, linkBase) {
 export function renderGuideHtml({guide, markdown, date, sourceSha, applicationHash, assets}) {
   ensure(/^[a-f0-9]{40}$/.test(sourceSha), 'Invalid manual source SHA');
   const path = repoRelative(guide.markdown.path);
-  const sourceRoot = `https://github.com/JoseK0514/Fuel-Scheduler-/blob/${sourceSha}/`;
+  const sourceRoot = `https://github.com/JoseK0514/NEVORA/blob/${sourceSha}/`;
   const linkBase = {root: sourceRoot, document: sourceRoot + path.split('/').map(encodeURIComponent).join('/')};
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; font-src data:; img-src data:; connect-src 'none'; script-src 'none'"><title>${escapeHtml(guide.title)}</title><style>
 @font-face{font-family:Inter;src:url(data:font/ttf;base64,${assets.inter});font-weight:100 900}
