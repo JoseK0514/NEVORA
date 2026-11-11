@@ -1,6 +1,6 @@
 # NEVORA Operations Closeout Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Finish the source-owned gaps in R21/R22/R26/R27/R28/R32/R34, qualify them without misrepresenting external operations, and integrate the passing candidate into development.
 
@@ -32,10 +32,10 @@
 
 **Interfaces:** Existing onboarding v1 API remains unchanged; new admission policy is checked before persistence. Explicit total-project configuration flows through existing provisioner contracts.
 
-- [ ] Copy/adapt the upstream regression tests first and demonstrate rejection on the current source.
-- [ ] Port only reviewed backend prerequisites and admission/capacity paths; preserve company access and legal wording.
-- [ ] Pass focused unit checks and actual concurrent capacity tests on disposable PostgreSQL; run static checks.
-- [ ] Commit only owned files and record exact imported source, tests and external activation limits.
+- [x] Copy/adapt the upstream regression tests first and demonstrate rejection on the current source.
+- [x] Port only reviewed backend prerequisites and admission/capacity paths; preserve company access and legal wording.
+- [x] Pass focused unit checks and actual concurrent capacity tests on disposable PostgreSQL; run static checks.
+- [x] Commit only owned files and record exact imported source, tests and external activation limits.
 
 ### Task 2: Read-only privacy case and restore review
 
@@ -43,10 +43,10 @@
 
 **Interfaces:** `reviewOperationsCase(manifest: unknown, expected: CaseBinding, asOf: string): CaseReview`; return only `blocked`/`review_ready`, reason codes, recorded-evidence classification and `canMutate:false`.
 
-- [ ] Add failing regressions for exact binding, required inventory, retained end/hold basis, unresolved provider evidence, wrong/expired withdrawal evidence and unreconciled restored erasures.
-- [ ] Implement closed input validation and explicit operation-specific checks. Keep input text out of diagnostics and reject unknown fields.
-- [ ] Add a no-network/no-database CLI; prove blocked input exits nonzero and no input secrets are echoed.
-- [ ] Pass the full focused set and static checks; commit only owned paths and document attestation limits.
+- [x] Add failing regressions for exact binding, required inventory, retained end/hold basis, unresolved provider evidence, wrong/expired withdrawal evidence and unreconciled restored erasures.
+- [x] Implement closed input validation and explicit operation-specific checks. Keep input text out of diagnostics and reject unknown fields.
+- [x] Add a no-network/no-database CLI; prove blocked input exits nonzero and no input secrets are echoed.
+- [x] Pass the full focused set and static checks; commit only owned paths and document attestation limits.
 
 ### Task 3: Current web guides and PDFs
 
@@ -54,10 +54,10 @@
 
 **Interfaces:** Manifest binds source SHA/application content hash, each guide's evidence paths and text/PDF hashes. Renderer uses existing dependencies, local assets and no network.
 
-- [ ] Write Owner, Manager/Lead, Employee and Rondo guides from current paths; provide developer/operations distributions using existing qualified material.
-- [ ] Add renderer/manifest regression checks for stale source/doc bytes, missing/empty documents and escaped content; prove them failing first.
-- [ ] Generate PDFs with local fonts, source markers and page numbers; inspect page/text/pagination and verify hashes/links.
-- [ ] Commit the bundle without overwriting the separate draft SOP or claiming hosted/native activation.
+- [x] Write Owner, Manager/Lead, Employee and Rondo guides from current paths; provide developer/operations distributions using existing qualified material.
+- [x] Add renderer/manifest regression checks for stale source/doc bytes, missing/empty documents and escaped content; prove them failing first.
+- [x] Generate PDFs with local fonts, source markers and page numbers; inspect page/text/pagination and verify hashes/links.
+- [x] Commit the bundle without overwriting the separate draft SOP or claiming hosted/native activation.
 
 ### Task 4: Existing operations qualification and source reconciliation
 
@@ -65,8 +65,8 @@
 
 **Interfaces:** Existing monitor/enrollment/packaging commands and owned SQL harnesses; exact immutable source/artifact receipts.
 
-- [ ] Reconcile legacy shared-root versus enrolled host custody and preserve dated historical evidence.
-- [ ] Run focused existing worker/monitor tests, actual owned SQL and packaged acceptance; classify all seven packages with real receipts and explicit external gaps.
+- [x] Reconcile legacy shared-root versus enrolled host custody and preserve dated historical evidence.
+- [x] Run focused existing worker/monitor tests, actual owned SQL and packaged acceptance; classify all seven packages with real receipts and explicit external gaps.
 - [ ] Run default/static/build and applicable browser gates, preserving the one-heavy-local-run coordination boundary.
 - [ ] Obtain fresh source review, fix meaningful findings with RED→GREEN evidence, then freeze the candidate.
 
@@ -91,3 +91,5 @@ Task2 local completion:6df067823 adds the read-only case/CLI;24 focused tests pa
 Task3 content:744eb057d adds six current-source guides and evidence index;92 evidence paths/36 local links checked. PDF/tooling and final qualified distribution remain in progress.
 
 Owner decisions recorded November11: Jose primary, Ilianis Soto secondary,24/7 coverage; critical acknowledgement15minutes and lower-severity1hour, explicitly internal ownership/triage targets. Actual responder access/receipt/drill remains unverified.
+
+Combined source1139ef08a passed all15 local stages:12210 default passes/zero failures,786 actual SQL checks, actual packages/static/build/audit. Manual provenance review then found root runtime/configuration inputs absent from the application identity. Seven meaningful RED cases preceded the shared classifier fix;53 fixture tests and regenerated actual publication pass. Full backend/default evidence is carried only across the scoped manual-tool/test/document delta; final static/build/review/Actions remain pending. See docs/handoffs/2026-11-11-operations-source-closeout.md and SCRUM-189.
