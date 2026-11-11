@@ -90,13 +90,17 @@ function readBounded(path){
 
 function guard({env,platform,uid}){
  const ref=env.GITHUB_REF??'';
- const pushRef=['refs/heads/development','refs/heads/main'].includes(ref)||/^refs\/tags\/candidate\/backend-completion\/[A-Za-z0-9][A-Za-z0-9._/-]{0,160}$/.test(ref);
+ const normalRef=['refs/heads/development','refs/heads/main'].includes(ref)||/^refs\/tags\/candidate\/backend-completion\/[A-Za-z0-9][A-Za-z0-9._/-]{0,160}$/.test(ref);
+ // TEMP diagnostic context only: never import this extension into development.
+ const wrapper=env.NEVORA_FAILURE_CAPTURE_CONTEXT==='diagnostic-wrapper';
+ const pushRef=(env.NEVORA_FAILURE_CAPTURE_CONTEXT===undefined&&normalRef)||(wrapper&&/^refs\/tags\/diagnostic\/management-network\/[A-Za-z0-9][A-Za-z0-9._/-]{0,160}$/.test(ref));
  if(!(platform==='linux'&&uid===0&&env.GITHUB_ACTIONS==='true'&&env.RUNNER_OS==='Linux'&&env.GITHUB_EVENT_NAME==='push'&&pushRef
   &&env.NEVORA_INSTALLER_OUTCOME==='failure'&&/^[a-f0-9]{40}$/.test(env.GITHUB_SHA??'')&&env.GITHUB_SHA===env.NEVORA_CHECKOUT_SHA
   &&/^[1-9]\d{0,19}$/.test(env.GITHUB_RUN_ID??'')&&/^[1-9]\d{0,5}$/.test(env.GITHUB_RUN_ATTEMPT??'')
   &&env.ImageOS==='ubuntu24'&&/^\d{8}\.\d+(?:\.\d+)?$/.test(env.ImageVersion??'')&&env.RUNNER_ARCH==='X64'
   &&typeof env.RUNNER_TEMP==='string'&&isAbsolute(env.RUNNER_TEMP)&&!env.RUNNER_TEMP.includes('\0')))
   throw Error('Collector requires failed push installer on root GitHub Ubuntu with exact checkout');
+ return wrapper?'diagnostic-wrapper':'release-installer-failure';
 }
 
 function execute(command){
@@ -115,12 +119,12 @@ function dnsSummary(raw){
 }
 
 export function captureFailure(options={}){
- const env=options.env??process.env;guard({env,platform:options.platform??process.platform,uid:options.uid??process.getuid?.()});
+ const env=options.env??process.env,executionContext=guard({env,platform:options.platform??process.platform,uid:options.uid??process.getuid?.()});
  const read=options.read??readBounded,write=options.write??((p,v)=>writeFileSync(p,v,{mode:0o644})),mkdir=options.mkdir??(p=>mkdirSync(p,{mode:0o755}));
  const lstat=options.lstat??lstatSync,readlink=options.readlink??readlinkSync,run=options.run??execute,now=options.now??(()=>new Date());
  const output=join(env.RUNNER_TEMP,'nevora-runner-network-failure');mkdir(output);
  const receipt={schemaVersion:1,kind:'failed-installer-network-capture-only',originalInstallerFailure:true,releaseAcceptance:false,complete:false,result:'CAPTURE_INCOMPLETE',exitCode:null,
-  identity:{source:env.GITHUB_SHA,checkoutSource:env.NEVORA_CHECKOUT_SHA,run:env.GITHUB_RUN_ID,attempt:env.GITHUB_RUN_ATTEMPT,ref:sanitize(env.GITHUB_REF),imageOS:env.ImageOS,imageVersion:env.ImageVersion,architecture:env.RUNNER_ARCH,uid:0},
+  identity:{source:env.GITHUB_SHA,checkoutSource:env.NEVORA_CHECKOUT_SHA,run:env.GITHUB_RUN_ID,attempt:env.GITHUB_RUN_ATTEMPT,ref:sanitize(env.GITHUB_REF),imageOS:env.ImageOS,imageVersion:env.ImageVersion,architecture:env.RUNNER_ARCH,uid:0,executionContext},
   startedAt:now().toISOString(),mutations:'Owned RUNNER_TEMP receipt only; no system, mirror, resolver, package, trust or proxy mutation.',permissions:[],metadata:{},probes:[]};
  const persist=()=>write(join(output,'receipt.json'),JSON.stringify(receipt,null,2)+'\n');persist();
  try{

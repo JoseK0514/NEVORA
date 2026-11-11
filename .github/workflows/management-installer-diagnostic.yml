@@ -1,0 +1,121 @@
+name: Management installer diagnostic (temporary; not release)
+
+on:
+  push:
+    tags: ["diagnostic/management-network/**"]
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    name: management-installer-network-diagnostic-only
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Install pinned Playwright runtime
+        shell: bash
+        run: |
+          PW_ROOT="$GITHUB_WORKSPACE/tools/ci-browser-runtime"
+          npm ci --prefix "$PW_ROOT" --no-audit --no-fund
+          npm audit --prefix "$PW_ROOT" --audit-level=high
+          echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
+          echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
+      - name: Verify failure capture regressions
+        run: node --test .github/scripts/runner-network-failure.check.mjs
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
+      - name: Install Chromium and WebKit
+        id: management_browser_install
+        timeout-minutes: 8
+        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+      - name: Record bounded installer outcome
+        if: always()
+        timeout-minutes: 1
+        env:
+          INSTALLER_OUTCOME: ${{ steps.management_browser_install.outcome || 'not_started' }}
+          NEVORA_FAILURE_CAPTURE_CONTEXT: diagnostic-wrapper
+        shell: bash
+        run: |
+          CHECKOUT_SHA="$(git rev-parse HEAD)"
+          test "$CHECKOUT_SHA" = "$GITHUB_SHA"
+          export NEVORA_CHECKOUT_SHA="$CHECKOUT_SHA"
+          node <<'NODE'
+          const {mkdirSync,writeFileSync}=require('node:fs');
+          const {join,isAbsolute}=require('node:path');
+          const {release}=require('node:os');
+          const {spawnSync}=require('node:child_process');
+          const e=process.env;
+          const valid=process.platform==='linux'&&e.GITHUB_ACTIONS==='true'&&e.RUNNER_OS==='Linux'
+            &&e.GITHUB_EVENT_NAME==='push'&&e.NEVORA_FAILURE_CAPTURE_CONTEXT==='diagnostic-wrapper'
+            &&/^refs\/tags\/diagnostic\/management-network\/[A-Za-z0-9][A-Za-z0-9._/-]{0,160}$/.test(e.GITHUB_REF??'')
+            &&/^[a-f0-9]{40}$/.test(e.GITHUB_SHA??'')&&e.NEVORA_CHECKOUT_SHA===e.GITHUB_SHA
+            &&/^[1-9]\d{0,19}$/.test(e.GITHUB_RUN_ID??'')&&/^[1-9]\d{0,5}$/.test(e.GITHUB_RUN_ATTEMPT??'')
+            &&e.ImageOS==='ubuntu24'&&/^\d{8}\.\d+(?:\.\d+)?$/.test(e.ImageVersion??'')&&e.RUNNER_ARCH==='X64'
+            &&typeof e.RUNNER_TEMP==='string'&&isAbsolute(e.RUNNER_TEMP)&&!e.RUNNER_TEMP.includes('\0')
+            &&['success','failure','skipped','cancelled','not_started'].includes(e.INSTALLER_OUTCOME);
+          if(!valid)throw Error('Invalid diagnostic wrapper identity');
+          const kernel=release(),dir=join(e.RUNNER_TEMP,'nevora-management-installer-outcome');
+          mkdirSync(dir,{mode:0o755});
+          const r={schemaVersion:1,kind:'management-installer-availability-only',executionContext:'diagnostic-wrapper',
+            source:e.GITHUB_SHA,checkoutSource:e.NEVORA_CHECKOUT_SHA,run:e.GITHUB_RUN_ID,attempt:e.GITHUB_RUN_ATTEMPT,ref:e.GITHUB_REF,
+            imageOS:e.ImageOS,imageVersion:e.ImageVersion,architecture:e.RUNNER_ARCH,
+            kernelRelease:/^[A-Za-z0-9._+~-]{1,128}$/.test(kernel)?kernel:'[unexpected kernel release omitted]',
+            installerOutcome:e.INSTALLER_OUTCOME,failureCollectorExpected:e.INSTALLER_OUTCOME==='failure',
+            releaseAcceptance:false,productAcceptance:false,installerAvailabilityOnly:true,
+            resolvOpen:{attempted:false,status:null,contentCollected:false},observedAt:new Date().toISOString()};
+          const save=()=>writeFileSync(join(dir,'receipt.json'),JSON.stringify(r,null,2)+'\n',{mode:0o644});
+          save();
+          if(e.INSTALLER_OUTCOME==='failure'){
+            r.resolvOpen={attempted:true,actor:'_apt',file:'/etc/resolv.conf',seconds:3,pending:true,status:null,contentCollected:false};save();
+            try{
+              const child=spawnSync('/usr/bin/sudo',['-n','/usr/bin/timeout','--signal=TERM','--kill-after=2s','3s','/usr/bin/sudo','-n','-u','_apt','/usr/bin/head','-c','0','/etc/resolv.conf'],
+                {timeout:7000,killSignal:'SIGKILL',maxBuffer:1024,stdio:['ignore','ignore','ignore']});
+              const status=Number.isInteger(child.status)?child.status:child.error?.code==='ETIMEDOUT'?124:1;
+              Object.assign(r.resolvOpen,{pending:false,status,signal:/^SIG[A-Z0-9]+$/.test(child.signal??'')?child.signal:null,
+                errorCode:/^[A-Z0-9_]{1,32}$/.test(child.error?.code??'')?child.error.code:null,timedOut:[124,137].includes(status)||child.error?.code==='ETIMEDOUT'});
+              process.exitCode=status;
+            }catch{
+              Object.assign(r.resolvOpen,{pending:false,status:1,errorCode:'SUBPROCESS_ERROR'});process.exitCode=1;
+            }finally{save();}
+          }
+          NODE
+      - name: Capture failed installer network context
+        if: ${{ failure() && steps.management_browser_install.outcome == 'failure' && github.event_name == 'push' }}
+        timeout-minutes: 3
+        shell: bash
+        run: |
+          CHECKOUT_SHA="$(git rev-parse HEAD)"
+          test "$CHECKOUT_SHA" = "$GITHUB_SHA"
+          sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS,GITHUB_EVENT_NAME,GITHUB_REF,GITHUB_SHA,GITHUB_RUN_ID,GITHUB_RUN_ATTEMPT,RUNNER_TEMP,ImageOS,ImageVersion,RUNNER_ARCH \
+            env NEVORA_CHECKOUT_SHA="$CHECKOUT_SHA" NEVORA_INSTALLER_OUTCOME=failure NEVORA_FAILURE_CAPTURE_CONTEXT=diagnostic-wrapper \
+            "$(command -v node)" .github/scripts/runner-network-failure.mjs
+      - name: Retain installer availability outcome
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: management-installer-outcome-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/nevora-management-installer-outcome/receipt.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Retain failed installer network context
+        if: ${{ always() && steps.management_browser_install.outcome == 'failure' && github.event_name == 'push' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: management-installer-network-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/nevora-runner-network-failure/receipt.json
+          if-no-files-found: error
+          retention-days: 14

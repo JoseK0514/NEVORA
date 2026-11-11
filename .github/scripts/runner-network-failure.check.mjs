@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import {runInNewContext} from 'node:vm';
 import {captureFailure,selectMetadata,sanitize} from './runner-network-failure.mjs';
 
 const sha='93fbf7f32b51503883a66c3af0004de10d62e736';
@@ -239,5 +240,98 @@ test('actual receipt persistence does not leak accepted-HTTP delimiter credentia
   const bad=fixture({mirrors:mirror.replace('http://azure.archive.ubuntu.com/ubuntu/',uri)});
   assert.equal(captureFailure(bad.options).exitCode,1);assert.equal(bad.calls.length,0);
   assert.ok(!JSON.stringify(bad.receipt()).includes('FictionalCredential123'));
+ }
+});
+
+test('TEMP wrapper context accepts only its explicit flag and actual diagnostic ref, preserving normal release guards',()=>{
+ const ref='refs/tags/diagnostic/management-network/20261111-fixture';
+ const f=fixture();Object.assign(f.options.env,{GITHUB_REF:ref,NEVORA_FAILURE_CAPTURE_CONTEXT:'diagnostic-wrapper'});
+ assert.equal(captureFailure(f.options).exitCode,0);assert.equal(f.receipt().identity.ref,ref);
+ assert.equal(f.receipt().identity.source,sha);assert.equal(f.receipt().identity.checkoutSource,sha);
+ assert.equal(f.receipt().identity.executionContext,'diagnostic-wrapper');
+ const normal=fixture();captureFailure(normal.options);assert.equal(normal.receipt().identity.executionContext,'release-installer-failure');
+ for(const bad of [
+  {GITHUB_REF:ref},{NEVORA_FAILURE_CAPTURE_CONTEXT:'diagnostic-wrapper'},
+  {GITHUB_REF:ref,NEVORA_FAILURE_CAPTURE_CONTEXT:'other'},
+  {GITHUB_REF:'refs/tags/diagnostic/backend-network/fixture',NEVORA_FAILURE_CAPTURE_CONTEXT:'diagnostic-wrapper'},
+  {GITHUB_REF:ref,NEVORA_FAILURE_CAPTURE_CONTEXT:'diagnostic-wrapper',NEVORA_CHECKOUT_SHA:'a'.repeat(40)},
+  {GITHUB_REF:ref,NEVORA_FAILURE_CAPTURE_CONTEXT:'diagnostic-wrapper',NEVORA_INSTALLER_OUTCOME:'success'},
+  {GITHUB_REF:ref,NEVORA_FAILURE_CAPTURE_CONTEXT:'diagnostic-wrapper',GITHUB_EVENT_NAME:'pull_request'},
+ ]){
+  const negative=fixture();Object.assign(negative.options.env,bad);
+  assert.throws(()=>captureFailure(negative.options),/requires failed push installer/);
+  assert.deepEqual(negative.reads,[]);assert.deepEqual(negative.calls,[]);assert.deepEqual(negative.writes,[]);
+ }
+});
+
+function wrapperText(){return readFileSync(new URL('../workflows/management-installer-diagnostic.yml',import.meta.url),'utf8');}
+function availability(environment){
+ const text=wrapperText(),code=text.match(/          node <<'NODE'\n([\s\S]*?)          NODE/)[1].replace(/^          /gm,'');
+ const files=new Map(),created=[],commands=[];
+ const context={process:{env:{...env,INSTALLER_OUTCOME:'success',NEVORA_FAILURE_CAPTURE_CONTEXT:'diagnostic-wrapper',...environment},platform:'linux'},require:name=>{
+  if(name==='node:fs')return {mkdirSync:p=>created.push(p),writeFileSync:(p,v)=>files.set(p,v)};
+  if(name==='node:os')return {release:()=> '6.11.0-fixture'};
+  if(name==='node:child_process')return {spawnSync:(file,args,options)=>{commands.push({file,args,options});return {status:environment?.FAKE_OPEN_STATUS??0,signal:null};}};
+  if(name==='node:path')return {join:(...v)=>v.join('/').replaceAll('//','/'),isAbsolute:p=>typeof p==='string'&&p.startsWith('/')};
+  throw Error('Unexpected module '+name);
+ }};
+ return {run:()=>runInNewContext(code,context,{timeout:1000}),files,created,commands,exitCode:()=>context.process.exitCode??0};
+}
+
+test('wrapper workflow has one bounded diagnostic-only job and failure/outcome artifacts without release work',()=>{
+ const text=wrapperText();
+ assert.match(text,/tags: \["diagnostic\/management-network\/\*\*"\]/);
+ assert.doesNotMatch(text,/workflow_dispatch:|pull_request:|branches:|continue-on-error/);
+ assert.match(text,/contents: read/);assert.match(text,/runs-on: ubuntu-24\.04/);assert.match(text,/timeout-minutes: 15/);
+ assert.match(text,/timeout-minutes: 8/);assert.match(text,/timeout-minutes: 3/);
+ assert.match(text,/NEVORA_FAILURE_CAPTURE_CONTEXT=diagnostic-wrapper/);
+ assert.match(text,/if: \$\{\{ failure\(\) && steps\.management_browser_install\.outcome == 'failure' && github\.event_name == 'push' \}\}/);
+ assert.match(text,/if: \$\{\{ always\(\) && steps\.management_browser_install\.outcome == 'failure' && github\.event_name == 'push' \}\}/);
+ assert.equal((text.match(/if-no-files-found: error/g)||[]).length,2);
+ assert.equal((text.match(/retention-days: 14/g)||[]).length,2);
+ assert.doesNotMatch(text,/test:release|payroll-postgres|test:mobile|npm run build|Install PostgreSQL|browser gate/);
+ assert.match(text,/"\$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit/);
+ for(const file of ['ci.yml','mobile-access.yml','native-android.yml','native-spike.yml']){
+  const other=readFileSync(new URL('../workflows/'+file,import.meta.url),'utf8');
+  assert.ok(!other.includes('diagnostic/management-network'));
+  if(['ci.yml','mobile-access.yml'].includes(file))assert.match(other,/tags: \["candidate\/backend-completion\/\*\*"\]/);
+  else assert.match(other,/push:\n    branches: \[development\]/);
+ }
+});
+
+test('always-outcome producer records healthy availability without product/release acceptance or a failure collector',()=>{
+ const ref='refs/tags/diagnostic/management-network/20261111-fixture';
+ const f=availability({GITHUB_REF:ref});f.run();
+ const data=JSON.parse([...f.files.values()][0]);assert.equal(data.source,sha);assert.equal(data.checkoutSource,sha);assert.equal(data.ref,ref);
+ assert.equal(data.executionContext,'diagnostic-wrapper');assert.equal(data.installerOutcome,'success');
+ assert.equal(data.failureCollectorExpected,false);assert.equal(data.releaseAcceptance,false);assert.equal(data.productAcceptance,false);
+ assert.equal(f.files.size,1);assert.equal(f.created.length,1);
+});
+
+test('always-outcome producer records failure/skipped states and rejects forged identity before output',()=>{
+ const ref='refs/tags/diagnostic/management-network/20261111-fixture';
+ for(const outcome of ['failure','skipped','cancelled','not_started']){
+  const f=availability({GITHUB_REF:ref,INSTALLER_OUTCOME:outcome});f.run();
+  const r=JSON.parse([...f.files.values()][0]);assert.equal(r.installerOutcome,outcome);assert.equal(r.failureCollectorExpected,outcome==='failure');
+  assert.equal(r.releaseAcceptance,false);assert.equal(r.productAcceptance,false);
+ }
+ for(const change of [{GITHUB_REF:env.GITHUB_REF},{NEVORA_CHECKOUT_SHA:'a'.repeat(40)},{INSTALLER_OUTCOME:'invented'},{GITHUB_EVENT_NAME:'pull_request'},{ImageVersion:''}]){
+  const f=availability({GITHUB_REF:ref,...change});assert.throws(()=>f.run(),/Invalid diagnostic wrapper identity/);assert.equal(f.files.size,0);assert.equal(f.created.length,0);
+ }
+});
+
+test('wrapper supplement records kernel and failure-only zero-byte _apt open without collecting child output',()=>{
+ const ref='refs/tags/diagnostic/management-network/20261111-fixture';
+ const healthy=availability({GITHUB_REF:ref,OPENAI_API_KEY:'fictional-never-dump'});healthy.run();
+ const h=JSON.parse([...healthy.files.values()][0]);assert.equal(h.kernelRelease,'6.11.0-fixture');
+ assert.equal(h.resolvOpen.attempted,false);assert.equal(healthy.commands.length,0);assert.ok(![...healthy.files.values()][0].includes('fictional-never-dump'));
+ for(const status of [0,1,124]){
+  const f=availability({GITHUB_REF:ref,INSTALLER_OUTCOME:'failure',FAKE_OPEN_STATUS:status});f.run();
+  const r=JSON.parse([...f.files.values()][0]);assert.equal(r.resolvOpen.status,status);assert.equal(r.resolvOpen.attempted,true);assert.equal(r.resolvOpen.contentCollected,false);assert.equal(f.exitCode(),status);
+  assert.equal(f.commands.length,1);const command=f.commands[0];
+  assert.equal(command.file,'/usr/bin/sudo');
+  assert.deepEqual(Array.from(command.args),['-n','/usr/bin/timeout','--signal=TERM','--kill-after=2s','3s','/usr/bin/sudo','-n','-u','_apt','/usr/bin/head','-c','0','/etc/resolv.conf']);
+  assert.equal(command.options.timeout,7000);assert.deepEqual(Array.from(command.options.stdio),['ignore','ignore','ignore']);
+  assert.equal(r.releaseAcceptance,false);assert.equal(r.productAcceptance,false);
  }
 });
