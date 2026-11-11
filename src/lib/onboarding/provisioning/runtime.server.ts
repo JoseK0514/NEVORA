@@ -17,6 +17,7 @@ export function readProvisionerRuntime(env:Readonly<Record<string,string|undefin
   if(!['postgres:','postgresql:'].includes(app.protocol)||!['postgres:','postgresql:'].includes(worker.protocol)||app.hostname!==worker.hostname||(app.port||'5432')!==(worker.port||'5432')||app.pathname!==worker.pathname||!app.username||!worker.username||decodeURIComponent(app.username)===decodeURIComponent(worker.username))return null;
   const config=readOnboardingConfig({...env,NEVORA_CONTROL_DATABASE_URL:worker.href}),policy=readProvisionerPolicy(env),apiKey=env.NEVORA_PROVISIONER_API_KEY;
   if(!config.enabled||!config.providerEnabled||!policy||policy.accountRef!==config.providerAccountRef||policy.region!==config.region||policy.version!==config.resourcePolicyVersion||typeof apiKey!=='string'||apiKey.length<16||apiKey.length>4096||!/^[\x21-\x7e]+$/.test(apiKey))return null;
+  if(config.environment==='production'&&policy.suspensionMode!=='explicit')return null;
   const commerce=readEnrollmentRuntime(env);return {config,policy,apiKey,commerce};
  }catch{return null;}
 }

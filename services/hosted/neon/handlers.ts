@@ -4,18 +4,19 @@ import {parseStripeWebhook,projectsStripeEvent} from '../../commerce/stripe-webh
 import {CommerceError} from '../../commerce/model';
 import {roleCapabilitiesAllowed,type FunctionRole} from './capabilities';
 import {hostedSourceMatches} from './source';
+import {hostedRuntimeProfile} from './runtime-profile';
 export const UNUSABLE_DATABASE_URL = 'postgresql://disabled.invalid/disabled';
 export type HostedRole = 'commercequeue' | 'commercereconcile' | 'provisioner' | 'workforcemonitor';
 type Env=Readonly<Record<string,string|undefined>>;
 const answer=(value:unknown,status=200)=>Response.json(value,{status,headers:{'cache-control':'no-store','x-content-type-options':'nosniff'}});
 const fail=(code:string,status:number)=>answer({error:{code}},status);
 /** Fixed role/status only: no paths, bodies, IDs, credentials or personal data. */
-export function observedFetch(role:FunctionRole,handler:(request:Request)=>Promise<Response>){
- return async(request:Request)=>{const response=await handler(request);console.info(JSON.stringify({event:'nevora_staging_http',role,status:response.status}));return response;};
+export function observedFetch(role:FunctionRole,handler:(request:Request)=>Promise<Response>,env:Env=process.env){
+ return async(request:Request)=>{const response=await handler(request);console.info(JSON.stringify({event:env.NEVORA_NEON_RUNTIME_PROFILE==='production-signup-v1'?'nevora_production_http':'nevora_staging_http',role,status:response.status}));return response;};
 }
 export function hostedEnvironmentBound(env:Env,role:FunctionRole){
  if(!hostedSourceMatches(env.NEVORA_NEON_SOURCE_SHA))return false;
- if(!/^br-[a-z0-9-]+$/.test(env.NEVORA_NEON_BRANCH_ID??'')||env.NEVORA_NEON_BRANCH_ID!==env.NEON_BRANCH_ID||env.NEVORA_COMMERCE_ENVIRONMENT!=='staging'||env.NEVORA_ONBOARDING_ENVIRONMENT!=='test'||env.NEVORA_WORKSPACE_MODE!=='isolated')return false;
+ if(!/^br-[a-z0-9-]+$/.test(env.NEVORA_NEON_BRANCH_ID??'')||env.NEVORA_NEON_BRANCH_ID!==env.NEON_BRANCH_ID||!hostedRuntimeProfile(env,role)||env.NEVORA_WORKSPACE_MODE!=='isolated')return false;
  // Neon automatically injects a default database capability. It must be overridden
  // in every deployment, even when disabled; only named role-specific DSNs are used.
  if(env.DATABASE_URL!==UNUSABLE_DATABASE_URL||env.DATABASE_URL_UNPOOLED!==UNUSABLE_DATABASE_URL)return false;
@@ -52,11 +53,13 @@ export function createScheduledHandler(role:HostedRole,env:Env,run:()=>Promise<{
    let data:unknown;try{data=JSON.parse(await readHostedBody(request,16384));}catch(error){if(error instanceof CommerceError)throw error;return fail('invalid_body',400);}
    const parsed=parseTriggerDelivery({headers:request.headers,body:data});
    if(!parsed.ok)return fail('invalid_trigger',parsed.error==='invalid_body'?400:401);
-   if(parsed.invocation.type!=='schedule'||parsed.invocation.trigger.name!=='nevora-staging-'+role)return fail('wrong_trigger',403);
+   const profile=hostedRuntimeProfile(env,role);
+   if(parsed.invocation.type!=='schedule'||parsed.invocation.trigger.name!=='nevora-'+(profile??'staging')+'-'+role)return fail('wrong_trigger',403);
    if(!hostedEnvironmentBound(env,role))return fail('not_ready',503);
-   if(env.NEVORA_NEON_HOST_ENABLED==='false'){console.info(JSON.stringify({event:'nevora_staging_task',role,state:'disabled'}));return answer({state:'disabled'});}
+   const event=profile==='production'?'nevora_production_task':'nevora_staging_task';
+   if(env.NEVORA_NEON_HOST_ENABLED==='false'){console.info(JSON.stringify({event,role,state:'disabled'}));return answer({state:'disabled'});}
    const result=await run();
-   console.info(JSON.stringify({event:'nevora_staging_task',role,state:['idle','processed','completed','complete'].includes(result.state)?result.state:'retry_required'}));
+   console.info(JSON.stringify({event,role,state:['idle','processed','completed','complete'].includes(result.state)?result.state:'retry_required'}));
    if(!['idle','processed','completed','complete'].includes(result.state))return fail('retry_required',503);
    return answer({state:result.state});
   }catch(error){if(error instanceof CommerceError&&['invalid_encoding','body_too_large','request_timeout'].includes(error.code))return fail(error.code,error.status);return fail('temporarily_unavailable',503);}
