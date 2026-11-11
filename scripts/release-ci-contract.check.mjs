@@ -96,6 +96,33 @@ test('mandatory release SQL job always runs the isolated Owner advisor integrati
  assert.equal(step.if,undefined);
  assert.equal(step['continue-on-error'],undefined);
 });
+test('mandatory release SQL executes staff task cases unconditionally and retains their report',()=>{
+ const config=readFileSync('vitest.staff-tasks-integration.config.mts','utf8');
+ const scripts=JSON.parse(readFileSync('package.json','utf8')).scripts;
+ assert.equal(scripts['test:staff-tasks:owned'],'node scripts/payroll-postgres.mjs vitest.staff-tasks-integration.config.mts');
+ assert(config.includes("include:['src/test/integration/staff-tasks.integration.ts']"));
+ const verify=job=>{
+  assert.equal(job.if,undefined);assert.equal(job['continue-on-error'],undefined);
+  const step=job.steps.find(s=>s.run==='npm run test:staff-tasks:owned -- --reporter=json --outputFile="$RUNNER_TEMP/staff-tasks.json"');
+  assert(step,'Staff tasks SQL execution/report missing');
+  assert.equal(step.if,undefined);assert.equal(step['continue-on-error'],undefined);
+  const upload=job.steps.find(s=>s.name==='Upload dedicated payroll SQL evidence');
+  assert(upload);assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
+  assert(upload.with.path.includes('${{ runner.temp }}/staff-tasks.json'));
+ };
+ const job=workflow.jobs['release-postgres'];verify(job);
+ for(const mutation of ['remove','condition','allow-failure','job-condition','job-allow-failure','ignore-exit','drop-artifact']){
+  const broken=structuredClone(job),index=broken.steps.findIndex(s=>s.run?.includes('test:staff-tasks:owned'));
+  if(mutation==='remove')broken.steps.splice(index,1);
+  if(mutation==='condition')broken.steps[index].if='false';
+  if(mutation==='allow-failure')broken.steps[index]['continue-on-error']=true;
+  if(mutation==='job-condition')broken.if='false';
+  if(mutation==='job-allow-failure')broken['continue-on-error']=true;
+  if(mutation==='ignore-exit')broken.steps[index].run+=' || true';
+  if(mutation==='drop-artifact')broken.steps.find(s=>s.name==='Upload dedicated payroll SQL evidence').with.path='${{ runner.temp }}/native-payroll.json';
+  assert.throws(()=>verify(broken),undefined,mutation);
+ }
+});
 test('mandatory release SQL runs both dedicated payroll suites and retains actual result files',()=>{
  const steps=workflow.jobs['release-postgres'].steps;
  for(const suite of ['native','configurable']){

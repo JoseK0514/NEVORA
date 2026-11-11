@@ -59,6 +59,7 @@ export const CURRENT_MIGRATIONS = [
   '0058_delegated_time_corrections.sql',
   '0059_payroll_export_business_identity.sql',
   '0060_monotonic_login_fence.sql',
+  '0061_staff_tasks.sql',
   '0046_owner_advisor_memory.sql',
 ] as const;
 

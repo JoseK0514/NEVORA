@@ -454,6 +454,8 @@ jobs:
         env:
           NEVORA_CAPACITY_EVIDENCE: ${{ runner.temp }}/capacity-evidence
         run: npm run test:release:postgres
+      - name: Staff tasks isolated PostgreSQL integration gate
+        run: npm run test:staff-tasks:owned -- --reporter=json --outputFile="$RUNNER_TEMP/staff-tasks.json"
       - name: Owner advisor isolated PostgreSQL integration gate
         run: node scripts/payroll-postgres.mjs vitest.owner-advisor-integration.config.mts
       - name: Rondo leadership fixture and recovery gate (no live model calls)
@@ -474,6 +476,7 @@ jobs:
         with:
           name: payroll-sql-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
+            ${{ runner.temp }}/staff-tasks.json
             ${{ runner.temp }}/native-payroll.json
             ${{ runner.temp }}/configurable-payroll.json
             ${{ runner.temp }}/timestamp-token.json
