@@ -47,6 +47,17 @@ Use **Insights** and **Time exports** only for the period you intend. Planned
 shifts do not establish recorded attendance or final pay. Owner-only company
 settings and Clocker administration remain with the Owner.
 
+Within current company scope, the Timecards inspector can offer **Close open
+punch** for another person. Enter a verified company-local end time and reason,
+read the open-break explanation, confirm and choose **Record close**. Recover an
+unconfirmed original operation through its recovery control.
+
+**Request time correction** lets you propose another employee’s entry, break or
+missing-time correction. Verify the target and proposed times before sending.
+It leaves original punches unchanged and requires a different authorized reviewer;
+neither the employee nor requester can approve or reject it. This workflow does
+not grant company access to a Manager assigned only to locations.
+
 ## Location-scoped Manager workflow
 
 1. On **Your workspace**, confirm the listed managed locations.

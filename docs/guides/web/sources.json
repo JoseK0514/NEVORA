@@ -22,7 +22,11 @@
         "src/lib/payroll/service.ts",
         "src/lib/payroll/access.ts",
         "src/app/app/help/page.tsx",
-        "src/lib/onboarding/admission.server.ts"
+        "src/lib/onboarding/admission.server.ts",
+        "src/components/management-close-form.tsx",
+        "src/components/delegated-time-correction-form.tsx",
+        "src/lib/payroll-export/service.ts",
+        "src/lib/payroll/documents.ts"
       ]
     },
     {
@@ -41,7 +45,9 @@
         "src/lib/payroll/service.ts",
         "src/lib/payroll/native/scope.ts",
         "src/app/app/my-time/page.tsx",
-        "src/app/app/ai-manager/page.tsx"
+        "src/app/app/ai-manager/page.tsx",
+        "src/components/management-close-form.tsx",
+        "src/components/delegated-time-correction-form.tsx"
       ]
     },
     {
@@ -113,7 +119,9 @@
         "services/hosted/neon/runtime-profile.ts",
         "src/lib/onboarding/provisioning/neon-provider.server.ts",
         "src/lib/onboarding/provisioning/runtime.server.ts",
-        "docs/handoffs/2026-11-11-r26-admission-capacity.md"
+        "docs/handoffs/2026-11-11-r26-admission-capacity.md",
+        "src/lib/data/sql-session-contract.ts",
+        "docs/handoffs/2026-11-11-r14-timestamp-contract.md"
       ]
     },
     {
@@ -140,7 +148,9 @@
         "services/hosted/neon/runtime-profile.ts",
         "src/lib/onboarding/provisioning/neon-provider.server.ts",
         "src/lib/onboarding/provisioning/runtime.server.ts",
-        "docs/handoffs/2026-11-11-r26-admission-capacity.md"
+        "docs/handoffs/2026-11-11-r26-admission-capacity.md",
+        "docs/handoffs/2026-11-11-r14-timestamp-contract.md",
+        "docs/handoffs/2026-11-11-r16-subscription-key-continuity.md"
       ]
     }
   ]
