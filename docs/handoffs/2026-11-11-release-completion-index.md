@@ -85,6 +85,14 @@ combined qualification remain required. The earlier e31 combined run passed all
 767 release SQL cases and then stopped source-unchanged for this correction;
 its unexecuted later stages remain unexecuted.
 
+The next c9 qualification again passed767 release SQL cases, then onboarding
+acceptance refused three unclassified additions before running its database
+steps: the R10 close route, R11 delegated-request route and R14 session helper.
+Their explicit inventory dispositions now describe current company/actor/domain
+authority and the helper's caller-selected driver. The inventory scanner and
+unseen-path refusal remain unchanged. This metadata correction does not change
+application, test, schema or runtime bytes; its failed receipt is retained.
+
 ## Release boundary
 
 After local and independent gates, publish a unique immutable candidate tag,

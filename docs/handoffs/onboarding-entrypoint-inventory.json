@@ -4316,6 +4316,33 @@
       "status": "CONVERTED",
       "reason": "Canonical enrolled WORKER material read audits actual scoped machine principal and current encrypted view, identity, expiry and unique recipient before every use. No browser/Owner purpose or plaintext cache.",
       "isolatedBehavior": "BOUND_WORKER"
+    },
+    {
+      "path": "src/app/api/manager/time-corrections/delegated/[employeeId]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_APPLICATION",
+      "reason": "R11 delegated read/request uses the current scoped session and correction authority through shared company-bound executors. Owner/Manager and current operational permission checks remain; separate authorized approval and exact-operation receipt rules are enforced by the domain/SQL guards. No browser-selected database or elevated global principal."
+    },
+    {
+      "path": "src/app/api/manager/timecards/[entryId]/close/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_APPLICATION",
+      "reason": "R10 read/close uses current scoped cookie and mutation proof through the shared company-bound executor. Actor, target/entry locations, source revision, explicit end/reason and audit/recovery rules remain server-enforced. Inactive target/location admission does not bypass current Owner/Manager operational authority."
+    },
+    {
+      "path": "src/lib/data/sql-session-contract.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_CALLER",
+      "reason": "R14 helper consumes only the caller-selected existing Neon driver; it neither resolves a company nor constructs a connection. Single-company executors and isolated APP/WORKER transports retain their own identity/scope guards. Its owning lazy batch applies LOCAL UTC/ISO YMD and ReadCommitted, preserves body indexes/abort, and refuses a changed final contract; trusted body SQL must preserve settings."
     }
   ],
   "routingEvidence": "Task2: actual owned A/B PostgreSQL databases through installed Neon HTTP protocol; not hosted Neon evidence.",
@@ -4325,5 +4352,9 @@
     "base": "e558c1f432ae5e19b6c49b9118f3c7004f9b6b70",
     "qualifiedApplicationSource": "10b4ee0cd872f002b6af13c24fe8adcd1068c68e",
     "scope": "Explicit closed hosted receiver, setup-only reader and fixed workforce command; no UI/native adoption"
+  },
+  "releaseCompletionReconciliation": {
+    "reviewedAfter": "c9dfda650",
+    "scope": "R10/R11 request routes and R14 caller-bound batch helper; explicit runtime dispositions only. No unseen-path exemption, native adoption or hosted acceptance."
   }
 }
