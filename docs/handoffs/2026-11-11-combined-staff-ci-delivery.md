@@ -49,7 +49,17 @@ Current verification receipts and final source/run identities are recorded in
 Earlier failed, interrupted and superseded receipts remain unchanged. This
 handoff makes no claim that pending combined qualification has already passed.
 
-The next gate is a frozen combined source, actual staff25 and fresh-company21
+The first combined source `5860531b5995e3eb57602863c12c030b73409f1c` passed
+staff25 and the complete fresh-company25 SQL cases. Its full default run passed
+12,525 tests and failed12 workflow-mutation fixtures, with857 configured skips.
+The newly mandatory staff CI check reads package.json and its suite config;
+those unrelated baseline inputs were missing from the synthetic workflow cwd.
+The bounded correction copies both actual inputs into that fixture. All12
+targeted mutations now reject exactly their intended controls; their strict
+assertions, application checks and deadlines remain unchanged. Original failed
+receipts remain under `combined-delivery/qualification-5860531b5/`.
+
+The next gate is a new frozen combined source, actual staff25 and fresh-company25
 SQL cases, full default/static/build checks, actual Phase E SQL/browser evidence,
 and all underlying candidate GitHub jobs and artifacts. After a normal
 nonforced development fast-forward, its own CI/Mobile runs must also finish.

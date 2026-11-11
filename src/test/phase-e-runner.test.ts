@@ -418,6 +418,9 @@ it.each(['omitted-suite', 'omitted-home-engine', 'duplicate-home-engine', 'wrong
   put(root, '.github/workflows/ci.yml', require('js-yaml').dump(changed));
   put(root, '.github/workflows/mobile-access.yml', readFileSync('.github/workflows/mobile-access.yml','utf8'));
   put(root, 'vitest.timestamp-token-integration.config.mts', readFileSync('vitest.timestamp-token-integration.config.mts','utf8'));
+  // Staff SQL is another independent mandatory control in the complete graph.
+  put(root, 'package.json', readFileSync('package.json', 'utf8'));
+  put(root, 'vitest.staff-tasks-integration.config.mts', readFileSync('vitest.staff-tasks-integration.config.mts', 'utf8'));
   put(root, 'vercel.json', readFileSync('vercel.json', 'utf8'));
   // Keep the unrelated Clocker contract baseline complete while mutating E.
   put(root, 'vitest.clocker-integration.config.mts', readFileSync('vitest.clocker-integration.config.mts', 'utf8'));
