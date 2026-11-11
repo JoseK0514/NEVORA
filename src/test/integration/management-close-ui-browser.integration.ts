@@ -30,10 +30,16 @@ it('offers an audited management close in real desktop/mobile timecards with rec
      await q("INSERT INTO break_entries(id,time_entry_id,break_start_at) VALUES('UI-OPEN-BREAK',$1,clock_timestamp()-interval '1 hour')",[target.entry]);
     }
     let surfacePhase='login';
+    await page.addInitScript(()=>{
+     const qa=window as Window&{__r10Focus?:unknown[]};qa.__r10Focus=[];
+     for(const name of ['focus','blur','focusin','focusout','visibilitychange'])window.addEventListener(name,event=>{
+      const target=event.target as HTMLElement|null;qa.__r10Focus!.push({at:Date.now(),event:name,target:target===window as unknown?'WINDOW':target?.tagName,type:target?.getAttribute?.('type'),active:document.activeElement?.tagName,hasFocus:document.hasFocus(),visibility:document.visibilityState});if(qa.__r10Focus!.length>100)qa.__r10Focus!.shift();
+     },true);
+    });
     page.on('pageerror',(e:Error)=>errors.push(engine+' '+actor+' '+surfacePhase+': '+e.message+' '+(e.stack??'')));
     page.on('requestfailed',(r:{url():string;failure():unknown})=>network.push({engine,actor,phase:surfacePhase,path:new URL(r.url()).pathname,failure:r.failure()}));
     await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){errors.push('External origin '+url.origin);await route.abort();}else await route.continue();});
-    failureShot=()=>page.screenshot({path:resolve(evidence,engine+'-'+actor+'-failure.png'),fullPage:true});
+    failureShot=async()=>{await page.screenshot({path:resolve(evidence,engine+'-'+actor+'-failure.png'),fullPage:true});await writeFile(resolve(evidence,engine+'-'+actor+'-focus-events.json'),JSON.stringify(await page.evaluate(()=>(window as Window&{__r10Focus?:unknown[]}).__r10Focus),null,2));};
     await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
     const url=app.url+'/app/timecards?start='+today+'&end='+today+'#timecard-'+target.id;
     surfacePhase='timecards';await page.goto(url);await page.locator('dialog[open]').waitFor();
