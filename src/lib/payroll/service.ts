@@ -6,6 +6,7 @@
 import { compatibleManagerScopeSql, payrollObjectScopeSql } from "./native/scope";
 import { readPayrollBacklog } from "./backlog-read";
 import { payrollNoticeDelivery } from "./notices";
+import { assertPaymentExportSupported } from './payment-policy';
 import { randomUUID } from "node:crypto";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
 import type { SessionMutationProof } from "../shift-changes/types";
@@ -90,10 +91,14 @@ async function readReceiptRecord(proof: SessionMutationProof, operationId: strin
     const permissionCheck = q(`SELECT (CASE WHEN COALESCE((SELECT (${permitted}) FROM payroll_command_receipts saved WHERE saved.workspace_id=${ws} AND saved.actor_id=$1 AND saved.operation_id=$2::uuid),true) THEN '1' ELSE 'payroll_authorization' END)::integer`, proof.employee.id, operationId);
     const query = q(`SELECT payload,command_hash FROM payroll_command_receipts WHERE workspace_id=${ws} AND actor_id=$1 AND operation_id=$2::uuid`, proof.employee.id, operationId);
     const result = await ex.transaction([...first, permissionCheck, query, permissionCheck, ...authority(proof, "REVIEW")]);
-    return (result[first.length + 1] as {
+    const saved = (result[first.length + 1] as {
         payload: PayrollReceipt;
         command_hash: string;
     }[])[0];
+    if (saved?.payload.action === 'PAYMENT_EXPORT' && saved.payload.runId) {
+        assertPaymentExportSupported((await readRun(proof,saved.payload.runId,ex)).payload);
+    }
+    return saved;
 }
 export async function receipt(proof: SessionMutationProof, operationId: string, ex: SqlExecutor = neonNotificationExecutor()): Promise<PayrollReceipt | null> { enabled(); return (await readReceiptRecord(proof, operationId, ex))?.payload ?? null; }
 async function replay(proof: SessionMutationProof, input: {
@@ -370,6 +375,7 @@ export async function command(proof: SessionMutationProof, input: unknown, ex: S
         ? "APPROVE"
         : "REVIEW";
     await guarded(proof, permission, q("SELECT 1"), ex);
+    if (c.action === 'PAYMENT_EXPORT') assertPaymentExportSupported((await readRun(proof,c.runId,ex)).payload);
     const saved = await replay(proof, c, ex);
     if (saved)
         return saved;

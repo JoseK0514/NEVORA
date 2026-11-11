@@ -53,7 +53,9 @@ export async function document(proof: SessionMutationProof, id: string, ex: SqlE
     const payrollAccess = payrollObjectScopeSql(proof, "(d.payload->'coverage')", "d.workspace_id");
     const [d] = await guarded<DocRow & {
         hex: string;
-    }>(proof, "SELF", q(`SELECT d.id::text,d.kind,d.employee_id,d.filename,d.sha256,${published} AS published,d.payload,encode(d.content,'hex') AS hex FROM payroll_documents d WHERE d.workspace_id=${ws} AND d.id=$2::uuid AND ((${payrollAccess} AND (d.kind='EMPLOYEE_STATEMENT' OR EXISTS(SELECT 1 FROM employees own WHERE own.id=$1 AND own.role='OWNER'))) OR (d.employee_id=$1 AND d.kind='EMPLOYEE_STATEMENT' AND ${published}))`, proof.employee.id, id), ex);
+    }>(proof, "SELF", q(`SELECT d.id::text,d.kind,d.employee_id,d.filename,d.sha256,${published} AS published,d.payload,encode(d.content,'hex') AS hex FROM payroll_documents d WHERE d.workspace_id=${ws} AND d.id=$2::uuid
+      AND (d.kind<>'PAYMENT_INSTRUCTIONS' OR NOT EXISTS(SELECT 1 FROM payroll_runs r WHERE r.workspace_id=d.workspace_id AND r.id=d.run_id AND r.correction_of IS NOT NULL))
+      AND ((${payrollAccess} AND (d.kind='EMPLOYEE_STATEMENT' OR EXISTS(SELECT 1 FROM employees own WHERE own.id=$1 AND own.role='OWNER'))) OR (d.employee_id=$1 AND d.kind='EMPLOYEE_STATEMENT' AND ${published}))`, proof.employee.id, id), ex);
     if (!d)
         throw new PayrollError("DOCUMENT_UNAVAILABLE", 404);
     const bytes = Buffer.from(d.hex, "hex");

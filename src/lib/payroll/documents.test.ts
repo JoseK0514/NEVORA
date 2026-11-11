@@ -99,3 +99,6 @@ it("neutral payment artifact contains exact approved total/count and explicitly 
   expect(body.instructions[0].amountMinor).toBe("8766");
 });
 it('fails unsupported-script names explicitly instead of creating corrupt statements',async()=>{await expect(generatePdfs({...run,rows:[{...run.rows[0],employeeName:'日本語'}]},snapshot)).rejects.toThrow('UNSUPPORTED_DOCUMENT_GLYPH');});
+it('refuses full-net payment instructions for a provider-import correction',()=>{
+  expect(()=>paymentDocument({...run,correctionOf:'22222222-2222-4222-8222-222222222222'},snapshot)).toThrow('CORRECTION_PAYMENT_EXPORT_UNAVAILABLE');
+});

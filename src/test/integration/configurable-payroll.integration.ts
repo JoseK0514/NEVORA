@@ -7,6 +7,7 @@ import {
   saveSettings,
   runs,
   command,
+  receipt,
 } from "../../lib/payroll/service";
 import type { SessionMutationProof } from "../../lib/shift-changes/types";
 const proof: SessionMutationProof = {
@@ -377,6 +378,39 @@ it("nonzero finalized time imports exact authoritative values, corrections link 
   expect(r.rows!.find((x) => x.employeeId === seeded.ids.a)!.netMinor).toBe(
     "87660",
   );
+});
+it('refuses provider correction payment instructions without a document or operation receipt',async()=>{
+  const seeded=await seedPayrollFixture(f.db.executor,{published:true}),owner=seeded.proof;
+  const original=(await runs(owner,f.db.executor)).runs.find(r=>r.id===seeded.runId)!;
+  const originalExport=await command(owner,{action:'PAYMENT_EXPORT',operationId:randomUUID(),runId:original.id,expectedRevision:original.revision},f.db.executor);
+  expect(originalExport.documentId).toBeTruthy();
+  const corrected=await command(owner,{action:'CORRECT',operationId:randomUUID(),runId:original.id,expectedRevision:original.revision,reason:'Fictional corrected provider reference',amounts:{...seeded.amounts,sourceReference:'R13-correction'}},f.db.executor);
+  let correction=(await runs(owner,f.db.executor)).runs.find(r=>r.id===corrected.runId)!;
+  await command(owner,{action:'APPROVE',operationId:randomUUID(),runId:correction.id,expectedRevision:correction.revision,reviewToken:correction.reviewToken},f.db.executor);
+  correction=(await runs(owner,f.db.executor)).runs.find(r=>r.id===corrected.runId)!;
+  const operationId=randomUUID();
+  for(let attempt=0;attempt<2;attempt++)await expect(command(owner,{action:'PAYMENT_EXPORT',operationId,runId:correction.id,expectedRevision:correction.revision},f.db.executor)).rejects.toThrow('CORRECTION_PAYMENT_EXPORT_UNAVAILABLE');
+  expect(await f.q("SELECT count(*)::integer n FROM payroll_documents WHERE run_id=$1 AND kind='PAYMENT_INSTRUCTIONS'",[correction.id])).toEqual([{n:0}]);
+  expect(await f.q('SELECT count(*)::integer n FROM payroll_command_receipts WHERE operation_id=$1',[operationId])).toEqual([{n:0}]);
+});
+it('quarantines historical correction payment receipts and downloads without deleting immutable evidence',async()=>{
+  const seeded=await seedPayrollFixture(f.db.executor,{published:true}),owner=seeded.proof;
+  const original=(await runs(owner,f.db.executor)).runs.find(r=>r.id===seeded.runId)!;
+  const corrected=await command(owner,{action:'CORRECT',operationId:randomUUID(),runId:original.id,expectedRevision:original.revision,reason:'Fictional legacy correction',amounts:{...seeded.amounts,sourceReference:'R13-historical'}},f.db.executor);
+  const draft=(await runs(owner,f.db.executor)).runs.find(r=>r.id===corrected.runId)!;
+  await command(owner,{action:'APPROVE',operationId:randomUUID(),runId:draft.id,expectedRevision:draft.revision,reviewToken:draft.reviewToken},f.db.executor);
+  const r=(await runs(owner,f.db.executor)).runs.find(r=>r.id===corrected.runId)!,operationId=randomUUID(),documentId=randomUUID();
+  const input={action:'PAYMENT_EXPORT',operationId,runId:r.id,expectedRevision:r.revision};
+  const {hash}=await import('../../lib/payroll/store'),{parseRunCommand}=await import('../../lib/payroll/model');
+  const body=Buffer.from('{"schema":"NEVORA_PAYMENT_INSTRUCTIONS_V1","instructions":[]}'),{createHash}=await import('node:crypto');
+  await f.q(`INSERT INTO payroll_documents(workspace_id,id,run_id,employee_id,kind,filename,sha256,content,payload)
+    SELECT workspace_id,$2,id,NULL,'PAYMENT_INSTRUCTIONS','historical-fictional.json',$3,$4,'{}'::jsonb FROM payroll_runs WHERE id=$1`,[r.id,documentId,createHash('sha256').update(body).digest('hex'),body]);
+  await f.q(`INSERT INTO payroll_command_receipts(workspace_id,actor_id,operation_id,command_hash,payload)
+    SELECT workspace_id,$2,$3,$4,$5 FROM payroll_runs WHERE id=$1`,[r.id,owner.employee.id,operationId,hash(parseRunCommand(input)),{...input,revision:r.revision,documentId}]);
+  await expect(command(owner,input,f.db.executor)).rejects.toThrow('CORRECTION_PAYMENT_EXPORT_UNAVAILABLE');
+  await expect(receipt(owner,operationId,f.db.executor)).rejects.toThrow('CORRECTION_PAYMENT_EXPORT_UNAVAILABLE');
+  await expect(document(owner,documentId,f.db.executor)).rejects.toThrow('DOCUMENT_UNAVAILABLE');
+  expect(await f.q('SELECT count(*)::integer n FROM payroll_documents WHERE id=$1',[documentId])).toEqual([{n:1}]);
 });
 it("own statements link a published correction to the statement it replaced, and name nobody else's", async () => {
   const seeded = await seedPayrollFixture(f.db.executor, { published: true });
