@@ -35,6 +35,7 @@ export function ManagementCloseForm({timeEntryId,actorId,timeZone,recoveryScope,
    if(!active)return;
    const next=state.snapshot;current.current=next;setView(next);
    if(next?.state==='ready'){
+    setMessage(previous=>previous==='Checking current punch…'||previous==='Checking the new punch…'?'':previous);
     const sourceHash='closed'in next?'closed':next.sourceHash;
     if(last.current&&(last.current.authority!==next.authority||last.current.sourceHash!==sourceHash)){clearDraft();if(last.current.authority!==next.authority){invalidateInFlight();running.current=false;setPhase(pending.current?'unknown':'idle');}}
     last.current={authority:next.authority,sourceHash};
