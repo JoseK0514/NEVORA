@@ -10,6 +10,7 @@ import {mutationTransaction,readTransaction} from '../data/transaction-compositi
 import {assertOperationalAccess,operationalScopeStatements,isOperationalAuthorizationError} from '../company-access/operational-scope.server';
 import type {ManagementCloseCommand,ManagementCloseContext,ManagementCloseReceipt,ManagementCloseResult} from './contracts';
 import {parseManagementCloseCommand} from './validation';
+import {managementRecoveryScope} from './recovery-scope.server';
 
 type Access=Awaited<ReturnType<typeof assertOperationalAccess>>;
 type Target={employeeId:string;locationId:string;primaryLocationId:string};
@@ -51,8 +52,9 @@ export async function readManagementCloseContext(proof:SessionMutationProof,time
     const row=rows[prefix.length]?.[0] as {closed:boolean;timeEntryId:string;employeeName:string;locationName:string;clockInAt:string;openBreakStartedAt:string|null;sourceHash:string}|undefined;
     const validForMs=Math.min(15000,access.validForMs-(Date.now()-Date.parse(access.observedAt)));
     if(!row||validForMs<=0||!row.sourceHash)return {state:'unavailable',reason:'access_denied'};
-    if(row.closed)return {state:'closed'};
-    return {state:'ready',observedAt:access.observedAt,target:{timeEntryId:row.timeEntryId,employeeName:row.employeeName,locationName:row.locationName,clockInAt:row.clockInAt,openBreakStartedAt:row.openBreakStartedAt},sourceHash:row.sourceHash,authority:intent(proof,access),validForMs};
+    const recoveryScope=managementRecoveryScope(access.workspace.id);
+    if(row.closed)return {state:'closed',observedAt:access.observedAt,authority:intent(proof,access),validForMs,recoveryScope};
+    return {state:'ready',observedAt:access.observedAt,recoveryScope,target:{timeEntryId:row.timeEntryId,employeeName:row.employeeName,locationName:row.locationName,clockInAt:row.clockInAt,openBreakStartedAt:row.openBreakStartedAt},sourceHash:row.sourceHash,authority:intent(proof,access),validForMs};
   } catch(error){return {state:'unavailable',reason:denied(error)?'access_denied':['42P01','42883'].includes(code(error))?'schema_missing':'read_failed'};}
 }
 

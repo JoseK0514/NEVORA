@@ -5,7 +5,7 @@ import {afterEach, beforeEach, expect, it, vi} from 'vitest';
 const fixture=vi.hoisted(()=>({role:'MANAGER',denied:false,company:vi.fn(),observation:{state:'ready',data:{private:'never-client'},authority:'fictional-company',observedAt:'2026-10-20T12:00:00Z',validForMs:15000}}));
 vi.mock('@/lib/auth/session',()=>({requireSession:async()=>({id:'actor',role:fixture.role}),requireSessionMutationProof:async()=>({employee:{id:'actor',role:fixture.role},sessionTokenHash:'a'.repeat(64)})}));
 vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async()=>{fixture.company();return fixture.denied?{state:'unavailable',reason:'access_denied'}:fixture.observation;}}));
-vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({timeZone:'America/Puerto_Rico'})}));
+vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({id:'fictional-workspace',timeZone:'America/Puerto_Rico'})}));
 vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:ReactNode;unavailable?:ReactNode})=><section data-company-frame="">{children??unavailable}</section>}));
 vi.mock('@/components/timecards',()=>({Timecards:({initialPeriod,manager,today}:{initialPeriod:{startDate:string;endDate:string};manager:boolean;today?:string})=><p data-manager={manager} data-today={today}>{initialPeriod.startDate} / {initialPeriod.endDate}</p>}));
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';

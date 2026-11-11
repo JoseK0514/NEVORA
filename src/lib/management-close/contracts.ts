@@ -25,9 +25,10 @@ export type ManagementCloseResult = ManagementCloseReceipt
 export type ManagementCloseContext = {
   state: 'ready';
   observedAt: string;
+  recoveryScope: string;
   target: { timeEntryId: string; employeeName: string; locationName: string; clockInAt: string; openBreakStartedAt: string | null };
   sourceHash: string;
   authority: string;
   validForMs: number;
-} | { state: 'closed' }
+} | { state: 'closed';observedAt:string;authority:string;validForMs:number;recoveryScope:string }
   | { state: 'unavailable'; reason: 'access_denied' | 'read_failed' | 'schema_missing' };
