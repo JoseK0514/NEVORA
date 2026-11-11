@@ -6,7 +6,7 @@ import {prioritizeUbuntuArchive} from './ci-ubuntu-mirrors.mjs';
 
 // This collects runner setup evidence. It neither repairs networking nor accepts a release.
 export function sanitize(value,limit=8192){
- let text=String(value??'').replace(/\x1b\[[0-?]*[ -/]*[@-~]/g,'').replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g,'');
+ let text=String(value??'').replace(/\x1b\[[0-?]*[ -/]*[@-~]/g,'').replace(/[\x00-\x08\x0b-\x1f\x7f]/g,'');
  text=text.replace(/https?:\/\/[^\s"'<>]+/gi,raw=>{
   try{
    const url=new URL(raw);url.username='';url.password='';
@@ -16,7 +16,9 @@ export function sanitize(value,limit=8192){
   }catch{return '[REDACTED URL]';}
  });
  text=text.replace(/^(\s*(?:authorization|proxy-authorization|cookie|set-cookie)\s*:).*$/gim,'$1 [REDACTED]');
- text=text.replace(/\b([\w-]*(?:token|password|secret|credential)[\w-]*\s*[=:])[^\s,;]+/gi,'$1[REDACTED]');
+ // Credential values may contain whitespace, quotes or truncated/escaped quotes.
+ // Keep the key, redact the rest of that line, and preserve other diagnostic lines.
+ text=text.replace(/\b([\w-]*(?:token|password|secret|credential|api[-_]?key)[\w-]*[ \t]*[=:][ \t]*)[^\r\n]*/gi,'$1[REDACTED]');
  text=text.replace(/\b(?:gh[pousr]_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+)\b/g,'[REDACTED]');
  return text.length>limit?text.slice(0,limit)+'\n[OUTPUT TRUNCATED]':text;
 }
@@ -85,7 +87,9 @@ export function runDiagnostic(options={}){
   }
   for(const base of urls){
    command('head:'+new URL(base).hostname,'/usr/bin/curl',[
-    '--head','--fail','--silent','--show-error','--connect-timeout','4','--max-time','8',base+'dists/noble/InRelease'
+    '--head','--fail','--silent','--show-error','--output','/dev/null',
+    '--write-out','http_status=%{http_code}\nremote_ip=%{remote_ip}\ntime_namelookup=%{time_namelookup}\ntime_connect=%{time_connect}\ntime_appconnect=%{time_appconnect}\ntime_total=%{time_total}\ntls_verify_result=%{ssl_verify_result}\n',
+    '--connect-timeout','4','--max-time','8',base+'dists/noble/InRelease'
    ],10);
   }
   const aptStatus=command('strict-signed-apt-update','/usr/bin/apt-get',['--error-on=any','update'],180);

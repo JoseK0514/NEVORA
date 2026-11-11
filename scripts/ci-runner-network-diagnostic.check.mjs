@@ -34,6 +34,43 @@ test('redacts credentials, query/fragment values, auth headers and controls befo
  assert.match(output,/archive\.ubuntu\.com/);assert.ok(sanitize('x'.repeat(100000)).length<=9000);
 });
 
+test('redacts spaced assignments and complete single/double quoted values while retaining other diagnostic lines',()=>{
+ const cases=[
+  ['PASSWORD = fictional-spaced-secret','PASSWORD = [REDACTED]'],
+  ['TOKEN="fictional quoted secret"','TOKEN=[REDACTED]'],
+  ["API_SECRET = 'fictional single quoted secret'","API_SECRET = [REDACTED]"],
+  ['credential\t:\t"fictional tab separated secret"','credential\t:\t[REDACTED]'],
+  ['ACCESS_TOKEN = "fictional \\"escaped quote\\" secret"','ACCESS_TOKEN = [REDACTED]'],
+  ["password = 'fictional \\'escaped quote\\' secret'","password = [REDACTED]"],
+  ['TOKEN="fictional unterminated quoted secret','TOKEN=[REDACTED]'],
+  ["PASSWORD = 'fictional unterminated single secret","PASSWORD = [REDACTED]"],
+  ['X-Token: fictional unquoted header secret','X-Token: [REDACTED]'],
+  ['X-Api-Key : fictional unquoted api header secret','X-Api-Key : [REDACTED]'],
+  ["API_KEY = 'fictional quoted api secret'",'API_KEY = [REDACTED]'],
+ ];
+ for(const [input,expected] of cases){
+  const output=sanitize('DNS archive.ubuntu.com failed; '+input+'; discarded inline data\nstatus=100');
+  assert.equal(output,'DNS archive.ubuntu.com failed; '+expected+'\nstatus=100');
+  assert.ok(!output.includes('fictional'),output);
+ }
+ assert.equal(sanitize('TOKEN=\nDNS archive.ubuntu.com failed; status=100'),'TOKEN=[REDACTED]\nDNS archive.ubuntu.com failed; status=100');
+});
+
+test('failure receipts redact spaced quoted credentials without changing failure evidence or output bounds',()=>{
+ const f=fixture({run:c=>({status:c.file==='/usr/bin/apt-get'?100:0,
+  stdout:'Temporary failure resolving archive.ubuntu.com\nTOKEN = "fictional quoted stdout secret"; discarded inline data\nstatus=100',
+  stderr:"PASSWORD : 'fictional quoted stderr secret'\nDNS failed"})});
+ assert.equal(runDiagnostic(f.options).exitCode,100);
+ const receipt=f.receipt();assert.equal(receipt.probes.length,10);assert.equal(receipt.probes.at(-1).status,100);
+ assert.ok(!JSON.stringify(receipt).includes('fictional'));assert.equal(receipt.result,'FAILURE_OBSERVED');
+ for(const probe of receipt.probes){
+  assert.match(probe.stdout,/Temporary failure resolving archive\.ubuntu\.com/);
+  assert.match(probe.stdout,/status=100/);assert.match(probe.stderr,/DNS failed/);
+  assert.ok(probe.stdout.length<=9000&&probe.stderr.length<=9000);
+ }
+ assert.ok(sanitize('TOKEN = "'+'fictional '.repeat(15000)+'"; status=100').length<=9000);
+});
+
 test('validates before changing mirrors and retains a sanitized refusal without running probes',()=>{
  const f=fixture({source:mirrors.replace('http://azure.archive.ubuntu.com','http://alice:fictional-password@unknown.invalid?token=fictional-query')});
  const result=runDiagnostic(f.options);assert.equal(result.exitCode,1);
@@ -57,6 +94,18 @@ test('Azure and AWS retain only the existing three mirrors and bound every root-
   assert.ok(!commands.some(c=>c.args.some(v=>/--insecure|--resolve|--noproxy|--ipv4|--allow-unauthenticated|install/.test(v))));
   assert.match(f.files.get('/etc/apt/apt-mirrors.txt'),/^https:\/\/archive\.ubuntu\.com\/ubuntu\/\tpriority:1/);
   assert.equal(receipt.identity.releaseAcceptance,false);
+ }
+});
+
+test('HEAD discards all response headers and emits only fixed allowlisted transport metadata',()=>{
+ const f=fixture();assert.equal(runDiagnostic(f.options).exitCode,0);
+ const heads=f.calls.filter(c=>c.file==='/usr/bin/curl');assert.equal(heads.length,3);
+ for(const command of heads){
+  const args=command.args;assert.ok(args.includes('--head'));
+  assert.equal(args[args.indexOf('--output')+1],'/dev/null');
+  const format=args[args.indexOf('--write-out')+1];
+  assert.deepEqual([...format.matchAll(/%\{([^}]+)\}/g)].map(m=>m[1]),['http_code','remote_ip','time_namelookup','time_connect','time_appconnect','time_total','ssl_verify_result']);
+  assert.ok(!args.some(a=>['--dump-header','--verbose','--trace','--insecure','--resolve','--noproxy','--ipv4'].includes(a)));
  }
 });
 
