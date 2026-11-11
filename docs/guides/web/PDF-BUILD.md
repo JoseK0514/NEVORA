@@ -67,3 +67,7 @@ inspect extracted text and rendered pages for readable fonts, source markers,
 table/list continuation, clipping, page numbering and links before committing
 the generated bundle. A passing structural/hash check does not replace that
 visual review.
+
+PDF repository references open the exact source commit on GitHub. The reader
+needs access to the private repository; standalone PDF text is readable offline.
+The builder fetches nothing while rendering these links.

@@ -242,7 +242,7 @@ function safeLink(value) {
   }
   return value;
 }
-function inline(markdown, depth = 0) {
+function inline(markdown, depth = 0, linkBase) {
   if (depth > 12) return escapeHtml(markdown);
   let result = '';
   for (let index = 0; index < markdown.length;) {
@@ -251,14 +251,15 @@ function inline(markdown, depth = 0) {
     if (code) {result += `<code>${escapeHtml(code[2])}</code>`; index += code[0].length; continue;}
     const link = /^\[([^\]\n]+)\]\(([^\n)]*)\)/.exec(tail);
     if (link) {
-      const href = safeLink(link[2]);
-      result += href ? `<a href="${escapeHtml(href)}" rel="noreferrer">${inline(link[1], depth + 1)}</a>` : inline(link[1], depth + 1);
+      const safeHref = safeLink(link[2]);
+      const href = safeHref && linkBase ? new URL(safeHref, linkBase).href : safeHref;
+      result += href ? `<a href="${escapeHtml(href)}" rel="noreferrer">${inline(link[1], depth + 1, linkBase)}</a>` : inline(link[1], depth + 1, linkBase);
       index += link[0].length; continue;
     }
     const strong = /^(\*\*|__)(?=\S)([\s\S]*?\S)\1/.exec(tail);
-    if (strong) {result += `<strong>${inline(strong[2], depth + 1)}</strong>`; index += strong[0].length; continue;}
+    if (strong) {result += `<strong>${inline(strong[2], depth + 1, linkBase)}</strong>`; index += strong[0].length; continue;}
     const emphasis = /^(\*|_)(?=\S)([^\n]*?\S)\1/.exec(tail);
-    if (emphasis) {result += `<em>${inline(emphasis[2], depth + 1)}</em>`; index += emphasis[0].length; continue;}
+    if (emphasis) {result += `<em>${inline(emphasis[2], depth + 1, linkBase)}</em>`; index += emphasis[0].length; continue;}
     if (tail[0] === '\\' && tail.length > 1 && /[\\`*_[\]{}()#+.!|>-]/.test(tail[1])) {result += escapeHtml(tail[1]); index += 2; continue;}
     result += escapeHtml(markdown[index++]);
   }
@@ -267,7 +268,7 @@ function inline(markdown, depth = 0) {
 const listItem = line => /^\s{0,3}([-+*]|\d+\.)\s+(.+)$/.exec(line);
 const tableDivider = line => /^\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(line);
 function cells(line) {return line.trim().replace(/^\|/, '').replace(/\|$/, '').split(/(?<!\\)\|/).map(value => value.trim());}
-export function renderMarkdown(markdown) {
+export function renderMarkdown(markdown, linkBase) {
   ensure(typeof markdown === 'string' && markdown.trim().length > 0, 'Empty guide Markdown');
   const lines = markdown.replace(/\r\n?/g, '\n').split('\n');
   const output = [];
@@ -282,11 +283,11 @@ export function renderMarkdown(markdown) {
       output.push(`<pre><code>${escapeHtml(code.join('\n'))}</code></pre>`); continue;
     }
     const heading = /^(#{1,6})\s+(.+?)(?:\s+#+)?$/.exec(line);
-    if (heading) {output.push(`<h${heading[1].length}>${inline(heading[2])}</h${heading[1].length}>`); index++; continue;}
+    if (heading) {output.push(`<h${heading[1].length}>${inline(heading[2], 0, linkBase)}</h${heading[1].length}>`); index++; continue;}
     if (index + 1 < lines.length && line.includes('|') && tableDivider(lines[index + 1])) {
       const headings = cells(line); index += 2; const rows = [];
       while (index < lines.length && lines[index].trim() && lines[index].includes('|')) rows.push(cells(lines[index++]));
-      output.push(`<table><thead><tr>${headings.map(cell => `<th>${inline(cell)}</th>`).join('')}</tr></thead><tbody>${rows.map(row => `<tr>${headings.map((_, column) => `<td>${inline(row[column] ?? '')}</td>`).join('')}</tr>`).join('')}</tbody></table>`); continue;
+      output.push(`<table><thead><tr>${headings.map(cell => `<th>${inline(cell, 0, linkBase)}</th>`).join('')}</tr></thead><tbody>${rows.map(row => `<tr>${headings.map((_, column) => `<td>${inline(row[column] ?? '', 0, linkBase)}</td>`).join('')}</tr>`).join('')}</tbody></table>`); continue;
     }
     const item = listItem(line);
     if (item) {
@@ -296,27 +297,30 @@ export function renderMarkdown(markdown) {
         if (!next || /^\d/.test(next[1]) !== ordered) break;
         const parts = [next[2]]; index++;
         while (index < lines.length && /^\s{2,}\S/.test(lines[index]) && !listItem(lines[index])) parts.push(lines[index++].trim());
-        items.push(`<li>${inline(parts.join(' '))}</li>`);
+        items.push(`<li>${inline(parts.join(' '), 0, linkBase)}</li>`);
       }
       output.push(`<${tag}>${items.join('')}</${tag}>`); continue;
     }
     if (/^\s*>/.test(line)) {
       const parts = [];
       while (index < lines.length && /^\s*>/.test(lines[index])) parts.push(lines[index++].replace(/^\s*>\s?/, ''));
-      output.push(`<blockquote>${inline(parts.join(' '))}</blockquote>`); continue;
+      output.push(`<blockquote>${inline(parts.join(' '), 0, linkBase)}</blockquote>`); continue;
     }
     if (/^\s*(?:-{3,}|\*{3,}|_{3,})\s*$/.test(line)) {output.push('<hr>'); index++; continue;}
     const paragraph = [line.trim()]; index++;
     while (index < lines.length && lines[index].trim() && !/^(#{1,6})\s|^\s{0,3}(`{3,}|~{3,})|^\s*>/.test(lines[index]) && !listItem(lines[index]) && !(lines[index].includes('|') && tableDivider(lines[index + 1] ?? ''))) paragraph.push(lines[index++].trim());
-    output.push(`<p>${inline(paragraph.join(' '))}</p>`);
+    output.push(`<p>${inline(paragraph.join(' '), 0, linkBase)}</p>`);
   }
   return output.join('\n');
 }
 
 export function renderGuideHtml({guide, markdown, date, sourceSha, applicationHash, assets}) {
+  ensure(/^[a-f0-9]{40}$/.test(sourceSha), 'Invalid manual source SHA');
+  const path = repoRelative(guide.markdown.path);
+  const linkBase = `https://github.com/JoseK0514/Fuel-Scheduler-/blob/${sourceSha}/${path.split('/').map(encodeURIComponent).join('/')}`;
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; font-src data:; img-src data:; connect-src 'none'; script-src 'none'"><title>${escapeHtml(guide.title)}</title><style>
 @font-face{font-family:Inter;src:url(data:font/ttf;base64,${assets.inter});font-weight:100 900}
 @font-face{font-family:JetBrains;src:url(data:font/ttf;base64,${assets.mono});font-weight:100 900}
 @page{size:A4;margin:19mm 17mm 23mm}*{box-sizing:border-box}html{print-color-adjust:exact;-webkit-print-color-adjust:exact}body{margin:0;color:#161C1B;background:white;font:10.5pt/1.48 Inter,sans-serif}header{border-bottom:1px solid #E3DFD8;padding:0 0 12pt;margin-bottom:16pt}header img{display:block;width:104px;height:auto}header p{color:#5F625E;font-size:8.5pt;margin:9pt 0 0}.qualification{background:#F7F6F3;border-left:3px solid #0B6E69;padding:10pt 12pt;margin:0 0 20pt;font-size:8.5pt;break-inside:avoid}.qualification p{margin:3pt 0}.source{font-family:JetBrains,monospace;font-size:7.4pt;overflow-wrap:anywhere}h1,h2,h3,h4,h5,h6{line-height:1.2;break-after:avoid;overflow-wrap:anywhere}h1{font-size:25pt;font-weight:600;letter-spacing:-.025em;margin:0 0 15pt}h2{font-size:15.5pt;font-weight:600;margin:20pt 0 8pt;padding-top:3pt}h3{font-size:12pt;margin:17pt 0 7pt}p{margin:0 0 8pt;orphans:3;widows:3}li{margin:0 0 6pt;orphans:3;widows:3}ul,ol{padding-left:19pt;margin:0 0 12pt}a{color:#0B6E69;text-decoration:underline;overflow-wrap:anywhere}strong{font-weight:650}code{font-family:JetBrains,monospace;font-size:.83em;overflow-wrap:anywhere;background:#F7F6F3}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#F7F6F3;border:1px solid #E3DFD8;padding:10pt;margin:12pt 0;font-size:9pt;line-height:1.5}pre code{background:none}table{border-collapse:collapse;width:100%;table-layout:fixed;margin:12pt 0 17pt;font-size:9.2pt;line-height:1.45}thead{display:table-header-group}tr{break-inside:avoid}th,td{text-align:left;vertical-align:top;padding:8pt;border-bottom:1px solid #E3DFD8;overflow-wrap:anywhere}th{background:#F7F6F3;font-weight:650}blockquote{border-left:2px solid #0B6E69;margin:12pt 0;padding:6pt 12pt;color:#5F625E}hr{border:0;border-top:1px solid #E3DFD8;margin:18pt 0}
-</style></head><body><header><img width="104" height="24" alt="NEVORA" src="data:image/png;base64,${assets.wordmark}"><p>Web guide · source-qualified distribution</p></header><section class="qualification"><p><strong>Prepared ${escapeHtml(date)} · ${escapeHtml(guide.id)}</strong></p><p>${escapeHtml(SCOPE)}</p><p class="source">Source ${escapeHtml(sourceSha)}</p><p class="source">Application ${escapeHtml(applicationHash)}</p></section><main>${renderMarkdown(markdown)}</main></body></html>`;
+</style></head><body><header><img width="104" height="24" alt="NEVORA" src="data:image/png;base64,${assets.wordmark}"><p>Web guide · source-qualified distribution</p></header><section class="qualification"><p><strong>Prepared ${escapeHtml(date)} · ${escapeHtml(guide.id)}</strong></p><p>${escapeHtml(SCOPE)}</p><p class="source">Source ${escapeHtml(sourceSha)}</p><p class="source">Application ${escapeHtml(applicationHash)}</p></section><main>${renderMarkdown(markdown, linkBase)}</main></body></html>`;
 }
