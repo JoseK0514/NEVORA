@@ -21,7 +21,7 @@ import { createTimeOffRequest } from './self-service-api';
 import { createSwapProposal, respondToSwap, approveSwapExchange, createCoverageOffer, claimCoverage, approveCoverageExchange, denyExchange, cancelExchange } from './shift-change-api';
 import { createCallout, approveCalloutAndOpenCoverage, denyCallout, cancelPendingCallout } from './shift-change-api';
 import { terminatePortalSession, reconcilePendingInstallation, type LogoutDeps } from '../../lib/notifications/logout';
-import { CLEANUP_COOKIE, INSTALLATION_COOKIE, openCleanupReceipt, sealCleanupReceipt, sealInstallationProof, encryptSubscriptionMaterial } from '../../lib/notifications/installation';
+import { CLEANUP_COOKIE, INSTALLATION_COOKIE, openCleanupReceipt, sealCleanupReceipt, sealInstallationProof, encryptSubscriptionMaterial, decryptSubscriptionMaterial } from '../../lib/notifications/installation';
 import { readNotificationConfig as readRuntimeConfig } from '../../lib/notifications/config';
 import { replaceWeeklyAvailability } from './self-service-api';
 import { runDispatch, type WorkerDeps } from '../../lib/notifications/worker';
@@ -182,6 +182,24 @@ describe('actual ordered publication and request SQL', () => {
 });
 
 describe('actual enrollment, materialization and leases', () => {
+  it('rewraps stored legacy material by exact ciphertext/generation CAS without changing consent, and never revives a detached device',async()=>{
+    const owned=await enroll('key-rotation'),oldKey=Buffer.alloc(32,31),newKey=Buffer.alloc(32,47);
+    const ring={active:{id:'new-key',key:newKey},previous:{id:'old-key',key:oldKey},legacyKeyId:'old-key'};
+    const material={endpoint:'https://fcm.googleapis.com/fcm/send/fictional-key-rotation',keys:{p256dh:'fictional',auth:'fictional'},expirationTime:null};
+    const legacy=encryptSubscriptionMaterial(material,oldKey,owned);
+    await sql('UPDATE push_subscriptions SET encrypted_material=$1 WHERE installation_hash=$2',[legacy,owned.installationHash]);
+    const [before]=await sql('SELECT * FROM push_subscriptions WHERE installation_hash=$1',[owned.installationHash]);
+    const migrated=encryptSubscriptionMaterial(decryptSubscriptionMaterial(legacy,ring,owned),ring,owned);
+    const cas=()=>sql(`UPDATE push_subscriptions SET encrypted_material=$1 WHERE installation_hash=$2 AND environment=$3 AND employee_id=$4 AND generation=$5 AND status='active' AND encrypted_material=$6 RETURNING id`,[migrated,owned.installationHash,owned.environment,owned.employeeId,owned.generation,legacy]);
+    expect(await cas()).toHaveLength(1);
+    const [after]=await sql('SELECT * FROM push_subscriptions WHERE installation_hash=$1',[owned.installationHash]);
+    expect(after).toEqual({...before,encrypted_material:migrated});
+    expect(decryptSubscriptionMaterial(String(after.encrypted_material),{active:ring.active},owned)).toEqual(material);
+    expect(await cas()).toHaveLength(0);
+    expect(await sqlSubscriptionRepository(db).detach(owned)).toEqual({state:'complete'});
+    expect(await cas()).toHaveLength(0);
+    expect((await sql('SELECT status,encrypted_material FROM push_subscriptions WHERE installation_hash=$1',[owned.installationHash]))[0]).toEqual({status:'detached',encrypted_material:null});
+  });
   it('foreign_installation_is_not_inherited', async () => {
     const enrolled = await enroll();
     expect(await sqlSubscriptionRepository(db).enroll({ ...enrolled, employeeId: 'QA-F', sessionHash: sessionB, expectedGeneration: enrolled.generation })).toEqual({ state: 'conflict' });

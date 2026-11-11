@@ -2,7 +2,8 @@ import {workspaceRuntimeEnvironment} from '../workspace-routing/runtime-config.s
 import { createHash } from 'node:crypto';
 import { neonNotificationExecutor } from '../data/notification-transactions';
 import { sqlSubscriptionRepository } from '../data/push-subscriptions';
-import { decodePushKey, readNotificationConfig } from './config';
+import { readNotificationConfig } from './config';
+import {subscriptionProtection} from './keyring';
 import { CLEANUP_COOKIE, INSTALLATION_COOKIE, MAX_CLEANUP_REVOCATIONS, MAX_CLEANUP_RECEIPT_BYTES, createInstallationProof, openCleanupReceipt, readInstallationProof, sealCleanupReceipt, sealInstallationProof, type CookieReader } from './installation';
 import type { CleanupResult, InstallationProof, PushRuntimeConfig, InstallationRecord, SubscriptionRepository, VerifiedCleanupReceipt } from './types';
 export type CookieWriter = {
@@ -123,7 +124,7 @@ export async function terminatePortalSession(input: {
     }
 }
 export function createLogoutDeps(config: PushRuntimeConfig): LogoutDeps {
-    const key = decodePushKey(config.subscriptionEncryptionKey, 32);
+    const key = subscriptionProtection(config);
     const executor = neonNotificationExecutor();
     return {
         clock: () => new Date(), secureCookies: config.portalOrigin.startsWith('https:') || process.env.NODE_ENV === 'production',
@@ -140,7 +141,7 @@ export async function reconcilePendingInstallation(cookies: CookieReaderWriter, 
     const pending = cookies.get(CLEANUP_COOKIE)?.value;
     if (!pending)
         return COMPLETE;
-    const key = decodePushKey(config.subscriptionEncryptionKey, 32);
+    const key = subscriptionProtection(config);
     if (!key)
         return PENDING;
     const proof = readInstallationProof(cookies, key, config.environment);
@@ -201,7 +202,7 @@ export async function prepareInstallationForAccount(employeeId: string, cookies:
         return PENDING;
     if (!cookies.get(INSTALLATION_COOKIE))
         return COMPLETE;
-    const key = decodePushKey(config.subscriptionEncryptionKey, 32);
+    const key = subscriptionProtection(config);
     if (!key) {
         retainPending(cookies, deps);
         return PENDING;
