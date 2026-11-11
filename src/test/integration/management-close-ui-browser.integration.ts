@@ -48,6 +48,7 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     const start=page.getByRole('button',{name:'Close open punch',exact:true});await start.focus();await page.keyboard.press('Enter');
     const end=page.getByLabel('Confirmed end time (America/Puerto_Rico)',{exact:true}),reason=page.getByLabel('Reason for closing',{exact:true});await end.waitFor();
     expect(await end.inputValue()).toBe('');expect(await reason.inputValue()).toBe('');expect(await end.evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);
+    expect(await page.getByText('Checking current punch…',{exact:true}).count()).toBe(0);
     expect(await page.getByRole('button',{name:'Record close',exact:true}).isDisabled()).toBe(true);
     if(engine==='chromium'&&actor==='QAOWNER')await page.getByText('The open break ends at the same selected time.',{exact:true}).waitFor();
     // The existing page and form both retire private drafts on a real browser lifecycle event.
