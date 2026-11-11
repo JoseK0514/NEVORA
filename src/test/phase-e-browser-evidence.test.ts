@@ -8,6 +8,11 @@ import { afterEach, expect, it } from 'vitest';
 const cli = resolve('scripts/phase-e-browser-evidence.mjs');
 const owned = resolve('scripts/phase-e-owned.mjs');
 const suites = ['home', 'communications', 'calendar', 'navigation', 'attention'];
+const leafPlan = [
+  { suite: 'home', engine: 'chromium', key: 'home-chromium' },
+  { suite: 'home', engine: 'webkit', key: 'home-webkit' },
+  ...suites.slice(1).map(suite => ({ suite, engine: undefined, key: suite })),
+];
 const widths = [320, 375, 390, 430, 768, 1024, 1440];
 const scratch: string[] = [];
 const hash = (value: string) => createHash('sha256').update(value).digest('hex');
@@ -30,24 +35,26 @@ function fixture() {
   const git = (ref: string) => execFileSync('git', ['rev-parse', ref], { cwd: source, encoding: 'utf8' }).trim();
   const checkpoint = git('HEAD'), tree = git('HEAD^{tree}');
   const custody = { checkpoint, tree, sourceClean: true, hashes: { 'src/lib/db.ts': hash(original) } };
-  const roots = suites.map((suite, index) => {
+  const roots = leafPlan.map(({ suite, engine: selectedEngine }, index) => {
     const evidence = directory(), pg = join(evidence, 'owned-postgres-fixture'), app = join(evidence, 'owned-next-fixture');
     const ownerId = String(index + 1).repeat(32), appOwnerId = `app-${suite}`;
-    const executions = ['chromium', 'webkit'].flatMap(engine => widths.map(width => ({
+    const engines = selectedEngine ? [selectedEngine] : ['chromium', 'webkit'];
+    const selection = selectedEngine ? { browserEngine: selectedEngine } : {};
+    const executions = engines.flatMap(engine => widths.map(width => ({
       suite, engine, width, status: 'passed', checks: [`fixture ${suite} ${engine} ${width}`],
     })));
     const ownershipFile = join(pg, 'ownership.json');
-    put(ownershipFile, { ownerId, source, root: pg, data: join(pg, 'data'), checkpoint, mode: 'browser', suites: [suite], started: true, closed: true, port: 54321 });
+    put(ownershipFile, { ownerId, source, root: pg, data: join(pg, 'data'), checkpoint, mode: 'browser', suites: [suite], ...selection, started: true, closed: true, port: 54321 });
     put(join(app, 'ownership.json'), { ownerId: appOwnerId, source, root: app, started: true, closed: true, sourceVerified: true, mirrorVerified: true, pid: 12345, port: 54322 });
     put(join(app, 'app/src/lib/db.ts'), adapter);
     put(join(app, 'source-manifest.json'), { checkpoint, hashes: custody.hashes, originalDbHash: hash(original), substitutedDbHash: hash(adapter), substitutedFiles: ['src/lib/db.ts'] });
     put(join(evidence, 'source-manifest.json'), custody);
-    const common = { checkpoint, tree, sourceClean: true, ownerId, ownershipFile, ownershipClosed: true, suites: [suite], status: 'passed', errors: [] };
+    const common = { checkpoint, tree, sourceClean: true, ownerId, ownershipFile, ownershipClosed: true, suites: [suite], ...selection, status: 'passed', errors: [] };
     put(join(evidence, 'browser-report.json'), { ...common, executions, appRoot: app, appOwnerId, sourceManifest: join(app, 'source-manifest.json') });
     put(join(evidence, 'owned-browser-report.json'), { ...common, mode: 'browser', results: [{
       suite, command: [process.execPath, '--import', join(source,'scripts/qa-server-context.mjs'), '--import', 'tsx', 'scripts/phase-e-browser-qa.mjs', '--suite', suite],
       exitCode: 0, checks: executions.flatMap(row => row.checks),
-      resources: ['next', 'browser-chromium', 'browser-webkit'].map((kind, i) => ({ kind, pid: 12345 + i, ppid: 12344, pgid: 12345 + i, started: 'fixture', commandHash: 'a'.repeat(64), stopped: true })),
+      resources: ['next', ...engines.map(engine => 'browser-' + engine)].map((kind, i) => ({ kind, pid: 12345 + i, ppid: 12344, pgid: 12345 + i, started: 'fixture', commandHash: 'a'.repeat(64), stopped: true })),
     }] });
     return evidence;
   });
@@ -56,9 +63,9 @@ function fixture() {
   const invoke = (args: string[], override = {}) => spawnSync(process.execPath, [cli, ...args], { cwd: source, env: { ...env, ...override }, encoding: 'utf8', timeout: 30_000 });
   function relocate() {
     return roots.map((root, index) => {
-      const target = join(artifacts, `phase-e-browser-${checkpoint}-${suites[index]}`);
+      const target = join(artifacts, `phase-e-browser-${checkpoint}-${leafPlan[index].key}`);
       // Home's second uploaded directory causes a different GitHub LCA layout.
-      const destination = index === 0 ? join(target, 'nevora-phase-e-browser-evidence') : target;
+      const destination = leafPlan[index].suite === 'home' ? join(target, 'nevora-phase-e-browser-evidence') : target;
       mkdirSync(destination, { recursive: true });
       for (const file of readdirSync(root)) {
         if (file.startsWith('owned-next-')) {
@@ -66,20 +73,20 @@ function fixture() {
           put(join(destination, file, 'source-manifest.json'), read(join(root, file, 'source-manifest.json')));
         } else cpSync(join(root, file), join(destination, file), { recursive: true });
       }
-      if (index === 0) put(join(target, 'nevora-phase-e-home-readiness-evidence', 'check-report.json'), { status: 'passed' });
+      if (leafPlan[index].suite === 'home') put(join(target, 'nevora-phase-e-home-readiness-evidence', 'check-report.json'), { status: 'passed' });
       return destination;
     });
   }
   function leaves() {
     roots.forEach((root, index) => {
-      const result = invoke(['leaf', '--suite', suites[index]], { PHASE_E_EVIDENCE_DIR: root });
+      const result = invoke(['leaf', '--suite', leafPlan[index].suite], { PHASE_E_EVIDENCE_DIR: root, PHASE_E_BROWSER_ENGINE: leafPlan[index].engine });
       expect(result.status, result.stderr).toBe(0);
     });
   }
   return { source, artifacts, output, checkpoint, roots, env, invoke, relocate, leaves };
 }
 
-it('accepts five relocated suite artifacts with 70 unique executed cells', () => {
+it('accepts six relocated leaves including both Home engines with 70 unique executed cells', () => {
   const f = fixture(); f.leaves(); f.relocate();
   const result = f.invoke(['aggregate']);
   expect(result.status, result.stderr).toBe(0);
@@ -87,6 +94,7 @@ it('accepts five relocated suite artifacts with 70 unique executed cells', () =>
   expect(report.executions).toHaveLength(70);
   expect(new Set(report.executions.map((row: { suite: string; engine: string; width: number }) => `${row.suite}/${row.engine}/${row.width}`)).size).toBe(70);
   expect(report.status).toBe('passed');
+  expect(report.leaves).toHaveLength(6);
 });
 
 it('rejects a lone suite through the unchanged default full-browser verifier', () => {
@@ -105,7 +113,7 @@ it.each(['failure', 'cancelled', 'skipped', 'neutral', 'missing', 'extra'])('rej
   expect(result.status).not.toBe(0); expect(existsSync(join(f.output, 'browser-aggregate-report.json'))).toBe(false);
 });
 
-it.each(['missing-suite', 'extra-suite', 'duplicate-suite', 'missing-cell', 'duplicate-cell', 'extra-cell', 'failed-cell', 'skipped-cell', 'empty-checks', 'sha', 'tree', 'source-hash', 'mirror-hash', 'runtime-error', 'pg-open', 'next-open', 'resource-open', 'missing-resource', 'observation-failure', 'command', 'missing-preload', 'wrong-preload', 'partial-command-checks', 'leaf-proof', 'missing-receipt', 'owner-mismatch', 'traversal', 'symlink', 'duplicate-layout'])('rejects relocated %s', mutation => {
+it.each(['missing-suite', 'extra-suite', 'duplicate-suite', 'missing-cell', 'duplicate-cell', 'extra-cell', 'failed-cell', 'skipped-cell', 'empty-checks', 'sha', 'tree', 'source-hash', 'mirror-hash', 'runtime-error', 'pg-open', 'next-open', 'resource-open', 'missing-resource', 'observation-failure', 'command', 'missing-preload', 'wrong-preload', 'partial-command-checks', 'leaf-proof', 'missing-receipt', 'owner-mismatch', 'pg-selection', 'browser-selection', 'supervisor-selection', 'leaf-selection', 'missing-home-webkit', 'traversal', 'symlink', 'duplicate-layout'])('rejects relocated %s', mutation => {
   const f = fixture(); f.leaves(); const roots = f.relocate(), root = roots[0];
   const path = join(root, 'browser-report.json'), report = read(path);
   if (mutation === 'missing-suite') rmSync(dirname(root), { recursive: true });
@@ -120,6 +128,11 @@ it.each(['missing-suite', 'extra-suite', 'duplicate-suite', 'missing-cell', 'dup
   else if (mutation === 'tree') report.tree = 'b'.repeat(40);
   else if (mutation === 'runtime-error') report.errors = ['fixture runtime error'];
   else if (mutation === 'owner-mismatch') report.ownerId = 'f'.repeat(32);
+  else if (mutation === 'browser-selection') report.browserEngine = 'webkit';
+  else if (mutation === 'pg-selection' || mutation === 'supervisor-selection' || mutation === 'leaf-selection') {
+    const file = mutation === 'pg-selection' ? 'owned-postgres-fixture/ownership.json' : mutation === 'supervisor-selection' ? 'owned-browser-report.json' : 'suite-verification-report.json';
+    const path = join(root, file); put(path, { ...read(path), browserEngine: 'webkit' });
+  } else if (mutation === 'missing-home-webkit') rmSync(dirname(roots[1]), { recursive: true });
   else if (mutation === 'traversal') report.appRoot += '/../owned-next-fixture';
   else if (mutation === 'source-hash') {
     const manifest = read(join(root, 'source-manifest.json')); manifest.hashes['src/lib/db.ts'] = '0'.repeat(64); put(join(root, 'source-manifest.json'), manifest);
@@ -176,7 +189,7 @@ it.each(['mirror', 'command', 'resource', 'error', 'next-owner', 'missing-cell']
     if (mutation === 'error') value.errors.push('fixture error');
     put(path, value);
   }
-  const result = f.invoke(['leaf', '--suite', 'home'], { PHASE_E_EVIDENCE_DIR: root });
+  const result = f.invoke(['leaf', '--suite', 'home'], { PHASE_E_EVIDENCE_DIR: root, PHASE_E_BROWSER_ENGINE: 'chromium' });
   expect(result.status).not.toBe(0);
   expect(existsSync(join(root, 'suite-verification-report.json'))).toBe(false);
 });

@@ -121,6 +121,12 @@ independent findings. Record source SHA, environment class, command, result and
 artifact identity. Local passing checks, exact-candidate CI, development
 integration, hosted acceptance and production release are separate states.
 
+Phase E Home runs in separate Chromium and WebKit CI leaves, each covering all
+seven viewport widths. The other four suites run both engines in their own
+leaves. Aggregation requires all six leaves and all 70 unique combinations;
+missing, duplicate or mismatched engine evidence fails the gate. The existing
+execution and job limits still apply.
+
 For guide changes, validate local links/evidence paths and regenerate/verify the
 distribution with its checked-in tooling. Do not relabel an older PDF or hosted
 receipt with a newer source. Keep secrets and private test content out of Git,

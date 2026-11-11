@@ -3,16 +3,21 @@ import { createHash } from 'node:crypto';
 import { lstatSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { basename, dirname, isAbsolute, join, normalize, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { assertSourceUnchanged, BROWSER_SUITES, captureSource, externalEvidence, parseSuiteArguments, selectSuites, verifyBrowserExecutions, verifyEvidence, verifySourceManifestMetadata } from './phase-e-owned.mjs';
+import { assertSourceUnchanged, BROWSER_SUITES, captureSource, externalEvidence, parseSuiteArguments, selectSuites, selectedBrowserEngines, verifyBrowserExecutions, verifyEvidence, verifySourceManifestMetadata } from './phase-e-owned.mjs';
 
 const suites = Object.keys(BROWSER_SUITES);
+const leaves = [
+  { suite: 'home', browserEngine: 'chromium', key: 'home-chromium' },
+  { suite: 'home', browserEngine: 'webkit', key: 'home-webkit' },
+  ...suites.filter(suite => suite !== 'home').map(suite => ({ suite, browserEngine: undefined, key: suite })),
+];
 const json = path => JSON.parse(readFileSync(path, 'utf8'));
 const digest = path => createHash('sha256').update(readFileSync(path)).digest('hex');
 function absolute(value) {
   assert(typeof value === 'string' && isAbsolute(value) && normalize(value) === value && !value.includes('\\'), 'Unsafe receipt path');
   return value;
 }
-function passed(report, custody, suite) {
+function passed(report, custody, suite, browserEngine) {
   assert.equal(report.checkpoint, custody.checkpoint, 'Receipt checkpoint mismatch');
   assert.equal(report.tree, custody.tree, 'Receipt tree mismatch');
   assert.equal(report.sourceClean, true, 'Missing clean source proof');
@@ -20,13 +25,15 @@ function passed(report, custody, suite) {
   assert.deepEqual(report.errors, [], 'Runtime errors');
   assert.equal(report.ownershipClosed, true, 'Unclosed ownership');
   assert.deepEqual(report.suites, [suite], 'Suite mismatch');
+  assert.equal(report.browserEngine, browserEngine, 'Browser engine report mismatch');
 }
-function validateReceipts(root, custody, suite) {
+function validateReceipts(root, custody, suite, browserEngine) {
+  const engines = selectedBrowserEngines([suite], browserEngine);
   const browser = json(join(root, 'browser-report.json'));
   const owned = json(join(root, 'owned-browser-report.json'));
-  passed(browser, custody, suite); passed(owned, custody, suite);
+  passed(browser, custody, suite, browserEngine); passed(owned, custody, suite, browserEngine);
   assert.deepEqual(json(join(root, 'source-manifest.json')), custody, 'Checkout source mismatch');
-  verifyBrowserExecutions(browser.executions, [suite]);
+  verifyBrowserExecutions(browser.executions, [suite], browserEngine);
   const pgRoot = dirname(absolute(browser.ownershipFile));
   const originalRoot = dirname(pgRoot), appRoot = absolute(browser.appRoot);
   assert.match(basename(pgRoot), /^owned-postgres-[A-Za-z0-9]+$/);
@@ -45,6 +52,7 @@ function validateReceipts(root, custody, suite) {
   assert.equal(pg.ownerId, browser.ownerId); assert.match(pg.ownerId, /^[a-f0-9]{32}$/);
   assert.equal(pg.checkpoint, custody.checkpoint); assert.equal(pg.mode, 'browser');
   assert.deepEqual(pg.suites, [suite]);
+  assert.equal(pg.browserEngine, browserEngine, 'Browser engine ownership mismatch');
   assert.equal(app.root, appRoot); assert.equal(app.ownerId, browser.appOwnerId);
   assert.equal(app.source, absolute(pg.source));
   for (const owner of [pg, app]) {
@@ -70,7 +78,8 @@ function validateReceipts(root, custody, suite) {
     assert(typeof resource.started === 'string' && resource.started.length > 0);
     assert.match(resource.commandHash, /^[a-f0-9]{64}$/);
   }
-  for (const kind of ['next', 'browser-chromium', 'browser-webkit']) assert(result.resources.some(item => item.kind === kind), 'Missing runtime kind: ' + kind);
+  for (const kind of ['next', ...engines.map(engine => 'browser-' + engine)]) assert(result.resources.some(item => item.kind === kind), 'Missing runtime kind: ' + kind);
+  assert(result.resources.every(item => !item.kind?.startsWith('browser-') || engines.some(engine => item.kind === 'browser-' + engine)), 'Unexpected browser runtime');
   assert(result.resources.some(item => item.kind === 'next' && item.pid === app.pid), 'Next process mismatch');
   const files = ['browser-report.json', 'owned-browser-report.json', 'source-manifest.json', pgFile, appFile, mirrorFile];
   return { browser, originalRoot, mirror: json(join(root, mirrorFile)), receipts: Object.fromEntries(files.map(file => [file, digest(join(root, file))])) };
@@ -92,9 +101,10 @@ function downloadedRoot(artifact) {
   }
   return artifact;
 }
-function validateLeafProof(root, custody, suite, validated) {
+function validateLeafProof(root, custody, suite, validated, browserEngine) {
   const leaf = json(join(root, 'suite-verification-report.json'));
   assert.equal(leaf.suite, suite); assert.equal(leaf.status, 'passed');
+  assert.equal(leaf.browserEngine, browserEngine, 'Browser engine leaf mismatch');
   assert.equal(leaf.checkpoint, custody.checkpoint); assert.equal(leaf.tree, custody.tree);
   assert.equal(leaf.localMirrorVerified, true); assert.equal(leaf.sourceUnchanged, true);
   assert.equal(leaf.evidenceRoot, validated.originalRoot);
@@ -102,14 +112,15 @@ function validateLeafProof(root, custody, suite, validated) {
   const expectedOwners = [basename(dirname(validated.browser.ownershipFile)), basename(validated.browser.appRoot)].sort();
   assert.deepEqual(readdirSync(root).filter(name => name.startsWith('owned-') && lstatSync(join(root, name)).isDirectory()).sort(), expectedOwners, 'Extra or missing owner receipts');
 }
-function leaf(source, custody, evidence, suite) {
+function leaf(source, custody, evidence, suite, browserEngine) {
   selectSuites('browser', suite); assert.notEqual(suite, 'all', 'Leaf requires exactly one suite');
-  verifyEvidence(evidence, 'browser', custody, suite);
-  const validated = validateReceipts(evidence, custody, suite);
+  selectedBrowserEngines([suite], browserEngine);
+  verifyEvidence(evidence, 'browser', custody, suite, browserEngine);
+  const validated = validateReceipts(evidence, custody, suite, browserEngine);
   assert.equal(validated.originalRoot, evidence);
   assertSourceUnchanged(source, custody);
   writeFileSync(join(evidence, 'suite-verification-report.json'), JSON.stringify({
-    suite, checkpoint: custody.checkpoint, tree: custody.tree, status: 'passed',
+    suite, ...(browserEngine === undefined ? {} : { browserEngine }), checkpoint: custody.checkpoint, tree: custody.tree, status: 'passed',
     localMirrorVerified: true, sourceUnchanged: true, evidenceRoot: evidence, receipts: validated.receipts,
   }, null, 2));
 }
@@ -121,22 +132,22 @@ function aggregate(source, custody, evidence) {
   const artifacts = externalEvidence(source, process.env.PHASE_E_ARTIFACTS_DIR);
   assert.notEqual(artifacts, evidence, 'Aggregate output must be separate');
   rejectLinks(artifacts);
-  const names = suites.map(suite => `phase-e-browser-${custody.checkpoint}-${suite}`);
+  const names = leaves.map(leaf => `phase-e-browser-${custody.checkpoint}-${leaf.key}`);
   assert.deepEqual(readdirSync(artifacts).sort(), [...names].sort(), 'Missing/extra suite artifacts');
-  const executions = [], leaves = [];
-  for (const [index, suite] of suites.entries()) {
+  const executions = [], verifiedLeaves = [];
+  for (const [index, { suite, browserEngine }] of leaves.entries()) {
     const root = downloadedRoot(join(artifacts, names[index]));
-    const validated = validateReceipts(root, custody, suite);
-    validateLeafProof(root, custody, suite, validated);
+    const validated = validateReceipts(root, custody, suite, browserEngine);
+    validateLeafProof(root, custody, suite, validated, browserEngine);
     verifySourceManifestMetadata(source, validated.mirror, custody.checkpoint);
     executions.push(...validated.browser.executions);
-    leaves.push({ suite, artifact: names[index], receipts: validated.receipts });
+    verifiedLeaves.push({ suite, ...(browserEngine === undefined ? {} : { browserEngine }), artifact: names[index], receipts: validated.receipts });
   }
   verifyBrowserExecutions(executions, suites);
   assertSourceUnchanged(source, custody);
   writeFileSync(join(evidence, 'browser-aggregate-report.json'), JSON.stringify({
     checkpoint: custody.checkpoint, tree: custody.tree, sourceClean: true, sourceUnchanged: true,
-    status: 'passed', errors: [], suites, executions, leaves,
+    status: 'passed', errors: [], suites, executions, leaves: verifiedLeaves,
     verification: 'Downloaded receipt and source completeness; local mirror bytes and runtime closure were verified by each leaf.',
   }, null, 2));
 }
@@ -145,10 +156,12 @@ function main() {
   assert(['leaf', 'aggregate'].includes(mode), 'Unknown browser evidence mode');
   if (mode === 'aggregate') assert.equal(args.length, 0, 'Aggregate takes no arguments');
   const suite = mode === 'leaf' ? parseSuiteArguments(args) : undefined;
+  const browserEngine = process.env.PHASE_E_BROWSER_ENGINE || undefined;
+  if (mode === 'aggregate') assert.equal(browserEngine, undefined, 'Aggregate cannot select a browser engine');
   const source = resolve(process.cwd()), custody = captureSource(source, process.env.PHASE_E_EXPECTED_SHA);
   const evidence = externalEvidence(source, process.env.PHASE_E_EVIDENCE_DIR);
   rmSync(join(evidence, mode === 'leaf' ? 'suite-verification-report.json' : 'browser-aggregate-report.json'), { force: true });
-  if (mode === 'leaf') leaf(source, custody, evidence, suite);
+  if (mode === 'leaf') leaf(source, custody, evidence, suite, browserEngine);
   else aggregate(source, custody, evidence);
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {

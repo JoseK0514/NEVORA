@@ -544,17 +544,24 @@ jobs:
           retention-days: 14
 
   phase-e-ui-suite:
-    name: phase-e-ui-suite (${{ matrix.suite }})
+    name: phase-e-ui-suite (${{ matrix.leaf }})
     runs-on: ubuntu-24.04
     timeout-minutes: 50
     strategy:
       fail-fast: false
       max-parallel: 2
       matrix:
-        suite: [home, communications, calendar, navigation, attention]
+        include:
+          - { suite: home, engine: chromium, leaf: home-chromium }
+          - { suite: home, engine: webkit, leaf: home-webkit }
+          - { suite: communications, leaf: communications }
+          - { suite: calendar, leaf: calendar }
+          - { suite: navigation, leaf: navigation }
+          - { suite: attention, leaf: attention }
     env:
       PHASE_E_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       PHASE_E_BROWSER_SUITE: ${{ matrix.suite }}
+      PHASE_E_BROWSER_ENGINE: ${{ matrix.engine }}
     steps:
       - name: Select owned evidence directory
         run: echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/nevora-phase-e-browser-evidence" >> "$GITHUB_ENV"
@@ -615,7 +622,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: phase-e-browser-${{ github.event.pull_request.head.sha || github.sha }}-${{ matrix.suite }}
+          name: phase-e-browser-${{ github.event.pull_request.head.sha || github.sha }}-${{ matrix.leaf }}
           path: |
             ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence/*.json
             ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence/*.png

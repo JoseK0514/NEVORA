@@ -5,7 +5,7 @@ import { accessSync, constants, existsSync, readFileSync, statSync, writeFileSyn
 import { homedir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER_SUITES, captureSource, ENGINES, externalEvidence, installTerminationHandlers, parseSuiteArguments, raceOwnedAbort, registerOwnedProcess, safeEnvironment, selectSuites, verifyBrowserExecutions, verifySourceManifest, WIDTHS } from './phase-e-owned.mjs';
+import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER_SUITES, captureSource, ENGINES, externalEvidence, installTerminationHandlers, parseSuiteArguments, raceOwnedAbort, registerOwnedProcess, safeEnvironment, selectSuites, selectedBrowserEngines, verifyBrowserExecutions, verifySourceManifest, WIDTHS } from './phase-e-owned.mjs';
 import { safeBrowserFailure } from './release-browser-diagnostics.mjs';
 import {navigationFetchDiagnostic,observeDocumentNavigation,observeWindowExceptions,verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
 import {observeNotificationReadWitness} from './notification-read-witness.mjs';
@@ -154,6 +154,7 @@ async function main() {
   const suite = parseSuiteArguments(process.argv.slice(2)), suites = selectSuites('browser', suite), source = resolve(process.cwd());
   assert.equal(owner.mode, 'browser', 'Browser fixture mode mismatch');
   assert.deepEqual(suites, owner.suites, 'Browser suite ownership mismatch');
+  const engines = selectedBrowserEngines(suites, owner.browserEngine);
   const custody = captureSource(source, process.env.PHASE_E_EXPECTED_SHA), evidence = externalEvidence(source, process.env.PHASE_E_EVIDENCE_DIR);
   assertSuitesPresent(source, 'browser', suites);
   const runtime = createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE ?? join(homedir(), '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'));
@@ -173,10 +174,10 @@ async function main() {
   const { createOwnedNextApp } = await import('../src/test/integration/owned-next-app.ts');
   const { seedOwnedApp } = await import('../src/test/integration/owned-app-fixture.ts');
   const { traceOwnedFixtureSeed } = await import('../src/test/integration/owned-setup-trace.ts');
-  const report = { checkpoint: custody.checkpoint, tree: custody.tree, sourceClean: true, ownerId: owner.ownerId, ownershipFile: process.env.PHASE_E_OWNERSHIP_FILE, ownershipClosed: false, suites, status: 'failed', executions: [], errors: [], runtime: { playwright: '1.62.1', axe: '4.11.0' }, launches: [], sourceManifest: undefined, limitations: ['Owned local Next/SQL mirror is not hosted verification.', 'Chromium/WebKit automation is not physical-device, screen-reader or actual-calendar-client acceptance.'] };
+  const report = { checkpoint: custody.checkpoint, tree: custody.tree, sourceClean: true, ownerId: owner.ownerId, ownershipFile: process.env.PHASE_E_OWNERSHIP_FILE, ownershipClosed: false, suites, ...(owner.browserEngine === undefined ? {} : { browserEngine: owner.browserEngine }), status: 'failed', executions: [], errors: [], runtime: { playwright: '1.62.1', axe: '4.11.0' }, launches: [], sourceManifest: undefined, limitations: ['Owned local Next/SQL mirror is not hosted verification.', 'Chromium/WebKit automation is not physical-device, screen-reader or actual-calendar-client acceptance.'] };
   const progress=[];
   const emitProgress=(cell,event,started)=>{
-    const entry=browserCellProgress(cell,event,started,Date.now(),report.executions.filter(item=>item.status==='passed').length,ENGINES.length*modules.length*WIDTHS.length);
+    const entry=browserCellProgress(cell,event,started,Date.now(),report.executions.filter(item=>item.status==='passed').length,engines.length*modules.length*WIDTHS.length);
     progress.push(entry);
     writeFileSync(join(evidence,'browser-progress-report.json'),JSON.stringify({checkpoint:custody.checkpoint,events:progress},null,2));
     console.log('[Phase E progress] '+JSON.stringify(entry));
@@ -191,7 +192,7 @@ async function main() {
     report.appOwnerId = JSON.parse(readFileSync(join(app.root, 'ownership.json'), 'utf8')).ownerId;
     verifySourceManifest(source, app.root, custody.checkpoint);
     await traceOwnedFixtureSeed(app.database.executor,seedOwnedApp,receipt=>writeFileSync(join(evidence,'fixture-setup-report.json'),JSON.stringify({checkpoint:custody.checkpoint,tree:custody.tree,...receipt},null,2)));
-    for (const engine of ENGINES) {
+    for (const engine of engines) {
       controller.signal.throwIfAborted();
       const launch = (async () => {
         const launchOptions=darwinWebKitLaunch(engine,playwright[engine].executablePath(),webkitRevisions);
@@ -247,7 +248,7 @@ async function main() {
         }
       } finally { await browser.close(); await server.close(); servers.delete(server); }
     }
-    verifyBrowserExecutions(report.executions, suites);
+    verifyBrowserExecutions(report.executions, suites, owner.browserEngine);
     assert.equal(report.errors.length, 0, 'Browser runtime/network errors recorded');
     report.status = 'passed';
   } catch (error) {

@@ -232,12 +232,21 @@ test('all-browser budget fits the existing job while single-suite and SQL budget
  assert.throws(()=>ownedExecutionTimeout('unknown','all'));
 });
 
-test('five bounded leaves retain strict current-source aggregation and unique raw artifacts',()=>{
+test('six bounded leaves retain both Home engines, strict aggregation and unique raw artifacts',()=>{
  const leaf=workflow.jobs['phase-e-ui-suite'], aggregate=workflow.jobs['phase-e-ui'];
  assert.equal(leaf.if,undefined);
- assert.deepEqual(leaf.strategy,{ 'fail-fast':false, 'max-parallel':2, matrix:{suite:['home','communications','calendar','navigation','attention']} });
+ assert.deepEqual(leaf.strategy,{ 'fail-fast':false, 'max-parallel':2, matrix:{include:[
+  {suite:'home',engine:'chromium',leaf:'home-chromium'},
+  {suite:'home',engine:'webkit',leaf:'home-webkit'},
+  {suite:'communications',leaf:'communications'},
+  {suite:'calendar',leaf:'calendar'},
+  {suite:'navigation',leaf:'navigation'},
+  {suite:'attention',leaf:'attention'},
+ ]} });
  assert.equal(leaf.env.PHASE_E_EXPECTED_SHA,'${{ github.event.pull_request.head.sha || github.sha }}');
  assert.equal(leaf.env.PHASE_E_BROWSER_SUITE,'${{ matrix.suite }}');
+ assert.equal(leaf.env.PHASE_E_BROWSER_ENGINE,'${{ matrix.engine }}');
+ assert.equal(leaf.name,'phase-e-ui-suite (${{ matrix.leaf }})');
  assert.deepEqual(aggregate.needs,['phase-e-ui-suite']);
  assert.equal(aggregate.if,'${{ always() }}');
  for(const job of [leaf,aggregate]) {
@@ -254,7 +263,7 @@ test('five bounded leaves retain strict current-source aggregation and unique ra
  assert.equal(home.length,1);assert.equal(home[0].if,"${{ matrix.suite == 'home' }}");
  const upload=leaf.steps.find(step=>step.uses?.startsWith('actions/upload-artifact@'));
  assert.equal(upload.if,'always()');
- assert.equal(upload.with.name,'phase-e-browser-${{ github.event.pull_request.head.sha || github.sha }}-${{ matrix.suite }}');
+ assert.equal(upload.with.name,'phase-e-browser-${{ github.event.pull_request.head.sha || github.sha }}-${{ matrix.leaf }}');
  assert.equal(upload.with['if-no-files-found'],'error');assert.equal(upload.with['retention-days'],14);
  for(const path of ['/*-report.json','/source-manifest.json','/owned-postgres-*/ownership.json','/owned-next-*/ownership.json','/owned-next-*/source-manifest.json']) assert(upload.with.path.includes('nevora-phase-e-browser-evidence'+path));
  assert(upload.with.path.includes('nevora-phase-e-home-readiness-evidence/*.json'));

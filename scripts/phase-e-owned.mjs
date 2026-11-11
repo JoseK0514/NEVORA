@@ -40,6 +40,11 @@ export const SQL_DATABASE_PREFIXES = Object.freeze({
 export const BROWSER_SUITES = Object.freeze(Object.fromEntries(['home', 'communications', 'calendar', 'navigation', 'attention'].map(suite => [suite, `scripts/phase-e-${suite}-browser-scenarios.mjs`])));
 export const ENGINES = Object.freeze(['chromium', 'webkit']);
 export const WIDTHS = Object.freeze([320, 375, 390, 430, 768, 1024, 1440]);
+export function selectedBrowserEngines(suites, browserEngine) {
+  if (browserEngine === undefined) return ENGINES;
+  if (!Array.isArray(suites) || suites.length !== 1 || suites[0] !== 'home' || !ENGINES.includes(browserEngine)) throw Error('Browser engine selection requires one supported Home engine');
+  return [browserEngine];
+}
 const REQUIRED_JOBS = ['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'management-review-ui', 'phase-e-postgres', 'phase-e-ui'];
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const json = path => JSON.parse(readFileSync(path, 'utf8'));
@@ -484,6 +489,8 @@ export function assertOwnedFixture(env = process.env) {
   const prefix = mode === 'sql' && Object.hasOwn(SQL_DATABASE_PREFIXES, env.PHASE_E_SQL_SUITE ?? '') ? SQL_DATABASE_PREFIXES[env.PHASE_E_SQL_SUITE] : mode === 'browser' ? 'nevora_exchange_test_' : undefined;
   const index = mode === 'sql' && Array.isArray(owner.suites) ? owner.suites.indexOf(env.PHASE_E_SQL_SUITE) : 0;
   if (!prefix || index < 0 || owner.mode !== mode || !/^[a-f0-9]{32}$/.test(env.PHASE_E_OWNER_ID) || owner.ownerId !== env.PHASE_E_OWNER_ID || owner.started !== true || owner.closed !== false || owner.port !== Number(target.port) || owner.checkpoint !== env.PHASE_E_EXPECTED_SHA || owner.source !== resolve(process.cwd()) || decodeURIComponent(target.pathname.slice(1)) !== `${prefix}e_${owner.ownerId.slice(0, 12)}_s${index}` || resolve(env.PHASE_E_OWNERSHIP_FILE) !== join(owner.root, 'ownership.json')) throw Error('Phase E ownership marker mismatch');
+  if (mode === 'browser') selectedBrowserEngines(owner.suites, owner.browserEngine);
+  else if (owner.browserEngine !== undefined) throw Error('Browser engine selection cannot alter SQL ownership');
   return owner;
 }
 export function verifySourceManifest(source, root, checkpoint) {
@@ -526,13 +533,14 @@ export function verifySourceManifestMetadata(source, manifest, checkpoint) {
   assert.deepEqual(Object.keys(manifest.hashes).sort(), [...new Set(files)], 'Source manifest mismatch: missing runtime source');
   return expectedHashes;
 }
-export function verifyBrowserExecutions(executions, suites) {
+export function verifyBrowserExecutions(executions, suites, browserEngine) {
   if (!Array.isArray(executions)) throw Error('Missing executed browser evidence');
-  for (const suite of suites) for (const engine of ENGINES) for (const width of WIDTHS) {
+  const engines = selectedBrowserEngines(suites, browserEngine);
+  for (const suite of suites) for (const engine of engines) for (const width of WIDTHS) {
     const records = executions.filter(item => item.suite === suite && item.engine === engine && item.width === width);
     if (records.length !== 1 || records[0].status !== 'passed' || !Array.isArray(records[0].checks) || !records[0].checks.length || records[0].checks.some(check => typeof check !== 'string' || !check.trim())) throw Error(`Missing/failed executed evidence: ${suite} ${engine} ${width}`);
   }
-  if (executions.length !== suites.length * ENGINES.length * WIDTHS.length) throw Error('Unexpected browser execution evidence');
+  if (executions.length !== suites.length * engines.length * WIDTHS.length) throw Error('Unexpected browser execution evidence');
 }
 export function verifyRequiredJobs(jobs) {
   for (const job of REQUIRED_JOBS) if (jobs?.[job]?.result !== 'success') throw Error('Required Phase E/D CI job did not pass: ' + job);
@@ -557,17 +565,20 @@ function verifySqlResults(results, evidence, source, suites) {
     assert.deepEqual(record.checks, verifySqlExecution(json(join(evidence, 'sql-' + suite + '.json')), source, suite), 'SQL executed case identity mismatch: ' + suite);
   }
 }
-export function verifyEvidence(evidence, kind, source, browserSuite = 'all') {
+export function verifyEvidence(evidence, kind, source, browserSuite = 'all', browserEngine) {
   if (kind !== 'browser' && browserSuite !== 'all') throw Error('Browser selector cannot alter SQL verification');
+  if (kind !== 'browser' && browserEngine !== undefined) throw Error('Browser engine selection cannot alter SQL verification');
   const report = json(join(evidence, kind + '-report.json'));
   if (report.checkpoint !== source.checkpoint || report.tree !== source.tree || report.sourceClean !== true || report.status !== 'passed' || !Array.isArray(report.errors) || report.errors.length || report.ownershipClosed !== true) throw Error('Invalid Phase E source/clean/error/ownership evidence');
   const suites = kind === 'sql' ? Object.keys(SQL_SUITES) : selectSuites('browser', browserSuite);
   assert.deepEqual(report.suites, suites, 'Mandatory Phase E suites missing');
+  assert.equal(report.browserEngine, browserEngine, 'Browser engine report mismatch');
   assert.deepEqual(json(join(evidence, 'source-manifest.json')), source, 'Phase E source manifest mismatch');
   const owner = json(report.ownershipFile);
+  assert.equal(owner.browserEngine, browserEngine, 'Browser engine ownership mismatch');
   if (owner.ownerId !== report.ownerId || owner.checkpoint !== source.checkpoint || owner.source !== resolve(process.cwd()) || owner.started !== true || owner.closed !== true || dirname(report.ownershipFile) !== owner.root || dirname(owner.root) !== evidence || !basename(owner.root).startsWith('owned-postgres-')) throw Error('Invalid Phase E ownership receipt');
   if (kind === 'browser') {
-    verifyBrowserExecutions(report.executions, suites);
+    verifyBrowserExecutions(report.executions, suites, browserEngine);
     verifySourceManifest(owner.source, report.appRoot, source.checkpoint);
     const appOwner = json(join(report.appRoot, 'ownership.json'));
     if (appOwner.ownerId !== report.appOwnerId || appOwner.source !== owner.source || appOwner.closed !== true || dirname(report.appRoot) !== evidence || !basename(report.appRoot).startsWith('owned-next-')) throw Error('Invalid Phase E application ownership receipt');
@@ -582,17 +593,21 @@ async function availablePort() {
 }
 async function runOwned(mode, suite, source, custody, evidence) {
   const suites = selectSuites(mode, suite);
+  const browserEngine = process.env.PHASE_E_BROWSER_ENGINE || undefined;
+  if (mode === 'browser') selectedBrowserEngines(suites, browserEngine);
+  else if (browserEngine !== undefined) throw Error('Browser engine selection cannot alter SQL execution');
+  const selection = browserEngine === undefined ? {} : { browserEngine };
   assertSuitesPresent(source, mode, suites);
   const bin = process.env.NEVORA_TEST_PG_BIN;
   if (!bin || !existsSync(join(bin, 'initdb')) || !existsSync(join(bin, 'pg_ctl'))) throw Error('Select an existing local PostgreSQL runtime with NEVORA_TEST_PG_BIN');
   const root = mkdtempSync(join(evidence, 'owned-postgres-')), data = join(root, 'data'), ownerId = randomBytes(16).toString('hex'), port = await availablePort();
   const ownerPath = join(root, 'ownership.json');
-  const owner = { ownerId, source, root, data, port, checkpoint: custody.checkpoint, mode, suites, started: false, closed: false };
+  const owner = { ownerId, source, root, data, port, checkpoint: custody.checkpoint, mode, suites, ...selection, started: false, closed: false };
   const writeOwner = () => writeFileSync(ownerPath, JSON.stringify(owner, null, 2), { mode: 0o600 });
   const assertOwner = () => assert.deepEqual(json(ownerPath), owner, 'Phase E ownership marker changed; refusing teardown');
   writeOwner(); writeFileSync(join(evidence, 'source-manifest.json'), JSON.stringify(custody, null, 2));
   const env = { ...safeEnvironment(), PHASE_E_EXPECTED_SHA: custody.checkpoint, PHASE_E_EVIDENCE_DIR: evidence, PHASE_E_OWNERSHIP_FILE: ownerPath, PHASE_E_OWNER_ID: ownerId, PHASE_E_MODE: mode, FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN: 'yes' };
-  const report = { checkpoint: custody.checkpoint, tree: custody.tree, sourceClean: true, ownerId, ownershipFile: ownerPath, ownershipClosed: false, suites, mode, status: 'failed', results: [], errors: [], limitations: ['Owned local foundation verification is not hosted, client or independent phase acceptance.'] };
+  const report = { checkpoint: custody.checkpoint, tree: custody.tree, sourceClean: true, ownerId, ownershipFile: ownerPath, ownershipClosed: false, suites, mode, ...selection, status: 'failed', results: [], errors: [], limitations: ['Owned local foundation verification is not hosted, client or independent phase acceptance.'] };
   let exitCode = 0;
   const controller = new AbortController();
   const removeSignals = installTerminationHandlers(() => controller.abort(Error('Owned supervisor termination signal')));
@@ -620,7 +635,8 @@ async function runOwned(mode, suite, source, custody, evidence) {
       else {
         const browser = json(join(evidence, 'browser-report.json'));
         if (browser.checkpoint !== custody.checkpoint || browser.tree !== custody.tree || browser.sourceClean !== true || browser.ownerId !== ownerId || browser.errors.length || browser.status !== 'passed' || browser.ownershipClosed !== true) throw Error('Invalid Phase E browser child evidence');
-        verifyBrowserExecutions(browser.executions, suites); record.checks = browser.executions.flatMap(item => item.checks);
+        assert.equal(browser.browserEngine, browserEngine, 'Browser child engine mismatch');
+        verifyBrowserExecutions(browser.executions, suites, browserEngine); record.checks = browser.executions.flatMap(item => item.checks);
       }
       assertOwner(); assertSourceUnchanged(source, custody);
     }
