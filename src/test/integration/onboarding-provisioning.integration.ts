@@ -33,6 +33,13 @@ it('atomically installs only canonical migrations, a pending Owner without crede
    await expect(appClient.query('SELECT token_digest FROM onboarding_owner_grants')).rejects.toMatchObject({code:'42501'});
    await expect(appClient.query('UPDATE onboarding_workspace_identity SET incarnation=2')).rejects.toMatchObject({code:'42501'});
    expect((await appClient.query("SELECT has_database_privilege(current_user,current_database(),'TEMP') AS temporary")).rows[0].temporary).toBe(false);
+   expect((await appClient.query(`SELECT has_table_privilege(current_user,'management_time_closes','SELECT') AS read,
+    has_table_privilege(current_user,'management_time_closes','INSERT') AS insert,
+    has_table_privilege(current_user,'management_time_closes','UPDATE') AS update,
+    has_table_privilege(current_user,'management_time_closes','DELETE') AS delete,
+    has_table_privilege(current_user,'management_time_closes','TRUNCATE') AS truncate,
+    has_function_privilege(current_user,'nevora_management_close_source(text,text)','EXECUTE') AS source,
+    has_function_privilege(current_user,'nevora_management_close(text,text,text,text,text,text,uuid,text,timestamptz,text,text)','EXECUTE') AS close`)).rows[0]).toEqual({read:true,insert:true,update:false,delete:false,truncate:false,source:true,close:true});
   }finally{await appClient.end();}
 
   const workerUrl=new URL(db.connectionUrl);workerUrl.username=spec.worker.name;workerUrl.password=spec.worker.password;const workerClient=new Client({connectionString:workerUrl.href});await workerClient.connect();try{
@@ -40,6 +47,10 @@ it('atomically installs only canonical migrations, a pending Owner without crede
    await expect(workerClient.query("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'OWNER-1',clock_timestamp()+interval '1 hour')",['a'.repeat(64)])).rejects.toMatchObject({code:'42501'});
    await expect(workerClient.query("UPDATE employees SET role='EMPLOYEE' WHERE id='OWNER-1'")).rejects.toMatchObject({code:'42501'});
    await expect(workerClient.query('SELECT password_hash FROM employee_credentials')).rejects.toMatchObject({code:'42501'});
+   expect((await workerClient.query(`SELECT has_table_privilege(current_user,'management_time_closes','SELECT') AS read,
+    has_table_privilege(current_user,'management_time_closes','INSERT') AS insert,
+    has_function_privilege(current_user,'nevora_management_close_source(text,text)','EXECUTE') AS source,
+    has_function_privilege(current_user,'nevora_management_close(text,text,text,text,text,text,uuid,text,timestamptz,text,text)','EXECUTE') AS close`)).rows[0]).toEqual({read:false,insert:false,source:false,close:false});
   }finally{await workerClient.end();}
   await admin.query('UPDATE onboarding_workspace_identity SET incarnation=incarnation+1');
   await expect(bootstrapPendingCompany(client,spec)).rejects.toThrow();

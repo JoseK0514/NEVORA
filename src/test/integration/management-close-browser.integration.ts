@@ -19,14 +19,14 @@ it('exercises real password cookies and management-close HTTP/SQL in an owned br
     await seedOwnedApp(app.database.executor);
     const password=await hashPassword(TEST_PASSWORD);
     for(const [id,role] of [['R10MANAGER','MANAGER'],['R10LEAD','LEAD'],['R10EMPLOYEE','EMPLOYEE']]){
-      await q("INSERT INTO employees(id,first_name,last_name,role,primary_location_id) VALUES($1,'Fictional',$1,$2,'loc-1')",[id,role]);
+      await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,'Fictional',$1,'fictional-'||$1,$2,'loc-1')",[id,role]);
       await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',[id,password]);
     }
     await assignOwnedManagerCompanyAccess(app.database.executor,'R10MANAGER');
     await q("INSERT INTO clocker_devices(id,name,location_id,active) VALUES('r10-retired-device','Retired fictional tablet','loc-1',false)");
     for(const [index,actor] of ['QAOWNER','R10MANAGER'].entries()){
       const employee='r10-target-'+index,entry='r10-browser-entry-'+index;
-      await q("INSERT INTO employees(id,first_name,last_name,role,primary_location_id,active) VALUES($1,'Unavailable','Fictional','EMPLOYEE','loc-1',false)",[employee]);
+      await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id,active) VALUES($1,'Unavailable','Fictional','fictional-'||$1,'EMPLOYEE','loc-1',false)",[employee]);
       await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES($1,$2,'loc-1','r10-retired-device',clock_timestamp()-interval '4 hours','CLOCKED_IN')",[entry,employee]);
       checks.push('Seeded isolated inactive worker and retired device for '+actor);
     }
