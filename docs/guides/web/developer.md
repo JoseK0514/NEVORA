@@ -122,3 +122,10 @@ distribution with its checked-in tooling. Do not relabel an older PDF or hosted
 receipt with a newer source. Keep secrets and private test content out of Git,
 logs and support records. See the [operations guide](operations.md) for deployment
 custody and incident boundaries.
+
+The selected SQL transports establish UTC, ISO/YMD timestamp text and READ
+COMMITTED within the owning transaction. Preserve exact microsecond version text;
+do not parse it through JavaScript Date or rewrite historical proof versions.
+Use the [timestamp contract and compatibility procedure](../../handoffs/2026-11-11-r14-timestamp-contract.md)
+when preparing a hosted upgrade. Older refused invitations require explicit
+current-Owner verification and reissue; a source merge performs no migration.

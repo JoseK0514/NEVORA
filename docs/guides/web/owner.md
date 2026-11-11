@@ -94,6 +94,18 @@ attendance or hours worked. Employees use their location's enrolled **Clocker**
 to record punches. The personal time view is not a promise of phone clock-in.
 Review Clocker recovery and any photo requirements through the Owner tools.
 
+For another person’s eligible open punch, use **Close open punch** in the
+Timecards inspector. Enter the verified company-local end time, a reason and
+the confirmation, then choose **Record close**. Read the open-break explanation
+before confirming. A later punch needs a new review. If the result is unconfirmed,
+use the original close’s recovery control instead of starting a second close.
+
+Use **Request time correction** for another employee’s entry, break or missing
+time. Check the employee, proposed local times and reason before **Send correction
+request**. A request leaves original punches unchanged. A different authorized
+reviewer must decide it; neither the employee nor the person who submitted it can
+approve or reject it. Follow current-source and finalized-period restrictions.
+
 ## Review insights and payroll
 
 **Insights** uses a selected reporting period. Verify that period and the
@@ -113,6 +125,12 @@ When payroll is enabled:
    their own published statements. Review downloads and any delivery state.
 5. For a correction, use **Fix this payroll** and review the linked replacement.
    The original approval and statements remain in history.
+
+Correction payroll does not offer payment-instruction exports. Reconcile any
+older correction instructions through the existing payment system and accountant;
+do not calculate a replacement or delta from the file. An already-generated time
+export must be recovered and reconciled rather than generated again with a new
+action. A changed export does not automatically replace a provider submission.
 
 Payment instructions, where offered, are a file. NEVORA does not transfer money;
 the employer's existing payment system handles disbursement. Do not infer bank

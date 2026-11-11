@@ -89,12 +89,25 @@ readiness only. Authenticated `/private/health` adds bounded queue/invocation
 evidence; a healthy response does not prove correct payroll or device delivery.
 An empty alert inbox is never proof of health.
 
+Web Push encryption-key changes require the separate
+[key-continuity procedure](../../handoffs/2026-11-11-r16-subscription-key-continuity.md).
+Keep old decrypt capability across every app, worker and recovery reader until
+stored subscriptions, returning installation cookies and cleanup receipts are
+qualified. A zero old-ciphertext count does not establish client continuity.
+Do not retire keys early, downgrade to an older reader after new writes, rotate
+VAPID as a substitute, or resend an uncertain provider submission.
+
+Before a hosted source/schema upgrade, follow the
+[timestamp compatibility procedure](../../handoffs/2026-11-11-r14-timestamp-contract.md).
+Some older invitations need verified Owner reissue, and pending timecards may
+need fresh review. Preserve finalized records, approved payroll and audit history.
+
 ## Alerts, incidents and public uptime
 
 The selected future failure-alert inbox is `support@thevelani.com`. Jose assigned
-himself as primary and Ilianis Soto as secondary with24/7 coverage. The
+himself as primary and Ilianis Soto as secondary with 24/7 coverage. The
 [on-call handoff](../../runbooks/renewal-and-on-call.md) records the approved
-internal acknowledgement targets:15minutes for critical incidents and1hour for
+internal acknowledgement targets: 15 minutes for critical incidents and 1 hour for
 lower-severity incidents. These are ownership/triage targets, not resolution
 guarantees or a public SLA. Verify responder
 access, actual receipt and the response process before unattended use. A support
