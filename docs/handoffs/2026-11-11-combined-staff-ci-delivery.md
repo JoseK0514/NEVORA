@@ -65,6 +65,23 @@ and all underlying candidate GitHub jobs and artifacts. After a normal
 nonforced development fast-forward, its own CI/Mobile runs must also finish.
 Any changed development head requires reconciliation and requalification.
 
+The later immutable candidate `55b927517e16d6d3b6df57cfaf31f81f183d2e25`
+passed all12,537 default tests, with zero failures and857 configured skips.
+Actual hosted onboarding job130751052954 then refused six unclassified staff
+API entrypoints before running acceptance. The fail-closed scanner is unchanged;
+each route now has an explicit CONVERTED/BOUND_APPLICATION disposition supported
+by its current-actor/proof admission and shared company-bound APP executor.
+All six inventory tests pass, including removal of each actual staff entry.
+
+CI43086178710 and Mobile43086178911 were deliberately canceled after that genuine
+integration failure; their terminal logs and metadata remain in
+`combined-delivery/superseded55b-archive/`. Local qualification stopped after its
+successful full unit child finished. Neither cancellation nor source inspection
+is acceptance. Before another immutable tag, run the actual current inventory
+and complete seven-step local onboarding acceptance, not provisioning alone.
+The next frozen-source local qualification has34 stages and derives the25
+fresh-company cases from that full acceptance instead of repeating its fixture.
+
 Main, production, native releases, hosted schema changes, paid activation, real
 notification delivery and customer-data exercises remain outside this delivery.
 The seven hosted/policy operating gates remain open; backend source delivery

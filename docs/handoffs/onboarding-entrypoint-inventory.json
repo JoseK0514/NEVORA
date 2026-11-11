@@ -4352,6 +4352,66 @@
       "status": "CONVERTED",
       "isolatedBehavior": "BOUND_CALLER",
       "reason": "R14 helper consumes only the caller-selected existing Neon driver; it neither resolves a company nor constructs a connection. Single-company executors and isolated APP/WORKER transports retain their own identity/scope guards. Its owning lazy batch applies LOCAL UTC/ISO YMD and ReadCommitted, preserves body indexes/abort, and refuses a changed final contract; trusted body SQL must preserve settings."
+    },
+    {
+      "path": "src/app/api/staff-tasks/[taskId]/route.ts",
+      "tags": [
+        "request-entrypoint",
+        "staff-tasks"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_APPLICATION",
+      "reason": "UUID task read requires current session mutation proof and staff authority, then current management or assignee/workspace/location admission and a final response fence through the shared company-bound executor. Isolated mode resolves current workspace APP transport; no caller-selected connection."
+    },
+    {
+      "path": "src/app/api/staff-tasks/commands/route.ts",
+      "tags": [
+        "request-entrypoint",
+        "staff-tasks"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_APPLICATION",
+      "reason": "Same-origin bounded JSON command requires current session proof, staff authority and exact operation/revision. Atomic domain SQL rechecks Company Access, assignee/location eligibility, immutable history and idempotent recovery through the shared company-bound executor; no browser-selected database or privileged machine principal."
+    },
+    {
+      "path": "src/app/api/staff-tasks/context/route.ts",
+      "tags": [
+        "request-entrypoint",
+        "staff-tasks"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_APPLICATION",
+      "reason": "Initial and paginated context require the current signed-in actor and mutation proof; continuation binds the staff authority digest. Staff domain reads use the shared company-bound executor and current role, workspace, location and eligibility fences. Isolated mode resolves the current workspace APP binding; no browser-selected database or elevated transport."
+    },
+    {
+      "path": "src/app/api/staff-tasks/history/route.ts",
+      "tags": [
+        "request-entrypoint",
+        "staff-tasks"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_APPLICATION",
+      "reason": "Bounded history POST requires current signed-in actor, staff proof and validated task/cursor. Current management or assignee scope and workspace/location authority are rechecked before returning append-only history through the company-bound executor; no former-assignee recovery of private content."
+    },
+    {
+      "path": "src/app/api/staff-tasks/operations/[operationId]/route.ts",
+      "tags": [
+        "request-entrypoint",
+        "staff-tasks"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_APPLICATION",
+      "reason": "UUID receipt lookup binds the current signed-in actor/session and staff authority. Domain recovery rechecks current Company Access or assignment before returning only committed identity/revision for that original operation; uses the shared company-bound executor without accepting a browser database target."
+    },
+    {
+      "path": "src/app/api/staff-tasks/query/route.ts",
+      "tags": [
+        "request-entrypoint",
+        "staff-tasks"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_APPLICATION",
+      "reason": "Same-origin bounded JSON query requires current session proof and staff authority. TEAM is management-only; MINE, dates, locations and pagination remain current-scope checked through the shared company-bound executor and response fence. Isolated mode uses current workspace APP transport."
     }
   ],
   "routingEvidence": "Task2: actual owned A/B PostgreSQL databases through installed Neon HTTP protocol; not hosted Neon evidence.",
@@ -4365,5 +4425,9 @@
   "releaseCompletionReconciliation": {
     "reviewedAfter": "c9dfda650",
     "scope": "R10/R11 request routes and R14 caller-bound batch helper; explicit runtime dispositions only. No unseen-path exemption, native adoption or hosted acceptance."
+  },
+  "staffTaskReconciliation": {
+    "reviewedAfter": "55b927517e16d6d3b6df57cfaf31f81f183d2e25",
+    "scope": "Six explicit staff-task HTTP entrypoints use current actor/proof admission and the existing company-bound APP executor. Fail-closed runtime scanning is unchanged; no blanket route exemption, privileged machine transport, UI/native import or hosted acceptance."
   }
 }
