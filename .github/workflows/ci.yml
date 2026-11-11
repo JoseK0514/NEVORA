@@ -193,11 +193,32 @@ jobs:
           npm audit --prefix "$PW_ROOT" --audit-level=high
           echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
           echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
+      - name: Verify failure capture regressions
+        run: node --test .github/scripts/runner-network-failure.check.mjs
       - name: Prefer official Ubuntu archive
         run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
       - name: Install Chromium and WebKit
+        id: management_browser_install
         timeout-minutes: 8
         run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+      - name: Capture failed installer network context
+        if: ${{ failure() && steps.management_browser_install.outcome == 'failure' && github.event_name == 'push' }}
+        timeout-minutes: 3
+        shell: bash
+        run: |
+          CHECKOUT_SHA="$(git rev-parse HEAD)"
+          test "$CHECKOUT_SHA" = "$GITHUB_SHA"
+          sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS,GITHUB_EVENT_NAME,GITHUB_REF,GITHUB_SHA,GITHUB_RUN_ID,GITHUB_RUN_ATTEMPT,RUNNER_TEMP,ImageOS,ImageVersion,RUNNER_ARCH \
+            env NEVORA_CHECKOUT_SHA="$CHECKOUT_SHA" NEVORA_INSTALLER_OUTCOME=failure \
+            "$(command -v node)" .github/scripts/runner-network-failure.mjs
+      - name: Retain failed installer network context
+        if: ${{ always() && steps.management_browser_install.outcome == 'failure' && github.event_name == 'push' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: management-installer-network-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/nevora-runner-network-failure/receipt.json
+          if-no-files-found: error
+          retention-days: 14
       - name: Install PostgreSQL test runtime
         id: attendance_runtime
         shell: bash
