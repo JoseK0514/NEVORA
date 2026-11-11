@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {readOperationalShiftEditor,readSchedulePendingChanges} from '@/lib/company-access/operational-read.server';
 import {ScopedManualShiftForm} from '@/components/company-access/scoped-manual-shift-form';
@@ -91,7 +92,7 @@ export default async function EditShiftPage({
 
   // Release 1 (board O-EditShift): Edit shift is the same sheet as Add shift, with the shift's state on top and Delete
   // shift (its own form, never nested) under the save.
-  return (<ScopedReadFrame observation={source}>
+  return (<ScopedReadFrame observation={scopedObservation(source)}>
     <CorpPage className="c-shift-page" label="Edit shift">
       <ScheduleShiftForm mode="edit" formId="edit-shift-form" action={updateShiftAction} employees={shiftFormEmployees(employees,shift.employeeId)} positions={positions}
         fixedLocation={location?.shortName ?? shift.locationId} weekStart={shift.weekStart} date={shift.date}

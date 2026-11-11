@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {requireRoles} from '@/lib/auth/permissions';
 import {AccountRecovery} from '@/components/account-recovery';
@@ -14,5 +15,5 @@ export default async function AccountRecoveryPage({searchParams}:{searchParams?:
  // Only a prefill; the server still checks the employee and attestation.
  const employee=params?.employee?.trim().slice(0,200)||undefined;
  const {timeZone}=await getWorkspace();
- return <ScopedReadFrame observation={access}><AccountRecovery kind="assisted" actorId={actor.id} employeeId={employee} timeZone={timeZone} from={params?.from==='settings'&&actor.role==='OWNER'?'settings':undefined} pins={actor.role==='OWNER'}/></ScopedReadFrame>;
+ return <ScopedReadFrame observation={scopedObservation(access)}><AccountRecovery kind="assisted" actorId={actor.id} employeeId={employee} timeZone={timeZone} from={params?.from==='settings'&&actor.role==='OWNER'?'settings':undefined} pins={actor.role==='OWNER'}/></ScopedReadFrame>;
 }

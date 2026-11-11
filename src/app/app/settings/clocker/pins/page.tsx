@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -19,7 +20,7 @@ export default async function ClockerPinsPage(){
  // read leaves the line out.
  const details=statuses?await personDetails(proof).catch(()=>({})):{};
  // eslint-disable-next-line @next/next/no-html-link-for-pages -- the "Try again" link: a retry after a failed server read reloads the whole document so every read runs again, with or without JavaScript
- return <ScopedReadFrame observation={source}><SettingsFrame back={{href:"/app/settings",label:"Settings"}} title="Clocker PINs" summary="Private access to the shared Clocker."><ClockerOwnerNav current="pins"/>{statuses?<ClockerPinInventory statuses={statuses} details={details}/>:<section role="alert"><h2>Couldn’t load Clocker PINs</h2><p>Check your connection, then try again.</p><a className="q-btn q-btn--sec" href="/app/settings/clocker/pins">Try again</a></section>}</SettingsFrame></ScopedReadFrame>;
+ return <ScopedReadFrame observation={scopedObservation(source)}><SettingsFrame back={{href:"/app/settings",label:"Settings"}} title="Clocker PINs" summary="Private access to the shared Clocker."><ClockerOwnerNav current="pins"/>{statuses?<ClockerPinInventory statuses={statuses} details={details}/>:<section role="alert"><h2>Couldn’t load Clocker PINs</h2><p>Check your connection, then try again.</p><a className="q-btn q-btn--sec" href="/app/settings/clocker/pins">Try again</a></section>}</SettingsFrame></ScopedReadFrame>;
 }
 
 /** "Barista · Condado" for each person, from the directory and position reads the Team page uses. */

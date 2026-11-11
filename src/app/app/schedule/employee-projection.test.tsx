@@ -2,6 +2,7 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { ScheduleShiftForm, type ScheduleShiftFormProps } from '@/components/schedule-shift-form';
 import { findElementProps } from '@/test/react-props.test-support';
 import type { Employee } from '@/lib/domain';
+import {ScopedReadFrame,type ScopedObservation} from '@/components/company-access/scoped-read-frame';
 import Edit from './edit/page';
 import Add from './new/page';
 
@@ -54,4 +55,10 @@ it('current company-access denial withholds the client form and its employee cat
   fixture.denied = true;
   const page = await Edit({ searchParams: Promise.resolve({ shiftId: 'SHIFT' }) });
   expect(() => findElementProps(page, ScheduleShiftForm)).toThrow('boundary not found');
+});
+it.each(['add','edit'] as const)('%s excludes server-only catalogs from the enclosing client observation as well as the form',async mode=>{
+  const page=mode==='add'?await Add({searchParams:Promise.resolve({week:'2026-11-09'})}):await Edit({searchParams:Promise.resolve({shiftId:'SHIFT'})});
+  const props=findElementProps<{observation:ScopedObservation;children:unknown}>(page,ScopedReadFrame);
+  expect(props.observation).toEqual({authority:'authority',observedAt:'2026-11-10T12:00:00Z',validForMs:15000});
+  expect(JSON.stringify(props)).not.toMatch(/555-private|@private\.invalid|eligibleLocationIds|primaryLocationId|UNRELATED|SELECTED/);
 });

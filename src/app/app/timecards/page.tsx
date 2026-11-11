@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import {ResponsiveEmployeeTimecards} from '@/components/employee-mobile/hours';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
@@ -25,7 +26,7 @@ export default async function TimecardsPage({searchParams}:{searchParams:Promise
     const weekStart=weekStartFor(today.toString());
     let managerPeriod={startDate:weekStart,endDate:addDays(weekStart,6)};
     try{if(params.start&&params.end)managerPeriod=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current week. */}
-    return <ScopedReadFrame observation={access!}><div className="cm-timecards" data-nv-page="">
+    return <ScopedReadFrame observation={scopedObservation(access)}><div className="cm-timecards" data-nv-page="">
       <Timecards key={session.id} initialPeriod={managerPeriod} manager actorId={session.id} employeeCorporate={false} today={today.toString()}/>
     </div></ScopedReadFrame>;
   }

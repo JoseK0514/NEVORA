@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import type { ReactNode } from "react";
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -72,7 +73,7 @@ export default async function CopyReceiptPage({
   const {receipt,command}=source.data;
   if (!receipt) {
     const back = command ? `/app/schedule?week=${command.weekStart}` : "/app/schedule";
-    return <ScopedReadFrame observation={source}><Frame title="Copy not confirmed" back={back} summary={command ? `We couldn’t confirm the copy into ${keepWhole(formatWeekRange(command.weekStart))}.` : "We couldn’t confirm whether shifts were copied."}>
+    return <ScopedReadFrame observation={scopedObservation(source)}><Frame title="Copy not confirmed" back={back} summary={command ? `We couldn’t confirm the copy into ${keepWhole(formatWeekRange(command.weekStart))}.` : "We couldn’t confirm whether shifts were copied."}>
       <Notice tone="review" title="Check the schedule first">Do not start a new copy while this one is unconfirmed. Some shifts may already be on the schedule.</Notice>
       <Card title="What you can do">
         <div className="wa-card-body">
@@ -94,7 +95,7 @@ export default async function CopyReceiptPage({
   for (const row of skipped) why.set(reasonText(row.reason), (why.get(reasonText(row.reason)) ?? 0) + 1);
   const warnings = receipt.rows.flatMap((row) => row.warnings);
   const back = `/app/schedule?week=${receipt.command.weekStart}`;
-  return <ScopedReadFrame observation={source}><Frame title={receipt.reason || !copied.length ? "Nothing copied" : "Week copied"} back={back}
+  return <ScopedReadFrame observation={scopedObservation(source)}><Frame title={receipt.reason || !copied.length ? "Nothing copied" : "Week copied"} back={back}
     summary={`${copied.length} ${copied.length === 1 ? "shift" : "shifts"} copied into ${keepWhole(formatWeekRange(receipt.command.weekStart))}.`}>
     {receipt.reason ? <Notice tone="review" title="No shifts were copied">
       {receipt.reason === "TEMPLATE_UNAVAILABLE" ? "The template isn’t available anymore." : "The week it came from changed while copying."} Go back to the schedule and start a new copy.

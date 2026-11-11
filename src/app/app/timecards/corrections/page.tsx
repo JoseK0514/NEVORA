@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
@@ -23,7 +24,7 @@ export default async function TimeCorrectionsPage(){
   if(source.state==='unavailable')return <OperationalUnavailable title="Time corrections unavailable" reason={source.reason}/>;
   const authority=correctionAuthority(proof);
   return <ManagerCorrectionRecoveryBoundary key={managerReviewRecoveryKey(session.id,authority,source.authority,'time-corrections')}>
-    <ScopedReadFrame observation={source}>
+    <ScopedReadFrame observation={scopedObservation(source)}>
       <CorpPage className="c-tcx c-page--narrow" labelledBy="tcx-title">
         <CorpNav back={{href:'/app/timecards',label:'Time'}} title="Time corrections" titleId="tcx-nav-title" phoneOnly/>
         <CorpTitle id="tcx-title" title="Time corrections" sub="Fixes your team asked for. You’ll always see the original time." wide/>

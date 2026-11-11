@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
@@ -23,6 +24,6 @@ export default async function ReportsPage({searchParams}:{searchParams:Promise<{
   let period={startDate:monday.toString(),endDate:today.toString()};
   try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current period. */}
   // Release 1 (board O-Insights): Reports renders the whole page (title, periods, Export on wide screens and the cards).
-  return <ScopedReadFrame observation={access}><ReportsEntrance>
+  return <ScopedReadFrame observation={scopedObservation(access)}><ReportsEntrance>
     <Reports key={session.id} initialPeriod={period} today={today.toString()}/></ReportsEntrance></ScopedReadFrame>;
 }

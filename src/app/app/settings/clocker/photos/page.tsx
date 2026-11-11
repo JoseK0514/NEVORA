@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import {requireRoles} from '@/lib/auth/permissions';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
@@ -21,7 +22,7 @@ export default async function ClockerPhotosPage(){
   ?<ClockerPhotoNoticeSettings initialSettings={noticeResult.settings} saveAction={saveClockerPhotoNoticeAction} readAction={readClockerPhotoNoticeAction}/>
   :<div className="c-photos__helperror" role="alert"><span className="c-row__title">Couldn’t load help for your team</span><span className="c-field__help">{noticeResult.message}</span><CorpRetryButton/></div>;
  const review=<CorpRow href="/app/settings/clocker/photos/review" title="Review punch photos" one chevron/>;
- return <ScopedReadFrame observation={source}><SettingsFrame back={{href:"/app/settings",label:"Settings"}} title="Punch photos" summary="Photos on your shared Clocker tablets."><ClockerOwnerNav current="photos"/>
+ return <ScopedReadFrame observation={scopedObservation(source)}><SettingsFrame back={{href:"/app/settings",label:"Settings"}} title="Punch photos" summary="Photos on your shared Clocker tablets."><ClockerOwnerNav current="photos"/>
   {/* Owner premium R13 (round 2): while capture is unavailable, one card says so, holds the settings and their one Save,
     with help for your team and review as rows inside it. The same two reads, forms and actions as before. */}
   <div className="c-page c-embed c-photos c-page--narrow">

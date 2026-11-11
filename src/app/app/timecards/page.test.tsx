@@ -2,7 +2,7 @@ import type {ReactElement, ReactNode} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {afterEach, beforeEach, expect, it, vi} from 'vitest';
 
-const fixture=vi.hoisted(()=>({role:'MANAGER',denied:false,company:vi.fn(),observation:{state:'ready',data:null,authority:'fictional-company',observedAt:'2026-10-20T12:00:00Z',validForMs:15000}}));
+const fixture=vi.hoisted(()=>({role:'MANAGER',denied:false,company:vi.fn(),observation:{state:'ready',data:{private:'never-client'},authority:'fictional-company',observedAt:'2026-10-20T12:00:00Z',validForMs:15000}}));
 vi.mock('@/lib/auth/session',()=>({requireSession:async()=>({id:'actor',role:fixture.role}),requireSessionMutationProof:async()=>({employee:{id:'actor',role:fixture.role},sessionTokenHash:'a'.repeat(64)})}));
 vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async()=>{fixture.company();return fixture.denied?{state:'unavailable',reason:'access_denied'}:fixture.observation;}}));
 vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({timeZone:'America/Puerto_Rico'})}));
@@ -18,7 +18,8 @@ it.each(['MANAGER','OWNER'])('keeps the clean current-week %s view inside the cu
  fixture.role=role;
  const page=await TimecardsPage({searchParams:Promise.resolve({})});
  expect(page.type).toBe(ScopedReadFrame);
- expect((page as ReactElement<{observation:unknown}>).props.observation).toBe(fixture.observation);
+ expect((page as ReactElement<{observation:unknown}>).props.observation).toEqual({authority:fixture.observation.authority,observedAt:fixture.observation.observedAt,validForMs:fixture.observation.validForMs});
+ expect(JSON.stringify((page as ReactElement<{observation:unknown}>).props.observation)).not.toContain('never-client');
  const html=renderToStaticMarkup(page);
  expect(html).toContain('class="cm-timecards"');
  expect(html).toContain('2026-10-19 / 2026-10-25');

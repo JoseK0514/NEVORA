@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import accessStyles from '@/components/company-access/company-access.module.css';
 import consentStyles from './coverage-consent.module.css';
 import {readOperationalShiftEditor} from '@/lib/company-access/operational-read.server';
@@ -66,7 +67,7 @@ export default async function NewShiftPage({
       }
     });
     if(source.state==='unavailable')return <OperationalUnavailable title="Replacement review unavailable" reason={source.reason}/>;
-    if(source.data.kind==='conflict')return <ScopedReadFrame observation={source}><div className="nv-page wa-page wa-shift" data-nv-page="">
+    if(source.data.kind==='conflict')return <ScopedReadFrame observation={scopedObservation(source)}><div className="nv-page wa-page wa-shift" data-nv-page="">
         <PageBand back={{ href:source.data.href, label: "Coverage" }} eyebrow="Replacement" title="Coverage changed" summary="Someone changed this shift since you opened the review." />
         <div className="nv-content wa-narrow">
           <Card title="This review is out of date">
@@ -84,7 +85,7 @@ export default async function NewShiftPage({
     const nextDay = overnight ? formatDayLabel(addDays(locator.date, 1)) : null;
     const refreshHref = coverageRepairUrl(locator, true);
     const need = locator.target === "POSITION" ? "the position requirement" : locator.target === "LEAD" ? "the lead requirement" : "the staffing requirement";
-    return <ScopedReadFrame observation={source}><div className="nv-page wa-page wa-shift" data-nv-page="">
+    return <ScopedReadFrame observation={scopedObservation(source)}><div className="nv-page wa-page wa-shift" data-nv-page="">
       <PageBand back={{ href: refreshHref, label: "Coverage" }} eyebrow={keepWhole(formatWeekRange(locator.weekStart))} title="Review replacement"
         summary={`${selected.employeeName} for ${keepWhole(`${day.weekday},\u00a0${day.day}`)}.`} />
       <div className="nv-content wa-narrow">
@@ -133,7 +134,7 @@ export default async function NewShiftPage({
   if(access.state==='unavailable')return <OperationalUnavailable title="Shift creation unavailable" reason={access.reason}/>;
   if(access.scope?.mode!=='COMPANY'){
     if(access.scope?.mode!=='LOCATIONS'||!access.locations.length)return <OperationalUnavailable title="Shift creation unavailable" reason="access_denied"/>;
-    if(params.locationId===undefined)return <ScopedReadFrame observation={access}><section className={'panel '+accessStyles.stack}><h1>Choose a location</h1><p>Select a managed location before assigning a shift.</p><form className={accessStyles.stack} method="get" action="/app/schedule/new"><input type="hidden" name="week" value={weekStart}/><SelectField className={accessStyles.search} name="locationId" label="Location" defaultValue="" required options={[{value:'',label:'Select a managed location',disabled:true},...access.locations.map(l=>({value:l.id,label:l.name}))]}/><button className="button primary" type="submit">Continue</button></form></section></ScopedReadFrame>;
+    if(params.locationId===undefined)return <ScopedReadFrame observation={scopedObservation(access)}><section className={'panel '+accessStyles.stack}><h1>Choose a location</h1><p>Select a managed location before assigning a shift.</p><form className={accessStyles.stack} method="get" action="/app/schedule/new"><input type="hidden" name="week" value={weekStart}/><SelectField className={accessStyles.search} name="locationId" label="Location" defaultValue="" required options={[{value:'',label:'Select a managed location',disabled:true},...access.locations.map(l=>({value:l.id,label:l.name}))]}/><button className="button primary" type="submit">Continue</button></form></section></ScopedReadFrame>;
     const source=await readOperationalShiftEditor(proof,{weekStart,locationId:params.locationId});
     if(source.state==='unavailable')return <OperationalUnavailable title="Shift creation unavailable" reason={source.reason} scoped/>;
     if(source.authority!==access.authority)return <OperationalUnavailable title="Shift creation unavailable" reason="source_changed" scoped/>;
@@ -154,7 +155,7 @@ export default async function NewShiftPage({
   // Release 1 (board O-AddShift): Add shift is the same sheet as Edit shift. Cancel, Add shift and Save in the bar, then
   // Person, Location and Position, Date, Start and End, Shift lead and Note, and Save shift.
   const blocked = !locations.length ? "Add a location first. A shift needs one." : !employees.some(item => item.active) ? "Add an employee first. A shift needs someone to work it." : undefined;
-  return (<ScopedReadFrame observation={source}>
+  return (<ScopedReadFrame observation={scopedObservation(source)}>
     <CorpPage className="c-shift-page" label={`Add shift, ${keepWhole(formatWeekRange(weekStart))}`}>
       <ScheduleShiftForm mode="add" formId={CREATE_SHIFT_FORM_ID} action={createShiftAction} employees={shiftFormEmployees(employees)} positions={positions}
         locations={locations} weekStart={weekStart} date={date} employeeId={params.employeeId} positionId={params.positionId} locationId={locationId}

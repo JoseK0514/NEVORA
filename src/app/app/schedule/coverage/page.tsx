@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -65,7 +66,7 @@ export default async function CoverageSuggestionsPage({
     const review=source.data;
     const back = `/app/schedule?week=${encodeURIComponent(locator.weekStart)}&location=${encodeURIComponent(locator.locationId)}`;
     const status = review?.status ?? 'STALE';
-    return <ScopedReadFrame observation={source}><CoverageAssistant
+    return <ScopedReadFrame observation={scopedObservation(source)}><CoverageAssistant
       date={locator.date}
       startTime={locator.startTime}
       endTime={locator.endTime}
@@ -170,7 +171,7 @@ export default async function CoverageSuggestionsPage({
   const location = locations.find((item) => item.id === locationId);
   const position = positions.find(item => item.id === params.positionId);
 
-  return <ScopedReadFrame observation={source}><CoverageAssistant
+  return <ScopedReadFrame observation={scopedObservation(source)}><CoverageAssistant
     date={date}
     startTime={startTime}
     endTime={endTime}

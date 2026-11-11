@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import Link from "next/link";
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
@@ -34,7 +35,7 @@ export default async function NewEmployeePage({
 
   // Release 1 (boards O-AddEmployee, O-AddEmployeePay): a sheet in two steps; the form carries its own header.
   return (
-    <ScopedReadFrame observation={source}><CorpPage className="c-addemp c-sheetpage" labelledBy="new-employee-title">
+    <ScopedReadFrame observation={scopedObservation(source)}><CorpPage className="c-addemp c-sheetpage" labelledBy="new-employee-title">
       <SheetMarker />
       <NewEmployeeForm actorRole={session.role} locations={activeLocations} positions={positions} action={createEmployeeFormAction} notice={<>
         {params.error ? <p className="c-error" role="alert">{errors[params.error] ?? "Complete all required employee fields."}</p> : null}

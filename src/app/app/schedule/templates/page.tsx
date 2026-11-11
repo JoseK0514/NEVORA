@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -48,7 +49,7 @@ export default async function ScheduleTemplatesPage({
   // Release 1 (board O-Templates): "‹ Schedule  Week templates", how many weeks are saved, then a card per template (its
   // name, how many shifts, Archive and Apply to this week), then Save this week. The first Apply is the page's one primary.
   const shortWeek = compactWeek(weekStart);
-  return (<ScopedReadFrame observation={source}>
+  return (<ScopedReadFrame observation={scopedObservation(source)}>
     <QuietPage className="q-templates">
       <QuietNav back={{ href: `/app/schedule?week=${weekStart}`, label: "Schedule" }} title="Week templates" />
       <QuietHeader title="Week templates" />

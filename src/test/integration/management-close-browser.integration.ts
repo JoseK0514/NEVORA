@@ -4,7 +4,7 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {createOwnedNextApp} from './owned-next-app';
-import {seedOwnedApp,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from './owned-app-fixture';
+import {seedOwnedApp,seedOwnedScenario,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from './owned-app-fixture';
 import {hashPassword} from '../../lib/auth/password';
 import type {ManagementCloseContext} from '../../lib/management-close/contracts';
 
@@ -19,7 +19,7 @@ it('exercises real password cookies and management-close HTTP/SQL in an owned br
     await seedOwnedApp(app.database.executor);
     const password=await hashPassword(TEST_PASSWORD);
     for(const [id,role] of [['R10MANAGER','MANAGER'],['R10LEAD','LEAD'],['R10EMPLOYEE','EMPLOYEE']]){
-      await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,'Fictional',$1,'fictional-'||$1,$2,'loc-1')",[id,role]);
+      await q("INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id) VALUES($1,'Fictional',$1,'r08-private-contact-'||$1,$1||'@r08-private.invalid',$2,'loc-1')",[id,role]);
       await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',[id,password]);
     }
     await assignOwnedManagerCompanyAccess(app.database.executor,'R10MANAGER');
@@ -30,6 +30,7 @@ it('exercises real password cookies and management-close HTTP/SQL in an owned br
       await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES($1,$2,'loc-1','r10-retired-device',clock_timestamp()-interval '4 hours','CLOCKED_IN')",[entry,employee]);
       checks.push('Seeded isolated inactive worker and retired device for '+actor);
     }
+    const schedule=await seedOwnedScenario(app.database.executor,'R08PRIVACY',0);
     const active=await runtime.chromium.launch({headless:true});browser=active;
     for(const [index,actor] of ['QAOWNER','R10MANAGER','R10LEAD','R10EMPLOYEE'].entries()){
       const context=await active.newContext({viewport:{width:1280,height:900},serviceWorkers:'block'}),page=await context.newPage();page.setDefaultTimeout(20000);
@@ -38,6 +39,13 @@ it('exercises real password cookies and management-close HTTP/SQL in an owned br
         const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){errors.push('Unexpected external origin');await route.abort();}else await route.continue();
       });
       await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
+      if(actor==='QAOWNER'){
+        for(const path of ['/app/schedule/new?week='+schedule.week,'/app/schedule/edit?shiftId='+encodeURIComponent(schedule.sourceId)]){
+          const response=await page.goto(app.url+path);expect(response?.status()).toBe(200);
+          const html=await response!.text();expect(/r08-private-contact-|@r08-private\.invalid|fictional-r10-target/.test(html),'Private employee data in actual HTML/RSC transport: '+path).toBe(false);
+          checks.push('R08: actual authenticated HTML/RSC excludes contact/inactive-catalog markers at '+path.split('?')[0]);
+        }
+      }
       const path='/api/manager/timecards/r10-browser-entry-'+Math.min(index,1)+'/close';
       const read=await page.evaluate(async(path:string)=>{
         const r=await fetch(path,{headers:{'x-nevora-management-close':'1'},cache:'no-store'});return {status:r.status,body:await r.json(),cache:r.headers.get('cache-control')};

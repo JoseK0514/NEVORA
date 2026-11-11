@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -90,7 +91,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
     coverage: Boolean(params.windowSaved || params.windowDeleted || ["duplicate_window", "invalid_window"].includes(params.error ?? "")),
   };
 
-  return (<ScopedReadFrame observation={source}><ScheduleFormKeys>
+  return (<ScopedReadFrame observation={scopedObservation(source)}><ScheduleFormKeys>
     <QuietPage className="q-rules">
       {/* Release 1 (board O-ScheduleRules): "‹ Schedule  Scheduling rules", one line about when the rules apply, then the
         rules in one card, each with what it means and its current value. A row opens its settings in place. */}

@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import {readEmployeeClockerPin,type EmployeePinView} from '@/lib/clocker/pins.server';
 import type { ReactNode } from "react";
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
@@ -75,7 +76,7 @@ export default async function EmployeeProfilePage({
   const place = primaryLocation ? `${primaryLocation.shortName}${primaryLocation.active ? "" : " (inactive)"}` : null;
 
   // Release 1, board O-Person: who they are with Call and Message, their work, then one row to Access and sign-in.
-  if (!editing && !accessView) return (<ScopedReadFrame observation={source}>
+  if (!editing && !accessView) return (<ScopedReadFrame observation={scopedObservation(source)}>
     <TeamLiveProvider>
     <CorpPage className="c-person c-page--narrow" labelledBy="person-title">
       <CorpNav back={{ href: "/app/employees", label: "Team" }} title={name} titleId="person-nav-title" right={canManageCore ? <Link href={`${base}?edit=1`}>Edit</Link> : undefined} phoneOnly />
@@ -112,7 +113,7 @@ export default async function EmployeeProfilePage({
 
   // Release 1, board O-PersonAccess: role, Clocker PIN and account; reset password; the Owner's invitation and management
   // access controls; then Deactivate (red outline) at the bottom.
-  if (accessView) return (<ScopedReadFrame observation={source}>
+  if (accessView) return (<ScopedReadFrame observation={scopedObservation(source)}>
     <CorpPage className="c-person c-access c-page--narrow" labelledBy="access-title">
       <CorpNav back={{ href: base, label: employee.firstName }} title="Access and sign-in" titleId="access-nav-title" phoneOnly />
       <CorpTitle id="access-title" title="Access and sign-in" sub={name} wide />
@@ -139,7 +140,7 @@ export default async function EmployeeProfilePage({
 
   // Release 1, board O-EditEmployee: a sheet (Cancel · Edit employee · Save). Positions and the hour rules each open their
   // own sheet with its own Save, as before (two separate saves, never mixed into one).
-  if (editing === "positions") return (<ScopedReadFrame observation={source}>
+  if (editing === "positions") return (<ScopedReadFrame observation={scopedObservation(source)}>
     <CorpPage className="c-sheetpage c-editpos" labelledBy="person-edit-title">
       <SheetMarker />
       <FormHead titleId="person-edit-title" title="Positions" left={<FormHeadLink href={`${base}?edit=1`}>Cancel</FormHeadLink>} right={<button type="submit" form="employee-scheduling">Save</button>} />
@@ -155,7 +156,7 @@ export default async function EmployeeProfilePage({
     </CorpPage>
   </ScopedReadFrame>);
 
-  if (editing === "rules") return (<ScopedReadFrame observation={source}>
+  if (editing === "rules") return (<ScopedReadFrame observation={scopedObservation(source)}>
     <CorpPage className="c-forms wa-page wa-member" labelledBy="person-rules-title">
       <CorpNav back={{ href: `${base}?edit=1`, label: "Edit" }} title="Hours and rules" titleId="person-rules-title" />
       <CorpCard id="member-rules" label="Operational rules">
@@ -171,7 +172,7 @@ export default async function EmployeeProfilePage({
     <SheetField label="Positions" value={positionNames} placeholder="None yet" href={`${base}?edit=positions`} />
     <SheetField label="Hours and rules" value={profileUnavailable ? "Unavailable" : operational ? "Set" : "Not set"} href={`${base}?edit=rules`} />
   </>;
-  return (<ScopedReadFrame observation={source}>
+  return (<ScopedReadFrame observation={scopedObservation(source)}>
     <CorpPage className="c-sheetpage c-editemp" labelledBy="person-edit-title">
       <SheetMarker />
       {canManageCore ? (
