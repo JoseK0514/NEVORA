@@ -67,16 +67,29 @@ async function fileBytes(root, path) {
   ensure((await stat(target)).isFile(), `Expected repository file: ${path}`);
   return readFile(target);
 }
-function sourceBytes(root, sourceSha, path) {
-  repoRelative(path);
-  const entry = git(root, ['ls-tree', sourceSha, '--', path]).trim();
-  ensure(/^100(?:644|755) blob /.test(entry), `Source file is missing or not a regular committed file: ${path}`);
-  return git(root, ['show', `${sourceSha}:${path}`], {buffer: true});
+function sourceSnapshot(root, sourceSha) {
+  const rows = git(root, ['ls-tree', '-r', '-z', sourceSha]).split('\0').filter(Boolean).map(line => {
+    const tab = line.indexOf('\t');
+    const [mode, kind, oid] = line.slice(0, tab).split(' ');
+    return {path: line.slice(tab + 1), mode, kind, oid};
+  });
+  const paths = new Map(rows.map(row => [row.path, row]));
+  // Only immutable committed hashes are reused, within this invocation. Current
+  // files and their path/symlink checks remain fresh on every qualification.
+  const hashes = new Map();
+  return {rows, hash(path) {
+    repoRelative(path);
+    const row = paths.get(path);
+    // A symlink can share an OID with a regular file: check its mode first.
+    ensure(row?.kind === 'blob' && /^100(?:644|755)$/.test(row.mode), `Source file is missing or not a regular committed file: ${path}`);
+    if (!hashes.has(row.oid)) hashes.set(row.oid, sha256(git(root, ['cat-file', 'blob', row.oid], {buffer: true})));
+    return hashes.get(row.oid);
+  }};
 }
-async function qualifiedHash(root, sourceSha, path) {
+async function qualifiedHash(root, source, path) {
   const bytes = await fileBytes(root, path);
   const hash = sha256(bytes);
-  ensure(hash === sha256(sourceBytes(root, sourceSha, path)), `Current file changed from recorded source: ${path}`);
+  ensure(hash === source.hash(path), `Current file changed from recorded source: ${path}`);
   return {path, sha256: hash};
 }
 function isApplication(path) {
@@ -84,20 +97,13 @@ function isApplication(path) {
     /(^|\/)(package(?:-lock)?\.json|npm-shrinkwrap\.json)$/.test(path) ||
     /^(?:next\.config\.[cm]?[jt]s|next-env\.d\.ts|tsconfig\.json|vercel\.json|postcss\.config\.[cm]?[jt]s)$/.test(path);
 }
-function sourceApplicationRows(root, sourceSha) {
-  return git(root, ['ls-tree', '-r', '-z', sourceSha]).split('\0').filter(Boolean).map(line => {
-    const tab = line.indexOf('\t');
-    const [mode, kind, oid] = line.slice(0, tab).split(' ');
-    return {path: line.slice(tab + 1), mode, kind, oid};
-  }).filter(row => isApplication(row.path)).sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0);
-}
 function applicationDigest(rows) {
   // Git blob IDs bind bytes (including their length). SHA-256 additionally binds
   // the exact ordered inventory and paths, independent of unrelated doc commits.
   return sha256(rows.map(row => `${row.path}\0${row.oid}\n`).join(''));
 }
-async function applicationHashes(root, sourceSha) {
-  const rows = sourceApplicationRows(root, sourceSha);
+async function applicationHashes(root, source) {
+  const rows = source.rows.filter(row => isApplication(row.path)).sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0);
   ensure(rows.length > 0 && rows.every(row => row.kind === 'blob' && /^100(?:644|755)$/.test(row.mode)), 'Invalid application source inventory');
   const algorithm = git(root, ['rev-parse', '--show-object-format']).trim();
   ensure(['sha1', 'sha256'].includes(algorithm), 'Unsupported source object format');
@@ -139,14 +145,14 @@ function validateIndex(value) {
   }
   return value;
 }
-async function readIndex(root, sourceSha) {
-  const sourceIndex = await qualifiedHash(root, sourceSha, SOURCE_INDEX);
+async function readIndex(root, source) {
+  const sourceIndex = await qualifiedHash(root, source, SOURCE_INDEX);
   let index;
   try {index = JSON.parse((await fileBytes(root, SOURCE_INDEX)).toString('utf8'));} catch {throw new ManualBundleError('Invalid guide source index JSON');}
   return {index: validateIndex(index), sourceIndex};
 }
-async function qualifiedGuide(root, sourceSha, guide) {
-  const markdown = await qualifiedHash(root, sourceSha, guide.markdown);
+async function qualifiedGuide(root, source, guide) {
+  const markdown = await qualifiedHash(root, source, guide.markdown);
   const content = (await fileBytes(root, guide.markdown)).toString('utf8');
   ensure(content.trim().length > 0, `Empty guide: ${guide.id}`);
   // Rendering first excludes fenced/inline examples and escaped HTML from link
@@ -159,10 +165,10 @@ async function qualifiedGuide(root, sourceSha, guide) {
     let decoded;
     try {decoded = decodeURIComponent(path);} catch {throw new ManualBundleError('Invalid local source link path');}
     const target = decoded.startsWith('/') ? decoded.slice(1) : posix.join(posix.dirname(guide.markdown), decoded);
-    await qualifiedHash(root, sourceSha, target);
+    await qualifiedHash(root, source, target);
   }
   const evidence = [];
-  for (const path of guide.evidence) evidence.push(await qualifiedHash(root, sourceSha, path));
+  for (const path of guide.evidence) evidence.push(await qualifiedHash(root, source, path));
   return {id: guide.id, title: guide.title, markdown, evidence};
 }
 export async function collectBundleInputs({repoRoot, date, requireCleanApplication = false}) {
@@ -170,11 +176,12 @@ export async function collectBundleInputs({repoRoot, date, requireCleanApplicati
   const root = await realpath(repoRoot);
   const sourceSha = git(root, ['rev-parse', 'HEAD']).trim();
   if (requireCleanApplication) cleanApplication(root);
-  const application = await applicationHashes(root, sourceSha);
+  const source = sourceSnapshot(root, sourceSha);
+  const application = await applicationHashes(root, source);
   ensure(application.current === application.source, 'Current application content does not match committed source');
-  const {index, sourceIndex} = await readIndex(root, sourceSha);
+  const {index, sourceIndex} = await readIndex(root, source);
   const guides = [];
-  for (const guide of index.guides) guides.push(await qualifiedGuide(root, sourceSha, guide));
+  for (const guide of index.guides) guides.push(await qualifiedGuide(root, source, guide));
   return {schemaVersion: 1, date, scope: SCOPE, sourceSha, applicationHash: application.source, sourceIndex, guides};
 }
 export function pdfSubject({id, sourceSha, applicationHash, markdownHash, date}) {
@@ -195,11 +202,12 @@ export async function verifyBundle({repoRoot, publicationDir = PUBLICATION}) {
   ensure(typeof manifest.sourceSha === 'string' && /^[a-f0-9]{40}(?:[a-f0-9]{24})?$/.test(manifest.sourceSha), 'Invalid full source SHA');
   try {git(root, ['merge-base', '--is-ancestor', manifest.sourceSha, 'HEAD']);} catch {throw new ManualBundleError('Publication source must be an ancestor of current HEAD');}
   ensure(SHA256.test(manifest.applicationHash), 'Invalid application hash');
-  const application = await applicationHashes(root, manifest.sourceSha);
+  const source = sourceSnapshot(root, manifest.sourceSha);
+  const application = await applicationHashes(root, source);
   ensure(application.source === manifest.applicationHash && application.current === manifest.applicationHash, 'Stale or foreign application content hash');
   validateFileHash(manifest.sourceIndex, 'source index');
   ensure(manifest.sourceIndex.path === SOURCE_INDEX, 'Unexpected source index path');
-  const {index, sourceIndex} = await readIndex(root, manifest.sourceSha);
+  const {index, sourceIndex} = await readIndex(root, source);
   ensure(sourceIndex.sha256 === manifest.sourceIndex.sha256, 'Stale source index hash');
   ensure(Array.isArray(manifest.guides) && manifest.guides.length === GUIDE_IDS.length, 'Publication requires exactly six guides');
   const ids = new Set();
@@ -214,7 +222,7 @@ export async function verifyBundle({repoRoot, publicationDir = PUBLICATION}) {
       validateFileHash(guide.evidence[index], 'guide evidence');
       ensure(guide.evidence[index].path === declared.evidence[index], 'Published guide evidence path differs from source');
     }
-    const qualified = await qualifiedGuide(root, manifest.sourceSha, declared);
+    const qualified = await qualifiedGuide(root, source, declared);
     ensure(qualified.markdown.sha256 === guide.markdown.sha256 && qualified.evidence.every((row, index) => row.sha256 === guide.evidence[index].sha256), 'Stale guide Markdown/evidence hash');
     keys(guide.pdf, ['path', 'sha256', 'pageCount'], 'PDF');
     repoRelative(guide.pdf.path);

@@ -1,7 +1,9 @@
-import {afterEach, beforeEach, describe, expect, it} from 'vitest';
-import {execFileSync, spawnSync} from 'node:child_process';
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
+import childProcess, {execFileSync, spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
+import {writeFileSync} from 'node:fs';
 import {mkdtemp, mkdir, readFile, rm, symlink, writeFile} from 'node:fs/promises';
+import {syncBuiltinESMExports} from 'node:module';
 import {tmpdir} from 'node:os';
 import {dirname, join, resolve} from 'node:path';
 import {PDFDocument} from 'pdf-lib';
@@ -26,6 +28,17 @@ async function put(path: string, content: string | Uint8Array) {
 }
 async function saveManifest() {
   await put(`${publication}/manifest.json`, `${JSON.stringify(manifest, null, 2)}\n`);
+}
+async function observeRealGit<T>(observe: (args: string[]) => void, run: () => Promise<T>) {
+  const actual = childProcess.execFileSync;
+  // Observe the expensive boundary while executing real Git and real files.
+  const spy = vi.spyOn(childProcess, 'execFileSync').mockImplementation(((...args: unknown[]) => {
+    const result = Reflect.apply(actual, childProcess, args);
+    if (args[0] === 'git' && Array.isArray(args[1])) observe(args[1] as string[]);
+    return result;
+  }) as typeof actual);
+  syncBuiltinESMExports();
+  try {return await run();} finally {spy.mockRestore(); syncBuiltinESMExports();}
 }
 async function rewritePdf(index: number, title?: string, subject?: string, empty = false) {
   const guide = manifest.guides[index];
@@ -90,6 +103,38 @@ describe('manual Markdown boundary', () => {
 });
 
 describe('source-bound guide publication', () => {
+  it('retrieves a repeated committed blob once while qualifying all six actual fixture guides', async () => {
+    const spec = `${manifest.sourceSha}:src/app.ts`, oid = git('rev-parse', spec);
+    let reads = 0;
+    const result = await observeRealGit<Manifest>(args => {
+      if ((args[0] === 'show' && args[1] === spec) || (args[0] === 'cat-file' && args[1] === 'blob' && args[2] === oid)) reads++;
+    }, () => verifyBundle({repoRoot: root}));
+    expect(result.guides).toHaveLength(6);
+    expect(reads).toBe(1);
+  });
+  it('rechecks live reference bytes after an earlier source-blob read during the same verification', async () => {
+    const spec = `${manifest.sourceSha}:src/app.ts`, oid = git('rev-parse', spec);
+    let changed = false;
+    await expect(observeRealGit(args => {
+      const blob = (args[0] === 'show' && args[1] === spec) || (args[0] === 'cat-file' && args[1] === 'blob' && args[2] === oid);
+      if (blob && !changed) {changed = true; writeFileSync(join(root, 'src/app.ts'), '// changed after the first reference check\n');}
+    }, () => verifyBundle({repoRoot: root}))).rejects.toThrow(/changed|source|hash/i);
+    expect(changed).toBe(true);
+  });
+  it('rejects a committed symlink even when its blob was already qualified as a regular reference', async () => {
+    await put('docs/regular-reference.txt', 'same-source-bytes');
+    await symlink('same-source-bytes', join(root, 'docs/symlink-reference.txt'));
+    const index = JSON.parse(await readFile(join(root, 'docs/guides/web/sources.json'), 'utf8'));
+    index.guides[0].evidence.push('docs/regular-reference.txt');
+    index.guides[1].evidence.push('docs/symlink-reference.txt');
+    await put('docs/guides/web/sources.json', JSON.stringify(index));
+    git('add', 'docs'); git('commit', '-m', 'Fictional references sharing a blob');
+    expect(git('rev-parse', 'HEAD:docs/regular-reference.txt')).toBe(git('rev-parse', 'HEAD:docs/symlink-reference.txt'));
+    // Live bytes are regular and identical; only the committed path mode differs.
+    await rm(join(root, 'docs/symlink-reference.txt'));
+    await put('docs/symlink-reference.txt', 'same-source-bytes');
+    await expect(collectBundleInputs({repoRoot: root, date})).rejects.toThrow(/regular committed file/i);
+  });
   it('loads six structurally valid PDFs without importing a browser and accepts a later documentation-only commit', async () => {
     expect((await verifyBundle({repoRoot: root})).guides).toHaveLength(6);
     await put('docs/later-note.md', '# Later documentation only\n'); git('add', 'docs/later-note.md'); git('commit', '-m', 'Later documentation');

@@ -39,6 +39,22 @@ protection was changed.
 
 ## Evidence and release state
 
+The rebuilt 19-page publication at `0e4699a759fcf5e9b9980ccbe7bb14c284619830`
+passed isolated verification, but the complete default run exposed the existing
+5,000 ms actual-publication test limit: 12,238 tests passed and that one timed
+out. Profiling identified repeated synchronous Git subprocesses for the same
+committed references. The verifier now loads one immutable tree inventory and
+reuses committed blob hashes only within one invocation. Each reference still
+checks its committed regular-file mode before any cache hit and rereads current
+bytes with all existing path, symlink, inventory and PDF controls intact.
+
+The real-Git regression observed six reads before repair and requires one;
+mid-verification live mutation and a symlink sharing an already qualified blob
+are rejected. All 56 manual fixture tests pass without skips. Read-only code
+review found no correctness or security issue. The 5,000 ms deadline is
+unchanged. This source change requires another actual PDF regeneration and a
+new frozen-source full qualification; earlier source receipts remain historical.
+
 The regression was observed before implementation. The focused suite passes
 295 tests with zero failures or skips, including owner-bound engine dispatch
 and invalid/missing/duplicated engine graphs. All 22 CI-contract checks pass.
