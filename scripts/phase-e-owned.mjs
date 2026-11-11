@@ -40,7 +40,7 @@ export const SQL_DATABASE_PREFIXES = Object.freeze({
 export const BROWSER_SUITES = Object.freeze(Object.fromEntries(['home', 'communications', 'calendar', 'navigation', 'attention'].map(suite => [suite, `scripts/phase-e-${suite}-browser-scenarios.mjs`])));
 export const ENGINES = Object.freeze(['chromium', 'webkit']);
 export const WIDTHS = Object.freeze([320, 375, 390, 430, 768, 1024, 1440]);
-const REQUIRED_JOBS = ['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui'];
+const REQUIRED_JOBS = ['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'management-review-ui', 'phase-e-postgres', 'phase-e-ui'];
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const json = path => JSON.parse(readFileSync(path, 'utf8'));
 const delay = ms => new Promise(ready => setTimeout(ready, ms));

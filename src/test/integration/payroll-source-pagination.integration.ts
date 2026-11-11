@@ -1,4 +1,6 @@
-import {readFile} from 'node:fs/promises';
+import {readFile,mkdir,writeFile} from 'node:fs/promises';
+import {resolve,relative,isAbsolute,join} from 'node:path';
+import {Client} from 'pg';
 import {randomUUID} from 'node:crypto';
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
 import {createPunchFixture} from './clocker-punch-fixture';
@@ -10,6 +12,7 @@ import {timecardReadSql} from '../../lib/timecards/service';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import type {SqlExecutor} from '../../lib/notifications/types';
 import type {CompleteReadManifest} from '../../lib/complete-read-pages';
+import {readGenerationSource,generationMutationGuards} from '../../lib/data/generation-guards';
 
 let f:Awaited<ReturnType<typeof createPunchFixture>>,workspaceId:string;
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
@@ -25,6 +28,11 @@ afterEach(async()=>{await f?.db.dispose();vi.unstubAllEnvs();});
 async function roster(total:number){
  await f.q(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id,active)
   SELECT 'R15-'||lpad(n::text,4,'0'),'Retained','Fictional '||n,'r15-'||n,'EMPLOYEE','loc-1',n%2=0 FROM generate_series(4,$1::integer) n`,[total]);
+}
+async function evidence(name:string,value:unknown){
+ const directory=process.env.NEVORA_CAPACITY_EVIDENCE;if(!directory)return;
+ if(!isAbsolute(directory)||!relative(process.cwd(),resolve(directory)).startsWith('..'))throw Error('Capacity evidence must be external');
+ await mkdir(directory,{recursive:true});await writeFile(join(directory,name+'.json'),JSON.stringify(value,null,2)+'\n');
 }
 type Captured={id:string;source:Source&{timecards:{cards:unknown[];paging?:CompleteReadManifest}};observed:string};
 async function capture(ex:SqlExecutor=f.db.executor,expression=sourceSql){
@@ -43,7 +51,45 @@ it.each([301,601])('aggregates all %i retained timecards from the real payroll S
  await guarded(owner,'REVIEW',sourceGuard(first,newRun(randomUUID(),period,'2026-09-29'),owner),f.db.executor);
  // Existing financial source bounds are not changed by this internal aggregation fix.
  await expect(source(owner,period,f.db.executor)).rejects.toThrow('SOURCE_LIMIT');
+ await expect(readPeriodClose(owner,period,f.db.executor)).rejects.toThrow('POPULATION_SOURCE_LIMIT');
  console.log('R15_SOURCE_MEASUREMENT',JSON.stringify({retainedPeople:total,pages:total===301?2:3,elapsedMs,sourceJsonBytes:Buffer.byteLength(JSON.stringify(first.source))}));
+ await evidence('source-'+total,{retainedPeople:total,pages:total===301?2:3,elapsedMs,sourceJsonBytes:Buffer.byteLength(JSON.stringify(first.source))});
+});
+it('uses the deployed read indexes on retained history and preserves payroll workspace lock serialization',async()=>{
+ await roster(300);
+ await f.q(`INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version)
+  SELECT 'R15-history-'||n,'c34-a','loc-1',$1,'2020-01-01T08:00Z'::timestamptz+n*interval '10 minutes','2020-01-01T08:05Z'::timestamptz+n*interval '10 minutes','CLOCKED_OUT',1 FROM generate_series(1,20000) n`,[f.devices[0].device.id]);
+ await f.q(`INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) SELECT 'R15-current-'||id,id,'loc-1',$1,'2026-09-22T08:00Z','2026-09-22T16:00Z','CLOCKED_OUT',1 FROM employees`,[f.devices[0].device.id]);
+ await f.q('ANALYZE time_entries');
+ const indexes=await f.q<{name:string;valid:boolean;ready:boolean;definition:string}>(`SELECT c.relname AS name,i.indisvalid AS valid,i.indisready AS ready,pg_get_indexdef(i.indexrelid) AS definition FROM pg_index i JOIN pg_class c ON c.oid=i.indexrelid WHERE c.relname IN('schedule_revision_shifts_source_idx','time_entries_clock_out_idx') ORDER BY c.relname`);
+ expect(indexes).toHaveLength(2);expect(indexes.every(i=>i.valid&&i.ready)).toBe(true);
+ const plan=await f.q('EXPLAIN (ANALYZE,BUFFERS,FORMAT JSON) SELECT id FROM time_entries WHERE clock_out_at > $1::timestamptz',['2026-09-20T00:00Z']);
+ expect(JSON.stringify(plan)).toContain('time_entries_clock_out_idx');
+ const started=performance.now(),snapshot=await source(owner,period,f.db.executor),readMs=Math.round(performance.now()-started);
+ expect(snapshot.source.timecards.cards).toHaveLength(300);
+ const blocker=new Client({connectionString:f.db.connectionString});await blocker.connect();
+ let pending:Promise<unknown>[]=[];const began=performance.now();let observedWaiters=0;
+ try{
+  await blocker.query('BEGIN');await blocker.query('SELECT id FROM workspaces WHERE singleton ORDER BY id FOR UPDATE');
+  pending=[source(owner,period,f.db.executor),source(owner,period,f.db.executor)];
+  const deadline=performance.now()+2000;
+  while(performance.now()<deadline){
+   const [{count}]=await f.q<{count:number}>(`SELECT count(*)::integer AS count FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query='SELECT id FROM workspaces WHERE singleton=true ORDER BY id FOR NO KEY UPDATE'`);
+   observedWaiters=count;if(count===2)break;await new Promise(r=>setTimeout(r,5));
+  }
+  expect(observedWaiters).toBe(2);await blocker.query('COMMIT');await Promise.all(pending);
+ }finally{await blocker.query('ROLLBACK');await blocker.end();await Promise.allSettled(pending);}
+ await evidence('retained-history-contention',{retainedPeople:300,historicalTimeEntries:20000,currentPeriodEntries:300,guardedSourceReadMs:readMs,twoSameWorkspaceWaitersObserved:observedWaiters,blockedThenSerializedTotalMs:Math.round(performance.now()-began),indexes,selectiveReadPlan:plan,scope:'Owned loopback only; fixed source locks retained; not hosted latency or admission/SLA'});
+});
+it('measures the unchanged complete scheduling fence with thirty staff and one year of historical shifts',async()=>{
+ await roster(31);await f.q('UPDATE employees SET active=true');
+ await f.q(`INSERT INTO employee_location_eligibility(employee_id,location_id) SELECT e.id,l.id FROM employees e CROSS JOIN locations l ON CONFLICT DO NOTHING`);
+ await f.q(`INSERT INTO schedules(id,location_id,week_start,created_by) SELECT 'R15-schedule-'||n||'-'||l,l,('2024-01-01'::date+n*7),'c34-owner' FROM generate_series(0,51) n CROSS JOIN (VALUES('loc-1'),('loc-2')) locations(l)`);
+ await f.q(`WITH staff AS(SELECT id,row_number() OVER(ORDER BY id) AS n FROM employees WHERE id<>'c34-owner') INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) SELECT 'R15-shift-'||s.id||'-'||staff.id||'-'||d,s.id,staff.id,(s.week_start::date+d),'09:00','17:00' FROM schedules s JOIN staff ON s.location_id=CASE WHEN staff.n<=15 THEN 'loc-1' ELSE 'loc-2' END CROSS JOIN generate_series(0,4) d WHERE s.id LIKE 'R15-schedule-%'`);
+ const start=performance.now(),captured=await readGenerationSource(f.db.executor),captureMs=Math.round(performance.now()-start);
+ expect(captured.source.shifts).toHaveLength(7800);expect(captured.source.employees).toHaveLength(31);
+ const lockedAt=performance.now();await f.db.executor.transaction(generationMutationGuards(captured.source,['2026-09-21']));const guardMs=Math.round(performance.now()-lockedAt);
+ await evidence('scheduling-fence',{nonOwnerStaff:30,locations:2,historicalWeeks:52,historicalShifts:7800,sourceTables:Object.keys(captured.source).length,sourceJsonBytes:Buffer.byteLength(JSON.stringify(captured.source)),captureMs,lockedExactSourceGuardMs:guardMs,scope:'Owned loopback raw source/fence only; complete source and existing locks/timeouts unchanged; not planner quality, full command latency or hosted capacity'});
 });
 it('preserves the current 300-person population hash, payroll approval and exact-operation replay',async()=>{
  await roster(300);const initial=await source(owner,period,f.db.executor),close=await readPeriodClose(owner,period,f.db.executor);

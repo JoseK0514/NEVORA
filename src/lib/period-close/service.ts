@@ -7,7 +7,7 @@ import {
   assertManagementProof,
 } from "../data/management-session";
 import { neonNotificationExecutor } from "../data/notification-transactions";
-import { timecardReadSql } from "../timecards/service";
+import {canonicalTimecardsSql} from "../timecards/canonical-source-sql";
 import { parseTimecardsResponse } from "../timecards/read-model";
 import { parsePeriod, type Period } from "../timecards/project";
 import { stableExportJson } from "../payroll-export/json";
@@ -57,7 +57,7 @@ export type Manifest = {
   state: "MANIFEST_PREPARED";
   downstream: "NOT_VERIFIED";
 };
-const periodSourceSql = `jsonb_build_object('roster',COALESCE((SELECT jsonb_agg(jsonb_build_object('employeeId',e.id,'name',trim(e.first_name||' '||e.last_name),'active',e.active,'locationId',e.primary_location_id) ORDER BY e.id COLLATE "C") FROM employees e),'[]'::jsonb),'timecards',(SELECT to_jsonb(t)-'observedAt' FROM (${timecardReadSql}) t))`;
+const periodSourceSql = `jsonb_build_object('roster',COALESCE((SELECT jsonb_agg(jsonb_build_object('employeeId',e.id,'name',trim(e.first_name||' '||e.last_name),'active',e.active,'locationId',e.primary_location_id) ORDER BY e.id COLLATE "C") FROM employees e),'[]'::jsonb),'timecards',${canonicalTimecardsSql})`;
 // The complete receipt set and current mapping revisions are part of period custody.
 // This also invalidates a prepared manifest when a later export batch is created.
 const exportCustodySql = `COALESCE((SELECT jsonb_agg(jsonb_build_object('actorId',r.actor_employee_id,'operationId',r.operation_id,'csvSha256',r.payload->>'csvSha256','canonicalSha256',r.payload->>'canonicalSha256','profileId',r.payload->>'profileId','currentProfileRevision',p.revision) ORDER BY r.actor_employee_id,r.operation_id) FROM payroll_export_receipts r LEFT JOIN nevora_payroll_profile_latest p ON p.workspace_id=r.workspace_id AND p.profile_id::text=r.payload->>'profileId' WHERE r.workspace_id=$1 AND r.payload#>>'{model,period,startDate}'=$2 AND r.payload#>>'{model,period,endDate}'=$3),'[]'::jsonb)`;

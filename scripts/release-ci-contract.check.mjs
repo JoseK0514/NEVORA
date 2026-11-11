@@ -7,7 +7,7 @@ import {clockerSourceHash,expectedClockerFiles,parseClockerArguments,validateClo
 import {verifyRequiredJobs, ownedExecutionTimeout} from './phase-e-owned.mjs';
 const require=createRequire(import.meta.url);
 const workflow=require('js-yaml').load(readFileSync('.github/workflows/ci.yml','utf8'));
-const mandatory=['validate','clocker-postgres','release-postgres','phase-d-attendance-ui','phase-e-postgres','phase-e-ui'];
+const mandatory=['validate','clocker-postgres','release-postgres','phase-d-attendance-ui','management-review-ui','phase-e-postgres','phase-e-ui'];
 
 test('Clocker SQL sharding preserves original selectors and rejects partial/custom shard configurations',()=>{
  assert.deepEqual(parseClockerArguments([]),{selection:undefined,shard:undefined});
@@ -162,7 +162,7 @@ test('Clocker rendering controls run before the unchanged authenticated regressi
  assert(upload.with.path.includes('${{ runner.temp }}/nevora-clocker-browser-evidence/*.json'));
 });
 test('runtime installers prefer the existing official mirror before every apt dependency step',()=>{
- for(const name of ['clocker-postgres-suite','release-postgres','phase-e-postgres','phase-d-attendance-ui','phase-e-ui-suite']){
+ for(const name of ['clocker-postgres-suite','release-postgres','phase-e-postgres','phase-d-attendance-ui','management-review-ui','phase-e-ui-suite']){
   const steps=workflow.jobs[name].steps,preference=steps.findIndex(step=>step.name==='Prefer official Ubuntu archive');
   assert(preference>=0,name+' archive preference missing');
   assert.equal(steps[preference].if,undefined);
@@ -174,6 +174,7 @@ test('runtime installers prefer the existing official mirror before every apt de
 });
 test('feature candidates run through PRs without a duplicate branch-push execution',()=>{
  assert.deepEqual(workflow.on.push.branches,['development','main']);
+ assert.deepEqual(workflow.on.push.tags,['candidate/backend-completion/**']);
  for(const target of ['development','main','codex/verify-preview-33'])assert(workflow.on.pull_request.branches.includes(target));
  assert.equal(workflow.concurrency['cancel-in-progress'],"${{ github.event_name == 'pull_request' }}");
 });
@@ -248,4 +249,16 @@ test('five bounded leaves retain strict current-source aggregation and unique ra
   PHASE_E_CI_NEEDS_JSON:'${{ toJSON(needs) }}',
  });
  assert(aggregate.steps.indexOf(download[0])<aggregate.steps.indexOf(gate));
+});
+
+test('management review and complete payroll sources are mandatory candidate gates',()=>{
+ const job=workflow.jobs['management-review-ui'];assert.equal(job.if,undefined);assert.equal(job['continue-on-error'],undefined);
+ for(const suite of ['management-close-ui','delegated-corrections']){
+  const step=job.steps.find(s=>s.run===`node scripts/payroll-postgres.mjs vitest.${suite}-browser.config.mts`);assert(step);assert.equal(step['continue-on-error'],undefined);
+ }
+ assert(job.steps.some(s=>s.run?.startsWith('node scripts/management-review-evidence.mjs')));
+ assert(workflow.jobs['phase-e-evidence'].needs.includes('management-review-ui'));
+ const step=workflow.jobs['release-postgres'].steps.find(s=>s.run?.includes('vitest.payroll-source-pagination-integration.config.mts'));assert(step);assert.equal(step.if,undefined);assert.equal(step['continue-on-error'],undefined);
+ for(const step of job.steps)assert.equal(step['continue-on-error'],undefined);
+ const upload=job.steps.find(s=>s.name==='Upload management review browser evidence');assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
 });

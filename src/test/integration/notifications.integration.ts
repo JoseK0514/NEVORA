@@ -1,4 +1,5 @@
-import {readFile} from 'node:fs/promises';
+import {readFile,mkdir,writeFile} from 'node:fs/promises';
+import {isAbsolute,relative,resolve,join} from 'node:path';
 vi.mock('server-only',()=>({}));
 import {reviewedAttentionInput} from './attention-api';
 import { fixtureProof } from './shift-change-api';
@@ -84,6 +85,23 @@ beforeEach(async () => {
   await sql(`INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES ('QA-sh1','QA-s1','QA-E','2030-10-11','09:00','17:00'),('QA-sh2','QA-s2','QA-F','2030-10-12','09:00','17:00')`);
   // Explicit legacy Manager/Owner census precedes current enforcement.
   await sql(await readFile('db/migrations/0032_company_access_invitations.sql','utf8'));
+});
+
+it('bounds concurrent queue claims and records FIFO urgent backlog without a provider send',async()=>{
+ await enroll();const now=Date.now(),values=Array.from({length:201},(_,n)=>intent({id:'R15-queue-'+String(n).padStart(4,'0'),eventKey:'R15-queue-'+n,urgency:n===200?'high':'normal',dueAt:new Date(now-(201-n)*1000).toISOString()}));
+ await db.transaction(notificationIntentStatements(values));await sqlDeliveryRepository('test',db).materialize(values.map(v=>v.id));
+ const repo=sqlDeliveryRepository('test',db),seen=new Set<string>(),order:string[]=[],latencies:number[]=[];
+ const [{oldestAgeSeconds}]=await sql<{oldestAgeSeconds:number}>(`SELECT EXTRACT(epoch FROM clock_timestamp()-min(next_attempt_at))::float AS "oldestAgeSeconds" FROM push_deliveries WHERE status='queued'`);
+ const started=performance.now();
+ for(let round=0;round<11;round++){
+  const batches=await Promise.all([0,1].map(async()=>{const start=performance.now(),claims=await claim();latencies.push(performance.now()-start);return claims;}));
+  for(const batch of batches){expect(batch.length).toBeLessThanOrEqual(10);for(const c of batch){expect(seen.has(c.deliveryId)).toBe(false);seen.add(c.deliveryId);order.push(c.intentId);await repo.finish(c,{state:'cancelled'});}}
+  if(round===0)expect(order).not.toContain('R15-queue-0200');
+ }
+ expect(seen.size).toBe(201);expect(order.slice(-1)).toEqual(['R15-queue-0200']);expect(await claim()).toEqual([]);
+ const counts=await sql(`SELECT status,count(*)::integer AS count FROM push_deliveries GROUP BY status`);expect(counts).toEqual([{status:'cancelled',count:201}]);
+ const directory=process.env.NEVORA_CAPACITY_EVIDENCE;
+ if(directory){if(!isAbsolute(directory)||!relative(process.cwd(),resolve(directory)).startsWith('..'))throw Error('Capacity evidence must be external');await mkdir(directory,{recursive:true});latencies.sort((a,b)=>a-b);await writeFile(join(directory,'queue-claims.json'),JSON.stringify({queueRows:201,concurrentClaimers:2,claimRequests:22,maxBatch:10,distinctClaims:seen.size,oldestAgeSeconds,claimP50Ms:Math.round(latencies[10]),claimP95Ms:Math.round(latencies[20]),claimAndCancelTotalMs:Math.round(performance.now()-started),urgentPosition:order.indexOf('R15-queue-0200')+1,counts,scope:'Real owned SQL claim/cancel only; no runDispatch/provider latency/device-delivery or priority guarantee'},null,2)+'\n');}
 });
 
 describe('actual ordered publication and request SQL', () => {

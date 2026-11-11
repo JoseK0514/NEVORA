@@ -1,0 +1,53 @@
+{
+  "required_status_checks": {
+    "strict": true,
+    "checks": [
+      {
+        "context": "validate",
+        "app_id": 15368
+      },
+      {
+        "context": "clocker-postgres",
+        "app_id": 15368
+      },
+      {
+        "context": "phase-d-attendance-ui",
+        "app_id": 15368
+      },
+      {
+        "context": "management-review-ui",
+        "app_id": 15368
+      },
+      {
+        "context": "release-postgres",
+        "app_id": 15368
+      },
+      {
+        "context": "phase-e-postgres",
+        "app_id": 15368
+      },
+      {
+        "context": "phase-e-ui",
+        "app_id": 15368
+      },
+      {
+        "context": "phase-e-evidence",
+        "app_id": 15368
+      },
+      {
+        "context": "onboarding-backend",
+        "app_id": 15368
+      }
+    ]
+  },
+  "enforce_admins": true,
+  "required_pull_request_reviews": null,
+  "restrictions": null,
+  "required_linear_history": true,
+  "allow_force_pushes": false,
+  "allow_deletions": false,
+  "required_conversation_resolution": true,
+  "block_creations": false,
+  "lock_branch": false,
+  "allow_fork_syncing": false
+}

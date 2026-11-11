@@ -5,6 +5,7 @@ name: CI
 on:
   push:
     branches: [development, main]
+    tags: ["candidate/backend-completion/**"]
   pull_request:
     branches: [development, main, "phase-c/**", "release/**", "codex/verify-preview-33"]
 
@@ -163,6 +164,80 @@ jobs:
         with:
           name: clocker-sql-aggregate-${{ github.event.pull_request.head.sha || github.sha }}
           path: ${{ runner.temp }}/clocker-sql-aggregate/*.json
+          if-no-files-found: error
+          retention-days: 14
+
+  management-review-ui:
+    name: management-review-ui
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Install pinned Playwright runtime
+        shell: bash
+        run: |
+          PW_ROOT="$GITHUB_WORKSPACE/tools/ci-browser-runtime"
+          npm ci --prefix "$PW_ROOT" --no-audit --no-fund
+          npm audit --prefix "$PW_ROOT" --audit-level=high
+          echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
+          echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
+      - name: Install Chromium and WebKit
+        timeout-minutes: 8
+        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+      - name: Install PostgreSQL test runtime
+        id: attendance_runtime
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-16
+          PG_INITDB="/usr/lib/postgresql/16/bin/initdb"
+          test -n "$PG_INITDB"
+          PG_BIN="$(dirname "$PG_INITDB")"
+          test -x "$PG_BIN/initdb"
+          test -x "$PG_BIN/pg_ctl"
+          echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
+      - name: Management close browser gate
+        env:
+          NEVORA_MANAGEMENT_CLOSE_UI_EVIDENCE: ${{ runner.temp }}/management-close-ui
+        run: node scripts/payroll-postgres.mjs vitest.management-close-ui-browser.config.mts
+      - name: Delegated correction browser gate
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          NEVORA_DELEGATED_UI_EVIDENCE: ${{ runner.temp }}/delegated-corrections-ui
+        run: node scripts/payroll-postgres.mjs vitest.delegated-corrections-browser.config.mts
+      - name: Verify management browser source and closure
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          MANAGEMENT_REVIEW_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node scripts/management-review-evidence.mjs "$RUNNER_TEMP/management-close-ui" "$RUNNER_TEMP/delegated-corrections-ui"
+      - name: Upload management review browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: management-review-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/management-close-ui/*.json
+            ${{ runner.temp }}/management-close-ui/*.png
+            ${{ runner.temp }}/management-close-ui/**/source-manifest.json
+            ${{ runner.temp }}/management-close-ui/**/ownership.json
+            ${{ runner.temp }}/delegated-corrections-ui/*.json
+            ${{ runner.temp }}/delegated-corrections-ui/*.png
+            ${{ runner.temp }}/delegated-corrections-ui/**/source-manifest.json
+            ${{ runner.temp }}/delegated-corrections-ui/**/ownership.json
           if-no-files-found: error
           retention-days: 14
 
@@ -385,6 +460,10 @@ jobs:
         run: node scripts/payroll-postgres.mjs vitest.native-payroll-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/native-payroll.json"
       - name: Configurable payroll isolated PostgreSQL integration gate
         run: node scripts/payroll-postgres.mjs vitest.configurable-payroll-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/configurable-payroll.json"
+      - name: Complete payroll source and contention SQL gate
+        env:
+          NEVORA_CAPACITY_EVIDENCE: ${{ runner.temp }}/capacity-evidence
+        run: node scripts/payroll-postgres.mjs vitest.payroll-source-pagination-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/payroll-source.json"
       - name: Upload dedicated payroll SQL evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -393,6 +472,8 @@ jobs:
           path: |
             ${{ runner.temp }}/native-payroll.json
             ${{ runner.temp }}/configurable-payroll.json
+            ${{ runner.temp }}/payroll-source.json
+            ${{ runner.temp }}/capacity-evidence/*.json
           if-no-files-found: error
           retention-days: 14
 
@@ -590,7 +671,7 @@ jobs:
   phase-e-evidence:
     name: phase-e-evidence
     if: ${{ always() }}
-    needs: [validate, clocker-postgres, release-postgres, phase-d-attendance-ui, phase-e-postgres, phase-e-ui]
+    needs: [validate, clocker-postgres, release-postgres, phase-d-attendance-ui, management-review-ui, phase-e-postgres, phase-e-ui]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
