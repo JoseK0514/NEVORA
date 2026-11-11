@@ -381,6 +381,7 @@ it.each(['omitted-suite', 'budget', 'skip-aggregate', 'missing-verifier', 'dupli
   const root = directory();
   put(root, '.github/workflows/ci.yml', require('js-yaml').dump(changed));
   put(root, '.github/workflows/mobile-access.yml', readFileSync('.github/workflows/mobile-access.yml','utf8'));
+  put(root, 'vitest.timestamp-token-integration.config.mts', readFileSync('vitest.timestamp-token-integration.config.mts','utf8'));
   put(root, 'vercel.json', readFileSync('vercel.json', 'utf8'));
   // Keep the unrelated Clocker contract baseline complete while mutating E.
   put(root, 'vitest.clocker-integration.config.mts', readFileSync('vitest.clocker-integration.config.mts', 'utf8'));
