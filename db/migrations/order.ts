@@ -63,6 +63,7 @@ export const BASE_MIGRATIONS = [
   '0056_clocker_identified_person_limits.sql',
   '0057_management_time_close.sql',
   '0058_delegated_time_corrections.sql',
+  '0059_payroll_export_business_identity.sql',
   '0060_monotonic_login_fence.sql',
   '0046_owner_advisor_memory.sql',
 ] as const;
