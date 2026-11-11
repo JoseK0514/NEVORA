@@ -10,6 +10,8 @@ import {openPeriodReports,reportNavigationStage,reportNavigationObservation} fro
 import {verifyReportRecoveryNavigation} from './scoped-navigation-browser-check.mjs';
 import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
 import {parseCurrentTimecards} from '../src/lib/timecards/client.ts';
+import {verifyExportReply} from '../src/lib/payroll-export/client.ts';
+import {stableExportJson} from '../src/lib/payroll-export/json.ts';
 import {observeEmployeeHoursReturn} from './employee-hours-return-diagnostic.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -215,15 +217,56 @@ try{
     const exportFiles=mp.getByRole('list',{name:'Your files',exact:true});
     const people=mp.locator('details.c-exp__item').filter({has:mp.locator('summary').filter({hasText:'People in this export'})}),openPeople=async()=>{if(!await people.evaluate(e=>e.open))await people.locator('summary').click();await waitUntilAsync(()=>people.evaluate(e=>e.open));};
     const averyExport=mp.getByRole('checkbox',{name:'Export Avery Period QA',exact:true});
-    await mp.getByRole('button',{name:'Create export',exact:true}).click();await exportFiles.getByRole('button',{name:'Download mapped CSV',exact:true}).waitFor();assert.match(await exportFiles.innerText(),/Time file/);
+    const exportReceipts=()=>q("SELECT workspace_id,actor_employee_id,operation_id::text,command_hash,payload->>'csvSha256' AS csv_sha256,payload->>'canonicalSha256' AS canonical_sha256 FROM payroll_export_receipts ORDER BY workspace_id,actor_employee_id,operation_id");
+    const captureExportResponse=async(response,command)=>{
+      const bodyText=await response.text();let body=null;try{body=JSON.parse(bodyText);}catch{/* Retain a malformed actual body before the contract assertion fails. */}
+      return {status:response.status(),command,body,bodyText};
+    };
+    const createExport=async()=>{
+      const pending=mp.waitForResponse(response=>{const target=new URL(response.url()),request=response.request();return target.origin===app.url&&target.pathname==='/api/payroll-export'&&request.method()==='POST'&&request.headers()['x-nevora-actor']==='D3-M';});
+      await mp.getByRole('button',{name:'Create export',exact:true}).click();const response=await pending;
+      return captureExportResponse(response,response.request().postDataJSON());
+    };
+    const beforeExports=await exportReceipts(),firstExport=await createExport(),exportEvidence={engine,firstCreate:firstExport,receiptStorage:{before:beforeExports}};
+    (report.payrollExports??=[]).push(exportEvidence);assert.equal(firstExport.status,200);
+    const firstPayload=await verifyExportReply(firstExport.body,firstExport.command);
+    assert.deepEqual(firstExport.command.cards.map(item=>item.employeeId),['D3-E']);
+    await exportFiles.getByRole('button',{name:'Download mapped CSV',exact:true}).waitFor();assert.match(await exportFiles.innerText(),/Time file/);
+    const firstDownloads=[];
+    for(const [name,extension] of [['Download mapped CSV','csv'],['Download canonical time record','json']]){
+      const waiting=mp.waitForEvent('download');await mp.getByRole('button',{name,exact:true}).click();const file=await waiting,path=join(evidence,`${engine}-payroll-neutral.${extension}`);await file.saveAs(path);
+      const bytes=await readFile(path);firstDownloads.push({extension,filename:file.suggestedFilename(),bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});
+    }
+    exportEvidence.firstCreate.downloads=firstDownloads;
+    const firstCsv=await readFile(join(evidence,`${engine}-payroll-neutral.csv`)),firstCanonical=await readFile(join(evidence,`${engine}-payroll-neutral.json`));
+    assert.equal(firstCsv.toString('utf8'),firstPayload.csv);assert.equal(firstCanonical.toString('utf8'),stableExportJson(firstPayload.model));
+    assert.equal(createHash('sha256').update(firstCsv).digest('hex'),firstPayload.csvSha256);assert.equal(createHash('sha256').update(firstCanonical).digest('hex'),firstPayload.canonicalSha256);
+    const afterFirst=await exportReceipts();exportEvidence.receiptStorage.afterFirst=afterFirst;assert.equal(afterFirst.length,beforeExports.length+1);assert.equal(afterFirst.filter(row=>row.operation_id===firstExport.command.operationId&&row.actor_employee_id==='D3-M').length,1);
+    checked(engine+': finalized neutral export receipt verified');checked(engine+': canonical and mapped export downloads');
     await openPeople();assert.equal(await averyExport.isChecked(),true,'Exporting everyone chose every finalized timecard');
     await mp.getByRole('button',{name:'Clear employee selection',exact:true}).click();assert.equal(await exportFiles.count(),0,'Changing the people retires the earlier files');checked(engine+': Quiet phone finalized export produces current files');
     // The access frame gives each view a 15 s window and then re-checks it (remounting the page); start the wide steps on a
-    // fresh view so a background re-check can't close the people list mid-choice. Choose exactly one person and export again.
+    // fresh view. Choosing the same sole finalized person is a fresh business duplicate, not another successful export.
     await mp.setViewportSize({width:1440,height:1000});await mp.reload();await settled(mp);
     await openPeople();assert.equal(await averyExport.isChecked(),false);await averyExport.check();assert.equal(await exportFiles.count(),0);
-    await mp.getByRole('button',{name:'Create export',exact:true}).click();await exportFiles.getByRole('button',{name:'Download mapped CSV',exact:true}).waitFor();checked(engine+': finalized neutral export receipt verified');
-    for(const [name,extension] of [['Download mapped CSV','csv'],['Download canonical time record','json']]){const waiting=mp.waitForEvent('download');await mp.getByRole('button',{name,exact:true}).click();const file=await waiting;await file.saveAs(join(evidence,`${engine}-payroll-neutral.${extension}`));}checked(engine+': canonical and mapped export downloads');await settled(mp);
+    const duplicateDownloads=[],observeDuplicateDownload=file=>duplicateDownloads.push(file.suggestedFilename());mp.on('download',observeDuplicateDownload);
+    try{
+      const duplicate=await createExport();exportEvidence.freshDuplicate={...duplicate,downloadEvents:duplicateDownloads};assert.equal(duplicate.status,409);assert.deepEqual(duplicate.body,{state:'already_generated'});
+      assert.notEqual(duplicate.command.operationId,firstExport.command.operationId);assert.deepEqual({...duplicate.command,operationId:firstExport.command.operationId},firstExport.command);
+      await mp.getByRole('status').filter({hasText:'This time record and CSV have already been exported. Use your original downloaded files. No new export was created.'}).waitFor();
+      assert.equal(await exportFiles.count(),0);assert.equal(await mp.getByRole('button',{name:'Download mapped CSV',exact:true}).count(),0);assert.equal(await mp.getByRole('button',{name:'Download canonical time record',exact:true}).count(),0);assert.equal(await mp.getByRole('button',{name:'Retry same export',exact:true}).count(),0);
+      const afterDuplicate=await exportReceipts();exportEvidence.receiptStorage.afterDuplicate=afterDuplicate;assert.deepEqual(afterDuplicate,afterFirst);assert.equal(afterDuplicate.filter(row=>row.operation_id===duplicate.command.operationId).length,0);assert.deepEqual(duplicateDownloads,[]);
+      checked(engine+': R12 fresh duplicate returns already_generated without a second operation/export or UI files');
+      // Supported recovery is authenticated exact-command API replay. There is
+      // no saved-export lookup UI here, and API replay must not restore UI files.
+      const replay=await mp.request.post(app.url+'/api/payroll-export',{headers:{origin:app.url,'x-nevora-payroll-export':'1','x-nevora-actor':'D3-M'},data:firstExport.command}),replayResult=await captureExportResponse(replay,firstExport.command);
+      exportEvidence.exactOperationRecovery={surface:'authenticated API replay; no saved-export lookup UI',...replayResult};assert.equal(replayResult.status,200);
+      const recovered=await verifyExportReply(replayResult.body,firstExport.command);assert.deepEqual(recovered,firstPayload);
+      assert.equal(recovered.operationId,firstExport.command.operationId);assert.deepEqual(Buffer.from(recovered.csv,'utf8'),firstCsv);assert.deepEqual(Buffer.from(stableExportJson(recovered.model),'utf8'),firstCanonical);
+      const afterReplay=await exportReceipts();exportEvidence.receiptStorage.afterReplay=afterReplay;assert.deepEqual(afterReplay,afterFirst);assert.equal(await exportFiles.count(),0);assert.deepEqual(duplicateDownloads,[]);
+      checked(engine+': R12 original operation API replay recovers identical bytes and receipt under current Manager authority');
+    }finally{mp.off('download',observeDuplicateDownload);}
+    await settled(mp);
     // The downloads above can use most of the access frame's 15 s view window; the mapping steps start on a fresh view so
     // a slow background refresh can't retire the page mid-save.
     await mp.reload();await settled(mp);await mp.locator('summary').filter({hasText:'File format'}).click();await mp.getByLabel('Profile name',{exact:true}).fill('Fictional customer CSV');await mp.getByLabel('Payroll product / edition',{exact:true}).fill('Fictional provider');await mp.getByRole('checkbox',{name:/I verified the required fields/}).check();await mp.getByRole('button',{name:'Save mapping profile',exact:true}).click();await mp.getByRole('status').filter({hasText:'Mapping saved as revision 1'}).waitFor();checked(engine+': current manager configurable mapping save');

@@ -108,7 +108,15 @@ export function PayrollExport({initialPeriod,actorId,tabs=null}:{initialPeriod:P
  const send=async(command:ExportCommand)=>{
   if(!currentActor){clearProtected.current('Export access ended',true);return;}
   if(mutating.current||busy||!cards||performance.now()>=validUntil.current){if(performance.now()>=validUntil.current)clearProtected.current('Export data expired. Refresh a current protected snapshot.');return;}cancelRefresh.current();mutating.current=true;setBusy(true);setNotice('');setResult(null);setRetry(command);const current=generation.current.value;
-  try{const response=await fetch('/api/payroll-export',{method:'POST',cache:'no-store',credentials:'same-origin',headers,body:JSON.stringify(command)});if(current!==generation.current.value)return;if(response.status===401||response.status===403){clearProtected.current('Export access ended',true);return;}if(response.status===409){setRetry(null);setNotice('The finalized revision or mapping changed. Refresh and review again.');return;}if(!response.ok)throw new Error();const verified=await verifyExportReply(await response.json(),command);if(current!==generation.current.value)return;if(performance.now()>=validUntil.current){clearProtected.current('Export data expired. Refresh a current protected snapshot.');return;}setResult(verified);setRetry(null);setNotice('Files verified. Download the mapped CSV and its canonical time record.');}catch{if(current===generation.current.value)setNotice('The export outcome is unconfirmed. Retry this same generation to retrieve its receipt.');}finally{if(current===generation.current.value){mutating.current=false;setBusy(false);}}
+  try{const response=await fetch('/api/payroll-export',{method:'POST',cache:'no-store',credentials:'same-origin',headers,body:JSON.stringify(command)});if(current!==generation.current.value)return;if(response.status===401||response.status===403){clearProtected.current('Export access ended',true);return;}
+   if(response.status===409){
+    setRetry(null);
+    const body=await response.json().catch(()=>null);
+    if(current!==generation.current.value)return;
+    if(performance.now()>=validUntil.current){clearProtected.current('Export data expired. Refresh a current protected snapshot.');return;}
+    setNotice(body?.state==='already_generated'?'This time record and CSV have already been exported. Use your original downloaded files. No new export was created.':'The finalized revision or mapping changed. Refresh and review again.');return;
+   }
+   if(!response.ok)throw new Error();const verified=await verifyExportReply(await response.json(),command);if(current!==generation.current.value)return;if(performance.now()>=validUntil.current){clearProtected.current('Export data expired. Refresh a current protected snapshot.');return;}setResult(verified);setRetry(null);setNotice('Files verified. Download the mapped CSV and its canonical time record.');}catch{if(current===generation.current.value)setNotice('The export outcome is unconfirmed. Retry this same generation to retrieve its receipt.');}finally{if(current===generation.current.value){mutating.current=false;setBusy(false);}}
  };
  const save=async()=>{
   if(!currentActor){clearProtected.current('Export access ended',true);return;}

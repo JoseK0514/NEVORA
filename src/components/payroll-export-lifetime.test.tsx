@@ -45,6 +45,50 @@ function selectEmployee(){const checkbox=control(n=>n.type==='input'&&n.props.ty
 beforeEach(()=>{actorId='OWNER';host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];vi.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});vi.stubGlobal('window',new EventTarget());vi.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));vi.stubGlobal('navigator',{onLine:true});});
 afterEach(()=>{cleanup?.();cleanup=undefined;vi.unstubAllGlobals();vi.useRealTimers();});
 
+it('explains a fresh duplicate export without retaining old files or offering an uncertain-operation retry',async()=>{
+ generatedReads(45000);const success=fetch,commands:ExportCommand[]=[];
+ vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{
+  if(path==='/api/payroll-export'){
+   commands.push(JSON.parse(String(init?.body)));
+   if(commands.length>1)return Response.json({state:'already_generated'},{status:409});
+  }
+  return success(path,init);
+ });
+ await mount();selectEmployee();click('Create export');
+ await vi.waitFor(()=>expect(html()).toContain('Download mapped CSV'),{interval:1});
+ click('Clear employee selection');selectEmployee();click('Create export');await flush();
+ expect(commands).toHaveLength(2);expect(commands[1].operationId).not.toBe(commands[0].operationId);
+ expect({...commands[1],operationId:commands[0].operationId}).toEqual(commands[0]);
+ expect(html()).toContain('This time record and CSV have already been exported. Use your original downloaded files. No new export was created.');
+ expect(html()).not.toContain('The finalized revision or mapping changed.');
+ expect(html()).not.toContain('Download mapped CSV');expect(html()).not.toContain('Download canonical time record');
+ expect(html()).not.toContain('Retry same export');expect(control(n=>n.type==='button'&&controlName(n)==='Create export').disabled).toBe(false);
+});
+it.each(['conflict','unknown','malformed'])('keeps a %s 409 distinct from a confirmed duplicate and an unknown transport outcome',async kind=>{
+ reads();await mount();vi.stubGlobal('fetch',async()=>kind==='malformed'?new Response('not json',{status:409}):Response.json({state:kind},{status:409}));
+ selectEmployee();click('Create export');await flush();
+ expect(html()).toContain('The finalized revision or mapping changed. Refresh and review again.');
+ expect(html()).not.toContain('already been exported');expect(html()).not.toContain('Retry same export');expect(html()).not.toContain('Download mapped CSV');
+});
+it.each(['blur','account','source'])('fences a delayed duplicate response body after %s invalidation',async kind=>{
+ reads();await mount();const body=deferred<unknown>();let parsed=false;
+ vi.stubGlobal('fetch',async(path:string)=>path==='/api/payroll-export'?{ok:false,status:409,json:()=>{parsed=true;return body.promise;}}
+  :kind==='account'?new Response(null,{status:403}):Response.json(path==='/api/timecards'?{...ready(),cards:[]}:mappings()));
+ selectEmployee();click('Create export');await flush();expect(parsed).toBe(true);
+ windowEvent(kind==='account'?'storage':kind==='source'?'pageshow':'blur');await flush();
+ body.resolve({state:'already_generated'});await flush();
+ expect(html()).not.toContain('PRIVATE Payroll Employee');expect(html()).not.toContain('already been exported');expect(html()).not.toContain('Download mapped CSV');expect(html()).not.toContain('Retry same export');
+ if(kind==='account')expect(html()).toContain('Export access ended');
+ if(kind==='source')expect(html()).toContain('Nothing ready to export yet');
+});
+it('checks the original server deadline after duplicate JSON even when the expiry timer has not fired',async()=>{
+ reads(1000);await mount();const body=deferred<unknown>();let parsed=false;
+ vi.stubGlobal('fetch',async()=>({ok:false,status:409,json:()=>{parsed=true;return body.promise;}}));
+ selectEmployee();click('Create export');await flush();expect(parsed).toBe(true);
+ const lateNow=vi.spyOn(performance,'now').mockReturnValue(performance.now()+1001);
+ try{body.resolve({state:'already_generated'});await flush();expect(html()).toContain('Export data expired.');expect(html()).not.toContain('already been exported');expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Retry same export');}finally{lateNow.mockRestore();}
+});
+
 it('expires the rendered payroll snapshot on its original server deadline',async()=>{reads(1000);await mount();expect(html()).toContain('PRIVATE Payroll Employee');expect(html()).toContain('PRIVATE Mapping');stallReadReplacements();await vi.advanceTimersByTimeAsync(1001);expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Create export');});
 it.each([undefined,0,-1,45001,Infinity,'1000'])('fails closed for unconfirmed payroll lifetime %s',async validForMs=>{reads(validForMs);await mount();expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Create export');});
 it('subtracts JSON and paired-profile latency instead of restarting the snapshot lifetime',async()=>{const mappingBody=deferred<unknown>();vi.stubGlobal('fetch',async(path:string)=>path==='/api/timecards'?Response.json(ready(1000)):{ok:true,status:200,json:()=>mappingBody.promise});await mount();await vi.advanceTimersByTimeAsync(800);mappingBody.resolve(mappings());await flush();expect(html()).toContain('PRIVATE Payroll Employee');stallReadReplacements();await vi.advanceTimersByTimeAsync(201);expect(html()).not.toContain('PRIVATE');});
