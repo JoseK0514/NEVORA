@@ -53,6 +53,7 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     expect(await page.locator('textarea').count()).toBe(0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
     await page.goto(url);await page.locator('dialog[open]').waitFor();await page.getByRole('button',{name:'Close open punch',exact:true}).click();await end.waitFor();expect(await reason.inputValue()).toBe('');
     surfacePhase='confirmation';const chosen=formatBusinessDateTimeInput(new Date(Date.now()-30*60000).toISOString(),'America/Puerto_Rico');await end.fill(chosen);await reason.fill('Verified last worked time; worker and tablet are unavailable.');
+    expect(await page.locator('textarea').evaluate((el:HTMLTextAreaElement)=>el.labels![0].textContent?.trim())).toBe('Reason for closing');
     const confirmation=page.getByLabel('I verified this end time and reason.',{exact:true});
     expect(await confirmation.evaluate((el:HTMLInputElement)=>el.labels![0].getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
     if(engine==='chromium'){await reason.focus();await page.keyboard.press('Tab');expect(await confirmation.evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);await page.keyboard.press('Space');}
