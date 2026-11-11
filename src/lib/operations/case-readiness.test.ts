@@ -45,10 +45,22 @@ describe('read-only operations case review', () => {
     });
     expect(JSON.stringify(m)).toBe(before);
   });
-  it.each(['environment', 'workspaceId', 'incarnationId', 'sourceSha', 'operation', 'reference', 'subjectRef'] as const)('blocks mismatched %s', key => {
+  const foreignValues: CaseBinding = {
+    environment: 'production', workspaceId: 'workspace_other',
+    incarnationId: '22222222-2222-4222-8222-222222222222', sourceSha: 'b'.repeat(40),
+    operation: 'withdrawal', reference: 'case_other', subjectRef: 'employee_other',
+  };
+  it.each(Object.keys(foreignValues) as (keyof CaseBinding)[])('blocks valid foreign %s', key => {
     const m = completion();
-    const expected = { ...binding, [key]: key === 'subjectRef' ? 'other_person' : 'different' };
-    expect(reviewOperationsCase(m, expected as CaseBinding, now).decision).toBe('blocked');
+    const expected = { ...binding, [key]: foreignValues[key] };
+    expect(reviewOperationsCase(m, expected as CaseBinding, now)).toEqual({
+      decision: 'blocked', reasons: ['BINDING_MISMATCH'], evidence: 'operator_attestations_only', canMutate: false, canActivate: false,
+    });
+  });
+  it.each(['environment', 'incarnationId', 'sourceSha', 'operation'] as const)('rejects malformed expected %s separately from a foreign binding', key => {
+    const m = completion();
+    const expected = { ...binding, [key]: 'different' };
+    expect(reviewOperationsCase(m, expected as CaseBinding, now).reasons).toEqual(['INVALID_EVIDENCE_RECORD']);
   });
   it('does not turn malformed input or unknown personal-data fields into an exception or diagnostic leak', () => {
     for (const m of [null, [], 'private_marker', { ...completion(), email: 'private_marker@example.invalid' }]) {
