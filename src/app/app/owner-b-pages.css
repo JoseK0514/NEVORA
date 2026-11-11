@@ -74,7 +74,7 @@
     html body .app-shell[data-nv-b] .c-page > .c-nav--phone ~ .c-phone-sub { display: block !important; font-size: 14px !important; line-height: 19px !important; }
     /* Segmented controls on the hero are frosted glass with a white thumb. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg), .c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg) {
-      margin: 0 !important; padding: 4px !important; border-radius: 14px !important; background: linear-gradient(rgb(255 255 255 / 0.12), rgb(255 255 255 / 0.12)), #08504C !important;
+      margin: 0 !important; padding: var(--b-seg-pad) !important; border-radius: var(--b-seg-r) !important; background: linear-gradient(rgb(255 255 255 / 0.12), rgb(255 255 255 / 0.12)), #08504C !important;
       box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16), 0 0 0 16px #08504C, 0 -14px 0 16px #08504C !important;
     }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg), .c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg) :is(a, button) { color: var(--b-on-band) !important; background: transparent !important; }
@@ -85,11 +85,11 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg) { margin: 0 16px !important; }
     html body .app-shell[data-nv-b] :is(.q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg), .c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg) > :is(a, button)::before { display: none !important; }
 
-    html body .app-shell[data-nv-b] .q-page > .q-hd + section > .q-seg:first-child { background: linear-gradient(rgb(255 255 255 / 0.12), rgb(255 255 255 / 0.12)), #08504C !important; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16), 0 0 0 16px #08504C, 0 -16px 0 16px #08504C !important; border-radius: 14px !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-hd + section > .q-seg:first-child { background: linear-gradient(rgb(255 255 255 / 0.12), rgb(255 255 255 / 0.12)), #08504C !important; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16), 0 0 0 16px #08504C, 0 -16px 0 16px #08504C !important; border-radius: var(--b-seg-r) !important; }
     html body .app-shell[data-nv-b] .q-page > .q-hd + section > .q-seg:first-child > button { color: var(--b-on-band) !important; background: transparent !important; }
     html body .app-shell[data-nv-b] .q-page > .q-hd + section > .q-seg:first-child > button:is([aria-pressed="true"], [aria-selected="true"], [aria-current="page"]) { color: #0B3B38 !important; background: #FFFFFF !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg), .c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg) { height: auto !important; gap: 0 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg), .c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg) > :is(a, button) { height: 36px !important; min-height: 36px !important; margin: 0 !important; border-radius: 10px !important; font-size: 14px !important; font-weight: 600 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg), .c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg) > :is(a, button) { height: var(--b-seg-item-h) !important; min-height: var(--b-seg-item-h) !important; margin: 0 !important; border-radius: var(--b-seg-item-r) !important; font-size: var(--b-seg-fs) !important; font-weight: 600 !important; }
     /* The teal runs on 44px under the hero's last line, so the first card lifts over it. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > .c-nav--phone ~ .c-phone-sub, .q-page > .q-nav + .q-hd) { box-shadow: 0 -14px 0 #08504C !important; }
     /* Everything after the hero sits above that band. */
@@ -169,7 +169,7 @@
     html body .app-shell[data-nv-b] :is(.q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg), .c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg, .q-page > .q-hd + section > .q-seg:first-child)::after { content: none !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg), .c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg, .q-page > .q-hd + section > .q-seg:first-child) + * { margin-top: 34px !important; }
     html body .app-shell[data-nv-b] .q-page > .q-hd + section > .q-seg:first-child { margin: 0 16px 34px !important; }
-    html body .app-shell[data-nv-b] .q-page > .q-hd + section > .q-seg:first-child > button { height: 36px !important; min-height: 36px !important; margin: 0 !important; border-radius: 10px !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-hd + section > .q-seg:first-child > button { height: var(--b-seg-item-h) !important; min-height: var(--b-seg-item-h) !important; margin: 0 !important; border-radius: var(--b-seg-item-r) !important; }
     html body .app-shell[data-nv-b] .q-page > .q-hd + section > .q-seg:first-child > button::before { display: none !important; }
     @media (max-width: 359px) { html body .app-shell[data-nv-b] :is(.c-seg, .q-seg) > :is(a, button) { padding: 0 4px !important; font-size: 12.5px !important; letter-spacing: -0.01em !important; } }
 
@@ -201,9 +201,9 @@
 
     /* Segmented controls in content: a soft pill track and a white thumb. */
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.q-seg, .c-seg):not(.q-page > .q-nav + .q-hd + *, .c-page > .c-nav--phone + * + .c-seg, .c-page > .c-nav--phone + .c-seg, .q-page > .q-hd + section > .q-seg:first-child) {
-      border-radius: 12px !important; padding: 3px !important; background: #E6EBEA !important; box-shadow: none !important;
+      border-radius: var(--b-seg-r) !important; padding: var(--b-seg-pad) !important; background: #E6EBEA !important; box-shadow: none !important;
     }
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.q-seg, .c-seg):not(.q-page > .q-nav + .q-hd + *, .c-page > .c-nav--phone + * + .c-seg, .c-page > .c-nav--phone + .c-seg, .q-page > .q-hd + section > .q-seg:first-child) > :is(a, button) { border-radius: 9px !important; font-weight: 600 !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.q-seg, .c-seg):not(.q-page > .q-nav + .q-hd + *, .c-page > .c-nav--phone + * + .c-seg, .c-page > .c-nav--phone + .c-seg, .q-page > .q-hd + section > .q-seg:first-child) > :is(a, button) { border-radius: var(--b-seg-item-r) !important; font-weight: 600 !important; }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .c-seg[data-slide]::before { border-radius: 9px !important; }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .q-seg > :is([aria-pressed="true"], [aria-selected="true"], [aria-current="page"]) { background: #FFFFFF !important; box-shadow: 0 1px 3px rgb(16 24 32 / 0.14) !important; color: var(--b-ink) !important; }
 

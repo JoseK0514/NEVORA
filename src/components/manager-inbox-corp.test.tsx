@@ -185,8 +185,9 @@ it('Direction B (phones): glass filters with counts, Find cover on each open shi
   const withReview = items.map(entry => entry.type === 'TIME_OFF' ? {...entry, detail: 'Ana Colon', request: {startDate: '2026-11-12', endDate: '2026-11-14', lengthText: '3 days', locationName: 'Condado', reviewHref: '/app/requests?tab=pending&requestId=r1&from=inbox'}} as ActionItem : entry);
   const html = onlyB(page({snapshot: ready(withReview), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true})).replace(/\u00a0/g, ' ');
   expect(html).toContain('<h1 id="b-todo-title" tabindex="-1">Things to do</h1>');
-  expect(html).toMatch(/aria-pressed="true">All \d+<\/button>/);
-  expect(html).toContain('>Shifts 1</button>');
+  // Review F5 (NV-103): each filter's count is the segmented control's count pill; its name still reads "Shifts, 1".
+  expect(html).toMatch(/aria-pressed="true" aria-label="All, \d+">All<span class="c-count c-num">\d+<\/span><\/button>/);
+  expect(html).toContain('aria-label="Shifts, 1">Shifts<span class="c-count c-num">1</span></button>');
   // Review B1 (NV-078): one teal primary per screen, so a row's Find cover is a ghost pill.
   expect(html).toMatch(/class="b-btn b-btn--ghost"[^>]*>Find cover<\/a>/);
   expect(html).toContain('<input type="hidden" name="requestId" value="r1"/><input type="hidden" name="returnTo" value="inbox"/><input type="hidden" name="returnFilter" value="all"/>');

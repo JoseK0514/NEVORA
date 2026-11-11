@@ -414,6 +414,10 @@ function AppShellView({
       {/* Review B2 (NV-011): Help is one click away at every width (on desktop it was only a back-link target or in Ctrl K). */}
       <Link href="/app/help" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Help</Link>
+      {/* Review F5 (NV-011): an Employee's or Lead's phone More lists Help and Privacy and terms together ("Help and legal");
+        * on tablets and desktop the account menu holds both, so nothing More reaches is further away there. */}
+      {employee ? <Link href="/privacy" className="nevora-action-menu-item"
+        onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Privacy and terms</Link> : null}
       <div className="nevora-action-menu-divider" />
       <PortalSignout><button className="nevora-action-menu-item portal-account-signout" type="submit">Sign out</button></PortalSignout>
     </PortalAccountMenu>

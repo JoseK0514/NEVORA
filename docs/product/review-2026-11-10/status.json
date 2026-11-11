@@ -92,19 +92,19 @@
  {
   "id": "NV-011",
   "severity": "High",
-  "status": "partly",
-  "remainder": "ui",
-  "by": "F2",
-  "note": "\"\u2039 More\" hidden where the rail has no More; an optional desktop More group not added.",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F5",
+  "note": "Every page a phone's More reaches is in the desktop sidebar, account menu, or one step away.",
   "inCodexHandoff": false
  },
  {
   "id": "NV-012",
   "severity": "High",
-  "status": "partly",
-  "remainder": "ui",
-  "by": "F2/F3",
-  "note": "Copy fixed, segment on the band; harness still sometimes shows \"didn't load\" (not reproducible live).",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F5",
+  "note": "Not a client bug: in the dev harness the Owner notifications read takes 5-6 s and the 15 s private-read window (a privacy rule) expires first. Copy and band placement fixed earlier.",
   "inCodexHandoff": false
  },
  {
@@ -659,10 +659,10 @@
  {
   "id": "NV-074",
   "severity": "Medium",
-  "status": "partly",
-  "remainder": "ui",
-  "by": "F2/F3",
-  "note": "B placeholder draws band and cards; exact per-route band heights not practical (depend on role and data).",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F5",
+  "note": "Placeholder band matches each main tab's loaded height for every role (0px jump measured on all ten tabs).",
   "inCodexHandoff": false
  },
  {
@@ -920,10 +920,10 @@
  {
   "id": "NV-103",
   "severity": "Medium",
-  "status": "partly",
-  "remainder": "ui",
-  "by": "F3",
-  "note": "Notifications and Availability segments on the band; one segmented geometry not unified.",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F5",
+  "note": "One segmented control (--b-seg-*) on the band and on white; Updates and Notifications filters on the band on desktop.",
   "inCodexHandoff": false
  },
  {
@@ -1523,10 +1523,10 @@
  {
   "id": "NV-170",
   "severity": "Medium",
-  "status": "partly",
-  "remainder": "ui",
-  "by": "F3",
-  "note": "Employee field focus fixed; the rail count badge still overlaps the focus ring.",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F5",
+  "note": "Sidebar and rail focus ring drawn above the count badge (Tab-checked at 900 and 1440).",
   "inCodexHandoff": false
  },
  {

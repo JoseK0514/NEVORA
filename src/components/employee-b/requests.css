@@ -72,7 +72,7 @@
    * size (the Owner pages' narrow rule shrinks every segmented control); the approval title never leaves one word alone. */
   @media (max-width: 359px) {
     html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-row { grid-template-columns: minmax(0, 1fr) !important; }
-    html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-seg > button { font-size: 14.5px !important; letter-spacing: 0 !important; }
+    html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-seg > button { font-size: var(--b-seg-fs) !important; letter-spacing: 0 !important; }
   }
 
   /* Inspection round 2 (Requests and shifts). */

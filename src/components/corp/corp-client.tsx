@@ -4,6 +4,7 @@ import "./corp.css";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
+import { BLoadingScreen } from "../owner-b/b-kit";
 
 /* Owner premium (Oct 31, 2026): the kit's client pieces. Presentation and navigation only; no data is read or written. */
 
@@ -206,7 +207,12 @@ export function CorpSkeleton({ route, label }: { route?: string; label: string }
   const owner = (route && OWNER[route]) || null, employee = (route && EMPLOYEE[route]) || null;
   const titleOf = (shape: Shape) => remembered ?? shape.title ?? null;
   // A route both roles open with different pages draws both; the Employee shell (#employee-mobile) shows its own.
-  return <div className="c-page c-embed c-skel" data-corp="" data-route={route} aria-hidden="true">
+  // Review F5 (NV-074): under Direction B (every shell) a tab tap draws the same placeholder as the access check that
+  // follows: the band at the tab's loaded height and card blocks (b-foundation.css), never the retired white header and
+  // corporate title. The class lets the B layers treat it as that placeholder at every width; the shapes below stay for
+  // any surface without a B screen.
+  return <div className="c-page c-embed c-skel c-route-state--checking" data-corp="" data-route={route} aria-hidden="true">
+    <BLoadingScreen />
     {owner && employee ? <>
       <SkelShape shape={owner} title={titleOf(owner)} variant="owner" />
       <SkelShape shape={employee} title={titleOf(employee)} variant="employee" />

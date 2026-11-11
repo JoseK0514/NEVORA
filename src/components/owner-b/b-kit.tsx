@@ -200,6 +200,14 @@ const STATE_LOOK: Record<BStateKind, { tone: BTone; icon: ReactNode }> = {
   // Review B5 (NV-254): nothing here yet; pass the page's own glyph as `icon`.
   empty: { tone: "grey", icon: <WarningCircleIcon weight="bold" /> },
 };
+/** Review F2/F5 (NV-074): a page's loading placeholder in Direction B: the band (each main tab's own height, from
+ * b-foundation.css) with a title bar, then two 22px cards of #ECEEEF bars. The access check (ScopedReadFrame) and a route's
+ * loading.tsx (CorpSkeleton) both draw it, so a tab tap and the check that follows look the same. */
+export function BLoadingScreen() {
+  return <BScreen><BHero title={<><span className="b-skel b-skel--title" aria-hidden="true" /><span className="b-sr">Loading…</span></>} />
+    <BStack>{[0, 1].map(card => <BCard key={card}><div className="b-skel-card" aria-hidden="true"><span className="b-skel b-skel--head" /><span className="b-skel" /><span className="b-skel" /><span className="b-skel b-skel--short" /></div></BCard>)}</BStack></BScreen>;
+}
+
 export function BState({ kind, title, line, action, children, icon, alert }: { kind: BStateKind; title?: ReactNode; line?: ReactNode;
   action?: { label: ReactNode; onClick?: () => void; href?: string; busy?: boolean }; children?: ReactNode; icon?: ReactNode; alert?: boolean }) {
   const look = STATE_LOOK[kind];

@@ -340,7 +340,7 @@
     html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins { position: relative !important; padding-top: 0 !important; }
     html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins::before { content: "" !important; position: absolute !important; top: -16px !important; left: 0 !important; right: 0 !important; height: 150px !important; z-index: 0 !important; background: #08504C !important; pointer-events: none !important; }
     html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search { margin: 0 !important; height: 46px !important; min-height: 46px !important; padding: 0 14px !important; border: 0 !important; border-radius: 14px !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; color: var(--b-on-band) !important; }
-    html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] { margin: 12px 0 0 !important; padding: 4px !important; border: 0 !important; border-radius: 14px !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
+    html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] { margin: 12px 0 0 !important; padding: var(--b-seg-pad) !important; border: 0 !important; border-radius: var(--b-seg-r) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
     html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg + * { margin-top: 40px !important; }
   }
   @media (min-width: 768px) {
@@ -350,8 +350,8 @@
     html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins { display: flex !important; flex-flow: row wrap !important; align-items: flex-start !important; column-gap: 12px !important; row-gap: 12px !important; padding: 0 !important; }
     html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > * { flex: 1 1 100% !important; min-width: 0 !important; }
     html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search { flex: 0 1 520px !important; height: 46px !important; min-height: 46px !important; margin: 0 !important; padding: 0 16px !important; border: 0 !important; border-radius: 23px !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; color: var(--b-on-band) !important; }
-    html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] { flex: none !important; width: auto !important; height: 46px !important; margin: 0 0 36px 12px !important; padding: 4px !important; border: 0 !important; border-radius: 16px !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
-    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg > button { height: 38px !important; min-height: 38px !important; padding: 0 16px !important; border-radius: 12px !important; }
+    html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] { flex: none !important; width: auto !important; height: var(--b-seg-h) !important; margin: 0 0 36px 12px !important; padding: var(--b-seg-pad) !important; border: 0 !important; border-radius: var(--b-seg-r) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
+    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg > button { height: var(--b-seg-item-h) !important; min-height: var(--b-seg-item-h) !important; padding: 0 var(--b-seg-item-px) !important; border-radius: var(--b-seg-item-r) !important; }
   }
   html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search :is(.c-ic, input) { color: var(--b-on-band) !important; }
   html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search input::placeholder { color: var(--b-on-band) !important; opacity: 1 !important; }
@@ -500,4 +500,121 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
       display: flex !important; width: fit-content !important; min-width: 96px !important; min-height: 48px !important; margin-left: auto !important; padding: 0 24px !important;
     }
   }
+}
+
+/* ---------- Review fix pass F5 (Nov 11, 2026). Every declaration here is !important, so the whole block is in nv-b. ---------- */
+@layer nv-b {
+  /* NV-170: on tablets and desktop a sidebar or rail entry's focus ring is drawn above its count badge. The ring is the
+   * entry's own 2px inset teal edge (the rail clips anything outside it), painted by ::after over the badge, which is
+   * positioned inside the entry; the outline it replaces was painted under the badge. */
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b] aside.sidebar .nav-link { position: relative !important; }
+    html body .app-shell[data-nv-b] aside.sidebar .nav-link:focus-visible { outline: none !important; }
+    html body .app-shell[data-nv-b] aside.sidebar .nav-link:focus-visible::after {
+      content: "" !important; display: block !important; position: absolute !important; inset: 0 !important; height: auto !important;
+      margin: 0 !important; z-index: 2 !important; border-radius: inherit !important; pointer-events: none !important;
+      box-shadow: inset 0 0 0 var(--b-focus-width) var(--b-focus) !important; background: none !important;
+    }
+  }
+  /* NV-170: on tablets the rail's entries are 48px (touch targets), so its column is 48px too; at 40px it clipped their
+   * right edge, the focus ring's included. */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar { padding-left: 12px !important; padding-right: 12px !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar :is(.sidebar-nav, .sidebar-nav-group) { width: 48px !important; }
+  }
+  /* NV-074: while a main tab loads, its band is as tall as the loaded tab's (--b-ph-band, set below per tab and role), so
+   * the page lands without the cards jumping. Three placeholders take it: the access check's and a tab tap's (the shared
+   * BLoadingScreen, .c-route-state--checking) and an Employee or Lead screen whose first card is still loading. */
+  html body .app-shell[data-nv-b] :is(.c-route-state--checking > .b-screen, .b-screen:has(> .b-stack > :first-child :is(.b-statecard[data-kind="loading"], p.b-state[role="status"]))) > .b-hero {
+    box-sizing: border-box !important; min-height: var(--b-ph-band, 0px) !important;
+  }
+
+  /* NV-103: one segmented control. Every page filter and tab switch (Things to do, Timecards, Payroll's tabs, Updates,
+   * Notifications, Availability, Time off's lists and its All day / Part of day, Pick up and swap, Team's filters, Clocker
+   * PINs) has the same geometry on the band (glass) and on white: a 44px pill track 4px in, 36px pill items with a 44px hit
+   * area, 14/600 labels, 16px item padding on tablets and desktop, and a 20px count pill of 12/700 beside the label. The
+   * tokens are in b-tokens.css; the older B rules that set these properties read the same tokens. Colours stay with each
+   * context (glass or the grey track on white), and so does each control's behaviour. Phones keep their equal-width columns;
+   * a phone track with three or more items keeps its narrower type so its labels fit. */
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) {
+    box-sizing: border-box !important; height: var(--b-seg-h) !important; min-height: var(--b-seg-h) !important; padding: var(--b-seg-pad) !important;
+    border: 0 !important; border-radius: var(--b-seg-r) !important; gap: 0 !important;
+  }
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) {
+    position: relative !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; box-sizing: border-box !important;
+    height: var(--b-seg-item-h) !important; min-height: var(--b-seg-item-h) !important; margin: 0 !important; border-radius: var(--b-seg-item-r) !important;
+    font-weight: 600 !important; line-height: 20px !important; white-space: nowrap !important;
+  }
+  /* The 44px hit area is the track's height; a thumb drawn by a pseudo-element is the item's own pill. */
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button)::after { content: "" !important; position: absolute !important; inset: calc(-1 * var(--b-seg-pad)) 0 !important; }
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button)::before { inset: 0 !important; border-radius: var(--b-seg-item-r) !important; }
+  html body .app-shell[data-nv-b] :is(.q-seg, .c-seg)[data-slide]::before { top: var(--b-seg-pad) !important; bottom: var(--b-seg-pad) !important; border-radius: var(--b-seg-item-r) !important; }
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) { padding: 0 var(--b-seg-item-px) !important; font-size: var(--b-seg-fs) !important; letter-spacing: 0 !important; }
+  }
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters):not(:has(> :nth-child(3))) > :is(a, button) { font-size: var(--b-seg-fs) !important; letter-spacing: 0 !important; }
+  }
+  /* The count pill: the label's colour at 16% behind it; teal on the white thumb; amber stays amber (For you). */
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.c-count, .eb-segn, .c-pins__count, b) {
+    display: inline-grid !important; place-items: center !important; box-sizing: border-box !important; min-width: var(--b-seg-count-h) !important; height: var(--b-seg-count-h) !important;
+    margin: 0 0 0 var(--b-seg-count-gap) !important; padding: 0 var(--b-seg-count-px) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-seg-count-fs) !important; font-weight: 700 !important;
+    line-height: 1 !important; letter-spacing: 0 !important; opacity: 1 !important; color: inherit !important; background: color-mix(in srgb, currentColor 16%, transparent) !important;
+  }
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is([aria-pressed="true"], [aria-current="page"], [aria-selected="true"]) :is(.c-count, .eb-segn, .c-pins__count, b) { background: var(--b-teal-50) !important; color: var(--b-teal) !important; }
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) .eb-segn--amber { background: var(--b-amber-50) !important; color: var(--b-amber) !important; }
+  /* Narrow phones (320–359px): a track of three or more items without a sliding thumb (Insights' periods, Things to do's
+   * filters, Pick up and swap) gives each item its label's width plus an equal share of what is left, so a long label isn't
+   * clipped or pressed to its thumb's edge while a short one has room to spare (equal columns clipped "This week" by 4px at
+   * 320). A track whose thumb slides (data-slide) keeps its equal columns, which the thumb's position is computed from. */
+  @media (max-width: 359px) {
+    html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg):not([data-slide]):has(> :nth-child(3)) { grid-template-columns: none !important; grid-auto-flow: column !important; grid-auto-columns: auto !important; }
+    html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg):not([data-slide]):has(> :nth-child(3)) > :is(a, button) { flex: 1 1 auto !important; min-width: 0 !important; padding-left: 4px !important; padding-right: 4px !important; }
+  }
+  /* Team's filters (on white, in the people card): the same track as the other controls on white, scrolling on a phone. */
+  html body .app-shell[data-nv-b] .b-filters {
+    display: flex !important; width: fit-content !important; max-width: calc(100% - 36px) !important; margin: 14px 18px 4px !important; overflow-x: auto !important;
+    background: var(--b-quiet) !important; box-shadow: inset 0 0 0 1px #E3E6E7 !important;
+  }
+  html body .app-shell[data-nv-b] .b-filters > button { flex: none !important; padding: 0 14px !important; background: transparent !important; box-shadow: none !important; color: var(--b-grey-on-fill) !important; }
+  html body .app-shell[data-nv-b] .b-filters > button[aria-pressed="true"] { background: #FFFFFF !important; color: var(--b-ink) !important; box-shadow: 0 1px 3px rgb(16 40 38 / 0.14) !important; }
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b] .b-filters { max-width: calc(100% - 44px) !important; margin: 16px 22px 8px !important; -webkit-mask-image: none !important; mask-image: none !important; }
+    html body .app-shell[data-nv-b] .b-filters > button { padding: 0 var(--b-seg-item-px) !important; }
+  }
+}
+/* NV-103, narrow phones (320–359px): a track of three or more items takes 12.5px labels and a compact 18px count pill
+ * (11/700, 4px in, 4px from its label), so Things to do's four filters and their counts fit inside the 280px track.
+ * Custom properties only: every rule that sets these reads the tokens. */
+@media (max-width: 359px) {
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters):has(> :nth-child(3)) {
+    --b-seg-fs: 12.5px; --b-seg-count-h: 18px; --b-seg-count-fs: 11px; --b-seg-count-px: 4px; --b-seg-count-gap: 4px;
+  }
+}
+/* NV-074: the main tabs' loaded band heights (the hero's height on a phone, from the top of the screen; on tablets and
+ * desktop from the hero's top under the top bar), measured with fictional rich data at 390 and 1440. The tab is the
+ * sidebar entry that is the current page, so each route and role (Owner and Manager, or Employee and Lead) has its own. */
+@media (max-width: 767px) {
+  html body .app-shell[data-nv-b]:not([data-employee-mobile]):has(#desktop-primary-navigation a.nav-link[href="/app"][aria-current="page"]) { --b-ph-band: 318px; }
+  html body .app-shell[data-nv-b]:not([data-employee-mobile]):has(#desktop-primary-navigation a.nav-link[href="/app/schedule"][aria-current="page"]) { --b-ph-band: 469px; }
+  html body .app-shell[data-nv-b]:not([data-employee-mobile]):has(#desktop-primary-navigation a.nav-link[href="/app/timecards"][aria-current="page"]) { --b-ph-band: 339px; }
+  html body .app-shell[data-nv-b]:not([data-employee-mobile]):has(#desktop-primary-navigation a.nav-link[href="/app/payroll"][aria-current="page"]) { --b-ph-band: 361px; }
+  html body .app-shell[data-nv-b]:not([data-employee-mobile]):has(#desktop-primary-navigation a.nav-link[href="/app/employees"][aria-current="page"]) { --b-ph-band: 253px; }
+  html body .app-shell[data-nv-b][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link[href="/app"][aria-current="page"]) { --b-ph-band: 321px; }
+  html body .app-shell[data-nv-b][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link[href="/app/schedule"][aria-current="page"]) { --b-ph-band: 321px; }
+  html body .app-shell[data-nv-b][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link[href="/app/my-time"][aria-current="page"]) { --b-ph-band: 274px; }
+  html body .app-shell[data-nv-b][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link[href="/app/my-pay"][aria-current="page"]) { --b-ph-band: 277px; }
+  html body .app-shell[data-nv-b][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link[href="/app/requests/hub"][aria-current="page"]) { --b-ph-band: 251px; }
+}
+@media (min-width: 768px) {
+  html body .app-shell[data-nv-b]:not([data-employee-mobile]):has(#desktop-primary-navigation a.nav-link[href="/app"][aria-current="page"]) { --b-ph-band: 295px; }
+  html body .app-shell[data-nv-b]:not([data-employee-mobile]):has(#desktop-primary-navigation a.nav-link[href="/app/schedule"][aria-current="page"]) { --b-ph-band: 207px; }
+  html body .app-shell[data-nv-b]:not([data-employee-mobile]):has(#desktop-primary-navigation a.nav-link[href="/app/timecards"][aria-current="page"]) { --b-ph-band: 207px; }
+  html body .app-shell[data-nv-b]:not([data-employee-mobile]):has(#desktop-primary-navigation a.nav-link[href="/app/payroll"][aria-current="page"]) { --b-ph-band: 211px; }
+  html body .app-shell[data-nv-b]:not([data-employee-mobile]):has(#desktop-primary-navigation a.nav-link[href="/app/employees"][aria-current="page"]) { --b-ph-band: 209px; }
+  html body .app-shell[data-nv-b][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link[href="/app"][aria-current="page"]) { --b-ph-band: 275px; }
+  html body .app-shell[data-nv-b][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link[href="/app/schedule"][aria-current="page"]) { --b-ph-band: 205px; }
+  html body .app-shell[data-nv-b][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link[href="/app/my-time"][aria-current="page"]) { --b-ph-band: 247px; }
+  html body .app-shell[data-nv-b][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link[href="/app/my-pay"][aria-current="page"]) { --b-ph-band: 259px; }
+  html body .app-shell[data-nv-b][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link[href="/app/requests/hub"][aria-current="page"]) { --b-ph-band: 269px; }
 }

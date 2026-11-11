@@ -57,7 +57,7 @@
   html .app-shell[data-nv-b] .b-setup :is(.c-row, li, .c-rows, .c-home__setup, .c-setup) { box-shadow: none !important; border: 0 !important; }
   html .app-shell[data-nv-b] .b-setup .c-row__title { font-size: 15.5px !important; font-weight: 600 !important; }
   /* Search icon never collapses; filter chips are 32px pills; the chip row fades at its scrolling edge. */
-  html .app-shell[data-nv-b] .b-filters button { min-height: 32px !important; height: 32px !important; border-radius: 16px !important; }
+  html .app-shell[data-nv-b] .b-filters button { min-height: var(--b-seg-item-h) !important; height: var(--b-seg-item-h) !important; border-radius: var(--b-seg-item-r) !important; }
 
   /* Narrow phones (320–359px): a title never breaks mid-word (its actions wrap under it), and a row's button moves under its
    * text so the words keep their width. */
@@ -339,7 +339,7 @@
   :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-seg:has(> :nth-child(4)) > * { padding: 0 6px; }
 }
 @media (max-width: 359px) {
-  :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-seg:has(> :nth-child(4)) > * { padding: 0 4px; font-size: 13px; letter-spacing: -0.01em; }
+  :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-seg:has(> :nth-child(4)) > * { padding: 0 4px; font-size: var(--b-seg-fs); letter-spacing: -0.01em; }
 }
 @media (prefers-reduced-motion: no-preference) {
   :is(#c-root, html) .app-shell[data-nv-b] :is(.b-btn, .b-ink__btn, .b-live__a, .b-back):not(:disabled, [aria-disabled="true"]):active { scale: var(--b-press-scale); }

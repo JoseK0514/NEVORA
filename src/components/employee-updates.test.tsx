@@ -47,8 +47,8 @@ it('does not claim an empty inbox is complete when the read is partial', async (
 it('gives managers requirement filters rather than claiming a personal review they cannot submit', async () => {
  const html = await render({mode: 'manager'});
  // Quiet (v4): All and Needs reply (the required ones); the + in the bar creates an update.
-// Review B5 (NV-258): segment counts read "Needs reply 1".
- expect(html).toContain('aria-label="Needs reply, 1">Needs reply 1</button>');
+// Review B5 (NV-258): segment counts read "Needs reply 1"; review F5 (NV-103): the figure is the control's count pill.
+ expect(html).toContain('aria-label="Needs reply, 1">Needs reply<span class="c-count c-num">1</span></button>');
  expect(html).not.toContain('To review');
  expect(html).toContain('href="/app/updates/compose">New update</a>');
 });

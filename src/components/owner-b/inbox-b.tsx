@@ -65,8 +65,10 @@ export function InboxB({ ready, families, waiting = [], total, connection, statu
     <BHero back={back ? { href: "/app", label: "Home" } : undefined} title="Things to do" titleId="b-todo-title"
       sub={total === null ? undefined : <>{total === 0 ? "Nothing needs you right now" : `${plural(total, "thing needs", "things need")} you`}<span role="status" className="b-sr">{statusLine}</span></>}>
       {families.length ? <BSeg label="Show" items={[
-        { key: "all", label: total === null ? "All" : `All ${total}`, current: filter === "all", onSelect: () => setFilter("all") },
-        ...families.map(family => ({ key: family.id, label: `${FILTER_LABEL[family.id as Exclude<Filter, "all">] ?? family.title} ${familyCount(family)}`, current: filter === family.id, onSelect: () => setFilter(family.id as Filter) })),
+        // Review F5 (NV-103): each count is the segmented control's count pill; the name still reads "All, 13".
+        { key: "all", label: total === null ? "All" : <>All<span className="c-count c-num">{total}</span></>, aria: total === null ? undefined : `All, ${total}`, current: filter === "all", onSelect: () => setFilter("all") },
+        ...families.map(family => { const name = FILTER_LABEL[family.id as Exclude<Filter, "all">] ?? family.title, count = familyCount(family);
+          return { key: family.id, label: <>{name}<span className="c-count c-num">{count}</span></>, aria: `${name}, ${count}`, current: filter === family.id, onSelect: () => setFilter(family.id as Filter) }; }),
       ]} /> : null}
     </BHero>
     <BStack>

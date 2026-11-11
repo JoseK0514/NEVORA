@@ -84,7 +84,7 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
    {/* Owner premium (N3): with nothing at all to filter, the All / Unread control steps aside for the empty card. */}
    {onMarkRead&&ready&&!ready.items.length?null:<div className="q-seg" role="group" aria-label="Filter notifications">
     <button type="button" aria-pressed={filter!=='unread'} disabled={!ready} onClick={()=>setFilter('all')}>All</button>
-    <button type="button" aria-pressed={filter==='unread'} disabled={!ready} onClick={()=>setFilter('unread')}>{unread?`Unread · ${unread}`:'Unread'}</button>
+    <button type="button" aria-pressed={filter==='unread'} disabled={!ready} onClick={()=>setFilter('unread')} aria-label={unread?`Unread, ${unread}`:undefined}>Unread{/* Review F5 (NV-103): the count is the segmented control's count pill. */unread?<span className="c-count c-num">{unread}</span>:null}</button>
    </div>}
    {ready?<p className="q-sr" role="status" aria-live="polite">{sorted.length} {sorted.length===1?'notification':'notifications'}{filter==='unread'?' unread':''}</p>:null}
    <HoldHeight holding={!ready} memory="notifications-manager" className="q-notif-hold">

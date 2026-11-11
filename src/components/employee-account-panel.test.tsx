@@ -33,7 +33,8 @@ it('gives Owners and Managers Quiet rows with All and Unread and no Mark read bu
  expect(html).not.toContain('Your alerts');
  expect(html).toContain('<p class="q-sr" role="status" aria-live="polite">1 notification</p>');
  expect(html).toContain('<b>Time off update</b>');
- expect(html).toContain('>Unread · 1</button>');
+ // Review F5 (NV-103): the unread figure is the segmented control's count pill; the name still reads "Unread, 1".
+ expect(html).toContain('aria-label="Unread, 1">Unread<span class="c-count c-num">1</span></button>');
  expect(html).toMatch(/aria-label="Time off update, Unread, /);
  expect(html).not.toContain('Action required');expect(html).not.toContain('Review your time off request');
  expect(html).not.toContain('Mark read');

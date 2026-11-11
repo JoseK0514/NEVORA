@@ -33,6 +33,10 @@
   /* shape and targets */
   --b-radius-card: 22px; --b-radius-pill: 999px; --b-radius-field: 14px;
   --b-target: 44px; --b-target-touch: 48px;
+  /* one segmented control (review F5, NV-103), on the band (glass) and on white: a 44px pill track, 4px in, a 36px pill
+   * thumb (the 44px hit area is the track's height), 14/600 labels, 16px item padding, 20px count pills of 12/700 */
+  --b-seg-h: 44px; --b-seg-pad: 4px; --b-seg-r: var(--b-radius-pill); --b-seg-item-h: 36px; --b-seg-item-r: var(--b-radius-pill);
+  --b-seg-fs: 14px; --b-seg-item-px: 16px; --b-seg-count-h: 20px; --b-seg-count-fs: 12px; --b-seg-count-px: 6px; --b-seg-count-gap: 6px;
   /* type roles (size / line-height pairs) */
   --b-fs-caption: 12.5px; --b-lh-caption: 16px;
   --b-fs-meta: 13.5px; --b-lh-meta: 18px;

@@ -81,7 +81,7 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
    <section className="updates-inbox" aria-label="Workplace updates" aria-busy={refreshing}>
     {/* Review B5 (NV-258): segment counts read "Needs reply 1", like "Waiting 7" and "All 16". */}<div className="q-seg" role="group" aria-label="Filter updates">
      <button type="button" aria-pressed={!needsReply} disabled={!current} onClick={() => setFilter('all')}>All</button>
-     <button type="button" aria-pressed={needsReply} disabled={!current} onClick={() => setFilter('to-review')} aria-label={current ? `Needs reply, ${toReview}` : 'Needs reply'}>{current && toReview ? `Needs reply ${toReview}` : 'Needs reply'}</button>
+     <button type="button" aria-pressed={needsReply} disabled={!current} onClick={() => setFilter('to-review')} aria-label={current ? `Needs reply, ${toReview}` : 'Needs reply'}>{/* Review F5 (NV-103): the count is the segmented control's count pill. */}Needs reply{current && toReview ? <span className="c-count c-num">{toReview}</span> : null}</button>
     </div>
     <HoldHeight holding={!current} memory="updates-manager" className="cm-updates-hold">
     {current?.state === 'partial' ? <p className="q-help" role="status">Some updates couldn’t load. Try again to check for the rest.</p> : null}

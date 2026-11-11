@@ -42,7 +42,7 @@
     /* Live figures on glass. */
     /* Review B6 (NV-094): the strip spans the content grid, so it ends on the cards' right edge at every width. */
     /* Glass tabs: as wide as their words, on the band. */
-    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-hero .b-seg > * { min-height: 36px !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-hero .b-seg > * { min-height: var(--b-seg-item-h) !important; }
 
     /* ---------- the cards ---------- */
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-card { border-radius: 22px !important; box-shadow: var(--nvd-card) !important; }

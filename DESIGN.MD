@@ -1901,3 +1901,36 @@ unchanged. New `!important` rules are in `@layer nv-b`; the F3 rules are at the 
   back link on tablets and desktop; payroll money is ink 600 and a replaced payroll nests under its correction on every
   width; Availability's Save appears once something changed; Time's Right now is the first cell on desktop; Update detail's
   title is in the phone band; the Branding preview's tag sits inside the preview.
+
+## Fix pass F5 (review, Nov 11, 2026)
+Source: `docs/product/review-2026-11-10/` (NV-074, NV-170, NV-103, NV-012, NV-011). Presentation and client code only; reads,
+handlers, authorization and contracts are unchanged. The new rules are at the end of `b-foundation.css`.
+- **Loading placeholder (NV-074).** The access check (`ScopedReadFrame`) and a tab tap's `loading.tsx` (`CorpSkeleton`) draw one
+  Direction B placeholder, `BLoadingScreen` in the kit: the band, a title bar and two 22px cards of #ECEEEF bars, never the retired
+  white header. Its band is each main tab's loaded height (`--b-ph-band`, keyed by role and by the sidebar entry that is the current
+  page): Owner and Manager Home, Schedule, Time, Payroll and Team; Employee and Lead Home, Schedule, Time, Pay and Requests. An
+  Employee or Lead screen whose first card is still loading keeps the same height. Tablets and desktop draw it too (it is treated
+  like Home's wide B screen). Other routes get the band at its default height. Verified Nov 11 at 390 and 1440 with the access check
+  held 1.6 s (Owner, Manager) and a tab tap over a throttled connection (`loading.tsx`, every role): the band's bottom moved 0px
+  between placeholder and page on all ten tabs. The placeholder band is teal; Payroll's loaded band is its darker green.
+- **Sidebar and rail focus (NV-170).** On tablets and desktop an entry's focus ring is its 2px inset teal edge, drawn above its count
+  badge; the tablet rail's column is 48px, like its entries, so nothing clips the ring.
+- **One segmented control (NV-103).** On the band (glass) and on white: a 44px pill track 4px in, 36px pill items (the 44px hit area
+  is the track), 14/600 labels, 16px item padding on tablets and desktop, and a 20px count pill of 12/700 beside the label (the
+  label's colour at 16%, teal on the white thumb, amber for For you). Tokens `--b-seg-*` in `b-tokens.css`; the older B rules read
+  them. Team's filters are this control on white. Underline tabs inside a card (Timecards' All / In progress) stay. Phone tracks
+  keep equal columns, and a phone track with three or more items keeps its narrower type. On narrow phones (320–359px) a track of
+  three or more items takes 12.5px labels and an 18px count pill (11/700, 4px in and 4px from its label), and, unless its thumb
+  slides (`data-slide`, whose position assumes equal columns), sizes each item to its label plus an equal share of the rest, so
+  Things to do's four filters fit their track and Insights' "This week" isn't clipped. Updates' filter on tablets and desktop sits
+  on the band like Notifications' (it sat on the canvas with white labels): the band rule reads its depth from `--b-band-below`
+  (28px unless a page sets it; Updates 128px), and the grey on-white track rule skips it.
+- **Notifications "didn't load" in the harness (NV-012).** Not a client race: the first read fires about a second after load and
+  answers 200. The Owner and Manager notifications read takes 5–6 s in the dev harness (Employee: 1–2 s), so the 15 s private-read
+  window, less two round trips, expires before the renewal lands; the controller then drops the data on purpose. Nothing changed.
+  Re-checked Nov 11 (fictional data, 1440): the Owner's page and bell reads answered 200 in 5.6–6.1 s; rows showed at about 8 s and
+  "Notifications didn't load / Try again." at 11–12 s, before the renewal could land. The Employee's reads answered in 0.5–0.8 s and
+  stayed. The 15 s window is a privacy rule and stays.
+- **Desktop More (NV-011).** Every page a phone's More reaches is on tablets and desktop in the sidebar (its More group), the account
+  menu, or one step away on the page that holds it (D3): a Manager's Scheduling rules in Schedule's menu, an Employee's Availability
+  on Schedule. An Employee's or Lead's account menu also has Privacy and terms, with Help, as on the phone's More.
