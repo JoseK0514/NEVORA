@@ -11,7 +11,7 @@ it('offers an audited management close in real desktop/mobile timecards with rec
  const evidence=process.env.NEVORA_MANAGEMENT_CLOSE_UI_EVIDENCE;if(!evidence)throw Error('Choose external management-close UI evidence');await mkdir(evidence,{recursive:true});
  const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
  const app=await createOwnedNextApp(evidence),q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
- const checks:string[]=[],errors:string[]=[],captures:string[]=[],network:unknown[]=[];let browser:{close():Promise<void>}|undefined,failureShot:(()=>Promise<void>)|undefined,complete=false;
+ const checks:string[]=[],errors:string[]=[],captures:string[]=[],network:unknown[]=[],releasePending:(()=>void)[]=[];let browser:{close():Promise<void>}|undefined,failureShot:(()=>Promise<void>)|undefined,complete=false;
  try {
   await seedOwnedApp(app.database.executor);const password=await hashPassword(TEST_PASSWORD);
   await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('R10UIMANAGER','Fictional','Manager','ui-manager','MANAGER','loc-1')");
@@ -45,12 +45,11 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     // The existing page and form both retire private drafts on a real browser lifecycle event.
     surfacePhase='privacy-retirement';await reason.fill('PRIVATE-RETIRED-DRAFT');await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
     expect(await page.locator('textarea').count()).toBe(0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
-    await page.locator('dialog[open]').waitFor({state:'detached'}).catch(()=>{});
     await page.goto(url);await page.locator('dialog[open]').waitFor();await page.getByRole('button',{name:'Close open punch',exact:true}).click();await end.waitFor();expect(await reason.inputValue()).toBe('');
     surfacePhase='confirmation';const chosen=formatBusinessDateTimeInput(new Date(Date.now()-30*60000).toISOString(),'America/Puerto_Rico');await end.fill(chosen);await reason.fill('Verified last worked time; worker and tablet are unavailable.');
     const confirmation=page.getByLabel('I verified this end time and reason.',{exact:true});
     expect(await confirmation.evaluate((el:HTMLInputElement)=>el.labels![0].getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
-    if(engine==='chromium'){await end.focus();await page.keyboard.press('Tab');expect(await reason.evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);await page.keyboard.press('Tab');expect(await confirmation.evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);await page.keyboard.press('Space');}
+    if(engine==='chromium'){await reason.focus();await page.keyboard.press('Tab');expect(await confirmation.evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);await page.keyboard.press('Space');}
     else await confirmation.check();
     for(const [width,scale] of [[320,100],[390,100],[1440,100],[390,200]]){
      await page.setViewportSize({width,height:1000});await page.evaluate((scale:number)=>{document.documentElement.style.fontSize=scale+'%';},scale);
@@ -58,16 +57,18 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     }
     await page.evaluate(()=>{document.documentElement.style.fontSize='100%';});await page.setViewportSize({width:index?390:1440,height:1000});
     const shot=resolve(evidence,engine+'-'+actor+'-confirmation.png');await page.screenshot({path:shot,fullPage:false});captures.push(shot);
-    const bodies:string[]=[];let interrupted=false;
+    const bodies:string[]=[];let interrupted=false,committed:()=>void=()=>{},releaseResponse:()=>void=()=>{};
+    const committedResponse=new Promise<void>(resolve=>{committed=resolve;}),responseGate=new Promise<void>(resolve=>{releaseResponse=resolve;});releasePending.push(releaseResponse);
     if(engine==='chromium'&&actor==='QAOWNER')await page.route('**/api/manager/timecards/'+target.entry+'/close',async(route:{request():{method():string;postData():string|null};fetch():Promise<unknown>;abort(reason:string):Promise<void>;continue():Promise<void>})=>{
-     if(route.request().method()==='POST'){bodies.push(route.request().postData()!);if(!interrupted){interrupted=true;await route.fetch();await route.abort('failed');return;}}await route.continue();
+     if(route.request().method()==='POST'){bodies.push(route.request().postData()!);if(!interrupted){interrupted=true;await route.fetch();committed();await responseGate;await route.abort('failed');return;}}await route.continue();
     });
     surfacePhase='save';await page.getByRole('button',{name:'Record close',exact:true}).focus();await page.keyboard.press('Enter');
     if(engine==='chromium'&&actor==='QAOWNER'){
-     await page.getByRole('button',{name:'Retry same close',exact:true}).waitFor();expect(await q('SELECT count(*)::int AS n FROM management_time_closes WHERE time_entry_id=$1',[target.entry])).toEqual([{n:1}]);
+     await Promise.race([committedResponse,new Promise<never>((_,reject)=>setTimeout(()=>reject(Error('Actual commit response barrier not reached')),20000))]);
+     expect(await q('SELECT count(*)::int AS n FROM management_time_closes WHERE time_entry_id=$1',[target.entry])).toEqual([{n:1}]);
      surfacePhase='uncertain-recovery';
      // Retire the whole protected tree and remount it, then close/reopen its inspector.
-     await page.evaluate(()=>window.dispatchEvent(new Event('blur')));expect(await page.getByRole('button',{name:'Record close',exact:true}).count()).toBe(0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+     await page.evaluate(()=>window.dispatchEvent(new Event('blur')));releaseResponse();expect(await page.getByRole('button',{name:'Record close',exact:true}).count()).toBe(0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
      await page.getByRole('button',{name:'Retry same close',exact:true}).waitFor();
      await page.locator('.cm-tc-done').click();await page.locator('[id="timecard-'+target.id+'"] button').first().click();await page.getByRole('button',{name:'Retry same close',exact:true}).waitFor();
      // Replace the cookie from another tab: the original tab must not offer the
@@ -95,5 +96,5 @@ it('offers an audited management close in real desktop/mobile timecards with rec
   }
   expect(errors).toEqual([]);complete=true;
  }catch(error){await failureShot?.().catch(()=>{});throw error;}
- finally{await browser?.close();await app.close();await writeFile(resolve(evidence,'results.json'),JSON.stringify({complete,checks,errors,captures,network,scope:'Owned current development UI and actual cookies/SQL only; no held Claude629-file import, hosted activation, native or production certification'},null,2));}
+ finally{for(const release of releasePending)release();await browser?.close();await app.close();await writeFile(resolve(evidence,'results.json'),JSON.stringify({complete,checks,errors,captures,network,scope:'Owned current development UI and actual cookies/SQL only; no held Claude629-file import, hosted activation, native or production certification'},null,2));}
 },360000);
