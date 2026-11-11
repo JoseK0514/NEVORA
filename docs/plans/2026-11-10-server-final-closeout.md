@@ -2,6 +2,8 @@
 
 > For agentic workers: use the parallel-agent skill for the independent domains below; root integrates/reviews and runs combined gates. Execution is already authorized by Jose: “get those left done asap”.
 
+Execution record: [final backend closeout](../handoffs/2026-11-10-server-final-closeout.md); exact-source CI follow-through is in SCRUM-175.
+
 **Goal:** finish remaining non-native server/copy and QA work from the Nov10 handoff without weakening controls or changing Claude-owned UI.
 **Base:** fresh origin/development b2c24cbe92f08c54c9e6e7ea2810f141c7e4947d.
 **Spec:** CODEX-HANDOFF at held4d3a0be63, existing docs/handoffs/2026-11-10-ui-review-backend-contract.md, exact wording in docs/handoffs/2026-11-10-backend-review-decisions.md, and Jose's new instruction. Jose explicitly chose Employee ID + PIN for per-person lockout in this turn.
