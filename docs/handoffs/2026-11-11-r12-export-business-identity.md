@@ -51,10 +51,15 @@ and recover/reconcile the existing immutable export through the authorized opera
 workflow. Do not edit/delete receipts, alter whitespace/mappings to evade identity,
 or regenerate and re-import merely because a browser lost its response.
 
-Claude integration contract: the existing client already clears retry on HTTP409
-but currently shows a general revision-conflict notice. Its held UI integration
-should recognize `already_generated` and explain recovery/reconciliation instead
-of suggesting that refreshing creates a new artifact. No styling/UI file changed.
+Current development-client follow-up: confirmed `already_generated` now has
+duplicate-specific feedback directing the user to the original downloaded files;
+no new export is claimed. Body parsing rechecks the privacy generation and
+server-derived lifetime. Unknown/malformed409 retains generic conflict handling.
+The [UI integration handoff](2026-11-11-r12-duplicate-export-ui-integration.md)
+documents the actual refusal/recovery regression and its pending browser gate.
+Held Claude UI must preserve this behavior when adopted. There is no saved-export
+catalogue or recovery lookup UI; original-command recovery is authenticated API
+replay under current authority. The original backend change contained no UI edit.
 
 ## Evidence and release gate
 

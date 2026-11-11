@@ -28,13 +28,18 @@ backlog retains a UTC `asOfDate`/`rangeEnd` after the session change; it produce
 periods/counts and current UI hides it. Owner business payroll dates remain explicitly
 workspace-local. Do not claim every metadata date is workspace-local.
 
-R12's current client still shows its general409 revision-conflict notice;
-`already_generated` needs explicit recovery/reconciliation wording in the held
-Claude UI integration. R13's unsupported correction-payment code likewise needs
-consumer wording. Server refusal, exact recovery and historical download controls
-remain authoritative; these are documented UI integration notes, not provider or
-payment authorization. Full held Claude UI, hosted client/provider/operator and
-production acceptance are not claimed by this backend packet.
+R12's current client now distinguishes confirmed `already_generated`, directs the
+user to the original downloaded files and fences delayed response bodies against
+privacy/account/source/expiry changes. Its [integration follow-up](2026-11-11-r12-duplicate-export-ui-integration.md)
+corrects the older Phase D scenario that expected a second identical export:
+the replacement must prove actual409 refusal, one stored export and original
+authenticated API recovery, including mobile/desktop feedback captures. The old
+8ee candidate's failed CI remains recorded; a new local browser/review/CI gate is
+required. No catalogue/recovery UI or provider submission is claimed. Held Claude
+integration must preserve this behavior. R13's unsupported correction-payment
+consumer wording remains a held UI note. Server refusal, exact recovery and
+historical download controls remain authoritative. Full held Claude UI, hosted
+client/provider/operator and production acceptance are not claimed here.
 
 ## Source custody and qualification
 

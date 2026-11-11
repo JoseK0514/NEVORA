@@ -254,6 +254,13 @@ try{
       const duplicate=await createExport();exportEvidence.freshDuplicate={...duplicate,downloadEvents:duplicateDownloads};assert.equal(duplicate.status,409);assert.deepEqual(duplicate.body,{state:'already_generated'});
       assert.notEqual(duplicate.command.operationId,firstExport.command.operationId);assert.deepEqual({...duplicate.command,operationId:firstExport.command.operationId},firstExport.command);
       await mp.getByRole('status').filter({hasText:'This time record and CSV have already been exported. Use your original downloaded files. No new export was created.'}).waitFor();
+      exportEvidence.freshDuplicate.viewports=[];
+      for(const width of [320,1440]){
+        await mp.setViewportSize({width,height:1000});
+        const notice=mp.getByRole('status').filter({hasText:'This time record and CSV have already been exported.'});assert(await notice.isVisible());
+        assert(await mp.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+2),`${engine}: duplicate-export feedback overflow ${width}`);
+        const screen=join(evidence,`${engine}-export-duplicate-${width}.png`);await mp.screenshot({path:screen,fullPage:true});report.screenshots.push(screen);exportEvidence.freshDuplicate.viewports.push({width,noticeVisible:true,noHorizontalOverflow:true,screenshot:screen});
+      }
       assert.equal(await exportFiles.count(),0);assert.equal(await mp.getByRole('button',{name:'Download mapped CSV',exact:true}).count(),0);assert.equal(await mp.getByRole('button',{name:'Download canonical time record',exact:true}).count(),0);assert.equal(await mp.getByRole('button',{name:'Retry same export',exact:true}).count(),0);
       const afterDuplicate=await exportReceipts();exportEvidence.receiptStorage.afterDuplicate=afterDuplicate;assert.deepEqual(afterDuplicate,afterFirst);assert.equal(afterDuplicate.filter(row=>row.operation_id===duplicate.command.operationId).length,0);assert.deepEqual(duplicateDownloads,[]);
       checked(engine+': R12 fresh duplicate returns already_generated without a second operation/export or UI files');
