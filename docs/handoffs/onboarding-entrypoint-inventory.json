@@ -56,6 +56,15 @@
       "isolatedBehavior": "NOT_DEPLOYED"
     },
     {
+      "path": "scripts/communication-login-diagnostics.mjs",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Test-only communications login observer imported solely by the owned Phase E browser harness. Its pg connection uses the invocation-owned disposable app database for bounded read-only failure diagnostics; it is not imported by application, hosted worker or onboarding runtime entrypoints.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
       "path": "scripts/company-setup-qa.mjs",
       "tags": [
         "runtime-boundary-audit"
