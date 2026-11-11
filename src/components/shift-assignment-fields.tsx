@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { SelectField } from "./select-field";
-import type { Employee, Position } from "../lib/domain";
+import type { Position } from "../lib/domain";
+import type {ShiftFormEmployee} from '../lib/scheduling/shift-form-employee';
 
 export function positionAfterEmployeeChange({
   positionId,
@@ -13,7 +14,7 @@ export function positionAfterEmployeeChange({
 }: {
   positionId: string;
   nextEmployeeId: string;
-  employees: Employee[];
+  employees: ShiftFormEmployee[];
   positions: Position[];
 }) {
   if (!positionId) return "";
@@ -34,7 +35,7 @@ export function designatedLeadAfterEmployeeChange({
 }: {
   checked: boolean;
   nextEmployeeId: string;
-  employees: Employee[];
+  employees: ShiftFormEmployee[];
 }) {
   if (!checked) return false;
   const nextEmployee = employees.find((item) => item.id === nextEmployeeId);
@@ -53,7 +54,7 @@ export function ShiftAssignmentFields({
   quiet = false,
   children,
 }: {
-  employees: Employee[];
+  employees: ShiftFormEmployee[];
   positions: Position[];
   employeeId?: string;
   positionId?: string;

@@ -40,7 +40,9 @@ export async function statements(proof: SessionMutationProof, ex: SqlExecutor = 
         FROM payroll_documents d WHERE workspace_id=${ws} AND d.employee_id=$1 AND d.kind='EMPLOYEE_STATEMENT' AND ${published} ORDER BY d.payload->>'payday' DESC`, proof.employee.id), ex);
     return {
         version: "PAYROLL_API_V1",
-        statements: docs.map((d) => ({ ...documentProjection(d), ...d.payload, corrects: d.corrects, correctedBy: d.corrected_by })),
+        statements: docs.map((d) => ({ ...documentProjection(d),
+            period: { startDate: d.payload.period.startDate, endDate: d.payload.period.endDate },
+            payday: d.payload.payday, corrects: d.corrects, correctedBy: d.corrected_by })),
     };
 }
 /** Return authorized bytes and metadata, concealing missing/unauthorized IDs as 404.

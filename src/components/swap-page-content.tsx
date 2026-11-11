@@ -5,16 +5,16 @@ import { SwapSentBoundary } from './wave-a/swap-sent';
 import { ReviewedSwapForm, SwapShiftRow } from './reviewed-swap-form';
 import { SheetCancel } from './quiet/quiet-sheet';
 import { QuietList, QuietPage } from './quiet/quiet';
-import type { ExchangeShift } from '@/lib/data/exchanges';
+import type {ExchangeShiftDisplay} from '@/lib/shift-changes/shift-display';
 import type { ReviewedSource, ReviewedTarget } from '@/lib/shift-changes/types';
 
 /* Swap a shift, or offer it for cover, in the v5 "One look" (approved Oct 24, 2026; mockup E04). Opened from a shift it
  * is a sheet over Schedule; opened by its URL it is the same content as a page. Cancel · title · Send in the bar, your
  * shift, then the shifts you could take. Same reviewed fields, coverage check and fallbacks as before. */
 export function SwapPageContent({ source, sourceFields, targets, coverage = null, mode = 'swap' }: {
-  source: ExchangeShift;
+  source: ExchangeShiftDisplay;
   sourceFields: ReviewedSource;
-  targets: { shift: ExchangeShift; fields: ReviewedTarget }[];
+  targets: { shift: ExchangeShiftDisplay; fields: ReviewedTarget }[];
   /** Offer-for-coverage check, for Offer it for cover or the no-target fallback; null otherwise. */
   coverage?: { allowed: boolean; notice: string | null } | null;
   mode?: 'swap' | 'cover';

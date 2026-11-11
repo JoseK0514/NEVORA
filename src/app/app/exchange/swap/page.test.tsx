@@ -3,6 +3,8 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import {beforeEach,expect,it,vi} from 'vitest';
 import type {ExchangeShift} from '../../../../lib/data/exchanges';
 import SwapPage from './page';
+import {SwapPageContent} from '../../../../components/swap-page-content';
+import {findElementProps} from '../../../../test/react-props.test-support';
 vi.mock('@/lib/workspace-presentation/service', async importOriginal => ({ ...(await importOriginal<typeof import('@/lib/workspace-presentation/service')>()), readActivePresentation: async () => ({ style: undefined, tokens: null, logoAssetId: null, revision: 0, words: 'standard' as const, modules: (await import('@/lib/workspace-presentation/modules')).ALL_MODULES_ON }) })); // no saved settings: every module on
 const state=vi.hoisted(()=>({source:null as ExchangeShift|null,target:null as ExchangeShift|null,sourceChange:{} as Partial<ExchangeShift>,targetChange:{} as Partial<ExchangeShift>,sourceFingerprintChange:false,refuse:null as null|string}));
 vi.mock('@/lib/auth/permissions',()=>({requireSelfService:async()=>({id:'self',role:'EMPLOYEE'})}));
@@ -52,4 +54,12 @@ it('keeps explicit selection and a safe coverage path when there are no targets'
 vi.mock('@/lib/data/shift-changes',()=>({readShiftChangeAvailability:async()=>state.refuse?{allowed:false,notice:state.refuse}:{allowed:true,notice:null}}));
 it('opened without choosing a shift returns to Shift requests with no false error (inspection Oct 24)',async()=>{
  await expect(SwapPage({searchParams:Promise.resolve({})})).rejects.toThrow(/^redirect:\/app\/exchange$/);
+});
+it('desktop swap client payload omits peer sign-in identity and internal source fields while retaining reviewed commands',async()=>{
+ const props=findElementProps<ComponentProps<typeof SwapPageContent>>(await SwapPage({searchParams:Promise.resolve({sourceShiftId:'source'})}),SwapPageContent);
+ expect(props.targets).toHaveLength(1);
+ expect(props.targets[0].shift).toEqual({id:'target',employeeName:'Fictional Partner',locationName:'North',weekStart:'2035-10-01',date:'2035-10-04',startTime:'10:00',endTime:'18:00',positionName:'Cashier',isDesignatedLead:true,timeZone:'America/Puerto_Rico'});
+ expect(props.sourceFields).toEqual({sourceShiftId:'source',sourceEpisodeId:'episode-source',sourceTermsFingerprint:'v1:source'});
+ expect(props.targets[0].fields).toEqual({targetShiftId:'target',targetEpisodeId:'episode-target',targetTermsFingerprint:'v1:target'});
+ expect(JSON.stringify(props.targets)).not.toMatch(/employeeId|scheduleId|locationId|termsRevision|assignmentEpisodeId/);
 });

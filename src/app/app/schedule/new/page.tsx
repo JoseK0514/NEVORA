@@ -10,6 +10,7 @@ import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {listPositions} from "@/lib/data/positions";
 import { keepDuration } from "@/components/wave-a/keep-duration";
 import { ScheduleShiftForm } from "@/components/schedule-shift-form";
+import {shiftFormEmployees} from '@/lib/scheduling/shift-form-employee';
 import { CorpPage } from "@/components/corp/corp";
 import { ConfigurationForm } from "@/components/configuration-form";
 import { Card, PageBand } from "@/components/kit/kit";
@@ -155,7 +156,7 @@ export default async function NewShiftPage({
   const blocked = !locations.length ? "Add a location first. A shift needs one." : !employees.some(item => item.active) ? "Add an employee first. A shift needs someone to work it." : undefined;
   return (<ScopedReadFrame observation={source}>
     <CorpPage className="c-shift-page" label={`Add shift, ${keepWhole(formatWeekRange(weekStart))}`}>
-      <ScheduleShiftForm mode="add" formId={CREATE_SHIFT_FORM_ID} action={createShiftAction} employees={employees} positions={positions}
+      <ScheduleShiftForm mode="add" formId={CREATE_SHIFT_FORM_ID} action={createShiftAction} employees={shiftFormEmployees(employees)} positions={positions}
         locations={locations} weekStart={weekStart} date={date} employeeId={params.employeeId} positionId={params.positionId} locationId={locationId}
         startTime={params.start} endTime={params.end} isDesignatedLead={params.lead === "1"} hidden={{ weekStart }} cancelHref={cancelHref} blocked={blocked} />
     </CorpPage>

@@ -8,13 +8,13 @@ export function swapDateLabel(date: string) {
   return new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${date}T12:00:00Z`));
 }
 
-export function swapTimeLabel(shift: ExchangeShift) {
+export function swapTimeLabel(shift: Pick<ExchangeShift,'date'|'startTime'|'endTime'>) {
   const overnight = shift.endTime.slice(0, 5) < shift.startTime.slice(0, 5) || shift.endTime.slice(0, 5) === '24:00';
   const endDate = formatDayLabel(addDays(shift.date, 1));
   return `${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}${overnight ? ` (${endDate.weekday}, ${endDate.day})` : ''}`;
 }
 
-export function swapPositionLabel(shift: ExchangeShift) {
+export function swapPositionLabel(shift: Pick<ExchangeShift,'positionName'|'positionId'>) {
   return shift.positionName ?? (shift.positionId ? `Position ${shift.positionId}` : 'No assigned position');
 }
 

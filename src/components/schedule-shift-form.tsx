@@ -5,7 +5,8 @@ import { useState, type ReactNode } from "react";
 import { ConfigurationForm, type ConfigurationResult } from "./configuration-form";
 import { designatedLeadAfterEmployeeChange, positionAfterEmployeeChange } from "./shift-assignment-fields";
 import { addDays, formatTime, isValidIsoDate } from "../lib/date-utils";
-import type { Employee, Position } from "../lib/domain";
+import type { Position } from "../lib/domain";
+import type {ShiftFormEmployee} from '../lib/scheduling/shift-form-employee';
 import { CorpFormFooter } from "./corp/corp";
 import "./schedule-shift-form.css";
 
@@ -34,7 +35,7 @@ export type ScheduleShiftFormProps = {
   mode: "add" | "edit";
   formId: string;
   action: (data: FormData) => Promise<ConfigurationResult>;
-  employees: Employee[];
+  employees: ShiftFormEmployee[];
   positions: Position[];
   /** Add: the locations to choose from. */
   locations?: { id: string; shortName: string }[];

@@ -7,9 +7,9 @@ import { SheetCancel } from '../quiet/quiet-sheet';
 import { QuietList, QuietPage, QuietRow } from '../quiet/quiet';
 import { swapTimeLabel } from '../swap-shift-summary';
 import { keepWhole } from '@/lib/keep-whole';
-import type { ExchangeShift } from '@/lib/data/exchanges';
+import type {ExchangeShiftDisplay} from '@/lib/shift-changes/shift-display';
 
-type Sent = { give: ExchangeShift; receive: ExchangeShift };
+type Sent = { give: ExchangeShiftDisplay; receive: ExchangeShiftDisplay };
 const SentContext = createContext<(sent: Sent) => void>(() => {});
 const shortDay = (date: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(`${date}T12:00:00Z`));
 
