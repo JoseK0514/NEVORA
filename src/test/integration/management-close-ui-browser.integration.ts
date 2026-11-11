@@ -66,9 +66,10 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     }
     await page.evaluate(()=>{document.documentElement.style.fontSize='100%';});await page.setViewportSize({width:index?390:1440,height:1000});
     const shot=resolve(evidence,engine+'-'+actor+'-confirmation.png');await page.screenshot({path:shot,fullPage:false});captures.push(shot);
-    const bodies:string[]=[];let interrupted=false,committed:()=>void=()=>{},releaseResponse:()=>void=()=>{};
+    const bodies:string[]=[];let interrupted=false,foreignContext=false,committed:()=>void=()=>{},releaseResponse:()=>void=()=>{};
     const committedResponse=new Promise<void>(resolve=>{committed=resolve;}),responseGate=new Promise<void>(resolve=>{releaseResponse=resolve;});releasePending.push(releaseResponse);
-    if(engine==='chromium'&&actor==='QAOWNER')await page.route('**/api/manager/timecards/'+target.entry+'/close',async(route:{request():{method():string;postData():string|null};fetch():Promise<unknown>;abort(reason:string):Promise<void>;continue():Promise<void>})=>{
+    if(engine==='chromium'&&actor==='QAOWNER')await page.route('**/api/manager/timecards/'+target.entry+'/close',async(route:{request():{method():string;postData():string|null};fetch():Promise<{json():Promise<unknown>}>;fulfill(options:unknown):Promise<void>;abort(reason:string):Promise<void>;continue():Promise<void>})=>{
+     if(route.request().method()==='GET'&&foreignContext){const response=await route.fetch(),body=await response.json() as Record<string,unknown>;await route.fulfill({response,json:{...body,recoveryScope:'d'.repeat(64)}});return;}
      if(route.request().method()==='POST'){bodies.push(route.request().postData()!);if(!interrupted){interrupted=true;await route.fetch();committed();await responseGate;await route.abort('failed');return;}}await route.continue();
     });
     surfacePhase='save';await page.getByRole('button',{name:'Record close',exact:true}).focus();await page.keyboard.press('Enter');
@@ -83,16 +84,22 @@ it('offers an audited management close in real desktop/mobile timecards with rec
      // Replace the cookie from another tab: the original tab must not offer the
      // Owner's private recovery to a different actor. Returning as the Owner
      // re-establishes fresh authority without replacing the business operation.
-     const switcher=await context.newPage();
      for(const replacement of ['R10UIMANAGER','QAOWNER']){
-      await switcher.bringToFront();await context.clearCookies();await switcher.goto(app.url+'/login');await switcher.getByLabel('Employee ID',{exact:true}).fill(replacement);await switcher.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await switcher.getByRole('button',{name:'Sign in',exact:true}).click();await switcher.waitForURL(app.url+'/app');await page.bringToFront();
+      const authContext=await active.newContext({serviceWorkers:'block'});
+      try{const switcher=await authContext.newPage();await switcher.bringToFront();await switcher.goto(app.url+'/login');await switcher.getByLabel('Employee ID',{exact:true}).fill(replacement);await switcher.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await switcher.getByRole('button',{name:'Sign in',exact:true}).click();await switcher.waitForURL(app.url+'/app');
+       await context.addCookies(await authContext.cookies(app.url));
+      }finally{await authContext.close();}
+      await page.bringToFront();
       await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+      await page.getByRole('button',{name:(replacement==='QAOWNER'?'Fictional Owner':'Fictional Manager')+', account menu',exact:true}).waitFor();
       if(replacement==='R10UIMANAGER'){
        await page.getByRole('button',{name:'Retry same close',exact:true}).waitFor({state:'detached'});
        expect(await page.getByText('Verified last worked time; worker and tablet are unavailable.',{exact:true}).count()).toBe(0);
       }else await page.getByRole('button',{name:'Retry same close',exact:true}).waitFor();
      }
-     await switcher.close();await page.bringToFront();await page.getByRole('button',{name:'Retry same close',exact:true}).click();expect(bodies).toHaveLength(2);expect(bodies[1]).toBe(bodies[0]);checks.push('Committed response loss survives privacy retirement, inspector unmount and account replacement; exact original operation reconciles once');
+     foreignContext=true;await page.getByRole('button',{name:'Refresh current punch',exact:true}).click();await page.getByText('Current punch information is unavailable.',{exact:true}).waitFor();expect(await page.getByRole('button',{name:'Retry same close',exact:true}).isDisabled()).toBe(true);expect(bodies).toHaveLength(1);
+     foreignContext=false;await page.getByRole('button',{name:'Refresh current punch',exact:true}).click();await page.getByText('This punch is already closed.',{exact:true}).waitFor();
+     await page.getByRole('button',{name:'Retry same close',exact:true}).click();expect(bodies).toHaveLength(2);expect(bodies[1]).toBe(bodies[0]);checks.push('Committed response loss survives privacy retirement, inspector unmount and atomic authenticated account replacement; different-company context refuses POST; exact original operation reconciles once');
     }
     await page.getByText('Punch closed. The selected end time and reason are recorded.',{exact:true}).waitFor();
     expect(await q('SELECT status,clock_out_at=$2::timestamptz AS correct_end FROM time_entries WHERE id=$1',[target.entry,localDateTimeToInstant(chosen,'America/Puerto_Rico')])).toEqual([{status:'CLOCKED_OUT',correct_end:true}]);
