@@ -92,6 +92,7 @@ export function ManagerTimeCorrectionsSurface({
           <PriorCorrectionDecisions context={item.context} zone={ready.timeZone}/>
           {item.baseChanged?<p className="manager-correction-self" role="status">The source or approved baseline changed since this request. The proposed time is not the current effective time.</p>:null}
           <p className="manager-correction-reason">{item.reason}</p>
+          {item.requestedByName?<p className="manager-correction-provenance">Requested by {item.requestedByName} for this employee.</p>:null}
           <p className="manager-correction-provenance">Original recorded punches stay unchanged. Approval creates an auditable effective adjustment.</p>
           {item.isSelf?<p className="manager-correction-self" role="note">Another manager or owner must review your request.</p>:null}
           <div className="manager-correction-actions">

@@ -33,6 +33,7 @@ it('atomically installs only canonical migrations, a pending Owner without crede
    await expect(appClient.query('SELECT token_digest FROM onboarding_owner_grants')).rejects.toMatchObject({code:'42501'});
    await expect(appClient.query('UPDATE onboarding_workspace_identity SET incarnation=2')).rejects.toMatchObject({code:'42501'});
    expect((await appClient.query("SELECT has_database_privilege(current_user,current_database(),'TEMP') AS temporary")).rows[0].temporary).toBe(false);
+   expect((await appClient.query("SELECT has_function_privilege(current_user,'nevora_submit_delegated_time_correction(uuid,text,text,text,text,text,text,text,timestamptz,timestamptz,text,text)','EXECUTE') AS base,has_function_privilege(current_user,'nevora_submit_delegated_time_correction(uuid,text,text,text,text,text,text,text,timestamptz,timestamptz,text,text,uuid,integer)','EXECUTE') AS supersession")).rows[0]).toEqual({base:true,supersession:true});
    expect((await appClient.query(`SELECT has_table_privilege(current_user,'management_time_closes','SELECT') AS read,
     has_table_privilege(current_user,'management_time_closes','INSERT') AS insert,
     has_table_privilege(current_user,'management_time_closes','UPDATE') AS update,
@@ -47,6 +48,7 @@ it('atomically installs only canonical migrations, a pending Owner without crede
    await expect(workerClient.query("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'OWNER-1',clock_timestamp()+interval '1 hour')",['a'.repeat(64)])).rejects.toMatchObject({code:'42501'});
    await expect(workerClient.query("UPDATE employees SET role='EMPLOYEE' WHERE id='OWNER-1'")).rejects.toMatchObject({code:'42501'});
    await expect(workerClient.query('SELECT password_hash FROM employee_credentials')).rejects.toMatchObject({code:'42501'});
+   expect((await workerClient.query("SELECT has_function_privilege(current_user,'nevora_submit_delegated_time_correction(uuid,text,text,text,text,text,text,text,timestamptz,timestamptz,text,text)','EXECUTE') AS base,has_function_privilege(current_user,'nevora_submit_delegated_time_correction(uuid,text,text,text,text,text,text,text,timestamptz,timestamptz,text,text,uuid,integer)','EXECUTE') AS supersession")).rows[0]).toEqual({base:false,supersession:false});
    expect((await workerClient.query(`SELECT has_table_privilege(current_user,'management_time_closes','SELECT') AS read,
     has_table_privilege(current_user,'management_time_closes','INSERT') AS insert,
     has_function_privilege(current_user,'nevora_management_close_source(text,text)','EXECUTE') AS source,

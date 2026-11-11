@@ -1,5 +1,8 @@
 import {readCompanyResult} from '../company-access/company-result.server';
+import {assertOperationalAccess,operationalScopeStatements,isOperationalAuthorizationError} from '../company-access/operational-scope.server';
 import {correctionAuthority} from '../time-corrections/authority.server';
+import {delegatedRecoveryScope} from '../time-corrections/delegated-authority.server';
+import type {DelegatedTimeCorrections} from '../time-corrections/delegated';
 import 'server-only';
 import { parseCorrectionActionCapture, type CorrectionActionCapture } from '../action-center/canonical-source';
 import { assembleCompleteReadPages } from '../complete-read-pages';
@@ -117,6 +120,8 @@ const publicRequestJson = (alias: string) => `jsonb_build_object(
   'breakName',CASE WHEN ${alias}.kind='BREAK_BOUNDARY'
     THEN ${alias}.source_snapshot #>> '{breakTypeSnapshot,name}' ELSE NULL END,
   'reason',${alias}.reason,
+  'requestedByName',CASE WHEN ${alias}.requested_by_employee_id<>${alias}.employee_id
+    THEN (SELECT trim(concat_ws(' ',requester.first_name,requester.last_name)) FROM employees requester WHERE requester.id=${alias}.requested_by_employee_id) ELSE NULL END,
   'baseChanged',CASE WHEN ${alias}.kind='MISSING_ENTRY' THEN
     effective.adjustment_id IS DISTINCT FROM CASE WHEN latest.event_kind='APPROVED' THEN latest.adjustment_id ELSE ${alias}.base_adjustment_id END
     ELSE effective.adjustment_id IS DISTINCT FROM ${alias}.base_adjustment_id
@@ -276,7 +281,7 @@ const managerSqlFor = (includeInternalCapture = false) => `WITH observed AS MATE
   ORDER BY r.created_at,r.id
 ), rows AS MATERIALIZED (
   SELECT (${publicRequestJson('r')} ||
-    jsonb_build_object('employeeName',r.employee_name,'isSelf',r.employee_id=$2)) AS value,
+    jsonb_build_object('employeeName',r.employee_name,'isSelf',r.employee_id=$2 OR r.requested_by_employee_id=$2)) AS value,
     ${includeInternalCapture ? 'internal_source.capture,' : ''}r.created_at,r.id,r.page_index
   FROM pending r
   JOIN locations loc ON loc.id=r.location_id
@@ -346,6 +351,26 @@ export async function readEmployeeTimeCorrections(
     if (schemaMissing(error)) return {state:'unavailable',reason:'schema_missing'};
     return {state:'unavailable',reason:'read_failed'};
   }
+}
+
+/** Same bounded correction context under current Company management authority;
+ * target identity is checked inside the locked transaction, never impersonated. */
+export async function readDelegatedTimeCorrections(proof:SessionMutationProof,employeeId:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<DelegatedTimeCorrections>{
+ try{
+  assertManagementProof(proof,proof?.employee?.id);
+  if(!['OWNER','MANAGER'].includes(proof.employee.role)||!employeeId||employeeId.length>200||employeeId!==employeeId.trim()||/[\p{Cc}\p{Cf}]/u.test(employeeId)||employeeId===proof.employee.id)return {state:'unavailable',reason:'access_denied'};
+  const access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor),workspace=access.workspace;
+  const guards=operationalScopeStatements(proof,workspace,{kind:'COMPANY'},access.authority);
+  const prefix=[...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR SHARE',values:[[proof.employee.id,employeeId].sort()]},...guards];
+  const result=await executor.transaction([...prefix,{text:"SELECT trim(concat_ws(' ',e.first_name,e.last_name)) AS name FROM employees e JOIN locations l ON l.id=e.primary_location_id WHERE e.id=$1 AND l.workspace_id=$2",values:[employeeId,workspace.id]},{text:employeeSqlFor(),values:[employeeId,workspace.id,workspace.timeZone]},...guards]);
+  const target=result[prefix.length]?.[0] as {name?:string}|undefined,row=result[prefix.length+1]?.[0] as {totalRequests?:number;locationCount?:number;targetCount?:number;snapshot?:unknown}|undefined;
+  if(!target?.name)return {state:'unavailable',reason:'access_denied'};
+  if(!row||!Number.isSafeInteger(row.totalRequests)||!Number.isSafeInteger(row.locationCount)||!Number.isSafeInteger(row.targetCount)||!row.snapshot)return {state:'unavailable',reason:'read_failed'};
+  if((row.totalRequests??0)>10000||(row.locationCount??0)>100||(row.targetCount??0)>100)return {state:'unavailable',reason:'source_limit'};
+  const snapshot=parseEmployeeTimeCorrections(row.snapshot),validForMs=Math.floor(Math.min(15000,access.validForMs-(Date.now()-Date.parse(access.observedAt))));
+  if(snapshot.state!=='ready'||validForMs<=0)return {state:'unavailable',reason:'read_failed'};
+  return {...snapshot,employeeId,employeeName:target.name,validForMs,authority:correctionAuthority(proof),recoveryScope:delegatedRecoveryScope(workspace.id)};
+ }catch(error){return {state:'unavailable',reason:isManagementAuthorizationError(error)||isOperationalAuthorizationError(error)?'access_denied':schemaMissing(error)?'schema_missing':'read_failed'};}
 }
 
 /**

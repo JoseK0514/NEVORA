@@ -5,6 +5,7 @@ import {
   type ManagerTimeCorrections,
 } from './read-model';
 import type { CorrectionRequestCommand, CorrectionReviewCommand } from './validation';
+import {parseDelegatedTimeCorrections} from './delegated';
 
 export type CorrectionActionResponse =
   | {state:'pending';operationId:string;requestId:string;revision:number}
@@ -46,11 +47,11 @@ async function get(path:string,signal:AbortSignal,actorId?:string,authority?:str
   return response.json();
 }
 
-async function post(path:string,body:CorrectionRequestCommand|CorrectionReviewCommand,actorId?:string,authority?:string):Promise<CorrectionActionResponse>{
+async function post(path:string,body:CorrectionRequestCommand|CorrectionReviewCommand,actorId?:string,authority?:string,signal?:AbortSignal):Promise<CorrectionActionResponse>{
   const serialized=JSON.stringify(body);
   const unknown={state:'outcome_unknown' as const,operationId:body.operationId};
   try{
-    const response=await fetch(path,{method:'POST',credentials:'same-origin',cache:'no-store',redirect:'error',headers:{
+    const response=await fetch(path,{method:'POST',credentials:'same-origin',cache:'no-store',redirect:'error',signal,headers:{
       Accept:'application/json','Content-Type':'application/json','X-Nevora-Time-Correction':'1',...(actorId?{'X-Nevora-Actor':actorId}:{}),...(authority?{'X-Nevora-Correction-Authority':authority}:{}),
     },body:serialized});
     if(response.status===401||response.status===403)return {state:'unavailable',httpStatus:response.status};
@@ -74,4 +75,12 @@ export async function fetchManagerTimeCorrections(signal:AbortSignal,actorId?:st
 }
 export async function reviewManagerTimeCorrection(command:CorrectionReviewCommand,actorId?:string,authority?:string):Promise<CorrectionActionResponse>{
   return post('/api/manager/time-corrections',command,actorId,authority);
+}
+export async function fetchDelegatedTimeCorrections(employeeId:string,actorId:string,authority:string,recoveryScope:string,signal:AbortSignal){
+ return parseDelegatedTimeCorrections(await get('/api/manager/time-corrections/delegated/'+encodeURIComponent(employeeId),signal,actorId,authority),employeeId,recoveryScope);
+}
+export async function submitDelegatedTimeCorrection(employeeId:string,command:CorrectionRequestCommand,actorId:string,authority:string,signal:AbortSignal):Promise<CorrectionActionResponse>{
+ const result=await post('/api/manager/time-corrections/delegated/'+encodeURIComponent(employeeId),command,actorId,authority,signal);
+ if(result.state==='approved'||result.state==='rejected'||(result.state==='pending'&&(result.requestId!==command.operationId||result.revision!==1)))return {state:'outcome_unknown',operationId:command.operationId};
+ return result;
 }

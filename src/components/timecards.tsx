@@ -402,6 +402,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             <details className="c-tc-sheet__more"><summary>Clock-ins and fixes</summary><Details card={openItem.card}/></details>
           </CorpCard>
           <div className="c-tc-sheet__actions">
+            {!own&&!locked?<Link className={btn('secondary')} href={'/app/timecards/corrections/new/'+encodeURIComponent(openItem.card.employeeId)}>Request time correction</Link>:null}
             {!own&&managementRecoveryScope?<ManagementCloseForm key={managementRecoveryScope+':'+actorId+':'+openItem.card.employeeId} recoveryScope={managementRecoveryScope} actorId={actorId} timeZone={openItem.card.timeZone}
               timeEntryId={openItem.card.entries.find(entry=>entry.sourceKind==='RECORDED'&&!entry.endAt&&!entry.rawEndAt)?.id} onClosed={()=>void refresh(period,true)}/>:null}
             {pending?.employeeId===openItem.card.employeeId?<button type="button" className={btn('primary')} disabled={busy} onClick={()=>void act(openItem,pending.action)}>Retry pending action</button>:

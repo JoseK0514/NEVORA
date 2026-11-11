@@ -323,6 +323,7 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
             <CorrectionComparison recordedLabel={item.kind==='MISSING_ENTRY'&&item.originalStartAt?'Approved missing time':'Recorded'} recordedStartAt={item.originalStartAt} recordedEndAt={item.originalEndAt} context={item.context} zone={zone}/>
             <p className="employee-time-correction-note">{item.status==='PENDING'?'Pending proposal':item.status==='APPROVED'?'Approved proposal':'Declined proposal'} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}{item.status==='REJECTED'?' · does not change effective time':''}</p>
             <PriorCorrectionDecisions context={item.context} zone={zone}/>
+            {item.requestedByName?<p className="employee-time-correction-note">Requested by {item.requestedByName} for you.</p>:null}
             {item.status==='PENDING'&&item.baseChanged?<p className="employee-time-correction-note">The source or approved baseline changed since this request.</p>:null}
           {item.kind==='MISSING_ENTRY'&&item.status==='APPROVED'&&item.currentAdjustmentId?<button className="employee-time-correction-trigger" type="button" disabled={busy||Boolean(retry)} aria-controls="employee-missing-time-correction" onClick={()=>{
             setReplacementTarget({id:item.currentAdjustmentId!,revision:item.revision});setLocation(item.locationId);

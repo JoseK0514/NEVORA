@@ -45,6 +45,7 @@ export type PublicCorrectionItem = {
   proposedEndAt: string;
   breakName: string | null;
   reason: string;
+  requestedByName?:string|null;
   baseChanged:boolean;
   context:CorrectionContext;
 };
@@ -139,6 +140,7 @@ function item(value: unknown): PublicCorrectionItem {
       !text(value.locationId, 200) || !text(value.locationName, 300) ||
       !instant(value.proposedStartAt) || !instant(value.proposedEndAt) ||
       !text(value.reason, 500) || typeof value.baseChanged!=='boolean' ||
+      !(value.requestedByName===undefined||value.requestedByName===null||text(value.requestedByName,300)) ||
       !(value.breakName === null || text(value.breakName, 80)) ||
       !(value.originalStartAt === null || instant(value.originalStartAt)) ||
       !(value.originalEndAt === null || instant(value.originalEndAt))) {
@@ -172,6 +174,7 @@ function item(value: unknown): PublicCorrectionItem {
     proposedEndAt:value.proposedEndAt,
     breakName:value.breakName,
     reason:value.reason,
+    ...(value.requestedByName!==undefined?{requestedByName:value.requestedByName as string|null}:{}),
     baseChanged:value.baseChanged,
     context:effective,
   };

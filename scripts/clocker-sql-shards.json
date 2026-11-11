@@ -17,6 +17,7 @@
     "2/4": [
       "src/test/integration/clocker-action-center.integration.ts",
       "src/test/integration/clocker-break-snapshots.integration.ts",
+      "src/test/integration/clocker-delegated-corrections.integration.ts",
       "src/test/integration/clocker-employee-time.integration.ts",
       "src/test/integration/clocker-payroll-client-projection.integration.ts",
       "src/test/integration/clocker-payroll-export.integration.ts",
