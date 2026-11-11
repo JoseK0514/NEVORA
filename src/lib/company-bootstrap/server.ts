@@ -64,12 +64,14 @@ async function runtimeRoles(client:BootstrapClient,spec:PendingCompanySpec){
   if(role===spec.app)await client.query(`GRANT EXECUTE ON FUNCTION onboarding_owner_claim(text,text,bigint,text,uuid,text,text) TO ${role.name}`);
   await client.query(`GRANT SELECT ON nevora_commerce_installation TO ${role.name}`);
   if(role===spec.app)await client.query(`GRANT EXECUTE ON FUNCTION nevora_commerce_apply_capacity(text,text,text,integer) TO ${role.name}`);
+  if(role===spec.app)await client.query(`GRANT EXECUTE ON FUNCTION conversation_apply(text,text,text,jsonb,text) TO ${role.name}`);
   if(role===spec.app&&quoted)await client.query(`GRANT SELECT,INSERT,UPDATE,DELETE ON ${quoted} TO ${role.name}`);
   if(role===spec.app){
    await client.query(`GRANT EXECUTE ON FUNCTION public.nevora_submit_delegated_time_correction(uuid,text,text,text,text,text,text,text,timestamptz,timestamptz,text,text), public.nevora_submit_delegated_time_correction(uuid,text,text,text,text,text,text,text,timestamptz,timestamptz,text,text,uuid,integer) TO ${role.name}`);
    await client.query(`REVOKE UPDATE,DELETE,TRUNCATE ON management_time_closes FROM ${role.name}`);
    await client.query(`GRANT EXECUTE ON FUNCTION nevora_management_close_source(text,text),nevora_management_close(text,text,text,text,text,text,uuid,text,timestamptz,text,text) TO ${role.name}`);
   }
+  if(role===spec.app)await client.query(`REVOKE DELETE ON conversation_streams,conversations,conversation_members FROM ${role.name}; REVOKE UPDATE,DELETE ON conversation_messages,conversation_events,conversation_operations FROM ${role.name}`);
   if(role===spec.worker){
    await client.query(`GRANT SELECT ON ${workerReadRelations.join(',')} TO ${role.name}`);
    await client.query(`GRANT INSERT ON ${workerInsertRelations.join(',')} TO ${role.name}`);

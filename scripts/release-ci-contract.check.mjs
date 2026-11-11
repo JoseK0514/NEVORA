@@ -329,3 +329,27 @@ test('the same immutable candidate runs the existing web Mobile Access gate',()=
  assert(job.steps.some(s=>s.name==='Checkout exact candidate'&&s.with.ref==='${{ github.sha }}'));
  for(const step of job.steps)assert.equal(step['continue-on-error'],undefined);
 });
+
+test('conversations SQL is a mandatory owned release gate with retained evidence',()=>{
+ const config=readFileSync('vitest.conversations-integration.config.mts','utf8');
+ assert(config.includes("include:['src/test/integration/conversations.integration.ts']"));
+ const verify=job=>{
+  assert.equal(job.if,undefined);assert.equal(job['continue-on-error'],undefined);
+  const step=job.steps.find(s=>s.run==='node scripts/payroll-postgres.mjs vitest.conversations-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/conversations.json"');
+  assert(step,'missing conversations owned SQL gate');assert.equal(step.if,undefined);assert.equal(step['continue-on-error'],undefined);
+  const upload=job.steps.find(s=>s.with?.name==='conversations-sql-${{ github.event.pull_request.head.sha || github.sha }}');
+  assert(upload);assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');assert.equal(upload.with.path,'${{ runner.temp }}/conversations.json');
+ };
+ const job=workflow.jobs['release-postgres'];verify(job);
+ for(const mutation of ['remove','condition','allow-failure','job-condition','job-allow-failure','ignore-exit','drop-artifact']){
+  const broken=structuredClone(job),index=broken.steps.findIndex(s=>s.run?.includes('vitest.conversations-integration.config.mts'));
+  if(mutation==='remove')broken.steps.splice(index,1);
+  if(mutation==='condition')broken.steps[index].if='false';
+  if(mutation==='allow-failure')broken.steps[index]['continue-on-error']=true;
+  if(mutation==='job-condition')broken.if='false';
+  if(mutation==='job-allow-failure')broken['continue-on-error']=true;
+  if(mutation==='ignore-exit')broken.steps[index].run+=' || true';
+  if(mutation==='drop-artifact')broken.steps.find(s=>s.with?.name?.startsWith('conversations-sql-')).with.path='${{ runner.temp }}/native-payroll.json';
+  assert.throws(()=>verify(broken),undefined,mutation);
+ }
+});

@@ -1,4 +1,4 @@
-# Combined backend and staff-task development delivery
+# Combined backend, staff-task and conversations development delivery
 
 Jose explicitly authorized one tested development integration through the
 staff-task chat and approved coordination with the active CI repair chat.
@@ -104,3 +104,54 @@ Main, production, native releases, hosted schema changes, paid activation, real
 notification delivery and customer-data exercises remain outside this delivery.
 The seven hosted/policy operating gates remain open; backend source delivery
 does not close them or mark the full staff UI feature Done.
+
+
+## Combined conversations scope, November11
+
+Jose subsequently selected **Coordinate one tested merge** for SCRUM-187 and
+requested Actions and development delivery. The same CI chat remains the sole
+integrator and publisher; the conversations chat owns feature review and Jira.
+The exact source is511921caf19ba0d16f4cc6072850fe8da2574403 plus qualified
+compatibility0407b5f0773a39e829c2e593c9758094130b6d7a. No runtime source from
+that delivery is altered in assembly. See the [conversations handoff](2026-11-11-conversations-backend.md).
+
+The earlier d90f3387cb94ea70183b024403df5fc43f56b997 completed all34 local stages:
+12,537 default tests,238 release checks, full seven-step onboarding, staff25,
+ten Phase E SQL suites, build/manual/static/audit and six actual browser leaves
+covering70 unique cells. It was then tagged in the authorized order. Candidate
+CI43097625058 and Mobile43097625028 queued during GitHub incident dvy0t3mvh1lg.
+Their records remain bound to d90 and cannot qualify the newly expanded scope.
+
+Conversation migration0062 follows Company Access in FINAL;0061 remains BASE
+after0057–0060. Additive bootstrap reconciliation preserves management-close and
+delegated-correction grants, grants conversation lifecycle only to APP and
+revokes destructive conversation/history writes. The regenerated combined
+canonical manifest hash is829458918b72793e321c71d1afca7079922da08e85de95a4abe9cd2c3950bcfb.
+The six additional API entrypoints have explicit CONVERTED/BOUND_APPLICATION
+entries; existing494 entries remain intact. Remove-each inventory checks retain
+the unchanged fail-closed scanner.
+
+The compatibility fixture runs all26 conversation SQL cases in both ABSENT and
+INSTALLED optional staff modes (52 actual cases). It prefers installed canonical
+0061 and temporarily renames/reinstates staff instance storage only inside owned
+fictional databases to exercise absence. The release-postgres job executes this
+suite unconditionally, retaining its separate conversations SQL JSON artifact.
+Workflow regressions reject removed/conditional/allowed-failure/ignored-exit and
+missing-report substitutions. The strict synthetic Phase E workflow fixture
+also includes the actual conversations suite configuration; its omission was
+first reproduced as12 extra-control failures, then fixed without weakening the
+expected rejection assertions.
+
+A new exact frozen source must complete **all35 local stages before its tag**,
+including actual conversations52, staff25, full onboarding/fresh-company25,
+complete default/build/static/SQL/manual/browser qualification. Its20 hosted
+CI/Mobile jobs and22 artifacts require exact producer/source custody and report
+verification before the ordinary nonforced development fast-forward. Its own
+development-triggered CI/Mobile runs must then finish and be archived separately.
+
+D04/SCRUM-58 stays held: every conversations read and write requires the existing
+owned-loopback database name and ownership-comment guard. Additive schema and
+backend delivery do not activate staging/production conversations, establish a
+retention/purge policy, send messages to real people or grant Owner implicit
+private-thread access. Claude UI, native and joint hosted acceptance remain
+separate. No main, production or activation authorization is inferred.

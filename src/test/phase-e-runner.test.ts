@@ -421,6 +421,7 @@ it.each(['omitted-suite', 'omitted-home-engine', 'duplicate-home-engine', 'wrong
   // Staff SQL is another independent mandatory control in the complete graph.
   put(root, 'package.json', readFileSync('package.json', 'utf8'));
   put(root, 'vitest.staff-tasks-integration.config.mts', readFileSync('vitest.staff-tasks-integration.config.mts', 'utf8'));
+  put(root, 'vitest.conversations-integration.config.mts', readFileSync('vitest.conversations-integration.config.mts', 'utf8'));
   put(root, 'vercel.json', readFileSync('vercel.json', 'utf8'));
   // Keep the unrelated Clocker contract baseline complete while mutating E.
   put(root, 'vitest.clocker-integration.config.mts', readFileSync('vitest.clocker-integration.config.mts', 'utf8'));

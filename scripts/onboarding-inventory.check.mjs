@@ -42,3 +42,17 @@ test('every actual staff task route has a company-bound disposition and removing
   assert.throws(()=>validateOnboardingInventory(files,{...inventory,entries:inventory.entries.filter(entry=>entry.path!==path)},read),/Unclassified runtime entrypoint/,path);
  }
 });
+test('every actual conversation route has a company-bound disposition and removing any entry fails closed',()=>{
+ const files=execFileSync('git',['ls-files','-z'],{encoding:'utf8',maxBuffer:32*1024*1024}).split('\0').filter(Boolean);
+ const paths=files.filter(path=>path.startsWith('src/app/api/conversations/')&&path.endsWith('/route.ts')).sort();
+ assert.deepEqual(paths,['src/app/api/conversations/[conversationId]/route.ts','src/app/api/conversations/commands/route.ts','src/app/api/conversations/context/route.ts','src/app/api/conversations/history/route.ts','src/app/api/conversations/operations/[operationId]/route.ts','src/app/api/conversations/query/route.ts']);
+ const inventory=JSON.parse(readFileSync('docs/handoffs/onboarding-entrypoint-inventory.json','utf8'));
+ const sources=new Map(files.map(path=>[path,/\.[cm]?[jt]sx?$/.test(path)?readFileSync(path,'utf8'):'']));
+ const read=path=>sources.get(path)??'';
+ assert.doesNotThrow(()=>validateOnboardingInventory(files,inventory,read));
+ for(const path of paths){
+  const entry=inventory.entries.find(entry=>entry.path===path);
+  assert(entry,path);assert.equal(entry.status,'CONVERTED');assert.equal(entry.isolatedBehavior,'BOUND_APPLICATION');
+  assert.throws(()=>validateOnboardingInventory(files,{...inventory,entries:inventory.entries.filter(entry=>entry.path!==path)},read),/Unclassified runtime entrypoint/,path);
+ }
+});

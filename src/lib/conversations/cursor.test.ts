@@ -1,0 +1,6 @@
+import {expect,it,vi} from 'vitest';
+import {sealCursor,openCursor} from './cursor.server';
+import type {Access} from './access.server';
+const access={workspace:{id:'fictional-workspace'},signature:'a'.repeat(64),key:'b'.repeat(64)} as Access;
+it('encrypts cursors and binds them to resource, workspace, authority and durable database key',()=>{const token=sealCursor(access,'inbox:false',{head:'912345',id:'private'});expect(Buffer.from(token,'base64url').toString()).not.toContain('912345');expect(openCursor({...access},'inbox:false',token)).toEqual({head:'912345',id:'private'});for(const [a,resource] of [[access,'history'],[{...access,key:'c'.repeat(64)},'inbox:false'],[{...access,signature:'d'.repeat(64)},'inbox:false'],[{...access,workspace:{id:'other'}} as Access,'inbox:false']] as [Access,string][])expect(()=>openCursor(a,resource,token)).toThrow('conversation_cursor_invalid');});
+it('expires a cursor after five minutes without trusting its unencrypted contents',()=>{const now=vi.spyOn(Date,'now').mockReturnValue(1_000_000);try{const token=sealCursor(access,'people',{after:'alice'});now.mockReturnValue(1_300_001);expect(()=>openCursor(access,'people',token)).toThrow('conversation_cursor_invalid');}finally{now.mockRestore();}});

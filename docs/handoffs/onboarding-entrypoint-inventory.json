@@ -4412,6 +4412,60 @@
       "status": "CONVERTED",
       "isolatedBehavior": "BOUND_APPLICATION",
       "reason": "Same-origin bounded JSON query requires current session proof and staff authority. TEAM is management-only; MINE, dates, locations and pagination remain current-scope checked through the shared company-bound executor and response fence. Isolated mode uses current workspace APP transport."
+    },
+    {
+      "path": "src/app/api/conversations/[conversationId]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Reviewed SCRUM-187 thin route: conversationHttp requires current session/proof, same-origin intent and company Updates permission; neonNotificationExecutor selects the request-bound workspace transport in isolated mode. Every business transaction rechecks workspace, Company Access, location footprint, membership/lifecycle and D04 owned-runtime guard; private responses are fenced and no-store. No public admission or cross-company selector is introduced.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/conversations/commands/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Reviewed SCRUM-187 thin route: conversationHttp requires current session/proof, same-origin intent and company Updates permission; neonNotificationExecutor selects the request-bound workspace transport in isolated mode. Every business transaction rechecks workspace, Company Access, location footprint, membership/lifecycle and D04 owned-runtime guard; private responses are fenced and no-store. No public admission or cross-company selector is introduced.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/conversations/context/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Reviewed SCRUM-187 thin route: conversationHttp requires current session/proof, same-origin intent and company Updates permission; neonNotificationExecutor selects the request-bound workspace transport in isolated mode. Every business transaction rechecks workspace, Company Access, location footprint, membership/lifecycle and D04 owned-runtime guard; private responses are fenced and no-store. No public admission or cross-company selector is introduced.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/conversations/history/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Reviewed SCRUM-187 thin route: conversationHttp requires current session/proof, same-origin intent and company Updates permission; neonNotificationExecutor selects the request-bound workspace transport in isolated mode. Every business transaction rechecks workspace, Company Access, location footprint, membership/lifecycle and D04 owned-runtime guard; private responses are fenced and no-store. No public admission or cross-company selector is introduced.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/conversations/operations/[operationId]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Reviewed SCRUM-187 thin route: conversationHttp requires current session/proof, same-origin intent and company Updates permission; neonNotificationExecutor selects the request-bound workspace transport in isolated mode. Every business transaction rechecks workspace, Company Access, location footprint, membership/lifecycle and D04 owned-runtime guard; private responses are fenced and no-store. No public admission or cross-company selector is introduced.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/conversations/query/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Reviewed SCRUM-187 thin route: conversationHttp requires current session/proof, same-origin intent and company Updates permission; neonNotificationExecutor selects the request-bound workspace transport in isolated mode. Every business transaction rechecks workspace, Company Access, location footprint, membership/lifecycle and D04 owned-runtime guard; private responses are fenced and no-store. No public admission or cross-company selector is introduced.",
+      "isolatedBehavior": "BOUND_APPLICATION"
     }
   ],
   "routingEvidence": "Task2: actual owned A/B PostgreSQL databases through installed Neon HTTP protocol; not hosted Neon evidence.",
@@ -4429,5 +4483,11 @@
   "staffTaskReconciliation": {
     "reviewedAfter": "55b927517e16d6d3b6df57cfaf31f81f183d2e25",
     "scope": "Six explicit staff-task HTTP entrypoints use current actor/proof admission and the existing company-bound APP executor. Fail-closed runtime scanning is unchanged; no blanket route exemption, privileged machine transport, UI/native import or hosted acceptance."
+  },
+  "conversationReconciliation": {
+    "source": "511921caf19ba0d16f4cc6072850fe8da2574403",
+    "routes": 6,
+    "behavior": "BOUND_APPLICATION",
+    "activation": "D04 owned-loopback guard remains mandatory on every read/write; no hosted activation"
   }
 }

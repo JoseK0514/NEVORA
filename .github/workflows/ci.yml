@@ -460,6 +460,16 @@ jobs:
         run: node scripts/payroll-postgres.mjs vitest.owner-advisor-integration.config.mts
       - name: Rondo leadership fixture and recovery gate (no live model calls)
         run: node scripts/payroll-postgres.mjs vitest.rondo-leadership.config.mts
+      - name: Conversations isolated PostgreSQL integration gate (D04 remains held)
+        run: node scripts/payroll-postgres.mjs vitest.conversations-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/conversations.json"
+      - name: Upload conversations SQL evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: conversations-sql-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/conversations.json
+          if-no-files-found: error
+          retention-days: 14
       - name: Native payroll isolated PostgreSQL integration gate
         run: node scripts/payroll-postgres.mjs vitest.native-payroll-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/native-payroll.json"
       - name: Configurable payroll isolated PostgreSQL integration gate
