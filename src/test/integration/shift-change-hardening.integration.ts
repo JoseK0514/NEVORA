@@ -13,7 +13,11 @@ import {loadWorkspaceNotificationConfig} from '../../lib/notifications/config';
 import {readEmployeeRequests} from '../../lib/data/employee-requests.server';
 import type {SqlExecutor} from '../../lib/notifications/types';
 let db:Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
-vi.mock('../../lib/db',()=>({getDb:()=>({query:(text:string,values:readonly unknown[]=[])=>db.executor.query({text,values})}),queryRows:(r:unknown)=>r}));
+vi.mock('../../lib/db',()=>{
+ // Preserve lazy construction and execute the real ordered SQL session batch.
+ const statement=(text:string,values:readonly unknown[]=[],options?:{fetchOptions?:{signal?:AbortSignal}})=>({statement:{text,values},then:(yes:(rows:unknown[])=>unknown,no:(error:unknown)=>unknown)=>db.executor.query({text,values},options?.fetchOptions?.signal).then(yes,no)});
+ return {getDb:()=>({query:statement,transaction:(queries:{statement:{text:string;values:readonly unknown[]}}[],options?:{fetchOptions?:{signal?:AbortSignal}})=>db.executor.transaction(queries.map(q=>q.statement),options?.fetchOptions?.signal)}),queryRows:(rows:unknown)=>rows};
+});
 const q=(text:string,values:readonly unknown[]=[])=>db.executor.query<Record<string,unknown>>({text,values});
 beforeEach(async()=>{db=await createDisposableExchangeDatabase({mode:'current-runtime'});await seedShiftChanges(db.executor,{companyAccess:true});});
 afterEach(async()=>db?.dispose());

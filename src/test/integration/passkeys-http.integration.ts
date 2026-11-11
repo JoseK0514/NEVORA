@@ -12,10 +12,11 @@ vi.mock("next/headers", () => ({ cookies: async () => ({
   set: (key: string, value: string, attributes: Record<string, unknown>) => { state.values.set(key, value); state.attributes.set(key, attributes); },
   delete: (key: string) => state.values.delete(key),
 }) }));
-vi.mock("@/lib/db", () => ({
-  getDb: () => ({ query: (text: string, values: unknown[] = []) => db.executor.query({ text, values }) }),
-  queryRows: (value: unknown) => value,
-}));
+vi.mock("@/lib/db",()=>{
+ // Preserve lazy construction and execute the real ordered SQL session batch.
+ const statement=(text:string,values:readonly unknown[]=[],options?:{fetchOptions?:{signal?:AbortSignal}})=>({statement:{text,values},then:(yes:(rows:unknown[])=>unknown,no:(error:unknown)=>unknown)=>db.executor.query({text,values},options?.fetchOptions?.signal).then(yes,no)});
+ return {getDb:()=>({query:statement,transaction:(queries:{statement:{text:string;values:readonly unknown[]}}[],options?:{fetchOptions?:{signal?:AbortSignal}})=>db.executor.transaction(queries.map(q=>q.statement),options?.fetchOptions?.signal)}),queryRows:(rows:unknown)=>rows};
+});
 vi.mock("../../lib/data/notification-transactions", async original => ({
   ...await original<typeof import("../../lib/data/notification-transactions")>(), neonNotificationExecutor: () => db.executor,
 }));

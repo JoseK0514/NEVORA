@@ -56,6 +56,13 @@ implementation/handoff map, not evidence that pending combined or hosted gates p
 The final qualification/publication receipts in that external directory are the
 source of current execution status. Absent publication receipts mean no publication.
 
+The later b0 source passes665 Clocker SQL checks but its first full foundation
+cohort fails21/284. The [fixture-boundary repair](2026-11-11-r14-sql-fixture-boundaries.md)
+and [active SQL adapter follow-up](2026-11-11-r14-active-sql-adapters.md) explain the
+raw/injected timestamp parity and fault-hook changes, with actual142+60 passing
+SQL cases. Those scoped results do not substitute for the final frozen combined
+default/database/browser/build gates. All earlier failures remain recorded.
+
 ## Release boundary
 
 After local and independent gates, publish a unique immutable candidate tag,
