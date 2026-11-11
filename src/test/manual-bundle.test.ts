@@ -6,7 +6,7 @@ import {tmpdir} from 'node:os';
 import {dirname, join, resolve} from 'node:path';
 import {PDFDocument} from 'pdf-lib';
 
-const {collectBundleInputs, pdfSubject, renderMarkdown, safePath, verifyBundle} = await import(resolve('scripts/manuals/bundle.mjs'));
+const {collectBundleInputs, pdfSubject, renderGuideHtml, renderMarkdown, safePath, verifyBundle} = await import(resolve('scripts/manuals/bundle.mjs'));
 const ids = ['owner', 'manager-lead', 'employee', 'rondo', 'developer', 'operations'];
 const date = '2026-11-11';
 const publication = 'docs/guides/web/publication';
@@ -71,6 +71,12 @@ describe('manual Markdown boundary', () => {
   });
   it.each(['javascript:alert%281%29', 'JaVaScRiPt:alert(1)', 'data:text/html,test', 'file:///etc/passwd', '//example.invalid/x', 'java\u0000script:alert(1)', 'https://user:password@example.invalid/'])('does not make an unsafe destination clickable: %s', destination => {
     expect(renderMarkdown(`[unsafe](${destination})`)).not.toContain('<a ');
+  });
+  it('makes PDF repository references clickable at the exact documented source', () => {
+    const html = renderGuideHtml({guide: {id: 'owner', title: 'Owner', markdown: {path: 'docs/guides/web/owner.md'}}, markdown: '[Operations](operations.md) and [Runbook](../../runbooks/workforce-operations.md) and [Support](mailto:support@example.invalid)', date, sourceSha: 'a'.repeat(40), applicationHash: 'b'.repeat(64), assets: {inter: '', mono: '', wordmark: ''}});
+    expect(html).toContain('href="https://github.com/JoseK0514/Fuel-Scheduler-/blob/' + 'a'.repeat(40) + '/docs/guides/web/operations.md"');
+    expect(html).toContain('href="https://github.com/JoseK0514/Fuel-Scheduler-/blob/' + 'a'.repeat(40) + '/docs/runbooks/workforce-operations.md"');
+    expect(html).toContain('href="mailto:support@example.invalid"');
   });
   it('renders headings, multiline lists, tables and safe links without interpreting raw HTML', () => {
     const html = renderMarkdown('# Guide\n\n1. First **step**\n   continuation\n2. Second `step`\n\n| Area | Action |\n| --- | --- |\n| Owner | [Help](https://example.invalid/help?a=1&b=2) |');
