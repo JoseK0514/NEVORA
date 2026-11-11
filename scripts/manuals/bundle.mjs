@@ -252,7 +252,7 @@ function inline(markdown, depth = 0, linkBase) {
     const link = /^\[([^\]\n]+)\]\(([^\n)]*)\)/.exec(tail);
     if (link) {
       const safeHref = safeLink(link[2]);
-      const href = safeHref && linkBase ? new URL(safeHref, linkBase).href : safeHref;
+      const href = safeHref && linkBase ? new URL(safeHref.startsWith('/') ? safeHref.slice(1) : safeHref, safeHref.startsWith('/') ? linkBase.root : linkBase.document).href : safeHref;
       result += href ? `<a href="${escapeHtml(href)}" rel="noreferrer">${inline(link[1], depth + 1, linkBase)}</a>` : inline(link[1], depth + 1, linkBase);
       index += link[0].length; continue;
     }
@@ -317,7 +317,8 @@ export function renderMarkdown(markdown, linkBase) {
 export function renderGuideHtml({guide, markdown, date, sourceSha, applicationHash, assets}) {
   ensure(/^[a-f0-9]{40}$/.test(sourceSha), 'Invalid manual source SHA');
   const path = repoRelative(guide.markdown.path);
-  const linkBase = `https://github.com/JoseK0514/Fuel-Scheduler-/blob/${sourceSha}/${path.split('/').map(encodeURIComponent).join('/')}`;
+  const sourceRoot = `https://github.com/JoseK0514/Fuel-Scheduler-/blob/${sourceSha}/`;
+  const linkBase = {root: sourceRoot, document: sourceRoot + path.split('/').map(encodeURIComponent).join('/')};
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; font-src data:; img-src data:; connect-src 'none'; script-src 'none'"><title>${escapeHtml(guide.title)}</title><style>
 @font-face{font-family:Inter;src:url(data:font/ttf;base64,${assets.inter});font-weight:100 900}
 @font-face{font-family:JetBrains;src:url(data:font/ttf;base64,${assets.mono});font-weight:100 900}
