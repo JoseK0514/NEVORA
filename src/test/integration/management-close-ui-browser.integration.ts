@@ -40,7 +40,7 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     page.on('requestfailed',(r:{url():string;failure():unknown})=>network.push({engine,actor,phase:surfacePhase,path:new URL(r.url()).pathname,failure:r.failure()}));
     await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){errors.push('External origin '+url.origin);await route.abort();}else await route.continue();});
     failureShot=async()=>{await page.screenshot({path:resolve(evidence,engine+'-'+actor+'-failure.png'),fullPage:true});await writeFile(resolve(evidence,engine+'-'+actor+'-focus-events.json'),JSON.stringify(await page.evaluate(()=>(window as Window&{__r10Focus?:unknown[]}).__r10Focus),null,2));};
-    await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
+    await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await page.waitForLoadState('networkidle');
     const url=app.url+'/app/timecards?start='+today+'&end='+today+'#timecard-'+target.id;
     surfacePhase='timecards';await page.goto(url);await page.locator('dialog[open]').waitFor();
     const start=page.getByRole('button',{name:'Close open punch',exact:true});await start.focus();await page.keyboard.press('Enter');
@@ -51,7 +51,7 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     // The existing page and form both retire private drafts on a real browser lifecycle event.
     surfacePhase='privacy-retirement';await reason.fill('PRIVATE-RETIRED-DRAFT');await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
     expect(await page.locator('textarea').count()).toBe(0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
-    await page.goto(url);await page.locator('dialog[open]').waitFor();await page.getByRole('button',{name:'Close open punch',exact:true}).click();await end.waitFor();expect(await reason.inputValue()).toBe('');
+    await page.locator('dialog[open]').waitFor();await page.getByRole('button',{name:'Close open punch',exact:true}).click();await end.waitFor();expect(await reason.inputValue()).toBe('');
     surfacePhase='confirmation';const chosen=formatBusinessDateTimeInput(new Date(Date.now()-30*60000).toISOString(),'America/Puerto_Rico');await end.fill(chosen);await reason.fill('Verified last worked time; worker and tablet are unavailable.');
     expect(await page.locator('textarea').evaluate((el:HTMLTextAreaElement)=>el.labels![0].textContent?.trim())).toBe('Reason for closing');
     const confirmation=page.getByLabel('I verified this end time and reason.',{exact:true});
@@ -103,7 +103,7 @@ it('offers an audited management close in real desktop/mobile timecards with rec
      await page.getByRole('button',{name:'Cancel close',exact:true}).click();checks.push('Later recorded punch gets a new blank review; prior receipt cannot hide or pre-confirm it');
     }
     checks.push(engine+' '+actor+': keyboard-open, explicit blank fields, privacy retirement,320/390/1440reflow and200%text, real inactive worker/location/tablet close');
-    surfacePhase='teardown';await context.close();
+    surfacePhase='teardown';await page.waitForLoadState('networkidle');await context.close();
    }
    await active.close();browser=undefined;
   }

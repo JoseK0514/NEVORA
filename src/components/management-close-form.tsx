@@ -14,7 +14,7 @@ const blocked:Record<string,string>={self_review:'A different manager must close
 
 /** Recovery is memory-only and bound to this actor/screen, never a new operation. */
 export function ManagementCloseForm({timeEntryId,actorId,timeZone,recoveryScope,onClosed}:{timeEntryId?:string;actorId:string;timeZone:string;recoveryScope:string;onClosed:()=>void}){
- const fieldId=useId(),completedEntry=useRef<string|null>(null);
+ const fieldId=useId(),[completedEntry,setCompletedEntry]=useState<string|null>(null);
  const journalScope=(typeof window==='undefined'?'':window.location.origin)+'|'+recoveryScope;
  const [attempt,setAttempt]=useState<CloseAttempt|null>(()=>pendingClose(journalScope,actorId));
  const [opened,setOpened]=useState(!!attempt),[view,setView]=useState<View|null>(null),[localEnd,setLocalEnd]=useState(''),[reason,setReason]=useState(''),[confirmed,setConfirmed]=useState(false);
@@ -73,7 +73,7 @@ export function ManagementCloseForm({timeEntryId,actorId,timeZone,recoveryScope,
    if(own!==sequence.current||!focused())return;
    if(response.status===401||response.status===403){setView(null);current.current=null;setLocalEnd('');setReason('');setConfirmed(false);setPhase('unknown');setMessage('Your access changed. Refresh your current session.');controller.current?.pause();return;}
    const body=await response.json();if(own!==sequence.current)return;
-   if(response.ok&&body.state==='closed'){parseCloseReceipt(body.receipt,original.command);forgetClose(journalScope,actorId,original.command.operationId);pending.current=null;setAttempt(null);completedEntry.current=original.command.timeEntryId;setPhase('saved');setLocalEnd('');setReason('');setConfirmed(false);setMessage('Punch closed. The selected end time and reason are recorded.');onClosed();return;}
+   if(response.ok&&body.state==='closed'){parseCloseReceipt(body.receipt,original.command);forgetClose(journalScope,actorId,original.command.operationId);pending.current=null;setAttempt(null);setCompletedEntry(original.command.timeEntryId);setPhase('saved');setLocalEnd('');setReason('');setConfirmed(false);setMessage('Punch closed. The selected end time and reason are recorded.');onClosed();return;}
    if(response.status===409&&(body.state==='blocked'||body.state==='conflict')){forgetClose(journalScope,actorId,original.command.operationId);pending.current=null;setAttempt(null);setPhase('idle');setConfirmed(false);setMessage(body.state==='blocked'?(blocked[String(body.reason)]??'Review the current punch before continuing.'):'The original operation conflicts. Refresh and review the current punch.');controller.current?.refresh();return;}
    throw Error('Unconfirmed');
   }catch{if(own===sequence.current&&focused()){setPhase('unknown');setMessage('The result is unconfirmed. Retry the same close to check its saved result.');}}
@@ -81,7 +81,7 @@ export function ManagementCloseForm({timeEntryId,actorId,timeZone,recoveryScope,
  }
  if(!timeEntryId&&!attempt&&!saved)return null;
  if(saved){
-  if(timeEntryId&&timeEntryId!==completedEntry.current)return <div className={styles.form}><p className="c-tc-sheet__note">A new punch is open. Review its current time before another close.</p><button type="button" className="c-btn c-btn--secondary" onClick={()=>{setPhase('idle');setOpened(true);setView(null);current.current=null;setMessage('Checking the new punch…');}}>Review new open punch</button></div>;
+  if(timeEntryId&&timeEntryId!==completedEntry)return <div className={styles.form}><p className="c-tc-sheet__note">A new punch is open. Review its current time before another close.</p><button type="button" className="c-btn c-btn--secondary" onClick={()=>{setPhase('idle');setOpened(true);setView(null);current.current=null;setMessage('Checking the new punch…');}}>Review new open punch</button></div>;
   return <p role="status" className="c-tc-sheet__note">{message}</p>;
  }
  if(!opened)return <button type="button" className="c-btn c-btn--secondary c-btn--full" onClick={()=>{setOpened(true);setMessage('Checking current punch…');}}>Close open punch</button>;
