@@ -18,6 +18,7 @@
       "src/test/integration/clocker-action-center.integration.ts",
       "src/test/integration/clocker-break-snapshots.integration.ts",
       "src/test/integration/clocker-employee-time.integration.ts",
+      "src/test/integration/clocker-payroll-client-projection.integration.ts",
       "src/test/integration/clocker-payroll-export.integration.ts",
       "src/test/integration/clocker-phase-d-remediation.integration.ts",
       "src/test/integration/clocker-photo-lifecycle.integration.ts",
@@ -30,6 +31,7 @@
     "3/4": [
       "src/test/integration/clocker-attendance-review.integration.ts",
       "src/test/integration/clocker-break-types.integration.ts",
+      "src/test/integration/clocker-capacity-completeness.integration.ts",
       "src/test/integration/clocker-devices.integration.ts",
       "src/test/integration/clocker-inherited-schema.integration.ts",
       "src/test/integration/clocker-inherited-transport.integration.ts",
@@ -43,6 +45,7 @@
       "src/test/integration/clocker-account-recovery.integration.ts",
       "src/test/integration/clocker-enrollment.integration.ts",
       "src/test/integration/clocker-inherited-punches.integration.ts",
+      "src/test/integration/clocker-management-close.integration.ts",
       "src/test/integration/clocker-owner-policy.integration.ts",
       "src/test/integration/clocker-photo-platform.integration.ts",
       "src/test/integration/clocker-pin-crypto.integration.ts",

@@ -4,7 +4,7 @@ Local follow-up to `ad161feab4fc3e614a3a7e97be539614913feb9d`. This is test
 coverage only, with a dedicated configuration for the existing owned PostgreSQL
 runner. No migrations, application logic, dependencies or hosted state change.
 
-`payroll-client-projection.integration.ts` creates a fictional company, sessions,
+`clocker-payroll-client-projection.integration.ts` creates a fictional company, sessions,
 approved run and genuine PDF bytes in a new disposable loopback database. It
 persists intentionally private native/future/nested period metadata in the initial
 immutable document insert. Assertions verify:

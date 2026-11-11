@@ -10,7 +10,7 @@ commits; the integration owner owns the outer schedule-observation privacy fix.
 Management timecards formerly rejected more than 300 retained people. The pending
 correction SQL returned null above 100 requests, disabling aggregate Action Center
 even though these are not approved customer admission limits. Both reads now
-assemble complete bounded pages from **one SQL statement and MVCC snapshot**:
+assemble complete bounded pages from **one SQL statement** with one materialized roster/count and observation header:
 
 - Timecards: deterministic employee-ID order, 300 rows per page, all retained
   employees including inactive people; Employee/Lead own-person scope unchanged.
@@ -36,6 +36,8 @@ session checks run after the reads. Existing 45-second/session validity, per-car
 100-revision history, aggregate 10,000-entry/correction controls, Action Center's
 1,000-item bound and 100-command write batch remain distinct controls. No new
 employee/customer admission policy or unlimited-capacity promise is introduced.
+
+The existing `nevora_timecard_source` remains VOLATILE. Its nested reads rely on the existing workspace/employee locking and freshness protocol; materializing outer pages does not establish a transaction-wide MVCC snapshot for every nested statement. Concurrent newly inserted people and deep source history are outside the measured capacity fixtures. Hosted workload admission and concurrency qualification remain release gates; this patch makes no stronger isolation claim than the verified protocol.
 
 ## Local qualification
 
@@ -84,7 +86,7 @@ own scope and approved environment; no live load test was performed.
 
 ## Ownership, review and next gate
 
-CTO: one-snapshot ordered aggregation and explicit complete-read contracts.
+CTO: one-statement ordered aggregation and explicit complete-read contracts.
 CISO: current authority and private capture coherence preserved; partial evidence
 cannot produce ready counts. Product: no invented admission cap. Governance:
 local qualification only; no independent finding self-closed.
