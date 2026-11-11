@@ -82,6 +82,24 @@ and complete seven-step local onboarding acceptance, not provisioning alone.
 The next frozen-source local qualification has34 stages and derives the25
 fresh-company cases from that full acceptance instead of repeating its fixture.
 
+Source `9500d7e5653e0030450bc84a37f9f304320410eb` completed the full seven-step
+onboarding acceptance, staff25, default12,537, TypeScript and lint, but its release
+suite found one stale diagnostic test assertion:237 passed and one failed. The
+Home child correctly validates coverage using the engine from its ownership
+receipt; the test still required the older two-argument call. Updating that
+assertion to the actual owner-bound call preserves the guard and all diagnostic
+checks. The full release suite now passes238 tests without failures or skips.
+CI43089260612 was canceled for this replacement; its Mobile43089260599 success
+remains attributed to9500, with terminal records in `superseded9500-archive/`.
+
+Jose's original sequencing applies: **all required local qualification must pass
+before the next immutable candidate tag**, then all exact-source GitHub gates,
+then ordinary development publication. The early candidate attempts above do
+not satisfy that sequence and remain superseded. The34-stage runner now places
+release/static/inventory/audit/build checks first, followed by full onboarding,
+staff/default/SQL/browser execution. No runtime code, coverage requirement,
+assertion, deadline or protected release gate is waived.
+
 Main, production, native releases, hosted schema changes, paid activation, real
 notification delivery and customer-data exercises remain outside this delivery.
 The seven hosted/policy operating gates remain open; backend source delivery
