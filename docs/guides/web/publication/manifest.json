@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-11",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "6dd8976c6f51f086e56abcf87be49d81c9522dd1",
-  "applicationHash": "0c4433f207acf5a285e3502ed847bf8c095b5c162d80a7cd28e45117b1b0e381",
+  "sourceSha": "498c017a69a52ff579f274fc4b3024c7b1a15c6b",
+  "applicationHash": "79a6bbe920b2816375ce6e4bd7e9ba0edf1c54fe4b6f7ad2d908e258d480f2d5",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "f1b50c0792496e3e38a5562fb01b12b5dd0604b99186ac5423adf3092856c626"
@@ -104,7 +104,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "bc575dd8c3262bf176d621303036241fc5b919922fee78ed357e41609d545ea1",
+        "sha256": "6e2eab0e1e2328daa867c5ca5ff46d12d6f8fa0559694be941a20f060ae372cb",
         "pageCount": 4
       }
     },
@@ -175,7 +175,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "74e21436bf6d5e2f76329ae530423420be0b7006c120eb9878768073697ccb9a",
+        "sha256": "2b97da8f1a1b7fcb90a7b19cd420037b8aed59737261f8f8bb8308e611c063fb",
         "pageCount": 3
       }
     },
@@ -258,7 +258,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "54b92258e8ab85b859b15fbab9c46394a618502f0d74db447c246eedc982574d",
+        "sha256": "b6ab2be8d6f6917df5e4f16bd8c99a19d8fa7d5299d882e004da6865d4842e2b",
         "pageCount": 3
       }
     },
@@ -329,7 +329,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "6e7cd89ae70db5be8f91cfe776956914a2fe5ba4059dfb3cd775a8e536f8193a",
+        "sha256": "02b7a9c510726efcc47d9ad377367e6ba363aa9e30e199949cd19595db97a2d2",
         "pageCount": 2
       }
     },
@@ -347,11 +347,11 @@
         },
         {
           "path": "package.json",
-          "sha256": "ab1856473a1f21b65bc584b4cb02ad308ee228b1a1aca5ec3b2b697fbc91aa94"
+          "sha256": "574df6fa6e7874163eaa6035887b86fe5ff9cbd68bd88cf6f6aeef61aa33b8fb"
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "ee6328afbb9208c36efd563d9da2b5974b11f7e09a8115accf316377af2c9e80"
+          "sha256": "336ac1fb7c7ab412987390a3d6f5a7ed3ea4dc0ccb412b5c2773dfab7aa40f27"
         },
         {
           "path": "docs/development/developer-guide.md",
@@ -359,7 +359,7 @@
         },
         {
           "path": "docs/handoffs/2026-10-21-development-assembly-sources.json",
-          "sha256": "1348e72c0fc80dfeef55db34418b28d67f0a6aa5dbc16cf92cd112a1b66b9527"
+          "sha256": "85ed533fa9d8a84622c329dc35071e7f84e4413fe26a123b3df00736a3546854"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",
@@ -399,7 +399,7 @@
         },
         {
           "path": "db/migrations/order.ts",
-          "sha256": "fd2a03f02ba8540d1195cad62b5975db247ce038d9c45d56cd05ce88c525023d"
+          "sha256": "46125813656234acd7b4bca2ffa3e91dcdbd69f00f9f2a325e1632e9d31c86a3"
         },
         {
           "path": "scripts/release-build.mjs",
@@ -432,7 +432,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "2ee0c35a5dbed9933b638677ca0c0474de5a4d5dd350fe8df6088b7597110a49",
+        "sha256": "815d8d8047d93ff0cf45c42eec0bbb4b003c7b04c80ea885edf79a1241adfa40",
         "pageCount": 3
       }
     },
@@ -535,7 +535,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "dedae018b36fa7cd00ea602df12a90a71634a0f7862188df39ee872aba824102",
+        "sha256": "bf732cad03e830a5b429e427b8074d4561c5475e3c401e1ef7ab7dc0179598db",
         "pageCount": 4
       }
     }
