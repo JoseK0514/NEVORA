@@ -81,3 +81,13 @@
 ## Ledger
 
 Discovery: three read-only domain audits completed; source inspection proves R26 integration and R32 delivery gaps. Runtime worker/monitor code exists; actual operator/policy/hosted gates remain open. No source test results are claimed yet.
+
+Task1 progress: a709f3f39 ports12 bounded admission/capacity paths;181 focused units and owned lint pass. Actual capacity SQL remains pending the shared heavy-run slot.
+
+Ruling: include the eight production-provider/profile backend/test paths from3922df9/c256b249 despite the original technical exclusion. Read-only audit proved that explicit resource policy readback was missing and current hosted code could not execute the production provisioner profile. Keep the profile provisioner-only and reject workforce/billing/enrollment production scope. This is necessary source integration under R26, not new production activation. Cost if wrong: a too-broad runtime-profile admission boundary; focused negative profile/resource tests and source review are required.
+
+Task2 local completion:6df067823 adds the read-only case/CLI;24 focused tests pass including the real CLI and an additional review-before-verification RED→GREEN regression. Project typecheck and owned lint pass. No mailbox, withdrawal, deletion or restore was executed.
+
+Task3 content:744eb057d adds six current-source guides and evidence index;92 evidence paths/36 local links checked. PDF/tooling and final qualified distribution remain in progress.
+
+Owner decisions recorded November11: Jose primary, Ilianis Soto secondary,24/7 coverage; critical acknowledgement15minutes and lower-severity1hour, explicitly internal ownership/triage targets. Actual responder access/receipt/drill remains unverified.

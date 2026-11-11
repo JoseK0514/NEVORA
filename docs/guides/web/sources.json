@@ -109,7 +109,11 @@
         "src/lib/communications/service.server.ts",
         "src/lib/owner-advisor/coverage-actions.server.ts",
         "db/migrations/order.ts",
-        "scripts/release-build.mjs"
+        "scripts/release-build.mjs",
+        "services/hosted/neon/runtime-profile.ts",
+        "src/lib/onboarding/provisioning/neon-provider.server.ts",
+        "src/lib/onboarding/provisioning/runtime.server.ts",
+        "docs/handoffs/2026-11-11-r26-admission-capacity.md"
       ]
     },
     {
@@ -132,7 +136,11 @@
         "src/lib/operations/managed-host.ts",
         "src/lib/operations/monitor.ts",
         "src/lib/operations/case-readiness.ts",
-        "src/lib/communications/service.server.ts"
+        "src/lib/communications/service.server.ts",
+        "services/hosted/neon/runtime-profile.ts",
+        "src/lib/onboarding/provisioning/neon-provider.server.ts",
+        "src/lib/onboarding/provisioning/runtime.server.ts",
+        "docs/handoffs/2026-11-11-r26-admission-capacity.md"
       ]
     }
   ]

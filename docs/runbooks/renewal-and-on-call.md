@@ -1,6 +1,13 @@
 # Renewal and on-call handoff
 
-Prepared November 10, 2026 for non-native web closeout. Jose is the initial responder and release decision maker; `support@thevelani.com` is the selected future failure-alert inbox. Mailbox access, backup responder, coverage hours and response target remain unverified/unassigned. The public two-business-day support aim in `src/lib/legal/policies.ts` is not a worker-incident response SLA. No schedule, subscription, paid service or alert is enabled by this handoff.
+Prepared November 10, 2026 for non-native web closeout; responder assignment and targets approved November11 by Jose. **Primary: Jose. Secondary: Ilianis Soto. Coverage: 24/7.** `support@thevelani.com` is the selected future failure-alert inbox. Actual mailbox/responder access and an alert-response rehearsal remain unverified. The public two-business-day support aim in `src/lib/legal/policies.ts` is separate from incident coverage. No schedule, subscription, paid service or alert is enabled by this handoff.
+
+Owner-approved internal acknowledgement targets: critical
+incidents such as widespread sign-in outage or blocked payroll processing within
+15minutes; lower-severity incidents within1hour. Acknowledgement means a responder
+accepts ownership and begins triage. It is not a resolution guarantee or a public
+SLA. Verify primary/backup receipt, handoff and acknowledgement through a controlled
+exercise before representing the response process as tested.
 
 ## Incident actions
 
@@ -28,10 +35,10 @@ Exact expiry dates, provider invoices, plan limits and private store references 
 | Retention/backup | Actual restore-history configuration, separate snapshot purpose/owner/review/delete date, request/hold register | Follow the approved policy and [deletion runbook](../compliance/account-deletion-runbook.md); no unattended purge or blanket retention extension |
 | Operations monitor journal | Incident/notice/attempt inventory, proposed retention/archival and abuse-retry counters | Keep existing durable dedupe records; policy remains an explicit Production decision; do not purge as part of the pilot |
 
-Suggested initial operating review: inspect monitor/worker freshness at each authorized pilot window and after any source/configuration change; review provider renewals before their actual expiry and costs before each bill; review deletion deadlines daily while requests exist. These are proposals for Jose's coverage decision, not a staffed service promise or a newly created automation.
+Suggested initial operating review: inspect monitor/worker freshness at each authorized pilot window and after any source/configuration change; review provider renewals before their actual expiry and costs before each bill; review deletion deadlines daily while requests exist. This review cadence is proposed; the primary/secondary and24/7 coverage above are Owner-assigned. Assignment alone is not an observed response exercise or a newly created automation.
 
 ## First responder checklist and remaining decisions
 
-Before unattended activation, establish Jose's working access to the private provider dashboards, approved secret store and selected inbox without exporting credentials into chat. Rehearse stop/drain and unknown-outcome handling on the owned local fixtures; obtain the separately authorized finite hosted acceptance. Record the recovery path if Jose is unavailable and the chosen coverage/response target. Until those are confirmed, describe operations as an attended finite pilot.
+Before unattended activation, establish the assigned responders' working access to the private provider dashboards, approved secret store and selected inbox without exporting credentials into chat. Rehearse stop/drain and unknown-outcome handling on the owned local fixtures; obtain the separately authorized finite hosted acceptance. Record Ilianis Soto's backup recovery/contact path privately and measure the approved acknowledgement targets. Until access and response are verified, describe execution as an attended finite pilot.
 
-Bundled owner decisions: backup responder/coverage/response target; actual renewal/expiry/billing register; private pre-request contact source for deletion withdrawal; any monitor journal retention policy. Existing deletion periods and the selected alert inbox are already policy/owner inputs and should not be asked again as undecided choices.
+Remaining operating inputs: responder-reachability/acknowledgement evidence; actual renewal/expiry/billing register; private pre-request contact source for deletion withdrawal; any monitor journal retention policy. Primary Jose, secondary Ilianis Soto,24/7 coverage and the15-minute/1-hour internal acknowledgement targets are already approved and must not be asked again as undecided choices. Existing deletion periods and the selected alert inbox are also already policy/owner inputs.
