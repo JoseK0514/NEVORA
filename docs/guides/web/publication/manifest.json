@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-11",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "7eb880aa99636273f53b0fe0126113ce3aaebdeb",
-  "applicationHash": "7d49aac5f4b0829ec1bd9780e382e1b33736931629b9038b4c0e42fa062beab8",
+  "sourceSha": "e0dcfbc0843069993701f8dbaa231e30ad670512",
+  "applicationHash": "202be0be133436ca8637be94420897332b28211a9f4ff80da539fa536fbf8ae5",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "f1b50c0792496e3e38a5562fb01b12b5dd0604b99186ac5423adf3092856c626"
@@ -104,7 +104,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "e812f36b579ecbaaf140f3810208c05e20b4b13b2abf2a7666f2cec4216d88a9",
+        "sha256": "9d386cbb04ea7446df6b866f5167f7416e887e906fff23a47388d83a3ee19fe8",
         "pageCount": 4
       }
     },
@@ -175,7 +175,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "5183126026b409db2d595e1d1e51ccd70123e96a29c8fe85fcec7ba9900f70cf",
+        "sha256": "dc1d3534b2dce9939abd871cbd6bfc50f153a8cd920ee350da07c6413ef1b8d4",
         "pageCount": 3
       }
     },
@@ -258,7 +258,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "b97f31cef5afa7994e0749b5669bbd82f86fca5525cf0c5dc79ee1c26f1a7696",
+        "sha256": "960950524596fac7d61a655e4bbdf8cc4e59c17db08740cca795f8dc09f5f2a7",
         "pageCount": 3
       }
     },
@@ -329,7 +329,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "4657bb6b54dc5ce1210c17afea9d047ac82289c6cc5aa5efa4eb829279f841e0",
+        "sha256": "4b4f7781a70085b44b04ffe5ce72ed40da08961b6f85e3de91123850cc754dfa",
         "pageCount": 2
       }
     },
@@ -347,7 +347,7 @@
         },
         {
           "path": "package.json",
-          "sha256": "8228c31cfb4594edd7f872b16500ed4cd234d31ea81de373570e84c0a78dec26"
+          "sha256": "ab1856473a1f21b65bc584b4cb02ad308ee228b1a1aca5ec3b2b697fbc91aa94"
         },
         {
           "path": ".github/workflows/ci.yml",
@@ -432,7 +432,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "9c75d5a574fced6c8b78e367170ada8da4e92707dab6af4d17c68a87d2f0c0f8",
+        "sha256": "027f02d479ab1c823cef4817218ed381e8c39932e8e250c94bf30c7003981811",
         "pageCount": 3
       }
     },
@@ -535,7 +535,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "89c67b67e16f33a40b64fec54f56910ea3680da2aaeabee256e26fd25b853b2b",
+        "sha256": "c4e45420fdfac1e54b367be9c1930869264ef75c34ef73d53bd34bf7cc0d31ca",
         "pageCount": 4
       }
     }
