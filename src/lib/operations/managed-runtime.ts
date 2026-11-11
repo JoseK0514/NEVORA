@@ -62,7 +62,7 @@ export async function runManagedProcess(invocation:Invocation,signal:AbortSignal
  return {exitCode:code,cleanupConfirmed:true,validOutput:valid,output:valid?output.trim():''};
 }
 export async function invokeManagedCommand(profile:ManagedProfile,mode:'run'|'health',command:WorkerCommand,signal:AbortSignal){
- return runManagedProcess({file:process.execPath,args:['--conditions=react-server','--import','./scripts/node-server-context.mjs','--import','tsx','scripts/workforce-operations.mts',mode,command],env:managedChildEnvironment(profile,process.env)},signal,mode==='run'?135000:15000);
+ return runManagedProcess({file:process.execPath,args:['--conditions=react-server','--import','./scripts/node-server-context.mjs','--import','tsx','scripts/workforce-operations.mts',mode,command],env:managedChildEnvironment(profile,process.env,command)},signal,mode==='run'?135000:15000);
 }
 type Invoke=(profile:ManagedProfile,mode:'run'|'health',command:WorkerCommand,signal:AbortSignal)=>Promise<ManagedProcessResult>;
 const decode=(r:ManagedProcessResult):Record<string,unknown>|null=>{try{const v=JSON.parse(r.output);return r.validOutput&&v&&typeof v==='object'&&!Array.isArray(v)?v:null;}catch{return null;}};
