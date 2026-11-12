@@ -1,4 +1,4 @@
-import {beforeAll,afterAll,beforeEach,describe,it,expect} from 'vitest';
+import {beforeAll,afterAll,beforeEach,afterEach,describe,it,expect,vi} from 'vitest';
 import {randomUUID} from 'node:crypto';
 import {freshOnboardingControl} from './onboarding-fixture';
 import {onboardingTestConfig} from './onboarding-test-config';
@@ -15,6 +15,26 @@ describe('actual control-database verified registration',()=>{
  beforeAll(async()=>{fixture=await freshOnboardingControl();store=createControlStore(fixture.pool);});
  afterAll(async()=>{await fixture?.close();});
  beforeEach(async()=>{mail.length=0;await fixture.pool.query('TRUNCATE nevora_onboarding.registrations,nevora_onboarding.admission_counters,nevora_onboarding.email_subjects CASCADE');});
+ afterEach(()=>vi.unstubAllEnvs());
+ it('HTTP registration gives unrelated edge addresses separate durable network budgets without persisting IPs',async()=>{
+  vi.stubEnv('VERCEL','1');const c={...config,verificationBucketLimit:2};const h=registrationHttpHandlers({config:c,store,delivery,admission:{mode:'open'}});
+  const request=(email:string,ip:string,spoof='198.51.100.99')=>h.request(new Request(c.signupOrigin+'/api/onboarding/registrations',{method:'POST',headers:{origin:c.signupOrigin,'content-type':'application/json','x-vercel-forwarded-for':ip,'x-forwarded-for':spoof},body:JSON.stringify(command(email))}));
+  expect((await request('one@example.invalid','203.0.113.1')).status).toBe(202);
+  expect((await request('two@example.invalid','203.0.113.2')).status).toBe(202);
+  expect((await request('three@example.invalid','203.0.113.3')).status).toBe(202);
+  expect((await request('four@example.invalid','203.0.113.1')).status).toBe(202);
+  const limited=await request('five@example.invalid','203.0.113.1','198.51.100.100');expect(limited.status).toBe(429);
+  expect(mail).toHaveLength(4);const counters=await fixture.pool.query("SELECT subject_digest,attempts FROM nevora_onboarding.admission_counters WHERE kind='IP' ORDER BY attempts");
+  expect(counters.rows.map(r=>r.attempts)).toEqual([1,1,2]);
+  expect(counters.rows.every(r=>/^[a-f0-9]{64}$/.test(r.subject_digest))).toBe(true);
+  expect(JSON.stringify(counters.rows)).not.toMatch(/203\.0\.113|198\.51\.100/);expect(await limited.text()).not.toMatch(/203\.0\.113|198\.51\.100/);
+ });
+ it('HTTP registration retains a shared conservative budget when edge identity is unavailable',async()=>{
+  vi.stubEnv('VERCEL','0');const c={...config,verificationBucketLimit:2};const h=registrationHttpHandlers({config:c,store,delivery,admission:{mode:'open'}});
+  const results=[];for(let i=1;i<=3;i++)results.push(await h.request(new Request(c.signupOrigin+'/api/onboarding/registrations',{method:'POST',headers:{origin:c.signupOrigin,'content-type':'application/json','x-vercel-forwarded-for':'203.0.113.'+i,'x-forwarded-for':'198.51.100.'+i},body:JSON.stringify(command('owner'+i+'@example.invalid'))})));
+  expect(results.map(r=>r.status)).toEqual([202,202,429]);expect(mail).toHaveLength(2);
+  expect((await fixture.pool.query("SELECT count(*)::int n FROM nevora_onboarding.admission_counters WHERE kind='IP'")).rows[0].n).toBe(1);
+ });
  it('stores consent and one receipt on identical concurrent requests without duplicate sends',async()=>{const c=command(),r=await Promise.all([requestRegistration(c,store,delivery,config,'127.0.0.1'),requestRegistration(c,store,delivery,config,'127.0.0.1')]);expect(r.map(x=>x.state)).toEqual(['verification_requested','verification_requested']);expect(mail.length).toBe(1);expect((await fixture.pool.query('SELECT count(*)::int n FROM nevora_onboarding.registrations')).rows[0].n).toBe(1);const row=(await fixture.pool.query('SELECT terms_version,privacy_version,email_ciphertext FROM nevora_onboarding.registrations')).rows[0];expect(row.terms_version).toBe('terms-1');expect(row.privacy_version).toBe('privacy-1');expect(row.email_ciphertext.includes('owner@example.invalid')).toBe(false);});
  it('refuses a changed payload under the same operation ID',async()=>{const c=command();await requestRegistration(c,store,delivery,config);expect((await requestRegistration({...c,email:'other@example.invalid'},store,delivery,config)).state).toBe('conflict');expect(mail.length).toBe(1);});
  it('does not enumerate the registration through cooldown responses',async()=>{const c=command();const first=await requestRegistration(c,store,delivery,config);const repeated=await requestRegistration(command(),store,delivery,config);expect(first).toEqual({schemaVersion:1,state:'verification_requested',resendAfterMs:60000});expect(repeated).toEqual(first);expect(mail.length).toBe(1);});
