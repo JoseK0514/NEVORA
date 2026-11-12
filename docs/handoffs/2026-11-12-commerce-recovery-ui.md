@@ -89,3 +89,12 @@ provider/capacity/restore/principal/normal-sign-in gates pass;50minutes maximum,
 cleanup by45, no additional effects. These local browser fixtures do not certify
 Stripe, payroll publication, push receipt, hosted worker recovery or financial
 policy. SCRUM-190/146 and separate Rondo155 retain their actual open criteria.
+
+
+Final source follow-up: TypeScript identified stale narrowing after the async
+fixture's handoff slot was cleared. Test-only commit4336dd89f reads that callback
+slot through its declared optional route type. Scoped lint/typecheck,83 direct
+UI/resource controls and both native-engine effects checks pass afterward. No
+production UI, authorization, assertion or timeout changed. The initial compiler
+failure remains retained outside the repository. Six guides are regenerated
+against4336dd89f; final candidate/development runs must bind the resulting commit.
