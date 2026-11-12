@@ -22,6 +22,14 @@ test('server actions after comments, without semicolons, or inline in a page sti
 test('commerce server/catalog/worker boundaries cannot evade the runtime inventory',()=>{
  for(const [path,source] of [['services/commerce/server.ts','export function serve(){}'],['services/commerce/enrollment-runtime.ts',"import {Pool} from 'pg'"],['services/commerce/worker.ts','export function once(){}']])assert.throws(()=>validateOnboardingInventory([path],{entries:[]},()=>source),/Unclassified runtime entrypoint/);
 });
+test('the billing status route and plan-confirmation catalog helper have explicit isolated dispositions',()=>{
+ const files=execFileSync('git',['ls-files','-z'],{encoding:'utf8',maxBuffer:32*1024*1024}).split('\0').filter(Boolean),inventory=JSON.parse(readFileSync('docs/handoffs/onboarding-entrypoint-inventory.json','utf8'));
+ const read=path=>/\.[cm]?[jt]sx?$/.test(path)?readFileSync(path,'utf8'):'';
+ for(const [path,behavior] of [['src/app/api/commerce/status/route.ts','BOUND_APPLICATION'],['services/commerce/plan-change.ts','SEPARATE_CATALOG']]){
+  const entry=inventory.entries.find(entry=>entry.path===path);assert(entry,path);assert.equal(entry.status,'CONVERTED');assert.equal(entry.isolatedBehavior,behavior);
+  assert.throws(()=>validateOnboardingInventory(files,{...inventory,entries:inventory.entries.filter(entry=>entry.path!==path)},read),/Unclassified runtime entrypoint/,path);
+ }
+});
 test('the private workforce command and every tracked transport boundary have an explicit reviewed disposition',()=>{
  assert.throws(()=>validateOnboardingInventory(['scripts/workforce-operations.mts'],{entries:[]},()=>''),/Unclassified runtime entrypoint/);
  assert.throws(()=>validateOnboardingInventory(['scripts/managed-workforce-host.mts'],{entries:[]},()=>''),/Unclassified runtime entrypoint/);
