@@ -36,6 +36,36 @@ results are author implementation evidence, not independent audit closure.
 
 ## Hosted status remains open
 
+### Candidate CI failure and QA synchronization repair
+
+The first candidate f13614ae3a7aa661abbccc7c0643005d6e28fd0f retained17passed
+jobs, one failed D2 browser step and the dependent evidence failure in
+CI43281545099; Mobile43281545104 passed. The original failed artifact13975425824
+is retained. Its WebKit witness proves documentFocused=true, linkFocused=false,
+activeTag=H1. The application's existing CorpHoursFrame route effect focuses
+hours-title after ready content commits; the QA script focused the correction
+link before that effect. This is a test readiness race, not a source change to
+the application UI.
+
+QA commit4e81331bfee3b3049e5d27511c3fe4a00fe583b7 adds a read-only observer for
+the actual ready frame, exact entry and native heading focus before the script
+focuses the link. It shares the original15second navigation budget. It never
+manufactures focus, dispatches synthetic events, retries Enter or weakens the
+existing native link-focus assertion. A visible-only implementation reproduced
+the failure in the new real-browser regression; the observer passes Chromium
+and WebKit delayed-focus, foreign-route, missing-focus and expired-deadline
+cases. Related deadline/foreground regressions passed35/35. The new native
+regression runs before the existing full D2 CI gate. Source-qualified manuals
+were regenerated through the pinned builder after this additional QA change.
+
+Jose subsequently approved **one** test of at most20minutes after the repaired
+candidate's CI passes, including at most1200extra active seconds per database
+and controlled failure/cleanup. Approval call_4a4ca27626d940e991d66491ce654905
+does not waive any CI, source, custody, cap-restoration or suspension gate.
+The window has not started at this snapshot. The original candidate's ZIPs and
+source assertions must be rebuilt/rebound to the final passing source before
+activation. Current execution state belongs in the referenced window plan/Jira.
+
 The previous source32 host test completed both original fictional companies'
 empty-queue payroll invocations and one real same-source restart, with signed
 2-of-2 health. Later control quota failures retained host marker
