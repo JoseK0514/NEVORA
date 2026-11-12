@@ -18,6 +18,8 @@ Interfaces: Request -> trusted hosting-edge client address -> existing durable r
 
 ## Task 2: Qualify backend and reconcile hosted evidence
 
+Source-comparison addendum: port the deployed Owner HTTP readiness check (202 until current APP routing confirms the same workspace/incarnation) and verification-email locale parameter missing from development. Observe their strengthened existing regressions fail first, then pass. Preserve development's newer session transaction transport. Earlier d0 qualification is intermediate; rerun immutable final-source acceptance after these bounded ports.
+
 Interfaces: the unchanged v1 contract and same-source registration/provisioning/activation/setup/people/invitation services.
 
 Run the committed clean-source onboarding acceptance, relevant units, type/lint and source-bound build with isolated owned PostgreSQL and provider delivery off. Read the actual production project/function/schedule/config receipts through existing accounts, without widening permissions or copying secrets. Complete any authorized owned-fixture mail check if secure normal authentication is available; otherwise retain the exact remaining hosted acceptance without inventing a pass. Expected: actual reports distinguish tested, deployed and activated states; public signup remains closed.
