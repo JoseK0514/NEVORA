@@ -325,10 +325,9 @@ export class StripeBilling implements BillingPort {
       }
       const paidThrough =
         Math.max(business.paidThrough ?? 0, matchingPaidThrough) || null;
-      // Preserve previously paid capacity until a replacement price has paid coverage.
+      // Preserve the existing trial or paid plan until a replacement price has paid coverage.
       const confirmedPlan =
         business.planKey &&
-        business.paidThrough &&
         matchingPaidThrough <= this.now()
           ? business.planKey
           : key;

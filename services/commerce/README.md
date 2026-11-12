@@ -89,6 +89,37 @@ Keep webhook and worker processing enabled after closing signup. Inspect durable
 
 ## Activation and rollback
 
+### Self-service plan confirmation (November 11)
+
+`POST /v1/plan-change` uses the existing billing Bearer session, exact allowed
+Origin, JSON content type and UUID `Idempotency-Key`. Body: `{plan:"small"|"team",
+lang?:"en"|"es"}`. It returns `{url,plan,effective:"after_payment"|"period_end"}`.
+The response creates a Stripe-hosted confirmation; it does not prove the Owner
+confirmed, paid or scheduled anything. Keep the same operation key and language
+when retrying. A changed request with the same key fails with 409
+`idempotency_conflict`. Legacy `/v1/portal` retry inputs remain unchanged.
+
+The opt-in `STRIPE_PORTAL_SMALL_CONFIG` and `STRIPE_PORTAL_TEAM_CONFIG` must be
+distinct target-only configurations. Both are required together; absent values
+leave plan changes disabled. Runtime verifies account/mode, approved price and
+product, fixed quantity, unchanged billing anchor, `always_invoice`,
+`continue_trial` and `decreasing_item_amount` at period end. This preserves the
+existing shared-product catalog without altering the default management portal.
+The runtime key additionally needs Customer Portal configuration read access.
+
+Small downgrades require at most 15 current active non-Owners; 16–30 uses Team.
+Unpaid/open invoices, pending updates, an existing subscription schedule or
+scheduled cancellation block another plan change. Resolve those through billing
+support/Stripe management first. If headcount grows past Small before renewal,
+the existing capacity gate restricts operations when the smaller paid plan takes
+effect; export and own-pay recovery remain available. No employee is deleted.
+Paid invoice lines must have a positive amount to grant that price's coverage.
+During the original trial no early charge or new trial deadline is introduced.
+
+Disabling both new configuration variables stops new plan-change confirmations;
+already-open Stripe sessions and provider schedules require separate operator
+review. Never cancel a customer's schedule as a code rollback.
+
 Before any real launch: verify Stripe account/test-mode checkout, approved SMTP with an explicitly approved test inbox, worker scheduling, exact deployment SHA, database separation/backup restore, ingress/client-IP rate limiting, current retention/commercial notices and cost per company. The built-in rate limiter uses the socket peer and does not trust arbitrary forwarded headers; choose an ingress strategy before public-scale signup. None of these external states is established by local tests.
 
 Start with isolated owned fixtures, then an authorized non-production pilot. Existing customers are not automatically enrolled. Stop new signup with `NEVORA_COMMERCE_SIGNUP_ENABLED=false` if needed while retaining billing webhooks and recovery workers. Do not disable the application billing gate to bypass an incident; restore the verified release/configuration or use an explicitly approved entitlement correction. Back up the catalog and encryption key before migrations. No billing action deletes company databases. Restore code and catalog together if rolling back; never reassign an occupied slot.

@@ -582,6 +582,22 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     provider.payments.get(subscription.id)!.push({end:1799236800,price:'price_team',amount:500,lineAmount:500});
     await billing.syncJob({subscriptionId:subscription.id});const paid=await store.business(id);expect(paid.planKey).toBe('team');expect(paid.trialEnd).toBe(before.trialEnd);
   });
+  it('retains Small trial capacity before the first paid Team invoice without changing the trial deadline',async()=>{
+    const {subscription}=await subscribed(),before=await store.business(id);
+    expect(before.planKey).toBe('small');expect(before.paidThrough).toBeNull();
+    const policy=vi.fn(async()=>{});Object.assign(billing.options,{policy});
+    subscription.items.data[0].price=provider.prices.get('price_team')!;
+    await billing.syncJob({subscriptionId:subscription.id});
+    expect((await store.business(id)).planKey).toBe('small');expect(policy).toHaveBeenLastCalledWith(expect.anything(),15);
+    expect((await store.business(id)).trialEnd).toBe(before.trialEnd);
+    provider.markPaid(subscription.id);await billing.syncJob({subscriptionId:subscription.id});
+    expect((await store.business(id)).planKey).toBe('team');expect(policy).toHaveBeenLastCalledWith(expect.anything(),30);
+    expect((await store.business(id)).trialEnd).toBe(before.trialEnd);
+  });
+  it('keeps legitimate initial Team trial assignment when there is no earlier plan',async()=>{
+    provider.counts.set(id,16);const {subscription}=await subscribed();
+    const initial=await store.business(id);expect(initial.planKey).toBe('team');expect(initial.paidThrough).toBeNull();expect(subscription.status).toBe('trialing');expect(provider.payments.get(subscription.id)).toBeUndefined();
+  });
   it('rejects changed confirmation parameters on the same operation rather than silently selecting a different language',async()=>{
     enablePlanChanges();await subscribed();const b=await store.business(id),operation=randomUUID();
     await billing.planChange(b,operation,'team',null,'en');
