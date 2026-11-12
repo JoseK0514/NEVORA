@@ -14,9 +14,10 @@ window.fetch=(input,options)=>{
 };
 function Operational(){useEffect(()=>{receipt.mounted++;return()=>{receipt.unmounted++;};},[]);return <aside>Operational pollers and parallel sheet</aside>;}
 function Fixture(){
- const [path,setPath]=useState('/app');
+ const initialRecovery=new URLSearchParams(window.location.search).get('initial')==='recovery';
+ const [path,setPath]=useState(initialRecovery?'/app/billing':'/app');
  return <PathnameContext.Provider value={path}><nav><button onClick={()=>setPath('/app/billing')}>Enter recovery</button><button onClick={()=>setPath('/app')}>Leave recovery</button></nav>
-  <CommerceRecoveryBoundary enabled shell={<Operational/>}><BillingRecovery lang="en" payrollEnabled={false} billingOrigin="https://www.thevelani.com"/></CommerceRecoveryBoundary>
+  <CommerceRecoveryBoundary enabled initialRecovery={initialRecovery} shell={<Operational/>}><BillingRecovery lang="en" payrollEnabled={false} billingOrigin="https://www.thevelani.com"/></CommerceRecoveryBoundary>
  </PathnameContext.Provider>;
 }
 createRoot(document.getElementById('root')!).render(<Fixture/>);
