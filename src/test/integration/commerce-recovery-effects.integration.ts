@@ -6,6 +6,7 @@ import {resolve,join} from 'node:path';
 import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import {withOwnedTestResources} from './owned-test-resources';
 
+function readHandoff(held:{handoff?:FixtureRoute}):FixtureRoute|undefined{return held.handoff;}
 type FixtureRoute={request():{url():string};abort(reason?:string):Promise<void>;fulfill(options:{contentType:string;body:string}):Promise<void>};
 
 it('unmounts retained shell state and cancels late billing reads/handoffs in native browser effects',async()=>{
@@ -61,12 +62,13 @@ it('unmounts retained shell state and cancels late billing reads/handoffs in nat
    await held.handoff.fulfill({contentType:'application/json',body:JSON.stringify({url:'https://www.thevelani.com/pages/plans#handoff='+'a'.repeat(43)})}).catch(()=>undefined);
    await page.getByText('Operational pollers and parallel sheet',{exact:true}).waitFor();
    expect(navigations).toEqual([origin+'/fixture']);expect(externalRequests).toEqual([]);expect(await page.getByText('2 / 15',{exact:true}).count()).toBe(0);
-   await page.getByRole('button',{name:'Enter recovery'}).click();await page.getByText('Access paused',{exact:true}).waitFor();held.handoff=undefined;
+   await page.getByRole('button',{name:'Enter recovery'}).click();await page.getByText('Access paused',{exact:true}).waitFor();delete held.handoff;
    await page.getByRole('button',{name:'Open billing in Velani'}).click();await expect.poll(()=>Boolean(held.handoff)).toBe(true);
    expect(await page.getByRole('button',{name:'Opening billing…'}).isDisabled()).toBe(true);
-   if(!held.handoff)throw Error('Success handoff request missing');
+   const successHandoff=readHandoff(held);
+   if(!successHandoff)throw Error('Success handoff request missing');
    const destination='https://www.thevelani.com/pages/plans#handoff='+'a'.repeat(43);
-   await held.handoff.fulfill({contentType:'application/json',body:JSON.stringify({url:destination})});await page.waitForURL(destination);await page.getByRole('heading',{name:'Fictional trusted billing destination'}).waitFor();
+   await successHandoff.fulfill({contentType:'application/json',body:JSON.stringify({url:destination})});await page.waitForURL(destination);await page.getByRole('heading',{name:'Fictional trusted billing destination'}).waitFor();
    expect(externalRequests).toEqual(['https://www.thevelani.com/pages/plans']);
    await page.goto(origin+'/fixture?initial=recovery');await page.addScriptTag({content:js});await page.getByText('Access paused',{exact:true}).waitFor();
    await page.getByRole('button',{name:'Leave recovery'}).click();await page.getByRole('heading',{name:'Fresh recovery exit document',exact:true}).waitFor();expect(recoveryDocuments).toBe(2);
