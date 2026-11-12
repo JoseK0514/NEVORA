@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-11-11T21:16:44.048626+00:00",
+  "observedAt": "2026-11-12T23:29:53.140253+00:00",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -364,9 +364,9 @@
     },
     {
       "branch": "development",
-      "sha": "baf26fc4861a21bc7ddd634f058c8d8f470293d7",
+      "sha": "242a993897aee4a213a1a9aefdecee2e86394b1f",
       "disposition": "target",
-      "reason": "Freshly fetched November 10 development baseline baf26fc4, with independently qualified company-specific worker enrollment and bounded SQL/D2 diagnostic work. This closeout adds the independently reviewed SMTP acknowledgement deadline code9bd76d86 and its operational handoff d75b7d74. Source-specific evidence and historical unknown CI causes remain retained; no Production or native adoption is implied."
+      "reason": "Freshly fetched November 10 development baseline baf26fc4, with independently qualified company-specific worker enrollment and bounded SQL/D2 diagnostic work. This closeout adds the independently reviewed SMTP acknowledgement deadline code9bd76d86 and its operational handoff d75b7d74. Source-specific evidence and historical unknown CI causes remain retained; no Production or native adoption is implied. November12 Step2 reconciliation: freshly fetched242a9938 is the preserved combined base; main46d6dc76 and held collaboration a496040fb are unchanged. All73 sources and three active branches pass inventory. Only the scoped onboarding recovery/fixture/tests are added; no held UI is imported. Existing development onboarding CI failure and exact candidate gates remain visible in the Step2 evidence."
     },
     {
       "branch": "fix/ci-preview-33",

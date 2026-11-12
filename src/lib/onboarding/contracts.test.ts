@@ -1,7 +1,7 @@
 import {describe,expect,it} from 'vitest';
-import {parseRegistrationCommand,parseWorkspaceCommand,parseOnboardingCommand,parseOnboardingSnapshot,safeOnboardingDestination,onboardingHttpStatus,type OnboardingResult} from './contracts';
+import {parseRegistrationCommand,parseWorkspaceCommand,parseOnboardingCommand,parseOnboardingSnapshot,safeOnboardingDestination,onboardingHttpStatus} from './contracts';
 import setupFixture from './fixtures/v1/setup-state.json';
-import commandResults from './fixtures/v1/command-results.json';
+import {commandResults} from './fixtures/v1/command-results';
 import registrationStates from './fixtures/v1/registration-states.json';
 
 const operationId='59f60420-ec96-455a-9292-0b1a416509e9';
@@ -32,7 +32,7 @@ describe('client snapshot and navigation boundaries',()=>{
   const decoded=parseOnboardingSnapshot(value);expect(decoded?.registrationState).toBe(value.registrationState);expect(decoded?.workspace).toBeNull();expect(decoded?.sections).toEqual([]);
  });
  it.each(commandResults)('maps the $name recovery fixture to its actual HTTP outcome',({result,http})=>{
-  expect(onboardingHttpStatus(result as OnboardingResult)).toBe(http);
+  expect(onboardingHttpStatus(result)).toBe(http);
   if('snapshot' in result)expect(parseOnboardingSnapshot(result.snapshot)).not.toBeNull();
  });
  const snapshot={schemaVersion:1,version:'1',registrationState:'EMAIL_VERIFIED',workspace:null,sections:[],nextStep:null};

@@ -9,8 +9,9 @@ and the actual types. Never persist passwords, cookies or fragment bearers.
 | --- | --- | --- |
 | `setup-state.json` | `OnboardingSnapshot`, `contracts.ts`; nested `snapshot` in GET state | All nine sections of an Owner-only workplace before scheduling setup |
 | `readiness-cases.json` | `deriveReadiness`, `readiness.server.ts`; canonical projection in `setup.server.ts` | All currently emitted section reasons/actions, empty/invalid inputs, regression and optional configuration |
-| `command-results.json` | `OnboardingResult`, `onboardingHttpStatus`, `contracts.ts` | Saved/recovered, pending, invalid, stale/changed replay, limited, unavailable, expired session, denied, unknown |
+| `command-results.ts` | `OnboardingResult`, `onboardingHttpStatus`, `contracts.ts` | Saved/recovered, pending, invalid, stale/changed replay, limited, unavailable, expired session, denied, unknown |
 | `invitation-batches.ts` | `BatchSnapshot`, `invitation-batch.server.ts`; nested `InvitationResult`/`InvitationStatusResult`, `auth/invitations/model.ts` | PENDING, COMPLETE, PARTIAL, UNKNOWN, unavailable; each person's PREPARED/SAVED/BLOCKED/UNKNOWN, missing email, accepted/failed/ambiguous sends |
+| `registration-states.json` | `OnboardingSnapshot`, `registration.server.ts` | All seven registration states without fabricated company readiness |
 | `verification-requested.json` | `RegistrationRequestResult`, `registration.server.ts` | Generic acknowledgment; says nothing about account existence or inbox delivery |
 | `provisioning-pending.json` | `OnboardingResult` | Current resource-reconciliation illustration; actual stage is supplied by the server |
 | `version-conflict.json` | `OnboardingResult` | Preserve input, read current state, review, then create a new changed command |

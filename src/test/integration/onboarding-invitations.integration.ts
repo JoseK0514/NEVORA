@@ -6,18 +6,18 @@ import {readOnboardingSetup} from '@/lib/onboarding/setup.server';
 import {issueInvitationBatch,readInvitationBatch} from '@/lib/onboarding/invitation-batch.server';
 import {getWorkspaceDb} from '@/lib/workspace-routing/transport.server';
 import type {InvitationDelivery} from '@/lib/company-access/contracts';
-it('keeps GET read-only with a prepared sixth target and stops continuation after logout during delivery',async()=>{
- const f=await ready(6);let sends=0;const delivery:InvitationDelivery={async send(){sends++;return {providerAccepted:true};}};
+it('keeps GET read-only with prepared targets and stops the same continuation after logout during delivery',async()=>{
+ const f=await ready(7);let sends=0;const delivery:InvitationDelivery={async send(){sends++;return {providerAccepted:true};}};
  try{
   await issueInvitationBatch(f.actor,f.binding,f.command,delivery);expect(sends).toBe(5);
   for(let i=0;i<2;i++){
    const state=await readInvitationBatch(f.actor,f.binding,f.command.operationId);
    expect(state.state==='ready'?state.stage:null).toBe('PENDING');
-   expect(state.state==='ready'?state.items.filter(item=>item.commandState==='PREPARED').length:null).toBe(1);
+   expect(state.state==='ready'?state.items.filter(item=>item.commandState==='PREPARED').length:null).toBe(2);
   }
   expect(sends).toBe(5);expect((await f.c.resource.db.pool.query('SELECT count(*)::int n FROM company_invitations')).rows[0].n).toBe(5);
   await issueInvitationBatch(f.actor,f.binding,f.command,{async send(){sends++;await f.c.resource.db.pool.query('DELETE FROM employee_sessions');return {providerAccepted:true};}});
-  expect(sends).toBe(6);expect((await readInvitationBatch(f.actor,f.binding,f.command.operationId)).state).toBe('unavailable');
+  expect(sends).toBe(6);expect((await f.c.resource.db.pool.query("SELECT count(*)::int n FROM company_invitations WHERE employee_id='EMP-7'")).rows[0].n).toBe(0);expect((await f.c.resource.db.pool.query("SELECT state FROM onboarding_invitation_items WHERE employee_id='EMP-7'")).rows[0].state).toBe('PREPARED');expect((await readInvitationBatch(f.actor,f.binding,f.command.operationId)).state).toBe('unavailable');
   expect((await issueInvitationBatch(f.actor,f.binding,f.command,delivery)).state).toBe('unavailable');expect(sends).toBe(6);
  }finally{await f.close();}
 });

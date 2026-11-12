@@ -1,4 +1,7 @@
-[
+import type {OnboardingResult} from '../../contracts';
+
+// Fictional browser-safe command outcomes; checked against the current union.
+export const commandResults: {name:string;http:number;result:OnboardingResult}[] = [
   {
     "name": "recovered-saved",
     "http": 200,
@@ -197,4 +200,4 @@
       "operationId": "59f60420-ec96-455a-9292-0b1a416509e9"
     }
   }
-]
+];
