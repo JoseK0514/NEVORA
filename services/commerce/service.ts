@@ -2,15 +2,17 @@ import {parseBillingOwner,type BillingOwner} from "./owner-authority";
 import {verifyInstallationOwner} from "./installation";
 import { businessAccess } from "./access";
 import { hashPassword } from "../../src/lib/auth/password";
-import { CommerceError, parseSignup, parseEmail, planFor } from "./model";
+import { CommerceError, parseSignup, parseEmail, planFor,type PlanKey } from "./model";
 import { token } from "./security";
 import { CommerceStore, type Business } from "./store";
 import {commerceLanguage,type CommerceLanguage} from './language';
 export interface BillingPort {
   checkout(business: Business, operation: string,owner?:BillingOwner|null,lang?:CommerceLanguage): Promise<string>;
   portal(business: Business, operation: string,owner?:BillingOwner|null,lang?:CommerceLanguage): Promise<string>;
+  planChange?(business:Business,operation:string,plan:PlanKey,owner?:BillingOwner|null,lang?:CommerceLanguage):Promise<PlanChangeResult>;
   webhook(raw: string, signature: string): Promise<void>;
 }
+export type PlanChangeResult={url:string;plan:PlanKey;effective:'after_payment'|'period_end'};
 export type CommerceOptions = {
   store: CommerceStore;
   origin: string;
@@ -228,7 +230,7 @@ export function createCommerce(options: CommerceOptions) {
           ...(await businessAccess(store, business, now, options.headcount)),
         });
       if (
-        (path === "/v1/checkout" || path === "/v1/portal") &&
+        (path === "/v1/checkout" || path === "/v1/portal" || path === '/v1/plan-change') &&
         request.method === "POST"
       ) {
         const lang=input.lang===undefined?undefined:commerceLanguage(input.lang);
@@ -241,6 +243,15 @@ export function createCommerce(options: CommerceOptions) {
         if (!/^[0-9a-f]{8}-[0-9a-f-]{27,40}$/i.test(operation))
           throw new CommerceError("idempotency_key_required");
         await store.rate(`billing:${id}`, 20, 3600, now);
+        if(path==='/v1/plan-change'){
+          if(input.plan!=='small'&&input.plan!=='team')throw new CommerceError('invalid_plan');
+          if(!options.billing.planChange)throw new CommerceError('plan_changes_unavailable',503);
+          const result=await options.billing.planChange(business,operation,input.plan,owner,lang);
+          const currentId=await store.session(bearer,options.now?.()??Date.now(),(b,o,c)=>verifyInstallationOwner(store,b,o,c));
+          const current=await store.business(currentId);
+          if(currentId!==id||current.state!=='ready'||current.slotId!==business.slotId||current.incarnation!==business.incarnation||current.origin!==business.origin||current.customerId!==business.customerId||current.subscriptionId!==business.subscriptionId)throw new CommerceError('billing_binding_changed',409);
+          return answer(result);
+        }
         return answer({
           url:
             path === "/v1/checkout"

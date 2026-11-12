@@ -6,6 +6,7 @@ import type { BillingPort } from "./service";
 import { CommerceStore, type Business } from "./store";
 import { CommerceError, type PlanKey } from "./model";
 import { createCheckout, recoverCheckouts } from "./checkout";
+import {createPlanChange} from './plan-change';
 import type { StripeTaxConfig } from "./stripe-config";
 import { assertTaxPrice, readTaxTerms } from "./stripe-tax";
 import { unseal } from "./security";
@@ -24,6 +25,7 @@ import {
 type BillingOptions = {
   origin: string;
   prices: Record<PlanKey, string>;
+  portalConfigurations?:Record<PlanKey,string>;
   webhookSecret?: string;
   live: boolean;
   expectedAccountId?: string;
@@ -93,6 +95,10 @@ export class StripeBilling implements BillingPort {
       );
       return session.url;
     });
+  }
+  async planChange(business:Business,operation:string,plan:PlanKey,owner?:BillingOwner|null,lang:CommerceLanguage='en'){
+    await this.verifyAccount();
+    return createPlanChange({...this.checkoutPorts(),portalConfigurations:this.options.portalConfigurations},business,operation,plan,owner,lang);
   }
   async webhook(raw: string, signature: string) {
     if(!this.options.webhookSecret)throw new CommerceError('webhook_not_configured',503);
@@ -309,6 +315,7 @@ export class StripeBilling implements BillingPort {
           if (
             stripeObjectId(line.pricing?.price_details?.price) ===
               item.price.id &&
+            line.amount > 0 &&
             Number.isFinite(line.period.end)
           )
             matchingPaidThrough = Math.max(

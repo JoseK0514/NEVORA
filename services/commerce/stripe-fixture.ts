@@ -13,13 +13,18 @@ type Price = {
 };
 export type FixtureSubscription = {
   id: string;
+  livemode: boolean;
   object: string;
   customer: string;
   status: string;
+  pending_update?: {expires_at:number}|null;
+  schedule?: string|null;
+  cancel_at_period_end?: boolean;
   metadata: Metadata;
   automatic_tax: { enabled: boolean; disabled_reason: string | null };
   items: {
     data: {
+      id: string;
       quantity: number;
       price: Price;
       current_period_start: number;
@@ -83,8 +88,13 @@ export class StripeFixture {
   readonly sessions = new Map<string, Session>();
   readonly payments = new Map<
     string,
-    { end: number; price: string; amount: number; automatic_tax?: { enabled: boolean; status: string | null; disabled_reason: string | null } }[]
+    { end: number; price: string; amount: number; lineAmount?:number; automatic_tax?: { enabled: boolean; status: string | null; disabled_reason: string | null } }[]
   >();
+  readonly openInvoices = new Set<string>();
+  readonly portalConfigurations = new Map(['small','team'].map(plan=>[`bpc_${plan}`,{
+    id:`bpc_${plan}`,object:'billing_portal.configuration',active:true,livemode:false,
+    features:{subscription_update:{enabled:true,default_allowed_updates:['price'],billing_cycle_anchor:'unchanged',proration_behavior:'always_invoice',trial_update_behavior:'continue_trial',schedule_at_period_end:{conditions:[{type:'decreasing_item_amount'}]},products:[{product:'prod_nevora',prices:[`price_${plan}`],adjustable_quantity:{enabled:false}}]}},
+  }]));
   readonly counts = new Map<string, number>();
   readonly unavailableSubscriptions = new Set<string>();
   readonly requests: { method: string; path: string; form: URLSearchParams }[] =
@@ -137,6 +147,7 @@ export class StripeFixture {
     if (!price) throw Error("unknown_fixture_price");
     const subscription: FixtureSubscription = {
       id,
+      livemode: false,
       object: "subscription",
       customer,
       status: trialEnd ? "trialing" : "active",
@@ -145,6 +156,7 @@ export class StripeFixture {
       items: {
         data: [
           {
+            id:`si_${id}`,
             quantity: 1,
             price,
             current_period_start: 1794052800,
@@ -311,6 +323,7 @@ export class StripeFixture {
       value = this.sessions.get(url.pathname.split("/").at(-1)!);
     else if (url.pathname === "/v1/invoices") {
       const id = url.searchParams.get("subscription")!;
+      if(url.searchParams.get('status')==='open')return this.response(this.list(this.openInvoices.has(id)?[{id:'in_open_fixture',status:'open'}]:[]));
       value = this.list(
         [...(this.payments.get(id) ?? [])]
           .reverse()
@@ -325,14 +338,17 @@ export class StripeFixture {
             lines: {
               data: [
                 {
+                  amount:payment.lineAmount??payment.amount,
                   period: { start: 1794052800, end: payment.end },
                   pricing: { price_details: { price: payment.price } },
                 },
+                ...(payment.lineAmount===undefined?[]:[{amount:payment.amount-payment.lineAmount,period:{start:1794052800,end:payment.end},pricing:{price_details:{price:'price_unrelated'}}}]),
               ],
             },
           })),
       );
-    } else if (url.pathname === "/v1/billing_portal/sessions")
+    } else if (url.pathname.startsWith('/v1/billing_portal/configurations/'))value=this.portalConfigurations.get(url.pathname.split('/').at(-1)!);
+    else if (url.pathname === "/v1/billing_portal/sessions")
       value = {
         id: "bps_fixture",
         object: "billing_portal.session",

@@ -26,6 +26,16 @@ Ledger and receipts: `.omo/evidence/payments-billing-20261111/`. Claude owns vis
 
 ## Qualification progress
 
+### Additional approved plan-change policy
+
+Jose approved self-service plan changes: paid upgrades apply after successful payment; downgrades take effect at renewal. Real charges remain disabled during setup. Trial deadlines must not move.
+
+Stripe rejected listing both existing monthly prices on their shared product in one Portal configuration (duplicate interval). Its documented renewal downgrade feature requires the same product. Preserve the default card/invoice/cancellation configuration and use two nondefault, target-only configurations with hosted `subscription_update_confirm` flows. Both were created in the sandbox only; runtime activation and actual hosted acceptance remain distinct gates.
+
+- [ ] Add a current-Owner `/v1/plan-change` contract, server-side target configuration selection, renewal/paid policy validation, immutable provider retry identity and bounded errors.
+- [ ] Reproduce and prevent granting larger capacity from an unpaid upgrade or a negative credit line on an otherwise paid invoice. Verify trial preservation, renewal downgrade, headcount and identity/authority guards.
+- [ ] Independently review the added policy work, regenerate source-bound guide provenance, rerun qualification and record precise provider/hosting limits for Claude.
+
 - Owned PostgreSQL + real Stripe SDK: **123/123**. Owner/status/recovery focused tests: **53/53**. Typecheck passes. Real provider network is replaced only by explicit fictional fixtures; no live payment, email or customer data test.
 - Checkout integration labels are generated inside the persisted immutable intent, not on transport retries. Existing saved intents remain unchanged. An assertion first failed with a missing identifier, then passed after adding it.
 - Initial root suite: **12,624 passed / 869 skipped / 1 failed**, solely `src/test/manual-publication.test.ts` because runtime source changes invalidate the R32 application hash. Regenerate the six guide PDFs with the existing offline builder from clean committed application source, then rerun without weakening that check. Source compile also caught a typed-array formatting issue; it was corrected and typecheck rerun successfully.

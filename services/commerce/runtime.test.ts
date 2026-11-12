@@ -49,6 +49,11 @@ it("defaults Tax off and carries an explicit Tax choice only when enabled", () =
   expect(runtime().billing?.options).not.toHaveProperty("tax");
   expect(runtime({ NEVORA_COMMERCE_TAX_ENABLED: "true", NEVORA_COMMERCE_TAX_CODE: "txcd_10103000", NEVORA_COMMERCE_TAX_BEHAVIOR: "exclusive" }).billing?.options).toMatchObject({ tax: { code: "txcd_10103000", behavior: "exclusive" } });
 });
+it('enables plan changes only with two explicit distinct Portal configurations',()=>{
+ expect(runtime().billing?.options).not.toHaveProperty('portalConfigurations');
+ expect(runtime({STRIPE_PORTAL_SMALL_CONFIG:'bpc_small',STRIPE_PORTAL_TEAM_CONFIG:'bpc_team'}).billing?.options).toMatchObject({portalConfigurations:{small:'bpc_small',team:'bpc_team'}});
+ for(const patch of [{STRIPE_PORTAL_SMALL_CONFIG:'bpc_small'},{STRIPE_PORTAL_TEAM_CONFIG:'bpc_team'},{STRIPE_PORTAL_SMALL_CONFIG:'https://foreign.invalid',STRIPE_PORTAL_TEAM_CONFIG:'bpc_team'},{STRIPE_PORTAL_SMALL_CONFIG:'bpc_same',STRIPE_PORTAL_TEAM_CONFIG:'bpc_same'}])expect(()=>runtime(patch)).toThrow('stripe_portal_configuration_invalid');
+});
 it("opens billing workers without giving them the receiver signing secret", async () => {
  const result=createRuntime({...base,...staging,STRIPE_ACCOUNT_ID:'acct_fictional',STRIPE_WEBHOOK_SECRET:undefined},'worker');
  try{expect(result.billing?.options).toMatchObject({live:false});expect(result.billing?.options.webhookSecret).toBeUndefined();await expect(result.billing!.webhook('{}','fixture')).rejects.toThrow('webhook_not_configured');}finally{await result.pool.end();}

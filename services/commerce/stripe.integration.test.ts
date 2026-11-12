@@ -546,4 +546,76 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     expect(status.reason).toBe("employee_limit_exceeded");
     expect(status.export).toBe(true);
   });
+  function enablePlanChanges(){Object.assign(billing.options,{portalConfigurations:{small:'bpc_small',team:'bpc_team'}});}
+  it('creates a target-only upgrade confirmation and reuses its exact provider operation',async()=>{
+    enablePlanChanges();const {subscription}=await subscribed(),before=await store.business(id),operation=randomUUID();
+    const first=await billing.planChange(before,operation,'team',null,'es');
+    expect(first).toEqual({url:'https://billing.stripe.com/p/session_fixture',plan:'team',effective:'after_payment'});
+    expect(await billing.planChange(before,operation,'team',null,'es')).toEqual(first);
+    const requests=provider.requests.filter(r=>r.method==='POST'&&r.path==='/v1/billing_portal/sessions');
+    expect(requests).toHaveLength(2);expect(requests[1].form.toString()).toBe(requests[0].form.toString());
+    const form=requests[0].form;
+    expect(form.get('configuration')).toBe('bpc_team');expect(form.get('locale')).toBe('es');
+    expect(form.get('flow_data[type]')).toBe('subscription_update_confirm');
+    expect(form.get('flow_data[subscription_update_confirm][subscription]')).toBe(subscription.id);
+    expect(form.get('flow_data[subscription_update_confirm][items][0][id]')).toBe(subscription.items.data[0].id);
+    expect(form.get('flow_data[subscription_update_confirm][items][0][price]')).toBe('price_team');
+    expect(form.get('flow_data[subscription_update_confirm][items][0][quantity]')).toBe('1');
+    const returned=new URL(form.get('return_url')!);expect(returned.origin).toBe('https://accounts.example.test');expect(returned.pathname).toBe('/pages/es-facturacion');expect(returned.hash).toMatch(/^#handoff=[A-Za-z0-9_-]{43}$/);
+    expect(form.get('flow_data[after_completion][redirect][return_url]')).toBe(returned.href);
+    const after=await store.business(id);expect(after.planKey).toBe(before.planKey);expect(after.paidThrough).toBe(before.paidThrough);expect(after.trialEnd).toBe(before.trialEnd);
+  });
+  it('offers the Small renewal flow only when current headcount fits and preserves paid Team coverage',async()=>{
+    enablePlanChanges();provider.counts.set(id,16);const {subscription}=await subscribed();provider.markPaid(subscription.id);await billing.syncJob({subscriptionId:subscription.id});
+    await expect(billing.planChange(await store.business(id),randomUUID(),'small')).rejects.toMatchObject({code:'plan_employee_limit',status:409});
+    provider.counts.set(id,15);expect(await billing.planChange(await store.business(id),randomUUID(),'small')).toMatchObject({plan:'small',effective:'period_end'});
+    expect(provider.requests.find(r=>r.path==='/v1/billing_portal/sessions')!.form.get('configuration')).toBe('bpc_small');
+    expect((await store.business(id)).planKey).toBe('team');
+  });
+  it.each([-400,0])('keeps unpaid upgrades and non-positive credit lines from granting paid Team capacity: %s',async lineAmount=>{
+    const {subscription}=await subscribed();provider.markPaid(subscription.id);await billing.syncJob({subscriptionId:subscription.id});
+    const before=await store.business(id);expect(before.planKey).toBe('small');
+    subscription.items.data[0].price=provider.prices.get('price_team')!;
+    await billing.syncJob({subscriptionId:subscription.id});expect((await store.business(id)).planKey).toBe('small');
+    provider.payments.get(subscription.id)!.push({end:1799236800,price:'price_team',amount:1000,lineAmount});
+    await billing.syncJob({subscriptionId:subscription.id});expect((await store.business(id)).planKey).toBe('small');
+    provider.payments.get(subscription.id)!.push({end:1799236800,price:'price_team',amount:500,lineAmount:500});
+    await billing.syncJob({subscriptionId:subscription.id});const paid=await store.business(id);expect(paid.planKey).toBe('team');expect(paid.trialEnd).toBe(before.trialEnd);
+  });
+  it('rejects changed confirmation parameters on the same operation rather than silently selecting a different language',async()=>{
+    enablePlanChanges();await subscribed();const b=await store.business(id),operation=randomUUID();
+    await billing.planChange(b,operation,'team',null,'en');
+    await expect(billing.planChange(b,operation,'team',null,'es')).rejects.toMatchObject({code:'idempotency_conflict',status:409});
+  });
+  it('keeps plan-change disabled until configured and rejects a second selection of the current plan',async()=>{
+    await subscribed();await expect(billing.planChange(await store.business(id),randomUUID(),'team')).rejects.toMatchObject({code:'plan_changes_unavailable',status:503});
+    enablePlanChanges();await expect(billing.planChange(await store.business(id),randomUUID(),'small')).rejects.toMatchObject({code:'plan_already_selected',status:409});
+    expect(provider.requests.filter(r=>r.path==='/v1/billing_portal/sessions')).toHaveLength(0);
+  });
+  it.each(['pending','scheduled','canceling','past_due','open_invoice','wrong_customer','live_mode','wrong_price','wrong_merchant'] as const)('refuses an unsafe plan-change source: %s',async reason=>{
+    enablePlanChanges();const {subscription}=await subscribed();
+    if(reason==='pending')subscription.pending_update={expires_at:1899236800};
+    if(reason==='scheduled')subscription.schedule='sub_sched_existing';
+    if(reason==='canceling')subscription.cancel_at_period_end=true;
+    if(reason==='past_due')subscription.status='past_due';
+    if(reason==='open_invoice')provider.openInvoices.add(subscription.id);
+    if(reason==='wrong_customer')subscription.customer='cus_foreign';
+    if(reason==='live_mode')subscription.livemode=true;
+    if(reason==='wrong_price')subscription.items.data[0].price={...subscription.items.data[0].price,unit_amount:1};
+    if(reason==='wrong_merchant')Object.assign(billing.options,{expectedAccountId:'acct_foreign'});
+    await expect(billing.planChange(await store.business(id),randomUUID(),'team')).rejects.toThrow();
+    expect(provider.requests.filter(r=>r.path==='/v1/billing_portal/sessions')).toHaveLength(0);
+  });
+  it.each(['immediate_downgrade','end_trial','free_upgrade','quantity','wrong_target','live_config','inactive'] as const)('rejects a Portal configuration that violates the approved policy: %s',async reason=>{
+    enablePlanChanges();await subscribed();const config=provider.portalConfigurations.get('bpc_team')!,update=config.features.subscription_update;
+    if(reason==='immediate_downgrade')update.schedule_at_period_end.conditions=[];
+    if(reason==='end_trial')update.trial_update_behavior='end_trial';
+    if(reason==='free_upgrade')update.proration_behavior='none';
+    if(reason==='quantity')update.default_allowed_updates.push('quantity');
+    if(reason==='wrong_target')update.products[0].prices=['price_small'];
+    if(reason==='live_config')config.livemode=true;
+    if(reason==='inactive')config.active=false;
+    await expect(billing.planChange(await store.business(id),randomUUID(),'team')).rejects.toMatchObject({code:'plan_change_policy_unavailable',status:503});
+    expect(provider.requests.filter(r=>r.path==='/v1/billing_portal/sessions')).toHaveLength(0);
+  });
 });

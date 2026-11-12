@@ -32,6 +32,9 @@ export function readStripeConfig(
   if (!env.STRIPE_PRICE_SMALL || !env.STRIPE_PRICE_TEAM || (usage==='application'&&!env.STRIPE_WEBHOOK_SECRET))
     throw Error("stripe_configuration_incomplete");
   if(usage==='worker'&&env.STRIPE_WEBHOOK_SECRET)throw Error('worker_webhook_credential_forbidden');
+  const smallPortal=env.STRIPE_PORTAL_SMALL_CONFIG,teamPortal=env.STRIPE_PORTAL_TEAM_CONFIG;
+  if((smallPortal!==undefined||teamPortal!==undefined)&&(!/^bpc_[A-Za-z0-9]+$/.test(smallPortal??'')||!/^bpc_[A-Za-z0-9]+$/.test(teamPortal??'')||smallPortal===teamPortal))throw Error('stripe_portal_configuration_invalid');
+  const portalConfigurations:Record<PlanKey,string>|undefined=smallPortal&&teamPortal?{small:smallPortal,team:teamPortal}:undefined;
   const prices: Record<PlanKey, string> = { small: env.STRIPE_PRICE_SMALL, team: env.STRIPE_PRICE_TEAM };
-  return { key, live, expectedAccountId, prices, webhookSecret: env.STRIPE_WEBHOOK_SECRET, ...(tax ? { tax } : {}) };
+  return { key, live, expectedAccountId, prices, webhookSecret: env.STRIPE_WEBHOOK_SECRET, ...(tax ? { tax } : {}), ...(portalConfigurations?{portalConfigurations}:{}) };
 }
