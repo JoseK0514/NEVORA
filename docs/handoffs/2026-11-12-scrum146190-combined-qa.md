@@ -89,3 +89,42 @@ reuse of older labeled ZIPs is permitted. Do not self-close independent findings
 Payroll/share, notifications, billing/provider and joined Owner/UI acceptance
 remain open until the responsible owner records actual evidence in SCRUM-190
 and SCRUM-146. Rondo/SCRUM-155 has a separate Velani repository and receipt.
+
+
+## Subsequent D2 authority-read attribution repair
+
+The earlier standalone66 CI did not qualify: its source-bound D2 artifact
+13977774358 records281checks followed by one final unexpected native diagnostic.
+The heading/link-focus assertions passed. The manager's own authority-read
+produced WebKit's access-control diagnostic while a real same-URL document reload
+was pending (sequence2, age93ms). The native observer recorded a plain own
+`authority-read`, with no JavaScript window error. No Playwright request reached
+normal ingress, so the earlier record did not prove its method. The failed record
+is retained in `authority-ci-witness.json`; it is not relabeled passed.
+
+QA commit `7ba6cc6154757938fe6b6f736bbcc77fc5c3842d` adds explicit authority-read attribution only when its
+owned native controls verify, the current source document has exactly one
+pre-fetch-proven own GET with no body, and its real document navigation remains
+pending. A separate fixed binding/token prevents cross-resource attribution.
+The hardened notification witness is reused with its original default behavior.
+There is no path-regex exemption or change to application UI, worker guards,
+assertions or recovery timeouts. Method/body/query ambiguity, overlapping reads,
+missing native or method proof, successor-document reads and actual window
+exceptions remain fatal and are exercised by the controls.
+
+The regression failed before attribution existed, then passed. Final native
+qualification passed56WebKitcases:17original notification,17notification with
+both witnesses installed, and22composed authority cases. All52related node
+regressions, the CI contract and ESLint passed. Independent follow-up review is
+CLEAR/APPROVE with zero remaining findings and independently repeated all56cases.
+Its composition coverage suggestion was addressed before freezing this repair.
+Reports are `authority-code-review.md`, `authority-native-controls.json` and
+`authority-local-qualification.json` in the adjacent evidence directory.
+
+Full exact-source D2 and final combined candidate/development Actions remain
+required after this documentation/manual freeze. Candidate40155983 and its
+artifacts remain unchanged; its Home Chromium failure is separately owned by the
+hosting chat. The earlier EEE development communications failure is also retained:
+an unchanged local14-cell/156-check run passed, but its original Linux CI cause
+remains unproven. No speculative communication/Home fix, blind retry, main push
+or hosted activation is implied by these local QA results.

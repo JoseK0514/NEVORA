@@ -1,0 +1,1392 @@
+[
+  {
+    "status": "mechanism-reproduced",
+    "verified": true,
+    "resourceKind": "notification-read",
+    "bothWitnesses": false,
+    "cells": [
+      {
+        "mode": "idle",
+        "serverReads": 1,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 200,
+        "sourceHandled": false,
+        "distinctReplacement": false,
+        "successorStatus": null,
+        "candidateClean": true,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [],
+        "windowExceptions": []
+      },
+      {
+        "mode": "reload",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": true,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": true,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 4
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "goto-same",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": true,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": true,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "source-history",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": false,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-boundary",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 5
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "stream-redirect",
+        "serverReads": 1,
+        "sourceIdentityRetained": false,
+        "sourceStatus": null,
+        "sourceHandled": null,
+        "distinctReplacement": true,
+        "successorStatus": 0,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": false,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-response",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 6
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "window-exceptions",
+        "serverReads": 0,
+        "sourceIdentityRetained": false,
+        "sourceStatus": null,
+        "sourceHandled": null,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 2,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 3
+            }
+          }
+        ],
+        "windowExceptions": [
+          "error",
+          "unhandledrejection"
+        ]
+      },
+      {
+        "mode": "different-get",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": true,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": true,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "idle-post",
+        "serverReads": 1,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 405,
+        "sourceHandled": false,
+        "distinctReplacement": false,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [],
+        "windowExceptions": []
+      },
+      {
+        "mode": "reload-post",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "different-post",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 3
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "unrelated-get",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 1
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "unrelated-post",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "request-input",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 3
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "accessor-method",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "mutated-method",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "base-post-idle",
+        "serverReads": 1,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 405,
+        "sourceHandled": false,
+        "distinctReplacement": false,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [],
+        "windowExceptions": []
+      },
+      {
+        "mode": "base-post-after-get",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": true,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          },
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 4
+            }
+          }
+        ],
+        "windowExceptions": []
+      }
+    ]
+  },
+  {
+    "status": "mechanism-reproduced",
+    "verified": true,
+    "resourceKind": "notification-read",
+    "bothWitnesses": true,
+    "cells": [
+      {
+        "mode": "idle",
+        "serverReads": 1,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 200,
+        "sourceHandled": false,
+        "distinctReplacement": false,
+        "successorStatus": null,
+        "candidateClean": true,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [],
+        "windowExceptions": []
+      },
+      {
+        "mode": "reload",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": true,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": true,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 3
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "goto-same",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": true,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": true,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 3
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "source-history",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": false,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-boundary",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 3
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "stream-redirect",
+        "serverReads": 1,
+        "sourceIdentityRetained": false,
+        "sourceStatus": null,
+        "sourceHandled": null,
+        "distinctReplacement": true,
+        "successorStatus": 0,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": false,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-response",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 6
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "window-exceptions",
+        "serverReads": 0,
+        "sourceIdentityRetained": false,
+        "sourceStatus": null,
+        "sourceHandled": null,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 2,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": [
+          "error",
+          "unhandledrejection"
+        ]
+      },
+      {
+        "mode": "different-get",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": true,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": true,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "idle-post",
+        "serverReads": 1,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 405,
+        "sourceHandled": false,
+        "distinctReplacement": false,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [],
+        "windowExceptions": []
+      },
+      {
+        "mode": "reload-post",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 3
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "different-post",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 3
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "unrelated-get",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "unrelated-post",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 3
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "request-input",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "accessor-method",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "mutated-method",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 3
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "base-post-idle",
+        "serverReads": 1,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 405,
+        "sourceHandled": false,
+        "distinctReplacement": false,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [],
+        "windowExceptions": []
+      },
+      {
+        "mode": "base-post-after-get",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": true,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          },
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 4
+            }
+          }
+        ],
+        "windowExceptions": []
+      }
+    ]
+  },
+  {
+    "status": "mechanism-reproduced",
+    "verified": true,
+    "resourceKind": "authority-read",
+    "bothWitnesses": true,
+    "cells": [
+      {
+        "mode": "idle",
+        "serverReads": 1,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 200,
+        "sourceHandled": false,
+        "distinctReplacement": false,
+        "successorStatus": null,
+        "candidateClean": true,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [],
+        "windowExceptions": []
+      },
+      {
+        "mode": "reload",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": true,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": true,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "goto-same",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": true,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": true,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "source-history",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": false,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-boundary",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 3
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "stream-redirect",
+        "serverReads": 1,
+        "sourceIdentityRetained": false,
+        "sourceStatus": null,
+        "sourceHandled": null,
+        "distinctReplacement": true,
+        "successorStatus": 0,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": false,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-response",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 6
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "window-exceptions",
+        "serverReads": 0,
+        "sourceIdentityRetained": false,
+        "sourceStatus": null,
+        "sourceHandled": null,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 2,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 1
+            }
+          }
+        ],
+        "windowExceptions": [
+          "error",
+          "unhandledrejection"
+        ]
+      },
+      {
+        "mode": "different-get",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": true,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": true,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "idle-post",
+        "serverReads": 1,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 405,
+        "sourceHandled": false,
+        "distinctReplacement": false,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [],
+        "windowExceptions": []
+      },
+      {
+        "mode": "reload-post",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 3
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "different-post",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 3
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "unrelated-get",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "unrelated-post",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "request-input",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 3
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "accessor-method",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 4
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "mutated-method",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "base-post-idle",
+        "serverReads": 1,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 405,
+        "sourceHandled": false,
+        "distinctReplacement": false,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [],
+        "windowExceptions": []
+      },
+      {
+        "mode": "base-post-after-get",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": true,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 3
+            }
+          },
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 4
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "query-get",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [],
+        "windowExceptions": []
+      },
+      {
+        "mode": "body-get",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 1,
+        "candidateWindowErrors": 0,
+        "native": [],
+        "windowExceptions": []
+      },
+      {
+        "mode": "overlapping-gets",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 3
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "without-native-proof",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      },
+      {
+        "mode": "without-method-witness",
+        "serverReads": 0,
+        "sourceIdentityRetained": true,
+        "sourceStatus": 0,
+        "sourceHandled": true,
+        "distinctReplacement": true,
+        "successorStatus": null,
+        "candidateClean": false,
+        "candidateUnproved": 0,
+        "candidateWindowErrors": 0,
+        "native": [
+          {
+            "eligible": true,
+            "classified": false,
+            "documentRequestOpen": true,
+            "documentNavigation": {
+              "phase": "reload-requested",
+              "sequence": 2,
+              "sourceHistoryEvents": 0,
+              "ageMs": 2
+            }
+          }
+        ],
+        "windowExceptions": []
+      }
+    ]
+  }
+]

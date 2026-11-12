@@ -1,0 +1,61 @@
+{
+  "source": "66bfaacfceb5401a325cfd578caff0cfbddb301a",
+  "checks": 281,
+  "failure": [
+    "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ [\n+   {\n+     atMs: 38641,\n+     frames: [\n+       {\n+         column: 34,\n+         line: 736,\n+         source: 'other-script'\n+       },\n+       {\n+         column: 49,\n+         line: 3130,\n+         source: 'other-script'\n+       }\n+     ],\n+     message: '/127.0.0.1:33431/api/company-access/operational-authority due to access control checks.',\n+     name: 'Unknown',\n+     phase: 'normal',\n+     role: 'manager',\n+     stage: 'manager-return'\n+   }\n+ ]\n- []\n\n    at verifyD2UiRemediation (file:///home/runner/work/NEVORA/NEVORA/scripts/phase-d2-ui-remediation-qa.mjs:273:10)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///home/runner/work/NEVORA/NEVORA/scripts/phase-d2-corrections-ui-qa.mjs:232:3"
+  ],
+  "runtime": [
+    {
+      "role": "manager",
+      "phase": "normal",
+      "stage": "manager-return",
+      "atMs": 38641,
+      "name": "Unknown",
+      "message": "/127.0.0.1:33431/api/company-access/operational-authority due to access control checks.",
+      "frames": [
+        {
+          "source": "other-script",
+          "line": 736,
+          "column": 34
+        },
+        {
+          "source": "other-script",
+          "line": 3130,
+          "column": 49
+        }
+      ]
+    }
+  ],
+  "nativeRuntimeErrors": [
+    {
+      "type": "page-runtime-error",
+      "role": "manager",
+      "pageIndex": 1,
+      "phase": "scenario",
+      "diagnostic": {
+        "nativeName": "Unknown",
+        "canonicalMessage": "Fetch API cannot load resource due to access control checks.",
+        "reactInvariant": null,
+        "route": "/app",
+        "resourceKind": "authority-read",
+        "plainOwnRead": true
+      },
+      "pendingMainFrameNavigation": true,
+      "documentNavigation": {
+        "phase": "reload-requested",
+        "sequence": 2,
+        "sourceHistoryEvents": 0,
+        "ageMs": 93
+      },
+      "failure": {
+        "name": "Error",
+        "summary": "Network load failure",
+        "sourceLocation": null,
+        "stage": null,
+        "cell": null
+      }
+    }
+  ],
+  "navigationProbeVerified": true,
+  "reloadProbeVerified": true
+}
