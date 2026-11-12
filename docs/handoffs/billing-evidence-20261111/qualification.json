@@ -16,12 +16,13 @@
     "failed": 0
   },
   "root": {
-    "passed": 12636,
+    "passed": 12639,
     "failed": 0,
     "skipped": 895,
     "passedFiles": 851,
     "skippedFiles": 33,
-    "rawJsonSha256": "0250b693d80d662549afb6658ec300f626f5a2b6a6f07a2eeb15b395b337ec05"
+    "rawJsonSha256": "4d87a7c734587130ccc422782d5426f2b9f62a512324138d05a75bfc0beea3da",
+    "checkpoint": "7b8280f68e791e7ee4e2edcad1f7e8d6307ad8ec"
   },
   "typecheck": "passed",
   "lint": {
@@ -33,8 +34,8 @@
     "vulnerabilities": 0
   },
   "build": {
-    "checkpoint": "c5637a9944b4b9878a699277522a8fc93ab98f3f",
-    "tree": "f0d4354c081b7c4a6e9f7a0eb0ae8025d3b8fb88",
+    "checkpoint": "7b8280f68e791e7ee4e2edcad1f7e8d6307ad8ec",
+    "tree": "f2306efa61932c381124948106c1019d5ee028b8",
     "sourceClean": true,
     "sourceUnchanged": true,
     "exitCode": 0,
@@ -64,10 +65,12 @@
   ],
   "receiptScopes": {
     "plan-change-*": "Earlier approved financial runtime ed5715fc0; preserved original evidence",
-    "root-summary.txt": "Earlier candidate 72b8eb01a; replacement full root run pending",
+    "root-summary.txt": "7b8280f68e791e7ee4e2edcad1f7e8d6307ad8ec",
     "v2-commerce.txt": "6db25fed8ead9109f79f267cb56585417c3a3c04",
     "native-final-green.txt": "6db25fed8ead9109f79f267cb56585417c3a3c04",
-    "local-build.json": "Earlier optimized build c5637a994; replacement pending"
+    "local-build.json": "7b8280f68e791e7ee4e2edcad1f7e8d6307ad8ec",
+    "v2-typecheck.txt": "7b8280f68e791e7ee4e2edcad1f7e8d6307ad8ec",
+    "v2-lint.txt": "7b8280f68e791e7ee4e2edcad1f7e8d6307ad8ec"
   },
   "nativeAdapters": {
     "passed": 184,
@@ -92,7 +95,7 @@
     "completedComponents": {
       "ownedOnboarding": 234,
       "companyAccessFoundation": 516,
-      "companyAccessExchange": "passed",
+      "companyAccessExchange": 36,
       "workerEnrollment": "separate external-directory component passed",
       "managedWorkforce": "separate external-directory component passed"
     },

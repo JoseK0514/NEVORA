@@ -1,6 +1,6 @@
 {
-  "checkpoint": "c5637a9944b4b9878a699277522a8fc93ab98f3f",
-  "tree": "f0d4354c081b7c4a6e9f7a0eb0ae8025d3b8fb88",
+  "checkpoint": "7b8280f68e791e7ee4e2edcad1f7e8d6307ad8ec",
+  "tree": "f2306efa61932c381124948106c1019d5ee028b8",
   "sourceClean": true,
   "sourceUnchanged": true,
   "exitCode": 0,
@@ -13,7 +13,7 @@
     "Next dev browser fixtures use explicitly substituted owned DB transport; this production build does not.",
     "Artifact bytes may differ across builds due to generated IDs and encryption. A receipt proves source custody, not bit-for-bit determinism."
   ],
-  "fullReceiptSha256": "68ca82a5fec61907d422688a8ff3a71cf6edb3e163a384ba0eea079f1c513789",
-  "fullReceiptPath": "/Users/josek0514/.codex/billing-completion-20261111/plan-change-build-receipt.json",
+  "fullReceiptSha256": "9534f7c76dce8be17944eafcb1984005fc0139d78b7ffadb9583822896732e5c",
+  "fullReceiptPath": "/Users/josek0514/.codex/billing-completion-20261111/v2-build-receipt.json",
   "artifacts": 4732
 }

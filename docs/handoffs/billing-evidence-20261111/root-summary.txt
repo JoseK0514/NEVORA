@@ -1,14 +1,14 @@
-
- ✓ src/lib/scheduling/generation/planner.test.ts (56 tests) 134627ms
-   ✓ measures deterministic 50-worker 7-day 3-location planning 4865ms
-   ✓ measures deterministic 50-worker 7-day 20-location planning 128498ms
+ ✓ src/lib/scheduling/generation/planner.test.ts (56 tests) 126703ms
+   ✓ allows 40, prevents 41, and allows target24/max40/projected32 352ms
+   ✓ measures deterministic 50-worker 7-day 3-location planning 3166ms
+   ✓ measures deterministic 50-worker 7-day 20-location planning 122629ms
 
  Test Files  851 passed | 33 skipped (884)
-      Tests  12636 passed | 895 skipped (13586)
-   Start at  21:42:59
-   Duration  135.18s (tests 80%, import 18%, transform 1%)
+      Tests  12639 passed | 895 skipped (13589)
+   Start at  22:04:49
+   Duration  126.98s (tests 78%, import 21%, transform 1%)
 
-    Isolate  884 workers spawned · ~76ms startup each (spawn + environment, per file)
-             at least ~7.43s faster with isolate: false — reuses workers across files instead of one per file
+    Isolate  884 workers spawned · ~77ms startup each (spawn + environment, per file)
+             at least ~7.52s faster with isolate: false — reuses workers across files instead of one per file
 
-JSON report written to /Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111/.omo/evidence/payments-billing-20261111/plan-change-root-suite.json
+JSON report written to /Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111/.omo/evidence/payments-billing-20261111/v2-root.json
