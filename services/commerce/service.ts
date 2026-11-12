@@ -225,13 +225,6 @@ export function createCommerce(options: CommerceOptions) {
           setup: business.state,
           applicationUrl: business.state === "ready" ? business.origin : null,
           ownerEmployeeId: business.profile.ownerEmployeeId ?? "OWNER",
-          trialEndsAt: business.trialEnd
-            ? new Date(business.trialEnd).toISOString()
-            : null,
-          paidThrough: business.paidThrough
-            ? new Date(business.paidThrough).toISOString()
-            : null,
-          plan: business.planKey,
           ...(await businessAccess(store, business, now, options.headcount)),
         });
       if (

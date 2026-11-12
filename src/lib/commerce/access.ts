@@ -45,6 +45,16 @@ export async function readCommerceAuthority(
     if (entry.authority.validUntil <= Date.now()) throw Error("invalid_commerce_authority");
     return entry.authority;
   }
+  const authority = await fetchCommerceAuthority(c, fetcher);
+  cached = { key, authority };
+  return authority;
+}
+/** Fresh server authority for the authenticated billing bridge; never use a
+ * cached operational grant to present an Owner's current billing state. */
+export async function fetchCommerceAuthority(
+  c: Awaited<ReturnType<typeof currentCommerceConnection>>,
+  fetcher: typeof fetch = fetch,
+): Promise<CommerceAuthority & Record<string, unknown>> {
   const response = await fetcher(`${c.origin}/internal/access`, {
     headers: {
       authorization: `Bearer ${c.secret}`,
@@ -67,8 +77,7 @@ export async function readCommerceAuthority(
     throw Error("invalid_commerce_authority");
   await c.assertCurrent?.();
   if (value.validUntil <= Date.now()) throw Error("invalid_commerce_authority");
-  cached = { key, authority: Object.freeze(value) };
-  return value;
+  return Object.freeze(value);
 }
 export async function requireOperationalCommerce() {
   if (commerceEnabled() && !(await readCommerceAuthority()).operational)
@@ -106,8 +115,13 @@ export async function commerceGate(
     (method === "GET" &&
       (path === "/api/payroll-export" ||
         path === "/api/payroll-export/profiles" ||
+        path === "/api/company-access/operational-authority" ||
+        path === "/api/payroll/statements" ||
+        path === "/api/payroll/portal-statements" ||
         path.startsWith("/api/payroll/documents/") ||
         path === "/app/payroll-export" ||
+        path === "/app/my-pay" ||
+        path === "/app/billing" ||
         path === "/app/pay"))
   )
     return null;

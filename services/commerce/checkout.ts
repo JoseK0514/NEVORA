@@ -1,5 +1,5 @@
 import type {BillingOwner} from "./owner-authority";
-import { createHmac } from "node:crypto";
+import { createHmac, randomBytes } from "node:crypto";
 import type Stripe from "stripe";
 import type { PoolClient } from "pg";
 import { CommerceStore, type Business } from "./store";
@@ -139,6 +139,9 @@ async function prepare(
       },
       expiresAt = Math.floor(Date.now() / 1000) + 2700;
     const params: Stripe.Checkout.SessionCreateParams = {
+      // Generated once in the saved intent; uncertain retries retain this exact
+      // label with all other provider parameters and the original provider key.
+      integration_identifier: `nevora-billing-${Array.from(randomBytes(8),value=>String.fromCharCode(97+value%26)).join('')}`,
       customer: customerId,
       mode: early ? "setup" : "subscription",
       currency: "usd",

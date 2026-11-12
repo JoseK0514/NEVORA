@@ -45,6 +45,8 @@ export async function workerOnce(
       "installation_identity_mismatch",
       "subscription_identity_mismatch",
       "invalid_subscription_price",
+      "invalid_stripe_risk_job",
+      "stripe_risk_identity_mismatch",
     ];
     const code =
       error instanceof Error && codes.includes(error.message)

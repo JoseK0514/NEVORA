@@ -124,6 +124,18 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     const requests=provider.requests.filter(r=>r.path==='/v1/billing_portal/sessions'&&r.method==='POST');
     expect(requests).toHaveLength(2);expect(requests[0].form.has('locale')).toBe(false);expect(requests[1].form.toString()).toBe(requests[0].form.toString());
   });
+  it("keeps the Checkout integration label stable when a refused creation is retried", async () => {
+    const operation=randomUUID();provider.failCheckoutBeforeCreate=true;
+    await expect(checkout(id,operation)).rejects.toThrow();
+    const first=provider.requests.find(r=>r.path==='/v1/checkout/sessions'&&r.method==='POST')!.form.get('integration_identifier');
+    expect(first).toEqual(expect.stringMatching(/^nevora-billing-[a-z]{8}$/));
+    provider.failCheckoutBeforeCreate=false;
+    await checkout(id,operation);
+    const attempts=provider.requests.filter(r=>r.path==='/v1/checkout/sessions'&&r.method==='POST');
+    expect(attempts).toHaveLength(2);
+    expect(attempts[1].form.get('integration_identifier')).toBe(first);
+    expect(provider.sessions.size).toBe(1);
+  });
   it("rejects the wrong merchant before checkout, portal or reconciliation", async () => {
     Object.assign(billing.options, { expectedAccountId: "acct_wrong" });
     const stored = await store.business(id);

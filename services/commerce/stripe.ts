@@ -10,6 +10,7 @@ import type { StripeTaxConfig } from "./stripe-config";
 import { assertTaxPrice, readTaxTerms } from "./stripe-tax";
 import { unseal } from "./security";
 import {parseStripeWebhook,enqueueStripeWebhook} from "./stripe-webhook";
+import {reviewStripeRisk} from './stripe-risk';
 import {billingPage,type CommerceLanguage} from './language';
 import {
   applyInstallationCapacity,
@@ -99,7 +100,8 @@ export class StripeBilling implements BillingPort {
   }
   async syncJob(payload: Record<string, string>) {
     await this.verifyAccount();
-    if (payload.sessionId) await this.syncCheckout(payload.sessionId);
+    if (payload.riskType) await reviewStripeRisk(this.store,this.stripe,payload,this.options.live);
+    else if (payload.sessionId) await this.syncCheckout(payload.sessionId);
     else if (payload.subscriptionId)
       await this.syncSubscription(payload.subscriptionId);
     else throw Error("invalid_stripe_job");

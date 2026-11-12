@@ -1,4 +1,5 @@
 import { validateWorkspaceProfile } from "../../src/lib/workspace/validation";
+import type { CommerceReason } from "../../src/lib/commerce/status";
 export const DAY = 86_400_000;
 export class CommerceError extends Error {
   constructor(
@@ -24,20 +25,24 @@ export type AccessRecord = {
 };
 export function accessAt(record: AccessRecord, now = Date.now()) {
   let state: "trial" | "paid" | "grace" | "restricted" = "restricted";
+  const renewalFailure = ["past_due", "unpaid"].includes(record.subscriptionStatus ?? "");
+  const graceEnd = renewalFailure && record.paidThrough && record.pastDueSince
+    ? record.pastDueSince + 7 * DAY : null;
   if (record.paidThrough && record.paidThrough > now) state = "paid";
   else if (record.trialEnd && record.trialEnd > now) state = "trial";
-  else if (
-    ["past_due", "unpaid"].includes(record.subscriptionStatus ?? "") &&
-    record.paidThrough &&
-    record.pastDueSince &&
-    now < record.pastDueSince + 7 * DAY
-  )
-    state = "grace";
+  else if (graceEnd && now < graceEnd) state = "grace";
+  let reason: CommerceReason | null = null;
+  if (state === "grace" || (state === "restricted" && renewalFailure)) reason = "payment_failed";
+  else if (state === "restricted") reason = record.subscriptionStatus === "canceled"
+    ? "subscription_canceled" : record.subscriptionStatus ? "payment_required"
+      : record.trialEnd && record.trialEnd <= now ? "trial_ended" : "payment_required";
   return {
     state,
     operational: state !== "restricted",
     billing: true,
     export: true,
+    reason,
+    graceEndsAt: graceEnd ? new Date(graceEnd).toISOString() : null,
   };
 }
 export function parseEmail(value: unknown) {
