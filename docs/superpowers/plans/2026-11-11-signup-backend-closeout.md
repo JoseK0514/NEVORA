@@ -31,3 +31,7 @@ Read the complete diff and exact qualification receipts through one fresh review
 ## Review focus
 
 Challenge forged forwarding headers; real Vercel versus direct requests; missing/invalid/multiple IP values; IPv4/IPv6 canonicalization and shared-network false lockout; per-address/per-email/platform durable counters and concurrency; no raw address/secret disclosure; unchanged operation replay, one-use verification/Owner activation and uncertain email/provider outcomes; exact source/environment custody; no accidental admission/CTA/provider activation.
+
+## Integration reconciliation
+
+Development advanced to65906b7f2ddf28d842b78892f1aa555b078fdc2f during initial candidate CI. Preserve it, carry the reviewed signup runtime/regression bytes without overlaying billing, retain stronger upstream EN/ES mail cases, rebuild guides and requalify the exact combined source. The original candidate remains historical and cannot be fast-forwarded over the new base.
