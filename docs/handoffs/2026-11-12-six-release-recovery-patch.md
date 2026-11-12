@@ -29,4 +29,3 @@ Import the reviewed patch into the current combined source; do not replace it wi
 At the inspected development source, the /app/billing and /clocker/access/paused UI page files are still absent. Reconcile the held existing UI under169. The shared app layout still mounts operational AppShell loaders/pollers and parallel sheets around recovery content; Claude must adapt recovery composition to current company/session binding without weakening guards. Earlier04fe recovery-boundary/layout is reference only, not a blind single-company port.
 
 The corresponding detailed Claude handoff and source-bound Velani fixtures live in VELANI-SHOPIFY-WEBSITE docs/handoffs/2026-11-12-six-release-codex-to-claude.md. Six overall issues stay open until their UI/business/device/hosted criteria are evidenced. Development is the operating/acceptance line under Jose's November12 policy; main/production still needs separate approval.
-

@@ -79,4 +79,3 @@ it('redirects document binding failures as unavailable without exposing query da
   const url=new URL(response!.headers.get('location')!);
   expect(url.pathname).toBe('/app/billing');expect(url.search).toBe('?reason=billing_status_unavailable');
 });
-
