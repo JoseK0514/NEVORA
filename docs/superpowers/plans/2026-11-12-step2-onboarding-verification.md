@@ -8,9 +8,9 @@ hosting only; Claude owns UI. Base: freshly fetched development
   closeout/v1 contract, Step 1 packet, hosted checkpoint and worker shutdown note.
 - [x] Inspect canonical setup/readiness, people, invitation services and tests.
 - [x] Source inventory: 73 classified sources / three active branches, no drift.
-- [ ] Run owned PostgreSQL onboarding and Company Access/exchange checks.
-- [ ] Correct obsolete browser-safe fixtures; test against real projections.
-- [ ] Extend missing readiness regression, GET-only invitation recovery and
+- [x] Run owned PostgreSQL onboarding and Company Access/exchange checks.
+- [x] Correct obsolete browser-safe fixtures; test against real projections.
+- [x] Extend missing readiness regression, GET-only invitation recovery and
   provisioning-trial stability coverage; fix only independently reproduced bugs.
 - [ ] Run unit/type/lint/source/build gates, review changes, qualify immutable
   candidate and protected development checks through the existing process.
@@ -21,3 +21,7 @@ No hosted/provider/message/deployment effects, new allowance, main promotion,
 UI changes or Step 3. Use owned loopback PG17.10 and synthetic transports. No
 contract redesign or business defaults. If current behavior passes, document
 NO BACKEND CHANGE REQUIRED. Candidate/development failure is not a waived gate.
+
+Local baseline qualification and review are complete; final frozen-source gates
+and development delivery are recorded in the dated Step2 handoff and its
+referenced completion receipt. No hosted or Step3 scope is added.

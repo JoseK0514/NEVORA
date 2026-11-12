@@ -1,0 +1,57 @@
+{
+  "base": "242a993897aee4a213a1a9aefdecee2e86394b1f",
+  "application": "e792b482a93311094e15a0711fe305f69c7d9634",
+  "initialQualified": "4aa3b0f64160560fa33e074bae6a0190b0056c85",
+  "reviewFollowup": "e01805601c50ff2227efd4315f36d932df6aa71d",
+  "node": "24.19.0",
+  "npm": "11.17.0",
+  "postgresServer": "17.10",
+  "postgresClients": "17.10",
+  "scope": "local fictional/synthetic only; source-bound final candidate and development gates still pending",
+  "logs": {
+    "units.log": {
+      "sha256": "0d8a070f5b889ff5f686eaf20959fe342eef8b184f4d1955624a5829e1b40e5e",
+      "path": "/Users/josek0514/.codex/nevora-step2-20261112/units.log"
+    },
+    "onboarding-baseline.log": {
+      "sha256": "42c1522f02490ab2e8a788e2454705069afbe1c018ab3505b9a00f68c5f7c6a5",
+      "path": "/Users/josek0514/.codex/nevora-step2-20261112/onboarding-baseline.log"
+    },
+    "operations-client-corrected.log": {
+      "sha256": "805067ee13bfe9916d6f814c79daadf97bbb55d982e5d36a2750c3b31649d2f5",
+      "path": "/Users/josek0514/.codex/nevora-step2-20261112/operations-client-corrected.log"
+    },
+    "onboarding-final.log": {
+      "sha256": "1a187394f0132628949c8be3bf39de631039850593b2686f4ac59cdac38df8bf",
+      "path": "/Users/josek0514/.codex/nevora-step2-20261112/onboarding-final.log"
+    },
+    "release-postgres.log": {
+      "sha256": "bf8a3ddb00fb9a867e9c0b105ddbeea5d0b3f5c61e9c674b2372a83e7ed0f921",
+      "path": "/Users/josek0514/.codex/nevora-step2-20261112/release-postgres.log"
+    },
+    "company-access.log": {
+      "sha256": "e2d31ff3c79d555052a4850729cf62b83844d4ebf04ce6561e989e511e57bf8d",
+      "path": "/Users/josek0514/.codex/nevora-step2-20261112/company-access.log"
+    },
+    "build.log": {
+      "sha256": "44a1ae8572ea76955d58e044a78976425ce35e09b4ca37ec8e7f2d00afff0fff",
+      "path": "/Users/josek0514/.codex/nevora-step2-20261112/build.log"
+    },
+    "build-final.log": {
+      "sha256": "d0184ccfb0b4937d39af3f2f6a400e97f026e27baa7cd7379c437e5799186919",
+      "path": "/Users/josek0514/.codex/nevora-step2-20261112/build-final.log"
+    },
+    "lint.log": {
+      "sha256": "d0e330b0facc347417ee4fc7635e5ecf2b7b9b39b195617d6fddc34d5ba9f3af",
+      "path": "/Users/josek0514/.codex/nevora-step2-20261112/lint.log"
+    },
+    "typecheck-final.log": {
+      "sha256": "a12318be798fbfe982f3307107c280a32f686008ee2f55b5636d8d8ae7a769ec",
+      "path": "/Users/josek0514/.codex/nevora-step2-20261112/typecheck-final.log"
+    },
+    "release-engineering.log": {
+      "sha256": "e84d67d6332a0a5adce7abd27c2a105bc5aa150791913ebe235c12dd6eaef807",
+      "path": "/Users/josek0514/.codex/nevora-step2-20261112/release-engineering.log"
+    }
+  }
+}

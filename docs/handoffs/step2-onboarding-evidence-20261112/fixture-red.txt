@@ -1,0 +1,125 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-step2-onboarding-20261112
+
+ ❯ src/lib/onboarding/readiness.test.ts (3 tests | 1 failed) 5ms
+   × gives Claude the actual empty-company sections, reasons and actions in the v1 setup fixture 4ms
+   ✓ never makes optional payroll/timekeeping a core blocker or treats a skip as configuration 0ms
+   ✓ reports sender unavailability without advertising sends and retains status access 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/onboarding/readiness.test.ts > gives Claude the actual empty-company sections, reasons and actions in the v1 setup fixture
+AssertionError: expected [ { id: 'BUSINESS', …(3) }, …(2) ] to deeply equal [ { id: 'BUSINESS', …(3) }, …(8) ]
+
+- Expected
++ Received
+
+  [
+    {
+      "allowedActions": [
+        "OPEN",
+-       "SAVE",
+      ],
+      "id": "BUSINESS",
+      "reasonCodes": [],
+      "state": "READY",
+-   },
+-   {
+-     "allowedActions": [
+-       "OPEN",
+-       "SAVE",
+-     ],
+-     "id": "LOCATIONS",
+-     "reasonCodes": [],
+-     "state": "READY",
+-   },
+-   {
+-     "allowedActions": [
+-       "OPEN",
+-       "SAVE",
+-     ],
+-     "id": "POSITIONS",
+-     "reasonCodes": [
+-       "POSITIONS_OPTIONAL_UNLESS_REQUIRED",
+-     ],
+-     "state": "OPTIONAL",
+    },
+    {
+      "allowedActions": [
+        "OPEN",
+        "SAVE",
+      ],
+      "id": "SCHEDULING",
+      "reasonCodes": [
+-       "STAFFING_NOT_CONFIGURED",
+-       "COVERAGE_NOT_CONFIGURED",
++       "COVERAGE_REQUIRED",
+      ],
+      "state": "IN_PROGRESS",
+-   },
+-   {
+-     "allowedActions": [
+-       "OPEN",
+-       "SAVE",
+-     ],
+-     "id": "PEOPLE",
+-     "reasonCodes": [
+-       "TEAM_CAN_BE_ADDED_LATER",
+-     ],
+-     "state": "OPTIONAL",
+    },
+    {
+      "allowedActions": [
+        "OPEN",
+-       "CHECK_STATUS",
+-     ],
+-     "id": "INVITATIONS",
+-     "reasonCodes": [
+-       "DELIVERY_NOT_CONFIGURED",
+-     ],
+-     "state": "OPTIONAL",
+-   },
+-   {
+-     "allowedActions": [
+-       "OPEN",
+      ],
+-     "id": "TIME_TRACKING",
+-     "reasonCodes": [
+-       "TIMEKEEPING_SETUP_REQUIRED",
+-     ],
+-     "state": "OPTIONAL",
+-   },
+-   {
+-     "allowedActions": [
+-       "OPEN",
+-     ],
+      "id": "PAYROLL",
+      "reasonCodes": [
+-       "PAYROLL_DISABLED",
+-     ],
+-     "state": "OPTIONAL",
+-   },
+-   {
+-     "allowedActions": [
+-       "OPEN",
+-     ],
+-     "id": "OPTIONAL_FEATURES",
+-     "reasonCodes": [
+-       "FEATURES_REQUIRE_EXPLICIT_CONFIGURATION",
++       "NOT_REQUESTED",
+      ],
+      "state": "OPTIONAL",
+    },
+  ]
+
+ ❯ src/lib/onboarding/readiness.test.ts:6:32
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  19:12:07
+   Duration  81ms (transform 60%, tests 17%, import 16%, worker 7%)
+

@@ -1,0 +1,38 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-step2-onboarding-20261112
+
+ ❯ src/lib/commerce/onboarding-recovery.test.ts (6 tests | 1 failed) 87ms
+   × admits signup operation recovery after refresh without an unavailable company billing binding 85ms
+   ✓ retains commercial restrictions on /api/onboarding/state 1ms
+   ✓ retains commercial restrictions on /api/onboarding/people 0ms
+   ✓ retains commercial restrictions on /api/onboarding/steps/BUSINESS 0ms
+   ✓ retains commercial restrictions on /api/onboarding/invitation-batches 0ms
+   ✓ retains commercial restrictions on /api/onboarding/operations/current/extra 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/commerce/onboarding-recovery.test.ts > admits signup operation recovery after refresh without an unavailable company billing binding
+AssertionError: expected Response { status: 503, statusText: '', headers: Headers { 'cache-control': 'no-store', 'content-type': 'application/json' }, body: ReadableStream { locked: false, state: 'readable', supportsBYOB: true }, bodyUsed: false, ok: false, redirected: false, type: 'default', url: '' } to be undefined
+
+- Expected:
+undefined
+
++ Received:
+Response {}
+
+ ❯ src/lib/commerce/onboarding-recovery.test.ts:12:31
+     10|  // The signup handler, rather than an unrelated company billing conne…
+     11|  // must validate the verified signup cookie and original actor-owned …
+     12|  expect(await proxy(request)).toBeUndefined();
+       |                               ^
+     13|  expect(await commerceGate('/api/onboarding/operations/current','GET',…
+     14| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  19:14:47
+   Duration  269ms (import 42%, tests 41%, transform 16%, worker 1%)
+
