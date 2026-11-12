@@ -4,7 +4,6 @@ import {previewCommunicationAudience,executeCommunicationCommand,communicationAu
 import type {CommunicationDraft} from '../../lib/communications/types';
 import {Client} from 'pg';
 import {createDisposableFoundationDatabase} from './local-postgres';
-import {createOwnedPgTransport,type OwnedDatabaseIdentity} from './owned-pg-transport';
 import {seedOwnedApp,seedOwnedScenario,seedOwnedScenarioOwner,setOwnedEmployeeRole} from './owned-app-fixture';
 import {admitLogin,admitLoginAttempt,LOGIN_LIMITS,releaseLoginAddress} from '../../lib/auth/login-limits.server';
 import {readEmployeeHome,homeAuthority} from '../../lib/data/employee-home.server';
@@ -25,17 +24,6 @@ beforeEach(async()=>{
  await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) VALUES('home-leave',$1,'2030-11-01','2030-11-01','APPROVED','PRIVATE OWN REASON'),('foreign-leave',$2,'2030-11-02','2030-11-02','APPROVED','OTHER PRIVATE REASON')",fixture.actors.slice(0,2));
 });
 afterEach(async()=>{await db?.dispose();});
-it('owned Home diagnostics preserve real SQL failure, rollback and subsequent reads when their sink throws',async()=>{
- const [identity]=await db.executor.query<OwnedDatabaseIdentity>({text:"SELECT datname AS name,oid::int AS oid,shobj_description(oid,'pg_database') AS marker FROM pg_database WHERE datname=current_database()",values:[]});
- const samples:Record<string,unknown>[]=[];
- const transport=createOwnedPgTransport(db.connectionString,identity,{observeHome:sample=>{samples.push(sample);throw Error('Owned diagnostic sink failure');}});
- try{
-  await expect(transport.transaction([transport.query('/* home_authority */ SELECT 1 AS value'),transport.query('SELECT 1/0')])).rejects.toMatchObject({code:'22012'});
-  expect(samples.some(sample=>sample.event==='failed'&&sample.code==='other')).toBe(true);
-  expect(await transport.query('/* home_authority */ SELECT 17 AS value')).toEqual([{value:17}]);
-  expect(samples.filter(sample=>sample.event==='finished')).toHaveLength(2);
- }finally{await transport.close();}
-});
 it('owned SQL transport resets reused sessions and keeps concurrent transaction backends independent',async()=>{
  const [initial]=await q('SELECT pg_backend_pid() AS pid') as {pid:number}[];
  await q("SET nevora.fixture_probe='private fixture state'");

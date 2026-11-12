@@ -54,3 +54,14 @@ it('refuses remote, unowned, wrong-identity and pre-aborted execution', async ()
   await expect(Promise.resolve(sql.query("INSERT INTO phase_a_transport_probe VALUES(5,'never')", [], { fetchOptions: { signal: aborted.signal } }))).rejects.toBeDefined();
   expect(await sql.query('SELECT * FROM phase_a_transport_probe WHERE id=5')).toEqual([]);
 });
+
+it('owned Home diagnostics preserve real SQL failure, rollback and subsequent reads when their sink throws',async()=>{
+ const samples:Record<string,unknown>[]=[];
+ const transport=createOwnedPgTransport(db.connectionString,identity,{observeHome:sample=>{samples.push(sample);throw Error('Owned diagnostic sink failure');}});
+ try{
+  await expect(transport.transaction([transport.query('/* home_authority */ SELECT 1 AS value'),transport.query('SELECT 1/0')])).rejects.toMatchObject({code:'22012'});
+  expect(samples.some(sample=>sample.event==='failed'&&sample.code==='other')).toBe(true);
+  expect(await transport.query('/* home_authority */ SELECT 17 AS value')).toEqual([{value:17}]);
+  expect(samples.filter(sample=>sample.event==='finished')).toHaveLength(2);
+ }finally{await transport.close();}
+});
