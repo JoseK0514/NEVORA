@@ -67,7 +67,7 @@ export async function createPlanChange(
     if ((await stripe.invoices.list({ subscription: subscription.id, status: "open", limit: 1 })).data.length)
       throw new CommerceError("payment_required", 409);
     const count = await ports.headcount(business, client);
-    if (!Number.isSafeInteger(count) || count < 1 || count > 30)
+    if (!Number.isSafeInteger(count) || count < 0 || count > 30)
       throw new CommerceError("assisted_quote_required", 409);
     if (plan === "small" && count > 15) throw new CommerceError("plan_employee_limit", 409);
     const price = await stripe.prices.retrieve(ports.prices[plan]);

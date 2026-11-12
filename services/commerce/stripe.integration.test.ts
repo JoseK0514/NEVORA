@@ -565,10 +565,10 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     expect(form.get('flow_data[after_completion][redirect][return_url]')).toBe(returned.href);
     const after=await store.business(id);expect(after.planKey).toBe(before.planKey);expect(after.paidThrough).toBe(before.paidThrough);expect(after.trialEnd).toBe(before.trialEnd);
   });
-  it('offers the Small renewal flow only when current headcount fits and preserves paid Team coverage',async()=>{
+  it.each([0,15])('offers the Small renewal flow only when current headcount fits and preserves paid Team coverage: %s',async count=>{
     enablePlanChanges();provider.counts.set(id,16);const {subscription}=await subscribed();provider.markPaid(subscription.id);await billing.syncJob({subscriptionId:subscription.id});
     await expect(billing.planChange(await store.business(id),randomUUID(),'small')).rejects.toMatchObject({code:'plan_employee_limit',status:409});
-    provider.counts.set(id,15);expect(await billing.planChange(await store.business(id),randomUUID(),'small')).toMatchObject({plan:'small',effective:'period_end'});
+    provider.counts.set(id,count);expect(await billing.planChange(await store.business(id),randomUUID(),'small')).toMatchObject({plan:'small',effective:'period_end'});
     expect(provider.requests.find(r=>r.path==='/v1/billing_portal/sessions')!.form.get('configuration')).toBe('bpc_small');
     expect((await store.business(id)).planKey).toBe('team');
   });
