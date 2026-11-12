@@ -1,4 +1,5 @@
 import 'server-only';
+import {isIP} from 'node:net';
 import {readOnboardingConfig,type EnabledConfig,type DisabledConfig} from './config.server';
 import {runtimeControlStore,type ControlStore} from './control-store.server';
 import {verificationDelivery,type VerificationDelivery} from './verification-delivery.server';
@@ -9,6 +10,16 @@ import {readSignupAdmission,signupAdmissionAllows,type SignupAdmission} from './
 
 export const SIGNUP_COOKIE='nevora_signup';
 type Dependencies={config:EnabledConfig|DisabledConfig;store?:ControlStore;delivery?:VerificationDelivery|null;admission?:SignupAdmission};
+function registrationClientAddress(request:Request):string|null{
+ // Vercel owns this header at its edge. Direct/self-hosted requests cannot
+ // assert a network identity using user-controlled forwarding headers.
+ if(process.env.VERCEL!=='1')return null;
+ const value=request.headers.get('x-vercel-forwarded-for')?.trim();
+ if(!value||value.includes('%'))return null;
+ const family=isIP(value);if(family===4)return value;if(family!==6)return null;
+ // Equivalent IPv6 spellings must consume the same durable admission budget.
+ return new URL('http://['+value+']/').hostname.slice(1,-1);
+}
 export function publicOnboardingConfig(config:EnabledConfig|DisabledConfig,senderConfigured:boolean,publicAdmission=config.enabled&&config.environment!=='production'):PublicOnboardingConfig{
  if(!config.enabled||!senderConfigured||!publicAdmission)return {schemaVersion:1,signupEnabled:false,locales:['en','es']};
  return {schemaVersion:1,signupEnabled:true,locales:['en','es'],terms:{version:config.termsVersion,url:config.signupOrigin+'/terms'},privacy:{version:config.privacyVersion,url:config.signupOrigin+'/privacy'}};
@@ -23,7 +34,7 @@ export function registrationHttpHandlers(deps:Dependencies){
    try{const body=await readOnboardingJson(request,4096);
     if(!signupAdmissionAllows(policy,body&&typeof body==='object'&&'email'in body?body.email:undefined))return onboardingJson({state:'unavailable',reasonCode:'ONBOARDING_DISABLED'},503);
     if(!deps.store)return onboardingJson({state:'unavailable',reasonCode:'SOURCE_UNAVAILABLE'},503);
-    const r=await requestRegistration(body,deps.store,deps.delivery??null,c);return onboardingJson(r,r.state==='verification_requested'?202:onboardingHttpStatus(r));}catch(error){return onboardingHttpFailure(error);}
+    const r=await requestRegistration(body,deps.store,deps.delivery??null,c,registrationClientAddress(request));return onboardingJson(r,r.state==='verification_requested'?202:onboardingHttpStatus(r));}catch(error){return onboardingHttpFailure(error);}
   },
   async verify(request:Request):Promise<Response>{
    const c=deps.config;if(!c.enabled)return onboardingJson({state:'unavailable',reasonCode:'ONBOARDING_DISABLED'},503);
