@@ -11,7 +11,7 @@ import {dropTestDatabase} from './test-database';
 const id='11111111-1111-4111-8111-111111111111',secret='whsec_fictional_risk_only';
 describe.skipIf(!process.env.NEVORA_COMMERCE_TEST_URL)('Stripe risk operator review with real catalog and SDK',()=>{
   let admin:Pool,pool:Pool,store:CommerceStore,billing:StripeBilling,name:string;
-  let failProvider:boolean,legacyWithoutIntent:boolean,foreignCustomer:boolean,paginated:boolean;
+  let failProvider:boolean,legacyWithoutIntent:boolean,foreignCustomer:boolean,paginated:boolean,unassignedSubscription:boolean;
   const response=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json'}});
   beforeEach(async()=>{
     const url=new URL(process.env.NEVORA_COMMERCE_TEST_URL!);
@@ -23,7 +23,7 @@ describe.skipIf(!process.env.NEVORA_COMMERCE_TEST_URL)('Stripe risk operator rev
     store=new CommerceStore(pool,Buffer.alloc(32,8));
     await pool.query('INSERT INTO commerce.accounts(id,email,profile) VALUES($1,$2,$3)',[id,'fictional@example.invalid',{}]);
     await pool.query("INSERT INTO commerce.businesses(id,state,employee_count,stripe_customer_id,stripe_subscription_id,paid_through) VALUES($1,'ready',8,'cus_owned','sub_owned','2026-12-01T00:00:00Z')",[id]);
-    failProvider=false;legacyWithoutIntent=false;foreignCustomer=false;paginated=false;
+    failProvider=false;legacyWithoutIntent=false;foreignCustomer=false;paginated=false;unassignedSubscription=false;
     const client=new Stripe('rk_test_fictional_risk_only',{
       maxNetworkRetries:0,
       httpClient:Stripe.createFetchHttpClient(async(input,init)=>{
@@ -42,7 +42,7 @@ describe.skipIf(!process.env.NEVORA_COMMERCE_TEST_URL)('Stripe risk operator rev
         }
         if(url.pathname==='/v1/invoices/in_unrelated')return response({id:'in_unrelated',object:'invoice',livemode:false,customer:'cus_owned',parent:null});
         if(url.pathname==='/v1/invoices/in_owned')return response({id:'in_owned',object:'invoice',livemode:false,customer:'cus_owned',parent:{type:'subscription_details',subscription_details:{subscription:'sub_owned'}}});
-        if(url.pathname==='/v1/subscriptions/sub_owned')return response({id:'sub_owned',object:'subscription',livemode:false,customer:foreignCustomer?'cus_foreign':'cus_owned',metadata:{nevora_business_id:id}});
+        if(url.pathname==='/v1/subscriptions/sub_owned')return response({id:'sub_owned',object:'subscription',livemode:false,customer:foreignCustomer?'cus_foreign':'cus_owned',metadata:unassignedSubscription?{}:{nevora_business_id:id}});
         throw Error('Unexpected risk provider read: '+url.pathname);
       }),
     });
@@ -78,6 +78,12 @@ describe.skipIf(!process.env.NEVORA_COMMERCE_TEST_URL)('Stripe risk operator rev
   it('retains an unresolved legacy charge for operator review without assigning it to a workplace',async()=>{
     legacyWithoutIntent=true;await notify('charge.dispute.created',true);expect(await work()).toMatchObject({state:'processed'});
     expect((await pool.query('SELECT business_id,event FROM commerce.audit')).rows).toEqual([{business_id:null,event:'stripe_risk_unresolved:charge.dispute.created:evt_risk_owned:ch_owned'}]);
+  });
+  it('retains a same-merchant subscription without NEVORA metadata as an unresolved review',async()=>{
+    unassignedSubscription=true;await notify('charge.refunded');
+    expect(await work()).toMatchObject({state:'processed'});
+    expect((await pool.query('SELECT business_id,event FROM commerce.audit')).rows).toEqual([{business_id:null,event:'stripe_risk_unresolved:charge.refunded:evt_risk_owned:ch_owned'}]);
+    expect((await pool.query('SELECT stripe_customer_id,stripe_subscription_id FROM commerce.businesses')).rows).toEqual([{stripe_customer_id:'cus_owned',stripe_subscription_id:'sub_owned'}]);
   });
   it('retries provider failure without losing the event or duplicating its eventual audit',async()=>{
     failProvider=true;await notify('charge.refunded');expect(await work()).toMatchObject({state:'retry_scheduled'});

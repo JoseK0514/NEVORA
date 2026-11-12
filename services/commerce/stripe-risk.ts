@@ -57,7 +57,10 @@ export async function reviewStripeRisk(store:CommerceStore,stripe:Stripe,payload
     const customerId=stripeObjectId(invoice.customer),businessId=subscription.metadata.nevora_business_id;
     if(subscription.id!==subscriptionId||subscription.livemode!==live||!id(customerId,'cus_')||
       stripeObjectId(subscription.customer)!==customerId)throw new CommerceError('stripe_risk_identity_mismatch',503);
-    if(!businessId||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(businessId))
+    // The merchant also invoices work outside NEVORA. Missing product metadata
+    // is an unresolved merchant review, not a retryable identity contradiction.
+    if(!businessId)continue;
+    if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(businessId))
       throw new CommerceError('stripe_risk_identity_mismatch',503);
     const owned=await store.pool.query('SELECT id FROM commerce.businesses WHERE id=$1 AND stripe_customer_id=$2',[businessId,customerId]);
     if(owned.rowCount===1)bindings.set(businessId,customerId);
