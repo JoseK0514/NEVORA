@@ -10,6 +10,7 @@ import {createOwnedNextApp} from '../src/test/integration/owned-next-app.ts';
 import {seedOwnedApp,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {assertPrivateClockInRecovery} from './clocker-recovery-privacy.ts';
 import {archiveBreak} from './clocker-break-editor.mjs';
+import {observePinReadiness,installPinReadinessObserver,runPinDiagnosticObservation} from './clocker-pin-readiness-diagnostic.mjs';
 const evidence=resolve(process.env.PHASE_C_EVIDENCE_DIR??join(homedir(),'.codex/visualizations/2026/10/05/nevora-punch-integration'));
 await mkdir(evidence,{recursive:true});
 const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'));
@@ -17,7 +18,7 @@ const pw=await import(pathToFileURL(runtime.resolve('playwright')).href),playwri
 const checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim(),sourceClean=execFileSync('git',['status','--porcelain=v1'],{encoding:'utf8'}).trim()==='';
 if(process.env.PHASE_C_EXPECTED_SHA){assert.equal(checkpoint,process.env.PHASE_C_EXPECTED_SHA);assert(sourceClean,'Clocker regression requires a clean exact candidate');}
 const report={checkpoint,tree,sourceClean,checks:[],errors:[],screenshots:[],contrast:[],limits:['Owned loopback PostgreSQL and scratch Next runtime; no hosted or physical-device verification.','Browser plugin not listed; existing Playwright used.']};
-const browsers=[];let app,currentPage;
+const browsers=[],pinDiagnostics=[];let app,currentPage,currentPinDiagnostic;
 function checked(name){report.checks.push(name);console.log('[C3/C4 browser] PASS '+name);}
 const q=(text,values=[])=>app.database.executor.query({text,values});
 async function context(browser,viewport={width:1024,height:768}){
@@ -155,7 +156,13 @@ try{
   await verify(t);await t.getByRole('button',{name:'Clock Out',exact:true}).click();await t.getByRole('button',{name:'Confirm Clock Out',exact:true}).click();await success(t,'Clock Out');await idle(t);
   assert.equal((await q('SELECT count(*)::int AS n FROM clocker_pin_sessions'))[0].n,0);checked(engine+': confirmation auto-resets and clears server identity');
   const guardStart=await count();
-  await verify(t);await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();
+  // Preserve bounded flags and request statuses at the exact post-reset boundary.
+  // The original PIN entry and Clock In assertion below remain unchanged.
+  const diagnostic=observePinReadiness({browser,context:tablet,page:t,origin:app.url,engine,source:report,artifactBase:join(evidence,engine+'-clocker-final-pin')});
+  pinDiagnostics.push(diagnostic);currentPinDiagnostic=diagnostic;await diagnostic.install();
+  await runPinDiagnosticObservation(()=>t.evaluate(installPinReadinessObserver)).catch(error=>diagnostic.failure('install',error));
+  diagnostic.phase('continue','before');await verify(t);diagnostic.phase('continue','after');await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();
+  await diagnostic.close();currentPinDiagnostic=undefined;
   await t.evaluate(()=>{window.__restoreStorage=IDBObjectStore.prototype.put;IDBObjectStore.prototype.put=function(){throw new DOMException('Test storage denial','QuotaExceededError');};});
   await t.getByRole('button',{name:'Clock In',exact:true}).click();await t.getByRole('heading',{name:'Browser Storage Needed',exact:true}).waitFor();assert.equal(await count(),guardStart);
   await t.evaluate(()=>{IDBObjectStore.prototype.put=window.__restoreStorage;delete window.__restoreStorage;});
@@ -211,5 +218,8 @@ try{
   await done(t);await q("UPDATE employees SET first_name='Avery',updated_at=clock_timestamp() WHERE id='PUNCH-A'");
   assert.deepEqual(errors,[]);checked(engine+': no runtime or hydration errors');await tablet.close();await owner.close();await browser.close();
  }
-}catch(error){report.errors.push(String(error.stack??error));if(currentPage&&!currentPage.isClosed())await shot(currentPage,'failure').catch(()=>{});process.exitCode=1;}
-finally{for(const b of browsers)await b.close().catch(()=>{});if(app)await app.close().catch(e=>{report.errors.push(String(e));process.exitCode=1;});await writeFile(join(evidence,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({checks:report.checks.length,errors:report.errors,evidence},null,2));}
+}catch(error){report.errors.push(String(error.stack??error));if(currentPage&&!currentPage.isClosed()){
+ const capture=async()=>{const file=join(evidence,'failure.png');await currentPage.screenshot({path:file,fullPage:true,timeout:900,style:'nextjs-portal { display: none; }'});report.screenshots.push(file);};
+ if(currentPinDiagnostic)await currentPinDiagnostic.captureFailure(capture);else await runPinDiagnosticObservation(capture).catch(()=>{});
+}process.exitCode=1;}
+finally{for(const diagnostic of pinDiagnostics)await diagnostic.close();for(const b of browsers)await b.close().catch(()=>{});if(app)await app.close().catch(e=>{report.errors.push(String(e));process.exitCode=1;});await writeFile(join(evidence,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({checks:report.checks.length,errors:report.errors,evidence},null,2));}

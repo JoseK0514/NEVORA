@@ -34,6 +34,14 @@ test('ignores foreign/private boundaries and strips or rejects malformed browser
  const result=f.observer.snapshot();assert.equal(result.events.length,1);assert.equal(result.events[0].defaultPrevented,true);assert.equal(result.events[0].stage,'after');assert.equal(result.rejectedInputs,3);assert(!JSON.stringify(result).includes('private-value'));assert(!Object.hasOwn(result.events[0],'enteredDigits'));await f.observer.close();
 });
 
+test('records only enumerated punch states without retaining arbitrary browser content',async()=>{
+ const f=fixture();
+ for(const punchState of ['ready','auth','recovery','private-value',null])f.observer.phase('continue','failure',{punchState});
+ const result=f.observer.snapshot();
+ assert.deepEqual(result.events.map(event=>event.punchState),['ready','auth','recovery',undefined,undefined]);
+ assert(!JSON.stringify(result).includes('private-value'));await f.observer.close();
+});
+
 test('caps independent event lanes so network flooding cannot erase lifecycle failure evidence',async()=>{
  const f=fixture();for(let i=0;i<150;i++)f.page.emit('request',f.request());for(let i=0;i<70;i++)f.observer.phase('keypad','before');f.page.emit('crash');f.browser.emit('disconnected');
  const result=f.observer.snapshot();assert.equal(result.events.filter(x=>x.kind==='request').length,128);assert.equal(result.events.filter(x=>x.kind==='phase').length,64);assert.equal(result.omittedEvents,28);assert.deepEqual(result.events.slice(-2).map(x=>x.kind),['page-crash','browser-disconnected']);await f.observer.close();

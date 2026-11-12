@@ -17,6 +17,14 @@ deletion, job reset, start-command change or security-gate weakening was added.
 The hosted restart failure motivated this regression; the exact hosted trigger
 has not been proven. A corrected-source hosted restart drill remains required.
 
+The first candidate's Actions also found a Clocker post-reset PIN timeout after
+79 passing checks. The unchanged local two-engine regression passed all 90.
+Its existing failure screenshot was absent, so the follow-up retains bounded,
+redacted state flags/request statuses at that exact boundary and captures failure
+without waiting for animations. A regression proves only enumerated punch states
+are retained. Original assertions, timeouts and application behavior are unchanged;
+the intermittent browser failure's trigger has not been established.
+
 ## Actual staging evidence
 
 - Six native Neon onboarding/commerce roles were rebuilt and ZIP-verified from
@@ -90,7 +98,11 @@ must use valid enrollment, not extend or bypass an expired token.
    subscription, payment-success upgrade, renewal downgrade and failure/reauth
    acceptance against fictional bindings. Local Stripe fixtures do not satisfy
    these hosted gates. Leave live payments and Tax collection off.
-5. Joint UI/backend acceptance precedes public signup/website trial-button
+5. Web-notification dispatch and reminder push remain open: prepare valid
+   delivery configuration, obtain explicit fictional recipient/content approval,
+   and observe bounded delivery. Payroll-only acceptance does not qualify these
+   commands. Native remains excluded.
+6. Joint UI/backend acceptance precedes public signup/website trial-button
    activation. Main, production, live billing, tax registration policy and
    continuous incident coverage require their own evidence and authorization.
 
