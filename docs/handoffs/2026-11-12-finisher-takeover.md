@@ -95,3 +95,14 @@ For separate Rondo SCRUM-155, Jose answered the responder question with
 "Jose Natal (me)". Record Jose Natal as primary; backup and actual human
 acknowledgment/drill/independent outage coverage remain unverified. This answer
 does not authorize additional email, AI usage, spending or promotion.
+
+
+## Superseding bounded UI reassignment
+
+Jose subsequently authorized Codex to build the two missing recovery screens
+so the combined release can finish, with Claude to remake them afterward.
+The pages, recovery layout and browser evidence now exist; see
+[bounded recovery UI delivery](2026-11-12-commerce-recovery-ui.md).
+Exact6aac local browser proof passes both native engines with owned cleanup.
+Earlier missing-page statements are historical. New final-source release gates
+are still required; no hosted window has started or provider effect occurred.

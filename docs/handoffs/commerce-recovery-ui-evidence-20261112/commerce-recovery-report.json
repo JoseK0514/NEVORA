@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "checks": [
+    "chromium: anonymous billing requires normal sign-in",
+    "chromium: public tablet has bounded return, no private data, four widths and keyboard focus",
+    "chromium: real Owner session, unavailable/handoff failure, bounded presentation fixtures restricted/paid/invalid/revoked, no stale private status",
+    "chromium: current non-Owner receives contact-Owner view without private status reads",
+    "webkit: anonymous billing requires normal sign-in",
+    "webkit: public tablet has bounded return, no private data, four widths and keyboard focus",
+    "webkit: real Owner session, unavailable/handoff failure, bounded presentation fixtures restricted/paid/invalid/revoked, no stale private status",
+    "webkit: current non-Owner receives contact-Owner view without private status reads"
+  ],
+  "errors": [],
+  "ownershipClosed": true,
+  "scope": "Exact committed Next source, owned local PostgreSQL and normal password sign-in; bounded client response fixtures for financial presentation only. No real provider, billing success, device or hosted acceptance claimed."
+}
