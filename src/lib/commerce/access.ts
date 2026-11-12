@@ -90,8 +90,17 @@ export const APP_BILLING_RECOVERY_PATH='/app/billing';
 export function commerceDenial(path:string,method:string,code:'subscription_required'|'billing_status_unavailable',request?:Request):Response {
   const appPage=path==='/app'||path.startsWith('/app/');
   const appApi=path==='/app/api'||path.startsWith('/app/api/');
-  const document=request&&(request.headers.get('sec-fetch-mode')==='navigate'||
-    (request.headers.get('accept')??'').split(',').some(part=>part.split(';')[0].trim().toLowerCase()==='text/html'));
+  const accepted=(request?.headers.get('accept')??'').split(',').map(part=>{
+    const [type,...parameters]=part.trim().toLowerCase().split(';');
+    const weights=parameters.map(value=>value.trim()).filter(value=>value.startsWith('q='));
+    const quality=weights.length===0?1:weights.length===1&&/^q=(?:0(?:\.\d{0,3})?|1(?:\.0{0,3})?)$/.test(weights[0])?Number(weights[0].slice(2)):0;
+    return {type:type.trim(),quality};
+  });
+  const html=accepted.some(value=>value.type==='text/html'&&value.quality>0);
+  const refusedHtml=accepted.some(value=>value.type==='text/html')&&!html;
+  const dataRequest=request?.headers.has('rsc')||accepted.some(value=>value.quality>0&&
+    (value.type==='application/json'||value.type.endsWith('+json')||value.type==='text/x-component'));
+  const document=request&&!dataRequest&&!refusedHtml&&(request.headers.get('sec-fetch-mode')==='navigate'||html);
   if(request&&method==='GET'&&appPage&&!appApi&&path!==APP_BILLING_RECOVERY_PATH&&document){
     return new Response(null,{status:303,headers:{
       location:new URL(APP_BILLING_RECOVERY_PATH+'?'+new URLSearchParams({reason:code}),request.url).href,

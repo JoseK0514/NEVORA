@@ -61,3 +61,37 @@ Cleanup skips rollback when the blocker never connected, preserving the primary
 failure while still closing diagnostics. A meaningful RED/GREEN regression
 rejects reintroduced unconnected rollback. No application/UI source, acceptance
 assertion, timeout, authority check or coherence guard was weakened.
+
+
+## Combined recovery patch and final qualification
+
+The coordinated recovery patch `bc0013f57ec60403cef8b81360e099a1669c22e1`
+and style checkpoint `90e7b101c90abaddba71039c8ec5350ef045a81b` were preserved
+and imported as584a89581/fd1414247 over the reviewed finisher sourcee6e79cad6.
+This retains all worker, QA and custody fixes. No competing candidate or remote
+branch was published by the patch owner.
+
+Fresh independent review reproduced a conflicting-header defect in that patch:
+explicit JSON/RSC and refused HTML could incorrectly receive303. Twenty new
+regressions failed against the imported classifier. The corrected classifier
+honors explicit data requests and valid positive HTML quality. All original
+controls remain; root's seven affected suites now pass105 tests, with typecheck,
+scoped lint and diff checks passing. Fresh review is CLEAR/APPROVE, blockers[].
+See the committed recovery-negotiation RED/GREEN and review artifacts.
+
+The preceding immutable e6e candidate completed all20 checks and10 strict
+contexts successfully. It remains a retained baseline, not acceptance of this
+new source. Its full unit suite passed12,658/895 skipped and audits reported0.
+All final-source manuals, candidate/development checks and release artifacts
+must be regenerated or freshly verified for the combined source.
+
+The exact /app/billing and /clocker/access/paused UI pages remain absent, and
+recovery content must be separated from operational shell pollers by Claude.
+Middleware recovery is implemented and tested; complete hosted billing/UI
+acceptance is not claimed. No finite hosted clock or provider effect has begun.
+The unchanged50/45-minute approval remains held pending all prerequisites.
+
+For separate Rondo SCRUM-155, Jose answered the responder question with
+"Jose Natal (me)". Record Jose Natal as primary; backup and actual human
+acknowledgment/drill/independent outage coverage remain unverified. This answer
+does not authorize additional email, AI usage, spending or promotion.

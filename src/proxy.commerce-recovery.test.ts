@@ -79,3 +79,28 @@ it('redirects document binding failures as unavailable without exposing query da
   const url=new URL(response!.headers.get('location')!);
   expect(url.pathname).toBe('/app/billing');expect(url.search).toBe('?reason=billing_status_unavailable');
 });
+
+const nonDocumentHeaders:Record<string,string>[]=[
+ {accept:'application/json','sec-fetch-mode':'navigate'},
+ {accept:'text/x-component','sec-fetch-mode':'navigate'},
+ {accept:'application/json,text/html'},
+ {accept:'application/problem+json,text/html'},
+ {accept:'text/html;q=0'},
+ {accept:'text/html;q=0','sec-fetch-mode':'navigate'},
+ {accept:'text/html;q=0.000'},
+ {accept:'text/html;q=invalid','sec-fetch-mode':'navigate'},
+ {accept:'text/html;q=0;q=1'},
+ {accept:'text/html','sec-fetch-mode':'cors',rsc:'1'},
+];
+it.each((['restricted','unavailable'] as const).flatMap(state=>nonDocumentHeaders.map(headers=>({state,headers}))))(
+ 'retains JSON denial for conflicting or refused document negotiation when $state: $headers',async({state,headers})=>{
+  authority(state);
+  const response=await proxy(request('/app/schedule?private=discard',headers));
+  expect(response?.status).toBe(state==='restricted'?402:503);
+  expect(response!.headers.has('location')).toBe(false);
+  expect(await response!.json()).toEqual({error:{code:state==='restricted'?'subscription_required':'billing_status_unavailable'}});
+ });
+it.each(['text/html;q=0.7','TEXT/HTML; Q=0.8'])('retains recovery for accepted HTML quality: %s',async accept=>{
+ authority('restricted');const response=await proxy(request('/app/schedule',{accept}));
+ expect(response?.status).toBe(303);expect(new URL(response!.headers.get('location')!).pathname).toBe('/app/billing');
+});
