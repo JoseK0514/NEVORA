@@ -86,7 +86,18 @@ export async function requireOperationalCommerce() {
 /** Tablet-safe recovery only. The return path is a bounded local Clocker key;
  * request query strings and caller-provided destinations are never forwarded. */
 export const CLOCKER_PAUSED_PATH='/clocker/access/paused';
+export const APP_BILLING_RECOVERY_PATH='/app/billing';
 export function commerceDenial(path:string,method:string,code:'subscription_required'|'billing_status_unavailable',request?:Request):Response {
+  const appPage=path==='/app'||path.startsWith('/app/');
+  const appApi=path==='/app/api'||path.startsWith('/app/api/');
+  const document=request&&(request.headers.get('sec-fetch-mode')==='navigate'||
+    (request.headers.get('accept')??'').split(',').some(part=>part.split(';')[0].trim().toLowerCase()==='text/html'));
+  if(request&&method==='GET'&&appPage&&!appApi&&path!==APP_BILLING_RECOVERY_PATH&&document){
+    return new Response(null,{status:303,headers:{
+      location:new URL(APP_BILLING_RECOVERY_PATH+'?'+new URLSearchParams({reason:code}),request.url).href,
+      'cache-control':'no-store','referrer-policy':'no-referrer',
+    }});
+  }
   const locationKey=path.startsWith('/clocker/')?path.slice('/clocker/'.length):'';
   if(request&&method==='GET'&&locationKey.length<=64&&/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(locationKey)&&!request.headers.get('accept')?.includes('application/json')){
     const query=new URLSearchParams({reason:code,from:path});
