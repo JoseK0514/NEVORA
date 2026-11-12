@@ -1,0 +1,12 @@
+
+> fuel-scheduler@0.1.0 test:commerce:owned
+> node scripts/commerce-postgres.mjs
+
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111
+
+
+ Test Files  15 passed (15)
+      Tests  159 passed (159)
+   Start at  22:02:10
+   Duration  4.92s (tests 89%, import 8%, transform 3%)

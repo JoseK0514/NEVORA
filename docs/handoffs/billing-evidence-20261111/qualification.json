@@ -2,8 +2,8 @@
   "observedDate": "2026-11-11",
   "scope": "Backend source and isolated local qualification; no hosted/live certification",
   "baseDevelopment": "d80da2a35b586378b59bdadc5e989baffe430165",
-  "runtimeSource": "ed5715fc0ceac9b2b50dd358f4d7e65c1e22f56d",
-  "applicationHash": "23590db7820530c6b9af243d1261145320ee9a5f27e319a862d98edfedb6c4b7",
+  "runtimeSource": "6db25fed8ead9109f79f267cb56585417c3a3c04",
+  "applicationHash": "912a4daeb3484c0a80f6c65e402968bf68b6a0316fe0fd2a071a3507939e8d14",
   "ownedCommerce": {
     "passed": 159,
     "failed": 0,
@@ -61,5 +61,41 @@
     "Claude UI integration and desktop/mobile acceptance",
     "Approved real inbox before any live email test",
     "Live account, Tax decisions/registration and separate production authorization"
-  ]
+  ],
+  "receiptScopes": {
+    "plan-change-*": "Earlier approved financial runtime ed5715fc0; preserved original evidence",
+    "root-summary.txt": "Earlier candidate 72b8eb01a; replacement full root run pending",
+    "v2-commerce.txt": "6db25fed8ead9109f79f267cb56585417c3a3c04",
+    "native-final-green.txt": "6db25fed8ead9109f79f267cb56585417c3a3c04",
+    "local-build.json": "Earlier optimized build c5637a994; replacement pending"
+  },
+  "nativeAdapters": {
+    "passed": 184,
+    "failed": 0,
+    "files": 6,
+    "source": "6db25fed8ead9109f79f267cb56585417c3a3c04"
+  },
+  "runtimeInventory": {
+    "passed": 8,
+    "failed": 0,
+    "explicitNewEntries": 2,
+    "scannerExemptionsAdded": 0
+  },
+  "candidateV1": {
+    "sha": "72b8eb01a792d3cfb3549b2f7d949b55e0e5852b",
+    "ciRun": "https://github.com/JoseK0514/NEVORA/actions/runs/43136972176",
+    "status": "Superseded after strict inventory rejected two unclassified new entrypoints; remaining CI canceled. Explicit dispositions added and reviewed at 6db25fed8."
+  },
+  "localBackendAcceptance": {
+    "source": "6db25fed8ead9109f79f267cb56585417c3a3c04",
+    "combinedRunner": "Did not complete: first attempt lacked client tools; retry passed DB suites then rejected evidence output inside source tree. Original failed receipts retained. No assertion or guard weakened.",
+    "completedComponents": {
+      "ownedOnboarding": 234,
+      "companyAccessFoundation": 516,
+      "companyAccessExchange": "passed",
+      "workerEnrollment": "separate external-directory component passed",
+      "managedWorkforce": "separate external-directory component passed"
+    },
+    "fullExactCandidateCI": "pending"
+  }
 }

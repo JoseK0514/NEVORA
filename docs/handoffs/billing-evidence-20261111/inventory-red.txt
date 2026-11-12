@@ -1,0 +1,123 @@
+✔ new download, auth action, worker and direct database paths cannot evade the entrypoint inventory (2.875958ms)
+✔ test-only suffixes are bounded exemptions, invalid inventory dispositions are rejected (0.072083ms)
+✔ server actions after comments, without semicolons, or inline in a page still require classification (0.349917ms)
+✔ commerce server/catalog/worker boundaries cannot evade the runtime inventory (0.076125ms)
+✖ the billing status route and plan-confirmation catalog helper have explicit isolated dispositions (22.324167ms)
+✖ the private workforce command and every tracked transport boundary have an explicit reviewed disposition (343.05375ms)
+✖ every actual staff task route has a company-bound disposition and removing any entry fails closed (83.774292ms)
+✖ every actual conversation route has a company-bound disposition and removing any entry fails closed (85.607333ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 4
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 674.218334
+
+✖ failing tests:
+
+test at scripts/onboarding-inventory.check.mjs:25:1
+✖ the billing status route and plan-confirmation catalog helper have explicit isolated dispositions (22.324167ms)
+  AssertionError [ERR_ASSERTION]: src/app/api/commerce/status/route.ts
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111/scripts/onboarding-inventory.check.mjs:29:64)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at scripts/onboarding-inventory.check.mjs:33:1
+✖ the private workforce command and every tracked transport boundary have an explicit reviewed disposition (343.05375ms)
+  AssertionError [ERR_ASSERTION]: Got unwanted exception.
+  Actual message: "Unclassified runtime entrypoint: services/commerce/plan-change.ts, src/app/api/commerce/status/route.ts"
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111/scripts/onboarding-inventory.check.mjs:37:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: Error: Unclassified runtime entrypoint: services/commerce/plan-change.ts, src/app/api/commerce/status/route.ts
+        at validateOnboardingInventory (file:///Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111/scripts/onboarding-inventory.mjs:21:26)
+        at file:///Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111/scripts/onboarding-inventory.check.mjs:37:26
+        at getActual (node:assert:611:5)
+        at strict.doesNotThrow (node:assert:779:32)
+        at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111/scripts/onboarding-inventory.check.mjs:37:9)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19)
+        at Test.run (node:internal/test_runner/test:1447:12),
+    expected: undefined,
+    operator: 'doesNotThrow',
+    diff: 'simple'
+  }
+
+test at scripts/onboarding-inventory.check.mjs:39:1
+✖ every actual staff task route has a company-bound disposition and removing any entry fails closed (83.774292ms)
+  AssertionError [ERR_ASSERTION]: Got unwanted exception.
+  Actual message: "Unclassified runtime entrypoint: services/commerce/plan-change.ts, src/app/api/commerce/status/route.ts"
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111/scripts/onboarding-inventory.check.mjs:46:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: Error: Unclassified runtime entrypoint: services/commerce/plan-change.ts, src/app/api/commerce/status/route.ts
+        at validateOnboardingInventory (file:///Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111/scripts/onboarding-inventory.mjs:21:26)
+        at file:///Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111/scripts/onboarding-inventory.check.mjs:46:26
+        at getActual (node:assert:611:5)
+        at strict.doesNotThrow (node:assert:779:32)
+        at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111/scripts/onboarding-inventory.check.mjs:46:9)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19)
+        at Test.run (node:internal/test_runner/test:1447:12),
+    expected: undefined,
+    operator: 'doesNotThrow',
+    diff: 'simple'
+  }
+
+test at scripts/onboarding-inventory.check.mjs:53:1
+✖ every actual conversation route has a company-bound disposition and removing any entry fails closed (85.607333ms)
+  AssertionError [ERR_ASSERTION]: Got unwanted exception.
+  Actual message: "Unclassified runtime entrypoint: services/commerce/plan-change.ts, src/app/api/commerce/status/route.ts"
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111/scripts/onboarding-inventory.check.mjs:60:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: Error: Unclassified runtime entrypoint: services/commerce/plan-change.ts, src/app/api/commerce/status/route.ts
+        at validateOnboardingInventory (file:///Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111/scripts/onboarding-inventory.mjs:21:26)
+        at file:///Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111/scripts/onboarding-inventory.check.mjs:60:26
+        at getActual (node:assert:611:5)
+        at strict.doesNotThrow (node:assert:779:32)
+        at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111/scripts/onboarding-inventory.check.mjs:60:9)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19)
+        at Test.run (node:internal/test_runner/test:1447:12),
+    expected: undefined,
+    operator: 'doesNotThrow',
+    diff: 'simple'
+  }

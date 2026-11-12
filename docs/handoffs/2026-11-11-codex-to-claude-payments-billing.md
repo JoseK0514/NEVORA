@@ -6,9 +6,9 @@ Codex owns this backend; Claude owns the Shopify and NEVORA UI. Start integratio
 from current development plus this candidate, preserving Claude's newer UI. Do
 not import an old whole tree. The candidate starts at development
 `d80da2a35b586378b59bdadc5e989baffe430165`; final runtime source is
-`ed5715fc0ceac9b2b50dd358f4d7e65c1e22f56d`. Subsequent guide/evidence commits do
+`6db25fed8ead9109f79f267cb56585417c3a3c04`. Subsequent guide/evidence commits do
 not change the application. The guide manifest records application hash
-`23590db7820530c6b9af243d1261145320ee9a5f27e319a862d98edfedb6c4b7`.
+`912a4daeb3484c0a80f6c65e402968bf68b6a0316fe0fd2a071a3507939e8d14`.
 
 This is implementation and isolated qualification, not live billing activation.
 Jose approved self-service **upgrades after successful payment and downgrades at
@@ -161,6 +161,17 @@ in `billing-evidence-20261111/`. Raw RED/green runs remain in the checkout's ign
 `.omo/evidence/payments-billing-20261111/`. See `qualification.json` for the exact
 local source, executed counts, skips and remaining gates. Candidate/development
 delivery and exact-SHA CI are separate from hosted runtime activation.
+
+Candidate `72b8eb01a` was superseded after CI's strict runtime inventory rejected
+the new status route and plan-change helper. At `6db25fed8`, both received explicit
+isolated dispositions; the scanner remains unchanged. The native adapter now
+admits only the new POST route and gives its non-secret configuration names only
+to `commerceapi`. Independent Spec/Standards follow-ups passed 65 adapter/policy
+cases and eight inventory checks; all native adapter tests pass 184/184. The
+original failure is retained. Local onboarding (234) and Company Access (516)
+passed on the corrected runtime; worker/enrollment components also passed
+separately. The combined local runner's environment/output-path failures are
+recorded rather than represented as a complete combined pass.
 
 Disable both new Portal configuration variables to stop new plan-change flows.
 Existing Stripe sessions/schedules require separate operator review; do not

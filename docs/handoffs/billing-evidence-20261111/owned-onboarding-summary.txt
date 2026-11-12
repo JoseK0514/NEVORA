@@ -1,0 +1,12 @@
+ ✓ src/test/integration/onboarding-registration.integration.ts (20 tests) 1103ms
+   ✓ actual control-database verified registration (20)
+     ✓ refuses a proof that expires while waiting for its unchanged registration row lock 764ms
+ ✓ src/test/integration/onboarding-isolation-routing.integration.ts (32 tests) 568ms
+ ✓ src/test/integration/onboarding-isolation-auth.integration.ts (13 tests) 311ms
+
+ Test Files  14 passed (14)
+      Tests  234 passed (234)
+   Start at  21:55:57
+   Duration  85.34s (tests 99%, import 1%)
+
+Owned onboarding PostgreSQL stopped and temporary cluster removed.
