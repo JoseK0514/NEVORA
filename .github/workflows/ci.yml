@@ -355,7 +355,9 @@ jobs:
         env:
           PHASE_D2_CORRECTIONS_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d2-browser-evidence
           PHASE_D2_CORRECTIONS_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: npm run test:phase-d2:corrections-ui
+        run: |
+          node scripts/d2-hours-route-focus.check.mjs
+          npm run test:phase-d2:corrections-ui
       - name: Existing Clocker lifecycle and recovery browser regression
         if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
         env:
