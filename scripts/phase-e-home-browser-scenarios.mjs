@@ -4,6 +4,7 @@ import {safeLoginServerRequests,safeEvaluationFailure} from './release-browser-d
 import {OWNED_LOGIN_HEADER,readOwnedLoginEvents} from '../src/test/integration/owned-login-diagnostics.mjs';
 import {waitForOwnedLoginWindow} from './browser-login-window.mjs';
 import {LOGIN_LIMITS} from '../src/lib/auth/login-limits.server.ts';
+import {observeHomeFailure,finishHomeFailure} from './home-source-failure-diagnostic.mjs';
 import assert from 'node:assert/strict';
 import {join} from 'node:path';
 import {readFile,writeFile} from 'node:fs/promises';
@@ -401,7 +402,22 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  }finally{time.release();await time.done;await page.unroute(time.path,time.handler);page.off('request',timeStarted);page.off('requestfailed',timeFailed);page.off('requestfinished',timeFinished);await writeFile(join(evidenceDirectory,`home-held-time-${engine}-${width}.json`),JSON.stringify(timeEvidence,null,2));}
  await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));details.timeAfterClockOut=await waitForRecordedTimeReady(page,'OFF_CLOCK');assert(await offClock().first().isVisible());await openHome();checks.push('H07 held actual Time read after pagehide/unmount cannot restore old Clocked In on the Time tab; fresh re-entry reflects persisted clock-out');
  stage='route-leave';const leaving=gate('**/api/employee/home');await page.route(leaving.path,leaving.handler);await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await leaving.seen;await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');const leavingNavigation=await page.goto(app.url+'/app/requests/hub',{waitUntil:'domcontentloaded'});assert(leavingNavigation?.ok());await page.getByRole('heading',{name:'Requests',exact:true}).waitFor();leaving.release('navigation');await leaving.done;assert.equal(leaving.failure,undefined);details.routeLeaveOutcome=leaving.outcome;await page.unroute(leaving.path,leaving.handler);await page.waitForLoadState('networkidle');assert.equal(await page.locator(HOME_SHIFT_CARD+' a[href^="/app/schedule"]').count(),0);await page.goto(app.url+'/app');await ready();checks.push('H08 hard route leave during actual Home read unmounts private Home; re-entry reads current sources');
- if(width===390){stage='sql-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE time_off_requests IN ACCESS EXCLUSIVE MODE');await refresh();const timeOffSource=()=>todo().locator('a.c-row[href="/app/requests?tab=my"]').filter({hasText:'Couldn’t be checked'});await timeOffSource().waitFor();assert.equal(await assignments().count(),1,'Independently authorized assignments stay: one shift card');await shot('unavailable');await blocker.query('COMMIT');await refresh();assert.equal(await timeOffSource().count(),0);checks.push('H09 actual time-off lock timeout retains independently authorized assignments, discloses unavailable and Retry restores current source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
+ if(width===390){
+  stage='sql-source-failure';const diagnostic=observeHomeFailure(page),blocker=new Client({connectionString:app.database.connectionString});let primaryFailure;
+  try{
+   await blocker.connect();await blocker.query('BEGIN');await blocker.query('LOCK TABLE time_off_requests IN ACCESS EXCLUSIVE MODE');
+   await refresh();const timeOffSource=()=>todo().locator('a.c-row[href="/app/requests?tab=my"]').filter({hasText:'Couldn’t be checked'});
+   await timeOffSource().waitFor();
+   details.sourceFailureRender=await page.locator('[data-home-state]').evaluate(root=>({state:root.getAttribute('data-home-state'),busy:root.getAttribute('aria-busy')}));
+   assert.equal(await assignments().count(),1,'Independently authorized assignments stay: one shift card');await shot('unavailable');
+   await blocker.query('COMMIT');diagnostic.setPhase('recovery');await refresh();assert.equal(await timeOffSource().count(),0);
+   checks.push('H09 actual time-off lock timeout retains independently authorized assignments, discloses unavailable and Retry restores current source');
+  }catch(error){primaryFailure=error;throw error;}finally{
+   await finishHomeFailure({blocker,diagnostic,primaryFailure,render:details.sourceFailureRender,
+    readLog:()=>readFile(join(app.root,'next.log'),'utf8'),
+    writeReceipt:receipt=>writeFile(join(evidenceDirectory,`home-source-failure-${engine}-${width}-report.json`),JSON.stringify(receipt,null,2))});
+  }
+ }
  stage='replaced-session';const other=await context.newPage();await login(other,scenario.actors[1]);await other.waitForLoadState('networkidle');await other.close();await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await page.locator('[data-home-state="unauthorized"]').waitFor();assert.equal(await assignments().count(),0);assert.equal(await items().count(),0);assert.equal(await recorded().count(),0);assert(await page.locator('main').getByRole('link',{name:'Sign in',exact:true}).isVisible());await shot('session-replaced');checks.push('H10 actual same-browser account cookie replacement refuses former lifetime binding and clears every Home private row');
  await page.bringToFront();await login();await ready();stage='early-my-time-route';
  const bellHold=gate('**/api/notifications');let bellReads=0;

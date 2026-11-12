@@ -22,5 +22,6 @@ export function ownedAppBarriers(directory: string): LocalTransportHooks {
     }
     throw new Error(`Owned application barrier timed out: ${gate.id}`);
   }
-  return { beforeQuery: text => pause('before', text), afterQuery: text => pause('after', text) };
+  return { beforeQuery: text => pause('before', text), afterQuery: text => pause('after', text),
+    observeHome: sample => console.log('[Owned Home SQL] '+JSON.stringify(sample)) };
 }

@@ -1,4 +1,5 @@
 import { Pool, type QueryResult } from 'pg';
+import {createHomeSqlDiagnostic} from './owned-home-diagnostics';
 
 export type OwnedDatabaseIdentity = { name: string; oid: number; marker: string };
 export type LocalQueryOptions = { fetchOptions?: { signal?: AbortSignal } };
@@ -14,6 +15,7 @@ export type LocalTransportHooks = {
   /** Test barriers may delay real IO but may not manufacture query results. */
   beforeQuery?(text: string): Promise<void>;
   afterQuery?(text: string, rows: LocalRows): Promise<void>;
+  observeHome?(sample:Record<string,unknown>):void;
 };
 type Statement = { text: string; values: readonly unknown[]; signal?: AbortSignal };
 type PendingQuery = { statement: Statement; started: boolean; promise?: Promise<LocalRows> };
@@ -46,12 +48,17 @@ export function createOwnedPgTransport(
   // An owned cluster may be torn down while an idle connection is parked. pg
   // removes that connection; active query failures still reject their caller.
   pool.on('error', () => {});
+  const diagnostic=createHomeSqlDiagnostic(sample=>hooks.observeHome?.(sample));
 
   async function run(statements: readonly Statement[], transaction: boolean, signal?: AbortSignal): Promise<LocalRows[]> {
     const signals = [...statements.flatMap(s => s.signal ? [s.signal] : []), ...(signal ? [signal] : [])];
     const effectiveSignal = signals.length ? AbortSignal.any(signals) : undefined;
     effectiveSignal?.throwIfAborted();
-    const client = await pool.connect();
+    const batch=diagnostic.begin(statements.map(statement=>statement.text));
+    let client;
+    try{client=await pool.connect();}
+    catch(error){diagnostic.failure(batch,error);throw error;}
+    diagnostic.emit(batch,'acquired',{total:pool.totalCount,idle:pool.idleCount,waiting:pool.waitingCount});
     let released = false;
     const release = (destroy = false) => { if (!released) { released = true; client.release(destroy); } };
     const abort = () => release(true);
@@ -71,20 +78,24 @@ export function createOwnedPgTransport(
         effectiveSignal?.throwIfAborted();
         await hooks.beforeQuery?.(statement.text);
         effectiveSignal?.throwIfAborted();
+        diagnostic.emit(batch,'statement',{index:results.length,aborted:effectiveSignal?.aborted??false});
         const result = await client.query(statement.text, [...statement.values]) as QueryResult | QueryResult[];
         const rows: LocalRows = Array.isArray(result) ? result.at(-1)?.rows ?? [] : result.rows;
         await hooks.afterQuery?.(statement.text, rows);
+        diagnostic.result(batch,statement.text,rows);
         results.push(rows);
       }
       effectiveSignal?.throwIfAborted();
       if (transaction) await client.query('COMMIT');
       return results;
     } catch (error) {
+      diagnostic.failure(batch,error);
       if (transaction) await client.query('ROLLBACK').catch(() => {});
       throw error;
     } finally {
       effectiveSignal?.removeEventListener('abort', abort);
       release();
+      diagnostic.emit(batch,'finished',{aborted:effectiveSignal?.aborted??false});
     }
   }
 
