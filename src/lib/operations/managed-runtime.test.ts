@@ -72,6 +72,25 @@ it('never trusts cross-scope health or a successful exit without a confirmed wor
   const r=await runManagedCycle(c,new AbortController().signal,async()=>({exitCode:0,cleanupConfirmed:true,validOutput:true,output}));expect(r.observations.every(o=>!o.healthy)).toBe(true);expect(r.cleanupConfirmed).toBe(false);
  }
 });
+it('classifies missing outer custody without retaining output, scope secrets or exception text',async()=>{
+ const c=config('/tmp/fictional');
+ const bound={schemaVersion:1,command:'payroll',scopeId:scope,environment:'test',sourceSha:source,status:'failed',cleanupConfirmed:true};
+ for(const [change,outcome] of [
+  [{cleanupConfirmed:false},'process_cleanup_unknown'],
+  [{validOutput:false},'output_invalid'],
+  [{output:'private@example.com secret not JSON'},'output_malformed'],
+  [{output:JSON.stringify({...bound,sourceSha:'f'.repeat(40)})},'receipt_binding_mismatch'],
+  [{output:JSON.stringify({...bound,cleanupConfirmed:false})},'worker_cleanup_unknown'],
+ ] as const){
+  const result=await runManagedCycle(c,new AbortController().signal,async()=>Object.assign({exitCode:1,cleanupConfirmed:true,validOutput:true,output:JSON.stringify(bound)},change));
+  expect(result.cleanupConfirmed).toBe(false);
+  expect(result.diagnostics).toEqual([{profileIndex:0,command:'payroll',phase:'run',outcome}]);
+  expect(JSON.stringify(result.diagnostics)).not.toMatch(/private@|secret|scopeId|sourceSha|output:/);
+ }
+ const thrown=await runManagedCycle(c,new AbortController().signal,async()=>{throw Error('postgresql://private:credential@secret.example/database');});
+ expect(thrown.cleanupConfirmed).toBe(false);
+ expect(thrown.diagnostics).toEqual([{profileIndex:0,command:'payroll',phase:'run',outcome:'invocation_exception'}]);
+});
 it('releases singleton custody when cancellation wins after admission and before the actual child spawn',async()=>{
  const root=await realpath(await mkdtemp(join(tmpdir(),'nevora-managed-admission-')));let lease:Awaited<ReturnType<typeof acquireManagedState>>|undefined;
  try{

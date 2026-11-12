@@ -66,13 +66,15 @@ export async function invokeManagedCommand(profile:ManagedProfile,mode:'run'|'he
 }
 type Invoke=(profile:ManagedProfile,mode:'run'|'health',command:WorkerCommand,signal:AbortSignal)=>Promise<ManagedProcessResult>;
 const decode=(r:ManagedProcessResult):Record<string,unknown>|null=>{try{const v=JSON.parse(r.output);return r.validOutput&&v&&typeof v==='object'&&!Array.isArray(v)?v:null;}catch{return null;}};
+type CustodyOutcome='process_cleanup_unknown'|'output_invalid'|'output_malformed'|'receipt_binding_mismatch'|'worker_cleanup_unknown'|'invocation_exception';
+export type ManagedCustodyDiagnostic={profileIndex:number;command:WorkerCommand;phase:'run'|'health';outcome:CustodyOutcome};
 export async function runManagedCycle(config:ManagedHostConfig,signal:AbortSignal,invoke:Invoke=invokeManagedCommand){
- const observations:ManagedObservation[]=[];let cleanupConfirmed=true;
- if(!config.enabled||signal.aborted)return {observations,cleanupConfirmed};
- outer:for(const p of config.profiles)for(const command of p.commands){
+ const observations:ManagedObservation[]=[],diagnostics:ManagedCustodyDiagnostic[]=[];let cleanupConfirmed=true;
+ if(!config.enabled||signal.aborted)return {observations,cleanupConfirmed,diagnostics};
+ outer:for(const [profileIndex,p] of config.profiles.entries())for(const command of p.commands){
   if(signal.aborted)break outer;
   const same=(v:Record<string,unknown>|null)=>v?.schemaVersion===1&&v.command===command&&v.scopeId===p.scopeId&&v.environment===p.environment&&v.sourceSha===config.sourceSha;
-  let healthy=false,reason:ManagedObservation['reason']='invocation_failed';
+  let healthy=false,reason:ManagedObservation['reason']='invocation_failed',phase:'run'|'health'='run';
   try{
    const result=await invoke(p,'run',command,signal);
    // Only the trusted process primitive can prove cancellation prevented fork.
@@ -80,16 +82,24 @@ export async function runManagedCycle(config:ManagedHostConfig,signal:AbortSigna
    if(result.started===false&&signal.aborted&&result.cleanupConfirmed&&!result.validOutput&&result.exitCode===null&&result.output==='')break outer;
    const receipt=decode(result);
    const confirmed=result.cleanupConfirmed&&same(receipt)&&receipt?.cleanupConfirmed===true;
-   if(!confirmed){cleanupConfirmed=false;}
+   if(!confirmed){
+    cleanupConfirmed=false;
+    // Fixed classifications only: never log child output, receipt fields,
+    // credentials, exception text or a customer's workspace identity.
+    const outcome:CustodyOutcome=!result.cleanupConfirmed?'process_cleanup_unknown':!result.validOutput?'output_invalid':!receipt?'output_malformed':!same(receipt)?'receipt_binding_mismatch':'worker_cleanup_unknown';
+    diagnostics.push({profileIndex,command,phase,outcome});
+   }
    else if(result.exitCode===0&&receipt?.status==='succeeded'&&!signal.aborted){
+    phase='health';
     const health=await invoke(p,'health',command,signal),report=decode(health);
     cleanupConfirmed=cleanupConfirmed&&health.cleanupConfirmed;healthy=health.exitCode===0&&health.cleanupConfirmed&&same(report)&&report?.healthy===true;reason=healthy?'ok':'health_unavailable';
+    if(!health.cleanupConfirmed)diagnostics.push({profileIndex,command,phase,outcome:'process_cleanup_unknown'});
    }
-  }catch{cleanupConfirmed=false;}
+  }catch{cleanupConfirmed=false;diagnostics.push({profileIndex,command,phase,outcome:'invocation_exception'});}
   observations.push({scopeId:p.scopeId,environment:p.environment,command,sourceSha:config.sourceSha,observedAt:Date.now(),healthy,reason});
   if(!cleanupConfirmed)break outer;
  }
- return {observations,cleanupConfirmed};
+ return {observations,cleanupConfirmed,diagnostics};
 }
 export function managedHttpResponse(request:Request,config:ManagedHostConfig,observations:readonly ManagedObservation[],now:number,ready:boolean):Response{
  const url=new URL(request.url),headers={'cache-control':'no-store','content-type':'application/json'};
