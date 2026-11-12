@@ -56,9 +56,10 @@ it('refuses remote, unowned, wrong-identity and pre-aborted execution', async ()
 });
 
 it('owned Home diagnostics preserve real SQL failure, rollback and subsequent reads when their sink throws',async()=>{
- const samples:Record<string,unknown>[]=[];
- const transport=createOwnedPgTransport(db.connectionString,identity,{observeHome:sample=>{samples.push(sample);throw Error('Owned diagnostic sink failure');}});
+ const samples:Record<string,unknown>[]=[];let enabled=false;
+ const transport=createOwnedPgTransport(db.connectionString,identity,{observeHomeEnabled:()=>enabled,observeHome:sample=>{samples.push(sample);throw Error('Owned diagnostic sink failure');}});
  try{
+  expect(await transport.query('/* home_authority */ SELECT 3 AS value')).toEqual([{value:3}]);expect(samples).toEqual([]);enabled=true;
   await expect(transport.transaction([transport.query('/* home_authority */ SELECT 1 AS value'),transport.query('SELECT 1/0')])).rejects.toMatchObject({code:'22012'});
   expect(samples.some(sample=>sample.event==='failed'&&sample.code==='other')).toBe(true);
   expect(await transport.query('/* home_authority */ SELECT 17 AS value')).toEqual([{value:17}]);

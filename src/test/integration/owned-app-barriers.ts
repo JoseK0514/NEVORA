@@ -1,4 +1,5 @@
 import { readFile, rename, writeFile, access } from 'node:fs/promises';
+import {existsSync} from 'node:fs';
 import { join } from 'node:path';
 import type { LocalTransportHooks } from './owned-pg-transport';
 
@@ -23,5 +24,6 @@ export function ownedAppBarriers(directory: string): LocalTransportHooks {
     throw new Error(`Owned application barrier timed out: ${gate.id}`);
   }
   return { beforeQuery: text => pause('before', text), afterQuery: text => pause('after', text),
+    observeHomeEnabled:()=>existsSync(join(directory,'home-diagnostic.enabled')),
     observeHome: sample => console.log('[Owned Home SQL] '+JSON.stringify(sample)) };
 }

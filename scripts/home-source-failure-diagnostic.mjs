@@ -47,14 +47,17 @@ export function homeSqlEvents(log,started){
 }
 
 /** Cleanup/capture failures cannot skip listener removal or replace the primary failure. */
-export async function finishHomeFailure({blocker,diagnostic,readLog,writeReceipt,render,primaryFailure}){
+export async function finishHomeFailure({blocker,blockerConnected=true,diagnostic,readLog,writeReceipt,render,primaryFailure,closeSql=async()=>{},requireSql=false}){
  const failures=[];
  const attempt=async(name,operation)=>{try{return await operation();}catch{failures.push(name);}};
- await attempt('blocker-rollback',()=>blocker.query('ROLLBACK'));
+ if(blockerConnected)await attempt('blocker-rollback',()=>blocker.query('ROLLBACK'));
  await attempt('blocker-close',()=>blocker.end());
+ await attempt('sql-observer-close',closeSql);
  const receipt=await attempt('observer-close',()=>diagnostic.close());
  const log=await attempt('server-log',readLog);
- await attempt('receipt-write',()=>writeReceipt({...receipt,render,sql:typeof log==='string'?homeSqlEvents(log,diagnostic.started):[],captureFailures:failures}));
+ const sql=typeof log==='string'?homeSqlEvents(log,diagnostic.started):[];
+ if(requireSql&&sql.length===0)failures.push('sql-observation-unavailable');
+ await attempt('receipt-write',()=>writeReceipt({...receipt,render,sql,captureFailures:failures}));
  if(failures.length){
   console.log('[Owned Home capture failure] '+JSON.stringify({failures}));
   if(!primaryFailure)throw Error('Owned Home diagnostic or cleanup failed; see safe capture receipt');

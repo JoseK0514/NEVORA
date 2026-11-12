@@ -16,6 +16,7 @@ export type LocalTransportHooks = {
   beforeQuery?(text: string): Promise<void>;
   afterQuery?(text: string, rows: LocalRows): Promise<void>;
   observeHome?(sample:Record<string,unknown>):void;
+  observeHomeEnabled?():boolean;
 };
 type Statement = { text: string; values: readonly unknown[]; signal?: AbortSignal };
 type PendingQuery = { statement: Statement; started: boolean; promise?: Promise<LocalRows> };
@@ -54,7 +55,9 @@ export function createOwnedPgTransport(
     const signals = [...statements.flatMap(s => s.signal ? [s.signal] : []), ...(signal ? [signal] : [])];
     const effectiveSignal = signals.length ? AbortSignal.any(signals) : undefined;
     effectiveSignal?.throwIfAborted();
-    const batch=diagnostic.begin(statements.map(statement=>statement.text));
+    let batch;
+    try{if(hooks.observeHome&&hooks.observeHomeEnabled?.()!==false)batch=diagnostic.begin(statements.map(statement=>statement.text));}
+    catch{/* Diagnostic opt-in cannot change query behavior. */}
     let client;
     try{client=await pool.connect();}
     catch(error){diagnostic.failure(batch,error);throw error;}

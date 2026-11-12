@@ -38,3 +38,26 @@ or UI correction is justified until the failing path is identified.
 Prior passed evidence remains retained under
 `/Users/josek0514/.codex/nevora-worker-quota-repair-20261112/`; new source-bound
 qualification and hosted effects must have new receipts. SCRUM-190/146 remain open.
+
+## Qualification follow-up
+
+Source `8cb8c240d753673de488f0ddffe0fc7455d00865` passed all14 local Home
+Chromium/WebKit cells and47 Home SQL tests, with errors[] and owned cleanup.
+The broader SQL run passed286 foundation,46 authority,182 generation,174
+exchange and80 notification checks. That runner began atd447680d2 and was not
+SHA-bound; the later8cb commit changed manuals/review evidence only. Retain it as
+supporting local evidence, not exact-source qualification or hosted acceptance.
+
+The broad unit run exposed16 stale notification-witness fixture failures; a fresh
+isolated run reproduced them on8cb. The fake addInitScript implementation had
+discarded the actual initialization argument required by the reviewed generic
+witness. The fixture now passes that argument in the same VM context; all
+original assertions remain. Related173 tests passed after correction.
+
+The8cb SQL diagnostic cap filled before H09. Capture now opts in only through a
+new mode600/exclusive marker in the owned scratch app's barrier directory. Only
+its creator removes it, and a missing required SQL receipt fails qualification.
+Cleanup skips rollback when the blocker never connected, preserving the primary
+failure while still closing diagnostics. A meaningful RED/GREEN regression
+rejects reintroduced unconnected rollback. No application/UI source, acceptance
+assertion, timeout, authority check or coherence guard was weakened.

@@ -5,13 +5,13 @@ import {expect,it} from 'vitest';
 const {observeNotificationReadWitness}=await import(resolve('scripts/notification-read-witness.mjs'));
 async function fixture({hold=false}={}){
  const nativeResponse=Promise.withResolvers<{status:number}>();
- let binding:(...args:unknown[])=>unknown=()=>{},script:()=>void=()=>{};
+ let binding:(...args:unknown[])=>unknown=()=>{},script:()=>void=()=>{},scriptArgument:unknown;
  const violations:unknown[]=[],attempts:unknown[][]=[],calls:unknown[]=[],frame={},page=Object.assign(new EventEmitter(),{mainFrame:()=>frame});
- const context=Object.assign(new EventEmitter(),{exposeBinding:async(_name:string,fn:typeof binding)=>{binding=fn;},addInitScript:async(fn:typeof script)=>{script=fn;}});
+ const context=Object.assign(new EventEmitter(),{exposeBinding:async(_name:string,fn:typeof binding)=>{binding=fn;},addInitScript:async(fn:typeof script,argument:unknown)=>{script=fn;scriptArgument=argument;}});
  const witness=await observeNotificationReadWitness(context,(p:unknown)=>violations.push(p));context.emit('page',page);
  const sandbox={URL,Request,Headers,AbortSignal,AbortController,queueMicrotask,document:{baseURI:'http://fictional.invalid/app'},location:{href:'http://fictional.invalid/app',origin:'http://fictional.invalid'},fetch:async(input:unknown,options:unknown)=>{calls.push({input,options});return hold?nativeResponse.promise:{status:200};},__nevoraQaNotificationAttempt:(...args:unknown[])=>{attempts.push(args);return Promise.resolve(binding({page,frame},...args));}};
  // Node's Request does not resolve relative URLs as the browser does.
- runInNewContext('('+script.toString()+')()',sandbox);
+ runInNewContext('('+script.toString()+')(__nevoraInit)',Object.assign(sandbox,{__nevoraInit:scriptArgument}));
  return {witness,page,frame,violations,attempts,calls,release:()=>nativeResponse.resolve({status:200}),dispatched:async()=>{while(calls.length===0)await new Promise(resolve=>setImmediate(resolve));},run:(source:string)=>runInNewContext(source,sandbox),binding};
 }
 it('acknowledges only static metadata and fixes native GET semantics before dispatch',async()=>{

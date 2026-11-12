@@ -23,6 +23,20 @@ test('server log capture rejects raw or injected fields and preserves safe phase
  assert.deepEqual(homeSqlEvents(log,9),[{at:10,event:'failed',batch:4,phase:'assignment',code:'55P03'}]);
  assert.deepEqual(homeSqlEvents(log,11),[]);
 });
+test('required SQL evidence cannot silently pass empty, and its owned opt-in is always closed',async()=>{
+ let closed=false,receipt;
+ await assert.rejects(finishHomeFailure({blocker:{query:async()=>{},end:async()=>{}},diagnostic:{started:1,close:async()=>({})},
+  closeSql:async()=>{closed=true;},requireSql:true,readLog:async()=>'',writeReceipt:async value=>{receipt=value;}}),/Owned Home diagnostic or cleanup failed/);
+ assert.equal(closed,true);assert.deepEqual(receipt.captureFailures,['sql-observation-unavailable']);
+});
+test('a blocker that never connected cannot queue a rollback ahead of cleanup',async()=>{
+ const steps=[];
+ await finishHomeFailure({blockerConnected:false,primaryFailure:Error('flag creation failed'),
+  blocker:{query:()=>{steps.push('query');throw Error('Unconnected query must not run');},end:async()=>{steps.push('end');}},
+  diagnostic:{started:1,close:async()=>{steps.push('close');return {}; }},
+  closeSql:async()=>{steps.push('sql-close');},readLog:async()=>'',writeReceipt:async()=>{steps.push('write');}});
+ assert.deepEqual(steps,['end','sql-close','close','write']);
+});
 test('H09 observation preserves request identity, failed bodies, finite capacity and listener cleanup',async()=>{
  const page=new EventEmitter(),diagnostic=observeHomeFailure(page);
  const request={url:()=> 'https://owned.invalid/api/employee/home',method:()=> 'GET'};

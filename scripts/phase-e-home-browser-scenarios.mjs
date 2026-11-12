@@ -7,7 +7,7 @@ import {LOGIN_LIMITS} from '../src/lib/auth/login-limits.server.ts';
 import {observeHomeFailure,finishHomeFailure} from './home-source-failure-diagnostic.mjs';
 import assert from 'node:assert/strict';
 import {join} from 'node:path';
-import {readFile,writeFile} from 'node:fs/promises';
+import {readFile,writeFile,rm} from 'node:fs/promises';
 import {Client} from 'pg';
 import {randomUUID,createHash} from 'node:crypto';
 import {hashPassword} from '../src/lib/auth/password.ts';
@@ -403,9 +403,10 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));details.timeAfterClockOut=await waitForRecordedTimeReady(page,'OFF_CLOCK');assert(await offClock().first().isVisible());await openHome();checks.push('H07 held actual Time read after pagehide/unmount cannot restore old Clocked In on the Time tab; fresh re-entry reflects persisted clock-out');
  stage='route-leave';const leaving=gate('**/api/employee/home');await page.route(leaving.path,leaving.handler);await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await leaving.seen;await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');const leavingNavigation=await page.goto(app.url+'/app/requests/hub',{waitUntil:'domcontentloaded'});assert(leavingNavigation?.ok());await page.getByRole('heading',{name:'Requests',exact:true}).waitFor();leaving.release('navigation');await leaving.done;assert.equal(leaving.failure,undefined);details.routeLeaveOutcome=leaving.outcome;await page.unroute(leaving.path,leaving.handler);await page.waitForLoadState('networkidle');assert.equal(await page.locator(HOME_SHIFT_CARD+' a[href^="/app/schedule"]').count(),0);await page.goto(app.url+'/app');await ready();checks.push('H08 hard route leave during actual Home read unmounts private Home; re-entry reads current sources');
  if(width===390){
-  stage='sql-source-failure';const diagnostic=observeHomeFailure(page),blocker=new Client({connectionString:app.database.connectionString});let primaryFailure;
+  stage='sql-source-failure';const diagnostic=observeHomeFailure(page),blocker=new Client({connectionString:app.database.connectionString}),sqlFlag=join(app.barriers,'home-diagnostic.enabled');let primaryFailure,sqlFlagCreated=false,blockerConnected=false;
   try{
-   await blocker.connect();await blocker.query('BEGIN');await blocker.query('LOCK TABLE time_off_requests IN ACCESS EXCLUSIVE MODE');
+   await writeFile(sqlFlag,'owned-h09',{mode:0o600,flag:'wx'});sqlFlagCreated=true;
+   await blocker.connect();blockerConnected=true;await blocker.query('BEGIN');await blocker.query('LOCK TABLE time_off_requests IN ACCESS EXCLUSIVE MODE');
    await refresh();const timeOffSource=()=>todo().locator('a.c-row[href="/app/requests?tab=my"]').filter({hasText:'Couldn’t be checked'});
    await timeOffSource().waitFor();
    details.sourceFailureRender=await page.locator('[data-home-state]').evaluate(root=>({state:root.getAttribute('data-home-state'),busy:root.getAttribute('aria-busy')}));
@@ -413,7 +414,8 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
    await blocker.query('COMMIT');diagnostic.setPhase('recovery');await refresh();assert.equal(await timeOffSource().count(),0);
    checks.push('H09 actual time-off lock timeout retains independently authorized assignments, discloses unavailable and Retry restores current source');
   }catch(error){primaryFailure=error;throw error;}finally{
-   await finishHomeFailure({blocker,diagnostic,primaryFailure,render:details.sourceFailureRender,
+   await finishHomeFailure({blocker,blockerConnected,diagnostic,primaryFailure,render:details.sourceFailureRender,requireSql:true,
+    closeSql:async()=>{if(sqlFlagCreated)await rm(sqlFlag);},
     readLog:()=>readFile(join(app.root,'next.log'),'utf8'),
     writeReceipt:receipt=>writeFile(join(evidenceDirectory,`home-source-failure-${engine}-${width}-report.json`),JSON.stringify(receipt,null,2))});
   }
