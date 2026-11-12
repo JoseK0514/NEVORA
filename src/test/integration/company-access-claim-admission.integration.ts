@@ -2,9 +2,15 @@ import {it,expect,vi} from 'vitest';
 import {randomBytes} from 'node:crypto';
 import {companyAccessFixture} from './company-access-fixture';
 import {issued,ownedPassword,type ClaimFixture} from './company-access-claim.test-support';
+import {claimCounterClock} from './company-access-claim-clock.test-support';
 import * as passwords from '../../lib/auth/password';
 import {claimInvitation} from '../../lib/auth/invitations/claim.server';
 vi.mock('server-only',()=>({}));
+async function counterFixture(){
+ const f=await companyAccessFixture();
+ try{const clock=await claimCounterClock(f.db.executor);f.db.executor=clock.executor;return {...f,clock};}
+ catch(error){await f.db.dispose();throw error;}
+}
 async function another(f:ClaimFixture,id:string){
  await f.q("INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id) VALUES($1,'Fictional','QA','555009',$2,'EMPLOYEE','loc-1')",[id,id+'@example.invalid']);return issued(f,id);
 }
@@ -41,7 +47,7 @@ it('hash and SQL failures release work slots and never claim a credential commit
  }finally{hash.mockRestore();await f.db.dispose();}
 });
 it('near-limit concurrent admission saturates at ten and permits only the two remaining derivations',async()=>{
- const f=await companyAccessFixture(),original=passwords.hashPassword,gates:(()=>void)[]=[],pending:Promise<unknown>[]=[];
+ const f=await counterFixture(),original=passwords.hashPassword,gates:(()=>void)[]=[],pending:Promise<unknown>[]=[];
  const hash=vi.spyOn(passwords,'hashPassword').mockImplementation(async value=>{await new Promise<void>(resolve=>gates.push(resolve));return original(value);});
  try{
   const invite=await issued(f);
@@ -55,7 +61,7 @@ it('near-limit concurrent admission saturates at ten and permits only the two re
  }finally{for(const release of gates)release();await Promise.allSettled(pending);hash.mockRestore();await f.db.dispose();}
 });
 it('exhausted live proof pressure cannot consume a fresh invitation budget or derive passwords',async()=>{
- const f=await companyAccessFixture(),hash=vi.spyOn(passwords,'hashPassword');try{
+ const f=await counterFixture(),hash=vi.spyOn(passwords,'hashPassword');try{
   const exhausted=await issued(f),fresh=await another(f,'fresh-budget');
   await f.q("INSERT INTO company_invitation_claim_counters VALUES('workspace-fuel',$1,date_bin(interval '15 minutes',clock_timestamp(),timestamptz '2000-01-01'),10)",[exhausted.receipt.invitationId]);
   for(let n=0;n<100;n++)expect(await claimInvitation(exhausted.proof,ownedPassword,f.db.executor)).toEqual({state:'invalid'});
@@ -65,7 +71,7 @@ it('exhausted live proof pressure cannot consume a fresh invitation budget or de
  }finally{hash.mockRestore();await f.db.dispose();}
 });
 it('admission bounds its known invitation to 97 historic buckets and preserves other invitations counters',async()=>{
- const f=await companyAccessFixture();try{
+ const f=await counterFixture();try{
   const invite=await issued(f),other=await another(f,'historic-counter');
   await f.q("INSERT INTO company_invitation_claim_counters SELECT 'workspace-fuel',$1,date_bin(interval '15 minutes',clock_timestamp(),timestamptz '2000-01-01')-n*interval '15 minutes',1 FROM generate_series(0,99)n",[invite.receipt.invitationId]);
   await f.q("INSERT INTO company_invitation_claim_counters SELECT 'workspace-fuel',$1,date_bin(interval '15 minutes',clock_timestamp(),timestamptz '2000-01-01')-n*interval '15 minutes',1 FROM generate_series(97,99)n",[other.receipt.invitationId]);
@@ -75,6 +81,21 @@ it('admission bounds its known invitation to 97 historic buckets and preserves o
   expect(await f.q('SELECT * FROM company_invitation_claim_counters WHERE invitation_id=$1 ORDER BY bucket_start',[other.receipt.invitationId])).toEqual(unrelated);
   expect(await f.q('SELECT count(*)::integer AS count FROM company_invitation_claim_counters')).toEqual([{count:100}]);
  }finally{await f.db.dispose();}
+});
+it('a real SQL bucket rollover grants only the new bucket budget and retains the exhausted previous bucket',async()=>{
+ const f=await counterFixture(),hash=vi.spyOn(passwords,'hashPassword');try{
+  const invite=await issued(f);
+  await f.q("INSERT INTO company_invitation_claim_counters VALUES('workspace-fuel',$1,date_bin(interval '15 minutes',clock_timestamp(),timestamptz '2000-01-01'),10)",[invite.receipt.invitationId]);
+  const before=await f.q('SELECT * FROM company_invitation_claim_counters');
+  expect(await claimInvitation(invite.proof,ownedPassword,f.db.executor)).toEqual({state:'invalid'});
+  expect(hash).not.toHaveBeenCalled();
+  f.clock.advanceBucket();
+  expect(await claimInvitation(invite.proof,ownedPassword,f.db.executor)).toEqual({state:'activated',employeeId:'target'});
+  expect(hash).toHaveBeenCalledTimes(1);
+  const after=await f.q('SELECT * FROM company_invitation_claim_counters ORDER BY bucket_start');
+  expect(after).toHaveLength(2);expect(after[0]).toEqual(before[0]);
+  expect(after[1]).toMatchObject({invitation_id:invite.receipt.invitationId,attempts:1});
+ }finally{hash.mockRestore();await f.db.dispose();}
 });
 it('lost commit acknowledgement returns no identity and replay cannot consume twice',async()=>{
  const f=await companyAccessFixture();try{
