@@ -1,13 +1,13 @@
-import {beforeEach, expect, it, vi} from 'vitest';
+import {afterEach,beforeEach, expect, it, vi} from 'vitest';
 import {renderToStaticMarkup} from 'react-dom/server';
 import type {ReactNode} from 'react';
 import type {UserRole} from '@/lib/domain';
 
 const state = vi.hoisted(() => ({
-  role: 'EMPLOYEE' as UserRole, marker: '' as string, sessionError: false,
+  role: 'EMPLOYEE' as UserRole, marker: '' as string, sessionError: false, recovery: '' as string,
   workspace: vi.fn(), proof: vi.fn(), logout: vi.fn(),
 }));
-vi.mock('next/headers', () => ({headers: async () => new Headers({'User-Agent': state.marker}), cookies: async () => ({get: () => undefined})}));
+vi.mock('next/headers', () => ({headers: async () => new Headers({'User-Agent': state.marker, 'x-nevora-recovery-route':state.recovery}), cookies: async () => ({get: () => undefined})}));
 vi.mock('@/lib/auth/session', () => ({
   requireSession: async () => {
     if (state.sessionError) throw new Error('session unavailable');
@@ -26,10 +26,11 @@ vi.mock('@/lib/workspace-presentation/current.server', () => ({currentBrand: asy
 vi.mock('@/lib/workspace-presentation/words', () => ({wordPreset: () => ({en: {}})}));
 vi.mock('@/components/app-shell', () => ({AppShell: ({children}: {children: ReactNode}) => <div data-shell="true">{children}</div>}));
 vi.mock('@/components/passkeys/passkey-offer', () => ({PasskeyOffer: () => null}));
+vi.mock('next/navigation',()=>({usePathname:()=>state.recovery||'/app'}));
 import PlatformLayout from './layout';
 
 beforeEach(() => {
-  vi.clearAllMocks(); state.role = 'EMPLOYEE'; state.marker = ''; state.sessionError = false;
+  vi.clearAllMocks(); vi.stubEnv('NEVORA_COMMERCE_ENABLED','false'); state.recovery=''; state.role = 'EMPLOYEE'; state.marker = ''; state.sessionError = false;
   state.workspace.mockResolvedValue({id: 'fictional-workspace', name: 'Test company'});
   state.proof.mockResolvedValue('fictional-proof');
 });
@@ -65,3 +66,17 @@ it('does not reinterpret authentication failure as unsupported-role success', as
   await expect(layout()).rejects.toThrow('session unavailable');
   expect(state.workspace).not.toHaveBeenCalled();
 });
+
+it.each(['/app/billing','/app/my-pay','/app/payroll-export','/app/pay'])('renders authenticated recovery %s without operational shell reads or parallel sheets',async path=>{
+ vi.stubEnv('NEVORA_COMMERCE_ENABLED','true');state.recovery=path;
+ state.workspace.mockRejectedValue(Error('operational workspace unavailable'));
+ const html=renderToStaticMarkup(await layout());
+ expect(html).toContain('PRIVATE workflow');expect(html).not.toContain('PRIVATE sheet');expect(html).not.toContain('data-shell');
+ expect(state.workspace).not.toHaveBeenCalled();expect(state.proof).not.toHaveBeenCalled();
+});
+it('keeps current session admission before recovery presentation',async()=>{
+ vi.stubEnv('NEVORA_COMMERCE_ENABLED','true');state.recovery='/app/billing';state.sessionError=true;
+ await expect(layout()).rejects.toThrow('session unavailable');
+});
+
+afterEach(()=>vi.unstubAllEnvs());

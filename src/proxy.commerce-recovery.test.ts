@@ -66,7 +66,7 @@ it.each(['restricted','unavailable'] as const)('keeps writes and explicit JSON/R
 it('keeps the exact recovery GET independent of commerce binding and avoids redirect loops',async()=>{
   const fetcher=authority('unavailable');
   fixture.bind.mockRejectedValue(new Error('Synthetic binding unavailable'));
-  expect(await proxy(request('/app/billing?reason=billing_status_unavailable',{accept:'text/html'}))).toBeUndefined();
+  expect((await proxy(request('/app/billing?reason=billing_status_unavailable',{accept:'text/html'})))?.headers.get('x-middleware-request-x-nevora-recovery-route')).toBe('/app/billing');
   expect(fixture.bind).not.toHaveBeenCalled();expect(fetcher).not.toHaveBeenCalled();
   const write=await proxy(request('/app/billing',{accept:'text/html'},'POST'));
   expect(write?.status).toBe(503);expect(write!.headers.has('location')).toBe(false);
@@ -103,4 +103,17 @@ it.each((['restricted','unavailable'] as const).flatMap(state=>nonDocumentHeader
 it.each(['text/html;q=0.7','TEXT/HTML; Q=0.8'])('retains recovery for accepted HTML quality: %s',async accept=>{
  authority('restricted');const response=await proxy(request('/app/schedule',{accept}));
  expect(response?.status).toBe(303);expect(new URL(response!.headers.get('location')!).pathname).toBe('/app/billing');
+});
+
+it('replaces a forged recovery marker with the exact admitted GET route',async()=>{
+ const response=await proxy(request('/app/billing',{'x-nevora-recovery-route':'/app/forged'}));
+ expect(response?.headers.get('x-middleware-request-x-nevora-recovery-route')).toBe('/app/billing');
+ expect(response?.headers.get('x-middleware-override-headers')).toContain('x-nevora-recovery-route');
+});
+it.each(['true','false'])('clears a caller recovery marker on operational routes when commerce=%s',async enabled=>{
+ vi.stubEnv('NEVORA_COMMERCE_ENABLED',enabled);
+ vi.stubGlobal('fetch',async()=>Response.json({state:'paid',operational:true,validUntil:Date.now()+10000}));
+ const response=await proxy(request('/app',{'x-nevora-recovery-route':'/app/billing'}));
+ expect(response?.headers.has('x-middleware-request-x-nevora-recovery-route')).toBe(false);
+ expect(response?.headers.get('x-middleware-override-headers')).not.toContain('x-nevora-recovery-route');
 });

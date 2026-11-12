@@ -1,0 +1,23 @@
+.frame { min-height:100dvh; padding:clamp(20px,5vw,64px) 20px; background:var(--sig-page); color:var(--sig-ink-1); font:var(--sig-type-body); }
+.content { width:min(100%,640px); margin:0 auto; }
+.brand { margin:0 0 48px; color:var(--sig-deep); font:600 1.125rem/1.4 var(--sig-font); letter-spacing:.12em; }
+.card { padding:clamp(24px,5vw,40px); border:1px solid var(--sig-edge); border-radius:24px; background:var(--sig-card); }
+.card h1 { margin:0 0 16px; font:400 clamp(1.75rem,5vw,2.25rem)/1.15 var(--sig-font-display); letter-spacing:-.035em; }
+.card h2 { font:var(--sig-type-row); margin:0 0 8px; }
+.card p { line-height:1.6; color:var(--sig-ink-2); }
+.eyebrow { margin:0 0 16px; font:var(--sig-type-caps); letter-spacing:.08em; }
+.details { margin:24px 0; padding:0; }
+.details div { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px 24px; padding:14px 0; border-bottom:1px solid var(--sig-rule); }
+.details dt { color:var(--sig-ink-2); }
+.details dd { margin:0; font-weight:550; }
+.actions { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-top:24px; }
+.action,.secondary { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:12px 20px; border:1px solid var(--sig-deep); border-radius:var(--sig-radius-control); font:500 1rem/1.4 var(--sig-font); text-align:center; text-decoration:none; cursor:pointer; }
+.action { background:var(--sig-deep); color:var(--sig-on-deep); }
+.action:hover { background:var(--sig-deep-hover); }
+.secondary { background:var(--sig-card); color:var(--sig-action); border-color:var(--sig-control-edge); }
+.frame :is(a,button):focus-visible { outline:3px solid var(--sig-action); outline-offset:4px; }
+.frame button:disabled { opacity:.6; cursor:wait; }
+.notice { margin:24px 0 0; padding:16px; border-radius:12px; background:var(--sig-review-wash); color:var(--sig-review-ink); }
+.footer { margin:24px 0 0; font:var(--sig-type-callout); color:var(--sig-ink-2); }
+.footer a { color:var(--sig-action); }
+@media(max-width:420px) { .actions { align-items:stretch; flex-direction:column; } .actions>* { width:100%; } .brand { margin-bottom:32px; } }
