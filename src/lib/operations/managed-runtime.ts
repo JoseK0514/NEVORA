@@ -65,14 +65,19 @@ export async function invokeManagedCommand(profile:ManagedProfile,mode:'run'|'he
  return runManagedProcess({file:process.execPath,args:['--conditions=react-server','--import','./scripts/node-server-context.mjs','--import','tsx','scripts/workforce-operations.mts',mode,command],env:managedChildEnvironment(profile,process.env,command)},signal,mode==='run'?135000:15000);
 }
 type Invoke=(profile:ManagedProfile,mode:'run'|'health',command:WorkerCommand,signal:AbortSignal)=>Promise<ManagedProcessResult>;
+type CustodyFailure={scopeId:string;environment:ManagedProfile['environment'];command:WorkerCommand;sourceSha:string;phase:'run'|'health';reason:'process_unconfirmed'|'receipt_unconfirmed'|'invocation_exception';exitCode:number|null;started:boolean|null;processCleanupConfirmed:boolean|null;validOutput:boolean|null;receiptBound:boolean|null;receiptCleanupConfirmed:boolean|null};
 const decode=(r:ManagedProcessResult):Record<string,unknown>|null=>{try{const v=JSON.parse(r.output);return r.validOutput&&v&&typeof v==='object'&&!Array.isArray(v)?v:null;}catch{return null;}};
 export async function runManagedCycle(config:ManagedHostConfig,signal:AbortSignal,invoke:Invoke=invokeManagedCommand){
- const observations:ManagedObservation[]=[];let cleanupConfirmed=true;
+ const observations:ManagedObservation[]=[];let cleanupConfirmed=true,failure:CustodyFailure|undefined;
  if(!config.enabled||signal.aborted)return {observations,cleanupConfirmed};
  outer:for(const p of config.profiles)for(const command of p.commands){
   if(signal.aborted)break outer;
   const same=(v:Record<string,unknown>|null)=>v?.schemaVersion===1&&v.command===command&&v.scopeId===p.scopeId&&v.environment===p.environment&&v.sourceSha===config.sourceSha;
   let healthy=false,reason:ManagedObservation['reason']='invocation_failed';
+  let phase:CustodyFailure['phase']='run';
+  // Only bounded metadata crosses this boundary. Never include stdout, stderr,
+  // exception text, profile environment or a decoded provider/worker payload.
+  const failed=(why:CustodyFailure['reason'],result?:ManagedProcessResult,receipt?:Record<string,unknown>|null):CustodyFailure=>({scopeId:p.scopeId,environment:p.environment,command,sourceSha:config.sourceSha,phase,reason:why,exitCode:result?.exitCode??null,started:result?.started??null,processCleanupConfirmed:result?.cleanupConfirmed??null,validOutput:result?.validOutput??null,receiptBound:result?same(receipt??null):null,receiptCleanupConfirmed:result?receipt?.cleanupConfirmed===true:null});
   try{
    const result=await invoke(p,'run',command,signal);
    // Only the trusted process primitive can prove cancellation prevented fork.
@@ -80,16 +85,18 @@ export async function runManagedCycle(config:ManagedHostConfig,signal:AbortSigna
    if(result.started===false&&signal.aborted&&result.cleanupConfirmed&&!result.validOutput&&result.exitCode===null&&result.output==='')break outer;
    const receipt=decode(result);
    const confirmed=result.cleanupConfirmed&&same(receipt)&&receipt?.cleanupConfirmed===true;
-   if(!confirmed){cleanupConfirmed=false;}
+   if(!confirmed){cleanupConfirmed=false;failure=failed(result.cleanupConfirmed?'receipt_unconfirmed':'process_unconfirmed',result,receipt);}
    else if(result.exitCode===0&&receipt?.status==='succeeded'&&!signal.aborted){
+    phase='health';
     const health=await invoke(p,'health',command,signal),report=decode(health);
     cleanupConfirmed=cleanupConfirmed&&health.cleanupConfirmed;healthy=health.exitCode===0&&health.cleanupConfirmed&&same(report)&&report?.healthy===true;reason=healthy?'ok':'health_unavailable';
+    if(!health.cleanupConfirmed)failure=failed('process_unconfirmed',health,report);
    }
-  }catch{cleanupConfirmed=false;}
+  }catch{cleanupConfirmed=false;failure=failed('invocation_exception');}
   observations.push({scopeId:p.scopeId,environment:p.environment,command,sourceSha:config.sourceSha,observedAt:Date.now(),healthy,reason});
   if(!cleanupConfirmed)break outer;
  }
- return {observations,cleanupConfirmed};
+ return {observations,cleanupConfirmed,...(failure?{failure}:{})};
 }
 export function managedHttpResponse(request:Request,config:ManagedHostConfig,observations:readonly ManagedObservation[],now:number,ready:boolean):Response{
  const url=new URL(request.url),headers={'cache-control':'no-store','content-type':'application/json'};

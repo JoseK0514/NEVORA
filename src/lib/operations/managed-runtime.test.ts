@@ -1,8 +1,9 @@
 import {it,expect} from 'vitest';
-import {mkdtemp,mkdir,realpath,writeFile,symlink,rm,readdir} from 'node:fs/promises';
+import {mkdtemp,mkdir,realpath,writeFile,readFile,symlink,rm,readdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {createServer} from 'node:http';
+import {createServer as createTcpServer} from 'node:net';
 import {createHmac,createHash} from 'node:crypto';
 import {once} from 'node:events';
 import {acquireManagedState,runManagedProcess,runManagedCycle,managedHttpResponse,invokeManagedCommand} from './managed-runtime';
@@ -72,6 +73,19 @@ it('never trusts cross-scope health or a successful exit without a confirmed wor
   const r=await runManagedCycle(c,new AbortController().signal,async()=>({exitCode:0,cleanupConfirmed:true,validOutput:true,output}));expect(r.observations.every(o=>!o.healthy)).toBe(true);expect(r.cleanupConfirmed).toBe(false);
  }
 });
+it('classifies unconfirmed custody without retaining child output or exception text',async()=>{
+ const c=config('/tmp/fictional');
+ const runFailure=await runManagedCycle(c,new AbortController().signal,async()=>({exitCode:1,started:true,cleanupConfirmed:true,validOutput:false,output:'fictional-private-output'}));
+ expect(runFailure.cleanupConfirmed).toBe(false);
+ expect(runFailure.failure).toEqual({scopeId:scope,environment:'test',command:'payroll',sourceSha:source,phase:'run',reason:'receipt_unconfirmed',exitCode:1,started:true,processCleanupConfirmed:true,validOutput:false,receiptBound:false,receiptCleanupConfirmed:false});
+ const healthFailure=await runManagedCycle(c,new AbortController().signal,async(p,mode,command)=>{
+  if(mode==='health')throw Error('fictional-private-error');
+  return {exitCode:0,started:true,cleanupConfirmed:true,validOutput:true,output:JSON.stringify({schemaVersion:1,command,scopeId:p.scopeId,environment:p.environment,sourceSha:source,status:'succeeded',cleanupConfirmed:true})};
+ });
+ expect(healthFailure.cleanupConfirmed).toBe(false);
+ expect(healthFailure.failure).toEqual({scopeId:scope,environment:'test',command:'payroll',sourceSha:source,phase:'health',reason:'invocation_exception',exitCode:null,started:null,processCleanupConfirmed:null,validOutput:null,receiptBound:null,receiptCleanupConfirmed:null});
+ expect(JSON.stringify([runFailure,healthFailure])).not.toContain('fictional-private');
+});
 it('releases singleton custody when cancellation wins after admission and before the actual child spawn',async()=>{
  const root=await realpath(await mkdtemp(join(tmpdir(),'nevora-managed-admission-')));let lease:Awaited<ReturnType<typeof acquireManagedState>>|undefined;
  try{
@@ -112,4 +126,36 @@ it('runs the actual canonical CLI with a closed payroll gate and retains its str
   const result=await invokeManagedCommand({...p,env:{NEVORA_OPERATIONS_ENABLED:'true',NEVORA_OPERATIONS_SOURCE_SHA:source,NEVORA_OPERATIONS_SCOPE_ID:scope,NEVORA_OPERATIONS_ENVIRONMENT:'test',NEVORA_OPERATIONS_STATE_DIR:p.stateDirectory,NEVORA_OPERATIONS_DEADLINE_SECONDS:'30',NEVORA_PAYROLL_ENABLED:'false'}},'run','payroll',new AbortController().signal);
   expect(result.cleanupConfirmed).toBe(true);expect(result.exitCode).toBe(1);expect(JSON.parse(result.output)).toMatchObject({command:'payroll',scopeId:scope,sourceSha:source,status:'failed',cleanupConfirmed:true});expect(await readdir(p.stateDirectory)).toEqual(['payroll.json']);
  }finally{await rm(root,{recursive:true,force:true});}
+});
+it('drains the actual failed CLI receipt before removing shutdown handlers after a control database rejection',async()=>{
+ const root=await realpath(await mkdtemp(join(tmpdir(),'nevora-managed-quota-')));
+ // Reject the real pg startup on an owned loopback socket. No hosted database,
+ // actual credentials or business jobs are used by this regression.
+ const database=createTcpServer(socket=>socket.once('data',()=>{
+  const fields=Buffer.from('SFATAL\0C53300\0Msynthetic quota exhausted\0\0');
+  const header=Buffer.alloc(5);header[0]=69;header.writeInt32BE(fields.length+4,1);socket.end(Buffer.concat([header,fields]));
+ }));
+ await new Promise<void>(ok=>database.listen(0,'127.0.0.1',ok));
+ let lease:Awaited<ReturnType<typeof acquireManagedState>>|undefined;
+ try{
+  const address=database.address();if(!address||typeof address==='string')throw Error('owned_database_unavailable');
+  const c=config(root),p=c.profiles[0];p.commands=['payroll'];
+  const env={NEVORA_OPERATIONS_ENABLED:'true',NEVORA_OPERATIONS_SOURCE_SHA:source,NEVORA_OPERATIONS_SCOPE_ID:scope,NEVORA_OPERATIONS_ENVIRONMENT:'test',NEVORA_OPERATIONS_STATE_DIR:p.stateDirectory,NEVORA_OPERATIONS_DEADLINE_SECONDS:'30',NEVORA_PAYROLL_ENABLED:'true',NEVORA_WORKSPACE_MODE:'isolated',NEVORA_WORKER_WORKSPACE_ORIGIN:'http://fictional.portal.localhost',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_PORTAL_BASE_DOMAIN:'portal.localhost',NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:Buffer.alloc(32,7).toString('base64url'),NEVORA_CONTROL_DATABASE_URL:`postgresql://nv_control_worker_t_${scope.replaceAll('-','')}:fictional@127.0.0.1:${address.port}/owned?sslmode=disable`};
+  // Model a pending pipe write, then deliver an actual SIGTERM before its
+  // completion. This catches removing the CLI's handlers immediately after
+  // console.log while its durable failed receipt has already been committed.
+  const preload=join(root,'pending-stdout.mjs');await writeFile(preload,`const write=process.stdout.write.bind(process.stdout);process.stdout.write=(chunk,encoding,callback)=>{if(typeof chunk==='string'&&chunk.includes('"cleanupConfirmed":true')){setTimeout(()=>process.kill(process.pid,'SIGTERM'),10);setTimeout(()=>write(chunk,...(typeof encoding==='function'?[encoding]:encoding===undefined?[]:[encoding,callback])),100);return true;}return write(chunk,encoding,callback);};`);
+  lease=await acquireManagedState(c);
+  const cycle=await runManagedCycle(c,new AbortController().signal,async(_profile,mode,command,signal)=>{
+   expect(mode).toBe('run');
+   return runManagedProcess({file:process.execPath,args:['--conditions=react-server','--import','./scripts/node-server-context.mjs','--import','tsx','--import',preload,'scripts/workforce-operations.mts',mode,command],env:{PATH:process.env.PATH,NODE_ENV:'test',...env}},signal,3000);
+  });
+  const receipt=JSON.parse(await readFile(join(p.stateDirectory,'payroll.json'),'utf8'));
+  expect(receipt).toMatchObject({command:'payroll',scopeId:scope,sourceSha:source,status:'failed',exitCode:1,cleanupConfirmed:true});
+  expect(await readdir(p.stateDirectory)).toEqual(['payroll.json']);
+  expect(cycle.observations).toMatchObject([{healthy:false,reason:'invocation_failed'}]);
+  expect(cycle.cleanupConfirmed).toBe(true);
+  await lease.release(cycle.cleanupConfirmed);
+  const restarted=await acquireManagedState(c);await restarted.release(true);
+ }finally{await lease?.release(false);await new Promise<void>(ok=>database.close(()=>ok()));await rm(root,{recursive:true,force:true});}
 });

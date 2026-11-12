@@ -31,11 +31,13 @@ async function main(){
   if(!config.enabled){await new Promise<void>(ok=>{controller.signal.addEventListener('abort',()=>ok(),{once:true});if(controller.signal.aborted)ok();});return;}
   while(!controller.signal.aborted){
    const cycle=await runManagedCycle(config,controller.signal);observations=cycle.observations;confirmed=cycle.cleanupConfirmed;
-   if(!confirmed){ready=false;throw Error('managed_cleanup_unconfirmed');}
+   if(!confirmed){ready=false;console.error(JSON.stringify({event:'managed_custody_unconfirmed',...cycle.failure}));throw Error('managed_cleanup_unconfirmed');}
    if(!controller.signal.aborted)await new Promise<void>(ok=>{const done=()=>{clearTimeout(timer);controller.signal.removeEventListener('abort',done);ok();};const timer=setTimeout(done,60000);controller.signal.addEventListener('abort',done,{once:true});if(controller.signal.aborted)done();});
   }
  }finally{
-  stop();server.closeAllConnections();await lease?.release(confirmed);process.removeListener('SIGTERM',stop);process.removeListener('SIGINT',stop);
+  stop();server.closeAllConnections();
+  try{await lease?.release(confirmed);}catch{console.error(JSON.stringify({event:'managed_state_release_failed',sourceSha:config.sourceSha,cleanupConfirmed:confirmed}));throw Error('managed_state_unavailable');}
+  finally{process.removeListener('SIGTERM',stop);process.removeListener('SIGINT',stop);}
  }
 }
 main().catch(()=>{console.error('managed_workforce_unavailable');process.exitCode=1;});

@@ -75,6 +75,16 @@ There is one host lock and separate command locks on the private disk. Private s
 
 For manual recovery: suspend the service and observer; prove the old process/group has stopped; inspect private invocation receipts, database job status, leases and source/environment/incarnation; retain a private evidence copy of the exact stale marker; remove only the reviewed invocation/host marker after cleanup is established. Never delete a durable job, reset an uncertain lease, recreate a company or retry a payment as compensation. Drain before changing profiles, source or keys. Do not restore older disk snapshots over newer job/receipt identities.
 
+The operations CLI retains its shutdown handlers until its terminal receipt has
+finished writing to the host pipe. Durable receipt persistence alone does not
+prove that the parent received it. Unconfirmed custody emits one
+`managed_custody_unconfirmed` record with source/scope/command, run or health
+phase, enumerated reason, process result flags and receipt-binding booleans.
+`managed_state_release_failed` separately identifies a filesystem release
+failure. Neither record contains child output, exception text, credentials or
+employee/provider payloads. These diagnostics do not authorize lock recovery or
+turn unknown cleanup into confirmed cleanup.
+
 Rollback selects a previously verified matching host/monitor source and configuration, with processing/delivery closed first. Keep the current source, durable queues and ambiguous outcome records for diagnosis. Rolling back application code does not reverse an accepted email, payroll document or business mutation. No main/production deployment is authorized by this runbook.
 
 ## Qualification
