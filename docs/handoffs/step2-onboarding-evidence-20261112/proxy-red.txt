@@ -35,4 +35,3 @@ Response {}
       Tests  1 failed | 5 passed (6)
    Start at  19:14:47
    Duration  269ms (import 42%, tests 41%, transform 16%, worker 1%)
-

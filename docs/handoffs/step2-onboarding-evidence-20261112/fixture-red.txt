@@ -122,4 +122,3 @@ AssertionError: expected [ { id: 'BUSINESS', …(3) }, …(2) ] to deeply equal 
       Tests  1 failed | 2 passed (3)
    Start at  19:12:07
    Duration  81ms (transform 60%, tests 17%, import 16%, worker 7%)
-

@@ -27,4 +27,3 @@
       Tests  290 passed (290)
    Start at  19:18:20
    Duration  648ms (import 41%, tests 30%, transform 26%, worker 2%)
-
