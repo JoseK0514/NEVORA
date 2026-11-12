@@ -16,6 +16,24 @@ beforeEach(async()=>{
  f=await onboardingJourneyFixture({commerce:{key:Buffer.alloc(32,23).toString('base64url'),workerKey:Buffer.alloc(32,24).toString('base64url'),async enroll(input){enrolled.push(input);await store.enrollWorkspace(input);}}});
 });
 afterEach(async()=>{await f?.close();await catalog?.close();});
+it('preserves the original provisioning trial receipt through activation, setup, refresh and optional skips',async()=>{
+ const {readOnboardingSetup,saveOnboardingStep}=await import('@/lib/onboarding/setup.server');
+ const {randomUUID}=await import('node:crypto');
+ const c=await f.createCompany('trial-setup'),original=(await catalog.pool.query('SELECT trial_started_at,trial_ends_at FROM commerce.businesses WHERE id=$1',[c.row.workspace_id])).rows[0];
+ const provisioned=(await c.resource.db.pool.query('SELECT provisioned_at FROM nevora_commerce_installation')).rows[0].provisioned_at;
+ expect(original.trial_started_at).toEqual(provisioned);
+ const a=await f.activateCompany(c);let state=await readOnboardingSetup(a.actor,a.binding);
+ for(const step of ['TIME_TRACKING','PAYROLL','OPTIONAL_FEATURES']){
+  const cmd={schemaVersion:1,operationId:randomUUID(),expectedVersion:state.snapshot.version,payload:{action:'SKIP'}};
+  expect((await saveOnboardingStep(a.actor,a.binding,step,cmd)).state).toBe('saved');
+  expect((await saveOnboardingStep(a.actor,a.binding,step,cmd)).state).toBe('saved');
+  state=await readOnboardingSetup(a.actor,a.binding);expect(state.snapshot.sections.find(s=>s.id===step)?.state).toBe('OPTIONAL');
+ }
+ expect((await catalog.pool.query('SELECT trial_started_at,trial_ends_at FROM commerce.businesses WHERE id=$1',[c.row.workspace_id])).rows[0]).toEqual(original);
+ expect((await c.resource.db.pool.query('SELECT provisioned_at FROM nevora_commerce_installation')).rows[0].provisioned_at).toEqual(provisioned);
+ expect((await c.resource.db.pool.query('SELECT count(*)::int n FROM clocker_devices')).rows[0].n).toBe(0);
+ expect((await c.resource.db.pool.query('SELECT count(*)::int n FROM native_payroll_setup_records')).rows[0].n).toBe(0);
+});
 it('enrolls the actual provisioned company once before publishing activation, without a second Owner credential or provisioning job',async()=>{
  const c=await f.createCompany('billing-north');
  const rows=await catalog.pool.query('SELECT id,state,trial_started_at,trial_ends_at FROM commerce.businesses');

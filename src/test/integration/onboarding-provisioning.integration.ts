@@ -5,7 +5,7 @@ import {ControlCommitUnknown,createControlStore,type ControlStore} from '@/lib/o
 import {onboardingTestConfig} from './onboarding-test-config';
 import {requestRegistration,verifyRegistration,readRegistration} from '@/lib/onboarding/registration.server';
 import {requestWorkspace,readProvisioningOperation,claimProvisioningJob} from '@/lib/onboarding/provisioning/store.server';
-import {it,expect,describe,beforeAll,afterAll,beforeEach} from 'vitest';
+import {it,expect,describe,beforeAll,afterAll,beforeEach,vi} from 'vitest';
 import {Client,type QueryResultRow} from 'pg';
 import {randomUUID,randomBytes} from 'node:crypto';
 import {freshOnboardingDatabase,freshOnboardingControl} from './onboarding-fixture';
@@ -101,6 +101,18 @@ describe('verified control-plane provisioning commands',()=>{
   expect((await h.request(make('nevora_signup='+a.sessionToken+'; nevora_signup='+a.sessionToken))).status).toBe(401);
   const r=await h.request(make('nevora_signup='+a.sessionToken));expect(r.status).toBe(202);expect(JSON.stringify(await r.json())).not.toMatch(/ciphertext|password|email|secret|token/i);
   const current=await h.read(new Request(config.signupOrigin+'/api/onboarding/operations/current',{headers:{cookie:'nevora_signup='+a.sessionToken}}),'current');expect(current.status).toBe(202);expect(await current.json()).toMatchObject({state:'pending',operationId:c.operationId});
+  const {proxy}=await import('@/proxy'),{NextRequest}=await import('next/server');
+  vi.stubEnv('NEVORA_COMMERCE_ENABLED','true');vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');
+  try{
+   const resumeUrl=config.signupOrigin+'/api/onboarding/operations/current';
+   expect(await proxy(new NextRequest(resumeUrl))).toBeUndefined();
+   expect((await h.read(new Request(resumeUrl),'current')).status).toBe(401);
+   const foreign=await verified('other-resume@example.invalid');
+   expect((await h.read(new Request(resumeUrl,{headers:{cookie:'nevora_signup='+foreign.sessionToken}}),'current')).status).toBe(403);
+   const resumed=await h.read(new Request(resumeUrl,{headers:{cookie:'nevora_signup='+a.sessionToken}}),'current');
+   expect(await resumed.json()).toMatchObject({state:'pending',operationId:c.operationId});
+   expect((await db.pool.query('SELECT count(*)::int n FROM nevora_onboarding.provisioning_operations')).rows[0].n).toBe(1);
+  }finally{vi.unstubAllEnvs();}
   const poll=await h.read(new Request(config.signupOrigin+'/api/onboarding/operations/'+c.operationId,{headers:{cookie:'nevora_signup='+a.sessionToken}}),c.operationId);expect(poll.status).toBe(202);expect(await poll.json()).toMatchObject({state:'pending',operationId:c.operationId});
  });
  it('enforces the daily reservation allowance before a second resource is queued',async()=>{

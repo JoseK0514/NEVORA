@@ -6,6 +6,21 @@ import {readOnboardingSetup} from '@/lib/onboarding/setup.server';
 import {issueInvitationBatch,readInvitationBatch} from '@/lib/onboarding/invitation-batch.server';
 import {getWorkspaceDb} from '@/lib/workspace-routing/transport.server';
 import type {InvitationDelivery} from '@/lib/company-access/contracts';
+it('keeps GET read-only with a prepared sixth target and stops continuation after logout during delivery',async()=>{
+ const f=await ready(6);let sends=0;const delivery:InvitationDelivery={async send(){sends++;return {providerAccepted:true};}};
+ try{
+  await issueInvitationBatch(f.actor,f.binding,f.command,delivery);expect(sends).toBe(5);
+  for(let i=0;i<2;i++){
+   const state=await readInvitationBatch(f.actor,f.binding,f.command.operationId);
+   expect(state.state==='ready'?state.stage:null).toBe('PENDING');
+   expect(state.state==='ready'?state.items.filter(item=>item.commandState==='PREPARED').length:null).toBe(1);
+  }
+  expect(sends).toBe(5);expect((await f.c.resource.db.pool.query('SELECT count(*)::int n FROM company_invitations')).rows[0].n).toBe(5);
+  await issueInvitationBatch(f.actor,f.binding,f.command,{async send(){sends++;await f.c.resource.db.pool.query('DELETE FROM employee_sessions');return {providerAccepted:true};}});
+  expect(sends).toBe(6);expect((await readInvitationBatch(f.actor,f.binding,f.command.operationId)).state).toBe('unavailable');
+  expect((await issueInvitationBatch(f.actor,f.binding,f.command,delivery)).state).toBe('unavailable');expect(sends).toBe(6);
+ }finally{await f.close();}
+});
 async function ready(count=2){const f=await onboardingJourneyFixture();try{const a=await f.activateCompany(await f.createCompany());for(let i=1;i<=count;i++){const result=await saveOnboardingPerson(a.actor,a.binding,{schemaVersion:1,operationId:randomUUID(),expectedVersion:String(i),payload:{employee:{id:'EMP-'+i,firstName:'Fictional',lastName:'Employee '+i,phone:'787-555-0102',email:'employee'+i+'@example.invalid',role:'EMPLOYEE',primaryLocationId:a.actor.employee.primaryLocationId,eligibleLocationIds:[a.actor.employee.primaryLocationId],positionIds:[]}}});if(result.state!=='saved')throw Error('Owned employee failed:'+result.state);}const state=await readOnboardingSetup(a.actor,a.binding),command={schemaVersion:1,operationId:randomUUID(),expectedVersion:state.snapshot.version,payload:{targets:state.configuration.people.filter(p=>p.id!=='OWNER-1').map(p=>({employeeId:p.id,expectedEmployeeVersion:p.updatedAt,expectedInvitationRevision:p.invitationRevision}))}};return {...f,...a,command};}catch(error){await f.close();throw error;}}
 it('issues the explicit selected group once through canonical receipts with the existing168hour lifetime',async()=>{
  const f=await ready(),messages:{registeredEmail:string;proof:string;expiresAt:string}[]=[],delivery:InvitationDelivery={async send(m){messages.push(m);return {providerAccepted:true};}};try{expect((await issueInvitationBatch(f.actor,f.binding,f.command,delivery)).state).toBe('pending');const snapshot=await readInvitationBatch(f.actor,f.binding,f.command.operationId);expect(snapshot.state).toBe('ready');if(snapshot.state!=='ready')throw Error('Expected owned batch');expect(snapshot.stage).toBe('COMPLETE');expect(snapshot.items.map(i=>i.result?.state==='saved'?i.result.receipt.delivery:'none')).toEqual(['PROVIDER_ACCEPTED','PROVIDER_ACCEPTED']);expect(messages).toHaveLength(2);for(const m of messages)expect(JSON.stringify(snapshot)).not.toContain(m.proof);expect((await f.c.resource.db.pool.query("SELECT extract(epoch FROM(expires_at-issued_at))/3600 AS hours FROM company_invitations")).rows.map(r=>Number(r.hours))).toEqual([168,168]);await issueInvitationBatch(f.actor,f.binding,f.command,delivery);expect(messages).toHaveLength(2);expect((await f.c.resource.db.pool.query('SELECT count(*)::int n FROM company_invitations')).rows[0].n).toBe(2);

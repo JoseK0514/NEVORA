@@ -1,0 +1,430 @@
+[
+  {
+    "name": "owner-only-ready",
+    "canonical": {
+      "businessValid": true,
+      "activeLocations": 1,
+      "activePositions": 0,
+      "schedulingIssues": [],
+      "teamCount": 0,
+      "uninvitedCount": 0,
+      "missingEmailCount": 0,
+      "payrollEnabled": false,
+      "timekeepingConfigured": false,
+      "payrollConfigured": false,
+      "invitationSenderAvailable": false
+    },
+    "sections": [
+      {
+        "id": "SCHEDULING",
+        "state": "READY",
+        "reasonCodes": [],
+        "allowedActions": [
+          "OPEN",
+          "SAVE"
+        ]
+      },
+      {
+        "id": "PEOPLE",
+        "state": "OPTIONAL",
+        "reasonCodes": [
+          "TEAM_CAN_BE_ADDED_LATER"
+        ],
+        "allowedActions": [
+          "OPEN",
+          "SAVE"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "invalid-business-and-empty-locations",
+    "canonical": {
+      "businessValid": false,
+      "activeLocations": 0,
+      "activePositions": 0,
+      "schedulingIssues": [
+        "LOCATION_INACTIVE"
+      ],
+      "teamCount": 0,
+      "uninvitedCount": 0,
+      "missingEmailCount": 0,
+      "payrollEnabled": false,
+      "timekeepingConfigured": false,
+      "payrollConfigured": false,
+      "invitationSenderAvailable": false
+    },
+    "sections": [
+      {
+        "id": "BUSINESS",
+        "state": "BLOCKED",
+        "reasonCodes": [
+          "BUSINESS_PROFILE_REQUIRED"
+        ],
+        "allowedActions": [
+          "OPEN",
+          "SAVE"
+        ]
+      },
+      {
+        "id": "LOCATIONS",
+        "state": "BLOCKED",
+        "reasonCodes": [
+          "ACTIVE_LOCATION_REQUIRED"
+        ],
+        "allowedActions": [
+          "OPEN",
+          "SAVE"
+        ]
+      },
+      {
+        "id": "SCHEDULING",
+        "state": "IN_PROGRESS",
+        "reasonCodes": [
+          "LOCATION_INACTIVE"
+        ],
+        "allowedActions": [
+          "OPEN",
+          "SAVE"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "workspace_inactive",
+    "canonical": {
+      "businessValid": true,
+      "activeLocations": 1,
+      "activePositions": 0,
+      "schedulingIssues": [
+        "WORKSPACE_INACTIVE",
+        "WORKSPACE_INACTIVE"
+      ],
+      "teamCount": 0,
+      "uninvitedCount": 0,
+      "missingEmailCount": 0,
+      "payrollEnabled": false,
+      "timekeepingConfigured": false,
+      "payrollConfigured": false,
+      "invitationSenderAvailable": false
+    },
+    "sections": [
+      {
+        "id": "SCHEDULING",
+        "state": "IN_PROGRESS",
+        "reasonCodes": [
+          "WORKSPACE_INACTIVE"
+        ],
+        "allowedActions": [
+          "OPEN",
+          "SAVE"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "location_inactive",
+    "canonical": {
+      "businessValid": true,
+      "activeLocations": 1,
+      "activePositions": 0,
+      "schedulingIssues": [
+        "LOCATION_INACTIVE",
+        "LOCATION_INACTIVE"
+      ],
+      "teamCount": 0,
+      "uninvitedCount": 0,
+      "missingEmailCount": 0,
+      "payrollEnabled": false,
+      "timekeepingConfigured": false,
+      "payrollConfigured": false,
+      "invitationSenderAvailable": false
+    },
+    "sections": [
+      {
+        "id": "SCHEDULING",
+        "state": "IN_PROGRESS",
+        "reasonCodes": [
+          "LOCATION_INACTIVE"
+        ],
+        "allowedActions": [
+          "OPEN",
+          "SAVE"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "staffing_not_configured",
+    "canonical": {
+      "businessValid": true,
+      "activeLocations": 1,
+      "activePositions": 0,
+      "schedulingIssues": [
+        "STAFFING_NOT_CONFIGURED",
+        "STAFFING_NOT_CONFIGURED"
+      ],
+      "teamCount": 0,
+      "uninvitedCount": 0,
+      "missingEmailCount": 0,
+      "payrollEnabled": false,
+      "timekeepingConfigured": false,
+      "payrollConfigured": false,
+      "invitationSenderAvailable": false
+    },
+    "sections": [
+      {
+        "id": "SCHEDULING",
+        "state": "IN_PROGRESS",
+        "reasonCodes": [
+          "STAFFING_NOT_CONFIGURED"
+        ],
+        "allowedActions": [
+          "OPEN",
+          "SAVE"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "coverage_not_configured",
+    "canonical": {
+      "businessValid": true,
+      "activeLocations": 1,
+      "activePositions": 0,
+      "schedulingIssues": [
+        "COVERAGE_NOT_CONFIGURED",
+        "COVERAGE_NOT_CONFIGURED"
+      ],
+      "teamCount": 0,
+      "uninvitedCount": 0,
+      "missingEmailCount": 0,
+      "payrollEnabled": false,
+      "timekeepingConfigured": false,
+      "payrollConfigured": false,
+      "invitationSenderAvailable": false
+    },
+    "sections": [
+      {
+        "id": "SCHEDULING",
+        "state": "IN_PROGRESS",
+        "reasonCodes": [
+          "COVERAGE_NOT_CONFIGURED"
+        ],
+        "allowedActions": [
+          "OPEN",
+          "SAVE"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "position_requirement_invalid",
+    "canonical": {
+      "businessValid": true,
+      "activeLocations": 1,
+      "activePositions": 0,
+      "schedulingIssues": [
+        "POSITION_REQUIREMENT_INVALID",
+        "POSITION_REQUIREMENT_INVALID"
+      ],
+      "teamCount": 0,
+      "uninvitedCount": 0,
+      "missingEmailCount": 0,
+      "payrollEnabled": false,
+      "timekeepingConfigured": false,
+      "payrollConfigured": false,
+      "invitationSenderAvailable": false
+    },
+    "sections": [
+      {
+        "id": "SCHEDULING",
+        "state": "IN_PROGRESS",
+        "reasonCodes": [
+          "POSITION_REQUIREMENT_INVALID"
+        ],
+        "allowedActions": [
+          "OPEN",
+          "SAVE"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "no_eligible_employees",
+    "canonical": {
+      "businessValid": true,
+      "activeLocations": 1,
+      "activePositions": 0,
+      "schedulingIssues": [
+        "NO_ELIGIBLE_EMPLOYEES",
+        "NO_ELIGIBLE_EMPLOYEES"
+      ],
+      "teamCount": 0,
+      "uninvitedCount": 0,
+      "missingEmailCount": 0,
+      "payrollEnabled": false,
+      "timekeepingConfigured": false,
+      "payrollConfigured": false,
+      "invitationSenderAvailable": false
+    },
+    "sections": [
+      {
+        "id": "SCHEDULING",
+        "state": "IN_PROGRESS",
+        "reasonCodes": [
+          "NO_ELIGIBLE_EMPLOYEES"
+        ],
+        "allowedActions": [
+          "OPEN",
+          "SAVE"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "reviewed-team-missing-email",
+    "canonical": {
+      "businessValid": true,
+      "activeLocations": 1,
+      "activePositions": 0,
+      "schedulingIssues": [],
+      "teamCount": 2,
+      "uninvitedCount": 1,
+      "missingEmailCount": 1,
+      "payrollEnabled": false,
+      "timekeepingConfigured": false,
+      "payrollConfigured": false,
+      "invitationSenderAvailable": true
+    },
+    "sections": [
+      {
+        "id": "PEOPLE",
+        "state": "READY",
+        "reasonCodes": [],
+        "allowedActions": [
+          "OPEN",
+          "SAVE"
+        ]
+      },
+      {
+        "id": "INVITATIONS",
+        "state": "IN_PROGRESS",
+        "reasonCodes": [
+          "EXPLICIT_SEND_REQUIRED",
+          "EMPLOYEE_EMAIL_REQUIRED"
+        ],
+        "allowedActions": [
+          "OPEN",
+          "CHECK_STATUS",
+          "INVITE"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "sender-unavailable",
+    "canonical": {
+      "businessValid": true,
+      "activeLocations": 1,
+      "activePositions": 0,
+      "schedulingIssues": [],
+      "teamCount": 1,
+      "uninvitedCount": 1,
+      "missingEmailCount": 0,
+      "payrollEnabled": false,
+      "timekeepingConfigured": false,
+      "payrollConfigured": false,
+      "invitationSenderAvailable": false
+    },
+    "sections": [
+      {
+        "id": "INVITATIONS",
+        "state": "IN_PROGRESS",
+        "reasonCodes": [
+          "EXPLICIT_SEND_REQUIRED",
+          "DELIVERY_NOT_CONFIGURED"
+        ],
+        "allowedActions": [
+          "OPEN",
+          "CHECK_STATUS"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "configured-optional-needs-review",
+    "canonical": {
+      "businessValid": true,
+      "activeLocations": 1,
+      "activePositions": 1,
+      "schedulingIssues": [],
+      "teamCount": 0,
+      "uninvitedCount": 0,
+      "missingEmailCount": 0,
+      "payrollEnabled": true,
+      "timekeepingConfigured": true,
+      "payrollConfigured": true,
+      "invitationSenderAvailable": false
+    },
+    "sections": [
+      {
+        "id": "POSITIONS",
+        "state": "READY",
+        "reasonCodes": [],
+        "allowedActions": [
+          "OPEN",
+          "SAVE"
+        ]
+      },
+      {
+        "id": "TIME_TRACKING",
+        "state": "OPTIONAL",
+        "reasonCodes": [
+          "REVIEW_CURRENT_TIMEKEEPING_SETUP"
+        ],
+        "allowedActions": [
+          "OPEN"
+        ]
+      },
+      {
+        "id": "PAYROLL",
+        "state": "OPTIONAL",
+        "reasonCodes": [
+          "REVIEW_CURRENT_PAYROLL_SETUP"
+        ],
+        "allowedActions": [
+          "OPEN"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "payroll-enabled-unconfigured",
+    "canonical": {
+      "businessValid": true,
+      "activeLocations": 1,
+      "activePositions": 0,
+      "schedulingIssues": [],
+      "teamCount": 0,
+      "uninvitedCount": 0,
+      "missingEmailCount": 0,
+      "payrollEnabled": true,
+      "timekeepingConfigured": false,
+      "payrollConfigured": false,
+      "invitationSenderAvailable": false
+    },
+    "sections": [
+      {
+        "id": "PAYROLL",
+        "state": "OPTIONAL",
+        "reasonCodes": [
+          "PAYROLL_SETUP_REQUIRED"
+        ],
+        "allowedActions": [
+          "OPEN"
+        ]
+      }
+    ]
+  }
+]

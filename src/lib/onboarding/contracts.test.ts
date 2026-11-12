@@ -1,6 +1,8 @@
 import {describe,expect,it} from 'vitest';
-import {parseRegistrationCommand,parseWorkspaceCommand,parseOnboardingCommand,parseOnboardingSnapshot,safeOnboardingDestination} from './contracts';
+import {parseRegistrationCommand,parseWorkspaceCommand,parseOnboardingCommand,parseOnboardingSnapshot,safeOnboardingDestination,onboardingHttpStatus,type OnboardingResult} from './contracts';
 import setupFixture from './fixtures/v1/setup-state.json';
+import commandResults from './fixtures/v1/command-results.json';
+import registrationStates from './fixtures/v1/registration-states.json';
 
 const operationId='59f60420-ec96-455a-9292-0b1a416509e9';
 const registration={schemaVersion:1,operationId,email:' Owner@Example.invalid ',locale:'en',termsVersion:'terms-1',privacyVersion:'privacy-1'};
@@ -26,6 +28,13 @@ describe('business creation boundary',()=>{
 });
 
 describe('client snapshot and navigation boundaries',()=>{
+ it.each(registrationStates)('decodes the $registrationState registration projection without inventing module readiness',value=>{
+  const decoded=parseOnboardingSnapshot(value);expect(decoded?.registrationState).toBe(value.registrationState);expect(decoded?.workspace).toBeNull();expect(decoded?.sections).toEqual([]);
+ });
+ it.each(commandResults)('maps the $name recovery fixture to its actual HTTP outcome',({result,http})=>{
+  expect(onboardingHttpStatus(result as OnboardingResult)).toBe(http);
+  if('snapshot' in result)expect(parseOnboardingSnapshot(result.snapshot)).not.toBeNull();
+ });
  const snapshot={schemaVersion:1,version:'1',registrationState:'EMAIL_VERIFIED',workspace:null,sections:[],nextStep:null};
  it('decodes an early registration snapshot without fabricating a business',()=>expect(parseOnboardingSnapshot(snapshot)?.workspace).toBeNull());
  it('lets the UI decode a saved business with incomplete and optional modules',()=>{const s=parseOnboardingSnapshot(setupFixture);expect(s?.workspace?.displayName).toBe('Fictional Example Company');expect(s?.nextStep).toBe('SCHEDULING');expect(s?.sections.find(x=>x.id==='PAYROLL')?.state).toBe('OPTIONAL');});
