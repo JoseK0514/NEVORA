@@ -72,6 +72,31 @@ it('never trusts cross-scope health or a successful exit without a confirmed wor
   const r=await runManagedCycle(c,new AbortController().signal,async()=>({exitCode:0,cleanupConfirmed:true,validOutput:true,output}));expect(r.observations.every(o=>!o.healthy)).toBe(true);expect(r.cleanupConfirmed).toBe(false);
  }
 });
+it('releases singleton custody when cancellation wins after admission and before the actual child spawn',async()=>{
+ const root=await realpath(await mkdtemp(join(tmpdir(),'nevora-managed-admission-')));let lease:Awaited<ReturnType<typeof acquireManagedState>>|undefined;
+ try{
+  const c=config(root),controller=new AbortController();lease=await acquireManagedState(c);let calls=0;
+  const cycle=await runManagedCycle(c,controller.signal,async(_profile,mode,_command,signal)=>{
+   expect(mode).toBe('run');calls++;controller.abort();
+   return runManagedProcess({file:process.execPath,args:['-e','require("node:fs").writeFileSync(process.argv[1],"unexpected child")',join(root,'unexpected-child')],env:{NODE_ENV:'test'}},signal,1000);
+  });
+  expect(await readdir(root)).not.toContain('unexpected-child');expect(calls).toBe(1);
+  expect(cycle.cleanupConfirmed).toBe(true);expect(cycle.observations).toEqual([]);
+  await lease.release(cycle.cleanupConfirmed);const next=await acquireManagedState(c);await next.release(true);
+ }finally{await lease?.release(false);await rm(root,{recursive:true,force:true});}
+});
+it('retains singleton custody after an actual child exits without a trusted receipt even when cancellation follows',async()=>{
+ const root=await realpath(await mkdtemp(join(tmpdir(),'nevora-managed-started-')));let lease:Awaited<ReturnType<typeof acquireManagedState>>|undefined;
+ try{
+  const c=config(root),controller=new AbortController();lease=await acquireManagedState(c);
+  const cycle=await runManagedCycle(c,controller.signal,async()=>{
+   const result=await runManagedProcess({file:process.execPath,args:['-e','require("node:fs").writeFileSync(process.argv[1],"started")',join(root,'actual-child')],env:{NODE_ENV:'test'}},undefined,1000);
+   expect(result.cleanupConfirmed).toBe(true);controller.abort();return result;
+  });
+  expect(await readdir(root)).toContain('actual-child');expect(cycle.cleanupConfirmed).toBe(false);
+  await lease.release(cycle.cleanupConfirmed);await expect(acquireManagedState(c)).rejects.toThrow('managed_state_unavailable');
+ }finally{await lease?.release(false);await rm(root,{recursive:true,force:true});}
+});
 it('serves readiness separately and requires authentication even for disabled health',()=>{
  const c=config('/tmp/fictional'),now=1794250000000;
  expect(managedHttpResponse(new Request('https://worker.onrender.com/ready'),c,[],now,true).status).toBe(200);

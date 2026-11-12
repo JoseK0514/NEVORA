@@ -33,12 +33,12 @@ export async function acquireManagedState(config:ManagedHostConfig){
   }};
  }catch{throw unavailable();}
 }
-export type ManagedProcessResult={exitCode:number|null;cleanupConfirmed:boolean;validOutput:boolean;output:string};
+export type ManagedProcessResult={exitCode:number|null;cleanupConfirmed:boolean;validOutput:boolean;output:string;started?:boolean};
 type Invocation={file:string;args:readonly string[];env:NodeJS.ProcessEnv};
 /** Private process primitive, never exposed through HTTP or profile JSON. The
  * caller below constructs only the fixed, source-custodied operations CLI. */
 export async function runManagedProcess(invocation:Invocation,signal:AbortSignal|undefined,deadlineMs:number):Promise<ManagedProcessResult>{
- if(signal?.aborted)return {exitCode:null,cleanupConfirmed:true,validOutput:false,output:''};
+ if(signal?.aborted)return {exitCode:null,cleanupConfirmed:true,validOutput:false,output:'',started:false};
  if(!Number.isSafeInteger(deadlineMs)||deadlineMs<1||deadlineMs>150000)throw Error('managed_configuration_invalid');
  const child=spawn(invocation.file,[...invocation.args],{env:invocation.env,stdio:['ignore','pipe','ignore'],detached:true,shell:false});
  let output='',bytes=0,valid=true,stopping=false,killTimer:ReturnType<typeof setTimeout>|undefined,hardTimer:ReturnType<typeof setTimeout>|undefined;
@@ -58,8 +58,8 @@ export async function runManagedProcess(invocation:Invocation,signal:AbortSignal
  if(alive()){
   kill('SIGKILL');const end=performance.now()+1500;while(alive()&&performance.now()<end)await new Promise(r=>setTimeout(r,10));
  }
- if(alive()){child.unref();return {exitCode:code,cleanupConfirmed:false,validOutput:false,output:''};}
- return {exitCode:code,cleanupConfirmed:true,validOutput:valid,output:valid?output.trim():''};
+ if(alive()){child.unref();return {exitCode:code,cleanupConfirmed:false,validOutput:false,output:'',started:true};}
+ return {exitCode:code,cleanupConfirmed:true,validOutput:valid,output:valid?output.trim():'',started:true};
 }
 export async function invokeManagedCommand(profile:ManagedProfile,mode:'run'|'health',command:WorkerCommand,signal:AbortSignal){
  return runManagedProcess({file:process.execPath,args:['--conditions=react-server','--import','./scripts/node-server-context.mjs','--import','tsx','scripts/workforce-operations.mts',mode,command],env:managedChildEnvironment(profile,process.env,command)},signal,mode==='run'?135000:15000);
@@ -74,7 +74,11 @@ export async function runManagedCycle(config:ManagedHostConfig,signal:AbortSigna
   const same=(v:Record<string,unknown>|null)=>v?.schemaVersion===1&&v.command===command&&v.scopeId===p.scopeId&&v.environment===p.environment&&v.sourceSha===config.sourceSha;
   let healthy=false,reason:ManagedObservation['reason']='invocation_failed';
   try{
-   const result=await invoke(p,'run',command,signal),receipt=decode(result);
+   const result=await invoke(p,'run',command,signal);
+   // Only the trusted process primitive can prove cancellation prevented fork.
+   // Started or unknown work still needs its bound worker receipt before release.
+   if(result.started===false&&signal.aborted&&result.cleanupConfirmed&&!result.validOutput&&result.exitCode===null&&result.output==='')break outer;
+   const receipt=decode(result);
    const confirmed=result.cleanupConfirmed&&same(receipt)&&receipt?.cleanupConfirmed===true;
    if(!confirmed){cleanupConfirmed=false;}
    else if(result.exitCode===0&&receipt?.status==='succeeded'&&!signal.aborted){
