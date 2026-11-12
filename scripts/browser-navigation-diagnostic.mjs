@@ -38,10 +38,10 @@ export function observeDocumentNavigation(page,origin=()=>new URL(page.url()).or
  page.on('requestfinished',request=>{if(pending===request){pending=null;phase='finished';}});
  return {pending:()=>pending!==null,snapshot:()=>({phase,sequence,sourceHistoryEvents,ageMs:startedAt===null?null:Math.min(60000,Math.max(0,Date.now()-startedAt))})};
 }
-export function navigationFetchDiagnostic(execution,diagnostic,pending,verified,phase){
+export function navigationFetchDiagnostic(execution,diagnostic,pending,verified,phase,{authorityGetVerified=false}={}){
  return execution.engine==='webkit'&&verified===true&&pending===true&&phase==='scenario'&&diagnostic.plainOwnRead===true
   &&diagnostic.canonicalMessage==='Fetch API cannot load resource due to access control checks.'
-  &&reads.has(diagnostic.resourceKind);
+  &&(reads.has(diagnostic.resourceKind)||diagnostic.resourceKind==='authority-read'&&authorityGetVerified===true);
 }
 
 export async function observeWindowExceptions(context,report){

@@ -8,7 +8,7 @@ import { pathToFileURL } from 'node:url';
 import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER_SUITES, captureSource, ENGINES, externalEvidence, installTerminationHandlers, parseSuiteArguments, raceOwnedAbort, registerOwnedProcess, safeEnvironment, selectSuites, selectedBrowserEngines, verifyBrowserExecutions, verifySourceManifest, WIDTHS } from './phase-e-owned.mjs';
 import { safeBrowserFailure } from './release-browser-diagnostics.mjs';
 import {navigationFetchDiagnostic,observeDocumentNavigation,observeWindowExceptions,verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
-import {observeNotificationReadWitness} from './notification-read-witness.mjs';
+import {observeNotificationReadWitness,observeAuthorityReadWitness} from './notification-read-witness.mjs';
 import {verifyCommunicationActionGeometry} from './communication-action-geometry-probe.mjs';
 
 const nativeErrorNames = new Set(['Error', 'TypeError', 'RangeError', 'ReferenceError', 'SyntaxError', 'EvalError', 'URIError', 'AggregateError', 'AbortError', 'InvalidStateError', 'NetworkError', 'NotAllowedError', 'NotFoundError', 'NotSupportedError', 'OperationError', 'QuotaExceededError', 'SecurityError', 'TimeoutError', 'DataCloneError', 'EncodingError']);
@@ -66,7 +66,7 @@ function originalRuntimeDiagnostic(name, message, page) {
 }
 
 /** Window exceptions and unproven native events remain fatal. */
-export function observeBrowserCell(execution, errors, {navigationDiagnosticVerified=false,reloadDiagnosticVerified=false,navigationReadKinds,requireNotificationGetWitness=false}={}) {
+export function observeBrowserCell(execution, errors, {navigationDiagnosticVerified=false,reloadDiagnosticVerified=false,authorityDiagnosticVerified=false,navigationReadKinds,requireNotificationGetWitness=false,requireAuthorityGetWitness=false}={}) {
   const start = errors.length;
   const classified=new WeakSet(),pages=new WeakMap();
   let phase = 'scenario', readStage = () => null, pageIndex = 0;
@@ -76,7 +76,7 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
     setPhase(value) { assert(['scenario', 'axe', 'context-close'].includes(value)); phase = value; },
     async observeContext(context, role) {
       assert(['primary', 'manager'].includes(role));
-      let witness;
+      let witness,authorityWitness;
       context.on('page', page => {
         const index = pageIndex++;
         const state={index,role,navigation:observeDocumentNavigation(page,undefined,{allowSameUrlReload:reloadDiagnosticVerified===true})};pages.set(page,state);
@@ -90,20 +90,23 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
                 : 'Unclassified page runtime error';
           const stage = readable(readStage);
           const reload=state.navigation.snapshot().phase==='reload-requested';
-          const methodWitness=witness?.snapshot(page);
+          const authority=diagnostic.resourceKind==='authority-read';
+          const selectedWitness=authority?authorityWitness:witness,methodWitness=selectedWitness?.snapshot(page);
           const scoped=navigationReadKinds===undefined||navigationReadKinds.includes(diagnostic.resourceKind);
-          const methodProven=!requireNotificationGetWitness||(diagnostic.resourceKind==='notification-read'&&methodWitness?.verified===true);
-          const verified=scoped&&methodProven&&(reload?reloadDiagnosticVerified===true&&diagnostic.resourceKind==='notification-read':navigationDiagnosticVerified);
-          if(navigationFetchDiagnostic(execution,diagnostic,state.navigation.pending(),verified,phase)&&(!requireNotificationGetWitness||witness.consume(page))){
+          const witnessRequired=authority?requireAuthorityGetWitness:requireNotificationGetWitness;
+          const methodProven=authority?requireAuthorityGetWitness&&methodWitness?.verified===true:!requireNotificationGetWitness||(diagnostic.resourceKind==='notification-read'&&methodWitness?.verified===true);
+          const verified=scoped&&methodProven&&(authority?authorityDiagnosticVerified===true:reload?reloadDiagnosticVerified===true&&diagnostic.resourceKind==='notification-read':navigationDiagnosticVerified);
+          if(navigationFetchDiagnostic(execution,diagnostic,state.navigation.pending(),verified,phase,{authorityGetVerified:authority&&methodProven})&&(!witnessRequired||selectedWitness.consume(page))){
             classified.add(error);execution.navigationDiagnostics??=[];
-            execution.navigationDiagnostics.push({type:'navigation-fetch-diagnostic',role,pageIndex:index,phase,diagnostic,...(requireNotificationGetWitness?{methodWitness}:{}),pendingMainFrameNavigation:true,documentNavigation:state.navigation.snapshot(),stage:stages.has(stage)?stage:null});return;
+            execution.navigationDiagnostics.push({type:'navigation-fetch-diagnostic',role,pageIndex:index,phase,diagnostic,...(witnessRequired?{methodWitness}:{}),pendingMainFrameNavigation:true,documentNavigation:state.navigation.snapshot(),stage:stages.has(stage)?stage:null});return;
           }
           errors.push({ type: 'page-runtime-error', role, pageIndex: index, phase, diagnostic,pendingMainFrameNavigation:state.navigation.pending(),documentNavigation:state.navigation.snapshot(),
             failure: safeBrowserFailure({ name, message: summary }, execution, { stage: stages.has(stage) ? stage : null }) });
         });
       });
       if(requireNotificationGetWitness)witness=await observeNotificationReadWitness(context,page=>{const state=pages.get(page);errors.push({type:'unproven-notification-read',role:state?.role??role,pageIndex:state?.index??null,phase});});
-      if(navigationDiagnosticVerified||reloadDiagnosticVerified)return observeWindowExceptions(context,(page,kind)=>{const state=pages.get(page);errors.push({type:'window-javascript-error',kind,role:state?.role??role,pageIndex:state?.index??null,phase});});
+      if(requireAuthorityGetWitness)authorityWitness=await observeAuthorityReadWitness(context,page=>{const state=pages.get(page);errors.push({type:'unproven-authority-read',role:state?.role??role,pageIndex:state?.index??null,phase});});
+      if(navigationDiagnosticVerified||reloadDiagnosticVerified||authorityDiagnosticVerified)return observeWindowExceptions(context,(page,kind)=>{const state=pages.get(page);errors.push({type:'window-javascript-error',kind,role:state?.role??role,pageIndex:state?.index??null,phase});});
     },
     isNavigationDiagnostic(error) {return classified.has(error);},
     assertClean() { assert.equal(errors.length, start, 'Browser runtime/network errors recorded in current cell'); },

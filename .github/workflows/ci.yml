@@ -357,6 +357,7 @@ jobs:
           PHASE_D2_CORRECTIONS_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           node scripts/d2-hours-route-focus.check.mjs
+          node scripts/d2-authority-reload.check.mjs
           npm run test:phase-d2:corrections-ui
       - name: Existing Clocker lifecycle and recovery browser regression
         if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
