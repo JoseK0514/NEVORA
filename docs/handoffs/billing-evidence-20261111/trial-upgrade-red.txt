@@ -1,0 +1,34 @@
+
+> fuel-scheduler@0.1.0 test:commerce:owned
+> node scripts/commerce-postgres.mjs
+
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111
+
+ ❯ services/commerce/stripe.integration.test.ts (61 tests | 1 failed) 5142ms
+   ❯ Stripe lifecycle with real catalog and SDK (61)
+     × retains Small trial capacity before the first paid Team invoice without changing the trial deadline 239ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  services/commerce/stripe.integration.test.ts > Stripe lifecycle with real catalog and SDK > retains Small trial capacity before the first paid Team invoice without changing the trial deadline
+AssertionError: expected 'team' to be 'small' // Object.is equality
+
+Expected: "small"
+Received: "team"
+
+ ❯ services/commerce/stripe.integration.test.ts:591:48
+    589|     subscription.items.data[0].price=provider.prices.get('price_team')…
+    590|     await billing.syncJob({subscriptionId:subscription.id});
+    591|     expect((await store.business(id)).planKey).toBe('small');expect(po…
+       |                                                ^
+    592|     expect((await store.business(id)).trialEnd).toBe(before.trialEnd);
+    593|     provider.markPaid(subscription.id);await billing.syncJob({subscrip…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 14 passed (15)
+      Tests  1 failed | 157 passed (158)
+   Start at  21:38:58
+   Duration  5.49s (tests 85%, import 9%, transform 6%)

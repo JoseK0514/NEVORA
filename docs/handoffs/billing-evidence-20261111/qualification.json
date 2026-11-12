@@ -1,0 +1,65 @@
+{
+  "observedDate": "2026-11-11",
+  "scope": "Backend source and isolated local qualification; no hosted/live certification",
+  "baseDevelopment": "d80da2a35b586378b59bdadc5e989baffe430165",
+  "runtimeSource": "ed5715fc0ceac9b2b50dd358f4d7e65c1e22f56d",
+  "applicationHash": "23590db7820530c6b9af243d1261145320ee9a5f27e319a862d98edfedb6c4b7",
+  "ownedCommerce": {
+    "passed": 159,
+    "failed": 0,
+    "files": 15,
+    "database": "Disposable loopback PostgreSQL",
+    "provider": "Real Stripe SDK with fictional HTTP transport; no real provider payments"
+  },
+  "focusedCompanyRecovery": {
+    "passed": 53,
+    "failed": 0
+  },
+  "root": {
+    "passed": 12636,
+    "failed": 0,
+    "skipped": 895,
+    "passedFiles": 851,
+    "skippedFiles": 33,
+    "rawJsonSha256": "0250b693d80d662549afb6658ec300f626f5a2b6a6f07a2eeb15b395b337ec05"
+  },
+  "typecheck": "passed",
+  "lint": {
+    "errors": 0,
+    "warnings": 1,
+    "preexistingWarning": "services/hosted/neon/workforcemonitor.entry.ts:17 import/no-anonymous-default-export"
+  },
+  "productionDependencyAudit": {
+    "vulnerabilities": 0
+  },
+  "build": {
+    "checkpoint": "c5637a9944b4b9878a699277522a8fc93ab98f3f",
+    "tree": "f0d4354c081b7c4a6e9f7a0eb0ae8025d3b8fb88",
+    "sourceClean": true,
+    "sourceUnchanged": true,
+    "exitCode": 0,
+    "node": "v24.19.0",
+    "npm": "11.17.0",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "lockSha256": "81e694c04b737a180c32869fe498526e433e2211c5208e80523dbf6f5db3dfef",
+    "limitations": [
+      "Next dev browser fixtures use explicitly substituted owned DB transport; this production build does not.",
+      "Artifact bytes may differ across builds due to generated IDs and encryption. A receipt proves source custody, not bit-for-bit determinism."
+    ]
+  },
+  "reviews": {
+    "Standards": "CLEAR / APPROVE",
+    "Spec": "CLEAR / APPROVE after independently reproduced and reviewed trial-capacity fix"
+  },
+  "providerChanges": "Two nondefault target-only sandbox Portal configurations; default unchanged. No customer, invoice, subscription, charge, mail, credential or permission mutation.",
+  "runtimeDeployment": "Not deployed by this task; older staging runtime lacks target configurations",
+  "remainingGates": [
+    "Exact-SHA candidate CI/development delivery",
+    "Verified isolated hosted runtime/source/config/permissions",
+    "Genuine sandbox hosted plan confirmations and signed webhook/queue reconciliation",
+    "Claude UI integration and desktop/mobile acceptance",
+    "Approved real inbox before any live email test",
+    "Live account, Tax decisions/registration and separate production authorization"
+  ]
+}

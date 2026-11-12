@@ -10,8 +10,8 @@ Scope: resume SCRUM-174/169 backend work from freshly fetched development `d80da
 - [x] Complete the authenticated Owner status bridge and recover the already-approved presentation contract from `1ea5511a`, adapting it to current isolated-company and current-authority lifetime checks. Do not overwrite current enrollment/credential controls.
 - [x] Preserve recovery access for Owner billing/payroll export and Employee own statements, with operational mutations still restricted. Keep the existing paused Clocker key, including short `main` keys, across recovery.
 - [x] Inspect Stripe risk-event and operator-review handling against official current-version documentation; implement missing durable, deduplicated review routing without issuing refunds or inventing an automatic suspension policy.
-- [ ] Run owned PostgreSQL/Stripe-SDK scenarios, relevant auth/route/gate regressions, typecheck/lint and the full root suite. Review the final diff independently and commit source/evidence in the detached checkout.
-- [ ] Write the final API/UI handoff, current runtime/provider configuration facts, rollback, exact source identity and remaining hosted/business gates. Distinguish sandbox/source qualification from live activation.
+- [x] Run owned PostgreSQL/Stripe-SDK scenarios, relevant auth/route/gate regressions, typecheck/lint and the full root suite. Review the final diff independently and commit source/evidence in the detached checkout.
+- [x] Write the final API/UI handoff, current runtime/provider configuration facts, rollback, exact source identity and remaining hosted/business gates. Distinguish sandbox/source qualification from live activation.
 
 ## Controls and rulings
 
@@ -32,9 +32,13 @@ Jose approved self-service plan changes: paid upgrades apply after successful pa
 
 Stripe rejected listing both existing monthly prices on their shared product in one Portal configuration (duplicate interval). Its documented renewal downgrade feature requires the same product. Preserve the default card/invoice/cancellation configuration and use two nondefault, target-only configurations with hosted `subscription_update_confirm` flows. Both were created in the sandbox only; runtime activation and actual hosted acceptance remain distinct gates.
 
-- [ ] Add a current-Owner `/v1/plan-change` contract, server-side target configuration selection, renewal/paid policy validation, immutable provider retry identity and bounded errors.
-- [ ] Reproduce and prevent granting larger capacity from an unpaid upgrade or a negative credit line on an otherwise paid invoice. Verify trial preservation, renewal downgrade, headcount and identity/authority guards.
-- [ ] Independently review the added policy work, regenerate source-bound guide provenance, rerun qualification and record precise provider/hosting limits for Claude.
+- [x] Add a current-Owner `/v1/plan-change` contract, server-side target configuration selection, renewal/paid policy validation, immutable provider retry identity and bounded errors.
+- [x] Reproduce and prevent granting larger capacity from an unpaid upgrade or a negative credit line on an otherwise paid invoice. Verify trial preservation, renewal downgrade, headcount and identity/authority guards.
+- [x] Independently review the added policy work, regenerate source-bound guide provenance, rerun qualification and record precise provider/hosting limits for Claude.
+
+Final local qualification: owned commerce **159/159**, focused company recovery **53/53**, root **12,636 passed / 895 skipped / zero failures** (851 passed files, 33 skipped). Typecheck, lint (one pre-existing warning), production dependency audit (zero vulnerabilities) and source-bound optimized build pass. Standards CLEAR; Spec CLEAR after its independently reproduced trial-capacity finding was fixed and independently reassessed. Guides are rebound to runtime `ed5715fc0`; application hash `23590db7820530c6b9af243d1261145320ee9a5f27e319a862d98edfedb6c4b7`.
+
+Final contract and compact receipts: `docs/handoffs/2026-11-11-codex-to-claude-payments-billing.md` and `docs/handoffs/billing-evidence-20261111/`. Exact-SHA CI/development delivery remains separate from hosted/source/config activation and genuine sandbox confirmation/queue acceptance. No live customer, invoice, email or charge was created. Do not treat this checklist as production certification.
 
 - Owned PostgreSQL + real Stripe SDK: **123/123**. Owner/status/recovery focused tests: **53/53**. Typecheck passes. Real provider network is replaced only by explicit fictional fixtures; no live payment, email or customer data test.
 - Checkout integration labels are generated inside the persisted immutable intent, not on transport retries. Existing saved intents remain unchanged. An assertion first failed with a missing identifier, then passed after adding it.

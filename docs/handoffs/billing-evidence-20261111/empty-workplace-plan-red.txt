@@ -1,0 +1,32 @@
+
+> fuel-scheduler@0.1.0 test:commerce:owned
+> node scripts/commerce-postgres.mjs
+
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111
+
+ ❯ services/commerce/stripe.integration.test.ts (62 tests | 1 failed) 4310ms
+   ❯ Stripe lifecycle with real catalog and SDK (62)
+     × offers the Small renewal flow only when current headcount fits and preserves paid Team coverage: 0 61ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  services/commerce/stripe.integration.test.ts > Stripe lifecycle with real catalog and SDK > offers the Small renewal flow only when current headcount fits and preserves paid Team coverage: 0
+Error: assisted_quote_required
+ ❯ services/commerce/plan-change.ts:71:13
+     69|     const count = await ports.headcount(business, client);
+     70|     if (!Number.isSafeInteger(count) || count < 1 || count > 30)
+     71|       throw new CommerceError("assisted_quote_required", 409);
+       |             ^
+     72|     if (plan === "small" && count > 15) throw new CommerceError("plan_…
+     73|     const price = await stripe.prices.retrieve(ports.prices[plan]);
+ ❯ CommerceStore.transaction services/commerce/store.ts:45:21
+ ❯ services/commerce/stripe.integration.test.ts:571:42
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 14 passed (15)
+      Tests  1 failed | 158 passed (159)
+   Start at  21:40:38
+   Duration  4.53s (tests 87%, import 8%, transform 4%)

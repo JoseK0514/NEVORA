@@ -1,0 +1,204 @@
+{
+  "observedAt": "2026-11-11",
+  "mode": "sandbox",
+  "account": "acct_1UZZK1HT1nhEuOJ2",
+  "changes": {
+    "defaultConfigurationUnchanged": "bpc_1UZb8kHT1nhEuOJ2AgU9chpR",
+    "smallConfiguration": "bpc_1UamoYHT1nhEuOJ2tpWyNfeQ",
+    "teamConfiguration": "bpc_1UamopHT1nhEuOJ2VUltf4hz"
+  },
+  "configurations": {
+    "small": {
+      "id": "bpc_1UamoYHT1nhEuOJ2tpWyNfeQ",
+      "object": "billing_portal.configuration",
+      "active": true,
+      "application": null,
+      "business_profile": {
+        "headline": "Manage your NEVORA plan",
+        "privacy_policy_url": null,
+        "terms_of_service_url": null
+      },
+      "created": 1794446914,
+      "default_return_url": "https://www.thevelani.com/pages/nevora-billing",
+      "features": {
+        "customer_update": {
+          "allowed_updates": [],
+          "enabled": false
+        },
+        "invoice_history": {
+          "enabled": true
+        },
+        "payment_method_update": {
+          "enabled": true,
+          "payment_method_configuration": null
+        },
+        "subscription_cancel": {
+          "cancellation_reason": {
+            "enabled": false,
+            "feedback_options": [],
+            "options": [
+              "too_expensive",
+              "missing_features",
+              "switched_service",
+              "unused",
+              "other"
+            ]
+          },
+          "enabled": true,
+          "mode": "at_period_end",
+          "proration_behavior": "none"
+        },
+        "subscription_pause": {
+          "duration": {
+            "interval_options": [
+              {
+                "interval": "month",
+                "interval_count": 1
+              }
+            ],
+            "type": "interval_options"
+          },
+          "enabled": false
+        },
+        "subscription_update": {
+          "billing_cycle_anchor": "unchanged",
+          "default_allowed_updates": [
+            "price"
+          ],
+          "enabled": true,
+          "products": [
+            {
+              "adjustable_quantity": {
+                "enabled": false,
+                "maximum": null,
+                "minimum": 1
+              },
+              "prices": [
+                "price_1UZb7JHT1nhEuOJ2MsMXV7Gf"
+              ],
+              "product": "prod_VamgO8BiGYi6XU"
+            }
+          ],
+          "proration_behavior": "always_invoice",
+          "schedule_at_period_end": {
+            "conditions": [
+              {
+                "type": "decreasing_item_amount"
+              }
+            ]
+          },
+          "trial_update_behavior": "continue_trial"
+        }
+      },
+      "is_default": false,
+      "livemode": false,
+      "login_page": {
+        "enabled": false,
+        "url": null
+      },
+      "metadata": {
+        "nevora_test_run": "billing-completion-20261111",
+        "sandbox_only": "true",
+        "target_plan": "small"
+      },
+      "name": "NEVORA Small · renewal downgrade · sandbox",
+      "updated": 1794446981
+    },
+    "team": {
+      "id": "bpc_1UamopHT1nhEuOJ2VUltf4hz",
+      "object": "billing_portal.configuration",
+      "active": true,
+      "application": null,
+      "business_profile": {
+        "headline": "Manage your NEVORA plan",
+        "privacy_policy_url": null,
+        "terms_of_service_url": null
+      },
+      "created": 1794446931,
+      "default_return_url": "https://www.thevelani.com/pages/nevora-billing",
+      "features": {
+        "customer_update": {
+          "allowed_updates": [],
+          "enabled": false
+        },
+        "invoice_history": {
+          "enabled": true
+        },
+        "payment_method_update": {
+          "enabled": true,
+          "payment_method_configuration": null
+        },
+        "subscription_cancel": {
+          "cancellation_reason": {
+            "enabled": false,
+            "feedback_options": [],
+            "options": [
+              "too_expensive",
+              "missing_features",
+              "switched_service",
+              "unused",
+              "other"
+            ]
+          },
+          "enabled": true,
+          "mode": "at_period_end",
+          "proration_behavior": "none"
+        },
+        "subscription_pause": {
+          "duration": {
+            "interval_options": [
+              {
+                "interval": "month",
+                "interval_count": 1
+              }
+            ],
+            "type": "interval_options"
+          },
+          "enabled": false
+        },
+        "subscription_update": {
+          "billing_cycle_anchor": "unchanged",
+          "default_allowed_updates": [
+            "price"
+          ],
+          "enabled": true,
+          "products": [
+            {
+              "adjustable_quantity": {
+                "enabled": false,
+                "maximum": null,
+                "minimum": 1
+              },
+              "prices": [
+                "price_1UZb7KHT1nhEuOJ22VvjXawN"
+              ],
+              "product": "prod_VamgO8BiGYi6XU"
+            }
+          ],
+          "proration_behavior": "always_invoice",
+          "schedule_at_period_end": {
+            "conditions": [
+              {
+                "type": "decreasing_item_amount"
+              }
+            ]
+          },
+          "trial_update_behavior": "continue_trial"
+        }
+      },
+      "is_default": false,
+      "livemode": false,
+      "login_page": {
+        "enabled": false,
+        "url": null
+      },
+      "metadata": {
+        "nevora_test_run": "billing-completion-20261111",
+        "sandbox_only": "true",
+        "target_plan": "team"
+      },
+      "name": "NEVORA Team · paid upgrade · sandbox",
+      "updated": 1794446982
+    }
+  }
+}
