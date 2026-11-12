@@ -1,6 +1,8 @@
 # Proposed onboarding backend/UI contract — November 7, 2026
 
-**Latest source-specific status:** [Private onboarding and Stripe staging acceptance](2026-11-08-private-onboarding-staging-acceptance.md) supersedes the hosted/private dependency and candidate claims below: source `a07bfcc17`, two genuinely provisioned companies, real approved-inbox mail, sandbox payment/failure/Portal recovery, protected READY Preview and exact company DNS/TLS verified. All processing ends OFF. Claude UI (including observed billing-return404), combined-source integration/CI, Tax policy and public release remain open. Older checkpoints below are historical where superseded; API contracts remain applicable.
+**Current backend/source reconciliation:** [November11 signup backend closeout](2026-11-11-signup-backend-closeout.md) supersedes the historical planned-status wording below; it separates current development, deployed signup and remaining UI/joined acceptance.
+
+**Historical source-specific status:** [Private onboarding and Stripe staging acceptance](2026-11-08-private-onboarding-staging-acceptance.md) supersedes the hosted/private dependency and candidate claims below: source `a07bfcc17`, two genuinely provisioned companies, real approved-inbox mail, sandbox payment/failure/Portal recovery, protected READY Preview and exact company DNS/TLS verified. All processing ends OFF. Claude UI (including observed billing-return404), combined-source integration/CI, Tax policy and public release remain open. Older checkpoints below are historical where superseded; API contracts remain applicable.
 
 Status: contract/configuration and verified registration endpoints implemented locally; later workspace/setup/invitation endpoints remain planned. Backend: Codex. UI: Claude. Public/hosted signup is disabled by default.
 Baseline e2872f30ea8548b1310ea4a9b25813352decf82a.
