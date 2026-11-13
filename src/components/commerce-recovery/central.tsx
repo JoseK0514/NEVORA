@@ -12,45 +12,45 @@ const words={
 type Client=ReturnType<typeof createCentralBillingClient>;
 const empty:PrivatePanelState<CentralRead>={snapshot:null,paused:true,refreshing:false};
 export function CentralBilling({apiOrigin,initialLanguage}:{apiOrigin:string|null;initialLanguage:BillingLanguage}){
- const [lang,setLang]=useState(initialLanguage),[link,setLink]=useState<'entry'|'loading'|'ready'|'denied'|'unavailable'>('loading'),[panel,setPanel]=useState(empty),[opening,setOpening]=useState(false),[problem,setProblem]=useState<BillingResult['kind']|null>(null);
- const client=useRef<Client|null>(null),controls=useRef<ReturnType<typeof createPrivateSnapshotController<CentralRead>>|null>(null),current=useRef(empty),mutation=useRef<AbortController|null>(null),proof=useRef<string|null>(null),captured=useRef(false),generation=useRef(0);
+ const [lang,setLang]=useState(initialLanguage),[link,setLink]=useState<'entry'|'loading'|'ready'|'denied'|'unavailable'>('loading'),[panel,setPanel]=useState(empty),[opening,setOpening]=useState(false),[pending,setPending]=useState(false),[problem,setProblem]=useState<BillingResult['kind']|null>(null);
+ const client=useRef<Client|null>(null),controls=useRef<ReturnType<typeof createPrivateSnapshotController<CentralRead>>|null>(null),current=useRef(empty),mutation=useRef<AbortController|null>(null),proof=useRef<string|null>(null),captured=useRef(false),generation=useRef({value:0});
  const alert=useRef<HTMLParagraphElement|null>(null);
  const foreground=()=>document.visibilityState!=='hidden'&&navigator.onLine&&document.hasFocus();
  useEffect(()=>{
-  const setup=++generation.current;let active=true;
+  const lifetime=generation.current,setup=++lifetime.value;let active=true;
   if(!captured.current){captured.current=true;proof.current=takeBillingFragment(window.location,url=>history.replaceState(history.state,'',url));}
   const transport=createCentralBillingClient(apiOrigin);client.current=transport;
   const cancel=()=>{mutation.current?.abort();mutation.current=null;if(active)setOpening(false);};
   const controller=createPrivateSnapshotController<CentralRead>(state=>{
-   current.current=state;if(state.paused||state.snapshot?.state==='unavailable'){cancel();transport.cancelAction();}if(active)setPanel(state);
+   current.current=state;if(state.paused||state.snapshot?.state==='unavailable'){cancel();transport.cancelAction();}if(active){setPanel(state);setPending(transport.hasPending());}
    if(active&&state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied')setLink('denied');
   },signal=>transport.read(signal),value=>value as CentralRead,reason=>({state:'unavailable',reason}),()=> 'read_failed');
   controls.current=controller;
   const pause=()=>{cancel();transport.pause();controller.pause();};
   const resume=()=>{controller.pause();if(foreground()&&transport.hasSession())controller.start();};
   const visibility=()=>{if(document.visibilityState==='hidden')pause();else resume();};
-  const retire=()=>{pause();transport.dispose();setLink('denied');};
+  const retire=()=>{pause();transport.dispose();setPending(false);setLink('denied');};
   document.addEventListener('visibilitychange',visibility);for(const event of ['blur','offline'])window.addEventListener(event,pause);for(const event of ['focus','online','storage','pageshow'])window.addEventListener(event,resume);window.addEventListener('pagehide',retire);
   const start=setTimeout(()=>{
-   const value=proof.current;proof.current=null;
+   const value=proof.current;proof.current=null;setPending(false);
    if(!apiOrigin){setLink('unavailable');return;}if(!value){setLink('entry');return;}if(!foreground()){setLink('denied');return;}
    void transport.enter(value).then(result=>{if(!active)return;if(result!=='ready'){setLink(result==='invalid'?'denied':'unavailable');return;}setLink('ready');if(foreground())controller.start();});
   },0);
-  return()=>{active=false;clearTimeout(start);cancel();controller.stop();transport.dispose();current.current=empty;if(client.current===transport)client.current=null;if(controls.current===controller)controls.current=null;document.removeEventListener('visibilitychange',visibility);for(const event of ['blur','offline'])window.removeEventListener(event,pause);for(const event of ['focus','online','storage','pageshow'])window.removeEventListener(event,resume);window.removeEventListener('pagehide',retire);queueMicrotask(()=>{if(generation.current===setup)proof.current=null;});};
+  return()=>{active=false;clearTimeout(start);cancel();controller.stop();transport.dispose();current.current=empty;if(client.current===transport)client.current=null;if(controls.current===controller)controls.current=null;document.removeEventListener('visibilitychange',visibility);for(const event of ['blur','offline'])window.removeEventListener(event,pause);for(const event of ['focus','online','storage','pageshow'])window.removeEventListener(event,resume);window.removeEventListener('pagehide',retire);queueMicrotask(()=>{if(lifetime.value===setup)proof.current=null;});};
  },[apiOrigin]);
  useEffect(()=>{if(problem&&foreground())alert.current?.focus();},[problem]);
- const ready=panel.snapshot?.state==='ready'?panel.snapshot:null,t=words[lang],pending=client.current?.hasPending()??false;
+ const ready=panel.snapshot?.state==='ready'?panel.snapshot:null,t=words[lang];
  async function financial(action?:BillingAction){
   if(mutation.current||!foreground()||current.current.snapshot?.state!=='ready')return;
   const transport=client.current;if(!transport)return;const controller=new AbortController();mutation.current=controller;setOpening(true);setProblem(null);
-  try{const result=await (action?transport.action(action,lang,controller.signal):transport.retry(controller.signal));
+  try{const request=action?transport.action(action,lang,controller.signal):transport.retry(controller.signal);setPending(transport.hasPending());const result=await request;
    if(mutation.current!==controller||controller.signal.aborted||!foreground()||current.current.snapshot?.state!=='ready')return;
-   if(result.kind==='denied'){controls.current?.pause();setLink('denied');return;}
+   if(result.kind==='denied'){setPending(false);controls.current?.pause();setLink('denied');return;}
    if(result.kind==='navigate'){try{window.location.assign(result.url);}catch{setProblem('unknown');}}else setProblem(result.kind);
   }finally{if(mutation.current===controller){mutation.current=null;setOpening(false);}}
  }
  const refresh=()=>{setProblem(null);if(foreground())controls.current?.start();};
- const close=()=>{controls.current?.pause();mutation.current?.abort();setLink('denied');void client.current?.signOut();};
+ const close=()=>{controls.current?.pause();mutation.current?.abort();setPending(false);setLink('denied');void client.current?.signOut();};
  const manage=!!ready&&(ready.status.state==='paid'||ready.status.state==='grace'||ready.status.state==='restricted'&&['payment_failed','payment_required'].includes(ready.status.reason??''));
  const date=(value:string)=>new Intl.DateTimeFormat(lang,{dateStyle:'medium',timeZone:ready?.status.timeZone??'UTC'}).format(new Date(value));
  return <RecoveryFrame lang={lang}><h1>{t.title}</h1><p>{t.intro}</p>
