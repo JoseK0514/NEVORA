@@ -37,6 +37,9 @@ export async function startOwnedDomainProxy(upstream:string,mappings:Readonly<Re
  // real fixed-host upgrade; never synthesize a socket or permit another target.
  const upgrade=(incoming:IncomingMessage,socket:Duplex,head:Buffer)=>{
   let front:URL;try{front=new URL(incoming.url??'/',`http://${incoming.headers.host}`);}catch{socket.destroy();return;}
+  // WebKit sends absolute ws:// targets through a plain HTTP proxy. It is
+  // the same fixed HTTP origin; wss:// and foreign targets remain refused.
+  if(front.protocol==='ws:')front.protocol='http:';
   const canonical=mappings[front.origin];
   if(!canonical||front.pathname!=='/_next/hmr'||incoming.headers.origin!==front.origin||incoming.headers.upgrade?.toLowerCase()!=='websocket'){socket.end('HTTP/1.1 403 Forbidden\r\nConnection: close\r\nContent-Length: 0\r\n\r\n');return;}
   const pending=request(upstream+front.pathname+front.search,{method:'GET',agent:false,headers:{...incoming.headers,host:new URL(canonical).host,origin:canonical,'x-forwarded-host':new URL(canonical).host,'x-forwarded-proto':'https'}});
