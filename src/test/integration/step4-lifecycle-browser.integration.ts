@@ -10,6 +10,7 @@ import {activateInitialOwner} from '@/lib/onboarding/owner-activation.server';
 import {openOnboardingValue} from '@/lib/onboarding/crypto.server';
 import {verifyOwnedIsolatedRuntime} from './owned-isolated-runtime';
 import {startOwnedDomainProxy} from './owned-domain-proxy';
+import {createOwnedSmtp} from './owned-smtp';
 
 it('admits normal browser sign-in on the actual provisioned fictional-company database',async()=>{
  const root=process.env.NEVORA_STEP4_EVIDENCE;if(!root)throw Error('Explicit Step4 evidence directory required');await mkdir(root,{recursive:true});
@@ -35,7 +36,8 @@ it('admits normal browser sign-in on the actual provisioned fictional-company da
   await expect(verifyOwnedIsolatedRuntime(options.isolatedWorkspaces)).rejects.toThrow('Invalid owned isolated browser runtime');
   await company.resource.db.pool.query(`COMMENT ON DATABASE "${company.resource.db.name}" IS '${marker}'`);
   stages.push({stage:'substituted-company-identity-refused-before-launch',state:'passed'});
-  const app=await createOwnedNextApp(join(root,'app'),options);defer(()=>app.close());
+  const smtp=await createOwnedSmtp();defer(()=>smtp.close());
+  const app=await createOwnedNextApp(join(root,'app'),{...options,invitationSmtpPort:smtp.port,payrollEnabled:true,clockerPunchEnabled:true,clockerPinKey:Buffer.alloc(32,61).toString('hex')});defer(()=>app.close());
   const front='http://alpha.step4.invalid',proxy=await startOwnedDomainProxy(app.url,{[front]:company.origin});defer(()=>proxy.close());
   const browser=await runtime.chromium.launch({headless:true});defer(()=>browser.close());const context=await browser.newContext({serviceWorkers:'block',proxy:{server:proxy.server}}),page=await context.newPage();page.setDefaultTimeout(15000);
   await context.tracing.start({screenshots:true,snapshots:true});defer(()=>context.tracing.stop({path:join(root,'admission-trace.zip')}));
@@ -44,6 +46,35 @@ it('admits normal browser sign-in on the actual provisioned fictional-company da
   expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='OWNER-1'")).rows).toEqual([{n:1}]);stages.push({stage:'normal-owner-browser-sign-in-on-provisioned-company',state:'passed'});
   const setup=await page.evaluate(async()=>{const response=await fetch('/api/onboarding/state',{credentials:'same-origin',cache:'no-store'});return {status:response.status,body:await response.json()};});
   expect(setup.status).toBe(200);expect(setup.body.state).toBe('ready');expect(setup.body.configuration.people.map((person:{id:string})=>person.id)).toContain('OWNER-1');stages.push({stage:'actual-owner-setup-http-and-company-authority',state:'passed'});
+  const call=async(path:string,body?:unknown,headers:Record<string,string>={})=>page.evaluate(async({path,body,headers}:{path:string;body?:unknown;headers:Record<string,string>})=>{const response=await fetch(path,{method:body===undefined?'GET':'POST',credentials:'same-origin',cache:'no-store',headers:{...(body===undefined?{}:{'content-type':'application/json'}),...headers},...(body===undefined?{}:{body:JSON.stringify(body)})});return {status:response.status,body:await response.json()};},{path,body,headers});
+  let current=setup.body;
+  const refresh=async()=>{const response=await call('/api/onboarding/state');expect(response.status).toBe(200);current=response.body;};
+  const save=async(step:string,payload:unknown)=>{const command={schemaVersion:1,operationId:randomUUID(),expectedVersion:current.snapshot.version,payload};const result=await call('/api/onboarding/steps/'+step,command);expect(result.status).toBe(200);expect(result.body.state).toBe('saved');expect((await call('/api/onboarding/steps/'+step,command)).body.receipt).toEqual(result.body.receipt);await refresh();};
+  await save('BUSINESS',{name:'Fictional Step4 Company',timeZone:'America/Puerto_Rico'});
+  for(const step of ['TIME_TRACKING','PAYROLL','OPTIONAL_FEATURES'])await save(step,{action:'SKIP'});
+  expect((await company.resource.db.pool.query('SELECT (SELECT count(*)::int FROM clocker_devices) devices,(SELECT count(*)::int FROM native_payroll_profile_revisions) profiles')).rows).toEqual([{devices:0,profiles:0}]);
+  const home=current.configuration.locations[0].id;
+  await save('SCHEDULING',{action:'STAFFING',staffingSettings:[{locationId:home,minimumStaffPerShift:1,requiresDesignatedLead:false}],hourTargets:[]});
+  await save('SCHEDULING',{action:'COVERAGE_CREATE',locationId:home,dayOfWeek:1,startTime:'09:00',endTime:'17:00',positionRequirements:[]});
+  for(const [id,email] of [['EMP-1','employee-1@example.invalid'],['EMP-2',null],['EMP-3','employee-3@example.invalid']]){
+   const command={schemaVersion:1,operationId:randomUUID(),expectedVersion:current.snapshot.version,payload:{employee:{id,firstName:'Fictional',lastName:'Step4 '+id,phone:'787-555-0123',email,role:'EMPLOYEE',primaryLocationId:home,eligibleLocationIds:[home],positionIds:[]}}};
+   const response=await call('/api/onboarding/people',command);expect(response.status).toBe(200);expect(response.body.state).toBe('saved');await refresh();
+  }
+  expect(smtp.messages).toHaveLength(0);expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_credentials WHERE employee_id LIKE 'EMP-%'")).rows).toEqual([{n:0}]);stages.push({stage:'canonical-setup-readiness-optional-skips-and-people-without-implicit-invitations',state:'passed'});
+  const prepareBatch=(ids:string[])=>({schemaVersion:1,operationId:randomUUID(),expectedVersion:current.snapshot.version,payload:{targets:ids.map(id=>{const person=current.configuration.people.find((person:{id:string})=>person.id===id);return {employeeId:id,expectedEmployeeVersion:person.updatedAt,expectedInvitationRevision:person.invitationRevision};})}});
+  const acceptedBatch=prepareBatch(['EMP-1']);expect((await call('/api/onboarding/invitation-batches',acceptedBatch)).status).toBe(202);expect(smtp.messages).toHaveLength(1);
+  const accepted=await call('/api/onboarding/invitation-batches/'+acceptedBatch.operationId);expect(accepted.status).toBe(200);expect(accepted.body.items[0].commandState).toBe('SAVED');expect(accepted.body.items[0].result.receipt.delivery).toBe('PROVIDER_ACCEPTED');
+  expect((await call('/api/onboarding/invitation-batches',acceptedBatch)).status).toBe(202);expect(smtp.messages).toHaveLength(1);await refresh();
+  smtp.loseNextAcknowledgement();const partialBatch=prepareBatch(['EMP-2','EMP-3']);expect((await call('/api/onboarding/invitation-batches',partialBatch)).status).toBe(202);
+  const partial=await call('/api/onboarding/invitation-batches/'+partialBatch.operationId);expect(partial.status).toBe(200);expect(partial.body.items.map((item:{employeeId:string;commandState:string})=>[item.employeeId,item.commandState])).toEqual([['EMP-2','BLOCKED'],['EMP-3','UNKNOWN']]);
+  expect(smtp.messages).toHaveLength(2);expect((await call('/api/onboarding/invitation-batches',partialBatch)).status).toBe(202);expect(smtp.messages).toHaveLength(2);expect((await company.resource.db.pool.query('SELECT count(*)::int n FROM company_invitations')).rows).toEqual([{n:2}]);stages.push({stage:'real-local-smtp-acceptance-missing-email-unknown-ack-and-no-resend-on-replay',state:'passed'});
+  const message=smtp.messages[0].body.replace(/=\r\n/g,'').replace(/=3D/gi,'='),proof=message.match(/https:\/\/[^\s<>\"]+\/activate#proof=([^\s<>\"]+)/)?.[1];if(!proof)throw Error('Actual local invitation link absent');
+  const employeeContext=await browser.newContext({serviceWorkers:'block',proxy:{server:proxy.server}}),employeePage=await employeeContext.newPage();employeePage.setDefaultTimeout(15000);
+  await employeePage.goto(front+'/login');
+  const activation=await employeePage.evaluate(async({proof,password}:{proof:string;password:string})=>{const response=await fetch('/api/auth/activate',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json','x-nevora-activation':'1'},body:JSON.stringify({proof,password})});return {status:response.status,body:await response.json()};},{proof:decodeURIComponent(proof),password:'Fictional Step4 Employee password 123!'});
+  expect(activation.status).toBe(200);expect(activation.body.state).toBe('activated');
+  await employeePage.getByLabel('Employee ID',{exact:true}).fill('EMP-1');await employeePage.getByLabel('Password',{exact:true}).fill('Fictional Step4 Employee password 123!');await employeePage.getByRole('button',{name:'Sign in',exact:true}).click();await employeePage.waitForURL(front+'/app');
+  expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='EMP-1'")).rows).toEqual([{n:1}]);expect((await employeePage.evaluate(async()=>(await fetch('/api/onboarding/state',{credentials:'same-origin'})).status))).toBe(403);stages.push({stage:'actual-invitation-activation-http-and-normal-employee-browser-sign-in-owner-boundary',state:'passed'});
   admissionComplete=true;
  });
 });
