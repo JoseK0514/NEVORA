@@ -1,5 +1,12 @@
 # Commerce recovery UI — bounded Codex completion
 
+November 13 follow-up: see
+[billing-private-lifetime](2026-11-13-billing-private-lifetime.md) for the actual
+session-revocation RED/GREEN and additive private API lifetime. Its bounded
+foreground financial renewal supersedes the historical "No automatic polling"
+statement below. Other source/evidence statements below retain their named
+historical checkpoint; they are not final combined release acceptance.
+
 November 12, 2026. This supersedes the earlier missing-page note in the finisher
 handoff. Jose explicitly reassigned these two screens: "do them so you can finish
 it and merge into dev, but claude will then remake them". Codex implemented the
