@@ -1,6 +1,7 @@
 import {it,expect,vi} from 'vitest';
 import {readFileSync} from 'node:fs';
-import {ownedIsolatedEnvironment,isolatedTransportAdapter,type OwnedIsolatedRuntime} from './owned-isolated-runtime';
+import {createServer} from 'node:http';
+import {ownedIsolatedEnvironment,isolatedTransportAdapter,probeOwnedIsolatedRuntime,type OwnedIsolatedRuntime} from './owned-isolated-runtime';
 const options=():OwnedIsolatedRuntime=>({environment:'test',controlDatabaseUrl:'postgresql://nv_onboard_aaaaaaaa:fictional@127.0.0.1:54321/nv_onboarding_test_aaaaaaaaaaaaaaaaaaaa',encryptionKey:Buffer.alloc(32,1).toString('base64url'),tokenKey:Buffer.alloc(32,2).toString('base64url'),portalBaseDomain:'portal.example.invalid',origins:['https://alpha.portal.example.invalid'],targets:[{uri:'postgresql://nv_app_aaaaaaaaaaaaaaaaaaaaaaaa:fictional@ep-aaaaaaaa.us-east-1.aws.neon.tech/nv_app_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?sslmode=require',connectionUrl:'postgresql://nv_app_aaaaaaaaaaaaaaaaaaaaaaaa:fictional@127.0.0.1:54321/nv_app_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',name:'nv_app_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',oid:1234,marker:'nevora-step4-owned:11111111-1111-4111-8111-111111111111'}]});
 it('ordinary browser fixtures ignore ambient isolated/provider credentials',()=>{
  vi.stubEnv('NEVORA_OWNED_ISOLATED_TARGETS','ambient');vi.stubEnv('DATABASE_URL','ambient-production');
@@ -31,4 +32,15 @@ it('changes only the SQL transport import and retains every original routing and
  const original=readFileSync('src/lib/workspace-routing/transport.server.ts','utf8'),derived=isolatedTransportAdapter(original);
  expect(derived.replace("from '../../test/integration/owned-isolated-neon'","from '@neondatabase/serverless'")).toBe(original);
  expect(()=>isolatedTransportAdapter(original.replace("from '@neondatabase/serverless'","from 'unreviewed-driver'"))).toThrow();
+});
+it('probes the real fixed-host HTTP boundary and refuses an already interrupted probe before sending',async()=>{
+ let requests=0;const server=createServer((req,res)=>{requests++;res.writeHead(req.url==='/login'&&req.headers.host==='alpha.portal.example.invalid'&&req.headers['x-forwarded-host']==='alpha.portal.example.invalid'&&req.headers['x-forwarded-proto']==='https'?200:403).end();});
+ await new Promise<void>(ok=>server.listen(0,'127.0.0.1',ok));const address=server.address();if(!address||typeof address==='string')throw Error('Owned bind failed');
+ try{
+  const target='http://127.0.0.1:'+address.port;
+  expect(await probeOwnedIsolatedRuntime(target,'https://alpha.portal.example.invalid')).toBe(200);
+  expect(await probeOwnedIsolatedRuntime(target,'https://foreign.portal.example.invalid')).toBe(403);
+  expect(await probeOwnedIsolatedRuntime(target,'https://alpha.portal.example.invalid',AbortSignal.abort())).toBeNull();expect(requests).toBe(2);
+  await expect(probeOwnedIsolatedRuntime('https://provider.example.invalid','https://alpha.portal.example.invalid')).rejects.toThrow();
+ }finally{await new Promise<void>((ok,bad)=>server.close(error=>error?bad(error):ok()));}
 });

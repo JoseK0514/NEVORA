@@ -10,7 +10,7 @@ import { createDisposableExchangeDatabase } from './local-postgres';
 import {createOwnedPgTransport,type OwnedDatabaseIdentity} from './owned-pg-transport';
 import type {SqlExecutor} from '../../lib/notifications/types';
 import {createCalendarLogRedactor} from './calendar-log-redaction';
-import {ownedIsolatedEnvironment,verifyOwnedIsolatedRuntime,isolatedTransportAdapter,type OwnedIsolatedRuntime} from './owned-isolated-runtime';
+import {ownedIsolatedEnvironment,verifyOwnedIsolatedRuntime,isolatedTransportAdapter,probeOwnedIsolatedRuntime,type OwnedIsolatedRuntime} from './owned-isolated-runtime';
 
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
 const applicationRoots=['src','public','services','db'];
@@ -351,7 +351,9 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { i
     while (Date.now() < deadline) {
       options.signal?.throwIfAborted();
       if (child.exitCode !== null) throw new Error('Owned Next process exited before readiness');
-      try { const origin=options.isolatedWorkspaces?.origins[0];const response = await fetch(`${url}/login`, { redirect: 'manual',...(origin?{headers:{host:new URL(origin).host,'x-forwarded-host':new URL(origin).host,'x-forwarded-proto':'https'}}:{}), signal: options.signal ? AbortSignal.any([options.signal, AbortSignal.timeout(3000)]) : AbortSignal.timeout(3000) }); if(options.isolatedWorkspaces)startupResponses[response.status]=(startupResponses[response.status]??0)+1;if (response.ok) { ready = true; break; } }
+      try { const origin=options.isolatedWorkspaces?.origins[0];const status=origin?await probeOwnedIsolatedRuntime(url,origin,options.signal):(await fetch(`${url}/login`,{redirect:'manual',signal:options.signal?AbortSignal.any([options.signal,AbortSignal.timeout(3000)]):AbortSignal.timeout(3000)})).status;
+        if(options.isolatedWorkspaces)startupResponses[status??'io']=(startupResponses[status??'io']??0)+1;if(status!==null&&status>=200&&status<300){ready=true;break;}
+      }
       catch { /* A cold compilation can exceed one poll; retain the bounded startup window. */ }
       await new Promise(resolve => setTimeout(resolve, 150));
     }

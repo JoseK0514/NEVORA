@@ -1,6 +1,7 @@
 import {Pool} from 'pg';
 import {readFile,lstat,realpath} from 'node:fs/promises';
 import {join} from 'node:path';
+import {request} from 'node:http';
 export type OwnedIsolatedTarget={uri:string;connectionUrl:string;name:string;oid:number;marker:string};
 export type OwnedIsolatedRuntime={environment:'test';controlDatabaseUrl:string;encryptionKey:string;tokenKey:string;portalBaseDomain:string;origins:string[];targets:OwnedIsolatedTarget[]};
 function fail():never{throw Error('Invalid owned isolated browser runtime');}
@@ -39,4 +40,15 @@ export function isolatedTransportAdapter(original:string){
  const from="from '@neondatabase/serverless'";
  if(original.split(from).length!==2)fail();
  return original.replace(from,"from '../../test/integration/owned-isolated-neon'");
+}
+/** Node24 fetch omits an explicit Host override. Probe the owned ingress with
+ * the same native HTTP header transport as the fixed browser domain proxy. */
+export async function probeOwnedIsolatedRuntime(upstream:string,origin:string,signal?:AbortSignal):Promise<number|null>{
+ const url=new URL(upstream),canonical=new URL(origin);
+ if(url.origin!==upstream||url.protocol!=='http:'||url.hostname!=='127.0.0.1'||!url.port||canonical.origin!==origin||canonical.protocol!=='https:'||!canonical.hostname.endsWith('.example.invalid'))fail();
+ if(signal?.aborted)return null;
+ return new Promise(resolve=>{
+  const pending=request(upstream+'/login',{method:'GET',agent:false,headers:{host:canonical.host,'x-forwarded-host':canonical.host,'x-forwarded-proto':'https'},signal:signal?AbortSignal.any([signal,AbortSignal.timeout(3000)]):AbortSignal.timeout(3000)},response=>{response.resume();resolve(response.statusCode??null);});
+  pending.once('error',()=>resolve(null));pending.end();
+ });
 }
