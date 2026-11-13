@@ -389,3 +389,15 @@ test('combined Step4 lifecycle remains a mandatory exact-source browser gate wit
  for(const suffix of ['/**/*.json','/**/*.png','/**/*-trace.zip'])assert(upload.with.path.split('\n').includes('${{ runner.temp }}/nevora-step4-local'+suffix));
  assert.equal(job['timeout-minutes'],50);
 });
+
+// The functional billing entry must travel with the existing combined release artifact.
+test('central billing is a mandatory source-bound two-browser gate in the combined lifecycle artifact',()=>{
+ const job=workflow.jobs['phase-d-attendance-ui'],gate=job.steps.find(step=>step.name==='Central billing entry and callback gate');
+ assert(gate,'Central billing entry gate is absent');
+ assert.equal(gate.run,'node scripts/central-billing-local-acceptance.mjs');
+ assert.equal(gate.if,"${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}");
+ assert.equal(gate['continue-on-error'],undefined);
+ assert.equal(gate.env.NEVORA_CENTRAL_BILLING_EXPECTED_SHA,'${{ github.event.pull_request.head.sha || github.sha }}');
+ assert.equal(gate.env.NEVORA_CENTRAL_BILLING_EVIDENCE,'${{ runner.temp }}/nevora-step4-local/central-billing');
+ const index=job.steps.indexOf(gate);assert(index>job.steps.findIndex(step=>step.name==='Combined company lifecycle and recovery gate'));assert(index<job.steps.findIndex(step=>step.name==='Upload combined company lifecycle evidence'));
+});

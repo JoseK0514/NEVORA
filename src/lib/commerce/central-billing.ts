@@ -12,9 +12,9 @@ type Transport=(input:string,init:RequestInit)=>Promise<Response>;
 type Intent={action:BillingAction;lang:BillingLanguage;key:string;path:string;body:Readonly<{lang:BillingLanguage;plan?:'small'|'team'}>};
 const object=(value:unknown):value is Record<string,unknown>=>!!value&&typeof value==='object'&&!Array.isArray(value);
 export function takeBillingFragment(location:{hash:string;pathname:string;search:string},scrub:(url:string)=>void):string|null{
- const proof=/^#handoff=([A-Za-z0-9_-]{43})$/.exec(location.hash)?.[1]??null;
- if(location.hash)scrub(location.pathname+location.search);
- return proof;
+ const proof=location.search?'':/^#handoff=([A-Za-z0-9_-]{43})$/.exec(location.hash)?.[1]??null;
+ if(location.hash||location.search)scrub(location.pathname);
+ return proof||null;
 }
 export function stripeBillingDestination(value:unknown):string{
  if(!object(value)||typeof value.url!=='string'||value.url.length>8192)throw Error('Invalid billing destination');

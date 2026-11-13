@@ -308,6 +308,12 @@ jobs:
           NEVORA_STEP4_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           NEVORA_STEP4_EVIDENCE: ${{ runner.temp }}/nevora-step4-local
         run: node scripts/step4-local-acceptance.mjs
+      - name: Central billing entry and callback gate
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          NEVORA_CENTRAL_BILLING_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          NEVORA_CENTRAL_BILLING_EVIDENCE: ${{ runner.temp }}/nevora-step4-local/central-billing
+        run: node scripts/central-billing-local-acceptance.mjs
       - name: Upload combined company lifecycle evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
