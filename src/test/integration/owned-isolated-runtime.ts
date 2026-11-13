@@ -1,6 +1,6 @@
 import {Pool} from 'pg';
 import {readFile,lstat,realpath} from 'node:fs/promises';
-import {resolve,join} from 'node:path';
+import {join} from 'node:path';
 export type OwnedIsolatedTarget={uri:string;connectionUrl:string;name:string;oid:number;marker:string};
 export type OwnedIsolatedRuntime={environment:'test';controlDatabaseUrl:string;encryptionKey:string;tokenKey:string;portalBaseDomain:string;origins:string[];targets:OwnedIsolatedTarget[]};
 function fail():never{throw Error('Invalid owned isolated browser runtime');}
