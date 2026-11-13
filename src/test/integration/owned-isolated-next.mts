@@ -6,9 +6,13 @@ const canonical=new URL(origins[0]);if(canonical.protocol!=='https:'||!canonical
 // Public hostname/port are the registered company identity. Only the actual
 // socket uses the owned ephemeral loopback port; no host-trust bypass is added.
 const application=next({dev:true,dir:process.cwd(),hostname:canonical.hostname,port:443});
-await application.prepare();const handle=application.getRequestHandler();
+process.stdout.write('Owned isolated ingress: prepare-start\n');
+await application.prepare();process.stdout.write('Owned isolated ingress: prepare-complete\n');const handle=application.getRequestHandler();
+const refused=new Set<string>();
 const server=createServer((req,res)=>{
- if(req.headers.host!==canonical.host||req.headers['x-forwarded-host']!==canonical.host||req.headers['x-forwarded-proto']!=='https'){res.writeHead(403).end();return;}
+ const reasons=[req.headers.host!==canonical.host?'host':null,req.headers['x-forwarded-host']!==canonical.host?'forwarded-host':null,req.headers['x-forwarded-proto']!=='https'?'protocol':null].filter(Boolean).join(',');
+ if(reasons){if(!refused.has(reasons)&&refused.size<4){refused.add(reasons);process.stdout.write('Owned isolated ingress: refused-'+reasons+'\n');}res.writeHead(403).end();return;}
  void handle(req,res).catch(()=>{if(!res.headersSent)res.writeHead(500);res.end();});
 });
 await new Promise<void>((ok,bad)=>{server.once('error',bad);server.listen(port,'127.0.0.1',ok);});
+process.stdout.write('Owned isolated ingress: listening\n');

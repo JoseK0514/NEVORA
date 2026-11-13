@@ -346,10 +346,12 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { i
     options.signal?.throwIfAborted();
     const deadline = Date.now() + 90000;
     let ready = false;
+    const startupResponses:Record<string,number>={};
+    if(options.isolatedWorkspaces)metadata.startupResponses=startupResponses;
     while (Date.now() < deadline) {
       options.signal?.throwIfAborted();
       if (child.exitCode !== null) throw new Error('Owned Next process exited before readiness');
-      try { const origin=options.isolatedWorkspaces?.origins[0];const response = await fetch(`${url}/login`, { redirect: 'manual',...(origin?{headers:{host:new URL(origin).host,'x-forwarded-host':new URL(origin).host,'x-forwarded-proto':'https'}}:{}), signal: options.signal ? AbortSignal.any([options.signal, AbortSignal.timeout(3000)]) : AbortSignal.timeout(3000) }); if (response.ok) { ready = true; break; } }
+      try { const origin=options.isolatedWorkspaces?.origins[0];const response = await fetch(`${url}/login`, { redirect: 'manual',...(origin?{headers:{host:new URL(origin).host,'x-forwarded-host':new URL(origin).host,'x-forwarded-proto':'https'}}:{}), signal: options.signal ? AbortSignal.any([options.signal, AbortSignal.timeout(3000)]) : AbortSignal.timeout(3000) }); if(options.isolatedWorkspaces)startupResponses[response.status]=(startupResponses[response.status]??0)+1;if (response.ok) { ready = true; break; } }
       catch { /* A cold compilation can exceed one poll; retain the bounded startup window. */ }
       await new Promise(resolve => setTimeout(resolve, 150));
     }
