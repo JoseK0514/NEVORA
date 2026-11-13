@@ -374,3 +374,5 @@ acceptance remain required. No development push, provider write or finite-window
 start has occurred. Original A/B-only alias permission is unchanged: prepare an
 exact protected replacement before requesting the additional signup-staging
 binding and its closed fallback. Main and production remain unauthorized.
+
+The final preparation at95af retained12,900 passing unit tests/936 skipped, but stopped on React render-ref lint errors in the new central component. The correction at41462ac3256a49531c10ae82558dcea51e20d60b renders pending operation controls through React state, retires that state on denial/close/pagehide and preserves transport/immutable intent custody. Full lint now has0errors/one existing monitor warning; all339 release-engineering checks and types pass. The actual source-bound central browser wrapper passes both engines/10checks/32measurements with all runtimes closed. No privacy, retry, deadline or runtime-error assertion was relaxed. New six-guide generation and complete frozen-source qualification follow; older passes are not relabeled.
