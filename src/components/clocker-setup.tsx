@@ -60,7 +60,7 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
     event.preventDefault();
     if (busy.current || pending || feedback?.uncertain) return;
     const code = input.current?.value.trim() ?? '';
-    if (!/^nev_enr_[a-f0-9]{64}$/.test(code)) {
+    if (code.length > 4096 || !(/^nev_enr_[a-f0-9]{64}$/.test(code) || /^nw1_v1\.[A-Za-z0-9_-]{16}\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{22}$/.test(code))) {
       setFeedback({ message: 'Paste the complete setup code from Owner Settings.', uncertain: false }); return;
     }
     busy.current = true; setPending(true); setFeedback(null);
@@ -97,7 +97,7 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
         <p className={styles.kioskLead}>{t("Ask your Owner to add this device in Settings → Clocker tablets. Then paste the one-use setup code.")}</p>
         <form onSubmit={connect} className={styles.tabletForm}>
           <fieldset disabled={pending || Boolean(feedback?.uncertain)}>
-            <label data-clocker-setup-field className={styles.field}>{t("Setup code")}<textarea ref={input} name="enrollmentToken" rows={3} required maxLength={72} autoComplete="off" autoCapitalize="none" spellCheck={false} aria-describedby="clocker-setup-help" /></label>
+            <label data-clocker-setup-field className={styles.field}>{t("Setup code")}<textarea ref={input} name="enrollmentToken" rows={3} required maxLength={4096} autoComplete="off" autoCapitalize="none" spellCheck={false} aria-describedby="clocker-setup-help" /></label>
             <p id="clocker-setup-help" className={styles.hint}>{t("This is the tablet setup code, not an employee PIN. Cookies must be allowed.")}</p>
             <button className="button primary" type="submit">{t(pending ? 'Checking setup...' : 'Connect tablet')}{!pending ? <ClockerIcon name="arrow" size={20}/> : null}</button>
           </fieldset>
