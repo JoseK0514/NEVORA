@@ -26,7 +26,7 @@ export function BillingRecovery({lang,billingOrigin,payrollEnabled}: {lang:AuthL
   const controller=createPrivateSnapshotController<BillingSnapshot>(view=>{
    if(view.paused){cancelOpening();setState({phase:'unavailable'});return;}
    if(!view.snapshot){setState({phase:'loading'});return;}
-   if(view.snapshot.state==='unavailable'){if(view.snapshot.reason==='access_denied')cancelOpening();setState({phase:view.snapshot.reason==='access_denied'?'denied':'unavailable'});return;}
+   if(view.snapshot.state==='unavailable'){cancelOpening();setState({phase:view.snapshot.reason==='access_denied'?'denied':'unavailable'});return;}
    setState({phase:'ready',status:view.snapshot.status});
   },async signal=>{
    const response=await fetch('/api/commerce/status',{cache:'no-store',credentials:'same-origin',redirect:'error',signal});
