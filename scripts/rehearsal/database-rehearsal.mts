@@ -51,7 +51,7 @@ const checks: Check[] = [];
 const harnessFiles = ['database-rehearsal.mts', 'guards.mts', 'guards.check.mts', 'migration-plan.mts', 'migration-plan.check.mts', 'sql-diagnostics.mts',
   'sql-diagnostics.check.mts', 'fixture-diagnostics.setup.ts', 'fixture-diagnostics.integration.ts', 'vitest.fixture-diagnostics.config.mts', 'tsconfig.json'];
 const harnessHashes = () => Object.fromEntries(harnessFiles.map(name => [name, sha(readFileSync(join('scripts/rehearsal', name)))]));
-const report = { candidate, observedPr: 'https://github.com/JoseK0514/NEVORA/pull/16', startedAt: new Date().toISOString(), completedAt: '', node: process.version, image,
+const report = { candidate, historicalHarnessOriginPr: 'https://github.com/JoseK0514/NEVORA/pull/16', startedAt: new Date().toISOString(), completedAt: '', node: process.version, image,
   ownedConnectionTimeoutMillis: 15000,
   harnessSha256: harnessHashes(), dependencyLockSha256: sha(readFileSync('package-lock.json')),
   migrationPlanSource: plan.source, migrationPlanInputs: plan.inputs,
@@ -467,11 +467,19 @@ try {
   await scenario('upgrade-pre-passkeys', async () => {
     const { name, client } = await database(source, 'prepasskeys');
     try {
-      await migrations(client, base.filter(x => x !== '0035_passkeys.sql')); const f = await seedPeople(client);
-      await migrations(client, ['0031_native_payroll.sql', '0032_company_access_invitations.sql', '0042_company_invitation_lifetime.sql']); await enrich(client, f);
+      // 0060 replaces the function introduced by 0035. Applying it to the
+      // pre-passkey fixture manufactures an impossible dependency state. Keep
+      // both unapplied, then upgrade every missing full filename in canonical
+      // order, including the later final conversations migration.
+      const priorBase = base.filter(name => !['0035_passkeys.sql', '0060_monotonic_login_fence.sql'].includes(name));
+      const priorFinal = ['0031_native_payroll.sql', '0032_company_access_invitations.sql', '0042_company_invitation_lifetime.sql'];
+      const missing = readMigrationPlan(process.cwd(), [...priorBase, ...priorFinal]).missing;
+      assert.deepEqual(missing, ['0035_passkeys.sql', '0060_monotonic_login_fence.sql', '0062_conversations.sql'], 'Review the pre-passkey upgrade dependency chain.');
+      await migrations(client, priorBase); const f = await seedPeople(client);
+      await migrations(client, priorFinal); await enrich(client, f);
       const before = await tableState(client);
-      await check('upgrade-pre-passkeys', '0035 preserves populated payroll, Company Access, credentials and sessions', async () => {
-        await migrations(client, ['0035_passkeys.sql']); assert.deepEqual(await tableState(client, before), before);
+      await check('upgrade-pre-passkeys', 'missing passkey/login-fence/conversations chain preserves populated payroll, Company Access, credentials and sessions', async () => {
+        await migrations(client, missing); assert.deepEqual(await tableState(client, before), before);
         assert.equal((await client.query('SELECT count(*)::int n FROM employee_passkeys')).rows[0].n, 0);
       });
       await enroll(client, f); await verifyBehavior(client, f, 'upgrade-pre-passkeys');

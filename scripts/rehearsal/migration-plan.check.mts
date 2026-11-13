@@ -151,6 +151,12 @@ test('plans only missing full filenames when an upgraded database already has th
   assert.deepEqual(readMigrationPlan(process.cwd(),previous).missing,supplemental);
   assert.deepEqual(readMigrationPlan(process.cwd(),current).missing,[]);
 });
+test('orders the missing passkey dependency chain before later final migrations without reapplying adoption', () => {
+  const current = readMigrationPlan(process.cwd()).current;
+  const deferred = ['0035_passkeys.sql', '0060_monotonic_login_fence.sql', '0062_conversations.sql'];
+  const applied = current.filter(file => !deferred.includes(file));
+  assert.deepEqual(readMigrationPlan(process.cwd(), applied).missing, deferred);
+});
 test('stops unknown, prefix-only, duplicate and historical renamed ledger entries before upgrade planning', () => {
   for(const applied of [['0038'],['0038_native_payroll_setup_records.sql'],['0026_tenant_ownership_expand.sql'],['0001_initial.sql','0001_initial.sql']]){
     assert.throws(()=>readMigrationPlan(process.cwd(),applied),/ledger/);
