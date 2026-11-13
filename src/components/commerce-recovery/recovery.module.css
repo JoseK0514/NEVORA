@@ -21,3 +21,8 @@
 .footer { margin:24px 0 0; font:var(--sig-type-callout); color:var(--sig-ink-2); }
 .footer a { color:var(--sig-action); }
 @media(max-width:420px) { .actions { align-items:stretch; flex-direction:column; } .actions>* { width:100%; } .brand { margin-bottom:32px; } }
+
+.language { border: 0; padding: 0; margin: 1rem 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+.language legend { margin-bottom: .5rem; font-weight: 600; }
+.language button[aria-pressed='true'] { outline: 2px solid currentColor; outline-offset: 2px; }
+.plans { padding-left: 1.25rem; overflow-wrap: anywhere; }

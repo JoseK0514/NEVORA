@@ -18,9 +18,12 @@ it.each(['chromium','webkit'] as const)('opens the central billing entry as an a
   await context.tracing.start({screenshots:true,snapshots:true});
   const page=await context.newPage();page.on('pageerror',()=>errors.push('pageerror'));
   try{
-   const response=await page.goto(app.url+'/pages/plans');
-   expect(response?.status(),'The canonical public billing entry must exist before hosted testing').toBe(200);
-   await page.getByRole('heading',{name:'NEVORA billing',exact:true}).waitFor();
+   for(const [path,title] of [['/pages/plans','NEVORA billing'],['/pages/nevora-billing','NEVORA billing'],['/pages/nevora-billing-return','NEVORA billing'],['/pages/es-facturacion','Facturación de NEVORA'],['/pages/es-pago','Facturación de NEVORA']]){
+    const response=await page.goto(app.url+path);
+    expect(response?.status(),'The canonical public billing entry must exist before hosted testing').toBe(200);
+    expect(response?.headers()['referrer-policy']).toBe('no-referrer');expect(response?.headers()['cache-control']).toContain('no-store');expect(response?.headers()['content-security-policy']).toContain("frame-ancestors 'none'");
+    await page.getByRole('heading',{name:title,exact:true}).waitFor();
+   }
    expect(errors).toEqual([]);expect(foreign).toEqual([]);complete=true;
   }finally{await page.screenshot({path:join(evidence,'entry.png'),fullPage:true}).catch(()=>{});await context.tracing.stop({path:join(evidence,'trace.zip')});await context.close();}
  }finally{
