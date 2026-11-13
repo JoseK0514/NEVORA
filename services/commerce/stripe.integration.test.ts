@@ -143,7 +143,10 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
   it.each(['foreign-customer','ambiguous','pagination','missing'] as const)('retains legacy exclusion after unsafe expired-session observation: %s',async reason=>{
     const {session}=await legacyCheckout();Object.assign(session,{status:'expired',url:null});
     if(reason==='ambiguous')provider.sessions.set('cs_duplicate',{...session,id:'cs_duplicate'});
-    else vi.spyOn(provider.client.checkout.sessions,'list').mockResolvedValueOnce({object:'list',url:'/v1/checkout/sessions',has_more:reason==='pagination',data:reason==='missing'?[]:[{...session,customer:reason==='foreign-customer'?'cus_foreign':session.customer} as unknown as Stripe.Checkout.Session]});
+    else {
+      const observed=await provider.client.checkout.sessions.list({customer:session.customer,limit:100});
+      vi.spyOn(provider.client.checkout.sessions,'list').mockResolvedValueOnce({...observed,lastResponse:observed.lastResponse,has_more:reason==='pagination',data:reason==='missing'?[]:[{...session,customer:reason==='foreign-customer'?'cus_foreign':session.customer} as unknown as Stripe.Checkout.Session]});
+    }
     expect(await billing.reconcile()).toEqual({checked:1,failed:reason==='missing'?0:1});
     expect((await pool.query('SELECT reconciled_expired_at FROM commerce.checkout_intents')).rows).toEqual([{reconciled_expired_at:null}]);
     await expect(billing.checkout(await store.business(id),randomUUID())).rejects.toMatchObject({code:'legacy_operation_reconciliation_required',status:409});

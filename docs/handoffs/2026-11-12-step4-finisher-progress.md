@@ -233,3 +233,40 @@ Full final-source checks, fresh whole-branch review, immutable candidate and act
 development qualification remain pending. No candidate/development push or hosted
 provider effect follows from the local results. The original finite hosted packet
 remains held/unstarted with null timestamps and zero effects.
+
+
+## November 13 — final review I1 and corrective qualification
+
+The single fresh whole-branch review of `f5859610641da8e8eee5299bd37d923d96438468`
+reported REQUEST_CHANGES: zero Critical, one Important, zero Minor. The reviewer
+reproduced an expired unresolved pre-receipt Checkout being bypassed by a fresh
+key (sessions 1 to 2) with owned PostgreSQL and the real SDK fixture. The original
+210 SQL/SDK passes did not cover this case. No candidate was published.
+
+The bounded correction is committed at `7d6f6fdca`: business-locked legacy
+exclusion now applies across keys and actions independently of local expiry.
+Only an exact Checkout stage identifies a modern intent; a root/refusal alone
+cannot adopt a legacy intent. The explicit additive 0005 migration now includes
+an immutable `reconciled_expired_at` observation and readiness requires it.
+Identity-checked, unambiguous provider expiry can safely release exclusion;
+missing, paginated, ambiguous or wrong-customer observations cannot. Completed
+legacy setup remains held until reconciliation links the verified subscription;
+a verified canceled predecessor still permits its legitimate successor. Original
+intents and actor uncertainty are preserved, with no invented old actor or receipt
+deletion. Rollback retains this column/proof and disables affected billing mutations.
+Stripe documents that a provider-expired Session cannot be completed:
+https://docs.stripe.com/api/checkout/sessions/expire (read November 13).
+
+Ten regression/readiness cases failed before implementation. After correction,
+all 14 selected tests passed; complete commerce then passed 221 tests across
+16 files with zero skips, including an additional missing-observation control.
+The first typecheck found a missing SDK-response metadata field in a controlled
+negative test fixture; the fixture now retains metadata from a real SDK response,
+and the second typecheck passed. No assertion or compiler rule was suppressed.
+
+The single fix pass is still being qualified; no second reviewer is dispatched.
+Fresh whole-source/guide/build and the complete 18-stage/48-cell owned journey,
+then candidate/development CI and all 14 artifact families remain mandatory.
+The original review's declined hosted/real-provider/physical/legal/independent
+and main-promotion topics remain separate gates. This correction is not hosted
+migration execution, production approval or closure of original independent findings.
