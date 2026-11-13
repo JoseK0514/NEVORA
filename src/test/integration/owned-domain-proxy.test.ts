@@ -2,8 +2,8 @@ import {it,expect} from 'vitest';
 import {createServer,request} from 'node:http';
 import {startOwnedDomainProxy} from './owned-domain-proxy';
 it('forwards real bodies/cookies with fixed host mapping, preserves redirects and refuses foreign origins',async()=>{
- const seen:{host:string|undefined;origin:string|undefined;cookie:string|undefined;body:string}[]=[];
- const upstream=createServer((req,res)=>{let body='';req.setEncoding('utf8');req.on('data',chunk=>{body+=chunk;});req.on('end',()=>{seen.push({host:req.headers.host,origin:req.headers.origin,cookie:req.headers.cookie,body});res.writeHead(303,{location:'https://alpha.portal.example.invalid/app','set-cookie':'fictional_cookie=owned; Path=/; HttpOnly'});res.end('Original upstream body');});});
+ const seen:{url:string|undefined;host:string|undefined;origin:string|undefined;cookie:string|undefined;body:string}[]=[];
+ const upstream=createServer((req,res)=>{let body='';req.setEncoding('utf8');req.on('data',chunk=>{body+=chunk;});req.on('end',()=>{seen.push({url:req.url,host:req.headers.host,origin:req.headers.origin,cookie:req.headers.cookie,body});res.writeHead(303,{location:'https://alpha.portal.example.invalid/app','set-cookie':'fictional_cookie=owned; Path=/; HttpOnly'});res.end('Original upstream body');});});
  await new Promise<void>(ok=>upstream.listen(0,'127.0.0.1',ok));const address=upstream.address();if(!address||typeof address==='string')throw Error('Owned test bind failed');
  const proxy=await startOwnedDomainProxy('http://127.0.0.1:'+address.port,{'http://alpha.step4.invalid':'https://alpha.portal.example.invalid'});
  const call=(destination:string,origin:string)=>new Promise<{status:number;location:string|undefined;cookie:string[]|undefined;body:string}>((ok,bad)=>{
@@ -11,7 +11,7 @@ it('forwards real bodies/cookies with fixed host mapping, preserves redirects an
  });
  try{
   expect(await call('http://alpha.step4.invalid/login','http://alpha.step4.invalid')).toEqual({status:303,location:'http://alpha.step4.invalid/app',cookie:['fictional_cookie=owned; Path=/; HttpOnly'],body:'Original upstream body'});
-  expect(seen).toEqual([{host:'alpha.portal.example.invalid',origin:'https://alpha.portal.example.invalid',cookie:'fictional_cookie=owned',body:'Original browser body'}]);
+  expect(seen).toEqual([{url:'https://alpha.portal.example.invalid/login',host:'alpha.portal.example.invalid',origin:'https://alpha.portal.example.invalid',cookie:'fictional_cookie=owned',body:'Original browser body'}]);
   await call('http://alpha.step4.invalid/login','https://foreign.example.invalid');expect(seen.at(-1)?.origin).toBe('https://foreign.example.invalid');
   expect((await call('http://unapproved.step4.invalid/login','http://unapproved.step4.invalid')).status).toBe(403);expect(seen).toHaveLength(2);
  }finally{await proxy.close();await new Promise<void>((ok,bad)=>upstream.close(error=>error?bad(error):ok()));}
