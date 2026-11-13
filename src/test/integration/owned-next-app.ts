@@ -10,6 +10,7 @@ import { createDisposableExchangeDatabase } from './local-postgres';
 import {createOwnedPgTransport,type OwnedDatabaseIdentity} from './owned-pg-transport';
 import type {SqlExecutor} from '../../lib/notifications/types';
 import {createCalendarLogRedactor} from './calendar-log-redaction';
+import {ownedIsolatedEnvironment,verifyOwnedIsolatedRuntime,isolatedTransportAdapter,type OwnedIsolatedRuntime} from './owned-isolated-runtime';
 
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
 const applicationRoots=['src','public','services','db'];
@@ -160,7 +161,9 @@ export function ownedDeviceEnvironment(origin:string,enabled=false):Record<strin
  * generated dev type-reference paths. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { commerceRecoveryEnabled?:boolean; mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { isolatedWorkspaces?:OwnedIsolatedRuntime;commerceRecoveryEnabled?:boolean; mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+  const isolatedEnvironment=ownedIsolatedEnvironment(options.isolatedWorkspaces);
+  if(options.isolatedWorkspaces){if(options.emptyDatabase!==true||options.commerceRecoveryEnabled)throw Error('Owned isolated admission requires empty unused fallback and explicit commerce transport');await verifyOwnedIsolatedRuntime(options.isolatedWorkspaces);}
   if (options.clockerPinKey !== undefined && !/^[a-f0-9]{64}$/.test(options.clockerPinKey)) throw new Error('Owned Clocker PIN key must be 32-byte hex.');
   validateOwnedMailOptions(options);
   const advisorEnvironment = ownedAdvisorEnvironment(options);
@@ -265,9 +268,16 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
     await access(join(source, 'node_modules/next/dist/bin/next'));
     copyOwnedDependencies(source, mirror);
     const originalDb = await readFile(join(source, 'src/lib/db.ts'), 'utf8');
-    const adapter = createOwnedDbAdapter(originalDb);
+    const adapter = options.isolatedWorkspaces?originalDb:createOwnedDbAdapter(originalDb);
     await writeFile(join(mirror, 'src/lib/db.ts'), adapter);
     Object.assign(mirrorHashes, hashes, { 'src/lib/db.ts': hash(adapter) });
+    const substitutedFiles=options.isolatedWorkspaces?[]:['src/lib/db.ts'];
+    let isolatedTransport;
+    if(options.isolatedWorkspaces){
+      const path='src/lib/workspace-routing/transport.server.ts',original=await readFile(join(source,path),'utf8'),derived=isolatedTransportAdapter(original);
+      await writeFile(join(mirror,path),derived);mirrorHashes[path]=hash(derived);substitutedFiles.push(path);
+      isolatedTransport={originalHash:hash(original),derivedHash:hash(derived),scope:'Owned loopback Neon SQL transport only; original routing/role/binding/session/business guards retained'};
+    }
     let generatedTypeReferences;
     if (pinDevTypeReferences) {
       const originalTypes = await readFile(join(source, 'next-env.d.ts'), 'utf8');
@@ -275,14 +285,16 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
       await writeFile(join(mirror, 'next-env.d.ts'), derivedTypes);
       generatedTypeReferences = { originalHash: hash(originalTypes), derivedHash: hash(derivedTypes), reason: 'Next 16.4.2 dev generated type-reference paths' };
       mirrorHashes['next-env.d.ts'] = hash(derivedTypes);
+      substitutedFiles.push('next-env.d.ts');
     }
-    const manifestBytes = JSON.stringify({ checkpoint: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: source, encoding: 'utf8' }).trim(), hashes, originalDbHash: hash(originalDb), substitutedDbHash: hash(adapter), substitutedFiles: pinDevTypeReferences ? ['src/lib/db.ts', 'next-env.d.ts'] : ['src/lib/db.ts'], generatedTypeReferences }, null, 2);
+    const manifestBytes = JSON.stringify({ checkpoint: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: source, encoding: 'utf8' }).trim(), hashes, originalDbHash: hash(originalDb), substitutedDbHash: hash(adapter), substitutedFiles,isolatedTransport, generatedTypeReferences }, null, 2);
     await writeFile(join(root, 'source-manifest.json'), manifestBytes);
     sourceManifestHash = hash(manifestBytes); mirrorPrepared = true;
     await verifyMirror();
     const port = await availablePort(), url = `http://127.0.0.1:${port}`;
     const env: NodeJS.ProcessEnv = {
       PATH: process.env.PATH, HOME: process.env.HOME, NODE_ENV: 'development', CI: '1',
+      ...isolatedEnvironment,
       NEVORA_CLOCKER_PIN_KEY: options.clockerPinKey,
       NEXT_PUBLIC_NEVORA_PASSKEYS: options.passkeysEnabled === true ? 'on' : 'off',
       NEVORA_MOBILE_ACCESS_ENABLED:options.mobileAccessEnabled===true?'true':'false',
@@ -335,7 +347,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
     while (Date.now() < deadline) {
       options.signal?.throwIfAborted();
       if (child.exitCode !== null) throw new Error('Owned Next process exited before readiness');
-      try { const response = await fetch(`${url}/login`, { redirect: 'manual', signal: options.signal ? AbortSignal.any([options.signal, AbortSignal.timeout(3000)]) : AbortSignal.timeout(3000) }); if (response.ok) { ready = true; break; } }
+      try { const origin=options.isolatedWorkspaces?.origins[0];const response = await fetch(`${url}/login`, { redirect: 'manual',...(origin?{headers:{host:new URL(origin).host,'x-forwarded-host':new URL(origin).host,'x-forwarded-proto':'https'}}:{}), signal: options.signal ? AbortSignal.any([options.signal, AbortSignal.timeout(3000)]) : AbortSignal.timeout(3000) }); if (response.ok) { ready = true; break; } }
       catch { /* A cold compilation can exceed one poll; retain the bounded startup window. */ }
       await new Promise(resolve => setTimeout(resolve, 150));
     }

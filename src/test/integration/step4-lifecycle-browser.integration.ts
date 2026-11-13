@@ -8,13 +8,14 @@ import {createOwnedNextApp} from './owned-next-app';
 import {withOwnedTestResources} from './owned-test-resources';
 import {activateInitialOwner} from '@/lib/onboarding/owner-activation.server';
 import {openOnboardingValue} from '@/lib/onboarding/crypto.server';
+import {verifyOwnedIsolatedRuntime} from './owned-isolated-runtime';
 
-it('executes the combined fictional-company lifecycle with normal browser sign-in on its provisioned database',async()=>{
+it('admits normal browser sign-in on the actual provisioned fictional-company database',async()=>{
  const root=process.env.NEVORA_STEP4_EVIDENCE;if(!root)throw Error('Explicit Step4 evidence directory required');await mkdir(root,{recursive:true});
  const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json'))('playwright');
- const stages:{stage:string;state:string}[]=[],f=await onboardingJourneyFixture();let complete=false;
+ const stages:{stage:string;state:string}[]=[],f=await onboardingJourneyFixture();let admissionComplete=false;
  await withOwnedTestResources(async defer=>{
-  defer(()=>writeFile(join(root,'report.json'),JSON.stringify({complete,stages,scope:'Combined source; owned provisioning and actual browser password sign-in. HTTP domain and Neon SQL transport adapters are local; no hosted/TLS/provider acceptance.'},null,2)));
+  defer(()=>writeFile(join(root,'report.json'),JSON.stringify({complete:false,admissionComplete,remaining:'Complete company lifecycle and resilience remain pending after browser admission.',stages,scope:'Combined source; owned provisioning and actual browser password sign-in. HTTP domain and Neon SQL transport adapters are local; no hosted/TLS/provider acceptance.'},null,2)));
   defer(()=>f.close());
   const company=await f.createCompany('step4-alpha','step4-alpha@example.invalid'),grant=await company.grant(),password='Fictional Step4 Owner password 123!';
   expect((await activateInitialOwner(company.binding,{schemaVersion:1,operationId:randomUUID(),proof:grant.proof,password})).state).toBe('activated');expect((await company.work()).state).toBe('complete');
@@ -28,6 +29,10 @@ it('executes the combined fictional-company lifecycle with normal browser sign-i
    return {uri,connectionUrl:target.href,name:company.resource.db.name,oid,marker};
   });
   const options={emptyDatabase:true,isolatedWorkspaces:{environment:'test' as const,controlDatabaseUrl:f.db.connectionUrl,encryptionKey:f.config.encryptionKey,tokenKey:f.config.workspaceTokenKey,portalBaseDomain:f.config.portalBaseDomain,origins:[company.origin],targets}};
+  await company.resource.db.pool.query(`COMMENT ON DATABASE "${company.resource.db.name}" IS 'foreign-marker'`);
+  await expect(verifyOwnedIsolatedRuntime(options.isolatedWorkspaces)).rejects.toThrow('Invalid owned isolated browser runtime');
+  await company.resource.db.pool.query(`COMMENT ON DATABASE "${company.resource.db.name}" IS '${marker}'`);
+  stages.push({stage:'substituted-company-identity-refused-before-launch',state:'passed'});
   const app=await createOwnedNextApp(join(root,'app'),options);defer(()=>app.close());
   const browser=await runtime.chromium.launch({headless:true});defer(()=>browser.close());const context=await browser.newContext({serviceWorkers:'block'}),page=await context.newPage();page.setDefaultTimeout(15000);
   await context.route('**/*',async(route:{request():{url():string;allHeaders():Promise<Record<string,string>>};abort(reason:string):Promise<void>;fetch(options:unknown):Promise<unknown>;fulfill(options:unknown):Promise<void>})=>{
@@ -37,6 +42,6 @@ it('executes the combined fictional-company lifecycle with normal browser sign-i
   });
   await page.goto(company.origin+'/login');await page.getByLabel('Employee ID',{exact:true}).fill('OWNER-1');await page.getByLabel('Password',{exact:true}).fill(password);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(company.origin+'/app');
   expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='OWNER-1'")).rows).toEqual([{n:1}]);stages.push({stage:'normal-owner-browser-sign-in-on-provisioned-company',state:'passed'});
-  complete=true;
+  admissionComplete=true;
  });
 });
