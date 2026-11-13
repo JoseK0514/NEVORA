@@ -3,6 +3,7 @@ import {Pool} from 'pg';
 import {createCommerce} from './service';
 import {CommerceStore,type Business} from './store';
 import {CommerceError} from './model';
+import {billingActorHash} from './billing-operations';
 const pools:Pool[]=[];
 afterEach(async()=>{vi.restoreAllMocks();await Promise.all(pools.splice(0).map(p=>p.end()));});
 function setup(path='/v1/plan-change'){
@@ -15,18 +16,23 @@ function setup(path='/v1/plan-change'){
  const billing={checkout:vi.fn(async()=>'https://checkout.stripe.com/fictional'),portal:vi.fn(async()=>'https://billing.stripe.com/fictional'),webhook:vi.fn(),planChange:vi.fn(async()=>({url:'https://billing.stripe.com/fictional',plan:'team' as const,effective:'after_payment' as const}))};
  const headcount=vi.fn(async()=>7);
  const service=createCommerce({store,origin:'https://billing.example.test',allowedOrigins:['https://www.thevelani.com'],provisioningMode:'onboarding',headcount,billing});
- const send=(body:unknown={plan:'team',lang:'es'},headers:Record<string,string>={})=>service(new Request('https://billing.example.test'+path,{method:path==='/v1/status'?'GET':'POST',headers:{origin:'https://www.thevelani.com','content-type':'application/json',authorization:'Bearer '+ 'k'.repeat(43),'idempotency-key':'22222222-2222-4222-8222-222222222222',...headers},...(path==='/v1/status'?{}:{body:JSON.stringify(body)})}),'127.0.0.1');
+ const send=(body:unknown=path==='/v1/plan-change'?{plan:'team',lang:'es'}:{lang:'es'},headers:Record<string,string>={})=>service(new Request('https://billing.example.test'+path,{method:path==='/v1/status'?'GET':'POST',headers:{origin:'https://www.thevelani.com','content-type':'application/json',authorization:'Bearer '+ 'k'.repeat(43),'idempotency-key':'22222222-2222-4222-8222-222222222222',...headers},...(path==='/v1/status'?{}:{body:JSON.stringify(body)})}),'127.0.0.1');
  return {b,owner,store,session,business,billing,headcount,send};
 }
 it('returns the server-selected confirmation contract and rechecks current Owner authority after provider I/O',async()=>{
  const {send,billing,owner,session}=setup();const response=await send();expect(response.status).toBe(200);expect(await response.json()).toEqual({url:'https://billing.stripe.com/fictional',plan:'team',effective:'after_payment'});
- expect(billing.planChange).toHaveBeenCalledWith(expect.anything(),'22222222-2222-4222-8222-222222222222','team',owner,'es');expect(session).toHaveBeenCalledTimes(3);expect(response.headers.get('cache-control')).toBe('no-store');expect(response.headers.get('access-control-allow-origin')).toBe('https://www.thevelani.com');
+ expect(billing.planChange).toHaveBeenCalledWith(expect.anything(),'22222222-2222-4222-8222-222222222222','team',owner,'es',expect.objectContaining({actor:billingActorHash(Buffer.alloc(32,7),['k'.repeat(43),owner]),assertCurrent:expect.any(Function),bindCustomer:expect.any(Function)}));expect(session).toHaveBeenCalledTimes(3);expect(response.headers.get('cache-control')).toBe('no-store');expect(response.headers.get('access-control-allow-origin')).toBe('https://www.thevelani.com');
 });
 it.each([null,'enterprise',{},'TEAM',1])('rejects an invalid target before contacting Stripe: %j',async plan=>{
  const {send,billing}=setup();const response=await send({plan});expect(response.status).toBe(400);expect(await response.json()).toEqual({error:{code:'invalid_plan'}});expect(billing.planChange).not.toHaveBeenCalled();
 });
 it('rejects invalid language, foreign origins and missing operation keys before contacting Stripe',async()=>{
  const {send,billing}=setup();for(const [body,headers] of [[{plan:'team',lang:'fr'},{}],[{plan:'team'},{origin:'https://foreign.invalid'}],[{plan:'team'},{'idempotency-key':''}]] as const)expect((await send(body,headers)).status).toBeGreaterThanOrEqual(400);expect(billing.planChange).not.toHaveBeenCalled();
+});
+it.each(['/v1/checkout','/v1/portal','/v1/plan-change'])('rejects extra client selectors before provider work: %s',async path=>{
+ const {send,billing}=setup(path);const response=await send({lang:'en',...(path==='/v1/plan-change'?{plan:'team'}:{}),actor:'buyer-selected'});
+ expect(response.status).toBe(400);expect(await response.json()).toEqual({error:{code:'invalid_billing_input'}});
+ expect(billing.checkout).not.toHaveBeenCalled();expect(billing.portal).not.toHaveBeenCalled();expect(billing.planChange).not.toHaveBeenCalled();
 });
 it('does not return a financial URL after Owner revocation during provider I/O',async()=>{
  const {send,session,billing}=setup();session.mockResolvedValueOnce('11111111-1111-4111-8111-111111111111').mockResolvedValueOnce('11111111-1111-4111-8111-111111111111').mockRejectedValue(new CommerceError('unauthorized',401));

@@ -2,6 +2,8 @@ import {afterEach,expect,it,vi} from 'vitest';
 import {Pool} from 'pg';
 import {createCommerce} from './service';
 import {CommerceStore,type Business} from './store';
+import {billingActorHash} from './billing-operations';
+const context=expect.objectContaining({actor:billingActorHash(Buffer.alloc(32,7),['fictional',null]),assertCurrent:expect.any(Function),bindCustomer:expect.any(Function)});
 const pools:Pool[]=[];
 afterEach(async()=>{vi.restoreAllMocks();await Promise.all(pools.splice(0).map(p=>p.end()));});
 function app(){
@@ -15,11 +17,11 @@ function app(){
 }
 it.each(['/v1/checkout','/v1/portal'])('forwards validated Spanish to %s',async path=>{
  const {billing,send}=app();expect((await send(path,{lang:'es'})).status).toBe(200);
- expect(path.endsWith('checkout')?billing.checkout:billing.portal).toHaveBeenCalledWith(expect.anything(),expect.any(String),null,'es');
+ expect(path.endsWith('checkout')?billing.checkout:billing.portal).toHaveBeenCalledWith(expect.anything(),expect.any(String),null,'es',context);
 });
 it('preserves omitted language for legacy Portal retries',async()=>{
  const {billing,send}=app();expect((await send('/v1/portal',{})).status).toBe(200);
- expect(billing.portal).toHaveBeenCalledWith(expect.anything(),expect.any(String),null,undefined);
+ expect(billing.portal).toHaveBeenCalledWith(expect.anything(),expect.any(String),null,undefined,context);
 });
 it.each([null,'fr','ES',{},'https://foreign.invalid'])('rejects invalid language before calling billing: %j',async lang=>{
  const {billing,send}=app();const response=await send('/v1/checkout',{lang});expect(response.status).toBe(400);expect(await response.json()).toEqual({error:{code:'invalid_language'}});expect(billing.checkout).not.toHaveBeenCalled();

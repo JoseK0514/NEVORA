@@ -2,11 +2,13 @@ import type {BillingOwner} from "./owner-authority";
 import { createHmac } from "node:crypto";
 import Stripe from "stripe";
 import type { PoolClient } from "pg";
-import type { BillingPort } from "./service";
+import type { BillingPort,PlanChangeResult } from "./service";
 import { CommerceStore, type Business } from "./store";
 import { CommerceError, type PlanKey } from "./model";
-import { createCheckout, recoverCheckouts } from "./checkout";
-import {createPlanChange} from './plan-change';
+import {prepareCheckoutPlan,executeCheckoutCustomer,prepareCheckoutIntent,executePreparedCheckout,recoverCheckouts,type CheckoutPlan,type PreparedCheckout,type KnownCheckout} from "./checkout";
+import {preparePlanChange,validatePreparedPlanChange,type PreparedPlanChange} from './plan-change';
+import {openBillingOperation,billingActorHash,type BillingOperationContext,type BillingAction} from './billing-operations';
+import {verifyInstallationOwner} from './installation';
 import type { StripeTaxConfig } from "./stripe-config";
 import { assertTaxPrice, readTaxTerms } from "./stripe-tax";
 import { unseal } from "./security";
@@ -57,9 +59,10 @@ export class StripeBilling implements BillingPort {
       throw new CommerceError("stripe_account_unavailable", 503);
     }
   }
-  private checkoutPorts() {
+  private checkoutPorts(assertCurrent?:(client:PoolClient)=>Promise<void>) {
     return {
       store: this.store,
+      assertCurrent,
       stripe: this.stripe,
       origin: this.options.origin,
       prices: this.options.prices,
@@ -72,33 +75,93 @@ export class StripeBilling implements BillingPort {
           : readInstallationHeadcount(this.store, business, client),
     };
   }
-  async checkout(business: Business, operation: string,owner?:BillingOwner|null,lang:CommerceLanguage='en') {
-    await this.verifyAccount();
-    return createCheckout(this.checkoutPorts(), business, operation,owner,lang);
+  private billingContext(business:Business,owner:BillingOwner|null|undefined,context?:BillingOperationContext):BillingOperationContext {
+    if(context)return context;
+    // Internal server/owned fixtures only. HTTP always supplies its current
+    // authenticated billing-session fingerprint and final authority callback.
+    return {actor:billingActorHash(this.store.key,['internal-server',owner??null]),assertCurrent:async client=>{
+      if(business.enrollmentSource==='onboarding'){
+        const current=await this.store.business(business.id,client);
+        if(!owner||!await verifyInstallationOwner(this.store,current,owner,client))throw new CommerceError('owner_required',403);
+      }
+    }};
   }
-  async portal(input: Business, operation: string,owner?:BillingOwner|null,lang?:CommerceLanguage) {
-    await this.verifyAccount();
-    return this.store.withBusinessLock(input.id, async (client, business) => {
-      if (!business.customerId)
-        throw new CommerceError("subscription_required", 409);
-      const proof = createHmac("sha256", this.store.key)
-        .update(`portal-return:${business.id}:${operation}`)
-        .digest("base64url");
-      await this.store.handoff(business.id, proof, this.now(), client, 3600000,owner);
-      const session = await this.stripe.billingPortal.sessions.create(
-        {
-          customer: business.customerId,
-          return_url: `${this.options.origin}${billingPage(lang??'en','billing')}#handoff=${proof}`,
-          ...(lang===undefined?{}:{locale:lang}),
-        },
-        { idempotencyKey: `nevora-portal:${business.id}:${operation}` },
-      );
-      return session.url;
-    });
+  private async operation(business:Business,operation:string,action:BillingAction,lang:CommerceLanguage|null,owner:BillingOwner|null|undefined,context:BillingOperationContext|undefined,plan?:PlanKey){
+    const selected=this.billingContext(business,owner,context);
+    const scope=billingActorHash(this.store.key,['stripe',this.options.expectedAccountId??'owned-local-fixture',this.options.live,this.options.origin]);
+    return {context:selected,op:await openBillingOperation(this.store,{business,operation,action,request:{lang,...(plan?{plan}:{})},context:selected,scope})};
   }
-  async planChange(business:Business,operation:string,plan:PlanKey,owner?:BillingOwner|null,lang:CommerceLanguage='en'){
-    await this.verifyAccount();
-    return createPlanChange({...this.checkoutPorts(),portalConfigurations:this.options.portalConfigurations},business,operation,plan,owner,lang);
+  private bindCustomer(business:Business,context:BillingOperationContext,customerId:string){
+    if(business.customerId!==null&&business.customerId!==customerId)throw new CommerceError('billing_binding_changed',409);
+    context.bindCustomer?.(customerId);
+  }
+  async checkout(business:Business,operation:string,owner?:BillingOwner|null,lang:CommerceLanguage='en',provided?:BillingOperationContext):Promise<string>{
+    const {op,context}=await this.operation(business,operation,'checkout',lang,owner,provided);
+    try{
+      await this.verifyAccount();
+      const cached=await op.replay<{url:string;customerId:string;expiresAt:number}>();
+      if(cached){this.bindCustomer(business,context,cached.customerId);if(cached.expiresAt<=Date.now())throw new CommerceError('checkout_expired',409);return cached.url;}
+      const ports=this.checkoutPorts(client=>op.assertCanIssue(client));
+      const plan=await op.prepareStage<CheckoutPlan>('plan',(client,current)=>prepareCheckoutPlan(ports,client,current,op.operation,owner,lang));
+      if(plan.state==='subscription_sync_pending')throw new CommerceError('subscription_sync_pending',409);
+      await op.prepareStage('customer',async()=>plan.customer);
+      const customer=await op.executeStage<typeof plan.customer,{id:string}>('customer',(client,current,params)=>executeCheckoutCustomer(ports,client,current,params));
+      this.bindCustomer(business,context,customer.id);
+      await op.prepareStage<PreparedCheckout>('checkout',(client,current)=>prepareCheckoutIntent(ports,client,current,op.operation,plan,customer.id));
+      const result=await op.executeStage<PreparedCheckout,KnownCheckout>('checkout',(client,current,params)=>executePreparedCheckout(ports,client,current,params));
+      if(!result.url)throw new CommerceError(result.code??'checkout_reconciliation_required',409);
+      const complete=await op.finish({url:result.url,customerId:customer.id,expiresAt:result.expiresAt});
+      if(complete.expiresAt<=Date.now())throw new CommerceError('checkout_expired',409);return complete.url;
+    }catch(error){return op.fail(error);}
+  }
+  async portal(business:Business,operation:string,owner?:BillingOwner|null,lang?:CommerceLanguage,provided?:BillingOperationContext):Promise<string>{
+    const {op,context}=await this.operation(business,operation,'portal',lang??null,owner,provided);
+    type Prepared={params:Stripe.BillingPortal.SessionCreateParams;customerId:string};
+    try{
+      await this.verifyAccount();
+      const cached=await op.replay<{url:string;customerId:string}>();
+      if(cached){this.bindCustomer(business,context,cached.customerId);return cached.url;}
+      await op.prepareStage<Prepared>('portal',async(client,current)=>{
+        if(!current.customerId)throw new CommerceError('subscription_required',409);
+        this.bindCustomer(business,context,current.customerId);
+        const proof=createHmac('sha256',this.store.key).update(`portal-return:${business.id}:${op.operation}`).digest('base64url');
+        await this.store.handoff(current.id,proof,this.now(),client,3600000,owner);
+        return {customerId:current.customerId,params:{customer:current.customerId,return_url:`${this.options.origin}${billingPage(lang??'en','billing')}#handoff=${proof}`,...(lang===undefined?{}:{locale:lang})}};
+      });
+      const result=await op.executeStage<Prepared,{url:string;customerId:string}>('portal',async(client,current,prepared)=>{
+        if(current.customerId!==prepared.customerId)throw new CommerceError('billing_binding_changed',409);
+        this.bindCustomer(business,context,prepared.customerId);await op.assertCanIssue(client);
+        const session=await this.stripe.billingPortal.sessions.create(prepared.params,{idempotencyKey:`nevora-portal:${business.id}:${op.operation}`});
+        return {url:session.url,customerId:prepared.customerId};
+      });
+      const complete=await op.finish(result);return complete.url;
+    }catch(error){return op.fail(error);}
+  }
+  async planChange(business:Business,operation:string,plan:PlanKey,owner?:BillingOwner|null,lang:CommerceLanguage='en',provided?:BillingOperationContext):Promise<PlanChangeResult>{
+    const {op,context}=await this.operation(business,operation,'plan-change',lang,owner,provided,plan);
+    type Complete={value:PlanChangeResult;customerId:string;subscriptionId:string};
+    try{
+      await this.verifyAccount();
+      const ports={...this.checkoutPorts(client=>op.assertCanIssue(client)),portalConfigurations:this.options.portalConfigurations};
+      const cached=await op.replay<Complete>();
+      if(cached){
+        this.bindCustomer(business,context,cached.customerId);
+        if(business.subscriptionId!==cached.subscriptionId)throw new CommerceError('billing_binding_changed',409);
+        return cached.value;
+      }
+      await op.prepareStage<PreparedPlanChange>('portal',(client,current)=>preparePlanChange(ports,client,current,op.operation,plan,owner,lang));
+      const result=await op.executeStage<PreparedPlanChange,Complete>('portal',async(client,current,prepared)=>{
+        if(current.customerId!==prepared.customerId||current.subscriptionId!==prepared.subscriptionId)throw new CommerceError('billing_binding_changed',409);
+        this.bindCustomer(business,context,prepared.customerId);
+        await validatePreparedPlanChange(ports,prepared);await op.assertCanIssue(client);
+        const session=await this.stripe.billingPortal.sessions.create(prepared.params,{idempotencyKey:`nevora-plan-portal:${business.id}:${op.operation}`});
+        return {value:{url:session.url,plan:prepared.plan,effective:prepared.effective},customerId:prepared.customerId,subscriptionId:prepared.subscriptionId};
+      });
+      return (await op.finish(result)).value;
+    }catch(error){
+      const safe=error instanceof Error&&'type' in error&&error.type==='StripeIdempotencyError'?new CommerceError('idempotency_conflict',409):error;
+      return op.fail(safe);
+    }
   }
   async webhook(raw: string, signature: string) {
     if(!this.options.webhookSecret)throw new CommerceError('webhook_not_configured',503);

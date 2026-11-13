@@ -10,7 +10,7 @@ import { unseal } from "./security";
 import { readTaxTerms, assertTaxPrice } from "./stripe-tax";
 import type { PlanChangeResult } from "./service";
 
-type Ports = {
+export type PlanChangePorts = {
   store: CommerceStore;
   stripe: Stripe;
   origin: string;
@@ -19,7 +19,9 @@ type Ports = {
   live: boolean;
   now: () => number;
   headcount: (business: Business, client: PoolClient) => Promise<number>;
+  assertCurrent?:(client:PoolClient)=>Promise<void>;
 };
+export type PreparedPlanChange={params:Stripe.BillingPortal.SessionCreateParams;customerId:string;subscriptionId:string;plan:PlanKey;effective:PlanChangeResult['effective']};
 
 function validPrice(price: Stripe.Price, plan: PlanKey, live: boolean) {
   return price.livemode === live && price.currency === "usd" &&
@@ -42,13 +44,12 @@ function assertPortalPolicy(configuration: Stripe.BillingPortal.Configuration, p
 }
 
 /** Only creates hosted confirmation. Paid invoices, never the return URL, grant capacity. */
-export async function createPlanChange(
-  ports: Ports, input: Business, operation: string, plan: PlanKey,
+export async function preparePlanChange(
+  ports: PlanChangePorts, client:PoolClient, business: Business, operation: string, plan: PlanKey,
   owner: BillingOwner | null | undefined, lang: CommerceLanguage,
-): Promise<PlanChangeResult> {
+): Promise<PreparedPlanChange> {
   const { store, stripe } = ports, configurationId = ports.portalConfigurations?.[plan];
   if (!configurationId) throw new CommerceError("plan_changes_unavailable", 503);
-  return store.withBusinessLock(input.id, async (client, business) => {
     if (!business.customerId || !business.subscriptionId)
       throw new CommerceError("subscription_required", 409);
     const subscription = await stripe.subscriptions.retrieve(business.subscriptionId);
@@ -67,6 +68,7 @@ export async function createPlanChange(
     if ((await stripe.invoices.list({ subscription: subscription.id, status: "open", limit: 1 })).data.length)
       throw new CommerceError("payment_required", 409);
     const count = await ports.headcount(business, client);
+    await ports.assertCurrent?.(client);
     if (!Number.isSafeInteger(count) || count < 0 || count > 30)
       throw new CommerceError("assisted_quote_required", 409);
     if (plan === "small" && count > 15) throw new CommerceError("plan_employee_limit", 409);
@@ -90,8 +92,7 @@ export async function createPlanChange(
       .update(`plan-portal-return:${business.id}:${operation}`).digest("base64url");
     await store.handoff(business.id, proof, ports.now(), client, 3600000, owner);
     const returnUrl = `${ports.origin}${billingPage(lang, 'billing')}#handoff=${proof}`;
-    try {
-      const session = await stripe.billingPortal.sessions.create({
+    return {customerId:business.customerId,subscriptionId:subscription.id,plan,effective:plan==='team'?'after_payment':'period_end',params:{
         customer: business.customerId, configuration: configurationId, locale: lang, return_url: returnUrl,
         flow_data: {
           type: "subscription_update_confirm",
@@ -100,12 +101,15 @@ export async function createPlanChange(
           },
           after_completion: { type: "redirect", redirect: { return_url: returnUrl } },
         },
-      }, { idempotencyKey: `nevora-plan-portal:${business.id}:${operation}` });
-      return { url: session.url, plan, effective: plan === "team" ? "after_payment" : "period_end" };
-    } catch (error) {
-      if (error instanceof Error && "type" in error && error.type === "StripeIdempotencyError")
-        throw new CommerceError("idempotency_conflict", 409);
-      throw error;
-    }
-  });
+    }};
+}
+
+/** Revalidate mutable merchant policy without recomputing the saved intent. */
+export async function validatePreparedPlanChange(ports:PlanChangePorts,prepared:PreparedPlanChange){
+ const priceId=prepared.params.flow_data?.subscription_update_confirm?.items?.[0]?.price,configurationId=prepared.params.configuration;
+ if(typeof priceId!=='string'||typeof configurationId!=='string')throw new CommerceError('plan_change_policy_unavailable',503);
+ const price=await ports.stripe.prices.retrieve(priceId);
+ if(!price.active||!validPrice(price,prepared.plan,ports.live))throw new CommerceError('invalid_billing_price',503);
+ const configuration=await ports.stripe.billingPortal.configurations.retrieve(configurationId,{expand:['features.subscription_update.products']});
+ assertPortalPolicy(configuration,price,ports.live);
 }
