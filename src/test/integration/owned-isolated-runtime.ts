@@ -25,11 +25,12 @@ export function ownedIsolatedEnvironment(options?:OwnedIsolatedRuntime):Record<s
 export async function verifyOwnedIsolatedRuntime(options:OwnedIsolatedRuntime){
  ownedIsolatedEnvironment(options);
  const root=process.env.NEVORA_ONBOARDING_TEST_CUSTODY_DIR,marker=process.env.NEVORA_ONBOARDING_TEST_CUSTODY;
- if(!root||!marker||!/^[a-f0-9]{32}$/.test(marker)||await realpath(root)!==resolve(root))fail();
+ if(!root||!marker||!/^[a-f0-9]{32}$/.test(marker))fail();
+ const canonicalRoot=await realpath(root);
  const directory=await lstat(root),owner=await lstat(join(root,'owner'));
- if(!directory.isDirectory()||directory.isSymbolicLink()||directory.uid!==process.getuid?.()||!owner.isFile()||owner.isSymbolicLink()||owner.nlink!==1||owner.uid!==process.getuid?.()||(owner.mode&0o777)!==0o600||await readFile(join(root,'owner'),'utf8')!==marker)fail();
+ if(!directory.isDirectory()||directory.isSymbolicLink()||directory.uid!==process.getuid?.()||(directory.mode&0o077)!==0||!owner.isFile()||owner.isSymbolicLink()||owner.nlink!==1||owner.uid!==process.getuid?.()||(owner.mode&0o777)!==0o600||await readFile(join(root,'owner'),'utf8')!==marker)fail();
  const control=new Pool({connectionString:options.controlDatabaseUrl,max:1,connectionTimeoutMillis:2000,statement_timeout:2000});
- try{if(resolve((await control.query('SHOW data_directory')).rows[0].data_directory)!==join(resolve(root),'data'))fail();}finally{await control.end();}
+ try{if(await realpath((await control.query('SHOW data_directory')).rows[0].data_directory)!==join(canonicalRoot,'data'))fail();}finally{await control.end();}
  for(const target of options.targets){const pool=new Pool({connectionString:target.connectionUrl,max:1,connectionTimeoutMillis:2000,statement_timeout:2000});
   try{const row=(await pool.query("SELECT current_user role,datname name,oid::int oid,shobj_description(oid,'pg_database') marker FROM pg_database WHERE datname=current_database()")).rows[0];if(row?.name!==target.name||row.oid!==target.oid||row.marker!==target.marker||row.role!==new URL(target.uri).username)fail();}finally{await pool.end();}
  }

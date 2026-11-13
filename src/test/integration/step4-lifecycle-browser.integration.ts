@@ -29,6 +29,7 @@ it('admits normal browser sign-in on the actual provisioned fictional-company da
    return {uri,connectionUrl:target.href,name:company.resource.db.name,oid,marker};
   });
   const options={emptyDatabase:true,isolatedWorkspaces:{environment:'test' as const,controlDatabaseUrl:f.db.connectionUrl,encryptionKey:f.config.encryptionKey,tokenKey:f.config.workspaceTokenKey,portalBaseDomain:f.config.portalBaseDomain,origins:[company.origin],targets}};
+  await verifyOwnedIsolatedRuntime(options.isolatedWorkspaces);
   await company.resource.db.pool.query(`COMMENT ON DATABASE "${company.resource.db.name}" IS 'foreign-marker'`);
   await expect(verifyOwnedIsolatedRuntime(options.isolatedWorkspaces)).rejects.toThrow('Invalid owned isolated browser runtime');
   await company.resource.db.pool.query(`COMMENT ON DATABASE "${company.resource.db.name}" IS '${marker}'`);
