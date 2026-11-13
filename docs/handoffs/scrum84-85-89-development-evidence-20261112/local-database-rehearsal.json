@@ -1,0 +1,5377 @@
+{
+  "candidate": "965839e847c4e48b7947bfe44b1399a0625a4e99",
+  "historicalHarnessOriginPr": "https://github.com/JoseK0514/NEVORA/pull/16",
+  "startedAt": "2026-11-13T01:53:12.665Z",
+  "completedAt": "2026-11-13T01:53:48.285Z",
+  "node": "v24.19.0",
+  "image": "postgres@sha256:0ea6700a3b4f0ae6ce746519073558aed4d88a79d8d07622a9a644946c7319c4",
+  "ownedConnectionTimeoutMillis": 15000,
+  "harnessSha256": {
+    "database-rehearsal.mts": "000e5fc7c64ba45faace9c18f6e18b9f18ae3e90384545e4371c875845011d2b",
+    "guards.mts": "72826561130320e901b9e7be3c7351f8f654284f1959b2bf7f49d55fb199832e",
+    "guards.check.mts": "00524f0d452c096b8daeb5c2c3466ffefdef19ce94f941c0ec5383b03e79e25a",
+    "migration-plan.mts": "a0a677473e92a1925ad6f41f5c0a0f8904b23e403dde4c1746579c57f562f780",
+    "migration-plan.check.mts": "5134593ccdf29b4fa29f48ebc85e5e3e9c9504827f9d9b3e035fc5121784a1f2",
+    "sql-diagnostics.mts": "7765dbe8ac055b0cab113749ba7709929f5890a3b6bae1653b77f7f14f623773",
+    "sql-diagnostics.check.mts": "8323c3bb6b63c5d58ca0357408c343c39da7c433f32e8b4527ac62cca9e3bee2",
+    "fixture-diagnostics.setup.ts": "29d5846c1ee47dfb43ffd1df57013456ece4b669166fcc8caf6ed2787dddc92c",
+    "fixture-diagnostics.integration.ts": "2d1e90ffe8e72687d00c826f55aa1f984dedfbf29f5d55b778ab08b7288b9db6",
+    "vitest.fixture-diagnostics.config.mts": "bb30a2ddb98dc804dfda744d33273c4ab90128e67a4bfd11f3434e2e751cac64",
+    "tsconfig.json": "d9a48c02e5ed73f4a6cc32256dc1f67afcf6f35c9d530027f904f31467411898"
+  },
+  "dependencyLockSha256": "81e694c04b737a180c32869fe498526e433e2211c5208e80523dbf6f5db3dfef",
+  "migrationPlanSource": "manifest",
+  "migrationPlanInputs": [
+    {
+      "path": "scripts/company-setup.ts",
+      "sha256": "639b12437da8666c4149437987455d55648dfc47a991dedc6fcd740634d93be1"
+    },
+    {
+      "path": "src/test/integration/local-postgres.ts",
+      "sha256": "99c302e6ed4d2f64700282ad7e49859f6ca2e8e3b5b17cd4ceaf85f5c01f7e11"
+    },
+    {
+      "path": "db/migrations/order.ts",
+      "sha256": "dd85dfc4ee84d1832e654b3e54077f50cc55b3a080bcaa8f9e19097b28da9355"
+    },
+    {
+      "path": "src/lib/company-bootstrap/server.ts",
+      "sha256": "2707b44cca630319ef85401c2b62536290b65dc146f9b0d1d72e47f312af9755"
+    }
+  ],
+  "fixtureDiagnostics": {
+    "exitCode": 0,
+    "passed": 2,
+    "failed": 0,
+    "traces": [
+      {
+        "candidate": "965839e847c4e48b7947bfe44b1399a0625a4e99",
+        "queries": 1374,
+        "failures": [
+          {
+            "code": "57014",
+            "command": "SELECT",
+            "sqlSha256": "03ee6de5df1fbe9633a69512f9ba40e9321978ef5f6c6caed542190dae2437db",
+            "elapsedMs": 2,
+            "expected": true
+          }
+        ],
+        "slowest": [
+          {
+            "command": "DROP",
+            "sqlSha256": "819f93dece500360bc74ec164691b04cd53fcb94e679f0cb3b816ef0a7dd9f68",
+            "elapsedMs": 157
+          },
+          {
+            "command": "CREATE",
+            "sqlSha256": "578610f52d7589e0222d81da7f045bf150cdb1dcd689e62642c1a03e6128ebab",
+            "elapsedMs": 35
+          },
+          {
+            "command": "BEGIN",
+            "sqlSha256": "fb5bd778da67f4e6d4b803e34fa663a6d74d78a345dd3e566005e25a796c30c7",
+            "elapsedMs": 34,
+            "migration": "0036_owner_advisor.sql"
+          },
+          {
+            "command": "BEGIN",
+            "sqlSha256": "020c45cbeb1c5000be22b3ce240f94225fc0c88471e540a67246dd54085440d2",
+            "elapsedMs": 31,
+            "migration": "0007_portal_web_push.sql"
+          },
+          {
+            "command": "BEGIN",
+            "sqlSha256": "476ef1887bf0c16688783736941454e8d209d93f5f31f05826a74de953836787",
+            "elapsedMs": 28,
+            "migration": "0040_clocker_photo_policy_evidence.sql"
+          },
+          {
+            "command": "BEGIN",
+            "sqlSha256": "330e125060422506f92403307224b739b73f5fc8697ed43039b22e56bcba61a1",
+            "elapsedMs": 18,
+            "migration": "0001_initial.sql"
+          },
+          {
+            "command": "BEGIN",
+            "sqlSha256": "f130df4238379aa50347decbc863c51f37b108a9f5975b49ca8696b49fc08277",
+            "elapsedMs": 18,
+            "migration": "0024_contextual_communications.sql"
+          },
+          {
+            "command": "BEGIN",
+            "sqlSha256": "0d8b55abe49995204bda9e63492026158b91b8dc4ca414d05c77b595a6474d8e",
+            "elapsedMs": 17,
+            "migration": "0010_shift_coverage_automation.sql"
+          },
+          {
+            "command": "BEGIN",
+            "sqlSha256": "788b748bbbd995c44f40d130ea079296aa3e6affcad86c78cbb3857e866c0cd0",
+            "elapsedMs": 17,
+            "migration": "0011_clocker_devices.sql"
+          },
+          {
+            "command": "BEGIN",
+            "sqlSha256": "361edcc14081de6c196d3fe157a8e5bda91da942eec5db5fb1f9c6279e0b2612",
+            "elapsedMs": 16,
+            "migration": "0032_company_access_invitations.sql"
+          }
+        ]
+      }
+    ]
+  },
+  "postgres": "postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg12+2)",
+  "migrationManifest": [
+    {
+      "name": "0001_initial.sql",
+      "sha256": "330e125060422506f92403307224b739b73f5fc8697ed43039b22e56bcba61a1"
+    },
+    {
+      "name": "0002_schedule_health.sql",
+      "sha256": "0dd019d1658c22763d11531ef72b39db9e5a106bb418b1a4fc63f5caaff7f9f0"
+    },
+    {
+      "name": "0003_schedule_assistance.sql",
+      "sha256": "d82513ab58c0e8a84f976a05c2be0e342309467c586ded8347cce4ef9001900a"
+    },
+    {
+      "name": "0004_assistance_layer.sql",
+      "sha256": "c0263d1e40bbfe3aa646a4740b0fe345728783eac39dfda916495ccf7a1ab7e5"
+    },
+    {
+      "name": "0005_time_clock.sql",
+      "sha256": "fc4afbdf4770bd7a3a718cd54fd204bc8df1b96296c04cb676dab3f4f6d0c4e5"
+    },
+    {
+      "name": "0006_scheduling_rule_inputs.sql",
+      "sha256": "4a0eb437395a5f4d1873c9b06b3c1104da5a23319e968d422a5a14f3c310483a"
+    },
+    {
+      "name": "0007_portal_web_push.sql",
+      "sha256": "020c45cbeb1c5000be22b3ce240f94225fc0c88471e540a67246dd54085440d2"
+    },
+    {
+      "name": "0008_workspace_positions.sql",
+      "sha256": "f517e18d468556c25814141a959427c969f620fa4ac6e98cc709b31ee1d88756"
+    },
+    {
+      "name": "0009_schedule_generation.sql",
+      "sha256": "aadde6a1f5d3167ed4f346817d1feeb0c9f99f28d50adcf904a989b86120f007"
+    },
+    {
+      "name": "0010_shift_coverage_automation.sql",
+      "sha256": "0d8b55abe49995204bda9e63492026158b91b8dc4ca414d05c77b595a6474d8e"
+    },
+    {
+      "name": "0011_clocker_devices.sql",
+      "sha256": "788b748bbbd995c44f40d130ea079296aa3e6affcad86c78cbb3857e866c0cd0"
+    },
+    {
+      "name": "0012_clocker_pins.sql",
+      "sha256": "9b607ca2e9e111953695ba5cf1a1dbc87f65ae483caeccc3d8056f19aab8c90f"
+    },
+    {
+      "name": "0013_clocker_punches.sql",
+      "sha256": "f222d8b52e5cace6698f22b8d4a10fa5ffcd93db1d8c7d5cfd551a02b74216e5"
+    },
+    {
+      "name": "0014_clocker_breaks.sql",
+      "sha256": "c20cd86b16fe2f82c05b69687402c52f37a648eb1d79c8f1418436ed8e4c5508"
+    },
+    {
+      "name": "0015_clocker_schedule_context.sql",
+      "sha256": "5b5160bff760e17d4e235c35e4936271fba0b8124f5da8a8989e01478fff6796"
+    },
+    {
+      "name": "0016_time_corrections.sql",
+      "sha256": "36532a3efc7c641a96b447f5caf2efbd3c4184cbfae2c6e080b548fa3fac4b35"
+    },
+    {
+      "name": "0017_missing_time_supersession.sql",
+      "sha256": "2a35c4e3180c3294c7197af56415b231bf66a0b30417000e08de17d161ef8fea"
+    },
+    {
+      "name": "0018_timecards.sql",
+      "sha256": "0221827d5faa0670a85661b6a15e59882382703a42bb9800576c30a1f66c1a81"
+    },
+    {
+      "name": "0019_payroll_export_mappings.sql",
+      "sha256": "1610d1018824ec84ba9cdbe2f42f3ae36c12ba509a735ea10dce3ee21b594262"
+    },
+    {
+      "name": "0020_account_recovery.sql",
+      "sha256": "26bc594863f1950588250be50a1ae66ba2191f90e8a908aea6a41a6ac76c61db"
+    },
+    {
+      "name": "0021_timecard_reassignment_interlock.sql",
+      "sha256": "c5e9f1df923c67d4764427cca9f005fed93a4cb148c4a469866d15d4253b4918"
+    },
+    {
+      "name": "0022_timecard_reopen_revision_authority.sql",
+      "sha256": "616dc741d8b48679b05958cfbd9dcf3ece018a356892034f2f1ad6a644ba584b"
+    },
+    {
+      "name": "0023_employee_attention_receipts.sql",
+      "sha256": "2758fd0dd5567839537483bb49eba8f4e5618b67a9a77c1deccf0e550cefcef1"
+    },
+    {
+      "name": "0024_contextual_communications.sql",
+      "sha256": "f130df4238379aa50347decbc863c51f37b108a9f5975b49ca8696b49fc08277"
+    },
+    {
+      "name": "0025_calendar_subscriptions.sql",
+      "sha256": "357bce5c806af4f3f0d9ff8a5b48e09a90b1342e8168206efce4f949072d824b"
+    },
+    {
+      "name": "0023_template_ownership.sql",
+      "sha256": "0352f4db63cb5ede8f47aec1178b8cf9cbdfb010d678c412fc1c127abca7439c"
+    },
+    {
+      "name": "0024_schedule_copy_receipts.sql",
+      "sha256": "fc13bcef690b30f6c3eb932581f19947835efbb0c8d523e54ca4c89331e4f3ee"
+    },
+    {
+      "name": "0025_company_policies.sql",
+      "sha256": "247139b09eb20e587061ddb925367dea9176b0c8acb0c062f0d517b4ad9a427a"
+    },
+    {
+      "name": "0026_attendance_observations.sql",
+      "sha256": "470cca7063764347d3bf0cde4163b1dc6629fc3aed08d2daaa57e6f97b2715db"
+    },
+    {
+      "name": "0027_payroll_period_custody.sql",
+      "sha256": "1b2999603afe74c8d36d8643386b2944d82ae6c83ccd395669b46a774695c826"
+    },
+    {
+      "name": "0028_configurable_payroll.sql",
+      "sha256": "6e6da74c87fb76b49af1beea70e9bef71a6d3e0fb3924c4b24896a6eb499a839"
+    },
+    {
+      "name": "0029_payroll_private_notices.sql",
+      "sha256": "42fc345790410582084db999b7069a242f14efb5deb91dfa4b75e084a0290576"
+    },
+    {
+      "name": "0030_notification_source_kinds.sql",
+      "sha256": "32cc7ee9d071c40e0f79b78918ba2cf7d46be6b0a69ef1d0d2eff5f321eea6b0"
+    },
+    {
+      "name": "0031_workspace_presentation.sql",
+      "sha256": "cb684bdfd7b3457048eb39f7b144e8c1e561a220682e9d3a346c8ae9937cab7e"
+    },
+    {
+      "name": "0032_workspace_words_modules.sql",
+      "sha256": "978301c0e13541471aa7a42835eae36bd0efbcee51fa1972e41363dc5273163e"
+    },
+    {
+      "name": "0033_management_alert_preferences.sql",
+      "sha256": "ba1e1e117c1c04be5359318d056bc2d4b6dbe33c29bcde78bf38f97f9345cccc"
+    },
+    {
+      "name": "0034_account_deletion_requests.sql",
+      "sha256": "43c750a764e6e6e77c10126469beee7d805bbeed7a5f50b0262ff9558c26f8da"
+    },
+    {
+      "name": "0035_passkeys.sql",
+      "sha256": "ca7d8071ff3a7e9d34b06b7a51818e7709c669296c60e3da96c1c29273c9a98d"
+    },
+    {
+      "name": "0036_owner_advisor.sql",
+      "sha256": "fb5bd778da67f4e6d4b803e34fa663a6d74d78a345dd3e566005e25a796c30c7"
+    },
+    {
+      "name": "0037_owner_briefing_reviews.sql",
+      "sha256": "51ed917185d10de4b7a5add636707ce76a6bdb832d7161521c0769b33cbd2986"
+    },
+    {
+      "name": "0038_read_path_indexes.sql",
+      "sha256": "16f733bdf74e4e4edbf4995ea93d1b652bf5ff3d92655faf2f4a717cad251325"
+    },
+    {
+      "name": "0039_native_payroll_setup_records.sql",
+      "sha256": "38e0b4de2e04ecf4dbc247a80ea9230b24358bec1ffa38289cb1baf71106adea"
+    },
+    {
+      "name": "0038_clocker_pin_operation_reference.sql",
+      "sha256": "a6962bdf12631eb3225d19b71811e4e56f4120788a1d89ae6fd931336736a8e2"
+    },
+    {
+      "name": "0039_clocker_review_requests.sql",
+      "sha256": "0ceb6b870596a14ad1254a83e18033e08b8501e0817e34369967cb85c4e305fe"
+    },
+    {
+      "name": "0040_clocker_photo_policy_evidence.sql",
+      "sha256": "476ef1887bf0c16688783736941454e8d209d93f5f31f05826a74de953836787"
+    },
+    {
+      "name": "0041_clocker_photo_platform_cleanup.sql",
+      "sha256": "335291af02ac2ba5beba2194c0dc1e316397502388ddcd1aa6497dd61ab7118c"
+    },
+    {
+      "name": "0043_schedule_pending_edits.sql",
+      "sha256": "c001c728c55d7b1253896c1c0ac83d106af22bf1e3b935aff0a835112f8f336a"
+    },
+    {
+      "name": "0044_owner_advisor_notebook.sql",
+      "sha256": "4128696d3a3a732469b6884cf841fc6e052f97fdd7afba274f0d760ebc8c0c8d"
+    },
+    {
+      "name": "0045_owner_coverage_actions.sql",
+      "sha256": "a77c37cc935c81ef97033799307e8cfb69ed97e58c725250acdfa5b32cb80e46"
+    },
+    {
+      "name": "0046_native_push.sql",
+      "sha256": "f756400f98452cce779b964e4718b408ecc49e2ca0722e18f34750d6fdc37147"
+    },
+    {
+      "name": "0047_isolated_workspace_runtime.sql",
+      "sha256": "d6fdae45fe700b90db1dc62b4e5fb14d45fafc952255c3786aa22d84694e5522"
+    },
+    {
+      "name": "0048_self_service_onboarding.sql",
+      "sha256": "0df38127e6c569dd269307cea4ddaac11ccff0c9b2ad14baa5d8e5530c1b881e"
+    },
+    {
+      "name": "0049_initial_owner_activation.sql",
+      "sha256": "4436fde28640e43e6ae9bd3873fd5fdd3e8c5b5492f1d40b7af4de2fe9177f72"
+    },
+    {
+      "name": "0050_onboarding_invitation_batch_authority.sql",
+      "sha256": "0016c7bb30159a03bc87550ba0d55db82e234f069f306499b20fbf0d2946ae5c"
+    },
+    {
+      "name": "0051_onboarding_restore_receipts.sql",
+      "sha256": "57a96a1524d9ac10454a843c7511cd3050a0dfb0f574b7c6188ed5fe300c2c07"
+    },
+    {
+      "name": "0052_onboarding_canonical_revision.sql",
+      "sha256": "960b94ff7c9f5cb91d7920acdb902e7d53ec6002c383e87731779c4e48d723f7"
+    },
+    {
+      "name": "0053_onboarding_worker_capabilities.sql",
+      "sha256": "a0d4dc9e211d0cbcee1724946d428a49d3c594656ef29c7e0f4eb41115e8b7d1"
+    },
+    {
+      "name": "0054_onboarding_commerce_binding.sql",
+      "sha256": "e173c38524327582cc7e5444483abca3ab4de63ad2a07209e105b2c7a0f6a38e"
+    },
+    {
+      "name": "0055_onboarding_commerce_worker_scope.sql",
+      "sha256": "42873db9d02645080816312f59ee174ae9e98761623bcd47c6690da429b75ee6"
+    },
+    {
+      "name": "0056_clocker_identified_person_limits.sql",
+      "sha256": "02701deacebcddb612336ac3d9e35bfdbb18e956e83d37ff10ead639c17b5125"
+    },
+    {
+      "name": "0057_management_time_close.sql",
+      "sha256": "24860af12f1ee7009628542508feb512cf37edeafb9eaed63a73dad428e12649"
+    },
+    {
+      "name": "0058_delegated_time_corrections.sql",
+      "sha256": "b13e035a466baa3481a361850bce0483ea188adbebaf81c229430733c9e1c203"
+    },
+    {
+      "name": "0059_payroll_export_business_identity.sql",
+      "sha256": "79a819a899603cd03077427ae6a92ec625ec6111c05b18a7076a25df34974e02"
+    },
+    {
+      "name": "0060_monotonic_login_fence.sql",
+      "sha256": "b1ece84a306075bdc73196fdece7776e8b64a1bd07be30b8c4cd3d76cd439585"
+    },
+    {
+      "name": "0061_staff_tasks.sql",
+      "sha256": "ebe9e46d3519fe0bf7ab25eaf380524273e4297e836332d2a4efcc2fd5664f17"
+    },
+    {
+      "name": "0046_owner_advisor_memory.sql",
+      "sha256": "1855f5064cef812a679772706b6adb1b01c858adee3524780ce1da76ecdd2907"
+    },
+    {
+      "name": "0031_native_payroll.sql",
+      "sha256": "bbe2857612e5ee1fc359f93e695a28c61f95b02846b1b3eb9aaae1e990b338bf"
+    },
+    {
+      "name": "0032_company_access_invitations.sql",
+      "sha256": "361edcc14081de6c196d3fe157a8e5bda91da942eec5db5fb1f9c6279e0b2612"
+    },
+    {
+      "name": "0042_company_invitation_lifetime.sql",
+      "sha256": "2392d691cd079688ee9b496b9f3dd493e8f963feb3859c724d2ea153414bfa1c"
+    },
+    {
+      "name": "0062_conversations.sql",
+      "sha256": "60cda7a81aa8d657a43dfea620bfff3b5ec70be3dc8bdbdba2b71d18137e0239"
+    }
+  ],
+  "excludedHeldMigrations": [
+    "0026_tenant_ownership_expand.sql",
+    "0027_tenant_ownership_validate.sql"
+  ],
+  "checks": [
+    {
+      "scenario": "fresh-install",
+      "name": "actual company installer configures current schema and Owner atomically",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fresh-install",
+      "name": "second install refuses populated schema without altering it",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fresh-install",
+      "name": "post-adoption Manager receives no automatic Company scope",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fresh-install",
+      "name": "Company Access preserves finite scope and denies another location/company access",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fresh-install",
+      "name": "payroll revisions/approved ledger and exact document bytes are available",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fresh-install",
+      "name": "operational permission cannot widen independent payroll permission",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fresh-install",
+      "name": "password verification, existing session and guarded new session work",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fresh-install",
+      "name": "signed passkey authentication survives and replay stays rejected",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fresh-install",
+      "name": "append-only payroll/access/passkey audit controls still reject mutation",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fresh-install",
+      "name": "logical data comparison detects a changed employee record",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fresh-install",
+      "name": "schema comparison detects a missing CHECK constraint",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fresh-install",
+      "name": "backup restores roles, ownership, schema, data and sequences into a different cluster",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fresh-install-restored",
+      "name": "Company Access preserves finite scope and denies another location/company access",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fresh-install-restored",
+      "name": "payroll revisions/approved ledger and exact document bytes are available",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fresh-install-restored",
+      "name": "operational permission cannot widen independent payroll permission",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fresh-install-restored",
+      "name": "password verification, existing session and guarded new session work",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fresh-install-restored",
+      "name": "signed passkey authentication survives and replay stays rejected",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fresh-install-restored",
+      "name": "append-only payroll/access/passkey audit controls still reject mutation",
+      "status": "PASS"
+    },
+    {
+      "scenario": "pre-upgrade-0002-backup",
+      "name": "logical data comparison detects a changed employee record",
+      "status": "PASS"
+    },
+    {
+      "scenario": "pre-upgrade-0002-backup",
+      "name": "schema comparison detects a missing CHECK constraint",
+      "status": "PASS"
+    },
+    {
+      "scenario": "pre-upgrade-0002-backup",
+      "name": "backup restores roles, ownership, schema, data and sequences into a different cluster",
+      "status": "PASS"
+    },
+    {
+      "scenario": "pre-upgrade-0002-backup",
+      "name": "restored pre-upgrade backup can be upgraded without losing legacy records",
+      "status": "PASS"
+    },
+    {
+      "scenario": "pre-upgrade-0002-backup-restored",
+      "name": "Company Access preserves finite scope and denies another location/company access",
+      "status": "PASS"
+    },
+    {
+      "scenario": "pre-upgrade-0002-backup-restored",
+      "name": "payroll revisions/approved ledger and exact document bytes are available",
+      "status": "PASS"
+    },
+    {
+      "scenario": "pre-upgrade-0002-backup-restored",
+      "name": "operational permission cannot widen independent payroll permission",
+      "status": "PASS"
+    },
+    {
+      "scenario": "pre-upgrade-0002-backup-restored",
+      "name": "password verification, existing session and guarded new session work",
+      "status": "PASS"
+    },
+    {
+      "scenario": "pre-upgrade-0002-backup-restored",
+      "name": "signed passkey authentication survives and replay stays rejected",
+      "status": "PASS"
+    },
+    {
+      "scenario": "pre-upgrade-0002-backup-restored",
+      "name": "append-only payroll/access/passkey audit controls still reject mutation",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-from-0002",
+      "name": "remaining declared migrations preserve all original columns/rows and custom staffing",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-from-0002",
+      "name": "Company adoption captures only the pre-existing active Manager",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-from-0002",
+      "name": "Company Access preserves finite scope and denies another location/company access",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-from-0002",
+      "name": "payroll revisions/approved ledger and exact document bytes are available",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-from-0002",
+      "name": "operational permission cannot widen independent payroll permission",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-from-0002",
+      "name": "password verification, existing session and guarded new session work",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-from-0002",
+      "name": "signed passkey authentication survives and replay stays rejected",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-from-0002",
+      "name": "append-only payroll/access/passkey audit controls still reject mutation",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-from-0002",
+      "name": "logical data comparison detects a changed employee record",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-from-0002",
+      "name": "schema comparison detects a missing CHECK constraint",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-from-0002",
+      "name": "backup restores roles, ownership, schema, data and sequences into a different cluster",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-from-0002-restored",
+      "name": "Company Access preserves finite scope and denies another location/company access",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-from-0002-restored",
+      "name": "payroll revisions/approved ledger and exact document bytes are available",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-from-0002-restored",
+      "name": "operational permission cannot widen independent payroll permission",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-from-0002-restored",
+      "name": "password verification, existing session and guarded new session work",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-from-0002-restored",
+      "name": "signed passkey authentication survives and replay stays rejected",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-from-0002-restored",
+      "name": "append-only payroll/access/passkey audit controls still reject mutation",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-pre-passkeys",
+      "name": "missing passkey/login-fence/conversations chain preserves populated payroll, Company Access, credentials and sessions",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-pre-passkeys",
+      "name": "Company Access preserves finite scope and denies another location/company access",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-pre-passkeys",
+      "name": "payroll revisions/approved ledger and exact document bytes are available",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-pre-passkeys",
+      "name": "operational permission cannot widen independent payroll permission",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-pre-passkeys",
+      "name": "password verification, existing session and guarded new session work",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-pre-passkeys",
+      "name": "signed passkey authentication survives and replay stays rejected",
+      "status": "PASS"
+    },
+    {
+      "scenario": "upgrade-pre-passkeys",
+      "name": "append-only payroll/access/passkey audit controls still reject mutation",
+      "status": "PASS"
+    },
+    {
+      "scenario": "failed-upgrade-rollback",
+      "name": "interrupted adoption rolls back all new access objects and preserves data",
+      "status": "PASS"
+    },
+    {
+      "scenario": "failed-upgrade-rollback",
+      "name": "clean retry succeeds after interruption is removed",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fixture-diagnostics",
+      "name": "two actual Clocker/Company Access fixtures initialize and dispose without hidden SQL failures",
+      "status": "PASS"
+    },
+    {
+      "scenario": "fixture-diagnostics",
+      "name": "controlled statement timeout retains SQLSTATE before the PIN layer masks it",
+      "status": "PASS"
+    }
+  ],
+  "clusterStartup": [
+    {
+      "attempts": 4,
+      "elapsedMs": 775,
+      "ready": true,
+      "lastErrorCode": "unknown"
+    },
+    {
+      "attempts": 4,
+      "elapsedMs": 827,
+      "ready": true,
+      "lastErrorCode": "unknown"
+    },
+    {
+      "attempts": 4,
+      "elapsedMs": 770,
+      "ready": true,
+      "lastErrorCode": "unknown"
+    },
+    {
+      "attempts": 5,
+      "elapsedMs": 1034,
+      "ready": true,
+      "lastErrorCode": "unknown"
+    }
+  ],
+  "scenarios": {
+    "fresh-install": {
+      "status": "PASS"
+    },
+    "upgrade-from-0002": {
+      "status": "PASS"
+    },
+    "upgrade-pre-passkeys": {
+      "status": "PASS"
+    },
+    "failed-upgrade-rollback": {
+      "status": "PASS"
+    }
+  },
+  "backups": [
+    {
+      "scenario": "fresh-install",
+      "archiveSha256": "914b31189e4e9c914c5b12a6b20e52b1d22b334e4965c7976a2808777f4f5917",
+      "archiveBytes": 839719,
+      "globalsSha256": "7bccf5727c7b63683eea1e39afb78172423c109561c597f13b96188b62497812",
+      "tableCount": 154,
+      "populatedTableCount": 24,
+      "logicalDataSha256": "9bafdb408e781e565242e72d734326693854fdaca53b9fa061b5ce67bbcc5431",
+      "originalSchemaSha256": "23c081b95f19f3aa56447f5173ba224e5bda7f21e017bb6713a8ad7eb59ca6d4",
+      "canonicalSchemaSha256": "f5c0d082ce1b005ad7d7dfcea2dfce127a1851922b5f6faf8756f72729988a63",
+      "tableDigests": {
+        "account_deletion_requests": {
+          "columns": [
+            "id",
+            "reference",
+            "employee_id",
+            "workspace_id",
+            "channel",
+            "policy_version",
+            "status",
+            "verified_at",
+            "confirmed_at",
+            "completed_at",
+            "retained_note",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "attendance_policy_observations": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "actor_employee_id",
+            "payload",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "auth_login_limits": {
+          "columns": [
+            "scope",
+            "bucket",
+            "attempts"
+          ],
+          "count": "5",
+          "digest": "eb889dfecf2d4e10727afed5a5c46c8526764a8957939bddbd984fafc1845866"
+        },
+        "auth_passkey_audit": {
+          "columns": [
+            "id",
+            "employee_id",
+            "passkey_id",
+            "event",
+            "reason",
+            "created_at"
+          ],
+          "count": "2",
+          "digest": "cf2cc916ff54e4829ff8b05ab037e67cba9eba39d33d1b7d3c68bf322354c7a9"
+        },
+        "auth_passkey_challenges": {
+          "columns": [
+            "token_hash",
+            "purpose",
+            "challenge",
+            "employee_id",
+            "session_token_hash",
+            "credential_updated_at",
+            "employee_updated_at",
+            "expires_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "auth_passkey_users": {
+          "columns": [
+            "employee_id",
+            "user_handle"
+          ],
+          "count": "1",
+          "digest": "4c5aa99eaf51bed88f40cd81584e7e1fb898431dd02c12a71a8107be9c501f21"
+        },
+        "availability_exceptions": {
+          "columns": [
+            "id",
+            "employee_id",
+            "date",
+            "kind",
+            "start_time",
+            "end_time",
+            "note"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "availability_windows": {
+          "columns": [
+            "id",
+            "employee_id",
+            "day_of_week",
+            "start_time",
+            "end_time"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "break_entries": {
+          "columns": [
+            "id",
+            "time_entry_id",
+            "break_start_at",
+            "break_end_at",
+            "version",
+            "break_type_id",
+            "break_type_snapshot"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "calendar_clock": {
+          "columns": [
+            "singleton",
+            "serial",
+            "modified_at"
+          ],
+          "count": "1",
+          "digest": "7811c4a928938dd0d90a21c0e950154602ab91f060b518ebf5107a2ea8dac012"
+        },
+        "calendar_operations": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "authority",
+            "payload_hash",
+            "result",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "calendar_removals": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "source_shift_id",
+            "previous_publication_shift_id",
+            "removal_revision_id",
+            "calendar_serial",
+            "removed_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "calendar_subscriptions": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "employee_id",
+            "digest",
+            "generation",
+            "allowed_location_ids",
+            "issued_at",
+            "revoked_at",
+            "revocation_reason"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_break_type_events": {
+          "columns": [
+            "id",
+            "break_type_id",
+            "version",
+            "actor_employee_id",
+            "settings",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_break_types": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "name",
+            "category",
+            "target_minutes",
+            "active",
+            "version",
+            "created_by",
+            "updated_by",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_command_ledger": {
+          "columns": [
+            "device_id",
+            "command_id",
+            "employee_id",
+            "credential_version",
+            "request_hash",
+            "action",
+            "time_entry_id",
+            "performed_at",
+            "result"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_device_credentials": {
+          "columns": [
+            "credential_hash",
+            "device_id",
+            "credential_version",
+            "issued_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_device_events": {
+          "columns": [
+            "id",
+            "device_id",
+            "actor_employee_id",
+            "kind",
+            "device_version",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_devices": {
+          "columns": [
+            "id",
+            "location_id",
+            "name",
+            "active",
+            "last_seen_at",
+            "credential_hash",
+            "credential_version",
+            "enrollment_hash",
+            "enrollment_expires_at",
+            "enrollment_owner_id",
+            "enrollment_session_hash",
+            "enrolled_at",
+            "revoked_at",
+            "version",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_employee_clock_state": {
+          "columns": [
+            "employee_id",
+            "revision"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_photo_access_events": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "actor_employee_id",
+            "device_id",
+            "command_id",
+            "kind",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_photo_cleanup_runs": {
+          "columns": [
+            "workspace_id",
+            "invocation_id",
+            "completed_at",
+            "expired_count",
+            "orphan_count",
+            "backlog"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_photo_notice_profiles": {
+          "columns": [
+            "workspace_id",
+            "version",
+            "assistance_contact",
+            "assistance_instructions",
+            "updated_by",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_photo_notice_revisions": {
+          "columns": [
+            "workspace_id",
+            "version",
+            "actor_employee_id",
+            "profile",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_photo_platform_lifecycle": {
+          "columns": [
+            "workspace_id",
+            "project_id",
+            "branch_id",
+            "worker_role_name",
+            "enabled",
+            "cleanup_disclosure",
+            "backup_disclosure",
+            "attested_until",
+            "last_success_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_photo_policy": {
+          "columns": [
+            "workspace_id",
+            "version",
+            "enabled",
+            "events",
+            "retention_days",
+            "failure_behavior",
+            "updated_by",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_photo_policy_revisions": {
+          "columns": [
+            "workspace_id",
+            "version",
+            "actor_employee_id",
+            "policy",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_photo_review_events": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "actor_employee_id",
+            "kind",
+            "result_count",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_pin_configuration": {
+          "columns": [
+            "workspace_id",
+            "key_identity"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_pin_events": {
+          "columns": [
+            "id",
+            "employee_id",
+            "actor_employee_id",
+            "pin_version",
+            "occurred_at",
+            "operation_id"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_pin_limits": {
+          "columns": [
+            "scope",
+            "scope_id",
+            "failures",
+            "failure_window",
+            "attempts",
+            "attempt_window",
+            "latest_attempt"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_pin_sessions": {
+          "columns": [
+            "device_id",
+            "employee_id",
+            "token_hash",
+            "pin_version",
+            "credential_version",
+            "employee_updated_at",
+            "expires_at",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_punch_photos": {
+          "columns": [
+            "workspace_id",
+            "device_id",
+            "command_id",
+            "employee_id",
+            "location_id",
+            "credential_version",
+            "action",
+            "performed_at",
+            "policy_version",
+            "notice_profile_version",
+            "state",
+            "upload_deadline",
+            "expires_at",
+            "failure_code",
+            "sha256",
+            "width",
+            "height",
+            "jpeg",
+            "uploaded_at",
+            "removed_at",
+            "removed_by"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_review_requests": {
+          "columns": [
+            "request_id",
+            "workspace_id",
+            "device_id",
+            "requester_id",
+            "location_id",
+            "command_id",
+            "requested_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "communication_lifecycle": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "communication_id",
+            "revision_id",
+            "actor_employee_id",
+            "kind",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "communication_operations": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "session_hash",
+            "payload_hash",
+            "kind",
+            "communication_id",
+            "revision_id",
+            "receipt_id",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "communication_receipts": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "communication_id",
+            "revision_id",
+            "employee_id",
+            "content_hash",
+            "acknowledged_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "communication_recipients": {
+          "columns": [
+            "workspace_id",
+            "communication_id",
+            "revision_id",
+            "employee_id",
+            "content_hash",
+            "location_id",
+            "grant_kind",
+            "source_shift_id",
+            "assignment_episode_id",
+            "terms_fingerprint",
+            "observed_at",
+            "provenance"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "communication_revisions": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "communication_id",
+            "version",
+            "created_by",
+            "type",
+            "scope_kind",
+            "location_id",
+            "business_date",
+            "source_shift_id",
+            "assignment_episode_id",
+            "terms_fingerprint",
+            "title",
+            "body",
+            "acknowledgement",
+            "expires_at",
+            "content_hash",
+            "audience_fingerprint",
+            "audience_observed_at",
+            "published_at",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "communications": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "author_employee_id",
+            "state",
+            "head_revision_id",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "company_access_adoption": {
+          "columns": [
+            "workspace_id",
+            "protocol_version",
+            "state",
+            "owner_policy_receipt_id",
+            "legacy_manager_census",
+            "census_digest",
+            "adopted_at"
+          ],
+          "count": "1",
+          "digest": "3576b8a1b00e85f2bc61386223bf84006d318fed0339249bc1e3d878cd8d2c05"
+        },
+        "company_access_operations": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "employee_id",
+            "kind",
+            "command_hash",
+            "receipt",
+            "committed_at"
+          ],
+          "count": "1",
+          "digest": "faba982df98996cb777c7a7d1622fe26b584047996cb4c77e27b33de1e06775f"
+        },
+        "company_invitation_claim_counters": {
+          "columns": [
+            "workspace_id",
+            "invitation_id",
+            "bucket_start",
+            "attempts"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "company_invitation_delivery_events": {
+          "columns": [
+            "workspace_id",
+            "id",
+            "invitation_id",
+            "state",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "company_invitation_events": {
+          "columns": [
+            "workspace_id",
+            "id",
+            "invitation_id",
+            "action",
+            "actor_employee_id",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "company_invitation_issue_counters": {
+          "columns": [
+            "workspace_id",
+            "bucket_start",
+            "kind",
+            "subject",
+            "attempts"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "company_invitations": {
+          "columns": [
+            "workspace_id",
+            "id",
+            "employee_id",
+            "revision",
+            "target_version",
+            "email_fingerprint",
+            "issuer_employee_id",
+            "issuer_generation",
+            "proof_digest",
+            "issued_at",
+            "expires_at",
+            "consumed_at",
+            "retired_at",
+            "retired_reason"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "conversation_events": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "conversation_id",
+            "actor_id",
+            "kind",
+            "data",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "conversation_members": {
+          "columns": [
+            "epoch",
+            "workspace_id",
+            "conversation_id",
+            "employee_id",
+            "role_generation",
+            "joined_after",
+            "ended_at",
+            "read_through",
+            "muted"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "conversation_messages": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "conversation_id",
+            "sequence",
+            "stream_order",
+            "author_id",
+            "author_epoch",
+            "body",
+            "persisted_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "conversation_operations": {
+          "columns": [
+            "workspace_id",
+            "actor_id",
+            "session_hash",
+            "operation_id",
+            "payload_hash",
+            "conversation_id",
+            "membership_epoch",
+            "receipt",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "conversation_streams": {
+          "columns": [
+            "workspace_id",
+            "last_order",
+            "cursor_key"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "conversations": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "location_id",
+            "kind",
+            "title",
+            "direct_key",
+            "topic_kind",
+            "topic_id",
+            "revision",
+            "archived",
+            "last_sequence",
+            "created_order",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "coverage_window_position_requirements": {
+          "columns": [
+            "coverage_window_id",
+            "position_id",
+            "quantity"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "employee_attention_operations": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "operation_id",
+            "command_hash",
+            "result",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "employee_attention_receipts": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "employee_id",
+            "source_kind",
+            "source_id",
+            "source_version",
+            "read_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "employee_clocker_pins": {
+          "columns": [
+            "employee_id",
+            "workspace_id",
+            "lookup_hash",
+            "pin_hash",
+            "version",
+            "updated_by",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "employee_credentials": {
+          "columns": [
+            "employee_id",
+            "password_hash",
+            "must_change_password",
+            "password_updated_at"
+          ],
+          "count": "4",
+          "digest": "988604c1e537a9de72022f65fbd2fd12a505691ebcd1065aa2a6dd3f3782220a"
+        },
+        "employee_location_eligibility": {
+          "columns": [
+            "employee_id",
+            "location_id"
+          ],
+          "count": "4",
+          "digest": "4dd7ff0dba44b518fa100ebe9bb857f303badc4cb74944941b30f031783057cf"
+        },
+        "employee_passkeys": {
+          "columns": [
+            "id",
+            "employee_id",
+            "credential_id",
+            "public_key",
+            "sign_counter",
+            "transports",
+            "rp_id",
+            "name",
+            "created_at",
+            "last_used_at",
+            "revoked_at",
+            "revocation_reason"
+          ],
+          "count": "1",
+          "digest": "10085f5473dbbeb188794da8f50ba0d42954ee870f44269b9480bc518ae8c097"
+        },
+        "employee_positions": {
+          "columns": [
+            "employee_id",
+            "position_id"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "employee_scheduling_settings": {
+          "columns": [
+            "employee_id",
+            "target_weekly_hours",
+            "updated_at",
+            "maximum_weekly_hours",
+            "operational_rule_profile"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "employee_sessions": {
+          "columns": [
+            "token_hash",
+            "employee_id",
+            "expires_at",
+            "created_at",
+            "onboarding_worker_lock"
+          ],
+          "count": "7",
+          "digest": "101018518a4a7679d685c168f175fe11312cb0098a76c907a4c18f3f971a1061"
+        },
+        "employees": {
+          "columns": [
+            "id",
+            "first_name",
+            "last_name",
+            "phone",
+            "email",
+            "role",
+            "primary_location_id",
+            "active",
+            "created_at",
+            "updated_at",
+            "management_alert_choices",
+            "onboarding_worker_lock"
+          ],
+          "count": "4",
+          "digest": "91973de24dcfed1f8f2b448babc5c762fad3a59c53646c7e47e74135fcc56601"
+        },
+        "location_coverage_windows": {
+          "columns": [
+            "id",
+            "location_id",
+            "day_of_week",
+            "start_time",
+            "end_time",
+            "minimum_staff",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "location_staffing_settings": {
+          "columns": [
+            "location_id",
+            "minimum_staff_per_shift",
+            "updated_at",
+            "requires_designated_lead"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "locations": {
+          "columns": [
+            "id",
+            "name",
+            "short_name",
+            "active",
+            "created_at",
+            "updated_at",
+            "workspace_id",
+            "clocker_key",
+            "calendar_serial",
+            "calendar_modified_at",
+            "onboarding_worker_lock"
+          ],
+          "count": "2",
+          "digest": "92c9cccc6c449a741e56fa293f8ab8308f6ae8b8b2acf706e3dd5376cae90f04"
+        },
+        "management_time_closes": {
+          "columns": [
+            "operation_id",
+            "workspace_id",
+            "employee_id",
+            "actor_employee_id",
+            "time_entry_id",
+            "location_id",
+            "command_hash",
+            "source_hash",
+            "closed_at",
+            "recorded_at",
+            "reason",
+            "before_snapshot",
+            "after_snapshot",
+            "receipt"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "native_payroll_document_manifests": {
+          "columns": [
+            "workspace_id",
+            "run_id",
+            "payload"
+          ],
+          "count": "1",
+          "digest": "2c7591b8b3b76d1fc33f5b937bd9510ca760fa5fd454cb861b5da0edc55f6341"
+        },
+        "native_payroll_ledger": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "tax_year",
+            "sequence",
+            "run_id",
+            "correction_of",
+            "opening_revision",
+            "start_date",
+            "end_date",
+            "payday",
+            "payload"
+          ],
+          "count": "1",
+          "digest": "52acd4d869a229a427b8c5b590bbb5cbadf62713fd01a95429d80ffb16840835"
+        },
+        "native_payroll_manager_scope_revisions": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "revision",
+            "subject_employee_version",
+            "payload"
+          ],
+          "count": "1",
+          "digest": "eca6f640c56f77abc3fd96478b2dd2409ef71198c6cce55816bf4a554205cc7e"
+        },
+        "native_payroll_opening_ytd_revisions": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "tax_year",
+            "revision",
+            "payload"
+          ],
+          "count": "1",
+          "digest": "69028a0b9bcaef78531301fa4d0fe77e1721957d840d7de9a5f1623541eb7273"
+        },
+        "native_payroll_profile_revisions": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "revision",
+            "payload"
+          ],
+          "count": "1",
+          "digest": "5c5ce7e688ff2aab20901f0a8b6495056c733829cd1554769d08ef4502cf0d6c"
+        },
+        "native_payroll_setup_records": {
+          "columns": [
+            "workspace_id",
+            "kind",
+            "subject_id",
+            "tax_year",
+            "revision",
+            "operation_id",
+            "actor_employee_id",
+            "created_at",
+            "facts_sha256",
+            "payload"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "native_push_challenges": {
+          "columns": [
+            "id",
+            "operation_id",
+            "workspace_id",
+            "employee_id",
+            "session_hash",
+            "origin",
+            "environment",
+            "key_fingerprint",
+            "public_key",
+            "wire",
+            "issued_at",
+            "expires_at",
+            "completed_input_hash",
+            "result_generation",
+            "result_state",
+            "completed_at",
+            "onboarding_worker_lock"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "native_push_deliveries": {
+          "columns": [
+            "id",
+            "notification_id",
+            "installation_id",
+            "generation",
+            "status",
+            "attempt_count",
+            "next_attempt_at",
+            "expires_at",
+            "lease_token",
+            "lease_expires_at",
+            "accepted_at",
+            "error_class",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "native_push_installations": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "employee_id",
+            "session_hash",
+            "origin",
+            "environment",
+            "platform",
+            "app_id",
+            "provider",
+            "key_fingerprint",
+            "public_key",
+            "generation",
+            "token_fingerprint",
+            "encrypted_material",
+            "status",
+            "consent_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "nevora_commerce_installation": {
+          "columns": [
+            "singleton",
+            "workspace_id",
+            "business_id",
+            "installation_id",
+            "environment",
+            "incarnation",
+            "canonical_origin",
+            "instance_secret_hash",
+            "provisioned_at",
+            "employee_limit",
+            "worker_secret_hash"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "nevora_company_policy_revisions": {
+          "columns": [
+            "operation_id",
+            "workspace_id",
+            "location_id",
+            "revision",
+            "actor_employee_id",
+            "changed_at",
+            "command_hash",
+            "previous_settings",
+            "settings",
+            "changed_keys"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "nevora_workspace_presentation_assets": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "actor_employee_id",
+            "created_at",
+            "media_type",
+            "width",
+            "height",
+            "byte_size",
+            "sha256",
+            "bytes"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "nevora_workspace_presentation_revisions": {
+          "columns": [
+            "operation_id",
+            "workspace_id",
+            "revision",
+            "actor_employee_id",
+            "changed_at",
+            "command_hash",
+            "previous_settings",
+            "settings",
+            "changed_keys"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "notifications": {
+          "columns": [
+            "id",
+            "employee_id",
+            "type",
+            "title",
+            "body",
+            "read_at",
+            "created_at",
+            "action_href",
+            "event_key",
+            "environment",
+            "source_kind",
+            "source_id",
+            "source_version",
+            "effective_version",
+            "purpose",
+            "due_at",
+            "expires_at",
+            "urgency",
+            "cancelled_at",
+            "push_state",
+            "item_keys",
+            "management_alert_suppressed"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_commands": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "command_kind",
+            "command_hash",
+            "resulting_version",
+            "result",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_initial_owner": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "registration_id",
+            "state",
+            "grant_revision",
+            "created_at",
+            "activated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_invitation_batches": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "command_hash",
+            "version",
+            "created_at",
+            "owner_generation"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_invitation_items": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "employee_id",
+            "child_operation_id",
+            "expected_employee_version",
+            "expected_invitation_revision",
+            "state",
+            "result",
+            "updated_at",
+            "target_generation"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_owner_activation_receipts": {
+          "columns": [
+            "operation_id",
+            "workspace_id",
+            "grant_id",
+            "employee_id",
+            "command_hash",
+            "credential_updated_at",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_owner_grants": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "operation_id",
+            "registration_id",
+            "incarnation",
+            "revision",
+            "token_digest",
+            "employee_updated_at",
+            "expires_at",
+            "revoked_at",
+            "consumed_at",
+            "created_at",
+            "email_fingerprint",
+            "claim_attempts"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_progress": {
+          "columns": [
+            "workspace_id",
+            "version",
+            "updated_at",
+            "canonical_transaction"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_provision_receipts": {
+          "columns": [
+            "workspace_id",
+            "operation_id",
+            "registration_id",
+            "environment",
+            "incarnation",
+            "provider_project_id",
+            "resource_name",
+            "manifest_hash",
+            "command_hash",
+            "initial_owner_id",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_restore_receipts": {
+          "columns": [
+            "operation_id",
+            "workspace_id",
+            "environment",
+            "from_incarnation",
+            "to_incarnation",
+            "provider_project_id",
+            "manifest_hash",
+            "operator_ref",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_runtime_roles": {
+          "columns": [
+            "kind",
+            "login_role"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_workspace_identity": {
+          "columns": [
+            "workspace_id",
+            "singleton",
+            "environment",
+            "incarnation",
+            "provider_project_id",
+            "lifecycle",
+            "lock_token"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "operational_scope_revisions": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "revision",
+            "role_generation",
+            "action",
+            "mode",
+            "location_ids",
+            "source",
+            "actor_employee_id",
+            "operation_id",
+            "created_at"
+          ],
+          "count": "1",
+          "digest": "9fc7c066d216808362db50e6e662ccd9a7d061d94706e5564bcbe453e43f0fbc"
+        },
+        "operational_subject_versions": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "generation"
+          ],
+          "count": "4",
+          "digest": "15ffb2e6df2509dca1ac05c5c931a681c36c7e616042042cc0f2b62c1bf8a9c4"
+        },
+        "owner_advisor_briefing_reviews": {
+          "columns": [
+            "workspace_id",
+            "owner_id",
+            "issue_id",
+            "fingerprint",
+            "issue_date",
+            "kind",
+            "location_id",
+            "proof",
+            "disposition",
+            "deferred_until",
+            "revision",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "owner_advisor_coverage_reviews": {
+          "columns": [
+            "workspace_id",
+            "owner_id",
+            "review_id",
+            "prepare_hash",
+            "authority",
+            "session_hash",
+            "source_version",
+            "payload",
+            "prepared_at",
+            "expires_at",
+            "applied_operation",
+            "apply_hash",
+            "receipt",
+            "created_assignments"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "owner_advisor_memories": {
+          "columns": [
+            "workspace_id",
+            "owner_id",
+            "revision",
+            "intents",
+            "decisions",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "owner_advisor_notebooks": {
+          "columns": [
+            "workspace_id",
+            "owner_id",
+            "revision",
+            "goals",
+            "tasks",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "owner_advisor_profiles": {
+          "columns": [
+            "workspace_id",
+            "owner_id",
+            "priorities",
+            "revision",
+            "history"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "owner_advisor_requests": {
+          "columns": [
+            "workspace_id",
+            "owner_id",
+            "request_id",
+            "command_hash",
+            "kind",
+            "state",
+            "created_at",
+            "lease_until",
+            "result"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "password_recovery_limits": {
+          "columns": [
+            "scope",
+            "bucket",
+            "attempts"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "password_recovery_proofs": {
+          "columns": [
+            "token_hash",
+            "employee_id",
+            "credential_updated_at",
+            "employee_updated_at",
+            "method",
+            "actor_employee_id",
+            "attestation",
+            "created_at",
+            "expires_at",
+            "used_at",
+            "retired_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_command_receipts": {
+          "columns": [
+            "workspace_id",
+            "actor_id",
+            "operation_id",
+            "command_hash",
+            "payload"
+          ],
+          "count": "3",
+          "digest": "95170a93be468c52b6f6e07fedf34d86da717a39d32c908a58258aef4e46c676"
+        },
+        "payroll_documents": {
+          "columns": [
+            "workspace_id",
+            "id",
+            "run_id",
+            "employee_id",
+            "kind",
+            "filename",
+            "sha256",
+            "content",
+            "payload"
+          ],
+          "count": "1",
+          "digest": "0dd23fd85c8f60843dd445d6bfaebd4b46f869648855ef599e820de28fbb4d64"
+        },
+        "payroll_exception_revisions": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "revision",
+            "effective_from",
+            "payload"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_export_profile_revisions": {
+          "columns": [
+            "workspace_id",
+            "profile_id",
+            "revision",
+            "operation_id",
+            "actor_employee_id",
+            "command_hash",
+            "profile",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_export_receipts": {
+          "columns": [
+            "workspace_id",
+            "operation_id",
+            "actor_employee_id",
+            "command_hash",
+            "payload",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_grant_revisions": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "revision",
+            "payload"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_jobs": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "run_id",
+            "kind",
+            "business_key",
+            "status",
+            "payload",
+            "attempts",
+            "lease_token",
+            "lease_until",
+            "available_at",
+            "error"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_notice_receipts": {
+          "columns": [
+            "workspace_id",
+            "business_key",
+            "payload"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_notice_sources": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "kind",
+            "version",
+            "payload"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_period_events": {
+          "columns": [
+            "workspace_id",
+            "manifest_id",
+            "id",
+            "actor_employee_id",
+            "kind",
+            "command_hash",
+            "payload",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_period_manifests": {
+          "columns": [
+            "workspace_id",
+            "id",
+            "actor_employee_id",
+            "command_hash",
+            "start_date",
+            "end_date",
+            "population_revision",
+            "source_hash",
+            "manifest_hash",
+            "payload",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_period_populations": {
+          "columns": [
+            "workspace_id",
+            "start_date",
+            "end_date",
+            "revision",
+            "operation_id",
+            "actor_employee_id",
+            "command_hash",
+            "source_hash",
+            "payload",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_publications": {
+          "columns": [
+            "workspace_id",
+            "run_id",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_run_revisions": {
+          "columns": [
+            "workspace_id",
+            "run_id",
+            "revision",
+            "payload",
+            "snapshot"
+          ],
+          "count": "1",
+          "digest": "e3da2fbc40771e0b3205f3a7cc7c6e8ba15a1337cb10603ecf27bea0ba5b0952"
+        },
+        "payroll_runs": {
+          "columns": [
+            "workspace_id",
+            "id",
+            "start_date",
+            "end_date",
+            "correction_of"
+          ],
+          "count": "1",
+          "digest": "b332cf9468f0bbf7c3261d7185639972ccb784ea213566db6253c27164eb99cb"
+        },
+        "payroll_setting_revisions": {
+          "columns": [
+            "workspace_id",
+            "revision",
+            "effective_from",
+            "payload"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "positions": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "name",
+            "active",
+            "created_at",
+            "updated_at",
+            "onboarding_worker_lock"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "push_deliveries": {
+          "columns": [
+            "id",
+            "notification_id",
+            "subscription_id",
+            "generation",
+            "status",
+            "attempt_count",
+            "next_attempt_at",
+            "expires_at",
+            "lease_token",
+            "lease_expires_at",
+            "accepted_at",
+            "error_class",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "push_subscriptions": {
+          "columns": [
+            "id",
+            "employee_id",
+            "installation_hash",
+            "environment",
+            "endpoint_fingerprint",
+            "encrypted_material",
+            "generation",
+            "session_hash",
+            "status",
+            "consent_at",
+            "updated_at",
+            "expires_at",
+            "last_test_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_acknowledgements": {
+          "columns": [
+            "week_start",
+            "employee_id",
+            "acknowledged_at",
+            "publication_revision_id"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_copy_operations": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "command_hash",
+            "command",
+            "source",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_copy_receipts": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "payload",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_copy_row_receipts": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "row_number",
+            "source_id",
+            "status",
+            "reason",
+            "warnings",
+            "inserted_shift_id"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_generation_exclusions": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "week_start",
+            "location_id",
+            "assignment_start",
+            "assignment_end",
+            "position_id",
+            "claims",
+            "deleted_source_shift_id",
+            "created_by",
+            "created_at",
+            "cleared_by",
+            "cleared_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_pending_edits": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "week_start",
+            "location_id",
+            "schedule_id",
+            "shift_id",
+            "kind",
+            "before_snapshot",
+            "after_snapshot",
+            "actor_employee_id",
+            "created_at",
+            "published_revision_id",
+            "published_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_publication_revision_shifts": {
+          "columns": [
+            "id",
+            "revision_id",
+            "source_shift_id",
+            "schedule_id",
+            "location_id",
+            "employee_id",
+            "date",
+            "start_time",
+            "end_time",
+            "notes",
+            "is_designated_lead",
+            "is_callout_approved",
+            "position_id",
+            "position_name"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_publication_revisions": {
+          "columns": [
+            "id",
+            "week_start",
+            "revision_number",
+            "source_type",
+            "source_id",
+            "affected_location_id",
+            "created_by",
+            "created_at",
+            "calendar_serial",
+            "calendar_modified_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_template_shifts": {
+          "columns": [
+            "id",
+            "template_id",
+            "location_id",
+            "day_offset",
+            "start_time",
+            "end_time",
+            "employee_id",
+            "is_designated_lead",
+            "notes",
+            "position_id",
+            "workspace_id"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_templates": {
+          "columns": [
+            "id",
+            "name",
+            "created_by",
+            "active",
+            "created_at",
+            "updated_at",
+            "workspace_id"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_week_settings": {
+          "columns": [
+            "week_start",
+            "availability_deadline",
+            "updated_by",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedules": {
+          "columns": [
+            "id",
+            "location_id",
+            "week_start",
+            "status",
+            "created_by",
+            "published_by",
+            "published_at",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "shift_callouts": {
+          "columns": [
+            "id",
+            "shift_id",
+            "employee_id",
+            "reason_code",
+            "reason_note",
+            "status",
+            "reviewed_by",
+            "reviewed_at",
+            "created_at",
+            "request_revision",
+            "legacy_manual",
+            "assignment_episode_id",
+            "reviewed_terms_fingerprint",
+            "source_terms",
+            "outcome_reason",
+            "linked_coverage_request_id",
+            "escalated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "shift_change_events": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "request_kind",
+            "request_id",
+            "request_revision",
+            "event_kind",
+            "actor_employee_id",
+            "source_terms",
+            "target_terms",
+            "participants",
+            "callout_reason_code",
+            "callout_reason_note",
+            "outcome_reason",
+            "outcome_mode",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "shift_change_operations": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "command_fingerprint",
+            "request_id",
+            "result",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "shift_change_participation": {
+          "columns": [
+            "shift_id",
+            "exchange_id",
+            "callout_id",
+            "role"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "shift_exchanges": {
+          "columns": [
+            "id",
+            "kind",
+            "source_shift_id",
+            "requested_by_employee_id",
+            "target_employee_id",
+            "target_shift_id",
+            "status",
+            "resolved_by",
+            "resolved_at",
+            "created_at",
+            "request_revision",
+            "legacy_manual",
+            "requester_consent",
+            "target_consent",
+            "source_terms",
+            "target_terms",
+            "submission_deadline",
+            "completion_deadline",
+            "policy_revision",
+            "recorded_approval_mode",
+            "outcome_mode",
+            "outcome_reason",
+            "prior_request_id",
+            "linked_callout_id",
+            "escalated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "shifts": {
+          "columns": [
+            "id",
+            "schedule_id",
+            "employee_id",
+            "date",
+            "start_time",
+            "end_time",
+            "notes",
+            "created_at",
+            "updated_at",
+            "is_designated_lead",
+            "position_id",
+            "assignment_origin",
+            "generated_claims",
+            "assignment_episode_id",
+            "terms_revision"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "staff_task_events": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "template_id",
+            "task_id",
+            "actor_id",
+            "kind",
+            "created_at",
+            "data"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "staff_task_instances": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "template_id",
+            "business_date",
+            "location_id",
+            "assignee_id",
+            "snapshot",
+            "checked_item_ids",
+            "due_at",
+            "reminder_at",
+            "reminder_generation",
+            "revision",
+            "status",
+            "completed_by",
+            "completed_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "staff_task_operations": {
+          "columns": [
+            "workspace_id",
+            "actor_id",
+            "session_hash",
+            "operation_id",
+            "payload_hash",
+            "template_id",
+            "task_id",
+            "result",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "staff_task_reminder_acks": {
+          "columns": [
+            "workspace_id",
+            "task_id",
+            "generation",
+            "employee_id",
+            "acknowledged_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "staff_task_templates": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "location_id",
+            "assignee_id",
+            "draft",
+            "revision",
+            "archived",
+            "next_date",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "time_correction_adjustments": {
+          "columns": [
+            "id",
+            "request_id",
+            "workspace_id",
+            "employee_id",
+            "kind",
+            "time_entry_id",
+            "break_entry_id",
+            "location_id",
+            "effective_start_at",
+            "effective_end_at",
+            "source_revision",
+            "source_snapshot",
+            "supersedes_adjustment_id",
+            "created_by",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "time_correction_events": {
+          "columns": [
+            "id",
+            "request_id",
+            "revision",
+            "event_kind",
+            "actor_employee_id",
+            "operation_hash",
+            "decision_note",
+            "adjustment_id",
+            "result",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "time_correction_requests": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "employee_id",
+            "requested_by_employee_id",
+            "kind",
+            "time_entry_id",
+            "break_entry_id",
+            "location_id",
+            "source_revision",
+            "source_snapshot",
+            "base_adjustment_id",
+            "proposal",
+            "reason",
+            "request_hash",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "time_entries": {
+          "columns": [
+            "id",
+            "employee_id",
+            "location_id",
+            "device_id",
+            "clock_in_at",
+            "clock_out_at",
+            "status",
+            "created_at",
+            "updated_at",
+            "version",
+            "schedule_context"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "time_off_requests": {
+          "columns": [
+            "id",
+            "employee_id",
+            "start_date",
+            "end_date",
+            "start_time",
+            "end_time",
+            "reason",
+            "status",
+            "reviewed_by",
+            "reviewed_at",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "timecard_revisions": {
+          "columns": [
+            "operation_id",
+            "workspace_id",
+            "employee_id",
+            "start_date",
+            "end_date",
+            "revision",
+            "action",
+            "actor_employee_id",
+            "source_hash",
+            "snapshot",
+            "command_hash",
+            "note",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "weekly_availability_submissions": {
+          "columns": [
+            "week_start",
+            "employee_id",
+            "submitted_at",
+            "updated_at",
+            "uses_normal_availability"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "weekly_availability_windows": {
+          "columns": [
+            "id",
+            "week_start",
+            "employee_id",
+            "day_of_week",
+            "start_time",
+            "end_time",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "workspaces": {
+          "columns": [
+            "id",
+            "name",
+            "time_zone",
+            "active",
+            "singleton",
+            "created_at",
+            "updated_at",
+            "shift_change_policy",
+            "onboarding_worker_lock"
+          ],
+          "count": "1",
+          "digest": "2ac38bbcbfe5c14308a7e0208a7517ba81506da6e42869576fe21735e3547ce4"
+        }
+      }
+    },
+    {
+      "scenario": "pre-upgrade-0002-backup",
+      "archiveSha256": "5ad072089f04b8be37871b6fd03ba03ccb5f784d1ac58b5759c10edd3e5ab468",
+      "archiveBytes": 35692,
+      "globalsSha256": "0f9d31b296a4cb7810e1808a192ff6d2efb5b4b1300d0eccd09c41149c441e63",
+      "tableCount": 14,
+      "populatedTableCount": 6,
+      "logicalDataSha256": "d3bb63e6b73b0ef624f4e094c95d781b8165fd7d717198e76139da9549bf7dda",
+      "originalSchemaSha256": "d3d301ad7acaca6e675c4c49d9f0c6528c15a3d09ecc26b60a7f6b2ada7d2634",
+      "canonicalSchemaSha256": "d3d301ad7acaca6e675c4c49d9f0c6528c15a3d09ecc26b60a7f6b2ada7d2634",
+      "tableDigests": {
+        "availability_exceptions": {
+          "columns": [
+            "id",
+            "employee_id",
+            "date",
+            "kind",
+            "start_time",
+            "end_time",
+            "note"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "availability_windows": {
+          "columns": [
+            "id",
+            "employee_id",
+            "day_of_week",
+            "start_time",
+            "end_time"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "employee_credentials": {
+          "columns": [
+            "employee_id",
+            "password_hash",
+            "must_change_password",
+            "password_updated_at"
+          ],
+          "count": "4",
+          "digest": "430e501bb31e3424dca35abdd47f4bc27562471d439d415b76b5c885fa7fe4f8"
+        },
+        "employee_location_eligibility": {
+          "columns": [
+            "employee_id",
+            "location_id"
+          ],
+          "count": "4",
+          "digest": "2204d423cfcdb0b00ccecc371efa68541bdd24e3d1c47d6e47497c750893673f"
+        },
+        "employee_scheduling_settings": {
+          "columns": [
+            "employee_id",
+            "target_weekly_hours",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "employee_sessions": {
+          "columns": [
+            "token_hash",
+            "employee_id",
+            "expires_at",
+            "created_at"
+          ],
+          "count": "5",
+          "digest": "4e24d946fe8da9f67c8df169d8ca5820cfbeb264237d9f062fbccf5cfc973e62"
+        },
+        "employees": {
+          "columns": [
+            "id",
+            "first_name",
+            "last_name",
+            "phone",
+            "email",
+            "role",
+            "primary_location_id",
+            "active",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "4",
+          "digest": "e677d756abc25ce1bf3f33b251153bd0a27bc73924a5a72c946ce39e4c6ad9e6"
+        },
+        "location_staffing_settings": {
+          "columns": [
+            "location_id",
+            "minimum_staff_per_shift",
+            "updated_at"
+          ],
+          "count": "2",
+          "digest": "e7639adb2bef6ae45bf8cd266dfc3f14636b449e990f4bddc71308b63be5dacd"
+        },
+        "locations": {
+          "columns": [
+            "id",
+            "name",
+            "short_name",
+            "active",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "2",
+          "digest": "c0c859f68422dfee6e1cf133c40c40a6b3a635139059b85d7cde698c8e05d4e3"
+        },
+        "notifications": {
+          "columns": [
+            "id",
+            "employee_id",
+            "type",
+            "title",
+            "body",
+            "read_at",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedules": {
+          "columns": [
+            "id",
+            "location_id",
+            "week_start",
+            "status",
+            "created_by",
+            "published_by",
+            "published_at",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "shift_exchanges": {
+          "columns": [
+            "id",
+            "kind",
+            "source_shift_id",
+            "requested_by_employee_id",
+            "target_employee_id",
+            "target_shift_id",
+            "status",
+            "resolved_by",
+            "resolved_at",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "shifts": {
+          "columns": [
+            "id",
+            "schedule_id",
+            "employee_id",
+            "date",
+            "start_time",
+            "end_time",
+            "notes",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "time_off_requests": {
+          "columns": [
+            "id",
+            "employee_id",
+            "start_date",
+            "end_date",
+            "start_time",
+            "end_time",
+            "reason",
+            "status",
+            "reviewed_by",
+            "reviewed_at",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "scenario": "upgrade-from-0002",
+      "archiveSha256": "d50486e65359aaa323a17dbcf22bf5f0576e9fb58d2b44484c53c4da32239cac",
+      "archiveBytes": 839304,
+      "globalsSha256": "e36eceb1ec295c36ecd527d0c12a75af519a5c88dc054d99a4170db0cc58e317",
+      "tableCount": 154,
+      "populatedTableCount": 25,
+      "logicalDataSha256": "df119654f72a3711d9d8d53f67ae2736116d17d48eebbe67bc4889cfc445bd84",
+      "originalSchemaSha256": "23c081b95f19f3aa56447f5173ba224e5bda7f21e017bb6713a8ad7eb59ca6d4",
+      "canonicalSchemaSha256": "f5c0d082ce1b005ad7d7dfcea2dfce127a1851922b5f6faf8756f72729988a63",
+      "tableDigests": {
+        "account_deletion_requests": {
+          "columns": [
+            "id",
+            "reference",
+            "employee_id",
+            "workspace_id",
+            "channel",
+            "policy_version",
+            "status",
+            "verified_at",
+            "confirmed_at",
+            "completed_at",
+            "retained_note",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "attendance_policy_observations": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "actor_employee_id",
+            "payload",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "auth_login_limits": {
+          "columns": [
+            "scope",
+            "bucket",
+            "attempts"
+          ],
+          "count": "5",
+          "digest": "b43197269e5a55c27b5db40f57cf8bf43b4ed78584f3c28d971f81de3b36a76d"
+        },
+        "auth_passkey_audit": {
+          "columns": [
+            "id",
+            "employee_id",
+            "passkey_id",
+            "event",
+            "reason",
+            "created_at"
+          ],
+          "count": "2",
+          "digest": "821fd72717b9b73a26be3b2094374db2bd6240533464dcc35d687440e232cf3a"
+        },
+        "auth_passkey_challenges": {
+          "columns": [
+            "token_hash",
+            "purpose",
+            "challenge",
+            "employee_id",
+            "session_token_hash",
+            "credential_updated_at",
+            "employee_updated_at",
+            "expires_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "auth_passkey_users": {
+          "columns": [
+            "employee_id",
+            "user_handle"
+          ],
+          "count": "1",
+          "digest": "5817326871d7a30ce99500d5f4c70b69fe7c0901c02a479723db55e298fc0221"
+        },
+        "availability_exceptions": {
+          "columns": [
+            "id",
+            "employee_id",
+            "date",
+            "kind",
+            "start_time",
+            "end_time",
+            "note"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "availability_windows": {
+          "columns": [
+            "id",
+            "employee_id",
+            "day_of_week",
+            "start_time",
+            "end_time"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "break_entries": {
+          "columns": [
+            "id",
+            "time_entry_id",
+            "break_start_at",
+            "break_end_at",
+            "version",
+            "break_type_id",
+            "break_type_snapshot"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "calendar_clock": {
+          "columns": [
+            "singleton",
+            "serial",
+            "modified_at"
+          ],
+          "count": "1",
+          "digest": "793032c9079cc96c247b6115ebf28ebbac1debd64b1afb9d97d576ca41ad4e5a"
+        },
+        "calendar_operations": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "authority",
+            "payload_hash",
+            "result",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "calendar_removals": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "source_shift_id",
+            "previous_publication_shift_id",
+            "removal_revision_id",
+            "calendar_serial",
+            "removed_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "calendar_subscriptions": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "employee_id",
+            "digest",
+            "generation",
+            "allowed_location_ids",
+            "issued_at",
+            "revoked_at",
+            "revocation_reason"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_break_type_events": {
+          "columns": [
+            "id",
+            "break_type_id",
+            "version",
+            "actor_employee_id",
+            "settings",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_break_types": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "name",
+            "category",
+            "target_minutes",
+            "active",
+            "version",
+            "created_by",
+            "updated_by",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_command_ledger": {
+          "columns": [
+            "device_id",
+            "command_id",
+            "employee_id",
+            "credential_version",
+            "request_hash",
+            "action",
+            "time_entry_id",
+            "performed_at",
+            "result"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_device_credentials": {
+          "columns": [
+            "credential_hash",
+            "device_id",
+            "credential_version",
+            "issued_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_device_events": {
+          "columns": [
+            "id",
+            "device_id",
+            "actor_employee_id",
+            "kind",
+            "device_version",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_devices": {
+          "columns": [
+            "id",
+            "location_id",
+            "name",
+            "active",
+            "last_seen_at",
+            "credential_hash",
+            "credential_version",
+            "enrollment_hash",
+            "enrollment_expires_at",
+            "enrollment_owner_id",
+            "enrollment_session_hash",
+            "enrolled_at",
+            "revoked_at",
+            "version",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_employee_clock_state": {
+          "columns": [
+            "employee_id",
+            "revision"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_photo_access_events": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "actor_employee_id",
+            "device_id",
+            "command_id",
+            "kind",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_photo_cleanup_runs": {
+          "columns": [
+            "workspace_id",
+            "invocation_id",
+            "completed_at",
+            "expired_count",
+            "orphan_count",
+            "backlog"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_photo_notice_profiles": {
+          "columns": [
+            "workspace_id",
+            "version",
+            "assistance_contact",
+            "assistance_instructions",
+            "updated_by",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_photo_notice_revisions": {
+          "columns": [
+            "workspace_id",
+            "version",
+            "actor_employee_id",
+            "profile",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_photo_platform_lifecycle": {
+          "columns": [
+            "workspace_id",
+            "project_id",
+            "branch_id",
+            "worker_role_name",
+            "enabled",
+            "cleanup_disclosure",
+            "backup_disclosure",
+            "attested_until",
+            "last_success_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_photo_policy": {
+          "columns": [
+            "workspace_id",
+            "version",
+            "enabled",
+            "events",
+            "retention_days",
+            "failure_behavior",
+            "updated_by",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_photo_policy_revisions": {
+          "columns": [
+            "workspace_id",
+            "version",
+            "actor_employee_id",
+            "policy",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_photo_review_events": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "actor_employee_id",
+            "kind",
+            "result_count",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_pin_configuration": {
+          "columns": [
+            "workspace_id",
+            "key_identity"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_pin_events": {
+          "columns": [
+            "id",
+            "employee_id",
+            "actor_employee_id",
+            "pin_version",
+            "occurred_at",
+            "operation_id"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_pin_limits": {
+          "columns": [
+            "scope",
+            "scope_id",
+            "failures",
+            "failure_window",
+            "attempts",
+            "attempt_window",
+            "latest_attempt"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_pin_sessions": {
+          "columns": [
+            "device_id",
+            "employee_id",
+            "token_hash",
+            "pin_version",
+            "credential_version",
+            "employee_updated_at",
+            "expires_at",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_punch_photos": {
+          "columns": [
+            "workspace_id",
+            "device_id",
+            "command_id",
+            "employee_id",
+            "location_id",
+            "credential_version",
+            "action",
+            "performed_at",
+            "policy_version",
+            "notice_profile_version",
+            "state",
+            "upload_deadline",
+            "expires_at",
+            "failure_code",
+            "sha256",
+            "width",
+            "height",
+            "jpeg",
+            "uploaded_at",
+            "removed_at",
+            "removed_by"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "clocker_review_requests": {
+          "columns": [
+            "request_id",
+            "workspace_id",
+            "device_id",
+            "requester_id",
+            "location_id",
+            "command_id",
+            "requested_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "communication_lifecycle": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "communication_id",
+            "revision_id",
+            "actor_employee_id",
+            "kind",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "communication_operations": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "session_hash",
+            "payload_hash",
+            "kind",
+            "communication_id",
+            "revision_id",
+            "receipt_id",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "communication_receipts": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "communication_id",
+            "revision_id",
+            "employee_id",
+            "content_hash",
+            "acknowledged_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "communication_recipients": {
+          "columns": [
+            "workspace_id",
+            "communication_id",
+            "revision_id",
+            "employee_id",
+            "content_hash",
+            "location_id",
+            "grant_kind",
+            "source_shift_id",
+            "assignment_episode_id",
+            "terms_fingerprint",
+            "observed_at",
+            "provenance"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "communication_revisions": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "communication_id",
+            "version",
+            "created_by",
+            "type",
+            "scope_kind",
+            "location_id",
+            "business_date",
+            "source_shift_id",
+            "assignment_episode_id",
+            "terms_fingerprint",
+            "title",
+            "body",
+            "acknowledgement",
+            "expires_at",
+            "content_hash",
+            "audience_fingerprint",
+            "audience_observed_at",
+            "published_at",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "communications": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "author_employee_id",
+            "state",
+            "head_revision_id",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "company_access_adoption": {
+          "columns": [
+            "workspace_id",
+            "protocol_version",
+            "state",
+            "owner_policy_receipt_id",
+            "legacy_manager_census",
+            "census_digest",
+            "adopted_at"
+          ],
+          "count": "1",
+          "digest": "fe4407d569f004121afa1c9b7fc05fe1780b9a684e2925e5d37f12d66f4f892d"
+        },
+        "company_access_operations": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "employee_id",
+            "kind",
+            "command_hash",
+            "receipt",
+            "committed_at"
+          ],
+          "count": "1",
+          "digest": "b294f1516f5f376ec4fc14f18124fc88b2c87c49c9311aa8434417ebcfd0ffbe"
+        },
+        "company_invitation_claim_counters": {
+          "columns": [
+            "workspace_id",
+            "invitation_id",
+            "bucket_start",
+            "attempts"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "company_invitation_delivery_events": {
+          "columns": [
+            "workspace_id",
+            "id",
+            "invitation_id",
+            "state",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "company_invitation_events": {
+          "columns": [
+            "workspace_id",
+            "id",
+            "invitation_id",
+            "action",
+            "actor_employee_id",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "company_invitation_issue_counters": {
+          "columns": [
+            "workspace_id",
+            "bucket_start",
+            "kind",
+            "subject",
+            "attempts"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "company_invitations": {
+          "columns": [
+            "workspace_id",
+            "id",
+            "employee_id",
+            "revision",
+            "target_version",
+            "email_fingerprint",
+            "issuer_employee_id",
+            "issuer_generation",
+            "proof_digest",
+            "issued_at",
+            "expires_at",
+            "consumed_at",
+            "retired_at",
+            "retired_reason"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "conversation_events": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "conversation_id",
+            "actor_id",
+            "kind",
+            "data",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "conversation_members": {
+          "columns": [
+            "epoch",
+            "workspace_id",
+            "conversation_id",
+            "employee_id",
+            "role_generation",
+            "joined_after",
+            "ended_at",
+            "read_through",
+            "muted"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "conversation_messages": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "conversation_id",
+            "sequence",
+            "stream_order",
+            "author_id",
+            "author_epoch",
+            "body",
+            "persisted_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "conversation_operations": {
+          "columns": [
+            "workspace_id",
+            "actor_id",
+            "session_hash",
+            "operation_id",
+            "payload_hash",
+            "conversation_id",
+            "membership_epoch",
+            "receipt",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "conversation_streams": {
+          "columns": [
+            "workspace_id",
+            "last_order",
+            "cursor_key"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "conversations": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "location_id",
+            "kind",
+            "title",
+            "direct_key",
+            "topic_kind",
+            "topic_id",
+            "revision",
+            "archived",
+            "last_sequence",
+            "created_order",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "coverage_window_position_requirements": {
+          "columns": [
+            "coverage_window_id",
+            "position_id",
+            "quantity"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "employee_attention_operations": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "operation_id",
+            "command_hash",
+            "result",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "employee_attention_receipts": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "employee_id",
+            "source_kind",
+            "source_id",
+            "source_version",
+            "read_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "employee_clocker_pins": {
+          "columns": [
+            "employee_id",
+            "workspace_id",
+            "lookup_hash",
+            "pin_hash",
+            "version",
+            "updated_by",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "employee_credentials": {
+          "columns": [
+            "employee_id",
+            "password_hash",
+            "must_change_password",
+            "password_updated_at"
+          ],
+          "count": "4",
+          "digest": "430e501bb31e3424dca35abdd47f4bc27562471d439d415b76b5c885fa7fe4f8"
+        },
+        "employee_location_eligibility": {
+          "columns": [
+            "employee_id",
+            "location_id"
+          ],
+          "count": "4",
+          "digest": "2204d423cfcdb0b00ccecc371efa68541bdd24e3d1c47d6e47497c750893673f"
+        },
+        "employee_passkeys": {
+          "columns": [
+            "id",
+            "employee_id",
+            "credential_id",
+            "public_key",
+            "sign_counter",
+            "transports",
+            "rp_id",
+            "name",
+            "created_at",
+            "last_used_at",
+            "revoked_at",
+            "revocation_reason"
+          ],
+          "count": "1",
+          "digest": "6833b271e136cf9754600e379e2fe9b6834e666c61d4d305ceae511597036d01"
+        },
+        "employee_positions": {
+          "columns": [
+            "employee_id",
+            "position_id"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "employee_scheduling_settings": {
+          "columns": [
+            "employee_id",
+            "target_weekly_hours",
+            "updated_at",
+            "maximum_weekly_hours",
+            "operational_rule_profile"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "employee_sessions": {
+          "columns": [
+            "token_hash",
+            "employee_id",
+            "expires_at",
+            "created_at",
+            "onboarding_worker_lock"
+          ],
+          "count": "7",
+          "digest": "ef68c069b80029625a4f899c0868e306e7fff0a9f643a4155f14c813a1bbcbf2"
+        },
+        "employees": {
+          "columns": [
+            "id",
+            "first_name",
+            "last_name",
+            "phone",
+            "email",
+            "role",
+            "primary_location_id",
+            "active",
+            "created_at",
+            "updated_at",
+            "management_alert_choices",
+            "onboarding_worker_lock"
+          ],
+          "count": "4",
+          "digest": "691587149ca0676c34b66ae73ca2d2369d78b2630f2d65ad853b6972b6579d6d"
+        },
+        "location_coverage_windows": {
+          "columns": [
+            "id",
+            "location_id",
+            "day_of_week",
+            "start_time",
+            "end_time",
+            "minimum_staff",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "location_staffing_settings": {
+          "columns": [
+            "location_id",
+            "minimum_staff_per_shift",
+            "updated_at",
+            "requires_designated_lead"
+          ],
+          "count": "2",
+          "digest": "c323762bf2d0092e8624cb8afb3138b9d8b478c4994e62d6bb7048a35572c844"
+        },
+        "locations": {
+          "columns": [
+            "id",
+            "name",
+            "short_name",
+            "active",
+            "created_at",
+            "updated_at",
+            "workspace_id",
+            "clocker_key",
+            "calendar_serial",
+            "calendar_modified_at",
+            "onboarding_worker_lock"
+          ],
+          "count": "2",
+          "digest": "f4b1997dad329daa1530bc9902e157b84e09d35b415df8025e6bdc9357a1ec59"
+        },
+        "management_time_closes": {
+          "columns": [
+            "operation_id",
+            "workspace_id",
+            "employee_id",
+            "actor_employee_id",
+            "time_entry_id",
+            "location_id",
+            "command_hash",
+            "source_hash",
+            "closed_at",
+            "recorded_at",
+            "reason",
+            "before_snapshot",
+            "after_snapshot",
+            "receipt"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "native_payroll_document_manifests": {
+          "columns": [
+            "workspace_id",
+            "run_id",
+            "payload"
+          ],
+          "count": "1",
+          "digest": "7d80feff53290744a78a186db7b1055ed6dc9b1f8290febd1079f93ec2764da7"
+        },
+        "native_payroll_ledger": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "tax_year",
+            "sequence",
+            "run_id",
+            "correction_of",
+            "opening_revision",
+            "start_date",
+            "end_date",
+            "payday",
+            "payload"
+          ],
+          "count": "1",
+          "digest": "155082ecaa36e97e35ca56545bcb121b21f2f1c0b35ad3bb26742e236b7bed38"
+        },
+        "native_payroll_manager_scope_revisions": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "revision",
+            "subject_employee_version",
+            "payload"
+          ],
+          "count": "1",
+          "digest": "5c98289932adbbc60f2946dfd34c30835e10a9ca58286de22bf4d15884a2ffee"
+        },
+        "native_payroll_opening_ytd_revisions": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "tax_year",
+            "revision",
+            "payload"
+          ],
+          "count": "1",
+          "digest": "f413ce0149535346f94457247305c88983f7ff709e86bad89cd8c2b0a2782ed7"
+        },
+        "native_payroll_profile_revisions": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "revision",
+            "payload"
+          ],
+          "count": "1",
+          "digest": "5a91e01e3e6747829430899f0103de259f44ac4e338405593bb2424da3f26a6c"
+        },
+        "native_payroll_setup_records": {
+          "columns": [
+            "workspace_id",
+            "kind",
+            "subject_id",
+            "tax_year",
+            "revision",
+            "operation_id",
+            "actor_employee_id",
+            "created_at",
+            "facts_sha256",
+            "payload"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "native_push_challenges": {
+          "columns": [
+            "id",
+            "operation_id",
+            "workspace_id",
+            "employee_id",
+            "session_hash",
+            "origin",
+            "environment",
+            "key_fingerprint",
+            "public_key",
+            "wire",
+            "issued_at",
+            "expires_at",
+            "completed_input_hash",
+            "result_generation",
+            "result_state",
+            "completed_at",
+            "onboarding_worker_lock"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "native_push_deliveries": {
+          "columns": [
+            "id",
+            "notification_id",
+            "installation_id",
+            "generation",
+            "status",
+            "attempt_count",
+            "next_attempt_at",
+            "expires_at",
+            "lease_token",
+            "lease_expires_at",
+            "accepted_at",
+            "error_class",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "native_push_installations": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "employee_id",
+            "session_hash",
+            "origin",
+            "environment",
+            "platform",
+            "app_id",
+            "provider",
+            "key_fingerprint",
+            "public_key",
+            "generation",
+            "token_fingerprint",
+            "encrypted_material",
+            "status",
+            "consent_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "nevora_commerce_installation": {
+          "columns": [
+            "singleton",
+            "workspace_id",
+            "business_id",
+            "installation_id",
+            "environment",
+            "incarnation",
+            "canonical_origin",
+            "instance_secret_hash",
+            "provisioned_at",
+            "employee_limit",
+            "worker_secret_hash"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "nevora_company_policy_revisions": {
+          "columns": [
+            "operation_id",
+            "workspace_id",
+            "location_id",
+            "revision",
+            "actor_employee_id",
+            "changed_at",
+            "command_hash",
+            "previous_settings",
+            "settings",
+            "changed_keys"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "nevora_workspace_presentation_assets": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "actor_employee_id",
+            "created_at",
+            "media_type",
+            "width",
+            "height",
+            "byte_size",
+            "sha256",
+            "bytes"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "nevora_workspace_presentation_revisions": {
+          "columns": [
+            "operation_id",
+            "workspace_id",
+            "revision",
+            "actor_employee_id",
+            "changed_at",
+            "command_hash",
+            "previous_settings",
+            "settings",
+            "changed_keys"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "notifications": {
+          "columns": [
+            "id",
+            "employee_id",
+            "type",
+            "title",
+            "body",
+            "read_at",
+            "created_at",
+            "action_href",
+            "event_key",
+            "environment",
+            "source_kind",
+            "source_id",
+            "source_version",
+            "effective_version",
+            "purpose",
+            "due_at",
+            "expires_at",
+            "urgency",
+            "cancelled_at",
+            "push_state",
+            "item_keys",
+            "management_alert_suppressed"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_commands": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "command_kind",
+            "command_hash",
+            "resulting_version",
+            "result",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_initial_owner": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "registration_id",
+            "state",
+            "grant_revision",
+            "created_at",
+            "activated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_invitation_batches": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "command_hash",
+            "version",
+            "created_at",
+            "owner_generation"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_invitation_items": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "employee_id",
+            "child_operation_id",
+            "expected_employee_version",
+            "expected_invitation_revision",
+            "state",
+            "result",
+            "updated_at",
+            "target_generation"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_owner_activation_receipts": {
+          "columns": [
+            "operation_id",
+            "workspace_id",
+            "grant_id",
+            "employee_id",
+            "command_hash",
+            "credential_updated_at",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_owner_grants": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "operation_id",
+            "registration_id",
+            "incarnation",
+            "revision",
+            "token_digest",
+            "employee_updated_at",
+            "expires_at",
+            "revoked_at",
+            "consumed_at",
+            "created_at",
+            "email_fingerprint",
+            "claim_attempts"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_progress": {
+          "columns": [
+            "workspace_id",
+            "version",
+            "updated_at",
+            "canonical_transaction"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_provision_receipts": {
+          "columns": [
+            "workspace_id",
+            "operation_id",
+            "registration_id",
+            "environment",
+            "incarnation",
+            "provider_project_id",
+            "resource_name",
+            "manifest_hash",
+            "command_hash",
+            "initial_owner_id",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_restore_receipts": {
+          "columns": [
+            "operation_id",
+            "workspace_id",
+            "environment",
+            "from_incarnation",
+            "to_incarnation",
+            "provider_project_id",
+            "manifest_hash",
+            "operator_ref",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_runtime_roles": {
+          "columns": [
+            "kind",
+            "login_role"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "onboarding_workspace_identity": {
+          "columns": [
+            "workspace_id",
+            "singleton",
+            "environment",
+            "incarnation",
+            "provider_project_id",
+            "lifecycle",
+            "lock_token"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "operational_scope_revisions": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "revision",
+            "role_generation",
+            "action",
+            "mode",
+            "location_ids",
+            "source",
+            "actor_employee_id",
+            "operation_id",
+            "created_at"
+          ],
+          "count": "2",
+          "digest": "17cb739ed319a1079b1731ed615b96534c197ccd54564a71a2b590fff4576f33"
+        },
+        "operational_subject_versions": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "generation"
+          ],
+          "count": "4",
+          "digest": "a6795e95a44145902152c2306dddeda4bc4e67e27d3e5aa6a9dab5e7e44a9fc2"
+        },
+        "owner_advisor_briefing_reviews": {
+          "columns": [
+            "workspace_id",
+            "owner_id",
+            "issue_id",
+            "fingerprint",
+            "issue_date",
+            "kind",
+            "location_id",
+            "proof",
+            "disposition",
+            "deferred_until",
+            "revision",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "owner_advisor_coverage_reviews": {
+          "columns": [
+            "workspace_id",
+            "owner_id",
+            "review_id",
+            "prepare_hash",
+            "authority",
+            "session_hash",
+            "source_version",
+            "payload",
+            "prepared_at",
+            "expires_at",
+            "applied_operation",
+            "apply_hash",
+            "receipt",
+            "created_assignments"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "owner_advisor_memories": {
+          "columns": [
+            "workspace_id",
+            "owner_id",
+            "revision",
+            "intents",
+            "decisions",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "owner_advisor_notebooks": {
+          "columns": [
+            "workspace_id",
+            "owner_id",
+            "revision",
+            "goals",
+            "tasks",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "owner_advisor_profiles": {
+          "columns": [
+            "workspace_id",
+            "owner_id",
+            "priorities",
+            "revision",
+            "history"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "owner_advisor_requests": {
+          "columns": [
+            "workspace_id",
+            "owner_id",
+            "request_id",
+            "command_hash",
+            "kind",
+            "state",
+            "created_at",
+            "lease_until",
+            "result"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "password_recovery_limits": {
+          "columns": [
+            "scope",
+            "bucket",
+            "attempts"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "password_recovery_proofs": {
+          "columns": [
+            "token_hash",
+            "employee_id",
+            "credential_updated_at",
+            "employee_updated_at",
+            "method",
+            "actor_employee_id",
+            "attestation",
+            "created_at",
+            "expires_at",
+            "used_at",
+            "retired_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_command_receipts": {
+          "columns": [
+            "workspace_id",
+            "actor_id",
+            "operation_id",
+            "command_hash",
+            "payload"
+          ],
+          "count": "3",
+          "digest": "0b23821e032df1e47892c474b4bd77e8b0ddbbb54f8e6f034029432a278e85a0"
+        },
+        "payroll_documents": {
+          "columns": [
+            "workspace_id",
+            "id",
+            "run_id",
+            "employee_id",
+            "kind",
+            "filename",
+            "sha256",
+            "content",
+            "payload"
+          ],
+          "count": "1",
+          "digest": "d699ddb8c688b9f3609dacbc5dba45bdf9452fa394b1f3d8748862c608de9396"
+        },
+        "payroll_exception_revisions": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "revision",
+            "effective_from",
+            "payload"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_export_profile_revisions": {
+          "columns": [
+            "workspace_id",
+            "profile_id",
+            "revision",
+            "operation_id",
+            "actor_employee_id",
+            "command_hash",
+            "profile",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_export_receipts": {
+          "columns": [
+            "workspace_id",
+            "operation_id",
+            "actor_employee_id",
+            "command_hash",
+            "payload",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_grant_revisions": {
+          "columns": [
+            "workspace_id",
+            "employee_id",
+            "revision",
+            "payload"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_jobs": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "run_id",
+            "kind",
+            "business_key",
+            "status",
+            "payload",
+            "attempts",
+            "lease_token",
+            "lease_until",
+            "available_at",
+            "error"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_notice_receipts": {
+          "columns": [
+            "workspace_id",
+            "business_key",
+            "payload"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_notice_sources": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "kind",
+            "version",
+            "payload"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_period_events": {
+          "columns": [
+            "workspace_id",
+            "manifest_id",
+            "id",
+            "actor_employee_id",
+            "kind",
+            "command_hash",
+            "payload",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_period_manifests": {
+          "columns": [
+            "workspace_id",
+            "id",
+            "actor_employee_id",
+            "command_hash",
+            "start_date",
+            "end_date",
+            "population_revision",
+            "source_hash",
+            "manifest_hash",
+            "payload",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_period_populations": {
+          "columns": [
+            "workspace_id",
+            "start_date",
+            "end_date",
+            "revision",
+            "operation_id",
+            "actor_employee_id",
+            "command_hash",
+            "source_hash",
+            "payload",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_publications": {
+          "columns": [
+            "workspace_id",
+            "run_id",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "payroll_run_revisions": {
+          "columns": [
+            "workspace_id",
+            "run_id",
+            "revision",
+            "payload",
+            "snapshot"
+          ],
+          "count": "1",
+          "digest": "f78715637e6c2feaeb772870797a74f45793951fc3fac07c9169f8243bebf16a"
+        },
+        "payroll_runs": {
+          "columns": [
+            "workspace_id",
+            "id",
+            "start_date",
+            "end_date",
+            "correction_of"
+          ],
+          "count": "1",
+          "digest": "822980cb6ef06d01f31d225db75eb89c5534bc300b55200ac34dc5e873c73b78"
+        },
+        "payroll_setting_revisions": {
+          "columns": [
+            "workspace_id",
+            "revision",
+            "effective_from",
+            "payload"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "positions": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "name",
+            "active",
+            "created_at",
+            "updated_at",
+            "onboarding_worker_lock"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "push_deliveries": {
+          "columns": [
+            "id",
+            "notification_id",
+            "subscription_id",
+            "generation",
+            "status",
+            "attempt_count",
+            "next_attempt_at",
+            "expires_at",
+            "lease_token",
+            "lease_expires_at",
+            "accepted_at",
+            "error_class",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "push_subscriptions": {
+          "columns": [
+            "id",
+            "employee_id",
+            "installation_hash",
+            "environment",
+            "endpoint_fingerprint",
+            "encrypted_material",
+            "generation",
+            "session_hash",
+            "status",
+            "consent_at",
+            "updated_at",
+            "expires_at",
+            "last_test_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_acknowledgements": {
+          "columns": [
+            "week_start",
+            "employee_id",
+            "acknowledged_at",
+            "publication_revision_id"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_copy_operations": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "command_hash",
+            "command",
+            "source",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_copy_receipts": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "payload",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_copy_row_receipts": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "row_number",
+            "source_id",
+            "status",
+            "reason",
+            "warnings",
+            "inserted_shift_id"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_generation_exclusions": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "week_start",
+            "location_id",
+            "assignment_start",
+            "assignment_end",
+            "position_id",
+            "claims",
+            "deleted_source_shift_id",
+            "created_by",
+            "created_at",
+            "cleared_by",
+            "cleared_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_pending_edits": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "week_start",
+            "location_id",
+            "schedule_id",
+            "shift_id",
+            "kind",
+            "before_snapshot",
+            "after_snapshot",
+            "actor_employee_id",
+            "created_at",
+            "published_revision_id",
+            "published_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_publication_revision_shifts": {
+          "columns": [
+            "id",
+            "revision_id",
+            "source_shift_id",
+            "schedule_id",
+            "location_id",
+            "employee_id",
+            "date",
+            "start_time",
+            "end_time",
+            "notes",
+            "is_designated_lead",
+            "is_callout_approved",
+            "position_id",
+            "position_name"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_publication_revisions": {
+          "columns": [
+            "id",
+            "week_start",
+            "revision_number",
+            "source_type",
+            "source_id",
+            "affected_location_id",
+            "created_by",
+            "created_at",
+            "calendar_serial",
+            "calendar_modified_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_template_shifts": {
+          "columns": [
+            "id",
+            "template_id",
+            "location_id",
+            "day_offset",
+            "start_time",
+            "end_time",
+            "employee_id",
+            "is_designated_lead",
+            "notes",
+            "position_id",
+            "workspace_id"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_templates": {
+          "columns": [
+            "id",
+            "name",
+            "created_by",
+            "active",
+            "created_at",
+            "updated_at",
+            "workspace_id"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedule_week_settings": {
+          "columns": [
+            "week_start",
+            "availability_deadline",
+            "updated_by",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "schedules": {
+          "columns": [
+            "id",
+            "location_id",
+            "week_start",
+            "status",
+            "created_by",
+            "published_by",
+            "published_at",
+            "created_at",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "shift_callouts": {
+          "columns": [
+            "id",
+            "shift_id",
+            "employee_id",
+            "reason_code",
+            "reason_note",
+            "status",
+            "reviewed_by",
+            "reviewed_at",
+            "created_at",
+            "request_revision",
+            "legacy_manual",
+            "assignment_episode_id",
+            "reviewed_terms_fingerprint",
+            "source_terms",
+            "outcome_reason",
+            "linked_coverage_request_id",
+            "escalated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "shift_change_events": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "request_kind",
+            "request_id",
+            "request_revision",
+            "event_kind",
+            "actor_employee_id",
+            "source_terms",
+            "target_terms",
+            "participants",
+            "callout_reason_code",
+            "callout_reason_note",
+            "outcome_reason",
+            "outcome_mode",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "shift_change_operations": {
+          "columns": [
+            "workspace_id",
+            "actor_employee_id",
+            "operation_id",
+            "command_fingerprint",
+            "request_id",
+            "result",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "shift_change_participation": {
+          "columns": [
+            "shift_id",
+            "exchange_id",
+            "callout_id",
+            "role"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "shift_exchanges": {
+          "columns": [
+            "id",
+            "kind",
+            "source_shift_id",
+            "requested_by_employee_id",
+            "target_employee_id",
+            "target_shift_id",
+            "status",
+            "resolved_by",
+            "resolved_at",
+            "created_at",
+            "request_revision",
+            "legacy_manual",
+            "requester_consent",
+            "target_consent",
+            "source_terms",
+            "target_terms",
+            "submission_deadline",
+            "completion_deadline",
+            "policy_revision",
+            "recorded_approval_mode",
+            "outcome_mode",
+            "outcome_reason",
+            "prior_request_id",
+            "linked_callout_id",
+            "escalated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "shifts": {
+          "columns": [
+            "id",
+            "schedule_id",
+            "employee_id",
+            "date",
+            "start_time",
+            "end_time",
+            "notes",
+            "created_at",
+            "updated_at",
+            "is_designated_lead",
+            "position_id",
+            "assignment_origin",
+            "generated_claims",
+            "assignment_episode_id",
+            "terms_revision"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "staff_task_events": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "template_id",
+            "task_id",
+            "actor_id",
+            "kind",
+            "created_at",
+            "data"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "staff_task_instances": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "template_id",
+            "business_date",
+            "location_id",
+            "assignee_id",
+            "snapshot",
+            "checked_item_ids",
+            "due_at",
+            "reminder_at",
+            "reminder_generation",
+            "revision",
+            "status",
+            "completed_by",
+            "completed_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "staff_task_operations": {
+          "columns": [
+            "workspace_id",
+            "actor_id",
+            "session_hash",
+            "operation_id",
+            "payload_hash",
+            "template_id",
+            "task_id",
+            "result",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "staff_task_reminder_acks": {
+          "columns": [
+            "workspace_id",
+            "task_id",
+            "generation",
+            "employee_id",
+            "acknowledged_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "staff_task_templates": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "location_id",
+            "assignee_id",
+            "draft",
+            "revision",
+            "archived",
+            "next_date",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "time_correction_adjustments": {
+          "columns": [
+            "id",
+            "request_id",
+            "workspace_id",
+            "employee_id",
+            "kind",
+            "time_entry_id",
+            "break_entry_id",
+            "location_id",
+            "effective_start_at",
+            "effective_end_at",
+            "source_revision",
+            "source_snapshot",
+            "supersedes_adjustment_id",
+            "created_by",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "time_correction_events": {
+          "columns": [
+            "id",
+            "request_id",
+            "revision",
+            "event_kind",
+            "actor_employee_id",
+            "operation_hash",
+            "decision_note",
+            "adjustment_id",
+            "result",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "time_correction_requests": {
+          "columns": [
+            "id",
+            "workspace_id",
+            "employee_id",
+            "requested_by_employee_id",
+            "kind",
+            "time_entry_id",
+            "break_entry_id",
+            "location_id",
+            "source_revision",
+            "source_snapshot",
+            "base_adjustment_id",
+            "proposal",
+            "reason",
+            "request_hash",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "time_entries": {
+          "columns": [
+            "id",
+            "employee_id",
+            "location_id",
+            "device_id",
+            "clock_in_at",
+            "clock_out_at",
+            "status",
+            "created_at",
+            "updated_at",
+            "version",
+            "schedule_context"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "time_off_requests": {
+          "columns": [
+            "id",
+            "employee_id",
+            "start_date",
+            "end_date",
+            "start_time",
+            "end_time",
+            "reason",
+            "status",
+            "reviewed_by",
+            "reviewed_at",
+            "created_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "timecard_revisions": {
+          "columns": [
+            "operation_id",
+            "workspace_id",
+            "employee_id",
+            "start_date",
+            "end_date",
+            "revision",
+            "action",
+            "actor_employee_id",
+            "source_hash",
+            "snapshot",
+            "command_hash",
+            "note",
+            "occurred_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "weekly_availability_submissions": {
+          "columns": [
+            "week_start",
+            "employee_id",
+            "submitted_at",
+            "updated_at",
+            "uses_normal_availability"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "weekly_availability_windows": {
+          "columns": [
+            "id",
+            "week_start",
+            "employee_id",
+            "day_of_week",
+            "start_time",
+            "end_time",
+            "updated_at"
+          ],
+          "count": "0",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "workspaces": {
+          "columns": [
+            "id",
+            "name",
+            "time_zone",
+            "active",
+            "singleton",
+            "created_at",
+            "updated_at",
+            "shift_change_policy",
+            "onboarding_worker_lock"
+          ],
+          "count": "1",
+          "digest": "dd81f3c0ee8327e3f290c690e8f20ad47c993ee6b41e4f999352bcaaa5d7acf2"
+        }
+      }
+    }
+  ],
+  "historicalBrowserEvidence": {
+    "commit": "6c56f504",
+    "passed": 42,
+    "artifactCommit": "f3a1a7c4b8d10ca76094f7c819f1fa59615998c2",
+    "executedByThisRehearsal": false
+  },
+  "interruptedBy": null,
+  "resourceCreationUncertain": false,
+  "sourceUnchanged": true,
+  "cleanup": true,
+  "status": "PASS"
+}

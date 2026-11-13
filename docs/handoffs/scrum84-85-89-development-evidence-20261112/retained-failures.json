@@ -1,0 +1,44 @@
+[
+  {
+    "log": "hosted-run.log",
+    "sha256": "f036d85fc6815969653d23a307fc311620a891b922b91461a2b41126a7a13206",
+    "disposition": "test-only payroll feature flag missing",
+    "rawLogRetainedPrivately": true
+  },
+  {
+    "log": "hosted-run-2.log",
+    "sha256": "904a59af672f4e036c23296451e90e95184083debc266e2314645e29856299a7",
+    "disposition": "unused admin socket emitted an unhandled error after an idle interval",
+    "rawLogRetainedPrivately": true
+  },
+  {
+    "log": "hosted-run-3.log",
+    "sha256": "83bdadfba70907c0284d4e5bc6006a8638c05b102dc14ac91cc8f679a0d79150",
+    "disposition": "task-specific 60-second pg_dump cutoff",
+    "rawLogRetainedPrivately": true
+  },
+  {
+    "log": "hosted-run-4.log",
+    "sha256": "81446fd6341e344b15e6c19735d7295900ea6fe9b23b2a56c0ef882e0fbe80d8",
+    "disposition": "task-specific 60-second pg_dump cutoff",
+    "rawLogRetainedPrivately": true
+  },
+  {
+    "log": "hosted-run-5.log",
+    "sha256": "5f19e3dbeb5ad9f1e44621c375db9a6aa54f3965f495c1ef8616c8b95c1b7682",
+    "disposition": "test metadata aggregation used name[] rather than text[]",
+    "rawLogRetainedPrivately": true
+  },
+  {
+    "log": "hosted-run-6.log",
+    "sha256": "6dce8cf09766cb135aaa9d12e831cdbd4859dcf33621a20aa8e4d19a37cf4d04",
+    "disposition": "serial five-minute restore cutoff",
+    "rawLogRetainedPrivately": true
+  },
+  {
+    "log": "hosted-run-7.log",
+    "sha256": "d8f8ed5b5bf3709c0be8208a6cda186a4088d9d7dd5e7c81962125013c72eed6",
+    "disposition": "first immediate post-restore passkey ceremony unavailable; subsequent fresh-client probe passes",
+    "rawLogRetainedPrivately": true
+  }
+]
