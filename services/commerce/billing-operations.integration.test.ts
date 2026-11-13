@@ -112,6 +112,11 @@ describe.skipIf(!enabled)('durable billing request and issued-stage custody',()=
   expect((await ready()).status).toBe(200);expect((await pool.query('SELECT row_to_json(b) company FROM commerce.businesses b')).rows).toEqual(before);
   expect((await pool.query('SELECT count(*)::int n FROM commerce.billing_operations')).rows).toEqual([{n:0}]);
  });
+ it('fails readiness until the explicit legacy-expiry observation column is installed',async()=>{
+  const handle=createCommerce({store,origin:'https://accounts.example.invalid',allowedOrigins:[]}),ready=()=>handle(new Request('https://accounts.example.invalid/ready'),'127.0.0.1');
+  await pool.query('ALTER TABLE commerce.checkout_intents DROP COLUMN IF EXISTS reconciled_expired_at');expect((await ready()).status).toBe(503);
+  await pool.query(await readFile(new URL('./migrations/0005_billing_operations.sql',import.meta.url),'utf8'));expect((await ready()).status).toBe(200);
+ });
  it('denies enrollment-principal receipts and API mutation of original actor, parameters or deadline',async()=>{
   const api='nv_commerce_api_'+randomUUID().replaceAll('-','').slice(0,24),enroll='nv_commerce_enroll_'+randomUUID().replaceAll('-','').slice(0,24);
   await pool.query(`CREATE ROLE ${api} NOLOGIN;CREATE ROLE ${enroll} NOLOGIN`);for(const sql of commercePrincipalGrants(api,enroll))await pool.query(sql);

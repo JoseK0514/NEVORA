@@ -62,9 +62,25 @@ export class BillingOperation {
    return fn(client,business,await this.row(client));
   });
  }
+ private async legacyAvailable(client:PoolClient){
+  // Modern intents have their exact canonical Checkout stage. A refused root
+  // or a matching UUID alone cannot manufacture ownership of a legacy intent.
+  // Only actual provider expiry or a reconciled subscription generation permits
+  // replacement; a local expires_at deadline is never outcome evidence.
+  const legacy=await client.query(`SELECT i.operation FROM commerce.checkout_intents i
+   JOIN commerce.businesses b ON b.id=i.business_id
+   WHERE i.business_id=$1 AND i.previous_subscription_id IS NOT DISTINCT FROM b.stripe_subscription_id
+    AND i.reconciled_expired_at IS NULL
+    AND NOT EXISTS(SELECT 1 FROM commerce.billing_operation_stages s
+     JOIN commerce.billing_operations o ON o.business_id=s.business_id AND o.operation=s.operation
+     WHERE s.business_id=i.business_id AND s.operation::text=i.operation AND o.action='checkout' AND s.stage='checkout')
+   LIMIT 1`,[this.id]);
+  if(legacy.rowCount)throw new CommerceError('legacy_operation_reconciliation_required',409);
+ }
  private async available(client:PoolClient){
   const other=await client.query('SELECT operation FROM commerce.billing_operations WHERE business_id=$1 AND operation<>$2 AND started_at IS NOT NULL AND resolved_at IS NULL LIMIT 1',this.parameters);
   if(other.rowCount)throw new CommerceError('billing_operation_pending',409);
+  await this.legacyAvailable(client);
  }
  private expires(row:Row,issued=false){
   if(row.expires_at.getTime()<=Date.now())throw new CommerceError(issued?'billing_operation_reconciliation_required':'billing_operation_expired',409);
@@ -80,7 +96,7 @@ export class BillingOperation {
   await this.store.withBusinessLock(this.id,async(client,business)=>{
    this.assertBinding(business);await this.input.context.assertCurrent(client);
    const old=await client.query<Row>('SELECT * FROM commerce.billing_operations WHERE business_id=$1 AND operation=$2',this.parameters);
-   if(old.rowCount){await this.row(client);return;}
+   if(old.rowCount){await this.row(client);await this.legacyAvailable(client);return;}
    await this.available(client);
    const created=Date.now();
    await client.query('INSERT INTO commerce.billing_operations(business_id,operation,action,actor_hash,request_hash,binding_hash,created_at,expires_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',

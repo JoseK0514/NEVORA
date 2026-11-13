@@ -73,7 +73,7 @@ export function createCommerce(options: CommerceOptions) {
         return answer({ state: "alive" });
       if (path === "/ready" && request.method === "GET") {
         const schema = await store.pool.query(
-          "SELECT CASE WHEN to_regclass('commerce.accounts') IS NOT NULL AND to_regclass('commerce.external_installations') IS NOT NULL AND to_regclass('commerce.billing_operations') IS NOT NULL AND to_regclass('commerce.billing_operation_stages') IS NOT NULL AND EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='commerce' AND table_name='tokens' AND column_name='owner_binding') AND EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='commerce' AND table_name='external_installations' AND column_name='worker_secret_hash') THEN true ELSE false END installed",
+          "SELECT CASE WHEN to_regclass('commerce.accounts') IS NOT NULL AND to_regclass('commerce.external_installations') IS NOT NULL AND to_regclass('commerce.billing_operations') IS NOT NULL AND to_regclass('commerce.billing_operation_stages') IS NOT NULL AND EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='commerce' AND table_name='checkout_intents' AND column_name='reconciled_expired_at') AND EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='commerce' AND table_name='tokens' AND column_name='owner_binding') AND EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='commerce' AND table_name='external_installations' AND column_name='worker_secret_hash') THEN true ELSE false END installed",
         );
         if (!schema.rows[0].installed)
           throw new CommerceError("catalog_not_ready", 503);

@@ -1,5 +1,6 @@
 BEGIN;
 -- Explicit operator migration; application startup/build never applies it.
+ALTER TABLE commerce.checkout_intents ADD COLUMN IF NOT EXISTS reconciled_expired_at timestamptz;
 CREATE TABLE IF NOT EXISTS commerce.billing_operations (
  business_id uuid NOT NULL REFERENCES commerce.businesses(id), operation uuid NOT NULL,
  action text NOT NULL CHECK(action IN('checkout','portal','plan-change')),
@@ -51,4 +52,20 @@ DROP TRIGGER IF EXISTS billing_operation_immutable ON commerce.billing_operation
 CREATE TRIGGER billing_operation_immutable BEFORE UPDATE ON commerce.billing_operations FOR EACH ROW EXECUTE FUNCTION commerce.billing_operation_immutable();
 DROP TRIGGER IF EXISTS billing_operation_stage_immutable ON commerce.billing_operation_stages;
 CREATE TRIGGER billing_operation_stage_immutable BEFORE UPDATE ON commerce.billing_operation_stages FOR EACH ROW EXECUTE FUNCTION commerce.billing_operation_immutable();
+
+CREATE OR REPLACE FUNCTION commerce.checkout_expiry_immutable() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+ IF NEW.reconciled_expired_at IS NOT NULL AND NEW.session_id IS NULL THEN
+  RAISE EXCEPTION 'checkout_expiry_observation_requires_session';
+ END IF;
+ IF TG_OP='UPDATE' AND OLD.reconciled_expired_at IS NOT NULL AND
+  ROW(NEW.business_id,NEW.operation,NEW.previous_subscription_id,NEW.params_secret,NEW.employee_count,NEW.plan_key,NEW.expires_at,NEW.session_id,NEW.reconciled_expired_at)
+   IS DISTINCT FROM ROW(OLD.business_id,OLD.operation,OLD.previous_subscription_id,OLD.params_secret,OLD.employee_count,OLD.plan_key,OLD.expires_at,OLD.session_id,OLD.reconciled_expired_at) THEN
+  RAISE EXCEPTION 'checkout_expiry_observation_immutable';
+ END IF;
+ RETURN NEW;
+END;
+$$;
+DROP TRIGGER IF EXISTS checkout_expiry_immutable ON commerce.checkout_intents;
+CREATE TRIGGER checkout_expiry_immutable BEFORE INSERT OR UPDATE ON commerce.checkout_intents FOR EACH ROW EXECUTE FUNCTION commerce.checkout_expiry_immutable();
 COMMIT;

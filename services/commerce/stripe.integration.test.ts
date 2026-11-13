@@ -11,6 +11,8 @@ import { accessAt } from "./model";
 import { createCommerce } from "./service";
 import { digest } from "./security";
 import { commercePrincipalGrants } from "./principals";
+import {openBillingOperation} from "./billing-operations";
+import {CommerceError} from "./model";
 const enabled = Boolean(process.env.NEVORA_COMMERCE_TEST_URL),
   id = "11111111-1111-4111-8111-111111111111",
   now = Date.parse("2026-11-07T12:00:00Z"),
@@ -88,6 +90,65 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
       subscription: provider.subscriptions.get(b.subscriptionId!)!,
     };
   }
+  async function legacyCheckout(completed=false) {
+    const operation=randomUUID();provider.loseCheckoutResponse=true;
+    await expect(billing.checkout(await store.business(id),operation)).rejects.toThrow();
+    const session=[...provider.sessions.values()][0];if(completed)provider.complete(session.id);
+    // An upgrade preserves old intents but has no actor/stage ledger for them.
+    await pool.query('DELETE FROM commerce.billing_operation_stages;DELETE FROM commerce.billing_operations');
+    await pool.query("UPDATE commerce.checkout_intents SET expires_at=clock_timestamp()-interval '1 minute'");
+    expect((await pool.query('SELECT session_id,result_secret FROM commerce.checkout_intents')).rows).toEqual([{session_id:null,result_secret:null}]);
+    return {operation,session};
+  }
+  it.each(['checkout','portal','plan-change'] as const)('retains expired unresolved legacy Checkout exclusion across new-key %s',async action=>{
+    await legacyCheckout(true);enablePlanChanges();
+    const before=(await pool.query('SELECT row_to_json(i) intent FROM commerce.checkout_intents i')).rows;
+    const current=await store.business(id),key=randomUUID();
+    const request=action==='checkout'?()=>billing.checkout(current,key):action==='portal'?()=>billing.portal(current,key):()=>billing.planChange(current,key,'team');
+    await expect(request()).rejects.toMatchObject({code:'legacy_operation_reconciliation_required',status:409});
+    expect(provider.sessions.size).toBe(1);expect(provider.subscriptions.size).toBe(0);
+    expect(provider.requests.filter(r=>r.path==='/v1/billing_portal/sessions'&&r.method==='POST')).toHaveLength(0);
+    expect((await pool.query('SELECT row_to_json(i) intent FROM commerce.checkout_intents i')).rows).toEqual(before);
+  });
+  it('does not turn a legacy intent into a modern Checkout by attaching a refused root without its prepared Checkout stage',async()=>{
+    const {operation}=await legacyCheckout(true),intent=(await pool.query('SELECT * FROM commerce.checkout_intents')).rows[0];
+    await pool.query('DELETE FROM commerce.checkout_intents');
+    const op=await openBillingOperation(store,{business:await store.business(id),operation,action:'checkout',request:{lang:'en'},context:{actor:'a'.repeat(64),assertCurrent:async()=>{}}});
+    expect(await op.refusePreflight(new CommerceError('legacy_operation_reconciliation_required',409))).toBe(true);
+    await pool.query('INSERT INTO commerce.checkout_intents(business_id,operation,previous_subscription_id,params_secret,employee_count,plan_key,expires_at) VALUES($1,$2,$3,$4,$5,$6,$7)',[intent.business_id,intent.operation,intent.previous_subscription_id,intent.params_secret,intent.employee_count,intent.plan_key,intent.expires_at]);
+    await expect(billing.checkout(await store.business(id),randomUUID())).rejects.toMatchObject({code:'legacy_operation_reconciliation_required',status:409});
+    expect(provider.sessions.size).toBe(1);expect((await pool.query('SELECT count(*)::int n FROM commerce.checkout_intents')).rows).toEqual([{n:1}]);
+  });
+  it('releases legacy exclusion only after completed setup is reconciled and a verified canceled subscription permits a successor',async()=>{
+    const {operation,session}=await legacyCheckout(true);
+    await expect(billing.checkout(await store.business(id),randomUUID())).rejects.toMatchObject({code:'legacy_operation_reconciliation_required',status:409});
+    expect(await billing.reconcile()).toEqual({checked:1,failed:0});const linked=await store.business(id);expect(linked.subscriptionId).not.toBeNull();
+    expect(provider.sessions.size).toBe(1);expect(provider.subscriptions.size).toBe(1);
+    const subscription=provider.subscriptions.get(linked.subscriptionId!)!;subscription.status='canceled';await billing.syncJob({subscriptionId:subscription.id});
+    await expect(billing.checkout(await store.business(id),randomUUID())).resolves.toContain('cs_fixture_2');
+    expect(provider.sessions.size).toBe(2);expect(provider.subscriptions.size).toBe(1);
+    expect((await pool.query('SELECT session_id FROM commerce.checkout_intents WHERE operation=$1',[operation])).rows).toEqual([{session_id:session.id}]);
+    await expect(billing.checkout(await store.business(id),operation)).rejects.toMatchObject({code:'legacy_operation_reconciliation_required',status:409});
+  });
+  it('requires actual provider-expired reconciliation before a fresh Checkout and preserves the original legacy receipt',async()=>{
+    const {operation,session}=await legacyCheckout();const original=(await pool.query('SELECT operation,params_secret,expires_at FROM commerce.checkout_intents')).rows;
+    await expect(billing.checkout(await store.business(id),randomUUID())).rejects.toMatchObject({code:'legacy_operation_reconciliation_required',status:409});
+    Object.assign(session,{status:'expired',url:null});expect(await billing.reconcile()).toEqual({checked:1,failed:0});
+    const receipt=(await pool.query('SELECT session_id,reconciled_expired_at FROM commerce.checkout_intents WHERE operation=$1',[operation])).rows[0];expect(receipt.session_id).toBe(session.id);expect(receipt.reconciled_expired_at).toBeInstanceOf(Date);
+    await expect(pool.query('UPDATE commerce.checkout_intents SET reconciled_expired_at=NULL WHERE operation=$1',[operation])).rejects.toMatchObject({code:'P0001'});
+    expect((await pool.query('SELECT operation,params_secret,expires_at FROM commerce.checkout_intents')).rows).toEqual(original);
+    await expect(billing.checkout(await store.business(id),randomUUID())).resolves.toContain('cs_fixture_2');expect(provider.sessions.size).toBe(2);expect(provider.subscriptions.size).toBe(0);
+    await expect(billing.checkout(await store.business(id),operation)).rejects.toMatchObject({code:'legacy_operation_reconciliation_required',status:409});
+  });
+  it.each(['foreign-customer','ambiguous','pagination','missing'] as const)('retains legacy exclusion after unsafe expired-session observation: %s',async reason=>{
+    const {session}=await legacyCheckout();Object.assign(session,{status:'expired',url:null});
+    if(reason==='ambiguous')provider.sessions.set('cs_duplicate',{...session,id:'cs_duplicate'});
+    else vi.spyOn(provider.client.checkout.sessions,'list').mockResolvedValueOnce({object:'list',url:'/v1/checkout/sessions',has_more:reason==='pagination',data:reason==='missing'?[]:[{...session,customer:reason==='foreign-customer'?'cus_foreign':session.customer} as unknown as Stripe.Checkout.Session]});
+    expect(await billing.reconcile()).toEqual({checked:1,failed:reason==='missing'?0:1});
+    expect((await pool.query('SELECT reconciled_expired_at FROM commerce.checkout_intents')).rows).toEqual([{reconciled_expired_at:null}]);
+    await expect(billing.checkout(await store.business(id),randomUUID())).rejects.toMatchObject({code:'legacy_operation_reconciliation_required',status:409});
+    expect(provider.requests.filter(r=>r.path==='/v1/checkout/sessions'&&r.method==='POST')).toHaveLength(1);
+  });
   it("refuses a competing operation ID without another checkout or a charge during trial", async () => {
     const b = await store.business(id),
       results = await Promise.allSettled([

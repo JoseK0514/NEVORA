@@ -11,7 +11,7 @@ import {assertTaxPrice,readTaxTerms,taxTerms} from './stripe-tax';
 import {assertOwnedSubscription,terminalSubscription,stripeObjectId} from './stripe-identity';
 export type CheckoutPorts={store:CommerceStore;stripe:Stripe;origin:string;now:()=>number;prices:Record<PlanKey,string>;live:boolean;tax?:StripeTaxConfig;headcount:(business:Business,client:PoolClient)=>Promise<number>;assertCurrent?:(client:PoolClient)=>Promise<void>};
 type Ports=CheckoutPorts;
-type Intent={business_id:string;operation:string;previous_subscription_id:string|null;params_secret:string;employee_count:number;plan_key:PlanKey;expires_at:Date;session_id:string|null;result_secret:string|null};
+type Intent={business_id:string;operation:string;previous_subscription_id:string|null;params_secret:string;employee_count:number;plan_key:PlanKey;expires_at:Date;session_id:string|null;result_secret:string|null;reconciled_expired_at:Date|null};
 type CustomerPlan={kind:'existing';id:string}|{kind:'create';params:Stripe.CustomerCreateParams};
 export type CheckoutPlan={state:'prepared';count:number;planKey:PlanKey;previousSubscriptionId:string|null;customer:CustomerPlan;params:Omit<Stripe.Checkout.SessionCreateParams,'customer'>}|{state:'subscription_sync_pending'};
 export type PreparedCheckout={operation:string;customerId:string;previousSubscriptionId:string|null;params:Stripe.Checkout.SessionCreateParams};
@@ -33,7 +33,7 @@ async function planCustomer(ports:Ports,business:Business):Promise<CustomerPlan>
 export async function prepareCheckoutPlan(ports:Ports,client:PoolClient,business:Business,operation:string,owner:BillingOwner|null|undefined,lang:CommerceLanguage):Promise<CheckoutPlan>{
  const exact=await client.query('SELECT operation FROM commerce.checkout_intents WHERE business_id=$1 AND operation=$2',[business.id,operation]);
  if(exact.rowCount)throw new CommerceError('legacy_operation_reconciliation_required',409);
- const open=await client.query('SELECT operation FROM commerce.checkout_intents WHERE business_id=$1 AND previous_subscription_id IS NOT DISTINCT FROM $2 AND expires_at>clock_timestamp() ORDER BY created_at DESC LIMIT 1',[business.id,business.subscriptionId]);
+ const open=await client.query('SELECT operation FROM commerce.checkout_intents WHERE business_id=$1 AND previous_subscription_id IS NOT DISTINCT FROM $2 AND reconciled_expired_at IS NULL AND expires_at>clock_timestamp() ORDER BY created_at DESC LIMIT 1',[business.id,business.subscriptionId]);
  if(open.rowCount)throw new CommerceError('checkout_pending',409);
  if(business.subscriptionId){const current=await ports.stripe.subscriptions.retrieve(business.subscriptionId);assertOwnedSubscription(current,business);if(!terminalSubscription(current.status))throw new CommerceError('use_billing_portal',409);}
  const count=Math.max(1,await ports.headcount(business,client)),plan=planFor(count);
@@ -98,8 +98,10 @@ async function record(
     session.metadata.nevora_checkout_operation !== intent.operation
   )
     throw Error("checkout_identity_mismatch");
+  const params=JSON.parse(unseal(intent.params_secret,ports.store.key,`intent:${intent.business_id}:${intent.operation}`)) as Stripe.Checkout.SessionCreateParams;
+  if(stripeObjectId(session.customer)!==params.customer||(intent.session_id!==null&&intent.session_id!==session.id))throw Error('checkout_identity_mismatch');
   await client.query(
-    "UPDATE commerce.checkout_intents SET session_id=$3,result_secret=$4 WHERE business_id=$1 AND operation=$2",
+    "UPDATE commerce.checkout_intents SET session_id=$3,result_secret=$4,reconciled_expired_at=CASE WHEN $5 THEN COALESCE(reconciled_expired_at,clock_timestamp()) ELSE reconciled_expired_at END WHERE business_id=$1 AND operation=$2",
     [
       intent.business_id,
       intent.operation,
@@ -107,6 +109,7 @@ async function record(
       session.url
         ? seal(session.url, ports.store.key, `checkout:${intent.business_id}`)
         : null,
+      session.status==='expired',
     ],
   );
   await client.query(
@@ -161,7 +164,13 @@ export async function executePreparedCheckout(ports:Ports,client:PoolClient,busi
 export async function recoverCheckouts(ports: Ports, business: Business) {
   if (!business.customerId) return;
   const intents = await ports.store.pool.query<Intent>(
-    "SELECT * FROM (SELECT * FROM commerce.checkout_intents WHERE business_id=$1 AND session_id IS NULL ORDER BY created_at DESC LIMIT 100) recent ORDER BY created_at",
+    `SELECT * FROM (SELECT i.* FROM commerce.checkout_intents i
+      JOIN commerce.businesses b ON b.id=i.business_id
+      LEFT JOIN commerce.billing_operation_stages s ON s.business_id=i.business_id AND s.operation::text=i.operation AND s.stage='checkout'
+      LEFT JOIN commerce.billing_operations o ON o.business_id=s.business_id AND o.operation=s.operation AND o.action='checkout'
+      WHERE i.business_id=$1 AND ((i.session_id IS NULL AND o.operation IS NOT NULL) OR
+        (o.operation IS NULL AND i.reconciled_expired_at IS NULL AND i.previous_subscription_id IS NOT DISTINCT FROM b.stripe_subscription_id))
+      ORDER BY i.created_at DESC LIMIT 100) recent ORDER BY created_at`,
     [business.id],
   );
   if (!intents.rowCount) return;
@@ -169,6 +178,7 @@ export async function recoverCheckouts(ports: Ports, business: Business) {
     customer: business.customerId,
     limit: 100,
   });
+  if(sessions.has_more)throw Error('checkout_reconciliation_required');
   for (const intent of intents.rows) {
     const matches = sessions.data.filter(
       (s) =>
