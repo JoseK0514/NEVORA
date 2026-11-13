@@ -6,11 +6,12 @@ import { createOwnedNextApp } from "./owned-next-app";
 import { seedOwnedApp, TEST_PASSWORD } from "./owned-app-fixture";
 import { fictionalProfile } from "../fixtures/shift-changes";
 import {withManagementBrowserEvidence,type ManagementCaptureState} from './management-browser-evidence';
+import {clickAdvisorRefresh,readAdvisorPrivatePresence,assertAdvisorRetired} from './owner-advisor-retirement';
 
-it.each(['refresh-first','watcher-first'])("compares real joint day plans with discoverable keyboard review and private retirement: %s", async (retirementOrder) => {
+it("compares real joint day plans with discoverable keyboard review and private retirement", async () => {
   const root = process.env.NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE;
   if (!root) throw Error("Explicit external evidence directory required");
-  const evidence = resolve(root, "coverage-plans",retirementOrder);
+  const evidence = resolve(root, "coverage-plans");
   await mkdir(evidence, { recursive: true });
   const requireRuntime = createRequire(resolve("tools/ci-browser-runtime/package.json"));
   const runtime = requireRuntime("playwright");
@@ -19,7 +20,7 @@ it.each(['refresh-first','watcher-first'])("compares real joint day plans with d
   const checks: string[] = [], external: string[] = [], errors: string[] = [], consoleMessages: unknown[] = [];
   const observations:{engine:string;events:unknown[];dropped:number}[]=[];
   let complete = false,browserClosed=false,appClosed=false,browser:{close():Promise<void>}|undefined;
-  let captureState:ManagementCaptureState|undefined,failureShot:((active:()=>boolean)=>Promise<void>)|undefined;
+  let captureState:ManagementCaptureState|'not_needed'='not_needed',failureShot:((active:()=>boolean)=>Promise<void>)|undefined;
   await withManagementBrowserEvidence(async()=>{
     await seedOwnedApp(app.database.executor);
     const q = (text: string, values: unknown[] = []) => app.database.executor.query({ text, values });
@@ -142,22 +143,22 @@ it.each(['refresh-first','watcher-first'])("compares real joint day plans with d
         await page.screenshot({ path: resolve(evidence, `${engine}-remaining.png`), fullPage: true });
         checks.push(`${engine}: a new request uses changed qualifications, new fingerprint and actual remaining position needs`);
 
+        phase='authorized native refresh';mark('refresh-click-start');
+        const authorizedRefresh=page.waitForResponse((response:{url():string;request():{method():string}})=>response.url().endsWith('/api/owner/advisor')&&response.request().method()==='GET');
+        await clickAdvisorRefresh(page);mark('refresh-click-finished');expect((await authorizedRefresh).status()).toBe(200);
+        await result.waitFor();checks.push(`${engine}: native Refresh history remains actionable with current authorized server response`);
+
         phase = "live authority retirement";
         mark('revocation-start');
         await q("DELETE FROM employee_sessions WHERE employee_id='QAOWNER'");
         mark('revocation-committed');
-        if(retirementOrder==='watcher-first'){
-          await expect.poll(()=>observation.events.some((event:unknown)=>typeof event==='object'&&event!==null&&'kind'in event&&event.kind==='authority-response'&&'status'in event&&[401,403].includes(Number(event.status))),{timeout:20000}).toBe(true);
-          await result.waitFor({state:'hidden'});mark('watcher-retired-before-click');
-        }
-        mark('refresh-click-start');
-        await page.getByRole("button", { name: "Refresh history", exact: true }).first().click();
-        mark('refresh-click-finished');
+        const denied=()=>observation.events.some((event:unknown)=>typeof event==='object'&&event!==null&&'kind'in event&&event.kind==='authority-response'&&'status'in event&&[401,403].includes(Number(event.status)));
+        await expect.poll(denied,{timeout:20000}).toBe(true);
         await result.waitFor({ state: "hidden" });
-        expect(await page.getByText(`Source fingerprint: ${plans.sourceVersion}`, { exact: true }).count()).toBe(0);
-        mark('private-retirement-observed',{regionCount:await result.count(),oldFingerprintCount:await page.getByText(`Source fingerprint: ${plans.sourceVersion}`,{exact:true}).count(),freshFingerprintCount:await page.getByText(`Source fingerprint: ${fresh.answer.coveragePlans.sourceVersion}`,{exact:true}).count()});
+        const presence=await readAdvisorPrivatePresence(page,[plans.sourceVersion,fresh.answer.coveragePlans.sourceVersion]);assertAdvisorRetired(denied(),presence);
+        mark('private-retirement-observed',presence);
         await page.screenshot({ path: resolve(evidence, `${engine}-retired.png`), fullPage: true });
-        checks.push(`${engine}: real session revocation and refreshed authority retire private plan content`);
+        checks.push(`${engine}: real session revocation and denied server authority remove the private result and both source fingerprints without interacting with a retired document`);
         scenarioComplete=true;
       } catch (error) {
         mark('scenario-failed');

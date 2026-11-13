@@ -288,7 +288,9 @@ jobs:
       - name: Owner advisor PostgreSQL and browser gate
         env:
           NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE: ${{ runner.temp }}/nevora-owner-advisor-browser-evidence
-        run: node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts
+        run: |
+          node --import tsx --test scripts/owner-advisor-retirement.check.mts
+          node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts
       - name: Upload Owner advisor browser evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

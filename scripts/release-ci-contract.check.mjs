@@ -171,8 +171,9 @@ test('mandatory release SQL selects the timestamp-fence regressions and retains 
 });
 test('mandatory browser job runs Owner advisor without a model connection and retains evidence',()=>{
  const steps=workflow.jobs['phase-d-attendance-ui'].steps;
- const step=steps.find(s=>s.run==='node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts');
+ const step=steps.find(s=>s.name==='Owner advisor PostgreSQL and browser gate');
  assert(step,'Owner advisor browser checks missing');
+ assert.deepEqual(step.run.trim().split('\n'),['node --import tsx --test scripts/owner-advisor-retirement.check.mts','node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts']);
  assert.equal(step.if,undefined);
  assert.equal(step['continue-on-error'],undefined);
  assert.deepEqual(step.env,{NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE:'${{ runner.temp }}/nevora-owner-advisor-browser-evidence'});
