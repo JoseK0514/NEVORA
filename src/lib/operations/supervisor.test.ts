@@ -71,7 +71,10 @@ it('kills a real SIGTERM-ignoring hung child at the deadline and reaps it before
 });
 it('stops an owned descendant before releasing process-group overlap protection',async()=>{
  const ready=join(directory,'pid'),descendant=join(directory,'descendant'),controller=new AbortController();
- const code=`const {spawn}=require('child_process');const child=spawn(process.execPath,['-e',"setInterval(()=>{},1000)"],{stdio:'ignore'});require('fs').writeFileSync(${JSON.stringify(descendant)},String(child.pid));require('fs').writeFileSync(${JSON.stringify(ready)},String(process.pid));setInterval(()=>{},1000)`;
+ // Reap the owned child before the fixture parent exits. Container PID 1 need
+ // not reap orphans; a zombie is correctly treated as unconfirmed cleanup.
+ // The parent never signals its child, so group termination is still required.
+ const code=`const {spawn}=require('child_process');const child=spawn(process.execPath,['-e',"setInterval(()=>{},1000)"],{stdio:'ignore'});process.on('SIGTERM',()=>{if(child.exitCode!==null||child.signalCode!==null)process.exit(0);else child.once('exit',()=>process.exit(0));});require('fs').writeFileSync(${JSON.stringify(descendant)},String(child.pid));require('fs').writeFileSync(${JSON.stringify(ready)},String(process.pid));setInterval(()=>{},1000)`;
  const pending=superviseProcess(config,'payroll',node(code),controller.signal);await waitFor(descendant);const pid=Number(readFileSync(descendant,'utf8'));controller.abort();
  expect((await pending).status).toBe('interrupted');expect(()=>process.kill(pid,0)).toThrow();expect(existsSync(join(directory,'payroll.lock'))).toBe(false);
 });
