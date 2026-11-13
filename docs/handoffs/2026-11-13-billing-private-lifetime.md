@@ -98,6 +98,19 @@ pass the exact-source 20-job/10-required-context readback. The 73-source/3-branc
 inventory passes after inclusion. These are incoming-release facts, not final
 qualification or publication of this finisher's combined source.
 
+Full mobile/recovery preparation at `f65fa74f2` passed all five tests with no
+skips in 183.13 seconds. All three owned Next runtimes closed with source and
+mirror verification; all 8,937 recorded source-file hashes match locally. The
+separate scenario reports retain their financial-fixture and normal-session
+scope. The source verifier is `combined-f65-mobile-verification.json`.
+
+The next typecheck caught TypeScript narrowing a callback-populated handoff
+receipt to `never` after its deletion in the new test. `b767a19dd` reads it
+through the fixture's existing typed helper, preserving the same assertions.
+Typecheck and the affected two-engine effects scenario pass (one selected,
+four deliberately unselected). This test-only correction does not relabel the
+earlier full-suite source; final current-source CI remains required.
+
 ## Combined release remains open
 
 The actual protected Clocker setup code is 194 characters, while the existing
