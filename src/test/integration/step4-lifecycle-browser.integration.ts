@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect,vi} from 'vitest';
 import {createRequire} from 'node:module';
 import {randomUUID} from 'node:crypto';
 import {resolve,join} from 'node:path';
@@ -11,6 +11,22 @@ import {openOnboardingValue} from '@/lib/onboarding/crypto.server';
 import {verifyOwnedIsolatedRuntime} from './owned-isolated-runtime';
 import {startOwnedDomainProxy} from './owned-domain-proxy';
 import {createOwnedSmtp} from './owned-smtp';
+import {resolveWorkspaceBinding} from '@/lib/workspace-routing/resolver.server';
+import {withWorkspaceBinding} from '@/lib/workspace-routing/context.server';
+import {getWorkspaceDb} from '@/lib/workspace-routing/transport.server';
+import type {SessionMutationProof} from '@/lib/shift-changes/types';
+import {ensureSchedule,insertShift} from '@/lib/data/schedules';
+import {publishScheduleWithRevision} from '@/lib/data/publication-revisions';
+import {saveBreakType} from '@/lib/clocker/break-types.server';
+import {weekStartFor} from '@/lib/date-utils';
+import {correctionAuthority} from '@/lib/time-corrections/authority.server';
+import {readTimecards,mutateTimecard} from '@/lib/timecards/service';
+import {readPeriodClose,savePeriodPopulation} from '@/lib/period-close/service';
+import {saveSettings,command as payrollCommand,readRun} from '@/lib/payroll/service';
+import {saveNativeProfile} from '@/lib/payroll/native/profiles.server';
+import {workerOnce} from '@/lib/payroll/worker';
+import {input as nativeInput} from '@/lib/payroll/native/fixtures.test-support';
+import {fictionalWorkweekPolicy} from '@/lib/payroll/native/workweek-fixtures.test-support';
 
 it('admits normal browser sign-in on the actual provisioned fictional-company database',async()=>{
  const root=process.env.NEVORA_STEP4_EVIDENCE;if(!root)throw Error('Explicit Step4 evidence directory required');await mkdir(root,{recursive:true});
@@ -19,6 +35,8 @@ it('admits normal browser sign-in on the actual provisioned fictional-company da
  await withOwnedTestResources(async defer=>{
   defer(()=>writeFile(join(root,'report.json'),JSON.stringify({complete:false,admissionComplete,remaining:'Complete company lifecycle and resilience remain pending after browser admission.',stages,network,scope:'Combined source; owned provisioning and actual browser password sign-in. HTTP domain and Neon SQL transport adapters are local; no hosted/TLS/provider acceptance.'},null,2)));
   defer(()=>f.close());
+  defer(()=>{vi.unstubAllEnvs();});
+  for(const [name,value] of Object.entries({NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_PORTAL_BASE_DOMAIN:f.config.portalBaseDomain,NEVORA_CONTROL_DATABASE_URL:f.db.connectionUrl,NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:f.config.encryptionKey,NEVORA_WORKSPACE_TOKEN_SECRET:f.config.workspaceTokenKey,NEVORA_PAYROLL_ENABLED:'true'}))vi.stubEnv(name,value);
   const company=await f.createCompany('step4-alpha','step4-alpha@example.invalid'),grant=await company.grant(),password='Fictional Step4 Owner password 123!';
   expect((await activateInitialOwner(company.binding,{schemaVersion:1,operationId:randomUUID(),proof:grant.proof,password})).state).toBe('activated');expect((await company.work()).state).toBe('complete');
   expect((await company.resource.db.pool.query('SELECT count(*)::int n FROM employee_sessions')).rows).toEqual([{n:0}]);stages.push({stage:'registration-provisioning-original-owner-activation',state:'passed'});
@@ -76,6 +94,58 @@ it('admits normal browser sign-in on the actual provisioned fictional-company da
   expect(activation.status).toBe(200);expect(activation.body.state).toBe('activated');
   await employeePage.getByLabel('Employee ID',{exact:true}).fill('EMP-1');await employeePage.getByLabel('Password',{exact:true}).fill('Fictional Step4 Employee password 123!');await employeePage.getByRole('button',{name:'Sign in',exact:true}).click();await employeePage.waitForURL(front+'/app');
   expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='EMP-1'")).rows).toEqual([{n:1}]);expect((await employeePage.evaluate(async()=>(await fetch('/api/onboarding/state',{credentials:'same-origin'})).status))).toBe(403);stages.push({stage:'actual-invitation-activation-http-and-normal-employee-browser-sign-in-owner-boundary',state:'passed'});
+  // These proofs reference the sessions just created by native password forms.
+  // They are never inserted, returned to a browser, or written into evidence.
+  const proofFor=async(employeeId:string):Promise<SessionMutationProof>=>{
+   const rows=(await company.resource.db.pool.query('SELECT s.token_hash AS "sessionTokenHash",e.id,e.first_name AS "firstName",e.last_name AS "lastName",e.role,e.primary_location_id AS "primaryLocationId" FROM employee_sessions s JOIN employees e ON e.id=s.employee_id WHERE e.id=$1 AND s.expires_at>clock_timestamp()',[employeeId])).rows;
+   expect(rows).toHaveLength(1);const {sessionTokenHash,...employee}=rows[0];return {sessionTokenHash,employee};
+  };
+  const ownerProof=await proofFor('OWNER-1'),employeeProof=await proofFor('EMP-1'),binding=await resolveWorkspaceBinding({origin:company.origin},f.store,f.routing),ex=getWorkspaceDb(binding);
+  const bound=<T>(work:()=>Promise<T>)=>withWorkspaceBinding(binding,work);
+  const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Puerto_Rico',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+  await bound(async()=>{
+   const weekStart=weekStartFor(today),scheduleId=await ensureSchedule({locationId:home,weekStart,createdBy:'OWNER-1',proof:ownerProof},ex);
+   await insertShift({scheduleId,employeeId:'EMP-1',date:today,startTime:'00:00',endTime:'24:00',actorEmployeeId:'OWNER-1',proof:ownerProof},ex);
+   expect((await publishScheduleWithRevision({locationId:home,weekStart,managerId:'OWNER-1',proof:ownerProof},ex)).published).toBe(true);
+   await saveBreakType({employeeId:'OWNER-1',sessionTokenHash:ownerProof.sessionTokenHash},{name:'Step4 rest',category:'REST',targetMinutes:15,active:true,expectedVersion:0},ex);
+  });
+  const locationKey=(await company.resource.db.pool.query('SELECT clocker_key FROM locations WHERE id=$1',[home])).rows[0].clocker_key;
+  await page.goto(front+'/app/employees/EMP-1/clocker-pin');await page.getByLabel('New PIN',{exact:true}).fill('2468');await page.getByLabel('Confirm PIN',{exact:true}).fill('2468');await page.getByRole('button',{name:'Save',exact:true}).click();await page.getByRole('status').filter({hasText:'PIN saved'}).waitFor();
+  await page.goto(front+'/app/settings/clocker');await page.getByRole('button',{name:'Add tablet',exact:true}).click();const dialog=page.getByRole('dialog');await dialog.getByLabel('Tablet name',{exact:true}).fill('Fictional Step4 tablet');await dialog.getByRole('combobox',{name:'Location',exact:true}).selectOption(home);await dialog.getByRole('button',{name:'Get setup code',exact:true}).click();await dialog.waitFor({state:'hidden'});
+  const code=await page.getByRole('textbox',{name:/^Setup code · expires /}).inputValue();expect(code).toBeTruthy();
+  const tabletContext=await browser.newContext({serviceWorkers:'block',proxy:{server:proxy.server}}),tablet=await tabletContext.newPage();tablet.setDefaultTimeout(15000);
+  await tablet.goto(front+'/clocker/'+locationKey);await tablet.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await tablet.getByRole('button',{name:'Connect tablet',exact:true}).click();
+  const idle=async()=>{await tablet.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await tablet.waitForFunction(()=>{const input=document.querySelector('input[name=pin]');return input&&!input.matches(':disabled');});};
+  const verify=async()=>{await idle();for(const digit of '2468')await tablet.getByRole('button',{name:'Number '+digit,exact:true}).click();await tablet.getByRole('button',{name:'Continue',exact:true}).click();};
+  const done=async(action:string)=>{await tablet.getByRole('heading',{name:action+' Recorded',exact:true}).waitFor();await tablet.getByRole('button',{name:'Done',exact:true}).click();await idle();};
+  await verify();await tablet.getByRole('button',{name:'Clock In',exact:true}).click();await done('Clock In');
+  await verify();await tablet.getByRole('button',{name:'Start Break',exact:true}).click();await tablet.getByRole('button',{name:'Start Step4 rest',exact:true}).click();await done('Break Start');
+  await verify();await tablet.getByRole('button',{name:'End Break',exact:true}).click();await done('Break End');
+  await verify();await tablet.getByRole('button',{name:'Clock Out',exact:true}).click();await tablet.getByRole('button',{name:'Confirm Clock Out',exact:true}).click();await done('Clock Out');
+  expect((await company.resource.db.pool.query('SELECT status FROM time_entries WHERE employee_id=\'EMP-1\'')).rows).toEqual([{status:'CLOCKED_OUT'}]);expect((await company.resource.db.pool.query('SELECT count(*)::int n FROM clocker_command_ledger')).rows).toEqual([{n:4}]);expect((await company.resource.db.pool.query('SELECT count(*)::int n FROM break_entries WHERE ended_at IS NOT NULL')).rows).toEqual([{n:1}]);stages.push({stage:'published-schedule-domain-service-and-normal-owner-pin-tablet-enrollment-punch-break-browser-flow',state:'passed'});
+  const employeeCall=async(path:string,body?:unknown,headers:Record<string,string>={})=>employeePage.evaluate(async({path,body,headers}:{path:string;body?:unknown;headers:Record<string,string>})=>{const response=await fetch(path,{method:body===undefined?'GET':'POST',credentials:'same-origin',cache:'no-store',headers:{...(body===undefined?{}:{'content-type':'application/json'}),...headers},...(body===undefined?{}:{body:JSON.stringify(body)})});return {status:response.status,body:await response.json()};},{path,body,headers});
+  // A separate fictional missing historical shift is intentionally requested
+  // and independently reviewed. Current tablet punches are never backdated.
+  const missing={operationId:randomUUID(),kind:'MISSING_ENTRY',locationId:home,proposedStartAt:'2026-11-02T09:00:00-04:00',proposedEndAt:'2026-11-02T17:00:00-04:00',reason:'Fictional employee reports a missed prior-period shift for independent review.'};
+  const submitted=await employeeCall('/api/employee/time-corrections',missing,{'x-nevora-correction-authority':correctionAuthority(employeeProof)});expect(submitted.status).toBe(202);expect((await employeeCall('/api/employee/time-corrections',missing,{'x-nevora-correction-authority':correctionAuthority(employeeProof)})).body).toEqual(submitted.body);
+  const review={operationId:randomUUID(),requestId:submitted.body.requestId,expectedRevision:submitted.body.revision,decision:'APPROVE',note:'Fictional Owner independently reviewed the employee report.'};
+  expect((await employeeCall('/api/manager/time-corrections',review,{'x-nevora-correction-authority':correctionAuthority(employeeProof)})).status).toBe(403);
+  const approved=await call('/api/manager/time-corrections',review,{'x-nevora-correction-authority':correctionAuthority(ownerProof)});expect(approved.status).toBe(200);expect(approved.body.state).toBe('approved');expect((await call('/api/manager/time-corrections',review,{'x-nevora-correction-authority':correctionAuthority(ownerProof)})).body).toEqual(approved.body);stages.push({stage:'actual-employee-missing-historical-entry-http-owner-independent-approval-idempotent-no-self-approval',state:'passed'});
+  await bound(async()=>{
+   const period={startDate:'2026-11-02',endDate:'2026-11-08'},contextPeriod={startDate:'2026-10-26',endDate:'2026-11-08'};
+   for(const action of ['APPROVE','FINALIZE'] as const){const cards=await readTimecards(ownerProof,contextPeriod,ex);expect(cards.state).toBe('ready');if(cards.state!=='ready')throw Error('Actual timecards unavailable');const item=cards.cards.find(item=>item.card.employeeId==='EMP-1');if(!item)throw Error('Actual employee timecard absent');const input={operationId:randomUUID(),employeeId:'EMP-1',...contextPeriod,action,expectedRevision:item.revision,expectedSourceHash:item.sourceHash};const receipt=await mutateTimecard(ownerProof,input,ex);expect(receipt.status).toBe(action==='APPROVE'?'approved':'finalized');expect(await mutateTimecard(ownerProof,input,ex)).toEqual(receipt);}
+   await saveSettings(ownerProof,{action:'SAVE_SETTINGS',operationId:randomUUID(),expectedRevision:0,effectiveFrom:'2026-01-01',reason:'Fictional explicitly configured native payroll',preferences:{companyName:'Fictional Step4 Company',language:'en',currency:'USD',schedule:{frequency:'WEEKLY',anchorDate:period.startDate,paydayOffsetDays:2},rules:[],automation:{prepare:true,publish:false,reminders:false,reminderLeadDays:[]},bankProfile:null}},ex);
+   const facts=nativeInput();facts.wages[0].locationIds=[home];facts.wages[0].workweekPolicy=fictionalWorkweekPolicy('EMP-1');facts.wages[0].wageCentRounding='UNVERIFIED';if(!facts.tax)throw Error('Fictional tax facts absent');facts.tax.prCentRounding='UNVERIFIED';facts.tax.ruleEvidenceReference=null;
+   await saveNativeProfile(ownerProof,{action:'SAVE_NATIVE_PROFILE',operationId:randomUUID(),expectedRevision:0,reason:'Fictional 2026 facts; no real company or statutory acceptance',configuration:{schema:'NEVORA_NATIVE_CONFIGURATION_V1',employeeId:'EMP-1',wages:facts.wages,tax:facts.tax,deductions:facts.deductions}},ex);
+   await saveNativeProfile(ownerProof,{action:'ATTEST_OPENING_YTD',operationId:randomUUID(),expectedRevision:0,reason:'Fictional attested opening zero',employeeId:'EMP-1',ytd:facts.ytd},ex);
+   const close=await readPeriodClose(ownerProof,period,ex);await savePeriodPopulation(ownerProof,{operationId:randomUUID(),expectedRevision:0,sourceHash:close.sourceHash,...period,members:close.members.map(member=>({employeeId:member.employeeId,disposition:member.employeeId==='EMP-1'?'INCLUDE' as const:'EXCLUDE' as const,reason:'Fictional reviewed historical payroll population',employmentFacts:'Fictional prior-period worked shift report',employmentBasis:'MANAGER_ATTESTED' as const}))},ex);
+   const prepare={action:'PREPARE',operationId:randomUUID(),period,payday:'2026-11-10'},prepared=await payrollCommand(ownerProof,prepare,ex);expect(await payrollCommand(ownerProof,prepare,ex)).toEqual(prepared);if(!prepared.runId)throw Error('Actual native run missing');const read=await readRun(ownerProof,prepared.runId,ex);expect(read.payload.exceptions).toEqual([]);expect(read.payload.status).toBe('REVIEW_REQUIRED');expect(read.payload.totals?.grossMinor).toBe('16000');
+   const approve={action:'APPROVE',operationId:randomUUID(),runId:prepared.runId,expectedRevision:read.payload.revision,reviewToken:read.payload.reviewToken};const receipt=await payrollCommand(ownerProof,approve,ex);expect(await payrollCommand(ownerProof,approve,ex)).toEqual(receipt);
+  });
+  const workerBinding=await resolveWorkspaceBinding({origin:company.origin},f.store,f.routing,'WORKER');await withWorkspaceBinding(workerBinding,async()=>{const worker=getWorkspaceDb(workerBinding);await workerOnce(worker);await workerOnce(worker);await workerOnce(worker);});
+  expect((await company.resource.db.pool.query('SELECT count(*)::int n FROM payroll_publications')).rows).toEqual([{n:1}]);expect((await company.resource.db.pool.query("SELECT kind,count(*)::int n FROM payroll_documents GROUP BY kind ORDER BY kind")).rows).toEqual([{kind:'COMPANY_SUMMARY',n:1},{kind:'EMPLOYEE_STATEMENT',n:1}]);
+  const own=await employeeCall('/api/payroll/statements');expect(own.status).toBe(200);expect(own.body.statements).toHaveLength(1);const ownDocument=own.body.statements[0].id;
+  expect(await employeePage.evaluate(async(id:string)=>{const response=await fetch('/api/payroll/documents/'+id,{credentials:'same-origin'});return {status:response.status,pdf:(await response.text()).startsWith('%PDF-')};},ownDocument)).toEqual({status:200,pdf:true});stages.push({stage:'actual-finalized-approved-historical-correction-native-2026-payroll-worker-private-publication-own-pay-http',state:'passed'});
   admissionComplete=true;
  });
 });
