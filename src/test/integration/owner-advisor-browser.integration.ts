@@ -63,7 +63,8 @@ it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned 
       try {
         const navigationProbe=engine==='webkit'?await verifyNavigationFetchDiagnostic(browser):null;
         const reloadProbe=engine==='webkit'?await verifyReloadFetchDiagnostic(browser):null;
-        browserDiagnostics.push({engine,navigationProbe,reloadProbe});
+        const authorityReloadProbe=engine==='webkit'?await verifyReloadFetchDiagnostic(browser,{resource:'authority',bothWitnesses:true}):null;
+        browserDiagnostics.push({engine,navigationProbe,reloadProbe,authorityReloadProbe});
         for (const actor of ["QAOWNER", "OA-MANAGER", "OA-EMPLOYEE"]) {
           const context = await browser.newContext({
             viewport: { width: 1440, height: 1000 },
@@ -88,7 +89,7 @@ it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned 
           );
           await context.tracing.start({ screenshots: true, snapshots: true });
           const execution={engine,actor,navigationDiagnostics:[]};browserDiagnostics.push(execution);
-          const cell=observeBrowserCell(execution,runtimeErrors,{navigationDiagnosticVerified:navigationProbe?.verified===true,reloadDiagnosticVerified:reloadProbe?.verified===true,navigationReadKinds:['notification-read'],requireNotificationGetWitness:true});
+          const cell=observeBrowserCell(execution,runtimeErrors,{navigationDiagnosticVerified:navigationProbe?.verified===true,reloadDiagnosticVerified:reloadProbe?.verified===true,authorityDiagnosticVerified:authorityReloadProbe?.verified===true,navigationReadKinds:['notification-read','authority-read'],requireNotificationGetWitness:true,requireAuthorityGetWitness:true});
           await cell.observeContext(context,actor==='QAOWNER'?'manager':'primary');
           const page = await context.newPage();
           let phase = "login";

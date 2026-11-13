@@ -308,3 +308,28 @@ whole-source, full seven-stage backend and actual browser qualification are next
 Development/main/held Claude remain unchanged. All 279 packages and reports keep
 their original identity and cannot certify the next corrected source. The original
 hosted packet is still held/unstarted with null timestamps and zero effects.
+
+
+## November 13 — retained 077 Owner Advisor native diagnostic failure
+
+Candidate077 passed the actual Linux combined lifecycle/reflow gate and the
+onboarding-backend job. Its original mandatory Owner Advisor step failed in
+main WebKit: every functional check completed, but an authority GET native
+diagnostic during an observed same-URL reload remained fatal. The original
+notifications-only collector had not adopted the already-reviewed D2 authority
+mechanism. The exact artifact14038062193/digest
+8c4cb3a42b50732e29ade114cc3abee96d02e86900ae1e5fb8a4f7f141c45b44
+and failed report remain retained. Coverage plans/actions/notebook reports all
+passed; no speculative change to them is justified.
+
+The bounded correction adds the existing authority native-reload mechanism
+probe and its real GET-method witness to this one Owner Advisor collector.
+The probe exercises actual WebKit native behavior and its fatal negative cases
+before opting in. The shared classifier and all runtime/window-error assertions,
+normal application behavior, deadlines and UI remain unchanged. No diagnostic
+is accepted merely because its string resembles the old failure.
+
+New exact-source full browser qualification, all mandatory release gates,
+candidate and actual development qualification remain required. No development
+push or hosted effect has occurred. This adoption does not relabel the failed
+077 report or certify physical-device/browser behavior outside the fixture.
