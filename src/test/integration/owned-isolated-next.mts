@@ -9,6 +9,10 @@ const clock=finance?createOwnedFinancialClock(finance,canonical.origin):null;
 if(finance&&clock){installOwnedFinancialFetch(finance);await clock.refresh();Date.now=clock.now;}
 // Public hostname/port are the registered company identity. Only the actual
 // socket uses the owned ephemeral loopback port; no host-trust bypass is added.
+// Match Next 16.4.2 start-server's internal origin when using this custom
+// ingress. Redirect self-fetches use the actual owned socket; forwarded public
+// Host/protocol, cookies, real RSC responses and all application guards remain.
+process.env.__NEXT_PRIVATE_ORIGIN=`http://127.0.0.1:${port}`;
 const application=next({dev:true,dir:process.cwd(),hostname:canonical.hostname,port:443});
 process.stdout.write('Owned isolated ingress: prepare-start\n');
 await application.prepare();process.stdout.write('Owned isolated ingress: prepare-complete\n');const handle=application.getRequestHandler();

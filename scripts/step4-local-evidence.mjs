@@ -34,7 +34,7 @@ export function verifyStep4Evidence({custody,source,report,vitest,cluster,packet
  assert.equal(vitest.testResults.length,1);const execution=vitest.testResults[0];assert.equal(execution.name,join(source,step4Fixture));assert.equal(execution.status,'passed');assert.equal(execution.assertionResults.length,1);assert.equal(execution.assertionResults[0].status,'passed');assert.equal(execution.assertionResults[0].fullName,step4TestName);
  assert.equal(cluster.suite,'step4-local');assert.equal(cluster.sourceSha,custody.checkpoint);for(const key of ['started','stopped','removed'])assert.equal(cluster[key],true);assert.equal(cluster.exitCode,0);
  assert.equal(report.sourceSha,custody.checkpoint);assert.equal(report.tree,custody.tree);for(const key of ['complete','admissionComplete','lifecycleComplete','resilienceComplete','cleanupVerified'])assert.equal(report[key],true,key);
- assert.deepEqual(report.stages,step4Stages.map(stage=>({stage,state:'passed'})));
+ assert.deepEqual(report.stages,step4Stages.map(stage=>({stage,state:'passed'})));assert.equal(report.internalRedirectFailures,0,'Owned internal redirect transport must not fail');
  for(const key of ['runtimeErrors','windowExceptions'])assert.deepEqual(report[key],[],key);for(const key of ['runtimeErrorsDropped','networkDropped'])assert.equal(report[key],0,key);
  assert(report.network.length>=200&&report.network.length<=512);assert(report.network.every(row=>row.ownedDomain===true&&['GET','POST'].includes(row.method)&&/^\//.test(row.path)&&!row.path.includes('?')&&Number.isInteger(row.status)&&row.status>=100&&row.status<=599));
  assert.deepEqual(report.matrixClosed,['chromium','webkit']);
