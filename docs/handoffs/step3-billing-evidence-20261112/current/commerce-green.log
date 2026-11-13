@@ -1,0 +1,15 @@
+
+> fuel-scheduler@0.1.0 test:commerce:owned
+> node scripts/commerce-postgres.mjs
+
+
+ RUN  v5.0.5 /workspace/nevora-step3-final
+
+
+ Test Files  15 passed (15)
+      Tests  183 passed (183)
+   Start at  00:30:45
+   Duration  10.92s (tests 89%, import 8%, transform 3%)
+
+    Isolate  15 workers spawned · ~151ms startup each (spawn + environment, per file)
+             at least ~603ms faster with isolate: false — reuses workers across files instead of one per file

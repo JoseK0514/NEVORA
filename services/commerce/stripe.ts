@@ -102,7 +102,12 @@ export class StripeBilling implements BillingPort {
   }
   async webhook(raw: string, signature: string) {
     if(!this.options.webhookSecret)throw new CommerceError('webhook_not_configured',503);
-    await enqueueStripeWebhook(this.store,parseStripeWebhook(raw,signature,this.options.webhookSecret,this.options.live));
+    const event = parseStripeWebhook(raw, signature, this.options.webhookSecret, this.options.live);
+    // The endpoint secret verifies delivery; an explicit account must also match
+    // this installation's merchant. No provider request is needed for admission.
+    if (event.account !== undefined && event.account !== this.options.expectedAccountId)
+      throw new CommerceError('stripe_account_mismatch', 503);
+    await enqueueStripeWebhook(this.store, event);
   }
   async syncJob(payload: Record<string, string>) {
     await this.verifyAccount();

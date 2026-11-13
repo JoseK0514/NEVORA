@@ -1,0 +1,30 @@
+Owned onboarding PostgreSQL started on loopback; existing databases are not used.
+
+ RUN  v5.0.5 /workspace/nevora-step3-final
+
+ ✓ src/test/integration/onboarding-commerce.integration.ts (18 tests) 71410ms
+   ✓ preserves the original provisioning trial receipt through activation, setup, refresh and optional skips 6367ms
+   ✓ enrolls the actual provisioned company once before publishing activation, without a second Owner credential or provisioning job 3921ms
+   ✓ refuses the competing public signup and setup paths in integrated mode before writing a second account 991ms
+   ✓ recovers concurrent enrollment replay without restarting a trial or storing any company database credential 3647ms
+   ✓ allows the verified contact to own a second separate company without linking billing authority by email 7895ms
+   ✓ uses current A/B routing for billing facts and never the process-wide legacy installation 9050ms
+   ✓ recovers a committed enrollment with a lost acknowledgement before publishing the same pending Owner 3705ms
+   ✓ keeps billing identity and capacity immutable to APP/WORKER and binds current Owner proofs to the correct company 6420ms
+   ✓ serves the same billing contract through the hosted API prefix while preserving public endpoint authentication 687ms
+   ✓ connects the provisioned Owner to one Stripe checkout and signed lifecycle events without changing the original trial 4643ms
+   ✓ uses separate real catalog logins so billing cannot reset a trial and enrollment cannot edit subscriptions 878ms
+   ✓ cannot mint a billing handoff with a retired company instance while its registry is suspended 3439ms
+   ✓ never substitutes B authority when A cache validation is interleaved with a B request 6223ms
+   ✓ rejects previously issued mailbox proofs for an onboarding business even when a caller omits integrated API configuration 3264ms
+   ✓ rejects preexisting handoffs and billing sessions after Owner authority is revoked 3990ms
+   ✓ refuses a correctly named provisioning target occupied in another user schema without changing its sentinel 1446ms
+   ✓ reports not ready when the required billing authority schema revision is absent 845ms
+   ✓ gives a WORKER a read-only entitlement credential that cannot mint Owner billing authority even with readable session hashes 3997ms
+
+ Test Files  1 passed (1)
+      Tests  18 passed (18)
+   Start at  00:31:03
+   Duration  72.62s (tests 99%, transform 1%)
+
+Owned onboarding PostgreSQL stopped and temporary cluster removed.

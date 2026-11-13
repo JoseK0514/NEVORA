@@ -1,0 +1,21 @@
+
+> fuel-scheduler@0.1.0 test:commerce:owned
+> node scripts/commerce-postgres.mjs
+
+
+ RUN  v5.0.5 /workspace/nevora-step3
+
+
+ Test Files  15 passed (15)
+      Tests  159 passed (159)
+   Start at  00:22:44
+   Duration  7.68s (tests 81%, import 10%, transform 9%)
+
+    Isolate  15 workers spawned · ~102ms startup each (spawn + environment, per file)
+             at least ~408ms faster with isolate: false — reuses workers across files instead of one per file
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

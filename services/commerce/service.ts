@@ -214,21 +214,32 @@ export function createCommerce(options: CommerceOptions) {
         return answer({ state: "signed_out" });
       }
       const business = await store.business(id);
+      const assertCurrentBilling = async (checkCustomer = true) => {
+        const currentId = await store.session(bearer, options.now?.() ?? Date.now(), (b, o, c) => verifyInstallationOwner(store, b, o, c));
+        const current = await store.business(currentId);
+        if (currentId !== id || current.state !== business.state || current.slotId !== business.slotId ||
+          current.incarnation !== business.incarnation || current.origin !== business.origin ||
+          (checkCustomer && (current.customerId !== business.customerId || current.subscriptionId !== business.subscriptionId)))
+          throw new CommerceError('billing_binding_changed', 409);
+      };
       if (path === "/v1/setup" && request.method === "POST") {
         await store.rate(`setup:${id}`, 10, 3600, now);
         const setup = parseSignup({ ...input, email: business.email });
         await store.submitSetup(id, setup, await hashPassword(setup.password));
         return answer({ state: "setup_accepted" }, 202);
       }
-      if (path === "/v1/status" && request.method === "GET")
+      if (path === "/v1/status" && request.method === "GET") {
+        const access = await businessAccess(store, business, now, options.headcount);
+        await assertCurrentBilling();
         return answer({
           businessId: id,
           businessName: business.profile.businessName ?? null,
           setup: business.state,
           applicationUrl: business.state === "ready" ? business.origin : null,
           ownerEmployeeId: business.profile.ownerEmployeeId ?? "OWNER",
-          ...(await businessAccess(store, business, now, options.headcount)),
+          ...access,
         });
+      }
       if (
         (path === "/v1/checkout" || path === "/v1/portal" || path === '/v1/plan-change') &&
         request.method === "POST"
@@ -243,21 +254,20 @@ export function createCommerce(options: CommerceOptions) {
         if (!/^[0-9a-f]{8}-[0-9a-f-]{27,40}$/i.test(operation))
           throw new CommerceError("idempotency_key_required");
         await store.rate(`billing:${id}`, 20, 3600, now);
+        await assertCurrentBilling();
         if(path==='/v1/plan-change'){
           if(input.plan!=='small'&&input.plan!=='team')throw new CommerceError('invalid_plan');
           if(!options.billing.planChange)throw new CommerceError('plan_changes_unavailable',503);
           const result=await options.billing.planChange(business,operation,input.plan,owner,lang);
-          const currentId=await store.session(bearer,options.now?.()??Date.now(),(b,o,c)=>verifyInstallationOwner(store,b,o,c));
-          const current=await store.business(currentId);
-          if(currentId!==id||current.state!=='ready'||current.slotId!==business.slotId||current.incarnation!==business.incarnation||current.origin!==business.origin||current.customerId!==business.customerId||current.subscriptionId!==business.subscriptionId)throw new CommerceError('billing_binding_changed',409);
+          await assertCurrentBilling();
           return answer(result);
         }
-        return answer({
-          url:
-            path === "/v1/checkout"
-              ? await options.billing.checkout(business, operation,owner,lang)
-              : await options.billing.portal(business, operation,owner,lang),
-        });
+        const url = path === "/v1/checkout"
+          ? await options.billing.checkout(business, operation, owner, lang)
+          : await options.billing.portal(business, operation, owner, lang);
+        // Checkout may legitimately create the first customer/subscription binding.
+        await assertCurrentBilling(path !== "/v1/checkout");
+        return answer({ url });
       }
       throw new CommerceError("not_found", 404);
     } catch (error) {
