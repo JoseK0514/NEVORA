@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-11-13T00:22:55.287012+00:00",
+  "observedAt": "2026-11-13T05:05:55.496148+00:00",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -364,9 +364,9 @@
     },
     {
       "branch": "development",
-      "sha": "f6baaaa6d988f34fb1c3388d0e1fe4c410bcbfd5",
+      "sha": "67dbf3deaf528d86057d3cd88ae2319ba000d851",
       "disposition": "target",
-      "reason": "Freshly fetched November 10 development baseline baf26fc4, with independently qualified company-specific worker enrollment and bounded SQL/D2 diagnostic work. This closeout adds the independently reviewed SMTP acknowledgement deadline code9bd76d86 and its operational handoff d75b7d74. Source-specific evidence and historical unknown CI causes remain retained; no Production or native adoption is implied. November12 Step2 reconciliation: freshly fetched242a9938 is the preserved combined base; main46d6dc76 and held collaboration a496040fb are unchanged. All73 sources and three active branches pass inventory. Only the scoped onboarding recovery/fixture/tests are added; no held UI is imported. Existing development onboarding CI failure and exact candidate gates remain visible in the Step2 evidence. Consolidated finisher reconciliation November12 local/November13 UTC: preserve the exact published Step2 development f6baaaa6d together with finishing238d0bdb4 (claim-counter fixture stability and bounded management browser evidence/independent cleanup). No held Claude source is imported. Only derived guide publication conflicts are temporarily resolved for regeneration from the combined application; exact combined candidate and actual-development qualification remain mandatory before hosting."
+      "reason": "Current development database-rehearsal delivery inspected and included by the sole finisher. Incoming changes follow/hash the shared canonical bootstrap and passkey dependency chain; operations negative fixtures retain strict cleanup/permission assertions. Source-bound documents remain historical evidence. Main and held Claude UI are unchanged; combined acceptance and hosted gates remain open."
     },
     {
       "branch": "fix/ci-preview-33",

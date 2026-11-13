@@ -1,0 +1,38 @@
+{
+  "source": "546dfb667d072ed54dbd06b4de5f8519c3443eaa",
+  "project": "lucky-wind-29844564",
+  "database": "scrum84_restored3",
+  "status": "PASS",
+  "checks": [
+    {
+      "scenario": "hosted-restored-fresh-client",
+      "name": "Company Access preserves finite scope and denies another location/company access",
+      "status": "PASS"
+    },
+    {
+      "scenario": "hosted-restored-fresh-client",
+      "name": "payroll revisions/approved ledger and exact document bytes are available",
+      "status": "PASS"
+    },
+    {
+      "scenario": "hosted-restored-fresh-client",
+      "name": "operational permission cannot widen independent payroll permission",
+      "status": "PASS"
+    },
+    {
+      "scenario": "hosted-restored-fresh-client",
+      "name": "password verification, existing session and guarded new session work",
+      "status": "PASS"
+    },
+    {
+      "scenario": "hosted-restored-fresh-client",
+      "name": "signed passkey authentication survives and replay stays rejected",
+      "status": "PASS"
+    },
+    {
+      "scenario": "hosted-restored-fresh-client",
+      "name": "append-only payroll/access/passkey audit controls still reject mutation",
+      "status": "PASS"
+    }
+  ]
+}
