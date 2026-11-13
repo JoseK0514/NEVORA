@@ -1,5 +1,6 @@
 import next from 'next';
 import {createServer} from 'node:http';
+import {createOwnedInternalRedirectFetch} from './owned-internal-redirect';
 import {installOwnedFinancialFetch,createOwnedFinancialClock,type OwnedFinanceBridge} from './owned-isolated-finance';
 const origins=JSON.parse(process.env.NEVORA_OWNED_ISOLATED_ORIGINS??'[]') as string[],port=Number(process.argv[2]);
 if(process.env.NODE_ENV!=='development'||process.env.NEVORA_ONBOARDING_ENVIRONMENT!=='test'||origins.length!==1||!Number.isInteger(port)||port<1024||port>65535)throw Error('Owned isolated Next ingress missing');
@@ -13,6 +14,7 @@ if(finance&&clock){installOwnedFinancialFetch(finance);await clock.refresh();Dat
 // ingress. Redirect self-fetches use the actual owned socket; forwarded public
 // Host/protocol, cookies, real RSC responses and all application guards remain.
 process.env.__NEXT_PRIVATE_ORIGIN=`http://127.0.0.1:${port}`;
+globalThis.fetch=createOwnedInternalRedirectFetch(process.env.__NEXT_PRIVATE_ORIGIN,canonical.origin,globalThis.fetch);
 const application=next({dev:true,dir:process.cwd(),hostname:canonical.hostname,port:443});
 process.stdout.write('Owned isolated ingress: prepare-start\n');
 await application.prepare();process.stdout.write('Owned isolated ingress: prepare-complete\n');const handle=application.getRequestHandler();
