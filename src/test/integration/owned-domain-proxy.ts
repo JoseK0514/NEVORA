@@ -8,7 +8,7 @@ export async function startOwnedDomainProxy(upstream:string,mappings:Readonly<Re
  if(process.env.NODE_ENV!=='test'||target.protocol!=='http:'||target.hostname!=='127.0.0.1'||!target.port||target.origin!==upstream||Object.keys(mappings).length<1||Object.keys(mappings).length>2)throw Error('Unowned HTTP domain proxy');
  for(const [front,back] of Object.entries(mappings)){
   const f=new URL(front),b=new URL(back);
-  if(f.origin!==front||f.protocol!=='http:'||!f.hostname.endsWith('.step4.invalid')||f.port||b.origin!==back||b.protocol!=='https:'||!b.hostname.endsWith('.example.invalid')||b.port)throw Error('Unowned HTTP domain mapping');
+  if(f.origin!==front||f.protocol!=='http:'||!['.step4.invalid','.step4.localhost'].some(suffix=>f.hostname.endsWith(suffix))||f.port||b.origin!==back||b.protocol!=='https:'||!b.hostname.endsWith('.example.invalid')||b.port)throw Error('Unowned HTTP domain mapping');
  }
  const sockets=new Set<Duplex>();
  const forward=(incoming:IncomingMessage,outgoing:ServerResponse)=>{
