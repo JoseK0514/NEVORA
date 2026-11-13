@@ -18,6 +18,10 @@ test('mandatory backend gate executes durable commerce SQL and SDK cases and ret
 });
 
 test('Owner advisor uploads nested reports, captures and traces with their source custody',()=>{
+ const gate=workflow.jobs['phase-d-attendance-ui'].steps.find(step=>step.name==='Owner advisor PostgreSQL and browser gate');
+ assert.equal(gate.if,undefined);
+ const steps=workflow.jobs['phase-d-attendance-ui'].steps;
+ assert(steps.findIndex(step=>step.name==='Combined company lifecycle and recovery gate')>steps.findIndex(step=>step.name==='Upload Owner advisor browser evidence'),'Original Owner advisor evidence must precede the combined journey');
  const upload=workflow.jobs['phase-d-attendance-ui'].steps.find(step=>step.name==='Upload Owner advisor browser evidence');
  assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
  const root='${{ runner.temp }}/nevora-owner-advisor-browser-evidence';

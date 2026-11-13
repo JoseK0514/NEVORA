@@ -245,7 +245,7 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
   // Real restricted-company status, fresh normal Owner logins and native
   // connectivity events. Held replies preserve actual server response bytes.
   const recoveryErrors:string[]=[],foreignRequests:string[]=[],operationalReads:string[]=[],recoveryReads:{path:string;status:number}[]=[];let recoveryDropped=0;
-  const recoveryDiagnostic:{errors:string[];foreignRequests:string[];operationalReads:string[];reads:{path:string;status:number}[];dropped:number;stage:string;focus:unknown[];latestStatus:Record<string,unknown>;failure?:unknown;capture?:string}={errors:recoveryErrors,foreignRequests,operationalReads,reads:recoveryReads,dropped:0,stage:'starting',focus:[],latestStatus:{}};browserDiagnostics.recoveryResilience=recoveryDiagnostic;
+  const recoveryDiagnostic:{errors:string[];foreignRequests:string[];operationalReads:string[];reads:{path:string;status:number}[];dropped:number;stage:string;focus:unknown[];layout:unknown[];latestStatus:Record<string,unknown>;failure?:unknown;capture?:string}={errors:recoveryErrors,foreignRequests,operationalReads,reads:recoveryReads,dropped:0,stage:'starting',focus:[],layout:[],latestStatus:{}};browserDiagnostics.recoveryResilience=recoveryDiagnostic;
   for(const engine of ['chromium','webkit'] as const){
    const recoveryBrowser=await runtime[engine].launch({headless:true});let recoveryClosed=false;defer(async()=>{if(!recoveryClosed)await recoveryBrowser.close();});
    try{for(const lang of ['en','es'] as AuthLang[]){
@@ -267,10 +267,15 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
     const tabletPath='/clocker/access/paused?from='+encodeURIComponent('/clocker/'+locationKey);
     for(const [kind,path,title] of [['billing','/app/billing',words.billing],['paused',tabletPath,words.tablet],['unavailable',tabletPath+'&reason=billing_status_unavailable',words.unavailable]]){
      recoveryDiagnostic.stage=engine+':'+lang+':'+kind;
-     await recoveryPage.goto(front+path);await recoveryPage.getByRole('heading',{name:title,exact:true}).waitFor();if(kind==='billing')await ready();
+     await recoveryPage.goto(front+path);await recoveryPage.getByRole('heading',{name:title,exact:true}).waitFor();if(kind==='billing')await ready();await recoveryPage.evaluate(()=>document.fonts.ready.then(()=>undefined));
      for(const width of [320,390,768,1440]){
       await recoveryPage.setViewportSize({width,height:1000});
-      for(const scale of [100,200]){await recoveryPage.evaluate((value:number)=>{document.documentElement.style.fontSize=value+'%';},scale);expect(await recoveryPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);}
+      for(const scale of [100,200]){
+       await recoveryPage.evaluate((value:number)=>{document.documentElement.style.fontSize=value+'%';},scale);
+       const layout=await recoveryPage.evaluate(()=>({viewportWidth:innerWidth,clientWidth:document.documentElement.clientWidth,scrollWidth:document.documentElement.scrollWidth,fonts:document.fonts.status,overflow:Array.from(document.querySelectorAll('h1,button,a,dt,dd')).map(node=>{const box=node.getBoundingClientRect();return {tag:node.tagName,left:box.left,right:box.right,width:box.width};}).filter(box=>box.left<0||box.right>innerWidth+1).slice(0,8)}));
+       recoveryDiagnostic.layout.push({engine,lang,kind,width,scale,...layout});
+       expect(layout.scrollWidth<=layout.viewportWidth+1,`${engine}/${lang}/${kind}/${width}/${scale}: ${layout.scrollWidth}/${layout.viewportWidth}, client ${layout.clientWidth}`).toBe(true);
+      }
       await recoveryPage.evaluate(()=>{document.documentElement.style.fontSize='100%';});
       await recoveryPage.screenshot({path:join(root,`recovery-${engine}-${lang}-${kind}-${width}.png`),fullPage:true});matrix.push({engine,lang,kind,width,textPercent:[100,200]});
      }

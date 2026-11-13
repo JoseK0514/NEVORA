@@ -270,3 +270,41 @@ then candidate/development CI and all 14 artifact families remain mandatory.
 The original review's declined hosted/real-provider/physical/legal/independent
 and main-promotion topics remain separate gates. This correction is not hosted
 migration execution, production approval or closure of original independent findings.
+
+
+## November 13 — retained candidate 279 CI failures and correction
+
+Immutable tag `candidate/backend-completion/scrum146190-combined-20261113-2793408`
+published exact source `27934085918f6fa17cf304fdd981a1605bee60fc`.
+CI 43419659051 / Mobile 43419659025 remain retained; this candidate is not
+qualified or delivered. The commerce CI gate passed all 221 SQL/SDK tests.
+The seven-stage backend runner then refused three unclassified paths:
+`scripts/step4-local-evidence.mjs`, `services/commerce/billing-operations.ts`,
+and `services/commerce/service.ts`. Existing full runtime-inventory controls
+reproduced this locally. Explicit reviewed separate-catalog/non-runtime entries
+now cover these paths; the scanner and its fail-closed behavior are unchanged.
+A new removal regression requires all three entries, and inventory checks are
+included in local release-engineering preparation as well as backend acceptance.
+
+The combined browser gate independently failed its unchanged horizontal-reflow
+assertion at WebKit/Spanish/billing/320px/200% text after 36 completed cells.
+The actual failure capture shows long Spanish heading/action words overflowing
+the narrow card. Runtime/window errors, dropped and foreign observations were
+zero; both source/mirror apps and the owned cluster closed. Artifact 14033098319,
+ZIP SHA256 b6c4e4c547d37fcd250f07161fde94ae3d235aee30ae6c777e07cc8099948a85,
+was downloaded and safely extracted (139 files). No unchanged-source rerun.
+
+The bounded recovery-card correction allows words to wrap when the available
+width cannot fit them, preserving existing type sizes, tokens, copy and controls.
+The journey now waits for actual fonts before measuring and records bounded
+viewport/client/scroll widths, text scale and overflow geometry without private
+text. The original viewport/text assertion remains mandatory. The new combined
+gate follows the original Owner-advisor evidence steps, preserving their original
+unconditional execution and all job counts/deadlines. A proposed conditional on
+the advisor was rejected by the existing strict contract and was not retained.
+All 75 boundary/workflow/semantic controls and typecheck pass locally; fresh
+whole-source, full seven-stage backend and actual browser qualification are next.
+
+Development/main/held Claude remain unchanged. All 279 packages and reports keep
+their original identity and cannot certify the next corrected source. The original
+hosted packet is still held/unstarted with null timestamps and zero effects.

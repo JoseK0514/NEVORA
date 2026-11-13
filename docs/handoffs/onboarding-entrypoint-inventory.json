@@ -4484,6 +4484,33 @@
       "status": "CONVERTED",
       "reason": "Current company-bound connection and Owner generation are resolved and rechecked around remote commerce authority reads; only browser-safe status fields leave this route. No ambient single-company database fallback is introduced.",
       "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "services/commerce/billing-operations.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Durable billing request/stage helper uses the explicitly selected separate CommerceStore catalog and the current Business lock. Server-derived actor/request/binding hashes and current-authority callbacks fence every preparation/mutation; no ambient application database or company selector is introduced.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "services/commerce/service.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Commerce HTTP handlers use the explicit separate catalog, validated installation/session/Owner authority and the existing current-company policy/facts bridges. The pg dependency is type-only PoolClient; the dispatcher does not resolve an ambient application database or bypass isolated binding.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "scripts/step4-local-evidence.mjs",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Read-only Step4 artifact verifier checks source hashes, reports, cleanup receipts, matrix cells and captures. Its Neon-import text is inspected as data to derive the approved owned-test substitution; it opens no database/provider connection and exports no public handler. Used only by the explicit owned acceptance runner and verification tests/tools.",
+      "isolatedBehavior": "NOT_DEPLOYED"
     }
   ],
   "routingEvidence": "Task2: actual owned A/B PostgreSQL databases through installed Neon HTTP protocol; not hosted Neon evidence.",

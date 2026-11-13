@@ -285,23 +285,6 @@ jobs:
           test -x "$PG_BIN/initdb"
           test -x "$PG_BIN/pg_ctl"
           echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
-      - name: Combined company lifecycle and recovery gate
-        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
-        env:
-          NEVORA_STEP4_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          NEVORA_STEP4_EVIDENCE: ${{ runner.temp }}/nevora-step4-local
-        run: node scripts/step4-local-acceptance.mjs
-      - name: Upload combined company lifecycle evidence
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: step4-local-${{ github.event.pull_request.head.sha || github.sha }}
-          path: |
-            ${{ runner.temp }}/nevora-step4-local/**/*.json
-            ${{ runner.temp }}/nevora-step4-local/**/*.png
-            ${{ runner.temp }}/nevora-step4-local/**/*-trace.zip
-          if-no-files-found: error
-          retention-days: 14
       - name: Owner advisor PostgreSQL and browser gate
         env:
           NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE: ${{ runner.temp }}/nevora-owner-advisor-browser-evidence
@@ -317,6 +300,23 @@ jobs:
             ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/*.json
             ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/*.png
             ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/*-trace.zip
+          if-no-files-found: error
+          retention-days: 14
+      - name: Combined company lifecycle and recovery gate
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          NEVORA_STEP4_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          NEVORA_STEP4_EVIDENCE: ${{ runner.temp }}/nevora-step4-local
+        run: node scripts/step4-local-acceptance.mjs
+      - name: Upload combined company lifecycle evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: step4-local-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/nevora-step4-local/**/*.json
+            ${{ runner.temp }}/nevora-step4-local/**/*.png
+            ${{ runner.temp }}/nevora-step4-local/**/*-trace.zip
           if-no-files-found: error
           retention-days: 14
       - name: Exact-SHA D1.3 attendance browser gate
