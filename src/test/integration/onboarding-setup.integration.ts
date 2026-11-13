@@ -7,6 +7,24 @@ import {readOnboardingSetup,saveOnboardingStep} from '@/lib/onboarding/setup.ser
 import type {SessionMutationProof} from '@/lib/shift-changes/types';
 async function ready(){const f=await onboardingJourneyFixture();try{const c=await f.createCompany(),{proof}=await c.grant();await activateInitialOwner(c.binding,{schemaVersion:1,operationId:randomUUID(),proof,password:'Fictional owner password 123!'});await c.work();const binding=await resolveWorkspaceBinding({origin:c.origin},f.store,f.routing),token=createHash('sha256').update(randomUUID()).digest('hex'),home=(await c.resource.db.pool.query('SELECT primary_location_id FROM employees')).rows[0].primary_location_id;await c.resource.db.pool.query("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'OWNER-1',clock_timestamp()+interval '1 hour')",[token]);const actor:SessionMutationProof={sessionTokenHash:token,employee:{id:'OWNER-1',firstName:'Fictional',lastName:'Owner',role:'OWNER',primaryLocationId:home}};return {...f,c,binding,actor};}catch(error){await f.close();throw error;}}
 const command=(version:string,payload:unknown)=>({schemaVersion:1,operationId:randomUUID(),expectedVersion:version,payload});
+it('regresses readiness when canonical eligibility or staffing is removed without inventing additional employees',async()=>{
+ const f=await ready();try{
+  let state=await readOnboardingSetup(f.actor,f.binding);const locationId=state.configuration.locations[0].id;
+  await saveOnboardingStep(f.actor,f.binding,'SCHEDULING',command(state.snapshot.version,{action:'STAFFING',staffingSettings:[{locationId,minimumStaffPerShift:1,requiresDesignatedLead:false}],hourTargets:[]}));
+  state=await readOnboardingSetup(f.actor,f.binding);
+  await saveOnboardingStep(f.actor,f.binding,'SCHEDULING',command(state.snapshot.version,{action:'COVERAGE_CREATE',locationId,dayOfWeek:1,startTime:'09:00',endTime:'17:00',positionRequirements:[]}));
+  state=await readOnboardingSetup(f.actor,f.binding);expect(state.snapshot.registrationState).toBe('READY');
+  await f.c.resource.db.pool.query("DELETE FROM employee_location_eligibility WHERE employee_id='OWNER-1'");
+  state=await readOnboardingSetup(f.actor,f.binding);expect(state.snapshot.registrationState).toBe('SETUP_IN_PROGRESS');
+  expect(state.snapshot.sections.find(s=>s.id==='SCHEDULING')).toMatchObject({state:'IN_PROGRESS',reasonCodes:['NO_ELIGIBLE_EMPLOYEES'],allowedActions:['OPEN','SAVE']});
+  await f.c.resource.db.pool.query("INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('OWNER-1',$1)",[locationId]);
+  expect((await readOnboardingSetup(f.actor,f.binding)).snapshot.registrationState).toBe('READY');
+  await f.c.resource.db.pool.query('DELETE FROM location_staffing_settings');
+  state=await readOnboardingSetup(f.actor,f.binding);expect(state.snapshot.registrationState).toBe('SETUP_IN_PROGRESS');
+  expect(state.snapshot.sections.find(s=>s.id==='SCHEDULING')?.reasonCodes).toContain('STAFFING_NOT_CONFIGURED');
+  expect(state.configuration.people.map(p=>p.id)).toEqual(['OWNER-1']);
+ }finally{await f.close();}
+});
 it('resumes canonical business fields after refresh and atomically saves the existing workspace profile plus one receipt',async()=>{
  const f=await ready();try{const before=await readOnboardingSetup(f.actor,f.binding);expect(before.configuration.workspace.name).toBe('Fictional fictional-north');expect(before.snapshot.sections.find(s=>s.id==='PAYROLL')?.state).toBe('OPTIONAL');const cmd=command(before.snapshot.version,{name:'Fictional renamed studio',timeZone:'America/Chicago'}),saved=await saveOnboardingStep(f.actor,f.binding,'BUSINESS',cmd);expect(saved.state).toBe('saved');const resumed=await readOnboardingSetup(f.actor,f.binding);expect(resumed.configuration.workspace.name).toBe('Fictional renamed studio');expect(BigInt(resumed.snapshot.version)).toBe(BigInt(before.snapshot.version)+BigInt(1));expect((await saveOnboardingStep(f.actor,f.binding,'BUSINESS',cmd)).state).toBe('saved');expect((await f.c.resource.db.pool.query('SELECT count(*)::int n FROM onboarding_commands')).rows[0].n).toBe(1);
  }finally{await f.close();}

@@ -1,1 +1,106 @@
-{"schemaVersion":1,"version":"3","registrationState":"SETUP_IN_PROGRESS","workspace":{"id":"170837ce-471d-4c6f-a322-aa73ce9863d6","displayName":"Fictional Example Company","portalUrl":"https://example-company.portal.example.invalid/"},"sections":[{"id":"BUSINESS","state":"READY","reasonCodes":[],"allowedActions":["OPEN"]},{"id":"SCHEDULING","state":"IN_PROGRESS","reasonCodes":["COVERAGE_REQUIRED"],"allowedActions":["OPEN","SAVE"]},{"id":"PAYROLL","state":"OPTIONAL","reasonCodes":["NOT_REQUESTED"],"allowedActions":["OPEN"]}],"nextStep":"SCHEDULING"}
+{
+  "schemaVersion": 1,
+  "version": "3",
+  "registrationState": "SETUP_IN_PROGRESS",
+  "workspace": {
+    "id": "170837ce-471d-4c6f-a322-aa73ce9863d6",
+    "displayName": "Fictional Example Company",
+    "portalUrl": "https://example-company.portal.example.invalid/"
+  },
+  "sections": [
+    {
+      "id": "BUSINESS",
+      "state": "READY",
+      "reasonCodes": [],
+      "allowedActions": [
+        "OPEN",
+        "SAVE"
+      ]
+    },
+    {
+      "id": "LOCATIONS",
+      "state": "READY",
+      "reasonCodes": [],
+      "allowedActions": [
+        "OPEN",
+        "SAVE"
+      ]
+    },
+    {
+      "id": "POSITIONS",
+      "state": "OPTIONAL",
+      "reasonCodes": [
+        "POSITIONS_OPTIONAL_UNLESS_REQUIRED"
+      ],
+      "allowedActions": [
+        "OPEN",
+        "SAVE"
+      ]
+    },
+    {
+      "id": "SCHEDULING",
+      "state": "IN_PROGRESS",
+      "reasonCodes": [
+        "STAFFING_NOT_CONFIGURED",
+        "COVERAGE_NOT_CONFIGURED"
+      ],
+      "allowedActions": [
+        "OPEN",
+        "SAVE"
+      ]
+    },
+    {
+      "id": "PEOPLE",
+      "state": "OPTIONAL",
+      "reasonCodes": [
+        "TEAM_CAN_BE_ADDED_LATER"
+      ],
+      "allowedActions": [
+        "OPEN",
+        "SAVE"
+      ]
+    },
+    {
+      "id": "INVITATIONS",
+      "state": "OPTIONAL",
+      "reasonCodes": [
+        "DELIVERY_NOT_CONFIGURED"
+      ],
+      "allowedActions": [
+        "OPEN",
+        "CHECK_STATUS"
+      ]
+    },
+    {
+      "id": "TIME_TRACKING",
+      "state": "OPTIONAL",
+      "reasonCodes": [
+        "TIMEKEEPING_SETUP_REQUIRED"
+      ],
+      "allowedActions": [
+        "OPEN"
+      ]
+    },
+    {
+      "id": "PAYROLL",
+      "state": "OPTIONAL",
+      "reasonCodes": [
+        "PAYROLL_DISABLED"
+      ],
+      "allowedActions": [
+        "OPEN"
+      ]
+    },
+    {
+      "id": "OPTIONAL_FEATURES",
+      "state": "OPTIONAL",
+      "reasonCodes": [
+        "FEATURES_REQUIRE_EXPLICIT_CONFIGURATION"
+      ],
+      "allowedActions": [
+        "OPEN"
+      ]
+    }
+  ],
+  "nextStep": "SCHEDULING"
+}

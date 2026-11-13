@@ -32,7 +32,7 @@ export async function currentCommerceConnection():Promise<{origin:string;install
  return (await import('./isolated-connection.server')).isolatedCommerceConnection();
 }
 export function publicOnboardingPath(path:string){
- return /^\/api\/onboarding\/(?:config|registrations(?:\/current)?|verification|workspaces|bootstrap-grants|owner-activation|operations\/[a-f0-9-]{36})$/.test(path);
+ return /^\/api\/onboarding\/(?:config|registrations(?:\/current)?|verification|workspaces|bootstrap-grants|owner-activation|operations\/(?:current|[a-f0-9-]{36}))$/.test(path);
 }
 export async function readCommerceAuthority(
   fetcher: typeof fetch = fetch,
