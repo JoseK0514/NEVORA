@@ -118,3 +118,68 @@ must include any new Step4 CI evidence and exact artifact digest/provenance.
 Evidence and complete execution ledger: the projectless finisher `work/` folder,
 `work/RESUME.md`, and this plan's `.superpowers/sdd/` ledger. Original failed logs,
 artifacts, custody roots and retained unknown work are preserved.
+
+## November 13 — combined preparation, still awaiting Clocker exception
+
+Application preparation checkpoint: `889672414d08d52ccfc42f683e396fafa4502c8d`.
+Development remains `67dbf3deaf528d86057d3cd88ae2319ba000d851`; its actual
+CI43360264485/Mobile43360264628 pass the independently read20-job/10-required
+context gate. Its inspected rehearsal/operations delta is included locally at
+9427507cb. Main46d6dc76 and held Claudea496040f remain unchanged; exactly three
+remote branches. No new candidate or finisher development publication.
+
+The approved strict durable billing rule is implemented at3bfc4095 (210 actual
+owned commerce SQL/SDK tests), and existing-shift-only continuation atdd0e7902
+(179 affected SQL checks). The integrated normal-browser fixture proves two
+actual local company trials, normal Owner/Employee sign-in and real local SMTP
+acceptance/unknown/replay. Its real billing session-revocation probe passes:
+actual200→401, no retained private fields or billing action. It remains an
+incomplete full lifecycle test, with no provider acceptance inferred.
+
+The billing presentation now expires within15seconds and retires on lifecycle
+loss; a further actual controlled component regression catches and fixes a held
+handoff surviving original disclosure expiry. Both engines reject late navigation
+and still complete a fresh trusted handoff. Pinned Playwright keeps both pages
+focused in headed/headless Chromium/WebKit, so explicit blur/focus fixtures are
+labelled controlled events, not physical tab proof. See
+[disclosure evidence and limits](2026-11-13-billing-private-lifetime.md).
+
+Preparation evidence, in the projectless finisher `work/` directory:
+
+- `preparation-b767/report.json`: exactba6019e18, unchanged source, full root
+  suite12,868passed/925skipped/zero failed (single worker,464.29s),247release
+  engineering tests, typecheck, lint, six guides, inventory and source-bound
+  production build passed. Lint retains one existing anonymous-export warning.
+- `combined-f65-mobile`: five full mobile/recovery tests, no skips,183.13s;
+  three verified closed Next runtimes,8,937source hashes verified. Later test-only
+  handoff receipt narrowing correctionb767 passes typecheck and affected effects
+  coverage; it does not relabel this earlier full-suite source.
+- Supplied SCRUM-156 patch from Velani5d2e5455, originala8de13a9, SHA256
+  f9fef0b767ade75d645dd18017afeab6028d9d98634a7d20a090457bf0b73411,
+  imported exactly at78428e419b0d2f96cd86c1e87b65d4d73a8dbfb2. Two policy
+  paragraphs distinguish workforce recovery history from provider/mailbox copies;
+  no eraser, timer, statutory period or accepted-policy version changes.
+- `policy-delta-889/report.json`: current889source unchanged,22legal tests,
+  typecheck/lint/inventory/six regenerated guides and source-bound build passed.
+  Prior whole-suite results remain explicitly tied toba6019e18.
+- `policy-889-browser-third`: actual public Next legal routes,32cells across
+  Chromium/WebKit,320/390/768/1440,100%/200%root text, expanded clauses and native
+  keyboard activation. No clipping, page errors, foreign requests or browser
+  writes;2,979source hashes verified, app closed and owned PG stopped/removed.
+  Earlier namespace/keyboard-order fixture errors remain retained; no application
+  fix or physical-device/legal/hosted acceptance is inferred from them.
+
+The original194-character protected Clocker setup code is still truncated by the
+72-character old client. The prepared two-line compatibility patch is **not
+applied**; Jose's narrow UI ownership exception is pending. Keep server envelope,
+company and expiry verification intact. Do not inject a tablet cookie or simulate
+combined acceptance. Resume the original full TaskD/E journey after that decision,
+then final fresh review, immutable candidate and actual-development20/10 plus all
+source-bound artifacts, packaging and only then the original finite hosted packet.
+
+The hosted packet remains held/unstarted, null timestamps and zero effects;
+50-minute maximum/cleanup-by45 ceilings and original targets are unchanged. No
+new real email, charge, provider action, production/main change or other chat
+message occurred in this preparation. Rondo primaryJose Natal/backupIlianis Soto
+and Jose's two-email review are recorded separately; backup drill, independent
+outage/heartbeat coverage and joined Claude UI/public promotion remain open.
