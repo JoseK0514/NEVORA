@@ -42,6 +42,8 @@ it('admits normal browser sign-in on the actual provisioned fictional-company da
   page.on('response',(response:{url():string;status():number;request():{method():string}})=>{const url=new URL(response.url());if(network.length<64&&!url.pathname.startsWith('/_next/'))network.push({path:url.pathname,method:response.request().method(),status:response.status(),ownedDomain:url.origin===front});});
   await page.goto(front+'/login');await page.getByLabel('Employee ID',{exact:true}).fill('OWNER-1');await page.getByLabel('Password',{exact:true}).fill(password);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(front+'/app');
   expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='OWNER-1'")).rows).toEqual([{n:1}]);stages.push({stage:'normal-owner-browser-sign-in-on-provisioned-company',state:'passed'});
+  const setup=await page.evaluate(async()=>{const response=await fetch('/api/onboarding/state',{credentials:'same-origin',cache:'no-store'});return {status:response.status,body:await response.json()};});
+  expect(setup.status).toBe(200);expect(setup.body.state).toBe('ready');expect(setup.body.configuration.people.map((person:{id:string})=>person.id)).toContain('OWNER-1');stages.push({stage:'actual-owner-setup-http-and-company-authority',state:'passed'});
   admissionComplete=true;
  });
 });
