@@ -378,6 +378,64 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
       ),
     ).rejects.toThrow("mode_mismatch");
   });
+  function signedEvent(extra:Record<string,unknown>={}) {
+    const raw=JSON.stringify({id:'evt_step3',object:'event',type:'invoice.paid',livemode:false,
+      data:{object:{id:'in_step3',object:'invoice',parent:{subscription_details:{subscription:'sub_fixture_1'}}}},...extra});
+    return {raw,signature:Stripe.webhooks.generateTestHeaderString({payload:raw,secret})};
+  }
+  it('rejects a signed event from a foreign account before durable admission or provider I/O',async()=>{
+    Object.assign(billing.options,{expectedAccountId:'acct_fictional'});
+    const {raw,signature}=signedEvent({account:'acct_foreign'});
+    await expect(billing.webhook(raw,signature)).rejects.toThrow('stripe_account_mismatch');
+    expect((await pool.query('SELECT count(*)::int n FROM commerce.webhooks')).rows[0].n).toBe(0);
+    expect((await pool.query('SELECT count(*)::int n FROM commerce.jobs')).rows[0].n).toBe(0);
+    expect(provider.requests).toHaveLength(0);
+  });
+  it('rejects modified raw bodies and stale signatures without any durable work',async()=>{
+    const {raw,signature}=signedEvent();
+    await expect(billing.webhook(raw+' ',signature)).rejects.toThrow('invalid_signature');
+    const stale=Stripe.webhooks.generateTestHeaderString({payload:raw,secret,timestamp:Math.floor(Date.now()/1000)-600});
+    await expect(billing.webhook(raw,stale)).rejects.toThrow('invalid_signature');
+    expect((await pool.query('SELECT count(*)::int n FROM commerce.webhooks')).rows[0].n).toBe(0);
+  });
+  it('does not acknowledge a failed durable admission and recovers one job after a lost acknowledgment',async()=>{
+    const {raw,signature}=signedEvent();
+    const app=createCommerce({store,origin:'https://accounts.example.test',allowedOrigins:[],billing});
+    const send=()=>app(new Request('https://accounts.example.test/webhooks/stripe',{method:'POST',headers:{'stripe-signature':signature},body:raw}),'127.0.0.1');
+    await pool.query("CREATE FUNCTION public.reject_step3_job() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Synthetic job admission failure'; END $$");
+    await pool.query('CREATE TRIGGER reject_step3_job BEFORE INSERT ON commerce.jobs FOR EACH ROW EXECUTE FUNCTION public.reject_step3_job()');
+    const failed=await send();expect(failed.status).toBe(503);expect(await failed.json()).toEqual({error:{code:'temporarily_unavailable'}});
+    expect((await pool.query('SELECT count(*)::int n FROM commerce.webhooks')).rows[0].n).toBe(0);
+    await pool.query('DROP TRIGGER reject_step3_job ON commerce.jobs');
+    await pool.query('DROP FUNCTION public.reject_step3_job()');
+    // Commit succeeds; the transport loses that reply. Concurrent redelivery recovers the receipt.
+    await send();
+    const replies=await Promise.all([send(),send()]);expect(replies.map(r=>r.status)).toEqual([200,200]);
+    expect((await pool.query('SELECT count(*)::int n FROM commerce.webhooks')).rows[0].n).toBe(1);
+    expect((await pool.query("SELECT count(*)::int n FROM commerce.jobs WHERE dedupe_key='stripe:evt_step3'")).rows[0].n).toBe(1);
+  });
+  it('keeps two fictional companies status, handoff and subscription coverage isolated',async()=>{
+    const second='22222222-2222-4222-8222-222222222222';await business(second);
+    const one=await subscribed(),two=await subscribed(second);
+    provider.markPaid(one.subscription.id);await billing.syncJob({subscriptionId:one.subscription.id});
+    expect((await store.business(second)).paidThrough).toBeNull();
+    const proof='h'.repeat(43),bearer='s'.repeat(43);
+    await store.handoff(second,proof,now);await store.exchange(proof,bearer,now,true);
+    const app=createCommerce({store,origin:'https://accounts.example.test',allowedOrigins:[],now:()=>now,headcount:async()=>10});
+    const status=await app(new Request('https://accounts.example.test/v1/status?businessId='+id,{headers:{authorization:'Bearer '+bearer}}),'127.0.0.1');
+    expect(await status.json()).toMatchObject({businessId:second,paidThrough:null});
+    const before=await store.business(id);two.subscription.customer=one.subscription.customer;
+    await expect(billing.syncJob({subscriptionId:two.subscription.id})).rejects.toThrow('subscription_identity_mismatch');
+    expect((await store.business(id)).paidThrough).toBe(before.paidThrough);
+  });
+  it('rejects expired and wrong-purpose handoffs without consuming a valid link',async()=>{
+    const proof='h'.repeat(43);await store.handoff(id,proof,now);
+    await expect(store.exchange(proof,'x'.repeat(43),now,false)).rejects.toThrow('invalid_or_expired_link');
+    await store.exchange(proof,'y'.repeat(43),now,true);
+    await expect(store.exchange(proof,'z'.repeat(43),now,true)).rejects.toThrow('invalid_or_expired_link');
+    await store.handoff(id,'e'.repeat(43),now);
+    await expect(store.exchange('e'.repeat(43),'v'.repeat(43),now+120000,true)).rejects.toThrow('invalid_or_expired_link');
+  });
   it("grants access only from a paid invoice and retains paid-through coverage after cancellation", async () => {
     const { subscription } = await subscribed();
     await pool.query(
