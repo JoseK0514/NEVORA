@@ -59,11 +59,22 @@ external destinations remain refused. Its destination/login set passed 65.
   controlled response fixtures, not provider acceptance.
 - Existing worker custody/real-child controls: 45 passed, four files. These are
   local component controls, not a hosted worker restart or external heartbeat.
+- Follow-up `d01e296c0` retires the old snapshot before every foreground read.
+  Recovery browser coverage passed again. A proposed physical tab-switch check
+  failed its focus prerequisite: independent Chromium/WebKit, headed/headless
+  probes show both pages keep focus under the pinned Playwright automation.
+  This is not physical focus-retirement evidence. At `804b67376`, the existing
+  component/effects fixture explicitly injects blur/focus, verifies a new held
+  read was aborted and fenced, obtains fresh status, and preserves the late
+  handoff/no-navigation checks. Both engines passed, errors empty and browsers
+  closed. The real SQL session-revocation result above remains separate.
 
 Private raw evidence lives in the finisher's project `work/` directories:
 `step4-billing-retirement-red-second`, `step4-billing-retirement-green`,
 `billing-private-lifetime-browser`, and their named logs. They contain only
 owned fictional data. Never publish raw traces or authentication material.
+The controlled effects report is `billing-controlled-effects/commerce-effects/report.json`;
+the focus assumption probe is `native-focus-probe.json`.
 
 ## Combined release remains open
 

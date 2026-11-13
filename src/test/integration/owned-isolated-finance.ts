@@ -70,3 +70,8 @@ export async function readOwnedFinancialClock(bridge:OwnedFinanceBridge,company:
  if(!response.ok)throw Error('Owned financial clock unavailable');const value=await response.json();
  if(value.origin!==company||!Number.isSafeInteger(value.offsetMs)||value.offsetMs<0||value.offsetMs>MAX_OFFSET)throw Error('Invalid owned financial clock response');return value.offsetMs as number;
 }
+/** One child runtime's application clock; the host and PostgreSQL stay real. */
+export function createOwnedFinancialClock(bridge:OwnedFinanceBridge,company:string){
+ const realNow=Date.now;let offsetMs=0;
+ return {now:()=>realNow()+offsetMs,async refresh(){const observed=await readOwnedFinancialClock(bridge,company);offsetMs=Math.max(offsetMs,observed);}};
+}
