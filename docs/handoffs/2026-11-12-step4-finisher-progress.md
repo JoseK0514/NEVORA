@@ -333,3 +333,44 @@ New exact-source full browser qualification, all mandatory release gates,
 candidate and actual development qualification remain required. No development
 push or hosted effect has occurred. This adoption does not relabel the failed
 077 report or certify physical-device/browser behavior outside the fixture.
+
+## Functional central billing entry — November 13
+
+The existing isolated staging source/deployment lacked the required central UI.
+Jose's functional recovery UI exception, subsequently confirmed by the existing
+coordinator, includes the five existing central entry/callback paths. This work
+reuses the recovery frame; Claude retains the visual remake and unrelated UI.
+The public server selector accepts only the pinned isolated test Neon billing
+API, with an explicit development-only loopback option for owned fixtures.
+The normal release verification build remains closed and strips ambient feature
+flags. Any later configured Preview must pin the same public API selection in
+both build and runtime environments; no wildcard CSP/CORS allowance is added.
+
+`fbc099d8043c99d1eeb659b8949f98ec6ae67f98` passed the actual source-bound central
+acceptance wrapper: two browsers, ten functional checks, 32 font-ready bilingual
+layout measurements, 5,984 runtime-file hash verifications, real canonical owned
+SQL/SDK checkout reply loss, one immutable retry/operation/intent/provider session,
+Back, controlled blur, fresh focus, actual browser offline/online and real catalog
+session revocation. All contexts, browsers, apps, catalogs and the owned loopback
+PostgreSQL cluster closed; no runtime or foreign-request error was accepted.
+The provider navigation is an intercepted owned witness and installation facts
+are controlled. Normal company Owner authority remains the separate Step4 gate;
+these results are not genuine provider, hosted or physical-device acceptance.
+
+The new CI gate is mandatory inside the existing Phase D job, and its strict
+source/closure/SQL/geometry/retirement reports travel as `central-billing` inside
+the existing Step4 artifact. Required jobs/contexts/artifact families remain
+20/10/14. The semantic verifier rejects missing or altered central evidence;
+existing core Step4 stages, 48 cells, 96 measurements and deadlines are unchanged.
+Focused client/config tests pass32, and workflow plus central-evidence controls
+pass69. The new query-bearing handoff regression was observed failing before
+its narrow rejection/scrubbing correction. Prior failed fixture prerequisites
+and source-identity refusals remain retained; no privacy or timeout gate changed.
+
+The earlier independent whole-branch review did not cover this added central UI.
+No reviewer reapproval is claimed. New complete source qualification, regenerated
+guides, immutable candidate/actual-development CI and genuine bounded hosted
+acceptance remain required. No development push, provider write or finite-window
+start has occurred. Original A/B-only alias permission is unchanged: prepare an
+exact protected replacement before requesting the additional signup-staging
+binding and its closed fallback. Main and production remain unauthorized.
