@@ -19,3 +19,13 @@ it('forwards real bodies/cookies with fixed host mapping, preserves redirects an
 it.each(['https://provider.example.invalid','http://127.0.0.1:1/path'])('refuses a noncanonical upstream target: %s',async target=>{
  await expect(startOwnedDomainProxy(target,{'http://alpha.step4.invalid':'https://alpha.portal.example.invalid'})).rejects.toThrow('Unowned HTTP domain proxy');
 });
+it('carries the real owned Next development upgrade and refuses foreign socket targets',async()=>{
+ const upstream=createServer(),sockets=new Set<import('node:net').Socket>();let upgrades=0;
+ upstream.on('connection',socket=>{sockets.add(socket);socket.once('close',()=>sockets.delete(socket));});
+ upstream.on('upgrade',(req,socket)=>{upgrades++;expect(req.headers.host).toBe('alpha.portal.example.invalid');expect(req.headers.origin).toBe('https://alpha.portal.example.invalid');socket.write('HTTP/1.1 101 Switching Protocols\r\nConnection: Upgrade\r\nUpgrade: websocket\r\n\r\noriginal-owned-stream');});
+ await new Promise<void>(ok=>upstream.listen(0,'127.0.0.1',ok));const address=upstream.address();if(!address||typeof address==='string')throw Error('Owned bind failed');
+ const proxy=await startOwnedDomainProxy('http://127.0.0.1:'+address.port,{'http://alpha.step4.invalid':'https://alpha.portal.example.invalid'});
+ const call=(path:string)=>new Promise<string>((ok,bad)=>{const url=new URL(proxy.server),req=request({host:url.hostname,port:url.port,path,headers:{host:'alpha.step4.invalid',origin:'http://alpha.step4.invalid',connection:'Upgrade',upgrade:'websocket'}},res=>{res.resume();ok(String(res.statusCode));});req.on('error',bad);req.on('upgrade',(_res,socket,head)=>{if(head.length){socket.destroy();ok(head.toString());}else{socket.once('data',data=>{socket.destroy();ok(data.toString());});}socket.on('error',bad);});req.end();});
+ try{expect(await call('http://alpha.step4.invalid/_next/hmr?id=owned')).toBe('original-owned-stream');expect(await call('http://alpha.step4.invalid/foreign-socket')).toBe('403');expect(upgrades).toBe(1);}
+ finally{await proxy.close();for(const socket of sockets)socket.destroy();await new Promise<void>((ok,bad)=>upstream.close(error=>error?bad(error):ok()));}
+});

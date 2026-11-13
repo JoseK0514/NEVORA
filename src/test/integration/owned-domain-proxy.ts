@@ -31,6 +31,23 @@ export async function startOwnedDomainProxy(upstream:string,mappings:Readonly<Re
   outgoing.once('close',()=>pending.destroy());incoming.pipe(pending);
  });
  server.on('connection',socket=>{sockets.add(socket);socket.once('close',()=>sockets.delete(socket));});
+ // New development chunks depend on Next's HMR handshake. Carry only its
+ // real fixed-host upgrade; never synthesize a socket or permit another target.
+ server.on('upgrade',(incoming,socket,head)=>{
+  let front:URL;try{front=new URL(incoming.url??'/',`http://${incoming.headers.host}`);}catch{socket.destroy();return;}
+  const canonical=mappings[front.origin];
+  if(!canonical||front.pathname!=='/_next/hmr'||incoming.headers.origin!==front.origin||incoming.headers.upgrade?.toLowerCase()!=='websocket'){socket.end('HTTP/1.1 403 Forbidden\r\nConnection: close\r\nContent-Length: 0\r\n\r\n');return;}
+  const pending=request(upstream+front.pathname+front.search,{method:'GET',agent:false,headers:{...incoming.headers,host:new URL(canonical).host,origin:canonical,'x-forwarded-host':new URL(canonical).host,'x-forwarded-proto':'https'}});
+  pending.once('error',()=>socket.destroy());socket.once('close',()=>pending.destroy());
+  pending.once('response',response=>{response.resume();socket.destroy();});
+  pending.once('upgrade',(response,remote,remoteHead)=>{
+   sockets.add(remote);remote.once('close',()=>sockets.delete(remote));
+   const headers=Object.entries(response.headers).flatMap(([name,value])=>value===undefined?[]:(Array.isArray(value)?value:[value]).map(v=>name+': '+v));
+   socket.write('HTTP/1.1 '+response.statusCode+' '+response.statusMessage+'\r\n'+headers.join('\r\n')+'\r\n\r\n');
+   if(remoteHead.length)socket.write(remoteHead);if(head.length)remote.write(head);
+   socket.on('error',()=>remote.destroy());remote.on('error',()=>socket.destroy());socket.once('close',()=>remote.destroy());remote.once('close',()=>socket.destroy());socket.pipe(remote).pipe(socket);
+  });pending.end();
+ });
  // No CONNECT/DNS/provider escape. All approved browser origins are plain HTTP
  // reserved domains carried to the existing loopback Next runtime.
  server.on('connect',(_request,socket)=>socket.destroy());
