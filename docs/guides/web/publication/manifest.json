@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-12",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "e01805601c50ff2227efd4315f36d932df6aa71d",
-  "applicationHash": "208ebf994479ffc3b8e3e7e9cc57bda5712641d24e2fa7af3fd1f03495c4f689",
+  "sourceSha": "0a8824f4390bb89778c3a83e4c8f2c3da5257cf0",
+  "applicationHash": "91f1d2c4bb2fe276527a7783e710b17da63495b240aeee1d208ae8651a55faf1",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "f1b50c0792496e3e38a5562fb01b12b5dd0604b99186ac5423adf3092856c626"
@@ -104,7 +104,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "dbb680b7663f3dbf8c4ba461105d20ca52ba381deb901807ef960d1e7077c539",
+        "sha256": "0702cdfbc79c890c16ade22bf0b34dab3dbefed83ec928dd3d22637b7e9ac112",
         "pageCount": 4
       }
     },
@@ -175,7 +175,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "09aabfbf68b821d0390cf809295d42891f0cee44fb40c4c01e016deedd62287f",
+        "sha256": "3d109833d12c510616c15d4d79dfd3f7a0e6e134f2866bc70a18df4322d596be",
         "pageCount": 3
       }
     },
@@ -258,7 +258,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "d0240dcb503b0c596cf600649196afa96df61a67d56eb6c839fe1d5d6281b981",
+        "sha256": "fd0fd336dee9c8ef5e41a6bad525888b7b0ddcaec7a3e0b4af0aa5de8388dd9a",
         "pageCount": 3
       }
     },
@@ -329,7 +329,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "23baa68aa0c36d54952099fe08bf6ffd96f5af98c05219236a4a627760b631a6",
+        "sha256": "39bcd6f573a1b40d6963ee3745eff13d65926e5b480ac899d466ae1f7f4d8c8c",
         "pageCount": 2
       }
     },
@@ -432,7 +432,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "337327963867e2609e3303ad1fa499828c1b0640dbe52f65a6f6975ba12337bf",
+        "sha256": "a0b1e58a6e07c33ed63934162a4e5f4fbc5e8bda6654ad6f8e63389338851ff4",
         "pageCount": 3
       }
     },
@@ -466,7 +466,7 @@
         },
         {
           "path": "docs/runbooks/renewal-and-on-call.md",
-          "sha256": "c827a605516a977ac32341940ee3fc6d830687b6c4d45652052aa731608d6300"
+          "sha256": "430dba5c8260d734f51d48ff121754cd6448d99c3214ddf17ba6ac5b745814fb"
         },
         {
           "path": "docs/compliance/account-deletion-runbook.md",
@@ -535,7 +535,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "dc9b19c80d2a92c6b528156d5263745b3881b052e07cb14d466f403ebcd323e2",
+        "sha256": "5bbb36ac79a8a3cbc80bfbad791a3edb26e68c461a365ff8deee3c0ab6de73aa",
         "pageCount": 4
       }
     }
