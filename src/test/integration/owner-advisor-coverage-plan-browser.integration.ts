@@ -7,10 +7,10 @@ import { seedOwnedApp, TEST_PASSWORD } from "./owned-app-fixture";
 import { fictionalProfile } from "../fixtures/shift-changes";
 import {withManagementBrowserEvidence,type ManagementCaptureState} from './management-browser-evidence';
 
-it("compares real joint day plans with discoverable keyboard review and private retirement", async () => {
+it.each(['refresh-first','watcher-first'])("compares real joint day plans with discoverable keyboard review and private retirement: %s", async (retirementOrder) => {
   const root = process.env.NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE;
   if (!root) throw Error("Explicit external evidence directory required");
-  const evidence = resolve(root, "coverage-plans");
+  const evidence = resolve(root, "coverage-plans",retirementOrder);
   await mkdir(evidence, { recursive: true });
   const requireRuntime = createRequire(resolve("tools/ci-browser-runtime/package.json"));
   const runtime = requireRuntime("playwright");
@@ -145,7 +145,12 @@ it("compares real joint day plans with discoverable keyboard review and private 
         phase = "live authority retirement";
         mark('revocation-start');
         await q("DELETE FROM employee_sessions WHERE employee_id='QAOWNER'");
-        mark('revocation-committed');mark('refresh-click-start');
+        mark('revocation-committed');
+        if(retirementOrder==='watcher-first'){
+          await expect.poll(()=>observation.events.some((event:unknown)=>typeof event==='object'&&event!==null&&'kind'in event&&event.kind==='authority-response'&&'status'in event&&[401,403].includes(Number(event.status)))).toBe(true);
+          await result.waitFor({state:'hidden'});mark('watcher-retired-before-click');
+        }
+        mark('refresh-click-start');
         await page.getByRole("button", { name: "Refresh history", exact: true }).first().click();
         mark('refresh-click-finished');
         await result.waitFor({ state: "hidden" });
