@@ -76,8 +76,8 @@ it('unmounts retained shell state and cancels late billing reads/handoffs in nat
    await expect.poll(()=>Boolean(held.handoff)).toBe(true);
    await page.getByRole('button',{name:'Leave recovery'}).click();
    await expect.poll(()=>page.evaluate(()=>(window.recoveryReceipt.aborted))).toContain('/api/commerce/handoff');
-   if(!held.handoff)throw Error('Held handoff request missing');
-   await held.handoff.fulfill({contentType:'application/json',body:JSON.stringify({url:'https://www.thevelani.com/pages/plans#handoff='+'a'.repeat(43)})}).catch(()=>undefined);
+   const unmountedHandoff=readHandoff(held);if(!unmountedHandoff)throw Error('Held handoff request missing');
+   await unmountedHandoff.fulfill({contentType:'application/json',body:JSON.stringify({url:'https://www.thevelani.com/pages/plans#handoff='+'a'.repeat(43)})}).catch(()=>undefined);
    await page.getByText('Operational pollers and parallel sheet',{exact:true}).waitFor();
    expect(navigations).toEqual([origin+'/fixture']);expect(externalRequests).toEqual([]);expect(await page.getByText('2 / 15',{exact:true}).count()).toBe(0);
    await page.getByRole('button',{name:'Enter recovery'}).click();await page.getByText('Access paused',{exact:true}).waitFor();delete held.handoff;
