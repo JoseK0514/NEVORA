@@ -1,0 +1,224 @@
+{
+  "note": "Fictional examples, not hosted observations. Dates are illustrative server authority values. Pending changes retain the existing CommerceStatus; there is no pending state/entitlement.",
+  "companyStatus": {
+    "trial": {
+      "state": "trial",
+      "operational": true,
+      "trialEndsAt": "2026-12-12T12:00:00.000Z",
+      "paidThrough": null,
+      "graceEndsAt": null,
+      "plan": "small",
+      "employeeLimit": 15,
+      "activeEmployees": 0,
+      "reason": null,
+      "billing": true,
+      "export": true
+    },
+    "paid": {
+      "state": "paid",
+      "operational": true,
+      "trialEndsAt": "2026-11-01T12:00:00.000Z",
+      "paidThrough": "2026-12-12T12:00:00.000Z",
+      "graceEndsAt": null,
+      "plan": "small",
+      "employeeLimit": 15,
+      "activeEmployees": 15,
+      "reason": null,
+      "billing": true,
+      "export": true
+    },
+    "grace": {
+      "state": "grace",
+      "operational": true,
+      "trialEndsAt": "2026-11-01T12:00:00.000Z",
+      "paidThrough": "2026-11-12T12:00:00.000Z",
+      "graceEndsAt": "2026-11-19T12:00:00.000Z",
+      "plan": "small",
+      "employeeLimit": 15,
+      "activeEmployees": 15,
+      "reason": "payment_failed",
+      "billing": true,
+      "export": true
+    },
+    "restricted": {
+      "state": "restricted",
+      "operational": false,
+      "trialEndsAt": "2026-11-01T12:00:00.000Z",
+      "paidThrough": null,
+      "graceEndsAt": null,
+      "plan": "small",
+      "employeeLimit": 15,
+      "activeEmployees": 15,
+      "reason": "trial_ended",
+      "billing": true,
+      "export": true
+    },
+    "limit_exceeded": {
+      "state": "restricted",
+      "operational": false,
+      "trialEndsAt": "2026-12-12T12:00:00.000Z",
+      "paidThrough": null,
+      "graceEndsAt": null,
+      "plan": "small",
+      "employeeLimit": 15,
+      "activeEmployees": 16,
+      "reason": "employee_limit_exceeded",
+      "billing": true,
+      "export": true
+    },
+    "pending_upgrade": {
+      "state": "trial",
+      "operational": true,
+      "trialEndsAt": "2026-12-12T12:00:00.000Z",
+      "paidThrough": null,
+      "graceEndsAt": null,
+      "plan": "small",
+      "employeeLimit": 15,
+      "activeEmployees": 15,
+      "reason": null,
+      "billing": true,
+      "export": true
+    },
+    "confirmed_team": {
+      "state": "paid",
+      "operational": true,
+      "trialEndsAt": "2026-12-12T12:00:00.000Z",
+      "paidThrough": "2026-12-12T12:00:00.000Z",
+      "graceEndsAt": null,
+      "plan": "team",
+      "employeeLimit": 30,
+      "activeEmployees": 16,
+      "reason": null,
+      "billing": true,
+      "export": true
+    },
+    "pending_downgrade": {
+      "state": "paid",
+      "operational": true,
+      "trialEndsAt": "2026-12-12T12:00:00.000Z",
+      "paidThrough": "2026-12-12T12:00:00.000Z",
+      "graceEndsAt": null,
+      "plan": "team",
+      "employeeLimit": 30,
+      "activeEmployees": 15,
+      "reason": null,
+      "billing": true,
+      "export": true
+    },
+    "renewed_small_over_limit": {
+      "state": "restricted",
+      "operational": false,
+      "trialEndsAt": "2026-12-12T12:00:00.000Z",
+      "paidThrough": "2026-12-12T12:00:00.000Z",
+      "graceEndsAt": null,
+      "plan": "small",
+      "employeeLimit": 15,
+      "activeEmployees": 16,
+      "reason": "employee_limit_exceeded",
+      "billing": true,
+      "export": true
+    }
+  },
+  "planChange": {
+    "upgrade": {
+      "url": "https://billing.stripe.com/p/fictional",
+      "plan": "team",
+      "effective": "after_payment"
+    },
+    "downgrade": {
+      "url": "https://billing.stripe.com/p/fictional",
+      "plan": "small",
+      "effective": "period_end"
+    }
+  },
+  "errors": [
+    {
+      "status": 400,
+      "body": {
+        "error": {
+          "code": "invalid_or_expired_link"
+        }
+      }
+    },
+    {
+      "status": 401,
+      "body": {
+        "error": {
+          "code": "unauthorized"
+        }
+      }
+    },
+    {
+      "status": 403,
+      "body": {
+        "error": {
+          "code": "owner_required"
+        }
+      }
+    },
+    {
+      "status": 403,
+      "body": {
+        "error": {
+          "code": "origin_denied"
+        }
+      }
+    },
+    {
+      "status": 409,
+      "body": {
+        "error": {
+          "code": "billing_binding_changed"
+        }
+      }
+    },
+    {
+      "status": 409,
+      "body": {
+        "error": {
+          "code": "idempotency_conflict"
+        }
+      }
+    },
+    {
+      "status": 409,
+      "body": {
+        "error": {
+          "code": "subscription_sync_pending"
+        }
+      }
+    },
+    {
+      "status": 429,
+      "body": {
+        "error": {
+          "code": "rate_limited"
+        }
+      }
+    },
+    {
+      "status": 503,
+      "body": {
+        "error": {
+          "code": "billing_status_unavailable"
+        }
+      }
+    },
+    {
+      "status": 503,
+      "body": {
+        "error": {
+          "code": "billing_unavailable"
+        }
+      }
+    },
+    {
+      "status": 503,
+      "body": {
+        "error": {
+          "code": "temporarily_unavailable"
+        }
+      }
+    }
+  ]
+}

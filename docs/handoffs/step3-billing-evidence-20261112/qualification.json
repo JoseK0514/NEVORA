@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "scope": "Bounded Cloud Step 3 billing patch/evidence only",
+  "base": "f6baaaa6d988f34fb1c3388d0e1fe4c410bcbfd5",
+  "baseTree": "5e1f99fd72b29b430c7e8f23e933830b72cc6d65",
+  "codeHead": "f640d7e3f90cb9f53c8a0e59dd52a0c112205125",
+  "codeTree": "8c0ffa665b01137c5730b683ec470c76710c8172",
+  "runtime": {
+    "node": "24.22.1",
+    "npm": "11.9.0",
+    "postgresql": "16.10",
+    "stripe": "23.1.0",
+    "pg": "8.23.1",
+    "next": "16.4.2",
+    "vitest": "5.0.5",
+    "platform": "Linux x64"
+  },
+  "transport": "Actual Stripe SDK with fictional fetch adapters; local synthetic webhook signatures; owned disposable loopback PostgreSQL only",
+  "step2": {
+    "sourceReconciled": true,
+    "completionReceiptAvailable": false,
+    "requiredReceipt": "/Users/josek0514/.codex/nevora-step2-20261112/delivery.json"
+  },
+  "integrationOwner": "Finish NEVORA SCRUM-190 handoff (01a1d175-7de0-7a80-b607-5418fde6ed50)",
+  "checks": [
+    {
+      "command": "env -u DATABASE_URL -u NEVORA_COMMERCE_DATABASE_URL npm run test:commerce:owned",
+      "log": "current/commerce-green.log",
+      "exitCode": 0,
+      "passed": 183,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "env -u DATABASE_URL -u NEVORA_COMMERCE_DATABASE_URL -u NEVORA_CONTROL_DATABASE_URL -u FUEL_TEST_DATABASE_URL node scripts/onboarding-owned.mjs --suite commerce",
+      "log": "current/onboarding-commerce.log",
+      "exitCode": 0,
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "npm test -- src/lib/commerce src/app/api/commerce",
+      "log": "current/company-http-recovery.log",
+      "exitCode": 0,
+      "passed": 67,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "npm run typecheck",
+      "log": "current/typecheck.log",
+      "exitCode": 0
+    },
+    {
+      "command": "npm run lint",
+      "log": "current/lint.log",
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 1
+    },
+    {
+      "command": "npm run build (spawned using releaseBuildEnvironment sanitizer)",
+      "log": "current/build.log",
+      "exitCode": 0
+    },
+    {
+      "command": "npm run check:development-sources",
+      "log": "current/development-sources.log",
+      "exitCode": 0,
+      "classifiedSources": 73,
+      "activeBranches": 3
+    },
+    {
+      "command": "node --test scripts/onboarding-inventory.check.mjs",
+      "log": "current/onboarding-inventory.log",
+      "exitCode": 0,
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "npm run check:onboarding-manifest",
+      "log": "current/onboarding-manifest.log",
+      "exitCode": 0
+    },
+    {
+      "command": "current parseCommerceStatus over contract-fixtures.json",
+      "log": "current/contract-fixtures.log",
+      "exitCode": 0,
+      "examples": 9
+    },
+    {
+      "command": "env -u DATABASE_URL -u NEVORA_COMMERCE_DATABASE_URL npm test",
+      "log": "current/unit.log",
+      "exitCode": 1,
+      "passed": 12779,
+      "failed": 5,
+      "skipped": 901,
+      "files": {
+        "passed": 853,
+        "failed": 3,
+        "skipped": 33,
+        "total": 889
+      },
+      "durationSeconds": 352.36,
+      "failures": [
+        {
+          "file": "src/test/manual-publication.test.ts",
+          "test": "qualifies the actual checked-in web manuals and PDFs against current application and source bytes",
+          "result": "Stale or foreign application content hash; changed application/test inventory requires final combined manual publication qualification"
+        },
+        {
+          "file": "src/lib/operations/managed-runtime.test.ts",
+          "test": "releases only confirmed own custody and rejects symlinked or public state directories",
+          "result": "Expected public directory rejection; environment umask0077 masks requested0755 to0700"
+        },
+        {
+          "file": "src/lib/operations/managed-runtime.test.ts",
+          "test": "runs the actual canonical CLI with a closed payroll gate and retains its structured failure receipt without database access",
+          "result": "5000ms test timeout; cause unresolved in unchanged operations code"
+        },
+        {
+          "file": "src/lib/operations/managed-runtime.test.ts",
+          "test": "drains the actual failed CLI receipt before removing shutdown handlers after a control database rejection",
+          "result": "5000ms test timeout; cause unresolved in unchanged operations code"
+        },
+        {
+          "file": "src/lib/operations/supervisor.test.ts",
+          "test": "stops an owned descendant before releasing process-group overlap protection",
+          "result": "Expected interrupted, received failed; process-group cause unresolved in unchanged operations code"
+        }
+      ]
+    }
+  ],
+  "sideEffects": {
+    "providerCalls": false,
+    "deployed": false,
+    "pushed": false,
+    "dispatchedCI": false,
+    "changedUI": false,
+    "createdBranch": false,
+    "hostedAcceptance": false,
+    "step4Executed": false
+  },
+  "gaps": [
+    "Universal durable actor/body idempotency is not satisfied by all legacy actions",
+    "Step 2 Mac completion receipt unavailable",
+    "Full unit gate failed: five named failures; four in unchanged operations/process modules and one changed-source manual publication gate. No waiver or speculative fix.",
+    "Hosted/provider/UI acceptance remains separate; no old finite allowance renewed"
+  ],
+  "completion": "BLOCKED for complete work-order acceptance; exact bounded patch ready for finisher integration review"
+}

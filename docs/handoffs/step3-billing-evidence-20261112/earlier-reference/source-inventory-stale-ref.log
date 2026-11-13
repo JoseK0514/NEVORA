@@ -1,0 +1,5 @@
+
+> fuel-scheduler@0.1.0 check:development-sources
+> node scripts/development-source-inventory.mjs
+
+Remote development has changes absent from this checkout
