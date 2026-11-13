@@ -16,6 +16,7 @@ import {withWorkspaceBinding} from '@/lib/workspace-routing/context.server';
 import {getWorkspaceDb} from '@/lib/workspace-routing/transport.server';
 import type {SessionMutationProof} from '@/lib/shift-changes/types';
 import {ensureSchedule,insertShift} from '@/lib/data/schedules';
+import {replaceAvailability} from '@/lib/data/availability';
 import {publishScheduleWithRevision} from '@/lib/data/publication-revisions';
 import {saveBreakType} from '@/lib/clocker/break-types.server';
 import {weekStartFor} from '@/lib/date-utils';
@@ -104,8 +105,9 @@ it('admits normal browser sign-in on the actual provisioned fictional-company da
   const bound=<T>(work:()=>Promise<T>)=>withWorkspaceBinding(binding,work);
   const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Puerto_Rico',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
   await bound(async()=>{
+   await replaceAvailability('EMP-1',Array.from({length:7},(_,dayOfWeek)=>({dayOfWeek,startTime:'08:00',endTime:'16:00'})),employeeProof,ex);
    const weekStart=weekStartFor(today),scheduleId=await ensureSchedule({locationId:home,weekStart,createdBy:'OWNER-1',proof:ownerProof},ex);
-   await insertShift({scheduleId,employeeId:'EMP-1',date:today,startTime:'00:00',endTime:'24:00',actorEmployeeId:'OWNER-1',proof:ownerProof},ex);
+   await insertShift({scheduleId,employeeId:'EMP-1',date:today,startTime:'08:00',endTime:'16:00',actorEmployeeId:'OWNER-1',proof:ownerProof},ex);
    expect((await publishScheduleWithRevision({locationId:home,weekStart,managerId:'OWNER-1',proof:ownerProof},ex)).published).toBe(true);
    await saveBreakType({employeeId:'OWNER-1',sessionTokenHash:ownerProof.sessionTokenHash},{name:'Step4 rest',category:'REST',targetMinutes:15,active:true,expectedVersion:0},ex);
   });
