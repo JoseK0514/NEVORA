@@ -9,6 +9,7 @@ import {withOwnedTestResources} from './owned-test-resources';
 import {activateInitialOwner} from '@/lib/onboarding/owner-activation.server';
 import {openOnboardingValue} from '@/lib/onboarding/crypto.server';
 import {verifyOwnedIsolatedRuntime} from './owned-isolated-runtime';
+import {startOwnedDomainProxy} from './owned-domain-proxy';
 
 it('admits normal browser sign-in on the actual provisioned fictional-company database',async()=>{
  const root=process.env.NEVORA_STEP4_EVIDENCE;if(!root)throw Error('Explicit Step4 evidence directory required');await mkdir(root,{recursive:true});
@@ -35,17 +36,11 @@ it('admits normal browser sign-in on the actual provisioned fictional-company da
   await company.resource.db.pool.query(`COMMENT ON DATABASE "${company.resource.db.name}" IS '${marker}'`);
   stages.push({stage:'substituted-company-identity-refused-before-launch',state:'passed'});
   const app=await createOwnedNextApp(join(root,'app'),options);defer(()=>app.close());
-  const browser=await runtime.chromium.launch({headless:true});defer(()=>browser.close());const context=await browser.newContext({serviceWorkers:'block'}),page=await context.newPage();page.setDefaultTimeout(15000);
+  const front='http://alpha.step4.invalid',proxy=await startOwnedDomainProxy(app.url,{[front]:company.origin});defer(()=>proxy.close());
+  const browser=await runtime.chromium.launch({headless:true});defer(()=>browser.close());const context=await browser.newContext({serviceWorkers:'block',proxy:{server:proxy.server}}),page=await context.newPage();page.setDefaultTimeout(15000);
   await context.tracing.start({screenshots:true,snapshots:true});defer(()=>context.tracing.stop({path:join(root,'admission-trace.zip')}));
-  await context.route('**/*',async(route:{request():{url():string;method():string;allHeaders():Promise<Record<string,string>>};abort(reason:string):Promise<void>;fetch(options:unknown):Promise<{status():number;headers():Record<string,string>}>;fulfill(options:unknown):Promise<void>})=>{
-   const url=new URL(route.request().url());if(url.origin!==company.origin){if(network.length<64)network.push({kind:'blocked',scheme:url.protocol,path:url.pathname,ownedLoopback:['127.0.0.1','localhost'].includes(url.hostname)});await route.abort('blockedbyclient');return;}
-   const headers=await route.request().allHeaders();delete headers['content-length'];headers.host=url.host;headers['x-forwarded-host']=url.host;headers['x-forwarded-proto']='https';
-   const response=await route.fetch({url:app.url+url.pathname+url.search,headers,maxRedirects:0});
-   const redirect=response.headers().location,action=response.headers()['x-action-redirect'];
-   if(network.length<64)network.push({path:url.pathname,method:route.request().method(),status:response.status(),...(redirect?{redirect:new URL(redirect,company.origin).origin===company.origin?'company':new URL(redirect,app.url).origin===app.url?'owned-loopback':'other',redirectPath:new URL(redirect,company.origin).pathname}:{}),...(action?{actionRedirectPath:new URL(action.split(';')[0],company.origin).pathname}: {})});
-   await route.fulfill({response});
-  });
-  await page.goto(company.origin+'/login');await page.getByLabel('Employee ID',{exact:true}).fill('OWNER-1');await page.getByLabel('Password',{exact:true}).fill(password);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(company.origin+'/app');
+  page.on('response',(response:{url():string;status():number;request():{method():string}})=>{const url=new URL(response.url());if(network.length<64&&!url.pathname.startsWith('/_next/'))network.push({path:url.pathname,method:response.request().method(),status:response.status(),ownedDomain:url.origin===front});});
+  await page.goto(front+'/login');await page.getByLabel('Employee ID',{exact:true}).fill('OWNER-1');await page.getByLabel('Password',{exact:true}).fill(password);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(front+'/app');
   expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='OWNER-1'")).rows).toEqual([{n:1}]);stages.push({stage:'normal-owner-browser-sign-in-on-provisioned-company',state:'passed'});
   admissionComplete=true;
  });
