@@ -2,6 +2,14 @@
 
 Prepared November 10, 2026 for non-native web closeout; responder assignment and targets approved November 11 by Jose. **Primary: Jose. Secondary: Ilianis Soto. Coverage: 24/7.** `support@thevelani.com` is the selected future failure-alert inbox. Actual mailbox/responder access and an alert-response rehearsal remain unverified. The public two-business-day support aim in `src/lib/legal/policies.ts` is separate from incident coverage. No schedule, subscription, paid service or alert is enabled by this handoff.
 
+November 12 Owner clarification under SCRUM-89: Ilianis is the office backup and
+has access to the main computers to reach the dashboards, secret store and inbox.
+Jose confirmed that no dated access/incident-acknowledgement drill record exists.
+Use that established workstation access path for the backup exercise; separate
+remote accounts or a different backup assignment are not new acceptance
+requirements. The access arrangement is Owner-confirmed, while successful access,
+alert receipt, acknowledgement, escalation and recovery remain unexercised.
+
 Owner-approved internal acknowledgement targets: critical
 incidents such as widespread sign-in outage or blocked payroll processing within
 15 minutes; lower-severity incidents within 1 hour. Acknowledgement means a responder
