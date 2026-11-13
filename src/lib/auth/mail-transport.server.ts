@@ -22,7 +22,15 @@ export function validatedMailTransport(env:Record<string,string|undefined>=proce
   return {origin:origin.origin,async sendRegistered(email:string,subject:string,text:string) {
    if(!validRegisteredEmail(email))throw Error('Invalid registered channel');
    if(approvedRecipient&&email.toLowerCase()!==approvedRecipient)throw new StagingRecipientDenied();
-   return transport.sendMail({from,to:email,subject,text,disableFileAccess:true,disableUrlAccess:true});
+   // Socket inactivity limits do not bound a progressing SMTP conversation.
+   // A deadline is an uncertain outcome, not proof of cancellation or rejection.
+   let timer:ReturnType<typeof setTimeout>|undefined;
+   try{
+    const deadline=new Promise<never>((_,reject)=>{
+     timer=setTimeout(()=>reject(Object.assign(new Error('Email delivery outcome is unknown'),{code:'smtp_deadline_exceeded'})),15000);
+    });
+    return await Promise.race([deadline,Promise.resolve().then(()=>transport.sendMail({from,to:email,subject,text,disableFileAccess:true,disableUrlAccess:true}))]);
+   }finally{if(timer!==undefined)clearTimeout(timer);}
   }};
  } catch {return null;}
 }
