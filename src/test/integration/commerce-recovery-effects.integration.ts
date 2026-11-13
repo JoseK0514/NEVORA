@@ -26,7 +26,7 @@ it('unmounts retained shell state and cancels late billing reads/handoffs in nat
    const browser=await runtime[engine].launch({headless:true});defer(async()=>{await browser.close();closed.push(engine);});
    const context=await browser.newContext({viewport:{width:390,height:844}}),page=await context.newPage();page.setDefaultTimeout(10000);
    page.on('pageerror',(error:Error)=>errors.push(engine+':'+error.message));
-   let holdStatus=true;const held:{status?:FixtureRoute;handoff?:FixtureRoute}={},navigations:string[]=[],externalRequests:string[]=[];let recoveryDocuments=0;
+   let holdStatus=true,responseLifetime=15000;const held:{status?:FixtureRoute;handoff?:FixtureRoute}={},navigations:string[]=[],externalRequests:string[]=[];let recoveryDocuments=0;
    page.on('framenavigated',(frame:{url():string})=>{if(frame===page.mainFrame())navigations.push(frame.url());});
    await context.route('**/*',async(route:FixtureRoute)=>{
     const url=new URL(route.request().url());
@@ -37,7 +37,7 @@ it('unmounts retained shell state and cancels late billing reads/handoffs in nat
     if(url.pathname==='/fixture'){await route.fulfill({contentType:'text/html',body:'<!doctype html><html><head><style>'+tokens+css+'</style></head><body><div id="root"></div></body></html>'});return;}
     if(url.pathname==='/api/commerce/status'){
      if(holdStatus){held.status=route;return;}
-     await route.fulfill({contentType:'application/json',body:JSON.stringify(status)});return;
+     await route.fulfill({contentType:'application/json',body:JSON.stringify({...status,validForMs:responseLifetime})});return;
     }
     if(url.pathname==='/api/commerce/handoff'){held.handoff=route;return;}
     await route.abort('blockedbyclient');
@@ -61,6 +61,17 @@ it('unmounts retained shell state and cancels late billing reads/handoffs in nat
    const abortsBefore=await page.evaluate(()=>window.recoveryReceipt.aborted.filter(path=>path==='/api/commerce/status').length);await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await expect.poll(()=>page.evaluate(()=>window.recoveryReceipt.aborted.filter(path=>path==='/api/commerce/status').length)).toBe(abortsBefore+1);
    const foregroundStatus=readStatus(held);if(!foregroundStatus)throw Error('Held foreground read missing');await foregroundStatus.fulfill({contentType:'application/json',body:JSON.stringify(status)}).catch(()=>undefined);expect(await page.getByText('2 / 15',{exact:true}).count()).toBe(0);
    holdStatus=false;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.getByText('Access paused',{exact:true}).waitFor();
+   // The original disclosure deadline must also cancel an already pending
+   // handoff; a late billing reply cannot navigate from retired presentation.
+   responseLifetime=1000;await page.getByRole('button',{name:'Refresh status',exact:true}).click();await page.getByText('2 / 15',{exact:true}).waitFor();delete held.handoff;
+   const handoffAbortsBefore=await page.evaluate(()=>window.recoveryReceipt.aborted.filter(path=>path==='/api/commerce/handoff').length);
+   await page.getByRole('button',{name:'Open billing in Velani'}).click();await expect.poll(()=>Boolean(held.handoff)).toBe(true);
+   await page.getByText('Billing status is unavailable. Try again in a moment.',{exact:true}).waitFor();
+   await expect.poll(()=>page.evaluate(()=>window.recoveryReceipt.aborted.filter(path=>path==='/api/commerce/handoff').length)).toBe(handoffAbortsBefore+1);
+   const expiredHandoff=readHandoff(held);if(!expiredHandoff)throw Error('Expired held handoff missing');
+   await expiredHandoff.fulfill({contentType:'application/json',body:JSON.stringify({url:'https://www.thevelani.com/pages/plans#handoff='+'a'.repeat(43)})}).catch(()=>undefined);
+   expect(await page.getByText('2 / 15',{exact:true}).count()).toBe(0);expect(externalRequests).toEqual([]);expect(navigations).toEqual([origin+'/fixture']);
+   responseLifetime=15000;await page.getByRole('button',{name:'Refresh status',exact:true}).click();await page.getByText('Access paused',{exact:true}).waitFor();delete held.handoff;
    await page.getByRole('button',{name:'Open billing in Velani'}).click();await page.getByRole('button',{name:'Opening billing…',exact:true}).waitFor();
    await expect.poll(()=>Boolean(held.handoff)).toBe(true);
    await page.getByRole('button',{name:'Leave recovery'}).click();
@@ -79,7 +90,7 @@ it('unmounts retained shell state and cancels late billing reads/handoffs in nat
    expect(externalRequests).toEqual(['https://www.thevelani.com/pages/plans']);
    await page.goto(origin+'/fixture?initial=recovery');await page.addScriptTag({content:js});await page.getByText('Access paused',{exact:true}).waitFor();
    await page.getByRole('button',{name:'Leave recovery'}).click();await page.getByRole('heading',{name:'Fresh recovery exit document',exact:true}).waitFor();expect(recoveryDocuments).toBe(2);
-   checks.push(engine+': healthy → recovery → healthy unmounts pollers/sheet; loading disables action; explicit blur/focus fixture aborts and fences a held read then obtains fresh status; late read/handoff abort with no stale status or attempted navigation; valid trusted handoff navigates; recovery-first exit reloads a fresh document');
+   checks.push(engine+': healthy → recovery → healthy unmounts pollers/sheet; loading disables action; explicit blur/focus fixture aborts and fences a held read then obtains fresh status; original disclosure expiry cancels a held handoff and fences late navigation; late read/handoff abort with no stale status or attempted navigation; valid trusted handoff navigates; recovery-first exit reloads a fresh document');
    await context.close();
   }
   expect(errors).toEqual([]);passed=true;
