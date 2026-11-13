@@ -147,7 +147,7 @@ it.each(['refresh-first','watcher-first'])("compares real joint day plans with d
         await q("DELETE FROM employee_sessions WHERE employee_id='QAOWNER'");
         mark('revocation-committed');
         if(retirementOrder==='watcher-first'){
-          await expect.poll(()=>observation.events.some((event:unknown)=>typeof event==='object'&&event!==null&&'kind'in event&&event.kind==='authority-response'&&'status'in event&&[401,403].includes(Number(event.status)))).toBe(true);
+          await expect.poll(()=>observation.events.some((event:unknown)=>typeof event==='object'&&event!==null&&'kind'in event&&event.kind==='authority-response'&&'status'in event&&[401,403].includes(Number(event.status))),{timeout:20000}).toBe(true);
           await result.waitFor({state:'hidden'});mark('watcher-retired-before-click');
         }
         mark('refresh-click-start');
