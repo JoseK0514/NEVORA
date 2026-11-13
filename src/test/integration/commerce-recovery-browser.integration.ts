@@ -30,7 +30,7 @@ it('renders actual recovery routes with current sessions, bounded status reads a
    const browser=await runtime[engine].launch({headless:true});defer(()=>browser.close());
    const context=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'}),page=await context.newPage();page.setDefaultTimeout(15000);
    const requests:string[]=[];let mode='actual';
-   const status={state:'restricted',operational:false,trialEndsAt:'2026-11-12T12:00:00.000Z',paidThrough:null,graceEndsAt:null,plan:'small',employeeLimit:15,activeEmployees:2,reason:'trial_ended',billing:true,export:true};
+   const status={state:'restricted',operational:false,trialEndsAt:'2026-11-12T12:00:00.000Z',paidThrough:null,graceEndsAt:null,plan:'small',employeeLimit:15,activeEmployees:2,reason:'trial_ended',billing:true,export:true,observedAt:new Date().toISOString(),validForMs:15000};
    page.on('pageerror',(error:Error)=>errors.push(engine+':'+error.message.slice(0,200)));
    page.on('request',(request:{url():string})=>{requests.push(new URL(request.url()).pathname);});
    await context.route('**/*',async(route:{request():{url():string};abort(reason?:string):Promise<void>;continue():Promise<void>;fulfill(options:unknown):Promise<void>})=>{

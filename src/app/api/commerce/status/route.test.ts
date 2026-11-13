@@ -46,6 +46,7 @@ const authority = () => ({
 });
 const request = (headers: HeadersInit = {}) =>
   new Request("https://company.example.test/api/commerce/status", { headers });
+function expectPresentation(value:Record<string,unknown>){const {observedAt,validForMs,...status}=value;expect(status).toEqual(presentation());expect(typeof observedAt).toBe('string');expect(new Date(String(observedAt)).toISOString()).toBe(observedAt);expect(validForMs).toBeGreaterThan(0);expect(validForMs).toBeLessThanOrEqual(15000);}
 beforeEach(() => {
   vi.stubEnv("NEVORA_COMMERCE_ENABLED", "true");
   vi.stubEnv("NEVORA_COMMERCE_API_ORIGIN", "https://billing.example.test");
@@ -101,10 +102,16 @@ it("denies authority that expires during the final Owner binding lookup", async 
   deps.query.mockResolvedValueOnce(binding()).mockImplementationOnce(async()=>{now+=60001;return binding();});
   expect((await GET(request())).status).toBe(503);
 });
+it('reduces the private display lifetime by time spent in the final Owner lookup',async()=>{
+ let now=Date.now();vi.spyOn(Date,'now').mockImplementation(()=>now);
+ vi.stubGlobal('fetch',async()=>Response.json({...authority(),validUntil:now+500}));
+ deps.query.mockResolvedValueOnce(binding()).mockImplementationOnce(async()=>{now+=400;return binding();});
+ const result=await GET(request());expect(result.status).toBe(200);expect((await result.json()).validForMs).toBe(100);
+});
 it("returns only the authenticated Owner presentation without serializing installation or Stripe identity", async () => {
   const response = await GET(request({ "sec-fetch-site": "same-origin" }));
   expect(response.status).toBe(200);
-  expect(await response.json()).toEqual(presentation());
+  expectPresentation(await response.json());
   expect(response.headers.get("cache-control")).toBe("no-store");
 });
 it("requires sign-in", async () => {
@@ -121,7 +128,7 @@ it("uses the canonical transport Host when Next reconstructs an internal request
     }),
   );
   expect(response.status).toBe(200);
-  expect(await response.json()).toEqual(presentation());
+  expectPresentation(await response.json());
 });
 it("does not trust a forwarded host to authorize a foreign transport Host", async () => {
   const response = await GET(
