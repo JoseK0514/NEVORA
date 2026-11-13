@@ -2,8 +2,9 @@ import {Pool} from 'pg';
 import {readFile,lstat,realpath} from 'node:fs/promises';
 import {join} from 'node:path';
 import {request} from 'node:http';
+import {financeBridgeEnvironment,readOwnedFinancialClock,type OwnedFinanceBridge} from './owned-isolated-finance';
 export type OwnedIsolatedTarget={uri:string;connectionUrl:string;name:string;oid:number;marker:string};
-export type OwnedIsolatedRuntime={environment:'test';controlDatabaseUrl:string;encryptionKey:string;tokenKey:string;portalBaseDomain:string;origins:string[];targets:OwnedIsolatedTarget[]};
+export type OwnedIsolatedRuntime={environment:'test';controlDatabaseUrl:string;encryptionKey:string;tokenKey:string;portalBaseDomain:string;origins:string[];targets:OwnedIsolatedTarget[];finance?:{bridge:OwnedFinanceBridge;bindingKey:string}};
 function fail():never{throw Error('Invalid owned isolated browser runtime');}
 const key=(value:string)=>/^[A-Za-z0-9_-]{43}$/.test(value)&&Buffer.from(value,'base64url').length===32;
 function local(raw:string){const u=new URL(raw);if(!['postgres:','postgresql:'].includes(u.protocol)||u.hostname!=='127.0.0.1'||!u.port||!u.username||!u.password||u.search||u.hash)fail();return u;}
@@ -19,7 +20,8 @@ export function ownedIsolatedEnvironment(options?:OwnedIsolatedRuntime):Record<s
   if(!/^nv_app_[a-f0-9]{32}$/.test(target.name)||actual.pathname!=='/'+target.name||actual.port!==control.port||!/^nv_app_[a-f0-9]{24}$/.test(actual.username)||!Number.isSafeInteger(target.oid)||target.oid<=0||!/^nevora-step4-owned:[a-f0-9-]{36}$/.test(target.marker)||!['postgres:','postgresql:'].includes(uri.protocol)||!/^ep-[a-f0-9]+\.us-east-1\.aws\.neon\.tech$/.test(uri.hostname)||uri.username!==actual.username||uri.password!==actual.password||uri.pathname!==actual.pathname||uri.hash||seen.has(target.uri))fail();
   seen.add(target.uri);
  }
- return {NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_CONTROL_DATABASE_URL:c.controlDatabaseUrl,NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:c.encryptionKey,NEVORA_WORKSPACE_TOKEN_SECRET:c.tokenKey,NEVORA_PORTAL_BASE_DOMAIN:c.portalBaseDomain,NEVORA_OWNED_ISOLATED_TARGETS:JSON.stringify(c.targets),NEVORA_OWNED_ISOLATED_ORIGINS:JSON.stringify(c.origins)};
+ if(c.finance&&(!key(c.finance.bindingKey)||[c.encryptionKey,c.tokenKey].includes(c.finance.bindingKey)))fail();
+ return {NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_CONTROL_DATABASE_URL:c.controlDatabaseUrl,NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:c.encryptionKey,NEVORA_WORKSPACE_TOKEN_SECRET:c.tokenKey,NEVORA_PORTAL_BASE_DOMAIN:c.portalBaseDomain,NEVORA_OWNED_ISOLATED_TARGETS:JSON.stringify(c.targets),NEVORA_OWNED_ISOLATED_ORIGINS:JSON.stringify(c.origins),...financeBridgeEnvironment(c.finance?.bridge),...(c.finance?{NEVORA_COMMERCE_BINDING_KEY:c.finance.bindingKey}:{})};
 }
 /** Check the existing invocation marker and actual SQL identities before any
  * application process launches. This neither provisions nor adopts a database. */
@@ -35,6 +37,7 @@ export async function verifyOwnedIsolatedRuntime(options:OwnedIsolatedRuntime){
  for(const target of options.targets){const pool=new Pool({connectionString:target.connectionUrl,max:1,connectionTimeoutMillis:2000,statement_timeout:2000});
   try{const row=(await pool.query("SELECT current_user role,datname name,oid::int oid,shobj_description(oid,'pg_database') marker FROM pg_database WHERE datname=current_database()")).rows[0];if(row?.name!==target.name||row.oid!==target.oid||row.marker!==target.marker||row.role!==new URL(target.uri).username)fail();}finally{await pool.end();}
  }
+ if(options.finance)await readOwnedFinancialClock(options.finance.bridge,options.origins[0]);
 }
 export function isolatedTransportAdapter(original:string){
  const from="from '@neondatabase/serverless'";

@@ -10,6 +10,11 @@ it('ordinary browser fixtures ignore ambient isolated/provider credentials',()=>
 it('accepts explicit fictional loopback mappings without manufacturing a verified SQL identity',()=>{
  const value=options(),env=ownedIsolatedEnvironment(value);expect(env.NEVORA_WORKSPACE_MODE).toBe('isolated');expect(env.NEVORA_ONBOARDING_ENVIRONMENT).toBe('test');expect(JSON.parse(env.NEVORA_OWNED_ISOLATED_TARGETS)).toEqual(value.targets);expect(env.DATABASE_URL).toBeUndefined();
 });
+it('enables financial authority only from an explicit owned bridge and separate fictional enrollment key',()=>{
+ const value=Object.assign(options(),{finance:{bridge:{origin:'https://billing.step4.example.invalid',upstream:'http://127.0.0.1:54322',capability:'a'.repeat(64)},bindingKey:Buffer.alloc(32,23).toString('base64url')}});
+ const env=ownedIsolatedEnvironment(value);expect(env.NEVORA_COMMERCE_ENABLED).toBe('true');expect(env.NEVORA_COMMERCE_API_ORIGIN).toBe(value.finance.bridge.origin);expect(env.NEVORA_COMMERCE_BINDING_KEY).toBe(value.finance.bindingKey);
+ value.finance.bindingKey=value.encryptionKey;expect(()=>ownedIsolatedEnvironment(value)).toThrow();
+});
 it.each(['live-mode','remote-control','foreign-control','remote-company','foreign-company','different-server','wrong-role','wrong-secret','missing-marker','invalid-oid','real-domain','foreign-origin','duplicate-uri','root-key-reuse'] as const)('rejects an unowned browser-runtime selector: %s',change=>{
  const value=options();
  if(change==='live-mode')Object.assign(value,{environment:'production'});

@@ -2,7 +2,7 @@ import {it,expect,vi} from 'vitest';
 import {createRequire} from 'node:module';
 import {randomUUID} from 'node:crypto';
 import {resolve,join} from 'node:path';
-import {mkdir,writeFile} from 'node:fs/promises';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import {onboardingJourneyFixture} from './onboarding-journey-fixture';
 import {createOwnedNextApp} from './owned-next-app';
 import {withOwnedTestResources} from './owned-test-resources';
@@ -28,19 +28,39 @@ import {saveNativeProfile} from '@/lib/payroll/native/profiles.server';
 import {workerOnce} from '@/lib/payroll/worker';
 import {input as nativeInput} from '@/lib/payroll/native/fixtures.test-support';
 import {fictionalWorkweekPolicy} from '@/lib/payroll/native/workweek-fixtures.test-support';
+import {freshOnboardingDatabase} from './onboarding-fixture';
+import {CommerceStore,type Business} from '../../../services/commerce/store';
+import {createCommerce} from '../../../services/commerce/service';
+import {StripeBilling} from '../../../services/commerce/stripe';
+import {StripeFixture} from '../../../services/commerce/stripe-fixture';
+import {startOwnedFinanceBridge,ownedHttpRequest} from './owned-isolated-finance';
 
 it('admits normal browser sign-in on the actual provisioned fictional-company database',async()=>{
  const root=process.env.NEVORA_STEP4_EVIDENCE;if(!root)throw Error('Explicit Step4 evidence directory required');await mkdir(root,{recursive:true});
  const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json'))('playwright');
- const stages:{stage:string;state:string}[]=[],network:unknown[]=[],browserDiagnostics:Record<string,unknown>={},f=await onboardingJourneyFixture();let admissionComplete=false,networkDropped=0;
+ const stages:{stage:string;state:string}[]=[],network:unknown[]=[],browserDiagnostics:Record<string,unknown>={};let admissionComplete=false,networkDropped=0;
  await withOwnedTestResources(async defer=>{
   defer(()=>writeFile(join(root,'report.json'),JSON.stringify({complete:false,admissionComplete,remaining:'Complete company lifecycle and resilience remain pending after browser admission.',stages,network,networkDropped,browserDiagnostics,scope:'Combined source; owned provisioning and actual browser password sign-in. HTTP domain and Neon SQL transport adapters are local; no hosted/TLS/provider acceptance.'},null,2)));
-  defer(()=>f.close());
+  const catalog=await freshOnboardingDatabase();defer(()=>catalog.close());await catalog.pool.query(await readFile(new URL('../../../services/commerce/schema.sql',import.meta.url),'utf8'));
+  const store=new CommerceStore(catalog.pool,Buffer.alloc(32,19)),bindingKey=Buffer.alloc(32,23).toString('base64url'),provider=new StripeFixture();
+  const f=await onboardingJourneyFixture({commerce:{key:bindingKey,workerKey:Buffer.alloc(32,24).toString('base64url'),enroll:input=>store.enrollWorkspace(input)}});defer(()=>f.close());
   defer(()=>{vi.unstubAllEnvs();});
   for(const [name,value] of Object.entries({NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_PORTAL_BASE_DOMAIN:f.config.portalBaseDomain,NEVORA_CONTROL_DATABASE_URL:f.db.connectionUrl,NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:f.config.encryptionKey,NEVORA_WORKSPACE_TOKEN_SECRET:f.config.workspaceTokenKey,NEVORA_PAYROLL_ENABLED:'true'}))vi.stubEnv(name,value);
   const company=await f.createCompany('step4-alpha','step4-alpha@example.invalid'),grant=await company.grant(),password='Fictional Step4 Owner password 123!';
   expect((await activateInitialOwner(company.binding,{schemaVersion:1,operationId:randomUUID(),proof:grant.proof,password})).state).toBe('activated');expect((await company.work()).state).toBe('complete');
   expect((await company.resource.db.pool.query('SELECT count(*)::int n FROM employee_sessions')).rows).toEqual([{n:0}]);stages.push({stage:'registration-provisioning-original-owner-activation',state:'passed'});
+  const second=await f.createCompany('step4-beta','step4-beta@example.invalid'),secondGrant=await second.grant();expect((await activateInitialOwner(second.binding,{schemaVersion:1,operationId:randomUUID(),proof:secondGrant.proof,password})).state).toBe('activated');expect((await second.work()).state).toBe('complete');
+  const companies=[company,second],apps=new Map<string,Awaited<ReturnType<typeof createOwnedNextApp>>>(),realFetch=globalThis.fetch,realNow=Date.now;
+  const headcount=async(business:Business)=>{const current=companies.find(c=>c.row.workspace_id===business.id);if(!current)throw Error('Unowned billing company');return Number((await current.appPool.query('SELECT count(*)::int n FROM employees WHERE active')).rows[0].n);};
+  const finance=await startOwnedFinanceBridge(async request=>{
+   const bearer=request.headers.get('authorization')?.replace(/^Bearer /,'')??'',id=request.headers.get('x-nevora-installation')??(await store.tokenOwner(bearer))?.businessId,current=companies.find(c=>c.row.workspace_id===id);if(!current)return Response.json({error:{code:'unauthorized'}},{status:401});
+   return createCommerce({store,origin:'https://billing.step4.example.invalid',uiOrigin:'https://www.thevelani.com',allowedOrigins:['https://www.thevelani.com'],provisioningMode:'onboarding',now:()=>realNow()+finance.offset(current.origin),headcount,billing:billingFor(current)})(request,'127.0.0.1');
+  });defer(()=>finance.close());for(const current of companies)finance.register(current.origin);
+  const billingFor=(current:typeof company)=>new StripeBilling(store,provider.client,{origin:'https://www.thevelani.com',prices:{small:'price_small',team:'price_team'},webhookSecret:'whsec_fictional_step4_only',live:false,now:()=>realNow()+finance.offset(current.origin),facts:headcount});
+  // Reverse transport reaches the original company authority endpoints. It
+  // carries their real SQL-authenticated responses without manufacturing facts.
+  globalThis.fetch=async(input,init)=>{const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url),app=apps.get(url.origin);if(!app||!['/api/commerce/facts','/api/commerce/policy','/api/commerce/owner'].includes(url.pathname)||url.search||input instanceof Request)throw Error('Unowned reverse financial request');return ownedHttpRequest(app.url,url.pathname,url.origin,init);};defer(()=>{globalThis.fetch=realFetch;});
+  const originalTrials=(await catalog.pool.query('SELECT id,trial_started_at,trial_ends_at FROM commerce.businesses ORDER BY id')).rows;expect(originalTrials).toHaveLength(2);for(const row of originalTrials)expect(row.trial_ends_at.getTime()-row.trial_started_at.getTime()).toBe(30*86400000);
   const marker='nevora-step4-owned:'+randomUUID();await company.resource.db.pool.query(`COMMENT ON DATABASE "${company.resource.db.name}" IS '${marker}'`);
   const oid=Number((await company.resource.db.pool.query('SELECT oid FROM pg_database WHERE datname=current_database()')).rows[0].oid);
   const secrets=(await f.db.pool.query("SELECT * FROM nevora_onboarding.workspace_secrets WHERE workspace_id=$1 AND role_kind='APP' AND active",[company.row.workspace_id])).rows;
@@ -49,7 +69,7 @@ it('admits normal browser sign-in on the actual provisioned fictional-company da
    const target=new URL(company.resource.db.connectionUrl),source=new URL(uri);target.username=source.username;target.password=source.password;
    return {uri,connectionUrl:target.href,name:company.resource.db.name,oid,marker};
   });
-  const options={emptyDatabase:true,isolatedWorkspaces:{environment:'test' as const,controlDatabaseUrl:f.db.connectionUrl,encryptionKey:f.config.encryptionKey,tokenKey:f.config.workspaceTokenKey,portalBaseDomain:f.config.portalBaseDomain,origins:[company.origin],targets}};
+  const options={emptyDatabase:true,isolatedWorkspaces:{environment:'test' as const,controlDatabaseUrl:f.db.connectionUrl,encryptionKey:f.config.encryptionKey,tokenKey:f.config.workspaceTokenKey,portalBaseDomain:f.config.portalBaseDomain,origins:[company.origin],targets,finance:{bridge:finance.bridge,bindingKey}}};
   await verifyOwnedIsolatedRuntime(options.isolatedWorkspaces);
   await company.resource.db.pool.query(`COMMENT ON DATABASE "${company.resource.db.name}" IS 'foreign-marker'`);
   await expect(verifyOwnedIsolatedRuntime(options.isolatedWorkspaces)).rejects.toThrow('Invalid owned isolated browser runtime');
@@ -57,6 +77,7 @@ it('admits normal browser sign-in on the actual provisioned fictional-company da
   stages.push({stage:'substituted-company-identity-refused-before-launch',state:'passed'});
   const smtp=await createOwnedSmtp();defer(()=>smtp.close());
   const app=await createOwnedNextApp(join(root,'app'),{...options,invitationSmtpPort:smtp.port,payrollEnabled:true,clockerPunchEnabled:true,clockerPinKey:Buffer.alloc(32,61).toString('hex')});defer(()=>app.close());
+  apps.set(company.origin,app);
   const front='http://alpha.step4.localhost',proxy=await startOwnedDomainProxy(app.url,{[front]:company.origin});defer(()=>proxy.close());
   const browser=await runtime.chromium.launch({headless:true});defer(()=>browser.close());const context=await browser.newContext({serviceWorkers:'block',proxy:{server:proxy.server}}),page=await context.newPage();page.setDefaultTimeout(15000);
   await context.tracing.start({screenshots:true,snapshots:true});defer(()=>context.tracing.stop({path:join(root,'admission-trace.zip')}));
@@ -65,6 +86,7 @@ it('admits normal browser sign-in on the actual provisioned fictional-company da
   expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='OWNER-1'")).rows).toEqual([{n:1}]);stages.push({stage:'normal-owner-browser-sign-in-on-provisioned-company',state:'passed'});
   const setup=await page.evaluate(async()=>{const response=await fetch('/api/onboarding/state',{credentials:'same-origin',cache:'no-store'});return {status:response.status,body:await response.json()};});
   expect(setup.status).toBe(200);expect(setup.body.state).toBe('ready');expect(setup.body.configuration.people.map((person:{id:string})=>person.id)).toContain('OWNER-1');stages.push({stage:'actual-owner-setup-http-and-company-authority',state:'passed'});
+  const billingStatus=await page.evaluate(async()=>{const response=await fetch('/api/commerce/status',{credentials:'same-origin',cache:'no-store'});return {status:response.status,body:await response.json()};});expect(billingStatus.status).toBe(200);expect(billingStatus.body.state).toBe('trial');expect(billingStatus.body.operational).toBe(true);stages.push({stage:'actual-enrolled-catalog-trial-and-company-owner-browser-billing-authority',state:'passed'});
   const call=async(path:string,body?:unknown,headers:Record<string,string>={})=>page.evaluate(async({path,body,headers}:{path:string;body?:unknown;headers:Record<string,string>})=>{const response=await fetch(path,{method:body===undefined?'GET':'POST',credentials:'same-origin',cache:'no-store',headers:{...(body===undefined?{}:{'content-type':'application/json'}),...headers},...(body===undefined?{}:{body:JSON.stringify(body)})});return {status:response.status,body:await response.json()};},{path,body,headers});
   let current=setup.body;
   const refresh=async()=>{const response=await call('/api/onboarding/state');expect(response.status).toBe(200);current=response.body;};
@@ -118,7 +140,7 @@ it('admits normal browser sign-in on the actual provisioned fictional-company da
   const code=await page.getByRole('textbox',{name:/^Setup code · expires /}).inputValue();expect(code).toBeTruthy();
   const tabletContext=await browser.newContext({serviceWorkers:'block',proxy:{server:proxy.server}}),tablet=await tabletContext.newPage();tablet.setDefaultTimeout(15000);
   observe(tablet);
-  await tablet.goto(front+'/clocker/'+locationKey);await tablet.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await tablet.getByRole('button',{name:'Connect tablet',exact:true}).click();
+  await tablet.goto(front+'/clocker/'+locationKey);const setupInput=tablet.getByRole('textbox',{name:'Setup code',exact:true});expect(code).toMatch(/^nw1_v1\./);expect(Number(await setupInput.getAttribute('maxlength'))).toBeGreaterThanOrEqual(code.length);await setupInput.fill(code);await tablet.getByRole('button',{name:'Connect tablet',exact:true}).click();
   const idle=async()=>{await tablet.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await tablet.waitForFunction(()=>{const input=document.querySelector('input[name=pin]');return input&&!input.matches(':disabled');});};
   const verify=async()=>{await idle();for(const digit of '2468')await tablet.getByRole('button',{name:'Number '+digit,exact:true}).click();await tablet.getByRole('button',{name:'Continue',exact:true}).click();};
   const done=async(action:string)=>{await tablet.getByRole('heading',{name:action+' Recorded',exact:true}).waitFor();await tablet.getByRole('button',{name:'Done',exact:true}).click();await idle();};
