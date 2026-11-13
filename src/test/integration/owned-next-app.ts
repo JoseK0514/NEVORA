@@ -302,7 +302,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
       // Recovery fixture intentionally has no commerce credential/provider binding.
       // Exact page exceptions still use genuine local session/role admission.
       NEVORA_COMMERCE_ENABLED:options.centralBillingApiOrigin||options.isolatedWorkspaces?.finance||options.commerceRecoveryEnabled===true?'true':'false',
-      ...(options.centralBillingApiOrigin?{NEVORA_COMMERCE_ENVIRONMENT:'development',NEVORA_COMMERCE_API_ORIGIN:options.centralBillingApiOrigin}:{}),
+      ...(options.centralBillingApiOrigin?{NEVORA_BILLING_ENVIRONMENT:'development',NEVORA_BILLING_API_ORIGIN:options.centralBillingApiOrigin}:{}),
       NEVORA_MOBILE_ACCESS_SUPPORT_ENABLED:options.mobileSupportEnabled===true?'true':'false',
       ...ownedPayrollEnvironment(options),
       ...advisorEnvironment,

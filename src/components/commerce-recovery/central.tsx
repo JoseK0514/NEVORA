@@ -14,6 +14,7 @@ const empty:PrivatePanelState<CentralRead>={snapshot:null,paused:true,refreshing
 export function CentralBilling({apiOrigin,initialLanguage}:{apiOrigin:string|null;initialLanguage:BillingLanguage}){
  const [lang,setLang]=useState(initialLanguage),[link,setLink]=useState<'entry'|'loading'|'ready'|'denied'|'unavailable'>('loading'),[panel,setPanel]=useState(empty),[opening,setOpening]=useState(false),[problem,setProblem]=useState<BillingResult['kind']|null>(null);
  const client=useRef<Client|null>(null),controls=useRef<ReturnType<typeof createPrivateSnapshotController<CentralRead>>|null>(null),current=useRef(empty),mutation=useRef<AbortController|null>(null),proof=useRef<string|null>(null),captured=useRef(false),generation=useRef(0);
+ const alert=useRef<HTMLParagraphElement|null>(null);
  const foreground=()=>document.visibilityState!=='hidden'&&navigator.onLine&&document.hasFocus();
  useEffect(()=>{
   const setup=++generation.current;let active=true;
@@ -37,6 +38,7 @@ export function CentralBilling({apiOrigin,initialLanguage}:{apiOrigin:string|nul
   },0);
   return()=>{active=false;clearTimeout(start);cancel();controller.stop();transport.dispose();current.current=empty;if(client.current===transport)client.current=null;if(controls.current===controller)controls.current=null;document.removeEventListener('visibilitychange',visibility);for(const event of ['blur','offline'])window.removeEventListener(event,pause);for(const event of ['focus','online','storage','pageshow'])window.removeEventListener(event,resume);window.removeEventListener('pagehide',retire);queueMicrotask(()=>{if(generation.current===setup)proof.current=null;});};
  },[apiOrigin]);
+ useEffect(()=>{if(problem&&foreground())alert.current?.focus();},[problem]);
  const ready=panel.snapshot?.state==='ready'?panel.snapshot:null,t=words[lang],pending=client.current?.hasPending()??false;
  async function financial(action?:BillingAction){
   if(mutation.current||!foreground()||current.current.snapshot?.state!=='ready')return;
@@ -49,15 +51,16 @@ export function CentralBilling({apiOrigin,initialLanguage}:{apiOrigin:string|nul
  }
  const refresh=()=>{setProblem(null);if(foreground())controls.current?.start();};
  const close=()=>{controls.current?.pause();mutation.current?.abort();setLink('denied');void client.current?.signOut();};
+ const manage=!!ready&&(ready.status.state==='paid'||ready.status.state==='grace'||ready.status.state==='restricted'&&['payment_failed','payment_required'].includes(ready.status.reason??''));
  const date=(value:string)=>new Intl.DateTimeFormat(lang,{dateStyle:'medium',timeZone:ready?.status.timeZone??'UTC'}).format(new Date(value));
  return <RecoveryFrame lang={lang}><h1>{t.title}</h1><p>{t.intro}</p>
   <fieldset className={styles.language}><legend>{t.language}</legend>{(['en','es'] as const).map(value=><button key={value} className={styles.secondary} type="button" disabled={pending||opening} aria-pressed={lang===value} onClick={()=>{if(!client.current?.hasPending())setLang(value);}}>{value==='en'?'English':'Español'}</button>)}</fieldset>
   <div aria-live="polite" aria-busy={link==='loading'||panel.refreshing}>
    {ready?<><h2>{ready.status.businessName??t.title}</h2><dl className={styles.details}><div><dt>{t.access}</dt><dd>{t.states[ready.status.state]}</dd></div><div><dt>{t.plan}</dt><dd>{ready.status.plan===null?t.none:ready.status.plan==='small'?'Small':'Team'}</dd></div><div><dt>{t.people}</dt><dd>{ready.status.activeEmployees} / {ready.status.employeeLimit}</dd></div>{([[t.trial,ready.status.trialEndsAt],[t.paid,ready.status.paidThrough],[t.grace,ready.status.graceEndsAt]] as const).map(([label,value])=>value?<div key={label}><dt>{label}</dt><dd>{date(value)}</dd></div>:null)}</dl>{ready.status.timeZone===null?<p>{t.utc}</p>:null}<ul className={styles.plans}>{ready.catalog.plans.map(plan=><li key={plan.key}>{plan.key==='small'?'Small':'Team'} · {new Intl.NumberFormat(lang,{style:'currency',currency:ready.catalog.currency,currencyDisplay:'code'}).format(plan.amount/100)} {t.month}</li>)}</ul></>:<p role="status">{link==='loading'||link==='ready'&&panel.refreshing?t.loading:link==='entry'?t.entry:link==='denied'?t.denied:link==='unavailable'?t.unavailable:t.hidden}</p>}
   </div>
-  {problem&&problem!=='navigate'&&problem!=='busy'?<p role="alert">{problem==='unknown'?t.unknown:problem==='conflict'?t.conflict:problem==='denied'?t.denied:t.refused}</p>:null}
+  {problem&&problem!=='navigate'&&problem!=='busy'?<p role="alert" tabIndex={-1} ref={alert}>{problem==='unknown'?t.unknown:problem==='conflict'?t.conflict:problem==='denied'?t.denied:t.refused}</p>:null}
   <div className={styles.actions}>
-   {ready&&!pending?<><button className={styles.action} disabled={opening} type="button" onClick={()=>void financial(ready.status.state==='paid'||ready.status.state==='grace'?'portal':'checkout')}>{opening?t.opening:ready.status.state==='paid'||ready.status.state==='grace'?t.portal:t.checkout}</button>{ready.status.state==='paid'&&ready.status.plan==='small'?<button className={styles.secondary} type="button" disabled={opening||ready.status.activeEmployees>30} onClick={()=>void financial('team')}>{t.team}</button>:null}{ready.status.state==='paid'&&ready.status.plan==='team'&&ready.status.activeEmployees<=15?<button className={styles.secondary} type="button" disabled={opening} onClick={()=>void financial('small')}>{t.small}</button>:null}</>:null}
+   {ready&&!pending?<><button className={styles.action} disabled={opening} type="button" onClick={()=>void financial(manage?'portal':'checkout')}>{opening?t.opening:manage?t.portal:t.checkout}</button>{ready.status.state==='paid'&&ready.status.plan==='small'?<button className={styles.secondary} type="button" disabled={opening||ready.status.activeEmployees>30} onClick={()=>void financial('team')}>{t.team}</button>:null}{ready.status.state==='paid'&&ready.status.plan==='team'&&ready.status.activeEmployees<=15?<button className={styles.secondary} type="button" disabled={opening} onClick={()=>void financial('small')}>{t.small}</button>:null}</>:null}
    {pending?<button className={styles.action} type="button" disabled={opening||!ready} onClick={()=>void financial()}>{opening?t.opening:t.retry}</button>:null}
    {link==='ready'?<button className={styles.secondary} type="button" disabled={opening||panel.refreshing} onClick={refresh}>{t.refresh}</button>:null}
    {link==='ready'?<button className={styles.secondary} type="button" onClick={close}>{t.close}</button>:null}

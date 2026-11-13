@@ -7,8 +7,9 @@ export function publicBillingApiOrigin(value:unknown):string|null{
 /** Public endpoint selection only; this module never reads credential values. */
 export function centralBillingApiOrigin(env:Readonly<Record<string,string|undefined>>):string|null{
  if(env.NEVORA_COMMERCE_ENABLED!=='true')return null;
- const origin=publicBillingApiOrigin(env.NEVORA_COMMERCE_API_ORIGIN);if(!origin)return null;
- if(env.NODE_ENV!=='production'&&env.NEVORA_COMMERCE_ENVIRONMENT==='development'&&origin.startsWith('http:'))return origin;
+ const mode=env.NEVORA_BILLING_ENVIRONMENT??env.NEVORA_COMMERCE_ENVIRONMENT;
+ const origin=publicBillingApiOrigin(env.NEVORA_BILLING_API_ORIGIN??env.NEVORA_COMMERCE_API_ORIGIN);if(!origin)return null;
+ if(env.NODE_ENV!=='production'&&mode==='development'&&origin.startsWith('http:'))return origin;
  const branch=env.NEVORA_NEON_BRANCH_ID;
- return env.NEVORA_COMMERCE_ENVIRONMENT==='staging'&&env.NEVORA_WORKSPACE_MODE==='isolated'&&env.NEVORA_ONBOARDING_ENVIRONMENT==='test'&&/^br-[a-z0-9-]+$/.test(branch??'')&&origin===`https://${branch}-commerceapi.compute.c-15.us-east-1.aws.neon.tech`?origin:null;
+ return mode==='staging'&&env.NEVORA_WORKSPACE_MODE==='isolated'&&env.NEVORA_ONBOARDING_ENVIRONMENT==='test'&&/^br-[a-z0-9-]+$/.test(branch??'')&&origin===`https://${branch}-commerceapi.compute.c-15.us-east-1.aws.neon.tech`?origin:null;
 }
