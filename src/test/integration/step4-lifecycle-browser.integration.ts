@@ -1,6 +1,7 @@
 import {it,expect,vi} from 'vitest';
 import {createRequire} from 'node:module';
 import {randomUUID} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import {resolve,join} from 'node:path';
 import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import {onboardingJourneyFixture} from './onboarding-journey-fixture';
@@ -36,13 +37,15 @@ import {StripeFixture} from '../../../services/commerce/stripe-fixture';
 import Stripe from 'stripe';
 import {workerOnce as commerceWorkerOnce} from '../../../services/commerce/worker';
 import {startOwnedFinanceBridge,ownedHttpRequest} from './owned-isolated-finance';
+import {AUTH_COPY,type AuthLang} from '@/lib/auth-copy';
 
-it('admits normal browser sign-in on the actual provisioned fictional-company database',async()=>{
+it('completes the fictional-company lifecycle and restricted recovery resilience on actual owned company databases',async()=>{
  const root=process.env.NEVORA_STEP4_EVIDENCE;if(!root)throw Error('Explicit Step4 evidence directory required');await mkdir(root,{recursive:true});
  const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json'))('playwright');
- const stages:{stage:string;state:string}[]=[],network:unknown[]=[],browserDiagnostics:Record<string,unknown>={};let admissionComplete=false,networkDropped=0;
+ const sourceSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim();
+ const stages:{stage:string;state:string}[]=[],network:{path:string;method:string;status:number;ownedDomain:boolean}[]=[],browserDiagnostics:Record<string,unknown>={},ownedAppRoots:string[]=[],matrix:unknown[]=[],matrixClosed:string[]=[];let admissionComplete=false,lifecycleComplete=false,resilienceComplete=false,networkDropped=0;
  await withOwnedTestResources(async defer=>{
-  defer(()=>writeFile(join(root,'report.json'),JSON.stringify({complete:false,admissionComplete,remaining:'Complete company lifecycle and resilience remain pending after browser admission.',stages,network,networkDropped,browserDiagnostics,scope:'Combined source; owned provisioning and actual browser password sign-in. HTTP domain and Neon SQL transport adapters are local; no hosted/TLS/provider acceptance.'},null,2)));
+  defer(async()=>{const ownership=await Promise.all(ownedAppRoots.map(async appRoot=>{const value=JSON.parse(await readFile(join(appRoot,'ownership.json'),'utf8'));return {closed:value.closed===true,sourceVerified:value.sourceVerified===true,mirrorVerified:value.mirrorVerified===true};}));const cleanupVerified=ownership.length===2&&ownership.every(value=>value.closed&&value.sourceVerified&&value.mirrorVerified);await writeFile(join(root,'report.json'),JSON.stringify({sourceSha,tree,complete:lifecycleComplete&&resilienceComplete&&cleanupVerified,admissionComplete,lifecycleComplete,resilienceComplete,cleanupVerified,ownership,stages,network,networkDropped,browserDiagnostics,matrix,matrixClosed,scope:'Combined local source; owned provisioning and actual browser password sign-in/SQL/SDK. Explicit local HTTP/domain and Neon SQL transports, controlled application/commerce clock and provider/delivery fixtures. No hosted/TLS/physical-device/legal/provider acceptance.'},null,2));});
   const catalog=await freshOnboardingDatabase();defer(()=>catalog.close());await catalog.pool.query(await readFile(new URL('../../../services/commerce/schema.sql',import.meta.url),'utf8'));
   const store=new CommerceStore(catalog.pool,Buffer.alloc(32,19)),bindingKey=Buffer.alloc(32,23).toString('base64url'),provider=new StripeFixture();
   const f=await onboardingJourneyFixture({commerce:{key:bindingKey,workerKey:Buffer.alloc(32,24).toString('base64url'),enroll:input=>store.enrollWorkspace(input)}});defer(()=>f.close());
@@ -80,11 +83,12 @@ it('admits normal browser sign-in on the actual provisioned fictional-company da
   stages.push({stage:'substituted-company-identity-refused-before-launch',state:'passed'});
   const smtp=await createOwnedSmtp();defer(()=>smtp.close());
   const app=await createOwnedNextApp(join(root,'app'),{...options,invitationSmtpPort:smtp.port,payrollEnabled:true,clockerPunchEnabled:true,clockerPinKey:Buffer.alloc(32,61).toString('hex')});defer(()=>app.close());
+  ownedAppRoots.push(app.root);
   apps.set(company.origin,app);
   const front='http://alpha.step4.localhost',proxy=await startOwnedDomainProxy(app.url,{[front]:company.origin});defer(()=>proxy.close());
   const browser=await runtime.chromium.launch({headless:true});defer(()=>browser.close());const context=await browser.newContext({serviceWorkers:'block',proxy:{server:proxy.server}}),page=await context.newPage();page.setDefaultTimeout(15000);
   await context.tracing.start({screenshots:true,snapshots:true});defer(()=>context.tracing.stop({path:join(root,'admission-trace.zip')}));
-  const observe=(target:typeof page,expectedOrigin=front)=>target.on('response',(response:{url():string;status():number;request():{method():string}})=>{const url=new URL(response.url());if(url.pathname.startsWith('/_next/')||url.pathname.startsWith('/fonts/')||url.pathname.startsWith('/images/'))return;if(network.length<256)network.push({path:url.pathname,method:response.request().method(),status:response.status(),ownedDomain:url.origin===expectedOrigin});else networkDropped++;});observe(page);
+  const observe=(target:typeof page,expectedOrigin=front)=>target.on('response',(response:{url():string;status():number;request():{method():string}})=>{const url=new URL(response.url());if(url.pathname.startsWith('/_next/')||url.pathname.startsWith('/fonts/')||url.pathname.startsWith('/images/'))return;if(network.length<512)network.push({path:url.pathname,method:response.request().method(),status:response.status(),ownedDomain:url.origin===expectedOrigin});else networkDropped++;});observe(page);
   await page.goto(front+'/login');expect(await page.evaluate(()=>({secure:isSecureContext,randomUUID:typeof crypto.randomUUID}))).toEqual({secure:true,randomUUID:'function'});await page.getByLabel('Employee ID',{exact:true}).fill('OWNER-1');await page.getByLabel('Password',{exact:true}).fill(password);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(front+'/app');
   expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='OWNER-1'")).rows).toEqual([{n:1}]);stages.push({stage:'normal-owner-browser-sign-in-on-provisioned-company',state:'passed'});
   const setup=await page.evaluate(async()=>{const response=await fetch('/api/onboarding/state',{credentials:'same-origin',cache:'no-store'});return {status:response.status,body:await response.json()};});
@@ -99,6 +103,7 @@ it('admits normal browser sign-in on the actual provisioned fictional-company da
   let secondApp:Awaited<ReturnType<typeof createOwnedNextApp>>;
   try{vi.stubEnv('FUEL_TEST_DATABASE_URL',secondFallback.href);secondApp=await createOwnedNextApp(join(root,'second-app'),{...options,isolatedWorkspaces:{...options.isolatedWorkspaces,origins:[second.origin],targets:secondTargets},payrollEnabled:true});}finally{vi.stubEnv('FUEL_TEST_DATABASE_URL',fallback);}
   defer(()=>secondApp.close());apps.set(second.origin,secondApp);
+  ownedAppRoots.push(secondApp.root);
   const secondFront='http://beta.step4.localhost',secondProxy=await startOwnedDomainProxy(secondApp.url,{[secondFront]:second.origin});defer(()=>secondProxy.close());
   const secondContext=await browser.newContext({serviceWorkers:'block',proxy:{server:secondProxy.server}}),secondPage=await secondContext.newPage();secondPage.setDefaultTimeout(15000);observe(secondPage,secondFront);await secondContext.tracing.start({screenshots:true,snapshots:true});defer(()=>secondContext.tracing.stop({path:join(root,'second-company-trace.zip')}));
   await secondPage.goto(secondFront+'/login');await secondPage.getByLabel('Employee ID',{exact:true}).fill('OWNER-1');await secondPage.getByLabel('Password',{exact:true}).fill(password);await secondPage.getByRole('button',{name:'Sign in',exact:true}).click();await secondPage.waitForURL(secondFront+'/app');
@@ -213,6 +218,46 @@ it('admits normal browser sign-in on the actual provisioned fictional-company da
   await signIn(employeePage,'EMP-1','Fictional Step4 Employee password 123!','/app/my-pay');expect((await employeeCall('/api/payroll/statements')).body.statements.map((row:{id:string})=>row.id)).toEqual([ownDocument]);expect((await employeeCall('/api/payroll-export/profiles',undefined,{'x-nevora-payroll-export':'1'})).status).toBe(403);
   expect(await secondPage.evaluate(async(id:string)=>(await fetch('/api/payroll/documents/'+id,{credentials:'same-origin'})).status,ownDocument)).toBe(404);
   stages.push({stage:'controlled-application-commerce-clock-original-trial-expiry-existing-shift-finishes-new-clock-in-402-own-pay-export-profile-read-isolation',state:'passed'});
+  // Real restricted-company status, fresh normal Owner logins and native
+  // connectivity events. Held replies preserve actual server response bytes.
+  const recoveryErrors:string[]=[],foreignRequests:string[]=[],operationalReads:string[]=[],recoveryReads:{path:string;status:number}[]=[];let recoveryDropped=0;
+  for(const engine of ['chromium','webkit'] as const){
+   const recoveryBrowser=await runtime[engine].launch({headless:true});let recoveryClosed=false;defer(async()=>{if(!recoveryClosed)await recoveryBrowser.close();});
+   try{for(const lang of ['en','es'] as AuthLang[]){
+    const before=new Set((await company.resource.db.pool.query("SELECT token_hash FROM employee_sessions WHERE employee_id='OWNER-1'")).rows.map(row=>row.token_hash));
+    const recoveryContext=await recoveryBrowser.newContext({serviceWorkers:'block',proxy:{server:proxy.server}}),recoveryPage=await recoveryContext.newPage();recoveryPage.setDefaultTimeout(15000);let failedStatusReads=0;
+    recoveryPage.on('requestfailed',(request:{url():string})=>{if(new URL(request.url()).pathname==='/api/commerce/status')failedStatusReads++;});
+    recoveryPage.on('pageerror',(error:Error)=>recoveryErrors.push(engine+':'+lang+':'+error.message));
+    await recoveryContext.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(url.origin!==front){foreignRequests.push(url.origin+url.pathname);await route.abort();return;}await route.continue();});
+    recoveryPage.on('response',(response:{url():string;status():number})=>{const path=new URL(response.url()).pathname;if(!path.startsWith('/api/'))return;if(recoveryReads.length<128)recoveryReads.push({path,status:response.status()});else recoveryDropped++;if(['/api/notifications','/api/employee/home','/api/company-access/operational-authority'].includes(path)||path.startsWith('/api/manager/'))operationalReads.push(path);});
+    const words=lang==='en'?{billing:'Workplace billing',paused:'Access paused',tablet:'Clocker access is paused',unavailable:'Access could not be checked',refresh:'Refresh status',open:'Open billing in Velani',pay:'My pay statements',owner:'Owner sign in',retry:'Try Clocker again',denied:'Sign in with the current workplace Owner account to manage billing.'}:{billing:'Facturación del negocio',paused:'Acceso pausado',tablet:'El acceso al Clocker está pausado',unavailable:'No se puede comprobar el acceso',refresh:'Actualizar estado',open:'Abrir facturación en Velani',pay:'Mis comprobantes de pago',owner:'Iniciar sesión como propietario',retry:'Intentar el Clocker de nuevo',denied:'Inicia sesión con la cuenta del propietario actual para administrar la facturación.'};
+    await recoveryPage.goto(front+'/login?returnTo=%2Fapp%2Fbilling');if(lang==='es'){await recoveryPage.getByRole('button',{name:/Español$/}).click();await recoveryPage.getByRole('button',{name:AUTH_COPY.es.signIn,exact:true}).waitFor();}
+    await recoveryPage.getByLabel(AUTH_COPY[lang].employeeId,{exact:true}).fill('OWNER-1');await recoveryPage.getByLabel(AUTH_COPY[lang].password,{exact:true}).fill(password);await recoveryPage.getByRole('button',{name:AUTH_COPY[lang].signIn,exact:true}).click();await recoveryPage.waitForURL(front+'/app/billing');
+    const ready=async()=>{await recoveryPage.getByRole('heading',{name:words.billing,exact:true}).waitFor();await recoveryPage.getByText(words.paused,{exact:true}).waitFor();await recoveryPage.getByText(privateLabel,{exact:true}).waitFor();};await ready();
+    const currentSession=(await company.resource.db.pool.query("SELECT token_hash FROM employee_sessions WHERE employee_id='OWNER-1'")).rows.filter(row=>!before.has(row.token_hash));expect(currentSession).toHaveLength(1);
+    const tabletPath='/clocker/access/paused?from='+encodeURIComponent('/clocker/'+locationKey);
+    for(const [kind,path,title] of [['billing','/app/billing',words.billing],['paused',tabletPath,words.tablet],['unavailable',tabletPath+'&reason=billing_status_unavailable',words.unavailable]]){
+     await recoveryPage.goto(front+path);await recoveryPage.getByRole('heading',{name:title,exact:true}).waitFor();if(kind==='billing')await ready();
+     for(const width of [320,390,768,1440]){
+      await recoveryPage.setViewportSize({width,height:1000});
+      for(const scale of [100,200]){await recoveryPage.evaluate((value:number)=>{document.documentElement.style.fontSize=value+'%';},scale);expect(await recoveryPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);}
+      await recoveryPage.evaluate(()=>{document.documentElement.style.fontSize='100%';});
+      await recoveryPage.screenshot({path:join(root,`recovery-${engine}-${lang}-${kind}-${width}.png`),fullPage:true});matrix.push({engine,lang,kind,width,textPercent:[100,200]});
+     }
+     if(kind!=='billing'){const first=recoveryPage.getByRole('link',{name:words.retry,exact:true});await first.focus();await recoveryPage.keyboard.press(engine==='webkit'&&process.platform==='darwin'?'Alt+Tab':'Tab');expect(await recoveryPage.getByRole('link',{name:words.owner,exact:true}).evaluate((node:HTMLElement)=>node===document.activeElement)).toBe(true);expect(await recoveryPage.locator('dl').count()).toBe(0);}
+    }
+    await recoveryPage.goto(front+'/app/billing');await ready();await recoveryPage.reload();await ready();await recoveryPage.getByRole('link',{name:words.pay,exact:true}).click();await recoveryPage.waitForURL(front+'/app/my-pay');await recoveryPage.goBack();await recoveryPage.waitForURL(front+'/app/billing');await ready();
+    await recoveryContext.setOffline(true);expect(await recoveryPage.evaluate(()=>navigator.onLine)).toBe(false);await expect.poll(()=>recoveryPage.locator('dl').count()).toBe(0);await recoveryContext.setOffline(false);await ready();
+    let releaseHeld!:()=>void,held=false;const release=new Promise<void>(done=>{releaseHeld=done;});
+    await recoveryPage.route('**/api/commerce/status',async(route:{fetch():Promise<unknown>;fulfill(options:{response:unknown}):Promise<void>})=>{const response=await route.fetch();held=true;await release;await route.fulfill({response}).catch(()=>undefined);});
+    try{
+     await recoveryPage.getByRole('button',{name:words.open,exact:true}).focus();await recoveryPage.keyboard.press(engine==='webkit'&&process.platform==='darwin'?'Alt+Tab':'Tab');expect(await recoveryPage.getByRole('button',{name:words.refresh,exact:true}).evaluate((node:HTMLElement)=>node===document.activeElement)).toBe(true);await recoveryPage.keyboard.press('Enter');await expect.poll(()=>held,{timeout:15000}).toBe(true);expect(await recoveryPage.getByRole('button',{name:words.open,exact:true}).isDisabled()).toBe(true);
+     const beforeAbort=failedStatusReads;await recoveryContext.setOffline(true);await expect.poll(()=>failedStatusReads).toBeGreaterThan(beforeAbort);await expect.poll(()=>recoveryPage.locator('dl').count()).toBe(0);releaseHeld();await recoveryPage.unroute('**/api/commerce/status');expect(await recoveryPage.getByText(privateLabel,{exact:true}).count()).toBe(0);await recoveryContext.setOffline(false);await ready();
+    }finally{releaseHeld();await recoveryContext.setOffline(false);}
+    await company.resource.db.pool.query('DELETE FROM employee_sessions WHERE token_hash=$1',[currentSession[0].token_hash]);await recoveryPage.getByRole('button',{name:words.refresh,exact:true}).click();await recoveryPage.getByText(words.denied,{exact:true}).waitFor();expect(await recoveryPage.locator('dl').count()).toBe(0);expect(await recoveryPage.getByRole('button',{name:words.open,exact:true}).count()).toBe(0);await recoveryContext.close();
+   }}finally{await recoveryBrowser.close();recoveryClosed=true;matrixClosed.push(engine);}
+  }
+  expect(matrix).toHaveLength(48);expect(recoveryErrors).toEqual([]);expect(foreignRequests).toEqual([]);expect(operationalReads).toEqual([]);expect(recoveryDropped).toBe(0);browserDiagnostics.recoveryResilience={errors:recoveryErrors,foreignRequests,operationalReads,reads:recoveryReads,dropped:recoveryDropped};resilienceComplete=true;stages.push({stage:'actual-restricted-company-en-es-two-engine-four-width-reload-back-keyboard-offline-late-read-fencing-and-current-session-denial',state:'passed'});
   // Public billing API/SDK stages are local handler calls with actual Owner
   // handoff authority; the separate Velani UI is never impersonated.
   const billingApi=async(path:string,body:unknown,bearer?:string,operation?:string)=>{const response=await commerceFor(company)(new Request(finance.bridge.origin+path,{method:'POST',headers:{origin:'https://www.thevelani.com','content-type':'application/json',...(bearer?{authorization:'Bearer '+bearer}:{}),...(operation?{'idempotency-key':operation}:{})},body:JSON.stringify(body)}),'127.0.0.1');return {status:response.status,body:await response.json()};};
@@ -231,5 +276,7 @@ it('admits normal browser sign-in on the actual provisioned fictional-company da
   const restoredEnd=Math.ceil((realNow()+finance.offset(company.origin))/1000)+15*86400;subscription.items.data[0].current_period_end=restoredEnd;provider.markPaid(subscription.id,restoredEnd);expect(await billing.reconcile()).toEqual({checked:1,failed:0});await page.getByRole('button',{name:'Refresh status',exact:true}).click();await page.getByText('Active',{exact:true}).waitFor();
   expect((await catalog.pool.query('SELECT id,trial_started_at,trial_ends_at FROM commerce.businesses ORDER BY id')).rows).toEqual(originalTrials);expect((await catalog.pool.query('SELECT count(*)::int n FROM commerce.external_installations')).rows).toEqual([{n:2}]);expect(provider.customers.size).toBe(1);expect(provider.sessions.size).toBe(1);expect(provider.subscriptions.size).toBe(1);expect((await company.resource.db.pool.query('SELECT count(*)::int n FROM payroll_publications')).rows).toEqual([{n:1}]);
   stages.push({stage:'actual-owner-handoff-local-public-billing-api-sdk-lost-checkout-recovery-signed-event-dedup-worker-reconcile-failure-grace-restriction-recovery-no-trial-reset-or-duplicates',state:'passed'});
+  await page.getByRole('link',{name:'Return to workspace',exact:true}).click();await page.waitForURL(front+'/app');await page.getByRole('button',{name:'Sign out',exact:true}).click();await page.waitForURL((url:URL)=>url.pathname==='/login');expect((await call('/api/commerce/status')).status).toBe(401);await page.goBack();await page.waitForURL((url:URL)=>url.pathname==='/login');expect(await page.locator('dl').count()).toBe(0);await signIn(page,'OWNER-1',password,'/app/billing');await page.getByText('Active',{exact:true}).waitFor();stages.push({stage:'native-owner-signout-back-does-not-restore-authority-and-normal-reauthentication-recovers',state:'passed'});
+  expect(networkDropped).toBe(0);expect(network.every(row=>row.ownedDomain)).toBe(true);lifecycleComplete=true;
  });
 });
