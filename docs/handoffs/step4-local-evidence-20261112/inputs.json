@@ -1,0 +1,9 @@
+{
+  "workOrderSha256": "48bfc588f09a5c9d7e1de5284f066a01911d5578d4620962dd15849caf33d59e",
+  "step2HandoffSha256": "59539d64b46b1acc1e6038247cd26d2bfcc06e8acd9033d98adc6ae9887ab0f9",
+  "step2ReceiptSha256": "035a915019fa7fc7f582e23af62aff3bea7b96b560f055dcd717109a0f2a80d4",
+  "base": "f6baaaa6d988f34fb1c3388d0e1fe4c410bcbfd5",
+  "step2Status": "DEVELOPMENT_DELIVERED_POSTCHECKS_PENDING",
+  "step3CloudThread": "6af657f6-8af0-8191-965e-d91be5cf50d2",
+  "step3Artifact": "NOT YET DELIVERED; actual Cloud work order was inspected; no patch invented"
+}

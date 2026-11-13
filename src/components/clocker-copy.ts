@@ -184,6 +184,7 @@ export const CLOCKER_COPY:Record<string,string>={
  "Breaks aren’t recorded on the Clocker here.": "Aquí no se registran descansos en Clocker.",
  "No break types are configured. Ask your Owner to add one.": "No hay tipos de descanso configurados. Pide al dueño que añada uno.",
  "This shift was started at another location. Use that location’s registered Clocker to continue.": "Este turno comenzó en otra ubicación. Usa su tableta Clocker registrada para continuar.",
+ "New clock-ins are paused. Ask your Owner about workplace access.": "Las nuevas entradas están pausadas. Consulta con tu empleador sobre el acceso al lugar de trabajo.",
  "Refresh Clock State": "Actualizar estado",
  "This screen clears after 30 seconds.": "Esta pantalla se borra después de 30 segundos.",
  "Reference times don’t end a break on their own.": "La duración de referencia no termina el descanso automáticamente.",

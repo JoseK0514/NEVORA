@@ -3,6 +3,8 @@ export type CommerceAuthority = {
   state: string;
   validUntil: number;
   employeeLimit?: number;
+  reason?: unknown;
+  trialEndsAt?: unknown;
 };
 let cached: { key: string; authority: CommerceAuthority } | null = null;
 export function resetCommerceAccessCache() {
@@ -87,6 +89,19 @@ export async function requireOperationalCommerce() {
  * request query strings and caller-provided destinations are never forwarded. */
 export const CLOCKER_PAUSED_PATH='/clocker/access/paused';
 export const APP_BILLING_RECOVERY_PATH='/app/billing';
+/** Jose's trial-expiry exception admits existing tablet handlers, never an
+ * operational grant. Their authenticated SQL writer fences the recorded shift. */
+export function trialContinuationEnd(authority:CommerceAuthority,now=Date.now()):number|null {
+  if(authority.operational||authority.state!=='restricted'||authority.reason!=='trial_ended'||typeof authority.trialEndsAt!=='string')return null;
+  const end=Date.parse(authority.trialEndsAt);
+  return Number.isFinite(end)&&new Date(end).toISOString()===authority.trialEndsAt&&end<=now?end:null;
+}
+export function clockerContinuationPath(path:string,method:string):boolean {
+  const key='[a-z0-9]+(?:-[a-z0-9]+)*';
+  const match=method==='GET'?new RegExp('^/clocker/('+key+')(?:/manifest\\.webmanifest)?$').exec(path)
+    :method==='POST'?new RegExp('^/api/clocker/('+key+')/(?:setup|pin|punch)$').exec(path):null;
+  return Boolean(match&&match[1].length<=64);
+}
 export function commerceDenial(path:string,method:string,code:'subscription_required'|'billing_status_unavailable',request?:Request):Response {
   const appPage=path==='/app'||path.startsWith('/app/');
   const appApi=path==='/app/api'||path.startsWith('/app/api/');
@@ -146,7 +161,9 @@ export async function commerceGate(
   )
     return null;
   try {
-    if ((await readCommerceAuthority(fetcher)).operational) return null;
+    const authority=await readCommerceAuthority(fetcher);
+    if (authority.operational) return null;
+    if(trialContinuationEnd(authority)!==null&&clockerContinuationPath(path,method))return null;
     return commerceDenial(path,method,'subscription_required',request);
   } catch {
     return commerceDenial(path,method,'billing_status_unavailable',request);

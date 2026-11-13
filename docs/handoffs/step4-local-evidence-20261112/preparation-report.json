@@ -1,0 +1,88 @@
+{
+  "recordedAt": "2026-11-13T00:35:51.435729+00:00",
+  "status": "PREPARATION CHECKPOINT; TRANSFER TO SOLE FINISHER",
+  "applicationSource": "f6baaaa6d988f34fb1c3388d0e1fe4c410bcbfd5",
+  "tree": "5e1f99fd72b29b430c7e8f23e933830b72cc6d65",
+  "step2": "Actual handoff and delivery receipt inspected; captured status DEVELOPMENT_DELIVERED_POSTCHECKS_PENDING.",
+  "step3": {
+    "thread": "6af657f6-8af0-8191-965e-d91be5cf50d2",
+    "state": "active; exact transferable billing artifact not yet delivered or reviewed here"
+  },
+  "freshBaselines": {
+    "onboardingCases": 4,
+    "recoveryBrowserTests": 2,
+    "failures": 0,
+    "skips": 0,
+    "runtimeErrors": [],
+    "sourceInventory": "PASS 73 classified sources / 3 active branches",
+    "browserWidths": [
+      320,
+      390,
+      768,
+      1440
+    ],
+    "browsers": [
+      "Chromium151.0.7922.34",
+      "WebKit26.5"
+    ],
+    "locale": "EN baseline only; ES combined acceptance not run"
+  },
+  "evidenceLimits": [
+    "Two onboarding cases use normal password actions and an in-memory Next cookie adapter, not rendered browsers.",
+    "Two additional journey domain cases use fixture-created authorization proofs; these do not establish normal-sign-in acceptance.",
+    "Actual Next recovery routes use normal password UI login; private financial status and handoff outcomes use bounded controlled-response fixtures.",
+    "No unified schedule/punch/correction/payroll-document/billing-reconciliation journey was executed."
+  ],
+  "cleanup": {
+    "testSupervisorSession": 24542,
+    "exitCode": 0,
+    "ownedPostgreSQLClusters": "both stopped by their own runners; temporary data removed",
+    "ownedApplicationClosed": true,
+    "sourceAndMirrorVerified": true,
+    "appPortClosedObserved": true,
+    "derivedRuntimeDirectoriesRemoved": {
+      "directories": [
+        "app/node_modules",
+        "app/.next"
+      ],
+      "availableBytesBefore": 60974108672,
+      "availableBytesAfter": 61827579904
+    },
+    "ownedDependencyCopy": "retained in isolated worktree for finisher; exact lockfile match, no .env or credential stores copied",
+    "uncertainProcessesSignalled": false
+  },
+  "changes": "plan, repository handoff and compact evidence only; application/UI/dependencies/schema unchanged",
+  "publication": "none; no candidate tag, development push, CI dispatch or deployment",
+  "owner": "Finish NEVORA SCRUM-190 handoff / 01a1d175-7de0-7a80-b607-5418fde6ed50",
+  "coordinationAuthorization": "Human instruction Did you resolve it? Can you fix the overlapping? independently read in Review Velani preview / 01a1a804-ec4f-7ed3-a6ce-eaf3569c2b47.",
+  "combinedLifecyclePassed": false,
+  "hostedActions": 0,
+  "productionAccepted": false,
+  "rawEvidenceRoot": "/Users/josek0514/.codex/nevora-step4-local-20261112",
+  "artifacts": [
+    {
+      "path": "/Users/josek0514/.codex/nevora-step4-local-20261112/baseline-onboarding-journey.log",
+      "sha256": "7d4860803fdfe4fff64868ccab78192e6b4e0569193c9735aff917a6f3346c26"
+    },
+    {
+      "path": "/Users/josek0514/.codex/nevora-step4-local-20261112/baseline-recovery-browsers.log",
+      "sha256": "4426a37564e53d6aa6005e0f38d8414591a719196f49acb6925f2cbb5fc2dd19"
+    },
+    {
+      "path": "/Users/josek0514/.codex/nevora-step4-local-20261112/browser/commerce-recovery/report.json",
+      "sha256": "401520406bda54eb9dcec57ebccada2b68081781b6bba731ecb65ad9eccb83ed"
+    },
+    {
+      "path": "/Users/josek0514/.codex/nevora-step4-local-20261112/browser/commerce-effects/report.json",
+      "sha256": "cbe8a9b3b1ddd9dd0a4b18d9241cf178d266d7b403ded4a7b883a1bc8c5f352b"
+    },
+    {
+      "path": "/Users/josek0514/.codex/nevora-step4-local-20261112/browser/commerce-recovery/owned-next-wRLcQO/ownership.json",
+      "sha256": "e94c0e48d25631b5dd4f3c2b2eeec4d7726d37fc55a51426d27dd8404ed5c7e9"
+    },
+    {
+      "path": "/Users/josek0514/.codex/nevora-step4-local-20261112/browser/commerce-recovery/owned-next-wRLcQO/source-manifest.json",
+      "sha256": "76062b6c3dae5ac220396838fbbad51085c4aadc86d6df55c6fb317055977f3e"
+    }
+  ]
+}

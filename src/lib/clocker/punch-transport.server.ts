@@ -33,7 +33,7 @@ const json=(body:object,status=200)=>Response.json(body,{status,headers:{
 }});
 function failed(error:unknown){
  const safe=error instanceof ClockerPunchError?error:new ClockerPunchError('UNAVAILABLE');
- const status=safe.code==='INVALID_INPUT'?400:safe.code==='AUTH_REQUIRED'?401:
+ const status=safe.code==='INVALID_INPUT'?400:safe.code==='AUTH_REQUIRED'?401:safe.code==='SUBSCRIPTION_REQUIRED'?402:
   ['INTEGRITY','CLOCK_INVALID','UNAVAILABLE'].includes(safe.code)?503:409;
  return json({state:status===503?'unavailable':status===401?'identity_required':'rejected',code:safe.code,error:safe.message},status);
 }
@@ -58,7 +58,7 @@ export async function handleClockerPunch(request:Request,locationKey:string,deps
    // survives re-PIN for read-only recovery but is neither a cookie nor a proof.
    const subject=createHmac('sha256',key).update(JSON.stringify(['nevora-punch-recovery-subject-v1',
     device.proof.workspaceId,device.proof.deviceId,device.proof.credentialHash,device.proof.credentialVersion,identity.proof.employeeId])).digest('hex');
-   return json({state:'ready',...view,photoCaptureAvailable:Boolean(await getClockerPhotoRuntime()),subject,firstName:identity.firstName,expiresAt:identity.expiresAt,locationId:device.proof.locationId});
+   return json({state:'ready',...view,photoCaptureAvailable:!view.commerceRestriction&&Boolean(await getClockerPhotoRuntime()),subject,firstName:identity.firstName,expiresAt:identity.expiresAt,locationId:device.proof.locationId});
   }
   if(data.operation==='execute')return json({state:'committed',receipt:await service.execute(identity.proof,data.command)});
   const receipt=await service.receipt(identity.proof,data.commandId,data.verificationId);

@@ -5,6 +5,7 @@ import { randomBytes } from 'node:crypto';
 import {workspaceRuntimeEnvironment} from '../workspace-routing/runtime-config.server';
 import type { SqlExecutor } from '../notifications/types';
 import { authenticateClockerDevice, clockerCredentialWasIssued, ClockerDeviceError, redeemClockerEnrollment } from './devices.server';
+import {readClockerCommercePolicy,assertCommercePolicyCurrent} from './commerce-policy.server';
 
 export type ClockerCookieStore = {
   get(name: string): { value: string } | undefined;
@@ -122,12 +123,16 @@ export async function handleClockerSetup(request: Request, locationKey: string, 
     return null;
   }
   try {
+    const policy=await readClockerCommercePolicy();
     const connected = await reconcile();
     if (connected) return connected;
+    if(policy.mode==='finish_shift')return failure({status:402,code:'SETUP_UNAVAILABLE',error:'New tablet setup is paused. Use an already registered tablet to finish an existing shift.'});
+    assertCommercePolicyCurrent(policy);
     if (input.step === 'status') return response({ state: 'unregistered' });
     if (input.step === 'prepare') {
       // Already-registered credentials are never recycled for a replacement.
       const reusable = validCredential(prepared) && !(await clockerCredentialWasIssued(prepared, deps.executor));
+      assertCommercePolicyCurrent(policy);
       const value = reusable ? prepared : `nev_dev_${randomBytes(32).toString('hex')}`;
       deps.cookies.set(names.setup, value, options(SETUP_LIFETIME));
       return response({ state: 'prepared' });
@@ -138,7 +143,7 @@ export async function handleClockerSetup(request: Request, locationKey: string, 
     try {
       const result = await redeemClockerEnrollment({
         enrollmentToken: input.enrollmentToken, locationKey, preparedCredential: prepared,
-      }, deps.executor);
+      }, deps.executor,policy.validUntil??undefined);
       return await finish(prepared, result.device.name);
     } catch (error) {
       // Another request may have committed, or the database reply may have been lost.
