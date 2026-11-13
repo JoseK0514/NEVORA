@@ -3,6 +3,13 @@
 Checkpoint: November 13, 2026, 00:40 UTC (November 12 in Puerto Rico).
 Tracking: SCRUM-190 and SCRUM-146; Rondo SCRUM-155 is separate Velani work.
 
+**Superseding progress:** [Receiving implementation and Step4 evidence](2026-11-12-step4-finisher-progress.md).
+Cloud e803 is now merged locally; Jose explicitly approved the strict billing
+contract, implemented at3bfc40955. The separately authorized SCRUM-60 delivery
+e14b37aa9 is also preserved by local mergeb52bbb53d. Combined lifecycle/CI/hosting
+acceptance remains pending. The tables below retain the historical00:40 checkpoint
+and its custody; their pending/source descriptions are not current acceptance.
+
 ## Ownership and release policy
 
 Jose authorized this chat to complete remaining finishing work, implement the two
