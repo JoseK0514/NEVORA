@@ -1,5 +1,5 @@
 import {it,expect} from 'vitest';
-import {mkdtemp,mkdir,realpath,writeFile,readFile,symlink,rm,readdir} from 'node:fs/promises';
+import {mkdtemp,mkdir,chmod,realpath,writeFile,readFile,symlink,rm,readdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {createServer} from 'node:http';
@@ -43,7 +43,8 @@ it('releases only confirmed own custody and rejects symlinked or public state di
   const second=await acquireManagedState(c);await second.release(true);
   await rm(c.stateDirectory,{recursive:true});await mkdir(join(root,'target'),{mode:0o700});await symlink(join(root,'target'),c.stateDirectory);
   await expect(acquireManagedState(c)).rejects.toThrow('managed_state_unavailable');
-  await rm(c.stateDirectory);await mkdir(c.stateDirectory,{mode:0o755});await expect(acquireManagedState(c)).rejects.toThrow('managed_state_unavailable');
+  // An inherited restrictive umask must not turn this negative control private.
+  await rm(c.stateDirectory);await mkdir(c.stateDirectory,{mode:0o755});await chmod(c.stateDirectory,0o755);await expect(acquireManagedState(c)).rejects.toThrow('managed_state_unavailable');
  }finally{await rm(root,{recursive:true,force:true});}
 });
 it('bounds real child output and cancels a real child through SIGTERM without exposing its private stderr',async()=>{
