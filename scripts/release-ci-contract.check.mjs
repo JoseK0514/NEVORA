@@ -362,3 +362,18 @@ test('conversations SQL is a mandatory owned release gate with retained evidence
   assert.throws(()=>verify(broken),undefined,mutation);
  }
 });
+
+test('combined Step4 lifecycle remains a mandatory exact-source browser gate with retained evidence',()=>{
+ const job=workflow.jobs['phase-d-attendance-ui'];
+ const gate=job.steps.find(step=>step.name==='Combined company lifecycle and recovery gate');
+ assert(gate,'Combined lifecycle gate is absent');
+ assert.equal(gate.run,'node scripts/step4-local-acceptance.mjs');
+ assert.equal(gate.if,"${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}");
+ assert.equal(gate['continue-on-error'],undefined);
+ assert.equal(gate.env.NEVORA_STEP4_EXPECTED_SHA,'${{ github.event.pull_request.head.sha || github.sha }}');
+ assert.equal(gate.env.NEVORA_STEP4_EVIDENCE,'${{ runner.temp }}/nevora-step4-local');
+ const upload=job.steps.find(step=>step.name==='Upload combined company lifecycle evidence');
+ assert.equal(upload.if,'always()');assert.equal(upload.with.name,'step4-local-${{ github.event.pull_request.head.sha || github.sha }}');assert.equal(upload.with['if-no-files-found'],'error');assert.equal(upload.with['retention-days'],14);
+ for(const suffix of ['/**/*.json','/**/*.png','/**/*-trace.zip'])assert(upload.with.path.split('\n').includes('${{ runner.temp }}/nevora-step4-local'+suffix));
+ assert.equal(job['timeout-minutes'],50);
+});
