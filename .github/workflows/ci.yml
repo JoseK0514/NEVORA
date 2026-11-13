@@ -295,11 +295,9 @@ jobs:
         with:
           name: owner-advisor-browser-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
-            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/*.json
-            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/*.png
-            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/*-trace.zip
-            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/source-manifest.json
-            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/ownership.json
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/*.json
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/*.png
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/*-trace.zip
           if-no-files-found: error
           retention-days: 14
       - name: Exact-SHA D1.3 attendance browser gate

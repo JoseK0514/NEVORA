@@ -9,6 +9,14 @@ const require=createRequire(import.meta.url);
 const workflow=require('js-yaml').load(readFileSync('.github/workflows/ci.yml','utf8'));
 const mandatory=['validate','clocker-postgres','release-postgres','phase-d-attendance-ui','management-review-ui','phase-e-postgres','phase-e-ui'];
 
+test('Owner advisor uploads nested reports, captures and traces with their source custody',()=>{
+ const upload=workflow.jobs['phase-d-attendance-ui'].steps.find(step=>step.name==='Upload Owner advisor browser evidence');
+ assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
+ const root='${{ runner.temp }}/nevora-owner-advisor-browser-evidence';
+ for(const suffix of ['/**/*.json','/**/*.png','/**/*-trace.zip'])assert(upload.with.path.split('\n').includes(root+suffix),'Nested Owner advisor evidence missing: '+suffix);
+ assert.equal(upload['continue-on-error'],undefined);
+});
+
 test('Clocker SQL sharding preserves original selectors and rejects partial/custom shard configurations',()=>{
  assert.deepEqual(parseClockerArguments([]),{selection:undefined,shard:undefined});
  for(const selection of ['--punch-ui','--pins-ui','--company-setup','vitest.clocker-integration.config.mts'])assert.deepEqual(parseClockerArguments([selection]),{selection,shard:undefined});
@@ -172,7 +180,7 @@ test('mandatory browser job runs Owner advisor without a model connection and re
  assert(upload);
  assert.equal(upload.if,'always()');
  assert.equal(upload.with['if-no-files-found'],'error');
- for(const item of ['/*.json','/*.png','/*-trace.zip','/**/source-manifest.json','/**/ownership.json'])assert(upload.with.path.includes('nevora-owner-advisor-browser-evidence'+item));
+ for(const item of ['/**/*.json','/**/*.png','/**/*-trace.zip'])assert(upload.with.path.includes('nevora-owner-advisor-browser-evidence'+item));
 });
 test('validation runs the spending guard suite without enabling live inference',()=>{
  const step=workflow.jobs.validate.steps.find(s=>s.run==='node --import tsx --test src/test/integration/owner-advisor-pilot.check.mts');
