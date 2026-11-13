@@ -1,0 +1,34 @@
+{
+  "baseSha": "612e211c57a7b3866b9174149c8ef4dee7d9670a",
+  "scope": "reviewed test-only working tree; final source browser/CI pending",
+  "historicalFailedRun": 43329481517,
+  "failedJob": 131570282110,
+  "failedArtifact": 13994987861,
+  "artifactSha256": "bd542a362bba71ecf5d21b0fae460468e3c63c6984ac410404b9d1a5bd4dec1b",
+  "unchangedLocalReproduction": {
+    "exitCode": 0,
+    "elapsedSeconds": 57.9,
+    "assertionsComplete": true,
+    "sourceAndMirrorVerified": true,
+    "networkFailures": 18,
+    "interpretation": "nonreproduction; not proof of historical cause"
+  },
+  "controls": {
+    "extractedLegacyFailureOrder": {
+      "failed": 2,
+      "passed": 1
+    },
+    "correctedHelper": {
+      "passed": 3,
+      "failed": 0
+    },
+    "typecheckExitCode": 0,
+    "scopedLintExitCode": 0,
+    "review": "CLEAR/APPROVE"
+  },
+  "originalDeadlineMs": 360000,
+  "newCaptureBudgetMs": 2000,
+  "journalLimit": 64,
+  "historicalCause": "unproven",
+  "providerEffects": false
+}

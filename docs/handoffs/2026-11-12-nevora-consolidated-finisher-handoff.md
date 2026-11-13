@@ -1,5 +1,17 @@
 # NEVORA consolidated finishing handoff — November 12, 2026
 
+## Superseding custody checkpoint — November 13, 00:40 UTC
+
+The original checkpoint below is historical. The sole current finisher is
+**Finish NEVORA SCRUM-190 handoff** (`01a1d175-7de0-7a80-b607-5418fde6ed50`).
+The [current combined-source handoff](2026-11-12-combined-step2-finisher.md)
+owns the current dependency table, exact source/CI state and single ordered
+remaining checklist. Preserve this original evidence and all failed runs.
+Jose reassigned the two recovery pages for this finisher to implement; they are
+now present, with Claude retaining later redesign. No unrelated UI reassignment.
+
+## Historical 20:32 UTC checkpoint
+
 Checkpoint: 20:32 UTC. Tracking: [SCRUM-190](https://thevelani-team.atlassian.net/browse/SCRUM-190).
 This is a continuation checkpoint, not completed hosted acceptance.
 

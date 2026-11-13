@@ -2,6 +2,7 @@ import {afterEach,expect,it,vi} from 'vitest';
 import {Pool} from 'pg';
 import {createCommerce} from './service';
 import {CommerceStore,type Business} from './store';
+import {businessAccess} from './access';
 import {seal} from './security';
 const id='11111111-1111-4111-8111-111111111111',key=Buffer.alloc(32,7),secret='a'.repeat(43);
 const pools:Pool[]=[];
@@ -27,4 +28,14 @@ it.each(['Not/AZone',42,'a'.repeat(101)])('fails closed for a malformed company 
 });
 it('denies an unapproved browser origin before returning billing facts',async()=>{
  expect((await status('America/New_York','https://foreign.invalid')).status).toBe(403);
+});
+
+it.each([0,15,16,30,31])('projects active headcount without inventing a plan or deleting people: %s',async count=>{
+ const pool=new Pool({connectionString:'postgresql://fictional@127.0.0.1:1/catalog'});pools.push(pool);
+ const store=new CommerceStore(pool,key),business:Business={id,state:'ready',email:'owner@example.invalid',profile:{email:'owner@example.invalid'},planKey:'small',trialStart:null,trialEnd:Date.now()+60000,paidThrough:null,pastDueSince:null,subscriptionStatus:null,customerId:null,subscriptionId:null,employeeCount:count,enrollmentSource:'onboarding',incarnation:'1',slotId:id,origin:'https://company.example.test'};
+ for(const plan of ['small','team'] as const){
+  const limit=plan==='small'?15:30;
+  const result=await businessAccess(store,{...business,planKey:plan},Date.now(),async()=>count);
+  expect(result).toMatchObject({plan,employeeLimit:limit,activeEmployees:count,operational:count<=limit,billing:true,export:true,reason:count>limit?'employee_limit_exceeded':null});
+ }
 });

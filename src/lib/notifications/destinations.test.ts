@@ -66,3 +66,7 @@ describe('exact pay statement destination',()=>{
       expect(safeReturnTo(refused),refused).toBeNull();
   });
 });
+it('retains the exact billing recovery destination through normal sign-in without accepting billing query payloads',()=>{
+ expect(safeReturnTo('/app/billing')).toBe('/app/billing');
+ for(const value of ['/app/billing?token=private','/app/billing?redirect=https://foreign.invalid','/app/billing/../settings','https://foreign.invalid/app/billing','//foreign.invalid/app/billing'])expect(safeReturnTo(value)).toBeNull();
+});

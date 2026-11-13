@@ -10,6 +10,7 @@ import { createDisposableExchangeDatabase } from './local-postgres';
 import {createOwnedPgTransport,type OwnedDatabaseIdentity} from './owned-pg-transport';
 import type {SqlExecutor} from '../../lib/notifications/types';
 import {createCalendarLogRedactor} from './calendar-log-redaction';
+import {ownedIsolatedEnvironment,verifyOwnedIsolatedRuntime,isolatedTransportAdapter,probeOwnedIsolatedRuntime,type OwnedIsolatedRuntime} from './owned-isolated-runtime';
 
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
 const applicationRoots=['src','public','services','db'];
@@ -160,7 +161,10 @@ export function ownedDeviceEnvironment(origin:string,enabled=false):Record<strin
  * generated dev type-reference paths. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { commerceRecoveryEnabled?:boolean; mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { centralBillingApiOrigin?:string; isolatedWorkspaces?:OwnedIsolatedRuntime;commerceRecoveryEnabled?:boolean; mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+  const isolatedEnvironment=ownedIsolatedEnvironment(options.isolatedWorkspaces);
+  if(options.centralBillingApiOrigin){const api=new URL(options.centralBillingApiOrigin);if(api.origin!==options.centralBillingApiOrigin||api.protocol!=='http:'||!['127.0.0.1','localhost'].includes(api.hostname)||!api.port||api.username||api.password)throw Error('Owned billing UI requires an explicit loopback API');}
+  if(options.isolatedWorkspaces){if(options.emptyDatabase!==true||options.commerceRecoveryEnabled)throw Error('Owned isolated admission requires empty unused fallback and explicit commerce transport');await verifyOwnedIsolatedRuntime(options.isolatedWorkspaces);}
   if (options.clockerPinKey !== undefined && !/^[a-f0-9]{64}$/.test(options.clockerPinKey)) throw new Error('Owned Clocker PIN key must be 32-byte hex.');
   validateOwnedMailOptions(options);
   const advisorEnvironment = ownedAdvisorEnvironment(options);
@@ -265,9 +269,16 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
     await access(join(source, 'node_modules/next/dist/bin/next'));
     copyOwnedDependencies(source, mirror);
     const originalDb = await readFile(join(source, 'src/lib/db.ts'), 'utf8');
-    const adapter = createOwnedDbAdapter(originalDb);
+    const adapter = options.isolatedWorkspaces?originalDb:createOwnedDbAdapter(originalDb);
     await writeFile(join(mirror, 'src/lib/db.ts'), adapter);
     Object.assign(mirrorHashes, hashes, { 'src/lib/db.ts': hash(adapter) });
+    const substitutedFiles=options.isolatedWorkspaces?[]:['src/lib/db.ts'];
+    let isolatedTransport;
+    if(options.isolatedWorkspaces){
+      const path='src/lib/workspace-routing/transport.server.ts',original=await readFile(join(source,path),'utf8'),derived=isolatedTransportAdapter(original);
+      await writeFile(join(mirror,path),derived);mirrorHashes[path]=hash(derived);substitutedFiles.push(path);
+      isolatedTransport={originalHash:hash(original),derivedHash:hash(derived),scope:'Owned loopback Neon SQL transport only; original routing/role/binding/session/business guards retained'};
+    }
     let generatedTypeReferences;
     if (pinDevTypeReferences) {
       const originalTypes = await readFile(join(source, 'next-env.d.ts'), 'utf8');
@@ -275,20 +286,23 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
       await writeFile(join(mirror, 'next-env.d.ts'), derivedTypes);
       generatedTypeReferences = { originalHash: hash(originalTypes), derivedHash: hash(derivedTypes), reason: 'Next 16.4.2 dev generated type-reference paths' };
       mirrorHashes['next-env.d.ts'] = hash(derivedTypes);
+      substitutedFiles.push('next-env.d.ts');
     }
-    const manifestBytes = JSON.stringify({ checkpoint: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: source, encoding: 'utf8' }).trim(), hashes, originalDbHash: hash(originalDb), substitutedDbHash: hash(adapter), substitutedFiles: pinDevTypeReferences ? ['src/lib/db.ts', 'next-env.d.ts'] : ['src/lib/db.ts'], generatedTypeReferences }, null, 2);
+    const manifestBytes = JSON.stringify({ checkpoint: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: source, encoding: 'utf8' }).trim(), hashes, originalDbHash: hash(originalDb), substitutedDbHash: hash(adapter), substitutedFiles,isolatedTransport, generatedTypeReferences }, null, 2);
     await writeFile(join(root, 'source-manifest.json'), manifestBytes);
     sourceManifestHash = hash(manifestBytes); mirrorPrepared = true;
     await verifyMirror();
     const port = await availablePort(), url = `http://127.0.0.1:${port}`;
     const env: NodeJS.ProcessEnv = {
       PATH: process.env.PATH, HOME: process.env.HOME, NODE_ENV: 'development', CI: '1',
+      ...isolatedEnvironment,
       NEVORA_CLOCKER_PIN_KEY: options.clockerPinKey,
       NEXT_PUBLIC_NEVORA_PASSKEYS: options.passkeysEnabled === true ? 'on' : 'off',
       NEVORA_MOBILE_ACCESS_ENABLED:options.mobileAccessEnabled===true?'true':'false',
       // Recovery fixture intentionally has no commerce credential/provider binding.
       // Exact page exceptions still use genuine local session/role admission.
-      NEVORA_COMMERCE_ENABLED:options.commerceRecoveryEnabled===true?'true':'false',
+      NEVORA_COMMERCE_ENABLED:options.centralBillingApiOrigin||options.isolatedWorkspaces?.finance||options.commerceRecoveryEnabled===true?'true':'false',
+      ...(options.centralBillingApiOrigin?{NEVORA_BILLING_ENVIRONMENT:'development',NEVORA_BILLING_API_ORIGIN:options.centralBillingApiOrigin}:{}),
       NEVORA_MOBILE_ACCESS_SUPPORT_ENABLED:options.mobileSupportEnabled===true?'true':'false',
       ...ownedPayrollEnvironment(options),
       ...advisorEnvironment,
@@ -316,7 +330,9 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
       metadata.ownerAdvisorPilot = { ...JSON.parse(advisorEnvironment.NEVORA_OWNER_ADVISOR_PILOT), ...PILOT, endpoint: PILOT.baseUrl + '/openai/v1/responses', preloadHash:mirrorHashes[preload], guardHash:mirrorHashes[guard] };
       pilotArgs.push('--import', join(mirror,preload));
     }
-    child = spawn(process.execPath, [...pilotArgs, join(mirror, 'node_modules/next/dist/bin/next'), 'dev', '--hostname', '127.0.0.1', '--port', String(port)], {
+    const serverArgs=options.isolatedWorkspaces?['--import','tsx',join(mirror,'src/test/integration/owned-isolated-next.mts'),String(port)]:[join(mirror,'node_modules/next/dist/bin/next'),'dev','--hostname','127.0.0.1','--port',String(port)];
+    if(options.isolatedWorkspaces)metadata.isolatedIngress={publicOrigin:options.isolatedWorkspaces.origins[0],entryHash:hashes['src/test/integration/owned-isolated-next.mts'],publicPort:443,socket:'owned-ephemeral-loopback-http',productionIngressVerified:false};
+    child = spawn(process.execPath, [...pilotArgs,...serverArgs], {
       cwd: mirror, env, detached: process.platform !== 'win32', stdio: ['ignore', 'pipe', 'pipe'],
     });
     // Credentials must never reach the persistent sink, even across chunks.
@@ -332,10 +348,14 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
     options.signal?.throwIfAborted();
     const deadline = Date.now() + 90000;
     let ready = false;
+    const startupResponses:Record<string,number>={};
+    if(options.isolatedWorkspaces)metadata.startupResponses=startupResponses;
     while (Date.now() < deadline) {
       options.signal?.throwIfAborted();
       if (child.exitCode !== null) throw new Error('Owned Next process exited before readiness');
-      try { const response = await fetch(`${url}/login`, { redirect: 'manual', signal: options.signal ? AbortSignal.any([options.signal, AbortSignal.timeout(3000)]) : AbortSignal.timeout(3000) }); if (response.ok) { ready = true; break; } }
+      try { const origin=options.isolatedWorkspaces?.origins[0];const status=origin?await probeOwnedIsolatedRuntime(url,origin,options.signal):(await fetch(`${url}/login`,{redirect:'manual',signal:options.signal?AbortSignal.any([options.signal,AbortSignal.timeout(3000)]):AbortSignal.timeout(3000)})).status;
+        if(options.isolatedWorkspaces)startupResponses[status??'io']=(startupResponses[status??'io']??0)+1;if(status!==null&&status>=200&&status<300){ready=true;break;}
+      }
       catch { /* A cold compilation can exceed one poll; retain the bounded startup window. */ }
       await new Promise(resolve => setTimeout(resolve, 150));
     }

@@ -64,3 +64,12 @@ test('every actual conversation route has a company-bound disposition and removi
   assert.throws(()=>validateOnboardingInventory(files,{...inventory,entries:inventory.entries.filter(entry=>entry.path!==path)},read),/Unclassified runtime entrypoint/,path);
  }
 });
+
+test('durable billing and the source-bound Step4 verifier have explicit reviewed transport dispositions',()=>{
+ const files=execFileSync('git',['ls-files','-z'],{encoding:'utf8',maxBuffer:32*1024*1024}).split('\0').filter(Boolean),inventory=JSON.parse(readFileSync('docs/handoffs/onboarding-entrypoint-inventory.json','utf8'));
+ const read=path=>/\.[cm]?[jt]sx?$/.test(path)?readFileSync(path,'utf8'):'';
+ for(const [path,status,behavior] of [['services/commerce/billing-operations.ts','CONVERTED','SEPARATE_CATALOG'],['services/commerce/service.ts','CONVERTED','SEPARATE_CATALOG'],['scripts/step4-local-evidence.mjs','PROVEN_NON_RUNTIME','NOT_DEPLOYED']]){
+  const entry=inventory.entries.find(entry=>entry.path===path);assert(entry,path);assert.equal(entry.status,status);assert.equal(entry.isolatedBehavior,behavior);
+  assert.throws(()=>validateOnboardingInventory(files,{...inventory,entries:inventory.entries.filter(entry=>entry.path!==path)},read),/Unclassified runtime entrypoint/,path);
+ }
+});

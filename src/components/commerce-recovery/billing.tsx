@@ -1,7 +1,9 @@
 'use client';
 import Link from 'next/link';
 import {useEffect,useRef,useState} from 'react';
-import {parseCommerceStatus,type CommerceStatus} from '@/lib/commerce/status';
+import type {CommerceStatus} from '@/lib/commerce/status';
+import {parseBillingSnapshot,type BillingSnapshot} from '@/lib/commerce/billing-snapshot';
+import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import type {AuthLang} from '@/lib/auth-copy';
 import styles from './recovery.module.css';
 const copy={
@@ -16,18 +18,27 @@ export function billingDestination(value:unknown,origin:string):string {
  return url.href;
 }
 export function BillingRecovery({lang,billingOrigin,payrollEnabled}: {lang:AuthLang;billingOrigin:string;payrollEnabled:boolean}) {
- const t=copy[lang], [state,setState]=useState<State>({phase:'loading'}),[revision,setRevision]=useState(0),[opening,setOpening]=useState(false),[failed,setFailed]=useState(false);
+ const t=copy[lang], [state,setState]=useState<State>({phase:'loading'}),[opening,setOpening]=useState(false),[failed,setFailed]=useState(false);
  const action=useRef<AbortController|null>(null);
+ const refresh=useRef<(()=>void)|null>(null);
  useEffect(()=>{
-  let active=true;const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
-  void fetch('/api/commerce/status',{cache:'no-store',credentials:'same-origin',redirect:'error',signal:controller.signal}).then(async response=>{
-   if(!active)return;
-   if(response.status===401||response.status===403){setState({phase:'denied'});return;}
-   if(!response.ok)throw Error('unavailable');
-   const status=parseCommerceStatus(await response.json());if(active)setState({phase:'ready',status});
-  }).catch(()=>{if(active)setState({phase:'unavailable'});}).finally(()=>clearTimeout(timer));
-  return()=>{active=false;clearTimeout(timer);controller.abort();action.current?.abort();action.current=null;};
- },[revision]);
+  const cancelOpening=()=>{action.current?.abort();action.current=null;setOpening(false);};
+  const controller=createPrivateSnapshotController<BillingSnapshot>(view=>{
+   if(view.paused){cancelOpening();setState({phase:'unavailable'});return;}
+   if(!view.snapshot){setState({phase:'loading'});return;}
+   if(view.snapshot.state==='unavailable'){cancelOpening();setState({phase:view.snapshot.reason==='access_denied'?'denied':'unavailable'});return;}
+   setState({phase:'ready',status:view.snapshot.status});
+  },async signal=>{
+   const response=await fetch('/api/commerce/status',{cache:'no-store',credentials:'same-origin',redirect:'error',signal});
+   if(response.status===401||response.status===403)return {state:'unavailable',reason:'access_denied'};
+   if(!response.ok)throw Error('Billing status unavailable');return response.json();
+  },value=>{if(value&&typeof value==='object'&&'state'in value&&value.state==='unavailable'&&'reason'in value&&value.reason==='access_denied')return {state:'unavailable',reason:'access_denied'};return parseBillingSnapshot(value);},reason=>({state:'unavailable',reason}),()=> 'read_failed');
+  const foreground=()=>document.visibilityState!=='hidden'&&navigator.onLine&&document.hasFocus();
+  const pause=()=>controller.pause(),resume=()=>{controller.pause();if(foreground())controller.start();};
+  refresh.current=()=>{controller.pause();if(foreground())controller.start();};
+  document.addEventListener('visibilitychange',resume);for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.addEventListener(event,resume);resume();
+  return()=>{refresh.current=null;controller.stop();action.current?.abort();action.current=null;document.removeEventListener('visibilitychange',resume);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,resume);};
+ },[]);
  async function openBilling(){
   if(action.current||state.phase==='loading'||state.phase==='denied')return;
   const controller=new AbortController();action.current=controller;setOpening(true);setFailed(false);
@@ -51,7 +62,7 @@ export function BillingRecovery({lang,billingOrigin,payrollEnabled}: {lang:AuthL
   {failed?<p className={styles.notice} role="alert">{t.failed}</p>:null}
   <div className={styles.actions}>
    {state.phase!=='denied'?<button className={styles.action} type="button" disabled={opening||state.phase==='loading'} onClick={()=>void openBilling()}>{opening?t.opening:t.billing}</button>:null}
-   <button className={styles.secondary} type="button" disabled={opening||state.phase==='loading'} onClick={()=>{setState({phase:'loading'});setFailed(false);setRevision(value=>value+1);}}>{t.refresh}</button>
+   <button className={styles.secondary} type="button" disabled={opening||state.phase==='loading'} onClick={()=>{setFailed(false);refresh.current?.();}}>{t.refresh}</button>
    {status?.operational?<Link className={styles.secondary} href="/app" prefetch={false}>{t.back}</Link>:null}
    {payrollEnabled?<Link className={styles.secondary} href="/app/my-pay" prefetch={false}>{t.pay}</Link>:null}
   </div><p className={styles.footer}>{t.note}</p>

@@ -1,0 +1,5 @@
+
+> fuel-scheduler@0.1.0 typecheck
+> tsc --noEmit
+
+services/commerce/status.test.ts(35,42): error TS2739: Type '{ id: string; state: string; email: string; profile: { email: string; }; planKey: "small"; trialStart: null; trialEnd: number; paidThrough: null; pastDueSince: null; subscriptionStatus: null; customerId: null; subscriptionId: null; employeeCount: number; }' is missing the following properties from type 'Business': enrollmentSource, incarnation, slotId, origin

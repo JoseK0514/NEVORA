@@ -1,0 +1,31 @@
+[
+  {
+    "name": "baseline-onboarding-journey",
+    "command": [
+      "node",
+      "scripts/onboarding-owned.mjs",
+      "--suite",
+      "journey"
+    ],
+    "source": "f6baaaa6d988f34fb1c3388d0e1fe4c410bcbfd5",
+    "startedAt": "2026-11-13T00:31:55.042135+00:00",
+    "endedAt": "2026-11-13T00:32:01.645598+00:00",
+    "exitCode": 0,
+    "scope": "Independent preparation baseline; no Step3 artifact or combined lifecycle acceptance."
+  },
+  {
+    "name": "baseline-recovery-browsers",
+    "command": [
+      "node",
+      "scripts/payroll-postgres.mjs",
+      "vitest.mobile-access-browser.config.mts",
+      "src/test/integration/commerce-recovery-browser.integration.ts",
+      "src/test/integration/commerce-recovery-effects.integration.ts"
+    ],
+    "source": "f6baaaa6d988f34fb1c3388d0e1fe4c410bcbfd5",
+    "startedAt": "2026-11-13T00:32:01.645985+00:00",
+    "endedAt": "2026-11-13T00:32:28.892197+00:00",
+    "exitCode": 0,
+    "scope": "Independent preparation baseline; no Step3 artifact or combined lifecycle acceptance."
+  }
+]

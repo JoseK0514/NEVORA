@@ -7,6 +7,7 @@ import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import {withOwnedTestResources} from './owned-test-resources';
 
 function readHandoff(held:{handoff?:FixtureRoute}):FixtureRoute|undefined{return held.handoff;}
+function readStatus(held:{status?:FixtureRoute}):FixtureRoute|undefined{return held.status;}
 type FixtureRoute={request():{url():string};abort(reason?:string):Promise<void>;fulfill(options:{contentType:string;body:string}):Promise<void>};
 
 it('unmounts retained shell state and cancels late billing reads/handoffs in native browser effects',async()=>{
@@ -16,16 +17,16 @@ it('unmounts retained shell state and cancels late billing reads/handoffs in nat
  const compiled=await build({entryPoints:['src/test/fixtures/commerce-recovery-component.tsx'],bundle:true,write:false,format:'iife',platform:'browser',outfile:'owned-recovery.js',define:{'process.env':'{"NODE_ENV":"production"}'}});
  const js=compiled.outputFiles.find(file=>file.path.endsWith('.js'))!.text,css=compiled.outputFiles.find(file=>file.path.endsWith('.css'))!.text;
  const tokens=await readFile('src/components/signature/tokens.css','utf8'),checks:string[]=[],errors:string[]=[];
- const status={state:'restricted',operational:false,trialEndsAt:null,paidThrough:null,graceEndsAt:null,plan:'small',employeeLimit:15,activeEmployees:2,reason:'trial_ended',billing:true,export:true};
+ const status={state:'restricted',operational:false,trialEndsAt:null,paidThrough:null,graceEndsAt:null,plan:'small',employeeLimit:15,activeEmployees:2,reason:'trial_ended',billing:true,export:true,observedAt:new Date().toISOString(),validForMs:15000};
  const origin='http://127.0.0.1:32199',checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim();
  let passed=false;const closed:string[]=[];
  await withOwnedTestResources(async defer=>{
-  defer(()=>writeFile(join(evidence,'report.json'),JSON.stringify({checkpoint,tree,status:passed&&closed.length===2?'passed':'failed',closedBrowsers:closed,checks,errors,scope:'Actual production components, real React effects and Next PathnameContext in native engines; controlled presentation-only HTTP fixtures, not full Next router or provider acceptance.'},null,2)));
+  defer(()=>writeFile(join(evidence,'report.json'),JSON.stringify({checkpoint,tree,status:passed&&closed.length===2?'passed':'failed',closedBrowsers:closed,checks,errors,scope:'Actual production components, real React effects and Next PathnameContext in native engines; controlled presentation-only HTTP and explicit blur/focus event fixtures, not physical tab focus, full Next router or provider acceptance.'},null,2)));
   for(const engine of ['chromium','webkit']){
    const browser=await runtime[engine].launch({headless:true});defer(async()=>{await browser.close();closed.push(engine);});
    const context=await browser.newContext({viewport:{width:390,height:844}}),page=await context.newPage();page.setDefaultTimeout(10000);
    page.on('pageerror',(error:Error)=>errors.push(engine+':'+error.message));
-   let holdStatus=true;const held:{status?:FixtureRoute;handoff?:FixtureRoute}={},navigations:string[]=[],externalRequests:string[]=[];let recoveryDocuments=0;
+   let holdStatus=true,responseLifetime=15000;const held:{status?:FixtureRoute;handoff?:FixtureRoute}={},navigations:string[]=[],externalRequests:string[]=[];let recoveryDocuments=0;
    page.on('framenavigated',(frame:{url():string})=>{if(frame===page.mainFrame())navigations.push(frame.url());});
    await context.route('**/*',async(route:FixtureRoute)=>{
     const url=new URL(route.request().url());
@@ -36,7 +37,7 @@ it('unmounts retained shell state and cancels late billing reads/handoffs in nat
     if(url.pathname==='/fixture'){await route.fulfill({contentType:'text/html',body:'<!doctype html><html><head><style>'+tokens+css+'</style></head><body><div id="root"></div></body></html>'});return;}
     if(url.pathname==='/api/commerce/status'){
      if(holdStatus){held.status=route;return;}
-     await route.fulfill({contentType:'application/json',body:JSON.stringify(status)});return;
+     await route.fulfill({contentType:'application/json',body:JSON.stringify({...status,validForMs:responseLifetime})});return;
     }
     if(url.pathname==='/api/commerce/handoff'){held.handoff=route;return;}
     await route.abort('blockedbyclient');
@@ -54,12 +55,29 @@ it('unmounts retained shell state and cancels late billing reads/handoffs in nat
    await held.status.fulfill({contentType:'application/json',body:JSON.stringify(status)}).catch(()=>undefined);
    expect(await page.getByText('2 / 15',{exact:true}).count()).toBe(0);
    holdStatus=false;await page.getByRole('button',{name:'Enter recovery'}).click();await page.getByText('Access paused',{exact:true}).waitFor();
+   // Playwright1.62.1 forces focused state in both engines. Test the actual
+   // production event wiring explicitly; this is not physical tab-focus proof.
+   holdStatus=true;delete held.status;await page.getByRole('button',{name:'Refresh status',exact:true}).click();await expect.poll(()=>Boolean(held.status)).toBe(true);
+   const abortsBefore=await page.evaluate(()=>window.recoveryReceipt.aborted.filter(path=>path==='/api/commerce/status').length);await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await expect.poll(()=>page.evaluate(()=>window.recoveryReceipt.aborted.filter(path=>path==='/api/commerce/status').length)).toBe(abortsBefore+1);
+   const foregroundStatus=readStatus(held);if(!foregroundStatus)throw Error('Held foreground read missing');await foregroundStatus.fulfill({contentType:'application/json',body:JSON.stringify(status)}).catch(()=>undefined);expect(await page.getByText('2 / 15',{exact:true}).count()).toBe(0);
+   holdStatus=false;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.getByText('Access paused',{exact:true}).waitFor();
+   // The original disclosure deadline must also cancel an already pending
+   // handoff; a late billing reply cannot navigate from retired presentation.
+   responseLifetime=1000;await page.getByRole('button',{name:'Refresh status',exact:true}).click();await page.getByText('2 / 15',{exact:true}).waitFor();delete held.handoff;
+   const handoffAbortsBefore=await page.evaluate(()=>window.recoveryReceipt.aborted.filter(path=>path==='/api/commerce/handoff').length);
+   await page.getByRole('button',{name:'Open billing in Velani'}).click();await expect.poll(()=>Boolean(held.handoff)).toBe(true);
+   await page.getByText('Billing status is unavailable. Try again in a moment.',{exact:true}).waitFor();
+   await expect.poll(()=>page.evaluate(()=>window.recoveryReceipt.aborted.filter(path=>path==='/api/commerce/handoff').length)).toBe(handoffAbortsBefore+1);
+   const expiredHandoff=readHandoff(held);if(!expiredHandoff)throw Error('Expired held handoff missing');
+   await expiredHandoff.fulfill({contentType:'application/json',body:JSON.stringify({url:'https://www.thevelani.com/pages/plans#handoff='+'a'.repeat(43)})}).catch(()=>undefined);
+   expect(await page.getByText('2 / 15',{exact:true}).count()).toBe(0);expect(externalRequests).toEqual([]);expect(navigations).toEqual([origin+'/fixture']);
+   responseLifetime=15000;await page.getByRole('button',{name:'Refresh status',exact:true}).click();await page.getByText('Access paused',{exact:true}).waitFor();delete held.handoff;
    await page.getByRole('button',{name:'Open billing in Velani'}).click();await page.getByRole('button',{name:'Opening billing…',exact:true}).waitFor();
    await expect.poll(()=>Boolean(held.handoff)).toBe(true);
    await page.getByRole('button',{name:'Leave recovery'}).click();
    await expect.poll(()=>page.evaluate(()=>(window.recoveryReceipt.aborted))).toContain('/api/commerce/handoff');
-   if(!held.handoff)throw Error('Held handoff request missing');
-   await held.handoff.fulfill({contentType:'application/json',body:JSON.stringify({url:'https://www.thevelani.com/pages/plans#handoff='+'a'.repeat(43)})}).catch(()=>undefined);
+   const unmountedHandoff=readHandoff(held);if(!unmountedHandoff)throw Error('Held handoff request missing');
+   await unmountedHandoff.fulfill({contentType:'application/json',body:JSON.stringify({url:'https://www.thevelani.com/pages/plans#handoff='+'a'.repeat(43)})}).catch(()=>undefined);
    await page.getByText('Operational pollers and parallel sheet',{exact:true}).waitFor();
    expect(navigations).toEqual([origin+'/fixture']);expect(externalRequests).toEqual([]);expect(await page.getByText('2 / 15',{exact:true}).count()).toBe(0);
    await page.getByRole('button',{name:'Enter recovery'}).click();await page.getByText('Access paused',{exact:true}).waitFor();delete held.handoff;
@@ -72,7 +90,7 @@ it('unmounts retained shell state and cancels late billing reads/handoffs in nat
    expect(externalRequests).toEqual(['https://www.thevelani.com/pages/plans']);
    await page.goto(origin+'/fixture?initial=recovery');await page.addScriptTag({content:js});await page.getByText('Access paused',{exact:true}).waitFor();
    await page.getByRole('button',{name:'Leave recovery'}).click();await page.getByRole('heading',{name:'Fresh recovery exit document',exact:true}).waitFor();expect(recoveryDocuments).toBe(2);
-   checks.push(engine+': healthy → recovery → healthy unmounts pollers/sheet; loading disables action; late read/handoff abort with no stale status or attempted navigation; valid trusted handoff navigates; recovery-first exit reloads a fresh document');
+   checks.push(engine+': healthy → recovery → healthy unmounts pollers/sheet; loading disables action; explicit blur/focus fixture aborts and fences a held read then obtains fresh status; original disclosure expiry cancels a held handoff and fences late navigation; late read/handoff abort with no stale status or attempted navigation; valid trusted handoff navigates; recovery-first exit reloads a fresh document');
    await context.close();
   }
   expect(errors).toEqual([]);passed=true;

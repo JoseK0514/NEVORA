@@ -191,7 +191,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
     :<p className={styles.detail}>{t("Your time is recorded when you clock in.")}</p>}
    {pause?.type?<p className={styles.breakContext}><strong>{pause.type.name}</strong>{pause.type.targetMinutes!==null?' · '+t('Reference: {minutes} min',{minutes:pause.type.targetMinutes}):''}</p>:null}
    {entry?.status==='CLOCKED_IN'&&!view.breakTypes.length&&!view.atOtherLocation?<p data-clocker-notice className={styles.notice}>{t(view.breaksOff?'Breaks aren\u2019t recorded on the Clocker here.':'No break types are configured. Ask your Owner to add one.')}</p>:null}
-   {!actions.length?<p data-clocker-notice className={styles.notice}>{t("This shift was started at another location. Use that location’s registered Clocker to continue.")}</p>:null}
+   {!actions.length?<p data-clocker-notice className={styles.notice}>{t(view.commerceRestriction==='paused'&&!view.atOtherLocation?"New clock-ins are paused. Ask your Owner about workplace access.":"This shift was started at another location. Use that location’s registered Clocker to continue.")}</p>:null}
    <div className={styles.cards}>{actions.map((action,i)=><button tabIndex={0} data-clocker-action key={action} type="button" className={`button ${i===0?'primary':'secondary'} ${styles.card}`} aria-label={t(labels[action])} onClick={()=>action==='CLOCK_OUT'?setMode('confirm-out'):action==='START_BREAK'?setMode('select-break'):act(action)}>
     <span className={styles.tile}><ClockerIcon name={actionIcons[action]} size={36} weight={presentation.v2?'regular':'duotone'}/></span>
     <span className="clocker-label"><span>{t(labels[action])}</span>{spanish?<Es phrase={labels[action] as ClockerPhrase} inButton/>:null}</span>

@@ -1,7 +1,7 @@
 .frame { min-height:100dvh; padding:clamp(20px,5vw,64px) 20px; background:var(--sig-page); color:var(--sig-ink-1); font:var(--sig-type-body); }
 .content { width:min(100%,640px); margin:0 auto; }
 .brand { margin:0 0 48px; color:var(--sig-deep); font:600 1.125rem/1.4 var(--sig-font); letter-spacing:.12em; }
-.card { padding:clamp(24px,5vw,40px); border:1px solid var(--sig-edge); border-radius:24px; background:var(--sig-card); }
+.card { overflow-wrap:anywhere; padding:clamp(24px,5vw,40px); border:1px solid var(--sig-edge); border-radius:24px; background:var(--sig-card); }
 .card h1 { margin:0 0 16px; font:400 clamp(1.75rem,5vw,2.25rem)/1.15 var(--sig-font-display); letter-spacing:-.035em; }
 .card h2 { font:var(--sig-type-row); margin:0 0 8px; }
 .card p { line-height:1.6; color:var(--sig-ink-2); }
@@ -21,3 +21,8 @@
 .footer { margin:24px 0 0; font:var(--sig-type-callout); color:var(--sig-ink-2); }
 .footer a { color:var(--sig-action); }
 @media(max-width:420px) { .actions { align-items:stretch; flex-direction:column; } .actions>* { width:100%; } .brand { margin-bottom:32px; } }
+
+.language { border: 0; padding: 0; margin: 1rem 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+.language legend { margin-bottom: .5rem; font-weight: 600; }
+.language button[aria-pressed='true'] { outline: 2px solid currentColor; outline-offset: 2px; }
+.plans { padding-left: 1.25rem; overflow-wrap: anywhere; }

@@ -1,0 +1,189 @@
+
+> fuel-scheduler@0.1.0 test:commerce:owned
+> node scripts/commerce-postgres.mjs
+
+
+ RUN  v5.0.5 /workspace/nevora-step3-final
+
+ ❯ services/commerce/plan-change-api.test.ts (22 tests | 11 failed) 71ms
+   × returns the server-selected confirmation contract and rechecks current Owner authority after provider I/O 32ms
+   × does not return a financial URL after Owner revocation during provider I/O 4ms
+   × withholds private results after revocation during awaited work: /v1/status 1ms
+   × withholds private results after revocation during awaited work: /v1/checkout 1ms
+   × withholds private results after revocation during awaited work: /v1/portal 1ms
+   × rejects an installation changed during awaited work: /v1/status 1ms
+   × rejects an installation changed during awaited work: /v1/checkout 11ms
+   × rejects an installation changed during awaited work: /v1/portal 1ms
+   × does not start provider work after revocation during headcount I/O: /v1/checkout 1ms
+   × does not start provider work after revocation during headcount I/O: /v1/portal 1ms
+   × does not start provider work after revocation during headcount I/O: /v1/plan-change 2ms
+ ❯ services/commerce/stripe.integration.test.ts (67 tests | 1 failed) 11271ms
+   ❯ Stripe lifecycle with real catalog and SDK (67)
+     × rejects a signed event from a foreign account before durable admission or provider I/O 77ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  services/commerce/plan-change-api.test.ts > returns the server-selected confirmation contract and rechecks current Owner authority after provider I/O
+AssertionError: expected "session" to be called 3 times, but got 2 times
+ ❯ services/commerce/plan-change-api.test.ts:23:142
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  services/commerce/plan-change-api.test.ts > does not return a financial URL after Owner revocation during provider I/O
+AssertionError: expected 200 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 200
+
+ ❯ services/commerce/plan-change-api.test.ts:33:54
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+ FAIL  services/commerce/plan-change-api.test.ts > withholds private results after revocation during awaited work: /v1/status
+ FAIL  services/commerce/plan-change-api.test.ts > withholds private results after revocation during awaited work: /v1/checkout
+ FAIL  services/commerce/plan-change-api.test.ts > withholds private results after revocation during awaited work: /v1/portal
+AssertionError: expected 200 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 200
+
+ ❯ services/commerce/plan-change-api.test.ts:47:54
+     45|  else if(path==='/v1/portal')billing.portal.mockImplementation(async()…
+     46|  else billing.planChange.mockImplementation(async()=>{await revoke();r…
+     47|  const response=await send();expect(response.status).toBe(401);expect(…
+       |                                                      ^
+     48| });
+     49| it.each(['/v1/status','/v1/checkout','/v1/portal','/v1/plan-change'])(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
+
+ FAIL  services/commerce/plan-change-api.test.ts > rejects an installation changed during awaited work: /v1/status
+ FAIL  services/commerce/plan-change-api.test.ts > rejects an installation changed during awaited work: /v1/checkout
+ FAIL  services/commerce/plan-change-api.test.ts > rejects an installation changed during awaited work: /v1/portal
+AssertionError: expected 200 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 200
+
+ ❯ services/commerce/plan-change-api.test.ts:55:54
+     53|  else if(path==='/v1/portal')billing.portal.mockImplementation(async()…
+     54|  else billing.planChange.mockImplementation(async()=>{b.incarnation='2…
+     55|  const response=await send();expect(response.status).toBe(409);expect(…
+       |                                                      ^
+     56| });
+     57| it.each(['/v1/checkout','/v1/portal','/v1/plan-change'])('does not sta…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
+
+ FAIL  services/commerce/plan-change-api.test.ts > does not start provider work after revocation during headcount I/O: /v1/checkout
+ FAIL  services/commerce/plan-change-api.test.ts > does not start provider work after revocation during headcount I/O: /v1/portal
+AssertionError: expected 200 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 200
+
+ ❯ services/commerce/plan-change-api.test.ts:60:54
+     58|  const {send,session,billing,headcount}=setup(path);
+     59|  headcount.mockImplementation(async()=>{session.mockRejectedValue(new …
+     60|  const response=await send();expect(response.status).toBe(401);expect(…
+       |                                                      ^
+     61|  expect(billing.checkout).not.toHaveBeenCalled();expect(billing.portal…
+     62| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/12]⎯
+
+ FAIL  services/commerce/plan-change-api.test.ts > does not start provider work after revocation during headcount I/O: /v1/plan-change
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      Object {
+        "customerId": "cus_fictional",
+        "email": "owner@example.invalid",
+        "employeeCount": 7,
+        "enrollmentSource": "onboarding",
+        "id": "11111111-1111-4111-8111-111111111111",
+        "incarnation": "1",
+        "origin": "https://company.example.test",
+        "paidThrough": null,
+        "pastDueSince": null,
+        "planKey": "small",
+        "profile": Object {
+          "email": "owner@example.invalid",
+        },
+        "slotId": "11111111-1111-4111-8111-111111111111",
+        "state": "ready",
+        "subscriptionId": "sub_fictional",
+        "subscriptionStatus": "active",
+        "trialEnd": null,
+        "trialStart": null,
+      },
+      "22222222-2222-4222-8222-222222222222",
+      "team",
+      Object {
+        "businessId": "11111111-1111-4111-8111-111111111111",
+        "employeeId": "owner",
+        "generation": "1",
+        "incarnation": "1",
+        "installationId": "11111111-1111-4111-8111-111111111111",
+        "sessionTokenHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+      "es",
+    ]
+
+
+Number of calls: 1
+
+ ❯ services/commerce/plan-change-api.test.ts:61:127
+     59|  headcount.mockImplementation(async()=>{session.mockRejectedValue(new …
+     60|  const response=await send();expect(response.status).toBe(401);expect(…
+     61|  expect(billing.checkout).not.toHaveBeenCalled();expect(billing.portal…
+       |                                                                                                                               ^
+     62| });
+     63| it.each(['/v1/checkout','/v1/portal'])('preserves a successful private…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
+
+ FAIL  services/commerce/stripe.integration.test.ts > Stripe lifecycle with real catalog and SDK > rejects a signed event from a foreign account before durable admission or provider I/O
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+undefined
+
+ ❯ services/commerce/stripe.integration.test.ts:389:49
+    387|     Object.assign(billing.options,{expectedAccountId:'acct_fictional'}…
+    388|     const {raw,signature}=signedEvent({account:'acct_foreign'});
+    389|     await expect(billing.webhook(raw,signature)).rejects.toThrow('stri…
+       |                                                 ^
+    390|     expect((await pool.query('SELECT count(*)::int n FROM commerce.web…
+    391|     expect((await pool.query('SELECT count(*)::int n FROM commerce.job…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/12]⎯
+
+
+ Test Files  2 failed | 13 passed (15)
+      Tests  12 failed | 170 passed (182)
+   Start at  00:30:21
+   Duration  11.91s (tests 87%, import 8%, transform 5%)

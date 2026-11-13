@@ -1,0 +1,11 @@
+# Claim admission bucket fixture correction
+
+Development242a993 passed its complete immutable candidate gates, then actual-development CI43325639433 failed onboarding job131557278760. The source-bound artifact13992119615 retained515 passed/1 failed foundation tests. The exhausted-proof test expected invalid and received activated; no later backend stage ran. Mobile43325639439 passed separately. Development242 remains unqualified; its source archives stay undeployed.
+
+The existing test seeded an exhausted current15-minute counter bucket, then assumed100 requests remained in that bucket. A new bucket legitimately admits the invitation. A controlled test-only advance reproduced the same assertion failure. This establishes the mechanism and invalid test assumption; missing historical counter timestamps prevent a definitive claim about the exact CI timing.
+
+The bounded correction pins only the counter date_bin input at a timestamp read from the owned database. PostgreSQL still executes date_bin, counter conflicts, limits and retention. Real invitation/session expiry, locks, eligibility, password derivation and writes remain unchanged. All existing assertions remain. A new explicit SQL rollover test proves old-bucket rejection/no hashing, new-bucket activation/one hash, old exhausted row retention and one new attempt.
+
+The affected seven tests and full32-file foundation suite517 tests passed; owned clusters stopped. Typecheck, scoped lint and diff check passed. Fresh read-only review is CLEAR/APPROVE, blockers[]. [Evidence and review](claim-bucket-evidence-20261112/qualification.json) distinguish this local working-tree validation from the pending final-source candidate/development qualification. Manuals must be regenerated because the tracked application hash includes tests.
+
+Codex remains sole finisher and owns this test correction; Claude retains UI redesign. Development is the primary operating/acceptance release with production standards. Required immutable candidate and actual-development20/10/artifact gates still apply. No assertion/timeout/rate-limit control, provider schedule, quota, hosted data, enrollment, lock, Stripe, push or mail behavior changed. The single50/45-minute hosted authorization remains held and unstarted. Main/production promotion requires Jose's approval.

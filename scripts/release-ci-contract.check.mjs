@@ -9,6 +9,26 @@ const require=createRequire(import.meta.url);
 const workflow=require('js-yaml').load(readFileSync('.github/workflows/ci.yml','utf8'));
 const mandatory=['validate','clocker-postgres','release-postgres','phase-d-attendance-ui','management-review-ui','phase-e-postgres','phase-e-ui'];
 
+test('mandatory backend gate executes durable commerce SQL and SDK cases and retains their report',()=>{
+ const job=workflow.jobs['onboarding-backend'];
+ const gate=job.steps.find(step=>step.name==='Durable commerce PostgreSQL and SDK gate');
+ assert(gate,'Durable commerce SQL/SDK gate is absent');assert.equal(gate.if,undefined);assert.equal(gate['continue-on-error'],undefined);
+ assert.equal(gate.run,'mkdir -p "$RUNNER_TEMP/nevora-onboarding-backend"\nnode scripts/commerce-postgres.mjs --reporter=default --reporter=json --outputFile="$RUNNER_TEMP/nevora-onboarding-backend/commerce-sql-sdk.json"\n');
+ const upload=job.steps.find(step=>step.name==='Upload backend evidence, separate from UI and hosted approval');assert.equal(upload.with.path,'${{ runner.temp }}/nevora-onboarding-backend/**');assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
+});
+
+test('Owner advisor uploads nested reports, captures and traces with their source custody',()=>{
+ const gate=workflow.jobs['phase-d-attendance-ui'].steps.find(step=>step.name==='Owner advisor PostgreSQL and browser gate');
+ assert.equal(gate.if,undefined);
+ const steps=workflow.jobs['phase-d-attendance-ui'].steps;
+ assert(steps.findIndex(step=>step.name==='Combined company lifecycle and recovery gate')>steps.findIndex(step=>step.name==='Upload Owner advisor browser evidence'),'Original Owner advisor evidence must precede the combined journey');
+ const upload=workflow.jobs['phase-d-attendance-ui'].steps.find(step=>step.name==='Upload Owner advisor browser evidence');
+ assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
+ const root='${{ runner.temp }}/nevora-owner-advisor-browser-evidence';
+ for(const suffix of ['/**/*.json','/**/*.png','/**/*-trace.zip'])assert(upload.with.path.split('\n').includes(root+suffix),'Nested Owner advisor evidence missing: '+suffix);
+ assert.equal(upload['continue-on-error'],undefined);
+});
+
 test('Clocker SQL sharding preserves original selectors and rejects partial/custom shard configurations',()=>{
  assert.deepEqual(parseClockerArguments([]),{selection:undefined,shard:undefined});
  for(const selection of ['--punch-ui','--pins-ui','--company-setup','vitest.clocker-integration.config.mts'])assert.deepEqual(parseClockerArguments([selection]),{selection,shard:undefined});
@@ -163,8 +183,9 @@ test('mandatory release SQL selects the timestamp-fence regressions and retains 
 });
 test('mandatory browser job runs Owner advisor without a model connection and retains evidence',()=>{
  const steps=workflow.jobs['phase-d-attendance-ui'].steps;
- const step=steps.find(s=>s.run==='node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts');
+ const step=steps.find(s=>s.name==='Owner advisor PostgreSQL and browser gate');
  assert(step,'Owner advisor browser checks missing');
+ assert.deepEqual(step.run.trim().split('\n'),['node --import tsx --test scripts/owner-advisor-retirement.check.mts','node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts']);
  assert.equal(step.if,undefined);
  assert.equal(step['continue-on-error'],undefined);
  assert.deepEqual(step.env,{NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE:'${{ runner.temp }}/nevora-owner-advisor-browser-evidence'});
@@ -172,7 +193,7 @@ test('mandatory browser job runs Owner advisor without a model connection and re
  assert(upload);
  assert.equal(upload.if,'always()');
  assert.equal(upload.with['if-no-files-found'],'error');
- for(const item of ['/*.json','/*.png','/*-trace.zip','/**/source-manifest.json','/**/ownership.json'])assert(upload.with.path.includes('nevora-owner-advisor-browser-evidence'+item));
+ for(const item of ['/**/*.json','/**/*.png','/**/*-trace.zip'])assert(upload.with.path.includes('nevora-owner-advisor-browser-evidence'+item));
 });
 test('validation runs the spending guard suite without enabling live inference',()=>{
  const step=workflow.jobs.validate.steps.find(s=>s.run==='node --import tsx --test src/test/integration/owner-advisor-pilot.check.mts');
@@ -352,4 +373,31 @@ test('conversations SQL is a mandatory owned release gate with retained evidence
   if(mutation==='drop-artifact')broken.steps.find(s=>s.with?.name?.startsWith('conversations-sql-')).with.path='${{ runner.temp }}/native-payroll.json';
   assert.throws(()=>verify(broken),undefined,mutation);
  }
+});
+
+test('combined Step4 lifecycle remains a mandatory exact-source browser gate with retained evidence',()=>{
+ const job=workflow.jobs['phase-d-attendance-ui'];
+ const gate=job.steps.find(step=>step.name==='Combined company lifecycle and recovery gate');
+ assert(gate,'Combined lifecycle gate is absent');
+ assert.equal(gate.run,'node scripts/step4-local-acceptance.mjs');
+ assert.equal(gate.if,"${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}");
+ assert.equal(gate['continue-on-error'],undefined);
+ assert.equal(gate.env.NEVORA_STEP4_EXPECTED_SHA,'${{ github.event.pull_request.head.sha || github.sha }}');
+ assert.equal(gate.env.NEVORA_STEP4_EVIDENCE,'${{ runner.temp }}/nevora-step4-local');
+ const upload=job.steps.find(step=>step.name==='Upload combined company lifecycle evidence');
+ assert.equal(upload.if,'always()');assert.equal(upload.with.name,'step4-local-${{ github.event.pull_request.head.sha || github.sha }}');assert.equal(upload.with['if-no-files-found'],'error');assert.equal(upload.with['retention-days'],14);
+ for(const suffix of ['/**/*.json','/**/*.png','/**/*-trace.zip'])assert(upload.with.path.split('\n').includes('${{ runner.temp }}/nevora-step4-local'+suffix));
+ assert.equal(job['timeout-minutes'],50);
+});
+
+// The functional billing entry must travel with the existing combined release artifact.
+test('central billing is a mandatory source-bound two-browser gate in the combined lifecycle artifact',()=>{
+ const job=workflow.jobs['phase-d-attendance-ui'],gate=job.steps.find(step=>step.name==='Central billing entry and callback gate');
+ assert(gate,'Central billing entry gate is absent');
+ assert.equal(gate.run,'node scripts/central-billing-local-acceptance.mjs');
+ assert.equal(gate.if,"${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}");
+ assert.equal(gate['continue-on-error'],undefined);
+ assert.equal(gate.env.NEVORA_CENTRAL_BILLING_EXPECTED_SHA,'${{ github.event.pull_request.head.sha || github.sha }}');
+ assert.equal(gate.env.NEVORA_CENTRAL_BILLING_EVIDENCE,'${{ runner.temp }}/nevora-step4-local/central-billing');
+ const index=job.steps.indexOf(gate);assert(index>job.steps.findIndex(step=>step.name==='Combined company lifecycle and recovery gate'));assert(index<job.steps.findIndex(step=>step.name==='Upload combined company lifecycle evidence'));
 });

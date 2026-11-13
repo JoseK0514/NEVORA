@@ -288,18 +288,41 @@ jobs:
       - name: Owner advisor PostgreSQL and browser gate
         env:
           NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE: ${{ runner.temp }}/nevora-owner-advisor-browser-evidence
-        run: node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts
+        run: |
+          node --import tsx --test scripts/owner-advisor-retirement.check.mts
+          node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts
       - name: Upload Owner advisor browser evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: owner-advisor-browser-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
-            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/*.json
-            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/*.png
-            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/*-trace.zip
-            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/source-manifest.json
-            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/ownership.json
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/*.json
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/*.png
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/*-trace.zip
+          if-no-files-found: error
+          retention-days: 14
+      - name: Combined company lifecycle and recovery gate
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          NEVORA_STEP4_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          NEVORA_STEP4_EVIDENCE: ${{ runner.temp }}/nevora-step4-local
+        run: node scripts/step4-local-acceptance.mjs
+      - name: Central billing entry and callback gate
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          NEVORA_CENTRAL_BILLING_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          NEVORA_CENTRAL_BILLING_EVIDENCE: ${{ runner.temp }}/nevora-step4-local/central-billing
+        run: node scripts/central-billing-local-acceptance.mjs
+      - name: Upload combined company lifecycle evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: step4-local-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/nevora-step4-local/**/*.json
+            ${{ runner.temp }}/nevora-step4-local/**/*.png
+            ${{ runner.temp }}/nevora-step4-local/**/*-trace.zip
           if-no-files-found: error
           retention-days: 14
       - name: Exact-SHA D1.3 attendance browser gate
@@ -746,6 +769,10 @@ jobs:
           test -x /usr/lib/postgresql/16/bin/pg_dump
           test -x /usr/lib/postgresql/16/bin/pg_restore
           echo "NEVORA_TEST_PG_BIN=/usr/lib/postgresql/16/bin" >> "$GITHUB_ENV"
+      - name: Durable commerce PostgreSQL and SDK gate
+        run: |
+          mkdir -p "$RUNNER_TEMP/nevora-onboarding-backend"
+          node scripts/commerce-postgres.mjs --reporter=default --reporter=json --outputFile="$RUNNER_TEMP/nevora-onboarding-backend/commerce-sql-sdk.json"
       - name: Verify source-bound owned backend acceptance
         env:
           NEVORA_ONBOARDING_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
