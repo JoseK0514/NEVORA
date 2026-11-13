@@ -328,7 +328,9 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { i
       metadata.ownerAdvisorPilot = { ...JSON.parse(advisorEnvironment.NEVORA_OWNER_ADVISOR_PILOT), ...PILOT, endpoint: PILOT.baseUrl + '/openai/v1/responses', preloadHash:mirrorHashes[preload], guardHash:mirrorHashes[guard] };
       pilotArgs.push('--import', join(mirror,preload));
     }
-    child = spawn(process.execPath, [...pilotArgs, join(mirror, 'node_modules/next/dist/bin/next'), 'dev', '--hostname', '127.0.0.1', '--port', String(port)], {
+    const serverArgs=options.isolatedWorkspaces?['--import','tsx',join(mirror,'src/test/integration/owned-isolated-next.mts'),String(port)]:[join(mirror,'node_modules/next/dist/bin/next'),'dev','--hostname','127.0.0.1','--port',String(port)];
+    if(options.isolatedWorkspaces)metadata.isolatedIngress={publicOrigin:options.isolatedWorkspaces.origins[0],entryHash:hashes['src/test/integration/owned-isolated-next.mts'],publicPort:443,socket:'owned-ephemeral-loopback-http',productionIngressVerified:false};
+    child = spawn(process.execPath, [...pilotArgs,...serverArgs], {
       cwd: mirror, env, detached: process.platform !== 'win32', stdio: ['ignore', 'pipe', 'pipe'],
     });
     // Credentials must never reach the persistent sink, even across chunks.

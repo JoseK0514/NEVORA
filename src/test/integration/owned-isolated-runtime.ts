@@ -10,7 +10,7 @@ function local(raw:string){const u=new URL(raw);if(!['postgres:','postgresql:'].
 export function ownedIsolatedEnvironment(options?:OwnedIsolatedRuntime):Record<string,string>{
  if(!options)return {};
  const c=options,control=local(c.controlDatabaseUrl);
- if(c.environment!=='test'||!/^nv_onboard_[a-f0-9]{8}$/.test(control.username)||!/^\/nv_onboarding_test_[a-f0-9]{20}$/.test(control.pathname)||!key(c.encryptionKey)||!key(c.tokenKey)||c.tokenKey===c.encryptionKey||!/^([a-z0-9-]+\.)*example\.invalid$/.test(c.portalBaseDomain)||c.origins.length<1||c.origins.length>2||new Set(c.origins).size!==c.origins.length||c.targets.length<1||c.targets.length>2)fail();
+ if(c.environment!=='test'||!/^nv_onboard_[a-f0-9]{8}$/.test(control.username)||!/^\/nv_onboarding_test_[a-f0-9]{20}$/.test(control.pathname)||!key(c.encryptionKey)||!key(c.tokenKey)||c.tokenKey===c.encryptionKey||!/^([a-z0-9-]+\.)*example\.invalid$/.test(c.portalBaseDomain)||c.origins.length!==1||c.targets.length<1||c.targets.length>2)fail();
  for(const value of c.origins){const u=new URL(value);if(u.origin!==value||u.protocol!=='https:'||u.port||u.username||u.password||!u.hostname.endsWith('.'+c.portalBaseDomain)||u.hostname.slice(0,-c.portalBaseDomain.length-1).includes('.'))fail();}
  const seen=new Set<string>();
  for(const target of c.targets){
@@ -18,7 +18,7 @@ export function ownedIsolatedEnvironment(options?:OwnedIsolatedRuntime):Record<s
   if(!/^nv_app_[a-f0-9]{32}$/.test(target.name)||actual.pathname!=='/'+target.name||actual.port!==control.port||!/^nv_app_[a-f0-9]{24}$/.test(actual.username)||!Number.isSafeInteger(target.oid)||target.oid<=0||!/^nevora-step4-owned:[a-f0-9-]{36}$/.test(target.marker)||!['postgres:','postgresql:'].includes(uri.protocol)||!/^ep-[a-f0-9]+\.us-east-1\.aws\.neon\.tech$/.test(uri.hostname)||uri.username!==actual.username||uri.password!==actual.password||uri.pathname!==actual.pathname||uri.hash||seen.has(target.uri))fail();
   seen.add(target.uri);
  }
- return {NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_CONTROL_DATABASE_URL:c.controlDatabaseUrl,NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:c.encryptionKey,NEVORA_WORKSPACE_TOKEN_SECRET:c.tokenKey,NEVORA_PORTAL_BASE_DOMAIN:c.portalBaseDomain,NEVORA_OWNED_ISOLATED_TARGETS:JSON.stringify(c.targets)};
+ return {NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_CONTROL_DATABASE_URL:c.controlDatabaseUrl,NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:c.encryptionKey,NEVORA_WORKSPACE_TOKEN_SECRET:c.tokenKey,NEVORA_PORTAL_BASE_DOMAIN:c.portalBaseDomain,NEVORA_OWNED_ISOLATED_TARGETS:JSON.stringify(c.targets),NEVORA_OWNED_ISOLATED_ORIGINS:JSON.stringify(c.origins)};
 }
 /** Check the existing invocation marker and actual SQL identities before any
  * application process launches. This neither provisions nor adopts a database. */

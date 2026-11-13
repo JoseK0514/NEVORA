@@ -11,7 +11,7 @@ it('forwards real bodies/cookies with fixed host mapping, preserves redirects an
  });
  try{
   expect(await call('http://alpha.step4.invalid/login','http://alpha.step4.invalid')).toEqual({status:303,location:'http://alpha.step4.invalid/app',cookie:['fictional_cookie=owned; Path=/; HttpOnly'],body:'Original upstream body'});
-  expect(seen).toEqual([{url:'https://alpha.portal.example.invalid/login',host:'alpha.portal.example.invalid',origin:'https://alpha.portal.example.invalid',cookie:'fictional_cookie=owned',body:'Original browser body'}]);
+  expect(seen).toEqual([{url:'/login',host:'alpha.portal.example.invalid',origin:'https://alpha.portal.example.invalid',cookie:'fictional_cookie=owned',body:'Original browser body'}]);
   await call('http://alpha.step4.invalid/login','https://foreign.example.invalid');expect(seen.at(-1)?.origin).toBe('https://foreign.example.invalid');
   expect((await call('http://unapproved.step4.invalid/login','http://unapproved.step4.invalid')).status).toBe(403);expect(seen).toHaveLength(2);
  }finally{await proxy.close();await new Promise<void>((ok,bad)=>upstream.close(error=>error?bad(error):ok()));}

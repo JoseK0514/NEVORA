@@ -21,7 +21,7 @@ export async function startOwnedDomainProxy(upstream:string,mappings:Readonly<Re
    try{const u=new URL(value);for(const [browser,app] of Object.entries(mappings))if(u.origin===app)return browser+u.pathname+u.search+u.hash;if(u.origin===upstream)return front.origin+u.pathname+u.search+u.hash;}catch{/* Preserve malformed destinations for real browser refusal. */}
    return value;
   };
-  const pending=request(upstream,{path:canonical+front.pathname+front.search,method:incoming.method,headers,agent:false},response=>{
+  const pending=request(upstream+front.pathname+front.search,{method:incoming.method,headers,agent:false},response=>{
    const result={...response.headers};
    if(typeof result.location==='string')result.location=redirect(result.location);
    const action=result['x-action-redirect'];if(typeof action==='string'){const parts=action.split(';');parts[0]=redirect(parts[0]);result['x-action-redirect']=parts.join(';');}
