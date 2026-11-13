@@ -763,6 +763,10 @@ jobs:
           test -x /usr/lib/postgresql/16/bin/pg_dump
           test -x /usr/lib/postgresql/16/bin/pg_restore
           echo "NEVORA_TEST_PG_BIN=/usr/lib/postgresql/16/bin" >> "$GITHUB_ENV"
+      - name: Durable commerce PostgreSQL and SDK gate
+        run: |
+          mkdir -p "$RUNNER_TEMP/nevora-onboarding-backend"
+          node scripts/commerce-postgres.mjs --reporter=default --reporter=json --outputFile="$RUNNER_TEMP/nevora-onboarding-backend/commerce-sql-sdk.json"
       - name: Verify source-bound owned backend acceptance
         env:
           NEVORA_ONBOARDING_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}

@@ -9,6 +9,14 @@ const require=createRequire(import.meta.url);
 const workflow=require('js-yaml').load(readFileSync('.github/workflows/ci.yml','utf8'));
 const mandatory=['validate','clocker-postgres','release-postgres','phase-d-attendance-ui','management-review-ui','phase-e-postgres','phase-e-ui'];
 
+test('mandatory backend gate executes durable commerce SQL and SDK cases and retains their report',()=>{
+ const job=workflow.jobs['onboarding-backend'];
+ const gate=job.steps.find(step=>step.name==='Durable commerce PostgreSQL and SDK gate');
+ assert(gate,'Durable commerce SQL/SDK gate is absent');assert.equal(gate.if,undefined);assert.equal(gate['continue-on-error'],undefined);
+ assert.equal(gate.run,'mkdir -p "$RUNNER_TEMP/nevora-onboarding-backend"\nnode scripts/commerce-postgres.mjs --reporter=default --reporter=json --outputFile="$RUNNER_TEMP/nevora-onboarding-backend/commerce-sql-sdk.json"\n');
+ const upload=job.steps.find(step=>step.name==='Upload backend evidence, separate from UI and hosted approval');assert.equal(upload.with.path,'${{ runner.temp }}/nevora-onboarding-backend/**');assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
+});
+
 test('Owner advisor uploads nested reports, captures and traces with their source custody',()=>{
  const upload=workflow.jobs['phase-d-attendance-ui'].steps.find(step=>step.name==='Upload Owner advisor browser evidence');
  assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
