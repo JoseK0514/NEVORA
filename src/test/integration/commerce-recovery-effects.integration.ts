@@ -21,7 +21,7 @@ it('unmounts retained shell state and cancels late billing reads/handoffs in nat
  const origin='http://127.0.0.1:32199',checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim();
  let passed=false;const closed:string[]=[];
  await withOwnedTestResources(async defer=>{
-  defer(()=>writeFile(join(evidence,'report.json'),JSON.stringify({checkpoint,tree,status:passed&&closed.length===2?'passed':'failed',closedBrowsers:closed,checks,errors,scope:'Actual production components, real React effects and Next PathnameContext in native engines; controlled presentation-only HTTP fixtures, not full Next router or provider acceptance.'},null,2)));
+  defer(()=>writeFile(join(evidence,'report.json'),JSON.stringify({checkpoint,tree,status:passed&&closed.length===2?'passed':'failed',closedBrowsers:closed,checks,errors,scope:'Actual production components, real React effects and Next PathnameContext in native engines; controlled presentation-only HTTP and explicit blur/focus event fixtures, not physical tab focus, full Next router or provider acceptance.'},null,2)));
   for(const engine of ['chromium','webkit']){
    const browser=await runtime[engine].launch({headless:true});defer(async()=>{await browser.close();closed.push(engine);});
    const context=await browser.newContext({viewport:{width:390,height:844}}),page=await context.newPage();page.setDefaultTimeout(10000);
@@ -55,11 +55,12 @@ it('unmounts retained shell state and cancels late billing reads/handoffs in nat
    await held.status.fulfill({contentType:'application/json',body:JSON.stringify(status)}).catch(()=>undefined);
    expect(await page.getByText('2 / 15',{exact:true}).count()).toBe(0);
    holdStatus=false;await page.getByRole('button',{name:'Enter recovery'}).click();await page.getByText('Access paused',{exact:true}).waitFor();
-   // Native tab focus retires private data and fences an already-held reply.
+   // Playwright1.62.1 forces focused state in both engines. Test the actual
+   // production event wiring explicitly; this is not physical tab-focus proof.
    holdStatus=true;delete held.status;await page.getByRole('button',{name:'Refresh status',exact:true}).click();await expect.poll(()=>Boolean(held.status)).toBe(true);
-   const other=await context.newPage();await other.bringToFront();await expect.poll(()=>page.evaluate(()=>document.hasFocus())).toBe(false);
+   const abortsBefore=await page.evaluate(()=>window.recoveryReceipt.aborted.filter(path=>path==='/api/commerce/status').length);await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await expect.poll(()=>page.evaluate(()=>window.recoveryReceipt.aborted.filter(path=>path==='/api/commerce/status').length)).toBe(abortsBefore+1);
    const foregroundStatus=readStatus(held);if(!foregroundStatus)throw Error('Held foreground read missing');await foregroundStatus.fulfill({contentType:'application/json',body:JSON.stringify(status)}).catch(()=>undefined);expect(await page.getByText('2 / 15',{exact:true}).count()).toBe(0);
-   holdStatus=false;await page.bringToFront();await page.getByText('Access paused',{exact:true}).waitFor();await other.close();
+   holdStatus=false;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.getByText('Access paused',{exact:true}).waitFor();
    await page.getByRole('button',{name:'Open billing in Velani'}).click();await page.getByRole('button',{name:'Opening billing…',exact:true}).waitFor();
    await expect.poll(()=>Boolean(held.handoff)).toBe(true);
    await page.getByRole('button',{name:'Leave recovery'}).click();
@@ -78,7 +79,7 @@ it('unmounts retained shell state and cancels late billing reads/handoffs in nat
    expect(externalRequests).toEqual(['https://www.thevelani.com/pages/plans']);
    await page.goto(origin+'/fixture?initial=recovery');await page.addScriptTag({content:js});await page.getByText('Access paused',{exact:true}).waitFor();
    await page.getByRole('button',{name:'Leave recovery'}).click();await page.getByRole('heading',{name:'Fresh recovery exit document',exact:true}).waitFor();expect(recoveryDocuments).toBe(2);
-   checks.push(engine+': healthy → recovery → healthy unmounts pollers/sheet; loading disables action; native tab blur fences a held read and refocus obtains fresh status; late read/handoff abort with no stale status or attempted navigation; valid trusted handoff navigates; recovery-first exit reloads a fresh document');
+   checks.push(engine+': healthy → recovery → healthy unmounts pollers/sheet; loading disables action; explicit blur/focus fixture aborts and fences a held read then obtains fresh status; late read/handoff abort with no stale status or attempted navigation; valid trusted handoff navigates; recovery-first exit reloads a fresh document');
    await context.close();
   }
   expect(errors).toEqual([]);passed=true;
