@@ -1,5 +1,6 @@
-import {createServer,request} from 'node:http';
-import type {Socket} from 'node:net';
+import {createServer,request,type IncomingMessage,type ServerResponse} from 'node:http';
+import {connect} from 'node:net';
+import type {Duplex} from 'node:stream';
 /** Owned HTTP domain adapter. Browser redirects/cookies remain native; no API
  * response body, credential or session is manufactured by the proxy. */
 export async function startOwnedDomainProxy(upstream:string,mappings:Readonly<Record<string,string>>){
@@ -9,8 +10,8 @@ export async function startOwnedDomainProxy(upstream:string,mappings:Readonly<Re
   const f=new URL(front),b=new URL(back);
   if(f.origin!==front||f.protocol!=='http:'||!f.hostname.endsWith('.step4.invalid')||f.port||b.origin!==back||b.protocol!=='https:'||!b.hostname.endsWith('.example.invalid')||b.port)throw Error('Unowned HTTP domain mapping');
  }
- const sockets=new Set<Socket>();
- const server=createServer((incoming,outgoing)=>{
+ const sockets=new Set<Duplex>();
+ const forward=(incoming:IncomingMessage,outgoing:ServerResponse)=>{
   let front:URL;try{front=new URL(incoming.url??'/',`http://${incoming.headers.host}`);}catch{outgoing.writeHead(400).end();return;}
   const canonical=mappings[front.origin];if(!canonical){outgoing.writeHead(403).end();return;}
   const headers={...incoming.headers,host:new URL(canonical).host,'x-forwarded-host':new URL(canonical).host,'x-forwarded-proto':'https'};
@@ -29,11 +30,12 @@ export async function startOwnedDomainProxy(upstream:string,mappings:Readonly<Re
   });
   pending.on('error',()=>{if(!outgoing.headersSent)outgoing.writeHead(502);outgoing.end();});pending.setTimeout(30000,()=>pending.destroy());
   outgoing.once('close',()=>pending.destroy());incoming.pipe(pending);
- });
+ };
+ const server=createServer(forward),tunnel=createServer(forward);
  server.on('connection',socket=>{sockets.add(socket);socket.once('close',()=>sockets.delete(socket));});
  // New development chunks depend on Next's HMR handshake. Carry only its
  // real fixed-host upgrade; never synthesize a socket or permit another target.
- server.on('upgrade',(incoming,socket,head)=>{
+ const upgrade=(incoming:IncomingMessage,socket:Duplex,head:Buffer)=>{
   let front:URL;try{front=new URL(incoming.url??'/',`http://${incoming.headers.host}`);}catch{socket.destroy();return;}
   const canonical=mappings[front.origin];
   if(!canonical||front.pathname!=='/_next/hmr'||incoming.headers.origin!==front.origin||incoming.headers.upgrade?.toLowerCase()!=='websocket'){socket.end('HTTP/1.1 403 Forbidden\r\nConnection: close\r\nContent-Length: 0\r\n\r\n');return;}
@@ -47,11 +49,22 @@ export async function startOwnedDomainProxy(upstream:string,mappings:Readonly<Re
    if(remoteHead.length)socket.write(remoteHead);if(head.length)remote.write(head);
    socket.on('error',()=>remote.destroy());remote.on('error',()=>socket.destroy());socket.once('close',()=>remote.destroy());remote.once('close',()=>socket.destroy());socket.pipe(remote).pipe(socket);
   });pending.end();
+ };
+ server.on('upgrade',upgrade);tunnel.on('upgrade',upgrade);
+ tunnel.on('connection',socket=>{sockets.add(socket);socket.once('close',()=>sockets.delete(socket));});
+ tunnel.on('connect',(_request,socket)=>socket.destroy());
+ await new Promise<void>((ok,bad)=>{tunnel.once('error',bad);tunnel.listen(0,'127.0.0.1',ok);});
+ const tunnelAddress=tunnel.address();if(!tunnelAddress||typeof tunnelAddress==='string')throw Error('Owned tunnel unavailable');
+ // Chromium carries ws:// over HTTP CONNECT even for plain HTTP proxies.
+ // Only known reserved port80 targets reach a second owned HTTP parser. That
+ // parser applies the SAME host/path mapping and rejects nested CONNECT; it
+ // never resolves or connects to the requested host.
+ server.on('connect',(incoming,socket,head)=>{
+  if(!Object.keys(mappings).some(front=>new URL(front).hostname+':80'===incoming.url)){socket.end('HTTP/1.1 403 Forbidden\r\nConnection: close\r\nContent-Length: 0\r\n\r\n');return;}
+  const local=connect(tunnelAddress.port,'127.0.0.1',()=>{socket.write('HTTP/1.1 200 Connection Established\r\n\r\n');if(head.length)local.write(head);socket.pipe(local).pipe(socket);});
+  sockets.add(local);local.once('close',()=>{sockets.delete(local);socket.destroy();});socket.once('close',()=>local.destroy());local.once('error',()=>socket.destroy());socket.once('error',()=>local.destroy());
  });
- // No CONNECT/DNS/provider escape. All approved browser origins are plain HTTP
- // reserved domains carried to the existing loopback Next runtime.
- server.on('connect',(_request,socket)=>socket.destroy());
  await new Promise<void>((ok,bad)=>{server.once('error',bad);server.listen(0,'127.0.0.1',ok);});
  const address=server.address();if(!address||typeof address==='string')throw Error('Owned domain proxy unavailable');
- return {server:`http://127.0.0.1:${address.port}`,async close(){for(const socket of sockets)socket.destroy();await new Promise<void>((ok,bad)=>server.close(error=>error?bad(error):ok()));}};
+ return {server:`http://127.0.0.1:${address.port}`,async close(){for(const socket of sockets)socket.destroy();const closed=await Promise.allSettled([server,tunnel].map(current=>new Promise<void>((ok,bad)=>current.close(error=>error?bad(error):ok()))));const failures=closed.filter(item=>item.status==='rejected').map(item=>item.reason);if(failures.length)throw new AggregateError(failures,'Owned proxy close failed');}};
 }

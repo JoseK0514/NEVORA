@@ -1,5 +1,6 @@
 import {it,expect} from 'vitest';
 import {createServer,request} from 'node:http';
+import {connect} from 'node:net';
 import {startOwnedDomainProxy} from './owned-domain-proxy';
 it('forwards real bodies/cookies with fixed host mapping, preserves redirects and refuses foreign origins',async()=>{
  const seen:{url:string|undefined;host:string|undefined;origin:string|undefined;cookie:string|undefined;body:string}[]=[];
@@ -26,6 +27,12 @@ it('carries the real owned Next development upgrade and refuses foreign socket t
  await new Promise<void>(ok=>upstream.listen(0,'127.0.0.1',ok));const address=upstream.address();if(!address||typeof address==='string')throw Error('Owned bind failed');
  const proxy=await startOwnedDomainProxy('http://127.0.0.1:'+address.port,{'http://alpha.step4.invalid':'https://alpha.portal.example.invalid'});
  const call=(path:string)=>new Promise<string>((ok,bad)=>{const url=new URL(proxy.server),req=request({host:url.hostname,port:url.port,path,headers:{host:'alpha.step4.invalid',origin:'http://alpha.step4.invalid',connection:'Upgrade',upgrade:'websocket'}},res=>{res.resume();ok(String(res.statusCode));});req.on('error',bad);req.on('upgrade',(_res,socket,head)=>{if(head.length){socket.destroy();ok(head.toString());}else{socket.once('data',data=>{socket.destroy();ok(data.toString());});}socket.on('error',bad);});req.end();});
- try{expect(await call('http://alpha.step4.invalid/_next/hmr?id=owned')).toBe('original-owned-stream');expect(await call('http://alpha.step4.invalid/foreign-socket')).toBe('403');expect(upgrades).toBe(1);}
+ const tunnel=(host:string)=>new Promise<string>((ok,bad)=>{
+  const url=new URL(proxy.server),socket=connect(Number(url.port),url.hostname);let body='',connected=false;
+  const timeout=setTimeout(()=>{socket.destroy();bad(Error('Owned tunnel did not complete'));},1000);
+  socket.on('error',bad);socket.once('close',()=>clearTimeout(timeout));socket.once('connect',()=>socket.write('CONNECT '+host+' HTTP/1.1\r\nHost: '+host+'\r\n\r\n'));
+  socket.on('data',chunk=>{body+=chunk.toString();if(body.includes('403 Forbidden')){socket.destroy();ok('403');}else if(!connected&&body.includes('200 Connection Established')){connected=true;body='';socket.write('GET /_next/hmr?id=owned HTTP/1.1\r\nHost: alpha.step4.invalid\r\nOrigin: http://alpha.step4.invalid\r\nConnection: Upgrade\r\nUpgrade: websocket\r\n\r\n');}else if(body.includes('original-owned-stream')){socket.destroy();ok('original-owned-stream');}});
+ });
+ try{expect(await call('http://alpha.step4.invalid/_next/hmr?id=owned')).toBe('original-owned-stream');expect(await call('http://alpha.step4.invalid/foreign-socket')).toBe('403');expect(await tunnel('alpha.step4.invalid:80')).toBe('original-owned-stream');expect(await tunnel('provider.example.invalid:443')).toBe('403');expect(upgrades).toBe(2);}
  finally{await proxy.close();for(const socket of sockets)socket.destroy();await new Promise<void>((ok,bad)=>upstream.close(error=>error?bad(error):ok()));}
 });
