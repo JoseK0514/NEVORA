@@ -34,7 +34,7 @@ export function BillingRecovery({lang,billingOrigin,payrollEnabled}: {lang:AuthL
    if(!response.ok)throw Error('Billing status unavailable');return response.json();
   },value=>{if(value&&typeof value==='object'&&'state'in value&&value.state==='unavailable'&&'reason'in value&&value.reason==='access_denied')return {state:'unavailable',reason:'access_denied'};return parseBillingSnapshot(value);},reason=>({state:'unavailable',reason}),()=> 'read_failed');
   const foreground=()=>document.visibilityState!=='hidden'&&navigator.onLine&&document.hasFocus();
-  const pause=()=>controller.pause(),resume=()=>{if(foreground())controller.start();else controller.pause();};
+  const pause=()=>controller.pause(),resume=()=>{controller.pause();if(foreground())controller.start();};
   refresh.current=()=>{controller.pause();if(foreground())controller.start();};
   document.addEventListener('visibilitychange',resume);for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.addEventListener(event,resume);resume();
   return()=>{refresh.current=null;controller.stop();action.current?.abort();action.current=null;document.removeEventListener('visibilitychange',resume);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,resume);};
