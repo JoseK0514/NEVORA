@@ -119,7 +119,7 @@ Evidence and complete execution ledger: the projectless finisher `work/` folder,
 `work/RESUME.md`, and this plan's `.superpowers/sdd/` ledger. Original failed logs,
 artifacts, custody roots and retained unknown work are preserved.
 
-## November 13 — combined preparation, still awaiting Clocker exception
+## November 13 — earlier preparation before Clocker approval
 
 Application preparation checkpoint: `889672414d08d52ccfc42f683e396fafa4502c8d`.
 Development remains `67dbf3deaf528d86057d3cd88ae2319ba000d851`; its actual
@@ -183,3 +183,53 @@ new real email, charge, provider action, production/main change or other chat
 message occurred in this preparation. Rondo primaryJose Natal/backupIlianis Soto
 and Jose's two-email review are recorded separately; backup drill, independent
 outage/heartbeat coverage and joined Claude UI/public promotion remain open.
+
+
+## November 13 — approved Clocker fix and complete local lifecycle
+
+Jose approved the narrow protected-code client compatibility fix; it is applied
+at `6727a1bd3`. The actual normal Owner-generated 194-character company-bound
+code now passes native tablet enrollment and server validation. Other UI remains
+with Claude under the existing release policy.
+
+Source `6e9067ad11423f8d464e2b02f37a6d5640067606`, tree
+`e1cf7e0a93de7e6c7889f57829b840d06bdb917d`, passed the complete source-bound
+local acceptance: one test, zero skips, 18 lifecycle stages and 48 recovery cells
+(Chromium/WebKit, EN/ES, billing/paused/unavailable, 320/390/768/1440 widths,
+100%/200% root text). The journey covers normal Owner/Employee sign-in,
+provisioned company isolation, setup/invitation partial delivery and replay,
+native Clocker/PIN/punch/break flow, independent correction approval, approved
+native-2026 payroll and WORKER PDF publication, own-pay isolation, original
+trial expiry with existing-shift completion/new-IN denial, signed fake-provider
+billing events, durable Checkout lost-reply recovery/conflicts, renewal grace and
+restriction/recovery, and native account-menu sign-out/Back/normal reauthentication.
+Provider APIs/SDK and SMTP are controlled local fixtures; payroll workerOnce is
+an in-process actual-WORKER SQL binding, not canonical hosted worker acceptance.
+
+The restricted-page matrix also passed native keyboard, reload/Back, genuine
+browser offline/online, held actual HTTP response abort/late-result fencing and
+actual Owner-session row revocation. All-context page errors and window
+error/unhandled-rejection collections were empty; 271 bounded network observations,
+zero drops/foreign requests/recovery operational readers. Both app mirrors closed
+with source and mirror verification (5,958 runtime hashes); the owned PostgreSQL
+cluster stopped and was removed. The independent artifact verifier rejected eight
+altered-evidence cases; 39 semantic regression controls passed.
+
+Retained failures identified test transport/fixture defects: WebKit sends an
+absolute `ws://` proxy upgrade, which the owned proxy formerly rejected 403;
+actual native wire capture and regression RED/GREEN prove the exact fixed-origin
+normalization. Foreign destinations and `wss://` remain refused. The last fixture
+assumed desktop sign-out/More was directly visible; an actual trace and current
+shell source establish native account-menu navigation. Neither fix relaxes
+application authorization, server validation, timing or browser input.
+
+CI now requires this source-bound journey within the existing Phase D job and
+retains its nested JSON/captures/traces as the 14th release artifact family.
+The existing backend job also explicitly runs all commerce real-SQL/SDK tests,
+which ordinary unit invocation intentionally skips; the original seven backend
+acceptance stages remain required. The latest combined workflow/semantic contracts
+pass 66 checks. Job count (20), strict contexts (10) and job deadlines are unchanged.
+Full final-source checks, fresh whole-branch review, immutable candidate and actual
+development qualification remain pending. No candidate/development push or hosted
+provider effect follows from the local results. The original finite hosted packet
+remains held/unstarted with null timestamps and zero effects.

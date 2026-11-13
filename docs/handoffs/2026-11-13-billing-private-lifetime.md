@@ -130,3 +130,12 @@ final manual qualification, independent review, final CI or development merge.
 Development is the primary operating/acceptance release at production standards.
 Main and production require Jose's later approval of the exact verified source.
 The original finite hosted packet stays held and unstarted with zero effects.
+
+
+November 13 combined-lifecycle update: Jose approved and the finisher applied the
+narrow Clocker setup compatibility fix at 6727a1bd3. Complete owned-source
+acceptance at 6e9067ad11423f8d464e2b02f37a6d5640067606 passed all 18 stages,
+48 bilingual/two-engine recovery cells, real-session denial/offline/late-read
+fencing and native sign-out/Back/reauthentication, with no page/window errors and
+verified app/cluster cleanup. This is local synthetic SQL/browser/SDK evidence;
+final-source CI/development and the original finite hosted packet remain separate.
