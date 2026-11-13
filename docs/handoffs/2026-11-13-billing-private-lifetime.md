@@ -76,6 +76,28 @@ owned fictional data. Never publish raw traces or authentication material.
 The controlled effects report is `billing-controlled-effects/commerce-effects/report.json`;
 the focus assumption probe is `native-focus-probe.json`.
 
+## Expired handoff follow-up
+
+At `70bae27d4`, the controlled component/browser fixture reproduces an additional
+deadline defect: a short original status lifetime expires and clears the private
+details, but the already pending billing handoff remains active. The expected new
+handoff abort is absent, so the test fails. At
+`4ccd84c04eed96dccf78f1725abb4ab4a8b635fe`, every unavailable snapshot cancels that
+pending handoff. The unchanged disclosure-expiry assertions pass in both engines,
+including fulfilling the old handoff afterward with zero attempted navigation,
+then refreshing and completing a new trusted handoff normally. Errors are empty,
+browsers closed and the owned cluster stopped. Four other tests were deliberately
+unselected. Evidence: `billing-expired-handoff-red` and
+`billing-expired-handoff-green` plus their logs. This is controlled component
+evidence, not provider acceptance or a physical focus claim.
+
+The latest development database-rehearsal delivery
+`67dbf3deaf528d86057d3cd88ae2319ba000d851` was inspected and merged locally at
+`9427507cb`. Its actual development GitHub CI/Mobile runs 43360264485/43360264628
+pass the exact-source 20-job/10-required-context readback. The 73-source/3-branch
+inventory passes after inclusion. These are incoming-release facts, not final
+qualification or publication of this finisher's combined source.
+
 ## Combined release remains open
 
 The actual protected Clocker setup code is 194 characters, while the existing
