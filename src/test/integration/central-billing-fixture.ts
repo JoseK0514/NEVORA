@@ -29,6 +29,19 @@ export async function centralBillingFixture(){
   await pool.query('INSERT INTO commerce.accounts(id,email,profile,verified_at) VALUES($1,$2,$3,clock_timestamp())',[id,'central-owner@example.invalid',{businessName,email:'central-owner@example.invalid'}]);
   await pool.query("INSERT INTO commerce.businesses(id,state,employee_count,trial_started_at,trial_ends_at) VALUES($1,'ready',4,$2,$3)",[id,new Date(),new Date(Date.now()+30*86400000)]);
   const store=new CommerceStore(pool,Buffer.alloc(32,37));
+  const customerId='cus_central_original',subscriptionId='sub_central_original';
+  async function coverage(){return (await pool.query('SELECT stripe_customer_id, stripe_subscription_id, subscription_status, trial_ends_at, paid_through FROM commerce.businesses WHERE id=$1',[id])).rows[0];}
+  async function subscriptionScenario(status:string){
+   if(!provider.customers.has(customerId)){
+    provider.customers.set(customerId,{id:customerId,object:'customer',email:'central-owner@example.invalid',metadata:{nevora_business_id:id}});
+    const subscription=provider.createSubscription(customerId,'price_small',{nevora_business_id:id});
+    provider.subscriptions.delete(subscription.id);subscription.id=subscriptionId;provider.subscriptions.set(subscriptionId,subscription);
+    await pool.query("UPDATE commerce.businesses SET stripe_customer_id=$2, stripe_subscription_id=$3, plan_key='small', trial_ends_at=$4, paid_through=$5 WHERE id=$1",[id,customerId,subscriptionId,new Date(Date.now()+15*86400000),new Date(Date.now()+16*86400000)]);
+   }
+   provider.subscriptions.get(subscriptionId)!.status=status;
+   await pool.query('UPDATE commerce.businesses SET subscription_status=$2 WHERE id=$1',[id,status]);
+   return coverage();
+  }
   const allowed=new Set(['/v1/plans','/v1/handoff/exchange','/v1/status','/v1/checkout','/v1/portal','/v1/plan-change','/v1/logout']);
   const server=createServer(async(incoming,outgoing)=>{
    try{
@@ -45,7 +58,7 @@ export async function centralBillingFixture(){
   });
   listener=server;
   server.on('connection',socket=>{sockets.add(socket);socket.once('close',()=>sockets.delete(socket));});await new Promise<void>(resolve=>server.listen(0,'127.0.0.1',resolve));const address=server.address();if(!address||typeof address==='string')throw Error('Owned billing listener unavailable');apiOrigin='http://127.0.0.1:'+address.port;
-  return {apiOrigin,businessName,provider,pool,requests,unexpected,
+  return {apiOrigin,businessName,provider,pool,requests,unexpected,subscriptionScenario,coverage,
    setUiOrigin(value:string){const url=new URL(value);if(url.origin!==value||url.protocol!=='http:'||url.hostname!=='127.0.0.1'||!url.port)throw Error('Owned UI origin required');uiOrigin=value;},
    async handoff(){const proof=randomBytes(32).toString('base64url');await store.handoff(id,proof,Date.now());return proof;},
    async revoke(){await pool.query("DELETE FROM commerce.tokens WHERE purpose='session'");},

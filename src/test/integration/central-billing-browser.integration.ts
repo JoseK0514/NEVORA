@@ -12,9 +12,9 @@ it.each(['chromium','webkit'] as const)('checks the central billing entry, canon
  const evidence=join(resolve(root),engine);await mkdir(evidence,{recursive:true});
  const runtimeRequire=createRequire(resolve('tools/ci-browser-runtime/package.json')),runtime=runtimeRequire('playwright'),axe=await readFile(runtimeRequire.resolve('axe-core/axe.min.js'),'utf8');
  const {observeWindowExceptions}=await import(pathToFileURL(resolve('scripts/browser-navigation-diagnostic.mjs')).href);
- const checks:string[]=[],errors:string[]=[],foreign:string[]=[],layout:unknown[]=[];let retryEvidence:unknown=null,privacyEvidence:unknown=null;let complete=false,contextClosed=false,browserClosed=false,catalogClosed=false,appRoot='',source:unknown=null,network:unknown[]=[],providerSessions=0,sqlCounts:{operations:number;intents:number}|null=null;const lifecycle:unknown[]=[];
+ const checks:string[]=[],errors:string[]=[],foreign:string[]=[],layout:unknown[]=[];let retryEvidence:unknown=null,privacyEvidence:unknown=null,recoveryEvidence:unknown=null;let complete=false,contextClosed=false,browserClosed=false,catalogClosed=false,appRoot='',source:unknown=null,network:unknown[]=[],providerSessions=0,sqlCounts:{operations:number;intents:number}|null=null;const lifecycle:unknown[]=[];
  await withOwnedTestResources(async defer=>{
-  defer(async()=>{const ownership=appRoot?JSON.parse(await readFile(join(appRoot,'ownership.json'),'utf8')):null;await writeFile(join(evidence,'report.json'),JSON.stringify({complete:complete&&contextClosed&&browserClosed&&catalogClosed&&ownership?.closed===true,engine,checks,errors,foreign,layout,contextClosed,browserClosed,catalogClosed,source,network,providerSessions,sqlCounts,retryEvidence,privacyEvidence,lifecycle,scope:'Actual public Next page and canonical commerce SQL/SDK over owned loopback HTTP with controlled legacy installation facts. Normal company Owner proof is separate Step4 evidence. Provider navigation is an intercepted local witness; no hosted, physical-device, real Stripe or payment acceptance.'},null,2));});
+  defer(async()=>{const ownership=appRoot?JSON.parse(await readFile(join(appRoot,'ownership.json'),'utf8')):null;await writeFile(join(evidence,'report.json'),JSON.stringify({complete:complete&&contextClosed&&browserClosed&&catalogClosed&&ownership?.closed===true,engine,checks,errors,foreign,layout,contextClosed,browserClosed,catalogClosed,source,network,providerSessions,sqlCounts,retryEvidence,privacyEvidence,recoveryEvidence,lifecycle,scope:'Actual public Next page and canonical commerce SQL/SDK over owned loopback HTTP with controlled legacy installation facts. Normal company Owner proof is separate Step4 evidence. Provider navigation is an intercepted local witness; no hosted, physical-device, real Stripe or payment acceptance.'},null,2));});
   const fixture=await centralBillingFixture();defer(async()=>{network=fixture.requests.map(({path,method,status,cookie})=>({path,method,status,cookie}));providerSessions=fixture.provider.sessions.size;sqlCounts=await fixture.counts();await fixture.close();catalogClosed=true;});
   const app=await createOwnedNextApp(evidence,{centralBillingApiOrigin:fixture.apiOrigin});appRoot=app.root;source=app.sourceHashes;defer(()=>app.close());fixture.setUiOrigin(app.url);
   const browser=await runtime[engine].launch({headless:true});defer(async()=>{await browser.close();browserClosed=true;});
@@ -33,9 +33,18 @@ it.each(['chromium','webkit'] as const)('checks the central billing entry, canon
   expect(await page.evaluate(()=>location.hash)).toBe('');expect(fixture.requests.filter(r=>r.method==='POST'&&r.path==='/v1/handoff/exchange')).toHaveLength(1);expect(fixture.requests.every(r=>!r.cookie)).toBe(true);
   expect(await page.evaluate(()=>Object.values({...localStorage,...sessionStorage}).some(value=>typeof value==='string'&&/handoff|Bearer/.test(value)))).toBe(false);
   checks.push('one canonical SQL-backed handoff exchange, scrubbed fragment, live public catalog/status and credential-free cross-origin HTTP transport');
+  // The hosted defect: retained paid access must not strand a terminal subscription in Portal.
+  expect(await page.getByRole('button',{name:'Review subscription in Stripe',exact:true}).count()).toBe(1);
+  const originalCoverage=await fixture.subscriptionScenario('canceled');
+  await page.getByRole('button',{name:'Refresh status',exact:true}).click();
+  await page.getByRole('button',{name:'Review subscription in Stripe',exact:true}).waitFor();
+  expect(await page.getByRole('button',{name:'Manage billing in Stripe',exact:true}).count()).toBe(0);
   await page.addScriptTag({content:axe});const baseFont=await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize));
   for(const lang of ['en','es']){
    await page.getByRole('button',{name:lang==='en'?'English':'Español',exact:true}).click();
+   expect(await page.getByRole('button',{name:lang==='en'?'Review subscription in Stripe':'Revisar suscripción en Stripe',exact:true}).count()).toBe(1);
+   expect(await page.getByRole('button',{name:/^(Manage billing in Stripe|Administrar facturación en Stripe|Review Team plan|Revisar plan Team)$/}).count()).toBe(0);
+   await page.locator('dd').filter({hasText:lang==='en'?'Active':'Activo'}).waitFor();
    for(const width of [320,390,768,1440])for(const scale of [100,200]){
     await page.setViewportSize({width,height:900});await page.evaluate((size:number)=>{document.documentElement.style.fontSize=size+'px';},baseFont*scale/100);
     await page.evaluate(async()=>{await document.fonts.ready;await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));});
@@ -53,6 +62,13 @@ it.each(['chromium','webkit'] as const)('checks the central billing entry, canon
   const alert=page.getByRole('alert').filter({hasText:'No se pudo confirmar'});await alert.waitFor();expect(await alert.textContent()).toContain('No se pudo confirmar');await expect.poll(()=>alert.evaluate((element:HTMLElement)=>document.activeElement===element)).toBe(true);expect(await page.getByRole('button',{name:'English',exact:true}).isDisabled()).toBe(true);
   await page.keyboard.press(engine==='webkit'&&process.platform==='darwin'?'Alt+Tab':'Tab');const retry=page.getByRole('button',{name:'Reintentar la solicitud original',exact:true});expect(await retry.evaluate((element:HTMLElement)=>document.activeElement===element)).toBe(true);await page.keyboard.press('Enter');await page.getByRole('heading',{name:'Owned provider navigation witness',exact:true}).waitFor();
   const attempts=fixture.requests.filter(r=>r.path==='/v1/checkout'&&r.method==='POST');expect(attempts).toHaveLength(2);expect(attempts[0].operation).toBe(attempts[1].operation);expect(attempts.map(r=>r.lang)).toEqual(['es','es']);expect(fixture.provider.sessions.size).toBe(1);expect(await fixture.counts()).toEqual({operations:1,intents:1});expect(navigations).toBe(1);retryEvidence={attempts:attempts.length,unchangedKey:attempts[0].operation===attempts[1].operation,languages:attempts.map(r=>r.lang),navigations};
+  const session=[...fixture.provider.sessions.values()][0];
+  expect(session.mode).toBe('setup');expect(session.customer).toBe(originalCoverage.stripe_customer_id);
+  expect(fixture.provider.subscriptions.size).toBe(1);expect(session.subscription).toBeNull();
+  expect(await fixture.coverage()).toEqual(originalCoverage);
+  const create=fixture.provider.requests.find(r=>r.method==='POST'&&r.path==='/v1/checkout/sessions');
+  expect(create?.form.get('mode')).toBe('setup');expect(create?.form.has('line_items[0][price]')).toBe(false);
+  expect(create?.form.get('custom_text[submit][message]')).toContain(originalCoverage.paid_through.toISOString().slice(0,10));
   await page.goBack();await page.getByRole('heading',{name:'NEVORA billing',exact:true}).waitFor();expect(await page.getByText(fixture.businessName,{exact:true}).count()).toBe(0);expect(fixture.requests.filter(r=>r.path==='/v1/checkout'&&r.method==='POST')).toHaveLength(2);
   checks.push('native keyboard intent, actual committed SQL/SDK checkout reply loss, focused recovery alert, unchanged key/body/language retry, one provider session and one intercepted navigation; Back retains no private display or automatic financial replay');
   await page.goto(app.url+'/pages/nevora-billing#handoff='+await fixture.handoff());await page.getByRole('heading',{name:fixture.businessName,exact:true}).waitFor();
@@ -64,6 +80,20 @@ it.each(['chromium','webkit'] as const)('checks the central billing entry, canon
   await fixture.revoke();await page.getByRole('button',{name:'Refresh status',exact:true}).click();await expect.poll(()=>page.getByText(fixture.businessName,{exact:true}).count()).toBe(0);await page.getByText('This billing access has ended. Return to your workplace and open Billing again.',{exact:true}).waitFor();expect(await page.getByRole('button',{name:'Review subscription in Stripe',exact:true}).count()).toBe(0);
   privacyEvidence={back:true,blur:true,focusFresh:true,offline:true,onlineFresh:true,denialStatus:401,privateRegions:await page.locator('dl').count(),financialActions:await page.getByRole('button',{name:'Review subscription in Stripe',exact:true}).count()};expect(privacyEvidence).toEqual({back:true,blur:true,focusFresh:true,offline:true,onlineFresh:true,denialStatus:401,privateRegions:0,financialActions:0});
   checks.push('controlled blur retires private details before a held actual response returns; focus obtains a fresh read; real catalog session revocation returns denial and removes private data/actions');
+  await fixture.subscriptionScenario('active');
+  await page.goto(app.url+'/pages/nevora-billing#handoff='+await fixture.handoff());
+  await page.getByRole('heading',{name:fixture.businessName,exact:true}).waitFor();
+  for(const lang of ['en','es']){
+   await page.getByRole('button',{name:lang==='en'?'English':'Español',exact:true}).click();
+   expect(await page.getByRole('button',{name:lang==='en'?'Manage billing in Stripe':'Administrar facturación en Stripe',exact:true}).count()).toBe(1);
+   expect(await page.getByRole('button',{name:/^(Review subscription in Stripe|Revisar suscripción en Stripe)$/}).count()).toBe(0);
+  }
+  await fixture.subscriptionScenario('unknown-provider-state');
+  await page.getByRole('button',{name:'Actualizar estado',exact:true}).click();
+  await page.getByText('La facturación no está disponible por el momento. Vuelve a tu negocio e inténtalo de nuevo.',{exact:true}).waitFor();
+  const unknownActions=await page.getByRole('button',{name:/^(Review subscription in Stripe|Revisar suscripción en Stripe|Manage billing in Stripe|Administrar facturación en Stripe|Review (Small|Team) plan|Revisar plan (Small|Team))$/}).count();
+  expect(unknownActions).toBe(0);expect(await fixture.counts()).toEqual({operations:1,intents:1});
+  recoveryEvidence={initialCheckout:true,terminalStatus:'canceled',languages:['en','es'],mode:session.mode,coverageUnchanged:true,originalCustomer:session.customer===originalCoverage.stripe_customer_id,originalSubscription:fixture.provider.subscriptions.size===1,nonterminalPortal:['en','es'],unknownUnavailable:true,unknownActions};
   expect(errors).toEqual([]);expect(foreign).toEqual([]);expect(fixture.unexpected).toEqual([]);providerSessions=fixture.provider.sessions.size;network=fixture.requests.map(({path,method,status,cookie})=>({path,method,status,cookie}));complete=true;
  });
 });

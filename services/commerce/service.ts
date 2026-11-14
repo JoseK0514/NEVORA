@@ -8,6 +8,7 @@ import { CommerceStore, type Business } from "./store";
 import {commerceLanguage,type CommerceLanguage} from './language';
 import type {PoolClient} from 'pg';
 import {billingActorHash,type BillingOperationContext} from './billing-operations';
+import {terminalSubscription} from './stripe-identity';
 export interface BillingPort {
   checkout(business: Business, operation: string,owner?:BillingOwner|null,lang?:CommerceLanguage,context?:BillingOperationContext): Promise<string>;
   portal(business: Business, operation: string,owner?:BillingOwner|null,lang?:CommerceLanguage,context?:BillingOperationContext): Promise<string>;
@@ -234,8 +235,16 @@ export function createCommerce(options: CommerceOptions) {
       }
       if (path === "/v1/status" && request.method === "GET") {
         const access = await businessAccess(store, business, now, options.headcount);
+        // Paid access can outlive a terminal subscription. This is presentation
+        // guidance from the catalog; Checkout still verifies the live provider,
+        // original coverage and durable operation fences before any mutation.
+        const billingAction = !options.billing || business.state !== 'ready' ? null
+          : !business.subscriptionId ? business.subscriptionStatus === null ? 'checkout' : null
+          : terminalSubscription(business.subscriptionStatus ?? '') ? 'checkout'
+          : ['active','trialing','past_due','unpaid','incomplete','paused'].includes(business.subscriptionStatus ?? '') ? 'portal' : null;
         await assertCurrentBilling();
         return answer({
+          billingAction,
           businessId: id,
           businessName: business.profile.businessName ?? null,
           setup: business.state,

@@ -5,7 +5,7 @@ import {parseCommerceStatus,type CommerceStatus} from './status';
 export type BillingLanguage='en'|'es';
 export type BillingAction='checkout'|'portal'|'small'|'team';
 export type BillingCatalog={currency:'usd';trialDays:30;plans:{key:'small'|'team';employees:number;amount:number}[]};
-export type CentralStatus=CommerceStatus&{businessName:string|null;applicationUrl:string|null;timeZone:string|null};
+export type CentralStatus=CommerceStatus&{businessName:string|null;applicationUrl:string|null;timeZone:string|null;billingAction:'checkout'|'portal'|null};
 export type CentralRead={state:'ready';observedAt:string;validForMs:number;status:CentralStatus;catalog:BillingCatalog}|{state:'unavailable';reason:'read_failed'|'access_denied'};
 export type BillingResult={kind:'navigate';url:string}|{kind:'unknown'|'refused'|'conflict'|'denied'|'busy'};
 type Transport=(input:string,init:RequestInit)=>Promise<Response>;
@@ -28,11 +28,13 @@ export function parseBillingCatalog(value:unknown):BillingCatalog{
 }
 export function parseCentralStatus(value:unknown):CentralStatus{
  const status=parseCommerceStatus(value);if(!object(value))throw Error('Invalid status');
+ const billingAction=value.billingAction??null;
+ if(billingAction!==null&&billingAction!=='checkout'&&billingAction!=='portal')throw Error('Invalid billing action');
  if(value.businessName!==null&&(typeof value.businessName!=='string'||value.businessName.length>200))throw Error('Invalid workplace');
  let applicationUrl:string|null=null;
  if(value.applicationUrl!==null){if(typeof value.applicationUrl!=='string')throw Error('Invalid workplace URL');const u=new URL(value.applicationUrl);if(u.origin!==value.applicationUrl||u.username||u.password||!(u.protocol==='https:'||u.protocol==='http:'&&['127.0.0.1','localhost'].includes(u.hostname)))throw Error('Invalid workplace URL');applicationUrl=u.origin;}
  if(value.timeZone!==null){if(typeof value.timeZone!=='string'||value.timeZone.length>100)throw Error('Invalid time zone');new Intl.DateTimeFormat('en',{timeZone:value.timeZone});}
- return {...status,businessName:value.businessName as string|null,applicationUrl,timeZone:value.timeZone as string|null};
+ return {...status,businessName:value.businessName as string|null,applicationUrl,timeZone:value.timeZone as string|null,billingAction};
 }
 /** Bearer and original intent stay in this instance's memory. No browser storage,
  * caller customer selector or automatic financial retry is supported. */
