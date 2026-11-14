@@ -1,0 +1,20 @@
+{
+  "state": "passed",
+  "controls": [
+    {
+      "control": "missing-original-key",
+      "expected": "restore regression rejects damage/re-enrollment",
+      "exitCode": 1,
+      "log": "restore-gaps-control-missing-original-key.log.gz",
+      "sha256": "dc3b96c8ab37a88414888daff4390519932083d0eff3a63c01be17671d08aadc"
+    },
+    {
+      "control": "post-restore-reenrollment",
+      "expected": "restore regression rejects damage/re-enrollment",
+      "exitCode": 1,
+      "log": "restore-gaps-control-post-restore-reenrollment.log.gz",
+      "sha256": "9f6dafc94a26a92a9c2fe94aa3ef7152d08a0600c44f06b61a4887265086412c"
+    }
+  ],
+  "sourceRestored": true
+}
