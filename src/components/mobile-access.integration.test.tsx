@@ -32,9 +32,9 @@ describe('Frozen mobile access integration',()=>{
   expect(html).toContain('name="employeeId"');expect(html).toContain('name="email"');
   expect(html.match(/<form\b/g)).toHaveLength(1);
  });
- it('preserves the current43-character reset contract and password bounds in the mobile form',()=>{
+ it('preserves bounded raw or isolated reset proof transport and password bounds in the mobile form',()=>{
   const html=renderToStaticMarkup(<MobileRecoveryReset lang="en" hydrated busy={false} done={false} message="" onSubmit={()=>{}} proofRef={()=>{}}/>);
-  expect(html).toContain('minLength="43"');expect(html).toContain('maxLength="43"');
+  expect(html).toContain('minLength="43"');expect(html).toContain('maxLength="4096"');
   expect(html.match(/maxLength="1024"/g)).toHaveLength(2);
 
  });

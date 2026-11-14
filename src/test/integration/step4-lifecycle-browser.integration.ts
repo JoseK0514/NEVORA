@@ -170,7 +170,7 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
   await employeePage.getByLabel('Employee ID',{exact:true}).fill('EMP-1');await employeePage.getByLabel('Password',{exact:true}).fill(employeePassword);await employeePage.getByRole('button',{name:'Sign in',exact:true}).click();await employeePage.waitForURL(front+'/app');
   expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='EMP-1'")).rows).toEqual([{n:1}]);expect((await employeePage.evaluate(async()=>(await fetch('/api/onboarding/state',{credentials:'same-origin'})).status))).toBe(403);stages.push({stage:'actual-invitation-activation-http-and-normal-employee-browser-sign-in-owner-boundary',state:'passed'});admissionComplete=true;
   browserDiagnostics.isolatedInvitationUi={engine:'chromium',wrapped:true,fragmentScrubbed:true};
-  const isolatedAccountAccess:{engine:string;wrappedAssistedUi:boolean;fullResetProof:boolean;normalNewPasswordLogin:boolean;replayDenied:boolean}[]=[];
+  const isolatedAccountAccess:{resetEngine:string;issuanceEngine:'chromium';wrappedAssistedUi:boolean;fullResetProof:boolean;normalNewPasswordLogin:boolean;replayDenied:boolean}[]=[];
   for(const engine of ['chromium','webkit']){
    await page.bringToFront();await page.goto(front+'/app/account-recovery?employee=EMP-1');
    await page.getByLabel('How you checked who they are').selectOption('Verified in person; I know this employee.');
@@ -180,14 +180,17 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
    const resetContext=await resetBrowser.newContext({serviceWorkers:'block',proxy:{server:proxy.server}});await watchContext(resetContext,'isolated-reset-'+engine);const resetPage=await resetContext.newPage();resetPage.setDefaultTimeout(15000);
    await resetPage.goto(front+'/reset-access'+(engine==='webkit'?'#proof='+recoveryProof:''));
    if(engine==='chromium')await resetPage.locator('#reset-proof').fill(recoveryProof);
-   await expect.poll(()=>resetPage.locator('#reset-proof').inputValue()).toBe(recoveryProof);expect(new URL(resetPage.url()).hash).toBe('');
+   await expect.poll(async()=>await resetPage.locator('#reset-proof').inputValue()===recoveryProof).toBe(true);expect(new URL(resetPage.url()).hash).toBe('');
    employeePassword='Fictional Step4 recovered '+engine+' password 123!';
    await resetPage.locator('#reset-password').fill(employeePassword);await resetPage.locator('#reset-confirm-password').fill(employeePassword);await resetPage.getByRole('button',{name:'Reset password',exact:true}).click();
    await resetPage.getByRole('link',{name:'Sign in with new password',exact:true}).waitFor();
    expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='EMP-1'")).rows).toEqual([{n:0}]);
    const replay=await resetPage.evaluate(async(proof:string)=>(await fetch('/api/auth/reset-access',{method:'POST',headers:{'content-type':'application/json','x-nevora-recovery':'1'},body:JSON.stringify({proof,password:'Fictional forbidden replay password 123!'})})).status,recoveryProof);expect(replay).toBe(400);
    await resetPage.getByRole('link',{name:'Sign in with new password',exact:true}).click();await resetPage.getByLabel('Employee ID',{exact:true}).fill('EMP-1');await resetPage.getByLabel('Password',{exact:true}).fill(employeePassword);await resetPage.getByRole('button',{name:'Sign in',exact:true}).click();await resetPage.waitForURL(front+'/app');
-   isolatedAccountAccess.push({engine,wrappedAssistedUi:true,fullResetProof:true,normalNewPasswordLogin:true,replayDenied:true});
+   if(await resetPage.getByRole('button',{name:'Sign out',exact:true}).count()===0)await resetPage.getByRole('button',{name:'Open account menu',exact:true}).click();
+   await resetPage.getByRole('button',{name:'Sign out',exact:true}).click();await resetPage.waitForURL((url:URL)=>url.pathname==='/login');
+   expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='EMP-1'")).rows).toEqual([{n:0}]);
+   isolatedAccountAccess.push({resetEngine:engine,issuanceEngine:'chromium',wrappedAssistedUi:true,fullResetProof:true,normalNewPasswordLogin:true,replayDenied:true});
    await resetContext.close();await resetBrowser.close();
   }
   browserDiagnostics.isolatedAccountAccess=isolatedAccountAccess;

@@ -96,7 +96,7 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
     </FieldErrors>
    </fieldset>
    <p className="nv-sr" role="status">{busy?'Issuing recovery code. Checking your access and preparing a single-use code.':''}</p>
-   {message?<div className="wc-feedback" ref={feedback} tabIndex={-1} role="alert"><Notice tone="urgent" title={message.includes('session ended')?'Your session ended':message.includes('expired')?'Recovery code expired':'Code not issued'}
+   {message?<div className="wc-feedback" ref={feedback} tabIndex={-1} role="alert"><Notice tone="urgent" title={message.includes('session ended')?'Your session ended':message.includes('expired')?'Recovery code expired':'Code not confirmed'}
     action={message.includes('session ended')?<Link className="q-btn q-btn--quiet" href="/login">Sign in</Link>:undefined}>{message}</Notice></div>:null}
    <button className="q-btn" type="submit" disabled={!hydrated||busy||!confirmed} aria-describedby={confirmed?undefined:'assisted-confirm-needed'}><ButtonLabel pending={busy} idle="Issue recovery code" busy="Issuing code…"/></button>
    {confirmed?null:<p className="q-sr" id="assisted-confirm-needed">Turn on “I confirmed who they are” first.</p>}
