@@ -6,14 +6,16 @@
       "expected": "restore regression rejects damage/re-enrollment",
       "exitCode": 1,
       "log": "restore-gaps-control-missing-original-key.log.gz",
-      "sha256": "dc3b96c8ab37a88414888daff4390519932083d0eff3a63c01be17671d08aadc"
+      "uncompressedSha256": "dc3b96c8ab37a88414888daff4390519932083d0eff3a63c01be17671d08aadc",
+      "compressedSha256": "07bf7b21ec559b96c9cb23c9ae18d19544045bbc630dab2de25d953f7dd783df"
     },
     {
       "control": "post-restore-reenrollment",
       "expected": "restore regression rejects damage/re-enrollment",
       "exitCode": 1,
       "log": "restore-gaps-control-post-restore-reenrollment.log.gz",
-      "sha256": "9f6dafc94a26a92a9c2fe94aa3ef7152d08a0600c44f06b61a4887265086412c"
+      "uncompressedSha256": "9f6dafc94a26a92a9c2fe94aa3ef7152d08a0600c44f06b61a4887265086412c",
+      "compressedSha256": "65e9f9d31e4bc757f8c5289ee1d78d3479fdc77c3015a52cfcaeddd061b987f7"
     }
   ],
   "sourceRestored": true

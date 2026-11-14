@@ -1,0 +1,12 @@
+ACTOR_FACTS {"location":"541e3a92-ad08-4552-96ec-c018e45c0bd2","workspace":"f01afaf7-7222-4eaa-848c-9c26408fe018","employees":[{"id":"REHEARSAL-EMPLOYEE","role":"EMPLOYEE","active":true},{"id":"REHEARSAL-INACTIVE","role":"MANAGER","active":false},{"id":"REHEARSAL-MANAGER","role":"MANAGER","active":true},{"id":"REHEARSAL-OWNER","role":"OWNER","active":true}]}
+ENROLL_PASS
+{"sqlstate":"22P02","table":null,"constraint":null,"fingerprint":"e39fee81748ed907a58bf2915255d2bdea763914b57e07627e9d51aebe6b9376"}
+{"sqlstate":"22P02","table":null,"constraint":null,"fingerprint":"a6a654329cfea83c49914dd97157ab89f344c36f028ab996ebb705be2fcfdda4"}
+{"sqlstate":"22P02","table":null,"constraint":null,"fingerprint":"a696b4d23c4102ab2f02c2614ac32f37979146d56040744fe66e8393daf66e7d"}
+PASS hosted-restored-fresh-client: Company Access preserves finite scope and denies another location/company access
+PASS hosted-restored-fresh-client: payroll revisions/approved ledger and exact document bytes are available
+PASS hosted-restored-fresh-client: operational permission cannot widen independent payroll permission
+{"sqlstate":"22P02","table":null,"constraint":null,"fingerprint":"da3d4ee17f21844b0a9a8c33d311f612c6d18740fb328911bdd01fd4a2c1b81b"}
+PASS hosted-restored-fresh-client: password verification, existing session and guarded new session work
+PASS hosted-restored-fresh-client: signed passkey authentication survives and replay stays rejected
+PASS hosted-restored-fresh-client: append-only payroll/access/passkey audit controls still reject mutation

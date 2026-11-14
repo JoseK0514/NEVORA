@@ -1,0 +1,1291 @@
+;
+; Archive created at 2026-11-13 02:23:43 UTC
+;     dbname: scrum84_fresh2
+;     TOC Entries: 1280
+;     Compression: gzip
+;     Dump Version: 1.16-0
+;     Format: CUSTOM
+;     Integer: 4 bytes
+;     Offset: 8 bytes
+;     Dumped from database version: 17.12 (14c6cec)
+;     Dumped by pg_dump version: 17.6
+;
+;
+; Selected TOC Entries:
+;
+479; 1255 30786 FUNCTION public apply_management_alert_preference() scrum84_operator
+424; 1255 30889 FUNCTION public auth_passkey_audit_immutable() scrum84_operator
+453; 1255 30891 FUNCTION public auth_passkey_authority_loss() scrum84_operator
+458; 1255 30297 FUNCTION public calendar_capture_removals(text) scrum84_operator
+433; 1255 29592 FUNCTION public clocker_apply_punch(text, text, text, integer, uuid, text, jsonb, text) scrum84_operator
+493; 1255 29661 FUNCTION public clocker_capture_schedule_context() scrum84_operator
+476; 1255 29423 FUNCTION public clocker_device_event_append_only() scrum84_operator
+390; 1255 29398 FUNCTION public clocker_device_location_immutable() scrum84_operator
+468; 1255 31174 FUNCTION public clocker_photo_binding_guard() scrum84_operator
+6058; 0 0 ACL public FUNCTION clocker_photo_binding_guard() scrum84_operator
+459; 1255 31223 FUNCTION public clocker_photo_capture_expectation(text, text, uuid) scrum84_operator
+6059; 0 0 ACL public FUNCTION clocker_photo_capture_expectation(p_workspace text, p_device text, p_command uuid) scrum84_operator
+427; 1255 31225 FUNCTION public clocker_photo_missing(text, text, text, integer, uuid, text) scrum84_operator
+6060; 0 0 ACL public FUNCTION clocker_photo_missing(p_workspace text, p_device text, p_employee text, p_generation integer, p_command uuid, p_code text) scrum84_operator
+483; 1255 31266 FUNCTION public clocker_photo_platform_cleanup(text, text) scrum84_operator
+6061; 0 0 ACL public FUNCTION clocker_photo_platform_cleanup(p_workspace text, p_invocation text) scrum84_operator
+478; 1255 31228 FUNCTION public clocker_photo_remove(text, text, text, uuid) scrum84_operator
+6062; 0 0 ACL public FUNCTION clocker_photo_remove(p_workspace text, p_actor text, p_device text, p_command uuid) scrum84_operator
+394; 1255 31227 FUNCTION public clocker_photo_save_notice(text, text, integer, text, text) scrum84_operator
+6063; 0 0 ACL public FUNCTION clocker_photo_save_notice(p_workspace text, p_actor text, p_expected integer, p_contact text, p_instructions text) scrum84_operator
+391; 1255 31226 FUNCTION public clocker_photo_save_policy(text, text, integer, boolean, text[], integer, text) scrum84_operator
+6064; 0 0 ACL public FUNCTION clocker_photo_save_policy(p_workspace text, p_actor text, p_expected integer, p_enabled boolean, p_events text[], p_retention integer, p_behavior text) scrum84_operator
+330; 1259 31123 TABLE public clocker_punch_photos scrum84_operator
+437; 1255 31222 FUNCTION public clocker_photo_status_value(public.clocker_punch_photos) scrum84_operator
+6065; 0 0 ACL public FUNCTION clocker_photo_status_value(p public.clocker_punch_photos) scrum84_operator
+467; 1255 31224 FUNCTION public clocker_photo_upload(text, text, text, integer, uuid, bytea, text, integer, integer, integer, integer) scrum84_operator
+6066; 0 0 ACL public FUNCTION clocker_photo_upload(p_workspace text, p_device text, p_employee text, p_generation integer, p_command uuid, p_jpeg bytea, p_sha256 text, p_width integer, p_height integer, p_policy_version integer, p_profile_version integer) scrum84_operator
+486; 1255 31757 FUNCTION public clocker_pin_person_parent_guard() scrum84_operator
+6067; 0 0 ACL public FUNCTION clocker_pin_person_parent_guard() scrum84_operator
+494; 1255 29655 FUNCTION public clocker_preserve_break_settings() scrum84_operator
+460; 1255 29663 FUNCTION public clocker_preserve_schedule_context() scrum84_operator
+387; 1255 29591 FUNCTION public clocker_punch_snapshot(text) scrum84_operator
+392; 1255 29660 FUNCTION public clocker_resolve_schedule_context(jsonb, text, text, timestamp with time zone) scrum84_operator
+438; 1255 30184 FUNCTION public communication_append_only() scrum84_operator
+450; 1255 30046 FUNCTION public communication_content_hash(text[]) scrum84_operator
+463; 1255 30191 FUNCTION public communication_identity_guard() scrum84_operator
+436; 1255 30190 FUNCTION public communication_same_workspace(text, text) scrum84_operator
+489; 1255 32375 FUNCTION public company_access_adoption_guard() scrum84_operator
+444; 1255 32157 FUNCTION public company_access_employee_generation() scrum84_operator
+485; 1255 32159 FUNCTION public company_access_generation_guard() scrum84_operator
+432; 1255 32271 FUNCTION public company_access_invitation_custody_guard() scrum84_operator
+492; 1255 32136 FUNCTION public company_access_next_revision(integer) scrum84_operator
+415; 1255 32222 FUNCTION public company_access_scope_guard() scrum84_operator
+471; 1255 32527 FUNCTION public conversation_apply(text, text, text, jsonb, text) scrum84_operator
+6068; 0 0 ACL public FUNCTION conversation_apply(w text, p text, s text, c jsonb, h text) scrum84_operator
+419; 1255 32513 FUNCTION public conversation_immutable() scrum84_operator
+491; 1255 32525 FUNCTION public conversation_member_allowed(text, text, uuid, uuid) scrum84_operator
+475; 1255 32524 FUNCTION public conversation_person_allowed(text, text, text) scrum84_operator
+439; 1255 32526 FUNCTION public conversation_topic_allowed(text, text, text, text, text) scrum84_operator
+411; 1255 32520 FUNCTION public conversation_update_guard() scrum84_operator
+481; 1255 30785 FUNCTION public management_alert_on(text, text) scrum84_operator
+413; 1255 30784 FUNCTION public management_alert_topic(text, text) scrum84_operator
+398; 1255 32110 FUNCTION public native_payroll_guard_ledger() scrum84_operator
+454; 1255 32112 FUNCTION public native_payroll_guard_opening() scrum84_operator
+470; 1255 30777 FUNCTION public nevora_add_workspace_presentation_asset(uuid, text, text, text, integer, integer, bytea, text) scrum84_operator
+6069; 0 0 ACL public FUNCTION nevora_add_workspace_presentation_asset(p_operation uuid, p_workspace text, p_actor text, p_media text, p_width integer, p_height integer, p_bytes bytea, p_sha text) scrum84_operator
+414; 1255 30017 FUNCTION public nevora_attention_append_only() scrum84_operator
+474; 1255 30262 FUNCTION public nevora_calendar_authority_loss() scrum84_operator
+451; 1255 30258 FUNCTION public nevora_calendar_credential_guard() scrum84_operator
+461; 1255 30260 FUNCTION public nevora_calendar_operation_guard() scrum84_operator
+423; 1255 30207 FUNCTION public nevora_calendar_source_stamp() scrum84_operator
+466; 1255 31752 FUNCTION public nevora_commerce_apply_capacity(text, text, text, integer) scrum84_operator
+6070; 0 0 ACL public FUNCTION nevora_commerce_apply_capacity(p_business text, p_installation text, p_secret text, p_limit integer) scrum84_operator
+435; 1255 31753 FUNCTION public nevora_commerce_employee_capacity() scrum84_operator
+6071; 0 0 ACL public FUNCTION nevora_commerce_employee_capacity() scrum84_operator
+426; 1255 30415 FUNCTION public nevora_company_policy_immutable() scrum84_operator
+420; 1255 31811 FUNCTION public nevora_correction_separate_reviewer() scrum84_operator
+6072; 0 0 ACL public FUNCTION nevora_correction_separate_reviewer() scrum84_operator
+477; 1255 29930 FUNCTION public nevora_export_immutable() scrum84_operator
+409; 1255 30379 FUNCTION public nevora_immutable_ledger() scrum84_operator
+397; 1255 31804 FUNCTION public nevora_management_close(text, text, text, text, text, text, uuid, text, timestamp with time zone, text, text) scrum84_operator
+6073; 0 0 ACL public FUNCTION nevora_management_close(p_workspace text, p_actor text, p_employee text, p_location text, p_primary_location text, p_entry text, p_operation uuid, p_source_hash text, p_closed_at timestamp with time zone, p_reason text, p_command_hash text) scrum84_operator
+425; 1255 31803 FUNCTION public nevora_management_close_source(text, text) scrum84_operator
+6074; 0 0 ACL public FUNCTION nevora_management_close_source(p_workspace text, p_entry text) scrum84_operator
+449; 1255 31815 FUNCTION public nevora_payroll_export_business_key(jsonb) scrum84_operator
+408; 1255 29938 FUNCTION public nevora_payroll_export_command(text, text, uuid, text, uuid, integer, jsonb) scrum84_operator
+400; 1255 31817 FUNCTION public nevora_payroll_export_deduplicate() scrum84_operator
+445; 1255 29937 FUNCTION public nevora_payroll_profile_command(text, text, uuid, uuid, integer, text, jsonb) scrum84_operator
+487; 1255 29834 FUNCTION public nevora_review_time_correction(uuid, uuid, text, integer, text, text, text) scrum84_operator
+403; 1255 30418 FUNCTION public nevora_set_company_policy(uuid, text, text, text, integer, jsonb, text) scrum84_operator
+6075; 0 0 ACL public FUNCTION nevora_set_company_policy(p_operation uuid, p_workspace text, p_location text, p_actor text, p_expected integer, p_settings jsonb, p_hash text) scrum84_operator
+480; 1255 30778 FUNCTION public nevora_set_workspace_presentation(uuid, text, text, integer, jsonb, text) scrum84_operator
+6076; 0 0 ACL public FUNCTION nevora_set_workspace_presentation(p_operation uuid, p_workspace text, p_actor text, p_expected integer, p_settings jsonb, p_hash text) scrum84_operator
+393; 1255 31807 FUNCTION public nevora_submit_delegated_time_correction(uuid, text, text, text, text, text, text, text, timestamp with time zone, timestamp with time zone, text, text) scrum84_operator
+6077; 0 0 ACL public FUNCTION nevora_submit_delegated_time_correction(p_request uuid, p_workspace text, p_employee text, p_actor text, p_kind text, p_time_entry text, p_break_entry text, p_location text, p_proposed_start timestamp with time zone, p_proposed_end timestamp with time zone, p_reason text, p_request_hash text) scrum84_operator
+421; 1255 31809 FUNCTION public nevora_submit_delegated_time_correction(uuid, text, text, text, text, text, text, text, timestamp with time zone, timestamp with time zone, text, text, uuid, integer) scrum84_operator
+6078; 0 0 ACL public FUNCTION nevora_submit_delegated_time_correction(p_request uuid, p_workspace text, p_employee text, p_actor text, p_kind text, p_time_entry text, p_break_entry text, p_location text, p_proposed_start timestamp with time zone, p_proposed_end timestamp with time zone, p_reason text, p_request_hash text, p_target_adjustment uuid, p_expected_base_revision integer) scrum84_operator
+410; 1255 29832 FUNCTION public nevora_submit_time_correction(uuid, text, text, text, text, text, text, text, timestamp with time zone, timestamp with time zone, text, text) scrum84_operator
+462; 1255 29837 FUNCTION public nevora_submit_time_correction(uuid, text, text, text, text, text, text, text, timestamp with time zone, timestamp with time zone, text, text, uuid, integer) scrum84_operator
+495; 1255 30329 FUNCTION public nevora_template_ownership() scrum84_operator
+389; 1255 29880 FUNCTION public nevora_timecard_command(uuid, text, text, text, date, date, integer, text, text, text, text) scrum84_operator
+442; 1255 29881 FUNCTION public nevora_timecard_correction_interlock() scrum84_operator
+407; 1255 29884 FUNCTION public nevora_timecard_raw_interlock() scrum84_operator
+422; 1255 29879 FUNCTION public nevora_timecard_source(text, text, date, date) scrum84_operator
+447; 1255 30772 FUNCTION public nevora_workspace_presentation_immutable() scrum84_operator
+472; 1255 31680 FUNCTION public onboarding_batch_custody_immutable() scrum84_operator
+412; 1255 31704 FUNCTION public onboarding_canonical_revision() scrum84_operator
+6079; 0 0 ACL public FUNCTION onboarding_canonical_revision() scrum84_operator
+406; 1255 31673 FUNCTION public onboarding_owner_claim(text, text, bigint, text, uuid, text, text) scrum84_operator
+6080; 0 0 ACL public FUNCTION onboarding_owner_claim(p_workspace text, p_environment text, p_incarnation bigint, p_digest text, p_operation uuid, p_command text, p_hash text) scrum84_operator
+441; 1255 31665 FUNCTION public onboarding_receipt_immutable() scrum84_operator
+396; 1255 31727 FUNCTION public onboarding_worker_table_lock(text, text) scrum84_operator
+6081; 0 0 ACL public FUNCTION onboarding_worker_table_lock(relation text, mode text) scrum84_operator
+388; 1255 31997 FUNCTION public owner_advisor_context_changed() scrum84_operator
+401; 1255 31996 FUNCTION public owner_advisor_forget_context(text, text) scrum84_operator
+404; 1255 30941 FUNCTION public owner_advisor_reserve(text, text, uuid, text, integer) scrum84_operator
+464; 1255 30974 FUNCTION public owner_advisor_review_briefing(text, text, uuid, text, text, text, date, text, text, jsonb, integer, text) scrum84_operator
+416; 1255 30942 FUNCTION public owner_advisor_save(text, text, uuid, text, integer, text) scrum84_operator
+395; 1255 32001 FUNCTION public owner_advisor_save_memory(text, text, uuid, text, integer, jsonb, jsonb) scrum84_operator
+473; 1255 31328 FUNCTION public owner_advisor_save_notebook(text, text, uuid, text, integer, jsonb, jsonb) scrum84_operator
+446; 1255 30687 FUNCTION public payroll_protect_approval() scrum84_operator
+452; 1255 29237 FUNCTION public schedule_generation_claims_valid(jsonb) scrum84_operator
+457; 1255 29297 FUNCTION public schedule_material_revision() scrum84_operator
+434; 1255 31300 FUNCTION public schedule_pending_edits_publish_once() scrum84_operator
+405; 1255 29291 FUNCTION public shift_assignment_episode() scrum84_operator
+418; 1255 29366 FUNCTION public shift_change_immutable_event() scrum84_operator
+455; 1255 29347 FUNCTION public shift_change_reserve_callout() scrum84_operator
+430; 1255 29345 FUNCTION public shift_change_reserve_exchange() scrum84_operator
+440; 1255 29317 FUNCTION public shift_change_revision() scrum84_operator
+484; 1255 29295 FUNCTION public shift_material_revision() scrum84_operator
+429; 1255 31968 FUNCTION public staff_task_apply(text, text, text, jsonb, text, jsonb, jsonb, text[]) scrum84_operator
+443; 1255 31960 FUNCTION public staff_task_immutable() scrum84_operator
+448; 1255 31966 FUNCTION public staff_task_snapshot_guard() scrum84_operator
+469; 1255 29299 FUNCTION public workspace_material_revision() scrum84_operator
+314; 1259 30788 TABLE public account_deletion_requests scrum84_operator
+295; 1259 30421 TABLE public attendance_policy_observations scrum84_operator
+318; 1259 30870 TABLE public auth_login_limits scrum84_operator
+319; 1259 30878 TABLE public auth_passkey_audit scrum84_operator
+317; 1259 30853 TABLE public auth_passkey_challenges scrum84_operator
+315; 1259 30817 TABLE public auth_passkey_users scrum84_operator
+223; 1259 28645 TABLE public availability_exceptions scrum84_operator
+222; 1259 28630 TABLE public availability_windows scrum84_operator
+243; 1259 29053 TABLE public break_entries scrum84_operator
+287; 1259 30199 TABLE public calendar_clock scrum84_operator
+289; 1259 30237 TABLE public calendar_operations scrum84_operator
+290; 1259 30268 TABLE public calendar_removals scrum84_operator
+288; 1259 30210 TABLE public calendar_subscriptions scrum84_operator
+264; 1259 29625 TABLE public clocker_break_type_events scrum84_operator
+263; 1259 29594 TABLE public clocker_break_types scrum84_operator
+262; 1259 29563 TABLE public clocker_command_ledger scrum84_operator
+255; 1259 29425 TABLE public clocker_device_credentials scrum84_operator
+254; 1259 29400 TABLE public clocker_device_events scrum84_operator
+241; 1259 29007 TABLE public clocker_devices scrum84_operator
+261; 1259 29549 TABLE public clocker_employee_clock_state scrum84_operator
+331; 1259 31177 TABLE public clocker_photo_access_events scrum84_operator
+334; 1259 31251 TABLE public clocker_photo_cleanup_runs scrum84_operator
+328; 1259 31083 TABLE public clocker_photo_notice_profiles scrum84_operator
+329; 1259 31104 TABLE public clocker_photo_notice_revisions scrum84_operator
+333; 1259 31236 TABLE public clocker_photo_platform_lifecycle scrum84_operator
+326; 1259 31041 TABLE public clocker_photo_policy scrum84_operator
+327; 1259 31069 TABLE public clocker_photo_policy_revisions scrum84_operator
+332; 1259 31197 TABLE public clocker_photo_review_events scrum84_operator
+256; 1259 29443 TABLE public clocker_pin_configuration scrum84_operator
+258; 1259 29485 TABLE public clocker_pin_events scrum84_operator
+259; 1259 29507 TABLE public clocker_pin_limits scrum84_operator
+260; 1259 29521 TABLE public clocker_pin_sessions scrum84_operator
+325; 1259 31011 TABLE public clocker_review_requests scrum84_operator
+286; 1259 30163 TABLE public communication_lifecycle scrum84_operator
+285; 1259 30136 TABLE public communication_operations scrum84_operator
+284; 1259 30119 TABLE public communication_receipts scrum84_operator
+283; 1259 30092 TABLE public communication_recipients scrum84_operator
+282; 1259 30047 TABLE public communication_revisions scrum84_operator
+281; 1259 30023 TABLE public communications scrum84_operator
+371; 1259 32163 TABLE public company_access_adoption scrum84_operator
+377; 1259 32308 TABLE public company_access_operations scrum84_operator
+379; 1259 32351 TABLE public company_invitation_claim_counters scrum84_operator
+376; 1259 32294 TABLE public company_invitation_delivery_events scrum84_operator
+375; 1259 32275 TABLE public company_invitation_events scrum84_operator
+378; 1259 32335 TABLE public company_invitation_issue_counters scrum84_operator
+374; 1259 32224 TABLE public company_invitations scrum84_operator
+384; 1259 32474 TABLE public conversation_events scrum84_operator
+382; 1259 32425 TABLE public conversation_members scrum84_operator
+383; 1259 32451 TABLE public conversation_messages scrum84_operator
+385; 1259 32493 TABLE public conversation_operations scrum84_operator
+380; 1259 32378 TABLE public conversation_streams scrum84_operator
+381; 1259 32394 TABLE public conversations scrum84_operator
+249; 1259 29204 TABLE public coverage_window_position_requirements scrum84_operator
+280; 1259 29997 TABLE public employee_attention_operations scrum84_operator
+279; 1259 29974 TABLE public employee_attention_receipts scrum84_operator
+257; 1259 29456 TABLE public employee_clocker_pins scrum84_operator
+220; 1259 28601 TABLE public employee_credentials scrum84_operator
+219; 1259 28584 TABLE public employee_location_eligibility scrum84_operator
+316; 1259 30832 TABLE public employee_passkeys scrum84_operator
+248; 1259 29187 TABLE public employee_positions scrum84_operator
+230; 1259 28800 TABLE public employee_scheduling_settings scrum84_operator
+221; 1259 28615 TABLE public employee_sessions scrum84_operator
+218; 1259 28567 TABLE public employees scrum84_operator
+231; 1259 28816 TABLE public location_coverage_windows scrum84_operator
+229; 1259 28786 TABLE public location_staffing_settings scrum84_operator
+217; 1259 28557 TABLE public locations scrum84_operator
+353; 1259 31759 TABLE public management_time_closes scrum84_operator
+369; 1259 32122 TABLE public native_payroll_document_manifests scrum84_operator
+367; 1259 32073 TABLE public native_payroll_ledger scrum84_operator
+368; 1259 32106 VIEW public native_payroll_ledger_heads scrum84_operator
+366; 1259 32072 SEQUENCE public native_payroll_ledger_sequence_seq scrum84_operator
+364; 1259 32047 TABLE public native_payroll_manager_scope_revisions scrum84_operator
+365; 1259 32068 VIEW public native_payroll_manager_scopes_current scrum84_operator
+362; 1259 32024 TABLE public native_payroll_opening_ytd_revisions scrum84_operator
+363; 1259 32043 VIEW public native_payroll_opening_ytd_current scrum84_operator
+360; 1259 32002 TABLE public native_payroll_profile_revisions scrum84_operator
+361; 1259 32020 VIEW public native_payroll_profiles_current scrum84_operator
+323; 1259 30977 TABLE public native_payroll_setup_records scrum84_operator
+324; 1259 31004 VIEW public native_payroll_setup_records_current scrum84_operator
+339; 1259 31390 TABLE public native_push_challenges scrum84_operator
+340; 1259 31423 TABLE public native_push_deliveries scrum84_operator
+338; 1259 31354 TABLE public native_push_installations scrum84_operator
+352; 1259 31728 TABLE public nevora_commerce_installation scrum84_operator
+294; 1259 30386 TABLE public nevora_company_policy_revisions scrum84_operator
+266; 1259 29710 TABLE public time_correction_adjustments scrum84_operator
+268; 1259 29812 VIEW public nevora_time_correction_leaf_adjustments scrum84_operator
+242; 1259 29023 TABLE public time_entries scrum84_operator
+270; 1259 29822 VIEW public nevora_effective_break_entries scrum84_operator
+269; 1259 29817 VIEW public nevora_effective_time_entries scrum84_operator
+274; 1259 29887 TABLE public payroll_export_profile_revisions scrum84_operator
+276; 1259 29933 VIEW public nevora_payroll_profile_latest scrum84_operator
+267; 1259 29771 TABLE public time_correction_events scrum84_operator
+265; 1259 29665 TABLE public time_correction_requests scrum84_operator
+271; 1259 29827 VIEW public nevora_pending_time_corrections scrum84_operator
+272; 1259 29840 TABLE public timecard_revisions scrum84_operator
+273; 1259 29875 VIEW public nevora_timecard_latest scrum84_operator
+312; 1259 30724 TABLE public nevora_workspace_presentation_assets scrum84_operator
+313; 1259 30748 TABLE public nevora_workspace_presentation_revisions scrum84_operator
+228; 1259 28772 TABLE public notifications scrum84_operator
+348; 1259 31599 TABLE public onboarding_commands scrum84_operator
+344; 1259 31511 TABLE public onboarding_initial_owner scrum84_operator
+349; 1259 31620 TABLE public onboarding_invitation_batches scrum84_operator
+350; 1259 31641 TABLE public onboarding_invitation_items scrum84_operator
+346; 1259 31558 TABLE public onboarding_owner_activation_receipts scrum84_operator
+345; 1259 31536 TABLE public onboarding_owner_grants scrum84_operator
+347; 1259 31584 TABLE public onboarding_progress scrum84_operator
+343; 1259 31487 TABLE public onboarding_provision_receipts scrum84_operator
+351; 1259 31683 TABLE public onboarding_restore_receipts scrum84_operator
+342; 1259 31477 TABLE public onboarding_runtime_roles scrum84_operator
+341; 1259 31456 TABLE public onboarding_workspace_identity scrum84_operator
+372; 1259 32181 TABLE public operational_scope_revisions scrum84_operator
+373; 1259 32218 VIEW public operational_scopes_current scrum84_operator
+370; 1259 32137 TABLE public operational_subject_versions scrum84_operator
+322; 1259 30944 TABLE public owner_advisor_briefing_reviews scrum84_operator
+337; 1259 31329 TABLE public owner_advisor_coverage_reviews scrum84_operator
+359; 1259 31971 TABLE public owner_advisor_memories scrum84_operator
+336; 1259 31303 TABLE public owner_advisor_notebooks scrum84_operator
+320; 1259 30895 TABLE public owner_advisor_profiles scrum84_operator
+321; 1259 30918 TABLE public owner_advisor_requests scrum84_operator
+278; 1259 29964 TABLE public password_recovery_limits scrum84_operator
+277; 1259 29939 TABLE public password_recovery_proofs scrum84_operator
+306; 1259 30601 TABLE public payroll_command_receipts scrum84_operator
+307; 1259 30618 TABLE public payroll_documents scrum84_operator
+300; 1259 30525 TABLE public payroll_exception_revisions scrum84_operator
+275; 1259 29910 TABLE public payroll_export_receipts scrum84_operator
+301; 1259 30543 TABLE public payroll_grant_revisions scrum84_operator
+302; 1259 30561 VIEW public payroll_grants_current scrum84_operator
+309; 1259 30650 TABLE public payroll_jobs scrum84_operator
+310; 1259 30675 TABLE public payroll_notice_receipts scrum84_operator
+311; 1259 30708 TABLE public payroll_notice_sources scrum84_operator
+298; 1259 30487 TABLE public payroll_period_events scrum84_operator
+297; 1259 30462 TABLE public payroll_period_manifests scrum84_operator
+296; 1259 30441 TABLE public payroll_period_populations scrum84_operator
+308; 1259 30637 TABLE public payroll_publications scrum84_operator
+304; 1259 30584 TABLE public payroll_run_revisions scrum84_operator
+303; 1259 30565 TABLE public payroll_runs scrum84_operator
+305; 1259 30597 VIEW public payroll_runs_current scrum84_operator
+299; 1259 30512 TABLE public payroll_setting_revisions scrum84_operator
+247; 1259 29170 TABLE public positions scrum84_operator
+245; 1259 29112 TABLE public push_deliveries scrum84_operator
+244; 1259 29088 TABLE public push_subscriptions scrum84_operator
+235; 1259 28892 TABLE public schedule_acknowledgements scrum84_operator
+291; 1259 30332 TABLE public schedule_copy_operations scrum84_operator
+292; 1259 30351 TABLE public schedule_copy_receipts scrum84_operator
+293; 1259 30364 TABLE public schedule_copy_row_receipts scrum84_operator
+250; 1259 29241 TABLE public schedule_generation_exclusions scrum84_operator
+335; 1259 31267 TABLE public schedule_pending_edits scrum84_operator
+240; 1259 28984 TABLE public schedule_publication_revision_shifts scrum84_operator
+239; 1259 28961 TABLE public schedule_publication_revisions scrum84_operator
+237; 1259 28921 TABLE public schedule_template_shifts scrum84_operator
+236; 1259 28905 TABLE public schedule_templates scrum84_operator
+232; 1259 28835 TABLE public schedule_week_settings scrum84_operator
+225; 1259 28682 TABLE public schedules scrum84_operator
+386; 1259 32539 TABLE public scrum84_transport_probe scrum84_operator
+234; 1259 28864 TABLE public shift_callouts scrum84_operator
+252; 1259 29349 TABLE public shift_change_events scrum84_operator
+253; 1259 29368 TABLE public shift_change_operations scrum84_operator
+251; 1259 29320 TABLE public shift_change_participation scrum84_operator
+227; 1259 28732 TABLE public shift_exchanges scrum84_operator
+226; 1259 28710 TABLE public shifts scrum84_operator
+356; 1259 31891 TABLE public staff_task_events scrum84_operator
+355; 1259 31848 TABLE public staff_task_instances scrum84_operator
+357; 1259 31916 TABLE public staff_task_operations scrum84_operator
+358; 1259 31941 TABLE public staff_task_reminder_acks scrum84_operator
+354; 1259 31819 TABLE public staff_task_templates scrum84_operator
+224; 1259 28659 TABLE public time_off_requests scrum84_operator
+238; 1259 28947 TABLE public weekly_availability_submissions scrum84_operator
+233; 1259 28848 TABLE public weekly_availability_windows scrum84_operator
+246; 1259 29145 TABLE public workspaces scrum84_operator
+5985; 0 30788 TABLE DATA public account_deletion_requests scrum84_operator
+5968; 0 30421 TABLE DATA public attendance_policy_observations scrum84_operator
+5989; 0 30870 TABLE DATA public auth_login_limits scrum84_operator
+5990; 0 30878 TABLE DATA public auth_passkey_audit scrum84_operator
+5988; 0 30853 TABLE DATA public auth_passkey_challenges scrum84_operator
+5986; 0 30817 TABLE DATA public auth_passkey_users scrum84_operator
+5902; 0 28645 TABLE DATA public availability_exceptions scrum84_operator
+5901; 0 28630 TABLE DATA public availability_windows scrum84_operator
+5922; 0 29053 TABLE DATA public break_entries scrum84_operator
+5960; 0 30199 TABLE DATA public calendar_clock scrum84_operator
+5962; 0 30237 TABLE DATA public calendar_operations scrum84_operator
+5963; 0 30268 TABLE DATA public calendar_removals scrum84_operator
+5961; 0 30210 TABLE DATA public calendar_subscriptions scrum84_operator
+5943; 0 29625 TABLE DATA public clocker_break_type_events scrum84_operator
+5942; 0 29594 TABLE DATA public clocker_break_types scrum84_operator
+5941; 0 29563 TABLE DATA public clocker_command_ledger scrum84_operator
+5934; 0 29425 TABLE DATA public clocker_device_credentials scrum84_operator
+5933; 0 29400 TABLE DATA public clocker_device_events scrum84_operator
+5920; 0 29007 TABLE DATA public clocker_devices scrum84_operator
+5940; 0 29549 TABLE DATA public clocker_employee_clock_state scrum84_operator
+6001; 0 31177 TABLE DATA public clocker_photo_access_events scrum84_operator
+6004; 0 31251 TABLE DATA public clocker_photo_cleanup_runs scrum84_operator
+5998; 0 31083 TABLE DATA public clocker_photo_notice_profiles scrum84_operator
+5999; 0 31104 TABLE DATA public clocker_photo_notice_revisions scrum84_operator
+6003; 0 31236 TABLE DATA public clocker_photo_platform_lifecycle scrum84_operator
+5996; 0 31041 TABLE DATA public clocker_photo_policy scrum84_operator
+5997; 0 31069 TABLE DATA public clocker_photo_policy_revisions scrum84_operator
+6002; 0 31197 TABLE DATA public clocker_photo_review_events scrum84_operator
+5935; 0 29443 TABLE DATA public clocker_pin_configuration scrum84_operator
+5937; 0 29485 TABLE DATA public clocker_pin_events scrum84_operator
+5938; 0 29507 TABLE DATA public clocker_pin_limits scrum84_operator
+5939; 0 29521 TABLE DATA public clocker_pin_sessions scrum84_operator
+6000; 0 31123 TABLE DATA public clocker_punch_photos scrum84_operator
+5995; 0 31011 TABLE DATA public clocker_review_requests scrum84_operator
+5959; 0 30163 TABLE DATA public communication_lifecycle scrum84_operator
+5958; 0 30136 TABLE DATA public communication_operations scrum84_operator
+5957; 0 30119 TABLE DATA public communication_receipts scrum84_operator
+5956; 0 30092 TABLE DATA public communication_recipients scrum84_operator
+5955; 0 30047 TABLE DATA public communication_revisions scrum84_operator
+5954; 0 30023 TABLE DATA public communications scrum84_operator
+6037; 0 32163 TABLE DATA public company_access_adoption scrum84_operator
+6042; 0 32308 TABLE DATA public company_access_operations scrum84_operator
+6044; 0 32351 TABLE DATA public company_invitation_claim_counters scrum84_operator
+6041; 0 32294 TABLE DATA public company_invitation_delivery_events scrum84_operator
+6040; 0 32275 TABLE DATA public company_invitation_events scrum84_operator
+6043; 0 32335 TABLE DATA public company_invitation_issue_counters scrum84_operator
+6039; 0 32224 TABLE DATA public company_invitations scrum84_operator
+6049; 0 32474 TABLE DATA public conversation_events scrum84_operator
+6047; 0 32425 TABLE DATA public conversation_members scrum84_operator
+6048; 0 32451 TABLE DATA public conversation_messages scrum84_operator
+6050; 0 32493 TABLE DATA public conversation_operations scrum84_operator
+6045; 0 32378 TABLE DATA public conversation_streams scrum84_operator
+6046; 0 32394 TABLE DATA public conversations scrum84_operator
+5928; 0 29204 TABLE DATA public coverage_window_position_requirements scrum84_operator
+5953; 0 29997 TABLE DATA public employee_attention_operations scrum84_operator
+5952; 0 29974 TABLE DATA public employee_attention_receipts scrum84_operator
+5936; 0 29456 TABLE DATA public employee_clocker_pins scrum84_operator
+5899; 0 28601 TABLE DATA public employee_credentials scrum84_operator
+5898; 0 28584 TABLE DATA public employee_location_eligibility scrum84_operator
+5987; 0 30832 TABLE DATA public employee_passkeys scrum84_operator
+5927; 0 29187 TABLE DATA public employee_positions scrum84_operator
+5909; 0 28800 TABLE DATA public employee_scheduling_settings scrum84_operator
+5900; 0 28615 TABLE DATA public employee_sessions scrum84_operator
+5897; 0 28567 TABLE DATA public employees scrum84_operator
+5910; 0 28816 TABLE DATA public location_coverage_windows scrum84_operator
+5908; 0 28786 TABLE DATA public location_staffing_settings scrum84_operator
+5896; 0 28557 TABLE DATA public locations scrum84_operator
+6023; 0 31759 TABLE DATA public management_time_closes scrum84_operator
+6035; 0 32122 TABLE DATA public native_payroll_document_manifests scrum84_operator
+6034; 0 32073 TABLE DATA public native_payroll_ledger scrum84_operator
+6032; 0 32047 TABLE DATA public native_payroll_manager_scope_revisions scrum84_operator
+6031; 0 32024 TABLE DATA public native_payroll_opening_ytd_revisions scrum84_operator
+6030; 0 32002 TABLE DATA public native_payroll_profile_revisions scrum84_operator
+5994; 0 30977 TABLE DATA public native_payroll_setup_records scrum84_operator
+6009; 0 31390 TABLE DATA public native_push_challenges scrum84_operator
+6010; 0 31423 TABLE DATA public native_push_deliveries scrum84_operator
+6008; 0 31354 TABLE DATA public native_push_installations scrum84_operator
+6022; 0 31728 TABLE DATA public nevora_commerce_installation scrum84_operator
+5967; 0 30386 TABLE DATA public nevora_company_policy_revisions scrum84_operator
+5983; 0 30724 TABLE DATA public nevora_workspace_presentation_assets scrum84_operator
+5984; 0 30748 TABLE DATA public nevora_workspace_presentation_revisions scrum84_operator
+5907; 0 28772 TABLE DATA public notifications scrum84_operator
+6018; 0 31599 TABLE DATA public onboarding_commands scrum84_operator
+6014; 0 31511 TABLE DATA public onboarding_initial_owner scrum84_operator
+6019; 0 31620 TABLE DATA public onboarding_invitation_batches scrum84_operator
+6020; 0 31641 TABLE DATA public onboarding_invitation_items scrum84_operator
+6016; 0 31558 TABLE DATA public onboarding_owner_activation_receipts scrum84_operator
+6015; 0 31536 TABLE DATA public onboarding_owner_grants scrum84_operator
+6017; 0 31584 TABLE DATA public onboarding_progress scrum84_operator
+6013; 0 31487 TABLE DATA public onboarding_provision_receipts scrum84_operator
+6021; 0 31683 TABLE DATA public onboarding_restore_receipts scrum84_operator
+6012; 0 31477 TABLE DATA public onboarding_runtime_roles scrum84_operator
+6011; 0 31456 TABLE DATA public onboarding_workspace_identity scrum84_operator
+6038; 0 32181 TABLE DATA public operational_scope_revisions scrum84_operator
+6036; 0 32137 TABLE DATA public operational_subject_versions scrum84_operator
+5993; 0 30944 TABLE DATA public owner_advisor_briefing_reviews scrum84_operator
+6007; 0 31329 TABLE DATA public owner_advisor_coverage_reviews scrum84_operator
+6029; 0 31971 TABLE DATA public owner_advisor_memories scrum84_operator
+6006; 0 31303 TABLE DATA public owner_advisor_notebooks scrum84_operator
+5991; 0 30895 TABLE DATA public owner_advisor_profiles scrum84_operator
+5992; 0 30918 TABLE DATA public owner_advisor_requests scrum84_operator
+5951; 0 29964 TABLE DATA public password_recovery_limits scrum84_operator
+5950; 0 29939 TABLE DATA public password_recovery_proofs scrum84_operator
+5977; 0 30601 TABLE DATA public payroll_command_receipts scrum84_operator
+5978; 0 30618 TABLE DATA public payroll_documents scrum84_operator
+5973; 0 30525 TABLE DATA public payroll_exception_revisions scrum84_operator
+5948; 0 29887 TABLE DATA public payroll_export_profile_revisions scrum84_operator
+5949; 0 29910 TABLE DATA public payroll_export_receipts scrum84_operator
+5974; 0 30543 TABLE DATA public payroll_grant_revisions scrum84_operator
+5980; 0 30650 TABLE DATA public payroll_jobs scrum84_operator
+5981; 0 30675 TABLE DATA public payroll_notice_receipts scrum84_operator
+5982; 0 30708 TABLE DATA public payroll_notice_sources scrum84_operator
+5971; 0 30487 TABLE DATA public payroll_period_events scrum84_operator
+5970; 0 30462 TABLE DATA public payroll_period_manifests scrum84_operator
+5969; 0 30441 TABLE DATA public payroll_period_populations scrum84_operator
+5979; 0 30637 TABLE DATA public payroll_publications scrum84_operator
+5976; 0 30584 TABLE DATA public payroll_run_revisions scrum84_operator
+5975; 0 30565 TABLE DATA public payroll_runs scrum84_operator
+5972; 0 30512 TABLE DATA public payroll_setting_revisions scrum84_operator
+5926; 0 29170 TABLE DATA public positions scrum84_operator
+5924; 0 29112 TABLE DATA public push_deliveries scrum84_operator
+5923; 0 29088 TABLE DATA public push_subscriptions scrum84_operator
+5914; 0 28892 TABLE DATA public schedule_acknowledgements scrum84_operator
+5964; 0 30332 TABLE DATA public schedule_copy_operations scrum84_operator
+5965; 0 30351 TABLE DATA public schedule_copy_receipts scrum84_operator
+5966; 0 30364 TABLE DATA public schedule_copy_row_receipts scrum84_operator
+5929; 0 29241 TABLE DATA public schedule_generation_exclusions scrum84_operator
+6005; 0 31267 TABLE DATA public schedule_pending_edits scrum84_operator
+5919; 0 28984 TABLE DATA public schedule_publication_revision_shifts scrum84_operator
+5918; 0 28961 TABLE DATA public schedule_publication_revisions scrum84_operator
+5916; 0 28921 TABLE DATA public schedule_template_shifts scrum84_operator
+5915; 0 28905 TABLE DATA public schedule_templates scrum84_operator
+5911; 0 28835 TABLE DATA public schedule_week_settings scrum84_operator
+5904; 0 28682 TABLE DATA public schedules scrum84_operator
+6051; 0 32539 TABLE DATA public scrum84_transport_probe scrum84_operator
+5913; 0 28864 TABLE DATA public shift_callouts scrum84_operator
+5931; 0 29349 TABLE DATA public shift_change_events scrum84_operator
+5932; 0 29368 TABLE DATA public shift_change_operations scrum84_operator
+5930; 0 29320 TABLE DATA public shift_change_participation scrum84_operator
+5906; 0 28732 TABLE DATA public shift_exchanges scrum84_operator
+5905; 0 28710 TABLE DATA public shifts scrum84_operator
+6026; 0 31891 TABLE DATA public staff_task_events scrum84_operator
+6025; 0 31848 TABLE DATA public staff_task_instances scrum84_operator
+6027; 0 31916 TABLE DATA public staff_task_operations scrum84_operator
+6028; 0 31941 TABLE DATA public staff_task_reminder_acks scrum84_operator
+6024; 0 31819 TABLE DATA public staff_task_templates scrum84_operator
+5945; 0 29710 TABLE DATA public time_correction_adjustments scrum84_operator
+5946; 0 29771 TABLE DATA public time_correction_events scrum84_operator
+5944; 0 29665 TABLE DATA public time_correction_requests scrum84_operator
+5921; 0 29023 TABLE DATA public time_entries scrum84_operator
+5903; 0 28659 TABLE DATA public time_off_requests scrum84_operator
+5947; 0 29840 TABLE DATA public timecard_revisions scrum84_operator
+5917; 0 28947 TABLE DATA public weekly_availability_submissions scrum84_operator
+5912; 0 28848 TABLE DATA public weekly_availability_windows scrum84_operator
+5925; 0 29145 TABLE DATA public workspaces scrum84_operator
+6082; 0 0 SEQUENCE SET public native_payroll_ledger_sequence_seq scrum84_operator
+5011; 2606 30802 CONSTRAINT public account_deletion_requests account_deletion_requests_pkey scrum84_operator
+5013; 2606 30804 CONSTRAINT public account_deletion_requests account_deletion_requests_reference_key scrum84_operator
+4965; 2606 30428 CONSTRAINT public attendance_policy_observations attendance_policy_observations_pkey scrum84_operator
+5027; 2606 30877 CONSTRAINT public auth_login_limits auth_login_limits_pkey scrum84_operator
+5030; 2606 30887 CONSTRAINT public auth_passkey_audit auth_passkey_audit_pkey scrum84_operator
+5025; 2606 30863 CONSTRAINT public auth_passkey_challenges auth_passkey_challenges_pkey scrum84_operator
+5015; 2606 30824 CONSTRAINT public auth_passkey_users auth_passkey_users_pkey scrum84_operator
+5017; 2606 30826 CONSTRAINT public auth_passkey_users auth_passkey_users_user_handle_key scrum84_operator
+4711; 2606 28653 CONSTRAINT public availability_exceptions availability_exceptions_pkey scrum84_operator
+4709; 2606 28638 CONSTRAINT public availability_windows availability_windows_pkey scrum84_operator
+4793; 2606 29060 CONSTRAINT public break_entries break_entries_pkey scrum84_operator
+4941; 2606 30206 CONSTRAINT public calendar_clock calendar_clock_pkey scrum84_operator
+4951; 2606 30247 CONSTRAINT public calendar_operations calendar_operations_pkey scrum84_operator
+4954; 2606 30275 CONSTRAINT public calendar_removals calendar_removals_pkey scrum84_operator
+4945; 2606 30222 CONSTRAINT public calendar_subscriptions calendar_subscriptions_digest_key scrum84_operator
+4947; 2606 30224 CONSTRAINT public calendar_subscriptions calendar_subscriptions_generation_key scrum84_operator
+4949; 2606 30220 CONSTRAINT public calendar_subscriptions calendar_subscriptions_pkey scrum84_operator
+4868; 2606 29636 CONSTRAINT public clocker_break_type_events clocker_break_type_events_break_type_id_version_key scrum84_operator
+4870; 2606 29634 CONSTRAINT public clocker_break_type_events clocker_break_type_events_pkey scrum84_operator
+4866; 2606 29608 CONSTRAINT public clocker_break_types clocker_break_types_pkey scrum84_operator
+4863; 2606 29573 CONSTRAINT public clocker_command_ledger clocker_command_ledger_pkey scrum84_operator
+4838; 2606 29436 CONSTRAINT public clocker_device_credentials clocker_device_credentials_device_id_credential_version_key scrum84_operator
+4840; 2606 29434 CONSTRAINT public clocker_device_credentials clocker_device_credentials_pkey scrum84_operator
+4834; 2606 29411 CONSTRAINT public clocker_device_events clocker_device_events_device_id_device_version_key scrum84_operator
+4836; 2606 29409 CONSTRAINT public clocker_device_events clocker_device_events_pkey scrum84_operator
+4781; 2606 29017 CONSTRAINT public clocker_devices clocker_devices_id_location_id_key scrum84_operator
+4783; 2606 29015 CONSTRAINT public clocker_devices clocker_devices_pkey scrum84_operator
+4860; 2606 29557 CONSTRAINT public clocker_employee_clock_state clocker_employee_clock_state_pkey scrum84_operator
+5057; 2606 31186 CONSTRAINT public clocker_photo_access_events clocker_photo_access_events_pkey scrum84_operator
+5063; 2606 31259 CONSTRAINT public clocker_photo_cleanup_runs clocker_photo_cleanup_runs_pkey scrum84_operator
+5048; 2606 31093 CONSTRAINT public clocker_photo_notice_profiles clocker_photo_notice_profiles_pkey scrum84_operator
+5050; 2606 31112 CONSTRAINT public clocker_photo_notice_revisions clocker_photo_notice_revisions_pkey scrum84_operator
+5061; 2606 31245 CONSTRAINT public clocker_photo_platform_lifecycle clocker_photo_platform_lifecycle_pkey scrum84_operator
+5044; 2606 31058 CONSTRAINT public clocker_photo_policy clocker_photo_policy_pkey scrum84_operator
+5046; 2606 31077 CONSTRAINT public clocker_photo_policy_revisions clocker_photo_policy_revisions_pkey scrum84_operator
+5059; 2606 31207 CONSTRAINT public clocker_photo_review_events clocker_photo_review_events_pkey scrum84_operator
+4842; 2606 29450 CONSTRAINT public clocker_pin_configuration clocker_pin_configuration_pkey scrum84_operator
+4848; 2606 29495 CONSTRAINT public clocker_pin_events clocker_pin_events_employee_id_pin_version_key scrum84_operator
+4851; 2606 29493 CONSTRAINT public clocker_pin_events clocker_pin_events_pkey scrum84_operator
+4853; 2606 29520 CONSTRAINT public clocker_pin_limits clocker_pin_limits_pkey scrum84_operator
+4856; 2606 29531 CONSTRAINT public clocker_pin_sessions clocker_pin_sessions_pkey scrum84_operator
+4858; 2606 29533 CONSTRAINT public clocker_pin_sessions clocker_pin_sessions_token_hash_key scrum84_operator
+5053; 2606 31148 CONSTRAINT public clocker_punch_photos clocker_punch_photos_device_id_command_id_key scrum84_operator
+5055; 2606 31146 CONSTRAINT public clocker_punch_photos clocker_punch_photos_pkey scrum84_operator
+5042; 2606 31018 CONSTRAINT public clocker_review_requests clocker_review_requests_pkey scrum84_operator
+4937; 2606 30171 CONSTRAINT public communication_lifecycle communication_lifecycle_pkey scrum84_operator
+4939; 2606 30173 CONSTRAINT public communication_lifecycle communication_lifecycle_workspace_id_communication_id_revis_key scrum84_operator
+4689; 2606 30021 CONSTRAINT public locations communication_location_workspace_key scrum84_operator
+4935; 2606 30147 CONSTRAINT public communication_operations communication_operations_pkey scrum84_operator
+4929; 2606 30126 CONSTRAINT public communication_receipts communication_receipts_pkey scrum84_operator
+4931; 2606 30130 CONSTRAINT public communication_receipts communication_receipts_workspace_id_communication_id_revis_key1 scrum84_operator
+4933; 2606 30128 CONSTRAINT public communication_receipts communication_receipts_workspace_id_communication_id_revisi_key scrum84_operator
+4925; 2606 30101 CONSTRAINT public communication_recipients communication_recipients_pkey scrum84_operator
+4927; 2606 30103 CONSTRAINT public communication_recipients communication_recipients_workspace_id_communication_id_revi_key scrum84_operator
+4916; 2606 30065 CONSTRAINT public communication_revisions communication_revisions_pkey scrum84_operator
+4918; 2606 30069 CONSTRAINT public communication_revisions communication_revisions_workspace_id_communication_id_id_co_key scrum84_operator
+4920; 2606 30067 CONSTRAINT public communication_revisions communication_revisions_workspace_id_communication_id_id_key scrum84_operator
+4922; 2606 30071 CONSTRAINT public communication_revisions communication_revisions_workspace_id_communication_id_versi_key scrum84_operator
+4912; 2606 30033 CONSTRAINT public communications communications_pkey scrum84_operator
+4914; 2606 30035 CONSTRAINT public communications communications_workspace_id_id_key scrum84_operator
+5184; 2606 32175 CONSTRAINT public company_access_adoption company_access_adoption_pkey scrum84_operator
+5201; 2606 32319 CONSTRAINT public company_access_operations company_access_operations_pkey scrum84_operator
+5205; 2606 32359 CONSTRAINT public company_invitation_claim_counters company_invitation_claim_counters_pkey scrum84_operator
+5199; 2606 32302 CONSTRAINT public company_invitation_delivery_events company_invitation_delivery_events_pkey scrum84_operator
+5197; 2606 32283 CONSTRAINT public company_invitation_events company_invitation_events_pkey scrum84_operator
+5203; 2606 32345 CONSTRAINT public company_invitation_issue_counters company_invitation_issue_counters_pkey scrum84_operator
+5191; 2606 32240 CONSTRAINT public company_invitations company_invitations_pkey scrum84_operator
+5193; 2606 32244 CONSTRAINT public company_invitations company_invitations_proof_digest_key scrum84_operator
+5195; 2606 32242 CONSTRAINT public company_invitations company_invitations_workspace_id_employee_id_revision_key scrum84_operator
+5226; 2606 32482 CONSTRAINT public conversation_events conversation_events_pkey scrum84_operator
+5217; 2606 32436 CONSTRAINT public conversation_members conversation_members_pkey scrum84_operator
+5219; 2606 32438 CONSTRAINT public conversation_members conversation_members_workspace_id_conversation_id_epoch_key scrum84_operator
+5222; 2606 32460 CONSTRAINT public conversation_messages conversation_messages_pkey scrum84_operator
+5224; 2606 32462 CONSTRAINT public conversation_messages conversation_messages_workspace_id_conversation_id_sequence_key scrum84_operator
+5228; 2606 32502 CONSTRAINT public conversation_operations conversation_operations_pkey scrum84_operator
+5207; 2606 32388 CONSTRAINT public conversation_streams conversation_streams_pkey scrum84_operator
+5209; 2606 32410 CONSTRAINT public conversations conversations_pkey scrum84_operator
+5211; 2606 32414 CONSTRAINT public conversations conversations_workspace_id_direct_key_key scrum84_operator
+5213; 2606 32412 CONSTRAINT public conversations conversations_workspace_id_id_key scrum84_operator
+4820; 2606 29211 CONSTRAINT public coverage_window_position_requirements coverage_window_position_requirements_pkey scrum84_operator
+4910; 2606 30006 CONSTRAINT public employee_attention_operations employee_attention_operations_pkey scrum84_operator
+4906; 2606 29984 CONSTRAINT public employee_attention_receipts employee_attention_receipts_pkey scrum84_operator
+4908; 2606 29986 CONSTRAINT public employee_attention_receipts employee_attention_receipts_workspace_id_employee_id_source_key scrum84_operator
+4844; 2606 29467 CONSTRAINT public employee_clocker_pins employee_clocker_pins_pkey scrum84_operator
+4846; 2606 29469 CONSTRAINT public employee_clocker_pins employee_clocker_pins_workspace_id_lookup_hash_key scrum84_operator
+4702; 2606 28609 CONSTRAINT public employee_credentials employee_credentials_pkey scrum84_operator
+4700; 2606 28590 CONSTRAINT public employee_location_eligibility employee_location_eligibility_pkey scrum84_operator
+5020; 2606 30846 CONSTRAINT public employee_passkeys employee_passkeys_credential_id_key scrum84_operator
+5022; 2606 30844 CONSTRAINT public employee_passkeys employee_passkeys_pkey scrum84_operator
+4818; 2606 29193 CONSTRAINT public employee_positions employee_positions_pkey scrum84_operator
+4741; 2606 28808 CONSTRAINT public employee_scheduling_settings employee_scheduling_settings_pkey scrum84_operator
+4706; 2606 28622 CONSTRAINT public employee_sessions employee_sessions_pkey scrum84_operator
+4698; 2606 28577 CONSTRAINT public employees employees_pkey scrum84_operator
+4691; 2606 29167 CONSTRAINT public locations location_clocker_key_unique scrum84_operator
+4743; 2606 28829 CONSTRAINT public location_coverage_windows location_coverage_windows_location_id_day_of_week_start_tim_key scrum84_operator
+4745; 2606 28827 CONSTRAINT public location_coverage_windows location_coverage_windows_pkey scrum84_operator
+4210; 2606 29168 CHECK CONSTRAINT public locations location_name_format scrum84_operator
+4211; 2606 29169 CHECK CONSTRAINT public locations location_short_name_format scrum84_operator
+4739; 2606 28794 CONSTRAINT public location_staffing_settings location_staffing_settings_pkey scrum84_operator
+4693; 2606 30299 CONSTRAINT public locations location_workspace_identity scrum84_operator
+4695; 2606 28566 CONSTRAINT public locations locations_pkey scrum84_operator
+5144; 2606 31774 CONSTRAINT public management_time_closes management_time_closes_pkey scrum84_operator
+5178; 2606 32128 CONSTRAINT public native_payroll_document_manifests native_payroll_document_manifests_pkey scrum84_operator
+5173; 2606 32082 CONSTRAINT public native_payroll_ledger native_payroll_ledger_pkey scrum84_operator
+5175; 2606 32084 CONSTRAINT public native_payroll_ledger native_payroll_ledger_sequence_key scrum84_operator
+5171; 2606 32057 CONSTRAINT public native_payroll_manager_scope_revisions native_payroll_manager_scope_revisions_pkey scrum84_operator
+5169; 2606 32032 CONSTRAINT public native_payroll_opening_ytd_revisions native_payroll_opening_ytd_revisions_pkey scrum84_operator
+5167; 2606 32009 CONSTRAINT public native_payroll_profile_revisions native_payroll_profile_revisions_pkey scrum84_operator
+5039; 2606 30993 CONSTRAINT public native_payroll_setup_records native_payroll_setup_records_pkey scrum84_operator
+5085; 2606 31409 CONSTRAINT public native_push_challenges native_push_challenges_origin_environment_key_fingerprint_o_key scrum84_operator
+5087; 2606 31407 CONSTRAINT public native_push_challenges native_push_challenges_pkey scrum84_operator
+5091; 2606 31443 CONSTRAINT public native_push_deliveries native_push_deliveries_notification_id_installation_id_gene_key scrum84_operator
+5093; 2606 31441 CONSTRAINT public native_push_deliveries native_push_deliveries_pkey scrum84_operator
+5076; 2606 31376 CONSTRAINT public native_push_installations native_push_installations_origin_environment_key_fingerprin_key scrum84_operator
+5078; 2606 31374 CONSTRAINT public native_push_installations native_push_installations_pkey scrum84_operator
+5137; 2606 31744 CONSTRAINT public nevora_commerce_installation nevora_commerce_installation_business_id_key scrum84_operator
+5139; 2606 31746 CONSTRAINT public nevora_commerce_installation nevora_commerce_installation_installation_id_key scrum84_operator
+5141; 2606 31742 CONSTRAINT public nevora_commerce_installation nevora_commerce_installation_pkey scrum84_operator
+4962; 2606 30398 CONSTRAINT public nevora_company_policy_revisions nevora_company_policy_revisions_pkey scrum84_operator
+5004; 2606 30737 CONSTRAINT public nevora_workspace_presentation_assets nevora_workspace_presentation_assets_pkey scrum84_operator
+5007; 2606 30760 CONSTRAINT public nevora_workspace_presentation_revisions nevora_workspace_presentation_revisions_pkey scrum84_operator
+4734; 2606 28779 CONSTRAINT public notifications notifications_pkey scrum84_operator
+5125; 2606 31609 CONSTRAINT public onboarding_commands onboarding_commands_pkey scrum84_operator
+5107; 2606 31525 CONSTRAINT public onboarding_initial_owner onboarding_initial_owner_employee_id_key scrum84_operator
+5109; 2606 31523 CONSTRAINT public onboarding_initial_owner onboarding_initial_owner_pkey scrum84_operator
+5127; 2606 31630 CONSTRAINT public onboarding_invitation_batches onboarding_invitation_batches_pkey scrum84_operator
+5129; 2606 31654 CONSTRAINT public onboarding_invitation_items onboarding_invitation_items_child_operation_id_key scrum84_operator
+5131; 2606 31652 CONSTRAINT public onboarding_invitation_items onboarding_invitation_items_pkey scrum84_operator
+5119; 2606 31568 CONSTRAINT public onboarding_owner_activation_receipts onboarding_owner_activation_receipts_grant_id_key scrum84_operator
+5121; 2606 31566 CONSTRAINT public onboarding_owner_activation_receipts onboarding_owner_activation_receipts_pkey scrum84_operator
+5111; 2606 31548 CONSTRAINT public onboarding_owner_grants onboarding_owner_grants_operation_id_key scrum84_operator
+5113; 2606 31546 CONSTRAINT public onboarding_owner_grants onboarding_owner_grants_pkey scrum84_operator
+5115; 2606 31550 CONSTRAINT public onboarding_owner_grants onboarding_owner_grants_token_digest_key scrum84_operator
+5117; 2606 31552 CONSTRAINT public onboarding_owner_grants onboarding_owner_grants_workspace_id_revision_key scrum84_operator
+5123; 2606 31593 CONSTRAINT public onboarding_progress onboarding_progress_pkey scrum84_operator
+5103; 2606 31500 CONSTRAINT public onboarding_provision_receipts onboarding_provision_receipts_operation_id_key scrum84_operator
+5105; 2606 31498 CONSTRAINT public onboarding_provision_receipts onboarding_provision_receipts_pkey scrum84_operator
+5133; 2606 31695 CONSTRAINT public onboarding_restore_receipts onboarding_restore_receipts_pkey scrum84_operator
+5135; 2606 31697 CONSTRAINT public onboarding_restore_receipts onboarding_restore_receipts_workspace_id_to_incarnation_key scrum84_operator
+5099; 2606 31486 CONSTRAINT public onboarding_runtime_roles onboarding_runtime_roles_login_role_key scrum84_operator
+5101; 2606 31484 CONSTRAINT public onboarding_runtime_roles onboarding_runtime_roles_pkey scrum84_operator
+5095; 2606 31469 CONSTRAINT public onboarding_workspace_identity onboarding_workspace_identity_pkey scrum84_operator
+5097; 2606 31471 CONSTRAINT public onboarding_workspace_identity onboarding_workspace_identity_singleton_key scrum84_operator
+5186; 2606 32195 CONSTRAINT public operational_scope_revisions operational_scope_revisions_pkey scrum84_operator
+5188; 2606 32197 CONSTRAINT public operational_scope_revisions operational_scope_revisions_workspace_id_actor_employee_id__key scrum84_operator
+5180; 2606 32146 CONSTRAINT public operational_subject_versions operational_subject_versions_employee_id_key scrum84_operator
+5182; 2606 32144 CONSTRAINT public operational_subject_versions operational_subject_versions_pkey scrum84_operator
+5037; 2606 30958 CONSTRAINT public owner_advisor_briefing_reviews owner_advisor_briefing_reviews_pkey scrum84_operator
+5071; 2606 31343 CONSTRAINT public owner_advisor_coverage_reviews owner_advisor_coverage_review_workspace_id_owner_id_applied_key scrum84_operator
+5073; 2606 31341 CONSTRAINT public owner_advisor_coverage_reviews owner_advisor_coverage_reviews_pkey scrum84_operator
+5165; 2606 31985 CONSTRAINT public owner_advisor_memories owner_advisor_memories_pkey scrum84_operator
+5069; 2606 31317 CONSTRAINT public owner_advisor_notebooks owner_advisor_notebooks_pkey scrum84_operator
+5032; 2606 30907 CONSTRAINT public owner_advisor_profiles owner_advisor_profiles_pkey scrum84_operator
+5035; 2606 30929 CONSTRAINT public owner_advisor_requests owner_advisor_requests_pkey scrum84_operator
+4904; 2606 29972 CONSTRAINT public password_recovery_limits password_recovery_limits_pkey scrum84_operator
+4902; 2606 29952 CONSTRAINT public password_recovery_proofs password_recovery_proofs_pkey scrum84_operator
+4989; 2606 30607 CONSTRAINT public payroll_command_receipts payroll_command_receipts_pkey scrum84_operator
+4991; 2606 30625 CONSTRAINT public payroll_documents payroll_documents_pkey scrum84_operator
+4979; 2606 30532 CONSTRAINT public payroll_exception_revisions payroll_exception_revisions_pkey scrum84_operator
+4894; 2606 29897 CONSTRAINT public payroll_export_profile_revisions payroll_export_profile_revisions_pkey scrum84_operator
+4896; 2606 29899 CONSTRAINT public payroll_export_profile_revisions payroll_export_profile_revisions_workspace_id_operation_id_key scrum84_operator
+4899; 2606 29919 CONSTRAINT public payroll_export_receipts payroll_export_receipts_pkey scrum84_operator
+4981; 2606 30550 CONSTRAINT public payroll_grant_revisions payroll_grant_revisions_pkey scrum84_operator
+4996; 2606 30662 CONSTRAINT public payroll_jobs payroll_jobs_pkey scrum84_operator
+4998; 2606 30664 CONSTRAINT public payroll_jobs payroll_jobs_workspace_id_business_key_key scrum84_operator
+5000; 2606 30681 CONSTRAINT public payroll_notice_receipts payroll_notice_receipts_pkey scrum84_operator
+5002; 2606 30715 CONSTRAINT public payroll_notice_sources payroll_notice_sources_pkey scrum84_operator
+4975; 2606 30495 CONSTRAINT public payroll_period_events payroll_period_events_pkey scrum84_operator
+4971; 2606 30469 CONSTRAINT public payroll_period_manifests payroll_period_manifests_pkey scrum84_operator
+4973; 2606 30471 CONSTRAINT public payroll_period_manifests payroll_period_manifests_workspace_id_start_date_end_date_p_key scrum84_operator
+4967; 2606 30449 CONSTRAINT public payroll_period_populations payroll_period_populations_pkey scrum84_operator
+4969; 2606 30451 CONSTRAINT public payroll_period_populations payroll_period_populations_workspace_id_actor_employee_id_o_key scrum84_operator
+4994; 2606 30644 CONSTRAINT public payroll_publications payroll_publications_pkey scrum84_operator
+4987; 2606 30591 CONSTRAINT public payroll_run_revisions payroll_run_revisions_pkey scrum84_operator
+4985; 2606 30571 CONSTRAINT public payroll_runs payroll_runs_pkey scrum84_operator
+4977; 2606 30519 CONSTRAINT public payroll_setting_revisions payroll_setting_revisions_pkey scrum84_operator
+4813; 2606 30318 CONSTRAINT public positions position_workspace_identity scrum84_operator
+4815; 2606 29180 CONSTRAINT public positions positions_pkey scrum84_operator
+4805; 2606 29132 CONSTRAINT public push_deliveries push_deliveries_notification_id_subscription_id_generation_key scrum84_operator
+4807; 2606 29130 CONSTRAINT public push_deliveries push_deliveries_pkey scrum84_operator
+4797; 2606 29102 CONSTRAINT public push_subscriptions push_subscriptions_installation_hash_environment_key scrum84_operator
+4799; 2606 29100 CONSTRAINT public push_subscriptions push_subscriptions_pkey scrum84_operator
+4756; 2606 28899 CONSTRAINT public schedule_acknowledgements schedule_acknowledgements_pkey scrum84_operator
+4956; 2606 30340 CONSTRAINT public schedule_copy_operations schedule_copy_operations_pkey scrum84_operator
+4958; 2606 30358 CONSTRAINT public schedule_copy_receipts schedule_copy_receipts_pkey scrum84_operator
+4960; 2606 30373 CONSTRAINT public schedule_copy_row_receipts schedule_copy_row_receipts_pkey scrum84_operator
+4822; 2606 29252 CONSTRAINT public schedule_generation_exclusions schedule_generation_exclusions_pkey scrum84_operator
+5066; 2606 31277 CONSTRAINT public schedule_pending_edits schedule_pending_edits_pkey scrum84_operator
+4774; 2606 28993 CONSTRAINT public schedule_publication_revision_shifts schedule_publication_revision_shifts_pkey scrum84_operator
+4768; 2606 28970 CONSTRAINT public schedule_publication_revisions schedule_publication_revisions_pkey scrum84_operator
+4771; 2606 28972 CONSTRAINT public schedule_publication_revisions schedule_publication_revisions_week_start_revision_number_key scrum84_operator
+4763; 2606 28930 CONSTRAINT public schedule_template_shifts schedule_template_shifts_pkey scrum84_operator
+4759; 2606 28914 CONSTRAINT public schedule_templates schedule_templates_pkey scrum84_operator
+4761; 2606 30306 CONSTRAINT public schedule_templates schedule_templates_workspace_key scrum84_operator
+4747; 2606 28842 CONSTRAINT public schedule_week_settings schedule_week_settings_pkey scrum84_operator
+4716; 2606 28694 CONSTRAINT public schedules schedules_location_id_week_start_key scrum84_operator
+4718; 2606 28692 CONSTRAINT public schedules schedules_pkey scrum84_operator
+5230; 2606 32543 CONSTRAINT public scrum84_transport_probe scrum84_transport_probe_pkey scrum84_operator
+4753; 2606 28874 CONSTRAINT public shift_callouts shift_callouts_pkey scrum84_operator
+4827; 2606 29363 CONSTRAINT public shift_change_events shift_change_events_pkey scrum84_operator
+4829; 2606 29365 CONSTRAINT public shift_change_events shift_change_events_request_kind_request_id_request_revisio_key scrum84_operator
+4831; 2606 29377 CONSTRAINT public shift_change_operations shift_change_operations_pkey scrum84_operator
+4825; 2606 29329 CONSTRAINT public shift_change_participation shift_change_participation_pkey scrum84_operator
+4728; 2606 28743 CONSTRAINT public shift_exchanges shift_exchanges_pkey scrum84_operator
+4722; 2606 28719 CONSTRAINT public shifts shifts_pkey scrum84_operator
+5158; 2606 31899 CONSTRAINT public staff_task_events staff_task_events_pkey scrum84_operator
+5151; 2606 31864 CONSTRAINT public staff_task_instances staff_task_instances_pkey scrum84_operator
+5153; 2606 31866 CONSTRAINT public staff_task_instances staff_task_instances_workspace_id_id_key scrum84_operator
+5155; 2606 31868 CONSTRAINT public staff_task_instances staff_task_instances_workspace_id_template_id_business_date_key scrum84_operator
+5161; 2606 31925 CONSTRAINT public staff_task_operations staff_task_operations_pkey scrum84_operator
+5163; 2606 31949 CONSTRAINT public staff_task_reminder_acks staff_task_reminder_acks_pkey scrum84_operator
+5146; 2606 31830 CONSTRAINT public staff_task_templates staff_task_templates_pkey scrum84_operator
+5148; 2606 31832 CONSTRAINT public staff_task_templates staff_task_templates_workspace_id_id_key scrum84_operator
+4878; 2606 29723 CONSTRAINT public time_correction_adjustments time_correction_adjustments_pkey scrum84_operator
+4880; 2606 29725 CONSTRAINT public time_correction_adjustments time_correction_adjustments_request_id_key scrum84_operator
+4884; 2606 29784 CONSTRAINT public time_correction_events time_correction_events_pkey scrum84_operator
+4887; 2606 29786 CONSTRAINT public time_correction_events time_correction_events_request_id_revision_key scrum84_operator
+4873; 2606 29679 CONSTRAINT public time_correction_requests time_correction_requests_pkey scrum84_operator
+4789; 2606 29034 CONSTRAINT public time_entries time_entries_pkey scrum84_operator
+4714; 2606 28670 CONSTRAINT public time_off_requests time_off_requests_pkey scrum84_operator
+4890; 2606 29855 CONSTRAINT public timecard_revisions timecard_revisions_pkey scrum84_operator
+4892; 2606 29857 CONSTRAINT public timecard_revisions timecard_revisions_workspace_id_employee_id_start_date_end__key scrum84_operator
+4766; 2606 28955 CONSTRAINT public weekly_availability_submissions weekly_availability_submissions_pkey scrum84_operator
+4750; 2606 28857 CONSTRAINT public weekly_availability_windows weekly_availability_windows_pkey scrum84_operator
+4809; 2606 29157 CONSTRAINT public workspaces workspaces_pkey scrum84_operator
+4811; 2606 29159 CONSTRAINT public workspaces workspaces_singleton_key scrum84_operator
+5008; 1259 30815 INDEX public account_deletion_one_active scrum84_operator
+5009; 1259 30816 INDEX public account_deletion_open_queue scrum84_operator
+5028; 1259 30888 INDEX public auth_passkey_audit_employee scrum84_operator
+5023; 1259 30869 INDEX public auth_passkey_challenges_expiry scrum84_operator
+4707; 1259 28644 INDEX public availability_windows_employee_day_idx scrum84_operator
+4790; 1259 29067 INDEX public break_entries_entry_history scrum84_operator
+4791; 1259 29066 INDEX public break_entries_one_open_per_entry scrum84_operator
+4942; 1259 30236 INDEX public calendar_employee_history scrum84_operator
+4943; 1259 30235 INDEX public calendar_one_active scrum84_operator
+4952; 1259 30296 INDEX public calendar_removal_window scrum84_operator
+4864; 1259 29624 INDEX public clocker_break_type_name scrum84_operator
+4861; 1259 29589 INDEX public clocker_command_employee_history scrum84_operator
+4778; 1259 29396 INDEX public clocker_device_credential_unique scrum84_operator
+4779; 1259 29397 INDEX public clocker_device_enrollment_unique scrum84_operator
+4832; 1259 29422 INDEX public clocker_device_event_history scrum84_operator
+4849; 1259 31010 INDEX public clocker_pin_events_operation_id_key scrum84_operator
+4854; 1259 29544 INDEX public clocker_pin_session_employee scrum84_operator
+5051; 1259 31176 INDEX public clocker_punch_photo_expiry scrum84_operator
+5040; 1259 31039 INDEX public clocker_review_requests_owner_page scrum84_operator
+4772; 1259 29659 INDEX public clocker_schedule_source_employee_date scrum84_operator
+4923; 1259 30198 INDEX public communication_recipient_feed scrum84_operator
+5189; 1259 32270 INDEX public company_invitation_one_live scrum84_operator
+5214; 1259 32449 INDEX public conversation_member_current scrum84_operator
+5215; 1259 32450 INDEX public conversation_member_inbox scrum84_operator
+5220; 1259 32473 INDEX public conversation_message_stream scrum84_operator
+5018; 1259 30852 INDEX public employee_passkeys_active scrum84_operator
+4703; 1259 28628 INDEX public employee_sessions_employee_idx scrum84_operator
+4704; 1259 28629 INDEX public employee_sessions_expires_idx scrum84_operator
+4696; 1259 28583 INDEX public employees_email_unique scrum84_operator
+5142; 1259 31800 INDEX public management_time_closes_entry scrum84_operator
+5176; 1259 32105 INDEX public native_payroll_single_successor scrum84_operator
+5074; 1259 31387 INDEX public native_push_active_token_unique scrum84_operator
+5081; 1259 31422 INDEX public native_push_challenge_expiry_idx scrum84_operator
+5082; 1259 31421 INDEX public native_push_challenge_rate_actor_idx scrum84_operator
+5083; 1259 31420 INDEX public native_push_challenge_rate_key_idx scrum84_operator
+5088; 1259 31454 INDEX public native_push_deliveries_due_idx scrum84_operator
+5089; 1259 31455 INDEX public native_push_deliveries_lease_idx scrum84_operator
+5079; 1259 31388 INDEX public native_push_recipient_idx scrum84_operator
+5080; 1259 31389 INDEX public native_push_session_idx scrum84_operator
+4963; 1259 30414 INDEX public nevora_company_policy_scope_revision scrum84_operator
+5005; 1259 30771 INDEX public nevora_workspace_presentation_revision scrum84_operator
+4730; 1259 28785 INDEX public notifications_employee_idx scrum84_operator
+4731; 1259 29083 INDEX public notifications_event_key_unique scrum84_operator
+4732; 1259 29087 INDEX public notifications_item_keys_idx scrum84_operator
+4735; 1259 29085 INDEX public notifications_push_due_idx scrum84_operator
+4736; 1259 29084 INDEX public notifications_push_event_unique scrum84_operator
+4737; 1259 29086 INDEX public notifications_push_source_idx scrum84_operator
+5033; 1259 30940 INDEX public owner_advisor_daily scrum84_operator
+4900; 1259 29963 INDEX public password_recovery_employee scrum84_operator
+4897; 1259 31816 INDEX public payroll_export_business_lookup scrum84_operator
+4982; 1259 30583 INDEX public payroll_one_correction scrum84_operator
+4983; 1259 30582 INDEX public payroll_one_original_period scrum84_operator
+4992; 1259 30636 INDEX public payroll_unique_document scrum84_operator
+4816; 1259 29186 INDEX public positions_workspace_name_unique scrum84_operator
+4794; 1259 29109 INDEX public push_active_endpoint_unique scrum84_operator
+4795; 1259 29108 INDEX public push_active_installation_unique scrum84_operator
+4802; 1259 29143 INDEX public push_deliveries_due_idx scrum84_operator
+4803; 1259 29144 INDEX public push_deliveries_lease_idx scrum84_operator
+4800; 1259 29110 INDEX public push_subscriptions_recipient_idx scrum84_operator
+4801; 1259 29111 INDEX public push_subscriptions_session_idx scrum84_operator
+4823; 1259 29278 INDEX public schedule_generation_exclusions_scope scrum84_operator
+5064; 1259 31298 INDEX public schedule_pending_edits_held scrum84_operator
+5067; 1259 31299 INDEX public schedule_pending_edits_shift scrum84_operator
+4769; 1259 28983 INDEX public schedule_publication_revisions_week_idx scrum84_operator
+4775; 1259 28999 INDEX public schedule_revision_shifts_employee_idx scrum84_operator
+4776; 1259 29000 INDEX public schedule_revision_shifts_location_idx scrum84_operator
+4777; 1259 30975 INDEX public schedule_revision_shifts_source_idx scrum84_operator
+4764; 1259 28946 INDEX public schedule_template_shifts_template_idx scrum84_operator
+4757; 1259 28920 INDEX public schedule_templates_name_unique scrum84_operator
+4751; 1259 29315 INDEX public shift_callouts_active_episode_unique scrum84_operator
+4754; 1259 28891 INDEX public shift_callouts_status_idx scrum84_operator
+4724; 1259 28770 INDEX public shift_exchanges_active_source_unique scrum84_operator
+4725; 1259 28771 INDEX public shift_exchanges_active_target_unique scrum84_operator
+4726; 1259 29316 INDEX public shift_exchanges_linked_callout_active_unique scrum84_operator
+4729; 1259 28769 INDEX public shift_exchanges_status_idx scrum84_operator
+4719; 1259 29290 INDEX public shifts_assignment_episode_unique scrum84_operator
+4720; 1259 28730 INDEX public shifts_employee_date_idx scrum84_operator
+4723; 1259 28731 INDEX public shifts_schedule_date_idx scrum84_operator
+5149; 1259 31889 INDEX public staff_task_assignee_dates scrum84_operator
+5159; 1259 31915 INDEX public staff_task_history scrum84_operator
+5156; 1259 31890 INDEX public staff_task_location_dates scrum84_operator
+4875; 1259 29806 INDEX public time_correction_adjustment_one_successor scrum84_operator
+4876; 1259 29805 INDEX public time_correction_adjustments_employee_history scrum84_operator
+4881; 1259 29808 INDEX public time_correction_break_root scrum84_operator
+4882; 1259 29807 INDEX public time_correction_entry_root scrum84_operator
+4885; 1259 29804 INDEX public time_correction_events_request_history scrum84_operator
+4871; 1259 29802 INDEX public time_correction_requests_employee_created scrum84_operator
+4874; 1259 29803 INDEX public time_correction_requests_workspace_created scrum84_operator
+4784; 1259 29051 INDEX public time_entries_active_location scrum84_operator
+4785; 1259 30976 INDEX public time_entries_clock_out_idx scrum84_operator
+4786; 1259 29052 INDEX public time_entries_employee_history scrum84_operator
+4787; 1259 29050 INDEX public time_entries_one_open_per_employee scrum84_operator
+4712; 1259 28681 INDEX public time_off_employee_status_idx scrum84_operator
+4888; 1259 29873 INDEX public timecard_revisions_employee_period scrum84_operator
+4748; 1259 28863 INDEX public weekly_availability_employee_week_idx scrum84_operator
+5622; 2620 30439 TRIGGER public attendance_policy_observations attendance_observations_immutable scrum84_operator
+5623; 2620 30440 TRIGGER public attendance_policy_observations attendance_observations_no_truncate scrum84_operator
+5600; 2620 30019 TRIGGER public employee_attention_operations attention_operations_immutable scrum84_operator
+5599; 2620 30018 TRIGGER public employee_attention_receipts attention_receipts_immutable scrum84_operator
+5656; 2620 30890 TRIGGER public auth_passkey_audit auth_passkey_audit_immutable scrum84_operator
+5554; 2620 30893 TRIGGER public employee_credentials auth_passkey_credential_loss scrum84_operator
+5655; 2620 30894 TRIGGER public account_deletion_requests auth_passkey_deletion_loss scrum84_operator
+5547; 2620 30892 TRIGGER public employees auth_passkey_employee_loss scrum84_operator
+5571; 2620 29662 TRIGGER public time_entries c6_capture_schedule_context scrum84_operator
+5612; 2620 30259 TRIGGER public calendar_subscriptions calendar_credential_guard scrum84_operator
+5552; 2620 30265 TRIGGER public employee_location_eligibility calendar_eligibility_loss scrum84_operator
+5548; 2620 30263 TRIGGER public employees calendar_employee_loss scrum84_operator
+5544; 2620 30266 TRIGGER public locations calendar_location_loss scrum84_operator
+5545; 2620 30209 TRIGGER public locations calendar_location_stamp scrum84_operator
+5613; 2620 30261 TRIGGER public calendar_operations calendar_operation_guard scrum84_operator
+5569; 2620 30208 TRIGGER public schedule_publication_revisions calendar_publication_stamp scrum84_operator
+5555; 2620 30264 TRIGGER public employee_credentials calendar_recovery_loss scrum84_operator
+5576; 2620 30267 TRIGGER public workspaces calendar_workspace_loss scrum84_operator
+5565; 2620 29348 TRIGGER public shift_callouts callout_participation scrum84_operator
+5566; 2620 29319 TRIGGER public shift_callouts callout_revision scrum84_operator
+5588; 2620 29647 TRIGGER public clocker_break_type_events clocker_break_type_event_append_only scrum84_operator
+5587; 2620 29590 TRIGGER public clocker_command_ledger clocker_command_append_only scrum84_operator
+5584; 2620 29442 TRIGGER public clocker_device_credentials clocker_device_credentials_append_only scrum84_operator
+5583; 2620 29424 TRIGGER public clocker_device_events clocker_device_event_append_only scrum84_operator
+5570; 2620 29399 TRIGGER public clocker_devices clocker_device_location_immutable scrum84_operator
+5664; 2620 31219 TRIGGER public clocker_photo_access_events clocker_photo_access_events_append_only scrum84_operator
+5666; 2620 31265 TRIGGER public clocker_photo_cleanup_runs clocker_photo_cleanup_runs_append_only scrum84_operator
+5662; 2620 31220 TRIGGER public clocker_photo_notice_revisions clocker_photo_notice_revisions_append_only scrum84_operator
+5663; 2620 31175 TRIGGER public clocker_punch_photos clocker_photo_original_command_guard scrum84_operator
+5661; 2620 31218 TRIGGER public clocker_photo_policy_revisions clocker_photo_policy_revisions_append_only scrum84_operator
+5665; 2620 31221 TRIGGER public clocker_photo_review_events clocker_photo_review_events_append_only scrum84_operator
+5585; 2620 29506 TRIGGER public clocker_pin_events clocker_pin_event_append_only scrum84_operator
+5586; 2620 31758 TRIGGER public clocker_pin_limits clocker_pin_person_parent scrum84_operator
+5574; 2620 29656 TRIGGER public break_entries clocker_preserve_break_settings scrum84_operator
+5572; 2620 29664 TRIGGER public time_entries clocker_preserve_schedule_context scrum84_operator
+5660; 2620 31040 TRIGGER public clocker_review_requests clocker_review_requests_append_only scrum84_operator
+5604; 2620 30194 TRIGGER public communication_recipients communication_grant_guard scrum84_operator
+5610; 2620 30197 TRIGGER public communication_lifecycle communication_lifecycle_guard scrum84_operator
+5611; 2620 30189 TRIGGER public communication_lifecycle communication_lifecycle_immutable scrum84_operator
+5608; 2620 30196 TRIGGER public communication_operations communication_operation_guard scrum84_operator
+5609; 2620 30188 TRIGGER public communication_operations communication_operations_immutable scrum84_operator
+5606; 2620 30195 TRIGGER public communication_receipts communication_receipt_guard scrum84_operator
+5607; 2620 30187 TRIGGER public communication_receipts communication_receipts_immutable scrum84_operator
+5605; 2620 30186 TRIGGER public communication_recipients communication_recipients_immutable scrum84_operator
+5602; 2620 30193 TRIGGER public communication_revisions communication_revision_guard scrum84_operator
+5603; 2620 30185 TRIGGER public communication_revisions communication_revisions_immutable scrum84_operator
+5601; 2620 30192 TRIGGER public communications communication_root_guard scrum84_operator
+5699; 2620 32376 TRIGGER public company_access_adoption company_access_adoption_guard scrum84_operator
+5549; 2620 32158 TRIGGER public employees company_access_employee_generation scrum84_operator
+5696; 2620 32161 TRIGGER public operational_subject_versions company_access_generation_no_delete scrum84_operator
+5697; 2620 32162 TRIGGER public operational_subject_versions company_access_generation_no_truncate scrum84_operator
+5698; 2620 32160 TRIGGER public operational_subject_versions company_access_generation_private scrum84_operator
+5700; 2620 32367 TRIGGER public company_access_adoption company_access_immutable scrum84_operator
+5712; 2620 32373 TRIGGER public company_access_operations company_access_immutable scrum84_operator
+5710; 2620 32371 TRIGGER public company_invitation_delivery_events company_access_immutable scrum84_operator
+5708; 2620 32369 TRIGGER public company_invitation_events company_access_immutable scrum84_operator
+5702; 2620 32365 TRIGGER public operational_scope_revisions company_access_immutable scrum84_operator
+5705; 2620 32272 TRIGGER public company_invitations company_access_invitation_custody scrum84_operator
+5706; 2620 32273 TRIGGER public company_invitations company_access_invitation_no_delete scrum84_operator
+5707; 2620 32274 TRIGGER public company_invitations company_access_invitation_no_truncate scrum84_operator
+5701; 2620 32368 TRIGGER public company_access_adoption company_access_no_truncate scrum84_operator
+5713; 2620 32374 TRIGGER public company_access_operations company_access_no_truncate scrum84_operator
+5711; 2620 32372 TRIGGER public company_invitation_delivery_events company_access_no_truncate scrum84_operator
+5709; 2620 32370 TRIGGER public company_invitation_events company_access_no_truncate scrum84_operator
+5703; 2620 32366 TRIGGER public operational_scope_revisions company_access_no_truncate scrum84_operator
+5704; 2620 32223 TRIGGER public operational_scope_revisions company_access_scope_guard scrum84_operator
+5721; 2620 32515 TRIGGER public conversation_events conversation_events_immutable scrum84_operator
+5718; 2620 32522 TRIGGER public conversation_members conversation_member_update scrum84_operator
+5719; 2620 32518 TRIGGER public conversation_members conversation_members_no_delete scrum84_operator
+5720; 2620 32514 TRIGGER public conversation_messages conversation_messages_immutable scrum84_operator
+5722; 2620 32516 TRIGGER public conversation_operations conversation_operations_immutable scrum84_operator
+5716; 2620 32521 TRIGGER public conversations conversation_root_update scrum84_operator
+5714; 2620 32523 TRIGGER public conversation_streams conversation_stream_update scrum84_operator
+5715; 2620 32519 TRIGGER public conversation_streams conversation_streams_no_delete scrum84_operator
+5717; 2620 32517 TRIGGER public conversations conversations_no_delete scrum84_operator
+5559; 2620 29346 TRIGGER public shift_exchanges exchange_participation scrum84_operator
+5560; 2620 29318 TRIGGER public shift_exchanges exchange_revision scrum84_operator
+5614; 2620 30380 TRIGGER public schedule_copy_operations immutable_copy_operation scrum84_operator
+5615; 2620 30383 TRIGGER public schedule_copy_operations immutable_copy_operation_truncate scrum84_operator
+5616; 2620 30381 TRIGGER public schedule_copy_receipts immutable_copy_receipt scrum84_operator
+5617; 2620 30384 TRIGGER public schedule_copy_receipts immutable_copy_receipt_truncate scrum84_operator
+5618; 2620 30382 TRIGGER public schedule_copy_row_receipts immutable_copy_row scrum84_operator
+5619; 2620 30385 TRIGGER public schedule_copy_row_receipts immutable_copy_row_truncate scrum84_operator
+5561; 2620 30787 TRIGGER public notifications management_alert_preference scrum84_operator
+5675; 2620 31801 TRIGGER public management_time_closes management_time_closes_immutable scrum84_operator
+5676; 2620 31802 TRIGGER public management_time_closes management_time_closes_no_truncate scrum84_operator
+5626; 2620 30508 TRIGGER public payroll_period_manifests manifest_immutable scrum84_operator
+5627; 2620 30509 TRIGGER public payroll_period_manifests manifest_no_truncate scrum84_operator
+5694; 2620 32134 TRIGGER public native_payroll_document_manifests native_payroll_document_manifest_immutable scrum84_operator
+5695; 2620 32135 TRIGGER public native_payroll_document_manifests native_payroll_document_manifest_no_truncate scrum84_operator
+5691; 2620 32120 TRIGGER public native_payroll_ledger native_payroll_immutable scrum84_operator
+5689; 2620 32118 TRIGGER public native_payroll_manager_scope_revisions native_payroll_immutable scrum84_operator
+5686; 2620 32116 TRIGGER public native_payroll_opening_ytd_revisions native_payroll_immutable scrum84_operator
+5684; 2620 32114 TRIGGER public native_payroll_profile_revisions native_payroll_immutable scrum84_operator
+5692; 2620 32121 TRIGGER public native_payroll_ledger native_payroll_immutable_truncate scrum84_operator
+5690; 2620 32119 TRIGGER public native_payroll_manager_scope_revisions native_payroll_immutable_truncate scrum84_operator
+5687; 2620 32117 TRIGGER public native_payroll_opening_ytd_revisions native_payroll_immutable_truncate scrum84_operator
+5685; 2620 32115 TRIGGER public native_payroll_profile_revisions native_payroll_immutable_truncate scrum84_operator
+5693; 2620 32111 TRIGGER public native_payroll_ledger native_payroll_ledger_guard scrum84_operator
+5688; 2620 32113 TRIGGER public native_payroll_opening_ytd_revisions native_payroll_opening_guard scrum84_operator
+5658; 2620 31008 TRIGGER public native_payroll_setup_records native_payroll_setup_immutable scrum84_operator
+5659; 2620 31009 TRIGGER public native_payroll_setup_records native_payroll_setup_immutable_truncate scrum84_operator
+5550; 2620 31754 TRIGGER public employees nevora_commerce_employee_capacity scrum84_operator
+5620; 2620 30416 TRIGGER public nevora_company_policy_revisions nevora_company_policy_immutable scrum84_operator
+5621; 2620 30417 TRIGGER public nevora_company_policy_revisions nevora_company_policy_no_truncate scrum84_operator
+5651; 2620 30775 TRIGGER public nevora_workspace_presentation_assets nevora_workspace_presentation_asset_immutable scrum84_operator
+5652; 2620 30776 TRIGGER public nevora_workspace_presentation_assets nevora_workspace_presentation_asset_no_truncate scrum84_operator
+5653; 2620 30773 TRIGGER public nevora_workspace_presentation_revisions nevora_workspace_presentation_immutable scrum84_operator
+5654; 2620 30774 TRIGGER public nevora_workspace_presentation_revisions nevora_workspace_presentation_no_truncate scrum84_operator
+5670; 2620 31667 TRIGGER public onboarding_owner_activation_receipts onboarding_activation_immutable scrum84_operator
+5672; 2620 31681 TRIGGER public onboarding_invitation_batches onboarding_batch_custody scrum84_operator
+5673; 2620 31682 TRIGGER public onboarding_invitation_items onboarding_batch_target scrum84_operator
+5581; 2620 31714 TRIGGER public coverage_window_position_requirements onboarding_canonical_revision scrum84_operator
+5553; 2620 31709 TRIGGER public employee_location_eligibility onboarding_canonical_revision scrum84_operator
+5580; 2620 31710 TRIGGER public employee_positions onboarding_canonical_revision scrum84_operator
+5563; 2620 31711 TRIGGER public employee_scheduling_settings onboarding_canonical_revision scrum84_operator
+5551; 2620 31708 TRIGGER public employees onboarding_canonical_revision scrum84_operator
+5564; 2620 31713 TRIGGER public location_coverage_windows onboarding_canonical_revision scrum84_operator
+5562; 2620 31712 TRIGGER public location_staffing_settings onboarding_canonical_revision scrum84_operator
+5546; 2620 31706 TRIGGER public locations onboarding_canonical_revision scrum84_operator
+5579; 2620 31707 TRIGGER public positions onboarding_canonical_revision scrum84_operator
+5577; 2620 31705 TRIGGER public workspaces onboarding_canonical_revision scrum84_operator
+5671; 2620 31668 TRIGGER public onboarding_commands onboarding_command_immutable scrum84_operator
+5669; 2620 31666 TRIGGER public onboarding_provision_receipts onboarding_provision_immutable scrum84_operator
+5674; 2620 31703 TRIGGER public onboarding_restore_receipts onboarding_restore_immutable scrum84_operator
+5683; 2620 31999 TRIGGER public owner_advisor_memories owner_advisor_memory_forgetting scrum84_operator
+5668; 2620 31998 TRIGGER public owner_advisor_notebooks owner_advisor_notebook_forgetting scrum84_operator
+5657; 2620 32000 TRIGGER public owner_advisor_profiles owner_advisor_priorities_forgetting scrum84_operator
+5638; 2620 30688 TRIGGER public payroll_run_revisions payroll_approved_frozen scrum84_operator
+5628; 2620 30510 TRIGGER public payroll_period_events payroll_event_immutable scrum84_operator
+5629; 2620 30511 TRIGGER public payroll_period_events payroll_event_no_truncate scrum84_operator
+5597; 2620 31818 TRIGGER public payroll_export_receipts payroll_export_business_unique scrum84_operator
+5641; 2620 30699 TRIGGER public payroll_command_receipts payroll_immutable scrum84_operator
+5643; 2620 30701 TRIGGER public payroll_documents payroll_immutable scrum84_operator
+5632; 2620 30691 TRIGGER public payroll_exception_revisions payroll_immutable scrum84_operator
+5634; 2620 30693 TRIGGER public payroll_grant_revisions payroll_immutable scrum84_operator
+5647; 2620 30705 TRIGGER public payroll_notice_receipts payroll_immutable scrum84_operator
+5645; 2620 30703 TRIGGER public payroll_publications payroll_immutable scrum84_operator
+5639; 2620 30697 TRIGGER public payroll_run_revisions payroll_immutable scrum84_operator
+5636; 2620 30695 TRIGGER public payroll_runs payroll_immutable scrum84_operator
+5630; 2620 30689 TRIGGER public payroll_setting_revisions payroll_immutable scrum84_operator
+5642; 2620 30700 TRIGGER public payroll_command_receipts payroll_no_truncate scrum84_operator
+5644; 2620 30702 TRIGGER public payroll_documents payroll_no_truncate scrum84_operator
+5633; 2620 30692 TRIGGER public payroll_exception_revisions payroll_no_truncate scrum84_operator
+5635; 2620 30694 TRIGGER public payroll_grant_revisions payroll_no_truncate scrum84_operator
+5648; 2620 30706 TRIGGER public payroll_notice_receipts payroll_no_truncate scrum84_operator
+5646; 2620 30704 TRIGGER public payroll_publications payroll_no_truncate scrum84_operator
+5640; 2620 30698 TRIGGER public payroll_run_revisions payroll_no_truncate scrum84_operator
+5637; 2620 30696 TRIGGER public payroll_runs payroll_no_truncate scrum84_operator
+5631; 2620 30690 TRIGGER public payroll_setting_revisions payroll_no_truncate scrum84_operator
+5649; 2620 30721 TRIGGER public payroll_notice_sources payroll_notice_source_immutable scrum84_operator
+5650; 2620 30722 TRIGGER public payroll_notice_sources payroll_notice_source_no_truncate scrum84_operator
+5596; 2620 29931 TRIGGER public payroll_export_profile_revisions payroll_profile_append_only scrum84_operator
+5598; 2620 29932 TRIGGER public payroll_export_receipts payroll_receipt_append_only scrum84_operator
+5624; 2620 30506 TRIGGER public payroll_period_populations population_immutable scrum84_operator
+5625; 2620 30507 TRIGGER public payroll_period_populations population_no_truncate scrum84_operator
+5556; 2620 29298 TRIGGER public schedules schedule_material_revision scrum84_operator
+5667; 2620 31301 TRIGGER public schedule_pending_edits schedule_pending_edits_publish_once scrum84_operator
+5557; 2620 29292 TRIGGER public shifts shift_assignment_episode scrum84_operator
+5582; 2620 29367 TRIGGER public shift_change_events shift_change_event_immutable scrum84_operator
+5558; 2620 29296 TRIGGER public shifts shift_material_revision scrum84_operator
+5680; 2620 31961 TRIGGER public staff_task_events staff_task_events_immutable scrum84_operator
+5678; 2620 31965 TRIGGER public staff_task_instances staff_task_instances_no_delete scrum84_operator
+5681; 2620 31962 TRIGGER public staff_task_operations staff_task_operations_immutable scrum84_operator
+5682; 2620 31963 TRIGGER public staff_task_reminder_acks staff_task_reminders_immutable scrum84_operator
+5679; 2620 31967 TRIGGER public staff_task_instances staff_task_snapshot_immutable scrum84_operator
+5677; 2620 31964 TRIGGER public staff_task_templates staff_task_templates_no_delete scrum84_operator
+5568; 2620 30331 TRIGGER public schedule_template_shifts template_child_owner scrum84_operator
+5567; 2620 30330 TRIGGER public schedule_templates template_owner scrum84_operator
+5591; 2620 29810 TRIGGER public time_correction_adjustments time_correction_adjustments_append_only scrum84_operator
+5593; 2620 29811 TRIGGER public time_correction_events time_correction_events_append_only scrum84_operator
+5589; 2620 29809 TRIGGER public time_correction_requests time_correction_requests_append_only scrum84_operator
+5594; 2620 31812 TRIGGER public time_correction_events time_correction_separate_reviewer scrum84_operator
+5592; 2620 29883 TRIGGER public time_correction_adjustments timecard_adjustment_interlock scrum84_operator
+5575; 2620 29886 TRIGGER public break_entries timecard_raw_break_interlock scrum84_operator
+5573; 2620 29885 TRIGGER public time_entries timecard_raw_entry_interlock scrum84_operator
+5590; 2620 29882 TRIGGER public time_correction_requests timecard_request_interlock scrum84_operator
+5595; 2620 29874 TRIGGER public timecard_revisions timecard_revisions_append_only scrum84_operator
+5578; 2620 29300 TRIGGER public workspaces workspace_material_revision scrum84_operator
+5412; 2606 30805 FK CONSTRAINT public account_deletion_requests account_deletion_requests_employee_id_fkey scrum84_operator
+5413; 2606 30810 FK CONSTRAINT public account_deletion_requests account_deletion_requests_workspace_id_fkey scrum84_operator
+5382; 2606 30434 FK CONSTRAINT public attendance_policy_observations attendance_policy_observations_actor_employee_id_fkey scrum84_operator
+5383; 2606 30429 FK CONSTRAINT public attendance_policy_observations attendance_policy_observations_workspace_id_fkey scrum84_operator
+5416; 2606 30864 FK CONSTRAINT public auth_passkey_challenges auth_passkey_challenges_employee_id_fkey scrum84_operator
+5414; 2606 30827 FK CONSTRAINT public auth_passkey_users auth_passkey_users_employee_id_fkey scrum84_operator
+5238; 2606 28654 FK CONSTRAINT public availability_exceptions availability_exceptions_employee_id_fkey scrum84_operator
+5237; 2606 28639 FK CONSTRAINT public availability_windows availability_windows_employee_id_fkey scrum84_operator
+5283; 2606 29648 FK CONSTRAINT public break_entries break_entries_break_type_id_fkey scrum84_operator
+5284; 2606 29061 FK CONSTRAINT public break_entries break_entries_time_entry_id_fkey scrum84_operator
+5369; 2606 30253 FK CONSTRAINT public calendar_operations calendar_operations_actor_employee_id_fkey scrum84_operator
+5370; 2606 30248 FK CONSTRAINT public calendar_operations calendar_operations_workspace_id_fkey scrum84_operator
+5371; 2606 30281 FK CONSTRAINT public calendar_removals calendar_removals_employee_id_fkey scrum84_operator
+5372; 2606 30286 FK CONSTRAINT public calendar_removals calendar_removals_previous_publication_shift_id_fkey scrum84_operator
+5373; 2606 30291 FK CONSTRAINT public calendar_removals calendar_removals_removal_revision_id_fkey scrum84_operator
+5374; 2606 30276 FK CONSTRAINT public calendar_removals calendar_removals_workspace_id_fkey scrum84_operator
+5367; 2606 30230 FK CONSTRAINT public calendar_subscriptions calendar_subscriptions_employee_id_fkey scrum84_operator
+5368; 2606 30225 FK CONSTRAINT public calendar_subscriptions calendar_subscriptions_workspace_id_fkey scrum84_operator
+5319; 2606 29642 FK CONSTRAINT public clocker_break_type_events clocker_break_type_events_actor_employee_id_fkey scrum84_operator
+5320; 2606 29637 FK CONSTRAINT public clocker_break_type_events clocker_break_type_events_break_type_id_fkey scrum84_operator
+5316; 2606 29614 FK CONSTRAINT public clocker_break_types clocker_break_types_created_by_fkey scrum84_operator
+5317; 2606 29619 FK CONSTRAINT public clocker_break_types clocker_break_types_updated_by_fkey scrum84_operator
+5318; 2606 29609 FK CONSTRAINT public clocker_break_types clocker_break_types_workspace_id_fkey scrum84_operator
+5313; 2606 29574 FK CONSTRAINT public clocker_command_ledger clocker_command_ledger_device_id_fkey scrum84_operator
+5314; 2606 29579 FK CONSTRAINT public clocker_command_ledger clocker_command_ledger_employee_id_fkey scrum84_operator
+5315; 2606 29584 FK CONSTRAINT public clocker_command_ledger clocker_command_ledger_time_entry_id_fkey scrum84_operator
+5303; 2606 29437 FK CONSTRAINT public clocker_device_credentials clocker_device_credentials_device_id_fkey scrum84_operator
+5301; 2606 29417 FK CONSTRAINT public clocker_device_events clocker_device_events_actor_employee_id_fkey scrum84_operator
+5302; 2606 29412 FK CONSTRAINT public clocker_device_events clocker_device_events_device_id_fkey scrum84_operator
+5278; 2606 29383 FK CONSTRAINT public clocker_devices clocker_devices_enrollment_owner_id_fkey scrum84_operator
+5279; 2606 29018 FK CONSTRAINT public clocker_devices clocker_devices_location_id_fkey scrum84_operator
+5312; 2606 29558 FK CONSTRAINT public clocker_employee_clock_state clocker_employee_clock_state_employee_id_fkey scrum84_operator
+5442; 2606 31187 FK CONSTRAINT public clocker_photo_access_events clocker_photo_access_events_actor_employee_id_fkey scrum84_operator
+5443; 2606 31192 FK CONSTRAINT public clocker_photo_access_events clocker_photo_access_events_workspace_id_device_id_command_fkey scrum84_operator
+5447; 2606 31260 FK CONSTRAINT public clocker_photo_cleanup_runs clocker_photo_cleanup_runs_workspace_id_fkey scrum84_operator
+5433; 2606 31099 FK CONSTRAINT public clocker_photo_notice_profiles clocker_photo_notice_profiles_updated_by_fkey scrum84_operator
+5434; 2606 31094 FK CONSTRAINT public clocker_photo_notice_profiles clocker_photo_notice_profiles_workspace_id_fkey scrum84_operator
+5435; 2606 31118 FK CONSTRAINT public clocker_photo_notice_revisions clocker_photo_notice_revisions_actor_employee_id_fkey scrum84_operator
+5436; 2606 31113 FK CONSTRAINT public clocker_photo_notice_revisions clocker_photo_notice_revisions_workspace_id_fkey scrum84_operator
+5446; 2606 31246 FK CONSTRAINT public clocker_photo_platform_lifecycle clocker_photo_platform_lifecycle_workspace_id_fkey scrum84_operator
+5432; 2606 31078 FK CONSTRAINT public clocker_photo_policy_revisions clocker_photo_policy_revisions_actor_employee_id_fkey scrum84_operator
+5430; 2606 31064 FK CONSTRAINT public clocker_photo_policy clocker_photo_policy_updated_by_fkey scrum84_operator
+5431; 2606 31059 FK CONSTRAINT public clocker_photo_policy clocker_photo_policy_workspace_id_fkey scrum84_operator
+5444; 2606 31213 FK CONSTRAINT public clocker_photo_review_events clocker_photo_review_events_actor_employee_id_fkey scrum84_operator
+5445; 2606 31208 FK CONSTRAINT public clocker_photo_review_events clocker_photo_review_events_workspace_id_fkey scrum84_operator
+5304; 2606 29451 FK CONSTRAINT public clocker_pin_configuration clocker_pin_configuration_workspace_id_fkey scrum84_operator
+5308; 2606 29501 FK CONSTRAINT public clocker_pin_events clocker_pin_events_actor_employee_id_fkey scrum84_operator
+5309; 2606 29496 FK CONSTRAINT public clocker_pin_events clocker_pin_events_employee_id_fkey scrum84_operator
+5310; 2606 29534 FK CONSTRAINT public clocker_pin_sessions clocker_pin_sessions_device_id_fkey scrum84_operator
+5311; 2606 29539 FK CONSTRAINT public clocker_pin_sessions clocker_pin_sessions_employee_id_fkey scrum84_operator
+5437; 2606 31149 FK CONSTRAINT public clocker_punch_photos clocker_punch_photos_device_id_command_id_fkey scrum84_operator
+5438; 2606 31159 FK CONSTRAINT public clocker_punch_photos clocker_punch_photos_device_id_fkey scrum84_operator
+5439; 2606 31154 FK CONSTRAINT public clocker_punch_photos clocker_punch_photos_employee_id_fkey scrum84_operator
+5440; 2606 31169 FK CONSTRAINT public clocker_punch_photos clocker_punch_photos_removed_by_fkey scrum84_operator
+5441; 2606 31164 FK CONSTRAINT public clocker_punch_photos clocker_punch_photos_workspace_id_location_id_fkey scrum84_operator
+5426; 2606 31024 FK CONSTRAINT public clocker_review_requests clocker_review_requests_device_id_fkey scrum84_operator
+5427; 2606 31034 FK CONSTRAINT public clocker_review_requests clocker_review_requests_location_id_fkey scrum84_operator
+5428; 2606 31029 FK CONSTRAINT public clocker_review_requests clocker_review_requests_requester_id_fkey scrum84_operator
+5429; 2606 31019 FK CONSTRAINT public clocker_review_requests clocker_review_requests_workspace_id_fkey scrum84_operator
+5352; 2606 30087 FK CONSTRAINT public communications communication_head_identity scrum84_operator
+5365; 2606 30174 FK CONSTRAINT public communication_lifecycle communication_lifecycle_actor_employee_id_fkey scrum84_operator
+5366; 2606 30179 FK CONSTRAINT public communication_lifecycle communication_lifecycle_workspace_id_communication_id_revi_fkey scrum84_operator
+5362; 2606 30148 FK CONSTRAINT public communication_operations communication_operations_actor_employee_id_fkey scrum84_operator
+5363; 2606 30158 FK CONSTRAINT public communication_operations communication_operations_workspace_id_communication_id_re_fkey1 scrum84_operator
+5364; 2606 30153 FK CONSTRAINT public communication_operations communication_operations_workspace_id_communication_id_rev_fkey scrum84_operator
+5361; 2606 30131 FK CONSTRAINT public communication_receipts communication_receipts_workspace_id_communication_id_revis_fkey scrum84_operator
+5358; 2606 30104 FK CONSTRAINT public communication_recipients communication_recipients_employee_id_fkey scrum84_operator
+5359; 2606 30109 FK CONSTRAINT public communication_recipients communication_recipients_workspace_id_communication_id_rev_fkey scrum84_operator
+5360; 2606 30114 FK CONSTRAINT public communication_recipients communication_recipients_workspace_id_location_id_fkey scrum84_operator
+5355; 2606 30072 FK CONSTRAINT public communication_revisions communication_revisions_created_by_fkey scrum84_operator
+5356; 2606 30077 FK CONSTRAINT public communication_revisions communication_revisions_workspace_id_communication_id_fkey scrum84_operator
+5357; 2606 30082 FK CONSTRAINT public communication_revisions communication_revisions_workspace_id_location_id_fkey scrum84_operator
+5353; 2606 30041 FK CONSTRAINT public communications communications_author_employee_id_fkey scrum84_operator
+5354; 2606 30036 FK CONSTRAINT public communications communications_workspace_id_fkey scrum84_operator
+5515; 2606 32176 FK CONSTRAINT public company_access_adoption company_access_adoption_workspace_id_fkey scrum84_operator
+5528; 2606 32325 FK CONSTRAINT public company_access_operations company_access_operations_actor_employee_id_fkey scrum84_operator
+5529; 2606 32330 FK CONSTRAINT public company_access_operations company_access_operations_employee_id_fkey scrum84_operator
+5530; 2606 32320 FK CONSTRAINT public company_access_operations company_access_operations_workspace_id_fkey scrum84_operator
+5532; 2606 32360 FK CONSTRAINT public company_invitation_claim_counters company_invitation_claim_counte_workspace_id_invitation_id_fkey scrum84_operator
+5527; 2606 32303 FK CONSTRAINT public company_invitation_delivery_events company_invitation_delivery_eve_workspace_id_invitation_id_fkey scrum84_operator
+5525; 2606 32284 FK CONSTRAINT public company_invitation_events company_invitation_events_actor_employee_id_fkey scrum84_operator
+5526; 2606 32289 FK CONSTRAINT public company_invitation_events company_invitation_events_workspace_id_invitation_id_fkey scrum84_operator
+5531; 2606 32346 FK CONSTRAINT public company_invitation_issue_counters company_invitation_issue_counters_workspace_id_fkey scrum84_operator
+5520; 2606 32250 FK CONSTRAINT public company_invitations company_invitations_employee_id_fkey scrum84_operator
+5521; 2606 32255 FK CONSTRAINT public company_invitations company_invitations_issuer_employee_id_fkey scrum84_operator
+5522; 2606 32260 FK CONSTRAINT public company_invitations company_invitations_workspace_id_employee_id_fkey scrum84_operator
+5523; 2606 32245 FK CONSTRAINT public company_invitations company_invitations_workspace_id_fkey scrum84_operator
+5524; 2606 32265 FK CONSTRAINT public company_invitations company_invitations_workspace_id_issuer_employee_id_fkey scrum84_operator
+5540; 2606 32483 FK CONSTRAINT public conversation_events conversation_events_actor_id_fkey scrum84_operator
+5541; 2606 32488 FK CONSTRAINT public conversation_events conversation_events_workspace_id_conversation_id_fkey scrum84_operator
+5536; 2606 32439 FK CONSTRAINT public conversation_members conversation_members_employee_id_fkey scrum84_operator
+5537; 2606 32444 FK CONSTRAINT public conversation_members conversation_members_workspace_id_conversation_id_fkey scrum84_operator
+5538; 2606 32463 FK CONSTRAINT public conversation_messages conversation_messages_author_id_fkey scrum84_operator
+5539; 2606 32468 FK CONSTRAINT public conversation_messages conversation_messages_workspace_id_conversation_id_author__fkey scrum84_operator
+5542; 2606 32503 FK CONSTRAINT public conversation_operations conversation_operations_actor_id_fkey scrum84_operator
+5543; 2606 32508 FK CONSTRAINT public conversation_operations conversation_operations_workspace_id_conversation_id_membe_fkey scrum84_operator
+5533; 2606 32389 FK CONSTRAINT public conversation_streams conversation_streams_workspace_id_fkey scrum84_operator
+5534; 2606 32415 FK CONSTRAINT public conversations conversations_workspace_id_fkey scrum84_operator
+5535; 2606 32420 FK CONSTRAINT public conversations conversations_workspace_id_location_id_fkey scrum84_operator
+5291; 2606 29212 FK CONSTRAINT public coverage_window_position_requirements coverage_window_position_requirements_coverage_window_id_fkey scrum84_operator
+5292; 2606 29217 FK CONSTRAINT public coverage_window_position_requirements coverage_window_position_requirements_position_id_fkey scrum84_operator
+5350; 2606 30012 FK CONSTRAINT public employee_attention_operations employee_attention_operations_employee_id_fkey scrum84_operator
+5351; 2606 30007 FK CONSTRAINT public employee_attention_operations employee_attention_operations_workspace_id_fkey scrum84_operator
+5348; 2606 29992 FK CONSTRAINT public employee_attention_receipts employee_attention_receipts_employee_id_fkey scrum84_operator
+5349; 2606 29987 FK CONSTRAINT public employee_attention_receipts employee_attention_receipts_workspace_id_fkey scrum84_operator
+5305; 2606 29470 FK CONSTRAINT public employee_clocker_pins employee_clocker_pins_employee_id_fkey scrum84_operator
+5306; 2606 29480 FK CONSTRAINT public employee_clocker_pins employee_clocker_pins_updated_by_fkey scrum84_operator
+5307; 2606 29475 FK CONSTRAINT public employee_clocker_pins employee_clocker_pins_workspace_id_fkey scrum84_operator
+5235; 2606 28610 FK CONSTRAINT public employee_credentials employee_credentials_employee_id_fkey scrum84_operator
+5233; 2606 28591 FK CONSTRAINT public employee_location_eligibility employee_location_eligibility_employee_id_fkey scrum84_operator
+5234; 2606 28596 FK CONSTRAINT public employee_location_eligibility employee_location_eligibility_location_id_fkey scrum84_operator
+5415; 2606 30847 FK CONSTRAINT public employee_passkeys employee_passkeys_employee_id_fkey scrum84_operator
+5289; 2606 29194 FK CONSTRAINT public employee_positions employee_positions_employee_id_fkey scrum84_operator
+5290; 2606 29199 FK CONSTRAINT public employee_positions employee_positions_position_id_fkey scrum84_operator
+5254; 2606 28809 FK CONSTRAINT public employee_scheduling_settings employee_scheduling_settings_employee_id_fkey scrum84_operator
+5236; 2606 28623 FK CONSTRAINT public employee_sessions employee_sessions_employee_id_fkey scrum84_operator
+5232; 2606 28578 FK CONSTRAINT public employees employees_primary_location_id_fkey scrum84_operator
+5255; 2606 28830 FK CONSTRAINT public location_coverage_windows location_coverage_windows_location_id_fkey scrum84_operator
+5253; 2606 28795 FK CONSTRAINT public location_staffing_settings location_staffing_settings_location_id_fkey scrum84_operator
+5231; 2606 29160 FK CONSTRAINT public locations locations_workspace_id_fkey scrum84_operator
+5480; 2606 31785 FK CONSTRAINT public management_time_closes management_time_closes_actor_employee_id_fkey scrum84_operator
+5481; 2606 31780 FK CONSTRAINT public management_time_closes management_time_closes_employee_id_fkey scrum84_operator
+5482; 2606 31795 FK CONSTRAINT public management_time_closes management_time_closes_location_id_fkey scrum84_operator
+5483; 2606 31790 FK CONSTRAINT public management_time_closes management_time_closes_time_entry_id_fkey scrum84_operator
+5484; 2606 31775 FK CONSTRAINT public management_time_closes management_time_closes_workspace_id_fkey scrum84_operator
+5512; 2606 32129 FK CONSTRAINT public native_payroll_document_manifests native_payroll_document_manifests_workspace_id_run_id_fkey scrum84_operator
+5508; 2606 32090 FK CONSTRAINT public native_payroll_ledger native_payroll_ledger_employee_id_fkey scrum84_operator
+5509; 2606 32100 FK CONSTRAINT public native_payroll_ledger native_payroll_ledger_workspace_id_employee_id_correction__fkey scrum84_operator
+5510; 2606 32085 FK CONSTRAINT public native_payroll_ledger native_payroll_ledger_workspace_id_fkey scrum84_operator
+5511; 2606 32095 FK CONSTRAINT public native_payroll_ledger native_payroll_ledger_workspace_id_run_id_fkey scrum84_operator
+5506; 2606 32063 FK CONSTRAINT public native_payroll_manager_scope_revisions native_payroll_manager_scope_revisions_employee_id_fkey scrum84_operator
+5507; 2606 32058 FK CONSTRAINT public native_payroll_manager_scope_revisions native_payroll_manager_scope_revisions_workspace_id_fkey scrum84_operator
+5504; 2606 32038 FK CONSTRAINT public native_payroll_opening_ytd_revisions native_payroll_opening_ytd_revisions_employee_id_fkey scrum84_operator
+5505; 2606 32033 FK CONSTRAINT public native_payroll_opening_ytd_revisions native_payroll_opening_ytd_revisions_workspace_id_fkey scrum84_operator
+5502; 2606 32015 FK CONSTRAINT public native_payroll_profile_revisions native_payroll_profile_revisions_employee_id_fkey scrum84_operator
+5503; 2606 32010 FK CONSTRAINT public native_payroll_profile_revisions native_payroll_profile_revisions_workspace_id_fkey scrum84_operator
+5424; 2606 30999 FK CONSTRAINT public native_payroll_setup_records native_payroll_setup_records_actor_employee_id_fkey scrum84_operator
+5425; 2606 30994 FK CONSTRAINT public native_payroll_setup_records native_payroll_setup_records_workspace_id_fkey scrum84_operator
+5458; 2606 31415 FK CONSTRAINT public native_push_challenges native_push_challenges_employee_id_fkey scrum84_operator
+5459; 2606 31410 FK CONSTRAINT public native_push_challenges native_push_challenges_workspace_id_fkey scrum84_operator
+5460; 2606 31449 FK CONSTRAINT public native_push_deliveries native_push_deliveries_installation_id_fkey scrum84_operator
+5461; 2606 31444 FK CONSTRAINT public native_push_deliveries native_push_deliveries_notification_id_fkey scrum84_operator
+5456; 2606 31382 FK CONSTRAINT public native_push_installations native_push_installations_employee_id_fkey scrum84_operator
+5457; 2606 31377 FK CONSTRAINT public native_push_installations native_push_installations_workspace_id_fkey scrum84_operator
+5479; 2606 31747 FK CONSTRAINT public nevora_commerce_installation nevora_commerce_installation_workspace_id_fkey scrum84_operator
+5379; 2606 30409 FK CONSTRAINT public nevora_company_policy_revisions nevora_company_policy_revisions_actor_employee_id_fkey scrum84_operator
+5380; 2606 30404 FK CONSTRAINT public nevora_company_policy_revisions nevora_company_policy_revisions_location_id_fkey scrum84_operator
+5381; 2606 30399 FK CONSTRAINT public nevora_company_policy_revisions nevora_company_policy_revisions_workspace_id_fkey scrum84_operator
+5408; 2606 30743 FK CONSTRAINT public nevora_workspace_presentation_assets nevora_workspace_presentation_assets_actor_employee_id_fkey scrum84_operator
+5409; 2606 30738 FK CONSTRAINT public nevora_workspace_presentation_assets nevora_workspace_presentation_assets_workspace_id_fkey scrum84_operator
+5410; 2606 30766 FK CONSTRAINT public nevora_workspace_presentation_revisions nevora_workspace_presentation_revisions_actor_employee_id_fkey scrum84_operator
+5411; 2606 30761 FK CONSTRAINT public nevora_workspace_presentation_revisions nevora_workspace_presentation_revisions_workspace_id_fkey scrum84_operator
+5252; 2606 28780 FK CONSTRAINT public notifications notifications_employee_id_fkey scrum84_operator
+5472; 2606 31615 FK CONSTRAINT public onboarding_commands onboarding_commands_actor_employee_id_fkey scrum84_operator
+5473; 2606 31610 FK CONSTRAINT public onboarding_commands onboarding_commands_workspace_id_fkey scrum84_operator
+5465; 2606 31531 FK CONSTRAINT public onboarding_initial_owner onboarding_initial_owner_employee_id_fkey scrum84_operator
+5466; 2606 31526 FK CONSTRAINT public onboarding_initial_owner onboarding_initial_owner_workspace_id_fkey scrum84_operator
+5474; 2606 31636 FK CONSTRAINT public onboarding_invitation_batches onboarding_invitation_batches_actor_employee_id_fkey scrum84_operator
+5475; 2606 31631 FK CONSTRAINT public onboarding_invitation_batches onboarding_invitation_batches_workspace_id_fkey scrum84_operator
+5476; 2606 31655 FK CONSTRAINT public onboarding_invitation_items onboarding_invitation_items_employee_id_fkey scrum84_operator
+5477; 2606 31660 FK CONSTRAINT public onboarding_invitation_items onboarding_invitation_items_workspace_id_actor_employee_id_fkey scrum84_operator
+5468; 2606 31579 FK CONSTRAINT public onboarding_owner_activation_receipts onboarding_owner_activation_receipts_employee_id_fkey scrum84_operator
+5469; 2606 31574 FK CONSTRAINT public onboarding_owner_activation_receipts onboarding_owner_activation_receipts_grant_id_fkey scrum84_operator
+5470; 2606 31569 FK CONSTRAINT public onboarding_owner_activation_receipts onboarding_owner_activation_receipts_workspace_id_fkey scrum84_operator
+5467; 2606 31553 FK CONSTRAINT public onboarding_owner_grants onboarding_owner_grants_workspace_id_fkey scrum84_operator
+5471; 2606 31594 FK CONSTRAINT public onboarding_progress onboarding_progress_workspace_id_fkey scrum84_operator
+5463; 2606 31506 FK CONSTRAINT public onboarding_provision_receipts onboarding_provision_receipts_initial_owner_id_fkey scrum84_operator
+5464; 2606 31501 FK CONSTRAINT public onboarding_provision_receipts onboarding_provision_receipts_workspace_id_fkey scrum84_operator
+5478; 2606 31698 FK CONSTRAINT public onboarding_restore_receipts onboarding_restore_receipts_workspace_id_fkey scrum84_operator
+5462; 2606 31472 FK CONSTRAINT public onboarding_workspace_identity onboarding_workspace_identity_workspace_id_fkey scrum84_operator
+5516; 2606 32208 FK CONSTRAINT public operational_scope_revisions operational_scope_revisions_actor_employee_id_fkey scrum84_operator
+5517; 2606 32203 FK CONSTRAINT public operational_scope_revisions operational_scope_revisions_employee_id_fkey scrum84_operator
+5518; 2606 32213 FK CONSTRAINT public operational_scope_revisions operational_scope_revisions_workspace_id_employee_id_fkey scrum84_operator
+5519; 2606 32198 FK CONSTRAINT public operational_scope_revisions operational_scope_revisions_workspace_id_fkey scrum84_operator
+5513; 2606 32152 FK CONSTRAINT public operational_subject_versions operational_subject_versions_employee_id_fkey scrum84_operator
+5514; 2606 32147 FK CONSTRAINT public operational_subject_versions operational_subject_versions_workspace_id_fkey scrum84_operator
+5421; 2606 30969 FK CONSTRAINT public owner_advisor_briefing_reviews owner_advisor_briefing_reviews_location_id_fkey scrum84_operator
+5422; 2606 30964 FK CONSTRAINT public owner_advisor_briefing_reviews owner_advisor_briefing_reviews_owner_id_fkey scrum84_operator
+5423; 2606 30959 FK CONSTRAINT public owner_advisor_briefing_reviews owner_advisor_briefing_reviews_workspace_id_fkey scrum84_operator
+5454; 2606 31349 FK CONSTRAINT public owner_advisor_coverage_reviews owner_advisor_coverage_reviews_owner_id_fkey scrum84_operator
+5455; 2606 31344 FK CONSTRAINT public owner_advisor_coverage_reviews owner_advisor_coverage_reviews_workspace_id_fkey scrum84_operator
+5500; 2606 31991 FK CONSTRAINT public owner_advisor_memories owner_advisor_memories_owner_id_fkey scrum84_operator
+5501; 2606 31986 FK CONSTRAINT public owner_advisor_memories owner_advisor_memories_workspace_id_fkey scrum84_operator
+5452; 2606 31323 FK CONSTRAINT public owner_advisor_notebooks owner_advisor_notebooks_owner_id_fkey scrum84_operator
+5453; 2606 31318 FK CONSTRAINT public owner_advisor_notebooks owner_advisor_notebooks_workspace_id_fkey scrum84_operator
+5417; 2606 30913 FK CONSTRAINT public owner_advisor_profiles owner_advisor_profiles_owner_id_fkey scrum84_operator
+5418; 2606 30908 FK CONSTRAINT public owner_advisor_profiles owner_advisor_profiles_workspace_id_fkey scrum84_operator
+5419; 2606 30935 FK CONSTRAINT public owner_advisor_requests owner_advisor_requests_owner_id_fkey scrum84_operator
+5420; 2606 30930 FK CONSTRAINT public owner_advisor_requests owner_advisor_requests_workspace_id_fkey scrum84_operator
+5346; 2606 29958 FK CONSTRAINT public password_recovery_proofs password_recovery_proofs_actor_employee_id_fkey scrum84_operator
+5347; 2606 29953 FK CONSTRAINT public password_recovery_proofs password_recovery_proofs_employee_id_fkey scrum84_operator
+5399; 2606 30613 FK CONSTRAINT public payroll_command_receipts payroll_command_receipts_actor_id_fkey scrum84_operator
+5400; 2606 30608 FK CONSTRAINT public payroll_command_receipts payroll_command_receipts_workspace_id_fkey scrum84_operator
+5401; 2606 30626 FK CONSTRAINT public payroll_documents payroll_documents_employee_id_fkey scrum84_operator
+5402; 2606 30631 FK CONSTRAINT public payroll_documents payroll_documents_workspace_id_run_id_fkey scrum84_operator
+5392; 2606 30538 FK CONSTRAINT public payroll_exception_revisions payroll_exception_revisions_employee_id_fkey scrum84_operator
+5393; 2606 30533 FK CONSTRAINT public payroll_exception_revisions payroll_exception_revisions_workspace_id_fkey scrum84_operator
+5342; 2606 29905 FK CONSTRAINT public payroll_export_profile_revisions payroll_export_profile_revisions_actor_employee_id_fkey scrum84_operator
+5343; 2606 29900 FK CONSTRAINT public payroll_export_profile_revisions payroll_export_profile_revisions_workspace_id_fkey scrum84_operator
+5344; 2606 29925 FK CONSTRAINT public payroll_export_receipts payroll_export_receipts_actor_employee_id_fkey scrum84_operator
+5345; 2606 29920 FK CONSTRAINT public payroll_export_receipts payroll_export_receipts_workspace_id_fkey scrum84_operator
+5394; 2606 30556 FK CONSTRAINT public payroll_grant_revisions payroll_grant_revisions_employee_id_fkey scrum84_operator
+5395; 2606 30551 FK CONSTRAINT public payroll_grant_revisions payroll_grant_revisions_workspace_id_fkey scrum84_operator
+5404; 2606 30665 FK CONSTRAINT public payroll_jobs payroll_jobs_workspace_id_fkey scrum84_operator
+5405; 2606 30670 FK CONSTRAINT public payroll_jobs payroll_jobs_workspace_id_run_id_fkey scrum84_operator
+5406; 2606 30682 FK CONSTRAINT public payroll_notice_receipts payroll_notice_receipts_workspace_id_fkey scrum84_operator
+5407; 2606 30716 FK CONSTRAINT public payroll_notice_sources payroll_notice_sources_workspace_id_fkey scrum84_operator
+5389; 2606 30496 FK CONSTRAINT public payroll_period_events payroll_period_events_actor_employee_id_fkey scrum84_operator
+5390; 2606 30501 FK CONSTRAINT public payroll_period_events payroll_period_events_workspace_id_manifest_id_fkey scrum84_operator
+5386; 2606 30477 FK CONSTRAINT public payroll_period_manifests payroll_period_manifests_actor_employee_id_fkey scrum84_operator
+5387; 2606 30472 FK CONSTRAINT public payroll_period_manifests payroll_period_manifests_workspace_id_fkey scrum84_operator
+5388; 2606 30482 FK CONSTRAINT public payroll_period_manifests payroll_period_manifests_workspace_id_start_date_end_date__fkey scrum84_operator
+5384; 2606 30457 FK CONSTRAINT public payroll_period_populations payroll_period_populations_actor_employee_id_fkey scrum84_operator
+5385; 2606 30452 FK CONSTRAINT public payroll_period_populations payroll_period_populations_workspace_id_fkey scrum84_operator
+5403; 2606 30645 FK CONSTRAINT public payroll_publications payroll_publications_workspace_id_run_id_fkey scrum84_operator
+5398; 2606 30592 FK CONSTRAINT public payroll_run_revisions payroll_run_revisions_workspace_id_run_id_fkey scrum84_operator
+5396; 2606 30577 FK CONSTRAINT public payroll_runs payroll_runs_workspace_id_correction_of_fkey scrum84_operator
+5397; 2606 30572 FK CONSTRAINT public payroll_runs payroll_runs_workspace_id_fkey scrum84_operator
+5391; 2606 30520 FK CONSTRAINT public payroll_setting_revisions payroll_setting_revisions_workspace_id_fkey scrum84_operator
+5288; 2606 29181 FK CONSTRAINT public positions positions_workspace_id_fkey scrum84_operator
+5286; 2606 29133 FK CONSTRAINT public push_deliveries push_deliveries_notification_id_fkey scrum84_operator
+5287; 2606 29138 FK CONSTRAINT public push_deliveries push_deliveries_subscription_id_fkey scrum84_operator
+5285; 2606 29103 FK CONSTRAINT public push_subscriptions push_subscriptions_employee_id_fkey scrum84_operator
+5261; 2606 28900 FK CONSTRAINT public schedule_acknowledgements schedule_acknowledgements_employee_id_fkey scrum84_operator
+5262; 2606 29001 FK CONSTRAINT public schedule_acknowledgements schedule_acknowledgements_publication_revision_id_fkey scrum84_operator
+5375; 2606 30346 FK CONSTRAINT public schedule_copy_operations schedule_copy_operations_actor_employee_id_fkey scrum84_operator
+5376; 2606 30341 FK CONSTRAINT public schedule_copy_operations schedule_copy_operations_workspace_id_fkey scrum84_operator
+5377; 2606 30359 FK CONSTRAINT public schedule_copy_receipts schedule_copy_receipts_workspace_id_actor_employee_id_oper_fkey scrum84_operator
+5378; 2606 30374 FK CONSTRAINT public schedule_copy_row_receipts schedule_copy_row_receipts_workspace_id_actor_employee_id__fkey scrum84_operator
+5293; 2606 29273 FK CONSTRAINT public schedule_generation_exclusions schedule_generation_exclusions_cleared_by_fkey scrum84_operator
+5294; 2606 29268 FK CONSTRAINT public schedule_generation_exclusions schedule_generation_exclusions_created_by_fkey scrum84_operator
+5295; 2606 29258 FK CONSTRAINT public schedule_generation_exclusions schedule_generation_exclusions_location_id_fkey scrum84_operator
+5296; 2606 29263 FK CONSTRAINT public schedule_generation_exclusions schedule_generation_exclusions_position_id_fkey scrum84_operator
+5297; 2606 29253 FK CONSTRAINT public schedule_generation_exclusions schedule_generation_exclusions_workspace_id_fkey scrum84_operator
+5448; 2606 31288 FK CONSTRAINT public schedule_pending_edits schedule_pending_edits_actor_employee_id_fkey scrum84_operator
+5449; 2606 31283 FK CONSTRAINT public schedule_pending_edits schedule_pending_edits_location_id_fkey scrum84_operator
+5450; 2606 31293 FK CONSTRAINT public schedule_pending_edits schedule_pending_edits_published_revision_id_fkey scrum84_operator
+5451; 2606 31278 FK CONSTRAINT public schedule_pending_edits schedule_pending_edits_workspace_id_fkey scrum84_operator
+5276; 2606 29232 FK CONSTRAINT public schedule_publication_revision_shifts schedule_publication_revision_shifts_position_id_fkey scrum84_operator
+5277; 2606 28994 FK CONSTRAINT public schedule_publication_revision_shifts schedule_publication_revision_shifts_revision_id_fkey scrum84_operator
+5274; 2606 28973 FK CONSTRAINT public schedule_publication_revisions schedule_publication_revisions_affected_location_id_fkey scrum84_operator
+5275; 2606 28978 FK CONSTRAINT public schedule_publication_revisions schedule_publication_revisions_created_by_fkey scrum84_operator
+5265; 2606 28941 FK CONSTRAINT public schedule_template_shifts schedule_template_shifts_employee_id_fkey scrum84_operator
+5266; 2606 28936 FK CONSTRAINT public schedule_template_shifts schedule_template_shifts_location_id_fkey scrum84_operator
+5267; 2606 29227 FK CONSTRAINT public schedule_template_shifts schedule_template_shifts_position_id_fkey scrum84_operator
+5268; 2606 28931 FK CONSTRAINT public schedule_template_shifts schedule_template_shifts_template_id_fkey scrum84_operator
+5269; 2606 30307 FK CONSTRAINT public schedule_template_shifts schedule_template_shifts_workspace_id_fkey scrum84_operator
+5263; 2606 28915 FK CONSTRAINT public schedule_templates schedule_templates_created_by_fkey scrum84_operator
+5264; 2606 30300 FK CONSTRAINT public schedule_templates schedule_templates_workspace_id_fkey scrum84_operator
+5256; 2606 28843 FK CONSTRAINT public schedule_week_settings schedule_week_settings_updated_by_fkey scrum84_operator
+5241; 2606 28700 FK CONSTRAINT public schedules schedules_created_by_fkey scrum84_operator
+5242; 2606 28695 FK CONSTRAINT public schedules schedules_location_id_fkey scrum84_operator
+5243; 2606 28705 FK CONSTRAINT public schedules schedules_published_by_fkey scrum84_operator
+5258; 2606 28880 FK CONSTRAINT public shift_callouts shift_callouts_employee_id_fkey scrum84_operator
+5259; 2606 28885 FK CONSTRAINT public shift_callouts shift_callouts_reviewed_by_fkey scrum84_operator
+5260; 2606 28875 FK CONSTRAINT public shift_callouts shift_callouts_shift_id_fkey scrum84_operator
+5298; 2606 29340 FK CONSTRAINT public shift_change_participation shift_change_participation_callout_id_fkey scrum84_operator
+5299; 2606 29335 FK CONSTRAINT public shift_change_participation shift_change_participation_exchange_id_fkey scrum84_operator
+5300; 2606 29330 FK CONSTRAINT public shift_change_participation shift_change_participation_shift_id_fkey scrum84_operator
+5247; 2606 28749 FK CONSTRAINT public shift_exchanges shift_exchanges_requested_by_employee_id_fkey scrum84_operator
+5248; 2606 28764 FK CONSTRAINT public shift_exchanges shift_exchanges_resolved_by_fkey scrum84_operator
+5249; 2606 28744 FK CONSTRAINT public shift_exchanges shift_exchanges_source_shift_id_fkey scrum84_operator
+5250; 2606 28754 FK CONSTRAINT public shift_exchanges shift_exchanges_target_employee_id_fkey scrum84_operator
+5251; 2606 28759 FK CONSTRAINT public shift_exchanges shift_exchanges_target_shift_id_fkey scrum84_operator
+5244; 2606 28725 FK CONSTRAINT public shifts shifts_employee_id_fkey scrum84_operator
+5245; 2606 29222 FK CONSTRAINT public shifts shifts_position_id_fkey scrum84_operator
+5246; 2606 28720 FK CONSTRAINT public shifts shifts_schedule_id_fkey scrum84_operator
+5492; 2606 31900 FK CONSTRAINT public staff_task_events staff_task_events_actor_id_fkey scrum84_operator
+5493; 2606 31910 FK CONSTRAINT public staff_task_events staff_task_events_workspace_id_task_id_fkey scrum84_operator
+5494; 2606 31905 FK CONSTRAINT public staff_task_events staff_task_events_workspace_id_template_id_fkey scrum84_operator
+5488; 2606 31869 FK CONSTRAINT public staff_task_instances staff_task_instances_assignee_id_fkey scrum84_operator
+5489; 2606 31874 FK CONSTRAINT public staff_task_instances staff_task_instances_completed_by_fkey scrum84_operator
+5490; 2606 31884 FK CONSTRAINT public staff_task_instances staff_task_instances_workspace_id_location_id_fkey scrum84_operator
+5491; 2606 31879 FK CONSTRAINT public staff_task_instances staff_task_instances_workspace_id_template_id_fkey scrum84_operator
+5495; 2606 31926 FK CONSTRAINT public staff_task_operations staff_task_operations_actor_id_fkey scrum84_operator
+5496; 2606 31936 FK CONSTRAINT public staff_task_operations staff_task_operations_workspace_id_task_id_fkey scrum84_operator
+5497; 2606 31931 FK CONSTRAINT public staff_task_operations staff_task_operations_workspace_id_template_id_fkey scrum84_operator
+5498; 2606 31950 FK CONSTRAINT public staff_task_reminder_acks staff_task_reminder_acks_employee_id_fkey scrum84_operator
+5499; 2606 31955 FK CONSTRAINT public staff_task_reminder_acks staff_task_reminder_acks_workspace_id_task_id_fkey scrum84_operator
+5485; 2606 31838 FK CONSTRAINT public staff_task_templates staff_task_templates_assignee_id_fkey scrum84_operator
+5486; 2606 31833 FK CONSTRAINT public staff_task_templates staff_task_templates_workspace_id_fkey scrum84_operator
+5487; 2606 31843 FK CONSTRAINT public staff_task_templates staff_task_templates_workspace_id_location_id_fkey scrum84_operator
+5270; 2606 30312 FK CONSTRAINT public schedule_template_shifts template_child_owner scrum84_operator
+5271; 2606 30324 FK CONSTRAINT public schedule_template_shifts template_location_owner scrum84_operator
+5272; 2606 30319 FK CONSTRAINT public schedule_template_shifts template_position_owner scrum84_operator
+5328; 2606 29746 FK CONSTRAINT public time_correction_adjustments time_correction_adjustments_break_entry_id_fkey scrum84_operator
+5329; 2606 29761 FK CONSTRAINT public time_correction_adjustments time_correction_adjustments_created_by_fkey scrum84_operator
+5330; 2606 29736 FK CONSTRAINT public time_correction_adjustments time_correction_adjustments_employee_id_fkey scrum84_operator
+5331; 2606 29751 FK CONSTRAINT public time_correction_adjustments time_correction_adjustments_location_id_fkey scrum84_operator
+5332; 2606 29726 FK CONSTRAINT public time_correction_adjustments time_correction_adjustments_request_id_fkey scrum84_operator
+5333; 2606 29756 FK CONSTRAINT public time_correction_adjustments time_correction_adjustments_supersedes_adjustment_id_fkey scrum84_operator
+5334; 2606 29741 FK CONSTRAINT public time_correction_adjustments time_correction_adjustments_time_entry_id_fkey scrum84_operator
+5335; 2606 29731 FK CONSTRAINT public time_correction_adjustments time_correction_adjustments_workspace_id_fkey scrum84_operator
+5336; 2606 29792 FK CONSTRAINT public time_correction_events time_correction_events_actor_employee_id_fkey scrum84_operator
+5337; 2606 29797 FK CONSTRAINT public time_correction_events time_correction_events_adjustment_id_fkey scrum84_operator
+5338; 2606 29787 FK CONSTRAINT public time_correction_events time_correction_events_request_id_fkey scrum84_operator
+5321; 2606 29766 FK CONSTRAINT public time_correction_requests time_correction_request_base_adjustment scrum84_operator
+5322; 2606 29700 FK CONSTRAINT public time_correction_requests time_correction_requests_break_entry_id_fkey scrum84_operator
+5323; 2606 29685 FK CONSTRAINT public time_correction_requests time_correction_requests_employee_id_fkey scrum84_operator
+5324; 2606 29705 FK CONSTRAINT public time_correction_requests time_correction_requests_location_id_fkey scrum84_operator
+5325; 2606 29690 FK CONSTRAINT public time_correction_requests time_correction_requests_requested_by_employee_id_fkey scrum84_operator
+5326; 2606 29695 FK CONSTRAINT public time_correction_requests time_correction_requests_time_entry_id_fkey scrum84_operator
+5327; 2606 29680 FK CONSTRAINT public time_correction_requests time_correction_requests_workspace_id_fkey scrum84_operator
+5280; 2606 29045 FK CONSTRAINT public time_entries time_entries_device_id_location_id_fkey scrum84_operator
+5281; 2606 29035 FK CONSTRAINT public time_entries time_entries_employee_id_fkey scrum84_operator
+5282; 2606 29040 FK CONSTRAINT public time_entries time_entries_location_id_fkey scrum84_operator
+5239; 2606 28671 FK CONSTRAINT public time_off_requests time_off_requests_employee_id_fkey scrum84_operator
+5240; 2606 28676 FK CONSTRAINT public time_off_requests time_off_requests_reviewed_by_fkey scrum84_operator
+5339; 2606 29868 FK CONSTRAINT public timecard_revisions timecard_revisions_actor_employee_id_fkey scrum84_operator
+5340; 2606 29863 FK CONSTRAINT public timecard_revisions timecard_revisions_employee_id_fkey scrum84_operator
+5341; 2606 29858 FK CONSTRAINT public timecard_revisions timecard_revisions_workspace_id_fkey scrum84_operator
+5273; 2606 28956 FK CONSTRAINT public weekly_availability_submissions weekly_availability_submissions_employee_id_fkey scrum84_operator
+5257; 2606 28858 FK CONSTRAINT public weekly_availability_windows weekly_availability_windows_employee_id_fkey scrum84_operator
+5887; 0 31177 ROW SECURITY public clocker_photo_access_events scrum84_operator
+5894; 3256 31232 POLICY public clocker_photo_access_events clocker_photo_access_events_scope scrum84_operator
+5884; 0 31083 ROW SECURITY public clocker_photo_notice_profiles scrum84_operator
+5891; 3256 31233 POLICY public clocker_photo_notice_profiles clocker_photo_notice_profiles_scope scrum84_operator
+5885; 0 31104 ROW SECURITY public clocker_photo_notice_revisions scrum84_operator
+5892; 3256 31234 POLICY public clocker_photo_notice_revisions clocker_photo_notice_revisions_scope scrum84_operator
+5882; 0 31041 ROW SECURITY public clocker_photo_policy scrum84_operator
+5883; 0 31069 ROW SECURITY public clocker_photo_policy_revisions scrum84_operator
+5890; 3256 31230 POLICY public clocker_photo_policy_revisions clocker_photo_policy_revisions_scope scrum84_operator
+5889; 3256 31229 POLICY public clocker_photo_policy clocker_photo_policy_scope scrum84_operator
+5888; 0 31197 ROW SECURITY public clocker_photo_review_events scrum84_operator
+5895; 3256 31235 POLICY public clocker_photo_review_events clocker_photo_review_events_scope scrum84_operator
+5886; 0 31123 ROW SECURITY public clocker_punch_photos scrum84_operator
+5893; 3256 31231 POLICY public clocker_punch_photos clocker_punch_photos_scope scrum84_operator

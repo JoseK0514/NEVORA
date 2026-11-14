@@ -1,0 +1,44 @@
+HISTORICAL RESTORE — RECOVERED SOURCE, NOT A NEW EXECUTION
+
+Source: runner-7.mts, lines 182–185 and 195–197. Full selected source is in
+historical-command-source-selected.json; original source hashes are in
+original-file-manifest.json. The helper's source constructs this argv:
+
+/workspace/environment-local/postgresql/17/bin/pg_restore --jobs=4 --exit-on-error --dbname scrum84_restored3 /workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/hosted-synthetic.dump
+
+Historical environment, sanitized without inventing resolved values:
+PGHOST=127.0.0.1
+PGPORT=<ephemeral recovery-tunnel port; resolved value not retained>
+PGUSER=<recovery credential username; omitted>
+PGPASSWORD=<REDACTED>
+PGDATABASE=scrum84_restored3
+PGSSLMODE=disable
+PGGSSENCMODE=disable
+PGCONNECT_TIMEOUT=12
+PATH=<historical process PATH; resolved value not retained>
+
+The source used a TLS WebSocket tunnel, timeout 300000 ms, ignored stdin,
+stdout/stderr pipes and SIGTERM on timeout. On failure its helper retained at
+most 300 stderr characters. No provider route is active or renewed here.
+runner-7 reads the retained dump and hashes those bytes before the attempt;
+its source also writes the same bytes back at the same path. That is historical
+source behavior, NOT an action performed during this read-only recovery.
+The original pg_dump producer source in runner-5/runner-6 invokes:
+/workspace/environment-local/postgresql/17/bin/pg_dump --format=custom
+with PGDATABASE=scrum84_fresh2 and private tunnel environment. Do not run it.
+
+Complete contents of the retained historical result logs follow. These files
+are untruncated here; they do NOT contain a successful child exit receipt.
+There is no recoverable complete pg_restore stdout/stderr/exit-0 receipt in the
+inspected evidence. A source reconstruction is not an execution receipt.
+
+--- hosted-run-6.log, complete sanitized retained contents ---
+{"code":null,"message":"pg_restore failed code 1: pg_restore: terminated by user\n"}
+
+--- hosted-run-7.log, complete sanitized retained contents ---
+{"code":"unavailable","message":"unavailable"}
+
+The subsequent restored-behavior log/report records post-restore enrollment
+before its passkey check. Neither it nor runner-7 proves original-key continuity.
+final-copy-comparison.json reports 155 tables/150 stable tables and later auth
+row additions; this is corroborating historical evidence, not an exit receipt.

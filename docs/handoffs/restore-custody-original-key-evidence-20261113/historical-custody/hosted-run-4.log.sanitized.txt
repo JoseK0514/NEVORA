@@ -1,0 +1,2 @@
+{"code":null,"message":"pg_dump failed code 1: pg_dump: terminated by user\n"}
+{"status":"FAIL","passed":0,"failed":0,"project":"morning-salad-93941233"}

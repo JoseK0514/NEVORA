@@ -1,0 +1,2 @@
+ACTOR_FACTS {"location":"541e3a92-ad08-4552-96ec-c018e45c0bd2","workspace":"f01afaf7-7222-4eaa-848c-9c26408fe018","employees":[{"id":"REHEARSAL-EMPLOYEE","role":"EMPLOYEE","active":true},{"id":"REHEARSAL-INACTIVE","role":"MANAGER","active":false},{"id":"REHEARSAL-MANAGER","role":"MANAGER","active":true},{"id":"REHEARSAL-OWNER","role":"OWNER","active":true}]}
+ENROLL_PASS
