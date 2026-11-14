@@ -187,6 +187,7 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
    expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='EMP-1'")).rows).toEqual([{n:0}]);
    const replay=await resetPage.evaluate(async(proof:string)=>(await fetch('/api/auth/reset-access',{method:'POST',headers:{'content-type':'application/json','x-nevora-recovery':'1'},body:JSON.stringify({proof,password:'Fictional forbidden replay password 123!'})})).status,recoveryProof);expect(replay).toBe(400);
    await resetPage.getByRole('link',{name:'Sign in with new password',exact:true}).click();await resetPage.getByLabel('Employee ID',{exact:true}).fill('EMP-1');await resetPage.getByLabel('Password',{exact:true}).fill(employeePassword);await resetPage.getByRole('button',{name:'Sign in',exact:true}).click();await resetPage.waitForURL(front+'/app');
+   await resetPage.getByRole('button',{name:/, account menu$/}).click();
    await resetPage.getByRole('button',{name:'Sign out',exact:true}).click();await resetPage.waitForURL((url:URL)=>url.pathname==='/login');
    expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='EMP-1'")).rows).toEqual([{n:0}]);
    isolatedAccountAccess.push({resetEngine:engine,issuanceEngine:'chromium',wrappedAssistedUi:true,fullResetProof:true,normalNewPasswordLogin:true,replayDenied:true});
