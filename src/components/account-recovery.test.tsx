@@ -4,9 +4,14 @@ import {describe,it,expect,vi} from 'vitest';
 import {AccountRecovery} from './account-recovery';
 import {RecoveryRequest} from './recovery-request';
 import {RecoveryReset} from './recovery-reset';
+import {MobileRecoveryReset} from './mobile-access/recovery-views';
 vi.stubGlobal('React',React);
 
 describe('Recovery presentation preserves its workflow boundaries',()=>{
+ it('lets the mobile reset transport an isolated-company envelope without truncation',()=>{
+  const html=renderToStaticMarkup(<MobileRecoveryReset hydrated busy={false} done={false} message="" onSubmit={()=>{}} proofRef={()=>{}} lang="en"/>);
+  expect(html).toContain('minLength="43"');expect(html).toContain('maxLength="4096"');
+ });
  it('keeps both required identity fields and the proof and sign-in paths',()=>{
   const html=renderToStaticMarkup(<AccountRecovery kind="request"/>);
   expect(html).toContain('name="employeeId"');expect(html).toContain('name="email"');
@@ -23,7 +28,7 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
  });
  it('keeps reset proof validation and new-password autocomplete',()=>{
   const html=renderToStaticMarkup(<AccountRecovery kind="reset"/>);
-  expect(html).toContain('minLength="43"');expect(html).toContain('maxLength="43"');
+  expect(html).toContain('minLength="43"');expect(html).toContain('maxLength="4096"');
   expect(html.match(/autoComplete="new-password"/g)).toHaveLength(2);
   expect(html).toContain('name="confirmPassword"');expect(html).not.toContain('recovery-help');
   expect(html.match(/minLength="8"/g)).toHaveLength(2);

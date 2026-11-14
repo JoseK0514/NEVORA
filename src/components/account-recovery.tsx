@@ -4,7 +4,9 @@ import {RecoveryRequest} from './recovery-request';
 import {AssistedRecovery} from './assisted-recovery';
 import {RecoveryReset} from './recovery-reset';
 import type {AuthLang} from '@/lib/auth-copy';
+import {isPublicAccountProof} from '@/lib/auth/public-proof';
 const subscribe=()=>()=>{};
+const assistedUnavailable='The recovery code could not be confirmed. Check current access before preparing another code.';
 type Issued={proof:string;expiresAt:string;employeeId:string};
 export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=false,lang='en',mobileAccess=false}:{kind:'request'|'reset'|'assisted';actorId?:string;employeeId?:string;from?:'settings';timeZone?:string;
  /** Assisted, Owner only: link to Employee PINs from the same page. */
@@ -19,7 +21,7 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=fals
  const incomingProof=useRef<string|null>(null);
  const generation=useRef(0),active=useRef<AbortController|null>(null),sending=useRef(false);
  useEffect(()=>{
-  const receiveProof=()=>{if(kind!=='reset')return;const token=new URLSearchParams(window.location.hash.slice(1)).get('proof');if(!token)return;if(mobileAccess)setLinkProof(/^[A-Za-z0-9_-]{43}$/.test(token));incomingProof.current=token;setDone(false);setMessage('');if(proofInput.current){proofInput.current.value=token;incomingProof.current=null;}history.replaceState(null,'',window.location.pathname);};
+  const receiveProof=()=>{if(kind!=='reset')return;const token=new URLSearchParams(window.location.hash.slice(1)).get('proof');if(!token)return;if(mobileAccess)setLinkProof(isPublicAccountProof(token));incomingProof.current=token;setDone(false);setMessage('');if(proofInput.current){proofInput.current.value=token;incomingProof.current=null;}history.replaceState(null,'',window.location.pathname);};
   const frame=requestAnimationFrame(receiveProof);window.addEventListener('hashchange',receiveProof);
   const stop=()=>{generation.current++;active.current?.abort();};
   const clear=()=>{stop();setIssued(null);setMessage('');setBusy(false);sending.current=false;};
@@ -41,9 +43,9 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=fals
    const data=await response.json();if(current!==generation.current)return;
    if(kind==='request'&&response.status===202&&data.state==='accepted'){setMessage(data.message);setDone(true);}
    else if(kind==='reset'&&response.ok&&data.state==='reset'){setMessage('Password reset. All portal sessions have ended. Sign in with your new password.');setDone(true);}
-   else if(kind==='assisted'&&response.ok&&data.state==='issued'&&/^[A-Za-z0-9_-]{43}$/.test(data.proof)&&Number.isFinite(Date.parse(data.expiresAt))&&data.employeeId===(body as {employeeId:string}).employeeId){setIssued(data);}
-   else setMessage(kind==='reset'&&data.state==='invalid'?'This recovery code has expired, was already used, or cannot be verified. Request a new code or contact your manager.':response.status===401||response.status===403?(kind==='assisted'?'Your session ended. Sign in again to issue a code.':'Your access ended. Sign in again.'):kind==='assisted'?'The code wasn’t issued. Try again.':'Recovery could not be confirmed. Keep your current access and try again.');
-  }catch{if(current===generation.current)setMessage(kind==='reset'?'The reset outcome could not be confirmed. Try signing in with your new password before requesting another code.':kind==='assisted'?'The code could not be issued. Check your connection and try again.':'Recovery is unavailable. Try again or contact your manager for assisted recovery.');}
+   else if(kind==='assisted'&&response.ok&&data.state==='issued'&&isPublicAccountProof(data.proof)&&Number.isFinite(Date.parse(data.expiresAt))&&data.employeeId===(body as {employeeId:string}).employeeId){setIssued(data);}
+   else setMessage(kind==='reset'&&data.state==='invalid'?'This recovery code has expired, was already used, or cannot be verified. Request a new code or contact your manager.':response.status===401||response.status===403?(kind==='assisted'?'Your session ended. Sign in again to issue a code.':'Your access ended. Sign in again.'):kind==='assisted'?assistedUnavailable:'Recovery could not be confirmed. Keep your current access and try again.');
+  }catch{if(current===generation.current)setMessage(kind==='reset'?'The reset outcome could not be confirmed. Try signing in with your new password before requesting another code.':kind==='assisted'?assistedUnavailable:'Recovery is unavailable. Try again or contact your manager for assisted recovery.');}
   finally{clearTimeout(timeout);if(current===generation.current){setBusy(false);sending.current=false;active.current=null;}}
  }
  if(kind==='request')return <RecoveryRequest onReview={()=>{setDone(false);setMessage('');}} draft={requestDraft} mobileAccess={mobileAccess} lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}/>;

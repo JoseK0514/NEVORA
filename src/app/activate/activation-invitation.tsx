@@ -10,6 +10,7 @@ import {ActivationPasswords} from './activation-passwords';
 import {ActivationSubmit} from './activation-submit';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {CopySimpleIcon} from '@phosphor-icons/react/dist/ssr/CopySimple';
+import {isPublicAccountProof} from '@/lib/auth/public-proof';
 
 export type ActivationPhase='checking'|'missing'|'ready'|'pending'|'invalid'|'unavailable'|'outcome_unknown'|'activated';
 /** Scrub first. Never retain a query string, encoded/ambiguous proof or history state. */
@@ -17,7 +18,7 @@ export function takeActivationFragment(location:Pick<Location,'hash'|'pathname'>
  const fragment=location.hash.slice(1);
  try{history.replaceState(null,'',location.pathname);}catch{throw new Error('Invitation could not be opened safely.');}
  const candidate=fragment.startsWith('proof=')?fragment.slice(6):fragment;
- return /^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$/.test(candidate)?candidate:null;
+ return isPublicAccountProof(candidate)?candidate:null;
 }
 export function readActivationResult(value:unknown):ActivationResult {
  if(!value||typeof value!=='object'||Array.isArray(value))throw new Error('Activation response unavailable.');

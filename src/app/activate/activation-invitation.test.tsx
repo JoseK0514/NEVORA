@@ -2,6 +2,16 @@ import {expect,it} from 'vitest';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {takeActivationFragment,ActivationInvitationView,readActivationResult} from './activation-invitation';
 
+const wrapped='nw1_v1.'+'A'.repeat(16)+'.'+'B'.repeat(100)+'.'+'A'.repeat(22);
+it.each(['#'+wrapped,'#proof='+wrapped])('scrubs and retains an isolated invitation envelope unchanged',hash=>{
+ const calls:unknown[][]=[];
+ expect(takeActivationFragment({hash,pathname:'/activate'},{replaceState:(...args:unknown[])=>{calls.push(args);}})).toBe(wrapped);
+ expect(calls).toEqual([[null,'','/activate']]);
+});
+it.each([wrapped+'?private=1',wrapped+'&proof=other',wrapped.replace('nw1_','nw2_'),'%6E'+wrapped.slice(1),wrapped+'\n','nw1_v1.'+'A'.repeat(16)+'.'+'B'.repeat(4096)+'.'+'A'.repeat(22)])('scrubs but rejects a malformed or ambiguous isolated proof',proof=>{
+ expect(takeActivationFragment({hash:'#proof='+proof,pathname:'/activate'},{replaceState:()=>{}})).toBeNull();
+});
+
 it.each(['#'+'A'.repeat(43),'#proof='+'A'.repeat(43)])('scrubs the complete URL before returning a canonical fragment proof',hash=>{
  const calls:unknown[][]=[];const proof=takeActivationFragment({hash,pathname:'/activate'},{replaceState:(...args:unknown[])=>{calls.push(args);}});
  expect(calls).toEqual([[null,'','/activate']]);expect(proof).toBe('A'.repeat(43));

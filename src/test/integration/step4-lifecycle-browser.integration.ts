@@ -160,11 +160,38 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
   const message=smtp.messages[0].body.replace(/=\r\n/g,'').replace(/=3D/gi,'='),proof=message.match(/https:\/\/[^\s<>\"]+\/activate#proof=([^\s<>\"]+)/)?.[1];if(!proof)throw Error('Actual local invitation link absent');
   const employeeContext=await browser.newContext({serviceWorkers:'block',proxy:{server:proxy.server}});await watchContext(employeeContext,'employee');const employeePage=await employeeContext.newPage();employeePage.setDefaultTimeout(15000);
   observe(employeePage);
-  await employeePage.goto(front+'/login');
-  const activation=await employeePage.evaluate(async({proof,password}:{proof:string;password:string})=>{const response=await fetch('/api/auth/activate',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json','x-nevora-activation':'1'},body:JSON.stringify({proof,password})});return {status:response.status,body:await response.json()};},{proof:decodeURIComponent(proof),password:'Fictional Step4 Employee password 123!'});
-  expect(activation.status).toBe(200);expect(activation.body.state).toBe('activated');
-  await employeePage.getByLabel('Employee ID',{exact:true}).fill('EMP-1');await employeePage.getByLabel('Password',{exact:true}).fill('Fictional Step4 Employee password 123!');await employeePage.getByRole('button',{name:'Sign in',exact:true}).click();await employeePage.waitForURL(front+'/app');
+  expect(proof.startsWith('nw1_')).toBe(true);
+  let employeePassword='Fictional Step4 Employee password 123!';
+  await employeePage.goto(front+'/activate#proof='+proof);
+  await employeePage.getByLabel('Create password',{exact:true}).fill(employeePassword);await employeePage.getByLabel('Confirm password',{exact:true}).fill(employeePassword);
+  await employeePage.getByRole('button',{name:'Activate account',exact:true}).click();await employeePage.getByRole('link',{name:'Continue to sign in',exact:true}).waitFor();
+  expect(new URL(employeePage.url()).hash).toBe('');
+  await employeePage.getByRole('link',{name:'Continue to sign in',exact:true}).click();
+  await employeePage.getByLabel('Employee ID',{exact:true}).fill('EMP-1');await employeePage.getByLabel('Password',{exact:true}).fill(employeePassword);await employeePage.getByRole('button',{name:'Sign in',exact:true}).click();await employeePage.waitForURL(front+'/app');
   expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='EMP-1'")).rows).toEqual([{n:1}]);expect((await employeePage.evaluate(async()=>(await fetch('/api/onboarding/state',{credentials:'same-origin'})).status))).toBe(403);stages.push({stage:'actual-invitation-activation-http-and-normal-employee-browser-sign-in-owner-boundary',state:'passed'});admissionComplete=true;
+  browserDiagnostics.isolatedInvitationUi={engine:'chromium',wrapped:true,fragmentScrubbed:true};
+  const isolatedAccountAccess:{engine:string;wrappedAssistedUi:boolean;fullResetProof:boolean;normalNewPasswordLogin:boolean;replayDenied:boolean}[]=[];
+  for(const engine of ['chromium','webkit']){
+   await page.bringToFront();await page.goto(front+'/app/account-recovery?employee=EMP-1');
+   await page.getByLabel('How you checked who they are').selectOption('Verified in person; I know this employee.');
+   await page.getByRole('switch',{name:'I confirmed who they are',exact:true}).check();await page.getByRole('button',{name:'Issue recovery code',exact:true}).click();
+   const input=page.getByLabel('Recovery code',{exact:true});await input.waitFor();const recoveryProof=await input.inputValue();expect(recoveryProof.startsWith('nw1_')).toBe(true);expect(recoveryProof.length).toBeGreaterThan(43);
+   const resetBrowser=await runtime[engine].launch({headless:true});defer(()=>resetBrowser.close());
+   const resetContext=await resetBrowser.newContext({serviceWorkers:'block',proxy:{server:proxy.server}});await watchContext(resetContext,'isolated-reset-'+engine);const resetPage=await resetContext.newPage();resetPage.setDefaultTimeout(15000);
+   await resetPage.goto(front+'/reset-access'+(engine==='webkit'?'#proof='+recoveryProof:''));
+   if(engine==='chromium')await resetPage.locator('#reset-proof').fill(recoveryProof);
+   await expect.poll(()=>resetPage.locator('#reset-proof').inputValue()).toBe(recoveryProof);expect(new URL(resetPage.url()).hash).toBe('');
+   employeePassword='Fictional Step4 recovered '+engine+' password 123!';
+   await resetPage.locator('#reset-password').fill(employeePassword);await resetPage.locator('#reset-confirm-password').fill(employeePassword);await resetPage.getByRole('button',{name:'Reset password',exact:true}).click();
+   await resetPage.getByRole('link',{name:'Sign in with new password',exact:true}).waitFor();
+   expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='EMP-1'")).rows).toEqual([{n:0}]);
+   const replay=await resetPage.evaluate(async proof=>(await fetch('/api/auth/reset-access',{method:'POST',headers:{'content-type':'application/json','x-nevora-recovery':'1'},body:JSON.stringify({proof,password:'Fictional forbidden replay password 123!'})})).status,recoveryProof);expect(replay).toBe(400);
+   await resetPage.getByRole('link',{name:'Sign in with new password',exact:true}).click();await resetPage.getByLabel('Employee ID',{exact:true}).fill('EMP-1');await resetPage.getByLabel('Password',{exact:true}).fill(employeePassword);await resetPage.getByRole('button',{name:'Sign in',exact:true}).click();await resetPage.waitForURL(front+'/app');
+   isolatedAccountAccess.push({engine,wrappedAssistedUi:true,fullResetProof:true,normalNewPasswordLogin:true,replayDenied:true});
+   await resetContext.close();await resetBrowser.close();
+  }
+  browserDiagnostics.isolatedAccountAccess=isolatedAccountAccess;
+  await employeeContext.clearCookies();await employeePage.goto(front+'/login');await employeePage.getByLabel('Employee ID',{exact:true}).fill('EMP-1');await employeePage.getByLabel('Password',{exact:true}).fill(employeePassword);await employeePage.getByRole('button',{name:'Sign in',exact:true}).click();await employeePage.waitForURL(front+'/app');
   const privateLabel='4 / '+billingStatus.body.employeeLimit;
   const ownerSessionsBefore=new Set((await company.resource.db.pool.query("SELECT token_hash FROM employee_sessions WHERE employee_id='OWNER-1'")).rows.map(row=>row.token_hash));
   const privacyContext=await browser.newContext({serviceWorkers:'block',proxy:{server:proxy.server}});await watchContext(privacyContext,'private-retirement');const privacyPage=await privacyContext.newPage();privacyPage.setDefaultTimeout(20000);observe(privacyPage);await privacyContext.tracing.start({screenshots:true,snapshots:true});defer(()=>privacyContext.tracing.stop({path:join(root,'billing-retirement-trace.zip')}));const privacyStatuses:number[]=[];
@@ -239,7 +266,7 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
   const signIn=async(target:typeof page,id:string,secret:string,destination:string)=>{await target.bringToFront();await target.goto(front+'/login?returnTo='+encodeURIComponent(destination));await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(secret);await target.getByRole('button',{name:'Sign in',exact:true}).click();await target.waitForURL(front+destination);};
   await signIn(page,'OWNER-1',password,'/app/billing');await page.getByText('Access paused',{exact:true}).waitFor();expect((await call('/api/commerce/status')).body).toMatchObject({state:'restricted',reason:'trial_ended',operational:false});expect((await secondCall('/api/commerce/status')).body).toMatchObject({state:'trial',operational:true,activeEmployees:2});
   expect((await call('/api/payroll-export/profiles',undefined,{'x-nevora-payroll-export':'1'})).status).toBe(200);
-  await signIn(employeePage,'EMP-1','Fictional Step4 Employee password 123!','/app/my-pay');expect((await employeeCall('/api/payroll/statements')).body.statements.map((row:{id:string})=>row.id)).toEqual([ownDocument]);expect((await employeeCall('/api/payroll-export/profiles',undefined,{'x-nevora-payroll-export':'1'})).status).toBe(403);
+  await signIn(employeePage,'EMP-1',employeePassword,'/app/my-pay');expect((await employeeCall('/api/payroll/statements')).body.statements.map((row:{id:string})=>row.id)).toEqual([ownDocument]);expect((await employeeCall('/api/payroll-export/profiles',undefined,{'x-nevora-payroll-export':'1'})).status).toBe(403);
   expect(await secondPage.evaluate(async(id:string)=>(await fetch('/api/payroll/documents/'+id,{credentials:'same-origin'})).status,ownDocument)).toBe(404);
   stages.push({stage:'controlled-application-commerce-clock-original-trial-expiry-existing-shift-finishes-new-clock-in-402-own-pay-export-profile-read-isolation',state:'passed'});
   // Real restricted-company status, fresh normal Owner logins and native

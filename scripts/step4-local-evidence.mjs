@@ -46,6 +46,8 @@ export function verifyStep4Evidence({custody,source,report,vitest,cluster,packet
  }
  assert.deepEqual(report.matrix,expectedCells);for(const name of ['admission-trace.zip','second-company-trace.zip','billing-retirement-trace.zip'])required(name);
  const diagnostics=report.browserDiagnostics;assert.deepEqual(diagnostics.webkitAdmission.console,[]);assert.deepEqual(diagnostics.webkitAdmission.pending,[]);assert.equal(diagnostics.webkitAdmission.capture,undefined);
+ assert.deepEqual(diagnostics.isolatedInvitationUi,{engine:'chromium',wrapped:true,fragmentScrubbed:true});
+ assert.deepEqual(diagnostics.isolatedAccountAccess,['chromium','webkit'].map(engine=>({engine,wrappedAssistedUi:true,fullResetProof:true,normalNewPasswordLogin:true,replayDenied:true})));
  const recovery=diagnostics.recoveryResilience;assert.equal(recovery.stage,'complete');for(const key of ['errors','foreignRequests','operationalReads'])assert.deepEqual(recovery[key],[],key);assert.equal(recovery.dropped,0);assert.equal(recovery.capture,undefined);assert.equal(recovery.focus.length,4);
  for(const engine of ['chromium','webkit'])for(const lang of ['en','es'])assert.equal(recovery.latestStatus[engine+':'+lang].status,401);
  assert(diagnostics.billingSessionRetirement.statuses.includes(200));assert(diagnostics.billingSessionRetirement.statuses.some(status=>status===401||status===403));assert.equal(diagnostics.billingSessionRetirement.privateDetails,0);

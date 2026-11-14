@@ -42,7 +42,7 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
     <fieldset className="q-auth__fields" disabled={!hydrated || busy}>
      <div className="q-fl">
       <label htmlFor="reset-proof">{t.recoveryCode}</label>
-      <input id="reset-proof" className="q-in" ref={proofRef} name="proof" required minLength={43} maxLength={43}
+      <input id="reset-proof" className="q-in" ref={proofRef} name="proof" required minLength={43} maxLength={4096}
        autoComplete="off" autoCapitalize="none" spellCheck={false} placeholder={t.recoveryCodePlaceholder}
        aria-describedby={message ? 'reset-proof-hint reset-error' : 'reset-proof-hint'}/>
       <span className="q-sr" id="reset-proof-hint">{t.recoveryCodeHint}</span>
