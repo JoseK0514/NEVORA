@@ -381,6 +381,7 @@ jobs:
         run: |
           node scripts/d2-hours-route-focus.check.mjs
           node scripts/d2-authority-reload.check.mjs
+          node --test scripts/d2-session-authority.check.mjs
           npm run test:phase-d2:corrections-ui
       - name: Existing Clocker lifecycle and recovery browser regression
         if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
