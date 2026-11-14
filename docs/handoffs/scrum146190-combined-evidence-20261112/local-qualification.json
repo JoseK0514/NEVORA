@@ -1,0 +1,44 @@
+{
+  "managedRuntime": {
+    "success": true,
+    "numTotalTests": 12,
+    "numPassedTests": 12,
+    "numFailedTests": 0,
+    "numPendingTests": 0
+  },
+  "manualPublication": {
+    "success": true,
+    "numTotalTests": 1,
+    "numPassedTests": 1,
+    "numFailedTests": 0,
+    "numPendingTests": 0
+  },
+  "baseSource": "eee76416ec8d06435e73c3ecde9a77752ec0d446",
+  "qaApplicationSource": "2470b37f746f82ebaa751e9c593c1f53c5baf927",
+  "nativeFocusEngines": {
+    "chromium": "passed",
+    "webkit": "passed"
+  },
+  "deadlineForegroundNativeFocus": {
+    "passed": 46,
+    "failed": 0,
+    "skipped": 0
+  },
+  "typecheck": {
+    "exitCode": 0
+  },
+  "manuals": {
+    "count": 6,
+    "builderRuntime": "1.62.1",
+    "applicationHash": "bb8d556e3f934c1c26224f288022184eaa6da8603c7f9dfdc17ceaa0e26e2752"
+  },
+  "review": {
+    "codeQualityStatus": "CLEAR",
+    "recommendation": "APPROVE",
+    "blockers": [],
+    "nonblockingSuggestion": "additional loading-to-ready fixture while heading already focused"
+  },
+  "hostedAcceptance": "not run by QA chat",
+  "hostingOwner": "01a1d0e8-1551-7613-9b22-6469eee3fd72",
+  "separateTwentyMinuteWindow": "unused; not combined or transferred"
+}

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Stripe from "stripe";
 import { Pool } from "pg";
-import { randomUUID } from "node:crypto";
+import { createHmac,randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { CommerceStore } from "./store";
 import { StripeBilling } from "./stripe";
@@ -11,6 +11,8 @@ import { accessAt } from "./model";
 import { createCommerce } from "./service";
 import { digest } from "./security";
 import { commercePrincipalGrants } from "./principals";
+import {openBillingOperation} from "./billing-operations";
+import {CommerceError} from "./model";
 const enabled = Boolean(process.env.NEVORA_COMMERCE_TEST_URL),
   id = "11111111-1111-4111-8111-111111111111",
   now = Date.parse("2026-11-07T12:00:00Z"),
@@ -88,19 +90,116 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
       subscription: provider.subscriptions.get(b.subscriptionId!)!,
     };
   }
-  it("reuses one open checkout under concurrent operation IDs without charging during trial", async () => {
+  async function legacyCheckout(completed=false) {
+    const operation=randomUUID();provider.loseCheckoutResponse=true;
+    await expect(billing.checkout(await store.business(id),operation)).rejects.toThrow();
+    const session=[...provider.sessions.values()][0];if(completed)provider.complete(session.id);
+    // An upgrade preserves old intents but has no actor/stage ledger for them.
+    await pool.query('DELETE FROM commerce.billing_operation_stages;DELETE FROM commerce.billing_operations');
+    await pool.query("UPDATE commerce.checkout_intents SET expires_at=clock_timestamp()-interval '1 minute'");
+    expect((await pool.query('SELECT session_id,result_secret FROM commerce.checkout_intents')).rows).toEqual([{session_id:null,result_secret:null}]);
+    return {operation,session};
+  }
+  it.each(['checkout','portal','plan-change'] as const)('retains expired unresolved legacy Checkout exclusion across new-key %s',async action=>{
+    await legacyCheckout(true);enablePlanChanges();
+    const before=(await pool.query('SELECT row_to_json(i) intent FROM commerce.checkout_intents i')).rows;
+    const current=await store.business(id),key=randomUUID();
+    const request=action==='checkout'?()=>billing.checkout(current,key):action==='portal'?()=>billing.portal(current,key):()=>billing.planChange(current,key,'team');
+    await expect(request()).rejects.toMatchObject({code:'legacy_operation_reconciliation_required',status:409});
+    expect(provider.sessions.size).toBe(1);expect(provider.subscriptions.size).toBe(0);
+    expect(provider.requests.filter(r=>r.path==='/v1/billing_portal/sessions'&&r.method==='POST')).toHaveLength(0);
+    expect((await pool.query('SELECT row_to_json(i) intent FROM commerce.checkout_intents i')).rows).toEqual(before);
+  });
+  it('does not turn a legacy intent into a modern Checkout by attaching a refused root without its prepared Checkout stage',async()=>{
+    const {operation}=await legacyCheckout(true),intent=(await pool.query('SELECT * FROM commerce.checkout_intents')).rows[0];
+    await pool.query('DELETE FROM commerce.checkout_intents');
+    const op=await openBillingOperation(store,{business:await store.business(id),operation,action:'checkout',request:{lang:'en'},context:{actor:'a'.repeat(64),assertCurrent:async()=>{}}});
+    expect(await op.refusePreflight(new CommerceError('legacy_operation_reconciliation_required',409))).toBe(true);
+    await pool.query('INSERT INTO commerce.checkout_intents(business_id,operation,previous_subscription_id,params_secret,employee_count,plan_key,expires_at) VALUES($1,$2,$3,$4,$5,$6,$7)',[intent.business_id,intent.operation,intent.previous_subscription_id,intent.params_secret,intent.employee_count,intent.plan_key,intent.expires_at]);
+    await expect(billing.checkout(await store.business(id),randomUUID())).rejects.toMatchObject({code:'legacy_operation_reconciliation_required',status:409});
+    expect(provider.sessions.size).toBe(1);expect((await pool.query('SELECT count(*)::int n FROM commerce.checkout_intents')).rows).toEqual([{n:1}]);
+  });
+  it('releases legacy exclusion only after completed setup is reconciled and a verified canceled subscription permits a successor',async()=>{
+    const {operation,session}=await legacyCheckout(true);
+    await expect(billing.checkout(await store.business(id),randomUUID())).rejects.toMatchObject({code:'legacy_operation_reconciliation_required',status:409});
+    expect(await billing.reconcile()).toEqual({checked:1,failed:0});const linked=await store.business(id);expect(linked.subscriptionId).not.toBeNull();
+    expect(provider.sessions.size).toBe(1);expect(provider.subscriptions.size).toBe(1);
+    const subscription=provider.subscriptions.get(linked.subscriptionId!)!;subscription.status='canceled';await billing.syncJob({subscriptionId:subscription.id});
+    await expect(billing.checkout(await store.business(id),randomUUID())).resolves.toContain('cs_fixture_2');
+    expect(provider.sessions.size).toBe(2);expect(provider.subscriptions.size).toBe(1);
+    expect((await pool.query('SELECT session_id FROM commerce.checkout_intents WHERE operation=$1',[operation])).rows).toEqual([{session_id:session.id}]);
+    await expect(billing.checkout(await store.business(id),operation)).rejects.toMatchObject({code:'legacy_operation_reconciliation_required',status:409});
+  });
+  it('requires actual provider-expired reconciliation before a fresh Checkout and preserves the original legacy receipt',async()=>{
+    const {operation,session}=await legacyCheckout();const original=(await pool.query('SELECT operation,params_secret,expires_at FROM commerce.checkout_intents')).rows;
+    await expect(billing.checkout(await store.business(id),randomUUID())).rejects.toMatchObject({code:'legacy_operation_reconciliation_required',status:409});
+    Object.assign(session,{status:'expired',url:null});expect(await billing.reconcile()).toEqual({checked:1,failed:0});
+    const receipt=(await pool.query('SELECT session_id,reconciled_expired_at FROM commerce.checkout_intents WHERE operation=$1',[operation])).rows[0];expect(receipt.session_id).toBe(session.id);expect(receipt.reconciled_expired_at).toBeInstanceOf(Date);
+    await expect(pool.query('UPDATE commerce.checkout_intents SET reconciled_expired_at=NULL WHERE operation=$1',[operation])).rejects.toMatchObject({code:'P0001'});
+    expect((await pool.query('SELECT operation,params_secret,expires_at FROM commerce.checkout_intents')).rows).toEqual(original);
+    await expect(billing.checkout(await store.business(id),randomUUID())).resolves.toContain('cs_fixture_2');expect(provider.sessions.size).toBe(2);expect(provider.subscriptions.size).toBe(0);
+    await expect(billing.checkout(await store.business(id),operation)).rejects.toMatchObject({code:'legacy_operation_reconciliation_required',status:409});
+  });
+  it.each(['foreign-customer','ambiguous','pagination','missing'] as const)('retains legacy exclusion after unsafe expired-session observation: %s',async reason=>{
+    const {session}=await legacyCheckout();Object.assign(session,{status:'expired',url:null});
+    if(reason==='ambiguous')provider.sessions.set('cs_duplicate',{...session,id:'cs_duplicate'});
+    else {
+      const observed=await provider.client.checkout.sessions.list({customer:session.customer,limit:100});
+      vi.spyOn(provider.client.checkout.sessions,'list').mockResolvedValueOnce({...observed,lastResponse:observed.lastResponse,has_more:reason==='pagination',data:reason==='missing'?[]:[{...session,customer:reason==='foreign-customer'?'cus_foreign':session.customer} as unknown as Stripe.Checkout.Session]});
+    }
+    expect(await billing.reconcile()).toEqual({checked:1,failed:reason==='missing'?0:1});
+    expect((await pool.query('SELECT reconciled_expired_at FROM commerce.checkout_intents')).rows).toEqual([{reconciled_expired_at:null}]);
+    await expect(billing.checkout(await store.business(id),randomUUID())).rejects.toMatchObject({code:'legacy_operation_reconciliation_required',status:409});
+    expect(provider.requests.filter(r=>r.path==='/v1/checkout/sessions'&&r.method==='POST')).toHaveLength(1);
+  });
+  it("refuses a competing operation ID without another checkout or a charge during trial", async () => {
     const b = await store.business(id),
-      urls = await Promise.all([
+      results = await Promise.allSettled([
         billing.checkout(b, randomUUID()),
         billing.checkout(b, randomUUID()),
       ]);
-    expect(urls).toEqual([
-      "https://checkout.stripe.com/c/pay/cs_fixture_1",
-      "https://checkout.stripe.com/c/pay/cs_fixture_1",
-    ]);
+    expect(results.filter(r=>r.status==='fulfilled')).toEqual([{status:'fulfilled',value:'https://checkout.stripe.com/c/pay/cs_fixture_1'}]);
+    const refused=results.find(r=>r.status==='rejected');expect(refused?.status).toBe('rejected');
+    if(refused?.status==='rejected')expect(refused.reason).toMatchObject({status:409,code:expect.stringMatching(/^(billing_operation_pending|checkout_pending)$/)});
     expect(provider.sessions.size).toBe(1);
     expect([...provider.sessions.values()][0].mode).toBe("setup");
     expect((await store.business(id)).paidThrough).toBeNull();
+  });
+  it('keeps Spanish checkout, cancel and Portal destinations on the approved origin',async()=>{
+    const b=await store.business(id),operation=randomUUID();
+    const first=await billing.checkout(b,operation,null,'es');
+    expect(await billing.checkout(b,operation,null,'es')).toBe(first);
+    await expect(billing.checkout(b,operation,null,'en')).rejects.toMatchObject({code:'idempotency_conflict',status:409});
+    expect(provider.sessions.size).toBe(1);
+    const checkoutRequest=provider.requests.find(r=>r.path==='/v1/checkout/sessions'&&r.method==='POST')!.form;
+    expect(checkoutRequest.get('locale')).toBe('es');
+    const success=new URL(checkoutRequest.get('success_url')!),cancel=new URL(checkoutRequest.get('cancel_url')!);
+    expect(success.origin).toBe('https://accounts.example.test');expect(success.pathname).toBe('/pages/es-pago');expect(success.hash).toMatch(/^#handoff=[A-Za-z0-9_-]{43}$/);
+    expect(cancel.pathname).toBe('/pages/es-facturacion');
+    await billing.portal(await store.business(id),randomUUID(),null,'es');
+    const portalRequest=provider.requests.find(r=>r.path==='/v1/billing_portal/sessions'&&r.method==='POST')!.form;
+    expect(portalRequest.get('locale')).toBe('es');expect(new URL(portalRequest.get('return_url')!).pathname).toBe('/pages/es-facturacion');
+    expect((await store.business(id)).trialEnd).toBe(b.trialEnd);expect((await store.business(id)).paidThrough).toBeNull();
+  });
+  it('replays an in-flight Portal request created before language support with identical provider parameters',async()=>{
+    await checkout();const b=await store.business(id),operation=randomUUID();
+    const proof=createHmac('sha256',store.key).update(`portal-return:${id}:${operation}`).digest('base64url');
+    const previous=await provider.client.billingPortal.sessions.create({customer:b.customerId!,return_url:`https://accounts.example.test/pages/nevora-billing#handoff=${proof}`},{idempotencyKey:`nevora-portal:${id}:${operation}`});
+    expect(await billing.portal(b,operation)).toBe(previous.url);
+    const requests=provider.requests.filter(r=>r.path==='/v1/billing_portal/sessions'&&r.method==='POST');
+    expect(requests).toHaveLength(2);expect(requests[0].form.has('locale')).toBe(false);expect(requests[1].form.toString()).toBe(requests[0].form.toString());
+  });
+  it("keeps the Checkout integration label stable when a refused creation is retried", async () => {
+    const operation=randomUUID();provider.failCheckoutBeforeCreate=true;
+    await expect(checkout(id,operation)).rejects.toThrow();
+    const first=provider.requests.find(r=>r.path==='/v1/checkout/sessions'&&r.method==='POST')!.form.get('integration_identifier');
+    expect(first).toEqual(expect.stringMatching(/^nevora-billing-[a-z]{8}$/));
+    provider.failCheckoutBeforeCreate=false;
+    await checkout(id,operation);
+    const attempts=provider.requests.filter(r=>r.path==='/v1/checkout/sessions'&&r.method==='POST');
+    expect(attempts).toHaveLength(2);
+    expect(attempts[1].form.get('integration_identifier')).toBe(first);
+    expect(provider.sessions.size).toBe(1);
   });
   it("rejects the wrong merchant before checkout, portal or reconciliation", async () => {
     Object.assign(billing.options, { expectedAccountId: "acct_wrong" });
@@ -120,7 +219,7 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     await expect(checkout()).rejects.toThrow();
     expect(provider.sessions.size).toBe(0);
     provider.unavailableAccount = false;
-    await Promise.all([checkout(), checkout()]);
+    const operation=randomUUID();await Promise.all([checkout(id,operation), checkout(id,operation)]);
     expect(provider.requests.filter((r) => r.path === "/v1/account")).toHaveLength(2);
     expect(provider.sessions.size).toBe(1);
   });
@@ -344,6 +443,64 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
       ),
     ).rejects.toThrow("mode_mismatch");
   });
+  function signedEvent(extra:Record<string,unknown>={}) {
+    const raw=JSON.stringify({id:'evt_step3',object:'event',type:'invoice.paid',livemode:false,
+      data:{object:{id:'in_step3',object:'invoice',parent:{subscription_details:{subscription:'sub_fixture_1'}}}},...extra});
+    return {raw,signature:Stripe.webhooks.generateTestHeaderString({payload:raw,secret})};
+  }
+  it('rejects a signed event from a foreign account before durable admission or provider I/O',async()=>{
+    Object.assign(billing.options,{expectedAccountId:'acct_fictional'});
+    const {raw,signature}=signedEvent({account:'acct_foreign'});
+    await expect(billing.webhook(raw,signature)).rejects.toThrow('stripe_account_mismatch');
+    expect((await pool.query('SELECT count(*)::int n FROM commerce.webhooks')).rows[0].n).toBe(0);
+    expect((await pool.query('SELECT count(*)::int n FROM commerce.jobs')).rows[0].n).toBe(0);
+    expect(provider.requests).toHaveLength(0);
+  });
+  it('rejects modified raw bodies and stale signatures without any durable work',async()=>{
+    const {raw,signature}=signedEvent();
+    await expect(billing.webhook(raw+' ',signature)).rejects.toThrow('invalid_signature');
+    const stale=Stripe.webhooks.generateTestHeaderString({payload:raw,secret,timestamp:Math.floor(Date.now()/1000)-600});
+    await expect(billing.webhook(raw,stale)).rejects.toThrow('invalid_signature');
+    expect((await pool.query('SELECT count(*)::int n FROM commerce.webhooks')).rows[0].n).toBe(0);
+  });
+  it('does not acknowledge a failed durable admission and recovers one job after a lost acknowledgment',async()=>{
+    const {raw,signature}=signedEvent();
+    const app=createCommerce({store,origin:'https://accounts.example.test',allowedOrigins:[],billing});
+    const send=()=>app(new Request('https://accounts.example.test/webhooks/stripe',{method:'POST',headers:{'stripe-signature':signature},body:raw}),'127.0.0.1');
+    await pool.query("CREATE FUNCTION public.reject_step3_job() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Synthetic job admission failure'; END $$");
+    await pool.query('CREATE TRIGGER reject_step3_job BEFORE INSERT ON commerce.jobs FOR EACH ROW EXECUTE FUNCTION public.reject_step3_job()');
+    const failed=await send();expect(failed.status).toBe(503);expect(await failed.json()).toEqual({error:{code:'temporarily_unavailable'}});
+    expect((await pool.query('SELECT count(*)::int n FROM commerce.webhooks')).rows[0].n).toBe(0);
+    await pool.query('DROP TRIGGER reject_step3_job ON commerce.jobs');
+    await pool.query('DROP FUNCTION public.reject_step3_job()');
+    // Commit succeeds; the transport loses that reply. Concurrent redelivery recovers the receipt.
+    await send();
+    const replies=await Promise.all([send(),send()]);expect(replies.map(r=>r.status)).toEqual([200,200]);
+    expect((await pool.query('SELECT count(*)::int n FROM commerce.webhooks')).rows[0].n).toBe(1);
+    expect((await pool.query("SELECT count(*)::int n FROM commerce.jobs WHERE dedupe_key='stripe:evt_step3'")).rows[0].n).toBe(1);
+  });
+  it('keeps two fictional companies status, handoff and subscription coverage isolated',async()=>{
+    const second='22222222-2222-4222-8222-222222222222';await business(second);
+    const one=await subscribed(),two=await subscribed(second);
+    provider.markPaid(one.subscription.id);await billing.syncJob({subscriptionId:one.subscription.id});
+    expect((await store.business(second)).paidThrough).toBeNull();
+    const proof='h'.repeat(43),bearer='s'.repeat(43);
+    await store.handoff(second,proof,now);await store.exchange(proof,bearer,now,true);
+    const app=createCommerce({store,origin:'https://accounts.example.test',allowedOrigins:[],now:()=>now,headcount:async()=>10});
+    const status=await app(new Request('https://accounts.example.test/v1/status?businessId='+id,{headers:{authorization:'Bearer '+bearer}}),'127.0.0.1');
+    expect(await status.json()).toMatchObject({businessId:second,paidThrough:null});
+    const before=await store.business(id);two.subscription.customer=one.subscription.customer;
+    await expect(billing.syncJob({subscriptionId:two.subscription.id})).rejects.toThrow('subscription_identity_mismatch');
+    expect((await store.business(id)).paidThrough).toBe(before.paidThrough);
+  });
+  it('rejects expired and wrong-purpose handoffs without consuming a valid link',async()=>{
+    const proof='h'.repeat(43);await store.handoff(id,proof,now);
+    await expect(store.exchange(proof,'x'.repeat(43),now,false)).rejects.toThrow('invalid_or_expired_link');
+    await store.exchange(proof,'y'.repeat(43),now,true);
+    await expect(store.exchange(proof,'z'.repeat(43),now,true)).rejects.toThrow('invalid_or_expired_link');
+    await store.handoff(id,'e'.repeat(43),now);
+    await expect(store.exchange('e'.repeat(43),'v'.repeat(43),now+120000,true)).rejects.toThrow('invalid_or_expired_link');
+  });
   it("grants access only from a paid invoice and retains paid-through coverage after cancellation", async () => {
     const { subscription } = await subscribed();
     await pool.query(
@@ -512,4 +669,175 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     expect(status.reason).toBe("employee_limit_exceeded");
     expect(status.export).toBe(true);
   });
+  function enablePlanChanges(){Object.assign(billing.options,{portalConfigurations:{small:'bpc_small',team:'bpc_team'}});}
+  it('preserves the primary billing refusal when persisting that refusal also fails',async()=>{
+    await pool.query("CREATE FUNCTION commerce.test_refusal_failure() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.resolved_at IS NOT NULL THEN RAISE EXCEPTION 'owned_refusal_write_failed'; END IF; RETURN NEW; END $$; CREATE TRIGGER test_refusal_failure BEFORE UPDATE ON commerce.billing_operations FOR EACH ROW EXECUTE FUNCTION commerce.test_refusal_failure()");
+    const operation=randomUUID();let caught:unknown;
+    try{await billing.portal(await store.business(id),operation);}catch(error){caught=error;}
+    expect(caught).toBeInstanceOf(AggregateError);
+    expect((caught as AggregateError).errors).toEqual([expect.objectContaining({code:'subscription_required',status:409}),expect.objectContaining({message:'owned_refusal_write_failed'})]);
+    expect((await pool.query('SELECT result_secret,resolved_at FROM commerce.billing_operations WHERE operation=$1',[operation])).rows).toEqual([{result_secret:null,resolved_at:null}]);
+    expect(provider.requests.filter(r=>r.method==='POST')).toHaveLength(0);
+  });
+  it('creates a target-only upgrade confirmation and reuses its exact provider operation',async()=>{
+    enablePlanChanges();const {subscription}=await subscribed(),before=await store.business(id),operation=randomUUID();
+    const first=await billing.planChange(before,operation,'team',null,'es');
+    expect(first).toEqual({url:'https://billing.stripe.com/p/session_fixture',plan:'team',effective:'after_payment'});
+    expect(await billing.planChange(before,operation,'team',null,'es')).toEqual(first);
+    const requests=provider.requests.filter(r=>r.method==='POST'&&r.path==='/v1/billing_portal/sessions');
+    expect(requests).toHaveLength(1);
+    const form=requests[0].form;
+    expect(form.get('configuration')).toBe('bpc_team');expect(form.get('locale')).toBe('es');
+    expect(form.get('flow_data[type]')).toBe('subscription_update_confirm');
+    expect(form.get('flow_data[subscription_update_confirm][subscription]')).toBe(subscription.id);
+    expect(form.get('flow_data[subscription_update_confirm][items][0][id]')).toBe(subscription.items.data[0].id);
+    expect(form.get('flow_data[subscription_update_confirm][items][0][price]')).toBe('price_team');
+    expect(form.get('flow_data[subscription_update_confirm][items][0][quantity]')).toBe('1');
+    const returned=new URL(form.get('return_url')!);expect(returned.origin).toBe('https://accounts.example.test');expect(returned.pathname).toBe('/pages/es-facturacion');expect(returned.hash).toMatch(/^#handoff=[A-Za-z0-9_-]{43}$/);
+    expect(form.get('flow_data[after_completion][redirect][return_url]')).toBe(returned.href);
+    const after=await store.business(id);expect(after.planKey).toBe(before.planKey);expect(after.paidThrough).toBe(before.paidThrough);expect(after.trialEnd).toBe(before.trialEnd);
+  });
+  it.each([0,15])('offers the Small renewal flow only when current headcount fits and preserves paid Team coverage: %s',async count=>{
+    enablePlanChanges();provider.counts.set(id,16);const {subscription}=await subscribed();provider.markPaid(subscription.id);await billing.syncJob({subscriptionId:subscription.id});
+    await expect(billing.planChange(await store.business(id),randomUUID(),'small')).rejects.toMatchObject({code:'plan_employee_limit',status:409});
+    provider.counts.set(id,count);expect(await billing.planChange(await store.business(id),randomUUID(),'small')).toMatchObject({plan:'small',effective:'period_end'});
+    expect(provider.requests.find(r=>r.path==='/v1/billing_portal/sessions')!.form.get('configuration')).toBe('bpc_small');
+    expect((await store.business(id)).planKey).toBe('team');
+  });
+  it.each([-400,0])('keeps unpaid upgrades and non-positive credit lines from granting paid Team capacity: %s',async lineAmount=>{
+    const {subscription}=await subscribed();provider.markPaid(subscription.id);await billing.syncJob({subscriptionId:subscription.id});
+    const before=await store.business(id);expect(before.planKey).toBe('small');
+    subscription.items.data[0].price=provider.prices.get('price_team')!;
+    await billing.syncJob({subscriptionId:subscription.id});expect((await store.business(id)).planKey).toBe('small');
+    provider.payments.get(subscription.id)!.push({end:1799236800,price:'price_team',amount:1000,lineAmount});
+    await billing.syncJob({subscriptionId:subscription.id});expect((await store.business(id)).planKey).toBe('small');
+    provider.payments.get(subscription.id)!.push({end:1799236800,price:'price_team',amount:500,lineAmount:500});
+    await billing.syncJob({subscriptionId:subscription.id});const paid=await store.business(id);expect(paid.planKey).toBe('team');expect(paid.trialEnd).toBe(before.trialEnd);
+  });
+  it('retains Small trial capacity before the first paid Team invoice without changing the trial deadline',async()=>{
+    const {subscription}=await subscribed(),before=await store.business(id);
+    expect(before.planKey).toBe('small');expect(before.paidThrough).toBeNull();
+    const policy=vi.fn(async()=>{});Object.assign(billing.options,{policy});
+    subscription.items.data[0].price=provider.prices.get('price_team')!;
+    await billing.syncJob({subscriptionId:subscription.id});
+    expect((await store.business(id)).planKey).toBe('small');expect(policy).toHaveBeenLastCalledWith(expect.anything(),15);
+    expect((await store.business(id)).trialEnd).toBe(before.trialEnd);
+    provider.markPaid(subscription.id);await billing.syncJob({subscriptionId:subscription.id});
+    expect((await store.business(id)).planKey).toBe('team');expect(policy).toHaveBeenLastCalledWith(expect.anything(),30);
+    expect((await store.business(id)).trialEnd).toBe(before.trialEnd);
+  });
+  it('keeps legitimate initial Team trial assignment when there is no earlier plan',async()=>{
+    provider.counts.set(id,16);const {subscription}=await subscribed();
+    const initial=await store.business(id);expect(initial.planKey).toBe('team');expect(initial.paidThrough).toBeNull();expect(subscription.status).toBe('trialing');expect(provider.payments.get(subscription.id)).toBeUndefined();
+  });
+  it('rejects changed confirmation parameters on the same operation rather than silently selecting a different language',async()=>{
+    enablePlanChanges();await subscribed();const b=await store.business(id),operation=randomUUID();
+    await billing.planChange(b,operation,'team',null,'en');
+    await expect(billing.planChange(b,operation,'team',null,'es')).rejects.toMatchObject({code:'idempotency_conflict',status:409});
+  });
+  it('keeps plan-change disabled until configured and rejects a second selection of the current plan',async()=>{
+    await subscribed();await expect(billing.planChange(await store.business(id),randomUUID(),'team')).rejects.toMatchObject({code:'plan_changes_unavailable',status:503});
+    enablePlanChanges();await expect(billing.planChange(await store.business(id),randomUUID(),'small')).rejects.toMatchObject({code:'plan_already_selected',status:409});
+    expect(provider.requests.filter(r=>r.path==='/v1/billing_portal/sessions')).toHaveLength(0);
+  });
+  it.each(['pending','scheduled','canceling','past_due','open_invoice','wrong_customer','live_mode','wrong_price','wrong_merchant'] as const)('refuses an unsafe plan-change source: %s',async reason=>{
+    enablePlanChanges();const {subscription}=await subscribed();
+    if(reason==='pending')subscription.pending_update={expires_at:1899236800};
+    if(reason==='scheduled')subscription.schedule='sub_sched_existing';
+    if(reason==='canceling')subscription.cancel_at_period_end=true;
+    if(reason==='past_due')subscription.status='past_due';
+    if(reason==='open_invoice')provider.openInvoices.add(subscription.id);
+    if(reason==='wrong_customer')subscription.customer='cus_foreign';
+    if(reason==='live_mode')subscription.livemode=true;
+    if(reason==='wrong_price')subscription.items.data[0].price={...subscription.items.data[0].price,unit_amount:1};
+    if(reason==='wrong_merchant')Object.assign(billing.options,{expectedAccountId:'acct_foreign'});
+    await expect(billing.planChange(await store.business(id),randomUUID(),'team')).rejects.toThrow();
+    expect(provider.requests.filter(r=>r.path==='/v1/billing_portal/sessions')).toHaveLength(0);
+  });
+  it.each(['immediate_downgrade','end_trial','free_upgrade','quantity','wrong_target','live_config','inactive'] as const)('rejects a Portal configuration that violates the approved policy: %s',async reason=>{
+    enablePlanChanges();await subscribed();const config=provider.portalConfigurations.get('bpc_team')!,update=config.features.subscription_update;
+    if(reason==='immediate_downgrade')update.schedule_at_period_end.conditions=[];
+    if(reason==='end_trial')update.trial_update_behavior='end_trial';
+    if(reason==='free_upgrade')update.proration_behavior='none';
+    if(reason==='quantity')update.default_allowed_updates.push('quantity');
+    if(reason==='wrong_target')update.products[0].prices=['price_small'];
+    if(reason==='live_config')config.livemode=true;
+    if(reason==='inactive')config.active=false;
+    await expect(billing.planChange(await store.business(id),randomUUID(),'team')).rejects.toMatchObject({code:'plan_change_policy_unavailable',status:503});
+    expect(provider.requests.filter(r=>r.path==='/v1/billing_portal/sessions')).toHaveLength(0);
+  });
+  // Jose explicitly approved the stricter durable contract on November12.
+  it('strict billing never returns an expired known Checkout URL or creates another session on retry',async()=>{
+    const operation=randomUUID();await billing.checkout(await store.business(id),operation);
+    const session=[...provider.sessions.values()][0];vi.spyOn(Date,'now').mockReturnValue(session.expires_at*1000+1);
+    await expect(billing.checkout(await store.business(id),operation)).rejects.toMatchObject({code:'checkout_expired',status:409});
+    expect(provider.sessions.size).toBe(1);expect(provider.requests.filter(r=>r.method==='POST'&&r.path==='/v1/checkout/sessions')).toHaveLength(1);
+  });
+  it('strict billing recovers a lost Portal reply with the original parameters and no new operation',async()=>{
+    await checkout();const before=await store.business(id),operation=randomUUID();
+    const create=provider.client.billingPortal.sessions.create.bind(provider.client.billingPortal.sessions);
+    vi.spyOn(provider.client.billingPortal.sessions,'create').mockImplementationOnce(async(params,options)=>{await create(params,options);throw Error('Owned accepted Portal reply lost');});
+    await expect(billing.portal(before,operation,null,'es')).rejects.toThrow('Owned accepted Portal reply lost');
+    await expect(billing.portal(before,randomUUID(),null,'es')).rejects.toMatchObject({code:'billing_operation_pending',status:409});
+    expect(await billing.portal(before,operation,null,'es')).toBe('https://billing.stripe.com/p/session_fixture');
+    const requests=provider.requests.filter(r=>r.path==='/v1/billing_portal/sessions'&&r.method==='POST');
+    expect(requests).toHaveLength(2);expect(requests[1].form.toString()).toBe(requests[0].form.toString());
+    expect([...provider.cache.keys()].filter(k=>k.startsWith('nevora-portal:'))).toHaveLength(1);
+    expect((await store.business(id)).trialEnd).toBe(before.trialEnd);
+  });
+  it('strict billing retains issued Portal custody across a failed local result commit',async()=>{
+    await checkout();const before=await store.business(id),operation=randomUUID(),actual=store.transaction.bind(store);let fail=true;
+    vi.spyOn(store,'transaction').mockImplementation(fn=>actual(async client=>{
+      const value=await fn(client);
+      if(fail&&value&&typeof value==='object'&&'url' in value){fail=false;throw Error('Owned result commit failed before acknowledgement');}
+      return value;
+    }));
+    await expect(billing.portal(before,operation,null,'en')).rejects.toThrow('Owned result commit failed');
+    const row=(await pool.query("SELECT issued_at,result_secret FROM commerce.billing_operation_stages WHERE operation=$1 AND stage='portal'",[operation])).rows[0];
+    expect(row.issued_at).not.toBeNull();expect(row.result_secret).toBeNull();
+    await expect(billing.checkout(before,randomUUID())).rejects.toMatchObject({code:'billing_operation_pending'});
+    expect(await billing.portal(before,operation,null,'en')).toBe('https://billing.stripe.com/p/session_fixture');
+    expect([...provider.cache.keys()].filter(k=>k.startsWith('nevora-portal:'))).toHaveLength(1);
+  });
+  it('strict billing saves a provider result before withholding its HTTP URL after real session revocation',async()=>{
+    await checkout();const operation=randomUUID(),proof='r'.repeat(43);
+    await pool.query("INSERT INTO commerce.tokens(hash,account_id,purpose,expires_at) VALUES($1,$2,'session',clock_timestamp()+interval '1 hour')",[digest(proof),id]);
+    const create=provider.client.billingPortal.sessions.create.bind(provider.client.billingPortal.sessions);
+    vi.spyOn(provider.client.billingPortal.sessions,'create').mockImplementationOnce(async(params,options)=>{const result=await create(params,options);await pool.query('DELETE FROM commerce.tokens WHERE hash=$1',[digest(proof)]);return result;});
+    const handle=createCommerce({store,billing,origin:'https://accounts.example.test',allowedOrigins:['https://www.thevelani.com'],headcount:async()=>10,now:()=>now});
+    const send=()=>handle(new Request('https://accounts.example.test/v1/portal',{method:'POST',headers:{origin:'https://www.thevelani.com',authorization:'Bearer '+proof,'content-type':'application/json','idempotency-key':operation},body:'{}'}),'127.0.0.1');
+    const response=await send();expect(response.status).toBe(401);expect(await response.json()).toEqual({error:{code:'unauthorized'}});
+    expect((await pool.query('SELECT result_secret IS NOT NULL known FROM commerce.billing_operations WHERE operation=$1',[operation])).rows).toEqual([{known:true}]);
+    expect((await pool.query("SELECT result_secret IS NOT NULL known FROM commerce.billing_operation_stages WHERE operation=$1 AND stage='portal'",[operation])).rows).toEqual([{known:true}]);
+    expect((await send()).status).toBe(401);expect(provider.requests.filter(r=>r.method==='POST'&&r.path==='/v1/billing_portal/sessions')).toHaveLength(1);
+  });
+  it('strict billing refuses a changed plan on the same key before another confirmation is created',async()=>{
+    enablePlanChanges();await subscribed();const before=await store.business(id),operation=randomUUID();
+    await billing.planChange(before,operation,'team',null,'en');
+    await expect(billing.planChange(before,operation,'small',null,'en')).rejects.toMatchObject({code:'idempotency_conflict',status:409});
+    expect(provider.requests.filter(r=>r.method==='POST'&&r.path==='/v1/billing_portal/sessions')).toHaveLength(1);
+    expect((await store.business(id)).trialEnd).toBe(before.trialEnd);
+  });
+  it('strict billing rejects changed language under the same Checkout operation without another session',async()=>{
+    const operation=randomUUID();await billing.checkout(await store.business(id),operation,null,'es');
+    await expect(billing.checkout(await store.business(id),operation,null,'en')).rejects.toMatchObject({code:'idempotency_conflict',status:409});
+    expect(provider.sessions.size).toBe(1);expect(provider.customers.size).toBe(1);
+  });
+  it('strict billing rejects a changed server actor under the same Checkout operation',async()=>{
+    const operation=randomUUID(),current=async()=>{};
+    await billing.checkout(await store.business(id),operation,null,'en',{actor:'a'.repeat(64),assertCurrent:current});
+    await expect(billing.checkout(await store.business(id),operation,null,'en',{actor:'b'.repeat(64),assertCurrent:current})).rejects.toMatchObject({code:'idempotency_conflict',status:409});
+    expect(provider.sessions.size).toBe(1);expect(provider.customers.size).toBe(1);
+  });
+  it('strict billing refuses reuse of a company operation key across Checkout and Portal HTTP actions',async()=>{
+    const operation=randomUUID(),proof='s'.repeat(43);
+    await pool.query("INSERT INTO commerce.tokens(hash,account_id,purpose,expires_at) VALUES($1,$2,'session',clock_timestamp()+interval '1 hour')",[digest(proof),id]);
+    const handle=createCommerce({store,billing,origin:'https://accounts.example.test',allowedOrigins:['https://www.thevelani.com'],headcount:async()=>10,now:()=>now});
+    const send=(path:string)=>handle(new Request('https://accounts.example.test'+path,{method:'POST',headers:{origin:'https://www.thevelani.com',authorization:'Bearer '+proof,'content-type':'application/json','idempotency-key':operation},body:JSON.stringify({lang:'en'})}),'127.0.0.1');
+    expect((await send('/v1/checkout')).status).toBe(200);
+    const second=await send('/v1/portal');expect(second.status).toBe(409);expect(await second.json()).toEqual({error:{code:'idempotency_conflict'}});
+    expect(provider.requests.filter(r=>r.path==='/v1/billing_portal/sessions'&&r.method==='POST')).toHaveLength(0);
+    expect(provider.sessions.size).toBe(1);
+  });
+
 });

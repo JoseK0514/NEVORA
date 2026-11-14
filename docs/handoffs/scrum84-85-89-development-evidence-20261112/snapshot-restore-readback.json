@@ -1,0 +1,26 @@
+{
+  "sourceProject": "morning-salad-93941233",
+  "sourceBranch": "br-odd-pond-bbjzv1wi",
+  "snapshot": "snap-red-wave-bbsimczs",
+  "restoredBranch": "br-winter-dream-bbqlze99",
+  "parentLsn": "0/3A42000",
+  "parentTimestamp": "2026-11-13T02:29:11Z",
+  "sourceBranchPreserved": true,
+  "readOnly": true,
+  "status": "PASS",
+  "observedAt": "2026-11-13T02:34:25.439Z",
+  "facts": [
+    {
+      "payroll_history": 1,
+      "payroll_revisions": 1,
+      "documents": [
+        {
+          "actual": "cc9675dacd49b06dc98c9b2d5d5f8d6adbce32968bbd205b8bf38cab164e5174",
+          "sha256": "cc9675dacd49b06dc98c9b2d5d5f8d6adbce32968bbd205b8bf38cab164e5174"
+        }
+      ],
+      "passkeys": 4,
+      "tables": 155
+    }
+  ]
+}

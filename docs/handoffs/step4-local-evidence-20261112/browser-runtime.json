@@ -1,0 +1,16 @@
+{
+  "node": "v24.19.0",
+  "playwright": "1.62.1",
+  "browsers": [
+    {
+      "name": "chromium",
+      "version": "151.0.7922.34",
+      "launched": true
+    },
+    {
+      "name": "webkit",
+      "version": "26.5",
+      "launched": true
+    }
+  ]
+}

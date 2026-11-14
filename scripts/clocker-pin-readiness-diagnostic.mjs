@@ -19,6 +19,7 @@ function state(value){
  if(['visible','hidden'].includes(value.visibility))result.visibility=value.visibility;
  if(['loading','interactive','complete'].includes(value.readyState))result.readyState=value.readyState;
  if(['entry','verified'].includes(value.pinState))result.pinState=value.pinState;
+ if(['photo','review-current','select-break','loading','ready','confirm-out','sending','recovery','retry','other-person','auth','unavailable','storage','success'].includes(value.punchState))result.punchState=value.punchState;
  if(Number.isInteger(value.enteredDigits)&&value.enteredDigits>=0&&value.enteredDigits<=16)result.enteredDigits=value.enteredDigits;
  return result;
 }
@@ -30,7 +31,7 @@ export function installPinReadinessObserver(){
  // Reaching capacity is conservative saturation, not an exact dropped count.
  // One reserved signal bypasses the ordinary event cap; never bridge each drop.
  const send=value=>{if(!active||count>=64)return;count++;bridge(value);if(count===64)bridge({kind:'browser-saturated',saturated:true});};
- const flags=()=>{const pin=document.querySelector('input[name=pin]'),gate=document.querySelector('[data-clocker-pin]');return {focused:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine,readyState:document.readyState,pinPresent:!!pin,pinDisabled:!!pin?.disabled,busy:gate?.getAttribute('aria-busy')==='true',pinState:gate?.getAttribute('data-clocker-pin')};};
+ const flags=()=>{const pin=document.querySelector('input[name=pin]'),gate=document.querySelector('[data-clocker-pin]');return {focused:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine,readyState:document.readyState,pinPresent:!!pin,pinDisabled:!!pin?.disabled,busy:gate?.getAttribute('aria-busy')==='true',pinState:gate?.getAttribute('data-clocker-pin'),punchState:document.querySelector('[data-clocker-state]')?.getAttribute('data-clocker-state')};};
  const on=(target,name,listener)=>{target.addEventListener(name,listener,true);listeners.push(()=>target.removeEventListener(name,listener,true));};
  for(const kind of ['focus','blur','pagehide','pageshow'])on(window,kind,event=>send({kind,...flags(),persisted:event.persisted===true}));
  on(document,'visibilitychange',()=>send({kind:'visibilitychange',...flags()}));
@@ -46,7 +47,7 @@ export function installPinReadinessObserver(){
 }
 export function readPinReadinessState(){
  const pin=document.querySelector('input[name=pin]'),gate=document.querySelector('[data-clocker-pin]');
- return {focused:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine,readyState:document.readyState,pinPresent:!!pin,pinDisabled:!!pin?.disabled,busy:gate?.getAttribute('aria-busy')==='true',pinState:gate?.getAttribute('data-clocker-pin')};
+ return {focused:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine,readyState:document.readyState,pinPresent:!!pin,pinDisabled:!!pin?.disabled,busy:gate?.getAttribute('aria-busy')==='true',pinState:gate?.getAttribute('data-clocker-pin'),punchState:document.querySelector('[data-clocker-state]')?.getAttribute('data-clocker-state')};
 }
 export async function runPinDiagnosticObservation(task){
  return bounded(task);

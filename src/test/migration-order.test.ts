@@ -22,13 +22,13 @@ describe('migration order authority', () => {
     // 0031 before 0032, both after the company and Owner exist; 0032 adoption
     // is immutable, so this order is part of the deployed contract. 0042 widens
     // 0032's invitation lifetime and must follow it.
-    expect([...FINAL_MIGRATIONS]).toEqual(['0031_native_payroll.sql', '0032_company_access_invitations.sql', '0042_company_invitation_lifetime.sql']);
+    expect([...FINAL_MIGRATIONS]).toEqual(['0031_native_payroll.sql', '0032_company_access_invitations.sql', '0042_company_invitation_lifetime.sql', '0062_conversations.sql']);
     expect([...HELD_MIGRATIONS]).toEqual(['0026_tenant_ownership_expand.sql', '0027_tenant_ownership_validate.sql']);
     expect(BASE_MIGRATIONS.some(file => (HELD_MIGRATIONS as readonly string[]).includes(file))).toBe(false);
   });
   it('keeps both independent PR34 files before the Clocker tail and the additive Publish changes and Owner review storage without prefix sorting', () => {
     // 0043 (Publish changes held-edit history) depends only on base tables and follows the Clocker tail; 0044/0045 are additive Owner AI storage.
-    expect(BASE_MIGRATIONS.slice(-22)).toEqual([
+    expect(BASE_MIGRATIONS.slice(-27)).toEqual([
       '0037_owner_briefing_reviews.sql', '0038_read_path_indexes.sql', '0039_native_payroll_setup_records.sql',
       '0038_clocker_pin_operation_reference.sql', '0039_clocker_review_requests.sql',
       '0040_clocker_photo_policy_evidence.sql', '0041_clocker_photo_platform_cleanup.sql',
@@ -44,6 +44,11 @@ describe('migration order authority', () => {
   '0054_onboarding_commerce_binding.sql',
   '0055_onboarding_commerce_worker_scope.sql',
   '0056_clocker_identified_person_limits.sql',
+  '0057_management_time_close.sql',
+  '0058_delegated_time_corrections.sql',
+  '0059_payroll_export_business_identity.sql',
+  '0060_monotonic_login_fence.sql',
+  '0061_staff_tasks.sql',
       '0046_owner_advisor_memory.sql',
     ]);
   });

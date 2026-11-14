@@ -1,0 +1,11 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-step2-onboarding-20261112
+
+ ✓ src/lib/onboarding/readiness.test.ts (15 tests) 3ms
+ ✓ src/lib/onboarding/contracts.test.ts (65 tests) 11ms
+ ✓ src/lib/commerce/onboarding-recovery.test.ts (6 tests) 49ms
+
+ Test Files  3 passed (3)
+      Tests  86 passed (86)
+   Start at  19:29:53
+   Duration  164ms (tests 38%, import 33%, transform 26%, worker 3%)

@@ -1,3 +1,4 @@
+vi.mock('@/lib/data/sql-session-contract',()=>import('../../../test/fixtures/business-sql-session'));
 import { createHash } from "node:crypto";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 const deps = vi.hoisted(() => ({ query: vi.fn(), session: vi.fn() }));
@@ -52,7 +53,7 @@ it("rejects installation facts and policy requests with another installation sec
 });
 it("returns only bounded installation facts after the current binding is verified", async () => {
   deps.query.mockResolvedValue([
-    { business_id: id, installation_id: "slot-a", employee_count: 12 },
+    { business_id: id, installation_id: "slot-a", employee_count: 12, time_zone: "America/New_York" },
   ]);
   const response = await facts(
     new Request("https://company.example.test/api/commerce/facts", {
@@ -64,6 +65,7 @@ it("returns only bounded installation facts after the current binding is verifie
     businessId: id,
     installationId: "slot-a",
     employeeCount: 12,
+    timeZone: "America/New_York",
   });
   expect(response.headers.get("cache-control")).toBe("no-store");
 });

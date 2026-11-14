@@ -1,0 +1,11 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-worker-quota-repair-20261112
+
+
+ Test Files  2 passed (2)
+      Tests  2 passed (2)
+   Start at  18:18:33
+   Duration  30.91s (tests 99%)
+
+[Payroll PostgreSQL] Owned cluster stopped.

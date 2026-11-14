@@ -9,6 +9,7 @@ import {
 import {
   reviewTimeCorrection,
   submitTimeCorrection,
+  submitDelegatedTimeCorrection,
   type CorrectionMutationResult,
 } from '../time-corrections/service';
 import type {
@@ -18,10 +19,19 @@ import type {
 import {
   readEmployeeTimeCorrections,
   readManagerTimeCorrections,
+  readDelegatedTimeCorrections,
 } from './time-corrections.server';
+import type {DelegatedTimeCorrections} from '../time-corrections/delegated';
 
 const selfRoles = ['EMPLOYEE','LEAD'] as const;
 const managerRoles = ['OWNER','MANAGER'] as const;
+
+export async function getDelegatedTimeCorrections(employeeId:string):Promise<DelegatedTimeCorrections>{
+ try{return await readDelegatedTimeCorrections(await requireSessionMutationProof(),employeeId);}catch{return {state:'unavailable',reason:'read_failed'};}
+}
+export async function submitManagerDelegatedTimeCorrection(employeeId:string,input:CorrectionRequestCommand):Promise<CorrectionMutationResult>{
+ return submitDelegatedTimeCorrection(await requireSessionMutationProof(),employeeId,input);
+}
 
 export async function getEmployeeTimeCorrections(): Promise<EmployeeTimeCorrections> {
   try {

@@ -214,16 +214,16 @@ export class CommerceStore {
       return id as string;
     });
   }
-  async session(proof: string, now: number,checkOwner?:OwnerAuthorityCheck) {
+  async session(proof: string, now: number,checkOwner?:OwnerAuthorityCheck,client?:PoolClient) {
     if (!/^[A-Za-z0-9_-]{43}$/.test(proof))
       throw new CommerceError("unauthorized", 401);
-    const result = await this.pool.query(
+    const result = await (client??this.pool).query(
       "SELECT account_id,owner_binding FROM commerce.tokens WHERE hash=$1 AND purpose='session' AND used_at IS NULL AND expires_at>$2",
       [digest(proof), new Date(now)],
     );
     if (!result.rowCount) throw new CommerceError("unauthorized", 401);
-    const id=result.rows[0].account_id,business=await this.business(id),owner=this.openOwner(result.rows[0].owner_binding,digest(proof));
-    if(business.enrollmentSource==='onboarding'&&(!owner||!checkOwner||!await checkOwner(business,owner)))throw new CommerceError('unauthorized',401);
+    const id=result.rows[0].account_id,business=await this.business(id,client),owner=this.openOwner(result.rows[0].owner_binding,digest(proof));
+    if(business.enrollmentSource==='onboarding'&&(!owner||!checkOwner||!await checkOwner(business,owner,client)))throw new CommerceError('unauthorized',401);
     return id as string;
   }
   private openOwner(value:unknown,hash:string){

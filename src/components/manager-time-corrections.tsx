@@ -94,6 +94,7 @@ export function ManagerTimeCorrectionsSurface({
           {item.context.state==='confirmed'&&item.context.totalDecisions?<PriorCorrectionDecisions context={item.context} zone={ready.timeZone}/>:null}
           {item.baseChanged?<p className="manager-correction-self" role="status">The timecard changed after this request. Check the current times before deciding.</p>:null}
           <p className="manager-correction-reason"><span className="manager-correction-reason__k">Their reason</span><q>{item.reason}</q></p>
+          {item.requestedByName?<p className="manager-correction-provenance">Requested by {item.requestedByName} for this employee.</p>:null}
           {item.isSelf?<p className="manager-correction-self" role="note">Another manager or an Owner reviews your own request.</p>:null}
           <div className="manager-correction-actions">
             <button type="button" aria-label={`Decline correction for ${item.employeeName}`} disabled={item.isSelf||busyId!==null||retry!==null} onClick={()=>onDecision(item,'REJECT')}>Decline</button>

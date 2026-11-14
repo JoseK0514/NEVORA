@@ -2,6 +2,7 @@ import Stripe from 'stripe';
 import {CommerceError} from './model';
 import type {CommerceStore} from './store';
 import {stripeObjectId} from './stripe-identity';
+import {isStripeRiskType,stripeRiskJob} from './stripe-risk';
 
 /** Endpoint-specific signing verification needs no Stripe API credential. */
 export function parseStripeWebhook(raw:string,signature:string,secret:string,live:boolean):Stripe.Event {
@@ -24,10 +25,11 @@ export function parseStripeWebhook(raw:string,signature:string,secret:string,liv
    const details=parent.subscription_details;
    if(details!==undefined&&details!==null&&(!record(details)||(details.subscription!==undefined&&details.subscription!==null&&!id(stripeObjectId(details.subscription),'sub_'))))throw new CommerceError('invalid_event');
   }
- }
+ }else if(isStripeRiskType(event.type))stripeRiskJob(event);
  return event;
 }
 export function projectsStripeEvent(event:Stripe.Event):boolean{
+ if(isStripeRiskType(event.type))return true;
  if(event.type==='checkout.session.completed'||event.type==='checkout.session.async_payment_succeeded'||event.type.startsWith('customer.subscription.'))return true;
  if(!event.type.startsWith('invoice.'))return false;
  const object=event.data.object as unknown as {parent?:{subscription_details?:{subscription?:unknown}}};
@@ -35,6 +37,13 @@ export function projectsStripeEvent(event:Stripe.Event):boolean{
 }
 /** Preserve existing durable receipt/job semantics; a delivery never grants access. */
 export async function enqueueStripeWebhook(store:CommerceStore,event:Stripe.Event):Promise<void>{
+ const risk=stripeRiskJob(event);
+ if(risk){
+  await store.transaction(async client=>{
+   const receipt=await client.query('INSERT INTO commerce.webhooks(id) VALUES($1) ON CONFLICT DO NOTHING RETURNING id',[event.id]);
+   if(receipt.rowCount)await store.enqueue(client,'stripe','stripe:'+event.id,risk);
+  });return;
+ }
  const object=event.data.object as unknown as Record<string,unknown>;
  if(event.type==='checkout.session.completed'||event.type==='checkout.session.async_payment_succeeded'){
   const id=stripeObjectId(object);if(!id)return;

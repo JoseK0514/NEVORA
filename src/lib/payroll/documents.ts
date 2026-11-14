@@ -14,6 +14,7 @@ import type { Snapshot } from "./service";
 import { PayrollError } from "./model";
 import { statement as q, workspaceSql as ws } from "./store";
 import { stableExportJson } from "../payroll-export/json";
+import { assertPaymentExportSupported } from './payment-policy';
 const sha = (bytes: Uint8Array) => createHash("sha256").update(bytes).digest("hex");
 const idFor = (runId: string, kind: string, employeeId: string | null) => {
     const hex = createHash("sha256")
@@ -69,6 +70,7 @@ function stored(run: PayrollRun, kind: PayrollDocument["kind"], employeeId: stri
 /** Produce neutral JSON payment instructions from approved amounts. This creates an
  * artifact only: bank format compatibility and payment processing remain unverified. */
 export function paymentDocument(run: PayrollRun, snapshot: Snapshot) {
+    assertPaymentExportSupported(run);
     if (run.status !== "APPROVED" || !run.totals || !run.rows)
         throw new PayrollError("APPROVAL_REQUIRED", 409);
     const artifact = {

@@ -48,9 +48,10 @@ export class NeonProvisioningProvider implements ProvisioningProvider{
   if(branchRows.length!==1||!id(branchRows[0].id))throw new NeonProviderUnavailable();const branchId=branchRows[0].id;
   const endpoints=rows(await this.call(base+'/endpoints'),'endpoints').filter(e=>e.branch_id===branchId&&e.project_id===projectId&&e.type==='read_write');
   if(endpoints.length!==1||!id(endpoints[0].id)||typeof endpoints[0].host!=='string'||!endpoints[0].host.startsWith(endpoints[0].id+'.')||!/^[a-z0-9.-]+\.neon\.tech$/.test(endpoints[0].host))throw new NeonProviderUnavailable();
-  if(this.policy.suspensionMode==='provider_default'){
+  if(this.policy.suspensionMode==='provider_default'||this.policy.suspensionMode==='explicit'){
    const settings=p.default_endpoint_settings,q=object(p.settings)?p.settings.quota:null,e=endpoints[0];
-   if(!object(settings)||settings.suspend_timeout_seconds!==0||settings.autoscaling_limit_min_cu!==0.25||settings.autoscaling_limit_max_cu!==0.25||e.suspend_timeout_seconds!==0||e.autoscaling_limit_min_cu!==0.25||e.autoscaling_limit_max_cu!==0.25||p.history_retention_seconds!==this.policy.historySeconds||!object(q)||!quotaFields.every(k=>q[k]===this.policy.quota[k as keyof ProvisionerPolicy['quota']]))throw new NeonProviderUnavailable();
+   const suspension=this.policy.suspensionMode==='provider_default'?0:this.policy.suspendSeconds,compute=this.policy.maxComputeUnits;
+   if(!object(settings)||settings.suspend_timeout_seconds!==suspension||settings.autoscaling_limit_min_cu!==compute||settings.autoscaling_limit_max_cu!==compute||e.suspend_timeout_seconds!==suspension||e.autoscaling_limit_min_cu!==compute||e.autoscaling_limit_max_cu!==compute||p.history_retention_seconds!==this.policy.historySeconds||!object(q)||!quotaFields.every(k=>q[k]===this.policy.quota[k as keyof ProvisionerPolicy['quota']]))throw new NeonProviderUnavailable();
   }
   const databases=rows(await this.call(base+'/branches/'+branchId+'/databases'),'databases').filter(d=>d.name===identity.databaseName&&d.owner_name===identity.provisionerRole&&d.branch_id===branchId);if(databases.length!==1)throw new NeonProviderUnavailable();
   // Neon can return the final row's cursor and echo it on an empty next page.

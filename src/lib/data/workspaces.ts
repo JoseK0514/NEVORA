@@ -60,7 +60,8 @@ const operationalRecords = `EXISTS (SELECT 1 FROM schedules)
  OR EXISTS (SELECT 1 FROM weekly_availability_submissions)
  OR EXISTS (SELECT 1 FROM schedule_week_settings WHERE availability_deadline IS NOT NULL)
  OR EXISTS (SELECT 1 FROM time_off_requests)
- OR EXISTS (SELECT 1 FROM time_entries)`;
+ OR EXISTS (SELECT 1 FROM time_entries)
+ OR EXISTS (SELECT 1 FROM staff_task_templates)`;
 /**
  * Save under an exclusive workspace lock and current Owner session. Once any
  * operational calendar/time record exists, timezone conversion needs a separate

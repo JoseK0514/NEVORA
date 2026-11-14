@@ -108,7 +108,15 @@ export function PayrollExport({initialPeriod,actorId,tabs=null}:{initialPeriod:P
  const send=async(command:ExportCommand)=>{
   if(!currentActor){clearProtected.current('Export access ended',true);return;}
   if(mutating.current||busy||!cards||performance.now()>=validUntil.current){if(performance.now()>=validUntil.current)clearProtected.current('This export is out of date. Refresh to start again.');return;}cancelRefresh.current();mutating.current=true;setBusy(true);setNotice('');setResult(null);setRetry(command);const current=generation.current.value;
-  try{const response=await fetch('/api/payroll-export',{method:'POST',cache:'no-store',credentials:'same-origin',headers,body:JSON.stringify(command)});if(current!==generation.current.value)return;if(response.status===401||response.status===403){clearProtected.current('Export access ended',true);return;}if(response.status===409){setRetry(null);setNotice('The timecards or the file format changed. Refresh and check again.');return;}if(!response.ok)throw new Error();const verified=await verifyExportReply(await response.json(),command);if(current!==generation.current.value)return;if(performance.now()>=validUntil.current){clearProtected.current('This export is out of date. Refresh to start again.');return;}setResult(verified);setRetry(null);setNotice('Files ready. Download the CSV and its time record.');}catch{if(current===generation.current.value)setNotice('We couldn’t confirm the export. Try again; it won’t create a second file.');}finally{if(current===generation.current.value){mutating.current=false;setBusy(false);}}
+  try{const response=await fetch('/api/payroll-export',{method:'POST',cache:'no-store',credentials:'same-origin',headers,body:JSON.stringify(command)});if(current!==generation.current.value)return;if(response.status===401||response.status===403){clearProtected.current('Export access ended',true);return;}
+   if(response.status===409){
+    setRetry(null);
+    const body=await response.json().catch(()=>null);
+    if(current!==generation.current.value)return;
+    if(performance.now()>=validUntil.current){clearProtected.current('This export is out of date. Refresh to start again.');return;}
+    setNotice(body?.state==='already_generated'?'This time record and CSV have already been exported. Use your original downloaded files. No new export was created.':'The timecards or the file format changed. Refresh and check again.');return;
+   }
+   if(!response.ok)throw new Error();const verified=await verifyExportReply(await response.json(),command);if(current!==generation.current.value)return;if(performance.now()>=validUntil.current){clearProtected.current('This export is out of date. Refresh to start again.');return;}setResult(verified);setRetry(null);setNotice('Files ready. Download the CSV and its time record.');}catch{if(current===generation.current.value)setNotice('We couldn’t confirm the export. Try again; it won’t create a second file.');}finally{if(current===generation.current.value){mutating.current=false;setBusy(false);}}
  };
  const save=async()=>{
   if(!currentActor){clearProtected.current('Export access ended',true);return;}

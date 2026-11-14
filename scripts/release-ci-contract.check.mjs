@@ -7,7 +7,27 @@ import {clockerSourceHash,expectedClockerFiles,parseClockerArguments,validateClo
 import {verifyRequiredJobs, ownedExecutionTimeout} from './phase-e-owned.mjs';
 const require=createRequire(import.meta.url);
 const workflow=require('js-yaml').load(readFileSync('.github/workflows/ci.yml','utf8'));
-const mandatory=['validate','clocker-postgres','release-postgres','phase-d-attendance-ui','phase-e-postgres','phase-e-ui'];
+const mandatory=['validate','clocker-postgres','release-postgres','phase-d-attendance-ui','management-review-ui','phase-e-postgres','phase-e-ui'];
+
+test('mandatory backend gate executes durable commerce SQL and SDK cases and retains their report',()=>{
+ const job=workflow.jobs['onboarding-backend'];
+ const gate=job.steps.find(step=>step.name==='Durable commerce PostgreSQL and SDK gate');
+ assert(gate,'Durable commerce SQL/SDK gate is absent');assert.equal(gate.if,undefined);assert.equal(gate['continue-on-error'],undefined);
+ assert.equal(gate.run,'mkdir -p "$RUNNER_TEMP/nevora-onboarding-backend"\nnode scripts/commerce-postgres.mjs --reporter=default --reporter=json --outputFile="$RUNNER_TEMP/nevora-onboarding-backend/commerce-sql-sdk.json"\n');
+ const upload=job.steps.find(step=>step.name==='Upload backend evidence, separate from UI and hosted approval');assert.equal(upload.with.path,'${{ runner.temp }}/nevora-onboarding-backend/**');assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
+});
+
+test('Owner advisor uploads nested reports, captures and traces with their source custody',()=>{
+ const gate=workflow.jobs['phase-d-attendance-ui'].steps.find(step=>step.name==='Owner advisor PostgreSQL and browser gate');
+ assert.equal(gate.if,undefined);
+ const steps=workflow.jobs['phase-d-attendance-ui'].steps;
+ assert(steps.findIndex(step=>step.name==='Combined company lifecycle and recovery gate')>steps.findIndex(step=>step.name==='Upload Owner advisor browser evidence'),'Original Owner advisor evidence must precede the combined journey');
+ const upload=workflow.jobs['phase-d-attendance-ui'].steps.find(step=>step.name==='Upload Owner advisor browser evidence');
+ assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
+ const root='${{ runner.temp }}/nevora-owner-advisor-browser-evidence';
+ for(const suffix of ['/**/*.json','/**/*.png','/**/*-trace.zip'])assert(upload.with.path.split('\n').includes(root+suffix),'Nested Owner advisor evidence missing: '+suffix);
+ assert.equal(upload['continue-on-error'],undefined);
+});
 
 test('Clocker SQL sharding preserves original selectors and rejects partial/custom shard configurations',()=>{
  assert.deepEqual(parseClockerArguments([]),{selection:undefined,shard:undefined});
@@ -96,6 +116,33 @@ test('mandatory release SQL job always runs the isolated Owner advisor integrati
  assert.equal(step.if,undefined);
  assert.equal(step['continue-on-error'],undefined);
 });
+test('mandatory release SQL executes staff task cases unconditionally and retains their report',()=>{
+ const config=readFileSync('vitest.staff-tasks-integration.config.mts','utf8');
+ const scripts=JSON.parse(readFileSync('package.json','utf8')).scripts;
+ assert.equal(scripts['test:staff-tasks:owned'],'node scripts/payroll-postgres.mjs vitest.staff-tasks-integration.config.mts');
+ assert(config.includes("include:['src/test/integration/staff-tasks.integration.ts']"));
+ const verify=job=>{
+  assert.equal(job.if,undefined);assert.equal(job['continue-on-error'],undefined);
+  const step=job.steps.find(s=>s.run==='npm run test:staff-tasks:owned -- --reporter=json --outputFile="$RUNNER_TEMP/staff-tasks.json"');
+  assert(step,'Staff tasks SQL execution/report missing');
+  assert.equal(step.if,undefined);assert.equal(step['continue-on-error'],undefined);
+  const upload=job.steps.find(s=>s.name==='Upload dedicated payroll SQL evidence');
+  assert(upload);assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
+  assert(upload.with.path.includes('${{ runner.temp }}/staff-tasks.json'));
+ };
+ const job=workflow.jobs['release-postgres'];verify(job);
+ for(const mutation of ['remove','condition','allow-failure','job-condition','job-allow-failure','ignore-exit','drop-artifact']){
+  const broken=structuredClone(job),index=broken.steps.findIndex(s=>s.run?.includes('test:staff-tasks:owned'));
+  if(mutation==='remove')broken.steps.splice(index,1);
+  if(mutation==='condition')broken.steps[index].if='false';
+  if(mutation==='allow-failure')broken.steps[index]['continue-on-error']=true;
+  if(mutation==='job-condition')broken.if='false';
+  if(mutation==='job-allow-failure')broken['continue-on-error']=true;
+  if(mutation==='ignore-exit')broken.steps[index].run+=' || true';
+  if(mutation==='drop-artifact')broken.steps.find(s=>s.name==='Upload dedicated payroll SQL evidence').with.path='${{ runner.temp }}/native-payroll.json';
+  assert.throws(()=>verify(broken),undefined,mutation);
+ }
+});
 test('mandatory release SQL runs both dedicated payroll suites and retains actual result files',()=>{
  const steps=workflow.jobs['release-postgres'].steps;
  for(const suite of ['native','configurable']){
@@ -112,10 +159,33 @@ test('mandatory release SQL runs both dedicated payroll suites and retains actua
  assert(upload.with.path.includes('${{ runner.temp }}/native-payroll.json'));
  assert(upload.with.path.includes('${{ runner.temp }}/configurable-payroll.json'));
 });
+test('mandatory release SQL selects the timestamp-fence regressions and retains their results',()=>{
+ const config=readFileSync('vitest.timestamp-token-integration.config.mts','utf8');
+ const verify=job=>{
+  assert.equal(job.if,undefined);assert.equal(job['continue-on-error'],undefined);
+  const step=job.steps.find(s=>s.run==='node scripts/payroll-postgres.mjs vitest.timestamp-token-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/timestamp-token.json"');
+  assert(step,'Timestamp-fence SQL gate missing');
+  assert.equal(step.if,undefined);assert.equal(step['continue-on-error'],undefined);
+  const upload=job.steps.find(s=>s.name==='Upload dedicated payroll SQL evidence');
+  assert(upload);assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
+  assert(upload.with.path.includes('${{ runner.temp }}/timestamp-token.json'));
+ };
+ assert.match(config,/include:\['src\/test\/integration\/employee-mobile-deletion-sql\.integration\.ts'\]/);
+ const job=workflow.jobs['release-postgres'];verify(job);
+ for(const mutation of ['remove','condition','allow-failure','drop-artifact']){
+  const broken=structuredClone(job),index=broken.steps.findIndex(s=>s.run?.includes('vitest.timestamp-token-integration.config.mts'));
+  if(mutation==='remove')broken.steps.splice(index,1);
+  if(mutation==='condition')broken.steps[index].if='false';
+  if(mutation==='allow-failure')broken.steps[index]['continue-on-error']=true;
+  if(mutation==='drop-artifact')broken.steps.find(s=>s.name==='Upload dedicated payroll SQL evidence').with.path='${{ runner.temp }}/native-payroll.json';
+  assert.throws(()=>verify(broken),undefined,mutation);
+ }
+});
 test('mandatory browser job runs Owner advisor without a model connection and retains evidence',()=>{
  const steps=workflow.jobs['phase-d-attendance-ui'].steps;
- const step=steps.find(s=>s.run==='node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts');
+ const step=steps.find(s=>s.name==='Owner advisor PostgreSQL and browser gate');
  assert(step,'Owner advisor browser checks missing');
+ assert.deepEqual(step.run.trim().split('\n'),['node --import tsx --test scripts/owner-advisor-retirement.check.mts','node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts']);
  assert.equal(step.if,undefined);
  assert.equal(step['continue-on-error'],undefined);
  assert.deepEqual(step.env,{NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE:'${{ runner.temp }}/nevora-owner-advisor-browser-evidence'});
@@ -123,7 +193,7 @@ test('mandatory browser job runs Owner advisor without a model connection and re
  assert(upload);
  assert.equal(upload.if,'always()');
  assert.equal(upload.with['if-no-files-found'],'error');
- for(const item of ['/*.json','/*.png','/*-trace.zip','/**/source-manifest.json','/**/ownership.json'])assert(upload.with.path.includes('nevora-owner-advisor-browser-evidence'+item));
+ for(const item of ['/**/*.json','/**/*.png','/**/*-trace.zip'])assert(upload.with.path.includes('nevora-owner-advisor-browser-evidence'+item));
 });
 test('validation runs the spending guard suite without enabling live inference',()=>{
  const step=workflow.jobs.validate.steps.find(s=>s.run==='node --import tsx --test src/test/integration/owner-advisor-pilot.check.mts');
@@ -162,7 +232,7 @@ test('Clocker rendering controls run before the unchanged authenticated regressi
  assert(upload.with.path.includes('${{ runner.temp }}/nevora-clocker-browser-evidence/*.json'));
 });
 test('runtime installers prefer the existing official mirror before every apt dependency step',()=>{
- for(const name of ['clocker-postgres-suite','release-postgres','phase-e-postgres','phase-d-attendance-ui','phase-e-ui-suite']){
+ for(const name of ['clocker-postgres-suite','release-postgres','phase-e-postgres','phase-d-attendance-ui','management-review-ui','phase-e-ui-suite']){
   const steps=workflow.jobs[name].steps,preference=steps.findIndex(step=>step.name==='Prefer official Ubuntu archive');
   assert(preference>=0,name+' archive preference missing');
   assert.equal(steps[preference].if,undefined);
@@ -174,6 +244,7 @@ test('runtime installers prefer the existing official mirror before every apt de
 });
 test('feature candidates run through PRs without a duplicate branch-push execution',()=>{
  assert.deepEqual(workflow.on.push.branches,['development','main']);
+ assert.deepEqual(workflow.on.push.tags,['candidate/backend-completion/**']);
  for(const target of ['development','main','codex/verify-preview-33'])assert(workflow.on.pull_request.branches.includes(target));
  assert.equal(workflow.concurrency['cancel-in-progress'],"${{ github.event_name == 'pull_request' }}");
 });
@@ -209,12 +280,21 @@ test('all-browser budget fits the existing job while single-suite and SQL budget
  assert.throws(()=>ownedExecutionTimeout('unknown','all'));
 });
 
-test('five bounded leaves retain strict current-source aggregation and unique raw artifacts',()=>{
+test('six bounded leaves retain both Home engines, strict aggregation and unique raw artifacts',()=>{
  const leaf=workflow.jobs['phase-e-ui-suite'], aggregate=workflow.jobs['phase-e-ui'];
  assert.equal(leaf.if,undefined);
- assert.deepEqual(leaf.strategy,{ 'fail-fast':false, 'max-parallel':2, matrix:{suite:['home','communications','calendar','navigation','attention']} });
+ assert.deepEqual(leaf.strategy,{ 'fail-fast':false, 'max-parallel':2, matrix:{include:[
+  {suite:'home',engine:'chromium',leaf:'home-chromium'},
+  {suite:'home',engine:'webkit',leaf:'home-webkit'},
+  {suite:'communications',leaf:'communications'},
+  {suite:'calendar',leaf:'calendar'},
+  {suite:'navigation',leaf:'navigation'},
+  {suite:'attention',leaf:'attention'},
+ ]} });
  assert.equal(leaf.env.PHASE_E_EXPECTED_SHA,'${{ github.event.pull_request.head.sha || github.sha }}');
  assert.equal(leaf.env.PHASE_E_BROWSER_SUITE,'${{ matrix.suite }}');
+ assert.equal(leaf.env.PHASE_E_BROWSER_ENGINE,'${{ matrix.engine }}');
+ assert.equal(leaf.name,'phase-e-ui-suite (${{ matrix.leaf }})');
  assert.deepEqual(aggregate.needs,['phase-e-ui-suite']);
  assert.equal(aggregate.if,'${{ always() }}');
  for(const job of [leaf,aggregate]) {
@@ -231,7 +311,7 @@ test('five bounded leaves retain strict current-source aggregation and unique ra
  assert.equal(home.length,1);assert.equal(home[0].if,"${{ matrix.suite == 'home' }}");
  const upload=leaf.steps.find(step=>step.uses?.startsWith('actions/upload-artifact@'));
  assert.equal(upload.if,'always()');
- assert.equal(upload.with.name,'phase-e-browser-${{ github.event.pull_request.head.sha || github.sha }}-${{ matrix.suite }}');
+ assert.equal(upload.with.name,'phase-e-browser-${{ github.event.pull_request.head.sha || github.sha }}-${{ matrix.leaf }}');
  assert.equal(upload.with['if-no-files-found'],'error');assert.equal(upload.with['retention-days'],14);
  for(const path of ['/*-report.json','/source-manifest.json','/owned-postgres-*/ownership.json','/owned-next-*/ownership.json','/owned-next-*/source-manifest.json']) assert(upload.with.path.includes('nevora-phase-e-browser-evidence'+path));
  assert(upload.with.path.includes('nevora-phase-e-home-readiness-evidence/*.json'));
@@ -248,4 +328,76 @@ test('five bounded leaves retain strict current-source aggregation and unique ra
   PHASE_E_CI_NEEDS_JSON:'${{ toJSON(needs) }}',
  });
  assert(aggregate.steps.indexOf(download[0])<aggregate.steps.indexOf(gate));
+});
+
+test('management review and complete payroll sources are mandatory candidate gates',()=>{
+ const job=workflow.jobs['management-review-ui'];assert.equal(job.if,undefined);assert.equal(job['continue-on-error'],undefined);
+ for(const suite of ['management-close-ui','delegated-corrections']){
+  const step=job.steps.find(s=>s.run===`node scripts/payroll-postgres.mjs vitest.${suite}-browser.config.mts`);assert(step);assert.equal(step['continue-on-error'],undefined);
+ }
+ assert(job.steps.some(s=>s.run?.startsWith('node scripts/management-review-evidence.mjs')));
+ assert(workflow.jobs['phase-e-evidence'].needs.includes('management-review-ui'));
+ const step=workflow.jobs['release-postgres'].steps.find(s=>s.run?.includes('vitest.payroll-source-pagination-integration.config.mts'));assert(step);assert.equal(step.if,undefined);assert.equal(step['continue-on-error'],undefined);
+ const baseSql=workflow.jobs['release-postgres'].steps.find(s=>s.run==='npm run test:release:postgres');assert.equal(baseSql.env.NEVORA_CAPACITY_EVIDENCE,'${{ runner.temp }}/capacity-evidence');
+ for(const step of job.steps)assert.equal(step['continue-on-error'],undefined);
+ const upload=job.steps.find(s=>s.name==='Upload management review browser evidence');assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
+});
+
+test('the same immutable candidate runs the existing web Mobile Access gate',()=>{
+ const mobile=require('js-yaml').load(readFileSync('.github/workflows/mobile-access.yml','utf8'));
+ assert.deepEqual(mobile.on.push.tags,['candidate/backend-completion/**']);
+ const job=mobile.jobs['mobile-access'];assert(job);assert.equal(job.if,undefined);assert.equal(job['continue-on-error'],undefined);
+ assert(job.steps.some(s=>s.name==='Checkout exact candidate'&&s.with.ref==='${{ github.sha }}'));
+ for(const step of job.steps)assert.equal(step['continue-on-error'],undefined);
+});
+
+test('conversations SQL is a mandatory owned release gate with retained evidence',()=>{
+ const config=readFileSync('vitest.conversations-integration.config.mts','utf8');
+ assert(config.includes("include:['src/test/integration/conversations.integration.ts']"));
+ const verify=job=>{
+  assert.equal(job.if,undefined);assert.equal(job['continue-on-error'],undefined);
+  const step=job.steps.find(s=>s.run==='node scripts/payroll-postgres.mjs vitest.conversations-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/conversations.json"');
+  assert(step,'missing conversations owned SQL gate');assert.equal(step.if,undefined);assert.equal(step['continue-on-error'],undefined);
+  const upload=job.steps.find(s=>s.with?.name==='conversations-sql-${{ github.event.pull_request.head.sha || github.sha }}');
+  assert(upload);assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');assert.equal(upload.with.path,'${{ runner.temp }}/conversations.json');
+ };
+ const job=workflow.jobs['release-postgres'];verify(job);
+ for(const mutation of ['remove','condition','allow-failure','job-condition','job-allow-failure','ignore-exit','drop-artifact']){
+  const broken=structuredClone(job),index=broken.steps.findIndex(s=>s.run?.includes('vitest.conversations-integration.config.mts'));
+  if(mutation==='remove')broken.steps.splice(index,1);
+  if(mutation==='condition')broken.steps[index].if='false';
+  if(mutation==='allow-failure')broken.steps[index]['continue-on-error']=true;
+  if(mutation==='job-condition')broken.if='false';
+  if(mutation==='job-allow-failure')broken['continue-on-error']=true;
+  if(mutation==='ignore-exit')broken.steps[index].run+=' || true';
+  if(mutation==='drop-artifact')broken.steps.find(s=>s.with?.name?.startsWith('conversations-sql-')).with.path='${{ runner.temp }}/native-payroll.json';
+  assert.throws(()=>verify(broken),undefined,mutation);
+ }
+});
+
+test('combined Step4 lifecycle remains a mandatory exact-source browser gate with retained evidence',()=>{
+ const job=workflow.jobs['phase-d-attendance-ui'];
+ const gate=job.steps.find(step=>step.name==='Combined company lifecycle and recovery gate');
+ assert(gate,'Combined lifecycle gate is absent');
+ assert.equal(gate.run,'node scripts/step4-local-acceptance.mjs');
+ assert.equal(gate.if,"${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}");
+ assert.equal(gate['continue-on-error'],undefined);
+ assert.equal(gate.env.NEVORA_STEP4_EXPECTED_SHA,'${{ github.event.pull_request.head.sha || github.sha }}');
+ assert.equal(gate.env.NEVORA_STEP4_EVIDENCE,'${{ runner.temp }}/nevora-step4-local');
+ const upload=job.steps.find(step=>step.name==='Upload combined company lifecycle evidence');
+ assert.equal(upload.if,'always()');assert.equal(upload.with.name,'step4-local-${{ github.event.pull_request.head.sha || github.sha }}');assert.equal(upload.with['if-no-files-found'],'error');assert.equal(upload.with['retention-days'],14);
+ for(const suffix of ['/**/*.json','/**/*.png','/**/*-trace.zip'])assert(upload.with.path.split('\n').includes('${{ runner.temp }}/nevora-step4-local'+suffix));
+ assert.equal(job['timeout-minutes'],50);
+});
+
+// The functional billing entry must travel with the existing combined release artifact.
+test('central billing is a mandatory source-bound two-browser gate in the combined lifecycle artifact',()=>{
+ const job=workflow.jobs['phase-d-attendance-ui'],gate=job.steps.find(step=>step.name==='Central billing entry and callback gate');
+ assert(gate,'Central billing entry gate is absent');
+ assert.equal(gate.run,'node scripts/central-billing-local-acceptance.mjs');
+ assert.equal(gate.if,"${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}");
+ assert.equal(gate['continue-on-error'],undefined);
+ assert.equal(gate.env.NEVORA_CENTRAL_BILLING_EXPECTED_SHA,'${{ github.event.pull_request.head.sha || github.sha }}');
+ assert.equal(gate.env.NEVORA_CENTRAL_BILLING_EVIDENCE,'${{ runner.temp }}/nevora-step4-local/central-billing');
+ const index=job.steps.indexOf(gate);assert(index>job.steps.findIndex(step=>step.name==='Combined company lifecycle and recovery gate'));assert(index<job.steps.findIndex(step=>step.name==='Upload combined company lifecycle evidence'));
 });

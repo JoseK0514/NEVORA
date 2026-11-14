@@ -13,4 +13,5 @@ describe('D6 export transport',()=>{
  it('requires login and same-origin anti-forgery',async()=>{expect((await POST(request(command,{origin:'https://evil.test'}))).status).toBe(403);f.session=null;expect((await POST(request())).status).toBe(401);});
  it('refuses caller-provided totals and unreviewed fields',async()=>{expect((await POST(request({...command,totalHours:100}))).status).toBe(400);});
  it('reports source revision conflicts without generating a new receipt',async()=>{f.create.mockRejectedValue(new Error('nevora_export_CONFLICT'));expect((await POST(request())).status).toBe(409);});
+ it('reports a business duplicate as a private non-retryable artifact conflict',async()=>{f.create.mockRejectedValue(new Error('nevora_export_ALREADY_GENERATED'));const response=await POST(request());expect(response.status).toBe(409);expect(await response.json()).toEqual({state:'already_generated'});expect(response.headers.get('cache-control')).toContain('no-store');});
 });

@@ -15,7 +15,8 @@ const sha=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{40}$/.test(v)
 const uuid=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(v);
 const key=(v:unknown):v is string=>typeof v==='string'&&/^[A-Za-z0-9_-]{43}$/.test(v)&&Buffer.from(v,'base64url').toString('base64url')===v;
 const profileKeys=['scopeId','environment','commands','origin','portalBaseDomain','env'];
-const allowedEnv=new Set(['NEVORA_CONTROL_DATABASE_URL','NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY','NEVORA_COMMERCE_WORKER_BINDING_KEY','NEVORA_WORKER_ENROLLMENT_ID','NEVORA_WORKER_RECIPIENT_PRIVATE_KEY','NEVORA_COMMERCE_API_ORIGIN','NEVORA_COMMERCE_ENABLED','NEVORA_PAYROLL_ENABLED','PUSH_FEATURE_ENABLED','PUSH_VAPID_PUBLIC_KEY','PUSH_VAPID_PRIVATE_KEY','PUSH_SUBSCRIPTION_ENCRYPTION_KEY','PUSH_VAPID_SUBJECT','NOTIFICATION_WORKER_SECRET','PUSH_DELIVERY_ENABLED','PUSH_TEST_DELIVERY_ENABLED','PUSH_TEST_ACCOUNT_IDS']);
+const allowedEnv=new Set(['NEVORA_CONTROL_DATABASE_URL','NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY','NEVORA_COMMERCE_WORKER_BINDING_KEY','NEVORA_WORKER_ENROLLMENT_ID','NEVORA_WORKER_RECIPIENT_PRIVATE_KEY','NEVORA_COMMERCE_API_ORIGIN','NEVORA_COMMERCE_ENABLED','NEVORA_PAYROLL_ENABLED','PUSH_FEATURE_ENABLED','PUSH_VAPID_PUBLIC_KEY','PUSH_VAPID_PRIVATE_KEY','PUSH_SUBSCRIPTION_ENCRYPTION_KEY','PUSH_SUBSCRIPTION_ENCRYPTION_KEY_ID','PUSH_SUBSCRIPTION_PREVIOUS_KEY','PUSH_SUBSCRIPTION_PREVIOUS_KEY_ID','PUSH_SUBSCRIPTION_LEGACY_KEY_ID','PUSH_VAPID_SUBJECT','NOTIFICATION_WORKER_SECRET','PUSH_DELIVERY_ENABLED','PUSH_TEST_DELIVERY_ENABLED','PUSH_TEST_ACCOUNT_IDS']);
+const notificationField=(name:string)=>name.startsWith('PUSH_')||name==='NOTIFICATION_WORKER_SECRET';
 const record=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 
 /** A managed profile is operator custody, never a browser/request input. Only
@@ -36,6 +37,7 @@ export function parseManagedHostConfig(env:Readonly<Record<string,string|undefin
    const environment=p.environment as Environment,scope=p.scopeId+'-'+environment;if(seen.has(scope))throw invalid();seen.add(scope);
    if(Object.entries(p.env).some(([k,v])=>!allowedEnv.has(k)||typeof v!=='string'||v.length>8192))throw invalid();
    const e=p.env as Record<string,string>;
+   if(p.commands.every(c=>c==='payroll')&&Object.keys(e).some(notificationField))throw invalid();
    const approved=destinations[environment];if(!approved||p.portalBaseDomain!==approved.portalBaseDomain)throw invalid();
    const state=join(stateDirectory,scope);
    const child={...e,NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:environment,NEVORA_PORTAL_BASE_DOMAIN:String(p.portalBaseDomain),NEVORA_WORKER_WORKSPACE_ORIGIN:String(p.origin),FUEL_PORTAL_ORIGIN:String(p.origin),PUSH_ENVIRONMENT:environment,NEVORA_OPERATIONS_ENABLED:'true',NEVORA_OPERATIONS_SOURCE_SHA:sourceSha,NEVORA_OPERATIONS_SCOPE_ID:p.scopeId,NEVORA_OPERATIONS_ENVIRONMENT:environment,NEVORA_OPERATIONS_STATE_DIR:state,NEVORA_OPERATIONS_DEADLINE_SECONDS:'120',NEVORA_OPERATIONS_MAX_HEARTBEAT_GAP_SECONDS:'600',NEVORA_OPERATIONS_MAX_QUEUE_AGE_SECONDS:'900'};
@@ -60,9 +62,13 @@ export function parseManagedHostConfig(env:Readonly<Record<string,string|undefin
   return Object.freeze({enabled:true,sourceSha,stateDirectory,healthKey,profiles:Object.freeze(parsed)});
  }catch{throw invalid();}
 }
-export function managedChildEnvironment(profile:ManagedProfile,ambient:Readonly<Record<string,string|undefined>>):NodeJS.ProcessEnv{
+export function managedChildEnvironment(profile:ManagedProfile,ambient:Readonly<Record<string,string|undefined>>,command?:WorkerCommand):NodeJS.ProcessEnv{
+ const selected=command??(profile.commands.length===1?profile.commands[0]:undefined);
+ if(!selected||!WORKER_COMMANDS.includes(selected)||!profile.commands.includes(selected))throw invalid();
  const safe:NodeJS.ProcessEnv={NODE_ENV:'production'};for(const k of ['PATH','HOME','TMPDIR','LANG','NODE_ENV'])if(ambient[k]!==undefined)safe[k]=ambient[k];
- return {...safe,...profile.env};
+ const scoped={...profile.env};
+ if(selected==='payroll')for(const k of Object.keys(scoped))if(notificationField(k))delete scoped[k];
+ return {...safe,...scoped};
 }
 const digest=(secret:string,at:string,nonce:string)=>createHmac('sha256',Buffer.from(secret,'base64url')).update('GET\n/private/health\n'+at+'\n'+nonce).digest('hex');
 export function signHealthRequest(secret:string,now:number,nonce:string):Record<string,string>{

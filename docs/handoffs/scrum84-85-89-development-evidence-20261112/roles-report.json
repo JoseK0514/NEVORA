@@ -1,0 +1,38 @@
+{
+  "runtimeRoles": [
+    {
+      "rolname": "nv_app_eb3864dfd9202d2061a3a0ad",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolbypassrls": false,
+      "rolinherit": false
+    },
+    {
+      "rolname": "nv_worker_be657970cb24ff5e0f89d035",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolbypassrls": false,
+      "rolinherit": false
+    }
+  ],
+  "status": "PASS",
+  "checks": [
+    {
+      "scenario": "roles",
+      "name": "actual pending bootstrap creates restricted APP and WORKER roles on hosted Neon",
+      "status": "PASS"
+    },
+    {
+      "scenario": "roles",
+      "name": "APP connects with its own identity and cannot obtain DDL or bootstrap authority",
+      "status": "PASS"
+    },
+    {
+      "scenario": "roles",
+      "name": "WORKER connects with its own identity and cannot obtain DDL or bootstrap authority",
+      "status": "PASS"
+    }
+  ]
+}

@@ -35,8 +35,10 @@ export function parseClockView(value:unknown):ClockView{
  for(const t of value.breakTypes)if(!classification(t)||!('active' in t)||t.active!==true)return invalid();
  if(new Set(value.breakTypes.map(t=>t.id)).size!==value.breakTypes.length)return invalid();
  if('breaksOff' in value&&(value.breaksOff!==true||value.breakTypes.length))return invalid();
+ if('commerceRestriction' in value&&!['finish_shift','paused'].includes(String(value.commerceRestriction)))return invalid();
  const elsewhere=Boolean(current.entry&&current.entry.locationId!==value.locationId);
- const allowed=elsewhere?[]:!current.entry?['CLOCK_IN']:current.break?['END_BREAK','CLOCK_OUT']:value.breakTypes.length?['START_BREAK','CLOCK_OUT']:['CLOCK_OUT'];
+ if(value.commerceRestriction==='finish_shift'&&(!current.entry||elsewhere))return invalid();
+ const allowed=elsewhere||value.commerceRestriction==='paused'?[]:!current.entry?['CLOCK_IN']:current.break?['END_BREAK','CLOCK_OUT']:value.breakTypes.length?['START_BREAK','CLOCK_OUT']:['CLOCK_OUT'];
  if(elsewhere!==value.atOtherLocation||JSON.stringify(value.allowedActions)!==JSON.stringify(allowed))return invalid();
  return value as ClockView;
 }

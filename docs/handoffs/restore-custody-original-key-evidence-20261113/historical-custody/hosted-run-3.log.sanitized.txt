@@ -1,0 +1,16 @@
+PASS hosted-fresh-resumed: Company Access preserves finite scope and denies another location/company access
+PASS hosted-fresh-resumed: payroll revisions/approved ledger and exact document bytes are available
+PASS hosted-fresh-resumed: operational permission cannot widen independent payroll permission
+PASS hosted-fresh-resumed: password verification, existing session and guarded new session work
+PASS hosted-fresh-resumed: signed passkey authentication survives and replay stays rejected
+PASS hosted-fresh-resumed: append-only payroll/access/passkey audit controls still reject mutation
+PASS http: actual Neon HTTP driver preserves transaction-local state
+PASS http: a failed HTTP transaction rolls back earlier writes
+PASS upgrade: full canonical upgrade preserves every legacy row/column
+PASS hosted-upgraded: Company Access preserves finite scope and denies another location/company access
+PASS hosted-upgraded: payroll revisions/approved ledger and exact document bytes are available
+PASS hosted-upgraded: operational permission cannot widen independent payroll permission
+PASS hosted-upgraded: password verification, existing session and guarded new session work
+PASS hosted-upgraded: signed passkey authentication survives and replay stays rejected
+PASS hosted-upgraded: append-only payroll/access/passkey audit controls still reject mutation
+{"code":null,"message":"pg_dump failed code 1: pg_dump: terminated by user\n"}

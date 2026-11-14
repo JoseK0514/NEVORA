@@ -5,7 +5,8 @@
  * A cryptographically valid proof is identity evidence; repositories enforce current ownership.
  */
 import { createCipheriv, createDecipheriv, createHash, createHmac, timingSafeEqual, hkdfSync, randomBytes, randomUUID } from 'node:crypto';
-import { decodePushKey } from './config';
+import { decodePushKey } from './push-key';
+import {activeProtection,readProtection,subscriptionProtection,protectionConfigFromEnvironment,type PushProtection} from './keyring';
 import type { InstallationProof, PushEnvironment, VerifiedCleanupReceipt } from './types';
 export const INSTALLATION_COOKIE = 'fuel_push_installation';
 export const CLEANUP_COOKIE = 'fuel_push_cleanup';
@@ -30,35 +31,42 @@ function purposeKey(key: Uint8Array, purpose: string): Buffer {
         throw new Error('Invalid protection configuration');
     return Buffer.from(hkdfSync('sha256', key, Buffer.alloc(0), `fuel-push:${purpose}:v1`, 32));
 }
-function seal(value: unknown, key: Uint8Array, purpose: string, context = ''): string {
+function seal(value: unknown, protection: PushProtection, purpose: string, context = ''): string {
+    const {key,id}=activeProtection(protection),header=id===undefined?'v1':`v2:${id}`,prefix=id===undefined?'v1':`v2.${id}`;
     const nonce = randomBytes(12);
     const cipher = createCipheriv('aes-256-gcm', purposeKey(key, purpose), nonce);
-    cipher.setAAD(Buffer.from(`fuel-push:${purpose}:v1:${context}`));
+    cipher.setAAD(Buffer.from(`fuel-push:${purpose}:${header}:${context}`));
     const encrypted = Buffer.concat([cipher.update(JSON.stringify(value), 'utf8'), cipher.final()]);
-    return `v1.${Buffer.concat([nonce, cipher.getAuthTag(), encrypted]).toString('base64url')}`;
+    return `${prefix}.${Buffer.concat([nonce, cipher.getAuthTag(), encrypted]).toString('base64url')}`;
 }
-function open(value: string, key: Uint8Array, purpose: string, context = ''): unknown {
-    if (value.length > 16384 || !/^v1\.[A-Za-z0-9_-]+$/.test(value))
-        throw new Error('Invalid protected material');
-    const encoded = value.slice(3);
+function protectedParts(value:string,protection:PushProtection){
+    if(value.length>16384)throw Error('Invalid protected material');
+    const parts=value.split('.');
+    const legacy=parts.length===2&&parts[0]==='v1';
+    if(!legacy&&!(parts.length===3&&parts[0]==='v2'&&/^[A-Za-z0-9_-]{1,32}$/.test(parts[1])))throw Error('Invalid protected material');
+    const encoded=parts[parts.length-1];if(!/^[A-Za-z0-9_-]+$/.test(encoded))throw Error('Invalid protected material');
     const bytes = Buffer.from(encoded, 'base64url');
     if (bytes.length < 29 || bytes.toString('base64url') !== encoded)
         throw new Error('Invalid protected material');
+    return {bytes,key:readProtection(protection,legacy?undefined:parts[1]),header:legacy?'v1':`v2:${parts[1]}`};
+}
+function open(value: string, protection: PushProtection, purpose: string, context = ''): unknown {
+    const {bytes,key,header}=protectedParts(value,protection);
     const decipher = createDecipheriv('aes-256-gcm', purposeKey(key, purpose), bytes.subarray(0, 12));
     decipher.setAuthTag(bytes.subarray(12, 28));
-    decipher.setAAD(Buffer.from(`fuel-push:${purpose}:v1:${context}`));
+    decipher.setAAD(Buffer.from(`fuel-push:${purpose}:${header}:${context}`));
     return JSON.parse(Buffer.concat([decipher.update(bytes.subarray(28)), decipher.final()]).toString('utf8'));
 }
 export function createInstallationProof(environment: PushEnvironment = 'test'): InstallationProof {
     return { installationHash: createHash('sha256').update(randomBytes(32)).digest('hex'), environment, generation: randomUUID() };
 }
-export function sealInstallationProof(proof: InstallationProof, key: Uint8Array): string {
+export function sealInstallationProof(proof: InstallationProof, key: PushProtection): string {
     if (!validProof(proof))
         throw new Error('Invalid installation proof');
     return seal(proof, key, 'installation');
 }
-export function readInstallationProof(cookies: CookieReader, key?: Uint8Array, environment?: PushEnvironment): InstallationProof | null {
-    const resolvedKey = key ?? decodePushKey(process.env.PUSH_SUBSCRIPTION_ENCRYPTION_KEY, 32);
+export function readInstallationProof(cookies: CookieReader, key?: PushProtection, environment?: PushEnvironment): InstallationProof | null {
+    const resolvedKey = key ?? subscriptionProtection(protectionConfigFromEnvironment(process.env));
     if (!resolvedKey)
         return null;
     const value = cookies.get(INSTALLATION_COOKIE)?.value;
@@ -85,11 +93,11 @@ function validReceipt(value: unknown): value is VerifiedCleanupReceipt {
     }) || new Set(revocations.map(item => item.sessionHash)).size !== revocations.length || (r.revokeSession === true && revocations.some(item => item.sessionHash === r.sessionHash)))) return false;
     return (r.recoveryBlocked === undefined || typeof r.recoveryBlocked === 'boolean') && (r.revokeSession === undefined || typeof r.revokeSession === 'boolean') && hashPattern.test(r.sessionHash ?? '') && Number.isFinite(issued) && Number.isFinite(expiry) && expiry > issued && expiry - issued <= MAX_LIFETIME_MS;
 }
-export function sealCleanupReceipt(receipt: VerifiedCleanupReceipt, key: Uint8Array): string {
+export function sealCleanupReceipt(receipt: VerifiedCleanupReceipt, key: PushProtection): string {
     if (!validReceipt(receipt))
         throw new Error('Invalid cleanup receipt');
     const encrypted = seal(receipt, key, 'cleanup-receipt');
-    const signature = createHmac('sha256', purposeKey(key, 'cleanup-signing')).update(encrypted).digest('base64url');
+    const signature = createHmac('sha256', purposeKey(activeProtection(key).key, 'cleanup-signing')).update(encrypted).digest('base64url');
     const value = `${encrypted}.${signature}`;
     if (Buffer.byteLength(value, 'utf8') > MAX_CLEANUP_RECEIPT_BYTES) throw new Error('Cleanup recovery capacity exceeded');
     return value;
@@ -97,16 +105,16 @@ export function sealCleanupReceipt(receipt: VerifiedCleanupReceipt, key: Uint8Ar
 /** Verify bounded signed/encrypted cleanup obligations and every retained lifetime.
  * Invalid, future-issued or expired material returns null; it must not be treated as
  * completed cleanup by callers deciding whether an installation can be inherited. */
-export function openCleanupReceipt(value: string, key: Uint8Array, now: Date): VerifiedCleanupReceipt | null {
+export function openCleanupReceipt(value: string, key: PushProtection, now: Date): VerifiedCleanupReceipt | null {
     try {
         if (Buffer.byteLength(value, 'utf8') > MAX_CLEANUP_RECEIPT_BYTES)
             return null;
         const parts = value.split('.');
-        if (parts.length !== 3)
+        if (!(parts.length===3&&parts[0]==='v1')&&!(parts.length===4&&parts[0]==='v2'))
             return null;
-        const encrypted = `${parts[0]}.${parts[1]}`;
-        const signature = decodePushKey(parts[2], 32);
-        const expected = createHmac('sha256', purposeKey(key, 'cleanup-signing')).update(encrypted).digest();
+        const encrypted = parts.slice(0,-1).join('.');
+        const signature = decodePushKey(parts[parts.length-1], 32);
+        const expected = createHmac('sha256', purposeKey(protectedParts(encrypted,key).key, 'cleanup-signing')).update(encrypted).digest();
         if (!signature || !timingSafeEqual(signature, expected))
             return null;
         const receipt = open(encrypted, key, 'cleanup-receipt');
@@ -117,5 +125,5 @@ export function openCleanupReceipt(value: string, key: Uint8Array, now: Date): V
     }
 }
 function materialContext(proof: InstallationProof): string { return `${proof.environment}:${proof.installationHash}:${proof.generation}`; }
-export function encryptSubscriptionMaterial(value: unknown, key: Uint8Array, proof: InstallationProof): string { return seal(value, key, 'subscription', materialContext(proof)); }
-export function decryptSubscriptionMaterial(value: string, key: Uint8Array, proof: InstallationProof): unknown { return open(value, key, 'subscription', materialContext(proof)); }
+export function encryptSubscriptionMaterial(value: unknown, key: PushProtection, proof: InstallationProof): string { return seal(value, key, 'subscription', materialContext(proof)); }
+export function decryptSubscriptionMaterial(value: string, key: PushProtection, proof: InstallationProof): unknown { return open(value, key, 'subscription', materialContext(proof)); }

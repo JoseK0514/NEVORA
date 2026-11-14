@@ -55,6 +55,11 @@ export const CURRENT_MIGRATIONS = [
   '0054_onboarding_commerce_binding.sql',
   '0055_onboarding_commerce_worker_scope.sql',
   '0056_clocker_identified_person_limits.sql',
+  '0057_management_time_close.sql',
+  '0058_delegated_time_corrections.sql',
+  '0059_payroll_export_business_identity.sql',
+  '0060_monotonic_login_fence.sql',
+  '0061_staff_tasks.sql',
   '0046_owner_advisor_memory.sql',
 ] as const;
 
@@ -92,6 +97,13 @@ async function createOwnedDatabase(prefix: 'fuel_phase3_test_' | 'nevora_foundat
     if (createdOid === undefined) throw new Error('Created database identity missing.');
     await admin.query(`COMMENT ON DATABASE "${name}" IS '${marker}'`);
     await assertOwned();
+    // Explicit injected executors and independent lock-holder clients must use
+    // the same text-token contract as the production HTTP business transport.
+    // These defaults affect only this newly created, ownership-verified database.
+    // Hostile-default SDK tests use their separate owned workspace fixture.
+    await admin.query(`ALTER DATABASE "${name}" SET TimeZone TO 'UTC'`);
+    await admin.query(`ALTER DATABASE "${name}" SET DateStyle TO 'ISO, YMD'`);
+    await admin.query(`ALTER DATABASE "${name}" SET default_transaction_isolation TO 'read committed'`);
   } catch (error) {
     // Successful CREATE plus its captured database identity is invocation evidence
     // even when COMMENT fails. Never recover an existing/replaced caller database.

@@ -6,12 +6,14 @@
 import { compatibleManagerScopeSql, payrollObjectScopeSql } from "./native/scope";
 import { readPayrollBacklog } from "./backlog-read";
 import { payrollNoticeDelivery } from "./notices";
+import { assertPaymentExportSupported } from './payment-policy';
 import { randomUUID } from "node:crypto";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
 import type { SessionMutationProof } from "../shift-changes/types";
 import { neonNotificationExecutor } from "../data/notification-transactions";
-import { timecardReadSql } from "../timecards/service";
+import {canonicalTimecardsSql} from "../timecards/canonical-source-sql";
 import { parseTimecardsResponse } from "../timecards/read-model";
+import type { CompleteReadManifest } from '../complete-read-pages';
 import type { Population } from "../period-close/service";
 import type { PayrollCapabilities, PayrollSettingsRevision, PayrollExceptionRevision, PayrollGrant, PayrollRun, PayrollReceipt, PayrollSettingsResponse, PayrollRunsResponse, PayrollJob, PayrollImport, PayrollPreferences, PayrollDocument, } from "./contracts";
 import { parseSettingsCommand, parseRunCommand, parseImport, PayrollError, uuid, totals, } from "./model";
@@ -32,12 +34,13 @@ export type Source = {
     }[];
     timecards: {
         cards: unknown[];
+        paging?: CompleteReadManifest;
     };
     population: Population | null;
     settings: PayrollSettingsRevision[];
     exceptions: PayrollExceptionRevision[];
 };
-export const sourceSql = `jsonb_build_object('roster',COALESCE((SELECT jsonb_agg(jsonb_build_object('employeeId',e.id,'name',trim(e.first_name||' '||e.last_name),'active',e.active,'locationId',e.primary_location_id) ORDER BY e.id COLLATE "C") FROM employees e),'[]'::jsonb),'timecards',(SELECT to_jsonb(t)-'observedAt' FROM (${timecardReadSql}) t),'population',(SELECT payload FROM payroll_period_populations WHERE workspace_id=$1 AND start_date=$4::date AND end_date=$5::date ORDER BY revision DESC LIMIT 1),'settings',COALESCE((SELECT jsonb_agg(payload ORDER BY revision) FROM payroll_setting_revisions WHERE workspace_id=$1),'[]'::jsonb),'exceptions',COALESCE((SELECT jsonb_agg(payload ORDER BY employee_id,revision) FROM payroll_exception_revisions WHERE workspace_id=$1),'[]'::jsonb))`;
+export const sourceSql = `jsonb_build_object('roster',COALESCE((SELECT jsonb_agg(jsonb_build_object('employeeId',e.id,'name',trim(e.first_name||' '||e.last_name),'active',e.active,'locationId',e.primary_location_id) ORDER BY e.id COLLATE "C") FROM employees e),'[]'::jsonb),'timecards',${canonicalTimecardsSql},'population',(SELECT payload FROM payroll_period_populations WHERE workspace_id=$1 AND start_date=$4::date AND end_date=$5::date ORDER BY revision DESC LIMIT 1),'settings',COALESCE((SELECT jsonb_agg(payload ORDER BY revision) FROM payroll_setting_revisions WHERE workspace_id=$1),'[]'::jsonb),'exceptions',COALESCE((SELECT jsonb_agg(payload ORDER BY employee_id,revision) FROM payroll_exception_revisions WHERE workspace_id=$1),'[]'::jsonb))`;
 /** Capture the bounded roster, timecards and revision history used by review; callers
  * must carry a matching sourceGuard into the eventual write transaction. */
 export async function source(proof: SessionMutationProof, p: {
@@ -90,10 +93,14 @@ async function readReceiptRecord(proof: SessionMutationProof, operationId: strin
     const permissionCheck = q(`SELECT (CASE WHEN COALESCE((SELECT (${permitted}) FROM payroll_command_receipts saved WHERE saved.workspace_id=${ws} AND saved.actor_id=$1 AND saved.operation_id=$2::uuid),true) THEN '1' ELSE 'payroll_authorization' END)::integer`, proof.employee.id, operationId);
     const query = q(`SELECT payload,command_hash FROM payroll_command_receipts WHERE workspace_id=${ws} AND actor_id=$1 AND operation_id=$2::uuid`, proof.employee.id, operationId);
     const result = await ex.transaction([...first, permissionCheck, query, permissionCheck, ...authority(proof, "REVIEW")]);
-    return (result[first.length + 1] as {
+    const saved = (result[first.length + 1] as {
         payload: PayrollReceipt;
         command_hash: string;
     }[])[0];
+    if (saved?.payload.action === 'PAYMENT_EXPORT' && saved.payload.runId) {
+        assertPaymentExportSupported((await readRun(proof,saved.payload.runId,ex)).payload);
+    }
+    return saved;
 }
 export async function receipt(proof: SessionMutationProof, operationId: string, ex: SqlExecutor = neonNotificationExecutor()): Promise<PayrollReceipt | null> { enabled(); return (await readReceiptRecord(proof, operationId, ex))?.payload ?? null; }
 async function replay(proof: SessionMutationProof, input: {
@@ -370,6 +377,7 @@ export async function command(proof: SessionMutationProof, input: unknown, ex: S
         ? "APPROVE"
         : "REVIEW";
     await guarded(proof, permission, q("SELECT 1"), ex);
+    if (c.action === 'PAYMENT_EXPORT') assertPaymentExportSupported((await readRun(proof,c.runId,ex)).payload);
     const saved = await replay(proof, c, ex);
     if (saved)
         return saved;

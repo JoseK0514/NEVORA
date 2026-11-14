@@ -6,6 +6,7 @@
 import {parseTimecardsResponse,type TimecardItem} from '../timecards/read-model';
 import {parsePeriod,projectTimecard,type TimecardEntry,type Period} from '../timecards/project';
 import {csvDocument} from '../reports/csv';
+import type {CompleteReadManifest} from '../complete-read-pages';
 export type CanonicalPayrollExport={version:1;workspaceId:string;timeZone:string;period:Period;timeBasis:'RECORDED_ELAPSED_INCLUDING_BREAKS';rows:{employeeId:string;employeeName:string;revision:number;sourceHash:string;finalizationOperationId:string;recordedNanoseconds:string;breakNanoseconds:string;entries:(TimecardEntry&{recordedNanoseconds:string;breakNanoseconds:string})[]}[]};
 export type MappingSource='employeeId'|'employeeName'|'providerEmployeeId'|'periodStart'|'periodEnd'|'recordedHours'|'breakHours'|'recordedNanoseconds'|'breakNanoseconds'|'revision'|'sourceHash'|'constant';
 export type ExportColumn={header:string;source:MappingSource;constant?:string};
@@ -17,10 +18,10 @@ const safeImport=(s:string)=>!/^\s*[=+@-]/.test(s);
 /** Revalidate 1–100 selected cards as currently finalized, with matching source hashes
  * and one shared time zone. Produces stable employee ordering without persistence
  * or authorization; the service owns current company access and receipt creation. */
-export function canonicalPayrollExport(workspaceId:string,observedAt:string,period:Period,cards:unknown,employeeIds:readonly string[]):CanonicalPayrollExport{
+export function canonicalPayrollExport(workspaceId:string,observedAt:string,period:Period,cards:unknown,employeeIds:readonly string[],paging?:CompleteReadManifest):CanonicalPayrollExport{
  if(!text(workspaceId)||employeeIds.length<1||employeeIds.length>100||employeeIds.some(id=>!text(id))||new Set(employeeIds).size!==employeeIds.length)throw new Error('Choose 1 to 100 distinct employees');
  const normalizedPeriod=parsePeriod(period.startDate,period.endDate);
- const parsed=parseTimecardsResponse({observedAt,cards},normalizedPeriod);
+ const parsed=parseTimecardsResponse({observedAt,cards,...(paging?{paging}:{})},normalizedPeriod);
  const selected=employeeIds.map(id=>{const c=parsed.cards.find(c=>c.card.employeeId===id);if(!c)throw new Error('Employee unavailable in this workspace');return c;});
  if(selected.some(c=>c.state!=='FINALIZED'||c.card.issues.length||c.history[0]?.action!=='FINALIZE'||c.history[0].sourceHash!==c.sourceHash))throw new Error('Every selected timecard must have a current finalized revision');
  const zones=new Set(selected.map(c=>c.card.timeZone));if(zones.size!==1)throw new Error('Inconsistent export timezone');

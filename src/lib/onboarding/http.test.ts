@@ -3,6 +3,10 @@ import {readOnboardingJson,onboardingJson,validateOnboardingWrite} from './http.
 import {publicOnboardingConfig} from './registration-http.server';
 import {onboardingTestConfig} from '@/test/integration/onboarding-test-config';
 describe('onboarding HTTP privacy and admission',()=>{
+ it('keeps public signup closed while the configured backend is reserved for acceptance',()=>{
+  expect(publicOnboardingConfig(onboardingTestConfig(),true,false)).toEqual({schemaVersion:1,signupEnabled:false,locales:['en','es']});
+  expect(publicOnboardingConfig({...onboardingTestConfig(),environment:'production'},true).signupEnabled).toBe(false);
+ });
  it('marks all responses private and non-cacheable',()=>{const r=onboardingJson({state:'unavailable'},503);expect(r.headers.get('cache-control')).toBe('no-store, private');expect(r.headers.get('referrer-policy')).toBe('no-referrer');expect(r.status).toBe(503);});
  it.each(['https://foreign.invalid','null',''])('refuses foreign or missing origin %s',origin=>{const r=new Request('https://signup.example.invalid/api/onboarding/registrations',{method:'POST',headers:{origin,'content-type':'application/json'},body:'{}'});expect(validateOnboardingWrite(r,'https://signup.example.invalid')?.status).toBe(403);});
  it('rejects cross-site fetch and unsupported methods before reading data',()=>{const r=new Request('https://signup.example.invalid/api/onboarding/registrations',{method:'POST',headers:{origin:'https://signup.example.invalid','content-type':'application/json','sec-fetch-site':'cross-site'},body:'{}'});expect(validateOnboardingWrite(r,'https://signup.example.invalid')?.status).toBe(403);});

@@ -1,0 +1,153 @@
+{
+  "observedAtUTC": "2026-11-14T03:54:51.954608+00:00",
+  "observedAtPuertoRico": "2026-11-13T23:54:51.954608-04:00",
+  "archiveOriginalMetadataAndHashUnchanged": true,
+  "originalFilesVerified": [
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/driver-2.mts",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/driver-3.mts",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/driver-4.mts",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/driver.mts",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/enroll-diagnostic.mts",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/final-copy-comparison.json",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/final-copy-comparison.mts",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/helpers.mts",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/hosted-report-initial.json",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/hosted-report-run5.json",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/hosted-report.json",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/restored-behavior-report.json",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/restored-behavior.mts",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/roles-diagnostic.mts",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/roles-final.mts",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/roles-report.json",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/runner-2.mts",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/runner-3.mts",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/runner-4.mts",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/runner-5.mts",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/runner-6.mts",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/runner-7.mts",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/runner.mts",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/snapshot-restore-readback.json",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/scratch/scrum-130-89-85-84-evidence/hosted-run-2.log",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/scratch/scrum-130-89-85-84-evidence/hosted-run-3.log",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/scratch/scrum-130-89-85-84-evidence/hosted-run-4.log",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/scratch/scrum-130-89-85-84-evidence/hosted-run-5.log",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/scratch/scrum-130-89-85-84-evidence/hosted-run-6.log",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/scratch/scrum-130-89-85-84-evidence/hosted-run-7.log",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/scratch/scrum-130-89-85-84-evidence/hosted-run.log",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/scratch/scrum-130-89-85-84-evidence/restored-behavior.log",
+      "hashAndRecordedMetadataUnchanged": true
+    },
+    {
+      "path": "/workspace/scratch/scrum-130-89-85-84-evidence/enroll-diagnostic.log",
+      "hashAndRecordedMetadataUnchanged": true
+    }
+  ],
+  "custodyOSOwner": {
+    "name": "agent",
+    "uid": 1000,
+    "group": "agent",
+    "gid": 1000
+  },
+  "custodyAuthority": "Jose-authorized original producer workspace; owner-retained file access only, no new sharing or retention-policy claim",
+  "retentionLocation": "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112/hosted-synthetic.dump",
+  "retentionDurationGuarantee": "not established by this read-only collection",
+  "fullHistoricalSuccessfulRestoreReceiptAvailable": false,
+  "newBackupOrSignerCreated": false,
+  "providerOrRestoredDatabaseAccessed": false,
+  "testsRun": false,
+  "adminSourceChanged": false
+}

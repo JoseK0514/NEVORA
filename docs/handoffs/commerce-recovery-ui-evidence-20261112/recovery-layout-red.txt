@@ -1,0 +1,93 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-worker-quota-repair-20261112
+
+ ❯ src/proxy.commerce-recovery.test.ts (47 tests | 3 failed) 38ms
+   × replaces a forged recovery marker with the exact admitted GET route 2ms
+   × clears a caller recovery marker on operational routes when commerce=true 1ms
+   × clears a caller recovery marker on operational routes when commerce=false 0ms
+ ❯ src/app/app/layout.native.test.tsx (12 tests | 4 failed) 63ms
+   × renders authenticated recovery /app/billing without operational shell reads or parallel sheets 5ms
+   × renders authenticated recovery /app/my-pay without operational shell reads or parallel sheets 1ms
+   × renders authenticated recovery /app/payroll-export without operational shell reads or parallel sheets 1ms
+   × renders authenticated recovery /app/pay without operational shell reads or parallel sheets 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/proxy.commerce-recovery.test.ts > replaces a forged recovery marker with the exact admitted GET route
+AssertionError: expected undefined to be '/app/billing' // Object.is equality
+
+- Expected:
+"/app/billing"
+
++ Received:
+undefined
+
+ ❯ src/proxy.commerce-recovery.test.ts:110:80
+    108| it('replaces a forged recovery marker with the exact admitted GET rout…
+    109|  const response=await proxy(request('/app/billing',{'x-nevora-recovery…
+    110|  expect(response?.headers.get('x-middleware-request-x-nevora-recovery-…
+       |                                                                                ^
+    111|  expect(response?.headers.get('x-middleware-override-headers')).toCont…
+    112| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/proxy.commerce-recovery.test.ts > clears a caller recovery marker on operational routes when commerce=true
+AssertionError: expected undefined to be false // Object.is equality
+
+- Expected:
+false
+
++ Received:
+undefined
+
+ ❯ src/proxy.commerce-recovery.test.ts:117:80
+    115|  vi.stubGlobal('fetch',async()=>Response.json({state:'paid',operationa…
+    116|  const response=await proxy(request('/app',{'x-nevora-recovery-route':…
+    117|  expect(response?.headers.has('x-middleware-request-x-nevora-recovery-…
+       |                                                                                ^
+    118|  expect(response?.headers.get('x-middleware-override-headers')).not.to…
+    119| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  src/proxy.commerce-recovery.test.ts > clears a caller recovery marker on operational routes when commerce=false
+AssertionError: expected undefined to be false // Object.is equality
+
+- Expected:
+false
+
++ Received:
+undefined
+
+ ❯ src/proxy.commerce-recovery.test.ts:117:80
+    115|  vi.stubGlobal('fetch',async()=>Response.json({state:'paid',operationa…
+    116|  const response=await proxy(request('/app',{'x-nevora-recovery-route':…
+    117|  expect(response?.headers.has('x-middleware-request-x-nevora-recovery-…
+       |                                                                                ^
+    118|  expect(response?.headers.get('x-middleware-override-headers')).not.to…
+    119| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  src/app/app/layout.native.test.tsx > renders authenticated recovery /app/billing without operational shell reads or parallel sheets
+ FAIL  src/app/app/layout.native.test.tsx > renders authenticated recovery /app/my-pay without operational shell reads or parallel sheets
+ FAIL  src/app/app/layout.native.test.tsx > renders authenticated recovery /app/payroll-export without operational shell reads or parallel sheets
+ FAIL  src/app/app/layout.native.test.tsx > renders authenticated recovery /app/pay without operational shell reads or parallel sheets
+Error: operational workspace unavailable
+ ❯ src/app/app/layout.native.test.tsx:72:36
+     70| it.each(['/app/billing','/app/my-pay','/app/payroll-export','/app/pay'…
+     71|  vi.stubEnv('NEVORA_COMMERCE_ENABLED','true');state.recovery=path;
+     72|  state.workspace.mockRejectedValue(Error('operational workspace unavai…
+       |                                    ^
+     73|  const html=renderToStaticMarkup(await layout());
+     74|  expect(html).toContain('PRIVATE workflow');expect(html).not.toContain…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  7 failed | 52 passed (59)
+   Start at  18:03:38
+   Duration  414ms (transform 44%, import 29%, tests 26%, worker 1%)
+

@@ -5,6 +5,8 @@ import { resolve } from "node:path";
 import { createOwnedNextApp } from "./owned-next-app";
 import { seedOwnedApp, TEST_PASSWORD } from "./owned-app-fixture";
 import { fictionalProfile } from "../fixtures/shift-changes";
+import {withManagementBrowserEvidence,type ManagementCaptureState} from './management-browser-evidence';
+import {clickAdvisorRefresh,readAdvisorPrivatePresence,assertAdvisorRetired} from './owner-advisor-retirement';
 
 it("compares real joint day plans with discoverable keyboard review and private retirement", async () => {
   const root = process.env.NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE;
@@ -16,8 +18,10 @@ it("compares real joint day plans with discoverable keyboard review and private 
   const axe = await readFile(requireRuntime.resolve("axe-core/axe.min.js"), "utf8");
   const app = await createOwnedNextApp(evidence, { ownerAdvisorEnabled: true });
   const checks: string[] = [], external: string[] = [], errors: string[] = [], consoleMessages: unknown[] = [];
-  let complete = false;
-  try {
+  const observations:{engine:string;events:unknown[];dropped:number}[]=[];
+  let complete = false,browserClosed=false,appClosed=false,browser:{close():Promise<void>}|undefined;
+  let captureState:ManagementCaptureState|'not_needed'='not_needed',failureShot:((active:()=>boolean)=>Promise<void>)|undefined;
+  await withManagementBrowserEvidence(async()=>{
     await seedOwnedApp(app.database.executor);
     const q = (text: string, values: unknown[] = []) => app.database.executor.query({ text, values });
     await q(`UPDATE location_coverage_windows SET start_time='08:00',end_time='12:00';
@@ -35,10 +39,20 @@ it("compares real joint day plans with discoverable keyboard review and private 
     const origin = app.url.replace("127.0.0.1", "localhost");
     for (const engine of ["chromium", "webkit"]) {
       await q("INSERT INTO employee_positions(employee_id,position_id) VALUES('OA-JOINT-A','qa-pos'),('OA-JOINT-C','qa-pos') ON CONFLICT DO NOTHING");
-      const browser = await runtime[engine].launch({ headless: true });
-      const context = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: "block" });
+      const activeBrowser = await runtime[engine].launch({ headless: true });browser=activeBrowser;
+      const context = await activeBrowser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: "block" });
       const page = await context.newPage();
-      let phase = "login", posts = 0;
+      let phase = "login", posts = 0,scenarioComplete=false;
+      const observation={engine,events:[] as unknown[],dropped:0},started=Date.now();observations.push(observation);
+      const mark=(kind:string,detail:Record<string,unknown>={})=>{if(observation.events.length<64)observation.events.push({kind,phase,elapsedMs:Date.now()-started,...detail});else observation.dropped++;};
+      failureShot=async isActive=>{if(isActive())await Promise.all([
+        page.screenshot({path:resolve(evidence,`${engine}-failed.png`),fullPage:true,timeout:1500}),
+        context.tracing.stop({path:resolve(evidence,`${engine}-trace.zip`)}),
+      ]);};
+      page.on('response',(response:{url():string;status():number;request():{method():string}})=>{
+        const url=new URL(response.url());if(url.origin===origin&&response.request().method()==='GET'&&['/api/owner/advisor','/api/company-access/operational-authority'].includes(url.pathname))mark('authority-response',{path:url.pathname,status:response.status()});
+      });
+      page.on('framenavigated',(frame:{url():string})=>{if(frame===page.mainFrame()){const path=new URL(frame.url()).pathname;mark('navigation',{path:['/login','/app','/app/ai-manager'].includes(path)?path:'other'});}});
       try {
         await context.tracing.start({ screenshots: true, snapshots: true });
         await context.route("**/*", async (route: { request(): { url(): string }; abort(): Promise<void>; continue(): Promise<void> }) => {
@@ -129,28 +143,44 @@ it("compares real joint day plans with discoverable keyboard review and private 
         await page.screenshot({ path: resolve(evidence, `${engine}-remaining.png`), fullPage: true });
         checks.push(`${engine}: a new request uses changed qualifications, new fingerprint and actual remaining position needs`);
 
+        phase='authorized native refresh';mark('refresh-click-start');
+        const authorizedRefresh=page.waitForResponse((response:{url():string;request():{method():string}})=>response.url().endsWith('/api/owner/advisor')&&response.request().method()==='GET');
+        await clickAdvisorRefresh(page);mark('refresh-click-finished');expect((await authorizedRefresh).status()).toBe(200);
+        await result.waitFor();checks.push(`${engine}: native Refresh history remains actionable with current authorized server response`);
+
         phase = "live authority retirement";
+        mark('revocation-start');
         await q("DELETE FROM employee_sessions WHERE employee_id='QAOWNER'");
-        await page.getByRole("button", { name: "Refresh history", exact: true }).first().click();
+        mark('revocation-committed');
+        const denied=()=>observation.events.some((event:unknown)=>typeof event==='object'&&event!==null&&'kind'in event&&event.kind==='authority-response'&&'status'in event&&[401,403].includes(Number(event.status)));
+        await expect.poll(denied,{timeout:20000}).toBe(true);
         await result.waitFor({ state: "hidden" });
-        expect(await page.getByText(`Source fingerprint: ${plans.sourceVersion}`, { exact: true }).count()).toBe(0);
+        const presence=await readAdvisorPrivatePresence(page,[plans.sourceVersion,fresh.answer.coveragePlans.sourceVersion]);assertAdvisorRetired(denied(),presence);
+        mark('private-retirement-observed',presence);
         await page.screenshot({ path: resolve(evidence, `${engine}-retired.png`), fullPage: true });
-        checks.push(`${engine}: real session revocation and refreshed authority retire private plan content`);
+        checks.push(`${engine}: real session revocation and denied server authority remove the private result and both source fingerprints without interacting with a retired document`);
+        scenarioComplete=true;
       } catch (error) {
-        await page.screenshot({ path: resolve(evidence, `${engine}-failed.png`), fullPage: true }).catch(() => {});
-        await writeFile(resolve(evidence, `${engine}-failure.json`), JSON.stringify({ phase, message: String(error) }, null, 2));
+        mark('scenario-failed');
+        await writeFile(resolve(evidence, `${engine}-failure.json`), JSON.stringify({ phase, failureKind:'assertion_or_browser_failure',observation }, null, 2));
         throw error;
       } finally {
-        await context.tracing.stop({ path: resolve(evidence, `${engine}-trace.zip`) }).catch(() => {});
-        await context.close(); await browser.close();
+        if(scenarioComplete){
+          await context.tracing.stop({ path: resolve(evidence, `${engine}-trace.zip`) });
+          await context.close(); await activeBrowser.close();browser=undefined;
+        }
       }
     }
     expect(await q("SELECT (SELECT count(*)::int FROM shifts) shifts,(SELECT count(*)::int FROM schedules) schedules,(SELECT count(*)::int FROM notifications) notifications,(SELECT count(*)::int FROM owner_advisor_requests WHERE kind='ask') asks")).toEqual(before);
     expect(external).toEqual([]); expect(errors).toEqual([]);
     complete = true;
-  } finally {
-    await app.close();
-    await writeFile(resolve(evidence, "report.json"), JSON.stringify({ complete, checks, external, errors, consoleMessages, source: app.sourceHashes,
+  },{
+    releaseBarriers(){},
+    captureFailure:async isActive=>{await failureShot?.(isActive);},recordCapture(state){captureState=state;},
+    closeBrowser:async()=>{await browser?.close();browserClosed=true;},
+    closeApp:async()=>{await app.close();appClosed=true;},
+    writeReport:async()=>{await writeFile(resolve(evidence, "report.json"), JSON.stringify({ complete:complete&&browserClosed&&appClosed,assertionsComplete:complete,browserClosed,appClosed,captureState,checks, external, errors, consoleMessages,observations,source: app.sourceHashes,
       providerConfigured: false, fixtureScope: "real Next/login/API/owned PostgreSQL with fictional people; no API interception, model call or simulated lifecycle event" }, null, 2));
-  }
+    },
+  });
 });

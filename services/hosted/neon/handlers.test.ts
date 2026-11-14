@@ -1,7 +1,7 @@
 import {sourceFixture} from './test-source';
 import {describe,it,expect,vi} from 'vitest';
 import Stripe from 'stripe';
-import {createWebhookHandler,createScheduledHandler,UNUSABLE_DATABASE_URL,observedFetch,type HostedRole} from './handlers';
+import {createWebhookHandler,createScheduledHandler,hostedEnvironmentBound,UNUSABLE_DATABASE_URL,observedFetch,type HostedRole} from './handlers';
 const secret='whsec_hosted_fixture';
 const inert={PGDATABASE:'disabled',PGHOST:'disabled.invalid',PGHOST_UNPOOLED:'disabled.invalid',PGPASSWORD:'disabled',PGUSER:'disabled',AWS_ACCESS_KEY_ID:'disabled',AWS_SECRET_ACCESS_KEY:'disabled',AWS_REGION:'us-east-1',AWS_ENDPOINT_URL_S3:'https://disabled.invalid',NEON_AI_GATEWAY_TOKEN:'disabled',NEON_AI_GATEWAY_BASE_URL:'https://disabled.invalid'};
 const env={...sourceFixture,...inert,NEVORA_NEON_HOST_ENABLED:'true',NEVORA_NEON_BRANCH_ID:'br-fictional-staging',NEON_BRANCH_ID:'br-fictional-staging',NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_WORKSPACE_MODE:'isolated',DATABASE_URL:UNUSABLE_DATABASE_URL,DATABASE_URL_UNPOOLED:UNUSABLE_DATABASE_URL,STRIPE_WEBHOOK_SECRET:secret};
@@ -51,6 +51,51 @@ describe('Neon sandbox webhook boundary',()=>{
  });
 });
 const {STRIPE_WEBHOOK_SECRET:_receiverSecret,...workerEnv}=env;
+describe('explicit production signup provisioner profile',()=>{
+ const production={...workerEnv,NEVORA_NEON_RUNTIME_PROFILE:'production-signup-v1',NEVORA_COMMERCE_ENVIRONMENT:'production',NEVORA_ONBOARDING_ENVIRONMENT:'production',NEVORA_SIGNUP_ORIGIN:'https://signup.nevora.team',NEVORA_PORTAL_BASE_DOMAIN:'portal.nevora.team'};
+ it('admits the production provisioner without admitting live billing or workforce roles',()=>{
+  expect(hostedEnvironmentBound(production,'provisioner')).toBe(true);
+  for(const role of ['commercequeue','commercereconcile','stripewebhook','commerceapi','commerceauthority','workforcemonitor'] as const)expect(hostedEnvironmentBound(production,role)).toBe(false);
+ });
+ it.each([{NEVORA_NEON_RUNTIME_PROFILE:undefined},{NEVORA_NEON_RUNTIME_PROFILE:'production'},{NEVORA_ONBOARDING_ENVIRONMENT:'test'},{NEVORA_COMMERCE_ENVIRONMENT:'staging'},{NEVORA_SIGNUP_ORIGIN:'https://signup-staging.nevora.team'},{NEVORA_PORTAL_BASE_DOMAIN:'portal-staging.nevora.team'},{NEON_BRANCH_ID:'br-other'},{NEVORA_WORKFORCE_ENROLLMENT_ENABLED:'true'}])('rejects mixed or unqualified production capabilities %j',patch=>{
+  expect(hostedEnvironmentBound({...production,...patch},'provisioner')).toBe(false);
+ });
+ it('accepts only the production schedule name and never consumes a staging tick',async()=>{
+  let work=0;const handler=createScheduledHandler('provisioner',production,async()=>{work++;return {state:'completed'};});
+  expect((await handler(tick('provisioner'))).status).toBe(403);
+  const request=tick('provisioner',{trigger:{type:'schedule',id:'trigger-fixture',name:'nevora-production-provisioner'}});
+  expect((await handler(request)).status).toBe(200);expect(work).toBe(1);
+ });
+ it.each([
+  {NEVORA_WORKFORCE_ENROLLMENT_REQUESTS:undefined},
+  {NEVORA_WORKSPACE_MODE:'single_company'},
+  {NEVORA_NEON_SOURCE_SHA:'e'.repeat(40)},
+  {DATABASE_URL:'postgresql://broad.invalid/default'},
+  {DATABASE_URL_UNPOOLED:undefined},
+  {NEVORA_NEON_HOST_ENABLED:'TRUE'},
+ ])('blocks production capabilities or a failed existing custody gate before private work %j',async patch=>{
+  let effects=0;const handler=createScheduledHandler('provisioner',{...production,...patch},async()=>{effects++;return {state:'completed'};});
+  const request=tick('provisioner',{trigger:{type:'schedule',id:'trigger-fixture',name:'nevora-production-provisioner'}});
+  expect((await handler(request)).status).not.toBe(200);expect(effects).toBe(0);
+ });
+ it('permits explicitly disabled enrollment flags without granting enrollment capabilities',()=>{
+  expect(hostedEnvironmentBound({...production,NEVORA_WORKFORCE_ENROLLMENT_ENABLED:'false',NEVORA_ONBOARDING_COMMERCE_ENABLED:'false'},'provisioner')).toBe(true);
+ });
+ it('preserves the provisioner tenant trial binding without admitting production billing or workforce roles',()=>{
+  const trial={...production,NEVORA_ONBOARDING_COMMERCE_ENABLED:'true',NEVORA_COMMERCE_BINDING_KEY:Buffer.alloc(32,11).toString('base64url'),NEVORA_COMMERCE_WORKER_BINDING_KEY:Buffer.alloc(32,12).toString('base64url'),NEVORA_COMMERCE_ENCRYPTION_KEY:Buffer.alloc(32,13).toString('base64'),NEVORA_COMMERCE_ENROLLMENT_DATABASE_URL:'postgresql://nv_commerce_enroll_aaaaaaaaaaaaaaaaaaaaaaaa:fictional@ep-fixture.us-east-1.aws.neon.tech/catalog?sslmode=verify-full'};
+  expect(hostedEnvironmentBound(trial,'provisioner')).toBe(true);
+  for(const role of ['commercequeue','commercereconcile','stripewebhook','commerceapi','commerceauthority','workforcemonitor'] as const)expect(hostedEnvironmentBound(trial,role)).toBe(false);
+ });
+ it('records only bounded production task and HTTP outcome fields',async()=>{
+  const lines:string[]=[];const log=vi.spyOn(console,'info').mockImplementation((line:string)=>{lines.push(line);});
+  try{
+   const handler=createScheduledHandler('provisioner',production,async()=>({state:'completed',private:'fictional-private-payload'}));
+   await observedFetch('provisioner',handler,production)(tick('provisioner',{trigger:{type:'schedule',id:'trigger-fixture',name:'nevora-production-provisioner'}}));
+   expect(lines.map(line=>JSON.parse(line))).toEqual([{event:'nevora_production_task',role:'provisioner',state:'completed'},{event:'nevora_production_http',role:'provisioner',status:200}]);
+   expect(lines.join('')).not.toContain('fictional-private-payload');
+  }finally{log.mockRestore();}
+ });
+});
 describe('Neon scheduled worker boundary',()=>{
  it.each([
   ['commercequeue','STRIPE_WEBHOOK_SECRET'],['commercereconcile','NEVORA_COMMERCE_SMTP_PASSWORD'],['provisioner','STRIPE_SECRET_KEY'],['commercequeue','NEVORA_SIGNUP_SESSION_SECRET'],

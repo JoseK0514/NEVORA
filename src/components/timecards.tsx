@@ -1,6 +1,7 @@
 'use client';
 
 import {classifyTimecardReview,summarizeTimecardReview} from '@/lib/timecards/review-summary';
+import {ManagementCloseForm} from './management-close-form';
 import {keepWhole} from '@/lib/keep-whole';
 import {announceFailure,failureRecovery,nevoraFailure,FAILURE_MESSAGES} from '@/lib/http/nevora-failure';
 import Link from 'next/link';
@@ -156,7 +157,7 @@ function TimecardsState({title,message,failed,signIn,onRetry,className}:{title:s
 const originFailure=(response:Response)=>{const code=nevoraFailure(response);return !!code&&failureRecovery(code)==='origin';};
 const ORIGIN_LINE=`${FAILURE_MESSAGES.origin.title}. ${FAILURE_MESSAGES.origin.body}`;
 
-export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false,today,signature=false}:{initialPeriod:Period;manager:boolean;actorId:string;employeeCorporate?:boolean;
+export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false,today,signature=false,managementRecoveryScope}:{initialPeriod:Period;manager:boolean;actorId:string;employeeCorporate?:boolean;managementRecoveryScope?:string;
   /** Employee Signature (phase 1, approved Oct 20, 2026; target docs/product/specs/employee-style/signature/phase-1/p1c-timecards.png). */
   signature?:boolean;
   /** The workspace's date (manager view): sets This week and Last week and whether approvals are open yet. */
@@ -453,6 +454,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           {/* Closing F1 (NV-029): the decision is confirmed in the panel at once, in words, while the fresh read runs. */}
           {done?.employeeId===openItem.card.employeeId?<p className="c-tc-sheet__done" role="status"><CheckIcon weight="bold" aria-hidden="true"/>{`${done.name==='This'?'This':`${done.name}’s`} timecard is ${done.action==='finalized'?'finalized':'approved'}.`}</p>:null}
           <div className="c-tc-sheet__actions">
+            {!own&&!locked?<Link className={btn('secondary')} href={'/app/timecards/corrections/new/'+encodeURIComponent(openItem.card.employeeId)}>Request time correction</Link>:null}
+            {!own&&managementRecoveryScope?<ManagementCloseForm key={managementRecoveryScope+':'+actorId+':'+openItem.card.employeeId} recoveryScope={managementRecoveryScope} actorId={actorId} timeZone={openItem.card.timeZone}
+              timeEntryId={openItem.card.entries.find(entry=>entry.sourceKind==='RECORDED'&&!entry.endAt&&!entry.rawEndAt)?.id} onClosed={()=>void refresh(period,true)}/>:null}
             {justSaved(openItem)?null:pending?.employeeId===openItem.card.employeeId?<button type="button" className={btn('primary')} disabled={busy} onClick={()=>void act(openItem,pending.action)}>Retry pending action</button>:
               openItem.state==='FINALIZED'?<><label className="c-field"><span className="c-field__label">Reopen reason</span><input className="c-in" value={notes[openItem.card.employeeId]??''} maxLength={500} enterKeyHint="done" autoComplete="off" onChange={e=>setNotes({...notes,[openItem.card.employeeId]:e.target.value})}/></label>
                 <button type="button" className={btn('secondary')} disabled={locked||own||!notes[openItem.card.employeeId]?.trim()} onClick={()=>void act(openItem,'REOPEN')}>Reopen period</button></>:

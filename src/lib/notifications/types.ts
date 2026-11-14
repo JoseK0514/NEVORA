@@ -66,6 +66,7 @@ export type NotificationConfig = {
   featureEnabled: boolean; deliveryEnabled: boolean; testDeliveryEnabled: boolean;
   testAccountIds: readonly string[]; environment: PushEnvironment; portalOrigin: string; policy: NotificationPolicy;
   workerSecret?: string; vapidPublicKey?: string; vapidPrivateKey?: string; vapidSubject?: string; subscriptionEncryptionKey?: string;
+  subscriptionEncryptionKeyId?:string;subscriptionPreviousEncryptionKey?:string;subscriptionPreviousEncryptionKeyId?:string;subscriptionLegacyEncryptionKeyId?:string;
 };
 
 /** Server-verified input only: Task 3 validates consent, proofs and encrypts material. */

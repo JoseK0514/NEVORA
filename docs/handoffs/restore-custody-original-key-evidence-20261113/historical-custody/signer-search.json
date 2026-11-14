@@ -1,0 +1,21 @@
+{
+  "roots": [
+    "/workspace/nevora-scrum-84-85-89/.omo/evidence/scrum84-hosted-20261112",
+    "/workspace/scratch/scrum-completion-private",
+    "/workspace/scratch/scrum-130-89-85-84-evidence"
+  ],
+  "filesScanned": 154,
+  "excludedBinaryArchiveTypes": [
+    "dump",
+    "zip",
+    "bundle",
+    "png",
+    "jpg",
+    "pdf"
+  ],
+  "fileSizeBoundBytes": 16777216,
+  "markerMatches": [],
+  "serializedFixtureCandidates": [],
+  "heapOrCoreFiles": [],
+  "matchingBytesExposed": false
+}

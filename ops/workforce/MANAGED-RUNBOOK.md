@@ -8,9 +8,22 @@ Use `ops/workforce/render.workforce.yaml` in Jose's selected Render workspace `t
 
 The build refuses dirty source and compiles its Git SHA into the host. Runtime requires that SHA to equal Render's documented `RENDER_GIT_COMMIT`. An optional `NEVORA_WORKFORCE_SOURCE_SHA` must also match. The monitor ZIP independently embeds its own clean SHA and checks both source labels; deploy matching host/monitor builds as one reviewed candidate. The closed host can answer `/ready` without a database or any secret. This proves process readiness only.
 
-Alert destination is **support@thevelani.com**. Jose is the initial responder and release decision maker. Mailbox access, backup coverage and a response target remain unverified/unassigned; do not describe the address as a staffed on-call service. Use the [renewal/on-call handoff](../../docs/runbooks/renewal-and-on-call.md) and [finite staging acceptance packet](../../docs/runbooks/web-notification-acceptance.md) before unattended activation.
+Alert destination is **support@thevelani.com**. Jose is primary and Ilianis Soto is secondary, with Owner-assigned 24/7 coverage. Approved internal acknowledgement targets are 15 minutes for critical incidents and one hour for lower severity; these mean ownership and triage, not resolution or a public SLA. Mailbox/responder access, actual alert receipt and a response drill remain unverified; assignment alone does not establish tested coverage. Use the [renewal/on-call handoff](../../docs/runbooks/renewal-and-on-call.md) and [finite staging acceptance packet](../../docs/runbooks/web-notification-acceptance.md) before unattended activation.
 
 ## Credentials and profiles
+
+For the new finite staging pilot, follow [company-specific enrollment](ENROLLMENT-RUNBOOK.md).
+That implemented path keeps shared onboarding/commerce roots inside the existing
+private provisioner. The host receives only each selected company's restricted
+control reader and recipient private key through the protected operator handoff.
+Generate its profile with the enrollment operator; do not hand-author a root-backed
+profile or copy a Vercel/browser environment to bypass missing recoverable custody.
+Local implementation and configuration preflight do not establish hosted enrollment,
+database access, issuer/reader grants or pilot approval.
+
+The environment/root-backed profile description below documents the retained legacy
+format only. It is not the credential prescription for the enrolled pilot; use only
+the format explicitly selected in the reviewed source-bound activation packet.
 
 Do not paste keys into chat, source, commands, build logs or checked-in files. Do not copy a Vercel/browser environment into this service. Obtain existing worker roots through their approved secure store and install only the required managed secret values. A credential existing only in a write-only provider store is not a recoverable handoff; report that limitation instead of adding an export endpoint or resetting enrolled identities.
 
@@ -61,6 +74,16 @@ Disable observer scheduling before a planned drain to avoid a planned-outage ale
 There is one host lock and separate command locks on the private disk. Private state must be canonical, owned by the process user and mode 0700/0600; symlinks or public directories fail closed. Confirmed cleanup releases only the host's own marker. Missing/uncertain cleanup leaves locks in place. A provider restart after a hard kill may therefore require manual recovery; automatic stale-lock deletion would risk overlapping business processing.
 
 For manual recovery: suspend the service and observer; prove the old process/group has stopped; inspect private invocation receipts, database job status, leases and source/environment/incarnation; retain a private evidence copy of the exact stale marker; remove only the reviewed invocation/host marker after cleanup is established. Never delete a durable job, reset an uncertain lease, recreate a company or retry a payment as compensation. Drain before changing profiles, source or keys. Do not restore older disk snapshots over newer job/receipt identities.
+
+The operations CLI retains its shutdown handlers until its terminal receipt has
+finished writing to the host pipe. Durable receipt persistence alone does not
+prove that the parent received it. Unconfirmed custody emits one
+`managed_custody_unconfirmed` record with source/scope/command, run or health
+phase, enumerated reason, process result flags and receipt-binding booleans.
+`managed_state_release_failed` separately identifies a filesystem release
+failure. Neither record contains child output, exception text, credentials or
+employee/provider payloads. These diagnostics do not authorize lock recovery or
+turn unknown cleanup into confirmed cleanup.
 
 Rollback selects a previously verified matching host/monitor source and configuration, with processing/delivery closed first. Keep the current source, durable queues and ambiguous outcome records for diagnosis. Rolling back application code does not reverse an accepted email, payroll document or business mutation. No main/production deployment is authorized by this runbook.
 

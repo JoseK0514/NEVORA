@@ -1,10 +1,12 @@
 import { projectTimecard, type Period, type Timecard, type TimecardSource } from './project';
+import {completeReadManifest,type CompleteReadManifest} from '../complete-read-pages';
+export const TIMECARD_READ_PAGE_SIZE = 300;
 
 export type TimecardHistory = { operationId: string; revision: number; action:'APPROVE'|'FINALIZE'|'REOPEN';
   occurredAt:string; actorName:string; note:string|null; sourceHash:string; snapshot:TimecardSource };
 export type TimecardItem = { source:TimecardSource; card:Timecard; sourceHash:string; revision:number;
   state:'DRAFT'|'APPROVED'|'FINALIZED'|'REOPENED'|'NEEDS_REVIEW'; history:TimecardHistory[] };
-export type TimecardProjection = {weeklyHoursLimit?:number|null;state:'ready';observedAt:string;period:Period;cards:TimecardItem[]};
+export type TimecardProjection = {weeklyHoursLimit?:number|null;paging?:CompleteReadManifest;state:'ready';observedAt:string;period:Period;cards:TimecardItem[]};
 export type TimecardsResult = (TimecardProjection & {validForMs:number})|{
   state:'unavailable';reason:'access_denied'|'source_limit'|'read_failed'|'schema_missing'};
 const object = (v:unknown):v is Record<string,unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
@@ -18,7 +20,8 @@ const safeText=(v:unknown,max=300):v is string=>typeof v==='string'&&v===v.trim(
  * response throws rather than presenting incomplete review evidence as ready.
  */
 export function parseTimecardsResponse(v:unknown,period:Period):TimecardProjection {
-  if(!object(v)||!safeText(v.observedAt,100)||!Array.isArray(v.cards)||v.cards.length>300)throw new Error('Invalid timecards');
+  if(!object(v)||!safeText(v.observedAt,100)||!Array.isArray(v.cards))throw new Error('Invalid timecards');
+  const paging=completeReadManifest(v.paging,v.cards.length,TIMECARD_READ_PAGE_SIZE);
   let entries=0,corrections=0;
   const cards=v.cards.map((raw):TimecardItem=>{
     if(!object(raw)||!sourceHash(raw.sourceHash)||!Number.isSafeInteger(raw.revision)||Number(raw.revision)<0||
@@ -42,6 +45,6 @@ export function parseTimecardsResponse(v:unknown,period:Period):TimecardProjecti
   if(new Set(cards.map(c=>c.card.employeeId)).size!==cards.length)throw new Error('Duplicate timecards');
   // No persisted company weekly-hours ceiling exists. Scheduling personal maxima and
   // overtime-risk thresholds are different contracts; neither defines this limit.
-  return {state:'ready',observedAt:v.observedAt,period,cards,weeklyHoursLimit:null};
+  return {state:'ready',observedAt:v.observedAt,period,cards,weeklyHoursLimit:null,...(paging?{paging}:{})};
 }
 

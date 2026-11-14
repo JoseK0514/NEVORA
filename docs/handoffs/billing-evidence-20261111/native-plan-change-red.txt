@@ -1,0 +1,59 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-billing-completion-20261111
+
+ ❯ services/hosted/neon/capabilities.test.ts (26 tests | 1 failed) 7ms
+   ❯ hosted provisioning control credentials (26)
+     × grants plan confirmation configuration names only to the browser commerce API role 3ms
+ ❯ services/hosted/neon/commerceapi.test.ts (39 tests | 2 failed) 12ms
+   × admits the plan-change POST with its paired non-secret configuration IDs and preserves original-handler authorization inputs 4ms
+   × refuses a malformed or partial plan-change deployment and never dispatches a GET mutation 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  services/hosted/neon/capabilities.test.ts > hosted provisioning control credentials > grants plan confirmation configuration names only to the browser commerce API role
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ services/hosted/neon/capabilities.test.ts:10:70
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  services/hosted/neon/commerceapi.test.ts > admits the plan-change POST with its paired non-secret configuration IDs and preserves original-handler authorization inputs
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ services/hosted/neon/commerceapi.test.ts:12:26
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  services/hosted/neon/commerceapi.test.ts > refuses a malformed or partial plan-change deployment and never dispatches a GET mutation
+AssertionError: expected 404 to be 503 // Object.is equality
+
+- Expected
++ Received
+
+- 503
++ 404
+
+ ❯ services/hosted/neon/commerceapi.test.ts:15:407
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 62 passed (65)
+   Start at  21:50:24
+   Duration  186ms (import 52%, transform 33%, tests 12%, worker 3%)

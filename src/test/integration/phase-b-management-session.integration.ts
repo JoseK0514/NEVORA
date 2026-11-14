@@ -18,6 +18,9 @@ import { createDisposableFoundationDatabase } from './local-postgres';
 import {installFixtureCompanyAccess} from './fixture-company-access';
 import * as actions from '../../app/app/settings/actions';
 import { createShiftAction, setAvailabilityDeadlineAction } from '../../app/app/schedule/actions';
+import type { GenerationSource } from '../../lib/data/generation-guards';
+
+const businessMutation = (statements: readonly SqlStatement[]) => statements.some(statement => /^\s*(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\b/.test(statement.text));
 
 const cases = [
   { key: 'createLocation', action: actions.createLocationAction, form: { name: 'Revoked Location', shortName: 'Revoked', clockerKey: 'revoked-location' }, sql: "SELECT id FROM locations WHERE clocker_key='revoked-location'" },
@@ -40,16 +43,22 @@ it.each(cases)('actual $key action rejects a session revoked after entry authori
       : test.key === 'updatePosition'
         ? (await db.executor.query<{ updatedAt: string }>({ text: "SELECT updated_at::text AS \"updatedAt\" FROM positions WHERE id='p1'", values: [] }))[0].updatedAt
         : undefined;
-    let revoked = false;
+    let revoked = false, mutationAttempts = 0, sqlDenial: unknown;
     context.executor = { query: db.executor.query, transaction: async (statements, signal) => {
-      if (!revoked) { revoked = true; await db.executor.query({ text: 'DELETE FROM employee_sessions WHERE token_hash=$1', values: [hash] }); }
-      return db.executor.transaction(statements, signal);
+      const mutation = businessMutation(statements);
+      if (mutation) mutationAttempts++;
+      // Revoke after action proof/validation, at the guarded write batch.
+      if (mutation && !revoked) { revoked = true; await db.executor.query({ text: 'DELETE FROM employee_sessions WHERE token_hash=$1', values: [hash] }); }
+      try { return await db.executor.transaction(statements, signal); }
+      catch (error) { if (mutation) sqlDenial = error; throw error; }
     } };
     const data = new FormData(); for (const [key, value] of Object.entries(test.form)) data.set(key, String(value));
     if (reviewedVersion) data.set('expectedUpdatedAt', reviewedVersion);
     data.set('actorEmployeeId', 'FORGED'); data.set('sessionTokenHash', 'FORGED');
     let result: unknown; try { result = await test.action(data); } catch (error) { result = error; }
     expect(revoked).toBe(true);
+    expect(mutationAttempts).toBe(1);
+    expect(sqlDenial).toMatchObject({code:'22P02',message:expect.stringMatching(/(?:management|operational)_authorization/)});
     expect(await db.executor.query({ text: test.sql, values: [] })).toEqual([]);
     expect(result).not.toMatchObject({ success: expect.any(String) });
     expect(await db.executor.query({ text: 'SELECT employee_id FROM employee_sessions', values: [] })).toEqual([]);
@@ -66,16 +75,38 @@ it.each(['overlap', 'approved-time-off'])('actual manual assignment rejects newl
     const token = 'owned-phase-b-owner-session', hash = createHash('sha256').update(token).digest('hex');
     await db.executor.query({ text: "INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'owner',clock_timestamp()+interval '1 day')", values: [hash] });
     context.cookies.set('fuel_session', token);
-    let injected = false;
-    context.executor = { query: db.executor.query, transaction: async (statements, signal) => {
-      if (!injected) { injected = true; await db.executor.query({ text: change === 'overlap'
+    await installFixtureCompanyAccess(db.executor);
+    let injected = false, writeAttempts = 0;
+    const snapshots: GenerationSource[] = [], conflicts: unknown[] = [];
+    const history = await db.executor.query({text:'SELECT id FROM schedule_publication_revisions ORDER BY id',values:[]});
+    const notices = await db.executor.query({text:'SELECT id FROM notifications ORDER BY id',values:[]});
+    context.executor = { query: async <T>(statement:SqlStatement,signal?:AbortSignal) => {
+      const rows = await db.executor.query<T>(statement,signal);
+      if(statement.text.includes(' AS state, clock_timestamp()::text AS read_at')) snapshots.push((rows[0] as {source:GenerationSource}).source);
+      return rows;
+    }, transaction: async (statements, signal) => {
+      const assignment = statements.some(statement => /^INSERT INTO shifts\b/.test(statement.text));
+      if(assignment)writeAttempts++;
+      // The first real write is already planned against a clean snapshot. A
+      // separately committed conflict must abort its source guard and force retry.
+      if (assignment && !injected) { injected = true; await db.executor.query({ text: change === 'overlap'
         ? "INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('concurrent','other','WORKER','2030-10-07','08:00','16:00')"
         : "INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reviewed_by) VALUES('concurrent','WORKER','2030-10-07','2030-10-07','APPROVED','owner')", values: [] }); }
-      return db.executor.transaction(statements, signal);
+      try { return await db.executor.transaction(statements, signal); }
+      catch(error){if(assignment)conflicts.push(error);throw error;}
     } };
     const data = new FormData(); for (const [key, value] of Object.entries({ weekStart: '2030-10-07', employeeId: 'WORKER', locationId: 'loc-1', date: '2030-10-07', startTime: '10:00', endTime: '12:00' })) data.set(key, value);
-    await createShiftAction(data).catch(() => {});
+    const result = await createShiftAction(data);
     expect(injected).toBe(true);
+    expect(writeAttempts).toBe(1);
+    expect(snapshots).toHaveLength(2);
+    expect(snapshots[0].shifts).toEqual([]);
+    expect(snapshots[0].time_off_requests).toEqual([]);
+    expect(conflicts).toEqual([expect.objectContaining({code:'22P02',message:expect.stringContaining('generation_source_conflict')})]);
+    expect(change==='overlap'?snapshots[1].shifts:snapshots[1].time_off_requests).toEqual([expect.objectContaining({id:'concurrent'})]);
+    expect(result).toMatchObject({issueCode:change==='overlap'?'SHIFT_OVERLAP':'APPROVED_TIME_OFF'});
     expect(await db.executor.query({ text: "SELECT id FROM shifts WHERE schedule_id='schedule'", values: [] })).toEqual([]);
+    expect(await db.executor.query({text:'SELECT id FROM schedule_publication_revisions ORDER BY id',values:[]})).toEqual(history);
+    expect(await db.executor.query({text:'SELECT id FROM notifications ORDER BY id',values:[]})).toEqual(notices);
   } finally { context.executor = db.executor; await db.dispose(); }
 });

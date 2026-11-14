@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import {readOperationalDirectory} from '@/lib/company-access/operational-read.server';
 import {ScopedEmployeeDirectory} from '@/components/company-access/scoped-operational-views';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -19,11 +20,11 @@ export default async function EmployeesPage({ searchParams }: {
   const params=await(searchParams??Promise.resolve({}));
   const source=await readOperationalDirectory(await requireSessionMutationProof());
   if(source.state==='unavailable')return <OperationalUnavailable title="Employees unavailable" reason={source.reason}/>;
-  if(source.data.mode==='LOCATIONS')return <ScopedEmployeeDirectory data={source.data} observation={source}/>;
+  if(source.data.mode==='LOCATIONS')return <ScopedEmployeeDirectory data={source.data} observation={scopedObservation(source)}/>;
   const {employees,locations}=source.data;
   const filters = readDirectoryFilters(params, locations);
   // Each person's detail line names their position, and search matches it; a failed read falls back to the role.
   const positions = await listPositions({ includeInactive: true }).catch(() => []);
-  return <ScopedReadFrame observation={source}><EmployeeDirectory clockerRecovery={actor.role==='OWNER'} positions={positions} words={wordPreset((await currentPresentation()).words).en} employees={employees} locations={locations} filters={filters}
+  return <ScopedReadFrame observation={scopedObservation(source)}><EmployeeDirectory clockerRecovery={actor.role==='OWNER'} positions={positions} words={wordPreset((await currentPresentation()).words).en} employees={employees} locations={locations} filters={filters}
     visibleEmployees={filterDirectoryEmployees(employees, filters, new Map(positions.map(position => [position.id, position.name])))} showAll={(params as DirectorySearchParams).all === '1'} /></ScopedReadFrame>;
 }

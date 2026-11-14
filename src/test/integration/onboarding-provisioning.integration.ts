@@ -5,7 +5,7 @@ import {ControlCommitUnknown,createControlStore,type ControlStore} from '@/lib/o
 import {onboardingTestConfig} from './onboarding-test-config';
 import {requestRegistration,verifyRegistration,readRegistration} from '@/lib/onboarding/registration.server';
 import {requestWorkspace,readProvisioningOperation,claimProvisioningJob} from '@/lib/onboarding/provisioning/store.server';
-import {it,expect,describe,beforeAll,afterAll,beforeEach} from 'vitest';
+import {it,expect,describe,beforeAll,afterAll,beforeEach,vi} from 'vitest';
 import {Client,type QueryResultRow} from 'pg';
 import {randomUUID,randomBytes} from 'node:crypto';
 import {freshOnboardingDatabase,freshOnboardingControl} from './onboarding-fixture';
@@ -33,6 +33,14 @@ it('atomically installs only canonical migrations, a pending Owner without crede
    await expect(appClient.query('SELECT token_digest FROM onboarding_owner_grants')).rejects.toMatchObject({code:'42501'});
    await expect(appClient.query('UPDATE onboarding_workspace_identity SET incarnation=2')).rejects.toMatchObject({code:'42501'});
    expect((await appClient.query("SELECT has_database_privilege(current_user,current_database(),'TEMP') AS temporary")).rows[0].temporary).toBe(false);
+   expect((await appClient.query("SELECT has_function_privilege(current_user,'nevora_submit_delegated_time_correction(uuid,text,text,text,text,text,text,text,timestamptz,timestamptz,text,text)','EXECUTE') AS base,has_function_privilege(current_user,'nevora_submit_delegated_time_correction(uuid,text,text,text,text,text,text,text,timestamptz,timestamptz,text,text,uuid,integer)','EXECUTE') AS supersession")).rows[0]).toEqual({base:true,supersession:true});
+   expect((await appClient.query(`SELECT has_table_privilege(current_user,'management_time_closes','SELECT') AS read,
+    has_table_privilege(current_user,'management_time_closes','INSERT') AS insert,
+    has_table_privilege(current_user,'management_time_closes','UPDATE') AS update,
+    has_table_privilege(current_user,'management_time_closes','DELETE') AS delete,
+    has_table_privilege(current_user,'management_time_closes','TRUNCATE') AS truncate,
+    has_function_privilege(current_user,'nevora_management_close_source(text,text)','EXECUTE') AS source,
+    has_function_privilege(current_user,'nevora_management_close(text,text,text,text,text,text,uuid,text,timestamptz,text,text)','EXECUTE') AS close`)).rows[0]).toEqual({read:true,insert:true,update:false,delete:false,truncate:false,source:true,close:true});
   }finally{await appClient.end();}
 
   const workerUrl=new URL(db.connectionUrl);workerUrl.username=spec.worker.name;workerUrl.password=spec.worker.password;const workerClient=new Client({connectionString:workerUrl.href});await workerClient.connect();try{
@@ -40,6 +48,11 @@ it('atomically installs only canonical migrations, a pending Owner without crede
    await expect(workerClient.query("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'OWNER-1',clock_timestamp()+interval '1 hour')",['a'.repeat(64)])).rejects.toMatchObject({code:'42501'});
    await expect(workerClient.query("UPDATE employees SET role='EMPLOYEE' WHERE id='OWNER-1'")).rejects.toMatchObject({code:'42501'});
    await expect(workerClient.query('SELECT password_hash FROM employee_credentials')).rejects.toMatchObject({code:'42501'});
+   expect((await workerClient.query("SELECT has_function_privilege(current_user,'nevora_submit_delegated_time_correction(uuid,text,text,text,text,text,text,text,timestamptz,timestamptz,text,text)','EXECUTE') AS base,has_function_privilege(current_user,'nevora_submit_delegated_time_correction(uuid,text,text,text,text,text,text,text,timestamptz,timestamptz,text,text,uuid,integer)','EXECUTE') AS supersession")).rows[0]).toEqual({base:false,supersession:false});
+   expect((await workerClient.query(`SELECT has_table_privilege(current_user,'management_time_closes','SELECT') AS read,
+    has_table_privilege(current_user,'management_time_closes','INSERT') AS insert,
+    has_function_privilege(current_user,'nevora_management_close_source(text,text)','EXECUTE') AS source,
+    has_function_privilege(current_user,'nevora_management_close(text,text,text,text,text,text,uuid,text,timestamptz,text,text)','EXECUTE') AS close`)).rows[0]).toEqual({read:false,insert:false,source:false,close:false});
   }finally{await workerClient.end();}
   await admin.query('UPDATE onboarding_workspace_identity SET incarnation=incarnation+1');
   await expect(bootstrapPendingCompany(client,spec)).rejects.toThrow();
@@ -61,7 +74,7 @@ describe('verified control-plane provisioning commands',()=>{
  const config=onboardingTestConfig({NEVORA_ONBOARDING_PROVIDER_ENABLED:'true',NEVORA_ONBOARDING_MAX_NEW_PROJECTS_PER_DAY:'10',NEVORA_ONBOARDING_PROVIDER_ACCOUNT_REF:'fictional-org',NEVORA_ONBOARDING_RESOURCE_POLICY_VERSION:'fictional-policy-1'});
  beforeAll(async()=>{db=await freshOnboardingControl();store=createControlStore(db.pool);});afterAll(async()=>{await db?.close();});
  beforeEach(async()=>{await db.pool.query('TRUNCATE nevora_onboarding.registrations,nevora_onboarding.admission_counters,nevora_onboarding.email_subjects CASCADE');});
- async function verified(email:string){let proof='';await requestRegistration({schemaVersion:1,operationId:randomUUID(),email,locale:'en',termsVersion:config.termsVersion,privacyVersion:config.privacyVersion},store,{async send(message){proof=message.proof;return {providerAccepted:true};}},config,'127.0.0.1');const result=await verifyRegistration({operationId:randomUUID(),proof},store,config);if(result.state!=='verified')throw Error('Owned signup verification failed');return result;}
+ async function verified(email:string,profile=config){let proof='';await requestRegistration({schemaVersion:1,operationId:randomUUID(),email,locale:'en',termsVersion:profile.termsVersion,privacyVersion:profile.privacyVersion},store,{async send(message){proof=message.proof;return {providerAccepted:true};}},profile,'127.0.0.1');const result=await verifyRegistration({operationId:randomUUID(),proof},store,profile);if(result.state!=='verified')throw Error('Owned signup verification failed');return result;}
  const command=(version:string,slug='fictional-north')=>({schemaVersion:1,operationId:randomUUID(),expectedVersion:version,payload:{...payload,requestedSlug:slug}});
  it('serializes identical submits and returns the same durable operation without duplicate workspace reservation',async()=>{
   const actor=await verified('owner-a@example.invalid'),c=command(actor.snapshot.version);const results=await Promise.all([requestWorkspace(actor.session,c,store,config),requestWorkspace(actor.session,c,store,config)]);expect(results.map(r=>r.state)).toEqual(['pending','pending']);expect((await db.pool.query('SELECT count(*)::int n FROM nevora_onboarding.provisioning_operations')).rows[0].n).toBe(1);expect((await db.pool.query('SELECT count(*)::int n FROM nevora_onboarding.workspace_registry')).rows[0].n).toBe(1);
@@ -88,10 +101,63 @@ describe('verified control-plane provisioning commands',()=>{
   expect((await h.request(make('nevora_signup='+a.sessionToken+'; nevora_signup='+a.sessionToken))).status).toBe(401);
   const r=await h.request(make('nevora_signup='+a.sessionToken));expect(r.status).toBe(202);expect(JSON.stringify(await r.json())).not.toMatch(/ciphertext|password|email|secret|token/i);
   const current=await h.read(new Request(config.signupOrigin+'/api/onboarding/operations/current',{headers:{cookie:'nevora_signup='+a.sessionToken}}),'current');expect(current.status).toBe(202);expect(await current.json()).toMatchObject({state:'pending',operationId:c.operationId});
+  const {proxy}=await import('@/proxy'),{NextRequest}=await import('next/server');
+  vi.stubEnv('NEVORA_COMMERCE_ENABLED','true');vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');
+  try{
+   const resumeUrl=config.signupOrigin+'/api/onboarding/operations/current';
+   expect(await proxy(new NextRequest(resumeUrl))).toBeUndefined();
+   expect((await h.read(new Request(resumeUrl),'current')).status).toBe(401);
+   const foreign=await verified('other-resume@example.invalid');
+   expect((await h.read(new Request(resumeUrl,{headers:{cookie:'nevora_signup='+foreign.sessionToken}}),'current')).status).toBe(403);
+   const resumed=await h.read(new Request(resumeUrl,{headers:{cookie:'nevora_signup='+a.sessionToken}}),'current');
+   expect(await resumed.json()).toMatchObject({state:'pending',operationId:c.operationId});
+   expect((await db.pool.query('SELECT count(*)::int n FROM nevora_onboarding.provisioning_operations')).rows[0].n).toBe(1);
+  }finally{vi.unstubAllEnvs();}
   const poll=await h.read(new Request(config.signupOrigin+'/api/onboarding/operations/'+c.operationId,{headers:{cookie:'nevora_signup='+a.sessionToken}}),c.operationId);expect(poll.status).toBe(202);expect(await poll.json()).toMatchObject({state:'pending',operationId:c.operationId});
  });
  it('enforces the daily reservation allowance before a second resource is queued',async()=>{
   const a=await verified('owner-a@example.invalid'),b=await verified('owner-b@example.invalid'),limited={...config,maxNewProjectsPerDay:1};expect((await requestWorkspace(a.session,command(a.snapshot.version,'alpha'),store,limited)).state).toBe('pending');expect((await requestWorkspace(b.session,command(b.snapshot.version,'beta'),store,limited)).state).toBe('limited');
+ });
+ it('enforces the total company capacity atomically across concurrent reservations',async()=>{
+  const a=await verified('capacity-a@example.invalid'),b=await verified('capacity-b@example.invalid'),limited={...config,maxTotalProjects:1};
+  const results=await Promise.all([requestWorkspace(a.session,command(a.snapshot.version,'capacity-a'),store,limited),requestWorkspace(b.session,command(b.snapshot.version,'capacity-b'),store,limited)]);
+  expect(results.map(r=>r.state).sort()).toEqual(['pending','unavailable']);
+  expect(results).toContainEqual({state:'unavailable',reasonCode:'PROVISIONING_CAPACITY'});
+  expect((await db.pool.query('SELECT count(*)::int n FROM nevora_onboarding.provisioning_operations')).rows[0].n).toBe(1);
+ });
+ it('shares total reservation capacity across environments on the same provider account',async()=>{
+  const limited={...config,maxTotalProjects:1},development={...limited,environment:'development' as const};
+  const a=await verified('cross-environment-a@example.invalid'),b=await verified('cross-environment-b@example.invalid',development);
+  const results=await Promise.all([requestWorkspace(a.session,command(a.snapshot.version,'cross-a'),store,limited),requestWorkspace(b.session,command(b.snapshot.version,'cross-b'),store,development)]);
+  expect(results.map(r=>r.state).sort()).toEqual(['pending','unavailable']);
+  expect(results).toContainEqual({state:'unavailable',reasonCode:'PROVISIONING_CAPACITY'});
+  expect((await db.pool.query('SELECT count(*)::int n FROM nevora_onboarding.provisioning_operations')).rows[0].n).toBe(1);
+ });
+ it('keeps a prior-day unknown dispatch in total capacity without issuing another provider create',async()=>{
+  const a=await verified('unknown-capacity-a@example.invalid'),b=await verified('unknown-capacity-b@example.invalid');
+  await requestWorkspace(a.session,command(a.snapshot.version,'unknown-a'),store,config);await requestWorkspace(b.session,command(b.snapshot.version,'unknown-b'),store,config);
+  const provider=new OwnedProvisioningProvider();provider.loseNextCreateResponse=true;
+  try{
+   await db.pool.query("CREATE FUNCTION nevora_onboarding.fixture_prior_dispatch_day() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN NEW.dispatched_at:=clock_timestamp()-interval '1 day'; RETURN NEW; END $$; CREATE TRIGGER fixture_prior_dispatch_day BEFORE INSERT ON nevora_onboarding.provisioning_attempts FOR EACH ROW EXECUTE FUNCTION nevora_onboarding.fixture_prior_dispatch_day()");
+   expect((await runProvisioningJob((await claimProvisioningJob(store,config))!,{store,config,provider,connect:provider.connect})).state).toBe('pending');
+   await db.pool.query('DROP TRIGGER fixture_prior_dispatch_day ON nevora_onboarding.provisioning_attempts; DROP FUNCTION nevora_onboarding.fixture_prior_dispatch_day()');
+   const limited={...config,maxTotalProjects:1};
+   expect((await runProvisioningJob((await claimProvisioningJob(store,limited))!,{store,config:limited,provider,connect:provider.connect})).state).toBe('pending');
+   expect(provider.createCalls).toBe(1);
+   expect((await db.pool.query('SELECT outcome FROM nevora_onboarding.provisioning_attempts')).rows.map(r=>r.outcome)).toEqual(['UNKNOWN']);
+   expect((await db.pool.query("SELECT count(*)::int n FROM nevora_onboarding.provisioning_operations WHERE reason_code='TOTAL_PROJECT_LIMIT'")).rows[0].n).toBe(1);
+  }finally{await db.pool.query('DROP TRIGGER IF EXISTS fixture_prior_dispatch_day ON nevora_onboarding.provisioning_attempts; DROP FUNCTION IF EXISTS nevora_onboarding.fixture_prior_dispatch_day()');await provider.close();}
+ });
+ it('honors a lowered total dispatch allowance against already reserved jobs',async()=>{
+  const a=await verified('dispatch-capacity-a@example.invalid'),b=await verified('dispatch-capacity-b@example.invalid');
+  await requestWorkspace(a.session,command(a.snapshot.version,'dispatch-a'),store,config);await requestWorkspace(b.session,command(b.snapshot.version,'dispatch-b'),store,config);
+  const provider=new OwnedProvisioningProvider(),limited={...config,maxTotalProjects:1};
+  try{
+   const leases=await Promise.all([claimProvisioningJob(store,limited),claimProvisioningJob(store,limited)]);expect(leases.every(Boolean)).toBe(true);
+   const results=await Promise.all(leases.map(lease=>runProvisioningJob(lease!,{store,config:limited,provider,connect:provider.connect})));
+   expect(provider.createCalls).toBe(1);expect(results.map(r=>r.state).sort()).toEqual(['complete','pending']);
+   expect((await db.pool.query("SELECT count(*)::int n FROM nevora_onboarding.provisioning_operations WHERE reason_code='TOTAL_PROJECT_LIMIT'")).rows[0].n).toBe(1);
+  }finally{await provider.close();}
  });
 
  it('enforces the dispatch-day ceiling against prior-day backlog, concurrent jobs and a lowered cap',async()=>{

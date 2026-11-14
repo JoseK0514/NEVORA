@@ -1,3 +1,4 @@
+vi.mock('./sql-session-contract',()=>import('../../test/fixtures/business-sql-session'));
 import {expect,it,vi} from 'vitest';
 vi.mock('server-only',()=>({}));
 const mocks=vi.hoisted(()=>({today:vi.fn(),actions:vi.fn(),query:vi.fn()}));

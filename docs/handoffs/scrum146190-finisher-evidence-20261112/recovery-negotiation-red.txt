@@ -1,0 +1,89 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-worker-quota-repair-20261112
+
+ ❯ src/proxy.commerce-recovery.test.ts (44 tests | 20 failed) 32ms
+   × retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'application/json', …(1) } 3ms
+   × retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'text/x-component', …(1) } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'application/json,text/html' } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when restricted: { …(1) } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'text/html;q=0' } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'text/html;q=0', …(1) } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'text/html;q=0.000' } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'text/html;q=invalid', …(1) } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'text/html;q=0;q=1' } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'text/html', …(2) } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'application/json', …(1) } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'text/x-component', …(1) } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'application/json,text/html' } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when unavailable: { …(1) } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'text/html;q=0' } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'text/html;q=0', …(1) } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'text/html;q=0.000' } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'text/html;q=invalid', …(1) } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'text/html;q=0;q=1' } 0ms
+   × retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'text/html', …(2) } 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 20 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'application/json', …(1) }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'text/x-component', …(1) }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'application/json,text/html' }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when restricted: { …(1) }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'text/html;q=0' }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'text/html;q=0', …(1) }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'text/html;q=0.000' }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'text/html;q=invalid', …(1) }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'text/html;q=0;q=1' }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when restricted: { accept: 'text/html', …(2) }
+AssertionError: expected 303 to be 402 // Object.is equality
+
+- Expected
++ Received
+
+- 402
++ 303
+
+ ❯ src/proxy.commerce-recovery.test.ts:99:28
+     97|   authority(state);
+     98|   const response=await proxy(request('/app/schedule?private=discard',h…
+     99|   expect(response?.status).toBe(state==='restricted'?402:503);
+       |                            ^
+    100|   expect(response!.headers.has('location')).toBe(false);
+    101|   expect(await response!.json()).toEqual({error:{code:state==='restric…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/20]⎯
+
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'application/json', …(1) }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'text/x-component', …(1) }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'application/json,text/html' }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when unavailable: { …(1) }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'text/html;q=0' }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'text/html;q=0', …(1) }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'text/html;q=0.000' }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'text/html;q=invalid', …(1) }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'text/html;q=0;q=1' }
+ FAIL  src/proxy.commerce-recovery.test.ts > retains JSON denial for conflicting or refused document negotiation when unavailable: { accept: 'text/html', …(2) }
+AssertionError: expected 303 to be 503 // Object.is equality
+
+- Expected
++ Received
+
+- 503
++ 303
+
+ ❯ src/proxy.commerce-recovery.test.ts:99:28
+     97|   authority(state);
+     98|   const response=await proxy(request('/app/schedule?private=discard',h…
+     99|   expect(response?.status).toBe(state==='restricted'?402:503);
+       |                            ^
+    100|   expect(response!.headers.has('location')).toBe(false);
+    101|   expect(await response!.json()).toEqual({error:{code:state==='restric…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/20]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  20 failed | 24 passed (44)
+   Start at  17:48:08
+   Duration  129ms (tests 52%, transform 29%, import 16%, worker 3%)
+

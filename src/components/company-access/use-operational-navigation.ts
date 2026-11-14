@@ -19,7 +19,7 @@ export function useOperationalNavigation(employeeId:string,role:UserRole,initial
  // Manager can still move between pages (each page checks access itself). An access denial forgets it.
  const [lastReady,setLastReady]=useState<Extract<OperationalAuthorityView,{state:'ready'}>|null>(initial?.state==='ready'?initial:null);
  useEffect(()=>{
-  if(role!=='MANAGER')return;
+  if(role!=='MANAGER'&&role!=='OWNER')return;
   let mounted=true,changed=false,baseline=initial?.state==='ready'?scopeIdentity(initial):null;
   function identityChanged(){if(!changed){changed=true;onAccessChange('identity');}}
   const changedState=(next:PrivatePanelState<OperationalAuthorityView>)=>{

@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {readOperationalSchedule,readSchedulePendingChanges} from '@/lib/company-access/operational-read.server';
 import {ScopedOperationalSchedule} from '@/components/company-access/scoped-operational-views';
@@ -137,7 +138,7 @@ export default async function SchedulePage({
       const source=await readOperationalSchedule(proof,{weekStart,...(params.location===undefined||params.location==='all'?{}:{locationId:params.location})});
       if(source.state==='unavailable')return <OperationalUnavailable title="Schedule unavailable" reason={source.reason} scoped/>;
       if(source.authority!==access.authority)return <OperationalUnavailable title="Schedule unavailable" reason="source_changed" scoped/>;
-      return withRepair(<ScopedOperationalSchedule data={source.data} observation={source} feedback={<>{repairNote("corp")}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/></>}/>);
+      return withRepair(<ScopedOperationalSchedule data={source.data} observation={scopedObservation(source)} feedback={<>{repairNote("corp")}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/></>}/>);
     }
   }
   async function renderSchedule(){
@@ -524,5 +525,5 @@ export default async function SchedulePage({
   if(!manager)return renderSchedule();
   const source=await withOperationalCompany(await requireSessionMutationProof(),renderSchedule);
   if(source.state==='unavailable')return <OperationalUnavailable title="Schedule unavailable" reason={source.reason}/>;
-  return <ScopedReadFrame observation={source}>{source.data}</ScopedReadFrame>;
+  return <ScopedReadFrame observation={scopedObservation(source)}>{source.data}</ScopedReadFrame>;
 }

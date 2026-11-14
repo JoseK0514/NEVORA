@@ -1,0 +1,26 @@
+Owned onboarding PostgreSQL started on loopback; existing databases are not used.
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-step2-onboarding-20261112
+
+ ✓ src/test/integration/onboarding-invitations.integration.ts (14 tests) 15537ms
+   ✓ keeps GET read-only with prepared targets and stops the same continuation after logout during delivery 1265ms
+   ✓ issues the explicit selected group once through canonical receipts with the existing168hour lifetime 732ms
+   ✓ reports accepted, known failed and unknown external delivery per person without automatically resending 836ms
+   ✓ revalidates a queued target email/version before the next chunk and never sends stale reviewed input 1037ms
+   ✓ retains an unknown dispatch fence after a crash before canonical issue and does not repeat it on replay 692ms
+   ✓ serializes duplicate batch submits and rejects changed selection under the same operation ID 720ms
+   ✓ stops remaining sends when the issuing Owner is demoted during the external delivery wait 693ms
+   ✓ pins queued target role generation independently of an unchanged timestamp 967ms
+   ✓ keeps an unknown outcome after a lost canonical invitation commit response and never reconstructs or resends its bearer 937ms
+   ✓ does not bind an old approval to the same Owner after demotion and later promotion 1605ms
+   ✓ uses the real mail adapter against owned loopback SMTP and activates only the exact bound company proof 2270ms
+   ✓ permits a newly reviewed explicit resend, retires the old proof and preserves one-use employee activation 1586ms
+   ✓ rejects revoked and expired proofs and clears terminal digests without deleting invitation history 1372ms
+   ✓ keeps the actual HTTP batch send/read path host-bound and reports the real loopback SMTP receipt 823ms
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  19:29:54
+   Duration  15.75s (tests 99%, import 1%)
+
+Owned onboarding PostgreSQL stopped and temporary cluster removed.

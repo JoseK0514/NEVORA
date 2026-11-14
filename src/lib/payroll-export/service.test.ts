@@ -46,7 +46,7 @@ function fixture(profile:unknown=neutralProfile()){
     }
     if(statement.text.includes('FROM payroll_export_receipts'))return state.receipt?[state.receipt]:[];
     if(statement.text.includes('FROM nevora_payroll_profile_latest'))return [{id:profileId,revision:1,profile}];
-    if(statement.text.includes('nevora_timecard_source'))return [{observedAt:'2026-09-28T12:00:00Z',cards:[{...card,state:state.unfinalized?'APPROVED':'FINALIZED'}]}];
+    if(statement.text.includes('nevora_timecard_source'))return [{observedAt:'2026-09-28T12:00:00Z',totalRows:1,pageIndex:0,cards:[{...card,state:state.unfinalized?'APPROVED':'FINALIZED'}]}];
     return [];
    });
   },

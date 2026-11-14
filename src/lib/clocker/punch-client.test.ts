@@ -108,3 +108,10 @@ it('compares recorded break settings semantically rather than by JSON key order'
  const receipt={commandId:uuid,action:'START_BREAK',timeEntryId:entry.id,breakEntryId:'pause-1',performedAt:onBreak.break!.breakStartAt,snapshot:onBreak,breakType:reordered};
  expect(parseReceiptReply({state:'committed',receipt},cmd)).toEqual(receipt);
 });
+
+it('accepts a paused trial view for receipt recovery but cannot make a new clock-in',()=>{
+ const paused={...view(),breakTypes:[],commerceRestriction:'paused',allowedActions:[]};
+ expect(parseClockView(paused)).toEqual(paused);expect(()=>makePunchCommand('CLOCK_IN',parseClockView(paused),uuid)).toThrow();
+ expect(parseClockView({...view(working),commerceRestriction:'finish_shift'})).toMatchObject({allowedActions:['START_BREAK','CLOCK_OUT']});
+ for(const bad of [{...paused,allowedActions:['CLOCK_IN']},{...view(),commerceRestriction:'finish_shift'},{...paused,commerceRestriction:'free_access'},{...view(working),commerceRestriction:'paused'}])expect(()=>parseClockView(bad)).toThrow();
+});

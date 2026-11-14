@@ -1,0 +1,58 @@
+[
+  {
+    "schemaVersion": 1,
+    "version": "1",
+    "registrationState": "EMAIL_PENDING",
+    "workspace": null,
+    "sections": [],
+    "nextStep": null
+  },
+  {
+    "schemaVersion": 1,
+    "version": "2",
+    "registrationState": "EMAIL_VERIFIED",
+    "workspace": null,
+    "sections": [],
+    "nextStep": null
+  },
+  {
+    "schemaVersion": 1,
+    "version": "3",
+    "registrationState": "WORKSPACE_RESERVED",
+    "workspace": null,
+    "sections": [],
+    "nextStep": null
+  },
+  {
+    "schemaVersion": 1,
+    "version": "4",
+    "registrationState": "PROVISIONING",
+    "workspace": null,
+    "sections": [],
+    "nextStep": null
+  },
+  {
+    "schemaVersion": 1,
+    "version": "5",
+    "registrationState": "OWNER_ACTIVATION_REQUIRED",
+    "workspace": null,
+    "sections": [],
+    "nextStep": null
+  },
+  {
+    "schemaVersion": 1,
+    "version": "6",
+    "registrationState": "SETUP_IN_PROGRESS",
+    "workspace": null,
+    "sections": [],
+    "nextStep": null
+  },
+  {
+    "schemaVersion": 1,
+    "version": "7",
+    "registrationState": "READY",
+    "workspace": null,
+    "sections": [],
+    "nextStep": null
+  }
+]

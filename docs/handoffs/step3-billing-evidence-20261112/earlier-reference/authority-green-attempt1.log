@@ -1,0 +1,29 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run services/commerce/plan-change-api.test.ts services/commerce/status.test.ts
+
+
+ RUN  v5.0.5 /workspace/nevora-step3
+
+ ❯ services/commerce/plan-change-api.test.ts (22 tests | 1 failed) 69ms
+   × does not return a financial URL after Owner revocation during provider I/O 6ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  services/commerce/plan-change-api.test.ts > does not return a financial URL after Owner revocation during provider I/O
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ ❯ services/commerce/plan-change-api.test.ts:33:160
+     31| it('does not return a financial URL after Owner revocation during prov…
+     32|  const {send,session,billing}=setup();session.mockResolvedValueOnce('1…
+     33|  const response=await send();expect(response.status).toBe(401);expect(…
+       |                                                                                                                                                                ^
+     34| });
+     35| it('does not return a financial URL after installation replacement dur…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 27 passed (28)
+   Start at  00:23:50
+   Duration  301ms (tests 44%, import 30%, transform 24%, worker 2%)

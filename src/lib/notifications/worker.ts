@@ -6,7 +6,7 @@ import { neonNotificationExecutor } from '../data/notification-transactions';
 import { sqlNotificationStateRepository } from '../data/notification-state';
 import { sqlDeliveryRepository } from '../data/push-deliveries';
 import { sqlSubscriptionRepository } from '../data/push-subscriptions';
-import { decodePushKey } from './config';
+import {subscriptionProtection} from './keyring';
 import { decryptSubscriptionMaterial } from './installation';
 import { validatePushSubscription } from './subscription-service';
 import { buildPushEnvelope } from './payloads';
@@ -166,7 +166,7 @@ export async function runDispatch(input: {
                 await release(claim);
                 return;
             }
-            const key = decodePushKey(config.subscriptionEncryptionKey, 32);
+            const key = subscriptionProtection(config);
             if (!key) {
                 await complete(claim, { state: 'failed', errorClass: 'subscription_configuration' });
                 return;

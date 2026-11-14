@@ -40,7 +40,9 @@ export async function statements(proof: SessionMutationProof, ex: SqlExecutor = 
         FROM payroll_documents d WHERE workspace_id=${ws} AND d.employee_id=$1 AND d.kind='EMPLOYEE_STATEMENT' AND ${published} ORDER BY d.payload->>'payday' DESC`, proof.employee.id), ex);
     return {
         version: "PAYROLL_API_V1",
-        statements: docs.map((d) => ({ ...documentProjection(d), ...d.payload, corrects: d.corrects, correctedBy: d.corrected_by })),
+        statements: docs.map((d) => ({ ...documentProjection(d),
+            period: { startDate: d.payload.period.startDate, endDate: d.payload.period.endDate },
+            payday: d.payload.payday, corrects: d.corrects, correctedBy: d.corrected_by })),
     };
 }
 /** Return authorized bytes and metadata, concealing missing/unauthorized IDs as 404.
@@ -51,7 +53,9 @@ export async function document(proof: SessionMutationProof, id: string, ex: SqlE
     const payrollAccess = payrollObjectScopeSql(proof, "(d.payload->'coverage')", "d.workspace_id");
     const [d] = await guarded<DocRow & {
         hex: string;
-    }>(proof, "SELF", q(`SELECT d.id::text,d.kind,d.employee_id,d.filename,d.sha256,${published} AS published,d.payload,encode(d.content,'hex') AS hex FROM payroll_documents d WHERE d.workspace_id=${ws} AND d.id=$2::uuid AND ((${payrollAccess} AND (d.kind='EMPLOYEE_STATEMENT' OR EXISTS(SELECT 1 FROM employees own WHERE own.id=$1 AND own.role='OWNER'))) OR (d.employee_id=$1 AND d.kind='EMPLOYEE_STATEMENT' AND ${published}))`, proof.employee.id, id), ex);
+    }>(proof, "SELF", q(`SELECT d.id::text,d.kind,d.employee_id,d.filename,d.sha256,${published} AS published,d.payload,encode(d.content,'hex') AS hex FROM payroll_documents d WHERE d.workspace_id=${ws} AND d.id=$2::uuid
+      AND (d.kind<>'PAYMENT_INSTRUCTIONS' OR NOT EXISTS(SELECT 1 FROM payroll_runs r WHERE r.workspace_id=d.workspace_id AND r.id=d.run_id AND r.correction_of IS NOT NULL))
+      AND ((${payrollAccess} AND (d.kind='EMPLOYEE_STATEMENT' OR EXISTS(SELECT 1 FROM employees own WHERE own.id=$1 AND own.role='OWNER'))) OR (d.employee_id=$1 AND d.kind='EMPLOYEE_STATEMENT' AND ${published}))`, proof.employee.id, id), ex);
     if (!d)
         throw new PayrollError("DOCUMENT_UNAVAILABLE", 404);
     const bytes = Buffer.from(d.hex, "hex");

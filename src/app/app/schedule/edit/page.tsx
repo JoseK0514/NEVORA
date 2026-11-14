@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {readOperationalShiftEditor,readSchedulePendingChanges} from '@/lib/company-access/operational-read.server';
 import {ScopedManualShiftForm} from '@/components/company-access/scoped-manual-shift-form';
@@ -13,6 +14,7 @@ import { DeleteShiftConfirm } from "./delete-shift-button";
 import { ActionForm } from "@/components/wave-a/action-form";
 import { CorpPage } from "@/components/corp/corp";
 import { ScheduleShiftForm } from "@/components/schedule-shift-form";
+import {shiftFormEmployees} from '@/lib/scheduling/shift-form-employee';
 import { formatDayLabel, formatTime } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
@@ -93,9 +95,9 @@ export default async function EditShiftPage({
 
   // Release 1 (board O-EditShift): Edit shift is the same sheet as Add shift, with the shift's state on top and Delete
   // shift (its own form, never nested) under the save.
-  return (<ScopedReadFrame observation={source}>
+  return (<ScopedReadFrame observation={scopedObservation(source)}>
     <CorpPage className="c-shift-page" label="Edit shift">
-      <ScheduleShiftForm mode="edit" formId="edit-shift-form" action={updateShiftAction} employees={employees} positions={positions}
+      <ScheduleShiftForm mode="edit" formId="edit-shift-form" action={updateShiftAction} employees={shiftFormEmployees(employees,shift.employeeId)} positions={positions}
         fixedLocation={location?.shortName ?? shift.locationId} weekStart={shift.weekStart} date={shift.date}
         employeeId={shift.employeeId} positionId={shift.positionId ?? ""} startTime={shift.startTime} endTime={shift.endTime}
         isDesignatedLead={shift.isDesignatedLead} notes={shift.notes ?? ""} hidden={{ shiftId: shift.id }} cancelHref={returnUrl}

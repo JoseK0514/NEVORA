@@ -179,6 +179,7 @@ describe.skipIf(!enabled)("isolated company provisioning", () => {
     ).toBeNull();
   });
   it("enforces employee capacity in the company database without disabling existing employees", async () => {
+    expect((await target.query("SELECT count(*)::int n FROM employees WHERE active AND role<>'OWNER'")).rows[0].n).toBe(0);
     await target.query(
       "UPDATE nevora_commerce_installation SET employee_limit=15",
     );
@@ -205,6 +206,21 @@ describe.skipIf(!enabled)("isolated company provisioning", () => {
         )
       ).rows[0].n,
     ).toBe(15);
+  });
+  it("counts active non-Owners through Team capacity while excluding inactive staff and retaining history", async () => {
+    await target.query("UPDATE nevora_commerce_installation SET employee_limit=30");
+    const location=(await target.query('SELECT id FROM locations LIMIT 1')).rows[0].id;
+    await target.query("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id,active) VALUES('INACTIVE','Fictional','Inactive','7875550101','EMPLOYEE',$1,false)",[location]);
+    for(let n=16;n<=30;n++){
+      await target.query("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,'Fictional','Staff','7875550101','EMPLOYEE',$2)",['STAFF-'+n,location]);
+      if(n===16||n===30)expect((await target.query("SELECT count(*)::int n FROM employees WHERE active AND role<>'OWNER'")).rows[0].n).toBe(n);
+    }
+    await expect(target.query("UPDATE employees SET active=true WHERE id='INACTIVE'")).rejects.toThrow('commerce_employee_limit');
+    // A downgrade cannot remove staff or history. The operational gate handles excess headcount.
+    await target.query("UPDATE nevora_commerce_installation SET employee_limit=15");
+    expect((await target.query("SELECT count(*)::int n FROM employees WHERE active AND role<>'OWNER'")).rows[0].n).toBe(30);
+    expect((await target.query("SELECT first_name FROM employees WHERE id='STAFF-1'")).rows[0].first_name).toBe('Updated');
+    expect((await target.query("SELECT active FROM employees WHERE id='INACTIVE'")).rows[0].active).toBe(false);
   });
   it("refuses to enroll a nonempty or already enrolled database for another slot", async () => {
     await expect(

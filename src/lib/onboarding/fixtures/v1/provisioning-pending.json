@@ -1,1 +1,1 @@
-{"state":"pending","operationId":"59f60420-ec96-455a-9292-0b1a416509e9","stage":"RESOURCE_CONFIRMATION","pollAfterMs":2000}
+{"state":"pending","operationId":"59f60420-ec96-455a-9292-0b1a416509e9","stage":"RECONCILING_RESOURCE","pollAfterMs":2000}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "checkpoint": "6db25fed8ead9109f79f267cb56585417c3a3c04",
+  "tree": "d3869fa014367e914b3d8dab05ebc02730b8f05c",
+  "sourceClean": true,
+  "runtime": "v24.19.0",
+  "status": "failed",
+  "scope": "backend-only",
+  "steps": [
+    {
+      "name": "inventory-contract",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 783,
+      "log": "inventory-contract.log"
+    },
+    {
+      "name": "manifest",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 42,
+      "log": "manifest.log"
+    },
+    {
+      "name": "owned-onboarding",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 86471,
+      "log": "owned-onboarding.log"
+    },
+    {
+      "name": "company-access-foundation",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 179378,
+      "log": "company-access-foundation.log"
+    },
+    {
+      "name": "company-access-exchange",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 12184,
+      "log": "company-access-exchange.log"
+    },
+    {
+      "name": "worker-enrollment",
+      "exitCode": 1,
+      "signal": null,
+      "elapsedMs": 130,
+      "log": "worker-enrollment.log"
+    }
+  ],
+  "inventoryCount": 502,
+  "manifestArtifactSha256": "5fb9c6ecf905f74c282bf47777d7fd197cf5e8b7165ddefaab5ae807e0ba1e22",
+  "ui": {
+    "status": "not_run",
+    "surfaceCandidates": []
+  },
+  "hosted": {
+    "status": "not_run"
+  },
+  "production": {
+    "status": "not_authorized"
+  },
+  "error": "Backend acceptance step failed: worker-enrollment"
+}

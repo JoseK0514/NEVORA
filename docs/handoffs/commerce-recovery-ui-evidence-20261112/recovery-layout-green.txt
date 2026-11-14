@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-worker-quota-repair-20261112
+
+
+ Test Files  2 passed (2)
+      Tests  59 passed (59)
+   Start at  18:05:53
+   Duration  173ms (import 49%, transform 33%, tests 16%, worker 2%)
+

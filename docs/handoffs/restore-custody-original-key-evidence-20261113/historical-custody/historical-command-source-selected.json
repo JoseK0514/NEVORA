@@ -1,0 +1,30 @@
+[
+  {
+    "line": 182,
+    "text": "async function tool(name:string,args:string[],database:string){"
+  },
+  {
+    "line": 183,
+    "text": " const target=name==='pg_restore'?recoveryUrl:baseUrl;const selectedPort=name==='pg_restore'?(recoveryTunnel.address() as any).port:port;const env={PATH:process.env.PATH,PGHOST:'127.0.0.1',PGPORT:String(selectedPort),PGUSER:decodeURIComponent(target.username),PGPASSWORD:[REDACTED],PGDATABASE:database,PGSSLMODE:'disable',PGGSSENCMODE:'disable',PGCONNECT_TIMEOUT:'12'};"
+  },
+  {
+    "line": 184,
+    "text": " return await new Promise<Buffer>((ok,bad)=>{const child=spawn('/workspace/environment-local/postgresql/17/bin/'+name,args,{env,stdio:['ignore','pipe','pipe']});const out:Buffer[]=[],err:Buffer[]=[];child.stdout.on('data',b=>out.push(b));child.stderr.on('data',b=>err.push(b));const timeout=setTimeout(()=>child.kill('SIGTERM'),300000);child.on('error',bad);child.on('close',code=>{clearTimeout(timeout);code===0?ok(Buffer.concat(out)):bad(Error(name+' failed code '+code+': '+Buffer.concat(err).toString().slice(0,300)));});});"
+  },
+  {
+    "line": 185,
+    "text": "}"
+  },
+  {
+    "line": 195,
+    "text": " const state=await tableState(fresh),sequences=await sequenceState(fresh);const dump=await readFile(output+'/hosted-synthetic.dump');const dumpFile=output+'/hosted-synthetic.dump';await writeFile(dumpFile,dump,{mode:0o600});report.backup={bytes:dump.length,sha256:sha(dump),retainedOutsideProvider:true,deadlineMs:300000};report.recoveryProject='lucky-wind-29844564';report.restoreAttempt={originalDatabase:'scrum84_restored2',originalAttempt:'five-minute serial restore timed out; partial target preserved',newDatabase:'scrum84_restored3',parallelJobs:4,deadlineMs:300000,originalBackupReused:true};"
+  },
+  {
+    "line": 196,
+    "text": " const recoveryAdmin=await connectUrl(recoveryUrl);await recoveryAdmin.query('CREATE DATABASE scrum84_restored3 OWNER scrum84_operator');await recoveryAdmin.end();recoveryUrl.pathname='/scrum84_restored3';const recoveryCheck=await connectUrl(recoveryUrl);assert.equal((await recoveryCheck.query(\"SELECT count(*)::int n FROM pg_tables WHERE schemaname='public'\")).rows[0].n,0);await recoveryCheck.end();"
+  },
+  {
+    "line": 197,
+    "text": " await check('restore','real pg_dump/pg_restore restores hosted data and sequences to a separate database',async()=>{await tool('pg_restore',['--jobs=4','--exit-on-error','--dbname','scrum84_restored3',dumpFile],'scrum84_restored3');const restored=await connectUrl(recoveryUrl);assert.deepEqual(await tableState(restored),state);assert.deepEqual(await sequenceState(restored),sequences);await enroll(restored,f);await verifyBehavior(restored,f,'hosted-restored');});"
+  }
+]

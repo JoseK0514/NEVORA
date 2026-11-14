@@ -1,0 +1,141 @@
+{
+  "datePuertoRico": "2026-11-12",
+  "base": "f6baaaa6d988f34fb1c3388d0e1fe4c410bcbfd5",
+  "codeCommit": "46ad1f9108288d1154a7501f31eae743f4c4bcae",
+  "applicationHash": "4f7adfd75bdb3fc6f8bce9f452fc1f35c1705a957b8979f53e325eb301510ffb",
+  "node": "24.19.0",
+  "postgres": "16.2",
+  "tests": [
+    {
+      "log": "red-smtp.log",
+      "command": "npm test -- src/lib/auth/mail-transport.deadline.test.ts src/lib/auth/mail-transport.slow-smtp.test.ts",
+      "exitCode": 1,
+      "scope": "intentional RED on original transport",
+      "sha256": "9ddd8a29a6ada9947c7efe6ff8376697c885320e1cb0d495155a28bab99f1cb6",
+      "summary": [
+        "Test Files  2 failed (2)",
+        "Tests  4 failed | 1 passed (5)",
+        "Duration  17.18s (tests 99%)"
+      ]
+    },
+    {
+      "log": "green-focused.log",
+      "command": "npm test -- notification/account-mail/route/monitor selection",
+      "exitCode": 0,
+      "scope": "590 focused tests with owned loopback SMTP",
+      "sha256": "f5a58a321bfe7ef6c726c52ebc2f4462fd69015612bf30fc7914c6d28303a8c8",
+      "summary": [
+        "Test Files  30 passed (30)",
+        "Tests  590 passed (590)",
+        "Duration  15.30s (tests 91%, import 6%, transform 3%, worker 1%)"
+      ]
+    },
+    {
+      "log": "notification-sql.log",
+      "command": "node scripts/payroll-postgres.mjs vitest.notifications-integration.config.mts",
+      "exitCode": 0,
+      "scope": "80 actual owned-loopback PostgreSQL tests",
+      "sha256": "f718f213d9de04dea3d8763cff42925f59cab5f9be47b5e081bce7daa03f3c34",
+      "summary": [
+        "Test Files  2 passed (2)",
+        "Tests  80 passed (80)",
+        "Duration  90.66s (tests 99%, transform 1%)"
+      ]
+    },
+    {
+      "log": "workforce-operations-sql.log",
+      "command": "node scripts/onboarding-owned.mjs --suite workforce-operations",
+      "exitCode": 0,
+      "scope": "27 actual owned-loopback PostgreSQL operations tests",
+      "sha256": "d5708409c671a453fd5591767fcfe61a19de03c1b0cf9df660d13ab1f940dcec",
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  27 passed (27)",
+        "Duration  9.21s (tests 98%, transform 2%, import 1%)"
+      ]
+    },
+    {
+      "log": "typecheck.log",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "scope": "TypeScript",
+      "sha256": "a12318be798fbfe982f3307107c280a32f686008ee2f55b5636d8d8ae7a769ec",
+      "summary": []
+    },
+    {
+      "log": "lint.log",
+      "command": "npm run lint",
+      "exitCode": 0,
+      "scope": "ESLint; 0 errors, 1 pre-existing monitor warning",
+      "sha256": "f74367d96db58d19fd110f4170694f09b319fa69cb4f688842566066d38dd37d",
+      "summary": []
+    },
+    {
+      "log": "build.log",
+      "command": "npm run build via releaseBuildEnvironment",
+      "exitCode": 0,
+      "scope": "production compilation without hosted configuration",
+      "sha256": "f41c7540b7be4d31b2efde3bc638853c6a071419324ea7515f42898a3abf7232",
+      "summary": []
+    },
+    {
+      "log": "manual-build.log",
+      "command": "node scripts/manuals/build-manuals.mjs --date 2026-11-12",
+      "exitCode": 0,
+      "scope": "six source-bound PDFs and manifest",
+      "sha256": "2a3e1a5879f7d6889c48b8873507972468860855eb63c812f59dabba7406836e",
+      "summary": []
+    },
+    {
+      "log": "browser-evidence-focused.log",
+      "command": "npm test -- src/test/phase-e-browser-evidence.test.ts",
+      "exitCode": 0,
+      "scope": "52 unchanged checks; original full-run timeout retained",
+      "sha256": "daafa0283238ac3166085387a038b72d105a919a606230a33cfeb4b73c860311",
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  52 passed (52)",
+        "Duration  49.86s (tests 100%)"
+      ]
+    },
+    {
+      "log": "full-test.log",
+      "command": "npm test",
+      "exitCode": 1,
+      "scope": "first full run: stale manual hash and one 5-second evidence-test timeout",
+      "sha256": "30ae508b7e052696723bf14c4e7d2cc904181ed17fb07f8e31d63208339fac0d",
+      "summary": [
+        "Test Files  2 failed | 856 passed | 33 skipped (891)",
+        "Tests  2 failed | 12769 passed | 895 skipped (13721)",
+        "Duration  206.58s (tests 76%, import 19%, transform 4%)"
+      ]
+    },
+    {
+      "log": "full-test-final.log",
+      "command": "npm test",
+      "exitCode": 0,
+      "scope": "Full default suite; no assertions or test timeouts changed",
+      "sha256": "ba2ab0a1e3dfaeda22ee1e49136d55c71d3b15bdeeb490736eacbfbfe9120f77",
+      "summary": [
+        "Test Files  858 passed | 33 skipped (891)",
+        "Tests  12771 passed | 895 skipped (13721)",
+        "Duration  123.17s (tests 80%, import 19%, transform 1%)"
+      ]
+    }
+  ],
+  "finalFullSuite": "passed",
+  "hostedDeliveryPerformed": false,
+  "externalMailOrPushAttempts": 0,
+  "productionChanged": false,
+  "additionalChatContactAfterJoseStopInstruction": false,
+  "setupFailuresRetained": [
+    "notification-sql-runtime-unavailable.log: selected client-only bin directory lacked postgres",
+    "notification-sql-runner-prefix-refused.log: incorrect runner produced a refused disposable prefix; canonical payroll runner resolved it"
+  ],
+  "review": "Scoped self-review only; no independent audit closure is claimed.",
+  "initialFailuresResolved": {
+    "manual-publication": "six guides regenerated from immutable code checkpoint; source verifier passed",
+    "phase-e-browser-evidence observation-failure": "unchanged 52-test file passed in isolation and final full suite; initial timeout retained"
+  },
+  "developmentIntegration": "Awaiting ten required exact-candidate GitHub status checks; no bypass"
+}

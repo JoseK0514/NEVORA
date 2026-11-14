@@ -203,7 +203,11 @@ export async function rotateClockerDevice(proof: ClockerOwnerProof, input: Devic
 /** Trusted server transport must put credential in an HttpOnly cookie, NOT JSON. */
 export async function redeemClockerEnrollment(
   input: { enrollmentToken: string; locationKey: string; preparedCredential?: string }, executor: SqlExecutor = neonNotificationExecutor(),
+  notAfter?:number,
 ): Promise<{ device: ClockerDeviceRecord; credential: string }> {
+  // Trusted transport lifetime, never a field read from the enrollment body.
+  if(notAfter!==undefined&&(!Number.isFinite(notAfter)||notAfter<=Date.now()))throw new ClockerDeviceError('ENROLLMENT_INVALID',errors.clocker_enrollment_invalid[1]);
+  const deadline=notAfter===undefined?[]:[assertion('$1::timestamptz>clock_timestamp()',[new Date(notAfter).toISOString()],'clocker_enrollment_invalid')];
   const hash = tokenHash(input?.enrollmentToken,'enrollment');
   if (!hash || !validLocationKey(input?.locationKey) || (input.preparedCredential !== undefined && !tokenHash(input.preparedCredential,'device'))) throw new ClockerDeviceError('ENROLLMENT_INVALID',errors.clocker_enrollment_invalid[1]);
   const workspace = await getWorkspace(executor);
@@ -215,7 +219,7 @@ export async function redeemClockerEnrollment(
   // Supplied only by trusted transport from its previously established HttpOnly cookie.
   const credential = input.preparedCredential ?? token('device');
   const results = await transaction(executor,[
-    ...workspaceReadGuard(workspace),...ownerLocks(pending),...deviceLocks(pending.id),ownerAssertion(pending),
+    ...workspaceReadGuard(workspace),...ownerLocks(pending),...deviceLocks(pending.id),ownerAssertion(pending),...deadline,
     assertion(`EXISTS(SELECT 1 FROM clocker_devices d JOIN locations l ON l.id=d.location_id
       WHERE d.id=$1 AND d.active AND d.revoked_at IS NULL AND d.enrollment_hash=$2
       AND d.enrollment_expires_at>clock_timestamp() AND d.enrollment_owner_id=$3 AND d.enrollment_session_hash=$4
@@ -232,8 +236,9 @@ export async function redeemClockerEnrollment(
     ownerAssertion(pending),
     // Consumption clears the token row: recheck its exact, DB-derived lifetime pinned by the earlier locked guard.
     assertion('$1::timestamptz>clock_timestamp()',[pending.enrollmentExpiresAt],'clocker_enrollment_invalid'),
+    ...deadline,
   ]);
-  return { device: one(results.slice(0,-2)),credential };
+  return { device: one(results.slice(0,-2-deadline.length)),credential };
 }
 
 /** Reuse INSIDE every future punch transaction, after its workspace/employee locks.

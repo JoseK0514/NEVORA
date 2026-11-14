@@ -1,5 +1,6 @@
 import 'server-only';
 import {companyWorkerPrivilegePredicate} from '../company-bootstrap/worker-privilege-guard';
+import {sessionTransaction} from '../data/sql-session-contract';
 import {neon,type NeonQueryFunction} from '@neondatabase/serverless';
 import {createHash} from 'node:crypto';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
@@ -40,7 +41,7 @@ export function getWorkspaceDb(binding:WorkspaceBinding):SqlExecutor{
  const execute=async(statements:readonly SqlStatement[],signal?:AbortSignal)=>{
   signal?.throwIfAborted();if(!statements.length)return [];
   const sql=await driver(binding),g=guard(binding),all=[{text:'SELECT workspace_id FROM onboarding_workspace_identity WHERE singleton ORDER BY workspace_id FOR SHARE',values:[]},g,...statements,g];
-  try{const results=await sql.transaction(all.map(s=>sql.query(s.text,[...s.values])),{isolationLevel:'ReadCommitted',...(signal?{fetchOptions:{signal}}:{})});return results.slice(2,2+statements.length);}
+  try{const results=await sessionTransaction(sql,all,signal);return results.slice(2,2+statements.length);}
   catch(error){if(error instanceof Error&&error.message.includes('onboarding_workspace_binding_denied'))throw new WorkspaceRoutingError();throw error;}
  };
  return {async query<T>(statement:SqlStatement,signal?:AbortSignal){return (await execute([statement],signal))[0] as T[];},async transaction(statements,signal){return execute(statements,signal);}};

@@ -1,0 +1,15 @@
+{
+  "checkpoint": "6aac8f4a23a58064f3c687a95113ec2ff3aec8a7",
+  "tree": "74b0007c823c622d41fe40de143537006484befd",
+  "status": "passed",
+  "closedBrowsers": [
+    "webkit",
+    "chromium"
+  ],
+  "checks": [
+    "chromium: healthy → recovery → healthy unmounts pollers/sheet; loading disables action; late read/handoff abort with no stale status or attempted navigation; valid trusted handoff navigates; recovery-first exit reloads a fresh document",
+    "webkit: healthy → recovery → healthy unmounts pollers/sheet; loading disables action; late read/handoff abort with no stale status or attempted navigation; valid trusted handoff navigates; recovery-first exit reloads a fresh document"
+  ],
+  "errors": [],
+  "scope": "Actual production components, real React effects and Next PathnameContext in native engines; controlled presentation-only HTTP fixtures, not full Next router or provider acceptance."
+}

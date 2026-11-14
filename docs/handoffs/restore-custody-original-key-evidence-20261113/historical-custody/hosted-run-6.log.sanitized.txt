@@ -1,0 +1,1 @@
+{"code":null,"message":"pg_restore failed code 1: pg_restore: terminated by user\n"}

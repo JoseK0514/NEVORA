@@ -1,4 +1,5 @@
-import {readFile} from 'node:fs/promises';
+import {readFile,mkdir,writeFile} from 'node:fs/promises';
+import {isAbsolute,relative,resolve,join} from 'node:path';
 vi.mock('server-only',()=>({}));
 import {reviewedAttentionInput} from './attention-api';
 import { fixtureProof } from './shift-change-api';
@@ -21,7 +22,7 @@ import { createTimeOffRequest } from './self-service-api';
 import { createSwapProposal, respondToSwap, approveSwapExchange, createCoverageOffer, claimCoverage, approveCoverageExchange, denyExchange, cancelExchange } from './shift-change-api';
 import { createCallout, approveCalloutAndOpenCoverage, denyCallout, cancelPendingCallout } from './shift-change-api';
 import { terminatePortalSession, reconcilePendingInstallation, type LogoutDeps } from '../../lib/notifications/logout';
-import { CLEANUP_COOKIE, INSTALLATION_COOKIE, openCleanupReceipt, sealCleanupReceipt, sealInstallationProof, encryptSubscriptionMaterial } from '../../lib/notifications/installation';
+import { CLEANUP_COOKIE, INSTALLATION_COOKIE, openCleanupReceipt, sealCleanupReceipt, sealInstallationProof, encryptSubscriptionMaterial, decryptSubscriptionMaterial } from '../../lib/notifications/installation';
 import { readNotificationConfig as readRuntimeConfig } from '../../lib/notifications/config';
 import { replaceWeeklyAvailability } from './self-service-api';
 import { runDispatch, type WorkerDeps } from '../../lib/notifications/worker';
@@ -84,6 +85,23 @@ beforeEach(async () => {
   await sql(`INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES ('QA-sh1','QA-s1','QA-E','2030-10-11','09:00','17:00'),('QA-sh2','QA-s2','QA-F','2030-10-12','09:00','17:00')`);
   // Explicit legacy Manager/Owner census precedes current enforcement.
   await sql(await readFile('db/migrations/0032_company_access_invitations.sql','utf8'));
+});
+
+it('bounds concurrent queue claims and records FIFO urgent backlog without a provider send',async()=>{
+ await enroll();const now=Date.now(),values=Array.from({length:201},(_,n)=>intent({id:'R15-queue-'+String(n).padStart(4,'0'),eventKey:'R15-queue-'+n,urgency:n===200?'high':'normal',dueAt:new Date(now-(201-n)*1000).toISOString()}));
+ await db.transaction(notificationIntentStatements(values));await sqlDeliveryRepository('test',db).materialize(values.map(v=>v.id));
+ const repo=sqlDeliveryRepository('test',db),seen=new Set<string>(),order:string[]=[],latencies:number[]=[];
+ const [{oldestAgeSeconds}]=await sql<{oldestAgeSeconds:number}>(`SELECT EXTRACT(epoch FROM clock_timestamp()-min(next_attempt_at))::float AS "oldestAgeSeconds" FROM push_deliveries WHERE status='queued'`);
+ const started=performance.now();
+ for(let round=0;round<11;round++){
+  const batches=await Promise.all([0,1].map(async()=>{const start=performance.now(),claims=await claim();latencies.push(performance.now()-start);return claims;}));
+  for(const batch of batches){expect(batch.length).toBeLessThanOrEqual(10);for(const c of batch){expect(seen.has(c.deliveryId)).toBe(false);seen.add(c.deliveryId);order.push(c.intentId);await repo.finish(c,{state:'cancelled'});}}
+  if(round===0)expect(order).not.toContain('R15-queue-0200');
+ }
+ expect(seen.size).toBe(201);expect(order.slice(-1)).toEqual(['R15-queue-0200']);expect(await claim()).toEqual([]);
+ const counts=await sql(`SELECT status,count(*)::integer AS count FROM push_deliveries GROUP BY status`);expect(counts).toEqual([{status:'cancelled',count:201}]);
+ const directory=process.env.NEVORA_CAPACITY_EVIDENCE;
+ if(directory){if(!isAbsolute(directory)||!relative(process.cwd(),resolve(directory)).startsWith('..'))throw Error('Capacity evidence must be external');await mkdir(directory,{recursive:true});latencies.sort((a,b)=>a-b);await writeFile(join(directory,'queue-claims.json'),JSON.stringify({queueRows:201,concurrentClaimers:2,claimRequests:22,maxBatch:10,distinctClaims:seen.size,oldestAgeSeconds,claimP50Ms:Math.round(latencies[10]),claimP95Ms:Math.round(latencies[20]),claimAndCancelTotalMs:Math.round(performance.now()-started),urgentPosition:order.indexOf('R15-queue-0200')+1,counts,scope:'Real owned SQL claim/cancel only; no runDispatch/provider latency/device-delivery or priority guarantee'},null,2)+'\n');}
 });
 
 describe('actual ordered publication and request SQL', () => {
@@ -182,6 +200,24 @@ describe('actual ordered publication and request SQL', () => {
 });
 
 describe('actual enrollment, materialization and leases', () => {
+  it('rewraps stored legacy material by exact ciphertext/generation CAS without changing consent, and never revives a detached device',async()=>{
+    const owned=await enroll('key-rotation'),oldKey=Buffer.alloc(32,31),newKey=Buffer.alloc(32,47);
+    const ring={active:{id:'new-key',key:newKey},previous:{id:'old-key',key:oldKey},legacyKeyId:'old-key'};
+    const material={endpoint:'https://fcm.googleapis.com/fcm/send/fictional-key-rotation',keys:{p256dh:'fictional',auth:'fictional'},expirationTime:null};
+    const legacy=encryptSubscriptionMaterial(material,oldKey,owned);
+    await sql('UPDATE push_subscriptions SET encrypted_material=$1 WHERE installation_hash=$2',[legacy,owned.installationHash]);
+    const [before]=await sql('SELECT * FROM push_subscriptions WHERE installation_hash=$1',[owned.installationHash]);
+    const migrated=encryptSubscriptionMaterial(decryptSubscriptionMaterial(legacy,ring,owned),ring,owned);
+    const cas=()=>sql(`UPDATE push_subscriptions SET encrypted_material=$1 WHERE installation_hash=$2 AND environment=$3 AND employee_id=$4 AND generation=$5 AND status='active' AND encrypted_material=$6 RETURNING id`,[migrated,owned.installationHash,owned.environment,owned.employeeId,owned.generation,legacy]);
+    expect(await cas()).toHaveLength(1);
+    const [after]=await sql('SELECT * FROM push_subscriptions WHERE installation_hash=$1',[owned.installationHash]);
+    expect(after).toEqual({...before,encrypted_material:migrated});
+    expect(decryptSubscriptionMaterial(String(after.encrypted_material),{active:ring.active},owned)).toEqual(material);
+    expect(await cas()).toHaveLength(0);
+    expect(await sqlSubscriptionRepository(db).detach(owned)).toEqual({state:'complete'});
+    expect(await cas()).toHaveLength(0);
+    expect((await sql('SELECT status,encrypted_material FROM push_subscriptions WHERE installation_hash=$1',[owned.installationHash]))[0]).toEqual({status:'detached',encrypted_material:null});
+  });
   it('foreign_installation_is_not_inherited', async () => {
     const enrolled = await enroll();
     expect(await sqlSubscriptionRepository(db).enroll({ ...enrolled, employeeId: 'QA-F', sessionHash: sessionB, expectedGeneration: enrolled.generation })).toEqual({ state: 'conflict' });

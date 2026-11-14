@@ -1,3 +1,4 @@
+import {scopedObservation} from '@/lib/company-access/observation';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -41,9 +42,9 @@ export default async function EmployeeClockerPinPage({params}:{params:Promise<{e
   <p className="q-empty" style={{marginTop:24}}><b style={{color:'#111413',fontWeight:600}}>{title}. </b>{body}</p><Link className="q-btn q-btn--sec" href={href}>{label}</Link>
  </section>;
  const ready=allowed&&employee.active&&!!pin;
- if(ready&&pin)return <ScopedReadFrame observation={source}><ClockerPinEditor employeeId={employeeId} name={name} initialVersion={pin.version} action={saveClockerPinAction} checkStatus={checkClockerPinSaveAction}/></ScopedReadFrame>;
+ if(ready&&pin)return <ScopedReadFrame observation={scopedObservation(source)}><ClockerPinEditor employeeId={employeeId} name={name} initialVersion={pin.version} action={saveClockerPinAction} checkStatus={checkClockerPinSaveAction}/></ScopedReadFrame>;
  // Quiet (v4, approved Oct 23): a sheet: Cancel, the title, Save; the person's name; the two PIN rows.
- return <ScopedReadFrame observation={source}><div className="q-page wa-pin" data-nv-page="" data-q-sheet="">
+ return <ScopedReadFrame observation={scopedObservation(source)}><div className="q-page wa-pin" data-nv-page="" data-q-sheet="">
   <QuietNav left={<Link className="q-nav__l q-nav__l--teal" href={employeeHref}><span className="wa-pin__cancel">Cancel</span><span className="wa-pin__back"><CaretLeftIcon className="q-ic q-ic--s" weight="bold" aria-hidden="true"/>{name}</span></Link>} title="Clocker PIN"
    />
   {/* Closing F1 (NV-256): "‹ Maria Rivera" on tablets and desktop, as on the editor. */}

@@ -1,0 +1,12 @@
+   ✓ current Owner keeps a real Manager approval and its original operation receipt 309ms
+   ✓ current Company Manager keeps a real Manager approval and its original operation receipt 308ms
+   ✓ private availability read denies a selected-location Manager before source lookup 320ms
+   ✓ private operation projection rechecks original Company authority after the awaited SQL observation 303ms
+   ✓ the final actual DB-clock check rolls back absence, linked coverage, receipts, events and notices after expiry 1412ms
+
+ Test Files  1 passed (1)
+      Tests  36 passed (36)
+   Start at  22:00:23
+   Duration  11.33s (tests 98%, transform 2%, import 1%)
+
+[Payroll PostgreSQL] Owned cluster stopped.

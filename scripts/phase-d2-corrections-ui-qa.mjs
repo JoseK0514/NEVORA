@@ -12,6 +12,7 @@ import { verifyCorrectionRecovery } from './phase-d2-corrections-recovery-qa.mjs
 import {verifyD2UiRemediation} from './phase-d2-ui-remediation-qa.mjs';
 import { missingTimeBrowserScenarios } from './phase-d2-missing-time-browser-scenarios.mjs';
 import {clockText,fixForm,fixValues,hoursPage,recordedReceipt,sendFix} from './employee-fix-time-browser.mjs';
+import {verifyD2SessionAuthority} from './d2-session-authority.mjs';
 
 const WIDTHS=[320,375,390,430,768,1024,1440];
 const ENGINES=['chromium','webkit'];
@@ -59,8 +60,7 @@ async function login(c,id,{reuseSession=false}={}){
  if(reuseSession&&cookiesByActor.has(id)){
   await c.addCookies(cookiesByActor.get(id));
   const endpoint=id==='QAOWNER'?'/api/manager/time-corrections':'/api/employee/time-corrections';
-  const current=await c.request.get(app.url+endpoint,{headers:{'X-Nevora-Time-Correction':'1'}});
-  assert.equal(current.status(),200,'Reused real fixture session must still pass current server authorization');
+  const current=await verifyD2SessionAuthority(c.request,app.url+endpoint);
   report.sessionReuses??=[];report.sessionReuses.push({role:id==='QAOWNER'?'Owner':'Employee',status:current.status()});return;
  }
  const page=await c.newPage();

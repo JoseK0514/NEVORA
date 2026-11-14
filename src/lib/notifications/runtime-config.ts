@@ -1,12 +1,8 @@
 import {createECDH,timingSafeEqual} from 'node:crypto';
 import type {PushRuntimeConfig} from './types';
-/** Canonical unpadded URL-safe encoding only. Never include rejected values in errors. */
-export function decodePushKey(value: unknown, length: number): Buffer | null {
-    if (typeof value !== 'string' || !/^[A-Za-z0-9_-]+$/.test(value))
-        return null;
-    const bytes = Buffer.from(value, 'base64url');
-    return bytes.length === length && bytes.toString('base64url') === value ? bytes : null;
-}
+import {decodePushKey} from './push-key';
+export {decodePushKey} from './push-key';
+import {protectionConfigFromEnvironment,subscriptionProtection} from './keyring';
 /** Parse runtime flags and validate origin/key material without reading workspace data.
  * Feature availability, delivery readiness and test allowlisting are separate gates;
  * this result describes configuration, not provider connectivity or successful delivery. */
@@ -24,7 +20,8 @@ export function parseNotificationRuntimeConfig(env: Record<string, string | unde
     catch { /* Invalid configuration stays unavailable. */ }
     const publicKey = decodePushKey(env.PUSH_VAPID_PUBLIC_KEY, 65);
     const privateKey = decodePushKey(env.PUSH_VAPID_PRIVATE_KEY, 32);
-    const encryptionKey = decodePushKey(env.PUSH_SUBSCRIPTION_ENCRYPTION_KEY, 32);
+    const protectionConfig=protectionConfigFromEnvironment(env);
+    const encryptionKey=subscriptionProtection(protectionConfig);
     let validPair = false;
     let validPublic = false;
     try {
@@ -60,7 +57,7 @@ export function parseNotificationRuntimeConfig(env: Record<string, string | unde
         ...(validPublic ? { vapidPublicKey: env.PUSH_VAPID_PUBLIC_KEY } : {}),
         ...(validPair ? { vapidPrivateKey: env.PUSH_VAPID_PRIVATE_KEY } : {}),
         ...(validSubject ? { vapidSubject: env.PUSH_VAPID_SUBJECT } : {}),
-        ...(encryptionKey ? { subscriptionEncryptionKey: env.PUSH_SUBSCRIPTION_ENCRYPTION_KEY } : {}),
+        ...(encryptionKey ? protectionConfig : {}),
         ...((env.NOTIFICATION_WORKER_SECRET?.length ?? 0) >= 32 ? { workerSecret: env.NOTIFICATION_WORKER_SECRET } : {}),
     };
     return config;

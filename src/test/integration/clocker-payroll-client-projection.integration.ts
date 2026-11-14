@@ -1,0 +1,26 @@
+import {createHash,randomUUID} from 'node:crypto';
+import {PDFDocument} from 'pdf-lib';
+import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {createPunchFixture} from './clocker-punch-fixture';
+import {document,statements} from '../../lib/payroll/access';
+import type {SessionMutationProof} from '../../lib/shift-changes/types';
+let f:Awaited<ReturnType<typeof createPunchFixture>>;
+const self:SessionMutationProof={employee:{id:'c34-a',role:'EMPLOYEE',firstName:'Avery',lastName:'Fictional',primaryLocationId:'loc-1'},sessionTokenHash:'d'.repeat(64)};
+beforeEach(async()=>{vi.stubEnv('NEVORA_PAYROLL_ENABLED','true');f=await createPunchFixture({companyAccess:true});await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'c34-a',clock_timestamp()+interval '1 day'),(repeat('e',64),'c34-b',clock_timestamp()+interval '1 day')");});
+afterEach(async()=>{await f?.db.dispose();vi.unstubAllEnvs();});
+it('actual published own-statement access minimizes persisted provenance and preserves verified PDF integrity and person scope',async()=>{
+ const [{id:workspaceId}]=await f.q<{id:string}>('SELECT id FROM workspaces WHERE singleton');
+ const runId=randomUUID(),documentId=randomUUID(),pdf=await PDFDocument.create();pdf.addPage().drawText('Fictional privacy regression');
+ const bytes=Buffer.from(await pdf.save()),sha=createHash('sha256').update(bytes).digest('hex');
+ await f.q('INSERT INTO payroll_runs(workspace_id,id,start_date,end_date) VALUES($1,$2,$3,$4)',[workspaceId,runId,'2026-09-21','2026-09-27']);
+ await f.q('INSERT INTO payroll_run_revisions(workspace_id,run_id,revision,payload) VALUES($1,$2,1,$3)',[workspaceId,runId,{status:'APPROVED'}]);
+ await f.q('INSERT INTO payroll_documents(workspace_id,id,run_id,employee_id,kind,filename,sha256,content,payload) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',[workspaceId,documentId,runId,'c34-a','EMPLOYEE_STATEMENT','fictional.pdf',sha,bytes,{period:{startDate:'2026-09-21',endDate:'2026-09-27',internal:'PRIVATE_PERIOD'},payday:'2026-10-02',nativeDocument:{sourceFingerprint:'PRIVATE_SOURCE',inputSha256:'PRIVATE_INPUT'},futureInternal:'PRIVATE_FUTURE'}]);
+ expect((await statements(self,f.db.executor)).statements).toEqual([]);
+ await f.q('INSERT INTO payroll_publications(workspace_id,run_id) VALUES($1,$2)',[workspaceId,runId]);
+ const result=await statements(self,f.db.executor);expect(result.statements).toHaveLength(1);expect(JSON.stringify(result)).not.toContain('PRIVATE_');
+ expect(result.statements[0]).toMatchObject({id:documentId,employeeId:'c34-a',sha256:sha,period:{startDate:'2026-09-21',endDate:'2026-09-27'},payday:'2026-10-02'});
+ expect((await document(self,documentId,f.db.executor)).bytes).toEqual(bytes);
+ const other:SessionMutationProof={employee:{...self.employee,id:'c34-b'},sessionTokenHash:'e'.repeat(64)};
+ expect((await statements(other,f.db.executor)).statements).toEqual([]);await expect(document(other,documentId,f.db.executor)).rejects.toThrow('DOCUMENT_UNAVAILABLE');
+ await f.q("DELETE FROM employee_sessions WHERE token_hash=repeat('d',64)");await expect(statements(self,f.db.executor)).rejects.toThrow('management_authorization');
+});

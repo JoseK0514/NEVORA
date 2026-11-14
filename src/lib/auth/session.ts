@@ -9,7 +9,8 @@ import {queryRows} from "@/lib/db";
 import {applicationSql} from "@/lib/data/app-sql";
 import type { UserRole } from "@/lib/domain";
 import { createLogoutDeps, terminatePortalSession } from "@/lib/notifications/logout";
-import { readNotificationConfig, decodePushKey } from "@/lib/notifications/config";
+import { readNotificationConfig } from "@/lib/notifications/config";
+import {subscriptionProtection} from "@/lib/notifications/keyring";
 import { readInstallationProof } from "@/lib/notifications/installation";
 import { neonNotificationExecutor } from '@/lib/data/notification-transactions';
 
@@ -57,7 +58,7 @@ export async function destroySession() {
   const store = await cookies();
   try {
     const config = readNotificationConfig(await workspaceRuntimeEnvironment());
-    const key = decodePushKey(config.subscriptionEncryptionKey, 32);
+    const key = subscriptionProtection(config);
     const installation = key ? readInstallationProof(store, key, config.environment) ?? undefined : undefined;
     await terminatePortalSession({ sessionToken: store.get(SESSION_COOKIE)?.value, installation, cookies: store, deps: createLogoutDeps(config) });
   } finally {

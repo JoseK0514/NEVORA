@@ -1,0 +1,44 @@
+{
+  "applicationSource": "7ba6cc6154757938fe6b6f736bbcc77fc5c3842d",
+  "red": {
+    "exitCode": 1,
+    "reason": "Owned native authority navigation positive remained unclassified before implementation",
+    "log": "d2-authority-attribution-red.log"
+  },
+  "nativeControls": {
+    "passed": true,
+    "cases": 56,
+    "defaultNotificationCases": 17,
+    "composedNotificationCases": 17,
+    "composedAuthorityCases": 22
+  },
+  "relatedNodeTests": {
+    "passed": 52,
+    "failed": 0,
+    "skipped": 0
+  },
+  "ciContract": {
+    "exitCode": 0
+  },
+  "eslint": {
+    "exitCode": 0
+  },
+  "review": {
+    "codeQualityStatus": "CLEAR",
+    "recommendation": "APPROVE",
+    "blockers": [],
+    "remainingFindings": []
+  },
+  "scope": "QA-only opt-in; no app UI or worker change",
+  "fullExactSourceD2": "pending after documentation freeze",
+  "hostedAcceptance": "not run; sole owner SCRUM190 chat",
+  "inputs": {
+    "scripts/notification-read-witness.mjs": "6d11fc2813356ea582fd4f18260472e4b71ffc73720f258cf3cdea598054aa72",
+    "scripts/browser-reload-diagnostic.mjs": "b588059ffd8829bc7b3629999579908f694a23fd312590157d9e4bc3ac3eebdf",
+    "scripts/browser-navigation-diagnostic.mjs": "b451c65b7f765964d159faecd6dcc5c747a20546e0ddbc717e0ab9b891e92c74",
+    "scripts/phase-e-browser-qa.mjs": "d5acfdd1f98f82de4fdecd8fa3fa6a66b1e013cd5c98a7e9e3654330799aa587",
+    "scripts/phase-d2-ui-remediation-qa.mjs": "e5db59abe32cbb29510c44b34f2826f5634ce292ac71390fbbcf22b49cb0ea70",
+    "scripts/d2-authority-reload.check.mjs": "4dc2442f40f4c0bdc8c744057b036c4fe58ab2e63092f4fec7094d72cce6d625",
+    ".github/workflows/ci.yml": "6ed202b837ca22f0cc567e04ac1430794cb9809b3e8dc437c31eae61249126e6"
+  }
+}

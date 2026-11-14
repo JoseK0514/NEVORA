@@ -3,7 +3,7 @@ import {randomUUID} from 'node:crypto';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import {companyAccessFixture} from './company-access-fixture';
-import {readOwnerOperationalScope,assignOperationalScope} from '../../lib/company-access/operational-scope.server';
+import {readOwnerOperationalScope,assignOperationalScope,readOperationalAuthority} from '../../lib/company-access/operational-scope.server';
 const ctx=vi.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
 vi.mock('server-only',()=>({}));
 vi.mock('@/lib/db',()=>{
@@ -18,6 +18,22 @@ vi.mock('next/cache',()=>({revalidatePath:()=>{}}));
 vi.mock('next/navigation',()=>({redirect:(destination:string)=>{throw Object.assign(new Error('Owned redirect'),{destination});}}));
 vi.mock('../../lib/data/notification-transactions',async original=>({...await original<typeof import('../../lib/data/notification-transactions')>(),neonNotificationExecutor:()=>ctx.ex!}));
 import {createShiftAction,updateShiftAction,deleteShiftAction,publishScheduleAction} from '../../app/app/schedule/actions';
+type ReadObserver=(statement:SqlStatement,rows:unknown[],contract:unknown[]|undefined)=>void|Promise<void>;
+/** Observe completed real reads before returning their rows to the action.
+ * Ordered HTTP batches keep their setup, body, exit guard and result indexes;
+ * the observer runs only after that owning transaction has completed. */
+function observeReads(base:SqlExecutor,after:ReadObserver,before?:(statement:SqlStatement)=>void):SqlExecutor{
+ return {...base,query:async<T>(statement:SqlStatement,signal?:AbortSignal)=>{
+  before?.(statement);
+  const rows=await base.query<T>(statement,signal);await after(statement,rows,undefined);return rows;
+ },transaction:async(statements,signal)=>{
+  for(const statement of statements)before?.(statement);
+  const rows=await base.transaction(statements,signal);
+  for(let i=0;i<statements.length;i++)await after(statements[i],rows[i],rows.at(-1));
+  return rows;
+ }};
+}
+const requireReadContract=(contract:unknown[]|undefined)=>expect(contract).toEqual([{sql_session_contract:1}]);
 async function setup(){
  const f=await companyAccessFixture();ctx.ex=f.db.executor;ctx.proof=f.manager;
  try{
@@ -75,6 +91,17 @@ async function choose(f:ActionFixture,mode:'COMPANY'|'LOCATIONS'|'REVOKE'){
 async function transition(f:ActionFixture,kind:'LOCATIONS'|'REVOKE'|'REGRANT'|'REVISION'){
  if(kind==='REGRANT'){await choose(f,'REVOKE');await choose(f,'COMPANY');}else await choose(f,kind==='REVISION'?'COMPANY':kind);
 }
+async function observedTransition(f:ActionFixture,kind:Parameters<typeof transition>[1]){
+ const before=await readOperationalAuthority(f.manager,f.db.executor);
+ expect(before).toMatchObject({state:'ready',employeeId:'manager',role:'MANAGER',scope:{mode:'COMPANY',locationIds:[]}});
+ if(before.state!=='ready')throw Error('Original Company authority unavailable');
+ await transition(f,kind);
+ const after=await readOperationalAuthority(f.manager,f.db.executor);
+ expect(after).toMatchObject({state:'ready',employeeId:'manager',role:'MANAGER',scope:kind==='REVOKE'?null:kind==='LOCATIONS'?{mode:'LOCATIONS',locationIds:['loc-1']}:{mode:'COMPANY',locationIds:[]}});
+ if(after.state!=='ready')throw Error('Changed scope authority unavailable');
+ expect(after.scopeRevision).toBe(before.scopeRevision+(kind==='REGRANT'?2:1));
+ expect(after.authority).not.toBe(before.authority);
+}
 const generic={error:'Operational access is unavailable. Reload and try again.',issueCode:'ACCESS_DENIED'};
 const business=(f:ActionFixture)=>f.q("SELECT jsonb_build_object('schedules',(SELECT jsonb_agg(to_jsonb(s) ORDER BY id) FROM schedules s),'shifts',(SELECT jsonb_agg(to_jsonb(s) ORDER BY id) FROM shifts s),'leave',(SELECT jsonb_agg(to_jsonb(r) ORDER BY id) FROM time_off_requests r),'publications',(SELECT jsonb_agg(to_jsonb(r) ORDER BY id) FROM schedule_publication_revisions r),'notifications',(SELECT jsonb_agg(to_jsonb(n) ORDER BY id) FROM notifications n)) state");
 async function privateFixture(method:'create'|'update',issue:'APPROVED_TIME_OFF'|'SHIFT_OVERLAP'){
@@ -85,13 +112,27 @@ for(const method of ['create','update'] as const)for(const issue of ['APPROVED_T
  it(`${method} stable Company preserves real ${issue} feedback without writes`,async()=>{const f=await privateFixture(method,issue);try{const before=await business(f);expect(await (method==='create'?createShiftAction(form()):updateShiftAction(form({shiftId:'editing'})))).toMatchObject({issueCode:issue});expect(await business(f)).toEqual(before);}finally{await close(f);}});
  for(const loss of ['LOCATIONS','REVOKE','REGRANT','REVISION'] as const)it(`${method} ${issue} observed during ${loss} cannot return private feedback under the earlier Company admission`,async()=>{
   const f=await privateFixture(method,issue);try{const before=await business(f),base=f.db.executor;let hit=false;
-  ctx.ex={...base,query:async<T>(statement:SqlStatement,signal?:AbortSignal)=>{const rows=await base.query<T>(statement,signal);const phase=issue==='APPROVED_TIME_OFF'?statement.text.includes('FROM time_off_requests'):(statement.text.includes('FROM shifts sh JOIN schedules s')&&statement.text.includes("s.status <> 'ARCHIVED'"));if(!hit&&phase&&statement.values[0]==='TARGET'){hit=true;expect(rows.length).toBeGreaterThan(0);await transition(f,loss);}return rows;}};
+  ctx.ex=observeReads(base,async(statement,rows,contract)=>{
+   const phase=issue==='APPROVED_TIME_OFF'?statement.text.includes('FROM time_off_requests'):(statement.text.includes('FROM shifts sh JOIN schedules s')&&statement.text.includes("s.status <> 'ARCHIVED'"));
+   if(!hit&&phase&&statement.values[0]==='TARGET'){
+    requireReadContract(contract);expect(rows.length).toBeGreaterThan(0);
+    if(issue==='APPROVED_TIME_OFF')expect(rows).toEqual([expect.objectContaining({status:'APPROVED'})]);
+    else expect(rows).toContainEqual(expect.objectContaining({id:'private-overlap',employee_id:'TARGET',start_time:'10:00:00',end_time:'12:00:00'}));
+    await observedTransition(f,loss);hit=true;
+   }
+  });
   const result=await(method==='create'?createShiftAction(form()):updateShiftAction(form({shiftId:'editing'})));expect(hit).toBe(true);expect(result).toEqual(generic);expect(await business(f)).toEqual(before);
   }finally{await close(f);}
  });
 }
 it.each(['LOCATIONS','REVOKE','REGRANT','REVISION'] as const)('update canonical management read after %s cannot continue to private validation',async loss=>{const f=await privateFixture('update','APPROVED_TIME_OFF');try{const before=await business(f),base=f.db.executor;let hit=false,privateValidationAfterLoss=false;
- ctx.ex={...base,query:async<T>(s:SqlStatement,signal?:AbortSignal)=>{if(hit&&s.text.includes('FROM time_off_requests')&&s.values[0]==='TARGET')privateValidationAfterLoss=true;const rows=await base.query<T>(s,signal);if(!hit&&s.text.includes('AS approved_callout')&&s.values[0]==='editing'){hit=true;expect(rows).toHaveLength(1);await transition(f,loss);}return rows;}};
+ ctx.ex=observeReads(base,async(s,rows,contract)=>{
+  if(!hit&&s.text.includes('AS approved_callout')&&s.values[0]==='editing'){
+   requireReadContract(contract);expect(rows).toHaveLength(1);
+   expect(rows[0]).toMatchObject({id:'editing',employee_id:'TARGET',location_id:'loc-1'});
+   await observedTransition(f,loss);hit=true;
+  }
+ },s=>{if(hit&&s.text.includes('FROM time_off_requests')&&s.values[0]==='TARGET')privateValidationAfterLoss=true;});
  expect(await updateShiftAction(form({shiftId:'editing'}))).toEqual(generic);expect(hit).toBe(true);expect(privateValidationAfterLoss).toBe(false);expect(await business(f)).toEqual(before);
  }finally{await close(f);}});
 it.each(['LOCATIONS','REVOKE'] as const)('existing minimal editor still denies %s while its real source is awaited',async loss=>{const f=await privateFixture('update','APPROVED_TIME_OFF');try{const before=await business(f),base=f.db.executor;let hit=false;ctx.ex={...base,query:async<T>(s:SqlStatement,signal?:AbortSignal)=>{const rows=await base.query<T>(s,signal);if(!hit&&s.text.includes('AS "positionIds"')&&Array.isArray(s.values[0])&&(s.values[0] as unknown[]).includes('TARGET')){hit=true;await transition(f,loss);}return rows;}};expect(await updateShiftAction(form({shiftId:'editing'}))).toEqual(generic);expect(hit).toBe(true);expect(await business(f)).toEqual(before);}finally{await close(f);}});
@@ -119,7 +160,15 @@ for(const method of ['create','update'] as const)for(const loss of ['STABLE','LO
  }finally{await close(f);}
 });
 for(const loss of ['STABLE','LOCATIONS','REVOKE','REGRANT','REVISION'] as const)it(`publish readiness ${loss} cannot release a stale private warning flag`,async()=>{
- const f=await neutralFixture('create');try{await f.q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('publish-warning','action-a','TARGET','2026-10-12','10:00','11:00')");const before=await business(f),base=f.db.executor;let hit=false;ctx.ex={...base,query:async<T>(s:SqlStatement,signal?:AbortSignal)=>{const rows=await base.query<T>(s,signal);if(!hit&&s.text.includes('FROM shifts sh')&&s.values[0]==='2026-10-12'){hit=true;if(loss!=='STABLE')await transition(f,loss);}return rows;}};
+ const f=await neutralFixture('create');try{await f.q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('publish-warning','action-a','TARGET','2026-10-12','10:00','11:00')");const before=await business(f),base=f.db.executor;let hit=false;
+ ctx.ex=observeReads(base,async(s,rows,contract)=>{
+  if(!hit&&s.text.includes('FROM shifts sh')&&s.values[0]==='2026-10-12'){
+   requireReadContract(contract);
+   expect(rows).toContainEqual(expect.objectContaining({id:'publish-warning',employee_id:'TARGET',location_id:'loc-1',start_time:'10:00:00',end_time:'11:00:00'}));
+   if(loss!=='STABLE')await observedTransition(f,loss);
+   hit=true;
+  }
+ });
  await expect(publishScheduleAction(form())).rejects.toMatchObject({destination:loss==='STABLE'?expect.stringContaining('publishCheck=loc-1'):'/app/schedule?error=ACCESS_DENIED'});expect(hit).toBe(true);expect(await business(f)).toEqual(before);
  }finally{await close(f);}
 });

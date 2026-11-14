@@ -61,6 +61,11 @@ export const BASE_MIGRATIONS = [
   '0054_onboarding_commerce_binding.sql',
   '0055_onboarding_commerce_worker_scope.sql',
   '0056_clocker_identified_person_limits.sql',
+  '0057_management_time_close.sql',
+  '0058_delegated_time_corrections.sql',
+  '0059_payroll_export_business_identity.sql',
+  '0060_monotonic_login_fence.sql',
+  '0061_staff_tasks.sql',
   '0046_owner_advisor_memory.sql',
 ] as const;
 
@@ -70,6 +75,7 @@ export const FINAL_MIGRATIONS = [
   '0031_native_payroll.sql',
   '0032_company_access_invitations.sql',
   '0042_company_invitation_lifetime.sql',
+  '0062_conversations.sql',
 ] as const;
 
 /** Held Phase F tenant preparation. Never applied to any deployed chain;

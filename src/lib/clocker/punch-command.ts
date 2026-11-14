@@ -1,6 +1,7 @@
 import type { PunchAction, PunchCommand, PunchExpected } from './punch-types';
-export type PunchErrorCode = 'INVALID_INPUT'|'AUTH_REQUIRED'|'CONTEXT_CHANGED'|'STALE_STATE'|'COMMAND_REUSED'|'INVALID_TRANSITION'|'OTHER_LOCATION'|'INTEGRITY'|'CLOCK_INVALID'|'UNAVAILABLE'|'BREAK_TYPE_CHANGED'|'SCHEDULE_CHANGED';
+export type PunchErrorCode = 'INVALID_INPUT'|'AUTH_REQUIRED'|'CONTEXT_CHANGED'|'STALE_STATE'|'COMMAND_REUSED'|'INVALID_TRANSITION'|'OTHER_LOCATION'|'INTEGRITY'|'CLOCK_INVALID'|'UNAVAILABLE'|'BREAK_TYPE_CHANGED'|'SCHEDULE_CHANGED'|'SUBSCRIPTION_REQUIRED';
 const messages:Record<PunchErrorCode,string>={
+ SUBSCRIPTION_REQUIRED:'New clock-ins are paused. Only a shift recorded before the trial ended can continue. Ask your Owner about workplace access.',
  SCHEDULE_CHANGED:'The published schedule changed while this clock action was being recorded. Check the current state and retry the same action.',
  BREAK_TYPE_CHANGED:'This break type changed or is inactive. Reload and choose an available break type.',
  INVALID_INPUT:'Check the clock action and reload its current state.',

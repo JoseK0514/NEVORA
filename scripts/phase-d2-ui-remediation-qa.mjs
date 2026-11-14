@@ -12,6 +12,7 @@ import {clockText,fixForm,fixValues,hoursPage,whatToFix} from './employee-fix-ti
 import {verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
 import {verifyReloadFetchDiagnostic} from './browser-reload-diagnostic.mjs';
 import {observeBrowserCell} from './phase-e-browser-qa.mjs';
+import {waitForD2HoursRouteFocus} from './d2-hours-route-focus.mjs';
 
 // Runs only inside the existing owned PostgreSQL / exact-clean-SHA D2 gate.
 export async function verifyD2UiRemediation({app,browser,engine,evidence,report,checked,context,login,geometry,widths}){
@@ -35,15 +36,16 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
  await login(employee,employeeId);await login(owner,'QAOWNER');
  const navigationProbe=engine==='webkit'?await verifyNavigationFetchDiagnostic(browser):null;
  const reloadProbe=engine==='webkit'?await verifyReloadFetchDiagnostic(browser):null;
+ const authorityReloadProbe=engine==='webkit'?await verifyReloadFetchDiagnostic(browser,{resource:'authority',bothWitnesses:true}):null;
  const runtimeErrors=[],execution={engine,navigationDiagnostics:[]};
- const cell=observeBrowserCell(execution,runtimeErrors,{navigationDiagnosticVerified:navigationProbe?.verified===true,reloadDiagnosticVerified:reloadProbe?.verified===true,navigationReadKinds:['notification-read'],requireNotificationGetWitness:true});
- const assertWindowClean=()=>assert.deepEqual(runtimeErrors.filter(event=>['window-javascript-error','unproven-notification-read'].includes(event.type)),[],'Browser attribution cannot hide window exceptions or unproved notification methods');
+ const cell=observeBrowserCell(execution,runtimeErrors,{navigationDiagnosticVerified:navigationProbe?.verified===true,reloadDiagnosticVerified:reloadProbe?.verified===true,authorityDiagnosticVerified:authorityReloadProbe?.verified===true,navigationReadKinds:['notification-read','authority-read'],requireNotificationGetWitness:true,requireAuthorityGetWitness:true});
+ const assertWindowClean=()=>assert.deepEqual(runtimeErrors.filter(event=>['window-javascript-error','unproven-notification-read','unproven-authority-read'].includes(event.type)),[],'Browser attribution cannot hide window exceptions or unproved private-read methods');
  await cell.observeContext(employee,'primary');await cell.observeContext(owner,'manager');
  const ep=await employee.newPage(),mp=await owner.newPage();
  ep.setDefaultTimeout(15000);mp.setDefaultTimeout(15000);
  let phase='normal',stage='initial',requestSequence=0,managerRscVersion=0;
  const observations={engine,console:[],runtime:[],failedRequests:[],injectedFailures:[],keyboard:[],states:[],network:[]};
- observations.nativeDocumentNavigation={navigationProbe,reloadProbe,execution,runtimeErrors};
+ observations.nativeDocumentNavigation={navigationProbe,reloadProbe,authorityReloadProbe,execution,runtimeErrors};
  const startedAt=performance.now(),requests=new WeakMap(),consoleDetails=[],managerRscRequests=new Set();
  const clean=safeD2Text;
  const record=value=>{observations.network.push({atMs:Math.round(performance.now()-startedAt),stage,phase,...value});if(observations.network.length>300)observations.network.shift();};
@@ -158,9 +160,11 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   observations.entryPath={entryDate,thisWeek,view:fromCards?'cards':'records'};
   await ep.goto(app.url+(fromCards?`/app/my-time?view=cards&start=${entryWeek}&end=${addDays(entryWeek,6)}`:'/app/my-time'),{waitUntil:'networkidle'});
   const entryRow=fromCards?hoursPage(ep,'cards').locator('a.c-row#hours-card-entry-'+entryId):hoursPage(ep,'records').locator('a.c-row#hours-entry-'+entryId);
+  const nativeRouteDeadline=performance.now()+15000;
   await entryRow.focus();await entryRow.press('Enter');
   await ep.waitForURL(url=>url.searchParams.get('entry')===entryId);
   const trigger=ep.getByRole('link',{name:'Request a correction',exact:true});await trigger.waitFor();
+  observations.keyboard.push({stage:'entry-route-heading-focus',state:await waitForD2HoursRouteFocus(ep.locator('.c-hours #hours-title'),entryId,nativeRouteDeadline)});
   await trigger.focus();observations.keyboard.push({stage:'trigger-focus',state:await trigger.evaluate(e=>({documentFocused:document.hasFocus(),linkFocused:document.activeElement===e,activeTag:document.activeElement?.tagName}))});assert(await trigger.evaluate(e=>document.hasFocus()&&document.activeElement===e),'Correction trigger must have native foreground focus');await trigger.press('Enter');
   await ep.waitForURL(url=>url.searchParams.get('edit')==='entry:'+entryId);
   const form=fixForm(ep);await form.waitFor();

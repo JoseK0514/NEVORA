@@ -5,6 +5,10 @@ vi.mock('@/lib/db', () => ({ getDb: vi.fn() }));
 const time = Date.parse('2030-01-01T16:00:00Z');
 async function moduleUnderTest() { const m = await import('./worker').catch(() => ({})); expect(m).toHaveProperty('runDispatch'); return m as typeof import('./worker'); }
 afterEach(() => vi.useRealTimers());
+it('reads legacy subscription material through the previous key after activating a new write key',async()=>{
+ const {deps}=fixture();Object.assign(deps.config,{subscriptionEncryptionKey:Buffer.alloc(32,47).toString('base64url'),subscriptionEncryptionKeyId:'new-key',subscriptionPreviousEncryptionKey:Buffer.alloc(32,3).toString('base64url'),subscriptionPreviousEncryptionKeyId:'old-key',subscriptionLegacyEncryptionKeyId:'old-key'});
+ const m=await moduleUnderTest();expect(await m.runDispatch({mode:'all',deps})).toMatchObject({accepted:1,failed:0});
+});
 it('provider_acceptance_is_not_acknowledgement', async () => { const m = await moduleUnderTest(); const { deps, claims } = fixture(); expect(await m.runDispatch({ mode: 'all', deps })).toMatchObject({ accepted: 1, failed: 0 }); expect(deps.deliveries.finish).toHaveBeenCalledWith(claims[0], { state: 'provider_accepted' }); expect(deps.executor.transaction).not.toHaveBeenCalled(); });
 it('invalid_subscription_is_cleaned', async () => { const m = await moduleUnderTest(); const { deps, claims } = fixture(); vi.mocked(deps.sender.send).mockResolvedValue({ kind: 'invalid_subscription' }); await m.runDispatch({ mode: 'all', deps }); expect(deps.subscriptions.invalidate).toHaveBeenCalledWith(claims[0].subscriptionId, claims[0].generation); });
 it('one_failed_device_does_not_block_another', async () => { const m = await moduleUnderTest(); const { deps } = fixture(2); vi.mocked(deps.sender.send).mockResolvedValueOnce({ kind: 'retry', errorClass: 'transport_error' }); expect(await m.runDispatch({ mode: 'retry', deps })).toMatchObject({ accepted: 1, retried: 1 }); expect(deps.deliveries.claim).toHaveBeenCalledWith(expect.objectContaining({ mode: 'retry', limit: 10, leaseSeconds: 120 })); });

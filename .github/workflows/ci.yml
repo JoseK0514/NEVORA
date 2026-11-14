@@ -5,6 +5,7 @@ name: CI
 on:
   push:
     branches: [development, main]
+    tags: ["candidate/backend-completion/**"]
   pull_request:
     branches: [development, main, "phase-c/**", "release/**", "codex/verify-preview-33"]
 
@@ -166,6 +167,80 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  management-review-ui:
+    name: management-review-ui
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Install pinned Playwright runtime
+        shell: bash
+        run: |
+          PW_ROOT="$GITHUB_WORKSPACE/tools/ci-browser-runtime"
+          npm ci --prefix "$PW_ROOT" --no-audit --no-fund
+          npm audit --prefix "$PW_ROOT" --audit-level=high
+          echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
+          echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
+      - name: Install Chromium and WebKit
+        timeout-minutes: 8
+        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+      - name: Install PostgreSQL test runtime
+        id: attendance_runtime
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-16
+          PG_INITDB="/usr/lib/postgresql/16/bin/initdb"
+          test -n "$PG_INITDB"
+          PG_BIN="$(dirname "$PG_INITDB")"
+          test -x "$PG_BIN/initdb"
+          test -x "$PG_BIN/pg_ctl"
+          echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
+      - name: Management close browser gate
+        env:
+          NEVORA_MANAGEMENT_CLOSE_UI_EVIDENCE: ${{ runner.temp }}/management-close-ui
+        run: node scripts/payroll-postgres.mjs vitest.management-close-ui-browser.config.mts
+      - name: Delegated correction browser gate
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          NEVORA_DELEGATED_UI_EVIDENCE: ${{ runner.temp }}/delegated-corrections-ui
+        run: node scripts/payroll-postgres.mjs vitest.delegated-corrections-browser.config.mts
+      - name: Verify management browser source and closure
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          MANAGEMENT_REVIEW_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node scripts/management-review-evidence.mjs "$RUNNER_TEMP/management-close-ui" "$RUNNER_TEMP/delegated-corrections-ui"
+      - name: Upload management review browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: management-review-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/management-close-ui/*.json
+            ${{ runner.temp }}/management-close-ui/*.png
+            ${{ runner.temp }}/management-close-ui/**/source-manifest.json
+            ${{ runner.temp }}/management-close-ui/**/ownership.json
+            ${{ runner.temp }}/delegated-corrections-ui/*.json
+            ${{ runner.temp }}/delegated-corrections-ui/*.png
+            ${{ runner.temp }}/delegated-corrections-ui/**/source-manifest.json
+            ${{ runner.temp }}/delegated-corrections-ui/**/ownership.json
+          if-no-files-found: error
+          retention-days: 14
+
   phase-d-attendance-ui:
     name: phase-d-attendance-ui
     runs-on: ubuntu-24.04
@@ -213,18 +288,41 @@ jobs:
       - name: Owner advisor PostgreSQL and browser gate
         env:
           NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE: ${{ runner.temp }}/nevora-owner-advisor-browser-evidence
-        run: node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts
+        run: |
+          node --import tsx --test scripts/owner-advisor-retirement.check.mts
+          node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts
       - name: Upload Owner advisor browser evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: owner-advisor-browser-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
-            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/*.json
-            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/*.png
-            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/*-trace.zip
-            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/source-manifest.json
-            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/ownership.json
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/*.json
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/*.png
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/*-trace.zip
+          if-no-files-found: error
+          retention-days: 14
+      - name: Combined company lifecycle and recovery gate
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          NEVORA_STEP4_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          NEVORA_STEP4_EVIDENCE: ${{ runner.temp }}/nevora-step4-local
+        run: node scripts/step4-local-acceptance.mjs
+      - name: Central billing entry and callback gate
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          NEVORA_CENTRAL_BILLING_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          NEVORA_CENTRAL_BILLING_EVIDENCE: ${{ runner.temp }}/nevora-step4-local/central-billing
+        run: node scripts/central-billing-local-acceptance.mjs
+      - name: Upload combined company lifecycle evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: step4-local-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/nevora-step4-local/**/*.json
+            ${{ runner.temp }}/nevora-step4-local/**/*.png
+            ${{ runner.temp }}/nevora-step4-local/**/*-trace.zip
           if-no-files-found: error
           retention-days: 14
       - name: Exact-SHA D1.3 attendance browser gate
@@ -280,7 +378,11 @@ jobs:
         env:
           PHASE_D2_CORRECTIONS_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d2-browser-evidence
           PHASE_D2_CORRECTIONS_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: npm run test:phase-d2:corrections-ui
+        run: |
+          node scripts/d2-hours-route-focus.check.mjs
+          node scripts/d2-authority-reload.check.mjs
+          node --test scripts/d2-session-authority.check.mjs
+          npm run test:phase-d2:corrections-ui
       - name: Existing Clocker lifecycle and recovery browser regression
         if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
         env:
@@ -376,23 +478,47 @@ jobs:
           test -x "$PG_BIN/pg_ctl"
           echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
       - name: Release PostgreSQL integration gates
+        env:
+          NEVORA_CAPACITY_EVIDENCE: ${{ runner.temp }}/capacity-evidence
         run: npm run test:release:postgres
+      - name: Staff tasks isolated PostgreSQL integration gate
+        run: npm run test:staff-tasks:owned -- --reporter=json --outputFile="$RUNNER_TEMP/staff-tasks.json"
       - name: Owner advisor isolated PostgreSQL integration gate
         run: node scripts/payroll-postgres.mjs vitest.owner-advisor-integration.config.mts
       - name: Rondo leadership fixture and recovery gate (no live model calls)
         run: node scripts/payroll-postgres.mjs vitest.rondo-leadership.config.mts
+      - name: Conversations isolated PostgreSQL integration gate (D04 remains held)
+        run: node scripts/payroll-postgres.mjs vitest.conversations-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/conversations.json"
+      - name: Upload conversations SQL evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: conversations-sql-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/conversations.json
+          if-no-files-found: error
+          retention-days: 14
       - name: Native payroll isolated PostgreSQL integration gate
         run: node scripts/payroll-postgres.mjs vitest.native-payroll-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/native-payroll.json"
       - name: Configurable payroll isolated PostgreSQL integration gate
         run: node scripts/payroll-postgres.mjs vitest.configurable-payroll-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/configurable-payroll.json"
+      - name: Timestamp token and account-deletion SQL gate
+        run: node scripts/payroll-postgres.mjs vitest.timestamp-token-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/timestamp-token.json"
+      - name: Complete payroll source and contention SQL gate
+        env:
+          NEVORA_CAPACITY_EVIDENCE: ${{ runner.temp }}/capacity-evidence
+        run: node scripts/payroll-postgres.mjs vitest.payroll-source-pagination-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/payroll-source.json"
       - name: Upload dedicated payroll SQL evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: payroll-sql-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
+            ${{ runner.temp }}/staff-tasks.json
             ${{ runner.temp }}/native-payroll.json
             ${{ runner.temp }}/configurable-payroll.json
+            ${{ runner.temp }}/timestamp-token.json
+            ${{ runner.temp }}/payroll-source.json
+            ${{ runner.temp }}/capacity-evidence/*.json
           if-no-files-found: error
           retention-days: 14
 
@@ -458,17 +584,24 @@ jobs:
           retention-days: 14
 
   phase-e-ui-suite:
-    name: phase-e-ui-suite (${{ matrix.suite }})
+    name: phase-e-ui-suite (${{ matrix.leaf }})
     runs-on: ubuntu-24.04
     timeout-minutes: 50
     strategy:
       fail-fast: false
       max-parallel: 2
       matrix:
-        suite: [home, communications, calendar, navigation, attention]
+        include:
+          - { suite: home, engine: chromium, leaf: home-chromium }
+          - { suite: home, engine: webkit, leaf: home-webkit }
+          - { suite: communications, leaf: communications }
+          - { suite: calendar, leaf: calendar }
+          - { suite: navigation, leaf: navigation }
+          - { suite: attention, leaf: attention }
     env:
       PHASE_E_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       PHASE_E_BROWSER_SUITE: ${{ matrix.suite }}
+      PHASE_E_BROWSER_ENGINE: ${{ matrix.engine }}
     steps:
       - name: Select owned evidence directory
         run: echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/nevora-phase-e-browser-evidence" >> "$GITHUB_ENV"
@@ -529,7 +662,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: phase-e-browser-${{ github.event.pull_request.head.sha || github.sha }}-${{ matrix.suite }}
+          name: phase-e-browser-${{ github.event.pull_request.head.sha || github.sha }}-${{ matrix.leaf }}
           path: |
             ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence/*.json
             ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence/*.png
@@ -590,7 +723,7 @@ jobs:
   phase-e-evidence:
     name: phase-e-evidence
     if: ${{ always() }}
-    needs: [validate, clocker-postgres, release-postgres, phase-d-attendance-ui, phase-e-postgres, phase-e-ui]
+    needs: [validate, clocker-postgres, release-postgres, phase-d-attendance-ui, management-review-ui, phase-e-postgres, phase-e-ui]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -637,6 +770,10 @@ jobs:
           test -x /usr/lib/postgresql/16/bin/pg_dump
           test -x /usr/lib/postgresql/16/bin/pg_restore
           echo "NEVORA_TEST_PG_BIN=/usr/lib/postgresql/16/bin" >> "$GITHUB_ENV"
+      - name: Durable commerce PostgreSQL and SDK gate
+        run: |
+          mkdir -p "$RUNNER_TEMP/nevora-onboarding-backend"
+          node scripts/commerce-postgres.mjs --reporter=default --reporter=json --outputFile="$RUNNER_TEMP/nevora-onboarding-backend/commerce-sql-sdk.json"
       - name: Verify source-bound owned backend acceptance
         env:
           NEVORA_ONBOARDING_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}

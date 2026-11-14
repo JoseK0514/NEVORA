@@ -65,6 +65,9 @@ import {readNativeRegistrationConfig} from '@/lib/native-push/config';
 import { PasskeyOffer } from "@/components/passkeys/passkey-offer";
 import {nativeContext, nativeRoleSupported} from '@/lib/native-shell/context';
 import {UnsupportedNativeRole} from '@/components/native-shell/unsupported-role';
+import {commerceEnabled} from '@/lib/commerce/access';
+import {isCommerceRecoveryRoute, RECOVERY_ROUTE_HEADER} from '@/lib/commerce/recovery-routes';
+import {CommerceRecoveryBoundary} from '@/lib/commerce/recovery-boundary';
 
 export const metadata: Metadata = {
   // Review fix (23/24 of 50): one title per page, so tab changes are announced and tabs are tellable apart.
@@ -96,6 +99,10 @@ export default async function PlatformLayout({ children, sheet }: { children: Re
   if (nativeContext((await headers()).get('user-agent')) && !nativeRoleSupported(session.role)) {
     return <UnsupportedNativeRole />;
   }
+  const recoveryEnabled = commerceEnabled();
+  if (recoveryEnabled && isCommerceRecoveryRoute((await headers()).get(RECOVERY_ROUTE_HEADER))) {
+    return <CommerceRecoveryBoundary enabled initialRecovery>{children}</CommerceRecoveryBoundary>;
+  }
   const workspace = await getWorkspace();
   const proof = await requireSessionMutationProof();
   const [operationalAuthority,payrollCapabilities]=await Promise.all([readOperationalAuthority(proof),payrollFeatureEnabled()?readPayrollCapabilities(proof):Promise.resolve(undefined)]);
@@ -103,7 +110,7 @@ export default async function PlatformLayout({ children, sheet }: { children: Re
   const initialCollapsed = (await cookies()).get(preferenceCookie)?.value === "collapsed";
   const brand = await currentBrand();
   return (
-    <AppShell
+    <CommerceRecoveryBoundary enabled={recoveryEnabled} shell={<AppShell
       key={session.id}
       workspaceName={workspace.name}
       initialCollapsed={initialCollapsed}
@@ -136,6 +143,6 @@ export default async function PlatformLayout({ children, sheet }: { children: Re
       <PasskeyOffer />
       {/* Review B6 (NV-326): the B entrance plays on the first page of a session only. */}
       <BEntrance />
-    </AppShell>
+    </AppShell>}>{children}</CommerceRecoveryBoundary>
   );
 }

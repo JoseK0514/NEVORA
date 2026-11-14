@@ -168,7 +168,7 @@ test('new diagnostic report matches the existing artifact selection', () => {
   assert(harness.includes("join(evidence, 'browser-failure-report.json')"));
   assert(harness.includes("report.errors.push('Required browser execution failed')"));
   assert(harness.includes('process.exitCode = 1'));
-  assert(harness.includes('verifyBrowserExecutions(report.executions, suites)'));
+  assert(harness.includes('verifyBrowserExecutions(report.executions, suites, owner.browserEngine)'));
 });
 
 test('cell progress retains bounded identifiers and timings without arbitrary payload',async()=>{

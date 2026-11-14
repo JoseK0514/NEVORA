@@ -1,5 +1,13 @@
 # Managed web workforce runtime — qualification and activation handoff
 
+November11 source reconciliation: the credential-recovery limitation below is the
+dated November9 state, preserved as history. The later [company-specific enrollment
+implementation](../../ops/workforce/ENROLLMENT-RUNBOOK.md) now provides a root-free
+worker-host custody path. It still requires fresh source/artifact bindings,
+restricted issuer/reader admission, private custody and separately authorized hosted
+acceptance. This addendum does not relabel the original tests, run the pilot or
+approve host/monitor activation.
+
 Jose approved completion of the remaining web backend and excluded native applications/push. This phase adds a dedicated payroll/web-notification host and an independent aggregate monitor. Claude retains product UI ownership. Production remains on hold. It does not add employee bank transfers, tax filing, Manager Rondo, CSV commit authority or universal autonomous Owner replacement.
 
 ## Delivered source

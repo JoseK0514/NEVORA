@@ -1,5 +1,8 @@
 import { Temporal } from '@js-temporal/polyfill';
 import type { CorrectionKind } from './validation';
+import {completeReadManifest,type CompleteReadManifest} from '../complete-read-pages';
+
+export const CORRECTION_READ_PAGE_SIZE = 100;
 
 export type CorrectionStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
@@ -42,6 +45,7 @@ export type PublicCorrectionItem = {
   proposedEndAt: string;
   breakName: string | null;
   reason: string;
+  requestedByName?:string|null;
   baseChanged:boolean;
   context:CorrectionContext;
 };
@@ -72,6 +76,7 @@ export type ManagerTimeCorrections =
       observedAt: string;
       timeZone: string;
       requests: ManagerCorrectionItem[];
+      paging?: CompleteReadManifest;
     }
   | { state: 'unavailable'; reason: 'access_denied' | 'read_failed' | 'schema_missing' | 'source_limit' };
 
@@ -135,6 +140,7 @@ function item(value: unknown): PublicCorrectionItem {
       !text(value.locationId, 200) || !text(value.locationName, 300) ||
       !instant(value.proposedStartAt) || !instant(value.proposedEndAt) ||
       !text(value.reason, 500) || typeof value.baseChanged!=='boolean' ||
+      !(value.requestedByName===undefined||value.requestedByName===null||text(value.requestedByName,300)) ||
       !(value.breakName === null || text(value.breakName, 80)) ||
       !(value.originalStartAt === null || instant(value.originalStartAt)) ||
       !(value.originalEndAt === null || instant(value.originalEndAt))) {
@@ -168,6 +174,7 @@ function item(value: unknown): PublicCorrectionItem {
     proposedEndAt:value.proposedEndAt,
     breakName:value.breakName,
     reason:value.reason,
+    ...(value.requestedByName!==undefined?{requestedByName:value.requestedByName as string|null}:{}),
     baseChanged:value.baseChanged,
     context:effective,
   };
@@ -218,14 +225,16 @@ export function parseManagerTimeCorrections(value: unknown): ManagerTimeCorrecti
   const failed = unavailable(value);
   if (failed) return failed;
   if (value.state !== 'ready' || !integer(value.validForMs,1) || value.validForMs>45000 || !instant(value.observedAt) || !zone(value.timeZone) ||
-      !Array.isArray(value.requests) || value.requests.length > 100) {
+      !Array.isArray(value.requests)) {
     throw new Error('Invalid correction response');
   }
+  const paging=completeReadManifest(value.paging,value.requests.length,CORRECTION_READ_PAGE_SIZE);
   const requests = value.requests.map((entry) => {
     if (!object(entry) || !text(entry.employeeName,300) || typeof entry.isSelf !== 'boolean') {
       throw new Error('Invalid correction response');
     }
     return {...item(entry),employeeName:entry.employeeName,isSelf:entry.isSelf};
   });
-  return {state:'ready',...(typeof value.authority==='string'&&/^[a-f0-9]{64}$/.test(value.authority)?{authority:value.authority}:{}),validForMs:value.validForMs,observedAt:value.observedAt,timeZone:value.timeZone,requests};
+  if(new Set(requests.map(request=>request.id)).size!==requests.length)throw Error('Duplicate corrections');
+  return {state:'ready',...(typeof value.authority==='string'&&/^[a-f0-9]{64}$/.test(value.authority)?{authority:value.authority}:{}),validForMs:value.validForMs,observedAt:value.observedAt,timeZone:value.timeZone,requests,...(paging?{paging}:{})};
 }

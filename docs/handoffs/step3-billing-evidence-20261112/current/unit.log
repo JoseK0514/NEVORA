@@ -1,0 +1,103 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 /workspace/nevora-step3-final
+
+ ❯ src/lib/operations/supervisor.test.ts (19 tests | 1 failed) 8466ms
+   × stops an owned descendant before releasing process-group overlap protection 2159ms
+(node:39265) Warning: Closing file descriptor 19 on garbage collection
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:39265) [DEP0137] DeprecationWarning: Closing a FileHandle object on garbage collection is deprecated. Please close FileHandle objects explicitly using FileHandle.prototype.close(). In the future, an error will be thrown if a file descriptor is closed during garbage collection.
+ ❯ src/lib/operations/managed-runtime.test.ts (12 tests | 3 failed) 10305ms
+   × releases only confirmed own custody and rejects symlinked or public state directories 15ms
+   × runs the actual canonical CLI with a closed payroll gate and retains its structured failure receipt without database access 5002ms
+   × drains the actual failed CLI receipt before removing shutdown handlers after a control database rejection 5000ms
+[OWNED_MIGRATION_FAILURE] {"file":"0002_schedule_health.sql","index":2,"total":66,"sha256":"0dd019d1658c22763d11531ef72b39db9e5a106bb418b1a4fc63f5caaff7f9f0","pid":2,"statementTimeout":"5s","elapsedMs":0,"sqlstate":null,"samples":[],"observerFailed":false}
+ ❯ src/test/manual-publication.test.ts (1 test | 1 failed) 1100ms
+   × qualifies the actual checked-in web manuals and PDFs against current application and source bytes 1099ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/test/manual-publication.test.ts > qualifies the actual checked-in web manuals and PDFs against current application and source bytes
+Error: Stale or foreign application content hash
+ ❯ ensure scripts/manuals/bundle.mjs:15:60
+     13| export const manualErrorMessage = error => error instanceof ManualBund…
+     14| export const sha256 = bytes => createHash('sha256').update(bytes).dige…
+     15| function ensure(condition, message) {if (!condition) throw new ManualB…
+       |                                                            ^
+     16| function object(value) {return value !== null && typeof value === 'obj…
+     17| function keys(value, names, label) {
+ ❯ verifyBundle scripts/manuals/bundle.mjs:207:3
+ ❯ src/test/manual-publication.test.ts:7:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/lib/operations/managed-runtime.test.ts > releases only confirmed own custody and rejects symlinked or public state directories
+AssertionError: promise resolved "{ release: [AsyncFunction release] }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "release": [Function release],
+  }
+
+ ❯ src/lib/operations/managed-runtime.test.ts:46:109
+     44|   await rm(c.stateDirectory,{recursive:true});await mkdir(join(root,'t…
+     45|   await expect(acquireManagedState(c)).rejects.toThrow('managed_state_…
+     46|   await rm(c.stateDirectory);await mkdir(c.stateDirectory,{mode:0o755}…
+       |                                                                                                             ^
+     47|  }finally{await rm(root,{recursive:true,force:true});}
+     48| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/lib/operations/managed-runtime.test.ts > runs the actual canonical CLI with a closed payroll gate and retains its structured failure receipt without database access
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/lib/operations/managed-runtime.test.ts:122:1
+    120|  expect(managedHttpResponse(new Request('https://worker.onrender.com/r…
+    121| });
+    122| it('runs the actual canonical CLI with a closed payroll gate and retai…
+       | ^
+    123|  const root=await realpath(await mkdtemp(join(tmpdir(),'nevora-managed…
+    124|  try{
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/lib/operations/managed-runtime.test.ts > drains the actual failed CLI receipt before removing shutdown handlers after a control database rejection
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/lib/operations/managed-runtime.test.ts:130:1
+    128|  }finally{await rm(root,{recursive:true,force:true});}
+    129| });
+    130| it('drains the actual failed CLI receipt before removing shutdown hand…
+       | ^
+    131|  const root=await realpath(await mkdtemp(join(tmpdir(),'nevora-managed…
+    132|  // Reject the real pg startup on an owned loopback socket. No hosted …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/lib/operations/supervisor.test.ts > stops an owned descendant before releasing process-group overlap protection
+AssertionError: expected 'failed' to be 'interrupted' // Object.is equality
+
+Expected: "interrupted"
+Received: "failed"
+
+ ❯ src/lib/operations/supervisor.test.ts:76:33
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  3 failed | 853 passed | 33 skipped (889)
+      Tests  5 failed | 12779 passed | 901 skipped (13740)
+   Start at  00:31:20
+   Duration  352.36s (tests 77%, import 19%, transform 3%)
+
+    Isolate  889 workers spawned · ~111ms startup each (spawn + environment, per file)
+             at least ~32.89s faster with isolate: false — reuses workers across files instead of one per file

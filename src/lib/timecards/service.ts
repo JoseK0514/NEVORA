@@ -7,7 +7,8 @@ import { neonNotificationExecutor } from '../data/notification-transactions';
 import { getWorkspace, workspaceReadGuard } from '../data/workspaces';
 import { parsePeriod, type Period } from './project';
 import type { TimecardActionCapture } from '../action-center/canonical-source';
-import { parseTimecardsResponse, type TimecardsResult } from './read-model';
+import { assembleCompleteReadPages } from '../complete-read-pages';
+import { parseTimecardsResponse, TIMECARD_READ_PAGE_SIZE, type TimecardsResult } from './read-model';
 export type { TimecardsResult } from './read-model';
 
 export type TimecardCommand = Period & { operationId:string;employeeId:string;expectedRevision:number;
@@ -87,15 +88,18 @@ SELECT jsonb_build_object(
 
 // Finalization freezes the reviewed source. Approval remains tied to the current
 // source hash, so subsequent changes surface as NEEDS_REVIEW rather than approval.
-const timecardReadSqlFor=(includeInternalCapture = false)=>`WITH scope AS (
-  SELECT e.id FROM employees e JOIN locations l ON l.id=e.primary_location_id
+const timecardReadSqlFor=(includeInternalCapture = false)=>`WITH observed AS MATERIALIZED (
+  SELECT clock_timestamp() AS at
+), scope AS MATERIALIZED (
+  SELECT e.id,((row_number() OVER (ORDER BY e.id)-1)/${TIMECARD_READ_PAGE_SIZE})::integer AS page_index
+  FROM employees e JOIN locations l ON l.id=e.primary_location_id
   WHERE l.workspace_id=$1 AND ($2::boolean OR e.id=$3)
-), sources AS (
-  SELECT s.id,nevora_timecard_source($1,s.id,$4::date,$5::date) AS current_source,
+), sources AS MATERIALIZED (
+  SELECT s.id,s.page_index,nevora_timecard_source($1,s.id,$4::date,$5::date) AS current_source,
     c.revision,c.action,c.source_hash,c.snapshot
   FROM scope s LEFT JOIN nevora_timecard_latest c ON c.workspace_id=$1 AND c.employee_id=s.id AND c.start_date=$4::date AND c.end_date=$5::date
-)
-SELECT clock_timestamp()::text AS "observedAt",COALESCE(jsonb_agg(jsonb_build_object(
+), pages AS (
+SELECT s.page_index,jsonb_agg(jsonb_build_object(
   'source',CASE WHEN s.action='FINALIZE' THEN s.snapshot ELSE s.current_source END,
   'sourceHash',CASE WHEN s.action='FINALIZE' THEN s.source_hash ELSE md5(s.current_source::text) END,
   'revision',COALESCE(s.revision,0),'state',CASE WHEN s.action='FINALIZE' THEN 'FINALIZED'
@@ -106,8 +110,14 @@ SELECT clock_timestamp()::text AS "observedAt",COALESCE(jsonb_agg(jsonb_build_ob
     'note',h.note,'sourceHash',h.source_hash,'snapshot',h.snapshot) ORDER BY h.revision DESC)
     FROM timecard_revisions h JOIN employees a ON a.id=h.actor_employee_id
     WHERE h.workspace_id=$1 AND h.employee_id=s.id AND h.start_date=$4::date AND h.end_date=$5::date),'[]'::jsonb)
-) ORDER BY s.id),'[]'::jsonb) AS cards${includeInternalCapture ? `,
-COALESCE(jsonb_agg(jsonb_build_object('employeeId',s.id,'source',s.current_source,'sourceHash',md5(s.current_source::text),'correctionFootprint',${timecardCorrectionCaptureSql}) ORDER BY s.id),'[]'::jsonb) AS "internalCurrentSources"` : ''} FROM sources s`;
+) ORDER BY s.id) AS cards${includeInternalCapture ? `,
+jsonb_agg(jsonb_build_object('employeeId',s.id,'source',s.current_source,'sourceHash',md5(s.current_source::text),'correctionFootprint',${timecardCorrectionCaptureSql}) ORDER BY s.id) AS "internalCurrentSources"` : ''}
+FROM sources s GROUP BY s.page_index
+)
+SELECT o.at::text AS "observedAt",(SELECT count(*)::integer FROM scope) AS "totalRows",
+  COALESCE(p.page_index,0) AS "pageIndex",COALESCE(p.cards,'[]'::jsonb) AS cards${includeInternalCapture ? `,
+  COALESCE(p."internalCurrentSources",'[]'::jsonb) AS "internalCurrentSources"` : ''}
+FROM observed o LEFT JOIN pages p ON true ORDER BY p.page_index`;
 export const timecardReadSql=timecardReadSqlFor();
 
 async function readTimecardsCore(proof:SessionMutationProof,requested:Period,executor:SqlExecutor=neonNotificationExecutor(),capture?: (value: TimecardActionCapture) => void):Promise<TimecardsResult> {
@@ -122,7 +132,10 @@ async function readTimecardsCore(proof:SessionMutationProof,requested:Period,exe
     ];
     const results=await executor.transaction([...guards,{text:capture ? timecardReadSqlFor(true) : timecardReadSql,values:[workspace.id,manager(proof),proof.employee.id,period.startDate,period.endDate]},
       ...managementSessionStatements(proof,proof.employee.id,readRoles)]);
-    const result=parseTimecardsResponse(results[guards.length]?.[0],period);
+    const pages=results[guards.length];
+    const complete=assembleCompleteReadPages(pages,'cards',TIMECARD_READ_PAGE_SIZE);
+    const result=parseTimecardsResponse({observedAt:complete.observedAt,cards:complete.rows,
+      ...(complete.rows.length>TIMECARD_READ_PAGE_SIZE?{paging:complete.paging}:{})},period);
     if(!manager(proof)&&result.cards.some(c=>c.card.employeeId!==proof.employee.id))throw new Error('Incorrect scope');
     const authority=await executor.query<{remaining:number}>({text:`SELECT floor(LEAST(45000,EXTRACT(epoch FROM(s.expires_at-clock_timestamp()))*1000))::integer AS remaining
       FROM employee_sessions s JOIN employees e ON e.id=s.employee_id JOIN locations l ON l.id=e.primary_location_id
@@ -130,8 +143,7 @@ async function readTimecardsCore(proof:SessionMutationProof,requested:Period,exe
     if(!authority[0])return {state:'unavailable',reason:'access_denied'};
     const validForMs=Math.floor(authority[0].remaining-(performance.now()-started));if(validForMs<1)throw Error('Timecards expired');
     if (capture) {
-      const capturedRow = results[guards.length]?.[0] as { internalCurrentSources?: unknown } | undefined;
-      const raw = capturedRow?.internalCurrentSources;
+      const raw=assembleCompleteReadPages(pages,'internalCurrentSources',TIMECARD_READ_PAGE_SIZE).rows;
       // Validation/coherence remains in the pure capture parser; do not copy private rows to view.
       capture({ workspaceId: workspace.id, actorEmployeeId: proof.employee.id, projection: result, currentSources: raw,
         validForMs });

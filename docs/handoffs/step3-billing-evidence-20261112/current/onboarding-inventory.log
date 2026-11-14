@@ -1,0 +1,16 @@
+✔ new download, auth action, worker and direct database paths cannot evade the entrypoint inventory (16.981391ms)
+✔ test-only suffixes are bounded exemptions, invalid inventory dispositions are rejected (0.243287ms)
+✔ server actions after comments, without semicolons, or inline in a page still require classification (4.056237ms)
+✔ commerce server/catalog/worker boundaries cannot evade the runtime inventory (0.283558ms)
+✔ the billing status route and plan-confirmation catalog helper have explicit isolated dispositions (666.504771ms)
+✔ the private workforce command and every tracked transport boundary have an explicit reviewed disposition (138.001798ms)
+✔ every actual staff task route has a company-bound disposition and removing any entry fails closed (867.194926ms)
+✔ every actual conversation route has a company-bound disposition and removing any entry fails closed (1217.485522ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3455.724149

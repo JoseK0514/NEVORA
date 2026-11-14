@@ -1,0 +1,35 @@
+{
+  "baseSha": "242a993897aee4a213a1a9aefdecee2e86394b1f",
+  "scope": "test-only working tree over development242; not final-source CI",
+  "failedDevelopmentRun": 43325639433,
+  "failedJob": 131557278760,
+  "artifactId": 13992119615,
+  "artifactSha256": "7250f79eb54d94c7b92f3f3304b7ca21d9d74eb99d10e65d766127b3f1f6a1d4",
+  "checks": {
+    "forcedBoundaryReproduction": {
+      "exitCode": 1,
+      "sameAssertion": true
+    },
+    "focused": {
+      "exitCode": 0,
+      "passed": 7
+    },
+    "foundation": {
+      "exitCode": 0,
+      "passed": 517,
+      "files": 32
+    },
+    "typecheck": {
+      "exitCode": 0
+    },
+    "scopedLint": {
+      "exitCode": 0
+    },
+    "review": {
+      "status": "CLEAR",
+      "blockers": []
+    }
+  },
+  "causeLimit": "Forced rollover reproduces the mechanism; exact historical CI counter timestamps were not recorded.",
+  "providerEffects": false
+}

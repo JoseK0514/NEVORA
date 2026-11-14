@@ -22,4 +22,6 @@ export type PunchView = {
  snapshot:PunchSnapshot; verificationId:string; allowedActions:PunchAction[]; atOtherLocation:boolean; breakTypes:BreakType[];
  /** The company turned breaks off (B2): no break types, by choice rather than missing setup. */
  breaksOff?:true;
+ /** Presentation only; the SQL writer independently checks server authority. */
+ commerceRestriction?:'finish_shift'|'paused';
 };

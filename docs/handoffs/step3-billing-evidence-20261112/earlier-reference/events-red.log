@@ -1,0 +1,42 @@
+
+> fuel-scheduler@0.1.0 test:commerce:owned
+> node scripts/commerce-postgres.mjs
+
+
+ RUN  v5.0.5 /workspace/nevora-step3
+
+ ❯ services/commerce/stripe.integration.test.ts (67 tests | 1 failed) 6996ms
+   ❯ Stripe lifecycle with real catalog and SDK (67)
+     × rejects a signed event from a foreign account before durable admission or provider I/O 87ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  services/commerce/stripe.integration.test.ts > Stripe lifecycle with real catalog and SDK > rejects a signed event from a foreign account before durable admission or provider I/O
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+undefined
+
+ ❯ services/commerce/stripe.integration.test.ts:389:49
+    387|     Object.assign(billing.options,{expectedAccountId:'acct_fictional'}…
+    388|     const {raw,signature}=signedEvent({account:'acct_foreign'});
+    389|     await expect(billing.webhook(raw,signature)).rejects.toThrow('stri…
+       |                                                 ^
+    390|     expect((await pool.query('SELECT count(*)::int n FROM commerce.web…
+    391|     expect((await pool.query('SELECT count(*)::int n FROM commerce.job…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 14 passed (15)
+      Tests  1 failed | 176 passed (177)
+   Start at  00:24:45
+   Duration  7.42s (tests 88%, import 8%, transform 3%)
+
+    Isolate  15 workers spawned · ~101ms startup each (spawn + environment, per file)
+             at least ~404ms faster with isolate: false — reuses workers across files instead of one per file

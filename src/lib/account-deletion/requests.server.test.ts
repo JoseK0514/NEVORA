@@ -1,3 +1,4 @@
+vi.mock('@/lib/data/sql-session-contract',()=>import('../../test/fixtures/business-sql-session'));
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const state = vi.hoisted(() => ({ query: vi.fn(), verify: vi.fn(), transaction: vi.fn() }));
@@ -38,7 +39,7 @@ describe("account deletion requests", () => {
     expect(statements[4].text).toMatch(/INSERT INTO account_deletion_requests[\s\S]*ON CONFLICT \(employee_id\) WHERE status IN \('received', 'processing'\) DO NOTHING/);
     expect(statements[4].values).toEqual([expect.any(String), expect.stringMatching(DELETION_REFERENCE), "FICTIONAL-E1", "web", "2026-10-20-draft"]);
     expect(statements[5].text).toMatch(/DELETE FROM employee_sessions WHERE employee_id = \$1/);
-    expect(statements[6].text).toMatch(/UPDATE employees SET updated_at = clock_timestamp\(\) WHERE id = \$1/);
+    expect(statements[6].text).toBe("UPDATE employees SET updated_at = GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE id = $1");
     expect(statements[7].text).toMatch(/UPDATE calendar_subscriptions[\s\S]*'account_loss'/);
     expect(statements.every(statement => statement.values.includes("FICTIONAL-E1"))).toBe(true);
   });

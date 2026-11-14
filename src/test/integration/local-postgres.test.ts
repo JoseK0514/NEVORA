@@ -94,6 +94,11 @@ it('runs exact migration files sequentially on one closed bootstrap connection, 
     expect(state.clients[1].statements).toEqual(["SELECT pg_backend_pid() AS pid,current_setting('statement_timeout') AS statement_timeout",...sql]);
     expect(state.clients[1].ended).toBe(true);
     expect(state.clients[0].ended).toBe(false);
+    expect(state.clients[0].statements.filter(text=>text.startsWith('ALTER DATABASE'))).toEqual([
+      'ALTER DATABASE "nevora_foundation_test_bootstrap" SET TimeZone TO \'UTC\'',
+      'ALTER DATABASE "nevora_foundation_test_bootstrap" SET DateStyle TO \'ISO, YMD\'',
+      'ALTER DATABASE "nevora_foundation_test_bootstrap" SET default_transaction_isolation TO \'read committed\'',
+    ]);
     expect(state.clients[0].statements.filter(text => text.startsWith('SELECT shobj_description'))).toHaveLength(sql.length + 1);
     await Promise.all([
       db.executor.query({ text: 'SELECT 11', values: [] }),

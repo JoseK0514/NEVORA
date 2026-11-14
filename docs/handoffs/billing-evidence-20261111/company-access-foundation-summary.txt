@@ -1,0 +1,12 @@
+ ✓ src/test/integration/company-access-digest-maintenance.integration.ts (1 test) 279ms
+ ✓ src/test/integration/company-access-scope-route.integration.ts (1 test) 273ms
+ ✓ src/test/integration/company-access-timestamp-tokens.integration.ts (2 tests) 839ms
+   ✓ keeps an existing UTC/ISO invitation usable under the canonical source session contract 395ms
+   ✓ fails closed for a persisted noncanonical invitation version and supports explicit Owner reissue without rewriting its old version 443ms
+
+ Test Files  32 passed (32)
+      Tests  516 passed (516)
+   Start at  21:57:23
+   Duration  178.58s (tests 98%, import 1%, transform 1%)
+
+[Payroll PostgreSQL] Owned cluster stopped.

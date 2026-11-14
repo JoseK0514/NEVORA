@@ -96,7 +96,7 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
     </FieldErrors>
    </fieldset>
    <p className="nv-sr" role="status">{busy?'Issuing recovery code. Checking your access and preparing a single-use code.':''}</p>
-   {message?<div className="wc-feedback" ref={feedback} tabIndex={-1} role="alert"><Notice tone="urgent" title={message.includes('session ended')?'Your session ended':message.includes('expired')?'Recovery code expired':'Code not issued'}
+   {message?<div className="wc-feedback" ref={feedback} tabIndex={-1} role="alert"><Notice tone="urgent" title={message.includes('session ended')?'Your session ended':message.includes('expired')?'Recovery code expired':'Code not confirmed'}
     action={message.includes('session ended')?<Link className="q-btn q-btn--quiet" href="/login">Sign in</Link>:undefined}>{message}</Notice></div>:null}
    {/* Review F2 (NV-249): the button stays enabled and the form checks on submit, as Add employee does. The confirmation
      * is still required: without it nothing is sent, the switch is marked and focused, and its error shows under it.

@@ -2,14 +2,20 @@ import {parseBillingOwner,type BillingOwner} from "./owner-authority";
 import {verifyInstallationOwner} from "./installation";
 import { businessAccess } from "./access";
 import { hashPassword } from "../../src/lib/auth/password";
-import { CommerceError, parseSignup, parseEmail, planFor } from "./model";
+import { CommerceError, parseSignup, parseEmail, planFor,type PlanKey } from "./model";
 import { token } from "./security";
 import { CommerceStore, type Business } from "./store";
+import {commerceLanguage,type CommerceLanguage} from './language';
+import type {PoolClient} from 'pg';
+import {billingActorHash,type BillingOperationContext} from './billing-operations';
+import {terminalSubscription} from './stripe-identity';
 export interface BillingPort {
-  checkout(business: Business, operation: string,owner?:BillingOwner|null): Promise<string>;
-  portal(business: Business, operation: string,owner?:BillingOwner|null): Promise<string>;
+  checkout(business: Business, operation: string,owner?:BillingOwner|null,lang?:CommerceLanguage,context?:BillingOperationContext): Promise<string>;
+  portal(business: Business, operation: string,owner?:BillingOwner|null,lang?:CommerceLanguage,context?:BillingOperationContext): Promise<string>;
+  planChange?(business:Business,operation:string,plan:PlanKey,owner?:BillingOwner|null,lang?:CommerceLanguage,context?:BillingOperationContext):Promise<PlanChangeResult>;
   webhook(raw: string, signature: string): Promise<void>;
 }
+export type PlanChangeResult={url:string;plan:PlanKey;effective:'after_payment'|'period_end'};
 export type CommerceOptions = {
   store: CommerceStore;
   origin: string;
@@ -68,7 +74,7 @@ export function createCommerce(options: CommerceOptions) {
         return answer({ state: "alive" });
       if (path === "/ready" && request.method === "GET") {
         const schema = await store.pool.query(
-          "SELECT CASE WHEN to_regclass('commerce.accounts') IS NOT NULL AND to_regclass('commerce.external_installations') IS NOT NULL AND EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='commerce' AND table_name='tokens' AND column_name='owner_binding') AND EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='commerce' AND table_name='external_installations' AND column_name='worker_secret_hash') THEN true ELSE false END installed",
+          "SELECT CASE WHEN to_regclass('commerce.accounts') IS NOT NULL AND to_regclass('commerce.external_installations') IS NOT NULL AND to_regclass('commerce.billing_operations') IS NOT NULL AND to_regclass('commerce.billing_operation_stages') IS NOT NULL AND EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='commerce' AND table_name='checkout_intents' AND column_name='reconciled_expired_at') AND EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='commerce' AND table_name='tokens' AND column_name='owner_binding') AND EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='commerce' AND table_name='external_installations' AND column_name='worker_secret_hash') THEN true ELSE false END installed",
         );
         if (!schema.rows[0].installed)
           throw new CommerceError("catalog_not_ready", 503);
@@ -211,32 +217,49 @@ export function createCommerce(options: CommerceOptions) {
         return answer({ state: "signed_out" });
       }
       const business = await store.business(id);
+      let expectedCustomer=business.customerId;
+      const assertCurrentBilling = async (checkCustomer = true,client?:PoolClient) => {
+        const currentId = await store.session(bearer, options.now?.() ?? Date.now(), (b, o, c) => verifyInstallationOwner(store, b, o, c),client);
+        const current = await store.business(currentId,client);
+        if (currentId !== id || current.state !== business.state || current.slotId !== business.slotId ||
+          current.incarnation !== business.incarnation || current.origin !== business.origin ||
+          ((checkCustomer||expectedCustomer!==null)&&current.customerId!==expectedCustomer) ||
+          (checkCustomer&&current.subscriptionId!==business.subscriptionId))
+          throw new CommerceError('billing_binding_changed', 409);
+      };
       if (path === "/v1/setup" && request.method === "POST") {
         await store.rate(`setup:${id}`, 10, 3600, now);
         const setup = parseSignup({ ...input, email: business.email });
         await store.submitSetup(id, setup, await hashPassword(setup.password));
         return answer({ state: "setup_accepted" }, 202);
       }
-      if (path === "/v1/status" && request.method === "GET")
+      if (path === "/v1/status" && request.method === "GET") {
+        const access = await businessAccess(store, business, now, options.headcount);
+        // Paid access can outlive a terminal subscription. This is presentation
+        // guidance from the catalog; Checkout still verifies the live provider,
+        // original coverage and durable operation fences before any mutation.
+        const billingAction = !options.billing || business.state !== 'ready' ? null
+          : !business.subscriptionId ? business.subscriptionStatus === null ? 'checkout' : null
+          : terminalSubscription(business.subscriptionStatus ?? '') ? 'checkout'
+          : ['active','trialing','past_due','unpaid','incomplete','paused'].includes(business.subscriptionStatus ?? '') ? 'portal' : null;
+        await assertCurrentBilling();
         return answer({
+          billingAction,
           businessId: id,
           businessName: business.profile.businessName ?? null,
           setup: business.state,
           applicationUrl: business.state === "ready" ? business.origin : null,
           ownerEmployeeId: business.profile.ownerEmployeeId ?? "OWNER",
-          trialEndsAt: business.trialEnd
-            ? new Date(business.trialEnd).toISOString()
-            : null,
-          paidThrough: business.paidThrough
-            ? new Date(business.paidThrough).toISOString()
-            : null,
-          plan: business.planKey,
-          ...(await businessAccess(store, business, now, options.headcount)),
+          ...access,
         });
+      }
       if (
-        (path === "/v1/checkout" || path === "/v1/portal") &&
+        (path === "/v1/checkout" || path === "/v1/portal" || path === '/v1/plan-change') &&
         request.method === "POST"
       ) {
+        const allowed=path==='/v1/plan-change'?['plan','lang']:['lang'];
+        if(Object.keys(input).some(key=>!allowed.includes(key)))throw new CommerceError('invalid_billing_input',400);
+        const lang=input.lang===undefined?undefined:commerceLanguage(input.lang);
         if (business.state !== "ready")
           throw new CommerceError("setup_pending", 409);
         if (!options.billing)
@@ -246,12 +269,24 @@ export function createCommerce(options: CommerceOptions) {
         if (!/^[0-9a-f]{8}-[0-9a-f-]{27,40}$/i.test(operation))
           throw new CommerceError("idempotency_key_required");
         await store.rate(`billing:${id}`, 20, 3600, now);
-        return answer({
-          url:
-            path === "/v1/checkout"
-              ? await options.billing.checkout(business, operation,owner)
-              : await options.billing.portal(business, operation,owner),
-        });
+        await assertCurrentBilling();
+        const context:BillingOperationContext={actor:billingActorHash(store.key,[bearer,owner]),assertCurrent:client=>assertCurrentBilling(path!=='/v1/checkout',client),bindCustomer:customerId=>{
+          if(!/^cus_[A-Za-z0-9_]{1,100}$/.test(customerId)||(expectedCustomer!==null&&expectedCustomer!==customerId))throw new CommerceError('billing_binding_changed',409);
+          expectedCustomer=customerId;
+        }};
+        if(path==='/v1/plan-change'){
+          if(input.plan!=='small'&&input.plan!=='team')throw new CommerceError('invalid_plan');
+          if(!options.billing.planChange)throw new CommerceError('plan_changes_unavailable',503);
+          const result=await options.billing.planChange(business,operation,input.plan,owner,lang,context);
+          await assertCurrentBilling();
+          return answer(result);
+        }
+        const url = path === "/v1/checkout"
+          ? await options.billing.checkout(business, operation, owner, lang,context)
+          : await options.billing.portal(business, operation, owner, lang,context);
+        // Checkout may legitimately create the first customer/subscription binding.
+        await assertCurrentBilling(path !== "/v1/checkout");
+        return answer({ url });
       }
       throw new CommerceError("not_found", 404);
     } catch (error) {

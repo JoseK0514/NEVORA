@@ -1,0 +1,13 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run src/lib/notifications src/lib/auth/mail-transport.test.ts src/lib/auth/mail-transport.deadline.test.ts src/lib/auth/mail-transport.slow-smtp.test.ts src/lib/auth/recovery-delivery.test.ts src/lib/auth/invitations/delivery.test.ts src/lib/onboarding/registration.test.ts src/app/app/api/push/push-routes.test.ts src/app/api/internal/notifications/worker-routes.test.ts src/lib/operations/monitor.test.ts
+
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-scrum60-delivery/nevora-worker-quota-repair-20261112
+
+
+ Test Files  30 passed (30)
+      Tests  590 passed (590)
+   Start at  21:32:07
+   Duration  15.30s (tests 91%, import 6%, transform 3%, worker 1%)
+

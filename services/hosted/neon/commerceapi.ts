@@ -4,7 +4,7 @@ import {readCompanyServiceTransport} from '../../commerce/installation-transport
 import {CommerceError} from '../../commerce/model';
 import {hostedEnvironmentBound,readHostedBody} from './handlers';
 import type {HostedEnvironment} from './capabilities';
-const methods:Readonly<Record<string,string>>={'/health':'GET','/ready':'GET','/v1/plans':'GET','/v1/status':'GET','/internal/access':'GET','/internal/handoff':'POST','/v1/handoff/exchange':'POST','/v1/checkout':'POST','/v1/portal':'POST','/v1/logout':'POST'};
+const methods:Readonly<Record<string,string>>={'/health':'GET','/ready':'GET','/v1/plans':'GET','/v1/status':'GET','/internal/access':'GET','/internal/handoff':'POST','/v1/handoff/exchange':'POST','/v1/checkout':'POST','/v1/portal':'POST','/v1/plan-change':'POST','/v1/logout':'POST'};
 const legacy=new Set(['/v1/signup','/v1/setup','/v1/login-link','/v1/verify']);
 const fail=(code:string,status:number,origin?:string)=>Response.json({error:{code}},{status,headers:{'cache-control':'no-store','x-content-type-options':'nosniff',vary:'Origin',...(origin?{'access-control-allow-origin':origin}:{})}});
 export function createCommerceApiHandler(env:HostedEnvironment,serve:(request:Request)=>Promise<Response>){

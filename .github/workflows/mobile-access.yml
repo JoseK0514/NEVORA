@@ -3,6 +3,7 @@ name: Mobile Access
 on:
   push:
     branches: [development, main, claude-codex-collab-nevora]
+    tags: ["candidate/backend-completion/**"]
   pull_request:
     branches: [development, main, claude-codex-collab-nevora]
 

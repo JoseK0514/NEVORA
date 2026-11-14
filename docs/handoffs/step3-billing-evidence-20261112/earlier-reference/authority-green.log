@@ -1,0 +1,12 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run services/commerce/plan-change-api.test.ts services/commerce/status.test.ts
+
+
+ RUN  v5.0.5 /workspace/nevora-step3
+
+
+ Test Files  2 passed (2)
+      Tests  28 passed (28)
+   Start at  00:24:03
+   Duration  249ms (tests 43%, import 29%, transform 26%, worker 2%)

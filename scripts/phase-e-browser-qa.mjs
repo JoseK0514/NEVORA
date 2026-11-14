@@ -5,10 +5,10 @@ import { accessSync, constants, existsSync, readFileSync, statSync, writeFileSyn
 import { homedir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER_SUITES, captureSource, ENGINES, externalEvidence, installTerminationHandlers, parseSuiteArguments, raceOwnedAbort, registerOwnedProcess, safeEnvironment, selectSuites, verifyBrowserExecutions, verifySourceManifest, WIDTHS } from './phase-e-owned.mjs';
+import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER_SUITES, captureSource, ENGINES, externalEvidence, installTerminationHandlers, parseSuiteArguments, raceOwnedAbort, registerOwnedProcess, safeEnvironment, selectSuites, selectedBrowserEngines, verifyBrowserExecutions, verifySourceManifest, WIDTHS } from './phase-e-owned.mjs';
 import { safeBrowserFailure } from './release-browser-diagnostics.mjs';
 import {navigationFetchDiagnostic,observeDocumentNavigation,observeWindowExceptions,verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
-import {observeNotificationReadWitness} from './notification-read-witness.mjs';
+import {observeNotificationReadWitness,observeAuthorityReadWitness} from './notification-read-witness.mjs';
 import {verifyCommunicationActionGeometry} from './communication-action-geometry-probe.mjs';
 
 const nativeErrorNames = new Set(['Error', 'TypeError', 'RangeError', 'ReferenceError', 'SyntaxError', 'EvalError', 'URIError', 'AggregateError', 'AbortError', 'InvalidStateError', 'NetworkError', 'NotAllowedError', 'NotFoundError', 'NotSupportedError', 'OperationError', 'QuotaExceededError', 'SecurityError', 'TimeoutError', 'DataCloneError', 'EncodingError']);
@@ -66,7 +66,7 @@ function originalRuntimeDiagnostic(name, message, page) {
 }
 
 /** Window exceptions and unproven native events remain fatal. */
-export function observeBrowserCell(execution, errors, {navigationDiagnosticVerified=false,reloadDiagnosticVerified=false,navigationReadKinds,requireNotificationGetWitness=false}={}) {
+export function observeBrowserCell(execution, errors, {navigationDiagnosticVerified=false,reloadDiagnosticVerified=false,authorityDiagnosticVerified=false,navigationReadKinds,requireNotificationGetWitness=false,requireAuthorityGetWitness=false}={}) {
   const start = errors.length;
   const classified=new WeakSet(),pages=new WeakMap();
   let phase = 'scenario', readStage = () => null, pageIndex = 0;
@@ -76,7 +76,7 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
     setPhase(value) { assert(['scenario', 'axe', 'context-close'].includes(value)); phase = value; },
     async observeContext(context, role) {
       assert(['primary', 'manager'].includes(role));
-      let witness;
+      let witness,authorityWitness;
       context.on('page', page => {
         const index = pageIndex++;
         const state={index,role,navigation:observeDocumentNavigation(page,undefined,{allowSameUrlReload:reloadDiagnosticVerified===true})};pages.set(page,state);
@@ -90,20 +90,23 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
                 : 'Unclassified page runtime error';
           const stage = readable(readStage);
           const reload=state.navigation.snapshot().phase==='reload-requested';
-          const methodWitness=witness?.snapshot(page);
+          const authority=diagnostic.resourceKind==='authority-read';
+          const selectedWitness=authority?authorityWitness:witness,methodWitness=selectedWitness?.snapshot(page);
           const scoped=navigationReadKinds===undefined||navigationReadKinds.includes(diagnostic.resourceKind);
-          const methodProven=!requireNotificationGetWitness||(diagnostic.resourceKind==='notification-read'&&methodWitness?.verified===true);
-          const verified=scoped&&methodProven&&(reload?reloadDiagnosticVerified===true&&diagnostic.resourceKind==='notification-read':navigationDiagnosticVerified);
-          if(navigationFetchDiagnostic(execution,diagnostic,state.navigation.pending(),verified,phase)&&(!requireNotificationGetWitness||witness.consume(page))){
+          const witnessRequired=authority?requireAuthorityGetWitness:requireNotificationGetWitness;
+          const methodProven=authority?requireAuthorityGetWitness&&methodWitness?.verified===true:!requireNotificationGetWitness||(diagnostic.resourceKind==='notification-read'&&methodWitness?.verified===true);
+          const verified=scoped&&methodProven&&(authority?authorityDiagnosticVerified===true:reload?reloadDiagnosticVerified===true&&diagnostic.resourceKind==='notification-read':navigationDiagnosticVerified);
+          if(navigationFetchDiagnostic(execution,diagnostic,state.navigation.pending(),verified,phase,{authorityGetVerified:authority&&methodProven})&&(!witnessRequired||selectedWitness.consume(page))){
             classified.add(error);execution.navigationDiagnostics??=[];
-            execution.navigationDiagnostics.push({type:'navigation-fetch-diagnostic',role,pageIndex:index,phase,diagnostic,...(requireNotificationGetWitness?{methodWitness}:{}),pendingMainFrameNavigation:true,documentNavigation:state.navigation.snapshot(),stage:stages.has(stage)?stage:null});return;
+            execution.navigationDiagnostics.push({type:'navigation-fetch-diagnostic',role,pageIndex:index,phase,diagnostic,...(witnessRequired?{methodWitness}:{}),pendingMainFrameNavigation:true,documentNavigation:state.navigation.snapshot(),stage:stages.has(stage)?stage:null});return;
           }
           errors.push({ type: 'page-runtime-error', role, pageIndex: index, phase, diagnostic,pendingMainFrameNavigation:state.navigation.pending(),documentNavigation:state.navigation.snapshot(),
             failure: safeBrowserFailure({ name, message: summary }, execution, { stage: stages.has(stage) ? stage : null }) });
         });
       });
       if(requireNotificationGetWitness)witness=await observeNotificationReadWitness(context,page=>{const state=pages.get(page);errors.push({type:'unproven-notification-read',role:state?.role??role,pageIndex:state?.index??null,phase});});
-      if(navigationDiagnosticVerified||reloadDiagnosticVerified)return observeWindowExceptions(context,(page,kind)=>{const state=pages.get(page);errors.push({type:'window-javascript-error',kind,role:state?.role??role,pageIndex:state?.index??null,phase});});
+      if(requireAuthorityGetWitness)authorityWitness=await observeAuthorityReadWitness(context,page=>{const state=pages.get(page);errors.push({type:'unproven-authority-read',role:state?.role??role,pageIndex:state?.index??null,phase});});
+      if(navigationDiagnosticVerified||reloadDiagnosticVerified||authorityDiagnosticVerified)return observeWindowExceptions(context,(page,kind)=>{const state=pages.get(page);errors.push({type:'window-javascript-error',kind,role:state?.role??role,pageIndex:state?.index??null,phase});});
     },
     isNavigationDiagnostic(error) {return classified.has(error);},
     assertClean() { assert.equal(errors.length, start, 'Browser runtime/network errors recorded in current cell'); },
@@ -154,6 +157,7 @@ async function main() {
   const suite = parseSuiteArguments(process.argv.slice(2)), suites = selectSuites('browser', suite), source = resolve(process.cwd());
   assert.equal(owner.mode, 'browser', 'Browser fixture mode mismatch');
   assert.deepEqual(suites, owner.suites, 'Browser suite ownership mismatch');
+  const engines = selectedBrowserEngines(suites, owner.browserEngine);
   const custody = captureSource(source, process.env.PHASE_E_EXPECTED_SHA), evidence = externalEvidence(source, process.env.PHASE_E_EVIDENCE_DIR);
   assertSuitesPresent(source, 'browser', suites);
   const runtime = createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE ?? join(homedir(), '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'));
@@ -173,10 +177,10 @@ async function main() {
   const { createOwnedNextApp } = await import('../src/test/integration/owned-next-app.ts');
   const { seedOwnedApp } = await import('../src/test/integration/owned-app-fixture.ts');
   const { traceOwnedFixtureSeed } = await import('../src/test/integration/owned-setup-trace.ts');
-  const report = { checkpoint: custody.checkpoint, tree: custody.tree, sourceClean: true, ownerId: owner.ownerId, ownershipFile: process.env.PHASE_E_OWNERSHIP_FILE, ownershipClosed: false, suites, status: 'failed', executions: [], errors: [], runtime: { playwright: '1.62.1', axe: '4.11.0' }, launches: [], sourceManifest: undefined, limitations: ['Owned local Next/SQL mirror is not hosted verification.', 'Chromium/WebKit automation is not physical-device, screen-reader or actual-calendar-client acceptance.'] };
+  const report = { checkpoint: custody.checkpoint, tree: custody.tree, sourceClean: true, ownerId: owner.ownerId, ownershipFile: process.env.PHASE_E_OWNERSHIP_FILE, ownershipClosed: false, suites, ...(owner.browserEngine === undefined ? {} : { browserEngine: owner.browserEngine }), status: 'failed', executions: [], errors: [], runtime: { playwright: '1.62.1', axe: '4.11.0' }, launches: [], sourceManifest: undefined, limitations: ['Owned local Next/SQL mirror is not hosted verification.', 'Chromium/WebKit automation is not physical-device, screen-reader or actual-calendar-client acceptance.'] };
   const progress=[];
   const emitProgress=(cell,event,started)=>{
-    const entry=browserCellProgress(cell,event,started,Date.now(),report.executions.filter(item=>item.status==='passed').length,ENGINES.length*modules.length*WIDTHS.length);
+    const entry=browserCellProgress(cell,event,started,Date.now(),report.executions.filter(item=>item.status==='passed').length,engines.length*modules.length*WIDTHS.length);
     progress.push(entry);
     writeFileSync(join(evidence,'browser-progress-report.json'),JSON.stringify({checkpoint:custody.checkpoint,events:progress},null,2));
     console.log('[Phase E progress] '+JSON.stringify(entry));
@@ -186,12 +190,12 @@ async function main() {
   let app;
   try {
     // Setup observes abort itself and awaits its owned teardown before rejecting.
-    app = await createOwnedNextApp(evidence, { loginDiagnostics:suites.includes('home'), pinDevTypeReferences: true, signal: controller.signal, processOwnerId: owner.ownerId, onProcessStarted: async child => registerOwnedProcess({ kind: 'next', pid: child.pid, ownerId: owner.ownerId }) });
+    app = await createOwnedNextApp(evidence, { loginDiagnostics:suites.some(suite=>['home','communications'].includes(suite)), pinDevTypeReferences: true, signal: controller.signal, processOwnerId: owner.ownerId, onProcessStarted: async child => registerOwnedProcess({ kind: 'next', pid: child.pid, ownerId: owner.ownerId }) });
     report.sourceManifest = join(app.root, 'source-manifest.json'); report.appRoot = app.root;
     report.appOwnerId = JSON.parse(readFileSync(join(app.root, 'ownership.json'), 'utf8')).ownerId;
     verifySourceManifest(source, app.root, custody.checkpoint);
     await traceOwnedFixtureSeed(app.database.executor,seedOwnedApp,receipt=>writeFileSync(join(evidence,'fixture-setup-report.json'),JSON.stringify({checkpoint:custody.checkpoint,tree:custody.tree,...receipt},null,2)));
-    for (const engine of ENGINES) {
+    for (const engine of engines) {
       controller.signal.throwIfAborted();
       const launch = (async () => {
         const launchOptions=darwinWebKitLaunch(engine,playwright[engine].executablePath(),webkitRevisions);
@@ -247,7 +251,7 @@ async function main() {
         }
       } finally { await browser.close(); await server.close(); servers.delete(server); }
     }
-    verifyBrowserExecutions(report.executions, suites);
+    verifyBrowserExecutions(report.executions, suites, owner.browserEngine);
     assert.equal(report.errors.length, 0, 'Browser runtime/network errors recorded');
     report.status = 'passed';
   } catch (error) {

@@ -109,6 +109,7 @@ async function transactResult(
       const result = await executor.transaction(statements);
       const index = statements.findIndex((statement) =>
         statement.text.includes('nevora_submit_time_correction') ||
+        statement.text.includes('nevora_submit_delegated_time_correction') ||
         statement.text.includes('nevora_review_time_correction'));
       const row = result[index]?.[0] as { result?: unknown } | undefined;
       return parseDatabaseResult(row?.result);
@@ -184,6 +185,26 @@ export async function submitTimeCorrection(
     ...managementSessionStatements(proof, actor, roles),
   ];
   return transactResult(statements, command.operationId, executor);
+}
+
+/** Delegated proposals use the existing Company correction permission. They
+ * retain the real requester and never impersonate the target's session. */
+export async function submitDelegatedTimeCorrection(
+  proof:SessionMutationProof,employeeId:string,input:CorrectionRequestCommand,
+  executor:SqlExecutor=neonNotificationExecutor(),
+):Promise<CorrectionMutationResult>{
+  try{assertManagementProof(proof,proof?.employee?.id);}catch{return {status:'unavailable'};}
+  if(!['OWNER','MANAGER'].includes(proof.employee.role)||!employeeId||employeeId.length>200||employeeId!==employeeId.trim()||/[\p{Cc}\p{Cf}]/u.test(employeeId)||employeeId===proof.employee.id)return {status:'unavailable'};
+  const command=parseCorrectionRequestCommand(input);
+  let access:Awaited<ReturnType<typeof assertOperationalAccess>>;
+  try{access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor);}catch{return {status:'unavailable'};}
+  const supersession=command.kind==='MISSING_ENTRY'&&command.targetAdjustmentId!==undefined;
+  const call:SqlStatement={
+    text:supersession?'SELECT nevora_submit_delegated_time_correction($1::uuid,$2,$3,$4,$5,$6,$7,$8,$9::timestamptz,$10::timestamptz,$11,$12,$13::uuid,$14::integer) AS result':'SELECT nevora_submit_delegated_time_correction($1::uuid,$2,$3,$4,$5,$6,$7,$8,$9::timestamptz,$10::timestamptz,$11,$12) AS result',
+    values:[command.operationId,access.workspace.id,employeeId,proof.employee.id,command.kind,command.kind==='MISSING_ENTRY'?null:command.timeEntryId,command.kind==='BREAK_BOUNDARY'?command.breakEntryId:null,command.kind==='MISSING_ENTRY'?command.locationId:null,command.proposedStartAt,command.proposedEndAt,command.reason,fingerprint({mode:'delegated',employeeId,command}),...(supersession?[command.targetAdjustmentId,command.expectedBaseRevision]:[])],
+  };
+  const guards=operationalScopeStatements(proof,access.workspace,{kind:'COMPANY'},access.authority);
+  return transactResult([...workspaceReadGuard(access.workspace),{text:'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE',values:[[...new Set([proof.employee.id,employeeId])].sort()]},...guards,call,...guards],command.operationId,executor);
 }
 
 /**

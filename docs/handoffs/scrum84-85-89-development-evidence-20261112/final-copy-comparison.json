@@ -1,0 +1,42 @@
+{
+  "scope": "isolated hosted logical restore",
+  "sourceProject": "morning-salad-93941233",
+  "recoveryProject": "lucky-wind-29844564",
+  "sourceDatabase": "scrum84_fresh2",
+  "recoveryDatabase": "scrum84_restored3",
+  "synthetic": true,
+  "postRestoreAuthExercises": true,
+  "status": "PASS",
+  "tables": 155,
+  "stableTables": 150,
+  "stableStateSha256": "74fd42321eb1e2b62e6e9cef24120f34769c1203ed1d049bdf420ea6d8cc4357",
+  "columnLayoutAndSequencesMatch": true,
+  "appendOnlyPreservation": [
+    {
+      "table": "auth_passkey_audit",
+      "sourceRows": 5,
+      "restoredRows": 8,
+      "preserved": true
+    },
+    {
+      "table": "employee_passkeys",
+      "sourceRows": 4,
+      "restoredRows": 6,
+      "preserved": true
+    },
+    {
+      "table": "employee_sessions",
+      "sourceRows": 7,
+      "restoredRows": 9,
+      "preserved": true
+    }
+  ],
+  "exercisedMutableAuth": [
+    "auth_login_limits",
+    "auth_passkey_challenges",
+    "auth_passkey_audit",
+    "employee_passkeys",
+    "employee_sessions"
+  ],
+  "observedAt": "2026-11-13T02:50:15.434Z"
+}

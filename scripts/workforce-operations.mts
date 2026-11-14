@@ -40,7 +40,14 @@ async function main(args:readonly string[]){
  assertWorkerCommandEnvironment(config,args[1] as WorkerCommand);
  if(args[0]==='health'){const report=await health(config,args[1] as WorkerCommand);console.log(JSON.stringify(report));if(!report.healthy)process.exitCode=1;return;}
  process.once('SIGTERM',stop);process.once('SIGINT',stop);
- try{const receipt=await runSupervisedWorker(config,args[1] as WorkerCommand,controller.signal);console.log(JSON.stringify(receipt));if(receipt.status!=='succeeded')process.exitCode=1;}
+ try{
+  const receipt=await runSupervisedWorker(config,args[1] as WorkerCommand,controller.signal);
+  // stdout is a pipe on the managed host. Keep SIGTERM handling installed until
+  // its terminal receipt has drained; console.log can return before that write
+  // completes, leaving safe durable cleanup indistinguishable from unknown work.
+  await new Promise<void>((ok,bad)=>process.stdout.write(JSON.stringify(receipt)+'\n',error=>error?bad(error):ok()));
+  if(receipt.status!=='succeeded')process.exitCode=1;
+ }
  finally{process.removeListener('SIGTERM',stop);process.removeListener('SIGINT',stop);}
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){

@@ -1,3 +1,4 @@
+import {activeProtection,subscriptionProtection} from './keyring';
 import {workspaceRuntimeEnvironment} from '../workspace-routing/runtime-config.server';
 import { createECDH, createHash, createHmac, randomUUID } from 'node:crypto';
 import { buildSelfTestNotification } from '../assistance/notification-events';
@@ -135,7 +136,7 @@ async function readJson(request: Request): Promise<Record<string, unknown>> {
  * None of these responses proves that a push reached or displayed on the device. */
 export function createPushHandlers(deps: PushHandlerDeps) {
     const { config } = deps;
-    function protectionKey() { return decodePushKey(config.subscriptionEncryptionKey, 32); }
+    function protectionKey() { return subscriptionProtection(config); }
     function cookieOptions(maxAge = 14 * 86400) { return { httpOnly: true, secure: config.portalOrigin.startsWith('https:'), sameSite: 'strict' as const, path: '/', maxAge }; }
     function testAllowed(employeeId: string, record: InstallationRecord | null) {
         return config.featureEnabled && config.deliveryEnabled && config.environment === 'test' && config.testDeliveryEnabled && config.testAccountIds.includes(employeeId) && record?.status === 'active' && (!record.lastTestAt || Date.parse(record.lastTestAt) <= deps.clock().getTime() - 300000);
@@ -147,7 +148,7 @@ export function createPushHandlers(deps: PushHandlerDeps) {
         return { supported: ready, enabled: !!owned, configurationAvailable: ready, testAllowed: !!owned && record?.sessionHash === sessionHash && !!testAllowed(employeeId, record),
             ...(ready ? { vapidPublicKey: config.vapidPublicKey } : {}),
             ...(owned ? { ownershipGeneration: record.generation } : {}),
-            ...(key && proof ? { dismissalScope: createHmac('sha256', key).update(`dismissal:${employeeId}:${proof.installationHash}`).digest('base64url') } : {}),
+            ...(key && proof ? { dismissalScope: createHmac('sha256', activeProtection(key).key).update(`dismissal:${employeeId}:${proof.installationHash}`).digest('base64url') } : {}),
         };
     }
     const cleanupDeps = deps.cleanupDeps ?? createLogoutDeps(config);

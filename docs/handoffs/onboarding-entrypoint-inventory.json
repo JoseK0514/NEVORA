@@ -56,6 +56,15 @@
       "isolatedBehavior": "NOT_DEPLOYED"
     },
     {
+      "path": "scripts/communication-login-diagnostics.mjs",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Test-only communications login observer imported solely by the owned Phase E browser harness. Its pg connection uses the invocation-owned disposable app database for bounded read-only failure diagnostics; it is not imported by application, hosted worker or onboarding runtime entrypoints.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
       "path": "scripts/company-setup-qa.mjs",
       "tags": [
         "runtime-boundary-audit"
@@ -4316,6 +4325,192 @@
       "status": "CONVERTED",
       "reason": "Canonical enrolled WORKER material read audits actual scoped machine principal and current encrypted view, identity, expiry and unique recipient before every use. No browser/Owner purpose or plaintext cache.",
       "isolatedBehavior": "BOUND_WORKER"
+    },
+    {
+      "path": "src/app/api/manager/time-corrections/delegated/[employeeId]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_APPLICATION",
+      "reason": "R11 delegated read/request uses the current scoped session and correction authority through shared company-bound executors. Owner/Manager and current operational permission checks remain; separate authorized approval and exact-operation receipt rules are enforced by the domain/SQL guards. No browser-selected database or elevated global principal."
+    },
+    {
+      "path": "src/app/api/manager/timecards/[entryId]/close/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_APPLICATION",
+      "reason": "R10 read/close uses current scoped cookie and mutation proof through the shared company-bound executor. Actor, target/entry locations, source revision, explicit end/reason and audit/recovery rules remain server-enforced. Inactive target/location admission does not bypass current Owner/Manager operational authority."
+    },
+    {
+      "path": "src/lib/data/sql-session-contract.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_CALLER",
+      "reason": "R14 helper consumes only the caller-selected existing Neon driver; it neither resolves a company nor constructs a connection. Single-company executors and isolated APP/WORKER transports retain their own identity/scope guards. Its owning lazy batch applies LOCAL UTC/ISO YMD and ReadCommitted, preserves body indexes/abort, and refuses a changed final contract; trusted body SQL must preserve settings."
+    },
+    {
+      "path": "src/app/api/staff-tasks/[taskId]/route.ts",
+      "tags": [
+        "request-entrypoint",
+        "staff-tasks"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_APPLICATION",
+      "reason": "UUID task read requires current session mutation proof and staff authority, then current management or assignee/workspace/location admission and a final response fence through the shared company-bound executor. Isolated mode resolves current workspace APP transport; no caller-selected connection."
+    },
+    {
+      "path": "src/app/api/staff-tasks/commands/route.ts",
+      "tags": [
+        "request-entrypoint",
+        "staff-tasks"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_APPLICATION",
+      "reason": "Same-origin bounded JSON command requires current session proof, staff authority and exact operation/revision. Atomic domain SQL rechecks Company Access, assignee/location eligibility, immutable history and idempotent recovery through the shared company-bound executor; no browser-selected database or privileged machine principal."
+    },
+    {
+      "path": "src/app/api/staff-tasks/context/route.ts",
+      "tags": [
+        "request-entrypoint",
+        "staff-tasks"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_APPLICATION",
+      "reason": "Initial and paginated context require the current signed-in actor and mutation proof; continuation binds the staff authority digest. Staff domain reads use the shared company-bound executor and current role, workspace, location and eligibility fences. Isolated mode resolves the current workspace APP binding; no browser-selected database or elevated transport."
+    },
+    {
+      "path": "src/app/api/staff-tasks/history/route.ts",
+      "tags": [
+        "request-entrypoint",
+        "staff-tasks"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_APPLICATION",
+      "reason": "Bounded history POST requires current signed-in actor, staff proof and validated task/cursor. Current management or assignee scope and workspace/location authority are rechecked before returning append-only history through the company-bound executor; no former-assignee recovery of private content."
+    },
+    {
+      "path": "src/app/api/staff-tasks/operations/[operationId]/route.ts",
+      "tags": [
+        "request-entrypoint",
+        "staff-tasks"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_APPLICATION",
+      "reason": "UUID receipt lookup binds the current signed-in actor/session and staff authority. Domain recovery rechecks current Company Access or assignment before returning only committed identity/revision for that original operation; uses the shared company-bound executor without accepting a browser database target."
+    },
+    {
+      "path": "src/app/api/staff-tasks/query/route.ts",
+      "tags": [
+        "request-entrypoint",
+        "staff-tasks"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_APPLICATION",
+      "reason": "Same-origin bounded JSON query requires current session proof and staff authority. TEAM is management-only; MINE, dates, locations and pagination remain current-scope checked through the shared company-bound executor and response fence. Isolated mode uses current workspace APP transport."
+    },
+    {
+      "path": "src/app/api/conversations/[conversationId]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Reviewed SCRUM-187 thin route: conversationHttp requires current session/proof, same-origin intent and company Updates permission; neonNotificationExecutor selects the request-bound workspace transport in isolated mode. Every business transaction rechecks workspace, Company Access, location footprint, membership/lifecycle and D04 owned-runtime guard; private responses are fenced and no-store. No public admission or cross-company selector is introduced.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/conversations/commands/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Reviewed SCRUM-187 thin route: conversationHttp requires current session/proof, same-origin intent and company Updates permission; neonNotificationExecutor selects the request-bound workspace transport in isolated mode. Every business transaction rechecks workspace, Company Access, location footprint, membership/lifecycle and D04 owned-runtime guard; private responses are fenced and no-store. No public admission or cross-company selector is introduced.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/conversations/context/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Reviewed SCRUM-187 thin route: conversationHttp requires current session/proof, same-origin intent and company Updates permission; neonNotificationExecutor selects the request-bound workspace transport in isolated mode. Every business transaction rechecks workspace, Company Access, location footprint, membership/lifecycle and D04 owned-runtime guard; private responses are fenced and no-store. No public admission or cross-company selector is introduced.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/conversations/history/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Reviewed SCRUM-187 thin route: conversationHttp requires current session/proof, same-origin intent and company Updates permission; neonNotificationExecutor selects the request-bound workspace transport in isolated mode. Every business transaction rechecks workspace, Company Access, location footprint, membership/lifecycle and D04 owned-runtime guard; private responses are fenced and no-store. No public admission or cross-company selector is introduced.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/conversations/operations/[operationId]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Reviewed SCRUM-187 thin route: conversationHttp requires current session/proof, same-origin intent and company Updates permission; neonNotificationExecutor selects the request-bound workspace transport in isolated mode. Every business transaction rechecks workspace, Company Access, location footprint, membership/lifecycle and D04 owned-runtime guard; private responses are fenced and no-store. No public admission or cross-company selector is introduced.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/conversations/query/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Reviewed SCRUM-187 thin route: conversationHttp requires current session/proof, same-origin intent and company Updates permission; neonNotificationExecutor selects the request-bound workspace transport in isolated mode. Every business transaction rechecks workspace, Company Access, location footprint, membership/lifecycle and D04 owned-runtime guard; private responses are fenced and no-store. No public admission or cross-company selector is introduced.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "services/commerce/plan-change.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Plan-confirmation creation uses the explicit separate commerce catalog and current Business lock; only type-only pg import, no ambient application database resolution. Stripe account/mode, approved target policy and current Owner handoff guards remain enforced.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "src/app/api/commerce/status/route.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Current company-bound connection and Owner generation are resolved and rechecked around remote commerce authority reads; only browser-safe status fields leave this route. No ambient single-company database fallback is introduced.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "services/commerce/billing-operations.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Durable billing request/stage helper uses the explicitly selected separate CommerceStore catalog and the current Business lock. Server-derived actor/request/binding hashes and current-authority callbacks fence every preparation/mutation; no ambient application database or company selector is introduced.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "services/commerce/service.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Commerce HTTP handlers use the explicit separate catalog, validated installation/session/Owner authority and the existing current-company policy/facts bridges. The pg dependency is type-only PoolClient; the dispatcher does not resolve an ambient application database or bypass isolated binding.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "scripts/step4-local-evidence.mjs",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Read-only Step4 artifact verifier checks source hashes, reports, cleanup receipts, matrix cells and captures. Its Neon-import text is inspected as data to derive the approved owned-test substitution; it opens no database/provider connection and exports no public handler. Used only by the explicit owned acceptance runner and verification tests/tools.",
+      "isolatedBehavior": "NOT_DEPLOYED"
     }
   ],
   "routingEvidence": "Task2: actual owned A/B PostgreSQL databases through installed Neon HTTP protocol; not hosted Neon evidence.",
@@ -4325,5 +4520,19 @@
     "base": "e558c1f432ae5e19b6c49b9118f3c7004f9b6b70",
     "qualifiedApplicationSource": "10b4ee0cd872f002b6af13c24fe8adcd1068c68e",
     "scope": "Explicit closed hosted receiver, setup-only reader and fixed workforce command; no UI/native adoption"
+  },
+  "releaseCompletionReconciliation": {
+    "reviewedAfter": "c9dfda650",
+    "scope": "R10/R11 request routes and R14 caller-bound batch helper; explicit runtime dispositions only. No unseen-path exemption, native adoption or hosted acceptance."
+  },
+  "staffTaskReconciliation": {
+    "reviewedAfter": "55b927517e16d6d3b6df57cfaf31f81f183d2e25",
+    "scope": "Six explicit staff-task HTTP entrypoints use current actor/proof admission and the existing company-bound APP executor. Fail-closed runtime scanning is unchanged; no blanket route exemption, privileged machine transport, UI/native import or hosted acceptance."
+  },
+  "conversationReconciliation": {
+    "source": "511921caf19ba0d16f4cc6072850fe8da2574403",
+    "routes": 6,
+    "behavior": "BOUND_APPLICATION",
+    "activation": "D04 owned-loopback guard remains mandatory on every read/write; no hosted activation"
   }
 }

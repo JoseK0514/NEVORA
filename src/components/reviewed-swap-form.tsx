@@ -10,13 +10,13 @@ import { SheetCancel } from './quiet/quiet-sheet';
 import { QuietList, initialsOf } from './quiet/quiet';
 import { formatWeekRange } from '@/lib/date-utils';
 import { keepWhole } from '@/lib/keep-whole';
-import type { ExchangeShift } from '@/lib/data/exchanges';
+import type {ExchangeShiftDisplay} from '@/lib/shift-changes/shift-display';
 import type { ReviewedSource, ReviewedTarget } from '@/lib/shift-changes/types';
 
 const shortDay = (date: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(`${date}T12:00:00Z`));
 
 /** "Sun, Oct 25 · 8:00 AM – 4:00 PM": the shift being changed, as one row. */
-export function SwapShiftRow({ shift }: { shift: ExchangeShift }) {
+export function SwapShiftRow({ shift }: { shift: ExchangeShiftDisplay }) {
   const where = [shift.locationName, shift.positionName, shift.isDesignatedLead ? 'Shift lead' : null].filter(Boolean).join(' · ');
   return <li><div className="q-row q-row--one">
     <span className="q-rt"><b><time dateTime={shift.date}>{keepWhole(shortDay(shift.date))}</time><span className="nv-sr">, {where}{shift.timeZone ? `, times in ${timeZoneLabel(shift.timeZone)}` : ''}</span></b></span>
@@ -27,16 +27,16 @@ export function SwapShiftRow({ shift }: { shift: ExchangeShift }) {
 /** The swap form in the v5 sheet (mockup E04): your shift, the shifts you could take (one choice), Send in the bar.
  * Same fields, single explicit choice, sent boundary and actions as before. */
 export function ReviewedSwapForm({ source, sourceFields, targets }: {
-  source: ExchangeShift;
+  source: ExchangeShiftDisplay;
   sourceFields: ReviewedSource;
-  targets: { shift: ExchangeShift; fields: ReviewedTarget }[];
+  targets: { shift: ExchangeShiftDisplay; fields: ReviewedTarget }[];
 }) {
   const [selected, setSelected] = useState('');
   const id = useId();
   const target = targets.find(item => item.shift.id === selected);
   // After a send is recorded the server stops offering that shift and the page refreshes; SwapSentBoundary keeps the result.
   const markSent = useSwapSent();
-  const sending = useRef<ExchangeShift | null>(null);
+  const sending = useRef<ExchangeShiftDisplay | null>(null);
   const body = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const form = body.current?.closest('form');
