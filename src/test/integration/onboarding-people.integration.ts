@@ -137,3 +137,14 @@ it('imports a reviewed Manager with explicit scope and completes 30 invitation t
   expect((await a.c.resource.db.pool.query("SELECT count(*)::int n FROM employee_credentials WHERE employee_id<>'OWNER-1'")).rows[0].n).toBe(0);
  }finally{await f.close();}
 });
+
+it('previews existing email case variants as errors and rejects duplicate-case commands without writes',async()=>{
+ const f=await onboardingJourneyFixture();try{
+  const a=await f.activateCompany(await f.createCompany()),setup=await readOnboardingSetup(a.actor,a.binding),home=a.actor.employee.primaryLocationId,email=setup.configuration.people.find(p=>p.id==='OWNER-1')!.email!;
+  const preview=await previewOnboardingRoster(a.actor,a.binding,{schemaVersion:1,format:'csv',text:`id,firstName,lastName,phone,email\nE1,Ana,Pérez,7875550103,${email.toUpperCase()}`,defaults:{primaryLocationId:home}});
+  expect(preview.state).toBe('ready');if(preview.state==='ready'){expect(preview.valid).toBe(false);expect(preview.rows[0].fieldErrors).toContainEqual({field:'email',code:'EMAIL_IN_USE'});}
+  const c=roster('1',home,2);c.payload.people[1].employee.email=c.payload.people[0].employee.email!.toUpperCase();
+  expect(await saveOnboardingRoster(a.actor,a.binding,c)).toMatchObject({state:'invalid',fieldErrors:[{field:'people',code:'INVALID_ROSTER'}]});
+  expect((await a.c.resource.db.pool.query('SELECT count(*)::int n FROM employees')).rows[0].n).toBe(1);
+ }finally{await f.close();}
+});

@@ -22,9 +22,9 @@ function people(value:unknown):{people:RosterPerson[]}|null{
  const parsed:RosterPerson[]=[],seenIds=new Set<string>(),seenEmails=new Set<string>();
  for(const v of value.people){
   if(!isClosedRecord(v,['employee'],['initialManagerScope']))return null;
-  const p=parseCreateEmployeeWithAccessCommand({operationId:parseId,...v});if(!p||p.employee.role==='OWNER'||seenIds.has(p.employee.id)||p.employee.email!==null&&seenEmails.has(p.employee.email))return null;
+  const p=parseCreateEmployeeWithAccessCommand({operationId:parseId,...v});if(!p||p.employee.role==='OWNER'||seenIds.has(p.employee.id)||p.employee.email!==null&&seenEmails.has(p.employee.email.toLowerCase()))return null;
   if(p.employee.role==='MANAGER'&&!p.initialManagerScope)return null;
-  seenIds.add(p.employee.id);if(p.employee.email!==null)seenEmails.add(p.employee.email);
+  seenIds.add(p.employee.id);if(p.employee.email!==null)seenEmails.add(p.employee.email.toLowerCase());
   parsed.push({employee:p.employee,...(p.initialManagerScope?{initialManagerScope:p.initialManagerScope}:{})});
  }
  return {people:parsed};
@@ -37,9 +37,9 @@ export async function previewOnboardingRoster(proof:SessionMutationProof,binding
  if(!isClosedRecord(value,['schemaVersion','format','text'],['defaults'])||value.schemaVersion!==1)return {state:'invalid',fieldErrors:[{field:'request',code:'INVALID_TABLE'}]};
  const parsed=parseRosterTable({format:value.format,text:value.text,...(value.defaults===undefined?{}:{defaults:value.defaults})});if(parsed.state==='invalid')return parsed;
  try{
-  const setup=await readOnboardingSetup(proof,binding,ex),c=setup.configuration,byId=new Set(c.people.map(p=>p.id.toUpperCase())),emails=new Set(c.people.map(p=>p.email).filter((s):s is string=>s!==null)),locations=new Set(c.locations.filter(l=>l.active).map(l=>l.id)),positions=new Set(c.positions.filter(p=>p.active).map(p=>p.id));
+  const setup=await readOnboardingSetup(proof,binding,ex),c=setup.configuration,byId=new Set(c.people.map(p=>p.id.toUpperCase())),emails=new Set(c.people.map(p=>p.email).filter((s):s is string=>s!==null).map(s=>s.toLowerCase())),locations=new Set(c.locations.filter(l=>l.active).map(l=>l.id)),positions=new Set(c.positions.filter(p=>p.active).map(p=>p.id));
   for(const row of parsed.rows){const p=row.person;if(!p)continue;const issue=(field:string,code:string)=>row.fieldErrors.push({field,code});
-   if(byId.has(p.employee.id))issue('id','ID_IN_USE');if(p.employee.email&&emails.has(p.employee.email))issue('email','EMAIL_IN_USE');
+   if(byId.has(p.employee.id))issue('id','ID_IN_USE');if(p.employee.email&&emails.has(p.employee.email.toLowerCase()))issue('email','EMAIL_IN_USE');
    if(p.employee.eligibleLocationIds.some(id=>!locations.has(id)))issue('eligibleLocationIds','LOCATION_UNAVAILABLE');
    if(p.employee.positionIds.some(id=>!positions.has(id)))issue('positionIds','POSITION_UNAVAILABLE');
    if(p.initialManagerScope?.mode==='LOCATIONS'&&p.initialManagerScope.locationIds.some(id=>!locations.has(id)))issue('initialManagerScope','LOCATION_UNAVAILABLE');

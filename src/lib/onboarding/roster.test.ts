@@ -46,3 +46,8 @@ describe('reviewing a roster before creating people',()=>{
   expect(parseRosterTable({format:'csv',text:'a'.repeat(65537),defaults}).state).toBe('invalid');
  });
 });
+
+it('flags case variants of the same email before commit, matching database uniqueness',()=>{
+ const result=parseRosterTable({format:'csv',text:'id,firstName,lastName,phone,email\nE1,Ana,Pérez,7875550101,Ana@Example.invalid\nE2,Alex,Rivera,7875550102,ana@example.invalid',defaults:{primaryLocationId:'loc-1'}});
+ expect(result.state).toBe('ready');if(result.state==='ready'){expect(result.valid).toBe(false);expect(result.rows[1].fieldErrors).toContainEqual({field:'email',code:'DUPLICATE_EMAIL'});}
+});

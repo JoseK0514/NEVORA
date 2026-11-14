@@ -58,7 +58,7 @@ export function parseRosterTable(value:unknown):RosterTableResult{
   if(!phone)issue('phone','INVALID_PHONE');
   if(email&&(!readableText(email,254)||/\s/.test(email)||!/^[^@]+@[^@]+$/.test(email)))issue('email','INVALID_EMAIL');
   if(id&&seenIds.has(id))issue('id','DUPLICATE_ID');seenIds.add(id);
-  if(email&&seenEmails.has(email))issue('email','DUPLICATE_EMAIL');if(email)seenEmails.add(email);
+  if(email&&seenEmails.has(email.toLowerCase()))issue('email','DUPLICATE_EMAIL');if(email)seenEmails.add(email.toLowerCase());
   const role=(values.role||'EMPLOYEE').toUpperCase();
   if(role==='OWNER')issue('role','OWNER_NOT_IMPORTABLE');else if(!['EMPLOYEE','LEAD','MANAGER'].includes(role))issue('role','INVALID_ROLE');
   if(role==='MANAGER'&&!defaults.initialManagerScope)issue('initialManagerScope','MANAGER_SCOPE_REQUIRED');
