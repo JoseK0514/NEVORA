@@ -81,7 +81,8 @@ it.each(['chromium','webkit'] as const)('checks the central billing entry, canon
   privacyEvidence={back:true,blur:true,focusFresh:true,offline:true,onlineFresh:true,denialStatus:401,privateRegions:await page.locator('dl').count(),financialActions:await page.getByRole('button',{name:'Review subscription in Stripe',exact:true}).count()};expect(privacyEvidence).toEqual({back:true,blur:true,focusFresh:true,offline:true,onlineFresh:true,denialStatus:401,privateRegions:0,financialActions:0});
   checks.push('controlled blur retires private details before a held actual response returns; focus obtains a fresh read; real catalog session revocation returns denial and removes private data/actions');
   await fixture.subscriptionScenario('active');
-  await page.goto(app.url+'/pages/nevora-billing#handoff='+await fixture.handoff());
+  // A fresh entry route reloads the component; hash-only navigation must not reuse retired access.
+  await page.goto(app.url+'/pages/plans#handoff='+await fixture.handoff());
   await page.getByRole('heading',{name:fixture.businessName,exact:true}).waitFor();
   for(const lang of ['en','es']){
    await page.getByRole('button',{name:lang==='en'?'English':'Español',exact:true}).click();
