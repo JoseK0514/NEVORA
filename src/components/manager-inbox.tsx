@@ -6,12 +6,12 @@ import { ScopedReadFrame, type ScopedObservation } from "./company-access/scoped
 import { useToday } from "./manager-today";
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowsLeftRightIcon, CalendarBlankIcon, CaretDownIcon, CaretRightIcon, ChatTextIcon, ClockIcon, PhoneIcon, PlusIcon, UserCheckIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
+import { ArrowsLeftRightIcon,CaretDownIcon,CaretRightIcon,ChatTextIcon,PhoneIcon,PlusIcon } from "@phosphor-icons/react/ssr";
 import { useActionCenter, mobileActionDetail, type ActionCenterConnection } from "./manager-action-center";
 import { actionCenterNavigation } from "./action-center-navigation";
-import { EmptyState } from "./empty-state";
-import { Celebration } from "./celebration";
-import { Avatar, Button, Card, Freshness, KitStack, MetaParts, PageBand, Status, Tile } from "./kit/kit";
+
+
+import { Button,MetaParts,Status,Tile } from "./kit/kit";
 import { QuietHeader } from "./quiet/quiet";
 import { usePresentation } from "./presentation-context";
 import { pathEnabled } from "@/lib/workspace-presentation/modules";
@@ -317,7 +317,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   const todayFailed = today?.state === "unavailable";
   const value = ready ? needsYou(ready.items, day, shifts) : null;
   const total = value ? value.count + value.planning.length + value.past.length : 0;
-  const updated = ready ? clock(ready.observedAt, timeZone) : null;
+
   const show = (group: InboxFilter) => filter === "all" || filter === group;
   // Clean Manager (v3): the parts of "Act now", each under its own heading.
   const gaps = value ? value.now.filter(item => item.type === "COVERAGE_GAP") : [];

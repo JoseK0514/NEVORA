@@ -378,8 +378,8 @@ it.each([
   ['refs/pull/12/merge', 'codex/phase-e-example', 'development'],
   ['refs/pull/13/merge', 'codex/phase-f-inventory', 'main'],
 ])('requires every SQL/browser regression for triggered %s head=%s base=%s', (ref, head, base) => {
-  for (const name of ['validate', 'clocker-postgres', 'clocker-postgres-suite', 'release-postgres', 'phase-d-attendance-ui', 'management-review-ui', 'phase-e-postgres', 'phase-e-ui', 'phase-e-ui-suite']) {
-    expect(workflow.jobs[name].if, name+' must not skip branches').toBe(['phase-e-ui','clocker-postgres'].includes(name) ? '${{ always() }}' : undefined);
+  for (const name of ['validate', 'clocker-postgres', 'clocker-postgres-suite', 'release-postgres', 'phase-d-attendance-ui', 'phase-d-browser-suite', 'management-review-ui', 'phase-e-postgres', 'phase-e-ui', 'phase-e-ui-suite']) {
+    expect(workflow.jobs[name].if, name+' must not skip branches').toBe(['phase-e-ui','clocker-postgres','phase-d-attendance-ui'].includes(name) ? '${{ always() }}' : undefined);
     expect(jobMatches(name, ref, head, base), name).toBe(true);
   }
 });

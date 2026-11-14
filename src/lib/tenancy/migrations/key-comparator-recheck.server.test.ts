@@ -8,7 +8,7 @@ import {canonicalOwnershipJson as canonical,ownershipDigest as digest,getOwnersh
 import type {MigrationCaptureRequest} from './capture.server';
 import {createTypedSnapshotFixture} from './typed-fixture.test-support';
 import {getTypedKeyComparatorContracts,getTypedKeyComparatorStockDescriptors,validateTypedKeyComparators,type TypedKeyComparatorContract} from './typed-key-comparators';
-import {collectTypedKeyComparatorCapture,collectTypedKeyComparatorLockedSourceRecheck,isKeyComparatorCaptureFailure} from './key-comparator-capture.server';
+import { collectTypedKeyComparatorCapture,collectTypedKeyComparatorLockedSourceRecheck } from './key-comparator-capture.server';
 
 vi.mock('./capture.server',async importOriginal=>{const actual=await importOriginal<typeof import('./capture.server')>();return {...actual,observeMigrationCatalog:async(c:Client)=>{const r=await c.query('/* F10_KEY_CATALOG */');const catalog=JSON.parse(r.rows[0][0]);return {catalog,digest:digest(catalog)};}};});
 const registry=getOwnershipRegistry(),contracts=getTypedKeyComparatorContracts(),stock=getTypedKeyComparatorStockDescriptors();

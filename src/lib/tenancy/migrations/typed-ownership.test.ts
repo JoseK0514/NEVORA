@@ -1,5 +1,5 @@
 import {describe,it,expect,vi} from 'vitest';
-import {canonicalOwnershipJson,getOwnershipRegistry,ownershipDigest,type JsonValue} from './ownership';
+import { canonicalOwnershipJson,getOwnershipRegistry,ownershipDigest } from './ownership';
 import {decodeTypedMigrationWireValue} from './typed-wire';
 import {traverseTypedMigrationWireValue} from './typed-lineage';
 import {inspectTypedMigrationSnapshot,type InspectedTypedSnapshot} from './typed-snapshot';

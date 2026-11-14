@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { beforeAll, afterAll, beforeEach, it, expect, vi } from 'vitest';
-import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
+import type { SqlExecutor } from '../../lib/notifications/types';
 const context = vi.hoisted(() => ({ executor: null as SqlExecutor | null }));
 const token = 'fictional-ab-catalog-session';
 vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => ({ value: 'fictional-ab-catalog-session' }) }) }));

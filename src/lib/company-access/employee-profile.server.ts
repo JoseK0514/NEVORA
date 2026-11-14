@@ -6,7 +6,7 @@ import type {SessionMutationProof} from '@/lib/shift-changes/types';
 import type {UserRole} from '@/lib/domain';
 import {neonNotificationExecutor} from '@/lib/data/notification-transactions';
 import {prepareEmployeeProfileMutation,prepareEmployeeCreationMutation} from '@/lib/data/employees';
-import {managementSessionStatements} from '@/lib/data/management-session';
+
 import {normalizePhoneNumber} from '@/lib/phone';
 import {readOperationalAuthority,operationalScopeStatements,withOperationalCompany} from './operational-scope.server';
 import {parseScopeSelection} from './scope-selection';

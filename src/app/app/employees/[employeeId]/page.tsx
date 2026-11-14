@@ -1,6 +1,6 @@
 import {scopedObservation} from '@/lib/company-access/observation';
 import {readEmployeeClockerPin,type EmployeePinView} from '@/lib/clocker/pins.server';
-import type { ReactNode } from "react";
+
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {readOperationalEmployeeProfile} from '@/lib/company-access/operational-read.server';

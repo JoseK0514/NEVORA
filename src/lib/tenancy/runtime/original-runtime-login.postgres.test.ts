@@ -70,7 +70,7 @@ type Outcome = { firstGuard: boolean; finalGuard: boolean | null; value: unknown
   messageTag: string; identity: JsonRecord; immediateStatus: string | null; synchronizedStatus: string | null };
 
 describe.skipIf(!leasePath && !runPath)('root-owned original LOGIN native prerequisite', () => {
-  let lease: Lease, admin: Client, app: Client, worker: Client, outsider: Client, fenceInstaller: Client | undefined;
+  let lease: Lease, admin: Client, app: Client, worker: Client, fenceInstaller: Client | undefined;
   let password = '', installerOid = '', verified = false, runVerified = false;
   let appRole: Role, workerRole: Role, outsiderRole: Role, appOwner: Role, workerOwner: Role, undeclaredOwner: Role;
   let guardSource = '', validatorSource = '', baselineRoles: unknown, baselineRows: Capability[] = [];
@@ -376,7 +376,7 @@ describe.skipIf(!leasePath && !runPath)('root-owned original LOGIN native prereq
       roots.push({ kind:'APP',signature:calendar,owner:undeclaredOwner,depends:false,object:await remember('function','nevora_tenancy','resolve_calendar',undeclaredOwner.oid,'(text)') });
       baselineRows = await refreshCapabilities();
     });
-    setupCommitted = true; app = await connect(appRole.name); worker = await connect(workerRole.name); outsider = await connect(outsiderRole.name);
+    setupCommitted = true; app = await connect(appRole.name); worker = await connect(workerRole.name); await connect(outsiderRole.name);
     record({ operation:'BEFORE_NATIVE_FEATURE_ASSERTIONS_NO_POSITIVE_SETUP_ASSERT',sourcePins:effectivePins,roles,objects,registry:await registryRows(),functionCatalog:await allFunctionCatalog(),
       originalApp:await identity(app),originalWorker:await identity(worker),claim:'FIXED_LITERAL_KIND_WRAPPERS_ONLY_NOT_ACTUAL_RESOLVERS_OR_CURRENT_PROOF_TRUE_FIXTURES' });
     writeFileSync(join(runPath!,'original-login-fixture-custody.json'),JSON.stringify({ base,roles,objects,installerOid,sourcePins:effectivePins,setupCommitted,

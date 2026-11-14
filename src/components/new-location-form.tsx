@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
+
 import type { ConfigurationResult } from "./configuration-form";
 import { lower } from "@/lib/workspace-presentation/words";
 import { Notice } from "@/app/app/settings/wave-c-kit";
-import { ButtonLabel, Field, FieldErrors, FormActions, useFieldErrors } from "@/app/app/settings/wave-c-form";
+import { Field,FieldErrors,FormActions,useFieldErrors } from "@/app/app/settings/wave-c-form";
 import { ReturnToNext } from "./team/return-to-next";
 
 /** Wave C: Add location on the kit form pattern. One request per tap; an unconfirmed save says

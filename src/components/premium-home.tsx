@@ -1,11 +1,11 @@
 "use client";
 import type { HomePayrollStatus } from '@/lib/payroll/backlog-read';
-import Link from "next/link";
+
 import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 
 import { useEffect, useLayoutEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
-import { AirplaneTiltIcon, ArrowsClockwiseIcon, CalendarXIcon, WalletIcon, UserCheckIcon, UserMinusIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
-import { Avatar, Button, Card, CardBody, Freshness, KitLink, Row, Rows, Tile } from "@/components/kit/kit";
+
+
 import { QuietBar, QuietBarIcon, QuietHeader, QuietList, QuietRow, QuietSection } from "@/components/quiet/quiet";
 import { BellIcon } from "@phosphor-icons/react/dist/ssr/Bell";
 import { CLOCK_IN, presentItem } from "@/lib/action-center/present";
@@ -19,7 +19,7 @@ import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor, ClockMonitorEmployee } from "@/lib/time-clock";
 import { useClockMonitor } from "./clean/use-clock-monitor";
 import { OwnerHomeCorp, toDoSentence } from "./owner-home-corp";
-import { keepWhole } from "@/lib/keep-whole";
+
 import type { NextPay } from "./payroll/my-pay";
 
 /* Manager and Owner Home, rebuilt for the clean Manager app (v3, approved Oct 19; spec in
@@ -65,7 +65,7 @@ const workspaceDay = (iso: string, timeZone: string) => {
   catch { return undefined; }
 };
 const plural = (n: number, one: string, many: string) => `${n}\u00a0${n === 1 ? one : many}`;
-const initials = (name: string) => name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
+
 
 /** Live Home: one Today read and the shared action center read. */
 export function PremiumHomeLive(props: PremiumHomeProps) {
@@ -250,18 +250,14 @@ function gapLocation(item: ActionItem) {
 }
 
 /** "2 PM", "5:30 PM": whole hours lose their ":00", as in the mockups. */
-const short = (iso: string, timeZone: string) => clock(iso, timeZone).replace(":00", "");
+
 
 const working = (shift: TodayShift) => shift.status === "clocked_in" || shift.status === "on_break";
 const later = (shift: TodayShift) => shift.status === "upcoming" || shift.status === "starting";
 
 /** "in at 9:02 AM" — or, for a punch open since before today, "in since Sun 12:28 AM", so a stale clock-in is
  * visible instead of looking fresh (reviews 10, 11 and 50 of 50). */
-function sinceLabel(iso: string, timeZone: string) {
-  const day = (value: Date) => new Intl.DateTimeFormat("en-CA", { timeZone, dateStyle: "short" }).format(value);
-  if (day(new Date(iso)) === day(new Date())) return `in at ${clock(iso, timeZone)}`;
-  return `in since ${new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short" }).format(new Date(iso))} ${clock(iso, timeZone)}`;
-}
+
 
 /** One timeline row: the planned shift (if any) and the time recorded so far (if any), in epoch milliseconds. */
 export type TimelineLane = {

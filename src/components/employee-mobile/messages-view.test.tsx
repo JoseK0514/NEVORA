@@ -1,4 +1,4 @@
-import React from 'react';
+
 import {renderToStaticMarkup} from 'react-dom/server';
 import {expect,it} from 'vitest';
 import {MessageInbox,MessageDetail,MessageRecovery} from './messages-view';

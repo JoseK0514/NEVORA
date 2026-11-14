@@ -1,0 +1,9 @@
+node_modules/
+.next/
+.omo/
+docs/
+public/
+db/
+tools/**/node_modules/
+**/generated/
+**/evidence/

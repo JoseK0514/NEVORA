@@ -2,9 +2,9 @@ import {describe,it,expect,vi} from 'vitest';
 import {canonicalOwnershipJson,getOwnershipRegistry,ownershipDigest,type JsonValue} from './ownership';
 import {createTypedSnapshotFixture} from './typed-fixture.test-support';
 import {inspectTypedMigrationSnapshot} from './typed-snapshot';
-import {getTypedKeyComparatorContracts,getTypedKeyComparatorStockDescriptors,validateTypedKeyComparators,isIssuedTypedKeyComparatorObservations,type TypedKeyComparatorCapture,type TypedKeyComparatorCatalog,type TypedKeyComparatorContract,type TypedKeyComparatorComponent} from './typed-key-comparators';
+import { getTypedKeyComparatorContracts,getTypedKeyComparatorStockDescriptors,validateTypedKeyComparators,isIssuedTypedKeyComparatorObservations,type TypedKeyComparatorCapture,type TypedKeyComparatorCatalog,type TypedKeyComparatorComponent } from './typed-key-comparators';
 const registry=getOwnershipRegistry(),contracts=getTypedKeyComparatorContracts(),stocks=getTypedKeyComparatorStockDescriptors();
-const same=(a:unknown,b:unknown)=>canonicalOwnershipJson(a)===canonicalOwnershipJson(b);
+
 const stock=(type:string)=>stocks.find(s=>s.type===type)!;
 const opOid=(type:string)=>String(20000+stocks.findIndex(s=>s.type===type));
 const oid=(type:string)=>type==='text'||type.startsWith('char(')||type==='text[]'?'100':'0';

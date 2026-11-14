@@ -114,7 +114,7 @@ const noTime=(item:TimecardItem)=>!needsReview(item)&&!isApproved(item)&&!item.c
 const byName=(a:TimecardItem,b:TimecardItem)=>a.card.employeeName.localeCompare(b.card.employeeName);
 const reviewFirst=(a:TimecardItem,b:TimecardItem)=>Number(needsReview(b))-Number(needsReview(a))||byName(a,b);
 const monthDay=(value:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short',day:'numeric'}).format(new Date(`${value}T12:00:00Z`));
-const longDay=(value:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'long',month:'short',day:'numeric'}).format(new Date(`${value}T12:00:00Z`));
+
 /** "Oct 19 – 25" in one month, "Sep 28 – Oct 4" across two. */
 const rangeText=(period:Period)=>period.startDate.slice(0,7)===period.endDate.slice(0,7)?`${monthDay(period.startDate)} – ${Number(period.endDate.slice(8))}`:`${monthDay(period.startDate)} – ${monthDay(period.endDate)}`;
 /** "Mon, Nov 2": the first day the period can be approved (the day after it ends). */

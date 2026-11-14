@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function FeaturesPage() {
   await requireRoles(["OWNER"]);
   const proof = await requireSessionMutationProof();
-  const [workspace, history, blockers, updatesHeld] = await Promise.all([getWorkspace(), readPresentationHistory(proof), readModuleBlockers(proof), updatesActivationHeld()]);
+  const [, history, blockers, updatesHeld] = await Promise.all([getWorkspace(), readPresentationHistory(proof), readModuleBlockers(proof), updatesActivationHeld()]);
   const latest = history[0];
   const settings = readSettings(latest?.settings);
   return (

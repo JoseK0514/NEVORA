@@ -19,7 +19,7 @@ import { EmployeeDeletionView, type DeletionView } from "./employee-mobile/delet
 type Account = { name: string; role: string; employeeId: string; roleKey?: "OWNER" | "MANAGER" | "LEAD" | "EMPLOYEE" };
 type Done = Extract<DeletionFormState, { reference: string }>;
 const RECEIPT = new Set(["received", "duplicate"]);
-const ENDED = new Set(["signed_out", "changed", "unavailable"]);
+
 const ANNOUNCED = new Set(["received", "duplicate", "failed", "unavailable", "uncertain", "busy", "signed_out", "changed"]);
 
 const unresolved = (token: string) => <mark className="legal-unresolved">[CONFIRM_{token}]</mark>;

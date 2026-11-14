@@ -20,7 +20,7 @@ import { PendingButton } from "@/components/wave-a/pending-button";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import { keepWhole } from "@/lib/keep-whole";
-import { durationText } from "@/lib/duration-text";
+
 import Link from "next/link";
 import { createShiftAction } from "@/app/app/schedule/actions";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";

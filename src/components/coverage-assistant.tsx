@@ -3,7 +3,7 @@ import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowClockwis
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { addDays, formatDayLabel, formatTime } from "@/lib/date-utils";
 import { durationText } from "@/lib/duration-text";
-import { CorpBody, CorpButtonLink, CorpCard, CorpNav, CorpNote, CorpPage, CorpRow, CorpRows, CorpTime, CorpTitle } from "./corp/corp";
+import { CorpBody,CorpButtonLink,CorpCard,CorpNav,CorpNote,CorpPage,CorpRows,CorpTime,CorpTitle } from "./corp/corp";
 import { ManagerIssueFocus } from "./manager-issue-focus";
 import { ScheduleCoverPick } from "./schedule-cover-pick";
 import "./coverage-assistant.css";
@@ -52,7 +52,7 @@ function personDetail(employee: CoverageEmployee) {
 /** Find cover (Release 1, board O-FindCover): the open shift, then who can work it, best fit first, and Assign, which
  * opens the existing review. Same reads and review links as before; nothing is saved on this page. */
 export function CoverageAssistant(props: CoverageAssistantProps) {
-  const day = formatDayLabel(props.date);
+
   const overnight = props.endTime < props.startTime || props.endTime.slice(0, 5) === "24:00";
   const nextDay = overnight ? formatDayLabel(addDays(props.date, 1)) : null;
   const shortDate = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${props.date}T12:00:00Z`));

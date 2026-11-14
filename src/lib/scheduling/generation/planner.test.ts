@@ -9,7 +9,7 @@ import { planWeek } from "./planner";
 import { deriveGenerationDemand } from "./demand";
 import { allocateAutomaticCapacity } from "./reservations";
 import { validateShift } from "../validate-shift";
-import type { GenerationInput, GenerationPlan } from "./types";
+import type { GenerationInput } from "./types";
 
 function run(i: GenerationInput) {
   const p = planWeek(i);

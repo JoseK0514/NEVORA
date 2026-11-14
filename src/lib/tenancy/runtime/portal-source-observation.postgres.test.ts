@@ -1069,7 +1069,7 @@ describe.skipIf(!leasePath && !runPath)('owned PG18 unused portal-source observa
       expect(observed.kind).toBe('PORTAL_POLICY_SOURCE_OBSERVATION_V1'); expect(observed.verification).toBe(observationVerification);
       return observed;
     }
-    async function freshCombined() { await begin(installer); try { return await combinedCall(installer); } finally { await rollback(installer); } }
+
     async function combinedSettle(pending: Promise<unknown>) { try { await pending; } finally { pendingFenceAttempts.delete(pending); } }
     async function independentComponents() {
       await begin(installer);

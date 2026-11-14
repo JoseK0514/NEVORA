@@ -1,4 +1,4 @@
-import React from 'react';
+
 import {renderToStaticMarkup} from 'react-dom/server';
 import {it,expect} from 'vitest';
 import {HoursRecordsView} from './hours-records';

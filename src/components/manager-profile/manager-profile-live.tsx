@@ -2,18 +2,18 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { BellIcon } from '@phosphor-icons/react/dist/ssr/Bell';
-import { DeviceMobileIcon } from '@phosphor-icons/react/dist/ssr/DeviceMobile';
-import { ReceiptIcon } from '@phosphor-icons/react/dist/ssr/Receipt';
-import { SignOutIcon } from '@phosphor-icons/react/dist/ssr/SignOut';
-import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
-import { PauseCircleIcon } from '@phosphor-icons/react/dist/ssr/PauseCircle';
+
+
+
+
+
+
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
-import { Card, KitLink, Row, Rows, Tile } from '@/components/kit/kit';
+
 import { phoneDisplay } from '@/components/team/phone';
 import { createPrivateSnapshotController, type PrivatePanelState } from '@/lib/private-snapshot-client';
 import { revealFeedback } from '@/lib/reveal-feedback';
-import { ALERT_TOPIC_SIZING, MANAGER_ALERTS_ENDPOINT, MANAGER_PROFILE_ENDPOINT, parseManagerProfile, type ManagerAlertTopic, type ManagerProfileSnapshot } from './contract';
+import { MANAGER_ALERTS_ENDPOINT,MANAGER_PROFILE_ENDPOINT,parseManagerProfile,type ManagerAlertTopic,type ManagerProfileSnapshot } from './contract';
 
 /** What the page already knows from today's session and workspace reads. */
 export type ManagerProfileIdentity = {
@@ -102,24 +102,6 @@ function Phone({ number }: { number: string }) {
   return <Parts parts={parts.map((part, index) => index ? ` ${part}` : part)} />;
 }
 
-const SHOWN_LOCATIONS = 5;
-/** "All locations" is one line: the count, never a list that arrives late and pushes the page. Assigned locations
- * are listed; past five, a count and the Show all toggle come first, so the toggle stays where it was pressed. */
-function Locations({ snapshot, owner }: { snapshot: Extract<ManagerProfileSnapshot, { state: 'ready' }>; owner: boolean }) {
-  const [open, setOpen] = useState(false);
-  const { scope, names } = snapshot.locations;
-  if (!names.length) return <span className="pmp-muted">{owner ? 'No locations yet' : 'None assigned yet'}</span>;
-  if (scope === 'all') return <>{names.length === 1 ? names[0] : `All ${names.length} locations`}</>;
-  const list = (items: string[], inline = false) => <ul className={inline ? 'pmp-locations pmp-locations--inline' : 'pmp-locations'} id="profile-assigned-locations" aria-label="Locations">{items.map((name, index) => <li key={`${index}-${name}`}>{name}</li>)}</ul>;
-  // A short list reads as one line ("Main Office · West Office") and wraps only between names.
-  if (names.length <= SHOWN_LOCATIONS) return list(names, true);
-  return <>
-    <span className="pmp-locations-scope">{names.length} locations</span>
-    <button type="button" className="pmp-text-button" aria-expanded={open} aria-controls="profile-assigned-locations" onClick={() => setOpen(value => !value)}>{open ? 'Show fewer' : `Show all ${names.length}`}</button>
-    {list(open ? names : names.slice(0, SHOWN_LOCATIONS))}
-  </>;
-}
-
 function saveMessage(error: AlertSave['error']) {
   if (error === 'offline') return 'Not saved. You’re offline.';
   if (error === 'signed_out') return 'Not saved. Sign in again.';
@@ -167,7 +149,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
   const rowStyle = (row: string) => read.kind === 'denied' && rowHeights?.[row] ? { minHeight: rowHeights[row] } : undefined;
   const said = read.kind === 'failed' && retried === 'failed' ? 'Still couldn’t load your contact details, locations and alert choices.' : 'said' in read ? read.said : '';
   // What sizes the alert list while there is no ready read: the last read, or else the role's expected topics.
-  const sizing = visible(held)?.alerts ?? (identity.owner ? identity.payrollAlerts === false ? ALERT_TOPIC_SIZING.manager : ALERT_TOPIC_SIZING.owner : ALERT_TOPIC_SIZING.manager);
+
   // Quiet (v4, approved Oct 23): who you are, three detail rows, then Notifications (its choices fold under it), this phone's
   // alerts, Privacy and terms, and Sign out in red.
   const onCount = shown ? shown.alerts.filter(topic => overrides[topic.id] ?? topic.on).length : null;

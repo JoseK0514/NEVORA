@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { automaticWeek, automaticAssignment } from '../../../test/fixtures/automatic-week';
 import { fictionalProfile, configured } from '../../../test/fixtures/shift-changes';
 import { planWeek } from './planner';
-import type { GenerationInput } from './types';
+
 import type { GenerationExplanationSnapshot, GenerationExplanationView } from './explanation-view';
 
 const path = './explanation-view';

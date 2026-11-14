@@ -7,7 +7,40 @@ import {clockerSourceHash,expectedClockerFiles,parseClockerArguments,validateClo
 import {verifyRequiredJobs, ownedExecutionTimeout} from './phase-e-owned.mjs';
 const require=createRequire(import.meta.url);
 const workflow=require('js-yaml').load(readFileSync('.github/workflows/ci.yml','utf8'));
+const attendanceCondition=group=>"${{ !cancelled() && steps.attendance_runtime.outcome == 'success' && matrix.group == '"+group+"' }}";
 const mandatory=['validate','clocker-postgres','release-postgres','phase-d-attendance-ui','management-review-ui','phase-e-postgres','phase-e-ui'];
+
+test('parallel attendance groups retain a mandatory protected aggregate and exact-run evidence custody',()=>{
+ const leaf=workflow.jobs['phase-d-browser-suite'],gate=workflow.jobs['phase-d-attendance-ui'];
+ assert.equal(leaf.if,undefined);assert.equal(leaf['timeout-minutes'],50);
+ assert.deepEqual(leaf.strategy,{'fail-fast':false,'max-parallel':3,matrix:{group:['advisor-lifecycle','attendance','corrections','clocker']}});
+ assert.deepEqual(gate.needs,['phase-d-browser-suite']);assert.equal(gate.if,'${{ always() }}');
+ assert.equal(gate['timeout-minutes'],10);
+ for(const job of [leaf,gate]){
+  assert.equal(job['continue-on-error'],undefined);
+  for(const step of job.steps)assert.equal(step['continue-on-error'],undefined);
+ }
+ const download=gate.steps.find(step=>step.name==='Download exact-run browser group evidence');
+ assert.equal(download.uses,'actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093');
+ assert.deepEqual(download.with,{pattern:'phase-d-partial-*',path:'${{ runner.temp }}/phase-d-group-artifacts','merge-multiple':false});
+ const verify=gate.steps.find(step=>step.run==='node scripts/phase-d-browser-groups.mjs aggregate');
+ assert(verify);assert.equal(verify.if,undefined);
+ assert.deepEqual(verify.env,{
+  PHASE_D_EXPECTED_SHA:'${{ github.event.pull_request.head.sha || github.sha }}',
+  PHASE_D_GROUP_ARTIFACTS:'${{ runner.temp }}/phase-d-group-artifacts',
+  PHASE_D_GROUP_OUTPUT:'${{ runner.temp }}/phase-d-aggregate',
+  PHASE_D_GROUP_NEEDS_JSON:'${{ toJSON(needs) }}',
+ });
+ const stage=leaf.steps.find(step=>step.name==='Stage exact-source browser group evidence');
+ assert.equal(stage.run,'node scripts/phase-d-browser-groups.mjs stage "$PHASE_D_GROUP_NAME"');
+ assert.equal(stage.if,"${{ always() && steps.attendance_runtime.outcome == 'success' && matrix.group != 'advisor-lifecycle' }}");
+ const upload=leaf.steps.find(step=>step.name==='Upload source-bound browser group evidence');
+ assert.equal(upload.if,"${{ always() && matrix.group != 'advisor-lifecycle' }}");
+ assert.deepEqual(upload.with,{name:'phase-d-partial-${{ github.event.pull_request.head.sha || github.sha }}-${{ matrix.group }}',path:'${{ runner.temp }}/phase-d-partial/','if-no-files-found':'error','retention-days':14});
+ const d13=leaf.steps.find(step=>step.name==='Upload D1.3 browser evidence');
+ assert.equal(d13.if,"${{ always() && matrix.group == 'attendance' }}");
+ assert.equal(d13.with['if-no-files-found'],'error');
+});
 
 test('mandatory backend gate executes durable commerce SQL and SDK cases and retains their report',()=>{
  const job=workflow.jobs['onboarding-backend'];
@@ -18,12 +51,12 @@ test('mandatory backend gate executes durable commerce SQL and SDK cases and ret
 });
 
 test('Owner advisor uploads nested reports, captures and traces with their source custody',()=>{
- const gate=workflow.jobs['phase-d-attendance-ui'].steps.find(step=>step.name==='Owner advisor PostgreSQL and browser gate');
- assert.equal(gate.if,undefined);
- const steps=workflow.jobs['phase-d-attendance-ui'].steps;
+ const gate=workflow.jobs['phase-d-browser-suite'].steps.find(step=>step.name==='Owner advisor PostgreSQL and browser gate');
+ assert.equal(gate.if,"${{ matrix.group == 'advisor-lifecycle' }}");
+ const steps=workflow.jobs['phase-d-browser-suite'].steps;
  assert(steps.findIndex(step=>step.name==='Combined company lifecycle and recovery gate')>steps.findIndex(step=>step.name==='Upload Owner advisor browser evidence'),'Original Owner advisor evidence must precede the combined journey');
- const upload=workflow.jobs['phase-d-attendance-ui'].steps.find(step=>step.name==='Upload Owner advisor browser evidence');
- assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
+ const upload=workflow.jobs['phase-d-browser-suite'].steps.find(step=>step.name==='Upload Owner advisor browser evidence');
+ assert.equal(upload.if,"${{ always() && matrix.group == 'advisor-lifecycle' }}");assert.equal(upload.with['if-no-files-found'],'error');
  const root='${{ runner.temp }}/nevora-owner-advisor-browser-evidence';
  for(const suffix of ['/**/*.json','/**/*.png','/**/*-trace.zip'])assert(upload.with.path.split('\n').includes(root+suffix),'Nested Owner advisor evidence missing: '+suffix);
  assert.equal(upload['continue-on-error'],undefined);
@@ -182,16 +215,16 @@ test('mandatory release SQL selects the timestamp-fence regressions and retains 
  }
 });
 test('mandatory browser job runs Owner advisor without a model connection and retains evidence',()=>{
- const steps=workflow.jobs['phase-d-attendance-ui'].steps;
+ const steps=workflow.jobs['phase-d-browser-suite'].steps;
  const step=steps.find(s=>s.name==='Owner advisor PostgreSQL and browser gate');
  assert(step,'Owner advisor browser checks missing');
  assert.deepEqual(step.run.trim().split('\n'),['node --import tsx --test scripts/owner-advisor-retirement.check.mts','node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts']);
- assert.equal(step.if,undefined);
+ assert.equal(step.if,"${{ matrix.group == 'advisor-lifecycle' }}");
  assert.equal(step['continue-on-error'],undefined);
  assert.deepEqual(step.env,{NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE:'${{ runner.temp }}/nevora-owner-advisor-browser-evidence'});
  const upload=steps.find(s=>s.name==='Upload Owner advisor browser evidence');
  assert(upload);
- assert.equal(upload.if,'always()');
+ assert.equal(upload.if,"${{ always() && matrix.group == 'advisor-lifecycle' }}");
  assert.equal(upload.with['if-no-files-found'],'error');
  for(const item of ['/**/*.json','/**/*.png','/**/*-trace.zip'])assert(upload.with.path.includes('nevora-owner-advisor-browser-evidence'+item));
 });
@@ -202,14 +235,15 @@ test('validation runs the spending guard suite without enabling live inference',
  assert.equal(step.env,undefined);
 });
 test('independent Attendance stages retain fatal outcomes and run after earlier failure only with installed runtimes',()=>{
- const job=workflow.jobs['phase-d-attendance-ui'],steps=job.steps;
+ const job=workflow.jobs['phase-d-browser-suite'],steps=job.steps;
  const runtime=steps.filter(step=>step.id==='attendance_runtime');
  assert.equal(runtime.length,1);assert.equal(runtime[0].name,'Install PostgreSQL test runtime');assert.equal(runtime[0].if,undefined);
  assert(steps.findIndex(step=>step.name==='Install Chromium and WebKit')<steps.indexOf(runtime[0]));
  const names=['Exact-SHA D1.3 attendance browser gate','Verify SHA-bound report','Whole Phase D exact-candidate browser regression','Independent Phase D audit remediation regressions','Verify remediation SHA-bound evidence','Existing D2 correction browser regression','Existing Clocker lifecycle and recovery browser regression','Verify whole-phase SHA and mandatory UX evidence'];
  for(const name of names){
   const matching=steps.filter(step=>step.name===name);assert.equal(matching.length,1,name);
-  assert.equal(matching[0].if,"${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}",name);
+  const group=name==='Existing D2 correction browser regression'?'corrections':name==='Existing Clocker lifecycle and recovery browser regression'?'clocker':'attendance';
+  assert.equal(matching[0].if,attendanceCondition(group),name);
   assert(steps.indexOf(matching[0])>steps.indexOf(runtime[0]),name);
  }
  assert.equal(job['continue-on-error'],undefined);
@@ -218,7 +252,7 @@ test('independent Attendance stages retain fatal outcomes and run after earlier 
  assert.match(steps.find(step=>step.name==='Verify remediation SHA-bound evidence').run,/r\.runtimeErrors/);
 });
 test('Clocker rendering controls run before the unchanged authenticated regression and retain their receipt',()=>{
- const steps=workflow.jobs['phase-d-attendance-ui'].steps;
+ const steps=workflow.jobs['phase-d-browser-suite'].steps;
  const step=steps.find(value=>value.name==='Existing Clocker lifecycle and recovery browser regression');
  assert.deepEqual(step.run.trim().split('\n'),[
   'node scripts/clocker-break-filter-readiness.check.mjs',
@@ -227,12 +261,12 @@ test('Clocker rendering controls run before the unchanged authenticated regressi
  assert.equal(step.env.PHASE_C_EXPECTED_SHA,'${{ github.event.pull_request.head.sha || github.sha }}');
  assert.equal(step.env.PHASE_C_EVIDENCE_DIR,'${{ runner.temp }}/nevora-clocker-browser-evidence');
  assert.equal(step['continue-on-error'],undefined);
- const upload=steps.find(value=>value.name==='Upload whole Phase D browser evidence');
+ const upload=workflow.jobs['phase-d-attendance-ui'].steps.find(value=>value.name==='Upload whole Phase D browser evidence');
  assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
- assert(upload.with.path.includes('${{ runner.temp }}/nevora-clocker-browser-evidence/*.json'));
+ assert(upload.with.path.includes('${{ runner.temp }}/phase-d-aggregate/nevora-clocker-browser-evidence/*.json'));
 });
 test('runtime installers prefer the existing official mirror before every apt dependency step',()=>{
- for(const name of ['clocker-postgres-suite','release-postgres','phase-e-postgres','phase-d-attendance-ui','management-review-ui','phase-e-ui-suite']){
+ for(const name of ['clocker-postgres-suite','release-postgres','phase-e-postgres','phase-d-browser-suite','management-review-ui','phase-e-ui-suite']){
   const steps=workflow.jobs[name].steps,preference=steps.findIndex(step=>step.name==='Prefer official Ubuntu archive');
   assert(preference>=0,name+' archive preference missing');
   assert.equal(steps[preference].if,undefined);
@@ -251,7 +285,7 @@ test('feature candidates run through PRs without a duplicate branch-push executi
 test('all triggered candidate branches receive mandatory SQL and browser gates',()=>{
  for(const name of mandatory) {
   assert(workflow.jobs[name], 'Missing mandatory gate '+name);
-  assert.equal(workflow.jobs[name].if,['phase-e-ui','clocker-postgres'].includes(name) ? '${{ always() }}' : undefined,'Branch-dependent skipping is forbidden for '+name);
+  assert.equal(workflow.jobs[name].if,['phase-e-ui','clocker-postgres','phase-d-attendance-ui'].includes(name) ? '${{ always() }}' : undefined,'Branch-dependent skipping is forbidden for '+name);
  }
  assert.deepEqual([...workflow.jobs['phase-e-evidence'].needs].sort(),[...mandatory].sort());
  assert.match(workflow.jobs['phase-e-evidence'].if,/^\$\{\{\s*always\(\)\s*\}\}$/);
@@ -376,26 +410,26 @@ test('conversations SQL is a mandatory owned release gate with retained evidence
 });
 
 test('combined Step4 lifecycle remains a mandatory exact-source browser gate with retained evidence',()=>{
- const job=workflow.jobs['phase-d-attendance-ui'];
+ const job=workflow.jobs['phase-d-browser-suite'];
  const gate=job.steps.find(step=>step.name==='Combined company lifecycle and recovery gate');
  assert(gate,'Combined lifecycle gate is absent');
  assert.equal(gate.run,'node scripts/step4-local-acceptance.mjs');
- assert.equal(gate.if,"${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}");
+ assert.equal(gate.if,attendanceCondition('advisor-lifecycle'));
  assert.equal(gate['continue-on-error'],undefined);
  assert.equal(gate.env.NEVORA_STEP4_EXPECTED_SHA,'${{ github.event.pull_request.head.sha || github.sha }}');
  assert.equal(gate.env.NEVORA_STEP4_EVIDENCE,'${{ runner.temp }}/nevora-step4-local');
  const upload=job.steps.find(step=>step.name==='Upload combined company lifecycle evidence');
- assert.equal(upload.if,'always()');assert.equal(upload.with.name,'step4-local-${{ github.event.pull_request.head.sha || github.sha }}');assert.equal(upload.with['if-no-files-found'],'error');assert.equal(upload.with['retention-days'],14);
+ assert.equal(upload.if,"${{ always() && matrix.group == 'advisor-lifecycle' }}");assert.equal(upload.with.name,'step4-local-${{ github.event.pull_request.head.sha || github.sha }}');assert.equal(upload.with['if-no-files-found'],'error');assert.equal(upload.with['retention-days'],14);
  for(const suffix of ['/**/*.json','/**/*.png','/**/*-trace.zip'])assert(upload.with.path.split('\n').includes('${{ runner.temp }}/nevora-step4-local'+suffix));
  assert.equal(job['timeout-minutes'],50);
 });
 
 // The functional billing entry must travel with the existing combined release artifact.
 test('central billing is a mandatory source-bound two-browser gate in the combined lifecycle artifact',()=>{
- const job=workflow.jobs['phase-d-attendance-ui'],gate=job.steps.find(step=>step.name==='Central billing entry and callback gate');
+ const job=workflow.jobs['phase-d-browser-suite'],gate=job.steps.find(step=>step.name==='Central billing entry and callback gate');
  assert(gate,'Central billing entry gate is absent');
  assert.equal(gate.run,'node scripts/central-billing-local-acceptance.mjs');
- assert.equal(gate.if,"${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}");
+ assert.equal(gate.if,attendanceCondition('advisor-lifecycle'));
  assert.equal(gate['continue-on-error'],undefined);
  assert.equal(gate.env.NEVORA_CENTRAL_BILLING_EXPECTED_SHA,'${{ github.event.pull_request.head.sha || github.sha }}');
  assert.equal(gate.env.NEVORA_CENTRAL_BILLING_EVIDENCE,'${{ runner.temp }}/nevora-step4-local/central-billing');

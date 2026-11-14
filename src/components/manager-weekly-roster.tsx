@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
 import { KeepSelectedVisible } from "./kit/keep-selected-visible";
-import { UsersIcon } from "@phosphor-icons/react/dist/ssr/Users";
+
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
-import { EmptyState } from "./empty-state";
+
 import { Avatar } from "./kit/kit";
 import { QuietGroup, QuietRow, QuietSection } from "./quiet/quiet";
 import { CorpAvatar, CorpCard, CorpTime } from "./corp/corp";
@@ -122,7 +122,7 @@ function liveState(shift: RosterShift, employeeId: string, today: Today | null, 
   return null;
 }
 
-export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZone, locationId, openShifts = [], absences = { state: "unavailable", reason: "read_failed" }, footnote, controls, notices, corp }: {
+export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZone, locationId, openShifts = [], absences = { state: "unavailable", reason: "read_failed" }, controls, notices, corp }: {
   employees: RosterEmployee[];
   absences?: WeeklyApprovedAbsences;
   dates: string[];

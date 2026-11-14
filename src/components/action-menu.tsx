@@ -1,5 +1,5 @@
 "use client";
-import { isPopoverOpen, hidePopover, showPopover } from "./kit/popover-open";
+import { isPopoverOpen } from "./kit/popover-open";
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { actionMenuGeometry } from "./action-menu-geometry";

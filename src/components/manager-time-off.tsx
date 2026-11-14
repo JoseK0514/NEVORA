@@ -7,9 +7,9 @@ import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listPendingTimeOffRequests, listTeamTimeOffRequests } from "@/lib/data/requests";
 import { reviewTimeOffAction } from "@/app/app/requests/actions";
 import { formatTime, weekStartFor } from "@/lib/date-utils";
-import { ActionForm } from "@/components/wave-a/action-form";
+
 import { agoLabel, dayLabel, initialsOf, QuietHeader, QuietList, QuietNav, QuietPage, QuietRow } from "@/components/quiet/quiet";
-import { ManagerIssueFocus } from './manager-issue-focus';
+
 import { CorpAvatar, CorpCard, CorpNav, CorpNote, CorpPage, CorpRow, CorpSegments, CorpTitle } from "@/components/corp/corp";
 import "./manager-time-off.css";
 import { inboxFilter } from "@/lib/action-center/inbox";
@@ -21,14 +21,9 @@ const tabs = [
   { id: "declined", label: "Declined", status: "DENIED" },
 ] as const;
 
-function dateLabel(date: string) {
-  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
-}
 
-function shortDate(date: string, weekday = true) {
-  // Each date stays whole on one line; a range breaks only after its dash.
-  return new Intl.DateTimeFormat("en-US", { ...(weekday ? { weekday: "short" as const } : {}), month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`)).replace(/ /g, "\u00a0");
-}
+
+
 
 type PendingRequest = Awaited<ReturnType<typeof listPendingTimeOffRequests>>[number];
 

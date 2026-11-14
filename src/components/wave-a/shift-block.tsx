@@ -1,6 +1,6 @@
 import { addDays, formatDayLabel, formatTime } from "@/lib/date-utils";
 import { keepDuration } from "./keep-duration";
-import { durationText } from "@/lib/duration-text";
+
 import { keepWhole } from "@/lib/keep-whole";
 import { timeZoneLabel } from "@/lib/time-zone-label";
 import { durationMinutes } from "@/lib/date-utils";

@@ -7,7 +7,7 @@ import {listEmployees} from '../../lib/data/employees';
 vi.mock('server-only',()=>({}));
 import {readOperationalDirectory,readOperationalSchedule,readOperationalShiftEditor,readOperationalClockMonitor,readOperationalEmployeeProfile} from '../../lib/company-access/operational-read.server';
 const week='2026-10-12';
-type Fixture=Awaited<ReturnType<typeof fixture>>;
+
 async function fixture(){
  const f=await companyAccessFixture();
  try{

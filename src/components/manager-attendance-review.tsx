@@ -107,7 +107,7 @@ export function AttendanceReviewSurface({
   const unavailable = review?.state === 'unavailable' && !denied;
   const rows = ready ? groupRows(ready.groups, ready.labels) : [];
   // Busy only while the first read is in flight: desktop hides the footer (and Refresh) while busy.
-  const loading = !ready && !paused && !denied && !unavailable;
+
 
   return (
     <section className="attendance-review" aria-labelledby="attendance-review-title" data-attendance-state={paused ? "paused" : denied ? "unauthorized" : ready ? "ready" : unavailable ? "unavailable" : "loading"}>

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { loadPinnedMigrations } from '../inventory/source';
 import { getOwnershipRegistry, OWNERSHIP_SCHEMA_COMMIT, OWNERSHIP_SCHEMA_TREE, ownershipDigest, canonicalOwnershipJson, type JsonValue } from './ownership';
-import { preflightTenantBackfill, resumeTenantBackfill, planNewOwnershipWrite, type BackfillCapture, type LegacyRow, type TableCapture, type OwnershipRecord, type HistoricalReference } from './backfill';
+import { preflightTenantBackfill,resumeTenantBackfill,planNewOwnershipWrite,type BackfillCapture,type LegacyRow,type OwnershipRecord,type HistoricalReference } from './backfill';
 const digest='a'.repeat(64);
 const registry=()=>getOwnershipRegistry();
 const rule=(name:string)=>registry().tables.find(t=>t.table===name)!;

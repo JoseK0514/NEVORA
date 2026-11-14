@@ -1,4 +1,4 @@
-import {expect,it,vi} from 'vitest';
+import { expect,it } from 'vitest';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {createElement} from 'react';
 import {ShiftAssignmentFields} from '../../../../components/shift-assignment-fields';

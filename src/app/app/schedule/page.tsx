@@ -18,21 +18,21 @@ import { SchedulePublicationChange } from "@/components/schedule-publication-cha
 import { listCapturedShiftPositions } from "@/lib/data/publication-revisions";
 import {ScheduleRouteFeedback} from '@/components/company-access/schedule-route-feedback';
 import Link from "next/link";
-import { Fragment, type ReactNode } from "react";
+
 import { CorpBody, CorpButtonLink, CorpCard, CorpLink, CorpNote, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
 import { FocusOnArrival } from "@/components/kit/focus-on-arrival";
 import { ManagerWeeklyRoster, type RosterOpenShift } from "@/components/manager-weekly-roster";
-import { scheduleWeekFacts } from "@/components/clean/week-summary";
-import { DayAwareLink } from "@/components/clean/day-aware-link";
+
+
 import { readWeeklyApprovedAbsences } from "@/lib/data/weekly-approved-absences.server";
 import { loadManagerDashboardData } from "@/lib/data/manager-dashboard";
 import { assignedHours, type RosterEmployee } from "@/lib/scheduling/manager-roster-presentation";
-import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
+
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { DotsThreeCircleIcon } from "@phosphor-icons/react/dist/ssr/DotsThreeCircle";
-import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
-import { CalendarCheckIcon } from "@phosphor-icons/react/dist/ssr/CalendarCheck";
+
+
 import "./manager-schedule.css";
 import "./schedule-corp.css";
 import { ScheduleGenerationControls } from "@/components/schedule-generation-controls";
@@ -42,7 +42,7 @@ import { listPositions } from "@/lib/data/positions";
 import { getScheduleGenerationReview, type ScheduleGenerationReview } from "@/lib/data/schedule-generation-review";
 import {EmployeeWeeklyConfirmation} from "@/components/employee-weekly-confirmation";
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
-import {emptyScheduleLabel} from '@/lib/data/employee-schedule';
+
 import { readShiftChangeAvailability } from "@/lib/data/shift-changes";
 import { refusalLines } from "@/lib/shift-changes/eligibility-reasons";
 import { isManagerRole } from "@/lib/auth/permissions";
@@ -53,12 +53,10 @@ import { listEmployeeExchangeActivity, listOpenCoverage, type ExchangeRecord } f
 import { PrintScheduleButton } from "@/components/print-schedule-button";
 import { Celebration } from "@/components/celebration";
 import {
-  addDays,
-  formatDayLabel,
-  formatTime,
-  formatWeekRange,
-  weekDates,
-  isValidWeekStart, weekStartFor,
+addDays,
+formatDayLabel,formatWeekRange,
+weekDates,
+isValidWeekStart,weekStartFor
 } from "@/lib/date-utils";
 import { getWeekSettings } from "@/lib/data/week-settings";
 import {readEmployeeWeeklyReview} from "@/lib/data/employee-weekly-review.server";
@@ -275,7 +273,6 @@ export default async function SchedulePage({
       };
     }),
   }));
-  const rosterShifts = roster.flatMap(employee => employee.shifts);
 
   // Open shifts: the uncovered coverage blocks behind Home's and the Inbox's counts, each with its existing Find cover link.
   const openShifts: RosterOpenShift[] = (weekRead?.managerActions ?? []).flatMap(item => {
@@ -288,29 +285,8 @@ export default async function SchedulePage({
     return [{ id: item.id, date, startTime, endTime, location: locations.find(location => location.id === locationId)?.shortName ?? "", href: item.href }];
   });
 
-  // The week's facts, worded as the v3 mockup does (WeekSummary's numbers, folded into the title lines).
-  const revision = weekRead?.latestRevision ?? null;
-  const dayOf = (iso: string) => { try { return new Intl.DateTimeFormat("en-US", { timeZone: workspace.timeZone, month: "short", day: "numeric" }).format(new Date(iso)); } catch { return null; } };
-  const facts = scheduleWeekFacts({
-    weekStart, weekLabel: formatWeekRange(weekStart), plannedShifts: rosterShifts.length, lastPublished: null,
-    locations: scheduleStatuses ? locations.map(location => {
-      const status = statusFor(location.id);
-      const state = status === "PUBLISHED" ? "published" as const : status === "DRAFT" ? "draft" as const : "not_started" as const;
-      return { id: location.id, name: location.shortName, state, publishedOn: state === "published" && revision?.affectedLocationId === location.id ? dayOf(revision.createdAt) : null };
-    }) : [],
-    availability: weekRead ? { submitted: weekRead.availabilitySubmissionSummary.submittedEmployees, eligible: weekRead.availabilitySubmissionSummary.eligibleEmployees } : null,
-  });
-  // Phones: with one location chosen, the line says that location's state ("West Office not planned").
-  const phonePublished = selectedLocation === "all" ? facts.published : facts.locations.find(part => part.location.id === selectedLocation)?.location.name
-    ? `${facts.locations.find(part => part.location.id === selectedLocation)!.location.name} ${({ published: "published", draft: "draft", not_started: "not planned" } as const)[facts.locations.find(part => part.location.id === selectedLocation)!.location.state]}` : facts.published;
   const planHref = (locationId: string) => `/app/schedule?week=${weekStart}&location=${encodeURIComponent(locationId)}${statusFor(locationId) === "DRAFT" ? `&publishCheck=${encodeURIComponent(locationId)}` : "&plan=1"}#schedule-planning`;
-  const deskFacts: ReactNode[] = [
-    ...(facts.locations.length > 3
-      ? [`${facts.locations.filter(part => part.location.state === "published").length} of ${facts.locations.length} locations published`]
-      : facts.locations.map(({ location, text }) => location.state === "published" ? text
-        : <Link key={location.id} className="cm-sched-fact" href={planHref(location.id)}>{text}</Link>)),
-    ...(facts.availabilityShort ? [facts.availabilityShort] : []),
-  ];
+
   const addShiftHref = `/app/schedule/new?week=${weekStart}${selectedLocation === "all" ? "" : `&locationId=${encodeURIComponent(selectedLocation)}`}`;
   // Phones: one row per location in view that the team can't see yet, with Plan or Review (the old Next up card).
   const toPlan = scheduleStatuses && !params.publishCheck && !params.published

@@ -36,6 +36,12 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci
+      - name: Install and audit pinned formatter
+        run: |
+          npm ci --prefix tools/format-runtime --no-audit --no-fund
+          npm audit --prefix tools/format-runtime --audit-level=high
+      - name: Critical module formatting
+        run: npm run format:check
       - name: Unit tests
         run: npm test -- --maxWorkers=1
       - name: Owner advisor pilot guard regressions
@@ -241,20 +247,19 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  phase-d-attendance-ui:
-    name: phase-d-attendance-ui
+  phase-d-browser-suite:
+    name: phase-d-browser-suite (${{ matrix.group }})
     runs-on: ubuntu-24.04
-    # Busy runners took 27-41 min on the Release 1 line (WebKit screenshots, owned PostgreSQL); 40 cut off a passing run.
     timeout-minutes: 50
     steps:
       - name: Checkout exact candidate
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
       - name: Use Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 24.19.0
           cache: npm
@@ -272,7 +277,7 @@ jobs:
         run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
       - name: Install Chromium and WebKit
         timeout-minutes: 8
-        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+        run: "\"$NEVORA_PLAYWRIGHT_BIN\" install --with-deps chromium webkit"
       - name: Install PostgreSQL test runtime
         id: attendance_runtime
         shell: bash
@@ -291,8 +296,9 @@ jobs:
         run: |
           node --import tsx --test scripts/owner-advisor-retirement.check.mts
           node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts
+        if: ${{ matrix.group == 'advisor-lifecycle' }}
       - name: Upload Owner advisor browser evidence
-        if: always()
+        if: ${{ always() && matrix.group == 'advisor-lifecycle' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: owner-advisor-browser-${{ github.event.pull_request.head.sha || github.sha }}
@@ -303,19 +309,19 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Combined company lifecycle and recovery gate
-        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' && matrix.group == 'advisor-lifecycle' }}
         env:
           NEVORA_STEP4_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           NEVORA_STEP4_EVIDENCE: ${{ runner.temp }}/nevora-step4-local
         run: node scripts/step4-local-acceptance.mjs
       - name: Central billing entry and callback gate
-        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' && matrix.group == 'advisor-lifecycle' }}
         env:
           NEVORA_CENTRAL_BILLING_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           NEVORA_CENTRAL_BILLING_EVIDENCE: ${{ runner.temp }}/nevora-step4-local/central-billing
         run: node scripts/central-billing-local-acceptance.mjs
       - name: Upload combined company lifecycle evidence
-        if: always()
+        if: ${{ always() && matrix.group == 'advisor-lifecycle' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: step4-local-${{ github.event.pull_request.head.sha || github.sha }}
@@ -326,13 +332,13 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Exact-SHA D1.3 attendance browser gate
-        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' && matrix.group == 'attendance' }}
         env:
           PHASE_D_ATTENDANCE_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d13-browser-evidence
           PHASE_D_ATTENDANCE_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: npm run test:phase-d:attendance-ui
       - name: Verify SHA-bound report
-        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' && matrix.group == 'attendance' }}
         env:
           PHASE_D_ATTENDANCE_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d13-browser-evidence
           PHASE_D_ATTENDANCE_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -347,19 +353,19 @@ jobs:
           console.log(JSON.stringify({ checkpoint: report.checkpoint, tree: report.tree, checks: report.checks.length, errors: report.errors }, null, 2));
           NODE
       - name: Whole Phase D exact-candidate browser regression
-        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' && matrix.group == 'attendance' }}
         env:
           PHASE_D_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-browser-evidence
           PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: node scripts/phase-d-owned.mjs browser
       - name: Independent Phase D audit remediation regressions
-        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' && matrix.group == 'attendance' }}
         env:
           PHASE_D_REMEDIATION_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-remediation-evidence
           PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: node scripts/phase-d-owned.mjs remediation
       - name: Verify remediation SHA-bound evidence
-        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' && matrix.group == 'attendance' }}
         env:
           PHASE_D_REMEDIATION_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-remediation-evidence
           PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -374,7 +380,7 @@ jobs:
           }
           NODE
       - name: Existing D2 correction browser regression
-        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' && matrix.group == 'corrections' }}
         env:
           PHASE_D2_CORRECTIONS_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d2-browser-evidence
           PHASE_D2_CORRECTIONS_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -384,7 +390,7 @@ jobs:
           node --test scripts/d2-session-authority.check.mjs
           npm run test:phase-d2:corrections-ui
       - name: Existing Clocker lifecycle and recovery browser regression
-        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' && matrix.group == 'clocker' }}
         env:
           PHASE_C_EVIDENCE_DIR: ${{ runner.temp }}/nevora-clocker-browser-evidence
           PHASE_C_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -392,7 +398,7 @@ jobs:
           node scripts/clocker-break-filter-readiness.check.mjs
           node scripts/phase-c-clocker-postgres.mjs --punch-ui
       - name: Verify whole-phase SHA and mandatory UX evidence
-        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' && matrix.group == 'attendance' }}
         env:
           PHASE_D_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-browser-evidence
           PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -407,35 +413,9 @@ jobs:
           }
           console.log(JSON.stringify({checkpoint:report.checkpoint,tree:report.tree,checks:report.checks.length,errors:report.errors}));
           NODE
-      - name: Upload whole Phase D browser evidence
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: phase-d-whole-browser-${{ github.event.pull_request.head.sha || github.sha }}
-          path: |
-            ${{ runner.temp }}/nevora-phase-d-remediation-evidence/**/report.json
-            ${{ runner.temp }}/nevora-phase-d-remediation-evidence/*.png
-            ${{ runner.temp }}/nevora-phase-d-remediation-evidence/**/source-manifest.json
-            ${{ runner.temp }}/nevora-phase-d-remediation-evidence/**/ownership.json
-            ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.json
-            ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.png
-            ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.csv
-            ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.pdf
-            ${{ runner.temp }}/nevora-phase-d-browser-evidence/**/source-manifest.json
-            ${{ runner.temp }}/nevora-phase-d-browser-evidence/**/ownership.json
-            ${{ runner.temp }}/nevora-d2-browser-evidence/*.json
-            ${{ runner.temp }}/nevora-d2-browser-evidence/*.png
-            ${{ runner.temp }}/nevora-d2-browser-evidence/**/source-manifest.json
-            ${{ runner.temp }}/nevora-d2-browser-evidence/**/ownership.json
-            ${{ runner.temp }}/nevora-clocker-browser-evidence/*.json
-            ${{ runner.temp }}/nevora-clocker-browser-evidence/*.png
-            ${{ runner.temp }}/nevora-clocker-browser-evidence/**/source-manifest.json
-            ${{ runner.temp }}/nevora-clocker-browser-evidence/**/ownership.json
-          if-no-files-found: error
-          retention-days: 14
       - name: Upload D1.3 browser evidence
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: ${{ always() && matrix.group == 'attendance' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: d13-attendance-browser-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
@@ -443,6 +423,91 @@ jobs:
             ${{ runner.temp }}/nevora-d13-browser-evidence/*.png
             ${{ runner.temp }}/nevora-d13-browser-evidence/**/source-manifest.json
             ${{ runner.temp }}/nevora-d13-browser-evidence/**/ownership.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Stage exact-source browser group evidence
+        if: ${{ always() && steps.attendance_runtime.outcome == 'success' && matrix.group != 'advisor-lifecycle' }}
+        env:
+          PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          PHASE_D_GROUP_SOURCE: ${{ runner.temp }}
+          PHASE_D_GROUP_OUTPUT: ${{ runner.temp }}/phase-d-partial
+          PHASE_D_GROUP_NAME: ${{ matrix.group }}
+        run: node scripts/phase-d-browser-groups.mjs stage "$PHASE_D_GROUP_NAME"
+      - name: Upload source-bound browser group evidence
+        if: ${{ always() && matrix.group != 'advisor-lifecycle' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase-d-partial-${{ github.event.pull_request.head.sha || github.sha }}-${{ matrix.group }}
+          path: ${{ runner.temp }}/phase-d-partial/
+          if-no-files-found: error
+          retention-days: 14
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        group:
+          - advisor-lifecycle
+          - attendance
+          - corrections
+          - clocker
+  phase-d-attendance-ui:
+    name: phase-d-attendance-ui
+    needs:
+      - phase-d-browser-suite
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24.19.0
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Download exact-run browser group evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: phase-d-partial-*
+          path: ${{ runner.temp }}/phase-d-group-artifacts
+          merge-multiple: false
+      - name: Verify all browser group results and exact evidence inventories
+        env:
+          PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          PHASE_D_GROUP_ARTIFACTS: ${{ runner.temp }}/phase-d-group-artifacts
+          PHASE_D_GROUP_OUTPUT: ${{ runner.temp }}/phase-d-aggregate
+          PHASE_D_GROUP_NEEDS_JSON: ${{ toJSON(needs) }}
+        run: node scripts/phase-d-browser-groups.mjs aggregate
+      - name: Upload whole Phase D browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase-d-whole-browser-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/phase-d-aggregate/nevora-phase-d-remediation-evidence/**/report.json
+            ${{ runner.temp }}/phase-d-aggregate/nevora-phase-d-remediation-evidence/*.png
+            ${{ runner.temp }}/phase-d-aggregate/nevora-phase-d-remediation-evidence/**/source-manifest.json
+            ${{ runner.temp }}/phase-d-aggregate/nevora-phase-d-remediation-evidence/**/ownership.json
+            ${{ runner.temp }}/phase-d-aggregate/nevora-phase-d-browser-evidence/*.json
+            ${{ runner.temp }}/phase-d-aggregate/nevora-phase-d-browser-evidence/*.png
+            ${{ runner.temp }}/phase-d-aggregate/nevora-phase-d-browser-evidence/*.csv
+            ${{ runner.temp }}/phase-d-aggregate/nevora-phase-d-browser-evidence/*.pdf
+            ${{ runner.temp }}/phase-d-aggregate/nevora-phase-d-browser-evidence/**/source-manifest.json
+            ${{ runner.temp }}/phase-d-aggregate/nevora-phase-d-browser-evidence/**/ownership.json
+            ${{ runner.temp }}/phase-d-aggregate/nevora-d2-browser-evidence/*.json
+            ${{ runner.temp }}/phase-d-aggregate/nevora-d2-browser-evidence/*.png
+            ${{ runner.temp }}/phase-d-aggregate/nevora-d2-browser-evidence/**/source-manifest.json
+            ${{ runner.temp }}/phase-d-aggregate/nevora-d2-browser-evidence/**/ownership.json
+            ${{ runner.temp }}/phase-d-aggregate/nevora-clocker-browser-evidence/*.json
+            ${{ runner.temp }}/phase-d-aggregate/nevora-clocker-browser-evidence/*.png
+            ${{ runner.temp }}/phase-d-aggregate/nevora-clocker-browser-evidence/**/source-manifest.json
+            ${{ runner.temp }}/phase-d-aggregate/nevora-clocker-browser-evidence/**/ownership.json
           if-no-files-found: error
           retention-days: 14
 

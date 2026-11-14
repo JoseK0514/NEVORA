@@ -6,10 +6,9 @@ import { join } from "node:path";
 import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
-  BellIcon, CalendarBlankIcon, CalendarXIcon, CaretDownIcon, CaretLeftIcon, CaretRightIcon, ChartBarIcon, ClockIcon,
-  ClockCounterClockwiseIcon, CopyIcon, CurrencyCircleDollarIcon, DotsThreeCircleIcon, ExportIcon, GearSixIcon, HouseIcon,
-  KeyIcon, LockKeyIcon, MagnifyingGlassIcon, MegaphoneIcon, PlusIcon, SlidersHorizontalIcon, TargetIcon, TrayIcon, UserIcon,
-  UsersIcon, UsersThreeIcon, HourglassIcon, ArrowsLeftRightIcon, UserMinusIcon, AirplaneTiltIcon, SquaresFourIcon,
+BellIcon,CalendarBlankIcon,CalendarXIcon,CaretDownIcon,CaretLeftIcon,CaretRightIcon,ChartBarIcon,ClockIcon,
+ClockCounterClockwiseIcon,CopyIcon,CurrencyCircleDollarIcon,DotsThreeCircleIcon,ExportIcon,GearSixIcon,HouseIcon,
+KeyIcon,LockKeyIcon,MagnifyingGlassIcon,MegaphoneIcon,PlusIcon,SlidersHorizontalIcon,TargetIcon,TrayIcon,UsersIcon,UsersThreeIcon,HourglassIcon,UserMinusIcon,AirplaneTiltIcon,SquaresFourIcon
 } from "@phosphor-icons/react/dist/ssr";
 
 const root = process.cwd();

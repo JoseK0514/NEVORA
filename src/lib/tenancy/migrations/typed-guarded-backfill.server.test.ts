@@ -82,7 +82,7 @@ function fixture(specs:RowSpec[]=[],classes:Record<string,string>={},change?:(f:
  return {snapshot,ownership:o.observations,namespaces:n.observations,facts:f.facts};
 }
 const keyContracts=getTypedKeyComparatorContracts(),stockDescriptors=getTypedKeyComparatorStockDescriptors();
-const keyContract=(table:string,label:string)=>keyContracts.find(c=>c.table===table&&c.label===label)!;
+
 const stockDescriptor=(type:string)=>stockDescriptors.find(s=>s.type===type)!;
 const fakeOpclassOid=(type:string)=>String(20000+stockDescriptors.findIndex(s=>s.type===type));
 const fakeColumnCollation=(type:string)=>type==='text'||type.startsWith('char(')||type==='text[]'?'100':'0';

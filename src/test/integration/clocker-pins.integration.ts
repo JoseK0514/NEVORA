@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+
 import { readFile } from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
 import { afterEach, beforeEach, expect, it } from 'vitest';

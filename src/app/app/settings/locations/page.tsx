@@ -7,26 +7,16 @@ import { listLocations, listEmployees } from "@/lib/data/employees";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { listPositions } from "@/lib/data/positions";
 import { listLocationStaffingSettings, listCoverageWindows } from "@/lib/data/schedule-health";
-import { evaluateLocationReadiness, type LocationSetupIssueCode } from "@/lib/scheduling/location-readiness";
+import { evaluateLocationReadiness } from "@/lib/scheduling/location-readiness";
 import { EmptyState, SettingsFrame } from "../wave-c-kit";
 
 type Search = { q?: string | string[]; status?: string | string[] };
 type Filter = "all" | "setup" | "ready" | "inactive";
 const directoryPath = "/app/settings/locations";
 
-function directoryLink(query: string, status: Filter) {
-  const params = new URLSearchParams();
-  if (query) params.set("q", query);
-  if (status !== "all") params.set("status", status);
-  return directoryPath + (params.size ? `?${params}` : "");
-}
 
-function issueAction(code: LocationSetupIssueCode, person = "Employee") {
-  if (code === "NO_ELIGIBLE_EMPLOYEES") return { href: "/app/employees", label: `${person} eligibility` };
-  if (code === "WORKSPACE_INACTIVE") return { href: "/app/settings/workspace", label: "Company profile" };
-  if (code === "LOCATION_INACTIVE") return null;
-  return { href: "/app/schedule/settings", label: "Scheduling rules" };
-}
+
+
 
 export default async function LocationsPage({ searchParams }: { searchParams?: Promise<Search> } = {}) {
   await requireRoles(["OWNER"]);
@@ -46,24 +36,16 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
     }),
     eligibleCount: employees.filter(employee => employee.active && employee.eligibleLocationIds.includes(location.id)).length,
   }));
-  const counts = {
-    all: entries.length,
-    setup: entries.filter(entry => entry.readiness.state === "NEEDS_SETUP").length,
-    ready: entries.filter(entry => entry.readiness.state === "READY").length,
-    inactive: entries.filter(entry => entry.readiness.state === "INACTIVE").length,
-  };
+
   const visible = entries.filter(({ location, readiness }) =>
     `${location.name} ${location.shortName}`.toLowerCase().includes(query.toLowerCase()) &&
     (filter === "all" || readiness.state === ({ setup: "NEEDS_SETUP", ready: "READY", inactive: "INACTIVE" } as const)[filter]),
   );
-  const filters: { value: Filter; label: string }[] = [
-    { value: "all", label: "All" }, { value: "setup", label: "Needs setup" },
-    { value: "ready", label: "Ready" }, { value: "inactive", label: "Inactive" },
-  ];
+
 
   const activeCount = locations.filter(location => location.active).length;
   const place = lower(words.location), places = lower(words.locations);
-  const team = employees.filter(employee => employee.active).length;
+
   const peopleWord = (count: number) => count === 1 ? lower(words.person) : lower(words.people);
   // Release 1 (board O-Locations): one card with its count line, a row per place (name, its state, how many people can
   // work there) and an inline "+ Add location" row, then one grey line. Places carry no address or hours yet, so the rows

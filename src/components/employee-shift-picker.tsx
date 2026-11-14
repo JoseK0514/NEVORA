@@ -101,7 +101,7 @@ export function EmployeeShiftPicker({ options, onSelect }: { options: ShiftOptio
       const previous = now - typeahead.current.time < 700 ? typeahead.current.text : "";
       const text = previous === event.key.toLowerCase() ? previous : previous + event.key.toLowerCase();
       typeahead.current = { text, time: now };
-      const index = options.findIndex((option, index) => {
+      const index = options.findIndex((_option, index) => {
         const candidate = options[(active + index + 1) % options.length];
         return candidate.label.toLowerCase().startsWith(text) || candidate.employeeName.toLowerCase().startsWith(text);
       });

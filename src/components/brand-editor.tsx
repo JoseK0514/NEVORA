@@ -29,12 +29,9 @@ function base64(buffer: ArrayBuffer) {
   return btoa(text);
 }
 const logoUrl = (id: string) => `/api/workspace-presentation/logo/${id}`;
-const changeLabel = (keys: string[]) => {
-  const colour = keys.includes("brand.seed"), logo = keys.includes("brand.logoAssetId");
-  return colour && logo ? "Color and logo changed" : colour ? "Color changed" : logo ? "Logo changed" : "Saved";
-};
 
-export function BrandEditor({ workspaceName, revision, seed, logoAssetId, history, timeZone, sample }: {
+
+export function BrandEditor({ workspaceName, revision, seed, logoAssetId, sample }: {
   workspaceName: string; revision: number; seed: string | null; logoAssetId: string | null; history: History[]; timeZone: string;
   /** The preview's position and location, from the company's own lists ("Barista", "Condado"); sample words when missing. */
   sample?: { position?: string; place?: string };
@@ -62,7 +59,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
   const previewStyle = brandStyle(brand.tokens) as CSSProperties;
   const effectiveSeed = brand.adjustments.some(a => a.code === "grey") ? DEFAULT_SEED : (valid ?? savedSeed);
   const dirty = effectiveSeed !== savedSeed || logo !== logoAssetId;
-  const stamp = (iso: string) => new Intl.DateTimeFormat("en-US", { timeZone, month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(iso)).replace(/ (AM|PM)$/, " $1");
+
 
   async function save() {
     if (sending.current || !valid || busy) return;
@@ -104,8 +101,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
   }
 
   const choose = (hex: string) => { retry.current = null; setDraft(hex); setNotice(null); };
-  const logoChip = logo ? <span className="wc-bp-logo">{/* eslint-disable-next-line @next/next/no-img-element -- immutable same-origin asset */}
-    <img src={logoUrl(logo)} alt="" /></span> : null;
+
   const passing = checks.filter(c => c.pass).length;
 
   // Quiet (v4, approved Oct 23): Color and Logo as rows, then what the team sees. The page's Save (top right) submits.

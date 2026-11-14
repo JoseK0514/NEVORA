@@ -1,4 +1,4 @@
-import Link from "next/link";
+
 import { DEFAULT_WORDS, lower, type WordSlots } from "@/lib/workspace-presentation/words";
 import { MagnifyingGlass, Plus } from "@phosphor-icons/react/dist/ssr";
 import type { Employee, Location, Position } from "@/lib/domain";
