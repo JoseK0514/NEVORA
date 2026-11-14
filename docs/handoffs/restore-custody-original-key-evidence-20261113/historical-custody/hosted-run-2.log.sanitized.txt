@@ -1,0 +1,78 @@
+PASS identity: new isolated target is empty and PostgreSQL 17
+PASS fresh: actual canonical company bootstrap installs atomically over Neon WebSockets
+PASS fresh: occupied target is refused without changing data
+PASS hosted-fresh: Company Access preserves finite scope and denies another location/company access
+node:internal/event_target:1136
+  process.nextTick(() => { throw err; });
+                           ^
+
+Error: Unhandled error. ()
+    at kn.emit (file:///workspace/NEVORA/node_modules/@neondatabase/serverless/index.mjs:316:46)
+    at kn._handleErrorEvent (file:///workspace/NEVORA/node_modules/@neondatabase/serverless/index.mjs:1044:1)
+    at Sn.emit (file:///workspace/NEVORA/node_modules/@neondatabase/serverless/index.mjs:317:79)
+    at S.reportStreamError (file:///workspace/NEVORA/node_modules/@neondatabase/serverless/index.mjs:970:57)
+    at S.emit (file:///workspace/NEVORA/node_modules/@neondatabase/serverless/index.mjs:317:79)
+    at WebSocket.<anonymous> (file:///workspace/NEVORA/node_modules/@neondatabase/serverless/index.mjs:402:1)
+    at [nodejs.internal.kHybridDispatch] (node:internal/event_target:856:20)
+    at WebSocket.dispatchEvent (node:internal/event_target:789:26)
+    at fireEvent (node:internal/deps/undici/undici:14403:14)
+    at #onSocketClose (node:internal/deps/undici/undici:15750:11) {
+  context: ErrorEvent {
+    Symbol(type): 'error',
+    Symbol(kTarget): WebSocket {
+      Symbol(kEvents): SafeMap(4) {
+        'error' => <ref *1> {
+          size: 1,
+          next: Listener {
+            next: undefined,
+            previous: [Circular *1],
+            listener: [Function (anonymous)],
+            flags: 0,
+            callback: [Function (anonymous)]
+          },
+          resistStopPropagation: false
+        },
+        'message' => <ref *2> {
+          size: 1,
+          next: Listener {
+            next: undefined,
+            previous: [Circular *2],
+            listener: [Function (anonymous)],
+            flags: 0,
+            callback: [Function (anonymous)]
+          },
+          resistStopPropagation: false
+        },
+        'close' => <ref *3> {
+          size: 1,
+          next: Listener {
+            next: undefined,
+            previous: [Circular *3],
+            listener: [Function (anonymous)],
+            flags: 0,
+            callback: [Function (anonymous)]
+          },
+          resistStopPropagation: false
+        },
+        'open' => <ref *4> {
+          size: 1,
+          next: Listener {
+            next: undefined,
+            previous: [Circular *4],
+            listener: [Function: handleWebSocketOpen],
+            flags: 0,
+            callback: [Function: handleWebSocketOpen]
+          },
+          resistStopPropagation: false
+        }
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kHandlers): undefined
+    },
+    Symbol(kIsBeingDispatched): false,
+    Symbol(kInPassiveListener): false
+  }
+}
+
+Node.js v24.19.0

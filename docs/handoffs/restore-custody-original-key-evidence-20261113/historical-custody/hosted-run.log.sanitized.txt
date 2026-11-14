@@ -1,0 +1,5 @@
+PASS identity: new isolated target is empty and PostgreSQL 17
+PASS fresh: actual canonical company bootstrap installs atomically over Neon WebSockets
+PASS fresh: occupied target is refused without changing data
+{"code":"PAYROLL_DISABLED","message":"PAYROLL_DISABLED"}
+{"status":"FAIL","passed":3,"failed":0,"project":"morning-salad-93941233"}
