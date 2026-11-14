@@ -3,14 +3,14 @@ import {mutationTransaction} from '../data/transaction-composition';
 import {createHash} from 'node:crypto';
 import type {SqlExecutor,SqlStatement} from '@/lib/notifications/types';
 import type {SessionMutationProof} from '@/lib/shift-changes/types';
-import type {UserRole} from '@/lib/domain';
+import type {UserRole,Workspace} from '@/lib/domain';
 import {neonNotificationExecutor} from '@/lib/data/notification-transactions';
 import {prepareEmployeeProfileMutation,prepareEmployeeCreationMutation} from '@/lib/data/employees';
 
 import {normalizePhoneNumber} from '@/lib/phone';
 import {readOperationalAuthority,operationalScopeStatements,withOperationalCompany} from './operational-scope.server';
 import {parseScopeSelection} from './scope-selection';
-import type {CoreProfileInput,EmployeeCoreAccessCommand,EmployeeCoreAccessReceipt,EmployeeCoreAccessResult,CreateEmployeeWithAccessCommand,ScopeSelection} from './model';
+import type {CoreProfileInput,EmployeeCoreAccessCommand,EmployeeCoreAccessReceipt,EmployeeCoreAccessResult,CreateEmployeeWithAccessCommand,ScopeSelection,OperationalAuthorityView} from './model';
 const roles:UserRole[]=['OWNER','MANAGER','LEAD','EMPLOYEE'];
 const uuid=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(v);
 const text=(v:unknown,max:number):v is string=>typeof v==='string'&&v.length>0&&[...v].length<=max&&!/[\p{Cc}\p{Cf}]/u.test(v);
@@ -154,15 +154,25 @@ export async function createEmployeeWithAccess(proof:SessionMutationProof,value:
  const hash=createHash('sha256').update(JSON.stringify({kind:'CREATE',command:c})).digest('hex');let attempted=false;
  try {
   const prior=await lookup(proof,c.operationId,ex);if(prior)return replay(prior,hash);
-  const actor=await readOperationalAuthority(proof,ex);if(actor.state!=='ready'||actor.scope?.mode!=='COMPANY')return {state:'unavailable'};
-  if(c.employee.role==='MANAGER'&&actor.role==='OWNER'&&!c.initialManagerScope)return invalid('scope','Choose Company or selected locations for the new Manager.');
-  if(c.initialManagerScope&&(actor.role!=='OWNER'||c.employee.role!=='MANAGER'))return invalid('scope','Only an Owner may assign a new Manager scope.');
-  const batch=await prepareEmployeeCreationMutation({...c.employee,email:c.employee.email??undefined,actorEmployeeId:proof.employee.id,proof},ex);
-  const statements:SqlStatement[]=[{text:'SELECT id FROM workspaces WHERE singleton ORDER BY id FOR NO KEY UPDATE',values:[]},...batch.guards,
-   ...operationalScopeStatements(proof,batch.workspace,{kind:'COMPANY'},actor.authority),operationAbsent(batch.workspace.id,proof,c.operationId),...batch.writes,
-   ...(c.initialManagerScope?[scopeAppend(batch.workspace.id,c.employee.id,proof,c.operationId,0,c.initialManagerScope)]:[]),receiptStatement(batch.workspace.id,proof,c.operationId,c.employee.id,hash),...batch.finalAuthority];
-  const index=statements.length-batch.finalAuthority.length-1;
-  attempted=true;const result=await mutationTransaction(ex,statements),receipt=cleanReceipt((result[index]?.[0] as {receipt:unknown}|undefined)?.receipt);
+  const prepared=await prepareEmployeeWithAccessCreation(proof,c,ex);if(prepared.state!=='prepared')return prepared;
+  attempted=true;const result=await mutationTransaction(ex,prepared.statements),receipt=cleanReceipt((result[prepared.receiptIndex]?.[0] as {receipt:unknown}|undefined)?.receipt);
   return receipt?{state:'saved',receipt}:{state:'outcome_unknown',operationId:c.operationId};
  }catch(error){return failure(error,proof,c.operationId,hash,attempted,ex);}
+}
+
+/** Read-only preparation shared by single creation and atomic reviewed imports.
+ * The caller must execute the whole statement list in one mutation transaction;
+ * current actor/catalog guards and the canonical child receipt are retained. */
+export type EmployeeCreationContext={actor:Extract<OperationalAuthorityView,{state:'ready'}>;workspace:Workspace};
+export async function prepareEmployeeWithAccessCreation(proof:SessionMutationProof,value:CreateEmployeeWithAccessCommand,ex:SqlExecutor,context?:EmployeeCreationContext){
+ const c=parseCreateEmployeeWithAccessCommand(value);if(!c)return invalid('employee','Complete all required employee details.');
+ const actor=context?.actor??await readOperationalAuthority(proof,ex);if(actor.state!=='ready'||actor.employeeId!==proof.employee.id||actor.scope?.mode!=='COMPANY')return {state:'unavailable' as const};
+ if(c.employee.role==='MANAGER'&&actor.role==='OWNER'&&!c.initialManagerScope)return invalid('scope','Choose Company or selected locations for the new Manager.');
+ if(c.initialManagerScope&&(actor.role!=='OWNER'||c.employee.role!=='MANAGER'))return invalid('scope','Only an Owner may assign a new Manager scope.');
+ const batch=await prepareEmployeeCreationMutation({...c.employee,email:c.employee.email??undefined,actorEmployeeId:proof.employee.id,proof},ex,context?.workspace);
+ const hash=createHash('sha256').update(JSON.stringify({kind:'CREATE',command:c})).digest('hex');
+ const statements:SqlStatement[]=[{text:'SELECT id FROM workspaces WHERE singleton ORDER BY id FOR NO KEY UPDATE',values:[]},...batch.guards,
+  ...operationalScopeStatements(proof,batch.workspace,{kind:'COMPANY'},actor.authority),operationAbsent(batch.workspace.id,proof,c.operationId),...batch.writes,
+  ...(c.initialManagerScope?[scopeAppend(batch.workspace.id,c.employee.id,proof,c.operationId,0,c.initialManagerScope)]:[]),receiptStatement(batch.workspace.id,proof,c.operationId,c.employee.id,hash),...batch.finalAuthority];
+ return {state:'prepared' as const,statements,receiptIndex:statements.length-batch.finalAuthority.length-1};
 }

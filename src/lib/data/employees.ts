@@ -1,7 +1,7 @@
 import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import {queryRows} from "@/lib/db";
 import {applicationSql} from "@/lib/data/app-sql";
-import type { Employee, UserRole } from "@/lib/domain";
+import type { Employee, UserRole, Workspace } from "@/lib/domain";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
 import { neonNotificationExecutor } from "./notification-transactions";
 import { getWorkspace, workspaceReadGuard } from "./workspaces";
@@ -138,10 +138,10 @@ export type EmployeeCreationMutationInput = {
  * The primary location is always included in eligibility, and only Owners can
  * create another Owner. Profile text/password preparation belongs to the caller.
  */
-export async function prepareEmployeeCreationMutation(input: EmployeeCreationMutationInput, executor?: SqlExecutor) {
+export async function prepareEmployeeCreationMutation(input: EmployeeCreationMutationInput, executor?: SqlExecutor, preparedWorkspace?: Workspace) {
   assertManagementProof(input.proof, input.actorEmployeeId);
   const sql = executor ?? neonNotificationExecutor();
-  const workspace = await getWorkspace(sql);
+  const workspace = preparedWorkspace ?? await getWorkspace(sql);
   const eligible = [...new Set([input.primaryLocationId, ...input.eligibleLocationIds])].sort();
   const positions = [...new Set(input.positionIds ?? [])].sort();
   if (!["OWNER", "MANAGER", "LEAD", "EMPLOYEE"].includes(input.role)) throw new Error('Choose an access role.');
