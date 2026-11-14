@@ -43,7 +43,7 @@ Files: relevant existing data producers and associated tests only; concise factu
 - [x] Commit checked corrections.
 
 ## Task 3 — Verification and handoff
-- [ ] Run the repository test command, type checks, lint and build appropriately; record every failure/skip.
-- [ ] Run the isolated people/setup/invitation journey and relevant existing Rondo local suites, respecting costs and scope.
-- [ ] Publish docs/handoffs/2026-11-14-owner-simplicity.md with exact API examples, tests, source and remaining Claude/browser/hosted work.
-- [ ] Keep development merge subject to exact-source checks and existing branch policy; no main or deployment.
+- [x] Run the repository test command, type checks, lint and build appropriately; record every failure/skip.
+- [x] Run the isolated people/setup/invitation journey and relevant existing Rondo local suites, respecting costs and scope.
+- [x] Publish docs/handoffs/2026-11-14-owner-simplicity.md with exact API examples, tests, source and remaining Claude/browser/hosted work.
+- [x] Keep development merge subject to exact-source checks and existing branch policy; no main or deployment.
