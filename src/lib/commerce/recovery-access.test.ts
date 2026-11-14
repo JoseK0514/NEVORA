@@ -23,3 +23,13 @@ it('does not allow unlisted descendants of a recovery path',async()=>{
   expect((await commerceGate('/api/payroll/statements/approve','POST',unavailable))?.status).toBe(503);
   expect((await commerceGate('/app/my-pay/operations','GET',unavailable))?.status).toBe(503);
 });
+it.each(['restricted','unavailable'] as const)('keeps only the account-deletion read and confirmation reachable when %s',async state=>{
+  const fetcher=vi.fn(async()=>{
+    if(state==='unavailable')throw Error('Synthetic billing outage');
+    return Response.json({state:'restricted',operational:false,validUntil:Date.now()+10000});
+  });
+  for(const method of ['GET','POST'])expect(await commerceGate('/app/account/delete',method,fetcher)).toBeNull();
+  expect(fetcher).not.toHaveBeenCalled();
+  for(const [path,method] of [['/app/account/delete/other','POST'],['/app/account/delete','DELETE'],['/api/employees','POST']])
+    expect((await commerceGate(path,method,fetcher))?.status).toBe(state==='restricted'?402:503);
+});

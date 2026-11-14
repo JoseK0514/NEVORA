@@ -67,15 +67,15 @@ it('does not reinterpret authentication failure as unsupported-role success', as
   expect(state.workspace).not.toHaveBeenCalled();
 });
 
-it.each(['/app/billing','/app/my-pay','/app/payroll-export','/app/pay'])('renders authenticated recovery %s without operational shell reads or parallel sheets',async path=>{
+it.each(['/app/billing','/app/my-pay','/app/payroll-export','/app/pay','/app/account/delete'])('renders authenticated recovery %s without operational shell reads or parallel sheets',async path=>{
  vi.stubEnv('NEVORA_COMMERCE_ENABLED','true');state.recovery=path;
  state.workspace.mockRejectedValue(Error('operational workspace unavailable'));
  const html=renderToStaticMarkup(await layout());
  expect(html).toContain('PRIVATE workflow');expect(html).not.toContain('PRIVATE sheet');expect(html).not.toContain('data-shell');
  expect(state.workspace).not.toHaveBeenCalled();expect(state.proof).not.toHaveBeenCalled();
 });
-it('keeps current session admission before recovery presentation',async()=>{
- vi.stubEnv('NEVORA_COMMERCE_ENABLED','true');state.recovery='/app/billing';state.sessionError=true;
+it.each(['/app/billing','/app/account/delete'])('keeps current session admission before recovery presentation: %s',async path=>{
+ vi.stubEnv('NEVORA_COMMERCE_ENABLED','true');state.recovery=path;state.sessionError=true;
  await expect(layout()).rejects.toThrow('session unavailable');
 });
 

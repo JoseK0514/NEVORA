@@ -43,6 +43,8 @@ it('renders actual recovery routes with current sessions, bounded status reads a
     await route.continue();
    });
    await page.goto(origin+'/app/billing');await page.waitForURL(/\/login(?:\?|$)/);checks.push(engine+': anonymous billing requires normal sign-in');
+   await page.goto(origin+'/app/account/delete');await page.waitForURL(/\/login(?:\?|$)/);
+   expect(new URL(page.url()).searchParams.get('returnTo')).toBe('/app/account/delete');
    await page.goto(origin+'/clocker/access/paused?from=%2Fclocker%2Fmain&reason=billing_status_unavailable&secret=must-not-echo');
    await page.getByRole('heading',{name:'Access could not be checked',exact:true}).waitFor();
    expect(await page.getByRole('link',{name:'Try Clocker again'}).getAttribute('href')).toBe('/clocker/main');
@@ -80,6 +82,27 @@ it('renders actual recovery routes with current sessions, bounded status reads a
     expect(await page.locator('.app-shell').count()).toBe(0);
     expect(requests.filter(path=>/^\/api\/(notifications|employee|company-access|passkeys)/.test(path))).toEqual([]);
    }
+   // Real proxy, layout, normal password login and server action, with no commerce
+   // binding. Each engine owns a distinct person because acceptance ends access.
+   const deletionEmployee='QA-DELETE-'+engine;
+   await app.database.executor.query({text:"INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,'Fictional','Deletion','555-0124','EMPLOYEE','loc-1')",values:[deletionEmployee]});
+   await app.database.executor.query({text:'INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',values:[deletionEmployee,await hashPassword(TEST_PASSWORD)]});
+   await context.clearCookies();await page.goto(origin+'/login?returnTo=%2Fapp%2Faccount%2Fdelete');
+   await page.getByLabel('Employee ID',{exact:true}).fill(deletionEmployee);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();
+   await page.waitForURL(origin+'/app/account/delete');await page.locator('[data-deletion-state="idle"]').waitFor();
+   expect(await page.locator('.app-shell').count()).toBe(0);
+   await page.getByLabel('Enter your password to confirm',{exact:true}).fill('wrong-fictional-password');
+   await page.getByRole('checkbox').check();await page.getByRole('button',{name:'Delete my account',exact:true}).click();
+   await page.locator('[data-deletion-state="wrong_password"]').waitFor();
+   expect(await app.database.executor.query({text:'SELECT reference FROM account_deletion_requests WHERE employee_id=$1',values:[deletionEmployee]})).toEqual([]);
+   await page.getByLabel('Enter your password to confirm',{exact:true}).fill(TEST_PASSWORD);
+   await page.getByRole('checkbox').check();await page.getByRole('button',{name:'Delete my account',exact:true}).click();
+   await page.locator('[data-deletion-state="received"]').waitFor();
+   const reference=await page.locator('.ad-reference').innerText();expect(reference).toMatch(/^DEL-[A-HJ-NP-Z2-9]{8}$/);
+   expect(await app.database.executor.query({text:'SELECT reference FROM account_deletion_requests WHERE employee_id=$1',values:[deletionEmployee]})).toEqual([{reference}]);
+   expect(await app.database.executor.query({text:'SELECT token_hash FROM employee_sessions WHERE employee_id=$1',values:[deletionEmployee]})).toEqual([]);
+   await page.goto(origin+'/app/account/delete');await page.waitForURL(/\/login(?:\?|$)/);
+   checks.push(engine+': billing-unavailable deletion keeps anonymous admission, normal employee sign-in, wrong-password refusal, one saved request and session revocation');
    await context.close();
   }
   expect(errors).toEqual([]);passed=true;

@@ -1,3 +1,5 @@
+import {isCommerceRecoveryRequest} from './recovery-routes';
+
 export type CommerceAuthority = {
   operational: boolean;
   state: string;
@@ -136,6 +138,7 @@ export async function commerceGate(
   request?: Request,
 ): Promise<Response | null> {
   if (!commerceEnabled()) return null;
+  if(isCommerceRecoveryRequest(path,method))return null;
   if(publicOnboardingPath(path))return null;
   if(path===CLOCKER_PAUSED_PATH&&method==='GET')return null;
   if (

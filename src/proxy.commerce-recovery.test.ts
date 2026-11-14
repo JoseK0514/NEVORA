@@ -110,6 +110,24 @@ it('replaces a forged recovery marker with the exact admitted GET route',async()
  expect(response?.headers.get('x-middleware-request-x-nevora-recovery-route')).toBe('/app/billing');
  expect(response?.headers.get('x-middleware-override-headers')).toContain('x-nevora-recovery-route');
 });
+it.each((['restricted','unavailable'] as const).flatMap(state=>['GET','POST'].map(method=>({state,method}))))(
+ 'admits the exact account-deletion $method while $state without a commerce binding',async({state,method})=>{
+  const fetcher=authority(state);
+  fixture.bind.mockRejectedValue(new Error('Synthetic binding unavailable'));
+  const response=await proxy(request('/app/account/delete',{'x-nevora-recovery-route':'/app/forged'},method));
+  expect(response?.headers.get('x-middleware-request-x-nevora-recovery-route')).toBe('/app/account/delete');
+  expect(fixture.bind).not.toHaveBeenCalled();expect(fetcher).not.toHaveBeenCalled();
+ });
+it.each(['/app/account/delete/other','/app/account','/app/settings'])(
+ 'does not extend the deletion exception to a different action: %s',async path=>{
+  authority('unavailable');
+  expect((await proxy(request(path,{'x-nevora-recovery-route':'/app/account/delete'},'POST')))?.status).toBe(503);
+ });
+it.each(['PUT','PATCH','DELETE'])(
+ 'does not admit unsupported account-deletion methods: %s',async method=>{
+  authority('restricted');
+  expect((await proxy(request('/app/account/delete',{},method)))?.status).toBe(402);
+ });
 it.each(['true','false'])('clears a caller recovery marker on operational routes when commerce=%s',async enabled=>{
  vi.stubEnv('NEVORA_COMMERCE_ENABLED',enabled);
  vi.stubGlobal('fetch',async()=>Response.json({state:'paid',operational:true,validUntil:Date.now()+10000}));
