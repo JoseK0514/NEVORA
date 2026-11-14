@@ -185,7 +185,7 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
    await resetPage.locator('#reset-password').fill(employeePassword);await resetPage.locator('#reset-confirm-password').fill(employeePassword);await resetPage.getByRole('button',{name:'Reset password',exact:true}).click();
    await resetPage.getByRole('link',{name:'Sign in with new password',exact:true}).waitFor();
    expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='EMP-1'")).rows).toEqual([{n:0}]);
-   const replay=await resetPage.evaluate(async proof=>(await fetch('/api/auth/reset-access',{method:'POST',headers:{'content-type':'application/json','x-nevora-recovery':'1'},body:JSON.stringify({proof,password:'Fictional forbidden replay password 123!'})})).status,recoveryProof);expect(replay).toBe(400);
+   const replay=await resetPage.evaluate(async(proof:string)=>(await fetch('/api/auth/reset-access',{method:'POST',headers:{'content-type':'application/json','x-nevora-recovery':'1'},body:JSON.stringify({proof,password:'Fictional forbidden replay password 123!'})})).status,recoveryProof);expect(replay).toBe(400);
    await resetPage.getByRole('link',{name:'Sign in with new password',exact:true}).click();await resetPage.getByLabel('Employee ID',{exact:true}).fill('EMP-1');await resetPage.getByLabel('Password',{exact:true}).fill(employeePassword);await resetPage.getByRole('button',{name:'Sign in',exact:true}).click();await resetPage.waitForURL(front+'/app');
    isolatedAccountAccess.push({engine,wrappedAssistedUi:true,fullResetProof:true,normalNewPasswordLogin:true,replayDenied:true});
    await resetContext.close();await resetBrowser.close();
