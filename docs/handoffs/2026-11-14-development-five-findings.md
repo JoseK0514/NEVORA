@@ -17,6 +17,8 @@ The existing protected `phase-d-attendance-ui` context aggregates all groups and
 
 All ten protected context names remain. A successful source requires **23 CI jobs plus Mobile Access**, with **25 CI artifacts plus the mobile artifact**. The original canonical artifact families and semantic verifiers remain required; three additional partial archives transport the split browser evidence. Candidate qualification and a separate actual-development qualification must both pass on the final source.
 
+The failed `5b248d20` candidate's navigation/WebKit/390 cell is retained: its Monday click returned but the dialog wait expired. The unchanged cell passed a focused owned run; the original CI cause remains unproved. A controlled real-app responsive transition demonstrated that the generic form selector can accept the initial editor, whose dialog disappears when the mobile editor replaces it. The navigation driver now waits for the matching selection's ready mobile form before its single click. Four Chromium/WebKit controls reject the initial editor, incomplete or denied reads, and a different selection. Existing dialog deadlines, normal/weekly save assertions, SQL readbacks and all scenario cases remain.
+
 ## Validation and release limits
 
 Before candidate publication, calendar HTTP tests passed 48/48 and the full owned exchange SQL suite passed 178/178. Strict TypeScript checks and the bounded formatter check passed. CI contract and transport-custody controls cover both successful assembly and retention on failed/incomplete execution. Final run IDs, complete unit/build results and artifact inventories are recorded in the delivery receipt; these preliminary results do not qualify a later source automatically.

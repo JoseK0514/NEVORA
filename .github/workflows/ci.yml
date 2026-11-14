@@ -705,6 +705,9 @@ jobs:
       - name: Browser feedback and reviewed-view readiness regressions
         if: ${{ matrix.suite == 'calendar' }}
         run: node scripts/browser-render-readiness.check.mjs
+      - name: Matching mobile availability owner readiness regressions
+        if: ${{ matrix.suite == 'navigation' }}
+        run: node --test scripts/availability-form-readiness.check.mjs
       - name: Actual React private-intent clearance regression
         if: ${{ matrix.suite == 'attention' }}
         run: node scripts/attention-intent-readiness.check.mjs
