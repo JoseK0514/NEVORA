@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-14",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "e1789d098d3eaa510b7c6af20f804fa9629d74e9",
-  "applicationHash": "0df8e808a54e918033d70d22fe7e7d426a242e8613272cb51233b6bc421f7de4",
+  "sourceSha": "7bc2223127b434a989309ea1a0edbec8dba853d6",
+  "applicationHash": "84ba778b4d59cdf0d5240bd7c27bd8d313bf2f65dd6fb3e8f11ee9adc83cf76b",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "f1b50c0792496e3e38a5562fb01b12b5dd0604b99186ac5423adf3092856c626"
@@ -39,7 +39,7 @@
         },
         {
           "path": "src/app/app/employees/[employeeId]/page.tsx",
-          "sha256": "b9737c6395eb33d0ca192aa5bd5df93a3def70662931358ddb6c3f09dc6b39ca"
+          "sha256": "f5daeacace952ddb06e96294d9dcd22e3c913523758c7f45c4706401b4a1a73c"
         },
         {
           "path": "src/components/company-access/employee-invitation-panel.tsx",
@@ -51,7 +51,7 @@
         },
         {
           "path": "src/app/app/schedule/page.tsx",
-          "sha256": "ff8e0e560c13e0aa6a98bd349c8942993c7dbca8cf3188f0129d451b3b52dab3"
+          "sha256": "f3f612b164a01e808ab9e1f393b24f36fbc34b452d5727bf1a9357aca14df103"
         },
         {
           "path": "src/app/app/schedule/publish/page.tsx",
@@ -67,11 +67,11 @@
         },
         {
           "path": "src/components/payroll/payroll-runs.tsx",
-          "sha256": "9616aff214e4947a1d977f82a7a39ec83a860807bbfc7f07320cfc311efa20b5"
+          "sha256": "ae7f88ac6f8626215c88013dd693c1c4657c4c1d123f67d17fad78bbfc0d0cd3"
         },
         {
           "path": "src/lib/payroll/service.ts",
-          "sha256": "b96875e22c889fb89ffc15dbd5aeee927393f3a20fb749e4f6b65fce556b3300"
+          "sha256": "f097ee1cf9cc82fa60bc14de04f15879c83224d5fad4ca1cb420d94af0356f3b"
         },
         {
           "path": "src/lib/payroll/access.ts",
@@ -91,7 +91,7 @@
         },
         {
           "path": "src/components/delegated-time-correction-form.tsx",
-          "sha256": "be1b7a0613927c31257ef4d0838150b1f8b7eeab610ff997a280946189a1f2fd"
+          "sha256": "648f6082f81cc3528cb4d7c6beaec0d468f8bbebba6c729b3daac8059e1fee85"
         },
         {
           "path": "src/lib/payroll-export/service.ts",
@@ -104,7 +104,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "bf630df86a2ac4c6069af694dc07a687c1ecabf96f37286fef983ca407f4ab2e",
+        "sha256": "13ca5a3e35b834966a8debf6715b343cbd37d0726d74ee82beb2f54f8b8f640c",
         "pageCount": 4
       }
     },
@@ -138,11 +138,11 @@
         },
         {
           "path": "src/app/app/schedule/new/page.tsx",
-          "sha256": "f11b00565812f726d87087446b6153982a675f2545472965982bf7079c9383e5"
+          "sha256": "78b27f176020a106d1eb23bae56bd8fced1adf433207df833bcb35155cb68ce6"
         },
         {
           "path": "src/app/app/employees/[employeeId]/page.tsx",
-          "sha256": "b9737c6395eb33d0ca192aa5bd5df93a3def70662931358ddb6c3f09dc6b39ca"
+          "sha256": "f5daeacace952ddb06e96294d9dcd22e3c913523758c7f45c4706401b4a1a73c"
         },
         {
           "path": "src/app/app/schedule/settings/page.tsx",
@@ -150,7 +150,7 @@
         },
         {
           "path": "src/lib/payroll/service.ts",
-          "sha256": "b96875e22c889fb89ffc15dbd5aeee927393f3a20fb749e4f6b65fce556b3300"
+          "sha256": "f097ee1cf9cc82fa60bc14de04f15879c83224d5fad4ca1cb420d94af0356f3b"
         },
         {
           "path": "src/lib/payroll/native/scope.ts",
@@ -170,12 +170,12 @@
         },
         {
           "path": "src/components/delegated-time-correction-form.tsx",
-          "sha256": "be1b7a0613927c31257ef4d0838150b1f8b7eeab610ff997a280946189a1f2fd"
+          "sha256": "648f6082f81cc3528cb4d7c6beaec0d468f8bbebba6c729b3daac8059e1fee85"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "99b2efeb4abd6f48a7e97743bb431e62f8181e9455446723637de6fd9f832a28",
+        "sha256": "da5f8a63893390546562fb218359b31bdc9fa1481c2dae9f57ff1013da467c89",
         "pageCount": 3
       }
     },
@@ -201,7 +201,7 @@
         },
         {
           "path": "src/app/app/schedule/page.tsx",
-          "sha256": "ff8e0e560c13e0aa6a98bd349c8942993c7dbca8cf3188f0129d451b3b52dab3"
+          "sha256": "f3f612b164a01e808ab9e1f393b24f36fbc34b452d5727bf1a9357aca14df103"
         },
         {
           "path": "src/app/app/availability/page.tsx",
@@ -258,7 +258,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "22eb62f3668306779e6718690efb952355dd5ce53aa16c40427c8bb1b2beba95",
+        "sha256": "6d26e212c515ed76f5d20dcf3e1a26e4e77f40cfcfbf6802deb2c68e11f9b32b",
         "pageCount": 3
       }
     },
@@ -329,7 +329,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "bd8bd7f7bc65ecd0952d96b9af6f31c41a8cf1809203e85c164968606f74f340",
+        "sha256": "d8b3fa5f58f4f0b0853c2276cd66489b4588951be79247e9f753f6b4c3f6848d",
         "pageCount": 2
       }
     },
@@ -347,11 +347,11 @@
         },
         {
           "path": "package.json",
-          "sha256": "6853df471076aeb5f829eddac995b79de6f4a1d97d2121071143a36f7af12468"
+          "sha256": "b0ff63686a1b87dfeaef6c612126dae323fe51ac200e7611b30eaa5b0c243be8"
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "4dddcd07e47ba66e841902567cf8733083a3c6522f83a070499d30862cfd726a"
+          "sha256": "45df7409367285a8c641a28d5a83ffb172ea44399f94c007bc833c58bc348c8a"
         },
         {
           "path": "docs/development/developer-guide.md",
@@ -432,7 +432,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "d8e471c9c33eee4626534ecf97cd133e932d3e9af3fc16986a36603336417b42",
+        "sha256": "ccde4bf0d2ac7f1cb89f7c9b6ae24320024970813a961d4b6b6025c4aebf3a87",
         "pageCount": 3
       }
     },
@@ -535,7 +535,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "cd54b2248701a7ce61f88126d4b86c4476e5c655b573c92f8123f7f65d2f8736",
+        "sha256": "31ad5e97c02078ea665534635eea6beb3068965323445b32d1003e683e7796b5",
         "pageCount": 4
       }
     }
