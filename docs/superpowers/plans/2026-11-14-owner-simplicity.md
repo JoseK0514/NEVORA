@@ -37,10 +37,10 @@ Interfaces: previewRoster validates CSV/TSV against readOnboardingSetup; saveOnb
 
 ## Task 2 — Confirmed data clarity
 Files: relevant existing data producers and associated tests only; concise factual corrections in existing consumers are allowed without layout/style changes. Remaining translation/hierarchy goes to Claude.
-- [ ] Reproduce position-source failure and ambiguous calendar payment wording.
-- [ ] Preserve unavailable state, use scheduled-payday wording and clarify headcount populations without changing policy.
-- [ ] Pass affected tests and record UI-only requirements.
-- [ ] Commit checked corrections.
+- [x] Reproduce position-source failure and ambiguous calendar payment wording.
+- [x] Preserve unavailable state, use scheduled-payday wording and clarify headcount populations without changing policy.
+- [x] Pass affected tests and record UI-only requirements.
+- [x] Commit checked corrections.
 
 ## Task 3 — Verification and handoff
 - [ ] Run the repository test command, type checks, lint and build appropriately; record every failure/skip.

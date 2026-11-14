@@ -23,8 +23,11 @@ export default async function EmployeesPage({ searchParams }: {
   if(source.data.mode==='LOCATIONS')return <ScopedEmployeeDirectory data={source.data} observation={scopedObservation(source)}/>;
   const {employees,locations}=source.data;
   const filters = readDirectoryFilters(params, locations);
-  // Each person's detail line names their position, and search matches it; a failed read falls back to the role.
-  const positions = await listPositions({ includeInactive: true }).catch(() => []);
+  // Position names drive both the detail line and search. A failed source must
+  // not become an empty catalogue and silently substitute access roles.
+  let positions: Awaited<ReturnType<typeof listPositions>>;
+  try { positions = await listPositions({ includeInactive: true }); }
+  catch { return <OperationalUnavailable title="Employees unavailable" reason="read_failed"/>; }
   return <ScopedReadFrame observation={scopedObservation(source)}><EmployeeDirectory clockerRecovery={actor.role==='OWNER'} positions={positions} words={wordPreset((await currentPresentation()).words).en} employees={employees} locations={locations} filters={filters}
     visibleEmployees={filterDirectoryEmployees(employees, filters, new Map(positions.map(position => [position.id, position.name])))} showAll={(params as DirectorySearchParams).all === '1'} /></ScopedReadFrame>;
 }

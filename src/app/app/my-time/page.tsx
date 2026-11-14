@@ -32,7 +32,7 @@ export default async function MyTimePage({searchParams}:{searchParams:Promise<{v
   // Signature (phase 1): the band says today's date until the punches arrive; the payday line follows the Clocker note.
   const zone=await getWorkspace().then(workspace=>workspace.timeZone).catch(()=>'UTC');
   const todayLabel=new Intl.DateTimeFormat('en-US',{timeZone:zone,weekday:'long',month:'short',day:'numeric'}).format(new Date());
-  const paidLine=pay?`Paid ${new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'long',month:'short',day:'numeric'}).format(new Date(`${pay.payday}T12:00:00Z`))} for ${pay.period.startDate.slice(0,7)===pay.period.endDate.slice(0,7)?`${shortDate(pay.period.startDate)}–${Number(pay.period.endDate.slice(8))}`:`${shortDate(pay.period.startDate)} – ${shortDate(pay.period.endDate)}`}`:undefined;
+  const scheduledPayLine=pay?`Scheduled payday: ${new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'long',month:'short',day:'numeric'}).format(new Date(`${pay.payday}T12:00:00Z`))} for ${pay.period.startDate.slice(0,7)===pay.period.endDate.slice(0,7)?`${shortDate(pay.period.startDate)}–${Number(pay.period.endDate.slice(8))}`:`${shortDate(pay.period.startDate)} – ${shortDate(pay.period.endDate)}`}`:undefined;
   const today=businessDate(new Date(),zone);let period={startDate:addDays(today,-6),endDate:today};try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{}
   const view=params.view==='cards'?'cards':params.view==='corrections'?'corrections':'records';
   // Corporate (board E-PastTimecards): an Employee's Past timecards open on last week, Monday to Sunday.
@@ -42,6 +42,6 @@ export default async function MyTimePage({searchParams}:{searchParams:Promise<{v
   // Corporate (Release 1): an Employee's Time is its own tab; a Lead's Hours still sits under Pay.
   const parent=session.role==='LEAD'&&mobileTabsForRole(session.role,payroll,{modules:brand.modules}).some(tab=>tab.href==='/app/my-pay')?{href:'/app/my-pay',label:'Pay'}:null;
   // Corporate (Release 1): an Employee sees the kit page on every screen, so the older desktop panel isn't rendered.
-  const panel=session.role==='EMPLOYEE'?null:<EmployeeTimePanel key={authority} authority={authority} corporate={corporate} signature={{todayLabel,payLine:paidLine}} />;
+  const panel=session.role==='EMPLOYEE'?null:<EmployeeTimePanel key={authority} authority={authority} corporate={corporate} signature={{todayLabel,payLine:scheduledPayLine}} />;
   return <ResponsiveEmployeeHours today={today} corporate={session.role==='EMPLOYEE'} tabTitle={session.role==='EMPLOYEE'?'Time':'Hours'} authority={employeeViewAuthority(proof,'hours')} parent={parent} view={view} period={period} entryId={hoursRecordId(params.entry)?params.entry:null} requestId={hoursRequestId(params.requestId)?params.requestId:null} edit={params.edit&&params.edit.length<=500?params.edit:null} filter={params.filter==='decided'?'decided':'waiting'} fromCards={params.from==='cards'}>{panel}</ResponsiveEmployeeHours>;
 }
