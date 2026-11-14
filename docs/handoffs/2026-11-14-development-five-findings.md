@@ -19,7 +19,7 @@ All ten protected context names remain. A successful source requires **23 CI job
 
 ## Validation and release limits
 
-Before candidate publication, focused calendar tests passed 16/16 and the full owned exchange SQL suite passed 178/178. Strict TypeScript checks and the bounded formatter check passed. CI contract and transport-custody controls cover both successful assembly and retention on failed/incomplete execution. Final run IDs, complete unit/build results and artifact inventories are recorded in the delivery receipt; these preliminary results do not qualify a later source automatically.
+Before candidate publication, calendar HTTP tests passed 48/48 and the full owned exchange SQL suite passed 178/178. Strict TypeScript checks and the bounded formatter check passed. CI contract and transport-custody controls cover both successful assembly and retention on failed/incomplete execution. Final run IDs, complete unit/build results and artifact inventories are recorded in the delivery receipt; these preliminary results do not qualify a later source automatically.
 
 A separate reviewer examined the calendar, batching, cleanup, formatter and CI changes. Review caught and corrected failure/cancellation diagnostic retention before freeze. That assessment is a source review, not hosted acceptance or independent closure of release findings.
 
