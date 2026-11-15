@@ -2,8 +2,8 @@
 
 Start here if you are picking this work up in a new session.
 
-Branch: `claude-codex-collab-nevora`. Development is merged up to `cfea6330` (merge commit `ef2692be`).
-Type check is clean, and all 2,860 app and component tests pass.
+Branch: `claude-codex-collab-nevora`. Development is merged up to `18c75692` (merge commit `73767e9c`, Nov 15).
+Type check is clean, and all 2,862 app and component tests pass.
 
 ## What is here
 
