@@ -1,5 +1,5 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-const state = vi.hoisted(() => ({ allowed: vi.fn(async () => true), create: vi.fn(), destroy: vi.fn(), prepare: vi.fn(), credential: vi.fn(), activation: vi.fn(), verify: vi.fn(), activate: vi.fn(), deletion: vi.fn(), admit: vi.fn(), release: vi.fn(), forwarded: null as string | null }));
+const state = vi.hoisted(() => ({ replacement: vi.fn(), envelope: vi.fn(), allowed: vi.fn(async () => true), create: vi.fn(), destroy: vi.fn(), prepare: vi.fn(), credential: vi.fn(), activation: vi.fn(), verify: vi.fn(), activate: vi.fn(), deletion: vi.fn(), admit: vi.fn(), release: vi.fn(), forwarded: null as string | null }));
 vi.mock('@/lib/auth/login-limits', () => ({ passwordLoginAllowed: state.allowed }));
 vi.mock('next/headers', () => ({ headers: async () => new Headers(state.forwarded ? { 'x-forwarded-for': state.forwarded } : {}) }));
 vi.mock('@/lib/auth/login-limits.server', async () => ({ ...(await import('../../lib/auth/login-limits.server')), admitLogin: async (id: string, address: string | null) => ({ admitted: await state.admit(id, address), addressBucket: 1977 }), releaseLoginAddress: state.release }));
@@ -11,6 +11,8 @@ vi.mock('@/lib/notifications/destinations', () => import('../../lib/notification
 vi.mock('@/lib/notifications/logout', () => ({ prepareInstallationForLogin: state.prepare }));
 vi.mock('@/lib/phone', () => import('../../lib/phone'));
 vi.mock('@/lib/account-deletion/requests.server', () => ({ activeDeletionRequest: state.deletion }));
+vi.mock('@/lib/auth/recovery.server', () => ({issueInitialPasswordReplacement:state.replacement}));
+vi.mock('@/lib/workspace-routing/token-envelope.server', () => ({publicWorkspaceToken:state.envelope}));
 import { login, logout } from './actions';
 import { activateAccountAction } from '../activate/actions';
 function form(returnTo?: string) { const f = new FormData(); f.set('employeeId', ' employee '); f.set('password', 'test-password'); f.set('confirmPassword', 'test-password'); f.set('phone', '7875550123'); if (returnTo)
@@ -125,4 +127,16 @@ it('a proven password hands its slot back to the shared network address; a wrong
   expect(state.release).not.toHaveBeenCalled();
   state.verify.mockResolvedValue(true); state.release.mockRejectedValueOnce(new Error('storage failure'));
   await expect(login(form())).rejects.toThrow('redirect:/app');
+});
+
+it('a verified operator password issues only a replacement proof, never an operational session',async()=>{
+ const employee={...(await state.credential()),must_change_password:true};state.credential.mockResolvedValue(employee);
+ state.replacement.mockResolvedValue({state:'issued',proof:'owned-proof',expiresAt:'2030-01-01T00:15:00Z'});state.envelope.mockResolvedValue('owned-envelope');
+ await expect(login(form('/app/requests'))).rejects.toThrow('redirect:/reset-access#proof=owned-envelope');
+ expect(state.replacement).toHaveBeenCalledWith('EMPLOYEE',employee);expect(state.envelope).toHaveBeenCalledWith('RECOVERY','owned-proof',Date.parse('2030-01-01T00:15:00Z'));expect(state.create).not.toHaveBeenCalled();expect(state.prepare).not.toHaveBeenCalled();
+});
+it('replacement issuance failure and a wrong operator password stay signed out',async()=>{
+ state.credential.mockResolvedValue({...(await state.credential()),must_change_password:true});state.replacement.mockResolvedValue({state:'unavailable'});
+ await expect(login(form())).rejects.toThrow('redirect:/login?error=invalid');expect(state.create).not.toHaveBeenCalled();
+ state.replacement.mockClear();state.verify.mockResolvedValue(false);await expect(login(form())).rejects.toThrow('redirect:/login?error=invalid');expect(state.replacement).not.toHaveBeenCalled();
 });

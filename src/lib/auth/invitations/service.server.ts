@@ -1,3 +1,4 @@
+import {assertOperationalAccess,operationalScopeStatements} from '../../company-access/operational-scope.server';
 import 'server-only';
 import {createHash, randomBytes, randomUUID} from 'node:crypto';
 import type {Workspace} from '@/lib/domain';
@@ -82,6 +83,22 @@ async function targetRead(proof: SessionMutationProof, workspace: Workspace, emp
  const rows=await executor.transaction(statements);
  return rows[statements.length-3]?.[0] as Target|undefined ?? null;
 }
+/** Managers can inspect sign-in readiness inside their current scope. Invitation
+ * writes and receipt recovery keep the Owner-only guards above. */
+async function statusTargetRead(proof:SessionMutationProof,workspace:Workspace,employeeId:string,executor:SqlExecutor):Promise<Target|null>{
+ if(proof.employee.role==='OWNER')return targetRead(proof,workspace,employeeId,executor);
+ const access=await assertOperationalAccess(proof,undefined,executor);
+ const footprint=access.scope.mode==='COMPANY'?{kind:'COMPANY'} as const:{kind:'LOCATIONS',locationIds:access.scope.locationIds} as const;
+ const guards=[...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR SHARE',values:[[proof.employee.id,employeeId].sort()]},
+  {text:'LOCK TABLE employee_location_eligibility IN SHARE MODE',values:[]},...operationalScopeStatements(proof,workspace,footprint,access.authority)];
+ const statement=targetStatement(workspace.id,employeeId,proof.employee.id);
+ if(access.scope.mode==='LOCATIONS'){
+  statement.text+=` AND e.primary_location_id=ANY($4::text[]) AND NOT EXISTS(SELECT 1 FROM employee_location_eligibility el WHERE el.employee_id=e.id AND NOT(el.location_id=ANY($4::text[])))`;
+  statement.values=[...statement.values,access.scope.locationIds];
+ }
+ const result=await executor.transaction([...guards,statement,...operationalScopeStatements(proof,workspace,footprint,access.authority)]);
+ return result[guards.length]?.[0] as Target|undefined??null;
+}
 function eligibility(target: Target): Extract<InvitationStatusResult,{state:'ready'}>['eligibility'] {
  return target.self?'SELF_ISSUE_DENIED':!target.active?'INACTIVE':target.credentialed?'ALREADY_ACTIVATED':!emailValid(target.email)?'NO_EMAIL':'INVITABLE';
 }
@@ -119,14 +136,14 @@ async function operationRead(proof: SessionMutationProof, workspace: Workspace, 
 export async function readInvitationStatus(proof: SessionMutationProof, employeeId: string, executor: SqlExecutor=neonNotificationExecutor()): Promise<InvitationStatusResult> {
  if(!safeId(employeeId)) return {state:'unavailable',reason:'access_denied'};
  try {
-  const workspace=await getWorkspace(executor),target=await targetRead(proof,workspace,employeeId,executor);
+  const workspace=await getWorkspace(executor),target=await statusTargetRead(proof,workspace,employeeId,executor);
   if(!target) return {state:'unavailable',reason:'access_denied'};
   const eligible=eligibility(target),deliveryAvailable=invitationDelivery(await workspaceRuntimeEnvironment())!==null;
   return {state:'ready',employeeId:target.employeeId,employeeVersion:target.employeeVersion,eligibility:eligible,
    registeredEmailMasked:maskedEmail(target.email),invitationRevision:target.invitationRevision,
    invitation:target.invitationId && target.invitationState && target.issuedAt && target.expiresAt ? {id:target.invitationId,state:target.invitationState,
     issuedAt:target.issuedAt,expiresAt:target.expiresAt,issuerName:target.issuerName??''}:null,
-   delivery:target.delivery??'UNAVAILABLE',deliveryAvailable,allowedCommands:[...(eligible==='INVITABLE'&&deliveryAvailable?['ISSUE' as const]:[]),...(target.invitationState==='ISSUED'?['REVOKE' as const]:[])],retryAfterMs:null};
+   delivery:target.delivery??'UNAVAILABLE',deliveryAvailable,allowedCommands:proof.employee.role!=='OWNER'?[]:[...(eligible==='INVITABLE'&&deliveryAvailable?['ISSUE' as const]:[]),...(target.invitationState==='ISSUED'?['REVOKE' as const]:[])],retryAfterMs:null};
  } catch {return {state:'unavailable',reason:'access_denied'};}
 }
 /** Recover this actor's historical receipt after an uncertain command response.
@@ -207,7 +224,7 @@ export async function issueOrRevokeInvitation(proof: SessionMutationProof, emplo
   if(!saved) return {state:'outcome_unknown',operationId:command.operationId};
   if(command.action==='REVOKE') return {state:'saved',receipt:saved};
   let outcome:DeliveryState='UNKNOWN';
-  try {const sent=await delivery!.send({registeredEmail:target.email!,proof:bearer!,expiresAt:saved.expiresAt!});if(sent.providerAccepted===true)outcome='PROVIDER_ACCEPTED';}
+  try {const sent=await delivery!.send({employeeId:target.employeeId,registeredEmail:target.email!,proof:bearer!,expiresAt:saved.expiresAt!});if(sent.providerAccepted===true)outcome='PROVIDER_ACCEPTED';}
   catch(error) {if(error && typeof error==='object' && 'deliveryState' in error && error.deliveryState==='FAILED')outcome='FAILED';}
   try {await executor.query({text:'INSERT INTO company_invitation_delivery_events(workspace_id,id,invitation_id,state) VALUES($1,$2,$3,$4)',values:[workspace.id,randomUUID(),invitationId,outcome]});}
   catch {return {state:'outcome_unknown',operationId:command.operationId};}

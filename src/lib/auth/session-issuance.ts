@@ -19,7 +19,7 @@ export function prepareSession(employeeId: string, reviewed: ReviewedLoginCreden
     { text: `SELECT (CASE WHEN EXISTS (
       SELECT 1 FROM employees e JOIN employee_credentials c ON c.employee_id=e.id
       WHERE e.id=$1 AND e.active AND e.updated_at::text=$2
-        AND c.password_hash=$3 AND c.password_updated_at::text=$4
+        AND NOT c.must_change_password AND c.password_hash=$3 AND c.password_updated_at::text=$4
     ) THEN '1' ELSE 'session_login_changed' END)::integer`, values: [employeeId, reviewed.updated_at, reviewed.password_hash, reviewed.password_updated_at] },
   ], insert: { text: "INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,$3)", values: [tokenHash, employeeId, expiresAt.toISOString()] } };
 }

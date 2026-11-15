@@ -100,6 +100,7 @@ const readSessionForToken = cache(async (token: string): Promise<SessionEmployee
        WHERE s.token_hash = $1
          AND s.expires_at > now()
          AND e.active = true
+         AND NOT EXISTS(SELECT 1 FROM employee_credentials c WHERE c.employee_id=e.id AND c.must_change_password)
        LIMIT 1`,
       [hashToken(token)],
     ),
@@ -146,7 +147,7 @@ export async function readSessionMutationProof(): Promise<import('../shift-chang
 /** Same per-render, per-token sharing as readSessionForToken; a missing row still redirects in the caller. */
 const readMutationProofForToken = cache(async (token: string): Promise<import('../shift-changes/types').SessionMutationProof | null> => {
   const sessionTokenHash=hashToken(token);
-  const rows=queryRows<{id:string;first_name:string;last_name:string;role:UserRole;primary_location_id:string}>(await applicationSql().query(`SELECT e.id,e.first_name,e.last_name,e.role,e.primary_location_id FROM employee_sessions s JOIN employees e ON e.id=s.employee_id WHERE s.token_hash=$1 AND s.expires_at>clock_timestamp() AND e.active LIMIT 1`,[sessionTokenHash]));
+  const rows=queryRows<{id:string;first_name:string;last_name:string;role:UserRole;primary_location_id:string}>(await applicationSql().query(`SELECT e.id,e.first_name,e.last_name,e.role,e.primary_location_id FROM employee_sessions s JOIN employees e ON e.id=s.employee_id WHERE s.token_hash=$1 AND s.expires_at>clock_timestamp() AND e.active AND NOT EXISTS(SELECT 1 FROM employee_credentials c WHERE c.employee_id=e.id AND c.must_change_password) LIMIT 1`,[sessionTokenHash]));
   const row=rows[0];
   if(!row) return null;
   return {sessionTokenHash,employee:{id:row.id,firstName:row.first_name,lastName:row.last_name,role:row.role,primaryLocationId:row.primary_location_id}};

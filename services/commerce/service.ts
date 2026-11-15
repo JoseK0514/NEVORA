@@ -245,6 +245,7 @@ export function createCommerce(options: CommerceOptions) {
         await assertCurrentBilling();
         return answer({
           billingAction,
+          subscriptionStatus:business.subscriptionStatus,
           businessId: id,
           businessName: business.profile.businessName ?? null,
           setup: business.state,

@@ -12,10 +12,10 @@ export function invitationDelivery(env:Record<string,string|undefined>=process.e
  if(!readFeatureFlags(env).invitationDelivery)return null;
  const mail=validatedMailTransport(env);
  if(!mail)return null;
- return {async send({registeredEmail,proof,expiresAt}) {
+ return {async send({registeredEmail,proof,expiresAt,employeeId}) {
   if(!validRegisteredEmail(registeredEmail)||!/^[A-Za-z0-9_-]{43}$/.test(proof)||Buffer.from(proof,'base64url').toString('base64url')!==proof||!Number.isFinite(Date.parse(expiresAt)))throw new InvitationDeliveryError('FAILED');
   try {
-   const email=invitationEmail(`${mail.origin}/activate#proof=${await publicWorkspaceToken('INVITATION',proof,Date.parse(expiresAt))}`);
+   const email=invitationEmail(`${mail.origin}/activate#proof=${await publicWorkspaceToken('INVITATION',proof,Date.parse(expiresAt))}`,employeeId);
    const result=await mail.sendRegistered(registeredEmail,email.subject,email.text);
    const accepted=result.accepted;
    if(accepted?.length!==1||accepted[0]?.toLowerCase()!==registeredEmail.toLowerCase())throw new InvitationDeliveryError('UNKNOWN');

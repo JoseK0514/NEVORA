@@ -126,7 +126,7 @@ export async function handleClockerSetup(request: Request, locationKey: string, 
     const policy=await readClockerCommercePolicy();
     const connected = await reconcile();
     if (connected) return connected;
-    if(policy.mode==='finish_shift')return failure({status:402,code:'SETUP_UNAVAILABLE',error:'New tablet setup is paused. Use an already registered tablet to finish an existing shift.'});
+    if(policy.mode==='finish_shift')return failure({status:402,code:'NEW_TABLET_SETUP_PAUSED',error:'New tablet setup is paused. Use an already registered tablet to finish an existing shift.'});
     assertCommercePolicyCurrent(policy);
     if (input.step === 'status') return response({ state: 'unregistered' });
     if (input.step === 'prepare') {

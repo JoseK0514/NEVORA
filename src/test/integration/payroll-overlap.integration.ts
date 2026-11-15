@@ -8,8 +8,8 @@ import { failure } from '../../lib/payroll/http';
 import { workerOnce } from '../../lib/payroll/worker';
 
 let db: Awaited<ReturnType<typeof createDisposableFoundationDatabase>>;
-beforeEach(async () => { process.env.NEVORA_PAYROLL_ENABLED = 'true'; db = await createDisposableFoundationDatabase({ mode: 'current-runtime' }); });
-afterEach(async () => { await db?.dispose(); delete process.env.NEVORA_PAYROLL_ENABLED; });
+beforeEach(async () => { process.env.NEVORA_PAYROLL_ENABLED = 'true'; process.env.NEVORA_PAYROLL_CALCULATION_MODE='native_provisional'; db = await createDisposableFoundationDatabase({ mode: 'current-runtime' }); });
+afterEach(async () => { await db?.dispose(); delete process.env.NEVORA_PAYROLL_ENABLED; delete process.env.NEVORA_PAYROLL_CALCULATION_MODE; });
 async function captureFailure(action: () => Promise<unknown>) {
     try { await action(); throw Error('Expected payroll rejection'); }
     catch (error) { if (error instanceof Error && error.message === 'Expected payroll rejection') throw error; return error; }

@@ -1,7 +1,7 @@
 /** Presentation routing only. Every page and API retains its own authorization. */
 export const RECOVERY_ROUTE_HEADER = 'x-nevora-recovery-route';
 export function isCommerceRecoveryRoute(path: string | null): boolean {
-  return path !== null && ['/app/billing', '/app/payroll-export', '/app/my-pay', '/app/pay', '/app/account/delete'].includes(path);
+  return path !== null && ['/app/billing', '/app/payroll-export', '/app/my-pay', '/app/account/delete'].includes(path);
 }
 
 /** The deletion server action retains its session/password/limiter checks.

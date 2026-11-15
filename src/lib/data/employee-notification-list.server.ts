@@ -1,3 +1,4 @@
+import {notificationListPresentation} from '../notifications/list-presentation';
 import {addDays,isValidIsoDate} from '../date-utils';
 import 'server-only';
 import {activePresentationSql,readActivePresentation} from '../workspace-presentation/service';
@@ -216,7 +217,7 @@ async function readNotificationObservation(proof:SessionMutationProof,environmen
     const read=receiptKind?receipts.some(row=>row.source_kind===receiptKind&&row.source_id===source.source.id&&row.source_version===receiptVersion):null;
     const communication=source.kind==='COMMUNICATION'?statuses.find(row=>row.sourceId===source.source.id)??null:null;
     const display=projectNotificationDisplayState(source,proof.employee.id,read,communication);if(display.actionState==='unavailable')partial=true;
-    items.push({id:intent.id,label:labels[intent.source.kind as typeof supported[number]],at:intent.dueAt,href,subject:notificationSubject(source),...display});
+    items.push({id:intent.id,...notificationListPresentation(intent,source,labels[intent.source.kind as typeof supported[number]]),at:intent.dueAt,href,subject:notificationSubject(source),...display});
    }
    return {items,coverage:partial?'partial' as const:'complete' as const,expires};
   }

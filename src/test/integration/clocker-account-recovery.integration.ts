@@ -1,7 +1,7 @@
 import {beforeEach,afterEach,it,expect,vi} from 'vitest';
 import {createHash,randomBytes,randomUUID} from 'node:crypto';
 import {createPunchFixture} from './clocker-punch-fixture';
-import {issueAssistedRecovery,requestPasswordRecovery,resetPasswordWithProof} from '../../lib/auth/recovery.server';
+import {issueInitialPasswordReplacement,issueAssistedRecovery,requestPasswordRecovery,resetPasswordWithProof} from '../../lib/auth/recovery.server';
 import {hashPassword,verifyPassword} from '../../lib/auth/password';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 vi.mock('next/headers',()=>({cookies:async()=>({set:vi.fn()})}));
@@ -11,7 +11,7 @@ import {submitTimeCorrection,reviewTimeCorrection} from '../../lib/time-correcti
 import {createSession} from '../../lib/auth/session';
 let f:Awaited<ReturnType<typeof createPunchFixture>>;
 const owner:SessionMutationProof={employee:{id:'c34-owner',role:'OWNER',firstName:'Owner',lastName:'QA',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
-beforeEach(async()=>{f=await createPunchFixture({breaks:true,companyAccess:true});const old=await hashPassword('Fictional previous password');await f.q('INSERT INTO employee_credentials(employee_id,password_hash) SELECT id,$1 FROM employees',[old]);await f.q("UPDATE employees SET email='avery@example.invalid' WHERE id='c34-a'; INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('b',64),'c34-a',now()+interval '1 day'),(repeat('c',64),'c34-a',now()+interval '1 day'); INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('UX1-S','loc-1','2030-10-07','DRAFT','c34-owner'); INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('UX1-D','UX1-S','c34-a','2030-10-07','08:00','12:00');");});
+beforeEach(async()=>{f=await createPunchFixture({breaks:true,companyAccess:true});const old=await hashPassword('Fictional previous password');await f.q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) SELECT id,$1,false FROM employees',[old]);await f.q("UPDATE employees SET email='avery@example.invalid' WHERE id='c34-a'; INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('b',64),'c34-a',now()+interval '1 day'),(repeat('c',64),'c34-a',now()+interval '1 day'); INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('UX1-S','loc-1','2030-10-07','DRAFT','c34-owner'); INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('UX1-D','UX1-S','c34-a','2030-10-07','08:00','12:00');");});
 afterEach(async()=>{await f?.db.dispose();});
 async function issued(){const r=await issueAssistedRecovery(owner,'c34-a','Verified in person using established workplace process.',f.db.executor);if(r.state!=='issued')throw Error('Fixture proof not issued');return r;}
 it('UX-01 stores only a hashed expiring proof and validates the registered channel without enumeration',async()=>{
@@ -76,4 +76,28 @@ it('P1 a failed notice never undoes the reset, and a person without an email is 
  expect(await resetPasswordWithProof(p.proof,'Fictional NEW password',f.db.executor,{send:vi.fn(),notifyReset:failing})).toEqual({state:'reset'});expect(failing).toHaveBeenCalledOnce();
  await f.q("UPDATE employees SET email=NULL WHERE id='c34-a'");const quiet=vi.fn(async()=>{});p=await issued();
  expect(await resetPasswordWithProof(p.proof,'Fictional newer password',f.db.executor,{send:vi.fn(),notifyReset:quiet})).toEqual({state:'reset'});expect(quiet).not.toHaveBeenCalled();
+});
+
+async function initialReplacement(){
+ await f.q("UPDATE employee_credentials SET must_change_password=true WHERE employee_id='c34-a'");
+ const [reviewed]=await f.q<{updated_at:string;password_hash:string;password_updated_at:string}>("SELECT e.updated_at::text,c.password_hash,c.password_updated_at::text FROM employees e JOIN employee_credentials c ON c.employee_id=e.id WHERE e.id='c34-a'");
+ return {reviewed,issued:await issueInitialPasswordReplacement('c34-a',reviewed,f.db.executor)};
+}
+it('operator password requires replacement before session issuance; the proof is single-use and cannot reuse the password',async()=>{
+ const {reviewed,issued:p}=await initialReplacement();expect(p.state).toBe('issued');if(p.state!=='issued')throw Error('Expected proof');
+ await expect(createSession('c34-a',reviewed)).rejects.toThrow('session_login_changed');
+ expect(await f.q("SELECT method,actor_employee_id,attestation FROM password_recovery_proofs")).toEqual([{method:'INITIAL_PASSWORD',actor_employee_id:null,attestation:null}]);
+ expect(await resetPasswordWithProof(p.proof,'Fictional previous password',f.db.executor)).toEqual({state:'invalid'});
+ expect(await resetPasswordWithProof(p.proof,'Fictional replacement password',f.db.executor)).toEqual({state:'reset'});
+ expect(await f.q("SELECT must_change_password FROM employee_credentials WHERE employee_id='c34-a'")).toEqual([{must_change_password:false}]);
+ expect(await f.q("SELECT count(*)::int AS n FROM employee_sessions WHERE employee_id='c34-a'")).toEqual([{n:0}]);
+ expect(await resetPasswordWithProof(p.proof,'Another replacement password',f.db.executor)).toEqual({state:'invalid'});
+});
+it('initial replacement proofs bind the reviewed password and lifecycle and retire their predecessors',async()=>{
+ const {reviewed,issued:first}=await initialReplacement();expect(first.state).toBe('issued');if(first.state!=='issued')throw Error('Expected proof');
+ const second=await issueInitialPasswordReplacement('c34-a',reviewed,f.db.executor);expect(second.state).toBe('issued');if(second.state!=='issued')throw Error('Expected proof');
+ expect(await resetPasswordWithProof(first.proof,'Fictional replacement password',f.db.executor)).toEqual({state:'invalid'});
+ await f.q("UPDATE employee_credentials SET password_updated_at=clock_timestamp() WHERE employee_id='c34-a'");
+ expect((await issueInitialPasswordReplacement('c34-a',reviewed,f.db.executor)).state).toBe('unavailable');
+ expect(await resetPasswordWithProof(second.proof,'Fictional replacement password',f.db.executor)).toEqual({state:'invalid'});
 });

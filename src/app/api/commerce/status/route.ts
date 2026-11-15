@@ -1,3 +1,4 @@
+import {getWorkspace} from '@/lib/data/workspaces';
 import { readSessionMutationProof } from "@/lib/auth/session";
 import { readBillingOwnerBinding } from "@/lib/commerce/owner-binding";
 import { currentCommerceConnection, commerceEnabled, fetchCommerceAuthority } from "@/lib/commerce/access";
@@ -44,9 +45,10 @@ export async function GET(request: Request) {
     if (!current || current.business_id !== initial.business_id || current.owner_generation !== initial.owner_generation)
       return error("owner_required", 403);
     await connection.assertCurrent?.();
+    const workspace=await getWorkspace();
     const observed=Date.now(),validForMs=Math.floor(Math.min(BILLING_SNAPSHOT_LIFETIME_MS,authority.validUntil-observed));
     if (validForMs <= 0) throw Error("invalid_commerce_authority");
-    return Response.json({...parseCommerceStatus(authority),observedAt:new Date(observed).toISOString(),validForMs}, { headers });
+    return Response.json({...parseCommerceStatus(authority),timeZone:workspace.timeZone,observedAt:new Date(observed).toISOString(),validForMs}, { headers });
   } catch (failure) {
     reportServerError(failure, {route: '/api/commerce/status'});
     return error("billing_status_unavailable", 503);

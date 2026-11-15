@@ -1,4 +1,5 @@
 import "server-only";
+import {assertNativeCalculationEnabled} from '../calculation-mode';
 import type { SqlExecutor, SqlStatement } from "../../notifications/types";
 import type { SessionMutationProof } from "../../shift-changes/types";
 import { neonNotificationExecutor } from "../../data/notification-transactions";
@@ -32,6 +33,7 @@ export async function saveNativeProfile(proof: SessionMutationProof, value: unkn
     const prior = await saved(proof, c, ex);
     if (prior)
         return prior;
+    if(c.action!=='SET_MANAGER_SCOPE')assertNativeCalculationEnabled();
     const employeeId = c.action === "SAVE_NATIVE_PROFILE" ? c.configuration.employeeId : c.employeeId, revision = c.expectedRevision + 1;
     const receipt: NativeProfileReceipt = { operationId: c.operationId, action: c.action, employeeId, revision };
     const mutations: SqlStatement[] = [member(employeeId)];

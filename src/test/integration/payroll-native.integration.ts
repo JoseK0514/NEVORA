@@ -1,4 +1,4 @@
-import { newRun, command } from "../../lib/payroll/service";
+import { newRun, command, readPayrollCapabilities } from "../../lib/payroll/service";
 import type { SqlExecutor } from "../../lib/notifications/types";
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -12,11 +12,51 @@ const proof: SessionMutationProof = { employee: { id: "c34-owner", role: "OWNER"
 let f: Awaited<ReturnType<typeof createPunchFixture>>;
 beforeEach(async () => {
     process.env.NEVORA_PAYROLL_ENABLED = "true";
+    process.env.NEVORA_PAYROLL_CALCULATION_MODE = "native_provisional";
     // Native payroll finalizes time through current operational authorization.
     // Adopt Company Access after the fixture's real employee census is seeded.
     f = await createPunchFixture({ companyAccess: true });
 });
-afterEach(async () => { await f?.db.dispose(); delete process.env.NEVORA_PAYROLL_ENABLED; });
+afterEach(async () => { await f?.db.dispose(); delete process.env.NEVORA_PAYROLL_ENABLED; delete process.env.NEVORA_PAYROLL_CALCULATION_MODE; });
+
+it('prepares external amounts by default even when native tables exist, including a 2027 payday',async()=>{
+ delete process.env.NEVORA_PAYROLL_CALCULATION_MODE;
+ expect((await readPayrollCapabilities(proof,f.db.executor)).internalCalculatorAvailable).toBe(false);
+ const operationId=randomUUID(),period={startDate:'2026-12-21',endDate:'2026-12-27'},payday='2027-01-01';
+ const result=await command(proof,{action:'PREPARE',operationId,period,payday},f.db.executor);
+ const [row]=await f.q<{payload:import('../../lib/payroll/contracts').PayrollRun}>('SELECT payload FROM payroll_runs_current WHERE run_id=$1::uuid',[result.runId]);
+ expect(row.payload.sourceAuthority).toBe('PROVIDER_IMPORT');expect(row.payload.status).toBe('WAITING_FOR_AMOUNTS');
+ expect(row.payload.nativeCalculation).toBeUndefined();
+ expect(await f.q('SELECT count(*)::int n FROM native_payroll_ledger')).toEqual([{n:0}]);
+});
+
+it('blocks native financial profile changes in external mode without blocking Owner-issued Manager scope',async()=>{
+ process.env.NEVORA_PAYROLL_CALCULATION_MODE='external';
+ await expect(saveNativeProfile(proof,{action:'SAVE_NATIVE_PROFILE',operationId:randomUUID(),reason:'Owned regression',expectedRevision:0,configuration:configuration()},f.db.executor)).rejects.toThrow('NATIVE_CALCULATION_DISABLED');
+ await f.q("UPDATE employees SET role='MANAGER' WHERE id='c34-b'");
+ await expect(saveNativeProfile(proof,{action:'SET_MANAGER_SCOPE',operationId:randomUUID(),reason:'Import review access',expectedRevision:0,employeeId:'c34-b',review:true,approve:false,locationIds:['loc-1']},f.db.executor)).resolves.toMatchObject({action:'SET_MANAGER_SCOPE'});
+});
+
+it('worker preparation defaults to external amounts with native schema installed',async()=>{
+ delete process.env.NEVORA_PAYROLL_CALCULATION_MODE;
+ const job=randomUUID(),period={startDate:'2026-12-21',endDate:'2026-12-27'},payday='2027-01-01';
+ await f.q("INSERT INTO payroll_jobs(id,workspace_id,kind,business_key,payload) SELECT $1::uuid,id,'PREPARE',$2,$3::jsonb FROM workspaces WHERE singleton",[job,'external-worker-'+job,JSON.stringify({period,payday})]);
+ await workerOnce(f.db.executor);
+ const [row]=await f.q<{payload:import('../../lib/payroll/contracts').PayrollRun}>('SELECT payload FROM payroll_runs_current WHERE run_id=$1::uuid',[job]);
+ expect(row.payload).toMatchObject({sourceAuthority:'PROVIDER_IMPORT',status:'WAITING_FOR_AMOUNTS'});
+ expect(await f.q('SELECT status FROM payroll_jobs WHERE id=$1::uuid',[job])).toEqual([{status:'SUCCEEDED'}]);
+});
+
+it('mode change refuses new native calculations and approval while preserving historical receipts',async()=>{
+ await nativeFixture();const prepared=await preparedNative();
+ process.env.NEVORA_PAYROLL_CALCULATION_MODE='external';
+ for(const commandBody of [
+  {action:'RECALCULATE',operationId:randomUUID(),runId:prepared.payload.id,expectedRevision:prepared.payload.revision},
+  {action:'APPROVE',operationId:randomUUID(),runId:prepared.payload.id,expectedRevision:prepared.payload.revision,reviewToken:prepared.payload.reviewToken},
+ ])await expect(command(proof,commandBody,f.db.executor)).rejects.toThrow('NATIVE_CALCULATION_DISABLED');
+ await expect(nativeCapture()).rejects.toThrow('NATIVE_CALCULATION_DISABLED');
+ expect(await f.q('SELECT count(*)::int n FROM native_payroll_ledger')).toEqual([{n:0}]);
+});
 function configuration() { const i = input(); i.wages[0].locationIds = ["loc-1"]; i.wages[0].workweekPolicy!.employeeId = "c34-a"; return { schema: "NEVORA_NATIVE_CONFIGURATION_V1" as const, employeeId: "c34-a", wages: i.wages, tax: i.tax, deductions: i.deductions }; }
 it("upgrades payroll additively and preserves append-only profile revisions/exact retries", async () => { const c = { action: "SAVE_NATIVE_PROFILE", operationId: randomUUID(), reason: "Actual wage facts reviewed", expectedRevision: 0, configuration: configuration() }; const r = await saveNativeProfile(proof, c, f.db.executor); expect(r.revision).toBe(1); expect(await saveNativeProfile(proof, c, f.db.executor)).toEqual(r); expect((await nativeProfiles(proof, f.db.executor)).configurations[0].wages[0].hourlyRateMinor).toBe("2000"); await expect(saveNativeProfile(proof, { ...c, reason: "Changed retry" }, f.db.executor)).rejects.toThrow("CONFLICT"); await expect(f.q("DELETE FROM native_payroll_profile_revisions")).rejects.toThrow("immutable"); await expect(f.q("TRUNCATE native_payroll_profile_revisions")).rejects.toThrow("immutable"); });
 it("serializes competing revisions with one winner", async () => { const c = { action: "SAVE_NATIVE_PROFILE", operationId: randomUUID(), reason: "First facts", expectedRevision: 0, configuration: configuration() }; const results = await Promise.allSettled([saveNativeProfile(proof, c, f.db.executor), saveNativeProfile(proof, { ...c, operationId: randomUUID(), reason: "Competing facts" }, f.db.executor)]); expect(results.filter(r => r.status === "fulfilled")).toHaveLength(1); expect(await f.q("SELECT count(*)::int n FROM native_payroll_profile_revisions")).toEqual([{ n: 1 }]); });

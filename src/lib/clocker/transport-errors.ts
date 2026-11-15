@@ -1,5 +1,6 @@
 /** Stable, public PIN/setup failures. Never encode employee or enrollment details. */
 export const CLOCKER_TRANSPORT_ERRORS = {
+  "NEW_TABLET_SETUP_PAUSED": "New tablet setup is paused. Use a registered tablet to finish an existing shift.",
   "SETUP_UNAVAILABLE": "Clocker setup is not configured for this environment.",
   "ORIGIN_REJECTED": "Open Clocker directly on this site and try again.",
   "LOCATION_INVALID": "Choose a valid Clocker location.",

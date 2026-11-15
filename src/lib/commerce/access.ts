@@ -160,8 +160,7 @@ export async function commerceGate(
         path.startsWith("/api/payroll/documents/") ||
         path === "/app/payroll-export" ||
         path === "/app/my-pay" ||
-        path === "/app/billing" ||
-        path === "/app/pay"))
+        path === "/app/billing"))
   )
     return null;
   try {

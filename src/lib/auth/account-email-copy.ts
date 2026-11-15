@@ -5,10 +5,11 @@ export type AccountEmail = { subject: string; text: string };
 
 const both = (subject: [string, string], en: string, es: string): AccountEmail => ({ subject: `${subject[0]} / ${subject[1]}`, text: `${en}\n\n—\n\n${es}` });
 
-export function invitationEmail(link: string): AccountEmail {
+export function invitationEmail(link: string, employeeId?:string): AccountEmail {
+  const id=employeeId?.trim();if(id&&(/[\u0000-\u001f\u007f]/.test(id)||id.length>200))throw Error("Invalid invitation identity");
   return both(["Activate your NEVORA account", "Activa tu cuenta de NEVORA"],
-    `Your Owner invited you to activate your NEVORA account. This single-use link expires in 7 days.\n\n${link}\n\nChoose your password, then sign in normally. If you did not expect this invitation, contact your Owner.`,
-    `El dueño de tu empresa te invitó a activar tu cuenta de NEVORA. Este enlace es de un solo uso y vence en 7 días.\n\n${link}\n\nElige tu contraseña y luego inicia sesión como siempre. Si no esperabas esta invitación, comunícate con el dueño de tu empresa.`);
+    `Your Owner invited you to activate your NEVORA account. This single-use link expires in 7 days.\n\n${link}\n\n${id?`Employee ID: ${id}\n\n`:``}Choose your password, then sign in normally. If you did not expect this invitation, contact your Owner.`,
+    `El dueño de tu empresa te invitó a activar tu cuenta de NEVORA. Este enlace es de un solo uso y vence en 7 días.\n\n${link}\n\n${id?`ID de empleado: ${id}\n\n`:``}Elige tu contraseña y luego inicia sesión como siempre. Si no esperabas esta invitación, comunícate con el dueño de tu empresa.`);
 }
 
 export function recoveryEmail(link: string): AccountEmail {

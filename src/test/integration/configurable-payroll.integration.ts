@@ -374,6 +374,8 @@ it("nonzero finalized time imports exact authoritative values, corrections link 
     (x) => x.id === correction.runId,
   )!;
   expect(r.correctionOf).toBe(seeded.runId);
+  expect(r.correctionDelta?.totalNetMinor).toBe('0');
+  expect(r.correctionDelta?.employees.find(x=>x.employeeId===seeded.ids.a)).toMatchObject({previousNetMinor:'87660',netMinor:'87660',deltaNetMinor:'0'});
   expect(r.settingsRevision).toBe(2);
   expect(r.rows!.find((x) => x.employeeId === seeded.ids.a)!.netMinor).toBe(
     "87660",

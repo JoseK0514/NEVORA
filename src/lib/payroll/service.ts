@@ -1,4 +1,7 @@
+import {openPeriod} from './calendar';
+import {correctionDelta} from './correction-delta';
 import {readFeatureFlags} from '../feature-flags';
+import {readPayrollCalculationMode,assertNativeCalculationEnabled} from './calculation-mode';
 /**
  * Payroll application commands and read projections. Mutations persist immutable run
  * revisions and an actor-scoped operation receipt in one guarded transaction; parsing
@@ -77,7 +80,7 @@ async function capabilities(proof: SessionMutationProof, ex: SqlExecutor): Promi
         canConfigure: r.owner,
         canReview: r.owner || r.review,
         canApprove: r.owner || r.approve,
-        internalCalculatorAvailable: await (await import("./native/source.server")).nativeSchemaAvailable(ex),
+        internalCalculatorAvailable: readPayrollCalculationMode()==='native_provisional' && await (await import("./native/source.server")).nativeSchemaAvailable(ex),
         bankCompatibility: "UNVERIFIED",
         noticeDelivery: payrollNoticeDelivery(),
     };
@@ -222,6 +225,12 @@ export function documentProjection(d: {
         published: d.published,
     };
 }
+/** Calendar guidance for preparation; no hours or amounts are calculated. */
+export async function currentPayrollPeriod(proof:SessionMutationProof,ex:SqlExecutor=neonNotificationExecutor()){
+ const [row]=await guarded<{today:string;timeZone:string;schedule:import('./contracts').PayrollPreferences['schedule']|null;settingsRevision:number|null}>(proof,'REVIEW',q(`SELECT (clock_timestamp() AT TIME ZONE w.time_zone)::date::text AS today,w.time_zone AS "timeZone",p.payload->'preferences'->'schedule' AS schedule,p.revision AS "settingsRevision" FROM workspaces w LEFT JOIN LATERAL(SELECT ps.payload,ps.revision FROM payroll_setting_revisions ps WHERE ps.workspace_id=w.id AND ps.effective_from<=(clock_timestamp() AT TIME ZONE w.time_zone)::date ORDER BY ps.effective_from DESC,ps.revision DESC LIMIT 1)p ON true WHERE w.id=${ws}`),ex);
+ if(!row?.schedule)return null;const current=openPeriod(row.schedule,row.today);
+ return current?{...current,asOfDate:row.today,timeZone:row.timeZone,settingsRevision:row.settingsRevision!}:null;
+}
 export async function runs(proof: SessionMutationProof, ex: SqlExecutor = neonNotificationExecutor()): Promise<PayrollRunsResponse> {
     const rows = await guarded<{
         payload: PayrollRun;
@@ -238,12 +247,15 @@ export async function runs(proof: SessionMutationProof, ex: SqlExecutor = neonNo
     const jobs = await guarded<PayrollJob>(proof, "REVIEW", q(`SELECT id::text,run_id::text AS "runId",kind,status,attempts,error,CASE WHEN kind='REMINDER' AND status='SUCCEEDED' THEN (SELECT CASE WHEN n.payload->>'delivery'='NOT_SENT' THEN 'NOT_SENT_STUB' ELSE n.payload->>'delivery' END FROM payroll_notice_receipts n WHERE n.workspace_id=payroll_jobs.workspace_id AND n.business_key=payroll_jobs.business_key) ELSE NULL END AS outcome FROM payroll_jobs WHERE workspace_id=${ws} AND (${payrollObjectScopeSql(proof, "NULL::jsonb", ws, "review", true)} OR EXISTS(SELECT 1 FROM payroll_runs_current current_run WHERE current_run.workspace_id=payroll_jobs.workspace_id AND current_run.run_id=payroll_jobs.run_id AND ${payrollObjectScopeSql(proof, "(current_run.payload->'coverage')", "current_run.workspace_id")})) ORDER BY available_at DESC LIMIT 300`), ex);
     const backlog = await readPayrollBacklog(proof, ex);
     const responseCapabilities = await capabilities(proof, ex);
+    const currentPeriod=await currentPayrollPeriod(proof,ex);
     await guarded(proof, "REVIEW", check(`(SELECT count(*) FROM payroll_runs_current current_run WHERE current_run.workspace_id=${ws} AND current_run.run_id=ANY($1::uuid[]) AND ${payrollObjectScopeSql(proof, "(current_run.payload->'coverage')", "current_run.workspace_id")})=cardinality($1::uuid[]) AND (SELECT count(*) FROM payroll_jobs final_job WHERE final_job.workspace_id=${ws} AND final_job.id=ANY($2::uuid[]) AND (${payrollObjectScopeSql(proof, "NULL::jsonb", ws, "review", true)} OR EXISTS(SELECT 1 FROM payroll_runs_current current_run WHERE current_run.workspace_id=final_job.workspace_id AND current_run.run_id=final_job.run_id AND ${payrollObjectScopeSql(proof, "(current_run.payload->'coverage')", "current_run.workspace_id")})))=cardinality($2::uuid[]) AND (SELECT count(*) FROM payroll_documents final_doc WHERE final_doc.workspace_id=${ws} AND final_doc.id=ANY($3::uuid[]) AND ${payrollObjectScopeSql(proof, "(final_doc.payload->'coverage')", "final_doc.workspace_id")} AND (final_doc.kind='EMPLOYEE_STATEMENT' OR ${payrollObjectScopeSql(proof, "NULL::jsonb", "final_doc.workspace_id", "review", true)}))=cardinality($3::uuid[])`, rows.map(r => r.payload.id), jobs.map(j => j.id), documents.map(d => d.id)), ex);
     return {
         version: "PAYROLL_API_V1",
         capabilities: responseCapabilities,
+        currentPeriod,
         runs: rows.map((r) => ({
             ...r.payload,
+            correctionDelta:r.payload.correctionOf?correctionDelta(rows.find(p=>p.payload.id===r.payload.correctionOf)?.payload.rows??null,r.payload.rows):null,
             documents: documents
                 .filter((d) => d.run_id === r.payload.id)
                 .map(documentProjection),
@@ -397,7 +409,7 @@ export async function command(proof: SessionMutationProof, input: unknown, ex: S
                 revision: existing[0].payload.revision,
             }, [], ex);
         const initial = newRun(c.operationId, c.period, c.payday);
-        const seed = await nativeSchemaAvailable(ex) ? await source(proof, initial.period, ex) : null;
+        const seed = readPayrollCalculationMode()==='native_provisional' && await nativeSchemaAvailable(ex) ? await source(proof, initial.period, ex) : null;
         const captured = seed ? await captureNativePayroll(seed, initial, ex, authority(proof, "REVIEW")) : null;
         const r = captured?.run ?? initial;
         try {
@@ -439,6 +451,7 @@ export async function command(proof: SessionMutationProof, input: unknown, ex: S
     const current = await readRun(proof, c.runId, ex), r = current.payload;
     if (r.revision !== c.expectedRevision)
         throw new PayrollError("REVISION_CONFLICT", 409);
+    if(r.sourceAuthority==='NATIVE_RECORDED_TIME'&&['RECALCULATE','CORRECT_NATIVE','APPROVE'].includes(c.action))assertNativeCalculationEnabled();
     if (c.action === "CORRECT_NATIVE") {
         if (r.sourceAuthority !== "NATIVE_RECORDED_TIME" || r.status !== "APPROVED" || !current.snapshot?.native || r.nativeCalculation?.state !== "ready")
             throw new PayrollError("RUN_STATE_CONFLICT", 409);

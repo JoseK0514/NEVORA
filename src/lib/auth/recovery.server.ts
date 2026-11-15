@@ -6,7 +6,8 @@ import type {SessionMutationProof} from '../shift-changes/types';
 import {neonNotificationExecutor} from '../data/notification-transactions';
 import {getWorkspace,workspaceReadGuard} from '../data/workspaces';
 import {assertManagementProof} from '../data/management-session';
-import {hashPassword} from './password';
+import {hashPassword,verifyPassword} from './password';
+import type {ReviewedLoginCredential} from './session-issuance';
 const hash=(value:string)=>createHash('sha256').update(value).digest('hex');
 const safeId=(v:string)=>v.trim().length>0&&v.trim().length<=200&&!/[\u0000-\u001f\u007f]/.test(v);
 const unavailable={state:'unavailable' as const};
@@ -68,6 +69,27 @@ export async function issueAssistedRecovery(proof:SessionMutationProof,employeeI
   return {state:'issued' as const,proof:token,employeeId:row.employeeId,expiresAt:row.expiresAt};
  }catch{return unavailable;}
 }
+/** Called only after password verification. Rechecks its exact reviewed revision
+ * under lifecycle/credential locks; the proof grants replacement only, never app
+ * authority. No channel claim or delivery is involved. */
+export async function issueInitialPasswordReplacement(employeeId:string,reviewed:ReviewedLoginCredential,executor:SqlExecutor=neonNotificationExecutor()){
+ try{
+  if(!safeId(employeeId)||!reviewed?.updated_at||!reviewed.password_hash||!reviewed.password_updated_at)return unavailable;
+  const workspace=await getWorkspace(executor),token=randomBytes(32).toString('base64url');
+  const results=await executor.transaction([...workspaceReadGuard(workspace),
+   {text:'SELECT id FROM employees WHERE id=$1 FOR UPDATE',values:[employeeId]},
+   {text:'SELECT employee_id FROM employee_credentials WHERE employee_id=$1 FOR UPDATE',values:[employeeId]},
+   {text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN employee_credentials c ON c.employee_id=e.id JOIN locations l ON l.id=e.primary_location_id
+    WHERE e.id=$1 AND e.active AND l.workspace_id=$5 AND e.updated_at::text=$2 AND c.password_hash=$3 AND c.password_updated_at::text=$4 AND c.must_change_password)
+    THEN '1' ELSE 'initial_password_changed' END)::integer`,values:[employeeId,reviewed.updated_at,reviewed.password_hash,reviewed.password_updated_at,workspace.id]},
+   {text:'UPDATE password_recovery_proofs SET retired_at=clock_timestamp() WHERE employee_id=$1 AND used_at IS NULL AND retired_at IS NULL',values:[employeeId]},
+   {text:`INSERT INTO password_recovery_proofs(token_hash,employee_id,credential_updated_at,employee_updated_at,method,expires_at)
+    SELECT $1,e.id,c.password_updated_at,e.updated_at,'INITIAL_PASSWORD',clock_timestamp()+interval '15 minutes' FROM employees e JOIN employee_credentials c ON c.employee_id=e.id WHERE e.id=$2 RETURNING expires_at::text AS "expiresAt"`,values:[hash(token),employeeId]},
+  ]);
+  const row=results.at(-1)?.[0] as {expiresAt:string}|undefined;
+  return row?{state:'issued' as const,proof:token,expiresAt:row.expiresAt}:unavailable;
+ }catch{return unavailable;}
+}
 /** Atomic credential replacement + single-use consumption + all portal session
  * revocation. The proof binds the employee and credential revisions at issuance,
  * so later lifecycle/password changes invalidate it. Push detachment/cancellation
@@ -89,8 +111,9 @@ export async function resetPasswordWithProof(token:string,password:string,execut
   ]);
   if(!(limits.at(-1)?.[0] as {allowed:boolean}|undefined)?.allowed)return {state:'invalid'};
   const newHash=await hashPassword(password),workspace=await getWorkspace(executor);
-  const rows=await executor.query<{employeeId:string}>({text:'SELECT employee_id AS "employeeId" FROM password_recovery_proofs WHERE token_hash=$1',values:[tokenHash]});
+  const rows=await executor.query<{employeeId:string;method:string;passwordHash:string}>({text:'SELECT p.employee_id AS "employeeId",p.method,c.password_hash AS "passwordHash" FROM password_recovery_proofs p JOIN employee_credentials c ON c.employee_id=p.employee_id WHERE p.token_hash=$1',values:[tokenHash]});
   if(!rows[0])return {state:'invalid'};const employeeId=rows[0].employeeId;
+  if(rows[0].method==='INITIAL_PASSWORD'&&await verifyPassword(password,rows[0].passwordHash))return {state:'invalid'};
   const statements:SqlStatement[]=[...workspaceReadGuard(workspace),
    {text:'SELECT id FROM employees WHERE id=$1 FOR UPDATE',values:[employeeId]},
    {text:'SELECT employee_id FROM employee_credentials WHERE employee_id=$1 FOR UPDATE',values:[employeeId]},

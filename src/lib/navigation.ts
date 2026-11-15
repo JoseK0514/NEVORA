@@ -6,7 +6,7 @@ import { DEFAULT_WORDS, type WordSlots } from './workspace-presentation/words';
 
 /** Company choices that shape navigation (B2): modules that are off disappear
  * everywhere, and the vocabulary names the people page. Defaults change nothing. */
-export type NavContext = { ownerAdvisorEnabled?: boolean; modules?: EnabledModules; words?: WordSlots; operational?:OperationalAuthorityView };
+export type NavContext = { billingEnabled?:boolean;ownerAdvisorEnabled?: boolean; modules?: EnabledModules; words?: WordSlots; operational?:OperationalAuthorityView };
 import type {OperationalAuthorityView} from './company-access/model';
 
 export type NavigationItem = {
@@ -200,7 +200,7 @@ export function activeNavigationHref(role: UserRole, path: string, payroll?: Pay
 export function navigationForRole(role: UserRole, payroll?: PayrollCapabilities, input: NavContext | OperationalAuthorityView = {}): NavigationItem[] {
   const context:NavContext = 'state' in input ? {operational:input} : input;
   const modules = context.modules ?? ALL_MODULES_ON, words = context.words ?? DEFAULT_WORDS.en;
-  return baseNavigation(role, payroll, context.operational, context.ownerAdvisorEnabled)
+  return [...baseNavigation(role, payroll, context.operational, context.ownerAdvisorEnabled),...(role==='OWNER'&&context.billingEnabled?[{href:'/app/billing',label:'Plan and billing',icon:'settings' as NavIconName}]:[])]
     .filter(item => pathEnabled(item.href, modules))
     .map(item => item.href === "/app/employees" ? { ...item, label: words.people } : item);
 }

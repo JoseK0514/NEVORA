@@ -17,7 +17,7 @@ const text=(v:unknown,max:number):v is string=>typeof v==='string'&&v.length>0&&
 const generation=(v:unknown):v is string=>typeof v==='string'&&/^[1-9][0-9]{0,18}$/.test(v)&&BigInt(v)<=BigInt('9223372036854775807');
 const revision=(v:unknown):v is number=>typeof v==='number'&&Number.isInteger(v)&&v>=0&&v<2147483647;
 const object=(v:unknown,required:string[],optional:string[]=[]):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v)&&required.every(k=>Object.prototype.hasOwnProperty.call(v,k))&&Object.keys(v).every(k=>required.includes(k)||optional.includes(k));
-const invalid=(field:string,message:string):EmployeeCoreAccessResult=>({state:'invalid',fieldErrors:[{field,message}]});
+const invalid=(field:string,message:string,code='INVALID_EMPLOYEE_PROFILE'):EmployeeCoreAccessResult=>({state:'invalid',fieldErrors:[{field,message,code}]});
 function profile(v:unknown):CoreProfileInput|null {
  if(!object(v,['firstName','lastName','phone','email','role','primaryLocationId','active']))return null;
  if(typeof v.firstName!=='string'||typeof v.lastName!=='string'||typeof v.phone!=='string'||typeof v.primaryLocationId!=='string')return null;
@@ -111,9 +111,9 @@ async function failure(error:unknown,proof:SessionMutationProof,id:string,hash:s
  if(message.includes('employee_profile_stale')||message.includes('company_access_profile_generation_changed'))return {state:'conflict',reason:'employee_changed'};
  if(message.includes('company_access_profile_scope_changed'))return {state:'conflict',reason:'scope_changed'};
  if(message.includes('employee_profile_last_owner'))return invalid('role','Keep at least one active Owner in the company.');
- if(message.includes('company_access_scope_locations')||message.includes('employee_profile_location_invalid')||message.includes('employee_location_invalid')||message.includes('employee_position_invalid'))return invalid('profile','Choose valid company locations and positions.');
+ if(message.includes('company_access_scope_locations')||message.includes('employee_profile_location_invalid')||message.includes('employee_location_invalid')||message.includes('employee_position_invalid'))return invalid('profile','Choose valid company locations and positions.','CATALOGUE_CHANGED');
  const code=error&&typeof error==='object'&&'code'in error?String(error.code):'';
- if(code==='23505')return invalid('employee','Employee ID or email is already in use.');
+ if(code==='23505')return invalid('employee','Employee ID or email is already in use.','ID_OR_EMAIL_IN_USE');
  return attempted&&!(/^[0-9A-Z]{5}$/.test(code)&&!code.startsWith('08'))?{state:'outcome_unknown',operationId:id}:{state:'unavailable'};
 }
 
@@ -167,7 +167,7 @@ export type EmployeeCreationContext={actor:Extract<OperationalAuthorityView,{sta
 export async function prepareEmployeeWithAccessCreation(proof:SessionMutationProof,value:CreateEmployeeWithAccessCommand,ex:SqlExecutor,context?:EmployeeCreationContext){
  const c=parseCreateEmployeeWithAccessCommand(value);if(!c)return invalid('employee','Complete all required employee details.');
  const actor=context?.actor??await readOperationalAuthority(proof,ex);if(actor.state!=='ready'||actor.employeeId!==proof.employee.id||actor.scope?.mode!=='COMPANY')return {state:'unavailable' as const};
- if(c.employee.role==='MANAGER'&&actor.role==='OWNER'&&!c.initialManagerScope)return invalid('scope','Choose Company or selected locations for the new Manager.');
+ if(c.employee.role==='MANAGER'&&actor.role==='OWNER'&&!c.initialManagerScope)return invalid('scope','Choose Company or selected locations for the new Manager.','MANAGER_SCOPE_REQUIRED');
  if(c.initialManagerScope&&(actor.role!=='OWNER'||c.employee.role!=='MANAGER'))return invalid('scope','Only an Owner may assign a new Manager scope.');
  const batch=await prepareEmployeeCreationMutation({...c.employee,email:c.employee.email??undefined,actorEmployeeId:proof.employee.id,proof},ex,context?.workspace);
  const hash=createHash('sha256').update(JSON.stringify({kind:'CREATE',command:c})).digest('hex');

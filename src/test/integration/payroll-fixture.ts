@@ -55,7 +55,7 @@ export async function seedPayrollFixture(
       ],
     });
     await ex.query({
-      text: "INSERT INTO employee_credentials(employee_id,password_hash) VALUES($1,$2)",
+      text: "INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)",
       values: [id, await hashPassword(password)],
     });
     await ex.query({

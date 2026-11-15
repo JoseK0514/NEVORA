@@ -1,4 +1,5 @@
 import {assertWorkerWorkspace} from '../workspace-routing/worker.server';
+import {readPayrollCalculationMode} from './calculation-mode';
 /**
  * Leased payroll outbox processor. External preparation/rendering runs outside the
  * final transaction; workspace, source and lease guards fence the resulting writes.
@@ -72,7 +73,7 @@ export async function processJob(job: ClaimedJob, ex: SqlExecutor = neonNotifica
             const [existing] = await ex.query(q("SELECT id FROM payroll_runs WHERE workspace_id=$1 AND start_date=$2::date AND end_date=$3::date AND correction_of IS NULL", job.workspace_id, period.startDate, period.endDate));
             if (!existing) {
                 const { nativeSchemaAvailable, captureNativePayroll, exactReadFence } = await import("./native/source.server");
-                if (await nativeSchemaAvailable(ex)) {
+                if (readPayrollCalculationMode()==='native_provisional' && await nativeSchemaAvailable(ex)) {
                     const active = q(`SELECT (CASE WHEN ${ws}=$1 THEN '1' ELSE 'WORKSPACE_UNAVAILABLE' END)::integer`, job.workspace_id);
                     const values = [job.workspace_id, true, "native-payroll-worker", period.startDate, period.endDate];
                     const read = q(`SELECT $1::text AS id,${sourceSql} AS source,clock_timestamp()::text AS observed WHERE ${ws}=$1`, ...values);

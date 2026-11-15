@@ -26,7 +26,7 @@ async function scope(f:Awaited<ReturnType<typeof companyAccessFixture>>,mode:'CO
  expect((await assignOperationalScope(f.owner,'manager',mode==='REVOKE'?{...base,action:'REVOKE'}:{...base,action:'ASSIGN',scope:mode==='COMPANY'?{mode,locationIds:[]}:{mode,locationIds:['loc-1']}},f.db.executor)).state).toBe('saved');
 }
 async function setup(){const f=await companyAccessFixture();ctx.ex=f.db.executor;ctx.proof=f.manager;try{
- await f.q("INSERT INTO employee_location_eligibility VALUES('target','loc-1'),('target','loc-2');INSERT INTO employee_credentials(employee_id,password_hash) VALUES('target','owned previous hash'),('owner','owned owner hash');INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'target',clock_timestamp()+interval '1 hour')");
+ await f.q("INSERT INTO employee_location_eligibility VALUES('target','loc-1'),('target','loc-2');INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('target','owned previous hash',false),('owner','owned owner hash',false);INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'target',clock_timestamp()+interval '1 hour')");
  const employee:SessionMutationProof={employee:{id:'target',role:'EMPLOYEE',firstName:'Target',lastName:'QA',primaryLocationId:'loc-1'},sessionTokenHash:'d'.repeat(64)};
  return {...f,employee};
  }catch(error){await f.db.dispose();throw error;}}

@@ -110,7 +110,7 @@ export default async function PlatformLayout({ children, sheet }: { children: Re
       nativeApp={nativeApp}
       payrollCapabilities={payrollCapabilities}
       brand={{ style: brand.style, logoUrl: brand.logoUrl }}
-      presentation={{ ownerAdvisorEnabled: readFeatureFlags(process.env).ownerAdvisor, modules: brand.modules, words: wordPreset(brand.words).en }}
+      presentation={{ billingEnabled:recoveryEnabled,ownerAdvisorEnabled: readFeatureFlags(process.env).ownerAdvisor, modules: brand.modules, words: wordPreset(brand.words).en }}
       operationalAuthority={operationalAuthority}
       user={{
         id: session.id,

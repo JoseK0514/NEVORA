@@ -69,10 +69,10 @@ export async function POST(request: Request) {
       {
         state: conflict ? "conflict" : invalid ? "invalid" : "unavailable",
         message: conflict
-          ? "Population, finalized revisions or selected export coverage changed. Reload and review."
+          ? "The people, approved time or selected export changed. Refresh and review them again."
           : invalid
-            ? "Review every member, reason and employment attestation."
-            : "Outcome unconfirmed. Retry the original operation.",
+            ? "Review each person, explain any exclusions and confirm their employment details."
+            : "We could not confirm the result. Try the same request again.",
       },
       conflict ? 409 : invalid ? 400 : 503,
     );

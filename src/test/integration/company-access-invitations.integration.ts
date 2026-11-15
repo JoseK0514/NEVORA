@@ -38,7 +38,7 @@ it('delivery availability never overrides eligibility or Owner access and does n
  const f=await companyAccessFixture(),smtp=await fakeInvitationSmtp();
  try{
   for(const [key,value] of Object.entries(smtp.env))vi.stubEnv(key,value);
-  expect(await readInvitationStatus(f.manager,'target',f.db.executor)).toMatchObject({state:'unavailable'});
+  expect(await readInvitationStatus(f.manager,'target',f.db.executor)).toMatchObject({state:'ready',allowedCommands:[]});
   expect(await readInvitationStatus(f.owner,'owner',f.db.executor)).toMatchObject({state:'ready',deliveryAvailable:true,allowedCommands:[]});
   for(const change of ['email=NULL','active=false']){
    await f.q(`UPDATE employees SET ${change} WHERE id='target'`);
@@ -193,3 +193,5 @@ it('Owner self-issue is denied and the authenticated global issue ceiling leaves
   expect(sent).toBe(0);expect(await f.q('SELECT count(*)::integer AS count FROM company_invitations')).toEqual([{count:0}]);
  }finally{await f.db.dispose();}
 });
+
+it('Managers read scoped sign-in readiness without acquiring invitation write or receipt authority',async()=>{const f=await companyAccessFixture();try{const status=await readInvitationStatus(f.manager,'target',f.db.executor);expect(status).toMatchObject({state:'ready',allowedCommands:[]});expect((await issueOrRevokeInvitation(f.manager,'target',{action:'ISSUE',operationId:randomUUID(),expectedEmployeeVersion:status.state==='ready'?status.employeeVersion:'',expectedInvitationRevision:0},null,f.db.executor)).state).toBe('unavailable');}finally{await f.db.dispose();}});
