@@ -43,3 +43,10 @@ it('opens a fold in place to list every notification, and marks none read by ope
  (read.props.onClick as ()=>void)();
  expect(onMarkRead).toHaveBeenCalledOnce();
 });
+
+it('reads days and times in the workplace zone the snapshot carries (backend, Nov 15, 2026)',()=>{
+ host.cursor=0;host.slots=[];
+ const zoned=()=>{host.cursor=0;return NotificationInbox({state:{paused:false,refreshing:false,snapshot:{state:'ready',kind:'notifications',timeZone:'Pacific/Kiritimati',coverage:'complete',items:[summary('z','2026-11-15T14:00:00Z','unread')],observedAt:'2026-11-15T14:05:00Z',validForMs:60000} as never},onRetry:()=>{},onMarkRead});};
+ // 14:00 UTC is 4:00 AM the next day at UTC+14.
+ expect(renderToStaticMarkup(zoned())).toContain('Monday, November 16 at 4:00');
+});

@@ -81,3 +81,17 @@ describe('native payroll browser contract', () => {
     expect(() => readStatements({ version: 'PAYROLL_API_V1', statements: [{ ...statement, viewUrl: 'https://foreign.invalid/private' }] })).toThrow();
   });
 });
+
+describe('optional read facts (backend, Nov 15, 2026)', () => {
+  const base = { version: 'PAYROLL_API_V1', capabilities: nativeCapabilities, jobs: [] };
+  it('keeps a well-formed current period and correction difference, and drops malformed ones instead of failing the page', () => {
+    const currentPeriod = { period: { startDate: '2026-11-09', endDate: '2026-11-15' }, payday: '2026-11-20', asOfDate: '2026-11-15', timeZone: 'America/Puerto_Rico', settingsRevision: 2 };
+    const delta = { totalNetMinor: '-250', employees: [{ employeeId: 'E1', previousNetMinor: '100', netMinor: '-0', deltaNetMinor: '1' }] };
+    const good = { totalNetMinor: '-250', employees: [{ employeeId: 'E1', previousNetMinor: '500', netMinor: '250', deltaNetMinor: '-250' }] };
+    expect(readRuns({ ...base, runs: [nativeRun({ correctionOf: 'x', correctionDelta: good })], currentPeriod }).currentPeriod).toEqual(currentPeriod);
+    expect(readRuns({ ...base, runs: [nativeRun({ correctionOf: 'x', correctionDelta: good })] }).runs[0].correctionDelta).toEqual(good);
+    expect(readRuns({ ...base, runs: [nativeRun({ correctionOf: 'x', correctionDelta: delta })] }).runs[0]).not.toHaveProperty('correctionDelta');
+    expect(readRuns({ ...base, runs: [], currentPeriod: { ...currentPeriod, timeZone: 'Not/AZone' } })).not.toHaveProperty('currentPeriod');
+    expect(readRuns({ ...base, runs: [], currentPeriod: null }).currentPeriod).toBeNull();
+  });
+});

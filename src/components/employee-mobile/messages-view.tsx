@@ -5,16 +5,17 @@ import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import {NoteIcon} from '@phosphor-icons/react/dist/ssr/Note';
 import type {EmployeeNotificationItem} from '@/lib/employee-view';
-import {notificationKind,type NotificationKind} from '@/lib/notification-labels';
+import {type NotificationKind} from '@/lib/notification-labels';
+import {notificationKindFor} from '@/lib/notification-facts';
 import type {CommunicationRead} from '@/lib/communications/types';
 import type {CommunicationRecoveryState} from '@/lib/communications/recovery';
 export type MessageFilter='all'|'unread'|'action';
 export type ReadyUpdate=Extract<CommunicationRead,{state:'ready'}>;
 export const messageTime=(at:string,zone:string)=>new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(at));
 const ACTIONS:Partial<Record<NotificationKind,string>>={SCHEDULE:'Review schedule',AVAILABILITY:'View availability',PAYROLL_STATEMENT:'View statement',COMMUNICATION:'Read update'};
-function noticeAction(item:EmployeeNotificationItem){const kind=notificationKind(item.label);return (kind&&ACTIONS[kind])??'View details';}
+function noticeAction(item:EmployeeNotificationItem){const kind=notificationKindFor(item);return (kind&&ACTIONS[kind])??'View details';}
 export function MessageInbox({kind,items,partial,search,filter,timeZone,onSearch,onFilter,onOpen,more=false}:{more?:boolean;kind:'notifications'|'updates';items:EmployeeNotificationItem[]|ReadyUpdate[];partial:boolean;search:string;filter:MessageFilter;timeZone:string;onSearch:(v:string)=>void;onFilter:(v:MessageFilter)=>void;onOpen:(event:MouseEvent<HTMLAnchorElement>,id:string,href:string)=>void}){
- const rows=items.map(item=>'label'in item?{id:item.id,title:item.label,at:item.at,href:item.href,unread:item.reviewState==='unread',required:item.actionState==='required',status:item.reviewState==='confirmed'?'Confirmed':item.reviewState==='read'?'Read':item.reviewState==='unread'?'Unread':'Status unavailable',action:noticeAction(item),schedule:notificationKind(item.label)==='SCHEDULE'}:{id:item.id,title:item.title,at:item.editedAt??item.publishedAt,href:'/app/updates/'+item.id,unread:!item.ownReadAt&&!item.ownAcknowledgedAt,required:item.acknowledgement==='REQUIRED'&&!item.ownAcknowledgedAt,status:item.ownAcknowledgedAt?'Acknowledged':item.ownReadAt?'Read':'Unread',action:'Read update'});
+ const rows=items.map(item=>'label'in item?{id:item.id,title:item.label,at:item.at,href:item.href,unread:item.reviewState==='unread',required:item.actionState==='required',status:item.reviewState==='confirmed'?'Confirmed':item.reviewState==='read'?'Read':item.reviewState==='unread'?'Unread':'Status unavailable',action:noticeAction(item),schedule:notificationKindFor(item)==='SCHEDULE'}:{id:item.id,title:item.title,at:item.editedAt??item.publishedAt,href:'/app/updates/'+item.id,unread:!item.ownReadAt&&!item.ownAcknowledgedAt,required:item.acknowledgement==='REQUIRED'&&!item.ownAcknowledgedAt,status:item.ownAcknowledgedAt?'Acknowledged':item.ownReadAt?'Read':'Unread',action:'Read update'});
  const matches=rows.filter(row=>(filter==='all'||filter==='unread'&&row.unread||filter==='action'&&row.required)&&row.title.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()));
  return <>
   <div className="em-message-tools"><div className="em-message-field"><label htmlFor={kind+'-search'}>Search this page</label><input id={kind+'-search'} type="search" maxLength={120} value={search} onChange={event=>onSearch(event.target.value)} autoComplete="off" placeholder={kind==='notifications'?'Search by update type':'Search update titles'}/></div><div className="em-message-field"><label htmlFor={kind+'-filter'}>Show</label><select id={kind+'-filter'} value={filter} onChange={event=>onFilter(event.target.value as MessageFilter)}><option value="all">All</option><option value="unread">Unread</option><option value="action">Action needed</option></select></div></div>

@@ -151,6 +151,23 @@ describe("Owner Home on the corporate kit (board C-Owner)", () => {
 describe("Direction B phone screen (Owner and Manager Home)", () => {
   const payrollWeek = { firstName: "Carmen", days: [], scheduledHours: 0, people: 0, payrollHref: "/app/payroll" };
   const phone = (props: Partial<ComponentProps<typeof OwnerHomeCorp>> = {}) => onlyB(renderToStaticMarkup(<OwnerHomeCorp {...base} {...props} />)).replace(/ /g, " ");
+  // BR-16 with the backend's clockerRegistered (Nov 15, 2026).
+  it("with no time clock registered, one tile says so in place of the attendance tiles; unknown or registered keeps them", () => {
+    const shifts = [shift("a", "clocked_in"), shift("b", "upcoming"), shift("c", "no_punches")];
+    const none = phone({ today: { ...today(shifts), clockerRegistered: false } as Today, setup: <span>setup</span> });
+    expect(none).toContain('<a href="/app/settings/clocker" class="b-live__a" aria-label="Time clock not set up. Set up your time clock">');
+    expect(none).toContain('>Time clock</span><span class="b-live__v">Not set up</span>');
+    expect(none).not.toContain("Clocked in: ");
+    expect(none).not.toContain('aria-label="Missed clock-ins: 1"');
+    expect(none).toContain("Open shifts");
+    // A Manager's Home (no setup card) says the same, without a link.
+    expect(phone({ today: { ...today(shifts), clockerRegistered: false } as Today })).not.toContain('href="/app/settings/clocker"');
+    for (const registered of [true, undefined]) {
+      const out = phone({ today: { ...today(shifts), ...(registered === undefined ? {} : { clockerRegistered: registered }) } as Today });
+      expect(out).toContain('aria-label="Clocked in: 1 of 3. Who’s working"');
+      expect(out).not.toContain(">Time clock<");
+    }
+  });
   it("leads with the shared needs-you count as a sentence and three live figures that open their lists", () => {
     const out = phone();
     expect(out).toMatch(/<h1>5 things need you<\/h1>/);

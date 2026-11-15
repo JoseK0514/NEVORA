@@ -4,7 +4,7 @@ import {useState,type MouseEvent,type ReactNode} from 'react';
 import {CircleNotchIcon} from '@phosphor-icons/react/dist/ssr/CircleNotch';
 import type {EmployeeNotificationItem,EmployeeViewSnapshot} from '../../lib/employee-view';
 import type {PrivatePanelState} from '../../lib/private-snapshot-client';
-import {notificationKind} from '../../lib/notification-labels';
+import {notificationCountNote,notificationKindFor,notificationName,notificationOutcomeNote} from '../../lib/notification-facts';
 import {CorpCard,CorpCount} from '../corp/corp';
 import './account-corp.css';
 
@@ -28,8 +28,22 @@ const forDates=(subject:EmployeeNotificationItem['subject'])=>!subject?'':subjec
  * at what is known to be true ("was answered", "was updated"). An unknown label is shown as it is. The label stays the
  * row's kind: its icon and how it opens still follow it. */
 export function notificationTitle(item:EmployeeNotificationItem):string{
- const dates=forDates(item.subject),needed=item.actionState==='required';
- switch(notificationKind(item.label)){
+ const dates=forDates(item.subject),needed=item.actionState==='required',who=notificationName(item);
+ // Backend (Nov 15, 2026): with the event type the title says what happened; a name only where the list sends one.
+ switch(needed?null:item.eventType){
+  case 'SCHEDULE_PUBLISHED':return `Your schedule${dates} was published`;
+  case 'TIME_OFF_APPROVED':return `Your time-off request${dates} was approved`;
+  case 'TIME_OFF_DENIED':return `Your time-off request${dates} was declined`;
+  case 'CALLOUT_APPROVED':return `Your can’t-work request${dates} was approved`;
+  case 'CALLOUT_DENIED':return `Your can’t-work request${dates} was declined`;
+  case 'SWAP_APPROVED':return `A shift swap${dates} was approved`;
+  case 'SWAP_DENIED':return `A shift swap${dates} was declined`;
+  case 'COVERAGE_APPROVED':return `A shift cover${dates} was approved`;
+  case 'COVERAGE_DENIED':return `A shift cover${dates} was declined`;
+ }
+ if(who&&item.actionState==='available'&&item.eventType==='SWAP_RESPONSE_REQUIRED')return `${who} asked you to swap a shift${dates}`;
+ if(who&&item.actionState==='available'&&item.eventType==='COVERAGE_INVITATION')return `${who} needs cover for a shift${dates}`;
+ switch(notificationKindFor(item)){
   case 'SCHEDULE':return needed?`Confirm your schedule${dates}`:`Your schedule${dates} was updated`;
   case 'TIME_OFF':return `Your time-off request${dates} was answered`;
   case 'CALLOUT':return `Your can’t-work request${dates} was answered`;
@@ -60,9 +74,10 @@ export function EmployeeNotificationList({items,partial,tab,onTab,timeZone,onOpe
    <ul className="c-rows" aria-label={group.name+' notifications'}>{group.rows.map(item=>{
     const isUnread=item.reviewState==='unread',required=item.actionState==='required',busy=opening===item.id,title=notificationTitle(item);
     const time=group.name==='Earlier'?`${day(item.at,zone)} · ${clock(item.at,zone)}`:clock(item.at,zone);
+    const facts=[notificationOutcomeNote(item),notificationCountNote(item)].filter((note):note is string=>!!note);
     return <li key={item.id}><Link id={'message-'+item.id} className={`c-row em-notif-row${isUnread?' em-notif-row--unread':''}${busy?' em-notif-row--busy':''}`} href={item.href} prefetch={false} onClick={onOpen?event=>onOpen(event,item.id,item.href):undefined}
-     aria-busy={busy||undefined} aria-label={`${title}${isUnread?', unread':''}${required?', action needed':''}, ${time}`}>
-     <span className="c-row__main"><span className={isUnread?'c-row__title c-row__title--b':'c-row__title'}>{title}</span><span className="c-row__detail"><span>{required?'Action needed · ':''}{time}</span></span></span>
+     aria-busy={busy||undefined} aria-label={`${title}${facts.length?`, ${facts.join(', ')}`:''}${isUnread?', unread':''}${required?', action needed':''}, ${time}`}>
+     <span className="c-row__main"><span className={isUnread?'c-row__title c-row__title--b':'c-row__title'}>{title}</span><span className="c-row__detail"><span>{required?'Action needed · ':''}{facts.map(note=>`${note} · `).join('')}{time}</span></span></span>
      {busy?<CircleNotchIcon className="em-notif-spin" weight="bold" aria-hidden="true"/>:isUnread?<span className="em-notif-dot" aria-hidden="true"/>:null}
     </Link></li>;})}</ul>
   </CorpCard>):<CorpCard><p className="c-empty"><b>{tab==='unread'?'You’re all caught up':partial?'Nothing confirmed on this page':'No current notifications'}</b>{tab==='unread'?'No unread notifications.':partial?'Some notices couldn’t be checked. Refresh to check again.':'New schedule, request and pay notices will show here.'}{more?' Older items may be on another page.':''}</p></CorpCard>}
@@ -78,6 +93,7 @@ export function EmployeeNotificationsSnapshotView({state,onRetry}:{state:Private
  if(!ready)status=<CorpCard><div className="c-card__body em-account-status"><p className="c-note" role="status">{state.paused?'Your notifications are paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current notifications…':'Your notifications couldn’t be checked.'}</p>
   {denied?<Link className="c-link c-link--l" href="/login">Sign in</Link>:!state.refreshing&&!state.paused?<button type="button" className="em-account-textbtn" onClick={onRetry}>Try again</button>:null}</div></CorpCard>;
  return <div className="em-account-stack" data-private-view="notifications">
-  {ready?<EmployeeNotificationList items={ready.items} partial={ready.coverage==='partial'} tab={tab} onTab={setTab}/>:status}
+  {/* Backend (Nov 15, 2026): the snapshot carries the workplace zone, so days and times are the workplace's. */}
+  {ready?<EmployeeNotificationList items={ready.items} partial={ready.coverage==='partial'} tab={tab} onTab={setTab} timeZone={ready.timeZone}/>:status}
  </div>;
 }

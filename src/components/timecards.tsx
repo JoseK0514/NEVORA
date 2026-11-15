@@ -360,6 +360,19 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   useEffect(()=>{if(openId&&!openKey&&!busy)setOpenId(null);},[openId,openKey,busy]);
   // The panel's confirmation belongs to the card it was said for; another card or another week drops it.
   useEffect(()=>{setDone(current=>current&&current.employeeId!==openId?null:current);},[openId,period]);
+  // Jose (Nov 15, 2026): the pressed Approve (or Finalize) button leaves with the save, so keyboard focus would fall to the
+  // top of the page. It moves to "Next timecard" when there is one, otherwise to the confirmation itself.
+  const doneKey=done?`${done.employeeId}:${done.revision}:${done.action}`:null;
+  useEffect(()=>{
+   if(!doneKey)return;
+   const frame=requestAnimationFrame(()=>{
+    const sheet=document.querySelector<HTMLElement>('.c-tc-sheet');
+    const target=sheet?.querySelector<HTMLElement>('.c-tc-sheet__next')??sheet?.querySelector<HTMLElement>('.c-tc-sheet__done');
+    const lost=!document.activeElement||document.activeElement===document.body||!document.activeElement.isConnected;
+    if(target&&lost)target.focus();
+   });
+   return()=>cancelAnimationFrame(frame);
+  },[doneKey]);
   // Reliability R-04: the address names the period. When it changes from outside the period control (the Time tab's
   // link to the bare page, browser history), the page moves to that period, so the screen agrees with a reload.
   // The new address can arrive a moment before the server's default period for it, so both are part of the check.
@@ -502,7 +515,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           {/* Closing F1 (NV-029): the decision is confirmed in the panel at once, in words, while the fresh read runs. */}
           {/* OW-037: the success is a block, not a line: a green circle with a check, the word, and how far the period is. The
             * sentence that names the person stays for screen readers. */}
-          {done?.employeeId===openItem.card.employeeId?<div className="c-tc-sheet__done" role="status"><BIcon tone="green"><CheckIcon weight="bold"/></BIcon>
+          {done?.employeeId===openItem.card.employeeId?<div className="c-tc-sheet__done" role="status" tabIndex={-1}><BIcon tone="green"><CheckIcon weight="bold"/></BIcon>
             <span className="c-tc-sheet__donetx"><b aria-hidden="true">{done.action==='finalized'?'Finalized':'Approved'}</b>
               <span className="c-sr">{`${done.name==='This'?'This':`${done.name}’s`} timecard is ${done.action==='finalized'?'finalized':'approved'}.`}</span>
               <span className="c-num">{`${doneCount(done.action)} of ${cards.length} done`}</span></span>

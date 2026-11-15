@@ -1,5 +1,6 @@
 import type {EmployeeNotificationItem} from './employee-view';
 import {dateRangeText} from './duration-format';
+import {notificationCountNote,notificationName,notificationOutcomeNote} from './notification-facts';
 
 export type NotificationFilter='all'|'unread'|'required';
 /** BR-6 (Nov 14, 2026): what a row says. The list payload carries the row's kind (as its label), when it arrived and,
@@ -10,10 +11,26 @@ export type NotificationFilter='all'|'unread'|'required';
 const ROW_TITLES:Readonly<Record<string,{title:string;detail:string}>>={
  'Operations need review':{title:'Things to do are waiting for you',detail:'Open shifts, requests or missing availability'},
 };
-export function notificationTitle(item:Pick<EmployeeNotificationItem,'label'|'subject'>):{title:string;detail:string|null}{
- const known=Object.hasOwn(ROW_TITLES,item.label)?ROW_TITLES[item.label]:null,subject=item.subject??null;
+/** Backend (Nov 15, 2026): labels now name the event ("Items need review", "Time off approved") and the item carries
+ * its eventType. The row's kind (its icon, destination and fixed title) follows the event type; the old labels still work. */
+const EVENT_LABELS:Readonly<Record<string,string>>={MANAGER_REVIEW:'Operations need review',COVERAGE_ATTENTION:'Operations need review',PAYROLL_PREPARATION:'Payroll preparation update',PAYROLL_STATEMENT:'Pay statement update',COMMUNICATION:'Team update'};
+export function canonicalNotificationLabel(item:Pick<EmployeeNotificationItem,'label'|'eventType'>):string{
+ const event=item.eventType??'';
+ if(Object.hasOwn(EVENT_LABELS,event))return EVENT_LABELS[event];
+ if(/^SCHEDULE_/.test(event))return 'Schedule update';
+ if(/^TIME_OFF_/.test(event))return 'Time-off update';
+ if(/^CALLOUT_/.test(event))return 'Can’t-work update';
+ if(/^SWAP_/.test(event)||['COVERAGE_INVITATION','COVERAGE_APPROVED','COVERAGE_DENIED'].includes(event))return 'Shift request update';
+ if(/^AVAILABILITY_/.test(event))return 'Availability update';
+ return item.label;
+}
+export function notificationTitle(item:Pick<EmployeeNotificationItem,'label'|'subject'|'eventType'|'outcome'|'names'|'count'>):{title:string;detail:string|null}{
+ const label=canonicalNotificationLabel(item),known=Object.hasOwn(ROW_TITLES,label)?ROW_TITLES[label]:null,subject=item.subject??null;
  const dates=subject?`${subject.kind==='scheduleWeek'?'Week of ':''}${dateRangeText(subject.startDate,subject.endDate)}`:null;
- return {title:known?.title??item.label,detail:dates??known?.detail??null};
+ // The facts the list sends, and only those: the person it is about, a later status, a count ("5 waiting").
+ const facts=[notificationName(item),notificationOutcomeNote(item),notificationCountNote(item)].filter((fact):fact is string=>!!fact);
+ const detail=[dates,...facts].filter(Boolean).join(' · ')||known?.detail||null;
+ return {title:known?.title??item.label,detail};
 }
 
 export function filterNotifications(items:EmployeeNotificationItem[],filter:NotificationFilter,search:string){
@@ -33,15 +50,16 @@ export function collapseNotifications(items:EmployeeNotificationItem[]):Notifica
  const rows:NotificationRow[]=[];
  for(const item of items){
   const last=rows.at(-1),unread=item.reviewState==='unread';
-  if(last&&!item.subject&&!last.item.subject&&last.item.label===item.label){last.count+=1;last.items.push(item);if(unread)last.unreadIds.push(item.id);}
+  // A row that names a person (backend facts, Nov 15) is told apart by that name, as a dated row is by its dates.
+  if(last&&!item.subject&&!last.item.subject&&!item.names?.length&&!last.item.names?.length&&last.item.label===item.label){last.count+=1;last.items.push(item);if(unread)last.unreadIds.push(item.id);}
   else rows.push({item,count:1,unreadIds:unread?[item.id]:[],items:[item]});
  }
  return rows;
 }
 
-export function groupNotifications(items:EmployeeNotificationItem[]){
+export function groupNotifications(items:EmployeeNotificationItem[],timeZone?:string){
  const groups=new Map<string,{key:string;label:string;items:EmployeeNotificationItem[]}>();
- const format=new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+ const format=new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric',...(timeZone?{timeZone}:{})});
  for(const item of [...items].sort((a,b)=>Date.parse(b.at)-Date.parse(a.at))){
   const date=new Date(item.at),key=format.format(date);
   if(!groups.has(key))groups.set(key,{key,label:key,items:[]});
@@ -51,8 +69,8 @@ export function groupNotifications(items:EmployeeNotificationItem[]){
 }
 
 /** Each row names its destination's action (Codex mobile review M6), not a generic "Open record". */
-export function notificationPresentation(label:string){
- switch(label){
+export function notificationPresentation(label:string,eventType?:string){
+ switch(canonicalNotificationLabel({label,eventType})){
   case 'Schedule update':return {icon:'schedule' as const,destination:'Review your current schedule',action:'Review schedule'};
   case 'Time-off update':
   case 'Time off update':return {icon:'timeOff' as const,destination:'Review your time-off request',action:'View request'};

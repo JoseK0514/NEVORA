@@ -49,7 +49,9 @@ function requestDetail(item: ActionItem, fallback: string) {
   const facts = (item as ActionItem & { request?: RequestFacts }).request;
   if (!facts) return fallback;
   const dates = facts.startDate === facts.endDate ? dayText(facts.startDate) : `${dayText(facts.startDate)} – ${dayText(facts.endDate)}`;
-  return `${dates} · ${facts.partialDay ? `${hhmm(facts.partialDay.start)} – ${hhmm(facts.partialDay.end)}` : "All day"}`;
+  // Backend (Nov 15, 2026): a cover request says so (a swap's title already shows both people with ⇄).
+  const cover = item.type === "EXCHANGE" && item.request?.exchangeKind === "COVERAGE" ? "Cover request · " : "";
+  return `${cover}${dates} · ${facts.partialDay ? `${hhmm(facts.partialDay.start)} – ${hhmm(facts.partialDay.end)}` : "All day"}`;
 }
 
 function itemRow(item: ActionItem, timeZone: string, calm = false): Row {

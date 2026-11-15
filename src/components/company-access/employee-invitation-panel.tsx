@@ -79,9 +79,14 @@ function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;i
    {status.eligibility==='NO_EMAIL'&&<p>Add a registered email in employee details before sending an invitation. An employee record can still be saved without email.</p>}
    {status.eligibility==='INACTIVE'&&<p>This employee is inactive. Review their employee details before inviting them.</p>}
    {status.eligibility==='SELF_ISSUE_DENIED'&&<p>Ask another Owner to manage your invitation.</p>}
+   {/* Backend (Nov 15, 2026): deliveryAvailable says whether invitation email is configured for this workplace (not that
+     * any email arrived). When it isn't, the reason shows before anyone tries to send; a Manager's read is read-only
+     * (allowedCommands is empty), so it says who sends invitations. */}
+   {status.eligibility==='INVITABLE'&&!status.deliveryAvailable&&!deliveryOff&&<p role="status">Email invitations aren’t turned on for this workplace yet, so an invitation can’t be sent. Contact <a className="c-link" href="mailto:support@thevelani.com">support@thevelani.com</a>.</p>}
+   {status.eligibility==='INVITABLE'&&status.deliveryAvailable&&!status.allowedCommands.length&&<p>An Owner sends invitations.</p>}
    {status.invitation&&<p>{deliveryText[status.delivery]}</p>}
   </div>:<p role="status">{deniedAccess?'Your access changed, so you can’t manage invitations.':'The invitation didn’t load. Refresh to try again.'}</p>}
-  {receipt&&<div className={styles.receipt}><strong>{receipt.action==='ISSUE'?'Invitation sent':'Invitation canceled'}</strong><p>{deliveryText[receipt.delivery]}</p><small>Refresh to see the current invitation status.</small></div>}
+  {receipt&&<div className={styles.receipt}><strong>{receipt.action==='ISSUE'?'Invitation issued':'Invitation canceled'}</strong><p>{deliveryText[receipt.delivery]}</p><small>Refresh to see the current invitation status.</small></div>}
   {message&&<p role={uncertain?'alert':'status'} aria-live="polite">{message}</p>}
   {deliveryOff&&<p role="status" aria-live="polite">Email invitations aren’t turned on for this workplace yet. Contact <a className="c-link" href="mailto:support@thevelani.com">support@thevelani.com</a>.</p>}
   {confirm&&<div className={styles.receipt} role="group" aria-label="Confirm invitation action"><p>{confirm==='REVOKE'?'Cancel this invitation? The link in their email stops working, and they’ll need a new invitation to activate.':status.state==='ready'&&status.invitation?'Send a new invitation to the registered email? The previous invitation will no longer be usable.':'Send an invitation to the registered employee email?'}</p><div className={styles.actions}><button type="button" className="button primary" disabled={pending} onClick={()=>void run()}>{confirm==='REVOKE'?'Cancel invitation':'Send invitation'}</button><button type="button" className="button secondary" disabled={pending} onClick={()=>setConfirm(null)}>{confirm==='REVOKE'?'Keep invitation':'Don’t send'}</button></div></div>}

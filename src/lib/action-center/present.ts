@@ -42,6 +42,34 @@ const sentDate = (iso: string | undefined, timeZone: string) => {
   catch { return ''; }
 };
 
+/** A length in minutes, said the way the rest of Time says it: "30 min", "1 h", "1 h 15 min". */
+const lengthText = (minutes: number) => {
+  const h = Math.floor(minutes / 60), m = minutes % 60;
+  return h ? `${h}${NBSP}h${m ? ` ${m}${NBSP}min` : ''}` : `${m}${NBSP}min`;
+};
+
+/** Backend contract (Nov 15, 2026): a correction item carries its work day, the workplace zone, the recorded interval
+ * (either end may be missing) and the requested one. The line says what changes, in the workplace's clock:
+ * "Wed, Nov 11 · 8:30 AM – 5:00 PM, was 9:00 AM – 5:00 PM · +30 min". The length difference is only given when both
+ * intervals are complete; nothing recorded reads "Add …", never a zero-minute entry. Null when the facts can't be read. */
+export function correctionLine(correction: NonNullable<ActionItem['correction']>): string | null {
+  const at = (iso: string | null) => { if (!iso) return null; const value = Date.parse(iso); return Number.isFinite(value) ? value : null; };
+  const askedStart = at(correction.requestedStartAt), askedEnd = at(correction.requestedEndAt);
+  const wasStart = at(correction.recordedStartAt), wasEnd = at(correction.recordedEndAt);
+  if (askedStart === null || askedEnd === null || askedEnd <= askedStart || !/^\d{4}-\d{2}-\d{2}$/.test(correction.workDate)) return null;
+  let clock: Intl.DateTimeFormat;
+  try { clock = new Intl.DateTimeFormat('en-US', {timeZone: correction.timeZone, hour: 'numeric', minute: '2-digit'}); } catch { return null; }
+  // Each time stays whole on a narrow phone ("10:55 AM" never breaks before AM): a narrow no-break space, which the row
+  // keeps (Things to do turns ordinary no-break spaces back into spaces).
+  const time = (value: number) => clock.format(new Date(value)).replace(/[ \u00a0\u202f]([AP]M)$/, '\u202f$1');
+  const day = new Intl.DateTimeFormat('en-US', {weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC'}).format(new Date(`${correction.workDate}T12:00:00Z`)).replace(/ (\d+)$/, `${NBSP}$1`);
+  const asked = `${time(askedStart)} – ${time(askedEnd)}`;
+  if (wasStart === null && wasEnd === null) return `${day} · Add ${asked}`;
+  if (wasStart === null || wasEnd === null || wasEnd <= wasStart) return wasStart === null ? `${day} · ${asked}` : `${day} · ${asked}, was ${time(wasStart)} with no clock-out`;
+  const change = Math.round(((askedEnd - askedStart) - (wasEnd - wasStart)) / 60_000);
+  return `${day} · ${asked}, was ${time(wasStart)} – ${time(wasEnd)} · ${change === 0 ? 'same length' : `${change > 0 ? '+' : '−'}${lengthText(Math.abs(change))}`}`;
+}
+
 /** The person an item is about, when its text names one. */
 export function itemPerson(item: ActionItem) {
   if (isStaffingRepair(item)) return repairPerson(item);
@@ -58,10 +86,13 @@ export function presentItem(item: ActionItem, actionLabel: string, timeZone = 'U
   // Approved leave over a published shift (Nov 9, 2026): scheduling work named for the person, never a request to decide.
   if (isStaffingRepair(item)) return {title: repairTitle(item), detail: spacedRanges(['Approved time off', repairWhen(item)].filter(Boolean).join(' · ')), person, action: actionLabel};
   switch (item.type) {
-    case 'TIME_OFF': case 'EXCHANGE': case 'CALLOUT':
+    case 'TIME_OFF': case 'EXCHANGE': case 'CALLOUT': {
       title = person ?? title;
-      detail = [requestKind[item.type], sentDate(item.dateTime, timeZone)].filter(Boolean).join(' · ');
+      // Backend (Nov 15, 2026): a shift request says whether it is a swap or a cover; without it, "Shift request".
+      const kind = item.type === 'EXCHANGE' && item.request?.exchangeKind ? (item.request.exchangeKind === 'SWAP' ? 'Shift swap' : 'Cover request') : requestKind[item.type];
+      detail = [kind, sentDate(item.dateTime, timeZone)].filter(Boolean).join(' · ');
       break;
+    }
     case 'TARGET_MISSING':
       title = 'No weekly hour target';
       detail = person ? `${person} has no weekly hour target yet.` : 'Set a weekly hour target.';
@@ -79,11 +110,12 @@ export function presentItem(item: ActionItem, actionLabel: string, timeZone = 'U
       detail = detail.replace(/: (\d+) missing/g, ': $1 open');
       break;
     case 'TIME_CORRECTION': {
-      // Phase 3 (OW-002): the title is the person, the line under it what they asked for and the day they sent it. The
-      // read names the person and the kind of request; which punch and by how much is on the review itself.
+      // Phase 3 (OW-002): the title is the person, the line under it what they asked for.
       const who = detail.split(' · ')[0]?.trim(), sent = sentDate(item.dateTime, timeZone);
       if (who && !isOwnCorrection(title)) title = who;
-      detail = [/Recorded entry not sent yet/.test(detail) ? 'Add unrecorded time' : 'Time correction', sent].filter(Boolean).join(' · ');
+      // Backend (Nov 15): with the correction's facts the line says what changes; without them, the kind and the day sent.
+      detail = (item.correction ? correctionLine(item.correction) : null)
+        ?? [/Recorded entry not sent yet/.test(detail) ? 'Add unrecorded time' : 'Time correction', sent].filter(Boolean).join(' · ');
       break;
     }
   }

@@ -274,3 +274,43 @@ describe('Payroll scope and hand-offs (Nov 14 inspection)', () => {
   });
 });
 
+
+// Backend contract (Nov 15, 2026): the runs read names the current period; a correction carries correctionDelta.
+describe('Payroll reads the current period and correction differences from the server', () => {
+  it('uses currentPeriod for Up next and links to that period’s timecards with the day approval opens', () => {
+    boundary.data = { ...boundary.data!, currentPeriod: { period: { startDate: '2026-11-09', endDate: '2026-11-15' }, payday: '2026-11-20', asOfDate: '2026-11-15', timeZone: 'America/Puerto_Rico', settingsRevision: 2 } };
+    const html = home().replace(/[   ]/g, ' ');
+    expect(html).toContain('Nov 9 – 15');
+    expect(html).not.toContain('Oct 5 – 11');
+    expect(html).toContain('href="/app/timecards?start=2026-11-09&amp;end=2026-11-15"');
+    expect(html).toContain('Can be approved from Mon, Nov 16');
+    // The day after the period ends, the line asks for the approval itself.
+    boundary.data = { ...boundary.data!, currentPeriod: { ...boundary.data!.currentPeriod!, asOfDate: '2026-11-16' } };
+    expect(home()).toContain('Approve this period’s timecards');
+  });
+  it('null means no pay schedule; an older read without the field keeps the route’s period', () => {
+    boundary.data = { ...boundary.data!, currentPeriod: null };
+    expect(home()).toContain('No pay schedule yet');
+    expect(home()).not.toContain('/app/timecards?start=');
+    boundary.data = { version: 'PAYROLL_API_V1', capabilities: nativeCapabilities, runs: [], jobs: [] };
+    expect(home().replace(/[   ]/g, ' ')).toContain('href="/app/timecards?start=2026-10-05&amp;end=2026-10-11"');
+  });
+  it('a correction shows the signed net pay differences on statements, never as money paid', () => {
+    const original = nativeRun({ id: 'run-original', status: 'APPROVED' });
+    const correction = nativeRun({ id: 'run-correction', correctionOf: 'run-original', correctionDelta: { totalNetMinor: '-250', employees: [
+      { employeeId: 'E1', previousNetMinor: '81200', netMinor: '82450', deltaNetMinor: '1250' },
+      { employeeId: 'E2', previousNetMinor: '50000', netMinor: '48500', deltaNetMinor: '-1500' },
+      { employeeId: 'E3', previousNetMinor: '30000', netMinor: '30000', deltaNetMinor: '0' }] } });
+    boundary.data = { ...boundary.data!, runs: [original, correction] };
+    const html = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="review" runId="run-correction" names={{ E1: 'Fictional One' }} />).replace(/ /g, ' ');
+    expect(html).toContain('Net pay on statements: −$2.50</b> across 2 people');
+    expect(html).toContain('<span>Fictional One</span><span class="c-num">was $812.00 · now $824.50</span><b class="c-num">+$12.50</b>');
+    expect(html).toContain('<span>A team member</span><span class="c-num">was $500.00 · now $485.00</span><b class="c-num">−$15.00</b>');
+    expect(html).not.toContain('$300.00');
+    expect(html).toContain('settle the difference with the employee outside NEVORA');
+    expect(html).not.toMatch(/paid to|remitted|deposited/i);
+    // Without the comparison (null: both populations aren't available), nothing is estimated.
+    boundary.data = { ...boundary.data!, runs: [original, { ...correction, correctionDelta: null }] };
+    expect(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="review" runId="run-correction" />)).not.toContain('Net pay on statements');
+  });
+});

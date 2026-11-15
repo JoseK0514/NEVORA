@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {ATTENDANCE_WORDS, groupHeading, presentItem, spacedRanges, splitNoClockIn} from './present';
+import {ATTENDANCE_WORDS, correctionLine, groupHeading, presentItem, spacedRanges, splitNoClockIn} from './present';
 import type {ActionItem} from './project';
 
 const plain = (text: string) => text.replace(/ /g, ' ').replace(/‑/g, '-');
@@ -55,4 +55,49 @@ describe('presented action items (Phase 7)', () => {
     expect(plain(groupHeading('TARGET_MISSING', 10, 'Weekly hour target missing'))).toBe('10 people with no weekly hour target');
     expect(plain(groupHeading('AVAILABILITY_MISSING', 1, 'x'))).toBe('1 person hasn’t sent availability');
   });
+});
+
+// Backend contract (Nov 15, 2026): a correction item carries workDate, the workplace zone and both intervals.
+describe('a time correction says what changes, in the workplace clock', () => {
+  const zone = 'America/Puerto_Rico'; // UTC−4, no daylight saving
+  const fix = (correction: Partial<NonNullable<ActionItem['correction']>>): ActionItem => ({id: 'TIME_CORRECTION:c1', type: 'TIME_CORRECTION', category: 'timekeeping', priority: 'REVIEW',
+    title: 'Time correction waiting for review', detail: 'James Ortiz · Recorded time correction.', dateTime: '2026-11-12T15:00:00Z', href: '/app?view=attendance#correction-c1',
+    correction: {workDate: '2026-11-11', timeZone: zone, recordedStartAt: '2026-11-11T13:00:00Z', recordedEndAt: '2026-11-11T21:00:00Z', requestedStartAt: '2026-11-11T12:30:00Z', requestedEndAt: '2026-11-11T21:00:00Z', ...correction}} as ActionItem);
+  const plain = (text: string) => text.replace(/[  ]/g, ' ');
+  it('gives the requested time, what was recorded and the difference in length', () => {
+    const shown = presentItem(fix({}), 'Review', zone);
+    expect(shown.title).toBe('James Ortiz');
+    expect(plain(shown.detail)).toBe('Wed, Nov 11 · 8:30 AM – 5:00 PM, was 9:00 AM – 5:00 PM · +30 min');
+    expect(plain(correctionLine(fix({requestedStartAt: '2026-11-11T13:15:00Z', requestedEndAt: '2026-11-11T20:00:00Z'}).correction!)!)).toBe('Wed, Nov 11 · 9:15 AM – 4:00 PM, was 9:00 AM – 5:00 PM · −1 h 15 min');
+    expect(plain(correctionLine(fix({requestedStartAt: '2026-11-11T14:00:00Z', requestedEndAt: '2026-11-11T22:00:00Z'}).correction!)!)).toMatch(/· same length$/);
+  });
+  it('never invents a zero-minute recorded entry or a difference it cannot know', () => {
+    expect(plain(correctionLine(fix({recordedStartAt: null, recordedEndAt: null}).correction!)!)).toBe('Wed, Nov 11 · Add 8:30 AM – 5:00 PM');
+    const open = plain(correctionLine(fix({recordedEndAt: null}).correction!)!);
+    expect(open).toBe('Wed, Nov 11 · 8:30 AM – 5:00 PM, was 9:00 AM with no clock-out');
+    expect(open).not.toMatch(/min|same length/);
+  });
+  it('reads times in the workplace zone, not the device or UTC', () => {
+    expect(plain(correctionLine(fix({timeZone: 'America/Los_Angeles'}).correction!)!)).toBe('Wed, Nov 11 · 4:30 AM – 1:00 PM, was 5:00 AM – 1:00 PM · +30 min');
+  });
+  it('keeps the earlier line when the facts are absent or unreadable', () => {
+    const none = {...fix({}), correction: undefined} as ActionItem;
+    expect(plain(presentItem(none, 'Review', zone).detail)).toBe('Time correction · sent Nov 12');
+    expect(correctionLine(fix({requestedEndAt: '2026-11-11T12:00:00Z'}).correction!)).toBeNull();
+    expect(correctionLine(fix({timeZone: 'Not/AZone'}).correction!)).toBeNull();
+    expect(plain(presentItem(fix({timeZone: 'Not/AZone'}), 'Review', zone).detail)).toBe('Time correction · sent Nov 12');
+  });
+});
+
+it('a shift request names a swap or a cover when the read says which (backend, Nov 15, 2026)', () => {
+  const request = (exchangeKind?: 'SWAP' | 'COVERAGE') => ({id: 'EXCHANGE:x1', type: 'EXCHANGE', category: 'requests', priority: 'REVIEW', title: 'Shift request', detail: 'Ana Colon is waiting for review.',
+    dateTime: '2026-11-12T15:00:00Z', href: '/app/exchange?tab=requests&requestId=x1', request: {...(exchangeKind ? {exchangeKind} : {}), startDate: '2026-11-18', endDate: '2026-11-18', lengthText: '8 h', locationName: 'Condado', reviewHref: '/app/exchange?tab=requests&requestId=x1'}} as ActionItem);
+  expect(presentItem(request('SWAP'), 'Review', 'UTC').detail.replace(/ /g, ' ')).toBe('Shift swap · sent Nov 12');
+  expect(presentItem(request('COVERAGE'), 'Review', 'UTC').detail.replace(/ /g, ' ')).toBe('Cover request · sent Nov 12');
+  expect(presentItem(request(), 'Review', 'UTC').detail.replace(/ /g, ' ')).toBe('Shift request · sent Nov 12');
+});
+
+it('keeps each time in a correction line whole with a narrow no-break space', () => {
+  const line = correctionLine({workDate: '2026-11-02', timeZone: 'America/Puerto_Rico', recordedStartAt: '2026-11-02T14:55:00Z', recordedEndAt: '2026-11-02T22:01:00Z', requestedStartAt: '2026-11-02T14:55:00Z', requestedEndAt: '2026-11-02T21:21:00Z'})!;
+  expect(line).toContain('10:55 AM – 5:21 PM, was 10:55 AM – 6:01 PM');
 });

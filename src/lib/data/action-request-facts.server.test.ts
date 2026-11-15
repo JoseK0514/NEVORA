@@ -16,6 +16,15 @@ it('validates request detail before a client can consume it',()=>{
   expect(parseActionCenter(snapshot,'2026-10-19')).toMatchObject({state:'ready'});
   expect(()=>parseActionCenter({...snapshot,items:[{...snapshot.items[0],request:{...request,reviewHref:'https://other.invalid'}}]},'2026-10-19')).toThrow('Invalid request facts');
 });
+it('the client accepts the server’s own exchange facts, exchangeKind included, and nothing else in its place',()=>{
+  // Closeout (Nov 15, 2026): development added exchangeKind to the projection but not to the client's allowed keys, so one
+  // shift request made all of Things to do fail to load. The round trip is the regression.
+  const request=projectActionRequestFact({kind:'EXCHANGE',exchange_kind:'COVERAGE',id:'x',start_date:'2026-10-19',end_date:'2026-10-19',start_time:'09:00',end_time:'17:00',location_name:'Fictional Office',note:null});
+  expect(request.exchangeKind).toBe('COVERAGE');
+  const snapshot={state:'ready',weekStart:'2026-10-19',observedAt:'2026-10-19T14:00:00Z',validForMs:45000,limitedAttendance:false,counts:{total:1,requests:1,scheduling:0,timekeeping:0},items:[{id:'EXCHANGE:x',type:'EXCHANGE',category:'requests',priority:'REVIEW',title:'QA',detail:'QA',href:'/app/exchange',request}]};
+  expect(parseActionCenter(snapshot,'2026-10-19')).toMatchObject({state:'ready'});
+  expect(()=>parseActionCenter({...snapshot,items:[{...snapshot.items[0],request:{...request,exchangeKind:'TRADE'}}]},'2026-10-19')).toThrow('Invalid request facts');
+});
 it('keeps the full-review fallback when optional facts cannot be read',async()=>{
   const proof={employee:{id:'self',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)} as SessionMutationProof;
   const items=[{id:'TIME_OFF:r',type:'TIME_OFF'}] as ActionItem[];

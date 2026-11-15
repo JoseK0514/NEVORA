@@ -6,6 +6,7 @@ import { TeamOverviewCorp } from "./team/team-overview";
 import { ManagerTimeCorrections } from "./manager-time-corrections";
 import {HomeActionCenterProvider} from './manager-action-center';
 import {OwnerSetupCorpLive} from './owner-setup-card';
+import {OwnerBillingNotice} from './owner-b/billing-notice-card';
 import { formatBusinessTimestamp } from "@/lib/business-time";
 import { durationSentence } from "@/lib/duration-format";
 import Link from "next/link";
@@ -248,7 +249,8 @@ function PremiumOverview(props: Props) {
     today={slots.snapshots.today} monitor={slots.snapshots.monitor ?? null} actions={slots.snapshots.actions} actionsConnection="ready" />;
   return <SharedHomeRead key={`${props.actorId}:${props.weekStart}`} live weekStart={props.weekStart} actorId={props.actorId ?? ''}
     owner={props.role === 'OWNER'} initialItems={props.managerActions}>
-    <PremiumHomeLive {...common} corporate nextPay={props.nextPay ?? null} payrollStatus={props.payrollStatus} setup={props.role === 'OWNER' ? <OwnerSetupCorpLive locationCount={props.totalLocations}/> : null} />
+    <PremiumHomeLive {...common} corporate nextPay={props.nextPay ?? null} payrollStatus={props.payrollStatus} setup={props.role === 'OWNER' ? <OwnerSetupCorpLive locationCount={props.totalLocations} payroll={!!props.payrollStatus}/> : null}
+      billing={props.role === 'OWNER' ? <OwnerBillingNotice timeZone={props.timeZone}/> : null} />
   </SharedHomeRead>;
 }
 

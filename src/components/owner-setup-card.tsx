@@ -3,7 +3,8 @@
 import {CorpRow} from '@/components/corp/corp';
 import { QuietList, QuietRow, QuietSection } from './quiet/quiet';
 import Link from 'next/link';
-import {useId, type ReactNode} from 'react';
+import {createContext, useContext, useId, type ReactNode} from 'react';
+import type {SetupProgress} from '@/lib/today/project';
 import {CaretRightIcon, CheckCircleIcon, CircleIcon, SquaresFourIcon} from '@phosphor-icons/react/ssr';
 import {lower} from '@/lib/workspace-presentation/words';
 import {hasSetupGaps, setupDoneCount, type SetupSteps} from '@/lib/action-center/setup';
@@ -105,18 +106,40 @@ export function OwnerSetupQuietLive({locationCount}: {locationCount: number}) {
   return <OwnerSetupQuiet steps={useHomeSetupSteps()} locationCount={locationCount}/>;
 }
 
-/** Corporate Home (Release 1): setup is one row inside Things to do, so Home keeps three cards. */
-export function OwnerSetupCorp({steps, locationCount}: {steps: SetupSteps | null; locationCount: number}) {
-  if (!steps || !hasSetupGaps(steps)) return null;
-  const done = setupDoneCount(steps);
-  const next = steps.coverageOpen
-    ? locationCount === 0 ? {href: '/app/settings/locations', label: 'add a location'} : {href: '/app/schedule/settings#coverage-staffing', label: 'set coverage periods'}
-    : {href: '/app/schedule/settings#target-hours', label: 'set weekly hour targets'};
-  // R7 (copy row 5): "1 of 2 done · Next: weekly hour targets".
-  const step = steps.coverageOpen ? locationCount === 0 ? 'add a location' : 'coverage periods' : 'weekly hour targets';
-  return <div id="home-setup" className="c-home__setup"><CorpRow href={next.href} title="Finish setting up" detail={`${done} of 2 done · Next: ${step}`} chevron /></div>;
+/** Backend (Nov 15, 2026): the Today read's setup facts for the actor's permitted locations. Home provides them; null
+ * when the read hasn't come back or doesn't carry them. */
+export const HomeSetupProgress = createContext<SetupProgress | null>(null);
+
+export type SetupItem = {done: boolean; step: string; href: string};
+/** The setup steps in order. The two configuration checks come from Things to do, as before; the server's setup facts
+ * add the team, a published schedule, a registered time clock, clock-in PINs and (with payroll) the pay schedule. With
+ * no facts the list is the two checks alone, so a missing read is never shown as more setup done. A registered tablet
+ * is only that: it doesn't say punching is on. */
+export function setupItems(steps: SetupSteps, locationCount: number, progress: SetupProgress | null, payroll: boolean): SetupItem[] {
+  const items: SetupItem[] = [];
+  if (progress) items.push({done: progress.teamSize > 1, step: 'add your team', href: '/app/employees'});
+  items.push(locationCount === 0 ? {done: !steps.coverageOpen, step: 'add a location', href: '/app/settings/locations'}
+    : {done: !steps.coverageOpen, step: 'coverage periods', href: '/app/schedule/settings#coverage-staffing'});
+  items.push({done: steps.missingTargets === 0, step: 'weekly hour targets', href: '/app/schedule/settings#target-hours'});
+  if (progress) {
+    items.push({done: progress.publishedSchedule, step: 'publish a schedule', href: '/app/schedule'});
+    items.push({done: progress.registeredClocks > 0, step: 'register a time clock tablet', href: '/app/settings/clocker'});
+    items.push({done: progress.peopleWithPins > 0, step: 'set clock-in PINs', href: '/app/settings/clocker/pins'});
+    if (payroll) items.push({done: progress.paySchedule, step: 'set your pay schedule', href: '/app/settings/payroll'});
+  }
+  return items;
 }
 
-export function OwnerSetupCorpLive({locationCount}: {locationCount: number}) {
-  return <OwnerSetupCorp steps={useHomeSetupSteps()} locationCount={locationCount}/>;
+/** Corporate Home (Release 1): setup is one row inside Things to do, so Home keeps three cards.
+ * R7 (copy row 5): "1 of 2 done · Next: weekly hour targets"; with the server's facts, "3 of 7 done · Next: …". */
+export function OwnerSetupCorp({steps, locationCount, progress = null, payroll = false}: {steps: SetupSteps | null; locationCount: number; progress?: SetupProgress | null; payroll?: boolean}) {
+  if (!steps) return null;
+  const items = setupItems(steps, locationCount, progress, payroll), next = items.find(item => !item.done);
+  if (!next) return null;
+  const done = items.filter(item => item.done).length;
+  return <div id="home-setup" className="c-home__setup"><CorpRow href={next.href} title="Finish setting up" detail={`${done} of ${items.length} done · Next: ${next.step}`} chevron /></div>;
+}
+
+export function OwnerSetupCorpLive({locationCount, payroll = false}: {locationCount: number; payroll?: boolean}) {
+  return <OwnerSetupCorp steps={useHomeSetupSteps()} locationCount={locationCount} progress={useContext(HomeSetupProgress)} payroll={payroll}/>;
 }

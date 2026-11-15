@@ -19,7 +19,8 @@ import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BScreen, BSeg, BStack, BState, type BStateKind, type BTone} from '../owner-b/b-kit';
 import type {EmployeeNotificationItem} from '../../lib/employee-view';
-import {notificationKind, type NotificationKind} from '../../lib/notification-labels';
+import {type NotificationKind} from '../../lib/notification-labels';
+import {notificationCountNote, notificationKindFor, notificationOutcomeNote} from '../../lib/notification-facts';
 import type {CommunicationRecoveryState} from '../../lib/communications/recovery';
 import {notificationGroup, notificationTitle, type NotificationTab} from '../employee-mobile/notifications-list';
 import {messageTime, type MessageFilter, type ReadyUpdate} from '../employee-mobile/messages-view';
@@ -107,17 +108,19 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
         {list.partial ? <p className="b-note" role="status">Some current notices couldn’t be checked. Refresh before relying on this list.</p> : null}
         {groups.length ? groups.map(group => <BCard key={group.name} title={group.name} id={'b-notifications-' + group.name.toLowerCase()}>
           <ul className="b-list" aria-label={group.name + ' notifications'}>{group.rows.map(item => {
-            const isUnread = item.reviewState === 'unread', required = item.actionState === 'required', busy = list.opening === item.id, kind = notificationKind(item.label);
+            const isUnread = item.reviewState === 'unread', required = item.actionState === 'required', busy = list.opening === item.id, kind = notificationKindFor(item);
             // Review B1 (NV-142): every item that needs an action is amber, whatever its kind.
             const Icon = kind ? KIND_ICON[kind] : BellIcon, tone: BTone = required ? 'amber' : 'grey';
             const earlier = group.name === 'Earlier', time = clock(item.at, zone);
             // Inspection Nov 14 (BR-6, EM-005): the title says what happened; the label stays the row's kind (its icon).
             const title = notificationTitle(item);
             // Review B6 (NV-271): an earlier notice's date is on the right, so its sub-line carries only the time.
-            const sub = [required ? 'Action needed' : null, earlier ? time : null].filter(Boolean).join(' · ');
+            // Backend (Nov 15, 2026): a request's later status and a schedule's shift count, when the list sends them.
+            const facts = [notificationOutcomeNote(item), notificationCountNote(item)].filter((note): note is string => !!note);
+            const sub = [required ? 'Action needed' : null, ...facts, earlier ? time : null].filter(Boolean).join(' · ');
             return <li className="b-li" key={item.id}><Link id={'b-message-' + item.id} className={`b-row b-row--link eb-notif${busy ? ' eb-notif--busy' : ''}`} href={item.href} prefetch={false}
               onClick={event => list.onOpen(event, item.id, item.href)} aria-busy={busy || undefined}
-              aria-label={`${title}${isUnread ? ', unread' : ''}${required ? ', action needed' : ''}, ${earlier ? `${longDay(item.at, zone)} · ${time}` : time}`}>
+              aria-label={`${title}${facts.length ? `, ${facts.join(', ')}` : ''}${isUnread ? ', unread' : ''}${required ? ', action needed' : ''}, ${earlier ? `${longDay(item.at, zone)} · ${time}` : time}`}>
               <BIcon tone={tone}><Icon weight="bold" /></BIcon>
               <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{title}</span></span>{sub ? <span className="b-row__s"><Dotted text={sub}/></span> : null}</span>
               <span className="b-row__end eb-when"><span>{earlier ? shortDate(item.at, zone) : time}</span>

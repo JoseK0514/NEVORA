@@ -9,7 +9,7 @@ import './payroll-corp.css';
 import type { OpenPayPeriod } from '@/lib/payroll/pay-calendar.server';
 import type { PayrollCapabilities, PayrollJob, PayrollMissingPeriod, PayrollRun, PayrollRunsResponse } from '@/lib/payroll/contracts';
 import { parsePayrollImport, readRuns } from './api';
-import { formatPayrollMoney } from './money';
+import { formatPayrollMoney, formatSignedPayrollMoney } from './money';
 import { usePayrollOperation, usePayrollResource } from './use-payroll';
 import { NativeReview } from './native-review';
 import { PortalStatements } from './portal-statements';
@@ -27,6 +27,7 @@ import { ReceiptIcon } from '@phosphor-icons/react/dist/ssr/Receipt';
 import { UploadSimpleIcon } from '@phosphor-icons/react/dist/ssr/UploadSimple';
 import { WarningIcon } from '@phosphor-icons/react/dist/ssr/Warning';
 import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown';
+import { ListChecksIcon } from '@phosphor-icons/react/dist/ssr/ListChecks';
 
 export type PayrollView = 'home' | 'review' | 'fix' | 'people' | 'prepare' | 'history';
 type Operation = ReturnType<typeof usePayrollOperation>;
@@ -117,12 +118,19 @@ export function PayrollRuns({ recoveryScope, current = null, canEditSettings = f
   const missingRun = data && (view === 'review' || view === 'fix' || view === 'people') && !run
     ? <EmptyCard alert title="This payroll isn’t available" detail="It may have been replaced by a newer revision." action={{ href: '/app/payroll', label: 'Go to Payroll' }} /> : null;
 
-  if (view === 'home') return <PayrollHome current={current} data={data} state={state} today={today} canEditSettings={canEditSettings} company={company} operation={operation} tabs={tabs} />;
+  // Backend (Nov 15, 2026): the runs read names the current period, its payday and the workplace's day (asOfDate). It is
+  // the page's period once read; null means no effective pay schedule. Before it arrives (or from an older read) the
+  // route's period stands, as before. The route's frequency still names the payroll.
+  const fromRead = data?.currentPeriod;
+  const period: OpenPayPeriod | null = fromRead === undefined ? current : fromRead === null ? null
+    : { period: fromRead.period, payday: fromRead.payday, ...(current?.frequency ? { frequency: current.frequency } : {}) };
+  const asOf = fromRead?.asOfDate ?? today;
+  if (view === 'home') return <PayrollHome current={period} data={data} state={state} today={asOf} canEditSettings={canEditSettings} company={company} operation={operation} tabs={tabs} />;
   // Single-column pushed pages use the 720px desktop width (visual-craft F).
   if (view === 'prepare') return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-prepare-title">
     <Pushed back={{ href: '/app/payroll', label: 'Payroll' }} title="Prepare payroll" id="payroll-prepare-title" />
     <Feedback operation={operation} />
-    {state ?? (data && <PreparePayroll current={current} data={data} today={today} operation={operation} />)}
+    {state ?? (data && <PreparePayroll current={period} data={data} today={asOf} operation={operation} />)}
   </CorpPage>;
   if (view === 'history') return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-history-title">
     <Pushed back={{ href: '/app/payroll', label: 'Payroll' }} title="Payroll history" id="payroll-history-title" />
@@ -265,6 +273,10 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
   const isTab = (href: string) => !!tabs?.some(item => item.href === href);
   const exportsHref = current ? `/app/payroll-export?start=${current.period.startDate}&end=${current.period.endDate}` : '/app/payroll-export';
   const exportsRow = <li className={isTab('/app/payroll-export') ? 'c-only-phone' : undefined}><CorpRow href={exportsHref} one title="Time exports" chevron /></li>;
+  // Backend (Nov 15, 2026): this period's timecards, with the day approval opens once the period ends (the words Time
+  // exports and Things to do use). It opens Timecards on that period.
+  const timecards = current ? { href: `/app/timecards?start=${current.period.startDate}&end=${current.period.endDate}`,
+    line: today > current.period.endDate ? 'Approve this period’s timecards' : `Can be approved from ${quietDay(new Date(Date.parse(`${current.period.endDate}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10))}` } : null;
   const settings = canEditSettings ? <Link className={isTab('/app/settings/payroll') ? 'c-link c-link--l c-only-phone' : 'c-link c-link--l'} href="/app/settings/payroll" aria-label="Payroll settings">Settings</Link> : undefined;
   const frequency = `${current?.frequency ? FREQUENCY[current.frequency] : ''} payroll`.trim().replace(/^payroll$/, 'Payroll');
   // Up next is one row (Nov 1 upscale): the payroll, its period and payday; it opens the next step (Prepare, Review issues,
@@ -320,6 +332,7 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
             {data && oldest ? <Link className="b-link c-pay__steplink" href={step.href} aria-label={`${step.label}, ${quietRange(current.period.startDate, current.period.endDate)}`}>{step.label}</Link>
               : <BButtonLink href={step.href} kind={step.quiet ? 'ghost' : 'teal'} full big label={`${step.label}, ${quietRange(current.period.startDate, current.period.endDate)}`}>{step.label}</BButtonLink>}
           </div>
+          {timecards ? <BList label="Timecards for this period"><BRow href={timecards.href} lead={<BIcon tone="grey"><ListChecksIcon weight="bold" /></BIcon>} title="Timecards" sub={timecards.line} /></BList> : null}
           {missing && !oldest ? <BList label="Periods with no payroll"><BRow href="/app/payroll/prepare" title="Periods with no payroll" sub="Prepare payroll for each one" end={<b className="c-num">{missing.missingCount === null ? 'Check' : String(missing.missingCount)}</b>} /></BList> : null}
         </BCard> : <BCard label="Pay schedule"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">No pay schedule yet</span><span className="b-notice__s">Set your pay schedule to see the current period.</span></span>
           {canEditSettings ? <BButtonLink href="/app/settings/payroll" kind="ghost">Settings</BButtonLink> : null}</div></BCard>}
@@ -357,6 +370,7 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
             detail={<><Num>{quietRange(current.period.startDate, current.period.endDate)}</Num>{' · Payday '}<Num>{quietDay(current.payday)}</Num></>}
             value={nextValue} valueTone="soft" chevron
             label={`${frequency}, ${quietRange(current.period.startDate, current.period.endDate)}, payday ${quietDay(current.payday)}${people.length ? `, ${plural(people.length, 'person', 'people')}` : ''}. ${step.label}`} /></li>
+          {timecards ? <li><CorpRow href={timecards.href} title="Timecards" detail={timecards.line} chevron /></li> : null}
           {missing && !oldest ? <li><CorpRow href="/app/payroll/prepare" bold title="Periods with no payroll" detail="Prepare payroll for each one" value={missing.missingCount === null ? 'Check' : <Num>{String(missing.missingCount)}</Num>} chevron /></li> : null}
         </CorpRows>
         <div className="b-steps c-pay__steps" role="group" aria-label="Payroll steps">{steps}</div>
@@ -370,6 +384,22 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
       </div>
     </>}
   </CorpPage>;
+}
+
+/** Backend (Nov 15, 2026): a correction's `correctionDelta` compares net pay on the earlier statements with this draft,
+ * in signed USD minor units, per person and in total. It is a statement comparison: it never says money was paid or
+ * taxes remitted (the settle note under it says what to do). Only people whose net pay changes are listed; a person's
+ * name is shown when the page has it, otherwise "A team member". */
+function CorrectionDelta({ delta, names }: { delta: NonNullable<PayrollRun['correctionDelta']>; names: Record<string, string> }) {
+  const changed = delta.employees.filter(row => row.deltaNetMinor !== '0');
+  return <div className="c-pay__delta">
+    <p className="c-pay__detail"><b>{`Net pay on statements: ${formatSignedPayrollMoney(delta.totalNetMinor)}`}</b>{changed.length ? ` across ${plural(changed.length, 'person', 'people')}` : ' (no one’s net pay changes)'}</p>
+    {changed.length ? <ul className="c-pay__deltalist" aria-label="Net pay changes by person">{changed.map(row => <li key={row.employeeId}>
+      <span>{names[row.employeeId] ?? 'A team member'}</span>
+      <span className="c-num">{`was ${formatPayrollMoney(row.previousNetMinor)} · now ${formatPayrollMoney(row.netMinor)}`}</span>
+      <b className="c-num">{formatSignedPayrollMoney(row.deltaNetMinor)}</b>
+    </li>)}</ul> : null}
+  </div>;
 }
 
 /** Board O-PayrollReview: the period and its totals, what stops payroll, then one Approve. Everything an approved run
@@ -403,6 +433,7 @@ function RunReview({ run, data, names, operation }: { run: PayrollRun; data: Pay
     {run.correctionOf ? <CorpCard as="div" ariaLabel="Correction"><CorpBody>
       <b className="c-pay__strong">{original ? `Correction of ${quietRange(original.period.startDate, original.period.endDate)}` : 'Correction of an earlier payroll'}</b>
       <p className="c-pay__detail">{reasons.length ? reasons.join(' · ') : 'The original approval and statements remain in history.'}</p>
+      {run.correctionDelta ? <CorrectionDelta delta={run.correctionDelta} names={names} /> : null}
       <p className="c-pay__detail">{SETTLE_NOTE}</p>
     </CorpBody></CorpCard> : reasons.length ? <CorpCard as="div" ariaLabel="Correction"><CorpBody><b className="c-pay__strong">Correction reason</b><p className="c-pay__detail">{reasons.join(' · ')}</p></CorpBody></CorpCard> : null}
     {standsApproved(run, data.runs) ? <PayGroup id="payroll-handoff" label="What’s next"><WhatsNext /></PayGroup> : null}

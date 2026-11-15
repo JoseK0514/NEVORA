@@ -16,6 +16,7 @@ import type { ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor } from "@/lib/time-clock";
 import type { ActionCenterConnection } from "@/components/manager-action-center";
+import { HomeSetupProgress } from "@/components/owner-setup-card";
 import { BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BInk, BList, BLive, BRow, BScreen, BStack, BState, BWhen, partOfDay, type BLiveItem } from "./b-kit";
 
 /* Direction B, Owner and Manager Home on a phone (mock screen "Owner · Home"). The same reads as the corporate Home: Today's
@@ -39,7 +40,7 @@ export type HomeBWeek = {
 export type HomeBProps = {
   today: Today | null; monitor: ClockMonitor | null; monitorPending: boolean; offline: boolean;
   value: NeedsYou | null; connection: ActionCenterConnection; timecards: ActionItem[]; timecardsReady: boolean; businessDay?: string;
-  nextPay?: NextPay; setup?: ReactNode; dateLabel: string; summary: string; week?: HomeBWeek; greeting: string;
+  nextPay?: NextPay; setup?: ReactNode; billing?: ReactNode; dateLabel: string; summary: string; week?: HomeBWeek; greeting: string;
   /** Closing F1 (NV-123): Things to do's fresh read, for the failed card's Try again. */
   onRetry?: () => void;
 };
@@ -83,6 +84,12 @@ export function HomeB(props: HomeBProps) {
     : missedOnly ? { label: ATTENDANCE_WORDS.missed, dot: "warn", value: noClockIn.ended.length, href: "/app/inbox#todo-missed", aria: `Missed clock-ins: ${noClockIn.ended.length}` }
     : { label: ATTENDANCE_WORDS.notClockedIn, value: noClockIn.running.length, href: "/app/inbox#todo-not-clocked-in",
       aria: `Not clocked in: ${noClockIn.running.length}${noClockIn.ended.length ? `. Missed clock-ins: ${noClockIn.ended.length}` : ""}` };
+  // BR-16 with the backend's clockerRegistered (Nov 15, 2026): while no time clock tablet is registered, the two attendance
+  // tiles would report punches that can't happen yet, so one tile says the time clock isn't set up. Registration is a
+  // stored fact, not proof that punching is on, so a registered tablet changes nothing here. Unknown keeps the tiles.
+  // Only an Owner's Home carries the setup card, so only an Owner's tile links to the time clock settings.
+  const noClock = ready?.clockerRegistered === false;
+  const clockTile: BLiveItem = { label: "Time clock", value: "Not set up", ...(props.setup ? { href: "/app/settings/clocker", aria: "Time clock not set up. Set up your time clock" } : {}) };
   const first = props.week?.firstName ?? props.greeting.replace(/^Welcome back,\s*/, "");
   const eyebrow = `${partOfDay(ready?.timeZone)}, ${first}`;
   const title = value ? value.count === 0 ? "You’re all set" : `${plural(value.count, "thing needs", "things need")} you`
@@ -95,9 +102,9 @@ export function HomeB(props: HomeBProps) {
       {/* Review B1 (NV-117): the date is a fact on the band, not a glass button. */}
       <div className="b-hrow"><span className="b-date" aria-hidden="true"><CalendarBlankIcon size={15} weight="bold" />{props.dateLabel}</span></div>
       <BLive label="Right now" items={[
-        { label: "Clocked in", dot: "live", value: checking ? CORP_NO_VALUE : onShift, small: !checking && scheduled ? `/${scheduled}` : undefined,
+        ...(noClock ? [clockTile] : [{ label: "Clocked in", dot: "live" as const, value: checking ? CORP_NO_VALUE : onShift, small: !checking && scheduled ? `/${scheduled}` : undefined,
           href: checking ? undefined : "/app?view=attendance", aria: checking ? undefined : `Clocked in: ${onShift} of ${scheduled}. Who’s working` },
-        attendance,
+        attendance]),
         { label: "Open shifts", dot: gaps?.length ? "warn" : undefined, value: gaps ? gaps.length : CORP_NO_VALUE, href: gaps ? openHref : undefined, aria: gaps ? `Open shifts: ${gaps.length}` : undefined },
       ]} />
     </BHero>
@@ -108,7 +115,9 @@ export function HomeB(props: HomeBProps) {
       <div className="b-home-col b-home-col--a">
         {/* Nov 14, 2026 inspection (BR-16): until setup is done its card leads the page (the card hides itself once the
           steps are complete), so a new workplace sees what to finish before the day's figures. */}
-        {props.setup ? <BCard label="Finish setting up"><div className="b-setup">{props.setup}</div></BCard> : null}
+        {/* Backend (Nov 15, 2026): the Owner's plan and billing notice leads while it applies. */}
+        {props.billing ?? null}
+        {props.setup ? <BCard label="Finish setting up"><div className="b-setup"><HomeSetupProgress.Provider value={ready?.setupProgress ?? null}>{props.setup}</HomeSetupProgress.Provider></div></BCard> : null}
         <NeedsYouCard {...props} gapRows={gapRows} openHref={openHref} />
         {ready ? <OnNow shifts={ready.shifts} timeZone={ready.timeZone} /> : null}
       </div>

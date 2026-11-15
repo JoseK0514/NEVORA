@@ -25,7 +25,7 @@ const kinds:Record<string,[string,string]>={schedule:['schedule review','schedul
 /** "2 schedule reviews · 1 team update", from the items waiting on the person. */
 export function waitingSummary(items:readonly EmployeeNotificationItem[]){
  const counts=new Map<string,number>();
- for(const item of items){const icon=notificationPresentation(item.label).icon;const key=kinds[icon]?icon:'other';counts.set(key,(counts.get(key)??0)+1);}
+ for(const item of items){const icon=notificationPresentation(item.label,item.eventType).icon;const key=kinds[icon]?icon:'other';counts.set(key,(counts.get(key)??0)+1);}
  return [...counts.entries()].map(([key,n])=>{const [one,many]=kinds[key]??['other update','other updates'];return `${n} ${n===1?one:many}`;}).join(' · ');
 }
 
@@ -39,7 +39,7 @@ function when(at:string){
 }
 
 function Row({item}:{item:EmployeeNotificationItem}){
- const presentation=notificationPresentation(item.label);
+ const presentation=notificationPresentation(item.label,item.eventType);
  const unread=item.reviewState==='unread';
  return <li data-inbox-row><Link className={styles.ntRow} data-unread={unread||undefined} href={item.href} prefetch={false}>
   <span className={styles.ntDot} aria-hidden="true"/>

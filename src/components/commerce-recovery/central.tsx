@@ -71,6 +71,9 @@ export function CentralBilling({apiOrigin,initialLanguage,returning=false,legal}
   const transport=client.current;if(!transport)return;const controller=new AbortController();mutation.current=controller;setOpening(true);setProblem(null);
   try{const request=action?transport.action(action,lang,controller.signal):transport.retry(controller.signal);setPending(transport.hasPending());const result=await request;
    if(mutation.current!==controller||controller.signal.aborted||!foreground()||current.current.snapshot?.state!=='ready')return;
+   // Codex (Nov 15, 2026): read the held operation again after the answer. A final refusal retires it (no Retry for an
+   // operation the service closed); anything uncertain keeps the original key and body for the person's own retry.
+   setPending(transport.hasPending());
    if(result.kind==='denied'){setPending(false);controls.current?.pause();setLink('denied');return;}
    if(result.kind==='navigate'){try{window.location.assign(result.url);}catch{setProblem({kind:'unknown'});}}else if(result.kind!=='busy')setProblem(result);
   }finally{if(mutation.current===controller){mutation.current=null;setOpening(false);}}

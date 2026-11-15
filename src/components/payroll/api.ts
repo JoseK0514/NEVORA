@@ -32,7 +32,29 @@ export function readRuns(value: unknown): PayrollRunsResponse {
     const backlog = value.backlog;
     if (!record(backlog) || !validDate(backlog.asOfDate) || !validDate(backlog.rangeEnd) || (backlog.rangeStart !== null && !validDate(backlog.rangeStart)) || typeof backlog.overflow !== 'boolean' || !Number.isInteger(backlog.returnedCount) || Number(backlog.returnedCount) < 0 || ['missingCount', 'remainingCount', 'ambiguousCount'].some(key => backlog[key] !== null && (!Number.isInteger(backlog[key]) || Number(backlog[key]) < 0))) throw new Error('The payroll history summary could not be read.');
   }
-  return value as PayrollRunsResponse;
+  return withReadFacts(value as PayrollRunsResponse);
+}
+
+const signedMinor = (value: unknown) => typeof value === 'string' && /^-?(0|[1-9]\d*)$/.test(value) && value !== '-0';
+const unsignedMinor = (value: unknown) => typeof value === 'string' && /^(0|[1-9]\d*)$/.test(value);
+const zoneOk = (value: unknown) => { if (typeof value !== 'string' || !value || value.length > 100) return false; try { new Intl.DateTimeFormat('en', { timeZone: value }); return true; } catch { return false; } };
+/** Backend (Nov 15, 2026): `currentPeriod` and each correction's `correctionDelta` are optional facts. A malformed one is
+ * dropped, so the page falls back to what it showed before rather than showing an amount or a period it can't trust. */
+function withReadFacts(value: PayrollRunsResponse): PayrollRunsResponse {
+  const current = value.currentPeriod;
+  const currentOk = current === undefined || current === null || (record(current) && validPeriod(current.period) && validDate(current.payday) && validDate(current.asOfDate)
+    && zoneOk(current.timeZone) && Number.isInteger(current.settingsRevision) && current.settingsRevision >= 1);
+  const runs = value.runs.map(run => {
+    const delta = run.correctionDelta;
+    if (delta === undefined || delta === null) return run;
+    const ok = record(delta) && signedMinor(delta.totalNetMinor) && Array.isArray(delta.employees) && delta.employees.every(row => record(row) && typeof row.employeeId === 'string' && !!row.employeeId
+      && unsignedMinor(row.previousNetMinor) && unsignedMinor(row.netMinor) && signedMinor(row.deltaNetMinor));
+    if (ok) return run;
+    const { correctionDelta: _dropped, ...rest } = run;
+    return rest as typeof run;
+  });
+  const { currentPeriod: _current, ...base } = value;
+  return { ...base, ...(currentOk ? (current === undefined ? {} : { currentPeriod: current }) : {}), runs };
 }
 export function readStatements(value: unknown): PayrollStatementsResponse {
   envelope(value);

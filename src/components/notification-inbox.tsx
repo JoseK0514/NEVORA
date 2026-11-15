@@ -36,9 +36,9 @@ const reviewLabels:Record<NotificationReviewState,string>={unread:'Unread',read:
 const actionLabels:Record<NotificationActionState,string>={required:'Action required',available:'Action available',complete:'Action complete',none:'No action required',unavailable:'Action status unavailable'};
 const filters:{value:NotificationFilter;label:string}[]=[{value:'all',label:'All'},{value:'unread',label:'Unread'},{value:'required',label:'Needs action'}];
 
-/* RA-16 (Nov 14, 2026): the notifications snapshot carries no workplace time zone, so a row's time and day are still the
- * device's. The shared relativeTimeText takes a zone; pass the snapshot's once the list sends one. */
-const whenLong=(at:string)=>new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(at));
+/* RA-16: a row's time and day are the workplace's. The snapshot carries the workplace zone (backend, Nov 15, 2026); an
+ * older snapshot without one keeps the device's. */
+const whenLong=(at:string,timeZone?:string)=>new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric',hour:'numeric',minute:'2-digit',...(timeZone?{timeZone}:{})}).format(new Date(at));
 
 export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;onMarkRead?:(id:string)=>Promise<void>;
  /** v5 (mockup E14): an Employee's or Lead's Notifications in the Quiet list, without Mark read (management only). */
@@ -57,7 +57,8 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
  const unavailable=state.snapshot?.state==='unavailable';
  const offline=unavailable&&typeof navigator!=='undefined'&&!navigator.onLine;
  const items=ready?filterNotifications(ready.items,filter,search):[];
- const groups=groupNotifications(items);
+ const zone=ready?.timeZone;
+ const groups=groupNotifications(items,zone);
  const counts=ready?{all:ready.items.length,unread:ready.items.filter(item=>item.reviewState==='unread').length,required:ready.items.filter(item=>item.actionState==='required').length}:null;
 
 
@@ -75,11 +76,11 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
   // One notification's row: what it is, then when. Opening it marks that one read (never the others in a fold).
   const chev=(open?:boolean)=><svg className="q-chev" data-open={open||undefined} viewBox="0 0 256 256" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/></svg>;
   const oneRow=(item:EmployeeNotificationItem)=>{
-   const Icon=icons[notificationPresentation(item.label).icon],review=item.reviewState??'unavailable',text=notificationTitle(item);
-   return <Link className="q-row q-row--av" data-unread={review==='unread'||undefined} href={item.href} prefetch={false} aria-label={`${[text.title,text.detail].filter(Boolean).join(', ')}, ${reviewLabels[review]}, ${whenLong(item.at)}`}
+   const Icon=icons[notificationPresentation(item.label,item.eventType).icon],review=item.reviewState??'unavailable',text=notificationTitle(item);
+   return <Link className="q-row q-row--av" data-unread={review==='unread'||undefined} href={item.href} prefetch={false} aria-label={`${[text.title,text.detail].filter(Boolean).join(', ')}, ${reviewLabels[review]}, ${whenLong(item.at,zone)}`}
     onClick={()=>{if(review==='unread')void markRead(item.id);}}>
     <span className="q-av" aria-hidden="true"><Icon weight="bold" className="q-ic" aria-hidden="true"/></span>
-    <span className="q-rt"><b>{text.title}</b><i>{text.detail?<>{text.detail} · </>:null}<time dateTime={item.at}>{relativeTimeText(item.at)}</time></i></span>
+    <span className="q-rt"><b>{text.title}</b><i>{text.detail?<>{text.detail} · </>:null}<time dateTime={item.at}>{relativeTimeText(item.at,undefined,zone)}</time></i></span>
     {/* Round 5: unread shows, not only in the label (a teal dot), and the row reads as a link (chevron). */}
     {review==='unread'?<span className="q-notif-dot" aria-hidden="true"/>:null}
     {chev()}
@@ -106,15 +107,15 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
       if(count===1)return <li key={item.id} data-inbox-row>{oneRow(item)}</li>;
       // Phase 3 (OW-002) fold: the row says how many and the latest; opening it lists each one under it, so every
       // notification is seen and read on its own. Nothing is marked read by opening the fold.
-      const Icon=icons[notificationPresentation(item.label).icon];
+      const Icon=icons[notificationPresentation(item.label,item.eventType).icon];
       const open=expanded.includes(item.id),listId=`notif-fold-${item.id}`;
       const text=notificationTitle(item);
       return <li key={item.id} data-inbox-row>
        <button type="button" className="q-row q-row--av q-notif-fold" data-unread={unreadIds.length?true:undefined} aria-expanded={open} aria-controls={listId}
-        aria-label={`${text.title}, ${count} notifications${unreadIds.length?`, ${unreadIds.length} unread`:''}, latest ${whenLong(item.at)}`}
+        aria-label={`${text.title}, ${count} notifications${unreadIds.length?`, ${unreadIds.length} unread`:''}, latest ${whenLong(item.at,zone)}`}
         onClick={()=>setExpanded(ids=>ids.includes(item.id)?ids.filter(id=>id!==item.id):[...ids,item.id])}>
         <span className="q-av" aria-hidden="true"><Icon weight="bold" className="q-ic" aria-hidden="true"/></span>
-        <span className="q-rt"><b>{text.title}</b><i><span className="b-notif-nw">{count} notifications ·</span> <span className="b-notif-nw">latest <time dateTime={item.at}>{relativeTimeText(item.at)}</time></span></i></span>
+        <span className="q-rt"><b>{text.title}</b><i><span className="b-notif-nw">{count} notifications ·</span> <span className="b-notif-nw">latest <time dateTime={item.at}>{relativeTimeText(item.at,undefined,zone)}</time></span></i></span>
         {unreadIds.length?<span className="q-notif-dot" aria-hidden="true"/>:null}
         {chev(open)}
        </button>
@@ -152,11 +153,11 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
    {groups.length?<div className={styles.groups}>{groups.map(group=><section className={styles.group} key={group.key} aria-label={group.label}>
     <h3 className={styles.groupHeading}>{keepWhole(group.label)}</h3>
     <ul className={styles.list}>{group.items.map(item=>{
-     const presentation=notificationPresentation(item.label),Icon=icons[presentation.icon];
+     const presentation=notificationPresentation(item.label,item.eventType),Icon=icons[presentation.icon];
      const review=item.reviewState??'unavailable',action=item.actionState??'unavailable';
      return <li key={item.id} data-inbox-row><Link className={styles.row} data-unread={review==='unread'} href={item.href} prefetch={false}>
       <span className={styles.icon}><Icon size={22} weight="bold" aria-hidden="true"/></span>
-      <div className={styles.copy}><div className={styles.rowHeading}><strong>{notificationTitle(item).title}</strong><time dateTime={item.at}>{keepWhole(new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit'}).format(new Date(item.at)))}</time></div>
+      <div className={styles.copy}><div className={styles.rowHeading}><strong>{notificationTitle(item).title}</strong><time dateTime={item.at}>{keepWhole(new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',...(zone?{timeZone:zone}:{})}).format(new Date(item.at)))}</time></div>
        <div className={styles.statuses}><span className={styles.review} data-state={review}>{review==='unread'?<span className={styles.dot} aria-hidden="true"/>:review==='confirmed'?<CheckCircleIcon size={15} weight="bold" aria-hidden="true"/>:null}{reviewLabels[review]}</span>{/* One status per row for Owners and Managers (v3); employees keep both. */}{onMarkRead?null:<span className={styles.action} data-state={action}>{actionLabels[action]}</span>}</div>
        <span className={styles.destination}>{presentation.destination}</span>
       </div>
