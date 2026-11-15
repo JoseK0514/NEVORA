@@ -43,6 +43,12 @@ These still use the older look:
 
 New server APIs with no screens yet: conversations and staff tasks.
 
+## From the Nov 15 development merge
+- **Owner roster import** (preview, then import a staff list): the backend is done and there is no screen yet. The UI contract is
+  `docs/handoffs/2026-11-14-owner-simplicity.md`. Add it to the Owner phase: the import screen with preview and errors, in EN/ES,
+  for phone and desktop. Label the headcounts distinctly (active people, availability eligibility, plan capacity), as the handoff asks.
+- Codex turned on unused-code checks in the type check, so new screens must not leave unused imports.
+
 ## Rules
 
 - **Brand is fixed:** Inter, teal #0B6E69, the teal band, canvas #F2F5F4, white 22px cards, pills, Phosphor bold icons, light only, and the Clocker glow.
