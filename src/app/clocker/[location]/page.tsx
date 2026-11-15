@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../../../lib/feature-flags';
 import type {Metadata} from 'next';
 import {clockerLaunchMetadata} from '@/lib/clocker/installation';
 import { readPinKey } from '@/lib/clocker/pin-crypto.server';
@@ -29,5 +30,5 @@ export default async function ClockerPage({
   let pinEnabled = false;
   try { readPinKey(); pinEnabled = true; } catch { /* PIN setup stays unavailable until configured. */ }
   const brand = await currentBrand();
-  return <ClockerSetup uiV2={process.env.NEVORA_CLOCKER_UI_V2==='true'} brand={{ style: clockerBrandStyle(brand.tokens), logoUrl: brand.logoUrl }} punchEnabled={process.env.NEVORA_CLOCKER_PUNCH_ENABLED === 'true'} pinEnabled={pinEnabled} locationKey={key} locationLabel={location.name} timeZone={workspace.timeZone} />;
+  return <ClockerSetup uiV2={readFeatureFlags(process.env).clockerUiV2} brand={{ style: clockerBrandStyle(brand.tokens), logoUrl: brand.logoUrl }} punchEnabled={readFeatureFlags(process.env).clockerPunch} pinEnabled={pinEnabled} locationKey={key} locationLabel={location.name} timeZone={workspace.timeZone} />;
 }

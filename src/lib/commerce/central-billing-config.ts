@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../feature-flags';
 export function publicBillingApiOrigin(value:unknown):string|null{
  if(typeof value!=='string')return null;
  try{const u=new URL(value);if(u.origin!==value||u.username||u.password)return null;
@@ -6,7 +7,7 @@ export function publicBillingApiOrigin(value:unknown):string|null{
 }
 /** Public endpoint selection only; this module never reads credential values. */
 export function centralBillingApiOrigin(env:Readonly<Record<string,string|undefined>>):string|null{
- if(env.NEVORA_COMMERCE_ENABLED!=='true')return null;
+ if(!readFeatureFlags(env).commerce)return null;
  const mode=env.NEVORA_BILLING_ENVIRONMENT??env.NEVORA_COMMERCE_ENVIRONMENT;
  const origin=publicBillingApiOrigin(env.NEVORA_BILLING_API_ORIGIN??env.NEVORA_COMMERCE_API_ORIGIN);if(!origin)return null;
  if(env.NODE_ENV!=='production'&&mode==='development'&&origin.startsWith('http:'))return origin;

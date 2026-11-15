@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../../../lib/feature-flags';
 import { keepWhole } from '@/lib/keep-whole';
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
 import { payrollFeatureEnabled, readPayrollCapabilities } from "@/lib/payroll/service";
@@ -126,7 +127,7 @@ export default async function MorePage() {
     getWorkspace(),
   ]);
   const words = wordPreset(brand.words).en;
-  const navigation = navigationForRole(session.role, payroll, { operational, modules: brand.modules, words, ownerAdvisorEnabled: process.env.NEVORA_OWNER_ADVISOR_ENABLED === "true" });
+  const navigation = navigationForRole(session.role, payroll, { operational, modules: brand.modules, words, ownerAdvisorEnabled: readFeatureFlags(process.env).ownerAdvisor });
   const has = (href: string) => navigation.some(entry => entry.href === href);
   const label = (href: string, fallback: string) => navigation.find(entry => entry.href === href)?.label ?? fallback;
   const owner = session.role === "OWNER";

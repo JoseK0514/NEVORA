@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../../../lib/feature-flags';
 import type { SessionMutationProof } from '@/lib/shift-changes/types';
 import type { SqlExecutor } from '@/lib/notifications/types';
 import { neonNotificationExecutor } from '@/lib/data/notification-transactions';
@@ -22,7 +23,7 @@ export async function readNextPay(timeZone?: string): Promise<NextPay> {
  * The outer company envelope retains its final authority/workspace fence; the inner
  * payroll read retains current session/Owner checks around the bounded source query. */
 export async function readHomePayrollStatus(proof: SessionMutationProof, ex: SqlExecutor = neonNotificationExecutor()): Promise<HomePayrollStatus | null> {
-  if (proof.employee.role !== 'OWNER' || process.env.NEVORA_PAYROLL_ENABLED !== 'true') return null;
+  if (proof.employee.role !== 'OWNER' || !readFeatureFlags(process.env).payroll) return null;
   const result = await withOperationalCompany(proof, async () => homePayrollStatus(await readPayrollBacklog(proof, ex, 'OWNER')), ex);
   return result.state === 'ready' ? result.data : {state: 'unavailable'};
 }

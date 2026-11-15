@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../../lib/feature-flags';
 import {scopedObservation} from '@/lib/company-access/observation';
 import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
 import {MobileOnboardingGuide} from "@/components/mobile-access/onboarding-guide";
@@ -111,9 +112,9 @@ export default async function DashboardPage({
   const {modules}=await currentPresentation();
   // MK1: Home's "Next payday" row, from the date My pay shows (none when pay statements are off or there's no schedule).
   const nextPay=view==='overview'&&modules.payStatements?await readNextPay(workspace.timeZone):null;
-  const payrollStatus=session.role==='OWNER'&&view==='overview'&&modules.payStatements&&process.env.NEVORA_PAYROLL_ENABLED==='true'?await readHomePayrollStatus(proof):null;
+  const payrollStatus=session.role==='OWNER'&&view==='overview'&&modules.payStatements&&readFeatureFlags(process.env).payroll?await readHomePayrollStatus(proof):null;
   return (<ManagerCorrectionRecoveryBoundary key={recoveryKey}><ScopedReadFrame observation={scopedObservation(source.state==='ready'?source:null)}>
-    {session.role === "OWNER" && process.env.NEVORA_OWNER_ADVISOR_ENABLED === "true" ? <Link className="nv-btn" data-kind="secondary" href="/app/ai-manager">AI manager</Link> : null}
+    {session.role === "OWNER" && readFeatureFlags(process.env).ownerAdvisor ? <Link className="nv-btn" data-kind="secondary" href="/app/ai-manager">AI manager</Link> : null}
     <ManagerDashboard
       role={session.role === "OWNER" ? "OWNER" : "MANAGER"}
       actorId={session.id}

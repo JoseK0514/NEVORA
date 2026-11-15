@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../feature-flags';
 import 'server-only';
 import {validatedMailTransport,StagingRecipientDenied} from '../auth/mail-transport.server';
 import {registeredEmail} from './contracts';
@@ -8,7 +9,7 @@ export type VerificationMessage={email:string;proof:string;locale:'en'|'es';expi
 export type VerificationDelivery={send(message:VerificationMessage):Promise<{providerAccepted:true}>};
 export class VerificationDeliveryError extends Error{constructor(readonly deliveryState:'FAILED'|'UNKNOWN'){super('Verification email outcome unavailable.');}}
 export function verificationDelivery(env:Record<string,string|undefined>,config:EnabledConfig):VerificationDelivery|null{
- if(env.NEVORA_ONBOARDING_EMAIL_ENABLED!=='true')return null;
+ if(!readFeatureFlags(env).onboardingEmail)return null;
  const transport=validatedMailTransport(env);if(!transport||transport.origin!==config.signupOrigin)return null;
  return {async send({email,proof,locale,expiresAt}){
   if(!registeredEmail(email)||!validOnboardingToken(proof)||!['en','es'].includes(locale)||!Number.isFinite(Date.parse(expiresAt))||Date.parse(expiresAt)<=Date.now())throw new VerificationDeliveryError('FAILED');

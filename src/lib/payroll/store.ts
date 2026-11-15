@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../feature-flags';
 import {workspaceMode} from '../workspace-routing/config.server';
 import {sourceTableLock} from '../data/source-table-lock';
 /**
@@ -15,7 +16,7 @@ import { compatibleManagerScopeSql } from "./native/scope";
 export const hash = (v: unknown) => createHash("sha256").update(stableExportJson(v)).digest("hex");
 export const statement = (text: string, ...values: unknown[]): SqlStatement => ({ text, values });
 export function enabled() {
-    if (process.env.NEVORA_PAYROLL_ENABLED !== "true")
+    if (!readFeatureFlags(process.env).payroll)
         throw new PayrollError("PAYROLL_DISABLED", 503);
 }
 export const locks = () => [

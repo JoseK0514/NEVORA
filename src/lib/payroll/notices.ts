@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../feature-flags';
 /**
  * Private payroll notifications reference metadata sources rather than embedding
  * financial snapshots. Source/version, current access, publication and automation
@@ -40,7 +41,7 @@ export async function checkPayrollNotice(intent: NotificationIntent, recipientId
         effectiveVersion: intent.effectiveVersion,
         expiresAt: intent.expiresAt,
     });
-    if (process.env.NEVORA_PAYROLL_ENABLED !== "true")
+    if (!readFeatureFlags(process.env).payroll)
         return no("payroll_disabled");
     if (intent.employeeId !== recipientId ||
         intent.type !== intent.source.kind ||

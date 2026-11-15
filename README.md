@@ -2,9 +2,17 @@
 
 Workforce operations platform owned by VELANI LLC, configured for one company per database.
 
-## Current delivery: one company
+## What exists and what is off by default
 
-Jose's 2026-10-12 direction pauses SaaS and bypasses Phase F for this delivery. Use the existing single-workspace development architecture, authenticated Owner/Manager/Lead/Employee roles, and configured business data. Company identity, timezone, locations, staffing and positions are data; no customer is selected by application code. See the [single-company handoff](docs/execution/single-company-20261012.md).
+Scheduling, team management and approved-time workflows use the configured workplace and current role/session authorization. The default deployment is one company per database. Separate isolated-workspace onboarding, provisioning and billing services also exist; their presence does not activate self-service signup.
+
+Payroll/statements, punch capture, invitation/onboarding email, commerce gating/API, mobile access and the Owner advisor are opt-in. Their exact boolean gates are listed in [the typed registry](src/lib/feature-flags.ts), with disabled examples in [.env.example](.env.example). An enabled flag still needs its validated origins, keys, transport, schema and release acceptance. Push delivery has its own existing configuration and remains off by default. Payroll supports imported external amounts and a provisional native calculator; Jose approved externally calculated amounts with statements in NEVORA on Nov 15. Import-only release enforcement is tracked in [the backend intake](docs/handoffs/2026-11-15-inspection-backend-intake.md); no customer payroll activation is implied.
+
+Development is the primary operating and acceptance line under Jose's Nov 12 release policy. Combined UI/backend must be verified there to production standards before the exact verified release is promoted to main/production with his approval. [Environment observations](docs/handoffs/2026-11-15-feature-environments.md) distinguish checked examples, synthetic tests and unverified hosted settings.
+
+## Single-company deployment
+
+Use the existing single-workspace architecture, authenticated Owner/Manager/Lead/Employee roles, and configured business data. Company identity, timezone, locations, staffing and positions are data; no customer is selected by application code. The [Oct 12 single-company handoff](docs/execution/single-company-20261012.md) records the original bounded delivery; later isolated services are separately gated.
 
 To initialize a **new empty database**, fill the company and private owner fields in your private environment, explicitly select `NEVORA_SETUP_ENVIRONMENT`, `NEVORA_SETUP_DATABASE_URL` and its exact `NEVORA_SETUP_DATABASE_NAME`, then run:
 
@@ -20,9 +28,10 @@ For another Owner in an existing company, explicitly provide `BOOTSTRAP_PRIMARY_
 ## Branch workflow
 
 - `main`: production branch; a commit is not production-authorized until the frozen SHA has passed required CI, hosted verification, independent QA/UI review, and owner authorization
-- `development`: active development and testing
+- `development`: primary working/operating and acceptance release, held to production standards
+- `claude-codex-collab-nevora`: existing UI/backend collaboration branch
 
-Feature work lands in `development` or an approved phase branch. Promotion to `main` is performed through the release-control path for a frozen candidate; branch location alone is never evidence of production readiness.
+Use these existing branches and detached worktrees for isolation; do not create new phase branches. Feature work integrates on `development`. Promotion to `main` is performed through the release-control path for a frozen candidate; branch location alone is never evidence of production readiness.
 
 ## Current foundation
 

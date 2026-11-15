@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../../../lib/feature-flags';
 import { notFound } from "next/navigation";
 import {
   requireSession,
@@ -10,7 +11,7 @@ export default async function AiManagerPage() {
   const session = await requireSession();
   if (
     session.role !== "OWNER" ||
-    process.env.NEVORA_OWNER_ADVISOR_ENABLED !== "true"
+    !readFeatureFlags(process.env).ownerAdvisor
   )
     notFound();
   const authority = await readOperationalAuthority(

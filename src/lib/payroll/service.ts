@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../feature-flags';
 /**
  * Payroll application commands and read projections. Mutations persist immutable run
  * revisions and an actor-scoped operation receipt in one guarded transaction; parsing
@@ -569,7 +570,7 @@ export async function command(proof: SessionMutationProof, input: unknown, ex: S
 }
 /** Safe layout projection: disabled flag never queries payroll tables. */
 export function payrollFeatureEnabled(env: NodeJS.ProcessEnv = process.env) {
-    return env.NEVORA_PAYROLL_ENABLED === "true";
+    return readFeatureFlags(env).payroll;
 }
 export async function readPayrollCapabilities(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<PayrollCapabilities> {
     if (!payrollFeatureEnabled())

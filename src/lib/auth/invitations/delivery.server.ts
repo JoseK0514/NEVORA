@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../../feature-flags';
 import {publicWorkspaceToken} from '../../workspace-routing/token-envelope.server';
 import 'server-only';
 import type {InvitationDelivery} from '@/lib/company-access/contracts';
@@ -8,7 +9,7 @@ class InvitationDeliveryError extends Error {
 }
 /** Disabled by default. Runtime verification uses only invocation-owned loopback SMTP. */
 export function invitationDelivery(env:Record<string,string|undefined>=process.env):InvitationDelivery|null {
- if(env.NEVORA_INVITATION_DELIVERY_ENABLED!=='true')return null;
+ if(!readFeatureFlags(env).invitationDelivery)return null;
  const mail=validatedMailTransport(env);
  if(!mail)return null;
  return {async send({registeredEmail,proof,expiresAt}) {

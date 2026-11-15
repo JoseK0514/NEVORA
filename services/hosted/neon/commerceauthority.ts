@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../../../src/lib/feature-flags';
 import {createHash,timingSafeEqual} from 'node:crypto';
 import {CommerceError} from '../../commerce/model';
 import {companyServiceSignature,validCompanyServiceKey} from '../../commerce/installation-transport';
@@ -11,7 +12,7 @@ export function createCompanyAuthorityHandler(env:HostedEnvironment,company:(req
  return async(request:Request):Promise<Response>=>{
   const url=new URL(request.url),path=url.pathname,method=request.method;
   if(url.search||!['/api/commerce/facts','/api/commerce/policy','/api/commerce/owner'].includes(path)||method!==(path.endsWith('/facts')?'GET':'POST'))return fail('not_found',404);
-  if(!hostedEnvironmentBound(env,'commerceauthority')||env.NEVORA_NEON_HOST_ENABLED!=='true'||env.NEVORA_COMMERCE_ENABLED!=='true'||!env.NEVORA_CONTROL_DATABASE_URL||!validCompanyServiceKey(env.NEVORA_COMMERCE_COMPANY_GATEWAY_KEY))return fail('not_ready',503);
+  if(!hostedEnvironmentBound(env,'commerceauthority')||env.NEVORA_NEON_HOST_ENABLED!=='true'||!readFeatureFlags(env).commerce||!env.NEVORA_CONTROL_DATABASE_URL||!validCompanyServiceKey(env.NEVORA_COMMERCE_COMPANY_GATEWAY_KEY))return fail('not_ready',503);
   const expectedOrigin=`https://${env.NEVORA_NEON_BRANCH_ID}-commerceauthority.compute.c-15.us-east-1.aws.neon.tech`;
   if(url.origin!==expectedOrigin)return fail('origin_denied',403);
   const origin=request.headers.get('x-nevora-company-origin')??'',authorization=request.headers.get('authorization')??'',header=request.headers.get('x-nevora-commerce-service-signature')??'';

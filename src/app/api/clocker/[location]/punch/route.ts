@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../../../../../lib/feature-flags';
 import {workspaceCookies as cookies} from "@/lib/workspace-routing/cookies.server";
 import { neonNotificationExecutor } from '@/lib/data/notification-transactions';
 import { clockerSecurity } from '@/lib/clocker/setup.server';
@@ -7,5 +8,5 @@ export const dynamic='force-dynamic';
 export async function POST(request:Request,{params}:{params:Promise<{location:string}>}){
  const {location}=await params;
  return handleClockerPunch(request,location,{cookies:await cookies(),executor:neonNotificationExecutor(),
-  security:await clockerSecurity(),enabled:process.env.NEVORA_CLOCKER_PUNCH_ENABLED==='true'});
+  security:await clockerSecurity(),enabled:readFeatureFlags(process.env).clockerPunch});
 }

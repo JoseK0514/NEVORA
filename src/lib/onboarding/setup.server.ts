@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../feature-flags';
 import 'server-only';
 import {mutationTransaction} from '../data/transaction-composition';
 import {invitationDelivery} from '../auth/invitations/delivery.server';
@@ -54,7 +55,7 @@ export async function readOnboardingSetup(proof:SessionMutationProof,binding:Wor
  if(!locations.length)issues.push('LOCATION_INACTIVE');
  let businessValid=false;try{validateWorkspaceProfile(c.workspace);businessValid=c.workspace.active;}catch{/* Invalid canonical data is never ready. */}
  const team=c.people.filter(e=>e.active&&e.id!==proof.employee.id),uninvited=team.filter(e=>e.email&&!e.hasCredentials&&!e.invitationPending);
- const sections=deriveReadiness({businessValid,activeLocations:locations.length,activePositions:c.positions.filter(p=>p.active).length,schedulingIssues:issues,teamCount:team.length,uninvitedCount:uninvited.length,missingEmailCount:team.filter(e=>!e.email&&!e.hasCredentials).length,payrollEnabled:process.env.NEVORA_PAYROLL_ENABLED==='true',timekeepingConfigured:c.timekeepingConfigured,payrollConfigured:c.payrollConfigured,invitationSenderAvailable:await withWorkspaceBinding(binding,async()=>invitationDelivery(await workspaceRuntimeEnvironment())!==null)});
+ const sections=deriveReadiness({businessValid,activeLocations:locations.length,activePositions:c.positions.filter(p=>p.active).length,schedulingIssues:issues,teamCount:team.length,uninvitedCount:uninvited.length,missingEmailCount:team.filter(e=>!e.email&&!e.hasCredentials).length,payrollEnabled:readFeatureFlags(process.env).payroll,timekeepingConfigured:c.timekeepingConfigured,payrollConfigured:c.payrollConfigured,invitationSenderAvailable:await withWorkspaceBinding(binding,async()=>invitationDelivery(await workspaceRuntimeEnvironment())!==null)});
  const coreReady=sections.filter(s=>['BUSINESS','LOCATIONS','SCHEDULING'].includes(s.id)).every(s=>s.state==='READY');
  return {snapshot:{schemaVersion:1,version:row.version,registrationState:coreReady?'READY':'SETUP_IN_PROGRESS',workspace:{id:c.workspace.id,displayName:c.workspace.name,portalUrl:f.record.canonicalOrigin+'/'},sections,nextStep:sections.find(s=>s.state==='BLOCKED'||s.state==='IN_PROGRESS')?.id??null},configuration:c,destinations:{...onboardingDestinations}};
 }
