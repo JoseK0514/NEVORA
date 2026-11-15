@@ -5,6 +5,17 @@ import type {InvitationDelivery} from '../../lib/company-access/contracts';
 vi.mock('server-only',()=>({}));
 import {issueOrRevokeInvitation,readInvitationStatus,readInvitationOperation} from '../../lib/auth/invitations/service.server';
 import {fakeInvitationSmtp} from './company-access-smtp.test-support';
+import * as runtimeConfig from '../../lib/workspace-routing/runtime-config.server';
+
+it('uses the current workspace runtime configuration for delivery capability',async()=>{
+ const f=await companyAccessFixture(),smtp=await fakeInvitationSmtp();
+ try{
+  vi.stubEnv('NEVORA_INVITATION_DELIVERY_ENABLED','false');
+  vi.spyOn(runtimeConfig,'workspaceRuntimeEnvironment').mockResolvedValue(smtp.env);
+  expect(await readInvitationStatus(f.owner,'target',f.db.executor)).toMatchObject({state:'ready',deliveryAvailable:true,allowedCommands:['ISSUE']});
+  expect(smtp.connections).toBe(0);
+ }finally{vi.restoreAllMocks();vi.unstubAllEnvs();await smtp.close();await f.db.dispose();}
+});
 
 it('reports configured invitation delivery without sending and withholds ISSUE when disabled',async()=>{
  const f=await companyAccessFixture(),smtp=await fakeInvitationSmtp();

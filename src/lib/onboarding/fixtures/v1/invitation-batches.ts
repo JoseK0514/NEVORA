@@ -48,6 +48,7 @@ export const invitationBatchFixtures: {name:string;result:BatchSnapshot}[] = [
               "issuerName": "Fictional Owner"
             },
             "delivery": "PROVIDER_ACCEPTED",
+            "deliveryAvailable": true,
             "allowedCommands": [
               "ISSUE",
               "REVOKE"
@@ -69,6 +70,7 @@ export const invitationBatchFixtures: {name:string;result:BatchSnapshot}[] = [
             "invitationRevision": 0,
             "invitation": null,
             "delivery": "UNAVAILABLE",
+            "deliveryAvailable": true,
             "allowedCommands": [
               "ISSUE"
             ],
@@ -124,6 +126,7 @@ export const invitationBatchFixtures: {name:string;result:BatchSnapshot}[] = [
               "issuerName": "Fictional Owner"
             },
             "delivery": "PROVIDER_ACCEPTED",
+            "deliveryAvailable": true,
             "allowedCommands": [
               "ISSUE",
               "REVOKE"
@@ -163,6 +166,7 @@ export const invitationBatchFixtures: {name:string;result:BatchSnapshot}[] = [
               "issuerName": "Fictional Owner"
             },
             "delivery": "FAILED",
+            "deliveryAvailable": true,
             "allowedCommands": [
               "ISSUE",
               "REVOKE"
@@ -192,6 +196,7 @@ export const invitationBatchFixtures: {name:string;result:BatchSnapshot}[] = [
             "invitationRevision": 0,
             "invitation": null,
             "delivery": "UNAVAILABLE",
+            "deliveryAvailable": true,
             "allowedCommands": [],
             "retryAfterMs": null
           }
@@ -245,6 +250,7 @@ export const invitationBatchFixtures: {name:string;result:BatchSnapshot}[] = [
               "issuerName": "Fictional Owner"
             },
             "delivery": "PROVIDER_ACCEPTED",
+            "deliveryAvailable": true,
             "allowedCommands": [
               "ISSUE",
               "REVOKE"
@@ -284,6 +290,7 @@ export const invitationBatchFixtures: {name:string;result:BatchSnapshot}[] = [
               "issuerName": "Fictional Owner"
             },
             "delivery": "UNKNOWN",
+            "deliveryAvailable": true,
             "allowedCommands": [
               "ISSUE",
               "REVOKE"
@@ -305,6 +312,7 @@ export const invitationBatchFixtures: {name:string;result:BatchSnapshot}[] = [
             "invitationRevision": 0,
             "invitation": null,
             "delivery": "UNAVAILABLE",
+            "deliveryAvailable": true,
             "allowedCommands": [
               "ISSUE"
             ],
@@ -360,6 +368,7 @@ export const invitationBatchFixtures: {name:string;result:BatchSnapshot}[] = [
               "issuerName": "Fictional Owner"
             },
             "delivery": "PROVIDER_ACCEPTED",
+            "deliveryAvailable": true,
             "allowedCommands": [
               "ISSUE",
               "REVOKE"
