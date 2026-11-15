@@ -9,7 +9,7 @@ import { RUNTIME_CATALOG_SHARED_FENCE_SQL, INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL
 // root explicitly invokes the owned fixture. This mocks only the build marker.
 vi.mock('server-only', () => ({}));
 const sourcePath = resolve('src/lib/tenancy/runtime/catalog-fence.server.ts');
-const testPath = resolve('src/lib/tenancy/runtime/catalog-fence.postgres.test.ts');
+
 const expectedSourceSHA256 = '2244d516b56bb7b4bbb76b47699971ed71c8ec0aebdeee6b8031692d2c1d0a2f';
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
 const q = (value: string) => '"' + value.replace(/"/g, '""') + '"';

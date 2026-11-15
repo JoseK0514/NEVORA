@@ -121,7 +121,10 @@
         "src/lib/onboarding/provisioning/runtime.server.ts",
         "docs/handoffs/2026-11-11-r26-admission-capacity.md",
         "src/lib/data/sql-session-contract.ts",
-        "docs/handoffs/2026-11-11-r14-timestamp-contract.md"
+        "docs/handoffs/2026-11-11-r14-timestamp-contract.md",
+        "src/lib/onboarding/roster.server.ts",
+        "src/lib/onboarding/roster.ts",
+        "docs/handoffs/2026-11-14-owner-simplicity.md"
       ]
     },
     {

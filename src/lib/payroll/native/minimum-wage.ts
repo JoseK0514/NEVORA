@@ -1,6 +1,6 @@
 import type { NativeWageProfile } from './contracts';
 import { hourlyRate } from './money';
-import { fail } from './time';
+
 /** Explicit ordinary Act47/FLSA-covered, untipped scope without a higher decree.
  * No exemption, alternate sector or higher agreed right is inferred. */
 export const ORDINARY_PR_MINIMUM_2026 = Object.freeze({ scope: 'PR_ACT_47_STANDARD_2026', minorPerHour: '1050', effectiveFrom: '2024-07-01', source: 'https://www.dol.gov/agencies/whd/mw-consolidated', sourceEffectiveDate: '2026-07-01' });

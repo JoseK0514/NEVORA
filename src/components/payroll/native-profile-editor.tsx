@@ -4,7 +4,7 @@ import { PlusIcon, TrashIcon } from '@phosphor-icons/react/ssr';
 import type { NativeDraft, NativeConfigurationSources } from './native-payroll-config';
 import type { usePayrollOperation } from './use-payroll';
 import { profileFromForm } from './native-profile-form';
-import { DraftFields, Input, Select, Check, LocationFields, localInstant, usd, hourlyDollars, captureForm, savedValue } from './native-config-fields';
+import { DraftFields,Input,Select,Check,LocationFields,localInstant,hourlyDollars,captureForm,savedValue } from './native-config-fields';
 import { NativeTaxFields, NativeDeductionFields } from './native-tax-fields';
 import { flagProblems, formKeys } from './form-keys';
 export type EditorProps={draft:NativeDraft;sources:NativeConfigurationSources;operation:ReturnType<typeof usePayrollOperation>;change:(patch:Partial<NativeDraft>)=>void};

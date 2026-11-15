@@ -104,7 +104,7 @@ export function LaterB({ ready, groups, statusLine, onRefresh, connection = "una
 
 function GroupCard({ group, items, staffing, checked }: { group: Group; items: Map<string, ActionItem>; staffing: StaffingState; checked: Set<string> }) {
   return <BCard title={group.title} count={count(group)} id={`b-todo-${group.id}`}>
-    <BList label={group.title}>{group.rows.map((row, index) => {
+    <BList label={group.title}>{group.rows.map((row) => {
       if (group.id === "open") {
         // "Today, 12–7 AM" over "Main Office · Needs 1": the day joins the time so the line under it stays short.
         const parts = (row.detail ?? "").split(" · ");

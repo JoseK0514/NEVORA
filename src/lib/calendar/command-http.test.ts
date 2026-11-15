@@ -1,7 +1,7 @@
 import {beforeEach,expect,it,vi} from 'vitest';
 vi.mock('server-only',()=>({}));
 const f=vi.hoisted(()=>({session:vi.fn(),query:vi.fn(),transaction:vi.fn()}));
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:f.session}));
+vi.mock('@/lib/auth/session',()=>({readSessionMutationProof:f.session}));
 vi.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({query:f.query,transaction:f.transaction})}));
 // Actual HTTP boundary, JSON reader, validator and service. Only session and
 // executor and Company admission I/O are replaced; no database is connected.

@@ -33,7 +33,7 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
   if(source.state==='unavailable')return <OperationalUnavailable title="Team availability unavailable" reason={source.reason}/>;
   const {selectedWeek,settings,statuses,windows,employees,locations}=source.data;
   const notSubmitted = statuses.filter(item => !item.submitted).length;
-  const unavailable = statuses.filter(item => item.submitted && item.windowCount === 0).length;
+
   const locationNames = new Map(locations.map(location => [location.id, location.shortName]));
   const employeeLocations = new Map(employees.map(employee => [employee.id, locationNames.get(employee.primaryLocationId)]));
   const ordered = [...statuses].sort((a, b) => Number(a.submitted) - Number(b.submitted) || a.windowCount - b.windowCount || a.employeeName.localeCompare(b.employeeName));

@@ -303,7 +303,7 @@ export async function updateShiftAction(formData: FormData) {
 
 /** Uses the scoped editor before deletion; retained exchange history can refuse the write. */
 export async function deleteShiftAction(formData: FormData) {
-  const session = await requireRoles(MANAGER_ROLES);
+  await requireRoles(MANAGER_ROLES);
   const proof = await requireSessionMutationProof();
   const shiftId = String(formData.get("shiftId") ?? "");
   let admission:Awaited<ReturnType<typeof assertOperationalAccess>>;

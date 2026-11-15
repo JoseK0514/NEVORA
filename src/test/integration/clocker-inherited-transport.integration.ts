@@ -118,7 +118,7 @@ it('returns not_found for an unseen receipt, not an invented successful action',
  expect(await q('SELECT id FROM time_entries')).toEqual([]);
 });
 it('another employee on the same tablet cannot read a prior employee receipt',async()=>{
- const v=await view(),cmd=command(v);await call({operation:'execute',command:cmd});await verify('5678');const other=await view();
+ const v=await view(),cmd=command(v);await call({operation:'execute',command:cmd});await verify('5678');await view();
  expect(await (await call({operation:'receipt',commandId:cmd.commandId,verificationId:(await view()).verificationId})).json()).toMatchObject({state:'unknown'});
 });
 it('disabled feature performs no SQL and reports unavailable',async()=>{

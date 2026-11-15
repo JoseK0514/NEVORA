@@ -2,8 +2,8 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, expect, it, vi } from "vitest";
 
-const fixture = vi.hoisted(() => ({ inactiveLocation: false, empty: false, denied: false, events: [] as string[] }));
-beforeEach(() => { fixture.inactiveLocation = false; fixture.empty = false; fixture.denied = false; fixture.events = []; });
+const fixture = vi.hoisted(() => ({ inactiveLocation: false, empty: false, denied: false, positionsFailed:false, events: [] as string[] }));
+beforeEach(() => { fixture.inactiveLocation = false; fixture.empty = false; fixture.denied = false; fixture.positionsFailed=false; fixture.events = []; });
 
 vi.mock("next/link", () => ({
   default: ({ href, children, ...props }: React.ComponentProps<"a">) =>
@@ -115,3 +115,9 @@ vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalDire
  if(operationalPageFixture.scoped)return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['loc']},data:{mode:'LOCATIONS',employees:[{id:'local',firstName:'Local',lastName:'Person',role:'EMPLOYEE',locationIds:['loc']}],locations:[{id:'loc',name:'Main',shortName:'Main',active:true}]}};
  const source=await import('@/lib/data/employees');return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'COMPANY',locationIds:[]},data:{mode:'COMPANY',employees:await source.listEmployees(),locations:await source.listLocations({includeInactive:true})}};
 }}));
+
+vi.mock('@/lib/data/positions',()=>({listPositions:async()=>{if(fixture.positionsFailed)throw Error('Fictional position source unavailable');return [];}}));
+it('withholds a directory when the position source fails instead of replacing positions with access roles',async()=>{
+ fixture.positionsFailed=true;const html=renderToStaticMarkup(await EmployeesPage());
+ expect(html).toContain('Employees unavailable');expect(html).not.toContain('Active Person');
+});

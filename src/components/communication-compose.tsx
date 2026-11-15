@@ -6,7 +6,7 @@ import {useRouter} from 'next/navigation';
 import {ArrowRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import {PaperPlaneTiltIcon} from '@phosphor-icons/react/dist/ssr/PaperPlaneTilt';
 import {UsersThreeIcon} from '@phosphor-icons/react/dist/ssr/UsersThree';
-import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
+
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {Tile} from './kit/kit';

@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import { PASSKEY_COPY } from "@/lib/passkeys/copy";
 import {PasskeyDesktopView} from "./passkey-desktop-view";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
-import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { deviceName, isPhoneLike, listPasskeys, passkeysAvailable, passkeysFlagOn, registerPasskey, removePasskey, type Passkey } from "@/lib/passkeys/client";
 import "./passkeys.css";
 

@@ -1,4 +1,4 @@
-import React,{type ReactNode} from 'react';
+import {type ReactNode} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {describe,expect,it} from 'vitest';
 import {CorpCorrections,CorpFixTime,CorpHoursFrame,CorpPastTimecards,CorpTimeEntry,CorpTimeTab} from '../employee-mobile/hours-corp';

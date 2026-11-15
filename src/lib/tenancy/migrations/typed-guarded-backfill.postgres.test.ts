@@ -1513,7 +1513,7 @@ async function prcClose(f:Fixture,c:Client,label:string){
  try{if(c.getTransactionStatus()!=='I')await c.query('ROLLBACK');}finally{await c.end();closed=true;}
  receipt('case-'+f.id+'-'+label+'-client-close.json',{name:f.name,oid:f.oid,marker:f.marker,role:lease.user,closed,retainedInOriginalClientMap:clients.has(c)});
 }
-async function prcNativeRows(c:Client,table:string){return (await c.query<(string|null)[]>({text:'SELECT * FROM nevora_tenancy.'+quoted(table),rowMode:'array',types:credentialedLegacyRawTypes})).rows;}
+
 async function prcSeedPartial(f:Fixture,intended:PRCWhole,kind:'PARTIAL_PORTAL'|'FOREIGN_LINEAGE'|'MISSING_LIVE'|'CHANGED_GRANTS'){
  // Root-only negative initialization from the independent intended tuples AFTER
  // actual rollback. No guard/constraint disablement, UPDATE, DELETE or authority.

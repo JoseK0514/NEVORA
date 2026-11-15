@@ -12,7 +12,7 @@ import {MegaphoneIcon} from '@phosphor-icons/react/dist/ssr/Megaphone';
 import {UserCheckIcon} from '@phosphor-icons/react/dist/ssr/UserCheck';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {ArrowClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
-import {ArrowsClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
+
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {MagnifyingGlassIcon} from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import {ListChecksIcon} from '@phosphor-icons/react/dist/ssr/ListChecks';
@@ -27,7 +27,7 @@ import styles from './notification-inbox.module.css';
 import './notification-inbox-corp.css';
 import {CorpEmpty} from './corp/corp';
 import {KeepSelectedVisible} from './kit/keep-selected-visible';
-import {Freshness} from './kit/kit';
+
 
 const icons={schedule:CalendarBlankIcon,timeOff:CalendarMinusIcon,exchange:ArrowsLeftRightIcon,update:MegaphoneIcon,availability:UserCheckIcon,callout:WarningCircleIcon,device:DeviceMobileIcon,operations:ListChecksIcon,payroll:WalletIcon,statement:ReceiptIcon};
 const reviewLabels:Record<NotificationReviewState,string>={unread:'Unread',read:'Read',confirmed:'Confirmed',unavailable:'Review status unavailable'};

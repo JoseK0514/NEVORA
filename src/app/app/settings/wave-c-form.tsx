@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useRef, useState,
   type FormEvent, type InputHTMLAttributes, type ReactNode, type Ref, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
-import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
+
 import type { ConfigurationResult } from "@/components/configuration-form";
 import { Notice } from "./wave-c-kit";
 

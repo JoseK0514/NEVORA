@@ -4,7 +4,7 @@ import { Client } from 'pg';
 import { describe, expect, it, vi } from 'vitest';
 vi.mock('server-only',()=>({}));
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
-import type { SessionMutationProof } from '../../lib/shift-changes/types';
+
 
 // Adapt only transport and request context. All authorization and business SQL
 // below is the real repository/action implementation on an owned database.

@@ -92,6 +92,23 @@ restore are different operations; never rerun the fresh seed chain on an existin
 company. See [self-service operations](../../runbooks/self-service-onboarding.md)
 and [worker enrollment](../../../ops/workforce/ENROLLMENT-RUNBOOK.md).
 
+## Reviewed roster import
+
+The same-company Owner APIs `POST /api/onboarding/roster/preview` and
+`POST /api/onboarding/roster` parse and atomically create reviewed profiles.
+CSV/TSV is limited to 50 rows; the existing company plan limit remains enforced.
+These endpoints create no credentials and send no invitations. Employee IDs,
+roles, catalogue choices and Manager scope use canonical employee commands;
+unknown outcomes reuse the original operation ID. Invitations are a separate
+explicit review and existing batch command. See the
+[backend/UI contract](../../handoffs/2026-11-14-owner-simplicity.md) for exact
+request/response shapes, validation and recovery. The backend contract does not
+establish that Claude's import UI or hosted rollout is available.
+
+Directory position-source failures remain unavailable instead of silently
+substituting access roles. Calendar-derived payday labels describe a scheduled
+payday, not evidence that money was paid.
+
 ## Verify safely
 
 Inspect scripts before execution and use the version/locked dependencies in the

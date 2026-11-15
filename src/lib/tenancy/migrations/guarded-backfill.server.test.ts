@@ -5,7 +5,7 @@ import { resolve, join } from 'node:path';
 import { randomBytes } from 'node:crypto';
 import { executeGuardedLocalBackfill, ownedLocalBackfillFenceBinding, type GuardedBackfillRequest } from './guarded-backfill.server';
 import { captureTenantMigrationFacts, observeMigrationCatalog } from './capture.server';
-import { getOwnershipRegistry, OWNERSHIP_SOURCE, ownershipDigest, canonicalOwnershipJson, type JsonValue } from './ownership';
+import { getOwnershipRegistry,OWNERSHIP_SOURCE,ownershipDigest,type JsonValue } from './ownership';
 import { preflightTenantBackfill, type BackfillCapture, type LeafBinding } from './backfill';
 
 const disconnected = () => new Client({ host: '127.0.0.1', port: 1, user: 'fictional-unconnected', database: 'fictional-unconnected', password: 'fictional-unused' });

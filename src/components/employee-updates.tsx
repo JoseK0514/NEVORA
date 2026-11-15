@@ -6,7 +6,7 @@ import Link from 'next/link';
 import {QuietHeader, QuietNav} from '@/components/quiet/quiet';
 import {useState} from 'react';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
-import {NavIcon} from './nav-icon';
+
 import {HoldHeight} from './kit/hold-height';
 import {useTopBarSlot} from './clean/top-bar-slot';
 import {UpdateEntrance, updateKinds} from './update-visual';
@@ -32,7 +32,7 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
   const signedOut = unavailableReason === 'access_denied' || unavailableReason === 'session_ended';
  const [filter, setFilter] = useState<Filter>('all');
  const [refreshFrom, setRefreshFrom] = useState<string | null>(null);
- const slot = useTopBarSlot(mode === 'manager', 'cm-tc-bar-tools cm-updates-bar');
+ useTopBarSlot(mode === 'manager', 'cm-tc-bar-tools cm-updates-bar');
  const current = paused ? null : list;
  const items = current?.items.filter((item): item is ReadyUpdate => item.state === 'ready') ?? [];
  const inReviewGroup = (item: ReadyUpdate) => mode === 'manager' ? item.acknowledgement === 'REQUIRED' : !isReviewed(item);
@@ -49,7 +49,7 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
 
  // Phase 3: the kit band; the compose action leads the content column. Clean Manager (v3): for managers at 1300px and wider
  // it sits in the top bar, as the mockups place page actions.
- const compose = <Link className="nv-btn updates-compose" data-kind="secondary" href="/app/updates/compose"><NavIcon name={mode === 'manager' ? 'updates' : 'employees'} />{mode === 'manager' ? 'Create update' : "Message today’s team"}</Link>;
+
  // A Refresh the reader asked for says so until a newer read lands (as on the Inbox); background polls stay quiet.
  const userRefreshing = refreshFrom !== null && current?.observedAt === refreshFrom;
  if (refreshFrom !== null && !userRefreshing) setRefreshFrom(null);
@@ -64,7 +64,7 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
    : loading || userRefreshing ? 'Checking…' : null;
   const stateTitle = paused ? 'Updates paused' : signedOut ? 'Your session ended' : unavailableReason ? 'Couldn’t load updates' : 'Loading updates…';
   const stateText = paused ? 'Return online and to this page to refresh.' : signedOut ? 'Sign in again to see updates.' : unavailableReason ? 'Check your connection, then try again.' : 'Checking for current workplace updates.';
-  const when = (item: ReadyUpdate) => keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, dateStyle: 'medium', timeStyle: 'short'}).format(new Date(item.publishedAt)));
+
   // Quiet (v4, approved Oct 23): "+" to compose; All and Needs reply; one row per update with who has read it.
   const day = (item: ReadyUpdate) => keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, month: 'short', day: 'numeric'}).format(new Date(item.publishedAt)));
   const readLine = (item: ReadyUpdate) => {

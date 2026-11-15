@@ -2,7 +2,7 @@ import {notificationOperationalAllowedSql,notificationOperationalGuard,isNotific
 import 'server-only';
 import {readEmployeeNotificationList,notificationReadManifest} from './employee-notification-list.server';
 import {employeeReadLimits,employeeViewGuards} from './employee-profile.server';
-import {getWorkspace,workspaceReadGuard} from './workspaces';
+import { getWorkspace } from './workspaces';
 import {isManagementAuthorizationError,managementSessionStatements} from './management-session';
 import {parseEmployeeView} from '../employee-view';
 import {sqlNotificationStateRepository} from './notification-state';

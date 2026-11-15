@@ -1322,6 +1322,24 @@
       "isolatedBehavior": "BOUND_ORIGIN"
     },
     {
+      "path": "src/app/api/onboarding/roster/preview/route.ts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Read-only roster preview behind the registered ACTIVE company origin and current Owner session; bounded private JSON and current company catalogue/identity validation.",
+      "isolatedBehavior": "BOUND_ORIGIN"
+    },
+    {
+      "path": "src/app/api/onboarding/roster/route.ts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Explicit atomic Owner roster import behind registered ACTIVE company origin, live session, canonical per-row authority/catalogue guards, capacity trigger, version and durable receipts; no credentials or invitation dispatch.",
+      "isolatedBehavior": "BOUND_ORIGIN"
+    },
+    {
       "path": "src/app/api/onboarding/registrations/current/route.ts",
       "tags": [
         "runtime-boundary-audit"

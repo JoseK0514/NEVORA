@@ -1,16 +1,16 @@
 "use client";
 
-import Link from "next/link";
+
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { BriefcaseIcon } from "@phosphor-icons/react/dist/ssr/Briefcase";
-import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
+
+
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
-import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
-import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
+
+
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import type { ConfigurationResult } from "@/components/configuration-form";
-import { Status } from "@/components/kit/kit";
+
 import { toast } from "@/components/toaster";
 import type { Position } from "@/lib/domain";
 import { EmptyState, SettingsFrame } from "../wave-c-kit";

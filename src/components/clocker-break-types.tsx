@@ -4,23 +4,23 @@ import ownerStyles from './clocker-owner.module.css';
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react';
 import { ArchiveIcon } from '@phosphor-icons/react/dist/ssr/Archive';
 import { ArrowClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
-import { CoffeeIcon } from '@phosphor-icons/react/dist/ssr/Coffee';
-import { ForkKnifeIcon } from '@phosphor-icons/react/dist/ssr/ForkKnife';
-import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
-import { PencilSimpleIcon } from '@phosphor-icons/react/dist/ssr/PencilSimple';
+
+
+
+
 import { PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-import { TimerIcon } from '@phosphor-icons/react/dist/ssr/Timer';
+
 import { XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
-import { Status } from './kit/kit';
+
 import { toast } from './toaster';
 import { breakCategories, type BreakType } from '../lib/clocker/break-types';
 import type { BreakTypeResult } from '../app/app/settings/breaks/actions';
-import { EmptyState, Notice, SettingsFrame } from '../app/app/settings/wave-c-kit';
+import { Notice,SettingsFrame } from '../app/app/settings/wave-c-kit';
 import { ButtonLabel, Field, FieldErrors, FormActions, lockPageScroll, useFieldErrors } from '../app/app/settings/wave-c-form';
 
 type Selection = { operation: 'CREATE' | 'EDIT' | 'ARCHIVE' | 'REACTIVATE'; type?: BreakType };
-const categoryIcons = { REST: CoffeeIcon, MEAL: ForkKnifeIcon, OTHER: TimerIcon };
+
 const categoryLabel = (value: BreakType['category']) => breakCategories.find(category => category.value === value)?.label ?? 'Other';
 
 /** Wave C: Break types on the kit. Rows say what each break is; Edit and Archive open one dialog

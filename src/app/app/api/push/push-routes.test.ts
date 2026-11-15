@@ -1,6 +1,6 @@
 import { expect, it, vi } from 'vitest';
 import { createECDH } from 'node:crypto';
-import type { PushRuntimeConfig, PushSubscriptionRecord, SubscriptionRepository, InstallationProof } from '../../../../lib/notifications/types';
+import type { PushRuntimeConfig,PushSubscriptionRecord,SubscriptionRepository } from '../../../../lib/notifications/types';
 // P-256 scalars have a 32-byte wire representation even when Node's minimal
 // integer export drops leading zeros (the maintained web-push generator pads too).
 function canonicalPrivateKey(curve: ReturnType<typeof createECDH>) {

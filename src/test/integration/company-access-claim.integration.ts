@@ -5,7 +5,7 @@ import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
 import {companyAccessFixture} from './company-access-fixture';
 import {issued,ownedPassword} from './company-access-claim.test-support';
 import * as passwords from '../../lib/auth/password';
-import {issueOrRevokeInvitation,readInvitationStatus,invitationProofDigest,invitationEmailFingerprint} from '../../lib/auth/invitations/service.server';
+import { issueOrRevokeInvitation,invitationProofDigest,invitationEmailFingerprint } from '../../lib/auth/invitations/service.server';
 import {requestPasswordRecovery} from '../../lib/auth/recovery.server';
 const context=vi.hoisted(()=>({executor:null as SqlExecutor|null}));
 vi.mock('server-only',()=>({}));

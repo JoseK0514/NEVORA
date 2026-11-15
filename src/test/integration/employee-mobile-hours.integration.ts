@@ -47,7 +47,7 @@ it('integrates own mobile punches, timecards and correction recovery without pun
    const ready=async(view:string,selection?:string)=>{await page.locator(root+':visible[data-hours-state="ready"][data-hours-view="'+view+'"]'+(selection?'[data-hours-context^="'+view+'|'+selection+'|"]':'')).waitFor();};
    // The Time pages' footer Refresh is gone (Release 1); a private read is renewed when the person returns to the app (window focus), the real refresh path that remains.
    const reread=async()=>{const read=page.waitForResponse((response:{url():string})=>new URL(response.url()).pathname.startsWith('/api/employee/hours/'));await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await read;};
-   const load=async(path:string,view='records',selection?:string)=>{await page.goto(app.url+path);await ready(view,selection);};
+
    const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:false,caret:'initial',style:'nextjs-portal {visibility:hidden;}'});captures.push(file);};
    // 200% text: the page's last control (the removed footer Refresh used to be it) can be scrolled clear of the tab bar, and the title's words fit.
    const textCheck=async(name:string)=>{

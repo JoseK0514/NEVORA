@@ -7,7 +7,7 @@ import {withManagementBrowserEvidence,type ManagementCaptureState} from './manag
 import {createOwnedNextApp} from './owned-next-app';
 import {seedOwnedApp,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from './owned-app-fixture';
 import {hashPassword} from '../../lib/auth/password';
-import {businessDate,formatBusinessDateTimeInput,localDateTimeToInstant} from '../../lib/business-time';
+import { formatBusinessDateTimeInput,localDateTimeToInstant } from '../../lib/business-time';
 
 it('offers an audited management close in real desktop/mobile timecards with recovery and privacy retirement',async()=>{
  const evidence=process.env.NEVORA_MANAGEMENT_CLOSE_UI_EVIDENCE;if(!evidence)throw Error('Choose external management-close UI evidence');await mkdir(evidence,{recursive:true});
@@ -27,7 +27,7 @@ it('offers an audited management close in real desktop/mobile timecards with rec
   let n=0;
   async function seed(){const id='UI-TARGET-'+n,entry='UI-ENTRY-'+n++;await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id,active) VALUES($1,'Unavailable',$1,$1,'EMPLOYEE','loc-2',false)",[id]);
    await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES($1,$2,'loc-2','ui-retired-tablet',clock_timestamp()-interval '4 hours','CLOCKED_IN')",[entry,id]);return {id,entry};}
-  const today=businessDate(new Date(),'America/Puerto_Rico');
+
   for(const engine of ['chromium','webkit']){
    const active=await runtime[engine].launch({headless:true});browser=active;
    for(const [index,actor] of ['QAOWNER','R10UIMANAGER'].entries()){

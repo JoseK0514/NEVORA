@@ -6,9 +6,9 @@ import type { CoverageMinutes } from "@/lib/scheduling/coverage-minutes";
 import { REPAIR_DAY_EVENT } from "./leave-staffing/repair-note";
 import { useEffect, useState, type ReactNode } from "react";
 import { KeepSelectedVisible } from "./kit/keep-selected-visible";
-import { UsersIcon } from "@phosphor-icons/react/dist/ssr/Users";
+
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
-import { EmptyState } from "./empty-state";
+
 import { Avatar } from "./kit/kit";
 import { QuietGroup, QuietRow, QuietSection } from "./quiet/quiet";
 import { CorpAvatar, CorpCard, CorpTime } from "./corp/corp";
@@ -145,7 +145,7 @@ export type RosterB = {
   coverage?: CoverageMinutes | null;
 };
 
-export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today, reviewDay, timeZone, locationId, openShifts = [], absences = { state: "unavailable", reason: "read_failed" }, footnote, controls, notices, corp, b }: {
+export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today, reviewDay, timeZone, locationId, openShifts = [], absences = { state: "unavailable", reason: "read_failed" }, controls, notices, corp, b }: {
   /** Opened from a staffing repair (Nov 9, 2026): this person's shifts are marked; the page's note says why. */
   repairEmployeeId?: string;
   employees: RosterEmployee[];

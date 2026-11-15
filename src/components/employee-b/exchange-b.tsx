@@ -4,7 +4,6 @@ import Link from 'next/link';
 import {useEffect, useRef, type ReactNode} from 'react';
 import {CalendarCheckIcon} from '@phosphor-icons/react/dist/ssr/CalendarCheck';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
-import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {ClockCounterClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ClockCounterClockwise';

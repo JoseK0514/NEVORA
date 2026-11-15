@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { calculateNativePayroll } from "./calculate";
-import type { NativePayrollInput, NativePayrollReady, NativeRecordedEntry } from "./contracts";
+import type { NativePayrollInput,NativePayrollReady } from "./contracts";
 import { input, entry } from "./fixtures.test-support";
 import { classifyRecordedTime, HOUR } from "./time";
 function ready(i: NativePayrollInput): NativePayrollReady {

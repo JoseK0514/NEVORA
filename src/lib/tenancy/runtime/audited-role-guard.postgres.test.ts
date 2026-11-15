@@ -73,7 +73,7 @@ type Settings = { oid: string; definition: string; rules: string[] };
 // One supplied variable without the other fails before connections. Only root's
 // explicit source-bound fresh fictional fixture invocation may execute this file.
 describe.skipIf(!leasePath && !runPath)('owned PostgreSQL audited runtime helper successor', () => {
-  let lease: Lease, admin: Client, app: Client, worker: Client, outsider: Client;
+  let lease: Lease, admin: Client, app: Client, worker: Client;
   let password = '', installerOid = '', verified = false, runVerified = false, fixtureSetupCommitted = false;
   let artifactInstalled = false, helperInstalled = false, sqlAttempted = false;
   let appRole: Role, workerRole: Role, outsiderRole: Role, ownerRole: Role, settings: Settings;
@@ -277,14 +277,7 @@ describe.skipIf(!leasePath && !runPath)('owned PostgreSQL audited runtime helper
       ARRAY(SELECT pg_catalog.pg_get_ruledef(w.oid,false) FROM pg_catalog.pg_rewrite w
       WHERE w.ev_class='pg_catalog.pg_settings'::pg_catalog.regclass ORDER BY w.rulename COLLATE pg_catalog."C") rules`)).rows[0] as Settings;
   }
-  async function installRejection(expected: string) {
-    expect(admin.getTransactionStatus()).toBe('I');
-    const code = await rejected(admin, source);
-    try { expect(code).toBe(expected); expect(admin.getTransactionStatus()).toBe('E'); }
-    finally { if (['T', 'E'].includes(admin.getTransactionStatus() ?? '')) await query(admin, 'ROLLBACK'); }
-    expect(admin.getTransactionStatus()).toBe('I');
-    return code;
-  }
+
   const named = () => [appRole.name, workerRole.name].map(q).join(',');
   async function seedBindings() {
     await query(admin, `INSERT INTO nevora_tenancy.runtime_role_binding
@@ -667,7 +660,7 @@ describe.skipIf(!leasePath && !runPath)('owned PostgreSQL audited runtime helper
       claim: 'ROOT_CONFIRMED_LITERAL_FIXTURES_ONLY_NO_RESOLVER_OR_FENCE_BUSINESS_BEHAVIOR' });
     reviewedDirectSHA256 = (await nativeFunction(directFunction.oid)).sha256 as string;
     reviewedTriggerSHA256 = (await nativeFunction(triggerFunction.oid)).sha256 as string;
-    app = await connect(appRole.name); worker = await connect(workerRole.name); outsider = await connect(outsiderRole.name);
+    app = await connect(appRole.name); worker = await connect(workerRole.name); await connect(outsiderRole.name);
     writeFileSync(join(runPath!, 'control-fixture-custody.json'), JSON.stringify({ base: actual, roles, installerOid,
       fixtureSetupCommitted, sourceSHA256: hash(source), helperSHA256: hash(helper),
       claim: 'EXPLICIT_FICTIONAL_TEST_ROLES_ONLY_NO_RUNTIME_AUTHORITY' }, null, 2), { flag: 'wx', mode: 0o600 });

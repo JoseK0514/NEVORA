@@ -1,9 +1,8 @@
 import { requireRoles } from "@/lib/auth/permissions";
 import { timeZoneLabel } from "@/lib/time-zone-label";
 import {
-  getWorkspace,
-  isWorkspaceTimezoneLocked,
-  WorkspaceTimezoneLockedError,
+getWorkspace,
+isWorkspaceTimezoneLocked
 } from "@/lib/data/workspaces";
 import { saveWorkspaceProfileAction } from "../actions";
 import { SettingsFrame } from "../wave-c-kit";

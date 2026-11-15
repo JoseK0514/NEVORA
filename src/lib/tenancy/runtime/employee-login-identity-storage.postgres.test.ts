@@ -69,7 +69,7 @@ describe.skipIf(!leasePath && !runPath)('owned PG18 employee-login-identity stor
   let appRole: Role, workerRole: Role, outsiderRole: Role, forceOwner: Role;
   let password = '', installerOid = '', workspaceId = '', verified = false, runVerified = false;
   let installed = false, setupCommitted = false, sqlAttempted = false;
-  let parent: OwnObject, employeeParent: OwnObject, schema: OwnObject, counter: OwnObject, contracts: OwnObject, protocol: OwnObject, location: OwnObject;
+  let parent: OwnObject, employeeParent: OwnObject, counter: OwnObject, contracts: OwnObject, protocol: OwnObject, location: OwnObject;
   let workspaceB = '', employeeA = '', employeeB = '', nullOwnerEmployee = '';
   const exactEmployeeIds: string[] = [];
   let originalParentRows: Awaited<ReturnType<typeof parentRows>>, originalParentCatalog: unknown;
@@ -433,7 +433,7 @@ describe.skipIf(!leasePath && !runPath)('owned PG18 employee-login-identity stor
       await query(admin,'REVOKE CREATE,TEMPORARY ON DATABASE '+q(lease.database)+' FROM PUBLIC');
       await query(admin,'REVOKE CREATE ON SCHEMA public FROM PUBLIC');
       await query(admin,'GRANT CONNECT ON DATABASE '+q(lease.database)+' TO '+[appRole,workerRole,outsiderRole].map(x=>q(x.name)).join(','));
-      await query(admin,'CREATE SCHEMA nevora_tenancy'); schema=await remember('schema','','nevora_tenancy',installerOid);
+      await query(admin,'CREATE SCHEMA nevora_tenancy'); await remember('schema','','nevora_tenancy',installerOid);
       await query(admin,'SET LOCAL search_path=public,pg_catalog');
       const minimalWorkspace='CREATE TABLE public.workspaces(id text PRIMARY KEY)';
       const minimalLocation='CREATE TABLE public.locations(id text PRIMARY KEY)';

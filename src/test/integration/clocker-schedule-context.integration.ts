@@ -5,7 +5,7 @@ import { createPunchFixture } from './clocker-punch-fixture';
 import { ClockerPunchService } from '../../lib/clocker/punches.server';
 import type { ClockerIdentityProof } from '../../lib/clocker/pin-identity.server';
 import type { PunchAction, PunchCommand } from '../../lib/clocker/punch-types';
-import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
+import type { SqlExecutor } from '../../lib/notifications/types';
 let f:Awaited<ReturnType<typeof createPunchFixture>>,service:ClockerPunchService,proof:ClockerIdentityProof,date:string,week:string;
 beforeEach(async()=>{
  f=await createPunchFixture({breaks:true});

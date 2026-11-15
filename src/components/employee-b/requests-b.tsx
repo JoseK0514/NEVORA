@@ -9,7 +9,7 @@ import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {ProhibitIcon} from '@phosphor-icons/react/dist/ssr/Prohibit';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
-import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BRow, BScreen, BSeg, BStack, BState, type BLiveItem, type BStateKind, type BTone} from '../owner-b/b-kit';
+import {BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BRow, BScreen, BSeg, BStack, BState, type BLiveItem, type BStateKind, type BTone} from '../owner-b/b-kit';
 import {Dotted} from './parts';
 import {useEmployeeDevice} from '../employee-mobile/device-owner';
 import './employee-b.css';

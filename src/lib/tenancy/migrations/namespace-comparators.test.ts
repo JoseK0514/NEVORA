@@ -2,7 +2,7 @@ import {describe,it,expect,vi} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {createTypedSnapshotFixture} from './typed-fixture.test-support';
-import {inspectTypedMigrationSnapshot,type InspectedTypedSnapshot} from './typed-snapshot';
+import { inspectTypedMigrationSnapshot } from './typed-snapshot';
 import {OWNERSHIP_SOURCE,ownershipDigest,canonicalOwnershipJson} from './ownership';
 import {DATABASE_NAMESPACES,databaseComparatorValue,validateTypedDatabaseNamespaceComparators,isIssuedTypedDatabaseNamespaceObservations} from './namespace-comparators';
 import type {DatabaseNamespaceComparators} from './backfill';

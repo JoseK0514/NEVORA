@@ -5,7 +5,7 @@ import {localDateTimeToInstant,formatBusinessDateTimeInput,formatBusinessDateTim
 import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import {fetchDelegatedTimeCorrections,submitDelegatedTimeCorrection} from '@/lib/time-corrections/client';
 import {parseDelegatedTimeCorrections,type DelegatedTimeCorrections} from '@/lib/time-corrections/delegated';
-import {parseCorrectionRequestCommand,type CorrectionRequestCommand} from '@/lib/time-corrections/validation';
+import { parseCorrectionRequestCommand } from '@/lib/time-corrections/validation';
 import {delegatedJournalKey,pendingDelegated,rememberDelegated,forgetDelegated} from '@/lib/time-corrections/delegated-recovery';
 import {CorrectionComparison} from './time-correction-context';
 import styles from './management-close-form.module.css';

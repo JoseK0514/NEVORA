@@ -1,4 +1,3 @@
-import React from 'react';
 import {beforeEach, expect, it, vi} from 'vitest';
 import {renderToStaticMarkup} from 'react-dom/server';
 const fixture = vi.hoisted(() => ({read: null as unknown, paused: false}));
