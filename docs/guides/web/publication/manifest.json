@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "date": "2026-11-14",
+  "date": "2026-11-15",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "1131c6a2b22ad652e975d6ca6e004eb5bdd9b3c2",
-  "applicationHash": "07fc4094861087c3d147a192dc75e39666539ea96ad2201b053503d08151cd80",
+  "sourceSha": "da7c75ed34a6d1b467a391b3687d36b240fdeb7a",
+  "applicationHash": "f5f0f9ab7e92fd08a3b97284350f4075e6ee7c4cb11fb9e272b2ffbfd795fa96",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "2b9aa8a664c69cabd928be3431330fdab46d295098a4bd76784a513afcacb983"
@@ -71,7 +71,7 @@
         },
         {
           "path": "src/lib/payroll/service.ts",
-          "sha256": "f097ee1cf9cc82fa60bc14de04f15879c83224d5fad4ca1cb420d94af0356f3b"
+          "sha256": "52c36c1d06fdd42ae7ddfbde422f187bcac32f6083067c2557b5face55f16fae"
         },
         {
           "path": "src/lib/payroll/access.ts",
@@ -104,7 +104,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "79baf0e614e5c0bee28ae6129bebe79a92ad660d8e68182f45ed6f6e27154afc",
+        "sha256": "e953c79273923501d0d24db0b3f71f8118c6ff67b62b9fe8f73a90862a874a54",
         "pageCount": 4
       }
     },
@@ -150,7 +150,7 @@
         },
         {
           "path": "src/lib/payroll/service.ts",
-          "sha256": "f097ee1cf9cc82fa60bc14de04f15879c83224d5fad4ca1cb420d94af0356f3b"
+          "sha256": "52c36c1d06fdd42ae7ddfbde422f187bcac32f6083067c2557b5face55f16fae"
         },
         {
           "path": "src/lib/payroll/native/scope.ts",
@@ -162,7 +162,7 @@
         },
         {
           "path": "src/app/app/ai-manager/page.tsx",
-          "sha256": "a17f87de442488b3b9db1b34ada877ec63ac4d3bd4f2ce47210ba5a3bbe8bcd6"
+          "sha256": "26b6c51bdee4e4f260967b245c5ca6f35c701f86db02694fce454ffaca392df6"
         },
         {
           "path": "src/components/management-close-form.tsx",
@@ -175,7 +175,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "f21f9f4ae4a7b5765f3f235f3a2ee6685cf76f70e58299280d4481966b394202",
+        "sha256": "3973463db3a3b0f1c1c566136a4015ee06eb6076ba6e46c33835f3e1b7c85776",
         "pageCount": 3
       }
     },
@@ -258,7 +258,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "6013eef06eee77ce51ab210c6f5527de80ca98e9bf8322dab4113df1f25c5486",
+        "sha256": "a5b59949f3caf7817f42b85bce67ef583695bea6950fbb4201a21189f55b088e",
         "pageCount": 3
       }
     },
@@ -272,7 +272,7 @@
       "evidence": [
         {
           "path": "src/app/app/ai-manager/page.tsx",
-          "sha256": "a17f87de442488b3b9db1b34ada877ec63ac4d3bd4f2ce47210ba5a3bbe8bcd6"
+          "sha256": "26b6c51bdee4e4f260967b245c5ca6f35c701f86db02694fce454ffaca392df6"
         },
         {
           "path": "src/lib/owner-advisor/authority.server.ts",
@@ -280,7 +280,7 @@
         },
         {
           "path": "src/lib/owner-advisor/config.server.ts",
-          "sha256": "8311a607af35bce7b68eb70621aebc0d0f49fefb2b6c4ca02900704e4f5c84ab"
+          "sha256": "5bf7fd86e32ad510d886ddb7f2d172187c4bd8cea6d5fc1897b724f8ade0b5fe"
         },
         {
           "path": "src/lib/owner-advisor/contracts.ts",
@@ -329,7 +329,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "6619d828c1cec4eb0f95694b700cfd79bcf87a6462770ff695819aca1a307f1e",
+        "sha256": "cb65afea6abccb1ec9c5b426778844602ea71afbceaf0dcd87ef6703c744e9a4",
         "pageCount": 2
       }
     },
@@ -347,11 +347,11 @@
         },
         {
           "path": "package.json",
-          "sha256": "b0ff63686a1b87dfeaef6c612126dae323fe51ac200e7611b30eaa5b0c243be8"
+          "sha256": "e74930e043ba333215de866f880d4d96d6e483b3c9d8ffd0df40cb17545d54f9"
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "18a6dd507f780e05338191deb0cc877cb53b1328a86ffeaf0d684cc414f53d51"
+          "sha256": "0f530473af4999eb4b4800650cbf4069146e018fbdfdd651e60c9bc1310dbca4"
         },
         {
           "path": "docs/development/developer-guide.md",
@@ -383,7 +383,7 @@
         },
         {
           "path": "src/lib/onboarding/config.server.ts",
-          "sha256": "da40f1ddc9aec762d77bf1d1747c9bc3a0a62e82323f1d10106b9555ac47edee"
+          "sha256": "16624444d21d70b05497d5234048389eb24a0a8717f39917dc059ca2f29597a5"
         },
         {
           "path": "src/lib/onboarding/provisioning/store.server.ts",
@@ -415,7 +415,7 @@
         },
         {
           "path": "src/lib/onboarding/provisioning/runtime.server.ts",
-          "sha256": "3a44d476f1ef2a7e0b24f83d20780bfc5040419b67af8cace3120f2850a703fd"
+          "sha256": "d5b1336e33c10a53dd407fb7e9229d245fd42f8ca44b0dca953d3952861c884a"
         },
         {
           "path": "docs/handoffs/2026-11-11-r26-admission-capacity.md",
@@ -444,7 +444,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "7ab0677b9567e74981783ef2b570fd97425c598911c39b8a0671e3b489acd651",
+        "sha256": "bdb5fafbad5dde4976ba142637bc3b201087e159f7f651d6343e72daa2f67ea3",
         "pageCount": 4
       }
     },
@@ -494,7 +494,7 @@
         },
         {
           "path": "src/lib/onboarding/config.server.ts",
-          "sha256": "da40f1ddc9aec762d77bf1d1747c9bc3a0a62e82323f1d10106b9555ac47edee"
+          "sha256": "16624444d21d70b05497d5234048389eb24a0a8717f39917dc059ca2f29597a5"
         },
         {
           "path": "src/lib/onboarding/provisioning/store.server.ts",
@@ -530,7 +530,7 @@
         },
         {
           "path": "src/lib/onboarding/provisioning/runtime.server.ts",
-          "sha256": "3a44d476f1ef2a7e0b24f83d20780bfc5040419b67af8cace3120f2850a703fd"
+          "sha256": "d5b1336e33c10a53dd407fb7e9229d245fd42f8ca44b0dca953d3952861c884a"
         },
         {
           "path": "docs/handoffs/2026-11-11-r26-admission-capacity.md",
@@ -547,7 +547,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "6cdf92cda2a1e77d8ced5530e29de95e01be62a514d88c827d17ff7f8b1430ce",
+        "sha256": "519e2f300d41cf9ef04eb83094f2f0cff8b2a873c7b94e8c4f518fb5d67f9e7e",
         "pageCount": 4
       }
     }
