@@ -16,7 +16,7 @@ import type { ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor } from "@/lib/time-clock";
 import type { ActionCenterConnection } from "@/components/manager-action-center";
-import { BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BInk, BList, BLive, BRow, BScreen, BStack, BState, partOfDay, type BLiveItem } from "./b-kit";
+import { BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BInk, BList, BLive, BRow, BScreen, BStack, BState, BWhen, partOfDay, type BLiveItem } from "./b-kit";
 
 /* Direction B, Owner and Manager Home on a phone (mock screen "Owner · Home"). The same reads as the corporate Home: Today's
  * shifts and the clock-in monitor for the live figures, the shared needs-you read for the sentence, the card and the count,
@@ -131,7 +131,7 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
   if (gapRows.length) {
     const next = gapRows[0];
     rows.push(<BRow key="gaps" lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={`Cover ${plural(gapRows.length, "open shift", "open shifts")}`}
-      sub={`Next: ${/^Today\b/.test(next.detail ?? "") ? "today, " : ""}${next.title}`} href={openHref} label={`Open shifts, ${gapRows.length}`}
+      sub={<>{`Next: ${/^Today\b/.test(next.detail ?? "") ? "today, " : ""}`}<BWhen text={next.title} /></>} href={openHref} label={`Open shifts, ${gapRows.length}`}
       trail={<BButtonLink href={next.href} label={`Find cover: ${next.title}`}>Find cover</BButtonLink>} />);
   }
   // Nov 9, 2026: approved leave over a published shift: "Fill Maria Rivera’s shift" (one) or "Fill 2 shifts for approved
@@ -246,7 +246,7 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
   const step = !timecardsReady ? { title: "Timecards", detail: connection === "loading" || connection === "reconnecting" ? "Checking…" : "Not available right now", done: false }
     // Review B2 (NV-007): the line says the state, never "Ready now" for work nobody has reviewed. Nov 14, 2026 inspection
     // (BR-7): this counts only cards whose pay period has ended, and says so, since Things to do also lists the cards of the
-    // period still open (its rows carry the same words, "Pay period ended" and "Not open yet").
+    // period still open (its rows carry the same words, "Pay period ended" and "Pay period still open").
     : closed ? { title: `${plural(closed, "timecard", "timecards")} to review`, detail: new Set(closedEnds).size > 1 ? "Pay periods ended" : "Pay period ended", done: false }
     : openEnd ? { title: "Approve timecards", detail: `From ${fmt(nextDay(openEnd), { weekday: "short", month: "short", day: "numeric" })}`, done: false }
     : { title: "Timecards", detail: "None waiting", done: true };

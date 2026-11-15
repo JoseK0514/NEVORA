@@ -23,7 +23,9 @@ import { isStaffingRepair, repairTitle, repairWhen } from "@/lib/time-off-staffi
 type Row = { key: string; href: string; label: string; title: string; detail?: string; value?: string; valueTone?: "red" | "soft" | "amber";
   /** Phase 3 (MG-012): the person the request is from, when the title says more than their name (the row's avatar). */
   person?: string };
-type Group = { id: string; title: string; rows: Row[]; count?: number; aside?: { href: string; label: string; text: string } };
+type Group = { id: string; title: string; rows: Row[]; count?: number; aside?: { href: string; label: string; text: string };
+  /** A line under the card's heading ("You can approve these from Mon, Nov 16."). */
+  note?: string };
 type Family = { id: string; title: string; groups: Group[] };
 
 const statusText: Record<ActionCenterConnection, string> = {
@@ -89,7 +91,7 @@ export function gapRow(item: ActionItem, timeZone: string, day: string): Row {
 /** Timecards to approve: one row per pay period, naming whose cards are waiting; it opens Time. Nov 14, 2026 inspection
  * (BR-7): each row says how many cards it holds and whether its pay period has ended, the words Home's Payday uses for
  * the cards it counts ("Pay period ended"), so the two screens' numbers can be told apart. */
-function timecardRows(items: ActionItem[], day: string, open = true): Row[] {
+function timecardRows(items: ActionItem[], day: string, open = true, dateInNote = false): Row[] {
   const byPeriod = new Map<string, ActionItem[]>();
   for (const item of items) { const period = item.detail.split(" · ")[1] ?? ""; byPeriod.set(period, [...(byPeriod.get(period) ?? []), item]); }
   return [...byPeriod].flatMap(([period, all]) => {
@@ -110,11 +112,13 @@ function timecardRows(items: ActionItem[], day: string, open = true): Row[] {
     const cards = `${list.length === all.length ? list.length : `${list.length}\u00a0of\u00a0${all.length}`}\u00a0${all.length === 1 ? "timecard" : "timecards"}`;
     // Phase 3 (MG-005): a pay period that is still open can't be approved yet; its row says the day approval opens.
     const opens = !open && /^\d{4}-\d{2}-\d{2}$/.test(end) ? `Opens ${dayText(nextDay(end))}` : undefined;
-    return [{ key: `timecards:${period}`, href, label: `${opens ? "Timecards not open yet" : "Timecards to approve"}, ${title}${opens ? `, ${opens.toLowerCase()}` : state ? `, ${state.toLowerCase()}` : ""}: ${names.join(", ")}`, title,
-      detail: opens ? `${opens} · ${cards}` : `${cards} · ${names.join(", ")}`, value: opens ? undefined : state, valueTone: "soft" as const }];
+    // Jose (Nov 15, 2026): when the card's heading line already says the day approval opens, the row names the people.
+    return [{ key: `timecards:${period}`, href, label: `${opens ? "Pay period still open" : "Timecards to approve"}, ${title}${opens ? `, ${opens.toLowerCase()}` : state ? `, ${state.toLowerCase()}` : ""}: ${names.join(", ")}`, title,
+      detail: opens && !dateInNote ? `${opens} · ${cards}` : `${cards} · ${names.join(", ")}`, value: opens ? undefined : state, valueTone: "soft" as const }];
   });
 }
 const nextDay = (date: string) => new Date(Date.parse(`${date}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10);
+const periodEnd = (item: ActionItem) => { try { const end = new URL(item.href, "https://nevora.invalid").searchParams.get("end"); return end && /^\d{4}-\d{2}-\d{2}$/.test(end) ? end : null; } catch { return null; } };
 const periodEnded = (item: ActionItem, day: string) => { try { const end = new URL(item.href, "https://nevora.invalid").searchParams.get("end"); return !end || end < day; } catch { return true; } };
 
 function shiftRow(shift: TodayShift, timeZone: string, observedAt: string | undefined, showPlace: boolean): Row {
@@ -200,8 +204,14 @@ export function groupThingsToDo(snapshot: Extract<ActionCenter, { state: "ready"
     { id: "waiting-corrections", title: "Time corrections", rows: of(["TIME_CORRECTION"], later).map(item => itemRow(item, timeZone)) },
     { id: "waiting-timecards", title: "Timecards to approve", rows: timecardRows(due, day), count: due.filter(item => !isOwnReview(item)).length },
   ].filter(group => group.rows.length);
+  // Jose (Nov 15, 2026): the card is "Pay period still open", and when one period is waiting its line says the day
+  // approval opens, in the words Time exports uses. Two periods keep the day on each row.
+  const openEnds = [...new Set(notOpen.filter(item => !isOwnReview(item)).map(periodEnd).filter((end): end is string => !!end))];
+  const opensOn = openEnds.length === 1 ? dayText(nextDay(openEnds[0])) : null;
   const closed: Group[] = [
-    { id: "closed-timecards", title: "Not open yet", rows: timecardRows(notOpen, day, false), count: notOpen.filter(item => !isOwnReview(item)).length },
+    { id: "closed-timecards", title: "Pay period still open", rows: timecardRows(notOpen, day, false, !!opensOn), count: notOpen.filter(item => !isOwnReview(item)).length,
+      // The day stays on one line on a narrow phone ("Mon, Nov 16." never breaks before "16").
+      ...(opensOn ? { note: `You can approve these from ${opensOn.replace(/ /g, "\u00a0")}.` } : {}) },
   ].filter(group => group.rows.length);
   const more: Group[] = [
     { id: "plan", title: "Plan ahead", rows: planRows(later.filter(item => !timeKinds.includes(item.type)), timeZone), count: later.filter(item => !timeKinds.includes(item.type)).length },

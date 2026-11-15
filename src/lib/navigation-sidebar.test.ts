@@ -75,7 +75,8 @@ describe("desktop sidebar (D3)", () => {
     const own = { enabled: true, canReview: false, canConfigure: false } as never;
     const items = sidebarNavigation("EMPLOYEE", navigationForRole("EMPLOYEE", own));
     // Release 1 (boards C-Employee, E-More): the phone tabs' names and order, then what More lists.
-    expect(items.map(item => item.label)).toEqual(["Home", "Schedule", "Time", "Pay", "Requests", "Updates", "Notifications"]);
+    // Jose (Nov 15, 2026, item 12): Notifications is the top bar's bell for every role, so it has no sidebar entry.
+    expect(items.map(item => item.label)).toEqual(["Home", "Schedule", "Time", "Pay", "Requests", "Updates"]);
     expect(sidebarActiveHref("EMPLOYEE", "/app/availability", items, own)).toBe("/app/schedule");
     // Profile lives in the account menu: no sidebar entry lights up for it (D5 fix: it used to light Home).
     expect(sidebarActiveHref("EMPLOYEE", "/app/profile", items, own)).toBeUndefined();

@@ -53,6 +53,8 @@ it('folds rows that follow each other with the same kind, and keeps which are un
  const list=[summary('a','2026-11-15T14:00:00Z','unread'),summary('b','2026-11-15T13:00:00Z','read'),summary('c','2026-11-15T12:00:00Z','unread'),rows[0],summary('d','2026-11-14T12:00:00Z','read')];
  const folded=collapseNotifications(list);
  expect(folded.map(row=>[row.item.id,row.count,row.unreadIds])).toEqual([['a',3,['a','c']],['read-required',1,[]],['d',1,[]]]);
+ // Jose (Nov 15, 2026, item 8): the fold keeps every notification it holds, so opening it can list each one.
+ expect(folded[0].items.map(item=>item.id)).toEqual(['a','b','c']);
 });
 it('never folds rows that carry their own dates or are of different kinds',()=>{
  const dated=(id:string):EmployeeNotificationItem=>({id,label:'Time-off update',at:'2026-11-15T14:00:00Z',href:'/app/requests',reviewState:'read',actionState:'none',subject:{kind:'requestDate',startDate:'2026-11-26',endDate:'2026-11-26'}});

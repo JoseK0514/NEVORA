@@ -1,6 +1,7 @@
 import "./owner-b.css";
 import Link from "next/link";
 import type { ReactNode, CSSProperties } from "react";
+import { BOffline } from "./b-offline";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
@@ -35,6 +36,7 @@ export function BHero({ title, titleId, eyebrow, sub, right, back, children, big
         {eyebrow ? <p className="b-eyebrow">{eyebrow}</p> : null}
         <h1 id={titleId} tabIndex={titleId ? -1 : undefined}>{title}</h1>
         {sub ? <p className="b-sub">{sub}</p> : null}
+        <BOffline />
       </div>
       {right ? <div className="b-title__right">{right}</div> : null}
     </div>
@@ -180,6 +182,14 @@ export function compactRange(text: string) {
   const compact = a[3] === b[3] ? `${short(a)}–${short(b)}\u00a0${b[3]}` : `${short(a)}\u00a0${a[3]} – ${short(b)}\u00a0${b[3]}`;
   // Only the two times change: a position before them ("Barista 1:00 PM – 3:00 PM") stays.
   return text.slice(0, a.index) + compact + text.slice((b.index ?? 0) + b[0].length);
+}
+
+/** Jose (Nov 15, 2026, item 5): a time range is short on a phone ("3–4:30 PM") and full from 768px ("3:00 PM – 4:30 PM").
+ * Both forms are rendered and the B sheets show one (b-foundation.css), so nothing shifts after hydration. */
+export function BWhen({ text }: { text: string }) {
+  const short = compactRange(text);
+  if (short === text) return <>{text}</>;
+  return <><span className="b-when-s">{short}</span><span className="b-when-f">{text}</span></>;
 }
 
 /** "Good morning/afternoon/evening" in the workspace's zone. */

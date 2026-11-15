@@ -49,9 +49,9 @@ it("retains the editable assignment, notes, lead, and shift identity and restric
   expect(html.match(/<form/g)).toHaveLength(2);
   expect(html.indexOf('>Delete shift</button>')).toBeGreaterThan(html.indexOf('Save changes'));
   expect(html).toContain('class="c-shift__delete-row" aria-expanded="false">Delete shift</button>');
-  // Review MG-017 (Phase 3): the line under the switch says what turning it on does, then who can lead (the same three
-  // roles as the server's INVALID_SHIFT_LEAD message).
-  expect(html).toContain("This person leads the shift. Owners, Managers and Leads can.");
+  // Review MG-017 (Phase 3) and Jose (Nov 15, 2026, item 13): the line under "Shift lead" says who can lead, the same three
+  // roles as the server's rule (isLeadCapable) and its INVALID_SHIFT_LEAD message ("Only an Owner, Manager or Lead can lead a shift.").
+  expect(html).toContain("Must be an Owner, Manager or Lead.");
   expect(html).not.toContain("can lead a shift");
   expect(html).toContain('/app/schedule?week=2026-10-12');
   // W2: Cancel returns to this shift's location, day and person.

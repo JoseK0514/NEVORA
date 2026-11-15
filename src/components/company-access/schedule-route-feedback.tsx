@@ -12,7 +12,7 @@ const scheduleErrors:Record<string,string>={
  APPROVED_TIME_OFF:'That employee has approved time off during the selected shift.',
  EMPLOYEE_INACTIVE:'Inactive employees cannot be scheduled.',
  INVALID_TIME_RANGE:'Enter a valid shift date and time period.',
- INVALID_SHIFT_LEAD:'Only an Owner, Manager, or Lead can be the designated shift lead.',
+ INVALID_SHIFT_LEAD:'Only an Owner, Manager or Lead can lead a shift.',
  INVALID_PUBLISH:'The schedule could not be published.',
  NO_PENDING_CHANGES:'There were no unpublished changes to publish.',
  NO_SCHEDULE:'There is no schedule to publish for that location yet.',
@@ -24,7 +24,7 @@ const editorErrors:Record<string,string>={
  APPROVED_TIME_OFF:'That employee has approved time off during this shift.',
  EMPLOYEE_INACTIVE:'Inactive employees cannot be scheduled.',
  INVALID_TIME_RANGE:'Enter a valid shift date and time period.',
- INVALID_SHIFT_LEAD:'Only an Owner, Manager, or Lead can be the designated shift lead.',
+ INVALID_SHIFT_LEAD:'Only an Owner, Manager or Lead can lead a shift.',
 };
 const companyWarnings:Record<string,string>={
  OUTSIDE_AVAILABILITY:"Shift saved, but it is outside the employee's submitted availability.",

@@ -423,6 +423,21 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const youChip=<span className="b-chip b-chip--grey c-tc-you">You</span>;
     // OW-037: how far the period is, counting the card just saved before the fresh read lands.
     const doneCount=(action:'approved'|'finalized')=>cards.filter(item=>justSaved(item)||(action==='finalized'?item.state==='FINALIZED':isApproved(item))).length;
+    // Jose (Nov 15, 2026, item 4): after a card is saved the reviewer moves on when they choose. "Next timecard" opens the
+    // next card in the list's order (wrapping) that still needs the same step and isn't the viewer's own, preferring one
+    // that can take that step now (no open issue, such as a correction waiting); the others come after.
+    const nextUp=(()=>{
+      if(!done||!openItem||done.employeeId!==openItem.card.employeeId)return null;
+      const at=listed.findIndex(item=>item.card.employeeId===openItem.card.employeeId);
+      const order=at<0?listed:[...listed.slice(at+1),...listed.slice(0,at)];
+      const left=order.filter(item=>!isOwn(item)&&!justSaved(item)&&item.card.employeeId!==openItem.card.employeeId&&(done.action==='finalized'?item.state==='APPROVED':!isApproved(item)));
+      return left.find(item=>!item.card.issues.length)??left[0]??null;
+    })();
+    const openNext=(item:TimecardItem)=>{
+      setOpenId(item.card.employeeId);
+      // The pressed button leaves with the block, so focus goes to the next person's name at the top of the sheet.
+      requestAnimationFrame(()=>document.getElementById('cm-tc-sheet-title')?.focus());
+    };
     const allApproved=cards.length>0&&cards.every(item=>isApproved(item)||(justSaved(item)&&done?.action==='approved'));
     const rowCue=(item:TimecardItem)=>{const row=statusOf(item);return {text:row.text,act:row.tone==='review'&&(!open||item.card.issues.some(issue=>issue!=='period_open'))};};
     // Review NV-071/NV-104: one status chip on every width (green done, amber when someone can act now, grey otherwise).
@@ -461,7 +476,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           <section className="c-card" aria-labelledby="cm-tc-sheet-title">
             <div className="c-tc-sheet__who">
               <CorpAvatar name={openItem.card.employeeName} initials={initialsOf(openItem.card.employeeName)}/>
-              <span className="c-row__main"><h3 id="cm-tc-sheet-title" className="c-row__title c-row__title--b">{openItem.card.employeeName}</h3>
+              <span className="c-row__main"><h3 id="cm-tc-sheet-title" className="c-row__title c-row__title--b" tabIndex={-1}>{openItem.card.employeeName}</h3>
                 <span className="c-row__detail"><span>{keepWhole(`${roleOf(openItem.card)?`${roleOf(openItem.card)} · `:''}${rangeText(period)}`)}</span></span></span>
               {status?<span className="c-tc-sheet__state"><BChip tone={toneOf(openItem)??'grey'}>{status.text}</BChip></span>:null}
             </div>
@@ -490,7 +505,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           {done?.employeeId===openItem.card.employeeId?<div className="c-tc-sheet__done" role="status"><BIcon tone="green"><CheckIcon weight="bold"/></BIcon>
             <span className="c-tc-sheet__donetx"><b aria-hidden="true">{done.action==='finalized'?'Finalized':'Approved'}</b>
               <span className="c-sr">{`${done.name==='This'?'This':`${done.name}’s`} timecard is ${done.action==='finalized'?'finalized':'approved'}.`}</span>
-              <span className="c-num">{`${doneCount(done.action)} of ${cards.length} done`}</span></span></div>:null}
+              <span className="c-num">{`${doneCount(done.action)} of ${cards.length} done`}</span></span>
+            {nextUp?<button type="button" className="c-btn b-rowact b-rowact--go c-tc-sheet__next" aria-label={`Next timecard: ${nextUp.card.employeeName}`} onClick={()=>openNext(nextUp)}>Next timecard</button>:null}</div>:null}
           <div className="c-tc-sheet__actions">
             {/* Nov 14 inspection: the viewer is fixing someone else's time here, so the button says so (same delegated correction). */}
             {!own&&!locked?<Link className={btn('secondary')} href={'/app/timecards/corrections/new/'+encodeURIComponent(openItem.card.employeeId)}>Request time correction</Link>:null}

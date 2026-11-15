@@ -717,8 +717,8 @@
     /* Notifications and Updates are sidebar pages with a strip (title at 88, no back link): like Schedule, the band is 296 in
      * every state and the first card lifts 52px over it (card top 244), so no plain band is left under the tabs or the search.
      * One rule: a sidebar page with a strip lifts its first card 52px; a page under a back link starts 24px under the band. */
-    html body .app-shell[data-nv-b][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link:is([href="/app/notifications"], [href="/app/updates"])[aria-current="page"]) .b-screen--back .b-hero { min-height: calc(var(--b-band-strip) - var(--b-title-top)) !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link:is([href="/app/notifications"], [href="/app/updates"])[aria-current="page"]) .b-screen--back .b-stack { position: relative !important; z-index: 1 !important; margin-top: -52px !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile]:is([data-shell-page="notifications"], :has(#desktop-primary-navigation a.nav-link[href="/app/updates"][aria-current="page"])) .b-screen--back .b-hero { min-height: calc(var(--b-band-strip) - var(--b-title-top)) !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile]:is([data-shell-page="notifications"], :has(#desktop-primary-navigation a.nav-link[href="/app/updates"][aria-current="page"])) .b-screen--back .b-stack { position: relative !important; z-index: 1 !important; margin-top: -52px !important; }
 
     /* 4. Content width. Availability is a work page: its band runs the grid's width, so Change one week ends on the week
      * card's right edge (EM-001: the action ended at 1108, the card at 1376). */
@@ -799,7 +799,7 @@
  * those less 88. */
 @media (min-width: 768px) {
   html body .app-shell[data-nv-b][data-employee-mobile] { --b-ph-band: calc(var(--b-band-short) - var(--b-title-top)); }
-  html body .app-shell[data-nv-b][data-employee-mobile][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link:is([href="/app/notifications"], [href="/app/updates"])[aria-current="page"]) { --b-ph-band: calc(var(--b-band-strip) - var(--b-title-top)); }
+  html body .app-shell[data-nv-b][data-employee-mobile][data-employee-mobile]:is([data-shell-page="notifications"], :has(#desktop-primary-navigation a.nav-link[href="/app/updates"][aria-current="page"])) { --b-ph-band: calc(var(--b-band-strip) - var(--b-title-top)); }
   html body .app-shell[data-nv-b][data-employee-mobile][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link[href="/app/schedule"][aria-current="page"]) { --b-ph-band: 208px; }
   html body .app-shell[data-nv-b][data-employee-mobile][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link:is([href="/app/my-time"], [href="/app/my-pay"], [href="/app/requests/hub"])[aria-current="page"]) { --b-ph-band: calc(var(--b-band-figures) - var(--b-title-top)); }
 }

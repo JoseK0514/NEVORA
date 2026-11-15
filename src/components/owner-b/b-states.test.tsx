@@ -10,7 +10,8 @@ vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, .
 vi.mock("./owner-b.css", () => ({}));
 vi.mock("@/components/kit/focus-after-retry", () => ({ focusAfterRetry: () => {} }));
 
-import { BLoadingScreen, BState, BStateScreen } from "./b-kit";
+import { BHero, BLoadingScreen, BState, BStateScreen } from "./b-kit";
+import { BOfflineContext } from "./b-offline";
 import { BRouteLoading, loadingShape } from "./b-loading";
 import { BRouteError } from "./b-route-error";
 
@@ -142,5 +143,19 @@ describe("offline is one pill over the canvas", () => {
     const phone = layer.slice(layer.indexOf("@media (max-width: 767px)"), layer.indexOf("@media (min-width: 768px)"));
     expect(phone).toMatch(/\.app-shell\[data-nv-b\]\[data-nv-b\]\[data-nv-b\] \.c-offline \{\s*position: fixed !important; top: auto !important;/);
     expect(phone).not.toContain(":has(.c-page > .b-screen) .c-offline");
+  });
+});
+
+// Jose (Nov 15, 2026, item 9; finding OW-008): on a page with a band, offline is a glass pill inside it, under the title.
+describe("offline sits inside the band when the page has one", () => {
+  it("the hero draws the shell's line under its title, and nothing while online", () => {
+    const offline = renderToStaticMarkup(<BOfflineContext.Provider value="Offline · updated 9:24 PM"><BHero title="Home" sub="3 things need you" /></BOfflineContext.Provider>);
+    expect(offline).toContain('<p class="b-sub">3 things need you</p><p class="b-offline b-glass" role="status"><span class="b-dot b-dot--warn" aria-hidden="true"></span>Offline · updated 9:24 PM</p></div>');
+    expect(renderToStaticMarkup(<BHero title="Home" />)).not.toContain("b-offline");
+  });
+  it("only a drawn band pill sends the shell's pill aside (a phone screen kept on desktop draws none)", () => {
+    const shell = readFileSync(join(__dirname, "../../app/app/owner-b-shell.css"), "utf8");
+    expect(shell).toMatch(/:has\(\.b-hero \.b-offline\[data-shown\]\) \.c-offline \{ display: none !important; \}/);
+    expect(shell).not.toMatch(/:has\(\.b-hero \.b-offline\) \.c-offline/);
   });
 });

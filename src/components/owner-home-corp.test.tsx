@@ -159,7 +159,8 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(out).toContain('<a href="/app/inbox#todo-missed" class="b-live__a" aria-label="Missed clock-ins: 1">');
     expect(out).toContain('aria-label="Find cover: Barista 1:00 PM – 3:00 PM">Find cover</a>');
     // B7 wording (NV-068): outside the dense week grid, ranges keep full times with a spaced en dash.
-    expect(out).toMatch(/>Next: today, Barista 1:00\s?PM\s–\s3:00\s?PM</);
+    // Jose (Nov 15, 2026, item 5): the short form shows on a phone, the full one from 768px (b-foundation.css picks).
+    expect(out).toMatch(/>Next: today, <span class="b-when-s">Barista 1–3\s?PM<\/span><span class="b-when-f">Barista 1:00\s?PM\s–\s3:00\s?PM</);
     expect(out).toContain(">1 missed clock-in<");
   });
   it("uses Jose's attendance words: a shift still running is Not clocked in, and only an ended shift is Missed", () => {

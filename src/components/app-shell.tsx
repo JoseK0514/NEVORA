@@ -6,7 +6,7 @@ import {NavigationLink as Link} from './navigation-link';
 import {useLinkStatus} from 'next/link';
 import {EmployeeMessageProvider,EmployeeMessageReturn} from './employee-mobile/message-session';
 import {AppNavigationProvider,useIdentityReload} from './app-navigation';
-import { NotificationBell, NotificationCount } from "./notification-bell";
+import { NotificationBell } from "./notification-bell";
 import { useInboxCount } from "./use-inbox-count";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
@@ -27,6 +27,7 @@ import { SectionTabs } from "./section-tabs";
 import { isPopoverOpen, hidePopover } from "./kit/popover-open";
 import { CommandFinder } from "./command-finder";
 import { PresentationProvider } from "./presentation-context";
+import { BOfflineContext } from "./owner-b/b-offline";
 import { NUVORA_BRAND } from "../lib/brand";
 import { handleRowNavigation } from "../lib/row-navigation";
 import type { PayrollCapabilities } from '@/lib/payroll/contracts';
@@ -347,6 +348,7 @@ function AppShellView({
   }, [pathname]);
   const online = useOnline();
   const offlineHeldAt = useOfflineHeldAt(online);
+  const offlineLine = online ? null : offlineHeldAt ? `Offline · updated ${clockTime(offlineHeldAt)}` : "You’re offline. Reconnect to see the latest.";
   useEffect(() => {
     if (online) return;
     document.addEventListener("click", blockOfflineActions, true);
@@ -444,6 +446,8 @@ function AppShellView({
       data-employee-mobile={employee ? "true" : undefined}
       data-employee-mobile-active={employeeMobile ? "true" : undefined}
       data-employee-mobile-chrome={rootChrome && employee ? "root" : employeeMobileChrome(user.role,pathname,mobileTabs,search)}
+      // Jose (Nov 15, 2026, item 12): Notifications left the Employee sidebar, so the page names itself for the band rules.
+      data-shell-page={pathname === "/app/notifications" ? "notifications" : undefined}
       data-employee-mobile-page={employee ? pathname === "/app" ? "home" : pathname === "/app/schedule" ? "schedule" : pathname === "/app/my-time" || pathname === "/app/timecards" ? "hours" : pathname === "/app/my-pay" ? "pay" : (pathname === "/app/requests/hub" || pathname === "/app/requests" || pathname === "/app/availability") || (pathname === "/app/exchange" || pathname.startsWith("/app/exchange/")) ? "requests" : "other" : undefined}
       data-nv-clean={employee ? undefined : ""}
       // Quiet (v4, Jose approved Oct 23, docs/product/specs/owner-v4-quiet): the Owner and Manager pages and their tab bar.
@@ -499,9 +503,6 @@ function AppShellView({
                 <span className="nav-label">{item.label}</span>
                 <NavPending />
                 {item.href === "/app/inbox" && inboxCount ? <span className="nav-count" aria-hidden="true">{inboxCount > 99 ? "99+" : inboxCount}</span> : null}
-                {/* Employee desktop, Direction B (Nov 8, 2026): Notifications carries its unread count (teal, not urgent), from
-                  the bell's own private snapshot. Shown on desktop only; the entry's label stays its name. */}
-                {employee && item.href === "/app/notifications" && notificationAuthority ? <NotificationCount authority={notificationAuthority} /> : null}
               </Link>
             );
           })}</div>)}
@@ -566,10 +567,12 @@ function AppShellView({
         </header>
         {/* Owner premium P7 and P11: the thin progress bar while a page is on its way, and the offline line over the page. */}
         <div className="c-progress" aria-hidden="true"><i /></div>
-        {!online ? <div className="c-offline" role="status" data-held={offlineHeldAt ? "" : undefined}>{offlineHeldAt ? `Offline · updated ${clockTime(offlineHeldAt)}` : "You’re offline. Reconnect to see the latest."}</div> : null}
+        {/* Jose (Nov 15, 2026, item 9): a page with a band shows this line inside it, under the title (BOffline); this
+          * one stays for pages without a band and is hidden when the band's pill is on the page (owner-b-shell.css). */}
+        {offlineLine ? <div className="c-offline" role="status" data-held={offlineHeldAt ? "" : undefined}>{offlineLine}</div> : null}
 
         <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{/* Review B2 (NV-032): no separate "Management menu unavailable" card above the hero; the page's own state says it once
-          and its Try again re-checks the menus too. */}<EmployeeMessageReturn/>{children}</PresentationProvider></main>
+          and its Try again re-checks the menus too. */}<EmployeeMessageReturn/><BOfflineContext.Provider value={offlineLine}>{children}</BOfflineContext.Provider></PresentationProvider></main>
 
         <nav className="mobile-nav" aria-label="Mobile navigation" style={{gridTemplateColumns:`repeat(${mobileTabs.length},minmax(0,1fr))`}}>
           {/* v5 One look (approved Oct 24): one Quiet tab bar for every role; More is a page. */}

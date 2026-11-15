@@ -186,7 +186,7 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
       {nextDay ? <p className="c-field__help c-shift__next" id={id("next-day")} aria-live="polite">{`Ends ${nextDay}`}</p> : null}
 
       <label className="c-shift__lead">
-        <span className="c-shift__lead-text"><b>Shift lead</b><span>This person leads the shift. Owners, Managers and Leads can.</span></span>
+        <span className="c-shift__lead-text"><b>Shift lead</b><span>Must be an Owner, Manager or Lead.</span></span>
         <input type="checkbox" role="switch" className="c-switch" name="isDesignatedLead" checked={lead} onChange={event => setLead(event.target.checked)} />
       </label>
 

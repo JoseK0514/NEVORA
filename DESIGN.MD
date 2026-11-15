@@ -426,8 +426,10 @@ item names the lines it supersedes; line numbers are from the file before this s
 - **Loading, error and offline (Phase 2).** A loading screen keeps the page's frame: its band at the page's height, its
   title, strip and card shapes, from one table (`src/components/owner-b/b-loading.tsx`); it does not animate. A failed
   page keeps the band at 196 with one 560px state card and one retry (`BStateScreen`, `BRouteError`). The offline line
-  is one dark pill: at the foot of the window from 768px, above the tab bar on phones; it never sits between the top
-  bar and the band. Employee Home still clears private rows when offline.
+  is one pill and is said once. On a page with a band (`BHero`) it is a glass pill inside the band, under the title,
+  on every width (Jose, Nov 15, 2026; finding OW-008). A page without a band keeps the dark pill: at the foot of the
+  window from 768px, above the tab bar on phones. It never sits between the top bar and the band. Employee Home still
+  clears private rows when offline.
 - **Owner and Manager screens (Phase 3, built Nov 15, 2026; see `docs/product/review-2026-11-14/fixes/phase-3/README.md`).**
   - *Area sheets.* New Owner and Manager rules live in one sheet per area, loaded after `b-foundation.css`:
     `owner-b-home.css`, `owner-b-schedule.css`, `owner-b-time-pay.css`, `owner-b-requests.css`, `owner-b-settings.css`;
@@ -449,6 +451,14 @@ item names the lines it supersedes; line numbers are from the file before this s
     the pill takes `aria-current`. Under 1024px Owners and Managers have the labelled rail only (no toggle).
   - *Supersedes* the red count badge, "light Home" for account pages on tablets, and the per-day open-shift time
     chips on the Owner grid noted further down.
+  - *Jose's thirteen decisions (Nov 15, 2026).* Listed in the Phase 3 README under "Decided". The rules they set:
+    timecards of an open period are one card, "Pay period still open", with the day approval opens on a line under its
+    heading. After a save the reviewer moves on with "Next timecard"; nothing advances on a timer. A time range is short
+    on a phone ("3–4:30 PM") and full from 768px ("3:00 PM – 4:30 PM") on Home and Things to do (`BWhen`), as the
+    Schedule's day list already was. A folded
+    notification opens in place and lists each notification, each read on its own. One bell, in the top bar, for every
+    role (no Notifications entry in the Employee sidebar or rail). My pay has no back link from 768px. Under "Shift
+    lead": "Must be an Owner, Manager or Lead."
 - **States and menus.** The state card's empty kind is grey with a tray glyph; the warning glyph is for failures.
   Menu items have 10px corners inside the 16px menu (supersedes 8px near 1891).
 - **Motion.** The press scale runs only under `prefers-reduced-motion: no-preference`.

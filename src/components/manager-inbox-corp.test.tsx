@@ -246,9 +246,11 @@ it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count i
   expect(html).not.toContain('Elena');
   expect(html).toMatch(/Oct 5 – 11<\/span><span class="b-chip b-chip--grey">Pay period ended</);
   expect(html).toMatch(/id="b-todo-waiting-timecards-h">Timecards to approve<span class="b-pill">1</);
-  // A period still open is one closed card at the bottom: when it opens and how many, no count pill, no "waiting" suffix.
-  expect(html).toMatch(/id="b-todo-closed-timecards-h">Not open yet<\/h2>/);
-  expect(html).toContain('>Opens Mon, Oct 19 · 2 timecards<');
+  // A period still open is one closed card at the bottom (Jose, Nov 15, 2026: "Pay period still open"): its line says the
+  // day approval opens, the row says how many and whose; no count pill, no "waiting" suffix.
+  expect(html).toMatch(/id="b-todo-closed-timecards-h">Pay period still open<\/h2><\/div><p class="b-card__note">You can approve these from Mon, Oct 19.<\/p>/);
+  expect(html).toContain('>2 timecards · Blair, Casey<');
+  expect(html).not.toContain('Not open yet');
   expect(html).not.toContain('· waiting');
   expect(html.indexOf('b-todo-closed-timecards')).toBeGreaterThan(html.indexOf('b-todo-waiting-timecards'));
   // The band counts the two requests and the correction; the tabs add up to it; the timecards to approve are named after it.

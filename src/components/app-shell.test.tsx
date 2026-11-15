@@ -136,7 +136,7 @@ it.each(['MANAGER','OWNER'] as const)('places %s device settings only in existin
  expect(html).not.toContain('href="/app/notifications"');
 });
 it('feature off retains the ordinary profile and does not mount setup',()=>{
- const {html}=render('EMPLOYEE');expect(html).not.toContain('portal-device-settings');expect(html).toContain('href="/app/profile" class="sidebar-profile portal-profile-trigger"');expect(html).toContain('href="/app/notifications"');
+ const {html}=render('EMPLOYEE');expect(html).not.toContain('portal-device-settings');expect(html).toContain('href="/app/profile" class="sidebar-profile portal-profile-trigger"');
 });
 
 it.each(["EMPLOYEE", "MANAGER"] as const)("offers a top-right account menu with sign out for %s", role => {
@@ -196,7 +196,14 @@ it.each(['MANAGER','OWNER'] as const)('opens %s More from the header avatar and 
 });
 
 it.each(['EMPLOYEE','LEAD'] as const)('push_disabled_profile_and_inbox_accessible shell affordances for %s',role=>{
- const {html}=render(role);expect(html).toContain('href="/app/profile"');expect(html).toContain('href="/app/notifications"');expect(html).not.toContain('portal-device-settings');
+ const {html}=render(role);expect(html).toContain('href="/app/profile"');expect(html).not.toContain('portal-device-settings');
+ // Jose (Nov 15, 2026, item 12): Notifications is reached from the one top-bar bell (the layout always passes its
+ // authority), not from a sidebar or rail entry, as for Owners and Managers.
+ navigationMock.pathname='/app/my-time';
+ const withBell=renderToStaticMarkup(<AppShell workspaceName="Northside Services" notificationAuthority="fictional-view-authority" operationalAuthority={company} user={{id:'actor',firstName:'Sam',lastName:'Cruz',role}}>Content</AppShell>);
+ expect(withBell.match(/href="\/app\/notifications"/g)).toHaveLength(1);
+ expect(withBell).toMatch(/<a href="\/app\/notifications" class="portal-notification-bell"/);
+ expect(withBell.split('aria-label="Primary navigation"')[1].split('</nav>')[0]).not.toContain('/app/notifications');
 });
 
 // Review Nov 14 (BR-4): Updates opens from More and is not one of the tabs, so the phone lights no tab (it used to light Home).
@@ -419,7 +426,7 @@ it('TB-001, TB-009: the current sidebar entry\'s glyph is filled and the others 
 });
 it('an Employee\'s account menu and sidebar are unchanged by the Manager rules',()=>{
  const {sidebar,pill}=shell('EMPLOYEE','/app/profile');
- expect([...sidebar.matchAll(/class="nav-label">([^<]+)</g)].map(match=>match[1])).toEqual(['Home','Schedule','Time','Pay','Requests','Updates','Notifications']);
+ expect([...sidebar.matchAll(/class="nav-label">([^<]+)</g)].map(match=>match[1])).toEqual(['Home','Schedule','Time','Pay','Requests','Updates']);
  expect(sidebar).toContain('<h2 class="sidebar-group-label">More</h2>');
  expect(pill).not.toContain('aria-current');
 });

@@ -67,6 +67,9 @@ const EMPLOYEE_SIDEBAR_HOLDERS: Record<string, string> = {
 /** Entries reached from the desktop account menu instead; their pages light no sidebar entry. */
 const ACCOUNT_MENU_ENTRIES = new Set(["/app/my-pay", "/app/profile"]);
 const EMPLOYEE_ACCOUNT_MENU_ENTRIES = new Set(["/app/profile"]);
+/** Jose (Nov 15, 2026, item 12): one bell, in the top bar, for every role. An Employee's or Lead's Notifications entry
+ * leaves the sidebar and the tablet rail, as an Owner's and a Manager's never had one; the phone header's bell is the same. */
+const EMPLOYEE_TOP_BAR_ENTRIES = new Set(["/app/notifications"]);
 /** Phase 3 (MG-007): a Manager has no Settings page and no Payroll entry, so the two pages that were only on the avatar's
  * More page have their own sidebar entries: Scheduling rules (the one setting a Manager has) and My pay. Both are entries
  * the Manager's navigation already holds; a Manager without one of them gets no entry for it. Owners keep the shorter list. */
@@ -95,7 +98,7 @@ export function sidebarNavigation(role: UserRole, items: NavigationItem[]): Navi
   const ordered = employee ? [...items].sort((a, b) => rank(a.href) - rank(b.href)) : items;
   const accountMenu = management ? ACCOUNT_MENU_ENTRIES : EMPLOYEE_ACCOUNT_MENU_ENTRIES;
   return ordered
-    .filter(item => role === "MANAGER" && MANAGER_SIDEBAR_KEEPS.has(item.href) || !holderFor(role, item.href, present) && !accountMenu.has(item.href))
+    .filter(item => role === "MANAGER" && MANAGER_SIDEBAR_KEEPS.has(item.href) || !holderFor(role, item.href, present) && !accountMenu.has(item.href) && !(employee && EMPLOYEE_TOP_BAR_ENTRIES.has(item.href)))
     .map(item => !employee || !EMPLOYEE_SIDEBAR_LABELS[item.href] ? item : { ...item, label: EMPLOYEE_SIDEBAR_LABELS[item.href] })
     // D-4: the people page is "Team" in the sidebar, as on the phone tab.
     // Corporate (Release 1): the desktop sidebar uses the phone's names for Timecards (Time) and Inbox (Things to do).

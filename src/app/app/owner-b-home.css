@@ -71,6 +71,11 @@
   }
 
   /* ---------- Things to do ---------- */
+  /* Jose (Nov 15, 2026): the "Pay period still open" card says the day approval opens on one grey line under its heading. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen .b-card__note:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { margin: 0 !important; padding: 0 var(--b-inset) var(--b-space-8) !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; }
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen .b-card__note:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+  }
   @media (max-width: 767px) {
     /* MG-012: on a phone a swap's or a can't-work request's Review pill sits under the text, at the right, as Decline and
      * Approve do under a time off request, so the names and the shift keep the row's width. */

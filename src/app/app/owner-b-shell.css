@@ -138,6 +138,17 @@
     }
   }
   /* ================= end of Phase 3, package F ================= */
+
+  /* Jose (Nov 15, 2026, item 9; finding OW-008): offline is a glass pill inside the band, under the title, on every width:
+   * a warm dot, then "Offline · updated 9:24 PM" in 13.5/600 white. While one is drawn (`data-shown`, set by BOffline)
+   * the shell's own pill (the foot of the window, or above the tab bar) steps aside, so the line is said once. Pages
+   * without a drawn band (a phone screen kept in the page on desktop draws none) keep the shell's pill. */
+  html:is(:root, [data-theme]) body .app-shell[data-nv-b] .b-hero .b-offline {
+    display: inline-flex !important; align-items: center !important; gap: var(--b-space-8) !important; width: fit-content !important; max-width: 100% !important;
+    min-height: 28px !important; margin: var(--b-space-8) 0 0 !important; padding: 4px var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important;
+    font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 600 !important; color: var(--b-on-band) !important; text-wrap: balance !important;
+  }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-b][data-nv-b][data-nv-b]:has(.b-hero .b-offline[data-shown]) .c-offline { display: none !important; }
 }
 
 /* Unlayered: normal declarations (they keep the cascade they had) and the !important declarations that must stay outside

@@ -23,7 +23,8 @@ export function filterNotifications(items:EmployeeNotificationItem[],filter:Noti
  return items.filter(item=>(filter==='all'||filter==='unread'&&item.reviewState==='unread'||filter==='required'&&item.actionState==='required')&&(!query||matches(item)));
 }
 
-export type NotificationRow={item:EmployeeNotificationItem;count:number;unreadIds:string[]};
+/** A row and, when it folds repeats, every notification it holds (newest first). */
+export type NotificationRow={item:EmployeeNotificationItem;count:number;unreadIds:string[];items:EmployeeNotificationItem[]};
 /** OW-002 (Phase 3): rows that follow each other and say the same thing (the same kind and no dates of their own) read as
  * one row: the newest, with how many it stands for and which of them are unread. `items` is newest first. Each row's link
  * is its own (it opens that notification), so links are not compared; the folded row opens the newest. A row with dates
@@ -32,8 +33,8 @@ export function collapseNotifications(items:EmployeeNotificationItem[]):Notifica
  const rows:NotificationRow[]=[];
  for(const item of items){
   const last=rows.at(-1),unread=item.reviewState==='unread';
-  if(last&&!item.subject&&!last.item.subject&&last.item.label===item.label){last.count+=1;if(unread)last.unreadIds.push(item.id);}
-  else rows.push({item,count:1,unreadIds:unread?[item.id]:[]});
+  if(last&&!item.subject&&!last.item.subject&&last.item.label===item.label){last.count+=1;last.items.push(item);if(unread)last.unreadIds.push(item.id);}
+  else rows.push({item,count:1,unreadIds:unread?[item.id]:[],items:[item]});
  }
  return rows;
 }

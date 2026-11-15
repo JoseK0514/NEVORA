@@ -12,6 +12,14 @@
   /* Live tiles sit in a clipped strip: the ring is an inset shadow above the neighbours, so all four edges show. */
   /* A card's first and last rows: the inside ring follows the card's corners. */
 
+  /* ---------- Time ranges (Jose, Nov 15, 2026, item 5): BWhen renders both forms; a phone shows the short one ---------- */
+  @media (max-width: 767px) {
+    :is(#c-root, html) body .app-shell[data-nv-b] .b-when-f { display: none !important; }
+  }
+  @media (min-width: 768px) {
+    :is(#c-root, html) body .app-shell[data-nv-b] .b-when-s { display: none !important; }
+  }
+
   /* ---------- Touch targets (NV-008, NV-127, NV-265): 44px hit areas without changing the drawn size ---------- */
   /* Filter chips that scroll sideways: room at the end and a fade, so a cut chip reads as "more". */
   /* Decision pairs (Decline / Approve) in the request lists: 44px, at least 96px wide, right-aligned on wide screens (NV-014). */

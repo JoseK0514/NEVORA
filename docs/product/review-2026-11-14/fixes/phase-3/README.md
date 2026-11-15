@@ -89,21 +89,47 @@ Every changed string is listed old to new in the six reports. No payroll calcula
 | Payroll desktop rows | amount alone | amount with "Net" under it (the phone's word; the field is net pay) |
 | Manager sidebar | group heading "More" | no heading |
 
-## For you to decide
+## Decided (Jose, Nov 15, 2026)
 
-1. **Things to do count.** It now includes corrections that wait on you. Timecards of an ended period are not in it; adding them would make 18 read 29 in the test workspace.
-2. **"On now" on Home.** Desktop only today. It could show on phones, or move to the right column.
-3. **"Not open yet"** as the title of the grey timecards card.
-4. **Approved timecard.** The green "Approved, 7 of 12 done" block is in. Moving on to the next timecard by itself after 1.2 seconds is not built, because it moves keyboard focus without being asked.
-5. **Phone Schedule times.** The day list writes "3–4:30 PM"; Home writes "3:00 PM – 4:30 PM". The full form wraps at 320px.
-6. **Open-shift list** opens in place under the row, not as a floating popover. Past days' chips are grey; the finding drew them all amber.
-7. **Tablet Schedule** uses a 128px name column and 68px rows (the finding said 124 and 60) so the longest name and a long time fit.
-8. **Folded notifications.** Opening one marks all the unread ones inside it as read.
-9. **Offline line.** Phase 2 put one pill at the foot of the window. The original finding asked for a pill inside the band. Unchanged here.
-10. **More page.** Sign out is a pill under the card; a row inside the card is the alternative.
-11. **Manager's My pay** is now in the sidebar and left the account menu on tablet and desktop. Its back link still reads "‹ More".
-12. **Employee tablets** show two bells (rail and top bar). Not changed; it belongs to the Employee phase.
-13. **Add shift** now names Leads among who can lead a shift, as the finding and the server message do.
+Jose approved a recommendation for each of the thirteen questions. "Built" names what changed after `5c79f685`; "kept"
+means the Phase 3 build already matched.
+
+1. **Things to do count: kept.** The badge counts what can be decided today, corrections that wait on you included.
+   Timecards of an ended period stay their own count ("N things need you · M timecards to approve"). Overdue ones may join
+   the badge once the server sends an `overdue` number (OW-028).
+2. **"On now" on Home: kept.** Tablet and desktop (it is hidden under 768px); on a phone the Clocked in tile opens the list.
+3. **"Not open yet": built.** The card is "Pay period still open". When one period is waiting, a grey line under the
+   heading says "You can approve these from Mon, Nov 16." and each row names how many and whose ("2 timecards · Blair,
+   Casey"). Two periods keep the day on each row. `manager-inbox-corp.tsx` (`groupThingsToDo`, `timecardRows`),
+   `owner-b/inbox-b.tsx` (`GroupCard`), `owner-b-home.css`.
+4. **After approving a timecard: built.** No timer. The green "Approved · 7 of 12 done" block carries a tinted "Next
+   timecard" pill when another card in the list still needs the same step and isn't the viewer's own; it prefers a card
+   that can take that step now (no correction waiting) and wraps to the start of the list. Pressing it opens that card
+   and moves focus to the person's name at the top of the sheet. `timecards.tsx`, `owner-b-time-pay.css`.
+5. **Phone times: built.** Phones write "3–4:30 PM" on Home ("Next: today, …") and Things to do's open shifts, as the
+   Schedule's day list does; tablet and desktop keep "3:00 PM – 4:30 PM". `BWhen` in `owner-b/b-kit.tsx` renders both
+   and `b-foundation.css` shows one by width.
+6. **Open-shift list: kept.** It opens in place under the day; past days' chips stay grey.
+7. **Tablet Schedule: kept.** 128px name column and 68px rows.
+8. **Grouped notifications: built.** Opening a fold used to open only the newest notification's page and mark every
+   unread one in the fold read, so the others were never seen. Now a fold is a button (`aria-expanded`) that lists each of
+   its notifications under it; each opens its own page and is marked read on its own. Opening the fold marks nothing.
+   `notification-inbox.tsx`, `notification-inbox-view.ts` (`NotificationRow.items`), `quiet.css`.
+9. **Offline: built.** On a page with a band the line is a glass pill inside it, under the title (warm dot, 13.5/600,
+   "Offline · updated 9:24 PM"), on every width; the shell's pill steps aside only while a band pill is drawn
+   (`data-shown`). Pages without a drawn band (Notifications, My pay, Settings, and desktop Payroll, which keeps its
+   phone screen hidden in the page) keep the shell's pill. Checked on 15 Owner routes at 1440 and 8 at 900 and 390: one
+   line each. `owner-b/b-offline.tsx`, `BHero`, `app-shell.tsx`, `owner-b-shell.css`.
+10. **Sign out on More: kept.** The separate pill under the card.
+11. **Manager's My pay: built.** It stays in the sidebar. From 768px it has no back link (it is a sidebar or account-menu
+    page, like Settings); phones keep "‹ More". `owner-b-desktop.css` (the Settings rules now name `.c-mypay`).
+12. **Employee bells: built.** One bell, in the top bar, for every role. An Employee's or Lead's Notifications entry left
+    the sidebar and the tablet rail (Owners and Managers never had one); the phone header keeps its bell, as before.
+    Notifications names itself on the shell (`data-shell-page`) so its 296 band rules no longer depend on the sidebar
+    link. `navigation.ts`, `app-shell.tsx`, `employee-b-desktop.css`.
+13. **Shift lead wording: built.** Under "Shift lead": "Must be an Owner, Manager or Lead." The error is "Only an Owner,
+    Manager or Lead can lead a shift." on every schedule page (the company-access forms said "…can be the designated shift
+    lead"). The roles match the server's `isLeadCapable`.
 
 ## Left for a later pass
 

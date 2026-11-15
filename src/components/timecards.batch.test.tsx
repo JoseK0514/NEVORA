@@ -458,3 +458,32 @@ it('phone: the tile names the step under way, the steps are said once and a fina
  expect(after).toContain('Every timecard for Sep 21 – 27 is finalized.');expect(after).not.toContain('Approve each timecard');
 });
 
+it('after an approval the reviewer moves on when they choose: Next timecard, never on a timer (Jose, Nov 15, 2026)',async()=>{
+ transport();await mount();openFirstSheet();
+ const focus=vi.fn();
+ vi.stubGlobal('requestAnimationFrame',(callback:()=>void)=>{callback();return 0;});
+ Object.assign(document,{getElementById:(id:string)=>id==='cm-tc-sheet-title'?{focus}:null});
+ click('Approve with no hours');await flush();
+ const saved=html();
+ expect(saved).toContain('PRIVATE E1’s timecard is approved.');
+ // The next card that still needs approval, skipping the viewer's own.
+ expect(saved).toContain('aria-label="Next timecard: PRIVATE E2"');
+ // Nothing moves by itself.
+ await vi.advanceTimersByTimeAsync(2000);
+ expect(html()).toContain('PRIVATE E1’s timecard is approved.');
+ expect(focus).not.toHaveBeenCalled();
+ click('Next timecard: PRIVATE E2');
+ expect(html()).toContain('id="cm-tc-sheet-title" class="c-row__title c-row__title--b" tabindex="-1">PRIVATE E2<');
+ expect(html()).not.toContain('Next timecard');
+ expect(focus).toHaveBeenCalledOnce();
+});
+it('Next timecard prefers a card that can be approved now over one waiting on a correction',async()=>{
+ const waiting={...card('E2'),source:{...card('E2').source,pendingCorrections:1}};
+ vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json({...ready(),cards:[card('E1'),waiting,card('E3'),card('OWNER')]});const c=JSON.parse(String(init?.body)) as TimecardCommand;commands.push(c);return Response.json({status:'approved',operationId:c.operationId,revision:1});});
+ await mount();
+ // The list puts the card that needs attention first: E2, E1, E3. After E3 the order wraps to E2 (waiting), then E1.
+ const person=nodes(render()).find(n=>n.type==='button'&&n.props.className==='c-tc-person'&&renderToStaticMarkup(n).includes('PRIVATE E3'))!;
+ (person.props.onClick as ()=>void)();
+ click('Approve with no hours');await flush();
+ expect(html()).toContain('aria-label="Next timecard: PRIVATE E1"');
+});
