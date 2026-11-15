@@ -86,3 +86,23 @@ test('consumer preserves legacy result only when all startup input paths are abs
 test('consumer rejects partial startup input before considering metadata',async()=>{
  const f=await fixture();try{rmSync(join(f.root,'src/instrumentation.ts'));assert.throws(()=>f.consumer.assertPortalGeneratedInstallationBuildInput(),/portal_generated_installation_build_input_unavailable/);}finally{f.close();}
 });
+
+test('the fixed request-error-only hook does not imply private portal startup installation',async()=>{
+ const f=await fixture();try{
+  rmSync(join(f.root,runtime+'portal-runtime-build-install-bootstrap.server.ts'));rmSync(join(f.root,installationPath));
+  put(f.root,'src/instrumentation.ts',readFileSync(join(app,'src/instrumentation.ts')));
+  assert.deepEqual(f.consumer.assertPortalGeneratedInstallationBuildInput(),{status:'LEGACY_BUILD_NO_PORTAL_STARTUP_BINDING'});
+ }finally{f.close();}
+});
+
+test('an error hook cannot conceal a partial private portal installation or an unknown startup hook',async()=>{
+ const f=await fixture();try{
+  rmSync(join(f.root,runtime+'portal-runtime-build-install-bootstrap.server.ts'));
+  const observer=readFileSync(join(app,'src/instrumentation.ts'));
+  put(f.root,'src/instrumentation.ts',observer);
+  assert.throws(()=>f.consumer.assertPortalGeneratedInstallationBuildInput(),/portal_generated_installation_build_input_unavailable/);
+  rmSync(join(f.root,installationPath));
+  put(f.root,'src/instrumentation.ts',Buffer.concat([observer,Buffer.from('\nexport function register() { throw new Error("unreviewed startup"); }\n')]));
+  assert.throws(()=>f.consumer.assertPortalGeneratedInstallationBuildInput(),/portal_generated_installation_build_input_unavailable/);
+ }finally{f.close();}
+});

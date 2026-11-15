@@ -11,7 +11,11 @@ const imagePath='src/lib/tenancy/runtime/portal-source-image.generated.ts';
 const producerPath='src/lib/tenancy/runtime/portal-native-installation-producer.server.ts';
 const capturePath='src/lib/tenancy/runtime/portal-native-installation-capture.server.ts';
 const instrumentationSourceSha256="9a483af0104831eaf399a7704fc7808b991d68362dbc28905f3a2038e5460ba4";
-const bootstrapSourceSha256="1ad06d1b6e1660c1a48bfb724d9a8326424d68182b360c397c9546c2ad4142fb";
+// The separately reviewed observer exports no register/startup binding. Unknown
+// hook bytes still fail closed rather than being classified by filename alone.
+const requestErrorInstrumentationSourceSha256="a8b015f5eeb5b0746f331eed2200eb90e065cf0b690265b92311ec7fe5e6370c";
+// c9f71141 upgraded the fixed bootstrap preimage from Next 16.3.8 to 16.4.2.
+const bootstrapSourceSha256="7a3660a6c437eb73bf7e037bdfae67e0e97dd1a75c963a2ba10159bdd89dd12a";
 const fenceSourceSha256="2244d516b56bb7b4bbb76b47699971ed71c8ec0aebdeee6b8031692d2c1d0a2f";
 const fenceProtocolSha256="f433a46cf53b69cd1bac000fb702c2586efd3b76abb57d51aab3a037ce1b7819";
 const fail=()=>{throw Error('portal_generated_installation_build_input_unavailable');};
@@ -35,12 +39,12 @@ function bytes(value){if(!Array.isArray(value)||!value.length||value.some(v=>typ
 function literal(source,name){const marker='const '+name+' = ';if(source.split(marker).length!==2)return fail();const start=source.indexOf(marker)+marker.length,end=source.indexOf(';\n',start);if(end<start)return fail();const value=JSON.parse(source.slice(start,end));if(typeof value!=='string'||!value.length)return fail();return value;}
 function oid(value){if(typeof value!=='string'||!/^[1-9][0-9]*$/.test(value)||BigInt(value)>4294967295n)return fail();return value;}
 /** Legacy release-build returns unchanged when neither startup source exists.
- * Once either fixed startup path exists, all generated/dependency/source inputs
+ * Once a portal startup path exists, all generated/dependency/source inputs
  * must exist coherently. No env flag, CLI approval/path, DB lookup or write.
  */
 export function assertPortalGeneratedInstallationBuildInput(){
  const instrumentation=present('src/instrumentation.ts'),bootstrap=present('src/lib/tenancy/runtime/portal-runtime-build-install-bootstrap.server.ts');
- if(!instrumentation&&!bootstrap){if(present(installationPath))return fail();return Object.freeze({status:'LEGACY_BUILD_NO_PORTAL_STARTUP_BINDING'});}
+ if(!bootstrap&&!present(installationPath)&&(!instrumentation||hash(read('src/instrumentation.ts'))===requestErrorInstrumentationSourceSha256))return Object.freeze({status:'LEGACY_BUILD_NO_PORTAL_STARTUP_BINDING'});
  if(!instrumentation||!bootstrap||present('.next'))return fail();
  if(hash(read('src/instrumentation.ts'))!==instrumentationSourceSha256||hash(read('src/lib/tenancy/runtime/portal-runtime-build-install-bootstrap.server.ts'))!==bootstrapSourceSha256)return fail();
  const raw=read(installationPath,true),text=utf8(raw),installation=exact(JSON.parse(text),['format','sourceImageSha256','producerSourceBytes','installationSourceBundle','catalogFenceProtocolSha256','startup','privateEnrollment']);
