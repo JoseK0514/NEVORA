@@ -4,7 +4,7 @@ name: CI
 
 on:
   push:
-    branches: [development, main]
+    branches: [development, main, claude-codex-collab-nevora]
     tags: ["candidate/backend-completion/**"]
   pull_request:
     branches: [development, main, "phase-c/**", "release/**", "codex/verify-preview-33"]
@@ -68,6 +68,10 @@ jobs:
           PHASE_E_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           NEVORA_BUILD_RECEIPT: ${{ runner.temp }}/nevora-build-source.json
         run: node scripts/release-build.mjs
+      - name: Production development-marker gate
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+        run: npm run test:dev:production
       - name: Production dependency audit
         run: npm audit --omit=dev --audit-level=high
       - name: Full dependency audit including development tooling

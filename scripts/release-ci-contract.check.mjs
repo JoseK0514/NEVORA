@@ -10,6 +10,21 @@ const workflow=require('js-yaml').load(readFileSync('.github/workflows/ci.yml','
 const attendanceCondition=group=>"${{ !cancelled() && steps.attendance_runtime.outcome == 'success' && matrix.group == '"+group+"' }}";
 const mandatory=['validate','clocker-postgres','release-postgres','phase-d-attendance-ui','management-review-ui','phase-e-postgres','phase-e-ui'];
 
+test('the collaboration branch receives the same CI push gates as development',()=>{
+ assert(workflow.on.push.branches.includes('claude-codex-collab-nevora'));
+ assert(workflow.on.push.branches.includes('development'));
+ assert(workflow.on.push.branches.includes('main'));
+});
+
+test('release validation scans the production build for development-only markers',()=>{
+ const steps=workflow.jobs.validate.steps;
+ const build=steps.findIndex(step=>step.run==='node scripts/release-build.mjs');
+ const scan=steps.findIndex(step=>step.run==='npm run test:dev:production');
+ assert(build>=0&&scan>build,'Production marker gate must follow the source-bound build');
+ assert.equal(steps[scan].if,undefined);
+ assert.equal(steps[scan]['continue-on-error'],undefined);
+});
+
 test('parallel attendance groups retain a mandatory protected aggregate and exact-run evidence custody',()=>{
  const leaf=workflow.jobs['phase-d-browser-suite'],gate=workflow.jobs['phase-d-attendance-ui'];
  assert.equal(leaf.if,undefined);assert.equal(leaf['timeout-minutes'],50);
@@ -277,7 +292,7 @@ test('runtime installers prefer the existing official mirror before every apt de
  }
 });
 test('feature candidates run through PRs without a duplicate branch-push execution',()=>{
- assert.deepEqual(workflow.on.push.branches,['development','main']);
+ assert.deepEqual(workflow.on.push.branches,['development','main','claude-codex-collab-nevora']);
  assert.deepEqual(workflow.on.push.tags,['candidate/backend-completion/**']);
  for(const target of ['development','main','codex/verify-preview-33'])assert(workflow.on.pull_request.branches.includes(target));
  assert.equal(workflow.concurrency['cancel-in-progress'],"${{ github.event_name == 'pull_request' }}");
