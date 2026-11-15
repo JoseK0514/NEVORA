@@ -1,6 +1,6 @@
 # Nov 15 inspection backend intake
 
-Status: source verified; handoff accepted; Jose approved implementation in this chat on Nov 15. Foundation implementation starting.
+Status: source verified; handoff accepted; Jose approved implementation in this chat on Nov 15. The first local backend batch is implemented; current evidence and remaining items are in [the validation record](2026-11-15-inspection-backend-validation.md).
 
 ## Source custody
 
@@ -56,7 +56,7 @@ Verified in current development code:
 - Program: implementation, verification, hosted acceptance and release acceptance remain separate. The register above is an intake, not a closure report.
 - Governance: GO for read-only discovery and planning. Release impact CONDITION; customer release remains held until affected mandatory gates are evidenced. No independent audit findings are self-closed.
 
-## Evidence actually obtained
+## Intake evidence (before implementation)
 
 - Read current AGENTS.md, package scripts, relevant backend implementation/tests, the pasted handoff and Claude's review reports.
 - `git ls-remote` confirmed both remote source heads; fetched origin and verified a clean detached development worktree before adding intake documents.
@@ -67,4 +67,4 @@ Verified in current development code:
 
 ## Next gate
 
-Review the external-calculation product scope and the [implementation plan](../superpowers/plans/2026-11-15-inspection-backend-foundation.md). Implement the independent foundation first, then the remaining register items with their decisions and regression evidence. Claude retains UI ownership. Integrate reviewed backend and UI on development, qualify the exact combined SHA there to production standards, and promote that exact release to main/production only after Jose's explicit approval.
+Continue the approved [foundation plan](../superpowers/plans/2026-11-15-inspection-backend-foundation.md) and the [external-calculation plan](../superpowers/plans/2026-11-15-external-payroll-statements.md), then the remaining register items with their decisions and evidence. Claude retains UI ownership. Integrate reviewed backend and UI on development, qualify the exact combined SHA there to production standards, and promote that exact release to main/production only after Jose's explicit approval. No repeated approval is needed for already approved bounded implementation.
