@@ -8,6 +8,7 @@ import type {InvitationCommand, InvitationReceipt, InvitationResult, InvitationS
 import {neonNotificationExecutor} from '@/lib/data/notification-transactions';
 import {getWorkspace, workspaceReadGuard} from '@/lib/data/workspaces';
 import {assertManagementProof, managementSessionStatements} from '@/lib/data/management-session';
+import {invitationDelivery} from './delivery.server';
 
 const uuid = (v: unknown): v is string => typeof v==='string' && /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(v);
 const safeId = (v: unknown): v is string => typeof v==='string' && v.length>0 && v.length<=200 && v===v.trim() && !/[\u0000-\u001f\u007f]/.test(v);
@@ -119,12 +120,12 @@ export async function readInvitationStatus(proof: SessionMutationProof, employee
  try {
   const workspace=await getWorkspace(executor),target=await targetRead(proof,workspace,employeeId,executor);
   if(!target) return {state:'unavailable',reason:'access_denied'};
-  const eligible=eligibility(target);
+  const eligible=eligibility(target),deliveryAvailable=invitationDelivery()!==null;
   return {state:'ready',employeeId:target.employeeId,employeeVersion:target.employeeVersion,eligibility:eligible,
    registeredEmailMasked:maskedEmail(target.email),invitationRevision:target.invitationRevision,
    invitation:target.invitationId && target.invitationState && target.issuedAt && target.expiresAt ? {id:target.invitationId,state:target.invitationState,
     issuedAt:target.issuedAt,expiresAt:target.expiresAt,issuerName:target.issuerName??''}:null,
-   delivery:target.delivery??'UNAVAILABLE',allowedCommands:[...(eligible==='INVITABLE'?['ISSUE' as const]:[]),...(target.invitationState==='ISSUED'?['REVOKE' as const]:[])],retryAfterMs:null};
+   delivery:target.delivery??'UNAVAILABLE',deliveryAvailable,allowedCommands:[...(eligible==='INVITABLE'&&deliveryAvailable?['ISSUE' as const]:[]),...(target.invitationState==='ISSUED'?['REVOKE' as const]:[])],retryAfterMs:null};
  } catch {return {state:'unavailable',reason:'access_denied'};}
 }
 /** Recover this actor's historical receipt after an uncertain command response.

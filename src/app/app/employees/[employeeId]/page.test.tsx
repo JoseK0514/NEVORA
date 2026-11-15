@@ -71,7 +71,7 @@ vi.mock("../actions", () => ({
 import EmployeeProfilePage from "./page";
 
 beforeEach(() => {
-  m.profileUnavailable=false;m.invitation.mockReset().mockResolvedValue({state:'ready',employeeId:'worker',employeeVersion:'2026-10-05 12:00:00+00',eligibility:'INVITABLE',registeredEmailMasked:'s***@example.invalid',invitationRevision:0,invitation:null,delivery:'UNAVAILABLE',allowedCommands:['ISSUE'],retryAfterMs:null});
+  m.profileUnavailable=false;m.invitation.mockReset().mockResolvedValue({state:'ready',employeeId:'worker',employeeVersion:'2026-10-05 12:00:00+00',eligibility:'INVITABLE',registeredEmailMasked:'s***@example.invalid',invitationRevision:0,invitation:null,delivery:'UNAVAILABLE',deliveryAvailable:true,allowedCommands:['ISSUE'],retryAfterMs:null});
   m.actorRole = "MANAGER";
   m.employeeRole = "EMPLOYEE";
 });

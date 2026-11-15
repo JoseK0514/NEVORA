@@ -4,6 +4,43 @@ import {companyAccessFixture} from './company-access-fixture';
 import type {InvitationDelivery} from '../../lib/company-access/contracts';
 vi.mock('server-only',()=>({}));
 import {issueOrRevokeInvitation,readInvitationStatus,readInvitationOperation} from '../../lib/auth/invitations/service.server';
+import {fakeInvitationSmtp} from './company-access-smtp.test-support';
+
+it('reports configured invitation delivery without sending and withholds ISSUE when disabled',async()=>{
+ const f=await companyAccessFixture(),smtp=await fakeInvitationSmtp();
+ try{
+  for(const [key,value] of Object.entries(smtp.env))vi.stubEnv(key,value);
+  const available=await readInvitationStatus(f.owner,'target',f.db.executor);
+  expect(available).toMatchObject({state:'ready',deliveryAvailable:true,allowedCommands:['ISSUE']});
+  expect(smtp.connections).toBe(0);expect(smtp.messages).toHaveLength(0);
+  for(const flag of [undefined,'false','invalid']){
+   vi.stubEnv('NEVORA_INVITATION_DELIVERY_ENABLED',flag);
+   expect(await readInvitationStatus(f.owner,'target',f.db.executor)).toMatchObject({state:'ready',deliveryAvailable:false,allowedCommands:[]});
+  }
+  vi.stubEnv('NEVORA_INVITATION_DELIVERY_ENABLED','true');vi.stubEnv('NEVORA_RECOVERY_FROM','');
+  expect(await readInvitationStatus(f.owner,'target',f.db.executor)).toMatchObject({state:'ready',deliveryAvailable:false,allowedCommands:[]});
+  expect(smtp.connections).toBe(0);
+ }finally{vi.unstubAllEnvs();await smtp.close();await f.db.dispose();}
+});
+
+it('delivery availability never overrides eligibility or Owner access and does not prevent revocation',async()=>{
+ const f=await companyAccessFixture(),smtp=await fakeInvitationSmtp();
+ try{
+  for(const [key,value] of Object.entries(smtp.env))vi.stubEnv(key,value);
+  expect(await readInvitationStatus(f.manager,'target',f.db.executor)).toMatchObject({state:'unavailable'});
+  expect(await readInvitationStatus(f.owner,'owner',f.db.executor)).toMatchObject({state:'ready',deliveryAvailable:true,allowedCommands:[]});
+  for(const change of ['email=NULL','active=false']){
+   await f.q(`UPDATE employees SET ${change} WHERE id='target'`);
+   expect(await readInvitationStatus(f.owner,'target',f.db.executor)).toMatchObject({state:'ready',deliveryAvailable:true,allowedCommands:[]});
+  }
+  await f.q("UPDATE employees SET email='target@example.invalid',active=true WHERE id='target'");
+  const status=await readInvitationStatus(f.owner,'target',f.db.executor);if(status.state!=='ready')throw Error('status');
+  const issued=await issueOrRevokeInvitation(f.owner,'target',{action:'ISSUE',operationId:randomUUID(),expectedEmployeeVersion:status.employeeVersion,expectedInvitationRevision:0},{async send(){return {providerAccepted:true};}},f.db.executor);
+  expect(issued.state).toBe('saved');vi.stubEnv('NEVORA_INVITATION_DELIVERY_ENABLED','false');
+  expect(await readInvitationStatus(f.owner,'target',f.db.executor)).toMatchObject({state:'ready',deliveryAvailable:false,allowedCommands:['REVOKE']});
+  expect(smtp.connections).toBe(0);
+ }finally{vi.unstubAllEnvs();await smtp.close();await f.db.dispose();}
+});
 
 it('Owner issues only to current registered email; replay returns metadata without resending or spending another issue',async()=>{
  const f=await companyAccessFixture();const mail:{email:string;proof:string}[]=[];
