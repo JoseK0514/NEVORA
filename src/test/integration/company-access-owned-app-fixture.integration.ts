@@ -13,9 +13,11 @@ vi.mock('@/lib/db',()=>({getDb:()=>{throw Error('Fixture must use the explicit o
 let db:Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
 let fixture:Awaited<ReturnType<typeof initializeCompanyAccessOwnedFixture>>;
 let identity:OwnedDatabaseIdentity;
+const oldMode=process.env.NEVORA_PAYROLL_CALCULATION_MODE;
 const oldPayroll=process.env.NEVORA_PAYROLL_ENABLED;
 const q=<T=Record<string,unknown>>(text:string,values:readonly unknown[]=[])=>db.executor.query<T>({text,values});
 beforeAll(async()=>{
+ process.env.NEVORA_PAYROLL_CALCULATION_MODE='native_provisional';
  // The Company runner uses Foundation names; the owned app runner uses Exchange.
  // Both helpers retain their own complete URL, fresh-database and marker guards.
  const target=process.env.FUEL_TEST_DATABASE_URL;
@@ -24,7 +26,7 @@ beforeAll(async()=>{
  db=await createDatabase({mode:'current-runtime'});
  try{[identity]=await q<OwnedDatabaseIdentity>("SELECT datname AS name,oid::int AS oid,shobj_description(oid,'pg_database') AS marker FROM pg_database WHERE datname=current_database()");fixture=await initializeCompanyAccessOwnedFixture({executor:db.executor,identity});process.env.NEVORA_PAYROLL_ENABLED='true';}catch(error){await db.dispose();throw error;}
 });
-afterAll(async()=>{try{await db?.dispose();}finally{if(oldPayroll===undefined)delete process.env.NEVORA_PAYROLL_ENABLED;else process.env.NEVORA_PAYROLL_ENABLED=oldPayroll;}});
+afterAll(async()=>{try{await db?.dispose();}finally{if(oldMode===undefined)delete process.env.NEVORA_PAYROLL_CALCULATION_MODE;else process.env.NEVORA_PAYROLL_CALCULATION_MODE=oldMode;if(oldPayroll===undefined)delete process.env.NEVORA_PAYROLL_ENABLED;else process.env.NEVORA_PAYROLL_ENABLED=oldPayroll;}});
 it('adopts the exact legacy census before new Managers and uses real normal credential hashes',async()=>{
  expect(await q('SELECT state,owner_policy_receipt_id,legacy_manager_census FROM company_access_adoption')).toEqual([{state:'ENFORCED',owner_policy_receipt_id:'01a13cda-e556-7652-8469-a18a77094364',legacy_manager_census:expect.arrayContaining([expect.objectContaining({employeeId:'QALEGACY'})])}]);
  const [census]=await q<{n:number}>('SELECT jsonb_array_length(legacy_manager_census)::int n FROM company_access_adoption');expect(census.n).toBe(1);

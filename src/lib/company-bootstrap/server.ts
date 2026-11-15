@@ -34,10 +34,11 @@ export async function installCompanyBase(client:BootstrapClient,manifest:Company
  await client.query('INSERT INTO workspaces(id,name,time_zone) VALUES($1,$2,$3)',[input.workspaceId,input.name,input.timeZone]);
  await client.query('INSERT INTO locations(id,workspace_id,clocker_key,name,short_name) VALUES($1,$2,$3,$4,$5)',[input.locationId,input.workspaceId,input.locationKey,input.locationName,input.locationShortName]);
 }
-export async function insertOwnerProfile(client:BootstrapClient,owner:{id:string;firstName:string;lastName:string;phone:string;email:string|null},primaryLocationId:string,eligibleLocationIds:string[],options:{active:boolean;passwordHash?:string}){
+export type OwnerPasswordOrigin='OPERATOR'|'SELF_SERVICE';
+export async function insertOwnerProfile(client:BootstrapClient,owner:{id:string;firstName:string;lastName:string;phone:string;email:string|null},primaryLocationId:string,eligibleLocationIds:string[],options:{active:boolean;passwordHash?:string;passwordOrigin?:OwnerPasswordOrigin}){
  await client.query(`INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id,active) VALUES($1,$2,$3,$4,$5,'OWNER',$6,$7)`,[owner.id,owner.firstName,owner.lastName,owner.phone,owner.email,primaryLocationId,options.active]);
  await client.query('INSERT INTO employee_location_eligibility(employee_id,location_id) SELECT $1,unnest($2::text[])',[owner.id,eligibleLocationIds]);
- if(options.passwordHash)await client.query('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',[owner.id,options.passwordHash]);
+ if(options.passwordHash)await client.query('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,$3)',[owner.id,options.passwordHash,options.passwordOrigin!=='SELF_SERVICE']);
 }
 export async function installCompanyFinal(client:BootstrapClient,manifest:CompanyManifest){for(const migration of manifest.final)await client.query(migration.body);}
 export type PendingCompanySpec={operationId:string;workspaceId:string;registrationId:string;environment:'test'|'development'|'production';incarnation:string;providerProjectId:string;resourceName:string;commandHash:string;payload:WorkspacePayload;verifiedEmail:string;databaseName:string;provisionerRole:string;app:{name:string;password:string};worker:{name:string;password:string};commerce?:{origin:string;instanceSecretHash:string;workerSecretHash:string}};

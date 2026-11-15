@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { readFile, mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { beforeEach, afterEach, expect, it } from 'vitest';
 import { createPunchFixture } from './clocker-punch-fixture';
 import { readTimecards, mutateTimecard } from '../../lib/timecards/service';
@@ -21,8 +21,8 @@ const employeeId = 'AS_POLICY', period = { startDate: '2026-09-28', endDate: '20
 const oldPeriod = { startDate: '2026-09-08', endDate: '2026-09-28' }, covering = { startDate: '2026-09-15', endDate: '2026-10-05' };
 const owner: SessionMutationProof = { sessionTokenHash: 'a'.repeat(64), employee: { id: 'c34-owner', role: 'OWNER', firstName: 'Owner', lastName: 'QA', primaryLocationId: 'loc-1' } };
 let f: Awaited<ReturnType<typeof createPunchFixture>>;
-beforeEach(async () => { process.env.NEVORA_PAYROLL_ENABLED = 'true'; f = await createPunchFixture(); await f.q(await readFile('db/migrations/0031_native_payroll.sql', 'utf8')); await f.q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('AS_POLICY','Fictional','Policy','558','EMPLOYEE','loc-1')"); });
-afterEach(async () => { await f?.db.dispose(); delete process.env.NEVORA_PAYROLL_ENABLED; });
+beforeEach(async () => { process.env.NEVORA_PAYROLL_ENABLED = 'true'; process.env.NEVORA_PAYROLL_CALCULATION_MODE='native_provisional'; f = await createPunchFixture({companyAccess:true}); await f.q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('AS_POLICY','Fictional','Policy','558','EMPLOYEE','loc-1')"); });
+afterEach(async () => { await f?.db.dispose(); delete process.env.NEVORA_PAYROLL_ENABLED; delete process.env.NEVORA_PAYROLL_CALCULATION_MODE; });
 async function timeAction(action: 'APPROVE' | 'FINALIZE' | 'REOPEN', p: Period) {
     const read = await readTimecards(owner, p, f.db.executor); if (read.state !== 'ready') throw Error('Time unavailable');
     const card = read.cards.find(c => c.source.employeeId === employeeId)!;
@@ -55,7 +55,7 @@ async function setup(mode: 'FINALIZE' | 'APPROVE' | 'MISSING' | 'PARTIAL' = 'FIN
         await finalize({ startDate: covering.startDate, endDate: oldPeriod.endDate });
         await finalize({ startDate: '2026-09-29', endDate: covering.endDate });
     } else {
-    if (mode !== 'MISSING') { const p = mode === 'PARTIAL' ? { ...covering, endDate: '2026-10-04' } : covering; await timeAction('APPROVE', p); if (mode !== 'APPROVE') await timeAction('FINALIZE', p); }
+    if (mode !== 'MISSING') { const p = mode === 'PARTIAL' ? { ...covering, endDate: '2026-10-03' } : covering; await timeAction('APPROVE', p); if (mode !== 'APPROVE') await timeAction('FINALIZE', p); }
     }
     const i = input(); i.wages[0].hourlyRateMinor = '2500'; i.wages[0].locationIds = historicalLocation ? ['loc-1', 'loc-2'] : ['loc-1']; i.wages[0].workweekAnchorDate = null; i.wages[0].workweekStartTime = null; i.wages[0].workweekPolicy = fictionalWorkweekPolicy(employeeId, { weekday: 1, startTime: '00:01', timeZone: 'America/Puerto_Rico' }, true); i.wages[0].wageCentRounding = 'UNVERIFIED'; i.tax!.prCentRounding = 'UNVERIFIED'; i.tax!.ruleEvidenceReference = null;
     await saveNativeProfile(owner, { action: 'SAVE_NATIVE_PROFILE', operationId: randomUUID(), reason: 'Fictional actual wage and withholding facts', expectedRevision: 0, configuration: { schema: 'NEVORA_NATIVE_CONFIGURATION_V1', employeeId, wages: i.wages, tax: i.tax, deductions: i.deductions } }, f.db.executor);

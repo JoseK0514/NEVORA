@@ -37,6 +37,7 @@ export function managementSessionStatements(proof: SessionIdentityProof, actorEm
       SELECT 1 FROM employee_sessions s JOIN employees e ON e.id=s.employee_id
       WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role=ANY($3::text[])
         AND s.expires_at>clock_timestamp()
+        AND NOT EXISTS(SELECT 1 FROM employee_credentials c WHERE c.employee_id=e.id AND c.must_change_password)
     ) THEN '1' ELSE 'management_authorization' END)::integer`, values: [proof.sessionTokenHash, actorEmployeeId, [...roles]] },
   ];
 }

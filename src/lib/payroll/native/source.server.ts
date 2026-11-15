@@ -1,3 +1,4 @@
+import {assertNativeCalculationEnabled} from '../calculation-mode';
 import { FEDERAL_EMPLOYEE_CENT_RULE_SOURCE } from './federal-employee-tax';
 import { acceptsNativePrCentProfile, acceptsNativePrCentResult, PR_FINAL_PERIODIC_HALF_UP_GUIDANCE, PR_FINAL_PERIODIC_GUIDANCE_SHA256 } from './pr-income-cent-policy';
 import { usesOwnerPayrollPolicy, OWNER_PAYROLL_POLICY, OWNER_PAYROLL_POLICY_SHA256 } from './provisional-policy';
@@ -105,6 +106,7 @@ export async function captureNativePayroll(seed: {
     source: Source;
     observed: string;
 }, run: PayrollRun, ex: SqlExecutor, permissionGuards: SqlStatement[], originalRunId = run.id, progress?: () => Promise<void>): Promise<NativeCapture> {
+    assertNativeCalculationEnabled();
     const settings = resolveSettings(seed.source, run.payday), exceptions = resolveExceptions(seed.source, run.payday), population = seed.source.population;
     const ids = seed.source.roster.map(e => e.employeeId), query = nativeDatabaseFactsQuery(seed.id, run, ids);
     const prefix = [...locks(), ...permissionGuards], responses = await ex.transaction([...prefix, query, ...permissionGuards]);

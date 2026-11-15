@@ -1,5 +1,7 @@
 "use server";
 
+import {issueInitialPasswordReplacement} from '@/lib/auth/recovery.server';
+import {publicWorkspaceToken} from '@/lib/workspace-routing/token-envelope.server';
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { findEmployeeCredential } from "@/lib/data/employees";
@@ -58,6 +60,15 @@ export async function login(formData: FormData) {
   // so the message never reveals anything about an account to someone who doesn't control it.
   if (await activeDeletionRequest(employee.id)) { await keepLoginId(typedId); redirect(`/login?error=deleting${returnQuery}`); }
 
+  if(employee.must_change_password){
+    const replacement=await issueInitialPasswordReplacement(employee.id,employee);
+    // Codex (Nov 15 handoff): the kept Employee ID stays on every expected failure and is cleared on the transfer to
+    // the replacement screen, as after a successful sign-in.
+    if(replacement.state!=='issued'){await keepLoginId(typedId);redirect(`/login?error=invalid${returnQuery}`);}
+    const proof=await publicWorkspaceToken('RECOVERY',replacement.proof,Date.parse(replacement.expiresAt));
+    await clearLoginId();
+    redirect(`/reset-access#proof=${encodeURIComponent(proof)}`);
+  }
   await prepareInstallationForLogin(employee.id);
   try { await createSession(employee.id, employee); }
   catch (error) {

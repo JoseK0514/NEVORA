@@ -18,7 +18,7 @@ const pw=await import(pathToFileURL(runtime.resolve('playwright')).href),playwri
 const checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim(),sourceClean=execFileSync('git',['status','--porcelain=v1'],{encoding:'utf8'}).trim()==='';
 if(process.env.PHASE_C_EXPECTED_SHA){assert.equal(checkpoint,process.env.PHASE_C_EXPECTED_SHA);assert(sourceClean,'Clocker regression requires a clean exact candidate');}
 const report={checkpoint,tree,sourceClean,checks:[],errors:[],screenshots:[],contrast:[],limits:['Owned loopback PostgreSQL and scratch Next runtime; no hosted or physical-device verification.','Browser plugin not listed; existing Playwright used.']};
-const browsers=[],pinDiagnostics=[];let app,currentPage,currentPinDiagnostic;
+const browsers=[],pinDiagnostics=[],pinWindows=new WeakMap();let app,currentPage,currentPinDiagnostic,pinWindowSequence=0;
 function checked(name){report.checks.push(name);console.log('[C3/C4 browser] PASS '+name);}
 const q=(text,values=[])=>app.database.executor.query({text,values});
 async function context(browser,viewport={width:1024,height:768}){
@@ -42,7 +42,20 @@ async function editBreak(owner,name,category,minutes){
  await d.getByRole('button',{name:'Save changes',exact:true}).click();await d.waitFor({state:'hidden'});
 }
 async function idle(p){await p.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await p.waitForFunction(()=>{const i=document.querySelector('input[name=pin]');return i&&!i.matches(':disabled');});}
-async function verify(p,pin='2468'){await idle(p);for(const n of pin)await p.getByRole('button',{name:'Number '+n,exact:true}).click();await p.getByRole('button',{name:'Continue',exact:true}).click();}
+async function verify(p,pin='2468',diagnostic){
+ if(!diagnostic){
+  // Each page keeps a bounded window through the action after its PIN attempt.
+  // Node-only listeners leave the final native-submit observer's binding available.
+  await pinWindows.get(p)?.close();
+  const browser=p.context().browser(),engine=browser.browserType().name();
+  diagnostic=observePinReadiness({browser,context:p.context(),page:p,origin:app.url,engine,source:report,artifactBase:join(evidence,engine+'-pin-window-'+(++pinWindowSequence))});
+  pinWindows.set(p,diagnostic);pinDiagnostics.push(diagnostic);currentPinDiagnostic=diagnostic;
+ }
+ currentPage=p;
+ diagnostic?.phase('readiness','before');await idle(p);diagnostic?.phase('readiness','after');
+ diagnostic?.phase('keypad','before');for(const n of pin)await p.getByRole('button',{name:'Number '+n,exact:true}).click();diagnostic?.phase('keypad','after');
+ diagnostic?.phase('continue','before');await p.getByRole('button',{name:'Continue',exact:true}).click();diagnostic?.phase('continue','after');
+}
 async function startBreak(p){await p.getByRole('button',{name:'Start break',exact:true}).click();await p.getByRole('heading',{name:'Choose a break',exact:true}).waitFor();await p.getByRole('button',{name:'Start Fixture rest',exact:true}).click();}
 // Since 57a04195 a pending action lives in the tablet's IndexedDB journal (one slot per location and employee), not sessionStorage.
 // Read location 2's only slot without ever creating the database (an aborted upgrade leaves it absent).
@@ -104,7 +117,8 @@ try{
   assert.equal(await count(),before+3);await t.getByRole('button',{name:'Clock Out',exact:true}).click();await t.getByRole('button',{name:'Confirm Clock Out',exact:true}).click();await success(t,'Clock Out');await done(t);
   assert.equal(await count(),before+4);checked(engine+': all four transitions persist; canceled Clock Out does not write');
   // A lost response must not create a replacement command, even after a page reload.
-  await verify(t);await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();let dropped=false,lostCommand;
+  await verify(t);await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();
+  let dropped=false,lostCommand;
   await t.route('**/api/clocker/2/punch',async route=>{
    if(!dropped&&route.request().postDataJSON()?.operation==='execute'){dropped=true;lostCommand=route.request().postDataJSON().command;const response=await route.fetch();assert.equal(response.status(),200);await route.abort('failed');}
    else await route.continue();
@@ -158,10 +172,11 @@ try{
   const guardStart=await count();
   // Preserve bounded flags and request statuses at the exact post-reset boundary.
   // The original PIN entry and Clock In assertion below remain unchanged.
+  await pinWindows.get(t)?.close();
   const diagnostic=observePinReadiness({browser,context:tablet,page:t,origin:app.url,engine,source:report,artifactBase:join(evidence,engine+'-clocker-final-pin')});
   pinDiagnostics.push(diagnostic);currentPinDiagnostic=diagnostic;await diagnostic.install();
   await runPinDiagnosticObservation(()=>t.evaluate(installPinReadinessObserver)).catch(error=>diagnostic.failure('install',error));
-  diagnostic.phase('continue','before');await verify(t);diagnostic.phase('continue','after');await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();
+  diagnostic.phase('continue','before');await verify(t,'2468',diagnostic);diagnostic.phase('continue','after');await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();
   await diagnostic.close();currentPinDiagnostic=undefined;
   await t.evaluate(()=>{window.__restoreStorage=IDBObjectStore.prototype.put;IDBObjectStore.prototype.put=function(){throw new DOMException('Test storage denial','QuotaExceededError');};});
   await t.getByRole('button',{name:'Clock In',exact:true}).click();await t.getByRole('heading',{name:'Browser storage needed',exact:true}).waitFor();assert.equal(await count(),guardStart);

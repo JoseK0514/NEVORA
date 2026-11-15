@@ -19,12 +19,12 @@ export async function invitationHttp(request:Request,action:'status'|'command'|'
  if(request.method!==(write?'POST':'GET'))return correctionJson({state:'unavailable'},405);
  try {
   const session=await getSession();if(!session)return correctionJson({state:'unavailable',reason:'access_denied'},401);
-  if(session.role!=='OWNER')return correctionJson({state:'unavailable',reason:'access_denied'},403);
+  if(session.role!=='OWNER'&&!(action==='status'&&session.role==='MANAGER'))return correctionJson({state:'unavailable',reason:'access_denied'},403);
   const proof=await requireSessionMutationProof();
   if(proof.employee.id!==session.id||proof.employee.role!==session.role||(write&&request.headers.get('x-nevora-actor')!==proof.employee.id))return correctionJson({state:'unavailable',reason:'access_denied'},403);
   if(action==='status') {
    const result=await readInvitationStatus(proof,id);
-   return correctionJson(result,result.state==='ready'?200:503);
+   return correctionJson(result,result.state==='ready'?200:result.reason==='access_denied'?403:503);
   }
   if(action==='operation')return response(await readInvitationOperation(proof,id));
   let value:unknown;

@@ -1,6 +1,5 @@
+import {projectConfig} from './vitest.shared.mts';
 import { defineConfig } from 'vitest/config';
-import { fileURLToPath } from 'node:url';
-export default defineConfig({
-  resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)), 'server-only': fileURLToPath(new URL('./node_modules/next/dist/compiled/server-only/empty.js', import.meta.url)) } },
+export default projectConfig('generation-integration', defineConfig({
   test: { include: ['src/test/integration/generation-provenance.integration.ts', 'src/test/integration/schedule-generation.integration.ts', 'src/test/integration/generation-cross-layer.integration.ts', 'src/test/integration/generation-session.integration.ts'], fileParallelism: false, testTimeout: 15000, hookTimeout: 30000 },
-});
+}));

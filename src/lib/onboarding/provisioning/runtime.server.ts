@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../../feature-flags';
 import {readEnrollmentRuntime,enrollmentRuntime} from "../../../../services/commerce/enrollment-runtime";
 import 'server-only';
 import {cleanupOnboardingControl} from '../cleanup.server';
@@ -12,7 +13,7 @@ export type ProvisionerRuntime={config:EnabledConfig;policy:ProvisionerPolicy;ap
  * falls back to the application principal, a company URL or legacy DATABASE_URL. */
 export function readProvisionerRuntime(env:Readonly<Record<string,string|undefined>>=process.env):ProvisionerRuntime|null{
  try{
-  if(env.NEVORA_PROVISIONER_WORKER_ENABLED!=='true'||env.NEVORA_WORKSPACE_MODE!=='isolated')return null;
+  if(!readFeatureFlags(env).provisionerWorker||env.NEVORA_WORKSPACE_MODE!=='isolated')return null;
   const app=new URL(env.NEVORA_CONTROL_DATABASE_URL??''),worker=new URL(env.NEVORA_PROVISIONER_CONTROL_DATABASE_URL??'');
   if(!['postgres:','postgresql:'].includes(app.protocol)||!['postgres:','postgresql:'].includes(worker.protocol)||app.hostname!==worker.hostname||(app.port||'5432')!==(worker.port||'5432')||app.pathname!==worker.pathname||!app.username||!worker.username||decodeURIComponent(app.username)===decodeURIComponent(worker.username))return null;
   const config=readOnboardingConfig({...env,NEVORA_CONTROL_DATABASE_URL:worker.href}),policy=readProvisionerPolicy(env),apiKey=env.NEVORA_PROVISIONER_API_KEY;

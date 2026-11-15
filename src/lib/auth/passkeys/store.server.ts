@@ -19,7 +19,7 @@ export type StoredCredential = ReviewedLoginCredential & { id: string; employeeI
 
 function assertion(proof: SessionMutationProof) {
   return s(`SELECT (CASE WHEN EXISTS(SELECT 1 FROM employee_sessions ss JOIN employees e ON e.id=ss.employee_id
-    WHERE ss.token_hash=$1 AND e.id=$2 AND e.active AND ss.expires_at>clock_timestamp())
+    WHERE ss.token_hash=$1 AND e.id=$2 AND e.active AND ss.expires_at>clock_timestamp() AND NOT EXISTS(SELECT 1 FROM employee_credentials c WHERE c.employee_id=e.id AND c.must_change_password))
     THEN '1' ELSE 'passkey_not_found' END)::integer`, [proof.sessionTokenHash, proof.employee.id]);
 }
 /** Use the shared employee -> credential -> session lock order, then check the
@@ -33,7 +33,7 @@ function guards(proof: SessionMutationProof): SqlStatement[] {
 const liveChallenge = (challenge: Challenge) => s("SELECT (CASE WHEN clock_timestamp()<$1::timestamptz THEN '1' ELSE 'passkey_not_found' END)::integer", [challenge.expiresAt]);
 const revisionGuard = (employee: string, updated: string | null, credential: string | null) =>
   s(`SELECT (CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN employee_credentials c ON c.employee_id=e.id
-    WHERE e.id=$1 AND e.active AND e.updated_at=$2::timestamptz AND c.password_updated_at=$3::timestamptz)
+    WHERE e.id=$1 AND e.active AND NOT c.must_change_password AND e.updated_at=$2::timestamptz AND c.password_updated_at=$3::timestamptz)
     THEN '1' ELSE 'passkey_not_found' END)::integer`, [employee, updated, credential]);
 
 /** Persistence boundary for passkeys. Challenge deletion runs before the final

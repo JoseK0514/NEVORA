@@ -11,8 +11,9 @@ export type TodayShift = {
   startAt: string; endAt: string; status: TodayShiftStatus; firstClockInAt: string | null; late: boolean;
 };
 export type TodayCounts = { scheduled: number; clockedIn: number; late: number; notClockedIn: number };
+export type SetupProgress={teamSize:number;publishedSchedule:boolean;registeredClocks:number;peopleWithPins:number;paySchedule:boolean};
 export type Today =
-  | { state: "ready"; observedAt: string; validForMs: number; timeZone: string; today: string; counts: TodayCounts; shifts: TodayShift[]; missed: TodayShift[] }
+  | { state: "ready"; observedAt: string; validForMs: number; timeZone: string; today: string; clockerRegistered?:boolean;setupProgress?:SetupProgress; counts: TodayCounts; shifts: TodayShift[]; missed: TodayShift[] }
   | { state: "unavailable"; reason: "access_denied" | "read_failed" | "schema_missing" };
 
 type RawShift = { id: string; employeeId: string; employeeName: string; locationId: string; locationName: string; positionName: string | null; date: string; startAt: string; endAt: string };
@@ -89,7 +90,10 @@ export function projectToday(source: unknown): Today {
     late: shifts.filter(s => s.late).length,
     notClockedIn: shifts.filter(s => s.status === "not_clocked_in").length,
   };
-  return { state: "ready", observedAt: new Date(now).toISOString(), validForMs, timeZone: source.timeZone, today: source.today, counts, shifts, missed };
+  const setup=source.setupProgress;
+  if(setup!==undefined&&(!object(setup)||!count(setup.teamSize)||!count(setup.registeredClocks)||!count(setup.peopleWithPins)||typeof setup.publishedSchedule!=='boolean'||typeof setup.paySchedule!=='boolean'))return fail();
+  if(source.clockerRegistered!==undefined&&typeof source.clockerRegistered!=='boolean')return fail();
+  return { ...(setup?{setupProgress:setup as SetupProgress}:{}),...(source.clockerRegistered===undefined?{}:{clockerRegistered:source.clockerRegistered as boolean}),state: "ready", observedAt: new Date(now).toISOString(), validForMs, timeZone: source.timeZone, today: source.today, counts, shifts, missed };
 }
 
 export const STATUS_TEXT: Record<TodayShiftStatus, string> = {
@@ -113,5 +117,8 @@ export function parseToday(value: unknown): Today {
   if (value.state !== "ready" || !Number.isFinite(ms(value.observedAt)) || !count(value.validForMs) || !text(value.timeZone) || !text(value.today) ||
       !object(c) || !count(c.scheduled) || !count(c.clockedIn) || !count(c.late) || !count(c.notClockedIn) ||
       !Array.isArray(value.shifts) || !value.shifts.every(shiftOk) || !Array.isArray(value.missed) || !value.missed.every(shiftOk)) return fail();
+  const setup=value.setupProgress;
+  if(setup!==undefined&&(!object(setup)||!count(setup.teamSize)||!count(setup.registeredClocks)||!count(setup.peopleWithPins)||typeof setup.publishedSchedule!=='boolean'||typeof setup.paySchedule!=='boolean'))return fail();
+  if(value.clockerRegistered!==undefined&&typeof value.clockerRegistered!=='boolean')return fail();
   return value as Today;
 }

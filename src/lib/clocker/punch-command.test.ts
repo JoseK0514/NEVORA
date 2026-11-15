@@ -31,7 +31,7 @@ it.each(['commandId','verificationId'] as const)('rejects a trailing newline in 
 it.each([
  ['COMMAND_REUSED','This punch reference belongs to a different punch. Ask your manager to check it.'],
  ['CONTEXT_CHANGED','Your PIN check changed. Enter your PIN again; nothing was punched twice.'],
- ['UNAVAILABLE',"We couldn't confirm your punch. Tap Check Action Status before trying again."],
+ ['UNAVAILABLE',"We couldn't confirm your punch. Tap Check action status before trying again."],
 ] as const)('provides safe recovery wording while preserving %s',async(code,message)=>{
  const {ClockerPunchError}=await import('./punch-command');const error=new ClockerPunchError(code);expect(error.code).toBe(code);expect(error.message).toBe(message);
 });

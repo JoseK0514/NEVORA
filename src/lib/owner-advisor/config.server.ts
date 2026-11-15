@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../feature-flags';
 import "server-only";
 export type ProviderConfig = {
   endpoint: string;
@@ -18,7 +19,7 @@ export function readConfig(
     apiStyle = env.NEVORA_OWNER_ADVISOR_API_STYLE ?? "responses",
     reasoningEffort = env.NEVORA_OWNER_ADVISOR_REASONING_EFFORT;
   if (
-    env.NEVORA_OWNER_ADVISOR_ENABLED !== "true" ||
+    !readFeatureFlags(env).ownerAdvisor ||
     env.NEVORA_OWNER_ADVISOR_DATA_APPROVED !== "true" ||
     !env.NEVORA_OWNER_ADVISOR_MODEL?.trim() ||
     !limit ||

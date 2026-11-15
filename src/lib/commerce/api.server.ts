@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../feature-flags';
 import 'server-only';
 import {createRuntime} from '../../../services/commerce/runtime';
 import {createCommerce} from '../../../services/commerce/service';
@@ -5,7 +6,7 @@ let handle:ReturnType<typeof createCommerce>|undefined;
 /** Separate catalog/API principal only. Private provisioner credentials never enter this runtime. */
 export async function billingApi(request:Request):Promise<Response>{
  const error=(code:string,status:number)=>Response.json({error:{code}},{status,headers:{'cache-control':'no-store'}});
- if(process.env.NEVORA_COMMERCE_API_ENABLED!=='true')return error('not_enabled',404);
+ if(!readFeatureFlags(process.env).commerceApi)return error('not_enabled',404);
  try{
   const actual=new URL(request.url),origin=process.env.NEVORA_COMMERCE_ORIGIN;
   if(!origin||actual.origin!==origin)return error('origin_denied',403);

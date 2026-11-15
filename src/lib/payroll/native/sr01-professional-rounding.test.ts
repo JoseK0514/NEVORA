@@ -1,3 +1,4 @@
+import {beforeEach,afterEach} from 'vitest';
 import { describe, expect, it, vi } from 'vitest';
 import type { SqlExecutor, SqlStatement } from '../../notifications/types';
 import type { Source } from '../service';
@@ -166,3 +167,6 @@ describe('SR01 scoped accountant-confirmed final periodic collection', () => {
     expect(s.i.wages[0].wageCentRounding).toBe('UNVERIFIED');
   });
 });
+
+beforeEach(()=>vi.stubEnv('NEVORA_PAYROLL_CALCULATION_MODE','native_provisional'));
+afterEach(()=>vi.unstubAllEnvs());

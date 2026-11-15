@@ -69,8 +69,8 @@ export function observePinReadiness({browser,context,page,origin,engine,source,a
   const lane=input.kind==='browser-saturated'?'metadata':['request','response','requestfinished','requestfailed'].includes(input.kind)?'network':['phase','diagnostic-failure'].includes(input.kind)?'phase':'browser';
   if(counts[lane]++>=limits[lane]){omittedEvents++;return;}
   const elapsed=now()-started,event={sequence:++sequence,elapsedMs:Number.isFinite(elapsed)?Math.max(0,Math.round(elapsed)):0,kind:input.kind,...state(input)};
-  if(['setup','pin'].includes(input.boundary))event.boundary=input.boundary;
-  if(['clear','verify','status','prepare','redeem','other'].includes(input.action))event.action=input.action;
+  if(['setup','pin','punch'].includes(input.boundary))event.boundary=input.boundary;
+  if(['clear','verify','status','prepare','redeem','state','execute','receipt','other'].includes(input.action))event.action=input.action;
   if(Number.isSafeInteger(input.requestId)&&input.requestId>0)event.requestId=input.requestId;
   if(Number.isInteger(input.status)&&input.status>=100&&input.status<=599)event.status=input.status;
   if(phases.includes(input.phase))event.phase=input.phase;
@@ -87,8 +87,8 @@ export function observePinReadiness({browser,context,page,origin,engine,source,a
  on(page,'close',()=>record({kind:'page-close'}));on(page,'crash',()=>record({kind:'page-crash'}));
  on(page,'request',guard(request=>{
   const url=new URL(request.url());if(url.origin!==origin||request.method()!=='POST')return;
-  const boundary=url.pathname==='/api/clocker/2/pin'?'pin':url.pathname==='/api/clocker/2/setup'?'setup':null;if(!boundary)return;
-  let action='other';try{const candidate=request.postDataJSON()?.[boundary==='setup'?'step':'action'];if((boundary==='setup'?['status','prepare','redeem']:['clear','verify','status']).includes(candidate))action=candidate;}catch{}
+  const boundary=url.pathname==='/api/clocker/2/pin'?'pin':url.pathname==='/api/clocker/2/setup'?'setup':url.pathname==='/api/clocker/2/punch'?'punch':null;if(!boundary)return;
+  let action='other';try{const candidate=request.postDataJSON()?.[boundary==='setup'?'step':boundary==='punch'?'operation':'action'];if((boundary==='setup'?['status','prepare','redeem']:boundary==='punch'?['state','execute','receipt']:['clear','verify','status']).includes(candidate))action=candidate;}catch{}
   const entry={requestId:++requestSequence,boundary,action};requests.set(request,entry);record({kind:'request',...entry});
  }));
  on(page,'response',guard(response=>{const entry=requests.get(response.request());if(entry)record({kind:'response',...entry,status:response.status()});}));

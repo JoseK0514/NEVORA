@@ -23,7 +23,7 @@ import {fictionalWorkweekPolicy} from '../../lib/payroll/native/workweek-fixture
 import {createTimeOffRequest,reviewTimeOffRequest} from '../../lib/data/requests';
 import {notificationIntentStatements} from '../../lib/data/notifications';
 import type {NotificationIntent} from '../../lib/notifications/types';
-export const companyAccessOwnedRuntimeOptions={payrollEnabled:true,clockerPinKey:'3d'.repeat(32),clockerPunchEnabled:false} as const;
+export const companyAccessOwnedRuntimeOptions={payrollEnabled:true,nativePayrollEnabled:true,clockerPinKey:'3d'.repeat(32),clockerPunchEnabled:false} as const;
 const periods=[{startDate:'2026-09-21',endDate:'2026-09-27'},{startDate:'2026-09-28',endDate:'2026-10-04'}] as const;
 const nativePeriod=periods[0],contextPeriod={startDate:'2026-09-14',endDate:'2026-09-27'};
 const actors={owner:{employeeId:'QAOWNER',role:'OWNER'},legacy:{employeeId:'QALEGACY',role:'MANAGER'},company:{employeeId:'QACOMPANY',role:'MANAGER'},locations:{employeeId:'QALOCATIONS',role:'MANAGER'},financial:{employeeId:'QAFINANCIAL',role:'MANAGER'},unassigned:{employeeId:'QANEWMANAGER',role:'MANAGER'},employee:{employeeId:'QAEMPLOYEE',role:'EMPLOYEE'},lead:{employeeId:'QALEAD',role:'LEAD'},native:{employeeId:'QANATIVEB',role:'EMPLOYEE'},a7:{employeeId:'QAA7MEMBER',role:'EMPLOYEE'}} as const;

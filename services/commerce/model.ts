@@ -5,6 +5,7 @@ export class CommerceError extends Error {
   constructor(
     readonly code: string,
     readonly status = 400,
+    readonly operationState?: 'refused',
   ) {
     super(code);
   }

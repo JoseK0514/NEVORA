@@ -89,7 +89,7 @@ export class BillingOperation {
   this.assertBinding(await this.store.business(this.id));
   await this.input.context.assertCurrent();
   this.expires(row);
-  if(outcome.state==='refused')throw new CommerceError(outcome.code,outcome.status);
+  if(outcome.state==='refused')throw new CommerceError(outcome.code,outcome.status,'refused');
   return outcome.value;
  }
  async admit():Promise<void>{
@@ -181,8 +181,10 @@ export class BillingOperation {
   },false);
  }
  async fail(error:unknown):Promise<never>{
-  try{await this.refusePreflight(error);}
+  let refused=false;
+  try{refused=await this.refusePreflight(error);}
   catch(persistenceError){throw new AggregateError([error,persistenceError],'billing_refusal_persistence_failed',{cause:error});}
+  if(refused&&error instanceof CommerceError)throw new CommerceError(error.code,error.status,'refused');
   throw error;
  }
 }

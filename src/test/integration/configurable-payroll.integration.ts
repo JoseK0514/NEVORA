@@ -374,6 +374,8 @@ it("nonzero finalized time imports exact authoritative values, corrections link 
     (x) => x.id === correction.runId,
   )!;
   expect(r.correctionOf).toBe(seeded.runId);
+  expect(r.correctionDelta?.totalNetMinor).toBe('0');
+  expect(r.correctionDelta?.employees.find(x=>x.employeeId===seeded.ids.a)).toMatchObject({previousNetMinor:'87660',netMinor:'87660',deltaNetMinor:'0'});
   expect(r.settingsRevision).toBe(2);
   expect(r.rows!.find((x) => x.employeeId === seeded.ids.a)!.netMinor).toBe(
     "87660",
@@ -1492,4 +1494,24 @@ it("history extraction returns bounded rows and explicit unknown counts on overf
     remainingCount: null,
     returnedCount: 0,
   });
+});
+
+it('imports and publishes exact external statements for a 2027 payday even with native tables present',async()=>{
+ await f.q(await readFile('db/migrations/0031_native_payroll.sql','utf8'));
+ const seeded=await seedPayrollFixture(f.db.executor,{published:true,payday:'2027-01-01'});
+ const run=(await runs(seeded.proof,f.db.executor)).runs.find(r=>r.id===seeded.runId)!;
+ expect(run).toMatchObject({sourceAuthority:'PROVIDER_IMPORT',status:'APPROVED',payday:'2027-01-01',totals:{grossMinor:'100000',deductionsMinor:'12340',netMinor:'87660'}});expect(run.nativeCalculation).toBeUndefined();
+ expect(await f.q('SELECT count(*)::int n FROM native_payroll_ledger')).toEqual([{n:0}]);
+ const employee={employee:{...seeded.proof.employee,id:seeded.ids.a,role:'EMPLOYEE' as const},sessionTokenHash:createHash('sha256').update(randomUUID()).digest('hex')};
+ await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,clock_timestamp()+interval '1 day')",[employee.sessionTokenHash,seeded.ids.a]);
+ const own=await statements(employee,f.db.executor);expect(own.statements).toHaveLength(1);expect((await document(employee,own.statements[0].id,f.db.executor)).bytes.subarray(0,5).toString()).toBe('%PDF-');
+});
+it('keeps exact correction differences when the authorized parent is outside the 300-run display page',async()=>{
+ const seeded=await seedPayrollFixture(f.db.executor,{published:true}),owner=seeded.proof;
+ const original=(await runs(owner,f.db.executor)).runs.find(r=>r.id===seeded.runId)!;
+ const {newRun,insertRun,insertRevision}=await import('../../lib/payroll/service'),batch=[];
+ for(let i=0;i<300;i++){const date=new Date(Date.UTC(2024,0,1+i)).toISOString().slice(0,10),draft=newRun(randomUUID(),{startDate:date,endDate:date},date);draft.createdAt=new Date(Date.parse(original.createdAt)+1).toISOString();batch.push(insertRun(draft),insertRevision(draft,null));}
+ await f.db.executor.transaction(batch);
+ const corrected=await command(owner,{action:'CORRECT',operationId:randomUUID(),runId:original.id,expectedRevision:original.revision,reason:'Owned older-parent correction',amounts:{...seeded.amounts,sourceReference:'owned-older-parent'}},f.db.executor);
+ const result=await runs(owner,f.db.executor);expect(result.runs).toHaveLength(300);expect(result.runs.some(r=>r.id===original.id)).toBe(false);expect(result.runs.find(r=>r.id===corrected.runId)?.correctionDelta?.totalNetMinor).toBe('0');
 });

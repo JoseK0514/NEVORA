@@ -87,10 +87,13 @@ describe.skipIf(!enabled)('durable billing request and issued-stage custody',()=
   await expect(open(randomUUID())).rejects.toMatchObject({code:'billing_operation_pending'});
   expect((await pool.query('SELECT expires_at FROM commerce.billing_operations')).rows[0].expires_at).toEqual(expires);
  });
+ it('marks the first durably recorded refusal so the client can retire its original intent immediately',async()=>{
+  const op=await open(randomUUID());await expect(op.fail(new CommerceError('plan_employee_limit',409))).rejects.toMatchObject({code:'plan_employee_limit',status:409,operationState:'refused'});
+ });
  it('records a known preflight refusal only when no issued stage remains unresolved',async()=>{
   const operation=randomUUID(),op=await open(operation);await op.prepareStage('portal',async()=>({customer:'cus_fictional'}));
   expect(await op.refusePreflight(new CommerceError('plan_employee_limit',409))).toBe(true);
-  await expect((await open(operation)).replay()).rejects.toMatchObject({code:'plan_employee_limit',status:409});expect(await open(randomUUID())).toBeDefined();
+  await expect((await open(operation)).replay()).rejects.toMatchObject({code:'plan_employee_limit',status:409,operationState:'refused'});expect(await open(randomUUID())).toBeDefined();
  });
  it('keeps the same key independent for two fictional companies',async()=>{
   const other='22222222-2222-4222-8222-222222222222';await seed(other);const operation=randomUUID();const one=await open(operation),two=await open(operation,{business:await store.business(other)});

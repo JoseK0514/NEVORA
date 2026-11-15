@@ -1,3 +1,3 @@
+import {projectConfig} from './vitest.shared.mts';
 import {defineConfig} from 'vitest/config';
-import {fileURLToPath} from 'node:url';
-export default defineConfig({resolve:{alias:{'@':fileURLToPath(new URL('./src',import.meta.url)),'server-only':fileURLToPath(new URL('./node_modules/next/dist/compiled/server-only/empty.js',import.meta.url))}},test:{include:['src/test/integration/step4-lifecycle-browser.integration.ts'],fileParallelism:false,maxWorkers:1,testTimeout:900000,hookTimeout:60000}});
+export default projectConfig('step4-local', defineConfig({test:{include:['src/test/integration/step4-lifecycle-browser.integration.ts'],fileParallelism:false,maxWorkers:1,testTimeout:900000,hookTimeout:60000}}));

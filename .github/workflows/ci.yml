@@ -4,7 +4,7 @@ name: CI
 
 on:
   push:
-    branches: [development, main]
+    branches: [development, main, claude-codex-collab-nevora]
     tags: ["candidate/backend-completion/**"]
   pull_request:
     branches: [development, main, "phase-c/**", "release/**", "codex/verify-preview-33"]
@@ -54,6 +54,8 @@ jobs:
         run: |
           npm run test:notifications:qa
           npm run test:foundation:qa
+          npm run check:test-projects
+          npm run test:test-projects
           npm run test:release-engineering
       - name: Type check
         # The cold compiler exhausted the hosted runner's ~2 GiB default heap.
@@ -68,6 +70,10 @@ jobs:
           PHASE_E_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           NEVORA_BUILD_RECEIPT: ${{ runner.temp }}/nevora-build-source.json
         run: node scripts/release-build.mjs
+      - name: Production development-marker gate
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+        run: npm run test:dev:production
       - name: Production dependency audit
         run: npm audit --omit=dev --audit-level=high
       - name: Full dependency audit including development tooling
@@ -395,6 +401,7 @@ jobs:
           PHASE_C_EVIDENCE_DIR: ${{ runner.temp }}/nevora-clocker-browser-evidence
           PHASE_C_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
+          node scripts/clocker-journal-lifecycle.check.mjs
           node scripts/clocker-break-filter-readiness.check.mjs
           node scripts/phase-c-clocker-postgres.mjs --punch-ui
       - name: Verify whole-phase SHA and mandatory UX evidence

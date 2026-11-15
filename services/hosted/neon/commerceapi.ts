@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../../../src/lib/feature-flags';
 import {readCommerceConfig} from '../../commerce/config';
 import {readStripeConfig} from '../../commerce/stripe-config';
 import {readCompanyServiceTransport} from '../../commerce/installation-transport';
@@ -12,7 +13,7 @@ export function createCommerceApiHandler(env:HostedEnvironment,serve:(request:Re
   let browserOrigin:string|undefined;const reject=(code:string,status:number)=>fail(code,status,browserOrigin);
   const url=new URL(request.url),path=url.pathname,method=request.method;
   if(url.search||(!legacy.has(path)&&!methods[path])||(!legacy.has(path)&&method!==methods[path]&&method!=='OPTIONS'))return reject('not_found',404);
-  if(!hostedEnvironmentBound(env,'commerceapi')||env.NEVORA_NEON_HOST_ENABLED!=='true'||env.NEVORA_COMMERCE_API_ENABLED!=='true'||env.NEVORA_COMMERCE_PROVISIONING_MODE!=='onboarding')return reject('not_ready',503);
+  if(!hostedEnvironmentBound(env,'commerceapi')||env.NEVORA_NEON_HOST_ENABLED!=='true'||!readFeatureFlags(env).commerceApi||env.NEVORA_COMMERCE_PROVISIONING_MODE!=='onboarding')return reject('not_ready',503);
   const expected=`https://${env.NEVORA_NEON_BRANCH_ID}-commerceapi.compute.c-15.us-east-1.aws.neon.tech`;
   const ui='https://signup-staging.nevora.team';
   if(env.NEVORA_COMMERCE_UI_ORIGIN!==ui||(env.NEVORA_COMMERCE_ALLOWED_ORIGINS!==undefined&&env.NEVORA_COMMERCE_ALLOWED_ORIGINS!==ui))return reject('not_ready',503);

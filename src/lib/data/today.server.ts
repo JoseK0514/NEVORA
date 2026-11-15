@@ -38,6 +38,13 @@ entry_rows AS (
   WHERE s."employeeId"=t.employee_id AND s."locationId"=t.location_id AND t.clock_in_at<s.end_at AND t.clock_out_at>s.start_at-interval '${EARLY_CLOCK_IN_MINUTES} minutes'))
 )
 SELECT jsonb_build_object('observedAt',o.at,'expiresAt',(SELECT expires_at FROM employee_sessions WHERE token_hash=$2),'timeZone',$3::text,'today',d.today::text,
+ 'clockerRegistered',EXISTS(SELECT 1 FROM clocker_devices cd WHERE cd.location_id IN(SELECT id FROM scope) AND cd.active AND cd.credential_hash IS NOT NULL AND cd.revoked_at IS NULL),
+ 'setupProgress',jsonb_build_object(
+  'teamSize',(SELECT count(*) FROM employees e WHERE e.active AND e.primary_location_id IN(SELECT id FROM scope)),
+  'publishedSchedule',EXISTS(SELECT 1 FROM schedule_publication_revision_shifts sh WHERE sh.location_id IN(SELECT id FROM scope)),
+  'registeredClocks',(SELECT count(*) FROM clocker_devices cd WHERE cd.location_id IN(SELECT id FROM scope) AND cd.active AND cd.credential_hash IS NOT NULL AND cd.revoked_at IS NULL),
+  'peopleWithPins',(SELECT count(*) FROM employees e JOIN employee_clocker_pins p ON p.employee_id=e.id AND p.workspace_id=$1 WHERE e.active AND e.primary_location_id IN(SELECT id FROM scope)),
+  'paySchedule',EXISTS(SELECT 1 FROM payroll_setting_revisions ps WHERE ps.workspace_id=$1 AND ps.effective_from<=d.today)),
  'shifts',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',s.id,'employeeId',s."employeeId",'employeeName',s."employeeName",'locationId',s."locationId",
    'locationName',s."locationName",'positionName',s."positionName",'date',s.date,'startAt',s.start_at,'endAt',s.end_at) ORDER BY s.start_at,s.id) FROM shift_rows s),'[]'::jsonb),
  'entries',COALESCE((SELECT jsonb_agg(x ORDER BY x."clockInAt",x.id) FROM entry_rows x),'[]'::jsonb)) AS snapshot

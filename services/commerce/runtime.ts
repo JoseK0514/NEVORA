@@ -69,11 +69,12 @@ export function createRuntime(env: NodeJS.ProcessEnv = process.env,usage:'applic
       await smtp.sendMail({
         from: env.NEVORA_COMMERCE_MAIL_FROM,
         to: message.email,
-        subject:
+        messageId:message.messageId,
+        subject: message.subject??(
           message.template === "verify"
             ? "Verify your NEVORA email"
-            : "Your NEVORA sign-in link",
-        text: `Open this single-use link to continue with NEVORA:\n\n${message.url}\n\nIf you did not request this link, you can ignore this message.`,
+            : "Your NEVORA sign-in link"),
+        text: message.text??`Open this single-use link to continue with NEVORA:\n\n${message.url}\n\nIf you did not request this link, you can ignore this message.`,
       });
     };
   }

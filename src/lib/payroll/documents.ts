@@ -54,7 +54,7 @@ export type GeneratedDocument = {
     metadata: PayrollDocumentMetadata;
     statement: ReturnType<typeof q>;
 };
-function stored(run: PayrollRun, kind: PayrollDocument["kind"], employeeId: string | null, bytes: Buffer, metadata: PayrollDocumentMetadata = { period: run.period, payday: run.payday }): GeneratedDocument {
+function stored(run: PayrollRun, kind: PayrollDocument["kind"], employeeId: string | null, bytes: Buffer, metadata: PayrollDocumentMetadata = { period: run.period, payday: run.payday,...(run.coverage?{coverage:run.coverage}:{}) }): GeneratedDocument {
     const id = idFor(run.id, kind, employeeId), filename = `payroll-${run.period.startDate}-${id}.${kind === "PAYMENT_INSTRUCTIONS" ? "json" : "pdf"}`, sha256 = sha(bytes);
     return {
         id,

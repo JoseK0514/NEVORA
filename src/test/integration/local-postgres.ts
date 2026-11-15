@@ -61,6 +61,7 @@ export const CURRENT_MIGRATIONS = [
   '0060_monotonic_login_fence.sql',
   '0061_staff_tasks.sql',
   '0046_owner_advisor_memory.sql',
+  '0063_initial_password_replacement.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every

@@ -13,7 +13,7 @@ const messages:Record<PunchErrorCode,string>={
  OTHER_LOCATION:'This shift is open at another location. Use a registered tablet at that location.',
  INTEGRITY:'Recorded clock data is inconsistent. No time was changed. Ask your manager for assistance.',
  CLOCK_INVALID:'The server clock does not agree with recorded time. No time was changed.',
- UNAVAILABLE:"We couldn't confirm your punch. Tap Check Action Status before trying again.",
+ UNAVAILABLE:"We couldn't confirm your punch. Tap Check action status before trying again.",
 };
 export class ClockerPunchError extends Error {
  constructor(public readonly code:PunchErrorCode){super(messages[code]);this.name='ClockerPunchError';}

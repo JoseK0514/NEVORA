@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../feature-flags';
 import 'server-only';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {SqlExecutor} from '../notifications/types';
@@ -46,7 +47,7 @@ export async function readManagementProfile(proof:SessionMutationProof,executor:
       [row.email,row.phone].some(v=>v!==null&&(typeof v!=='string'||v.length>200))||!row.choices||typeof row.choices!=='object'||Array.isArray(row.choices)||Object.values(row.choices).some(v=>typeof v!=='boolean'))throw Error('invalid_profile_snapshot');
     return {state:'ready',kind:'management-profile',observedAt:new Date(row.observedAt).toISOString(),validForMs,
       contact:{email:row.email,phone:row.phone},locations:{scope,names},
-      alerts:managementAlertTopics.filter(t=>proof.employee.role==='OWNER'||t.id!=='payroll-ready').map(t=>({...t,on:t.id==='payroll-ready'&&process.env.NEVORA_PAYROLL_ENABLED!=='true'?false:row.choices[t.id]??true}))};
+      alerts:managementAlertTopics.filter(t=>proof.employee.role==='OWNER'||t.id!=='payroll-ready').map(t=>({...t,on:t.id==='payroll-ready'&&!readFeatureFlags(process.env).payroll?false:row.choices[t.id]??true}))};
   }catch(error){return {state:'unavailable',reason:isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
 }
 /** Persist an own allowed topic choice and reapply queue suppression atomically; it never sends a test notification. */

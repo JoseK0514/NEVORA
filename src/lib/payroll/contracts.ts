@@ -157,6 +157,8 @@ export type PayrollRun = {
     payday: string;
     status: "WAITING_FOR_AMOUNTS" | "BLOCKED" | "REVIEW_REQUIRED" | "APPROVED";
     correctionOf: string | null;
+    /** Present on reads only when both authorized statement populations are available. */
+    correctionDelta?: import('./correction-delta').PayrollCorrectionDelta | null;
     nativeCorrection?: {
         rootRunId: string;
         reason: string;
@@ -221,6 +223,7 @@ export type PayrollBacklogSummary = {
     overflow: boolean;
 };
 export type PayrollRunsResponse = {
+    currentPeriod?:{period:PayrollPeriod;payday:string;asOfDate:string;timeZone:string;settingsRevision:number}|null;
     version: "PAYROLL_API_V1";
     capabilities: PayrollCapabilities;
     runs: PayrollRun[];

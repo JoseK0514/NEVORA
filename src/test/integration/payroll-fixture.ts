@@ -1,3 +1,4 @@
+import {add} from '../../lib/payroll/calendar';
 /** Fictional test data only. Caller supplies an owned disposable executor. */
 import { randomUUID, createHash } from "node:crypto";
 import type { SqlExecutor } from "../../lib/notifications/types";
@@ -20,7 +21,7 @@ import type {
 } from "../../lib/payroll/contracts";
 export async function seedPayrollFixture(
   ex: SqlExecutor,
-  options: { published?: boolean } = {},
+  options: { published?: boolean;period?:{startDate:string;endDate:string};payday?:string } = {},
 ) {
   const [identity] = await ex.query<{ name: string; marker: string }>({
     text: "SELECT current_database() AS name,shobj_description(oid,'pg_database') AS marker FROM pg_database WHERE datname=current_database()",
@@ -55,7 +56,7 @@ export async function seedPayrollFixture(
       ],
     });
     await ex.query({
-      text: "INSERT INTO employee_credentials(employee_id,password_hash) VALUES($1,$2)",
+      text: "INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)",
       values: [id, await hashPassword(password)],
     });
     await ex.query({
@@ -120,7 +121,7 @@ export async function seedPayrollFixture(
     },
     ex,
   );
-  const period = { startDate: "2026-09-21", endDate: "2026-09-27" };
+  const period = options.period??{ startDate: "2026-09-21", endDate: "2026-09-27" };
   const pending = await registerClockerDevice(
     { employeeId: ids.owner, sessionTokenHash },
     { name: "Fictional payroll clock", locationId: "loc-1" },
@@ -131,8 +132,8 @@ export async function seedPayrollFixture(
     ex,
   );
   await ex.query({
-    text: "INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES($1,$2,'loc-1',$3,'2026-09-22T12:00:00Z','2026-09-22T20:00:00Z','CLOCKED_OUT',1)",
-    values: [randomUUID(), ids.a, device.device.id],
+    text: "INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES($1,$2,'loc-1',$3,$4::timestamptz,$5::timestamptz,'CLOCKED_OUT',1)",
+    values: [randomUUID(), ids.a, device.device.id,add(period.startDate,1)+'T12:00:00Z',add(period.startDate,1)+'T20:00:00Z'],
   });
   const cards = await readTimecards(proof, period, ex);
   if (cards.state !== "ready") throw Error("Fictional timecard unavailable");
@@ -177,7 +178,7 @@ export async function seedPayrollFixture(
     sourceName: "Fictional Accountant",
     sourceReference: "QA-2026-09",
     period,
-    payday: "2026-09-29",
+    payday: options.payday??add(period.endDate,2),
     rows: close.members.map((e) => ({
       employeeId: e.employeeId,
       grossMinor: e.employeeId === ids.a ? "100000" : "0",

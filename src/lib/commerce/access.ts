@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../feature-flags';
 import {isCommerceRecoveryRequest} from './recovery-routes';
 
 export type CommerceAuthority = {
@@ -13,7 +14,7 @@ export function resetCommerceAccessCache() {
   cached = null;
 }
 export function commerceEnabled() {
-  return process.env.NEVORA_COMMERCE_ENABLED === "true";
+  return readFeatureFlags(process.env).commerce;
 }
 export function commerceConnection() {
   const origin = process.env.NEVORA_COMMERCE_API_ORIGIN ?? "",
@@ -159,8 +160,7 @@ export async function commerceGate(
         path.startsWith("/api/payroll/documents/") ||
         path === "/app/payroll-export" ||
         path === "/app/my-pay" ||
-        path === "/app/billing" ||
-        path === "/app/pay"))
+        path === "/app/billing"))
   )
     return null;
   try {

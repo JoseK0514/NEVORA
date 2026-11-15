@@ -4529,6 +4529,24 @@
       "status": "PROVEN_NON_RUNTIME",
       "reason": "Read-only Step4 artifact verifier checks source hashes, reports, cleanup receipts, matrix cells and captures. Its Neon-import text is inspected as data to derive the approved owned-test substitution; it opens no database/provider connection and exports no public handler. Used only by the explicit owned acceptance runner and verification tests/tools.",
       "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
+      "path": "services/commerce/lifecycle-mail.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Privileged commerce worker schedules encrypted lifecycle/readiness jobs with exact business and incarnation checks, unique durable keys and current verified contact. Enrollment never receives queue rights.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "src/lib/commerce/installation-facts.server.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Private bearer-admitted installation facts use the current APP connection, exact installation secret binding and final current-binding check in the route. Owner readiness is durable ACTIVE identity plus current credential facts; no mutation or activation capability.",
+      "isolatedBehavior": "BOUND_APPLICATION"
     }
   ],
   "routingEvidence": "Task2: actual owned A/B PostgreSQL databases through installed Neon HTTP protocol; not hosted Neon evidence.",

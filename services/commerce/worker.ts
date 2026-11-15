@@ -1,3 +1,5 @@
+import {readInstallationFacts} from './installation';
+import {scheduleLifecycleMail,onboardingReadyRequested,enqueueWorkplaceReady,lifecycleTemplates,lifecycleMailCurrent,lifecycleMailCopy,type LifecycleTemplate} from './lifecycle-mail';
 import { CommerceStore } from "./store";
 import { provisionBusiness } from "./provision";
 import type { StripeBilling } from "./stripe";
@@ -6,17 +8,36 @@ export type MailDelivery = (message: {
   email: string;
   url: string;
   template: string;
+  messageId?:string;
+  subject?:string;
+  text?:string;
 }) => Promise<void>;
 export async function workerOnce(
   store: CommerceStore,
   billing: Pick<StripeBilling, "syncJob"> | undefined,
   sendMail: MailDelivery,
+  readiness:typeof readInstallationFacts=readInstallationFacts,
 ) {
+  await scheduleLifecycleMail(store);
   const job = await store.claimJob();
   if (!job) return { state: "idle" };
   try {
     const payload = store.openJob(job);
-    if (job.kind === "mail") {
+    if(job.kind==='mail'&&payload.template==='workplace_ready_check'){
+      const business=await store.business(payload.businessId),anchor=Number(payload.anchor);
+      if(onboardingReadyRequested(business,anchor)){
+        if(!(await readiness(store,business)).ownerReady)throw Error('owner_activation_pending');
+        await store.withBusinessLock(business.id,async(client,current)=>{if(onboardingReadyRequested(current,anchor))await enqueueWorkplaceReady(store,client,current.id,anchor);});
+      }
+    } else if(job.kind==='mail'&&(lifecycleTemplates as readonly string[]).includes(payload.template)){
+      const business=await store.business(payload.businessId),template=payload.template as LifecycleTemplate,anchor=Number(payload.anchor);
+      if(lifecycleMailCurrent(business,template,anchor)){
+        if(business.enrollmentSource==='onboarding'&&!(await readiness(store,business)).ownerReady)throw Error('owner_activation_pending');
+        const contact=await store.pool.query<{email:string}>('SELECT email FROM commerce.accounts WHERE id=$1 AND verified_at IS NOT NULL',[business.id]);
+        if(contact.rowCount!==1||contact.rows[0].email!==business.email)throw Error('billing_contact_unavailable');
+        await sendMail({...lifecycleMailCopy(business,template,anchor),messageId:`<nevora-${job.id}@nevora.team>`});
+      }
+    } else if (job.kind === "mail") {
       const raw = new URL(payload.url).hash.slice("#token=".length);
       const active = await store.pool.query(
         "SELECT 1 FROM commerce.tokens WHERE hash=$1 AND used_at IS NULL AND expires_at>clock_timestamp()",
@@ -40,6 +61,7 @@ export async function workerOnce(
     return { state: "processed", kind: job.kind };
   } catch (error) {
     const codes = [
+      "owner_activation_pending",
       "capacity_unavailable",
       "installation_not_ready",
       "installation_identity_mismatch",

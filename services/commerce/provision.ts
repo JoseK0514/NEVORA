@@ -1,3 +1,4 @@
+import {enqueueWorkplaceReady} from './lifecycle-mail';
 import { Client } from "pg";
 import {
   assertEmptyDatabase,
@@ -169,6 +170,7 @@ export async function provisionBusiness(
           const environment=['127.0.0.1','localhost','[::1]'].includes(new URL(databaseUrl).hostname)?'development':'production';
           await client.query("INSERT INTO public.nevora_commerce_installation(singleton,workspace_id,business_id,installation_id,environment,incarnation,canonical_origin,instance_secret_hash) VALUES(true,$1,$2,$3,$4,1,$5,$6)",[ids.workspaceId,businessId,slot.id,environment,slot.origin,slot.instance_secret_hash]);
         },
+        'SELF_SERVICE',
       );
     }
     const secret = unseal(
@@ -188,6 +190,8 @@ export async function provisionBusiness(
         "UPDATE commerce.businesses SET state='ready',trial_started_at=COALESCE(trial_started_at,$2),trial_ends_at=COALESCE(trial_ends_at,$3) WHERE id=$1",
         [businessId, new Date(now), new Date(now + 30 * DAY)],
       );
+      const current=await store.business(businessId,client);
+      if(current.trialStart!==null)await enqueueWorkplaceReady(store,client,businessId,current.trialStart);
       await client.query(
         "UPDATE commerce.accounts SET password_hash=NULL WHERE id=$1",
         [businessId],

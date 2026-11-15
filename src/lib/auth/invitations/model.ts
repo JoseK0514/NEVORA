@@ -14,6 +14,7 @@ export type InvitationStatusResult =
       invitation:null|{id:string;state:'ISSUED'|'CONSUMED'|'REVOKED'|'EXPIRED'|'INVALIDATED';
         issuedAt:string;expiresAt:string;issuerName:string};
       delivery:'UNAVAILABLE'|'PREPARED'|'PROVIDER_ACCEPTED'|'UNKNOWN'|'FAILED';
+      deliveryAvailable:boolean;
       allowedCommands:('ISSUE'|'REVOKE')[];retryAfterMs:number|null }
   | { state:'unavailable'; reason:AccessFailure };
 

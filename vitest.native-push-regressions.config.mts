@@ -1,3 +1,4 @@
+import {projectConfig} from './vitest.shared.mts';
 import {defineConfig} from 'vitest/config';
 import {fileURLToPath} from 'node:url';
 import {nativeRegressionTarget} from './src/test/integration/native-push-fixture-url';
@@ -9,7 +10,7 @@ const groups = [
   ]},
   {name: 'existing-web-push', prefix: 'fuel_phase3_test_' as const, include: ['src/test/integration/notifications.integration.ts']},
 ];
-export default defineConfig({test: {fileParallelism: false, maxWorkers: 1, passWithNoTests: false, projects: groups.map(group => ({
+export default projectConfig('native-push-regressions', defineConfig({test: {fileParallelism: false, maxWorkers: 1, passWithNoTests: false, projects: groups.map(group => ({
   extends: false as const, resolve: resolution, test: {name: group.name, include: group.include, fileParallelism: false, maxWorkers: 1,
     testTimeout: 15000, hookTimeout: 30000, env: process.env.FUEL_TEST_DATABASE_URL ? {FUEL_TEST_DATABASE_URL: nativeRegressionTarget(process.env.FUEL_TEST_DATABASE_URL, group.prefix)} : {}},
-}))}});
+}))}}));

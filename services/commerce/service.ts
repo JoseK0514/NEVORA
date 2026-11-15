@@ -245,6 +245,7 @@ export function createCommerce(options: CommerceOptions) {
         await assertCurrentBilling();
         return answer({
           billingAction,
+          subscriptionStatus:business.subscriptionStatus,
           businessId: id,
           businessName: business.profile.businessName ?? null,
           setup: business.state,
@@ -293,6 +294,7 @@ export function createCommerce(options: CommerceOptions) {
       return answer(
         {
           error: {
+            ...(error instanceof CommerceError&&error.operationState?{operationState:error.operationState}:{}),
             code:
               error instanceof CommerceError
                 ? error.code

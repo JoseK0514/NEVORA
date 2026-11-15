@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../feature-flags';
 import { readOperationalInsights } from "./operational-insights.server";
 import { addDays } from "@/lib/date-utils";
 import { memoryDay } from "./memory";
@@ -44,7 +45,7 @@ export async function advisorService(
       ),
   };
   const admission = await admitOwner(proof, ex);
-  if (env.NEVORA_OWNER_ADVISOR_ENABLED !== "true")
+  if (!readFeatureFlags(env).ownerAdvisor)
     throw new AdvisorError("disabled");
   const store = new AdvisorStore(proof, admission, ex),
     tools = new AdvisorTools(store, signal),

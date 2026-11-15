@@ -21,11 +21,20 @@ async function seed(){
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('calendar-owner','Fictional','Owner','555-0100','OWNER','loc-1'),('calendar-self','Fictional','Self','555-0101','EMPLOYEE','loc-1')");
  await q("INSERT INTO employee_location_eligibility VALUES('calendar-self','loc-1'),('calendar-self','loc-2')");
  await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('a',64),'calendar-owner',now()+interval '1 day'),(repeat('b',64),'calendar-self',now()+interval '1 day')");
- await q("INSERT INTO employee_credentials(employee_id,password_hash) VALUES('calendar-self','fictional-hash')");
+ // Calendar lifecycle tests begin with an established portal credential.
+ await q("INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('calendar-self','fictional-hash',false)");
  // Intended Owner census precedes operational adoption; no automatic grant to later Managers.
  for(const file of ['0031_native_payroll.sql','0032_company_access_invitations.sql'])await q(await readFile('db/migrations/'+file,'utf8'));
 }
 const command=(kind:'ISSUE'|'ROTATE'|'REVOKE'='ISSUE',generation:string|null=null)=>({kind,operationId:randomUUID(),authority:calendarAuthority(proof),expectedGeneration:generation});
+it('keeps calendar access blocked until the portal password replacement is complete',async()=>{
+ await seed();await q("UPDATE employee_credentials SET must_change_password=true WHERE employee_id='calendar-self'");
+ expect((await manage(proof,command(),db.executor)).status).toBe('blocked');
+ expect((await status(proof,db.executor)).state).toBe('unauthorized');
+ expect(await q('SELECT count(*)::integer AS n FROM calendar_subscriptions')).toEqual([{n:0}]);
+ await q("UPDATE employee_credentials SET must_change_password=false WHERE employee_id='calendar-self'");
+ expect((await manage(proof,command(),db.executor)).status).toBe('created');
+});
 async function issue(){await seed();const cmd=command(),created=await manage(proof,cmd,db.executor);expect(created.status).toBe('created');if(created.status!=='created')throw Error('No capability');return {created,cmd,token:created.url.split('/')[3]};}
 it('own issue digest only and response loss lookup cannot recover URL',async()=>{
  const {created,cmd,token}=await issue();expect(/^[A-Za-z0-9_-]{43}$/.test(token)).toBe(true);expect(await status(proof,db.executor)).toMatchObject({state:'active',generation:created.generation,allowedLocationIds:['loc-1','loc-2']});

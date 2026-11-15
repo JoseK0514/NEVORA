@@ -70,11 +70,12 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
     const fresh=parseClockView(await postPunch(locationKey,{operation:'state'}));
     if(!current)return;
     try{const store=await recoveryJournal();saved=await store.read(locationKey,fresh.subject);const {references:refs,otherCount:others}=await store.references(locationKey,fresh.subject);if(!current)return;setReferences(refs);setOtherCount(others);}
-    catch{setMode('storage');setMessage('This tablet can’t read its saved punches right now. Ask your manager to check the tablet.');return;}
+    catch{if(!current)return;setMode('storage');setMessage('This tablet can’t read its saved punches right now. Ask your manager to check the tablet.');return;}
     setView(fresh);setPending(saved);setMode(saved?'recovery':resumeContinuation(resume,fresh));
    }catch(error){if(current){setPending(saved);failed(error,Boolean(saved));}}
   };
-  void load();return()=>{current=false;alive.current=false;void journal.current?.then(store=>store.close(),()=>{});};
+  // Cleanup owns the old connection; the next state load must open a fresh one.
+  void load();return()=>{current=false;alive.current=false;const opened=journal.current;journal.current=null;void opened?.then(store=>store.close(),()=>{});};
  },[locationKey,resume]);
  useEffect(()=>{onContinuationChange?.(view&&!pending?continuationFor(view,mode):null);return()=>onContinuationChange?.(null);},[view,mode,pending,onContinuationChange]);
  useEffect(()=>{heading.current?.focus({preventScroll:true});},[mode]);

@@ -1,8 +1,10 @@
 import {CLOCKER_TRANSPORT_ERRORS,type ClockerTransportErrorCode} from '../lib/clocker/transport-errors';
 export type ClockerLocale='en'|'es';
 export const CLOCKER_COPY:Record<string,string>={
+ "New tablet setup is paused. Use a registered tablet to finish an existing shift.":"La configuración de nuevas tabletas está pausada. Usa una tableta registrada para terminar un turno en curso.",
  "Your PIN check changed. Enter your PIN again; nothing was punched twice.":"La verificación de tu PIN cambió. Ingresa tu PIN de nuevo; no se registró ninguna marcación dos veces.",
  "This punch reference belongs to a different punch. Ask your manager to check it.":"Esta referencia pertenece a otra marcación. Pide a tu gerente que la revise.",
+ "We couldn't confirm your punch. Tap Check action status before trying again.":"No pudimos confirmar tu marcación. Toca Verificar estado de la acción antes de volver a intentarlo.",
  "We couldn't confirm your punch. Tap Check Action Status before trying again.":"No pudimos confirmar tu marcación. Toca Verificar estado de la acción antes de volver a intentarlo.",
  "Photo capture is unavailable":"La captura de fotos no está disponible",
  "Photo for {action}":"Foto para {action}",

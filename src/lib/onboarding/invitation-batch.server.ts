@@ -95,7 +95,7 @@ export async function readInvitationBatch(proof:SessionMutationProof,binding:Wor
     const recovered=await readInvitationOperation(proof,item.child_operation_id,sql);
     if(recovered.state==='saved'){result=recovered;state=item.state==='UNKNOWN'&&recovered.receipt.delivery==='PREPARED'?'UNKNOWN':'SAVED';}
    }
-   const status=await readInvitationStatus(proof,item.employee_id,sql);if(status.state!=='ready')return {state:'unavailable'};
+   const status=await withWorkspaceBinding(binding,()=>readInvitationStatus(proof,item.employee_id,sql));if(status.state!=='ready')return {state:'unavailable'};
    items.push({employeeId:item.employee_id,operationId:item.child_operation_id,commandState:state,result,status});
   }
   await onboardingCommandReceipt(proof,binding,operationId,sql);

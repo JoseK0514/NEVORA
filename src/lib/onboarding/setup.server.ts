@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../feature-flags';
 import 'server-only';
 import {mutationTransaction} from '../data/transaction-composition';
 import {invitationDelivery} from '../auth/invitations/delivery.server';
@@ -20,7 +21,7 @@ import {deriveReadiness,onboardingDestinations} from './readiness.server';
 import {parseSetupCommand} from './steps';
 import type {OnboardingSnapshot,OnboardingResult,OperationReceipt} from './contracts';
 export type OnboardingPerson=Omit<Employee,'email'>&{email:string|null;updatedAt:string;hasCredentials:boolean;invitationRevision:number;invitationPending:boolean;targetWeeklyHours:number|null;maximumWeeklyHours:number|null};
-export type OnboardingConfiguration={workspace:Workspace;locations:(Location&{updatedAt:string})[];positions:Position[];people:OnboardingPerson[];staffing:LocationStaffingSetting[];coverage:CoverageWindow[];timekeepingConfigured:boolean;payrollConfigured:boolean};
+export type OnboardingConfiguration={employeeLimit?:number|null;workspace:Workspace;locations:(Location&{updatedAt:string})[];positions:Position[];people:OnboardingPerson[];staffing:LocationStaffingSetting[];coverage:CoverageWindow[];timekeepingConfigured:boolean;payrollConfigured:boolean};
 export type OnboardingSetup={snapshot:OnboardingSnapshot;configuration:OnboardingConfiguration;destinations:typeof onboardingDestinations};
 const check=(expression:string,values:readonly unknown[],reason:string):SqlStatement=>({text:`SELECT(CASE WHEN ${expression} THEN '1' ELSE '${reason}' END)::integer`,values});
 export function onboardingOwnerGuards(proof:SessionMutationProof,workspaceId:string,write=false):SqlStatement[]{return [
@@ -30,6 +31,7 @@ export function onboardingOwnerGuards(proof:SessionMutationProof,workspaceId:str
  check("EXISTS(SELECT 1 FROM employees e JOIN locations l ON l.id=e.primary_location_id JOIN workspaces w ON w.id=l.workspace_id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND e.role='OWNER')",[workspaceId,proof.employee.id],'onboarding_authorization'),
 ];}
 const configurationSql=`SELECT p.version::text AS version,jsonb_build_object(
+ 'employeeLimit',(SELECT i.employee_limit FROM public.nevora_commerce_installation i WHERE i.singleton AND i.workspace_id=w.id),
  'workspace',jsonb_build_object('id',w.id,'name',w.name,'timeZone',w.time_zone,'active',w.active,'createdAt',w.created_at::text,'updatedAt',w.updated_at::text),
  'locations',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',l.id,'workspaceId',l.workspace_id,'clockerKey',l.clocker_key,'name',l.name,'shortName',l.short_name,'active',l.active,'updatedAt',l.updated_at::text) ORDER BY l.id) FROM locations l WHERE l.workspace_id=w.id),'[]'::jsonb),
  'positions',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',pos.id,'workspaceId',pos.workspace_id,'name',pos.name,'active',pos.active,'createdAt',pos.created_at::text,'updatedAt',pos.updated_at::text) ORDER BY pos.id) FROM positions pos WHERE pos.workspace_id=w.id),'[]'::jsonb),
@@ -54,7 +56,7 @@ export async function readOnboardingSetup(proof:SessionMutationProof,binding:Wor
  if(!locations.length)issues.push('LOCATION_INACTIVE');
  let businessValid=false;try{validateWorkspaceProfile(c.workspace);businessValid=c.workspace.active;}catch{/* Invalid canonical data is never ready. */}
  const team=c.people.filter(e=>e.active&&e.id!==proof.employee.id),uninvited=team.filter(e=>e.email&&!e.hasCredentials&&!e.invitationPending);
- const sections=deriveReadiness({businessValid,activeLocations:locations.length,activePositions:c.positions.filter(p=>p.active).length,schedulingIssues:issues,teamCount:team.length,uninvitedCount:uninvited.length,missingEmailCount:team.filter(e=>!e.email&&!e.hasCredentials).length,payrollEnabled:process.env.NEVORA_PAYROLL_ENABLED==='true',timekeepingConfigured:c.timekeepingConfigured,payrollConfigured:c.payrollConfigured,invitationSenderAvailable:await withWorkspaceBinding(binding,async()=>invitationDelivery(await workspaceRuntimeEnvironment())!==null)});
+ const sections=deriveReadiness({businessValid,activeLocations:locations.length,activePositions:c.positions.filter(p=>p.active).length,schedulingIssues:issues,teamCount:team.length,uninvitedCount:uninvited.length,missingEmailCount:team.filter(e=>!e.email&&!e.hasCredentials).length,payrollEnabled:readFeatureFlags(process.env).payroll,timekeepingConfigured:c.timekeepingConfigured,payrollConfigured:c.payrollConfigured,invitationSenderAvailable:await withWorkspaceBinding(binding,async()=>invitationDelivery(await workspaceRuntimeEnvironment())!==null)});
  const coreReady=sections.filter(s=>['BUSINESS','LOCATIONS','SCHEDULING'].includes(s.id)).every(s=>s.state==='READY');
  return {snapshot:{schemaVersion:1,version:row.version,registrationState:coreReady?'READY':'SETUP_IN_PROGRESS',workspace:{id:c.workspace.id,displayName:c.workspace.name,portalUrl:f.record.canonicalOrigin+'/'},sections,nextStep:sections.find(s=>s.state==='BLOCKED'||s.state==='IN_PROGRESS')?.id??null},configuration:c,destinations:{...onboardingDestinations}};
 }

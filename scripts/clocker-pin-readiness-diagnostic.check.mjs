@@ -164,3 +164,18 @@ test('cleanup retirement does not manufacture an installation timeout when the t
  const installing=f.observer.install();await Promise.resolve();await f.observer.close();const disposed=f.observer.snapshot();clock=1101;for(const callback of [...callbacks])callback();releaseBinding();await installing;
  assert.deepEqual(f.observer.snapshot(),disposed);assert.equal(disposed.events.filter(x=>x.operation==='install').length,0);
 });
+
+test('retains owned clock-state boundaries after successful PIN verification without command data',async()=>{
+ const browser=new EventEmitter(),context=new EventEmitter(),page=new EventEmitter();page.isClosed=()=>true;
+ const diagnostic=observePinReadiness({browser,context,page,origin:'http://owned.invalid',engine:'webkit'});
+ for(const operation of ['state','execute','receipt']){
+  const request={url:()=> 'http://owned.invalid/api/clocker/2/punch?secret=private-value',method:()=> 'POST',postDataJSON:()=>({operation,command:{pin:'private-value',token:'private-value'}})};
+  page.emit('request',request);page.emit('response',{request:()=>request,status:()=>200});page.emit('requestfinished',request);
+ }
+ const result=diagnostic.snapshot();
+ assert.deepEqual(result.events.map(event=>[event.kind,event.boundary,event.action]),[
+  ['request','punch','state'],['response','punch','state'],['requestfinished','punch','state'],
+  ['request','punch','execute'],['response','punch','execute'],['requestfinished','punch','execute'],
+  ['request','punch','receipt'],['response','punch','receipt'],['requestfinished','punch','receipt']]);
+ assert(!JSON.stringify(result).includes('private-value'));assert(!JSON.stringify(result).includes('owned.invalid'));await diagnostic.close();
+});

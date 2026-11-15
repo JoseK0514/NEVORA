@@ -5,12 +5,13 @@ import {parseCommerceStatus,type CommerceStatus} from './status';
 export type BillingLanguage='en'|'es';
 export type BillingAction='checkout'|'portal'|'small'|'team';
 export type BillingCatalog={currency:'usd';trialDays:30;plans:{key:'small'|'team';employees:number;amount:number}[]};
-export type CentralStatus=CommerceStatus&{businessName:string|null;applicationUrl:string|null;timeZone:string|null;billingAction:'checkout'|'portal'|null};
+export type CentralStatus=CommerceStatus&{subscriptionStatus?:string|null;businessName:string|null;applicationUrl:string|null;timeZone:string|null;billingAction:'checkout'|'portal'|null};
 export type CentralRead={state:'ready';observedAt:string;validForMs:number;status:CentralStatus;catalog:BillingCatalog}|{state:'unavailable';reason:'read_failed'|'access_denied'};
 /** Refusals the Owner can act on. The codes are the commerce service's; the page holds the words
  * (services/commerce/README.md, "Consumer error copy"). Every other code keeps the general refusal. */
 export type BillingRefusal='changed'|'pending'|'review'|'expired'|'quote'|'employees'|'manage'|'syncing';
-export type BillingResult={kind:'navigate';url:string}|{kind:'unknown'|'denied'|'busy'}|{kind:'refused'|'conflict';refusal?:BillingRefusal};
+/** `retired`: the service refused this operation for good and the client let go of its key (a new attempt is new). */
+export type BillingResult={kind:'navigate';url:string}|{kind:'unknown'|'denied'|'busy'}|{kind:'refused'|'conflict';refusal?:BillingRefusal;retired?:boolean};
 const refusals=new Map<string,BillingRefusal>([['idempotency_conflict','changed'],['billing_operation_pending','pending'],['checkout_pending','pending'],
  ['billing_operation_reconciliation_required','review'],['legacy_operation_reconciliation_required','review'],['checkout_expired','expired'],['billing_operation_expired','expired'],
  ['assisted_quote_required','quote'],['plan_employee_limit','employees'],['use_billing_portal','manage'],['subscription_sync_pending','syncing']]);
@@ -39,12 +40,19 @@ export function parseBillingCatalog(value:unknown):BillingCatalog{
 export function parseCentralStatus(value:unknown):CentralStatus{
  const status=parseCommerceStatus(value);if(!object(value))throw Error('Invalid status');
  const billingAction=value.billingAction??null;
+ const subscriptionStatus=value.subscriptionStatus;
+ if(subscriptionStatus!==undefined&&subscriptionStatus!==null){
+  if(typeof subscriptionStatus!=='string'||!subscriptionStatus.length||subscriptionStatus.length>100||subscriptionStatus.trim()!==subscriptionStatus||/[\u0000-\u001f\u007f]/.test(subscriptionStatus))throw Error('Invalid subscription status');
+  // Preserve an opaque future provider fact only when the authoritative API
+  // has disabled financial actions. Never invent a payable state from it.
+  if(!['active','trialing','past_due','unpaid','incomplete','incomplete_expired','canceled','paused'].includes(subscriptionStatus)&&billingAction!==null)throw Error('Unknown actionable subscription status');
+ }
  if(billingAction!==null&&billingAction!=='checkout'&&billingAction!=='portal')throw Error('Invalid billing action');
  if(value.businessName!==null&&(typeof value.businessName!=='string'||value.businessName.length>200))throw Error('Invalid workplace');
  let applicationUrl:string|null=null;
  if(value.applicationUrl!==null){if(typeof value.applicationUrl!=='string')throw Error('Invalid workplace URL');const u=new URL(value.applicationUrl);if(u.origin!==value.applicationUrl||u.username||u.password||!(u.protocol==='https:'||u.protocol==='http:'&&['127.0.0.1','localhost'].includes(u.hostname)))throw Error('Invalid workplace URL');applicationUrl=u.origin;}
  if(value.timeZone!==null){if(typeof value.timeZone!=='string'||value.timeZone.length>100)throw Error('Invalid time zone');new Intl.DateTimeFormat('en',{timeZone:value.timeZone});}
- return {...status,businessName:value.businessName as string|null,applicationUrl,timeZone:value.timeZone as string|null,billingAction};
+ return {...status,...(value.subscriptionStatus===undefined?{}:{subscriptionStatus:value.subscriptionStatus as string|null}),businessName:value.businessName as string|null,applicationUrl,timeZone:value.timeZone as string|null,billingAction};
 }
 /** Bearer and original intent stay in this instance's memory. No browser storage,
  * caller customer selector or automatic financial retry is supported. */
@@ -77,6 +85,12 @@ export function createCentralBillingClient(origin:string|null,transport:Transpor
    const result=await call(original.path,'POST',original.body,true,controller.signal,original.key);
    if(disposed||generation!==epoch||controller.signal.aborted||result.status===0)return {kind:'unknown'};
    if([401,403].includes(result.status)){clear();return {kind:'denied'};}
+   // A final refusal (error.operationState 'refused', backend Nov 15 contract) retires the held intent: the service
+   // recorded the refusal durably, so a new attempt starts with a new key. Every other non-2xx (409 conflict, any other
+   // 4xx, 5xx) keeps the original key and body for the person's own retry; nothing is retried here.
+   if(object(result.data)&&object(result.data.error)&&result.data.error.operationState==='refused'&&typeof result.data.error.code==='string'){
+    if(intent===original)intent=null;const refusal=billingRefusal(result.data);return {kind:'refused',retired:true,...(refusal?{refusal}:{})};
+   }
    if(result.status<200||result.status>=300){const refusal=billingRefusal(result.data);return {kind:result.status===409?'conflict':'refused',...(refusal?{refusal}:{})};}
    try{return {kind:'navigate',url:stripeBillingDestination(result.data)};}catch{return {kind:'unknown'};}
   }finally{signal?.removeEventListener('abort',abort);if(financial===controller)financial=null;}

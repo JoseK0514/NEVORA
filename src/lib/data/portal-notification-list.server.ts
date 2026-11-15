@@ -1,3 +1,5 @@
+import {notificationListPresentation} from '../notifications/list-presentation';
+import {notificationSubject} from './employee-notification-list.server';
 import {notificationOperationalAllowedSql,notificationOperationalGuard,isNotificationOperationalAuthorizationError} from './notification-operational-sql';
 import 'server-only';
 import {readEmployeeNotificationList,notificationReadManifest} from './employee-notification-list.server';
@@ -78,7 +80,8 @@ export async function readPortalNotificationList(proof:SessionMutationProof,envi
     if(!check.deliverable||check.effectiveVersion!==intent.effectiveVersion||!href||!safeReturnTo(check.destination)||!(Date.parse(check.expiresAt)>now.getTime()))continue;
     expires=Math.min(expires,Date.parse(check.expiresAt));
     if(!['PAYROLL_PREPARATION','PAYROLL_STATEMENT','SELF_TEST'].includes(intent.source.kind))requiresCompany=true;
-    items.push({id:row.id,label:labels[intent.source.kind],at:new Date(row.at).toISOString(),href,reviewState:row.read?'read':'unread',actionState:'available'});
+    const source=await repository.readSource(intent.source);
+    items.push({id:row.id,...notificationListPresentation(intent,source,labels[intent.source.kind]),subject:source?notificationSubject(source):null,at:new Date(row.at).toISOString(),href,reviewState:row.read?'read':'unread',actionState:'available'});
    }
    const access=requiresCompany?await repository.recipientAccess(proof.employee.id,'operational'):null;
    if(requiresCompany&&(!access?.operationalCompany||!access.operationalAuthority))throw Error('notification_operational_authorization');
@@ -110,7 +113,7 @@ export async function readPortalNotificationList(proof:SessionMutationProof,envi
   await bounded.transaction([...guards,...(projected.operationalAuthority?[notificationOperationalGuard(proof.employee.id,proof.employee.role,projected.operationalAuthority)]:[]),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])]);
   const now=performance.now(),validForMs=Math.floor(Math.min(Number(final.validForMs)-(now-finalStarted),originalBudget-(now-started),projected.expires-Date.parse(final.observedAt)));
   if(validForMs<=0)return {state:'unavailable',reason:'access_denied'};
-  return parseEmployeeView({state:'ready',kind:'notifications',items:projected.items,coverage:projected.coverage,observedAt:final.observedAt,validForMs},'notifications');
+  return parseEmployeeView({state:'ready',kind:'notifications',timeZone:workspace.timeZone,items:projected.items,coverage:projected.coverage,observedAt:final.observedAt,validForMs},'notifications');
  }catch(error){return {state:'unavailable',reason:isManagementAuthorizationError(error)||isNotificationOperationalAuthorizationError(error)?'access_denied':'read_failed'};}
 }
 

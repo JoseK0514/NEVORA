@@ -1,8 +1,11 @@
+import {billingNotice} from '@/lib/commerce/billing-notice';
+import {getWorkspace} from '@/lib/data/workspaces';
 import { readSessionMutationProof } from "@/lib/auth/session";
 import { readBillingOwnerBinding } from "@/lib/commerce/owner-binding";
 import { currentCommerceConnection, commerceEnabled, fetchCommerceAuthority } from "@/lib/commerce/access";
 import { parseCommerceStatus } from "@/lib/commerce/status";
 import {BILLING_SNAPSHOT_LIFETIME_MS} from '@/lib/commerce/billing-snapshot';
+import {reportServerError} from '@/lib/server-error';
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -36,6 +39,7 @@ export async function GET(request: Request) {
     if (proof.employee.role !== "OWNER") return error("owner_required", 403);
     const initial = await readBillingOwnerBinding(proof, connection);
     if (!initial) return error("owner_required", 403);
+    const workspace=await getWorkspace();
     const authority = await fetchCommerceAuthority(connection);
     if (authority.businessId !== initial.business_id || authority.installationId !== connection.installationId)
       throw Error("installation_identity_mismatch");
@@ -45,8 +49,10 @@ export async function GET(request: Request) {
     await connection.assertCurrent?.();
     const observed=Date.now(),validForMs=Math.floor(Math.min(BILLING_SNAPSHOT_LIFETIME_MS,authority.validUntil-observed));
     if (validForMs <= 0) throw Error("invalid_commerce_authority");
-    return Response.json({...parseCommerceStatus(authority),observedAt:new Date(observed).toISOString(),validForMs}, { headers });
-  } catch {
+    const status=parseCommerceStatus(authority);
+    return Response.json({...status,notice:billingNotice(status,observed),timeZone:workspace.timeZone,observedAt:new Date(observed).toISOString(),validForMs}, { headers });
+  } catch (failure) {
+    reportServerError(failure, {route: '/api/commerce/status'});
     return error("billing_status_unavailable", 503);
   }
 }

@@ -67,6 +67,7 @@ export const BASE_MIGRATIONS = [
   '0060_monotonic_login_fence.sql',
   '0061_staff_tasks.sql',
   '0046_owner_advisor_memory.sql',
+  '0063_initial_password_replacement.sql',
 ] as const;
 
 /** Applied last, in exactly this order, once the company and Owner exist:

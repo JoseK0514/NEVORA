@@ -12,6 +12,7 @@ vi.mock("@/lib/db", () => ({
 vi.mock("@/lib/auth/session", () => ({
   readSessionMutationProof: deps.session,
 }));
+vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({timeZone:'America/Puerto_Rico'})}));
 import { GET } from "./route";
 const id = "22222222-2222-4222-8222-222222222222",
   secret = "a".repeat(43);
@@ -37,7 +38,7 @@ const presentation = () => ({
   export: true,
 });
 const authority = () => ({
-  ...presentation(),
+  ...presentation(),timeZone:'America/Puerto_Rico',
   businessId: id,
   installationId: "slot-a",
   validUntil: Date.now() + 60000,
@@ -46,7 +47,7 @@ const authority = () => ({
 });
 const request = (headers: HeadersInit = {}) =>
   new Request("https://company.example.test/api/commerce/status", { headers });
-function expectPresentation(value:Record<string,unknown>){const {observedAt,validForMs,...status}=value;expect(status).toEqual(presentation());expect(typeof observedAt).toBe('string');expect(new Date(String(observedAt)).toISOString()).toBe(observedAt);expect(validForMs).toBeGreaterThan(0);expect(validForMs).toBeLessThanOrEqual(15000);}
+function expectPresentation(value:Record<string,unknown>){const {observedAt,validForMs,notice,...status}=value;expect(notice).toMatchObject({kind:'PAYMENT_FAILED',href:'/app/billing'});expect(status).toEqual({...presentation(),timeZone:'America/Puerto_Rico'});expect(typeof observedAt).toBe('string');expect(new Date(String(observedAt)).toISOString()).toBe(observedAt);expect(validForMs).toBeGreaterThan(0);expect(validForMs).toBeLessThanOrEqual(15000);}
 beforeEach(() => {
   vi.stubEnv("NEVORA_COMMERCE_ENABLED", "true");
   vi.stubEnv("NEVORA_COMMERCE_API_ORIGIN", "https://billing.example.test");
@@ -231,4 +232,21 @@ it("reads fresh status instead of sharing a previous billing presentation", asyn
 it("keeps existing unenrolled installations off", async () => {
   vi.stubEnv("NEVORA_COMMERCE_ENABLED", "false");
   expect((await GET(request())).status).toBe(404);
+});
+
+it('records a caught unexpected failure without logging request or provider secrets', async () => {
+  const sink = vi.spyOn(console, 'error').mockImplementation(() => {});
+  vi.stubGlobal('fetch', async () => {throw Object.assign(new Error('private-provider-token'), {code: '08006'});});
+  const response = await GET(request({authorization: 'Bearer private-request-token'}));
+  expect(response.status).toBe(503);
+  expect(sink).toHaveBeenCalledTimes(1);
+  expect(JSON.parse(sink.mock.calls[0][0])).toMatchObject({event: 'server_request_error', route: '/api/commerce/status', sqlState: '08006'});
+  expect(sink.mock.calls[0][0]).not.toContain('private');
+});
+
+it('does not report an expected unauthenticated read as a server failure', async () => {
+  const sink = vi.spyOn(console, 'error').mockImplementation(() => {});
+  deps.session.mockResolvedValue(null);
+  expect((await GET(request())).status).toBe(401);
+  expect(sink).not.toHaveBeenCalled();
 });

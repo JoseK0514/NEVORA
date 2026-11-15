@@ -6,7 +6,7 @@ import { type WordSlots } from './workspace-presentation/words';
 
 /** Company choices that shape navigation (B2): modules that are off disappear
  * everywhere, and the vocabulary names the people page. Defaults change nothing. */
-export type NavContext = { ownerAdvisorEnabled?: boolean; modules?: EnabledModules; words?: WordSlots; operational?:OperationalAuthorityView };
+export type NavContext = { billingEnabled?:boolean;ownerAdvisorEnabled?: boolean; modules?: EnabledModules; words?: WordSlots; operational?:OperationalAuthorityView };
 import type {OperationalAuthorityView} from './company-access/model';
 
 export type NavigationItem = {
@@ -214,7 +214,8 @@ export function navigationForRole(role: UserRole, payroll?: PayrollCapabilities,
   const context:NavContext = 'state' in input ? {operational:input} : input;
   const modules = context.modules ?? ALL_MODULES_ON;
   // B7 wording (NV-119): the people page is "Team" everywhere (its H1 and tab); the vocabulary preset stays in sentences.
-  return baseNavigation(role, payroll, context.operational, context.ownerAdvisorEnabled)
+  // Development (Nov 15): an Owner with billing enabled also gets Plan and billing.
+  return [...baseNavigation(role, payroll, context.operational, context.ownerAdvisorEnabled),...(role==='OWNER'&&context.billingEnabled?[{href:'/app/billing',label:'Plan and billing',icon:'settings' as NavIconName}]:[])]
     .filter(item => pathEnabled(item.href, modules));
 }
 

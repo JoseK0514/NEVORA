@@ -43,7 +43,7 @@ describe("passkey JSON route contract", () => {
     db = await createDisposableFoundationDatabase({ mode: "current-runtime" });
     try {
       const token = Buffer.alloc(32, 5).toString("base64url");
-      await db.executor.query({ text: "INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('PK-HTTP','Fictional','HTTP','5550101','EMPLOYEE','loc-1'); INSERT INTO employee_credentials(employee_id,password_hash) VALUES('PK-HTTP','fictional-http-hash')", values: [] });
+      await db.executor.query({ text: "INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('PK-HTTP','Fictional','HTTP','5550101','EMPLOYEE','loc-1'); INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('PK-HTTP','fictional-http-hash',false)", values: [] });
       await db.executor.query({ text: "INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'PK-HTTP',clock_timestamp()+interval '1 hour')", values: [createHash("sha256").update(token).digest("hex")] });
       state.values.set("fuel_session", token);
     } catch (error) { await db.dispose(); throw error; }

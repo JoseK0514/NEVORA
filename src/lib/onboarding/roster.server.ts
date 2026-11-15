@@ -15,7 +15,7 @@ import {parseRosterTable,ROSTER_MAX_ROWS,type RosterPerson,type RosterTableResul
 
 export type RosterSaved=Extract<OnboardingResult,{state:'saved'}>&{createdEmployeeIds:string[]};
 export type RosterResult=Exclude<OnboardingResult,{state:'saved'}>|RosterSaved;
-export type RosterPreview=Extract<RosterTableResult,{state:'ready'}>&{schemaVersion:1;expectedVersion:string};
+export type RosterPreview=Extract<RosterTableResult,{state:'ready'}>&{schemaVersion:1;expectedVersion:string;positions:{id:string;name:string}[];capacity:{activeEmployees:number;employeeLimit:number|null;remaining:number|null;importAdds:number}};
 const parseId='00000000-0000-4000-8000-000000000001';
 function people(value:unknown):{people:RosterPerson[]}|null{
  if(!isClosedRecord(value,['people'])||!Array.isArray(value.people)||!value.people.length||value.people.length>ROSTER_MAX_ROWS)return null;
@@ -44,7 +44,9 @@ export async function previewOnboardingRoster(proof:SessionMutationProof,binding
    if(p.employee.positionIds.some(id=>!positions.has(id)))issue('positionIds','POSITION_UNAVAILABLE');
    if(p.initialManagerScope?.mode==='LOCATIONS'&&p.initialManagerScope.locationIds.some(id=>!locations.has(id)))issue('initialManagerScope','LOCATION_UNAVAILABLE');
   }
-  return {...parsed,valid:parsed.rows.every(r=>!r.fieldErrors.length),schemaVersion:1,expectedVersion:setup.snapshot.version};
+  const activeEmployees=c.people.filter(p=>p.active&&p.role!=='OWNER').length,employeeLimit=c.employeeLimit??null;
+  const current=await readOnboardingSetup(proof,binding,ex);if(current.snapshot.version!==setup.snapshot.version||current.configuration.employeeLimit!==c.employeeLimit)return {state:'conflict',reason:'version_changed'};
+  return {positions:c.positions.filter(p=>p.active).map(p=>({id:p.id,name:p.name})),capacity:{activeEmployees,employeeLimit,remaining:employeeLimit===null?null:Math.max(0,employeeLimit-activeEmployees),importAdds:parsed.rows.filter(r=>r.person!==null&&!r.fieldErrors.length).length},...parsed,valid:parsed.rows.every(r=>!r.fieldErrors.length),schemaVersion:1,expectedVersion:setup.snapshot.version};
  }catch{return {state:'unavailable',reasonCode:'ACCESS_OR_SOURCE_UNAVAILABLE'};}
 }
 export async function saveOnboardingRoster(proof:SessionMutationProof,binding:WorkspaceBinding,value:unknown,ex?:SqlExecutor):Promise<RosterResult>{
@@ -60,7 +62,7 @@ export async function saveOnboardingRoster(proof:SessionMutationProof,binding:Wo
   const composed=onboardingMutationExecutor({proof,binding,operationId:c.operationId,expectedVersion:c.expectedVersion,kind,hash},sql),statements:SqlStatement[]=[...onboardingOwnerGuards(proof,f.record.id,true)];
   for(const [i,p] of c.payload.people.entries()){
    const prepared=await prepareEmployeeWithAccessCreation(proof,{operationId:rosterChildOperationId(f.record.id,proof.employee.id,c.operationId,i),...p},sql,context);
-   if(prepared.state!=='prepared')return prepared.state==='invalid'?{state:'invalid',fieldErrors:prepared.fieldErrors.map((e):FieldError=>({field:`people.${i}.${e.field}`,code:'CANONICAL_VALIDATION_FAILED'}))}:{state:'unavailable',reasonCode:'ACCESS_OR_SOURCE_UNAVAILABLE'};
+   if(prepared.state!=='prepared')return prepared.state==='invalid'?{state:'invalid',fieldErrors:prepared.fieldErrors.map((e):FieldError=>({field:`people.${i}.${e.field}`,code:'CANONICAL_VALIDATION_FAILED',params:{underlyingCode:e.code??'INVALID_EMPLOYEE_PROFILE',underlyingMessage:e.message}}))}:{state:'unavailable',reasonCode:'ACCESS_OR_SOURCE_UNAVAILABLE'};
    statements.push(...prepared.statements);
   }
   statements.push(...onboardingOwnerGuards(proof,f.record.id,true));attempted=true;

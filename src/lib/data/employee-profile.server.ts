@@ -41,7 +41,7 @@ export async function readEmployeeProfile(proof:SessionMutationProof,executor:Sq
   const signal=AbortSignal.timeout(8000),workspace=await readEmployeeWorkspace(executor,signal),guards=[...employeeReadLimits,...employeeViewGuards(proof,workspace)];
   const results=await executor.transaction([...guards,{text:`SELECT jsonb_build_object('state','ready','kind','profile','observedAt',clock_timestamp(),
     'validForMs',LEAST(45000,FLOOR(EXTRACT(EPOCH FROM (s.expires_at-clock_timestamp()))*1000)),
-    'profile',jsonb_build_object('name',trim(e.first_name||' '||e.last_name),'role',CASE e.role WHEN 'LEAD' THEN 'Lead' ELSE 'Employee' END,
+    'profile',jsonb_build_object('email',NULLIF(trim(e.email),''),'phone',NULLIF(trim(e.phone),''),'name',trim(e.first_name||' '||e.last_name),'role',CASE e.role WHEN 'LEAD' THEN 'Lead' ELSE 'Employee' END,
       'workspace',w.name,'timeZone',w.time_zone,'locations',COALESCE((SELECT jsonb_agg(l.short_name ORDER BY l.id)
         FROM locations l WHERE l.workspace_id=w.id AND l.active AND (l.id=e.primary_location_id OR EXISTS(SELECT 1 FROM employee_location_eligibility el WHERE el.employee_id=e.id AND el.location_id=l.id))),'[]'::jsonb))) AS snapshot
     FROM employees e JOIN employee_sessions s ON s.employee_id=e.id JOIN workspaces w ON w.id=$3

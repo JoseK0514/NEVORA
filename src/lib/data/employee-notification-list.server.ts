@@ -1,3 +1,4 @@
+import {notificationListPresentation} from '../notifications/list-presentation';
 import {addDays,isValidIsoDate} from '../date-utils';
 import 'server-only';
 import {activePresentationSql,readActivePresentation} from '../workspace-presentation/service';
@@ -184,7 +185,7 @@ async function readNotificationObservation(proof:SessionMutationProof,environmen
      // Payroll has no generic SourceSnapshot: expose metadata only, and replay
      // this same check against the final protected Finance observation.
      if(candidate.read!==null&&(typeof candidate.read!=='string'||!Number.isFinite(Date.parse(candidate.read))))throw Error('Missing notification read metadata');
-     items.push({id:intent.id,label:labels.PAYROLL_STATEMENT,at:intent.dueAt,href,reviewState:candidate.read===null?'unread':'read',actionState:'available'});
+     items.push({id:intent.id,...notificationListPresentation(intent,null,labels.PAYROLL_STATEMENT),at:intent.dueAt,href,reviewState:candidate.read===null?'unread':'read',actionState:'available'});
      continue;
     }
     const source=await state.readSource(intent.source);if(!source){partial=true;continue;}
@@ -216,7 +217,7 @@ async function readNotificationObservation(proof:SessionMutationProof,environmen
     const read=receiptKind?receipts.some(row=>row.source_kind===receiptKind&&row.source_id===source.source.id&&row.source_version===receiptVersion):null;
     const communication=source.kind==='COMMUNICATION'?statuses.find(row=>row.sourceId===source.source.id)??null:null;
     const display=projectNotificationDisplayState(source,proof.employee.id,read,communication);if(display.actionState==='unavailable')partial=true;
-    items.push({id:intent.id,label:labels[intent.source.kind as typeof supported[number]],at:intent.dueAt,href,subject:notificationSubject(source),...display});
+    items.push({id:intent.id,...notificationListPresentation(intent,source,labels[intent.source.kind as typeof supported[number]]),at:intent.dueAt,href,subject:notificationSubject(source),...display});
    }
    return {items,coverage:partial?'partial' as const:'complete' as const,expires};
   }
@@ -249,7 +250,7 @@ async function readNotificationObservation(proof:SessionMutationProof,environmen
   }};
   const projected=await project(replay,candidates,new Date(final.observedAt));budget();
   const validForMs=Math.min(Number(final.validForMs),projected.expires-Date.parse(final.observedAt));
-  const value=parseEmployeeView({state:'ready',kind:'notifications',observedAt:final.observedAt,validForMs,coverage:projected.coverage,items:projected.items},'notifications');
+  const value=parseEmployeeView({state:'ready',kind:'notifications',timeZone:workspace.timeZone,observedAt:final.observedAt,validForMs,coverage:projected.coverage,items:projected.items},'notifications');
   const boundary=candidates[LIMIT-1],nextCursor=paged&&candidates.length>LIMIT?encodeMessageCursor({at:boundary.cursorAt as string,id:boundary.id as string}):null;
   return pageResult(value,nextCursor);
  }catch(error){return pageResult({state:'unavailable',reason:isManagementAuthorizationError(error)?'access_denied':'read_failed'});}

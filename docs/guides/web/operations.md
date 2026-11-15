@@ -190,3 +190,27 @@ and next gate. Source, local tests, exact-candidate CI, development integration
 and actual hosted acceptance are distinct evidence. Main, production, real
 messages, customer mutations and paid changes need their applicable explicit
 authorization; documentation cannot supply it.
+
+## Operator password replacement and external statements
+
+Operator-created Owner passwords require replacement at first sign-in. Install
+the canonical migration chain, including the additive initial-password proof
+method and its matching bootstrap manifest, before using that flow. A verified
+temporary password issues only a short-lived replacement proof. It never creates
+an operational session. Replacement consumes the proof once and revokes old
+sessions. Do not clear the flag manually to work around a failed replacement.
+Email and assisted recovery also require a different password while replacement
+is pending. A customer-chosen password in self-service signup is distinguished
+from an operator-created password and does not require choosing it twice.
+
+Keep payroll calculation mode `external` for this release. Native table presence
+does not enable calculation. Imported statement validation and approval do not
+prove tax correctness, wage payment or remittance. Do not turn on customer payroll,
+mail delivery or live commerce through a test fixture or inherited environment.
+
+Enrollment records a readiness request without queue privileges. The privileged
+commerce worker checks durable Owner activation before queuing a workplace-ready
+notice and rechecks current credential readiness before sending. Pending activation
+retries without sending that notice. Trial and renewal reminders use the existing
+encrypted outbox and current verified contact. SMTP acknowledgement can be uncertain;
+the stable message identifier supports deduplication but delivery is at-least-once.

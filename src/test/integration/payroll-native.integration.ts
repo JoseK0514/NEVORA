@@ -1,4 +1,4 @@
-import { newRun, command } from "../../lib/payroll/service";
+import { newRun, command, readPayrollCapabilities } from "../../lib/payroll/service";
 import type { SqlExecutor } from "../../lib/notifications/types";
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -12,11 +12,51 @@ const proof: SessionMutationProof = { employee: { id: "c34-owner", role: "OWNER"
 let f: Awaited<ReturnType<typeof createPunchFixture>>;
 beforeEach(async () => {
     process.env.NEVORA_PAYROLL_ENABLED = "true";
+    process.env.NEVORA_PAYROLL_CALCULATION_MODE = "native_provisional";
     // Native payroll finalizes time through current operational authorization.
     // Adopt Company Access after the fixture's real employee census is seeded.
     f = await createPunchFixture({ companyAccess: true });
 });
-afterEach(async () => { await f?.db.dispose(); delete process.env.NEVORA_PAYROLL_ENABLED; });
+afterEach(async () => { await f?.db.dispose(); delete process.env.NEVORA_PAYROLL_ENABLED; delete process.env.NEVORA_PAYROLL_CALCULATION_MODE; });
+
+it('prepares external amounts by default even when native tables exist, including a 2027 payday',async()=>{
+ delete process.env.NEVORA_PAYROLL_CALCULATION_MODE;
+ expect((await readPayrollCapabilities(proof,f.db.executor)).internalCalculatorAvailable).toBe(false);
+ const operationId=randomUUID(),period={startDate:'2026-12-21',endDate:'2026-12-27'},payday='2027-01-01';
+ const result=await command(proof,{action:'PREPARE',operationId,period,payday},f.db.executor);
+ const [row]=await f.q<{payload:import('../../lib/payroll/contracts').PayrollRun}>('SELECT payload FROM payroll_runs_current WHERE run_id=$1::uuid',[result.runId]);
+ expect(row.payload.sourceAuthority).toBe('PROVIDER_IMPORT');expect(row.payload.status).toBe('WAITING_FOR_AMOUNTS');
+ expect(row.payload.nativeCalculation).toBeUndefined();
+ expect(await f.q('SELECT count(*)::int n FROM native_payroll_ledger')).toEqual([{n:0}]);
+});
+
+it('blocks native financial profile changes in external mode without blocking Owner-issued Manager scope',async()=>{
+ process.env.NEVORA_PAYROLL_CALCULATION_MODE='external';
+ await expect(saveNativeProfile(proof,{action:'SAVE_NATIVE_PROFILE',operationId:randomUUID(),reason:'Owned regression',expectedRevision:0,configuration:configuration()},f.db.executor)).rejects.toThrow('NATIVE_CALCULATION_DISABLED');
+ await f.q("UPDATE employees SET role='MANAGER' WHERE id='c34-b'");
+ await expect(saveNativeProfile(proof,{action:'SET_MANAGER_SCOPE',operationId:randomUUID(),reason:'Import review access',expectedRevision:0,employeeId:'c34-b',review:true,approve:false,locationIds:['loc-1']},f.db.executor)).resolves.toMatchObject({action:'SET_MANAGER_SCOPE'});
+});
+
+it('worker preparation defaults to external amounts with native schema installed',async()=>{
+ delete process.env.NEVORA_PAYROLL_CALCULATION_MODE;
+ const job=randomUUID(),period={startDate:'2026-12-21',endDate:'2026-12-27'},payday='2027-01-01';
+ await f.q("INSERT INTO payroll_jobs(id,workspace_id,kind,business_key,payload) SELECT $1::uuid,id,'PREPARE',$2,$3::jsonb FROM workspaces WHERE singleton",[job,'external-worker-'+job,JSON.stringify({period,payday})]);
+ await workerOnce(f.db.executor);
+ const [row]=await f.q<{payload:import('../../lib/payroll/contracts').PayrollRun}>('SELECT payload FROM payroll_runs_current WHERE run_id=$1::uuid',[job]);
+ expect(row.payload).toMatchObject({sourceAuthority:'PROVIDER_IMPORT',status:'WAITING_FOR_AMOUNTS'});
+ expect(await f.q('SELECT status FROM payroll_jobs WHERE id=$1::uuid',[job])).toEqual([{status:'SUCCEEDED'}]);
+});
+
+it('mode change refuses new native calculations and approval while preserving historical receipts',async()=>{
+ await nativeFixture();const prepared=await preparedNative();
+ process.env.NEVORA_PAYROLL_CALCULATION_MODE='external';
+ for(const commandBody of [
+  {action:'RECALCULATE',operationId:randomUUID(),runId:prepared.payload.id,expectedRevision:prepared.payload.revision},
+  {action:'APPROVE',operationId:randomUUID(),runId:prepared.payload.id,expectedRevision:prepared.payload.revision,reviewToken:prepared.payload.reviewToken},
+ ])await expect(command(proof,commandBody,f.db.executor)).rejects.toThrow('NATIVE_CALCULATION_DISABLED');
+ await expect(nativeCapture()).rejects.toThrow('NATIVE_CALCULATION_DISABLED');
+ expect(await f.q('SELECT count(*)::int n FROM native_payroll_ledger')).toEqual([{n:0}]);
+});
 function configuration() { const i = input(); i.wages[0].locationIds = ["loc-1"]; i.wages[0].workweekPolicy!.employeeId = "c34-a"; return { schema: "NEVORA_NATIVE_CONFIGURATION_V1" as const, employeeId: "c34-a", wages: i.wages, tax: i.tax, deductions: i.deductions }; }
 it("upgrades payroll additively and preserves append-only profile revisions/exact retries", async () => { const c = { action: "SAVE_NATIVE_PROFILE", operationId: randomUUID(), reason: "Actual wage facts reviewed", expectedRevision: 0, configuration: configuration() }; const r = await saveNativeProfile(proof, c, f.db.executor); expect(r.revision).toBe(1); expect(await saveNativeProfile(proof, c, f.db.executor)).toEqual(r); expect((await nativeProfiles(proof, f.db.executor)).configurations[0].wages[0].hourlyRateMinor).toBe("2000"); await expect(saveNativeProfile(proof, { ...c, reason: "Changed retry" }, f.db.executor)).rejects.toThrow("CONFLICT"); await expect(f.q("DELETE FROM native_payroll_profile_revisions")).rejects.toThrow("immutable"); await expect(f.q("TRUNCATE native_payroll_profile_revisions")).rejects.toThrow("immutable"); });
 it("serializes competing revisions with one winner", async () => { const c = { action: "SAVE_NATIVE_PROFILE", operationId: randomUUID(), reason: "First facts", expectedRevision: 0, configuration: configuration() }; const results = await Promise.allSettled([saveNativeProfile(proof, c, f.db.executor), saveNativeProfile(proof, { ...c, operationId: randomUUID(), reason: "Competing facts" }, f.db.executor)]); expect(results.filter(r => r.status === "fulfilled")).toHaveLength(1); expect(await f.q("SELECT count(*)::int n FROM native_payroll_profile_revisions")).toEqual([{ n: 1 }]); });
@@ -116,6 +156,7 @@ it("denies direct mixed-location documents and leaked run totals before projecti
 it("returns identical private bytes to own all-role history and a fully covered Manager", async () => {
     const manager = await managerProof();
     const d = await scopeDocument(["loc-1"]);
+    process.env.NEVORA_PAYROLL_CALCULATION_MODE='external';
     await f.q("INSERT INTO employee_sessions VALUES(repeat('c',64),'c34-a',clock_timestamp()+interval '1 day',clock_timestamp())");
     for (const role of ["EMPLOYEE", "LEAD", "MANAGER", "OWNER"] as const) {
         await f.q("UPDATE employees SET role=$1,updated_at=clock_timestamp() WHERE id='c34-a'", [role]);
@@ -461,4 +502,30 @@ it('keeps null live money when employer federal rounding remains unsupported aft
     expect(c.run.status).toBe('BLOCKED'); expect(c.run.rows).toBeNull(); expect(c.run.totals).toBeNull();
     expect(c.run.exceptions).toContain('EMPLOYER_FICA_SOCIAL_SECURITY_CENT_RULE_UNVERIFIED:c34-a');
     expect(await f.q('SELECT count(*)::int n FROM native_payroll_ledger')).toEqual([{ n: 0 }]);
+});
+
+it('external mode recovers an unchanged native prepare receipt and financial profile receipt',async()=>{
+ const profile={action:'SAVE_NATIVE_PROFILE',operationId:randomUUID(),expectedRevision:0,reason:'Owned receipt preservation',configuration:configuration()};
+ const original=await saveNativeProfile(proof,profile,f.db.executor);
+ process.env.NEVORA_PAYROLL_CALCULATION_MODE='external';expect(await saveNativeProfile(proof,profile,f.db.executor)).toEqual(original);
+});
+it('external mode recovers native prepare custody and refuses new native corrections',async()=>{
+ await nativeFixture();const prepared=await preparedNative();
+ process.env.NEVORA_PAYROLL_CALCULATION_MODE='external';
+ expect(await command(proof,{action:'PREPARE',operationId:prepared.payload.id,period:nativePeriod,payday:nativePayday},f.db.executor)).toMatchObject({runId:prepared.payload.id});
+ await expect(command(proof,{action:'CORRECT_NATIVE',operationId:randomUUID(),runId:prepared.payload.id,expectedRevision:prepared.payload.revision,reason:'Owned correction refusal'},f.db.executor)).rejects.toThrow('NATIVE_CALCULATION_DISABLED');
+});
+it('an actually granted Manager completes external preparation, import, approval and private document reads with native schema installed',async()=>{
+ await nativeFixture({contextPeriod:nativePeriod});const manager=await managerProof();process.env.NEVORA_PAYROLL_CALCULATION_MODE='external';
+ expect((await readPayrollCapabilities(manager,f.db.executor)).canReview).toBe(true);
+ const prepared=await command(manager,{action:'PREPARE',operationId:randomUUID(),period:nativePeriod,payday:nativePayday},f.db.executor);
+ let run=(await readRun(manager,prepared.runId!,f.db.executor)).payload;
+ expect(run).toMatchObject({sourceAuthority:'PROVIDER_IMPORT',coverage:{complete:true,locationIds:['loc-1']}});
+ const seed=await source(proof,nativePeriod,f.db.executor);
+ const amounts={schema:'NEVORA_PAYROLL_IMPORT_V1',currency:'USD',sourceName:'Fictional external provider',sourceReference:'owned-manager-import',period:nativePeriod,payday:nativePayday,rows:seed.source.roster.map(p=>({employeeId:p.employeeId,grossMinor:p.employeeId==='c34-a'?'100000':'0',netMinor:p.employeeId==='c34-a'?'100000':'0',employeeDeductions:[],employerContributions:[]}))};
+ await command(manager,{action:'IMPORT',operationId:randomUUID(),runId:run.id,expectedRevision:run.revision,amounts},f.db.executor);run=(await readRun(manager,run.id,f.db.executor)).payload;expect(run.status).toBe('REVIEW_REQUIRED');
+ await command(manager,{action:'APPROVE',operationId:randomUUID(),runId:run.id,expectedRevision:run.revision,reviewToken:run.reviewToken},f.db.executor);await workerOnce(f.db.executor);
+ const view=await runs(manager,f.db.executor),approved=view.runs.find(r=>r.id===run.id)!;expect(approved.status).toBe('APPROVED');const pdf=approved.documents.find(d=>d.kind==='EMPLOYEE_STATEMENT'&&d.employeeId==='c34-a')!;expect(pdf).toBeDefined();expect((await document(manager,pdf.id,f.db.executor)).bytes.subarray(0,5).toString()).toBe('%PDF-');
+ await saveNativeProfile(proof,{action:'SET_MANAGER_SCOPE',operationId:randomUUID(),reason:'Owned partial-scope denial',expectedRevision:1,employeeId:'c34-b',review:true,approve:true,locationIds:['loc-2']},f.db.executor);
+ expect((await runs(manager,f.db.executor)).runs.some(r=>r.id===run.id)).toBe(false);await expect(document(manager,pdf.id,f.db.executor)).rejects.toThrow('DOCUMENT_UNAVAILABLE');
 });

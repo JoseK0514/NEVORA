@@ -1,3 +1,4 @@
+import {readFeatureFlags} from '../feature-flags';
 import 'server-only';
 type Environment=Readonly<Record<string,string|undefined>>;
 export type DisabledConfig={enabled:false;reason:'disabled'|'configuration_unavailable'};
@@ -18,7 +19,7 @@ export function readSignupOrigin(env:Environment=process.env):string|null{
  }catch{return null;}
 }
 export function readOnboardingConfig(env:Environment=process.env):DisabledConfig|EnabledConfig{
- if(env.NEVORA_ONBOARDING_ENABLED!=='true')return {enabled:false,reason:'disabled'};
+ if(!readFeatureFlags(env).onboarding)return {enabled:false,reason:'disabled'};
  const invalid:DisabledConfig={enabled:false,reason:'configuration_unavailable'};
  const environment=env.NEVORA_ONBOARDING_ENVIRONMENT;if(environment!=='test'&&environment!=='development'&&environment!=='production')return invalid;
  const sessionKey=env.NEVORA_SIGNUP_SESSION_SECRET,workspaceTokenKey=env.NEVORA_WORKSPACE_TOKEN_SECRET,encryptionKey=env.NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY;

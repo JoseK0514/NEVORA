@@ -21,7 +21,7 @@ describe("passkeys with real signed WebAuthn messages and owned PostgreSQL", () 
     try {
       await q(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id)
         VALUES('PK-FICTIONAL','Fictional','Passkey','5550100','EMPLOYEE','loc-1');
-        INSERT INTO employee_credentials(employee_id,password_hash) VALUES('PK-FICTIONAL','fictional-test-hash');
+        INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('PK-FICTIONAL','fictional-test-hash',false);
         INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('a',64),'PK-FICTIONAL',clock_timestamp()+interval '1 hour');`);
       service = new PasskeyService(config, db.executor);
     } catch (error) { await db.dispose(); throw error; }
@@ -33,6 +33,13 @@ describe("passkeys with real signed WebAuthn messages and owned PostgreSQL", () 
     const passkey = await service.register(proof, token, device.register(options.challenge, config.origin, config.rpID, counter), "Fictional Face ID");
     return { device, passkey, handle: options.user.id };
   }
+  it('a required password replacement blocks existing passkey sessions and enrollment until replacement',async()=>{
+    const {device,handle}=await enrolled(),token=flow(),options=await service.loginOptions(token);
+    await q("UPDATE employee_credentials SET must_change_password=true WHERE employee_id='PK-FICTIONAL'");
+    await expect(service.login(token,device.authenticate(options.challenge,handle))).rejects.toMatchObject({code:'not_found'});
+    await expect(service.registrationOptions(proof,flow())).rejects.toMatchObject({code:'not_found'});
+    expect(await q("SELECT count(*)::int n FROM employee_sessions WHERE token_hash<>repeat('a',64)")).toEqual([{n:0}]);
+  });
   it("registers discoverable user-verified credentials and signs in with the existing session format", async () => {
     const { device, passkey, handle } = await enrolled();
     expect(await service.list(proof)).toEqual([passkey]);
@@ -141,12 +148,12 @@ describe("passkeys with real signed WebAuthn messages and owned PostgreSQL", () 
   });
   it("does not revive a credential after its password row is replaced", async () => {
     await enrolled();
-    await q("DELETE FROM employee_credentials WHERE employee_id='PK-FICTIONAL'; INSERT INTO employee_credentials(employee_id,password_hash) VALUES('PK-FICTIONAL','fictional-replacement')");
+    await q("DELETE FROM employee_credentials WHERE employee_id='PK-FICTIONAL'; INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('PK-FICTIONAL','fictional-replacement',false)");
     expect(await service.list(proof)).toEqual([]);
   });
   it("keeps enrollment and removal scoped to the current session's employee", async () => {
     const { passkey } = await enrolled();
-    await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('PK-OTHER','Other','Fictional','5550102','EMPLOYEE','loc-1'); INSERT INTO employee_credentials(employee_id,password_hash) VALUES('PK-OTHER','fictional-other'); INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('b',64),'PK-OTHER',clock_timestamp()+interval '1 hour')");
+    await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('PK-OTHER','Other','Fictional','5550102','EMPLOYEE','loc-1'); INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('PK-OTHER','fictional-other',false); INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('b',64),'PK-OTHER',clock_timestamp()+interval '1 hour')");
     const other: SessionMutationProof = { sessionTokenHash: "b".repeat(64), employee: { ...proof.employee, id: "PK-OTHER" } };
     expect(await service.list(other)).toEqual([]);
     await expect(service.remove(other, passkey.id)).rejects.toMatchObject({ code: "not_found" });

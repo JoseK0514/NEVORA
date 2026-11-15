@@ -300,3 +300,30 @@ it('gives a WORKER a read-only entitlement credential that cannot mint Owner bil
   expect((await app(new Request('https://billing.example.test/internal/handoff',{method:'POST',headers:{...headers,'content-type':'application/json'},body:JSON.stringify({owner:{businessId:input.workspaceId,installationId:input.workspaceId,incarnation:'1',employeeId:a.actor.employee.id,sessionTokenHash:a.actor.sessionTokenHash,generation}})}),'127.0.0.1')).status).toBe(401);
  }finally{process.env=prior;}
 });
+it('enrolls through the actual least-privilege principal without granting it queue access',async()=>{
+ const {Pool}=await import('pg'),{randomBytes,randomUUID}=await import('node:crypto'),{commercePrincipalGrants}=await import('../../../services/commerce/principals');
+ await (await f.createCompany('role-source','role-source@example.invalid')).work();const prior=enrolled[0] as Parameters<CommerceStore['enrollWorkspace']>[0];
+ const api='nv_commerce_api_'+randomBytes(12).toString('hex'),role='nv_commerce_enroll_'+randomBytes(12).toString('hex'),password='Owned-role-'+randomBytes(24).toString('hex');await catalog.pool.query(`CREATE ROLE ${api} NOLOGIN;CREATE ROLE ${role} LOGIN PASSWORD '${password}'`);for(const sql of commercePrincipalGrants(api,role))await catalog.pool.query(sql);
+ const url=new URL(catalog.connectionUrl);url.username=role;url.password=password;const pool=new Pool({connectionString:url.href,max:2}),scoped=new CommerceStore(pool,store.key,'onboarding');
+ try{
+  const input={...prior,workspaceId:randomUUID(),origin:'https://owned-enrollment.example.invalid',instanceSecret:randomBytes(32).toString('base64url'),workerSecret:randomBytes(32).toString('base64url')};
+  await scoped.enrollWorkspace(input);expect((await catalog.pool.query('SELECT has_table_privilege($1,\'commerce.jobs\',\'INSERT\') AS allowed',[role])).rows).toEqual([{allowed:false}]);expect((await catalog.pool.query('SELECT count(*)::int n FROM commerce.jobs')).rows).toEqual([{n:0}]);
+ }finally{await pool.end();}
+});
+it('produces workplace-ready mail only after the actual durable Owner activation, with retry and replay',async()=>{
+ const {workerOnce}=await import('../../../services/commerce/worker'),{readInstallationFactSnapshot}=await import('@/lib/commerce/installation-facts.server');
+ const company=await f.createCompany('ready-stage','ready-stage@example.invalid');await company.work();const input=enrolled[0] as Parameters<CommerceStore['enrollWorkspace']>[0],connection={businessId:input.workspaceId,installationId:input.workspaceId,secret:input.instanceSecret};
+ const probe=async()=>readInstallationFactSnapshot(connection,async(text,values)=>(await company.appPool.query(text,values)).rows);
+ expect((await probe()).ownerReady).toBe(false);const sent:unknown[]=[];
+ expect(await workerOnce(store,undefined,async m=>{sent.push(m);},probe)).toMatchObject({state:'retry_scheduled',code:'owner_activation_pending'});expect(sent).toHaveLength(0);
+ expect((await catalog.pool.query("SELECT count(*)::int n FROM commerce.jobs WHERE dedupe_key LIKE 'lifecycle:%:workplace_ready:%'")).rows).toEqual([{n:0}]);
+ await f.activateCompany(company);expect((await probe()).ownerReady).toBe(true);
+ await catalog.pool.query("UPDATE commerce.jobs SET available_at=clock_timestamp()-interval '1 second' WHERE state='pending'");
+ expect((await workerOnce(store,undefined,async m=>{sent.push(m);},probe)).state).toBe('processed');expect(sent).toHaveLength(0);
+ await company.resource.db.pool.query('UPDATE employee_credentials SET must_change_password=true');expect((await probe()).ownerReady).toBe(false);
+ expect(await workerOnce(store,undefined,async m=>{sent.push(m);},probe)).toMatchObject({state:'retry_scheduled',code:'owner_activation_pending'});expect(sent).toHaveLength(0);
+ await company.resource.db.pool.query('UPDATE employee_credentials SET must_change_password=false');await catalog.pool.query("UPDATE commerce.jobs SET available_at=clock_timestamp()-interval '1 second' WHERE state='pending'");
+ expect((await workerOnce(store,undefined,async m=>{sent.push(m);},probe)).state).toBe('processed');expect(sent).toHaveLength(1);expect(sent[0]).toMatchObject({email:'ready-stage@example.invalid',template:'workplace_ready',url:input.origin+'/login'});
+ expect((await workerOnce(store,undefined,async m=>{sent.push(m);},probe)).state).toBe('idle');expect(sent).toHaveLength(1);
+ await company.resource.db.pool.query('UPDATE employee_credentials SET must_change_password=true');expect((await probe()).ownerReady).toBe(false);
+});

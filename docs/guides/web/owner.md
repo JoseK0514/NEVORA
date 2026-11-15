@@ -27,6 +27,10 @@ Location eligibility, operational positions, an access role and a designated
 shift lead are different settings. Hiding a feature changes its availability;
 it does not complete the feature's provider setup or required acceptance.
 
+If an operator supplied your initial password, sign in with it and choose a
+different password on the replacement screen. The initial password grants no
+workplace session. After replacement, sign in with your new password.
+
 ## Add people and grant access
 
 1. Open **Team** and add the person. Enter a unique Employee ID and accurate
@@ -114,17 +118,19 @@ data; it is distinct from payroll approval or sending money.
 
 When payroll is enabled:
 
-1. Check **Payroll settings**, pay schedule, people and required calculation
-   inputs. The configured workflow may use recorded-time calculation or imported
-   provider amounts; follow the mode actually displayed.
+1. Check **Payroll settings**, pay schedule and people. New payroll uses amounts
+   calculated outside NEVORA. Export the approved hours to your provider, finish
+   calculations there and import the supported structured amounts for review.
+   NEVORA checks the import; it does not calculate taxes or send wages.
 2. Choose **Prepare payroll**, then **Review payroll**. Resolve **Fix before
    payroll** items and inspect the people, period, payday, amounts and exceptions.
 3. Approve only the revision you reviewed. A changed source needs a fresh
-   calculation/review. Approval freezes that revision; it does not mean paid.
+   import/review. Approval freezes that revision; it does not mean paid.
 4. Use **Share pay statements** separately when offered. Employees see only
    their own published statements. Review downloads and any delivery state.
 5. For a correction, use **Fix this payroll** and review the linked replacement.
-   The original approval and statements remain in history.
+   Compare the signed net-amount difference per person and in total. The original
+   approval and statements remain in history; a difference is not a payment.
 
 Correction payroll does not offer payment-instruction exports. Reconcile any
 older correction instructions through the existing payment system and accountant;

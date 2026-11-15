@@ -59,7 +59,7 @@ export type EmployeeCoreAccessReceipt = {
 export type EmployeeCoreAccessResult =
   | { state:'saved'; receipt:EmployeeCoreAccessReceipt }
   | { state:'conflict'; reason:'employee_changed'|'scope_changed'|'changed_replay' }
-  | { state:'invalid'; fieldErrors:{field:string;message:string}[] }
+  | { state:'invalid'; fieldErrors:{field:string;message:string;code?:string}[] }
   | { state:'unavailable' }
   | { state:'outcome_unknown'; operationId:string };
 
@@ -117,7 +117,7 @@ export type ScopeReceipt={operationId:string;employeeId:string;revision:number;
 export type ScopeResult=
   |{state:'saved';receipt:ScopeReceipt}
   |{state:'conflict';reason:'employee_changed'|'scope_changed'|'changed_replay'}
-  |{state:'invalid';fieldErrors:{field:string;message:string}[]}
+  |{state:'invalid';fieldErrors:{field:string;message:string;code?:string}[]}
   |{state:'unavailable'}
   |{state:'outcome_unknown';operationId:string};
 
