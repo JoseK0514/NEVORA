@@ -42,7 +42,11 @@ async function editBreak(owner,name,category,minutes){
  await d.getByRole('button',{name:'Save changes',exact:true}).click();await d.waitFor({state:'hidden'});
 }
 async function idle(p){await p.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await p.waitForFunction(()=>{const i=document.querySelector('input[name=pin]');return i&&!i.matches(':disabled');});}
-async function verify(p,pin='2468'){await idle(p);for(const n of pin)await p.getByRole('button',{name:'Number '+n,exact:true}).click();await p.getByRole('button',{name:'Continue',exact:true}).click();}
+async function verify(p,pin='2468',diagnostic){
+ diagnostic?.phase('readiness','before');await idle(p);diagnostic?.phase('readiness','after');
+ diagnostic?.phase('keypad','before');for(const n of pin)await p.getByRole('button',{name:'Number '+n,exact:true}).click();diagnostic?.phase('keypad','after',{enteredDigits:pin.length});
+ diagnostic?.phase('continue','before');await p.getByRole('button',{name:'Continue',exact:true}).click();diagnostic?.phase('continue','after');
+}
 async function startBreak(p){await p.getByRole('button',{name:'Start Break',exact:true}).click();await p.getByRole('heading',{name:'Choose a Break',exact:true}).waitFor();await p.getByRole('button',{name:'Start Fixture rest',exact:true}).click();}
 // Since 57a04195 a pending action lives in the tablet's IndexedDB journal (one slot per location and employee), not sessionStorage.
 // Read location 2's only slot without ever creating the database (an aborted upgrade leaves it absent).
@@ -104,7 +108,13 @@ try{
   assert.equal(await count(),before+3);await t.getByRole('button',{name:'Clock Out',exact:true}).click();await t.getByRole('button',{name:'Confirm Clock Out',exact:true}).click();await success(t,'Clock Out');await done(t);
   assert.equal(await count(),before+4);checked(engine+': all four transitions persist; canceled Clock Out does not write');
   // A lost response must not create a replacement command, even after a page reload.
-  await verify(t);await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();let dropped=false,lostCommand;
+  // Retain the early re-PIN boundary too. Node listeners need no injected binding,
+  // so this window cannot consume the later native-submit observer's one context binding.
+  const earlyPinDiagnostic=observePinReadiness({browser,context:tablet,page:t,origin:app.url,engine,source:report,artifactBase:join(evidence,engine+'-early-pin-readiness')});
+  pinDiagnostics.push(earlyPinDiagnostic);currentPinDiagnostic=earlyPinDiagnostic;
+  await verify(t,'2468',earlyPinDiagnostic);await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();
+  await earlyPinDiagnostic.close();currentPinDiagnostic=undefined;
+  let dropped=false,lostCommand;
   await t.route('**/api/clocker/2/punch',async route=>{
    if(!dropped&&route.request().postDataJSON()?.operation==='execute'){dropped=true;lostCommand=route.request().postDataJSON().command;const response=await route.fetch();assert.equal(response.status(),200);await route.abort('failed');}
    else await route.continue();
