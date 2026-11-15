@@ -15,7 +15,9 @@ process.env.FUEL_TEST_DATABASE_URL=fixture;
 const rows=[],configurations=[];
 for(const suite of suites){
  const file='vitest.employee-mobile-'+suite+'.config.mts',bytes=readFileSync(file),config=(await import(pathToFileURL(resolve(file)).href)).default;
- allowed(config,['resolve','test'],'configuration');allowed(config.test,['include','projects','fileParallelism','maxWorkers','testTimeout','hookTimeout','passWithNoTests'],'root test');
+ allowed(config,['resolve','test'],'configuration');allowed(config.test,['name','include','projects','fileParallelism','maxWorkers','testTimeout','hookTimeout','passWithNoTests'],'root test');
+ // Project naming is metadata; keep every effective execution-contract check.
+ assert.equal(config.test.name,'employee-mobile-'+suite,'Inspect changed project identity before claiming coverage');
  configurations.push({suite,file,sha256:createHash('sha256').update(bytes).digest('hex')});
  for(const group of config.test.projects??[config]){
   allowed(group,['extends','resolve','test'],'project');const test=group.test;
