@@ -79,7 +79,24 @@ reason, URL, token and coworker-name exclusions remain. This changes only the
 integration test; the runtime Profile behavior is unchanged. The failing cloud
 run and exact-source local reproduction are retained.
 
-These corrections affect two server/data modules and six integration/unit files. They
+The same candidate's release SQL job subsequently exposed a restricted staff-task
+migration fixture missing the credential-state SELECT now used by session
+admission. Its fictional APP role receives only SELECT on `employee_id` and
+`must_change_password` before migration replay. New assertions prove that password
+hash reads and credential writes remain denied; the existing staff-domain grants,
+immutability and role-attribute assertions remain. No real APP grant is changed.
+
+Local closeout also ran all five base release SQL suites (286/46/182/178/80
+passing tests), staff tasks (25), Owner advisor (153), Rondo leadership (18),
+conversations (52), native/history payroll (64), configurable payroll (41),
+timestamp tokens (17) and payroll source pagination (14). The complete ten-suite
+Phase E SQL run passed, including all 23 Employee navigation/privacy tests.
+The existing local PostgreSQL 16.15 build lacks XML support; native and subsequent
+payroll checks use the existing XML-capable PostgreSQL 17.11 runtime. That local
+prerequisite failure is retained separately. GitHub's Ubuntu PostgreSQL 16 gates
+remain mandatory on the final exact source.
+
+These corrections affect two server/data modules and seven integration/unit files. They
 do not change the public interface, company grants, schema defaults or Claude's
 UI. Whole-suite and exact-source CI qualification still apply to the replacement
 candidate; the first candidate's passing jobs are not substituted for that gate.

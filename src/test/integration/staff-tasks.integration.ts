@@ -122,11 +122,17 @@ it('migration upgrade grants only the recorded restricted APP enough staff acces
   // Only pre-existing relations get prior-bootstrap privileges. No fixture grant
   // touches staff relations after migration application.
   await q(`GRANT SELECT,INSERT,UPDATE,DELETE ON workspaces,employees,locations,employee_sessions,employee_location_eligibility,operational_subject_versions,operational_scopes_current,company_access_adoption TO "${appRole}"`);
+  // Current session admission reads replacement state; this staff-only fixture
+  // needs no password hashes or credential writes to model that existing guard.
+  await q(`GRANT SELECT(employee_id,must_change_password) ON employee_credentials TO "${appRole}"`);
   const attributes=()=>q('SELECT rolname,rolsuper,rolinherit,rolcreaterole,rolcreatedb,rolcanlogin,rolreplication,rolbypassrls FROM pg_roles WHERE rolname=ANY($1::text[]) ORDER BY rolname',[[appRole,workerRole]]),before=await attributes();
   await q(await readFile('db/migrations/0061_staff_tasks.sql','utf8'));
   const transaction:SqlExecutor['transaction']=async(statements,signal)=>(await db.executor.transaction([{text:`SET LOCAL ROLE "${appRole}"`,values:[]},...statements],signal)).slice(1);
   const ex:SqlExecutor={transaction,query:async<T>(statement:SqlStatement,signal?:AbortSignal)=>(await transaction([statement],signal))[0] as T[]};
   expect((await ex.query<{role:string}>({text:'SELECT current_user AS role',values:[]}))[0].role).toBe(appRole);
+  expect((await q("SELECT has_column_privilege($1,'employee_credentials','employee_id','SELECT') AS identity_read,has_column_privilege($1,'employee_credentials','must_change_password','SELECT') AS replacement_read,has_column_privilege($1,'employee_credentials','password_hash','SELECT') AS password_read,has_column_privilege($1,'employee_credentials','must_change_password','UPDATE') AS credential_write",[appRole]))[0]).toEqual({identity_read:true,replacement_read:true,password_read:false,credential_write:false});
+  await expect(ex.query({text:'SELECT password_hash FROM employee_credentials',values:[]})).rejects.toThrow('permission denied');
+  await expect(ex.query({text:'UPDATE employee_credentials SET must_change_password=false',values:[]})).rejects.toThrow('permission denied');
   expect(await ex.query({text:'SELECT count(*)::integer AS count FROM staff_task_templates',values:[]})).toEqual([{count:0}]);
   const templateId=randomUUID();expect(await run(owner,{kind:'CREATE_TEMPLATE',templateId,draft:draft()},ex)).toMatchObject({status:'committed',revision:1});
   expect(await run(owner,{kind:'SYNC_TEMPLATE',templateId,expectedRevision:1},ex)).toMatchObject({status:'committed',createdCount:31});
