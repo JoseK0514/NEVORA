@@ -185,7 +185,7 @@ async function readNotificationObservation(proof:SessionMutationProof,environmen
      // Payroll has no generic SourceSnapshot: expose metadata only, and replay
      // this same check against the final protected Finance observation.
      if(candidate.read!==null&&(typeof candidate.read!=='string'||!Number.isFinite(Date.parse(candidate.read))))throw Error('Missing notification read metadata');
-     items.push({id:intent.id,label:labels.PAYROLL_STATEMENT,at:intent.dueAt,href,reviewState:candidate.read===null?'unread':'read',actionState:'available'});
+     items.push({id:intent.id,...notificationListPresentation(intent,null,labels.PAYROLL_STATEMENT),at:intent.dueAt,href,reviewState:candidate.read===null?'unread':'read',actionState:'available'});
      continue;
     }
     const source=await state.readSource(intent.source);if(!source){partial=true;continue;}
@@ -250,7 +250,7 @@ async function readNotificationObservation(proof:SessionMutationProof,environmen
   }};
   const projected=await project(replay,candidates,new Date(final.observedAt));budget();
   const validForMs=Math.min(Number(final.validForMs),projected.expires-Date.parse(final.observedAt));
-  const value=parseEmployeeView({state:'ready',kind:'notifications',observedAt:final.observedAt,validForMs,coverage:projected.coverage,items:projected.items},'notifications');
+  const value=parseEmployeeView({state:'ready',kind:'notifications',timeZone:workspace.timeZone,observedAt:final.observedAt,validForMs,coverage:projected.coverage,items:projected.items},'notifications');
   const boundary=candidates[LIMIT-1],nextCursor=paged&&candidates.length>LIMIT?encodeMessageCursor({at:boundary.cursorAt as string,id:boundary.id as string}):null;
   return pageResult(value,nextCursor);
  }catch(error){return pageResult({state:'unavailable',reason:isManagementAuthorizationError(error)?'access_denied':'read_failed'});}

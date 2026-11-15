@@ -67,7 +67,7 @@ it('does not reinterpret authentication failure as unsupported-role success', as
   expect(state.workspace).not.toHaveBeenCalled();
 });
 
-it.each(['/app/billing','/app/my-pay','/app/payroll-export','/app/pay','/app/account/delete'])('renders authenticated recovery %s without operational shell reads or parallel sheets',async path=>{
+it.each(['/app/billing','/app/my-pay','/app/payroll-export','/app/account/delete'])('renders authenticated recovery %s without operational shell reads or parallel sheets',async path=>{
  vi.stubEnv('NEVORA_COMMERCE_ENABLED','true');state.recovery=path;
  state.workspace.mockRejectedValue(Error('operational workspace unavailable'));
  const html=renderToStaticMarkup(await layout());

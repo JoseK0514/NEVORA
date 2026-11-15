@@ -99,6 +99,7 @@ it('persists only explicitly selected qualifications and the Owner-selected init
 it('enforces the provisioned 30-staff capacity atomically, excluding the Owner',async()=>{
  const f=await onboardingJourneyFixture({commerce:{key:Buffer.alloc(32,23).toString('base64url'),workerKey:Buffer.alloc(32,24).toString('base64url'),async enroll(){}}});try{
   const a=await f.activateCompany(await f.createCompany()),home=a.actor.employee.primaryLocationId;
+  const preview=await previewOnboardingRoster(a.actor,a.binding,{schemaVersion:1,format:'csv',text:'id,firstName,lastName,phone,email\nCOUNT-1,Fictional,Count,7875550102,count@example.invalid',defaults:{primaryLocationId:home}});expect(preview).toMatchObject({state:'ready',capacity:{activeEmployees:0,employeeLimit:30,remaining:30,importAdds:1}});
   const tooMany=roster('1',home,31);expect(await saveOnboardingRoster(a.actor,a.binding,tooMany)).toMatchObject({state:'invalid',fieldErrors:[{field:'people',code:'EMPLOYEE_LIMIT'}]});
   expect((await a.c.resource.db.pool.query('SELECT count(*)::int n FROM employees')).rows[0].n).toBe(1);
   expect((await readOnboardingSetup(a.actor,a.binding)).snapshot.version).toBe('1');

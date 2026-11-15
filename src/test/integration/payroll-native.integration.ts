@@ -156,6 +156,7 @@ it("denies direct mixed-location documents and leaked run totals before projecti
 it("returns identical private bytes to own all-role history and a fully covered Manager", async () => {
     const manager = await managerProof();
     const d = await scopeDocument(["loc-1"]);
+    process.env.NEVORA_PAYROLL_CALCULATION_MODE='external';
     await f.q("INSERT INTO employee_sessions VALUES(repeat('c',64),'c34-a',clock_timestamp()+interval '1 day',clock_timestamp())");
     for (const role of ["EMPLOYEE", "LEAD", "MANAGER", "OWNER"] as const) {
         await f.q("UPDATE employees SET role=$1,updated_at=clock_timestamp() WHERE id='c34-a'", [role]);
@@ -501,4 +502,16 @@ it('keeps null live money when employer federal rounding remains unsupported aft
     expect(c.run.status).toBe('BLOCKED'); expect(c.run.rows).toBeNull(); expect(c.run.totals).toBeNull();
     expect(c.run.exceptions).toContain('EMPLOYER_FICA_SOCIAL_SECURITY_CENT_RULE_UNVERIFIED:c34-a');
     expect(await f.q('SELECT count(*)::int n FROM native_payroll_ledger')).toEqual([{ n: 0 }]);
+});
+
+it('external mode recovers an unchanged native prepare receipt and financial profile receipt',async()=>{
+ const profile={action:'SAVE_NATIVE_PROFILE',operationId:randomUUID(),expectedRevision:0,reason:'Owned receipt preservation',configuration:configuration()};
+ const original=await saveNativeProfile(proof,profile,f.db.executor);
+ process.env.NEVORA_PAYROLL_CALCULATION_MODE='external';expect(await saveNativeProfile(proof,profile,f.db.executor)).toEqual(original);
+});
+it('external mode recovers native prepare custody and refuses new native corrections',async()=>{
+ await nativeFixture();const prepared=await preparedNative();
+ process.env.NEVORA_PAYROLL_CALCULATION_MODE='external';
+ expect(await command(proof,{action:'PREPARE',operationId:prepared.payload.id,period:nativePeriod,payday:nativePayday},f.db.executor)).toMatchObject({runId:prepared.payload.id});
+ await expect(command(proof,{action:'CORRECT_NATIVE',operationId:randomUUID(),runId:prepared.payload.id,expectedRevision:prepared.payload.revision,reason:'Owned correction refusal'},f.db.executor)).rejects.toThrow('NATIVE_CALCULATION_DISABLED');
 });

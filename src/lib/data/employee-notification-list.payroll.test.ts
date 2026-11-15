@@ -65,7 +65,7 @@ it('registers the exact two-argument Finance query for ordinary protected replay
 it.each(['EMPLOYEE','LEAD','MANAGER','OWNER'] as const)('%s sees only metadata for their own authorized published statement',async role=>{
  const result=await read(role);expect(result.finalized).toBe(true);expect(result.readsAfterFinal).toBe(0);expect(result.postFinalAuthorityFences).toBe(['MANAGER','OWNER'].includes(role)?1:0);
  expect(result.sourceValues).toEqual([['10000000-0000-4000-8000-000000000001','self']]);
- expect(result.view).toMatchObject({state:'ready',kind:'notifications',coverage:'complete',items:[{id:'notice-0',label:'Pay statement update',href:'/app/notifications/open?notificationId=notice-0',reviewState:'unread',actionState:'available'}]});
+ expect(result.view).toMatchObject({state:'ready',kind:'notifications',timeZone:'America/Puerto_Rico',coverage:'complete',items:[{id:'notice-0',label:'Pay statement available',eventType:'PAYROLL_STATEMENT',href:'/app/notifications/open?notificationId=notice-0',reviewState:'unread',actionState:'available'}]});
  expect(JSON.stringify(result.view)).not.toMatch(/PRIVATE_|salary|tax|netPay|paid|payment/i);
 });
 it.each(['EMPLOYEE','LEAD'] as const)('%s uses observed read metadata without confusing it with payment or acknowledgement',async role=>{

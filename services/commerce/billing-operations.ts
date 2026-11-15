@@ -89,7 +89,7 @@ export class BillingOperation {
   this.assertBinding(await this.store.business(this.id));
   await this.input.context.assertCurrent();
   this.expires(row);
-  if(outcome.state==='refused')throw new CommerceError(outcome.code,outcome.status);
+  if(outcome.state==='refused')throw new CommerceError(outcome.code,outcome.status,'refused');
   return outcome.value;
  }
  async admit():Promise<void>{

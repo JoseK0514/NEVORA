@@ -1,7 +1,7 @@
+import {projectConfig} from './vitest.shared.mts';
 import {defineConfig} from 'vitest/config';
-import {fileURLToPath} from 'node:url';
+import {vitestResolution as resolution} from './vitest.shared.mts';
 import {communicationFixtureUrl} from './src/test/integration/employee-mobile-communications-fixtures';
-const resolution={alias:{'@':fileURLToPath(new URL('./src',import.meta.url)),'server-only':fileURLToPath(new URL('./node_modules/next/dist/compiled/server-only/empty.js',import.meta.url))}};
 const groups=[
  {name:'employee',prefix:'nevora_exchange_test_',include:[
   'src/test/integration/employee-mobile-communications.integration.ts',
@@ -35,4 +35,4 @@ const groups=[
 export function employeeMobileProjects(additionalEmployeeFiles:readonly string[]=[],additionalFoundationFiles:readonly string[]=[]){
  return groups.map(group=>({extends:false as const,resolve:resolution,test:{name:group.name,include:group.name==='employee'?[...group.include,...additionalEmployeeFiles]:group.name==='canonical-communications'?[...group.include,...additionalFoundationFiles]:group.include,fileParallelism:false,maxWorkers:1,testTimeout:600000,hookTimeout:30000,env:process.env.FUEL_TEST_DATABASE_URL?{FUEL_TEST_DATABASE_URL:communicationFixtureUrl(process.env.FUEL_TEST_DATABASE_URL,group.prefix)}:{}}}));
 }
-export default defineConfig({test:{fileParallelism:false,passWithNoTests:false,projects:employeeMobileProjects()}});
+export default projectConfig('employee-mobile-communications', defineConfig({test:{fileParallelism:false,passWithNoTests:false,projects:employeeMobileProjects()}}));

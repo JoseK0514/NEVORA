@@ -23,7 +23,7 @@ Jose resumed this work on Nov 15 after the foundation checkpoint `2d082042e`. Co
 | Profile/messages | Own profile adds email/phone. Notification snapshots add workplace timeZone. Currently authorized list items carry eventType, outcome, names and count where available, plus factual event titles and existing date subject. Private reasons and payroll amounts remain excluded. Push privacy copy is unchanged pending language scope. |
 | Billing | Company status adds workplace timeZone. Central status already gets the zone from current installation facts and now exposes subscriptionStatus. No optimistic checkout-completed assertion is inferred from a return URL. Shell nav context adds billingEnabled. |
 | Kiosk | New setup-only refusal `NEW_TABLET_SETUP_PAUSED` (402), distinct from setup misconfiguration. Existing enrolled tablet reconciliation runs before this refusal. |
-| Import | Single-company routes return `ROSTER_IMPORT_NOT_ENABLED` (404). Preview adds positions by id/name and capacity (activeEmployees, employeeLimit, remaining, importAdds); null limit is unconfigured, not unlimited. Canonical validation retains its outer code with underlyingCode/underlyingMessage in params. Server write limits remain authoritative. |
+| Import | Single-company routes return `ROSTER_IMPORT_NOT_ENABLED` (404). Preview adds positions by id/name and capacity (activeEmployees (excluding Owners), employeeLimit, remaining, importAdds); the limit is the currently installed database capacity; null is unconfigured, not unlimited. Canonical validation retains its outer code with underlyingCode/underlyingMessage in params. Server write limits remain authoritative. |
 | Period close | Plain failure sentences retain status, same-operation retry and existing Owner-only exclusion rules. `/app/pay` is no longer a commerce recovery exemption. |
 
 ## Operator password and authentication
@@ -35,3 +35,13 @@ Claude's pending keep-ID cookie, session-end return, restricted page and Accept-
 ## Verification and next gate
 
 Implementation and verification are in progress; this document is a contract, not a release certificate. Retained RED/GREEN, SQL and browser logs are under `.superpowers/sdd/2026-11-15-external-payroll-statements/`. CTO direction is additive contracts and explicit calculation policy; CISO direction is no operational session before required replacement and current scoped authority at every protected boundary. Product scope is imported statements; program/release gate is combined immutable source, source-bound manuals and development qualification. Hosted settings, log retention/destination, SMTP delivery and sandbox billing traversal must be verified separately without activating customers or real effects.
+
+Nov 15 source gate update: Jose confirmed there is no reviewed UI commit yet. `ce4de4bc` is only the baseline; Round 1 / Phase 1 / Phase 2 are uncommitted. Hold combined integration until Claude provides the exact reviewed and pushed collaboration SHA. Continue independent backend qualification. No development, main or production push has been performed by this batch.
+
+Billing final refusals now carry `error.operationState='refused'` only when replaying a durably recorded preflight refusal with no unresolved issued stage. The central client can retire that held intent. An arbitrary 4xx, 409 conflict, outage or uncertain provider response retains the original key/body; no automatic financial retry or new key is introduced.
+
+## Lifecycle notification backend
+
+The company Owner status read now includes a stable `notice` for the seven-day/one-day trial windows, failed renewal/grace and restricted access, with deadline and `/app/billing` destination. The existing finite presentation lifetime still applies. Claude owns rendering this on Owner Home and its notification surface.
+
+Commerce queue invocations schedule durable seven-day/one-day trial and failed-renewal mail jobs using the existing encrypted outbox, unique business/lifecycle keys, business locks and worker leases. Workplace-ready mail is enqueued atomically only at an actual readiness transition, never backfilled for existing workplaces. Delivery resolves the current verified billing contact and rechecks the current lifecycle; paid/changed/expired conditions retire obsolete notices. SMTP retries retain the outbox job and a stable Message-ID; SMTP is at-least-once, so an uncertain provider acknowledgement can still duplicate delivery. Hosted mail remains disabled/unverified; owned tests capture messages and never contact real recipients.

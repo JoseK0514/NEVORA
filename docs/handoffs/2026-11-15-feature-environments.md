@@ -22,6 +22,6 @@ The example is checked by `src/lib/feature-flags.test.ts`. It does not describe 
 
 `.env.example` explicitly closes onboarding admission and leaves commerce origins blank. The registry preserves current admission defaults in code; a configuration example does not silently change legacy runtime behavior. The legacy renderer flag remains documented until Claude's reviewed UI integration establishes its removal. Historical Oct 30 evidence is unchanged.
 
-Payroll calculation mode is a separate approved-scope implementation item: externally calculated amounts must be enforced at service, worker and capability boundaries before statements-only acceptance. Feature enablement must not accidentally reactivate native calculations because native database tables exist.
+Payroll calculation mode is now enforced locally at service, worker, native capture/financial-write and capability boundaries. The checked example is `external`; absent or invalid modes select external. Hosted calculation mode remains unobserved. Feature enablement must not accidentally reactivate native calculations because native database tables exist.
 
 Before development acceptance, verify the current flag matrix, delivery transport, exact combined UI/backend source, CI and hosted behavior. Promotion to main/production still requires Jose's approval. No feature activation, real email or paid call was made by these tests.

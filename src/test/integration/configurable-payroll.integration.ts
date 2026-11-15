@@ -1495,3 +1495,14 @@ it("history extraction returns bounded rows and explicit unknown counts on overf
     returnedCount: 0,
   });
 });
+
+it('imports and publishes exact external statements for a 2027 payday even with native tables present',async()=>{
+ await f.q(await readFile('db/migrations/0031_native_payroll.sql','utf8'));
+ const seeded=await seedPayrollFixture(f.db.executor,{published:true,payday:'2027-01-01'});
+ const run=(await runs(seeded.proof,f.db.executor)).runs.find(r=>r.id===seeded.runId)!;
+ expect(run).toMatchObject({sourceAuthority:'PROVIDER_IMPORT',status:'APPROVED',payday:'2027-01-01',totals:{grossMinor:'100000',deductionsMinor:'12340',netMinor:'87660'}});expect(run.nativeCalculation).toBeUndefined();
+ expect(await f.q('SELECT count(*)::int n FROM native_payroll_ledger')).toEqual([{n:0}]);
+ const employee={employee:{...seeded.proof.employee,id:seeded.ids.a,role:'EMPLOYEE' as const},sessionTokenHash:createHash('sha256').update(randomUUID()).digest('hex')};
+ await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,clock_timestamp()+interval '1 day')",[employee.sessionTokenHash,seeded.ids.a]);
+ const own=await statements(employee,f.db.executor);expect(own.statements).toHaveLength(1);expect((await document(employee,own.statements[0].id,f.db.executor)).bytes.subarray(0,5).toString()).toBe('%PDF-');
+});

@@ -34,6 +34,7 @@ export async function seedNativeOverlapFixture(ex: SqlExecutor) {
     const owner = actors.owner.proof;
     for (const id of employees) await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,'Fictional','Overlap worker','555-NQ2','EMPLOYEE','loc-1')", [id]);
     await q("INSERT INTO employee_location_eligibility(employee_id,location_id) SELECT id,'loc-1' FROM employees WHERE primary_location_id='loc-1'");
+    await q(await readFile('db/migrations/0032_company_access_invitations.sql','utf8'));
     await saveSettings(owner, { action: 'SAVE_SETTINGS', operationId: randomUUID(), expectedRevision: 0, effectiveFrom: '2026-01-01', reason: 'Fictional overlap contract', preferences: { companyName: 'Fictional overlap company', language: 'en', currency: 'USD', schedule: { frequency: 'WEEKLY', anchorDate: overlapFirstPeriod.startDate, paydayOffsetDays: 2 }, rules: [], automation: { prepare: true, publish: false, reminders: false, reminderLeadDays: [] }, bankProfile: null } }, ex);
     for (const name of ['full', 'partial', 'revoked'] as const) {
         await saveNativeProfile(owner, { action: 'SET_MANAGER_SCOPE', operationId: randomUUID(), reason: 'Fictional finite scope', expectedRevision: 0, employeeId: actors[name].proof.employee.id, review: true, approve: true, locationIds: name === 'partial' ? ['loc-1'] : ['loc-1', 'loc-2'] }, ex);

@@ -143,3 +143,15 @@ For guides, validate links/evidence, rebuild and verify PDFs with checked-in
 tooling. Never relabel older PDFs or hosted receipts. Keep secrets and private
 test content out of Git, logs and support records. See the
 [operations guide](operations.md) for deployment custody and incident boundaries.
+
+## Calculation policy and test selection
+
+Payroll availability and calculation policy are separate. New work defaults to
+`NEVORA_PAYROLL_CALCULATION_MODE=external`, even with native tables installed.
+`native_provisional` is an explicit operator/test opt-in, not customer approval.
+Preserve historical statements and receipts; Manager access administration stays
+available in external mode. See the [backend contract](../../handoffs/2026-11-15-inspection-backend-remaining.md).
+
+The [test inventory](../../handoffs/2026-11-15-test-projects.md) names every test
+configuration. `npm test` runs the unit project. Use existing owned runners for
+SQL/browser projects; their admission and cleanup are still mandatory.

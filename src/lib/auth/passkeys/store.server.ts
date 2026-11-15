@@ -19,7 +19,7 @@ export type StoredCredential = ReviewedLoginCredential & { id: string; employeeI
 
 function assertion(proof: SessionMutationProof) {
   return s(`SELECT (CASE WHEN EXISTS(SELECT 1 FROM employee_sessions ss JOIN employees e ON e.id=ss.employee_id
-    WHERE ss.token_hash=$1 AND e.id=$2 AND e.active AND ss.expires_at>clock_timestamp())
+    WHERE ss.token_hash=$1 AND e.id=$2 AND e.active AND ss.expires_at>clock_timestamp() AND NOT EXISTS(SELECT 1 FROM employee_credentials c WHERE c.employee_id=e.id AND c.must_change_password))
     THEN '1' ELSE 'passkey_not_found' END)::integer`, [proof.sessionTokenHash, proof.employee.id]);
 }
 /** Use the shared employee -> credential -> session lock order, then check the

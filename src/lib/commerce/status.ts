@@ -10,6 +10,7 @@ export const commerceReasons = [
 ] as const;
 export type CommerceReason = (typeof commerceReasons)[number];
 export type CommerceStatus = {
+  timeZone?:string|null;
   state: "trial" | "paid" | "grace" | "restricted";
   operational: boolean;
   trialEndsAt: string | null;
@@ -53,7 +54,9 @@ export function parseCommerceStatus(value: unknown): CommerceStatus {
     v.export !== true
   )
     throw Error("invalid_commerce_status");
+  if(v.timeZone!==undefined&&v.timeZone!==null){if(typeof v.timeZone!=='string'||v.timeZone.length>100)throw Error('invalid_commerce_status');new Intl.DateTimeFormat('en',{timeZone:v.timeZone});}
   return {
+    ...(v.timeZone===undefined?{}:{timeZone:v.timeZone as string|null}),
     state: v.state as CommerceStatus["state"],
     operational: v.operational,
     trialEndsAt: date(v.trialEndsAt),

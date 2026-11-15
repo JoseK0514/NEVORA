@@ -1,3 +1,4 @@
+import {projectConfig} from './vitest.shared.mts';
 import {defineConfig} from 'vitest/config';
 import {employeeMobileProjects} from './vitest.employee-mobile-communications.config.mts';
 const projects=employeeMobileProjects([
@@ -15,4 +16,4 @@ const projects=employeeMobileProjects([
  'src/test/integration/passkeys.integration.ts',
 ]);
 projects.find(project=>project.test.name==='canonical-notifications')!.test.include.push('src/test/integration/notifications.integration.ts');
-export default defineConfig({test:{fileParallelism:false,passWithNoTests:false,projects}});
+export default projectConfig('employee-mobile-device-alerts', defineConfig({test:{fileParallelism:false,passWithNoTests:false,projects}}));

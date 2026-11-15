@@ -47,7 +47,7 @@ const authority = () => ({
 });
 const request = (headers: HeadersInit = {}) =>
   new Request("https://company.example.test/api/commerce/status", { headers });
-function expectPresentation(value:Record<string,unknown>){const {observedAt,validForMs,...status}=value;expect(status).toEqual({...presentation(),timeZone:'America/Puerto_Rico'});expect(typeof observedAt).toBe('string');expect(new Date(String(observedAt)).toISOString()).toBe(observedAt);expect(validForMs).toBeGreaterThan(0);expect(validForMs).toBeLessThanOrEqual(15000);}
+function expectPresentation(value:Record<string,unknown>){const {observedAt,validForMs,notice,...status}=value;expect(notice).toMatchObject({kind:'PAYMENT_FAILED',href:'/app/billing'});expect(status).toEqual({...presentation(),timeZone:'America/Puerto_Rico'});expect(typeof observedAt).toBe('string');expect(new Date(String(observedAt)).toISOString()).toBe(observedAt);expect(validForMs).toBeGreaterThan(0);expect(validForMs).toBeLessThanOrEqual(15000);}
 beforeEach(() => {
   vi.stubEnv("NEVORA_COMMERCE_ENABLED", "true");
   vi.stubEnv("NEVORA_COMMERCE_API_ORIGIN", "https://billing.example.test");

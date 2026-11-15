@@ -1,3 +1,4 @@
+import {enqueueWorkplaceReady} from './lifecycle-mail';
 import {parseBillingOwner,type BillingOwner,type OwnerAuthorityCheck} from "./owner-authority";
 import {enrollmentIdentity,type WorkspaceEnrollment} from "./workspace-enrollment";
 import { createHmac, randomUUID } from "node:crypto";
@@ -91,6 +92,7 @@ export class CommerceStore {
       await client.query("INSERT INTO commerce.accounts(id,email,profile,verified_at,enrollment_source) VALUES($1,$2,$3,$4,'onboarding')",[input.workspaceId,input.verifiedEmail,{email:input.verifiedEmail,businessName:input.businessName,ownerEmployeeId:input.ownerEmployeeId},input.provisionedAt]);
       await client.query("INSERT INTO commerce.businesses(id,state,employee_count,trial_started_at,trial_ends_at) VALUES($1,'ready',1,$2::timestamptz,$2::timestamptz+interval '30 days')",[input.workspaceId,input.provisionedAt]);
       await client.query('INSERT INTO commerce.external_installations(business_id,id,origin,environment,incarnation,provider_project_id,manifest_hash,identity_hash,instance_secret_hash,instance_secret,worker_secret_hash) VALUES($1::uuid,$1::text,$2,$3,$4::bigint,$5,$6,$7,$8,$9,$10)',[input.workspaceId,input.origin,input.environment,input.incarnation,input.providerProjectId,input.manifestHash,identity,digest(input.instanceSecret),seal(input.instanceSecret,this.key,'instance:'+input.workspaceId),digest(input.workerSecret)]);
+      await enqueueWorkplaceReady(this,client,input.workspaceId,Date.parse(input.provisionedAt));
       await client.query("INSERT INTO commerce.audit(business_id,event) VALUES($1,'onboarding_enrolled')",[input.workspaceId]);
     });
   }

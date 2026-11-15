@@ -1,4 +1,3 @@
-import {commerceEnabled,readCommerceAuthority} from '../commerce/access';
 import 'server-only';
 import {createHash} from 'node:crypto';
 import type {SessionMutationProof} from '../shift-changes/types';
@@ -45,9 +44,9 @@ export async function previewOnboardingRoster(proof:SessionMutationProof,binding
    if(p.employee.positionIds.some(id=>!positions.has(id)))issue('positionIds','POSITION_UNAVAILABLE');
    if(p.initialManagerScope?.mode==='LOCATIONS'&&p.initialManagerScope.locationIds.some(id=>!locations.has(id)))issue('initialManagerScope','LOCATION_UNAVAILABLE');
   }
-  const activeEmployees=c.people.filter(p=>p.active).length,employeeLimit=commerceEnabled()?(await readCommerceAuthority()).employeeLimit??null:null;
-  const current=await readOnboardingSetup(proof,binding,ex);if(current.snapshot.version!==setup.snapshot.version)return {state:'conflict',reason:'version_changed'};
-  return {positions:c.positions.filter(p=>p.active).map(p=>({id:p.id,name:p.name})),capacity:{activeEmployees,employeeLimit,remaining:employeeLimit===null?null:Math.max(0,employeeLimit-activeEmployees),importAdds:parsed.rows.filter(r=>r.person!==null).length},...parsed,valid:parsed.rows.every(r=>!r.fieldErrors.length),schemaVersion:1,expectedVersion:setup.snapshot.version};
+  const activeEmployees=c.people.filter(p=>p.active&&p.role!=='OWNER').length,employeeLimit=c.employeeLimit??null;
+  const current=await readOnboardingSetup(proof,binding,ex);if(current.snapshot.version!==setup.snapshot.version||current.configuration.employeeLimit!==c.employeeLimit)return {state:'conflict',reason:'version_changed'};
+  return {positions:c.positions.filter(p=>p.active).map(p=>({id:p.id,name:p.name})),capacity:{activeEmployees,employeeLimit,remaining:employeeLimit===null?null:Math.max(0,employeeLimit-activeEmployees),importAdds:parsed.rows.filter(r=>r.person!==null&&!r.fieldErrors.length).length},...parsed,valid:parsed.rows.every(r=>!r.fieldErrors.length),schemaVersion:1,expectedVersion:setup.snapshot.version};
  }catch{return {state:'unavailable',reasonCode:'ACCESS_OR_SOURCE_UNAVAILABLE'};}
 }
 export async function saveOnboardingRoster(proof:SessionMutationProof,binding:WorkspaceBinding,value:unknown,ex?:SqlExecutor):Promise<RosterResult>{

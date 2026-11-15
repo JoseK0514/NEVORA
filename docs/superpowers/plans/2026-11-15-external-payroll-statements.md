@@ -24,26 +24,26 @@
 
 **Interface:** `readPayrollCalculationMode(env: Readonly<Record<string,string|undefined>>): 'external'|'native_provisional'`. Only exact NEVORA_PAYROLL_CALCULATION_MODE=native_provisional permits native calculation; missing/invalid values select external. NEVORA_PAYROLL_ENABLED stays independent. Native availability requires both mode and schema.
 
-- [ ] Add failing pure cases for absent/invalid/external/native_provisional values. Add owned database cases with native tables installed: default PREPARE creates a PROVIDER_IMPORT draft awaiting amounts, without native capture or native YTD writes.
-- [ ] Add the same assertion for worker PREPARE, retaining lease, same-period idempotency/races and receipts. Run red, add the checks, rerun green.
-- [ ] Pin only intentionally native fixtures to native_provisional with cleanup between tests. Keep every native test/assertion. Document external mode without activating a host.
+- [x] Add failing pure cases for absent/invalid/external/native_provisional values. Add owned database cases with native tables installed: default PREPARE creates a PROVIDER_IMPORT draft awaiting amounts, without native capture or native YTD writes.
+- [x] Add the same assertion for worker PREPARE, retaining lease, same-period idempotency/races and receipts. Run red, add the checks, rerun green.
+- [x] Pin only intentionally native fixtures to native_provisional with cleanup between tests. Keep every native test/assertion. Document external mode without activating a host.
 
 ## Task 2: Native mutation guards with preserved history/authority
 
 **Files:** Modify `src/lib/payroll/service.ts`, `native/source.server.ts`, `native/profiles.server.ts`; extend existing native/configurable-payroll SQL tests; document the refusal code for Claude's wording map.
 
-- [ ] Add failing owned cases: external mode refuses RECALCULATE/CORRECT_NATIVE and approval of an unapproved native run; direct native capture cannot bypass mode; native tax/wage/opening-YTD writes cannot reactivate calculations. Recheck normal authentication and scope before mutation.
-- [ ] Preserve saved actor-scoped receipt recovery/replay after a mode change and Manager scope administration used by imported payroll. Historical published native statements retain identical bytes and current employee/management access rules.
-- [ ] Implement bounded guards; run history, scope, ledger, correction, receipt and worker suites. Do not delete the engine, rewrite approved runs, invent paid states or suppress pending-job failures.
+- [x] Add failing owned cases: external mode refuses RECALCULATE/CORRECT_NATIVE and approval of an unapproved native run; direct native capture cannot bypass mode; native tax/wage/opening-YTD writes cannot reactivate calculations. Recheck normal authentication and scope before mutation.
+- [x] Preserve saved actor-scoped receipt recovery/replay after a mode change and Manager scope administration used by imported payroll. Historical published native statements retain identical bytes and current employee/management access rules.
+- [x] Implement bounded guards; run history, scope, ledger, correction, receipt and worker suites. Do not delete the engine, rewrite approved runs, invent paid states or suppress pending-job failures.
 
 ## Task 3: External statement journey and UI contract
 
 **Files:** Extend `src/test/integration/configurable-payroll.integration.ts`, `payroll-fixture.ts`, relevant payroll browser harness and the contract handoff. Documents remain in `src/lib/payroll/documents.ts` under version/immutability rules.
 
-- [ ] Exercise approved hours → export → external amount import → review → approve → PDF → explicit/configured publication → own employee download, using fictional people and no external money/mail/tax effects.
-- [ ] Pin exact USD minor units/source references. Reject wrong periods/paydays, missing/duplicate/foreign employees, noncanonical money, unreconciled deductions/net and changed-source approval. Preserve concurrent tabs, replay and lost responses.
-- [ ] Prove a 2027 imported period never invokes native 2026 rules. Corrections are separately reviewed replacements; show differences in approved amounts without asserting money was paid or settled.
-- [ ] Hand Claude exact capabilities/refusals, import/review/share actions and employer responsibilities. Do not imply arbitrary CSV/PDF/provider compatibility beyond structured import.
+- [x] Exercise approved hours → export → external amount import → review → approve → PDF → explicit/configured publication → own employee download, using fictional people and no external money/mail/tax effects.
+- [x] Pin exact USD minor units/source references. Reject wrong periods/paydays, missing/duplicate/foreign employees, noncanonical money, unreconciled deductions/net and changed-source approval. Preserve concurrent tabs, replay and lost responses.
+- [x] Prove a 2027 imported payday for a closed period never invokes native 2026 rules. Corrections are separately reviewed replacements; show differences in approved amounts without asserting money was paid or settled.
+- [x] Hand Claude exact capabilities/refusals, import/review/share actions and employer responsibilities. Do not imply arbitrary CSV/PDF/provider compatibility beyond structured import.
 - [ ] Run focused/full required tests, owned payroll suites, typecheck/lint, browser/mobile/keyboard/failure states and exact combined-development qualification. Rebuild source-qualified manuals after application commits. Report code/local/hosted/copy/activation states separately.
 
-This plan is prepared, not implemented. The foundation evidence does not establish import-only behavior yet.
+The independent implementation is in qualification. Local SQL proves external preparation/import/approval/publication/download, native refusals, receipt/history preservation and a 2027 payday. Combined browser/manual/QA-driver acceptance remains held until Claude supplies the exact reviewed and pushed collaboration SHA, per Jose’s Nov 15 clarification. No production or customer activation is authorized.

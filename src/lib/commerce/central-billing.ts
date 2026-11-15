@@ -68,6 +68,7 @@ export function createCentralBillingClient(origin:string|null,transport:Transpor
    const result=await call(original.path,'POST',original.body,true,controller.signal,original.key);
    if(disposed||generation!==epoch||controller.signal.aborted||result.status===0)return {kind:'unknown'};
    if([401,403].includes(result.status)){clear();return {kind:'denied'};}
+   if(object(result.data)&&object(result.data.error)&&result.data.error.operationState==='refused'&&typeof result.data.error.code==='string'){intent=null;return {kind:'refused'};}
    if(result.status<200||result.status>=300)return {kind:result.status===409?'conflict':'refused'};
    try{return {kind:'navigate',url:stripeBillingDestination(result.data)};}catch{return {kind:'unknown'};}
   }finally{signal?.removeEventListener('abort',abort);if(financial===controller)financial=null;}

@@ -51,7 +51,9 @@
     "test:commerce:owned": "node scripts/commerce-postgres.mjs",
     "operations:worker": "node --conditions=react-server --import ./scripts/node-server-context.mjs --import tsx scripts/workforce-operations.mts",
     "format:check": "node scripts/format-critical.mjs --check",
-    "format:write": "node scripts/format-critical.mjs --write"
+    "format:write": "node scripts/format-critical.mjs --write",
+    "check:test-projects": "node scripts/check-vitest-projects.mjs",
+    "test:test-projects": "node --test scripts/vitest-projects.check.mjs"
   },
   "dependencies": {
     "@gsap/react": "2.1.2",

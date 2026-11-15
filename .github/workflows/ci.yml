@@ -54,6 +54,8 @@ jobs:
         run: |
           npm run test:notifications:qa
           npm run test:foundation:qa
+          npm run check:test-projects
+          npm run test:test-projects
           npm run test:release-engineering
       - name: Type check
         # The cold compiler exhausted the hosted runner's ~2 GiB default heap.

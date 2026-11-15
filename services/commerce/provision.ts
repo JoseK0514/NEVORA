@@ -1,3 +1,4 @@
+import {enqueueWorkplaceReady} from './lifecycle-mail';
 import { Client } from "pg";
 import {
   assertEmptyDatabase,
@@ -188,6 +189,8 @@ export async function provisionBusiness(
         "UPDATE commerce.businesses SET state='ready',trial_started_at=COALESCE(trial_started_at,$2),trial_ends_at=COALESCE(trial_ends_at,$3) WHERE id=$1",
         [businessId, new Date(now), new Date(now + 30 * DAY)],
       );
+      const current=await store.business(businessId,client);
+      if(current.trialStart!==null)await enqueueWorkplaceReady(store,client,businessId,current.trialStart);
       await client.query(
         "UPDATE commerce.accounts SET password_hash=NULL WHERE id=$1",
         [businessId],
