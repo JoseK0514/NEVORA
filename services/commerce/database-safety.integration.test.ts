@@ -17,14 +17,14 @@ describe.skipIf(!enabled)("dedicated database mutation guards", () => {
   afterAll(async () => {
     await admin?.end();
   });
-  async function fixture(run: (pool: Pool) => Promise<void>) {
+  async function fixture(run: (pool: Pool) => Promise<void>, empty=false) {
     const name = `commerce_test_${randomUUID().replaceAll("-", "")}`,
       url = new URL(process.env.NEVORA_COMMERCE_TEST_URL!);
     await admin.query(`CREATE DATABASE "${name}"`);
     url.pathname = `/${name}`;
     const pool = new Pool({ connectionString: url.href });
     try {
-      await pool.query(
+      if(!empty)await pool.query(
         "CREATE SCHEMA another_app;CREATE TABLE another_app.records(value integer);INSERT INTO another_app.records VALUES(7)",
       );
       await run(pool);
@@ -84,4 +84,11 @@ describe.skipIf(!enabled)("dedicated database mutation guards", () => {
   it("refuses a maintenance database even when its public schema is empty", async () => {
     await expect(installCatalog(admin)).rejects.toThrow("maintenance");
   });
+  it.each(['OPERATOR','SELF_SERVICE'] as const)('identifies %s credentials explicitly when installing a fresh company',origin=>fixture(async pool=>{
+    const client=await pool.connect();try{
+      await setupCompanyWithCredential(client,{name:'Owned fresh company',timeZone:'America/Puerto_Rico',locationName:'Main',locationShortName:'Main',locationKey:'owned-main',owner:{id:'OWNED-OWNER',firstName:'Fictional',lastName:'Owner',phone:'7875550101',email:'owner@example.invalid'}},await hashPassword('Fictional chosen initial password'),undefined,origin);
+      expect((await client.query("SELECT must_change_password FROM employee_credentials WHERE employee_id='OWNED-OWNER'")).rows).toEqual([{must_change_password:origin==='OPERATOR'}]);
+    }finally{client.release();}
+  },true));
+
 });

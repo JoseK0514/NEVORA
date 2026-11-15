@@ -27,9 +27,20 @@ export function lifecycleMailCopy(b:Business,template:LifecycleTemplate,anchor:n
 export async function enqueueWorkplaceReady(store:CommerceStore,client:PoolClient,id:string,anchor:number){
  await store.enqueue(client,'mail',lifecycleMailKey(id,'workplace_ready',anchor),{businessId:id,template:'workplace_ready',anchor:String(anchor)});
 }
+/** Enrollment records a request only. The privileged queue worker owns its
+ * readiness check; the enrollment principal never receives queue permission. */
+export function onboardingReadyRequested(b:Business,anchor:number){
+ const marker=b.profile.initialOwnerReadyNotice;
+ return b.enrollmentSource==='onboarding'&&b.state==='ready'&&Number.isSafeInteger(anchor)&&b.trialStart===anchor&&!!marker&&marker.incarnation===b.incarnation&&Date.parse(marker.requestedAt)===anchor;
+}
+export async function scheduleOwnerReadinessChecks(store:CommerceStore){
+ const rows=await store.pool.query<{id:string;anchor:string}>(`SELECT b.id::text,FLOOR(EXTRACT(epoch FROM b.trial_started_at)*1000)::bigint::text AS anchor FROM commerce.businesses b JOIN commerce.accounts a ON a.id=b.id WHERE b.state='ready' AND b.trial_started_at IS NOT NULL AND a.enrollment_source='onboarding' AND a.profile->'initialOwnerReadyNotice' IS NOT NULL AND NOT EXISTS(SELECT 1 FROM commerce.jobs j WHERE j.dedupe_key='ready-check:'||b.id::text||':'||FLOOR(EXTRACT(epoch FROM b.trial_started_at)*1000)::bigint::text) ORDER BY b.id LIMIT 100`);
+ for(const row of rows.rows)await store.withBusinessLock(row.id,async(client,b)=>{if(onboardingReadyRequested(b,Number(row.anchor)))await store.enqueue(client,'mail',`ready-check:${b.id}:${row.anchor}`,{businessId:b.id,template:'workplace_ready_check',anchor:row.anchor});});
+}
 /** Bounded candidate scan excludes existing receipts before LIMIT. Concurrent
  * workers share the existing unique job key, business locks and job leases. */
 export async function scheduleLifecycleMail(store:CommerceStore,now=Date.now()){
+ await scheduleOwnerReadinessChecks(store);
  const candidates=await store.pool.query<{id:string;template:LifecycleTemplate;anchor:string}>(`WITH due AS (
   SELECT id,CASE WHEN trial_ends_at<=$1::timestamptz+interval '1 day' THEN 'trial_1d' ELSE 'trial_7d' END AS template,trial_ends_at AS anchor
   FROM commerce.businesses WHERE state='ready' AND trial_ends_at>$1::timestamptz AND trial_ends_at<=$1::timestamptz+interval '7 days' AND (paid_through IS NULL OR paid_through<=$1::timestamptz)

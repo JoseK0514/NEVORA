@@ -29,7 +29,8 @@
         "src/lib/payroll/documents.ts",
         "src/lib/payroll/calculation-mode.ts",
         "src/lib/auth/recovery.server.ts",
-        "docs/handoffs/2026-11-15-inspection-backend-remaining.md"
+        "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
+        "src/lib/payroll/source-coverage.ts"
       ]
     },
     {
@@ -50,7 +51,8 @@
         "src/app/app/my-time/page.tsx",
         "src/app/app/ai-manager/page.tsx",
         "src/components/management-close-form.tsx",
-        "src/components/delegated-time-correction-form.tsx"
+        "src/components/delegated-time-correction-form.tsx",
+        "src/lib/payroll/source-coverage.ts"
       ]
     },
     {
@@ -130,7 +132,11 @@
         "docs/handoffs/2026-11-14-owner-simplicity.md",
         "src/lib/payroll/calculation-mode.ts",
         "src/lib/auth/recovery.server.ts",
-        "docs/handoffs/2026-11-15-inspection-backend-remaining.md"
+        "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
+        "src/lib/payroll/source-coverage.ts",
+        "src/lib/commerce/installation-facts.server.ts",
+        "services/commerce/lifecycle-mail.ts",
+        "services/commerce/billing-operations.ts"
       ]
     },
     {
@@ -162,7 +168,10 @@
         "docs/handoffs/2026-11-11-r16-subscription-key-continuity.md",
         "src/lib/payroll/calculation-mode.ts",
         "src/lib/auth/recovery.server.ts",
-        "docs/handoffs/2026-11-15-inspection-backend-remaining.md"
+        "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
+        "services/commerce/lifecycle-mail.ts",
+        "services/commerce/worker.ts",
+        "src/lib/commerce/installation-facts.server.ts"
       ]
     }
   ]

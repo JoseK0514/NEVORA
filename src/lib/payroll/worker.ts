@@ -1,3 +1,4 @@
+import {providerRunCoverage} from './source-coverage';
 import {assertWorkerWorkspace} from '../workspace-routing/worker.server';
 import {readPayrollCalculationMode} from './calculation-mode';
 /**
@@ -73,7 +74,8 @@ export async function processJob(job: ClaimedJob, ex: SqlExecutor = neonNotifica
             const [existing] = await ex.query(q("SELECT id FROM payroll_runs WHERE workspace_id=$1 AND start_date=$2::date AND end_date=$3::date AND correction_of IS NULL", job.workspace_id, period.startDate, period.endDate));
             if (!existing) {
                 const { nativeSchemaAvailable, captureNativePayroll, exactReadFence } = await import("./native/source.server");
-                if (readPayrollCalculationMode()==='native_provisional' && await nativeSchemaAvailable(ex)) {
+                {
+                    const calculateNative=readPayrollCalculationMode()==='native_provisional' && await nativeSchemaAvailable(ex);
                     const active = q(`SELECT (CASE WHEN ${ws}=$1 THEN '1' ELSE 'WORKSPACE_UNAVAILABLE' END)::integer`, job.workspace_id);
                     const values = [job.workspace_id, true, "native-payroll-worker", period.startDate, period.endDate];
                     const read = q(`SELECT $1::text AS id,${sourceSql} AS source,clock_timestamp()::text AS observed WHERE ${ws}=$1`, ...values);
@@ -87,7 +89,7 @@ export async function processJob(job: ClaimedJob, ex: SqlExecutor = neonNotifica
                         throw Error("WORKSPACE_UNAVAILABLE");
                     const progress = async () => { const renewed = await ex.query(q("UPDATE payroll_jobs SET lease_until=clock_timestamp()+interval '60 seconds' WHERE id=$1::uuid AND lease_token=$2::uuid AND status='RUNNING' AND lease_until>clock_timestamp() RETURNING id", job.id, job.lease_token)); if (!renewed.length)
                         throw Error("PAYROLL_LEASE_LOST"); };
-                    const captured = await captureNativePayroll(seed, r, ex, [...fence(job), active], r.id, progress);
+                    const captured = calculateNative?await captureNativePayroll(seed, r, ex, [...fence(job), active], r.id, progress):{run:{...r,coverage:providerRunCoverage(seed.source,seed.observed,period)},snapshot:null,guards:[]};
                     r = captured.run;
                     snapshot = captured.snapshot;
                     sourceGuards = [active, exactReadFence(q(`SELECT ${sourceSql} AS source WHERE ${ws}=$1`, ...values), [{ source: seed.source }]), ...captured.guards];

@@ -170,6 +170,7 @@ export async function provisionBusiness(
           const environment=['127.0.0.1','localhost','[::1]'].includes(new URL(databaseUrl).hostname)?'development':'production';
           await client.query("INSERT INTO public.nevora_commerce_installation(singleton,workspace_id,business_id,installation_id,environment,incarnation,canonical_origin,instance_secret_hash) VALUES(true,$1,$2,$3,$4,1,$5,$6)",[ids.workspaceId,businessId,slot.id,environment,slot.origin,slot.instance_secret_hash]);
         },
+        'SELF_SERVICE',
       );
     }
     const secret = unseal(

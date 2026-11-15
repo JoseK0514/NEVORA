@@ -101,3 +101,23 @@ it('initial replacement proofs bind the reviewed password and lifecycle and reti
  expect((await issueInitialPasswordReplacement('c34-a',reviewed,f.db.executor)).state).toBe('unavailable');
  expect(await resetPasswordWithProof(second.proof,'Fictional replacement password',f.db.executor)).toEqual({state:'invalid'});
 });
+it.each(['EMAIL','ASSISTED'] as const)('a legitimate %s recovery cannot keep an operator password or bypass required replacement',async method=>{
+ await f.q("UPDATE employee_credentials SET must_change_password=true WHERE employee_id='c34-a'");let token='';
+ if(method==='ASSISTED')token=(await issued()).proof;
+ else await requestPasswordRecovery('c34-a','avery@example.invalid',{send:async(_email,proof)=>{token=proof;}},f.db.executor);
+ expect(token).toMatch(/^[A-Za-z0-9_-]{43}$/);
+ expect(await resetPasswordWithProof(token,'Fictional previous password',f.db.executor)).toEqual({state:'invalid'});
+ expect(await f.q("SELECT must_change_password FROM employee_credentials WHERE employee_id='c34-a'")).toEqual([{must_change_password:true}]);
+ expect(await resetPasswordWithProof(token,'Fictional alternate replacement password',f.db.executor)).toEqual({state:'reset'});
+ expect(await f.q("SELECT must_change_password FROM employee_credentials WHERE employee_id='c34-a'")).toEqual([{must_change_password:false}]);
+});
+it('a replacement requirement changed after recovery pre-read cannot be cleared without comparing the current credential',async()=>{
+ const p=await issued();let changed=false;
+ const ex:import('../../lib/notifications/types').SqlExecutor={...f.db.executor,query:async<T>(statement:import('../../lib/notifications/types').SqlStatement)=>{
+  const result=await f.db.executor.query<T>(statement);
+  if(statement.text.startsWith('SELECT p.employee_id')&&!changed){changed=true;await f.q("UPDATE employee_credentials SET must_change_password=true WHERE employee_id='c34-a'");}
+  return result;
+ }};
+ expect(await resetPasswordWithProof(p.proof,'Fictional previous password',ex)).toEqual({state:'invalid'});expect(changed).toBe(true);
+ expect(await f.q("SELECT must_change_password FROM employee_credentials WHERE employee_id='c34-a'")).toEqual([{must_change_password:true}]);
+});

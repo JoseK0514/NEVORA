@@ -1,6 +1,6 @@
 # Nov 15 inspection backend intake
 
-Status: source verified; handoff accepted; Jose approved implementation in this chat on Nov 15. The first local backend batch is implemented; current evidence and remaining items are in [the validation record](2026-11-15-inspection-backend-validation.md).
+Status: historical intake and pre-implementation findings. Jose approved implementation in this chat on Nov 15. Foundation evidence is in [the validation record](2026-11-15-inspection-backend-validation.md); the resumed implementation and reconciled decisions are in [the remaining-work contract](2026-11-15-inspection-backend-remaining.md). Earlier open/actionable wording below describes intake, not current implementation status.
 
 ## Source custody
 
@@ -31,6 +31,14 @@ Verified in current development code:
 - Imported statements follow the existing `automation.publish` preference; a change to the product's default sharing policy needs a separate decision.
 
 ## Work register
+
+Reconciliation: the Nov 13 central `/pages/plans` billing destination is already
+chosen; existing Nov 14 Company/Locations Manager assignments are preserved.
+External calculation with NEVORA statements is approved. These are not pending
+questions. Spanish timing, email-less activation, offline/late punches and new
+attendance policy remain outside this approved backend batch. Jose confirmed
+that `ce4de4bc` is only the collaboration baseline: combined integration waits
+for Claude's exact reviewed and pushed SHA, not the dirty checkout.
 
 | Group | Incoming items | Disposition |
 |---|---|---|

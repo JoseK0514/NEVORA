@@ -152,6 +152,11 @@ Payroll availability and calculation policy are separate. New work defaults to
 Preserve historical statements and receipts; Manager access administration stays
 available in external mode. See the [backend contract](../../handoffs/2026-11-15-inspection-backend-remaining.md).
 
+Provider runs and their new documents retain factual location coverage from
+protected source reads, including retained time-entry history. Manager grants
+continue to apply to that coverage. Correction parents are authorized by exact
+ID even outside the latest-300 display window and rechecked before returning a delta.
+
 The [test inventory](../../handoffs/2026-11-15-test-projects.md) names every test
 configuration. `npm test` runs the unit project. Use existing owned runners for
 SQL/browser projects; their admission and cleanup are still mandatory.

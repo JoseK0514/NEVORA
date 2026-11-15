@@ -1,4 +1,3 @@
-import {enqueueWorkplaceReady} from './lifecycle-mail';
 import {parseBillingOwner,type BillingOwner,type OwnerAuthorityCheck} from "./owner-authority";
 import {enrollmentIdentity,type WorkspaceEnrollment} from "./workspace-enrollment";
 import { createHmac, randomUUID } from "node:crypto";
@@ -16,7 +15,7 @@ export type Business = {
   id: string;
   state: string;
   email: string;
-  profile: Partial<Omit<Signup, "password">> & { email: string; ownerEmployeeId?:string };
+  profile: Partial<Omit<Signup, "password">> & { email: string; ownerEmployeeId?:string;initialOwnerReadyNotice?:{incarnation:string;requestedAt:string} };
   trialEnd: number | null;
   trialStart: number | null;
   paidThrough: number | null;
@@ -89,10 +88,9 @@ export class CommerceStore {
       const old=await client.query('SELECT identity_hash FROM commerce.external_installations WHERE business_id=$1',[input.workspaceId]);
       if(old.rowCount){if(old.rowCount!==1||old.rows[0].identity_hash!==identity)throw new CommerceError('enrollment_identity_mismatch',503);return;}
       if((await client.query('SELECT id FROM commerce.accounts WHERE id=$1',[input.workspaceId])).rowCount)throw new CommerceError('enrollment_identity_mismatch',503);
-      await client.query("INSERT INTO commerce.accounts(id,email,profile,verified_at,enrollment_source) VALUES($1,$2,$3,$4,'onboarding')",[input.workspaceId,input.verifiedEmail,{email:input.verifiedEmail,businessName:input.businessName,ownerEmployeeId:input.ownerEmployeeId},input.provisionedAt]);
+      await client.query("INSERT INTO commerce.accounts(id,email,profile,verified_at,enrollment_source) VALUES($1,$2,$3,$4,'onboarding')",[input.workspaceId,input.verifiedEmail,{email:input.verifiedEmail,businessName:input.businessName,ownerEmployeeId:input.ownerEmployeeId,initialOwnerReadyNotice:{incarnation:input.incarnation,requestedAt:input.provisionedAt}},input.provisionedAt]);
       await client.query("INSERT INTO commerce.businesses(id,state,employee_count,trial_started_at,trial_ends_at) VALUES($1,'ready',1,$2::timestamptz,$2::timestamptz+interval '30 days')",[input.workspaceId,input.provisionedAt]);
       await client.query('INSERT INTO commerce.external_installations(business_id,id,origin,environment,incarnation,provider_project_id,manifest_hash,identity_hash,instance_secret_hash,instance_secret,worker_secret_hash) VALUES($1::uuid,$1::text,$2,$3,$4::bigint,$5,$6,$7,$8,$9,$10)',[input.workspaceId,input.origin,input.environment,input.incarnation,input.providerProjectId,input.manifestHash,identity,digest(input.instanceSecret),seal(input.instanceSecret,this.key,'instance:'+input.workspaceId),digest(input.workerSecret)]);
-      await enqueueWorkplaceReady(this,client,input.workspaceId,Date.parse(input.provisionedAt));
       await client.query("INSERT INTO commerce.audit(business_id,event) VALUES($1,'onboarding_enrolled')",[input.workspaceId]);
     });
   }

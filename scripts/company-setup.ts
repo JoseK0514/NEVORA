@@ -1,7 +1,7 @@
 import {parsePostgresUrl} from "../src/lib/postgres-url";
 import { randomUUID } from 'node:crypto';
 import type { Client } from 'pg';
-import {canonicalCompanyManifest,lockFreshCompany,installCompanyBase,insertOwnerProfile,installCompanyFinal} from '../src/lib/company-bootstrap/server';
+import {canonicalCompanyManifest,lockFreshCompany,installCompanyBase,insertOwnerProfile,installCompanyFinal,type OwnerPasswordOrigin} from '../src/lib/company-bootstrap/server';
 export {migrationBody} from '../src/lib/company-bootstrap/server';
 import { hashPassword } from '../src/lib/auth/password';
 import { normalizePhoneNumber } from '../src/lib/phone';
@@ -90,8 +90,8 @@ export function readSetupTarget(env: Environment): string {
   return value;
 }
 
-async function insertOwner(client: Client, owner: Omit<OwnerInput, "password">, passwordHash: string, primaryLocationId: string, eligibleLocationIds: string[]) {
-  return insertOwnerProfile(client,owner,primaryLocationId,eligibleLocationIds,{active:true,passwordHash});
+async function insertOwner(client: Client, owner: Omit<OwnerInput, "password">, passwordHash: string, primaryLocationId: string, eligibleLocationIds: string[], passwordOrigin:OwnerPasswordOrigin='OPERATOR') {
+  return insertOwnerProfile(client,owner,primaryLocationId,eligibleLocationIds,{active:true,passwordHash,passwordOrigin});
 }
 
 export async function bootstrapOwner(client: Client, owner: OwnerInput, locations: ReturnType<typeof readOwnerLocations>) {
@@ -134,7 +134,7 @@ export async function setupCompany(client: Client, input: CompanyInput) {
   return setupCompanyWithCredential(client,input,await hashPassword(input.owner.password));
 }
 export async function setupCompanyWithCredential(client: Client, input: CredentialCompanyInput, passwordHash: string,
-  afterInstall?: (client: Client, ids: { workspaceId: string; locationId: string }) => Promise<void>) {
+  afterInstall?: (client: Client, ids: { workspaceId: string; locationId: string }) => Promise<void>,passwordOrigin:OwnerPasswordOrigin='OPERATOR') {
   if (!/^scrypt\$[a-f0-9]{32}\$[a-f0-9]{128}$/i.test(passwordHash)) throw Error('Invalid owner credential hash.');
   const manifest=await canonicalCompanyManifest();
   const workspaceId = randomUUID(), locationId = randomUUID();
@@ -143,7 +143,7 @@ export async function setupCompanyWithCredential(client: Client, input: Credenti
     await lockFreshCompany(client);
     await assertEmptyDatabase(client);
     await installCompanyBase(client,manifest,{workspaceId,name:input.name,timeZone:input.timeZone,locationId,locationName:input.locationName,locationShortName:input.locationShortName,locationKey:input.locationKey});
-    await insertOwner(client, input.owner, passwordHash, locationId, [locationId]);
+    await insertOwner(client, input.owner, passwordHash, locationId, [locationId],passwordOrigin);
     // Immutable access adoption must bind the configured company and real employees.
     await installCompanyFinal(client,manifest);
     if (afterInstall) await afterInstall(client,{workspaceId,locationId});

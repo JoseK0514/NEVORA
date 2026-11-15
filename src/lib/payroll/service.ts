@@ -1,3 +1,4 @@
+import {providerRunCoverage} from './source-coverage';
 import {openPeriod} from './calendar';
 import {correctionDelta} from './correction-delta';
 import {readFeatureFlags} from '../feature-flags';
@@ -235,6 +236,9 @@ export async function runs(proof: SessionMutationProof, ex: SqlExecutor = neonNo
     const rows = await guarded<{
         payload: PayrollRun;
     }>(proof, "REVIEW", q(`SELECT c.payload FROM payroll_runs_current c WHERE c.workspace_id=${ws} AND ${payrollObjectScopeSql(proof, "(c.payload->'coverage')", "c.workspace_id")} ORDER BY payload->>'createdAt' DESC LIMIT 300`), ex);
+    const displayed=new Set(rows.map(r=>r.payload.id)),parentIds=[...new Set(rows.flatMap(r=>r.payload.correctionOf&&!displayed.has(r.payload.correctionOf)?[r.payload.correctionOf]:[]))];
+    const parents=parentIds.length?await guarded<{payload:PayrollRun}>(proof,'REVIEW',q(`SELECT c.payload FROM payroll_runs_current c WHERE c.workspace_id=${ws} AND c.run_id=ANY($1::uuid[]) AND ${payrollObjectScopeSql(proof,"(c.payload->'coverage')","c.workspace_id")}`,parentIds),ex):[];
+    const authorizedRuns=[...rows,...parents];
     const documents = await guarded<{
         id: string;
         run_id: string;
@@ -248,14 +252,14 @@ export async function runs(proof: SessionMutationProof, ex: SqlExecutor = neonNo
     const backlog = await readPayrollBacklog(proof, ex);
     const responseCapabilities = await capabilities(proof, ex);
     const currentPeriod=await currentPayrollPeriod(proof,ex);
-    await guarded(proof, "REVIEW", check(`(SELECT count(*) FROM payroll_runs_current current_run WHERE current_run.workspace_id=${ws} AND current_run.run_id=ANY($1::uuid[]) AND ${payrollObjectScopeSql(proof, "(current_run.payload->'coverage')", "current_run.workspace_id")})=cardinality($1::uuid[]) AND (SELECT count(*) FROM payroll_jobs final_job WHERE final_job.workspace_id=${ws} AND final_job.id=ANY($2::uuid[]) AND (${payrollObjectScopeSql(proof, "NULL::jsonb", ws, "review", true)} OR EXISTS(SELECT 1 FROM payroll_runs_current current_run WHERE current_run.workspace_id=final_job.workspace_id AND current_run.run_id=final_job.run_id AND ${payrollObjectScopeSql(proof, "(current_run.payload->'coverage')", "current_run.workspace_id")})))=cardinality($2::uuid[]) AND (SELECT count(*) FROM payroll_documents final_doc WHERE final_doc.workspace_id=${ws} AND final_doc.id=ANY($3::uuid[]) AND ${payrollObjectScopeSql(proof, "(final_doc.payload->'coverage')", "final_doc.workspace_id")} AND (final_doc.kind='EMPLOYEE_STATEMENT' OR ${payrollObjectScopeSql(proof, "NULL::jsonb", "final_doc.workspace_id", "review", true)}))=cardinality($3::uuid[])`, rows.map(r => r.payload.id), jobs.map(j => j.id), documents.map(d => d.id)), ex);
+    await guarded(proof, "REVIEW", check(`(SELECT count(*) FROM payroll_runs_current current_run WHERE current_run.workspace_id=${ws} AND current_run.run_id=ANY($1::uuid[]) AND ${payrollObjectScopeSql(proof, "(current_run.payload->'coverage')", "current_run.workspace_id")})=cardinality($1::uuid[]) AND (SELECT count(*) FROM payroll_jobs final_job WHERE final_job.workspace_id=${ws} AND final_job.id=ANY($2::uuid[]) AND (${payrollObjectScopeSql(proof, "NULL::jsonb", ws, "review", true)} OR EXISTS(SELECT 1 FROM payroll_runs_current current_run WHERE current_run.workspace_id=final_job.workspace_id AND current_run.run_id=final_job.run_id AND ${payrollObjectScopeSql(proof, "(current_run.payload->'coverage')", "current_run.workspace_id")})))=cardinality($2::uuid[]) AND (SELECT count(*) FROM payroll_documents final_doc WHERE final_doc.workspace_id=${ws} AND final_doc.id=ANY($3::uuid[]) AND ${payrollObjectScopeSql(proof, "(final_doc.payload->'coverage')", "final_doc.workspace_id")} AND (final_doc.kind='EMPLOYEE_STATEMENT' OR ${payrollObjectScopeSql(proof, "NULL::jsonb", "final_doc.workspace_id", "review", true)}))=cardinality($3::uuid[])`, authorizedRuns.map(r => r.payload.id), jobs.map(j => j.id), documents.map(d => d.id)), ex);
     return {
         version: "PAYROLL_API_V1",
         capabilities: responseCapabilities,
         currentPeriod,
         runs: rows.map((r) => ({
             ...r.payload,
-            correctionDelta:r.payload.correctionOf?correctionDelta(rows.find(p=>p.payload.id===r.payload.correctionOf)?.payload.rows??null,r.payload.rows):null,
+            correctionDelta:r.payload.correctionOf?correctionDelta(authorizedRuns.find(p=>p.payload.id===r.payload.correctionOf)?.payload.rows??null,r.payload.rows):null,
             documents: documents
                 .filter((d) => d.run_id === r.payload.id)
                 .map(documentProjection),
@@ -409,9 +413,9 @@ export async function command(proof: SessionMutationProof, input: unknown, ex: S
                 revision: existing[0].payload.revision,
             }, [], ex);
         const initial = newRun(c.operationId, c.period, c.payday);
-        const seed = readPayrollCalculationMode()==='native_provisional' && await nativeSchemaAvailable(ex) ? await source(proof, initial.period, ex) : null;
-        const captured = seed ? await captureNativePayroll(seed, initial, ex, authority(proof, "REVIEW")) : null;
-        const r = captured?.run ?? initial;
+        const seed = await source(proof,initial.period,ex);
+        const captured = readPayrollCalculationMode()==='native_provisional' && await nativeSchemaAvailable(ex) ? await captureNativePayroll(seed, initial, ex, authority(proof, "REVIEW")) : null;
+        const r = captured?.run ?? {...initial,coverage:providerRunCoverage(seed.source,seed.observed,initial.period)};
         try {
             return await commit(proof, "REVIEW", c, {
                 operationId: c.operationId,
@@ -493,6 +497,7 @@ export async function command(proof: SessionMutationProof, input: unknown, ex: S
                 ...row,
                 employeeName: s.source.roster.find((e) => e.employeeId === row.employeeId)!.name,
             })),
+            coverage:providerRunCoverage(s.source,s.observed,r.period),
             sourceName: amounts.sourceName,
             sourceReference: amounts.sourceReference,
             importRevision: r.importRevision + 1,

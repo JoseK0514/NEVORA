@@ -11,7 +11,7 @@ describe.skipIf(!process.env.NEVORA_COMMERCE_TEST_URL)('owned lifecycle mail out
  beforeEach(async()=>{
   const url=new URL(process.env.NEVORA_COMMERCE_TEST_URL!);admin=new Pool({connectionString:url.href});name='commerce_test_'+randomUUID().replaceAll('-','');await admin.query(`CREATE DATABASE "${name}"`);url.pathname='/'+name;pool=new Pool({connectionString:url.href,max:4});await pool.query(await readFile(new URL('./schema.sql',import.meta.url),'utf8'));store=new CommerceStore(pool,Buffer.alloc(32,45));
   await pool.query("INSERT INTO commerce.accounts(id,email,profile,verified_at) VALUES($1,'owner@example.invalid','{}',clock_timestamp())",[id]);
-  await pool.query("INSERT INTO commerce.businesses(id,state,employee_count,trial_started_at,trial_ends_at) VALUES($1,'ready',1,clock_timestamp()-interval '23 days',clock_timestamp()+interval '7 days')",[id]);
+  await pool.query("INSERT INTO commerce.businesses(id,state,employee_count,trial_started_at,trial_ends_at) VALUES($1,'ready',1,clock_timestamp()-interval '23 days',clock_timestamp()+interval '6 days')",[id]);
   await pool.query("INSERT INTO commerce.slots(id,origin,database_fingerprint,database_secret,instance_secret_hash,instance_secret,business_id) VALUES('owned-slot','https://company.example.invalid','owned-database','owned-secret',repeat('a',64),'owned-instance',$1)",[id]);
  });
  afterEach(async()=>{await pool?.end();if(admin){await dropTestDatabase(admin,name);await admin.end();}});

@@ -181,8 +181,10 @@ export class BillingOperation {
   },false);
  }
  async fail(error:unknown):Promise<never>{
-  try{await this.refusePreflight(error);}
+  let refused=false;
+  try{refused=await this.refusePreflight(error);}
   catch(persistenceError){throw new AggregateError([error,persistenceError],'billing_refusal_persistence_failed',{cause:error});}
+  if(refused&&error instanceof CommerceError)throw new CommerceError(error.code,error.status,'refused');
   throw error;
  }
 }

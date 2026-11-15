@@ -515,3 +515,17 @@ it('external mode recovers native prepare custody and refuses new native correct
  expect(await command(proof,{action:'PREPARE',operationId:prepared.payload.id,period:nativePeriod,payday:nativePayday},f.db.executor)).toMatchObject({runId:prepared.payload.id});
  await expect(command(proof,{action:'CORRECT_NATIVE',operationId:randomUUID(),runId:prepared.payload.id,expectedRevision:prepared.payload.revision,reason:'Owned correction refusal'},f.db.executor)).rejects.toThrow('NATIVE_CALCULATION_DISABLED');
 });
+it('an actually granted Manager completes external preparation, import, approval and private document reads with native schema installed',async()=>{
+ await nativeFixture({contextPeriod:nativePeriod});const manager=await managerProof();process.env.NEVORA_PAYROLL_CALCULATION_MODE='external';
+ expect((await readPayrollCapabilities(manager,f.db.executor)).canReview).toBe(true);
+ const prepared=await command(manager,{action:'PREPARE',operationId:randomUUID(),period:nativePeriod,payday:nativePayday},f.db.executor);
+ let run=(await readRun(manager,prepared.runId!,f.db.executor)).payload;
+ expect(run).toMatchObject({sourceAuthority:'PROVIDER_IMPORT',coverage:{complete:true,locationIds:['loc-1']}});
+ const seed=await source(proof,nativePeriod,f.db.executor);
+ const amounts={schema:'NEVORA_PAYROLL_IMPORT_V1',currency:'USD',sourceName:'Fictional external provider',sourceReference:'owned-manager-import',period:nativePeriod,payday:nativePayday,rows:seed.source.roster.map(p=>({employeeId:p.employeeId,grossMinor:p.employeeId==='c34-a'?'100000':'0',netMinor:p.employeeId==='c34-a'?'100000':'0',employeeDeductions:[],employerContributions:[]}))};
+ await command(manager,{action:'IMPORT',operationId:randomUUID(),runId:run.id,expectedRevision:run.revision,amounts},f.db.executor);run=(await readRun(manager,run.id,f.db.executor)).payload;expect(run.status).toBe('REVIEW_REQUIRED');
+ await command(manager,{action:'APPROVE',operationId:randomUUID(),runId:run.id,expectedRevision:run.revision,reviewToken:run.reviewToken},f.db.executor);await workerOnce(f.db.executor);
+ const view=await runs(manager,f.db.executor),approved=view.runs.find(r=>r.id===run.id)!;expect(approved.status).toBe('APPROVED');const pdf=approved.documents.find(d=>d.kind==='EMPLOYEE_STATEMENT'&&d.employeeId==='c34-a')!;expect(pdf).toBeDefined();expect((await document(manager,pdf.id,f.db.executor)).bytes.subarray(0,5).toString()).toBe('%PDF-');
+ await saveNativeProfile(proof,{action:'SET_MANAGER_SCOPE',operationId:randomUUID(),reason:'Owned partial-scope denial',expectedRevision:1,employeeId:'c34-b',review:true,approve:true,locationIds:['loc-2']},f.db.executor);
+ expect((await runs(manager,f.db.executor)).runs.some(r=>r.id===run.id)).toBe(false);await expect(document(manager,pdf.id,f.db.executor)).rejects.toThrow('DOCUMENT_UNAVAILABLE');
+});

@@ -1506,3 +1506,12 @@ it('imports and publishes exact external statements for a 2027 payday even with 
  await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,clock_timestamp()+interval '1 day')",[employee.sessionTokenHash,seeded.ids.a]);
  const own=await statements(employee,f.db.executor);expect(own.statements).toHaveLength(1);expect((await document(employee,own.statements[0].id,f.db.executor)).bytes.subarray(0,5).toString()).toBe('%PDF-');
 });
+it('keeps exact correction differences when the authorized parent is outside the 300-run display page',async()=>{
+ const seeded=await seedPayrollFixture(f.db.executor,{published:true}),owner=seeded.proof;
+ const original=(await runs(owner,f.db.executor)).runs.find(r=>r.id===seeded.runId)!;
+ const {newRun,insertRun,insertRevision}=await import('../../lib/payroll/service'),batch=[];
+ for(let i=0;i<300;i++){const date=new Date(Date.UTC(2024,0,1+i)).toISOString().slice(0,10),draft=newRun(randomUUID(),{startDate:date,endDate:date},date);draft.createdAt=new Date(Date.parse(original.createdAt)+1).toISOString();batch.push(insertRun(draft),insertRevision(draft,null));}
+ await f.db.executor.transaction(batch);
+ const corrected=await command(owner,{action:'CORRECT',operationId:randomUUID(),runId:original.id,expectedRevision:original.revision,reason:'Owned older-parent correction',amounts:{...seeded.amounts,sourceReference:'owned-older-parent'}},f.db.executor);
+ const result=await runs(owner,f.db.executor);expect(result.runs).toHaveLength(300);expect(result.runs.some(r=>r.id===original.id)).toBe(false);expect(result.runs.find(r=>r.id===corrected.runId)?.correctionDelta?.totalNetMinor).toBe('0');
+});

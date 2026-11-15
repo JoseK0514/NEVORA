@@ -111,15 +111,15 @@ export async function resetPasswordWithProof(token:string,password:string,execut
   ]);
   if(!(limits.at(-1)?.[0] as {allowed:boolean}|undefined)?.allowed)return {state:'invalid'};
   const newHash=await hashPassword(password),workspace=await getWorkspace(executor);
-  const rows=await executor.query<{employeeId:string;method:string;passwordHash:string}>({text:'SELECT p.employee_id AS "employeeId",p.method,c.password_hash AS "passwordHash" FROM password_recovery_proofs p JOIN employee_credentials c ON c.employee_id=p.employee_id WHERE p.token_hash=$1',values:[tokenHash]});
+  const rows=await executor.query<{employeeId:string;method:string;passwordHash:string;mustChange:boolean}>({text:'SELECT p.employee_id AS "employeeId",p.method,c.password_hash AS "passwordHash",c.must_change_password AS "mustChange" FROM password_recovery_proofs p JOIN employee_credentials c ON c.employee_id=p.employee_id WHERE p.token_hash=$1',values:[tokenHash]});
   if(!rows[0])return {state:'invalid'};const employeeId=rows[0].employeeId;
-  if(rows[0].method==='INITIAL_PASSWORD'&&await verifyPassword(password,rows[0].passwordHash))return {state:'invalid'};
+  if((rows[0].mustChange||rows[0].method==='INITIAL_PASSWORD')&&await verifyPassword(password,rows[0].passwordHash))return {state:'invalid'};
   const statements:SqlStatement[]=[...workspaceReadGuard(workspace),
    {text:'SELECT id FROM employees WHERE id=$1 FOR UPDATE',values:[employeeId]},
    {text:'SELECT employee_id FROM employee_credentials WHERE employee_id=$1 FOR UPDATE',values:[employeeId]},
    {text:'SELECT token_hash FROM password_recovery_proofs WHERE token_hash=$1 FOR UPDATE',values:[tokenHash]},
    {text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM password_recovery_proofs p JOIN employees e ON e.id=p.employee_id JOIN employee_credentials c ON c.employee_id=e.id JOIN locations l ON l.id=e.primary_location_id
-    WHERE p.token_hash=$1 AND p.employee_id=$2 AND e.active AND l.workspace_id=$3 AND p.used_at IS NULL AND p.retired_at IS NULL AND p.expires_at>clock_timestamp() AND p.credential_updated_at=c.password_updated_at AND p.employee_updated_at=e.updated_at) THEN '1' ELSE 'recovery_proof_invalid' END)::integer`,values:[tokenHash,employeeId,workspace.id]},
+    WHERE p.token_hash=$1 AND p.employee_id=$2 AND e.active AND l.workspace_id=$3 AND p.used_at IS NULL AND p.retired_at IS NULL AND p.expires_at>clock_timestamp() AND p.credential_updated_at=c.password_updated_at AND p.employee_updated_at=e.updated_at AND c.password_hash=$4 AND c.must_change_password=$5) THEN '1' ELSE 'recovery_proof_invalid' END)::integer`,values:[tokenHash,employeeId,workspace.id,rows[0].passwordHash,rows[0].mustChange]},
    {text:'UPDATE employee_credentials SET password_hash=$2,password_updated_at=GREATEST(clock_timestamp(),password_updated_at+interval \'1 microsecond\'),must_change_password=false WHERE employee_id=$1',values:[employeeId,newHash]},
    {text:'UPDATE password_recovery_proofs SET used_at=clock_timestamp() WHERE token_hash=$1',values:[tokenHash]},
    {text:'UPDATE password_recovery_proofs SET retired_at=clock_timestamp() WHERE employee_id=$1 AND token_hash<>$2 AND used_at IS NULL AND retired_at IS NULL',values:[employeeId,tokenHash]},

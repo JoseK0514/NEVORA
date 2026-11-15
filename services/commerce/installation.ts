@@ -48,7 +48,8 @@ export async function readInstallationFacts(
     try{timeZone=validateWorkspaceTimeZone(data.timeZone);}
     catch{throw new CommerceError('installation_unavailable',503);}
   }
-  return {employeeCount:data.employeeCount as number,timeZone};
+  if(data.ownerReady!==undefined&&typeof data.ownerReady!=='boolean')throw new CommerceError('installation_unavailable',503);
+  return {employeeCount:data.employeeCount as number,timeZone,ownerReady:data.ownerReady===true};
 }
 export async function readInstallationHeadcount(store:CommerceStore,business:Business,client?:PoolClient){
   return (await readInstallationFacts(store,business,client)).employeeCount;
