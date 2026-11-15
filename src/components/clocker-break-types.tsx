@@ -39,9 +39,9 @@ export function ClockerBreakTypes({ initialTypes, action }: {
   const trigger = useRef<HTMLElement | null>(null);
   const busy = useRef(false);
   const { errors, handlers, clear } = useFieldErrors({
-    name: { missing: 'Enter a break name.' },
-    category: { missing: 'Choose a classification.' },
-    targetMinutes: { pattern: 'Enter whole minutes, from 1 to 1,440.', length: 'Enter whole minutes, from 1 to 1,440.' },
+    name: { missing: 'Enter a break name' },
+    category: { missing: 'Choose a classification' },
+    targetMinutes: { pattern: 'Enter whole minutes, from 1 to 1,440', length: 'Enter whole minutes, from 1 to 1,440' },
   });
 
   useEffect(() => {

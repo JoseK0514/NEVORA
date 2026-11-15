@@ -31,18 +31,18 @@ describe('presented action items (Phase 7)', () => {
     expect(plain(card.detail)).toBe('Casey Rivera · Oct 19 – Oct 25 · Fix recorded-time issues before finalizing.');
     expect(card.detail).not.toMatch(/\d{4}-\d{2}/);
   });
-  it('says who asked for a time correction and when it was sent, never the filler sentence (Nov 14 inspection, BR-7)', () => {
+  it('titles a time correction with the person and says what they asked for and when (Phase 3, OW-002)', () => {
     const fix = presentItem(item({type: 'TIME_CORRECTION', category: 'timekeeping', priority: 'REVIEW', title: 'Time correction waiting for review', detail: 'James Ortiz · Recorded time correction.', dateTime: '2026-11-10T22:15:00Z'}), 'Review correction', 'America/Puerto_Rico');
-    expect(fix.title).toBe('James Ortiz asked for a time correction');
-    expect(plain(fix.detail)).toBe('Sent Nov 10');
+    expect(fix.title).toBe('James Ortiz');
+    expect(plain(fix.detail)).toBe('Time correction · sent Nov 10');
     const added = presentItem(item({type: 'TIME_CORRECTION', category: 'timekeeping', priority: 'REVIEW', title: 'Time correction waiting for review', detail: 'Sofía Méndez · Recorded entry not sent yet.'}), 'Review correction');
-    expect(added.title).toBe('Sofía Méndez asked to add unrecorded time');
-    expect(added.detail).toBe('Waiting for review');
+    expect(added.title).toBe('Sofía Méndez');
+    expect(added.detail).toBe('Add unrecorded time');
     // The reviewer's own request keeps its title: it needs someone else.
     const own = presentItem(item({type: 'TIME_CORRECTION', category: 'timekeeping', priority: 'REVIEW', title: 'Your correction needs another reviewer', detail: 'Jose Natal · Recorded time correction.', dateTime: '2026-11-10'}), 'Review correction');
     expect(own.title).toBe('Your correction needs another reviewer');
-    expect(plain(own.detail)).toBe('Sent Nov 10');
-    expect(`${fix.title} ${fix.detail} ${added.title} ${added.detail}`).not.toMatch(/Recorded time correction|not sent yet/);
+    expect(plain(own.detail)).toBe('Time correction · sent Nov 10');
+    expect(`${fix.title} ${fix.detail} ${added.title} ${added.detail}`).not.toMatch(/Recorded time correction|not sent yet|\.$/);
   });
   it('keeps Jose’s attendance words apart: a shift in progress is not clocked in, an ended one is missed', () => {
     expect(ATTENDANCE_WORDS).toEqual({notClockedIn: 'Not clocked in', late: 'Clocked in late', missed: 'Missed'});

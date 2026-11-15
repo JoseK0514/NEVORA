@@ -11,7 +11,9 @@ import {type TimecardItem} from '@/lib/timecards/read-model';
 import {summarizeTimecardReview} from '@/lib/timecards/review-summary';
 import {parseCurrentTimecards} from '@/lib/timecards/client';
 import {parsePeriod,type Period} from '@/lib/timecards/project';
-import {hoursText,periodRange} from './payroll/payroll-format';
+import {periodRange} from './payroll/payroll-format';
+import {durationRow,durationSentence,minutesFromNanoseconds} from '@/lib/duration-format';
+import {addDays} from '@/lib/date-utils';
 import type {ExportCommand,PayrollExportPayload,SavedExportProfile} from '@/lib/payroll-export/service';
 import {verifyExportReply} from '@/lib/payroll-export/client';
 import {stableExportJson} from '@/lib/payroll-export/json';
@@ -29,6 +31,11 @@ function payrollSourceKey(cards:readonly TimecardItem[],profiles:readonly SavedE
 const dayText=(value:string)=>{try{return new Intl.DateTimeFormat('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(`${value}T12:00:00Z`));}catch{return '';}};
 const utcDay=(value:string)=>new Date(`${value}T12:00:00Z`);
 const isoDay=(date:Date)=>date.toISOString().slice(0,10);
+/** OW-003: recorded time through the shared formatters. A sentence reads "24 h 7 min"; a figure in the people column
+ * reads "24 h 07", as the Timecards table does. Zero is "0 h", as it was. */
+const written=(nanoseconds:string,write:(minutes:number,zero:string)=>string)=>{const minutes=minutesFromNanoseconds(nanoseconds);return minutes===null?'—':write(minutes,'0 h');};
+const hoursText=(nanoseconds:string)=>written(nanoseconds,durationSentence);
+const hoursFigure=(nanoseconds:string)=>written(nanoseconds,durationRow);
 /** "Oct 19 – 25", or "Sep 28 – Oct 4" (Payroll's one period format, R2). */
 const rangeText=periodRange;
 /** This week and the five before it, Monday to Sunday, counted from the page's default week. */
@@ -62,7 +69,9 @@ function IncludedSection({payroll,period,actorId}:{payroll:boolean;period:Period
   </details>
  </section>;
 }
-export function PayrollExport({initialPeriod,actorId,tabs=null}:{initialPeriod:Period;actorId:string;tabs?:PayrollTab[]|null}){
+export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPeriod:Period;actorId:string;tabs?:PayrollTab[]|null;
+ /** MG-010: the workspace's date, so a week that has not ended says when its timecards can be approved. */
+ today?:string}){
  const [period,setPeriod]=useState(initialPeriod),[draftPeriod,setDraftPeriod]=useState(initialPeriod),[cards,setCards]=useState<TimecardItem[]|null>(null),[profiles,setProfiles]=useState<SavedExportProfile[]>([]),[profileId,setProfileId]=useState('neutral'),[draft,setDraft]=useState<ExportProfile>(neutralProfile),[reviewed,setReviewed]=useState(false),[selected,setSelected]=useState<string[]>([]),[state,setState]=useState('Loading finalized time'),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[result,setResult]=useState<PayrollExportPayload|null>(null);
  const [retry,setRetry]=useState<ExportCommand|null>(null),[snapshotActor,setSnapshotActor]=useState<string|null>(null);
  const saveRetry=useRef<ProfileCommand|null>(null),generation=useRef({value:0}),abort=useRef<AbortController|null>(null),reload=useRef<()=>void>(()=>{});
@@ -177,6 +186,10 @@ export function PayrollExport({initialPeriod,actorId,tabs=null}:{initialPeriod:P
  // always named: "Approve, then finalize 10 timecards first" (it read "Approve 10 timecards first").
  const notFinal=unapproved+approvedOnly;
  const waiting=unapproved?(approvedOnly?`Approve ${unapproved} ${unapproved===1?'timecard':'timecards'}, then finalize ${notFinal} first`:`Approve, then finalize ${unapproved} ${unapproved===1?'timecard':'timecards'} first`):approvedOnly?`Finalize ${approvedOnly} approved ${approvedOnly===1?'timecard':'timecards'} first`:'';
+ // MG-010: one line says the one thing in the way. While the week is still open nobody can approve yet, so the line says
+ // when they can (Timecards' own date); once it has ended the line names the steps left, as before.
+ const notYet=!!today&&period.endDate>=today&&unapproved>0;
+ const waitingLine=notYet?`Timecards for ${rangeText(period.startDate,period.endDate)} can be approved from ${dayText(addDays(period.endDate,1))}.`:waiting;
  const weeks=weekChoices();
  const periodKey=`${period.startDate}|${period.endDate}`;
  const listed=weeks.some(w=>w.value===periodKey);
@@ -211,10 +224,10 @@ export function PayrollExport({initialPeriod,actorId,tabs=null}:{initialPeriod:P
     </ul>
     <div className="c-exp__ready">
      <b className="c-pay__strong">{finalized.length?<>{`${finalized.length} ${finalized.length===1?'person':'people'} · `}<span className="c-num">{hoursText(readyHours)}</span></>:'Nothing ready to export yet'}</b>
-     {waiting?<span className="c-exp__waiting">{`${waiting} · `}<a className="c-exp__inline" href={timecardsHref}>Go to Timecards</a></span>:null}
+     {waitingLine?<span className="c-exp__waiting">{notYet?`${waitingLine} `:`${waitingLine} · `}<a className="c-exp__inline" href={timecardsHref}>Go to Timecards</a></span>:null}
      {retry?<button type="button" className="c-btn c-btn--full" disabled={busy} onClick={()=>retry&&void send(retry)}>Retry same export</button>
       :<button type="button" className="c-btn c-btn--full" disabled={locked||!finalized.length||periodChanged} onClick={create}>Create export</button>}
-     <p className="c-note">{busy?'Preparing your files…':retry?'Retry to confirm the outcome of this export.':periodChanged?'Show the dates you chose before exporting.':!finalized.length?(waiting?'Only finalized timecards are exported.':<>No one has finalized time for these dates. <a className="c-exp__inline" href={timecardsHref}>Go to Timecards</a></>):selected.length?`Exports the ${selected.length} ${selected.length===1?'person':'people'} you chose.`:`Exports every finalized timecard${visibleSelection.overLimit?' (the first 100)':''}. Hours include breaks; your payroll system decides pay types.`}</p>
+     {!busy&&!retry&&!periodChanged&&!finalized.length&&waitingLine?null:<p className="c-note">{busy?'Preparing your files…':retry?'Retry to confirm the outcome of this export.':periodChanged?'Show the dates you chose before exporting.':!finalized.length?(waitingLine?null:<>No one has finalized time for these dates. <a className="c-exp__inline" href={timecardsHref}>Go to Timecards</a></>):selected.length?`Exports the ${selected.length} ${selected.length===1?'person':'people'} you chose.`:`Exports every finalized timecard${visibleSelection.overLimit?' (the first 100)':''}. Hours include breaks; your payroll system decides pay types.`}</p>}
     </div>
    </>:<div className="c-card__body"><p className="c-payroll__state" role="status" data-export-loading={state==='Loading finalized time'||undefined}>{stateText}</p>{state!=='Loading finalized time'?<button type="button" className="c-btn c-btn--secondary c-btn--md c-pay__gap" disabled={busy} onClick={()=>reload.current()}>Try again</button>:null}</div>}
    </div>
@@ -239,7 +252,7 @@ export function PayrollExport({initialPeriod,actorId,tabs=null}:{initialPeriod:P
      {cards?.length===0?<p className="c-note">No one has time in this period.</p>:<ul className="c-exp__people">{cards?.map(c=><li key={c.card.employeeId}><label className="c-exp__person" data-off={c.state!=='FINALIZED'||undefined}>
       <input type="checkbox" aria-label={`Export ${c.card.employeeName}`} disabled={c.state!=='FINALIZED'||locked||(!selected.includes(c.card.employeeId)&&selected.length>=100)} checked={selected.includes(c.card.employeeId)} onChange={e=>{setSelected(ids=>changeExportSelection(cards??[],ids,c.card.employeeId,e.target.checked));setResult(null);}}/>
       <span className="c-row__main"><span className="c-row__title">{c.card.employeeName}</span><span className="c-row__detail"><span>{c.state==='FINALIZED'?'Finalized':c.state==='APPROVED'?'Approved · not finalized':c.state==='DRAFT'?'Draft':c.state.charAt(0)+c.state.slice(1).toLowerCase().replaceAll('_',' ')}</span></span></span>
-      <span className="c-row__value c-row__value--soft c-num">{hoursText(c.card.recordedNanoseconds)}</span>
+      <span className="c-row__value c-row__value--soft c-num">{hoursFigure(c.card.recordedNanoseconds)}</span>
      </label></li>)}</ul>}
      {selected.length?<p className="c-note">{`Selected: ${hoursText(recorded)} recorded · ${hoursText(breaks)} of breaks, listed separately.`}</p>:null}
     </div>

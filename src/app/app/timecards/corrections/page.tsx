@@ -8,7 +8,8 @@ import {correctionAuthority} from '@/lib/time-corrections/authority.server';
 import {managerReviewRecoveryKey} from '@/lib/time-corrections/review-recovery';
 import {ManagerCorrectionRecoveryBoundary} from '@/components/manager-correction-recovery';
 import {ManagerTimeCorrections} from '@/components/manager-time-corrections';
-import {CorpNav,CorpPage,CorpTitle} from '@/components/corp/corp';
+import {CorpNav,CorpPage} from '@/components/corp/corp';
+import {getWorkspace} from '@/lib/data/workspaces';
 import './corrections.css';
 
 export const metadata={title:'Time corrections'};
@@ -22,14 +23,13 @@ export default async function TimeCorrectionsPage(){
   if(access.state==='unavailable')return <OperationalUnavailable title="Time corrections unavailable" reason={access.reason}/>;
   const source=await withOperationalCompany(proof,async()=>null);
   if(source.state==='unavailable')return <OperationalUnavailable title="Time corrections unavailable" reason={source.reason}/>;
-  const authority=correctionAuthority(proof);
+  const authority=correctionAuthority(proof),workspace=await getWorkspace();
   return <ManagerCorrectionRecoveryBoundary key={managerReviewRecoveryKey(session.id,authority,source.authority,'time-corrections')}>
     <ScopedReadFrame observation={scopedObservation(source)}>
       <CorpPage className="c-tcx c-page--narrow" labelledBy="tcx-title">
         <CorpNav back={{href:'/app/timecards',label:'Time'}} title="Time corrections" titleId="tcx-nav-title" phoneOnly/>
-        <CorpTitle id="tcx-title" title="Time corrections" sub="Fixes your team asked for. You’ll always see the original time." wide/>
-        <p className="c-phone-sub">Fixes your team asked for. You’ll always see the original time.</p>
-        <ManagerTimeCorrections key={authority} actorId={session.id} authority={authority}/>
+        {/* OW-015 / OW-004: the queue draws the title and its one sub-line (the count, the note about times). */}
+        <ManagerTimeCorrections key={authority} actorId={session.id} authority={authority} band={{zone:workspace.timeZone}}/>
       </CorpPage>
     </ScopedReadFrame>
   </ManagerCorrectionRecoveryBoundary>;

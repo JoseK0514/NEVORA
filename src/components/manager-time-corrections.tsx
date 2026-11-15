@@ -13,6 +13,8 @@ import {CorrectionComparison,PriorCorrectionDecisions} from './time-correction-c
 
 import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import {useManagerCorrectionRecovery} from './manager-correction-recovery';
+import {CorpTitle} from './corp/corp';
+import {timeZoneLabel} from '@/lib/time-zone-label';
 export type CorrectionQueueConnection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
 const changedEvent='nevora:time-correction-changed';
 const unknownNotice='We couldn’t confirm your decision. Try again; it won’t be applied twice.';
@@ -51,7 +53,12 @@ export function ManagerTimeCorrectionsSurface({
   onDecision,
   onRetry,
   retry,
+  band,
 }:{
+  /** OW-015 / OW-004 (Time corrections page): the page's title and sub-line are drawn here, so the sub-line can carry how
+   * many requests wait and say the note about times once. The cards then start right under the band, with no heading on
+   * the canvas and no note repeated inside each card. `zone` is the workplace's zone until the read brings its own. */
+  band?:{zone:string};
   snapshot:ManagerTimeCorrections|null;
   loading:boolean;
   connection?:CorrectionQueueConnection;
@@ -65,10 +72,12 @@ export function ManagerTimeCorrectionsSurface({
   const mode=requestedMode==='ready'&&snapshot?.state!=='ready'?'unavailable':requestedMode;
   const ready=mode==='ready'&&snapshot?.state==='ready'?snapshot:null;
   usePrivateFragmentFocus('correction-',!!ready);
-  return <section className="manager-corrections" aria-labelledby="manager-corrections-title">
+  const count=ready?.requests.length??0;
+  const bandLine=band?`${count?`${count} waiting · `:''}Fixes your team asked for. Original times are always kept. Times in ${timeZoneLabel(ready?.timeZone??band.zone)}.`:null;
+  return <>{band?<><p className="c-phone-sub">{bandLine}</p><CorpTitle id="tcx-title" title="Time corrections" sub={bandLine} wide/></>:null}<section className="manager-corrections" data-band={band?'':undefined} aria-labelledby="manager-corrections-title">
     {/* Copy table 49: when nothing is waiting, the header's "Correction requests 0" would repeat the empty state, so it is
       kept for screen readers only. */}
-    <header className={ready&&!ready.requests.length?"manager-corrections-header sr-only":"manager-corrections-header"}>
+    <header className={band||(ready&&!ready.requests.length)?"manager-corrections-header sr-only":"manager-corrections-header"}>
       <div>
         <p>Time corrections</p>
         <h2 id="manager-corrections-title">Correction requests</h2>
@@ -91,7 +100,7 @@ export function ManagerTimeCorrectionsSurface({
           </div>
           {/* Review B6 (NV-080): Recorded and Asked for, the change in bold with how much it moves; Current effective only
             * when it differs; one line for the zone and what approving does; the reason as a labelled quote. */}
-          <CorrectionComparison compact note="Approving changes the timecard; the original clock times stay in the history" recordedLabel={item.kind==='MISSING_ENTRY'&&item.originalStartAt?'Approved missing time':'Recorded'} recordedStartAt={item.originalStartAt} recordedEndAt={item.originalEndAt} context={item.context} zone={ready.timeZone} proposedStartAt={item.proposedStartAt} proposedEndAt={item.proposedEndAt}/>
+          <CorrectionComparison compact note={band?null:"Approving changes the timecard; the original clock times stay in the history"} recordedLabel={item.kind==='MISSING_ENTRY'&&item.originalStartAt?'Approved missing time':'Recorded'} recordedStartAt={item.originalStartAt} recordedEndAt={item.originalEndAt} context={item.context} zone={ready.timeZone} proposedStartAt={item.proposedStartAt} proposedEndAt={item.proposedEndAt}/>
           {item.context.state==='confirmed'&&item.context.totalDecisions?<PriorCorrectionDecisions context={item.context} zone={ready.timeZone}/>:null}
           {item.baseChanged?<p className="manager-correction-self" role="status">The timecard changed after this request. Check the current times before deciding.</p>:null}
           <p className="manager-correction-reason"><span className="manager-correction-reason__k">Their reason</span><q>{item.reason}</q></p>
@@ -103,10 +112,10 @@ export function ManagerTimeCorrectionsSurface({
           </div>
         </article>)}
       </div>:<div className="manager-corrections-empty" role="status"><span aria-hidden="true">✓</span><strong>Nothing to fix</strong><small>When someone asks to fix a time, it shows up here.</small></div>}
-  </section>;
+  </section></>;
 }
 
-export function ManagerTimeCorrections({actorId,authority}:{actorId?:string;authority?:string}={}){
+export function ManagerTimeCorrections({actorId,authority,band}:{actorId?:string;authority?:string;band?:{zone:string}}={}){
   const recovery=useManagerCorrectionRecovery();
   const [snapshot,setSnapshot]=useState<ManagerTimeCorrections|null>(null);
   const [connection,setConnection]=useState<CorrectionQueueConnection>('loading');
@@ -163,6 +172,7 @@ export function ManagerTimeCorrections({actorId,authority}:{actorId?:string;auth
     busyId={busyId}
     notice={notice}
     retry={retry}
+    band={band}
     onRetry={()=>{if(retry)void send(retry);}}
     onDecision={(item,decision)=>void send({operationId:crypto.randomUUID(),requestId:item.id,expectedRevision:item.revision,decision})}
   />;

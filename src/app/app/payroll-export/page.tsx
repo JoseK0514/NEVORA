@@ -31,5 +31,5 @@ export default async function PayrollExportPage({searchParams}:{searchParams:Pro
   // Managers and Owners only (the notice above). Corporate (Release 1, board O-TimeExports): the page draws its own kit frame.
   // Owner premium: Payroll's tabs under the title; the same access read the shell makes for its section tabs.
   const payroll=payrollFeatureEnabled()?await readPayrollCapabilities(proof).catch(()=>undefined):undefined;
-  return <ScopedReadFrame observation={scopedObservation(access)}><PayrollExport key={session.id} initialPeriod={period} actorId={session.id} tabs={payrollTabs(session.role,payroll)}/></ScopedReadFrame>;
+  return <ScopedReadFrame observation={scopedObservation(access)}><PayrollExport key={session.id} initialPeriod={period} actorId={session.id} tabs={payrollTabs(session.role,payroll)} today={today.toString()}/></ScopedReadFrame>;
 }

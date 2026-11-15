@@ -21,6 +21,8 @@ import {keepWhole} from '../lib/keep-whole';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {SigBand,SigPage} from './signature/signature';
 import cd from './communication-detail-signature.module.css';
+import {ArrowUUpLeftIcon} from '@phosphor-icons/react/dist/ssr/ArrowUUpLeft';
+import {BIcon} from './owner-b/b-kit';
 
 
 /** TC-B-01: a soft hyphen lets the long word break cleanly at large text sizes instead of clipping. */
@@ -68,10 +70,12 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
   // Quiet (v4): the state in words and one way forward.
   return <>
    <QuietNav back={{href:'/app/updates',label:'Updates'}}/>
-   <div className="q-hd"><h1 style={{fontSize:28,lineHeight:'34px'}}>{title}</h1><p>{description}</p></div>
+   {/* Phase 3 (OW-020): while it loads the band keeps the page's name and the canvas holds two placeholder cards (the
+       kit's grey bars); "Loading update…" is said to screen readers only. */}
+   <div className="q-hd"><h1 style={{fontSize:28,lineHeight:'34px'}}>{loading?'Update':title}</h1>{loading?null:<p>{description}</p>}</div>
    <section ref={surface} aria-busy={loading} aria-label={title}>
     <p className="q-sr" role="status">{title}. {description}</p>
-    {loading?null:signedOut||read?.state==='unauthorized'||notice==='blocked'?<Link href="/login" className="q-btn q-btn--sec">Sign in</Link>:read?.state==='withdrawn'?<Link href="/app/updates" className="q-btn q-btn--sec">All updates</Link>:<button type="button" className="q-btn q-btn--sec" onClick={onRefresh} disabled={paused||pending}>{notice==='conflict'?'Review latest':'Try again'}</button>}
+    {loading?<div className="b-upd-skel" aria-hidden="true"><section className="b-card"><i/><i/><i/></section><section className="b-card"><i/><i/></section></div>:signedOut||read?.state==='unauthorized'||notice==='blocked'?<Link href="/login" className="q-btn q-btn--sec">Sign in</Link>:read?.state==='withdrawn'?<Link href="/app/updates" className="q-btn q-btn--sec">All updates</Link>:<button type="button" className="q-btn q-btn--sec" onClick={onRefresh} disabled={paused||pending}>{notice==='conflict'?'Review latest':'Try again'}</button>}
    </section>
   </>;
  }
@@ -145,11 +149,12 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
     :markedRead?<p className="q-note" role="status"><b className="q-note__title">Marked read</b></p>
     :<button type="button" className="q-btn q-btn--sec" disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('MARK_READ');}}><PendingLabel pending={pending} pendingText="Saving…">Mark read</PendingLabel></button>}
    {ready.sentCount!==undefined?<p className="q-sr">Sent to {ready.sentCount} {ready.sentCount===1?'recipient':'recipients'}.</p>:null}
-   {ready.canWithdraw?(confirmWithdraw?<div role="group" aria-labelledby="withdraw-confirm-text" style={{marginTop:24}}>
+   {ready.canWithdraw?(confirmWithdraw?/* Phase 3 (OW-021): the confirm step is a card too, where the Withdraw row was. */<div className="b-card b-upd-confirm" role="group" aria-labelledby="withdraw-confirm-text">
      <p className="q-empty" id="withdraw-confirm-text">{audience?`Withdraw this update for ${audience} ${audience===1?'person':'people'}? They won’t see it anymore.`:'Withdraw this update? People won’t see it anymore.'}</p>
      <button ref={confirmRef} type="button" className="q-btn" style={{background:'#C42B1C'}} disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('WITHDRAW');}}>{pending?'Withdrawing…':'Withdraw update'}</button>
      <button type="button" className="q-btn q-btn--quiet" disabled={pending} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(false);}}>Keep update</button></div>
-    :<button ref={withdrawRef} type="button" className="q-btn q-btn--danger" disabled={locked} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(true);}}>Withdraw update</button>):null}
+    :/* Phase 3 (OW-021): Withdraw is a row in its own card (red circle, red words), not loose text on the canvas. */
+    <ul className="q-list b-upd-danger"><li><button ref={withdrawRef} type="button" className="q-row q-row--one q-row--danger b-upd-withdraw" disabled={locked} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(true);}}><BIcon tone="red"><ArrowUUpLeftIcon weight="bold"/></BIcon><span className="q-rt"><b>Withdraw update</b></span></button></li></ul>):null}
    {notice==='unknown'?<section ref={noticeRef} role="status"><p className="q-note"><b className="q-note__title">Result not yet confirmed</b><span className="q-note__body">Check status before trying again.</span></p><button type="button" className="q-btn q-btn--sec" aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('LOOKUP');}}>{pending?'Checking…':'Check status'}</button></section>
     :notice==='unavailable'?<section ref={noticeRef} role="alert"><p className="q-note" data-tone="urgent"><b className="q-note__title">Unable to confirm</b><span className="q-note__body">Try again.</span></p><button type="button" className="q-btn q-btn--sec" aria-disabled={pending||undefined} onClick={()=>{if(!pending)onRefresh();}}>Try again</button></section>:null}
   </article>

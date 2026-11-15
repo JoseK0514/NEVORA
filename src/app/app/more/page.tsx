@@ -132,6 +132,8 @@ export default async function MorePage() {
   return <CorpPage className="c-more c-page--narrow" labelledBy="more-title">
     <CorpNav back={{ href: "/app", label: "Home" }} title="More" titleId="more-nav-title" phoneOnly />
     <CorpTitle id="more-title" title="More" wide />
+    {/* Review Nov 11 (OW-032, TB-016): on tablets and desktop the groups read as one card, 560px at most, with Sign out as a
+      quiet pill under it (owner-b-settings.css, by the Sign out section's id); phones keep their separate cards. */}
     <CorpSection ariaLabel="You"><CorpCard as="div">
       <CorpRows label="You"><li><CorpRow href="/app/profile" bold title={name} detail={`${owner ? "Owner" : "Manager"} · ${company}`}
         label={`Your profile, ${name}`} avatar={<CorpAvatar initials={initialsOf(name)} />} chevron /></li></CorpRows>
@@ -155,7 +157,7 @@ export default async function MorePage() {
         {row("/app/help", "Help")}
       </CorpRows>
     </CorpCard></CorpSection>
-    <CorpSection ariaLabel="Sign out"><CorpCard as="div">
+    <CorpSection id="more-signout" ariaLabel="Sign out"><CorpCard as="div">
       <PortalSignout className="c-more__signout"><button type="submit" className="c-row c-row--one c-more__signout-row"><span className="c-row__main"><span className="c-row__title">Sign out</span></span></button></PortalSignout>
     </CorpCard></CorpSection>
   </CorpPage>;

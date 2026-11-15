@@ -31,9 +31,9 @@ export function NewLocationForm({
   const success = Boolean(result.success && !result.error);
   const { errors, handlers, clear } = useFieldErrors({
     // Review F3 (NV-112): a name of only spaces is flagged like an empty one, so both name fields are marked together.
-    name: { missing: `Enter a ${place} name.`, pattern: `Enter a ${place} name.` },
-    shortName: { missing: "Enter a short name.", pattern: "Enter a short name." },
-    clockerKey: { pattern: "Use lowercase letters, numbers and single hyphens, like downtown-office." },
+    name: { missing: `Enter a ${place} name`, pattern: `Enter a ${place} name` },
+    shortName: { missing: "Enter a short name", pattern: "Enter a short name" },
+    clockerKey: { pattern: "Use lowercase letters, numbers and single hyphens, like downtown-office" },
   });
 
   useEffect(() => {

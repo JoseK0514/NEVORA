@@ -8,6 +8,7 @@ import {Temporal} from '@js-temporal/polyfill';
 import {requireSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {isManagerRole} from '@/lib/auth/permissions';
 import {getWorkspace} from '@/lib/data/workspaces';
+import {listEmployees} from '@/lib/data/employees';
 import {parsePeriod} from '@/lib/timecards/project';
 import {Timecards} from '@/components/timecards';
 import {addDays,weekStartFor} from '@/lib/date-utils';
@@ -34,8 +35,12 @@ export default async function TimecardsPage({searchParams}:{searchParams:Promise
     // Time exports instead. Display only: Payroll's own page still checks access.
     const payroll=proof&&payrollFeatureEnabled()?await readPayrollCapabilities(proof).catch(()=>null):null;
     const payrollStep=payroll?.enabled?payroll.canReview?'prepare' as const:'owner' as const:undefined;
+    // MG-004: a Manager's own timecard names who approves it. The Owners come from the team list a Manager already sees
+    // (the same read the closed Payroll page uses); a failed read falls back to "An Owner".
+    const viewerIsOwner=session.role==='OWNER';
+    const owners=viewerIsOwner?[]:await listEmployees().then(list=>list.filter(employee=>employee.role==='OWNER'&&employee.active!==false).map(employee=>`${employee.firstName} ${employee.lastName}`.trim())).catch(()=>[]);
     return <ScopedReadFrame observation={scopedObservation(access)}><div className="cm-timecards" data-nv-page="">
-      <Timecards key={session.id} initialPeriod={managerPeriod} manager actorId={session.id} managementRecoveryScope={managementRecoveryScope(workspace.id)} employeeCorporate={false} today={today.toString()} payrollStep={payrollStep}/>
+      <Timecards key={session.id} initialPeriod={managerPeriod} manager actorId={session.id} managementRecoveryScope={managementRecoveryScope(workspace.id)} employeeCorporate={false} today={today.toString()} payrollStep={payrollStep} viewerIsOwner={viewerIsOwner} owners={owners}/>
     </div></ScopedReadFrame>;
   }
   // Signature (phase 1): the employee page is the Timecards component's own band and sheet.

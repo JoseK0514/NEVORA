@@ -2,7 +2,7 @@
 
 Jose asked for all fixes from the [Nov 14 inspection](../README.md). This round builds the UI fixes that needed no decision and no server change. They sit in the working tree of `claude-codex-collab-nevora` on top of `ce4de4bc`. **Nothing is committed.** Backend items are in [the Codex handoff](../../../handoffs/2026-11-14-claude-to-codex-inspection-fixes.md).
 
-**Update:** Phase 1 of the design system is built on top of this round. See [phase-1/README.md](phase-1/README.md). Phase 2 (the desktop frame, row buttons, loading and error states) is built on top of that. See [phase-2/README.md](phase-2/README.md).
+**Update:** Phase 1 of the design system is built on top of this round. See [phase-1/README.md](phase-1/README.md). Phase 2 (the desktop frame, row buttons, loading and error states) is built on top of that. See [phase-2/README.md](phase-2/README.md). Phase 3 (the remaining Owner and Manager findings) follows: see [phase-3/README.md](phase-3/README.md).
 
 ## What changed
 

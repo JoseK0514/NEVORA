@@ -9,6 +9,7 @@ import { keepWhole } from "@/lib/keep-whole";
 import { initialsOf } from "@/components/quiet/quiet";
 import { faceTint } from "@/lib/face-tint";
 import { CorpSegments } from "@/components/corp/corp";
+import { BCard } from "@/components/owner-b/b-kit";
 import type { AvailabilitySubmissionListItem } from "@/lib/data/availability-submissions";
 import type { AvailabilityRecord } from "@/lib/data/availability";
 import "./availability-team-list.css";
@@ -55,7 +56,8 @@ export function AvailabilityTeamList({ employees, employeeId, before }: {
     <section aria-label="People">
     {before}
     <p className="q-sr" role="status" aria-live="polite">{visible.length} {visible.length === 1 ? "person" : "people"} shown</p>
-    {visible.length ? <ul className="q-list q-avail-list">
+    {/* Phase 3 (MG-016): the people are one kit card with its title and count ("Not sent 1"), as the cards on Things to do. */}
+    {visible.length ? <BCard title={filter === "missing" ? "Not sent" : "Sent"} count={visible.length} id="availability-people"><ul className="q-list q-avail-list">
       {visible.map(employee => {
         const selected = employee.employeeId === employeeId;
         // Someone who started but hasn't sent shows when they last changed it (the server's own wording of the time).
@@ -79,7 +81,7 @@ export function AvailabilityTeamList({ employees, employeeId, before }: {
           : <div className="q-row q-row--av">{head}</div>}
         </li>;
       })}
-    </ul> : <p className="q-empty q-first">{!employees.length ? "Employees and Leads show here once they’re added." : filter === "missing" ? "Everyone has sent theirs." : "No one has sent theirs yet."}</p>}
+    </ul></BCard> : <p className="q-empty q-first">{!employees.length ? "Employees and Leads show here once they’re added." : filter === "missing" ? "Everyone has sent theirs." : "No one has sent theirs yet."}</p>}
     </section>
   </>;
 }

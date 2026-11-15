@@ -6,7 +6,7 @@ import { TimeOffReviewActions } from "@/components/time-off-review-actions";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listPendingTimeOffRequests, listTeamTimeOffRequests } from "@/lib/data/requests";
 import { reviewTimeOffAction } from "@/app/app/requests/actions";
-import { formatTime, weekStartFor } from "@/lib/date-utils";
+import { formatTimeRange, weekStartFor } from "@/lib/date-utils";
 import { CorpPill } from "@/components/corp/corp";
 import { agoLabel, dayLabel, initialsOf, QuietHeader, QuietList, QuietNav, QuietPage, QuietRow } from "@/components/quiet/quiet";
 import { CorpAvatar, CorpCard, CorpNav, CorpNote, CorpPage, CorpRow, CorpRows, CorpSegments, CorpTitle } from "@/components/corp/corp";
@@ -45,7 +45,7 @@ const backTo = ({ from, filter, item }: Origin) => {
 /** Quiet (v4): "Thu, Oct 29 – Fri, Oct 30 · 2 days", "Thu, Oct 29 · 9:00 AM – 1:00 PM" or "Thu, Oct 29 · All day". */
 function whenLabel(request: { startDate: string; endDate: string; startTime?: string | null; endTime?: string | null }) {
   const days = Math.round((Date.parse(`${request.endDate}T12:00:00Z`) - Date.parse(`${request.startDate}T12:00:00Z`)) / 86_400_000) + 1;
-  if (request.startTime && request.endTime) return `${dayLabel(request.startDate)} · ${formatTime(request.startTime)} – ${formatTime(request.endTime)}`;
+  if (request.startTime && request.endTime) return `${dayLabel(request.startDate)} · ${formatTimeRange(request.startTime, request.endTime)}`;
   return days === 1 ? `${dayLabel(request.startDate)} · All day` : `${dayLabel(request.startDate)} – ${dayLabel(request.endDate)} · ${days} days`;
 }
 
@@ -56,7 +56,7 @@ type DecidedRequest = Awaited<ReturnType<typeof listTeamTimeOffRequests>>[number
 function requestDates(request: { startDate: string; endDate: string; startTime?: string | null; endTime?: string | null }) {
   const days = Math.round((Date.parse(`${request.endDate}T12:00:00Z`) - Date.parse(`${request.startDate}T12:00:00Z`)) / 86_400_000) + 1;
   const title = request.startDate === request.endDate ? dayLabel(request.startDate) : `${dayLabel(request.startDate)} – ${dayLabel(request.endDate)}`;
-  const length = request.startTime && request.endTime ? `${formatTime(request.startTime)} – ${formatTime(request.endTime)}` : days === 1 ? "All day" : `${days} days`;
+  const length = request.startTime && request.endTime ? formatTimeRange(request.startTime, request.endTime) : days === 1 ? "All day" : `${days} days`;
   return { title, length };
 }
 
@@ -181,7 +181,8 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
       {selected.id === "pending" ? (requests.length ? <TimeOffWaitingList requests={requests.map(request => {
         const sent = (request as { createdAt?: string }).createdAt;
         return { id: request.id, employeeName: request.employeeName, avatar: initialsOf(request.employeeName), startDate: request.startDate, endDate: request.endDate,
-          when: whenLabel(request), ago: sent ? agoLabel(sent, source.observedAt) : undefined, href: `/app/requests?tab=pending&requestId=${encodeURIComponent(request.id)}` };
+          when: whenLabel(request), ago: sent ? agoLabel(sent, source.observedAt) : undefined,
+          aged: sent ? Date.parse(source.observedAt) - Date.parse(sent) >= 86_400_000 : undefined, href: `/app/requests?tab=pending&requestId=${encodeURIComponent(request.id)}` };
       })} /> : <p className="q-empty q-first">You’re all caught up.</p>)
       : requests.length ? <QuietList label={`${selected.label} time off`} style={{ marginTop: 16 }}>{requests.map(request => (
           <QuietRow key={request.id} avatar={initialsOf(request.employeeName)} title={request.employeeName}

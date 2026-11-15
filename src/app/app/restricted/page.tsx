@@ -18,5 +18,6 @@ export async function generateMetadata(): Promise<Metadata> {
  * rendered. */
 export default async function RestrictedPage() {
   const session = await requireSession();
-  return <OwnerOnlyNotice title={restrictedTitle(session.role)} help="Ask your Owner if you need access." next={{ href: "/app", label: "Go to Home" }} />;
+  // Phase 3 (MG-015): a Manager sees the one state screen at every width; an Employee or Lead keeps the notice as it was.
+  return <OwnerOnlyNotice state={session.role === "MANAGER"} title={restrictedTitle(session.role)} help="Ask your Owner if you need access." next={{ href: "/app", label: "Go to Home" }} />;
 }

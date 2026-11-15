@@ -46,7 +46,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
   const registered = devices.filter(device => device.state === 'ACTIVE').length;
   const waiting = devices.filter(needsSetup).length;
   const revoked = devices.filter(device => device.state === 'REVOKED').length;
-  const { errors, handlers, clear } = useFieldErrors({ name: { missing: 'Enter a tablet name.' }, locationId: { missing: 'Choose a location.' } });
+  const { errors, handlers, clear } = useFieldErrors({ name: { missing: 'Enter a tablet name' }, locationId: { missing: 'Choose a location' } });
   const place = (id: string | undefined) => { const location = locations.find(item => item.id === id); return location ? shortNames[location.id] ?? location.name : undefined; };
   const date = (value: string) => {
     // ICU versions disagree on joining literals (", " versus " at ").

@@ -91,6 +91,9 @@ it('shows inclusive full-day and partial leave on both surfaces without offering
  expect(output).toContain('Time off'); expect(output).not.toContain('class="cm-add"');
  const partial=renderToStaticMarkup(createElement(ManagerWeeklyRoster,{employees:[employees[1]],dates:weekDates('2026-10-05'),today:'2026-10-06',reviewDay:'2026-10-06',timeZone:'America/Puerto_Rico',absences:{state:'ready',employeeIds:['unassigned'],rows:[{employeeId:'unassigned',startDate:'2026-10-06',endDate:'2026-10-06',startTime:'09:00',endTime:'12:00'}]}}));
  expect(partial).toContain('Time off');expect(partial).toContain('9:00');expect(partial).toContain('class="cm-add"');
+ // Nov 14 inspection (RA-10): an empty day's "+ Add" is a named link a keyboard can reach.
+ expect(partial).toMatch(/<a class="cm-add"[^>]*aria-label="Add a shift for [^"]+, (Mon|Tue|Wed|Thu|Fri|Sat|Sun) Oct \d+"[^>]*>\+ Add<\/a>/);
+ expect(partial).not.toMatch(/class="cm-add"[^>]*(tabindex|aria-hidden)/);
 });
 it('does not present an unverified empty slot when the absence read fails',()=>{
  const output=renderToStaticMarkup(createElement(ManagerWeeklyRoster,{employees:[employees[1]],dates:weekDates('2026-10-05'),today:'2026-10-06',timeZone:'America/Puerto_Rico',absences:{state:'unavailable',reason:'read_failed'}}));
@@ -177,12 +180,47 @@ it("corporate: today's open shifts that already ended say Not filled, and anothe
   expect(out).not.toContain('href="/app/schedule/coverage?shift=early"');
   expect(out.match(/<span class="c-meta">Not filled<\/span>/g)).toHaveLength(1);
   for (const id of ["later", "late", "night"]) expect(out).toContain(`class="c-row c-sched-row c-sched-row--open" href="/app/schedule/coverage?shift=${id}"`);
-  // The desktop grid's today column: the ended one collapses to a grey line with no action.
-  expect(out).toContain('<span aria-hidden="true">1 not filled</span>');
+  // Phase 3 (OW-027, TB-011): the desktop grid's day is one chip that opens its list; closed at first, so the grid itself
+  // holds no Find cover link, and the chip says how many are already over.
+  expect(out).toContain('<span aria-hidden="true">4 open</span><span class="sr-only">4 open shifts, Tue Oct 6, 1 already over</span>');
+  expect(out).toMatch(/<button type="button" class="sb-openchip" id="[^"]+" aria-expanded="false">/);
+  expect(out).not.toContain("sb-openlist");
+  expect(out).toContain('<span class="cm-person__sub sb-opencount"><b class="c-num">4</b><span> this week</span></span>');
   expect(out).toContain('<a class="c-sched-week__today" href="/app/schedule?week=2026-10-12" aria-label="Go to this week">Today</a>');
   // Without the read time, today's open shifts all stay open.
   const unknown = renderToStaticMarkup(createElement(ManagerWeeklyRoster, { employees, dates: weekDates("2026-10-05"), today: "2026-10-06", timeZone: "America/Puerto_Rico",
     absences: { state: "ready", employeeIds: ["fictional", "unassigned"], rows: [] } as never, openShifts,
     corp: { weekLabel: "Oct 5 – 11", previousHref: "/p", nextHref: "/n", addShiftHref: "/app/schedule/new?week=2026-10-05" } }));
   expect(unknown).not.toContain(">Not filled<");
+});
+
+// Phase 3 (OW-003, OW-006, TB-018): durations come from the shared formatters, the week's coverage is one line in the grid
+// card's head, and the week's state sits inside the week stepper.
+it("grid: whole-minute durations, one coverage line and the week's state beside the stepper", () => {
+  const roster: RosterEmployee[] = [{ id: "e", name: "Dana Kim", role: "Employee", shifts: [
+    { id: "a", date: "2026-10-05", startTime: "09:00", endTime: "16:45", location: "Main Office", status: "PUBLISHED", lead: false },
+    { id: "b", date: "2026-10-06", startTime: "09:00", endTime: "17:00", location: "Main Office", status: "PUBLISHED", lead: false },
+  ] }];
+  const out = renderToStaticMarkup(createElement(ManagerWeeklyRoster, { employees: roster, dates: weekDates("2026-10-05"), today: "2026-10-06", timeZone: "America/Puerto_Rico",
+    openShifts: [{ id: "past", date: "2026-10-05", startTime: "06:00", endTime: "10:00", location: "Main Office", href: "/app/schedule/coverage?shift=past" }],
+    corp: { weekLabel: "Oct 5 – 11", previousHref: "/p", nextHref: "/n", addShiftHref: "/app/schedule/new?week=2026-10-05", status: createElement("span", { className: "c-meta c-sched-weekstate", "data-tone": "green" }, "Published") },
+    b: { sub: "Tuesday", actions: null, location: null, weekState: null, toPlan: [],
+      coverage: { state: "ready", staffing: { required: 480, covered: 240, percent: 50 }, positions: { required: 0, covered: 0, percent: null }, lead: { required: 0, covered: 0, percent: null } } } }));
+  // 7 h 45 + 8 h: the person's week and the corner total (rounded like Home's), a day's hours as a row figure.
+  expect(out).toContain("15 h 45 assigned this week");
+  expect(out).toContain("1 person · 16 h");
+  expect(out).toContain('<span class="sr-only">, </span>7 h 45</span>');
+  expect(out).not.toMatch(/\d\.\d+ h/);
+  // One line, no tile and no "aren’t required" sentence in the grid card.
+  const bar = out.slice(out.indexOf('class="c-sched-gridbar"'), out.indexOf('class="cm-grid__scroll"'));
+  expect(bar).toContain('<div class="sb-cov" role="group" aria-label="Covered this week">');
+  expect(bar).toContain('Staffing <b class="c-num">50%</b>');
+  expect(bar).toContain('style="inline-size:50%"');
+  expect(bar).toMatch(/4\sh of 8\sh/);
+  expect(bar).not.toContain("required");
+  expect(bar).not.toContain("cm-grid__coverage");
+  // The week's state is the stepper's last child.
+  expect(bar).toMatch(/aria-label="Next week">.*?<\/a><span class="c-meta c-sched-weekstate" data-tone="green">Published<\/span><\/span>/);
+  // A day already over: a grey chip that still opens its list.
+  expect(out).toContain('data-over="true" aria-expanded="false"><span aria-hidden="true">1 open</span><span class="sr-only">1 open shift, Mon Oct 5, day already over</span>');
 });

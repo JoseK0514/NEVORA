@@ -38,6 +38,9 @@ function labelText(field: Field) {
 function message(field: Field) {
   const v = field.validity, label = labelText(field);
   if (v.valueMissing) {
+    // Review Nov 11 (OW-023): a field may say its own sentence ("Enter a first name"): the label alone cannot give the
+    // article. Fields without one keep the sentence built from their label.
+    if (field.dataset.missing) return field.dataset.missing;
     if (field instanceof HTMLSelectElement) return label ? `Choose ${label}` : "Choose an option";
     if (field instanceof HTMLInputElement && (field.type === "checkbox" || field.type === "radio")) return "Select this to continue";
     return label ? `Enter ${label}` : "Fill in this field";

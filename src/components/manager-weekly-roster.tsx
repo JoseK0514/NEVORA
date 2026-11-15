@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { CoverageFigures } from "./coverage-minutes/coverage-minutes";
+import { ScheduleCoverageLine } from "./schedule-coverage-line";
+import { durationRow, durationTotal } from "@/lib/duration-format";
 import type { CoverageMinutes } from "@/lib/scheduling/coverage-minutes";
 import { REPAIR_DAY_EVENT } from "./leave-staffing/repair-note";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useId, useState, type ReactNode } from "react";
 import { KeepSelectedVisible } from "./kit/keep-selected-visible";
 
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
@@ -22,7 +24,7 @@ import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { addDays, formatDayLabel, formatTime } from "../lib/date-utils";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { compactRange, BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BStack, type BTone } from "./owner-b/b-kit";
-import { absencesOn, fullDayAbsence, type WeeklyApprovedAbsences, assignedHours, type RosterEmployee, type RosterShift } from "../lib/scheduling/manager-roster-presentation";
+import { absencesOn, fullDayAbsence, type WeeklyApprovedAbsences, assignedMinutes, type RosterEmployee, type RosterShift } from "../lib/scheduling/manager-roster-presentation";
 
 /* Manager and Owner Schedule, rebuilt for the clean Manager app (v3, approved Oct 19; spec "Schedule" in
  * docs/product/specs/clean-manager/spec.md). Phones: an iOS week strip, then the chosen day as a grouped list
@@ -87,14 +89,6 @@ function Block({ shift, person, onLeave = false }: { shift: RosterShift; person:
     {shift.position ? <span className="sr-only schedule-assigned-position">{`, ${shift.position}`}</span> : null}
     {overnight(shift) ? <span className="sr-only">{`, Ends ${formatDayLabel(addDays(shift.date, 1)).day}`}</span> : null}
     <span className="sr-only">{`, ${statusWord(shift.status)}`}</span>
-  </Link>;
-}
-
-function OpenBlock({ open }: { open: RosterOpenShift }) {
-  const day = formatDayLabel(open.date);
-  return <Link className="cm-block open" href={open.href} title={`${formatTime(open.startTime)} – ${formatTime(open.endTime)} · ${open.location} · No one assigned`}
-    aria-label={`Find cover for an open shift, ${day.weekday} ${day.day}, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>
-    <span aria-hidden="true"><CorpTime>{range(open.startTime, open.endTime)}</CorpTime></span>
   </Link>;
 }
 
@@ -177,6 +171,9 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
   const [showUnscheduled, setShowUnscheduled] = useState(false);
   const [repairDay, setRepairDay] = useState<string | null>(null);
   const [moreDay, setMoreDay] = useState<string | null>(null);
+  // Desktop and tablets: the day whose open shifts are listed under the Open shifts row (one at a time; none at first).
+  const [openDay, setOpenDay] = useState<string | null>(null);
+  const openListId = useId();
   // Corporate: the day card shows who is working or late today, from the Today read Home already uses.
   const todayRead = useTodayWhen(!!corp && dates.includes(today));
   // The navigation row's Add shift opens on the chosen day (it listens for this).
@@ -252,16 +249,18 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
   </QuietSection>;
 
   // ---------- Corporate phone (board G-O-Schedule): a week card, then the chosen day as a card ----------
-  const weekNav = corp ? <span className="c-sched-week__nav">
+  // `state` (the grid only): the week's state rides inside the stepper, so it sits beside the week it describes (TB-018).
+  const weekNav = (state?: ReactNode) => corp ? <span className="c-sched-week__nav">
     <a className="c-sched-week__arrow" href={corp.previousHref} aria-label="Previous week"><CaretLeftIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" /></a>
     <span className="c-sched-week__label">{corp.weekLabel}</span>
     <a className="c-sched-week__arrow" href={corp.nextHref} aria-label="Next week"><CaretRightIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" /></a>
     {corp.todayHref ? <a className="c-sched-week__today" href={corp.todayHref} aria-label="Go to this week">Today</a> : null}
+    {state}
   </span> : null;
   // Phones and tablets: the week card. Desktop (R11) moves the same bar into the grid's card, so this card hides there.
   const corpWeek = corp ? <div className="c-sched-weekcard"><CorpCard as="div" ariaLabel="Week">
     <div className="c-card__head c-sched-week__head">
-      {weekNav}
+      {weekNav()}
       {/* Round 5 (Nov 8): the week's state is a server-built element beside weekNav; its own fragment keeps React's list
         check quiet (it reached this client list unvalidated and warned about a missing key). */}
       <>{corp.status ?? null}</>
@@ -279,7 +278,9 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
       })}
     </div>
   </CorpCard></div> : null;
-  const corpHours = assignedHours(dayShifts.map(entry => entry.shift));
+  // Review OW-003: durations read from the shared formatters (whole minutes; "53 h", "7 h 30"), never decimal hours.
+  const corpMinutes = assignedMinutes(dayShifts.map(entry => entry.shift));
+  const corpHours = corpMinutes ? durationRow(corpMinutes) : "";
   // Owner premium (visual-craft I, R3, Jose's rule): red at most once per screen, and one red mark on that row. The day's
   // first problem in time order (an open shift still to come, or a missed or late clock-in) has red text; nothing else on
   // the row is red (no ring, the "+" stays grey). The rest stay quiet. Open shifts that are over carry no alert.
@@ -327,7 +328,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
   ].sort((a, b) => a.start.localeCompare(b.start));
   const SHOWN_CORP = 5;
   const corpDayLabel = `${phoneDay === today ? "Today · " : ""}${formatDayLabel(phoneDay).weekday}, ${new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${phoneDay}T12:00:00Z`))}`;
-  const corpDay = corp ? <CorpCard id="schedule-day" label={corpDayLabel} aside={<span className="c-sched-day__count">{`${plural(corpRows.length, "shift", "shifts")}${corpHours ? ` · ${corpHours} h` : ""}`}</span>}>
+  const corpDay = corp ? <CorpCard id="schedule-day" label={corpDayLabel} aside={<span className="c-sched-day__count">{`${plural(corpRows.length, "shift", "shifts")}${corpHours ? ` · ${corpHours}` : ""}`}</span>}>
     {corpRows.length ? <ul className="c-rows" aria-label={`Shifts on ${longWeekday(phoneDay)}`}>
       {(showAll ? corpRows : corpRows.slice(0, SHOWN_CORP)).map(row => row.node)}
     </ul> : <p className="c-sched-day__empty">Nothing scheduled.</p>}
@@ -349,17 +350,19 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
   const scheduled = employees.filter(employee => shown(employee).length);
   const unscheduled = employees.filter(employee => !shown(employee).length);
   const gridOpen = openShifts.filter(open => visibleDates.includes(open.date));
-  const totalHours = assignedHours(scheduled.flatMap(shown));
+  const openOn = (date: string) => gridOpen.filter(open => open.date === date).sort((a, b) => a.startTime.localeCompare(b.startTime));
+  const listedOpen = openDay && visibleDates.includes(openDay) ? openOn(openDay) : [];
+  const totalMinutes = assignedMinutes(scheduled.flatMap(shown));
   const personRow = (employee: RosterEmployee, hidden = false) => {
-    const week = assignedHours(employee.shifts);
+    const week = durationRow(assignedMinutes(employee.shifts), "0 h");
     const over = employee.hours ? employee.hours.week > employee.hours.maximum : false;
     return <tr className={repairEmployeeId === employee.id ? "cm-grid__row manager-issue-target cm-grid__row--repair" : "cm-grid__row manager-issue-target"} data-leave-repair={repairEmployeeId === employee.id || undefined} id={`schedule-employee-${employee.id}`} tabIndex={-1} key={employee.id} hidden={hidden || undefined}>
       <th scope="row" className="cm-person">
         <Avatar initials={initials(employee.name)} />
         <span className="cm-person__text">
           <span className="cm-person__name" title={employee.name}>{employee.name}</span>
-          <span className="cm-person__sub c-num" aria-hidden="true" title={employee.hours ? hoursText(employee.hours) : undefined}>{week} h{over && employee.hours ? <em>{` · ${overBy(employee.hours)} over ${employee.hours.maximum} h`}</em> : null}</span>
-          <span className="sr-only">{week} h assigned this week</span>
+          <span className="cm-person__sub c-num" aria-hidden="true" title={employee.hours ? hoursText(employee.hours) : undefined}>{week}{over && employee.hours ? <em>{` · ${overBy(employee.hours)} over ${employee.hours.maximum} h`}</em> : null}</span>
+          <span className="sr-only">{week} assigned this week</span>
           {employee.hours ? <span className="sr-only mws-hours" data-over={over || undefined}>{`, ${hoursText(employee.hours)}`}</span> : null}
           {!shown(employee).length ? <span className="sr-only">{focus === "all" ? ", No assignments this week" : ", No assignments on this day"}</span> : null}
         </span>
@@ -369,8 +372,10 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
         const leave = absencesOn(absences, employee.id, date);
         return <td key={date} data-today={date === today || undefined}>
           {leave.length ? <span className="wb-note">{absenceText(leave)}</span> : !absenceKnown(employee.id) ? <span className="wb-note">Time off unavailable</span> : null}
+          {/* Nov 14 inspection (RA-10): an empty day's "+ Add" is a real link (named for the person and day), shown on
+            keyboard focus and on touch screens as well as on hover. */}
           {shifts.length ? shifts.map(shift => <Block shift={shift} person={employee.name} key={shift.id} onLeave={fullDayAbsence(leave)} />)
-            : absenceKnown(employee.id) && !fullDayAbsence(leave) ? <Link className="cm-add" tabIndex={-1} aria-hidden="true" href={newShift(date, employee.id)}>+ Add</Link> : null}
+            : absenceKnown(employee.id) && !fullDayAbsence(leave) ? <Link className="cm-add" href={newShift(date, employee.id)} aria-label={`Add a shift for ${employee.name}, ${formatDayLabel(date).weekday} ${formatDayLabel(date).day}`}>+ Add</Link> : null}
         </td>;
       })}
     </tr>;
@@ -378,9 +383,11 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
   // R11: on desktop the week bar (‹ week › and the week's state) is the grid card's head.
   const grid = <div className="cm-grid-wrap">
     {/* Review B5 (NV-131): the grid's three block looks are explained once, beside the week's state. */}
-    {corp ? <div className="c-sched-gridbar">{weekNav}<span className="cm-legend" aria-hidden="true"><span data-k="published">Published</span><span data-k="draft">Draft</span><span data-k="open">Open</span></span><>{corp.status ?? null}</></div> : null}
-    {/* Nov 9, 2026: the week's coverage (schedule health's required minutes, staffing, positions and lead apart). */}
-    {b?.coverage ? <div className="cm-grid__coverage"><CoverageFigures coverage={b.coverage} label="Covered this week" /></div> : null}
+    {/* Phase 3 (OW-006, TB-018): the bar is one line: the week's coverage (schedule health's required minutes) at the
+      left, the legend at the right. The week's state sits inside the stepper, on the band. */}
+    {corp ? <div className="c-sched-gridbar">{weekNav(<>{corp.status ?? null}</>)}
+      {b?.coverage ? <ScheduleCoverageLine coverage={b.coverage} label="Covered this week" /> : null}
+      <span className="cm-legend" aria-hidden="true"><span data-k="published">Published</span><span data-k="draft">Draft</span><span data-k="open">Open</span></span></div> : null}
     {focus !== "all" ? <div className="cm-grid__focus">
       <span>{`${longWeekday(focus)}, ${formatDayLabel(focus).day}`}</span>
       <button type="button" className="cm-kbtn" onClick={() => setFocus("all")}>Full week</button>
@@ -389,31 +396,47 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
       <table className="cm-grid" data-days={visibleDates.length}>
         <caption className="sr-only">{`Team schedule. Times in ${timeZone.split("/").at(-1)?.replaceAll("_", " ") ?? timeZone}. Select a shift to edit.`}</caption>
         <thead><tr>
-          <th scope="col" className="cm-grid__corner">{`${plural(scheduled.length, "person", "people")} · ${totalHours} h`}</th>
+          <th scope="col" className="cm-grid__corner">{`${plural(scheduled.length, "person", "people")} · ${durationTotal(totalMinutes)}`}</th>
           {/* Nov 1 upscale: each day's assigned hours under its date ("Mon 26" over "24 h"). */}
-          {visibleDates.map(date => { const hours = assignedHours(scheduled.flatMap(shown).filter(shift => shift.date === date)); return <th scope="col" key={date} data-today={date === today || undefined}>
+          {visibleDates.map(date => { const hours = durationRow(assignedMinutes(scheduled.flatMap(shown).filter(shift => shift.date === date)), "0 h"); return <th scope="col" key={date} data-today={date === today || undefined}>
             <span>{formatDayLabel(date).weekday}</span> <b>{Number(date.slice(8))}</b>{date === today ? <span className="sr-only">, today</span> : null}
-            <span className="cm-grid__dayhours c-num"><span className="sr-only">, </span>{`${hours} h`}</span>
+            <span className="cm-grid__dayhours c-num"><span className="sr-only">, </span>{hours}</span>
           </th>; })}
         </tr></thead>
         <tbody>
           {gridOpen.length ? <tr className="cm-grid__open">
-            {/* R11: no icon tile; open shifts are dashed chips. A day already over collapses to one grey "4 open" line. */}
+            {/* Phase 3 (OW-027, TB-011): every day is one chip ("4 open") that opens that day's list under the row. The
+              count is a pill beside "Open shifts" on a narrow grid (TB-003). */}
             <th scope="row" className="cm-person">
-              <span className="cm-person__text"><span className="cm-person__name">Open shifts</span><span className="cm-person__sub">{focus === "all" ? `${gridOpen.length} this week` : `${gridOpen.length} this day`}</span></span>
+              <span className="cm-person__text"><span className="cm-person__name">Open shifts</span><span className="cm-person__sub sb-opencount"><b className="c-num">{gridOpen.length}</b><span>{focus === "all" ? " this week" : " this day"}</span></span></span>
             </th>
             {visibleDates.map(date => {
-              const dayOpenShifts = gridOpen.filter(open => open.date === date).sort((a, b) => a.startTime.localeCompare(b.startTime));
-              const day = formatDayLabel(date);
+              const dayOpenShifts = openOn(date);
+              const day = formatDayLabel(date), over = dayOpenShifts.filter(ended).length;
               return <td key={date} data-today={date === today || undefined}>
-                {date < today ? dayOpenShifts.length ? <span className="cm-open-past"><span aria-hidden="true">{`${dayOpenShifts.length} open`}</span><span className="sr-only">{`${plural(dayOpenShifts.length, "open shift", "open shifts")}, ${day.weekday} ${day.day}, day already over`}</span></span> : null
-                  : <>
-                    {/* Today: the ones that already ended collapse to the same grey line as a past day's, with no action. */}
-                    {dayOpenShifts.some(ended) ? <span className="cm-open-past"><span aria-hidden="true">{`${dayOpenShifts.filter(ended).length} not filled`}</span><span className="sr-only">{`${plural(dayOpenShifts.filter(ended).length, "open shift", "open shifts")} already over, not filled`}</span></span> : null}
-                    {dayOpenShifts.filter(open => !ended(open)).map(open => <OpenBlock key={`open-${open.id}`} open={open} />)}
-                  </>}
+                {dayOpenShifts.length ? <button type="button" className="sb-openchip" id={`${openListId}-${date}`} data-over={over === dayOpenShifts.length || undefined}
+                  aria-expanded={openDay === date} aria-controls={openDay === date ? openListId : undefined} onClick={() => setOpenDay(current => current === date ? null : date)}>
+                  <span aria-hidden="true">{`${dayOpenShifts.length} open`}</span>
+                  <span className="sr-only">{`${plural(dayOpenShifts.length, "open shift", "open shifts")}, ${day.weekday} ${day.day}${date < today ? ", day already over" : over === dayOpenShifts.length ? ", already over, not filled" : over ? `, ${over} already over` : ""}`}</span>
+                  <CaretDownIcon size={12} weight="bold" aria-hidden="true" />
+                </button> : null}
               </td>;
             })}
+          </tr> : null}
+          {listedOpen.length && openDay ? <tr className="sb-openlist">
+            <td colSpan={visibleDates.length + 1}>
+              {/* Escape closes the list and returns to its chip. */}
+              <div id={openListId} role="group" aria-label={`Open shifts, ${longWeekday(openDay)}, ${formatDayLabel(openDay).day}`}
+                onKeyDown={event => { if (event.key === "Escape") { const chip = document.getElementById(`${openListId}-${openDay}`); setOpenDay(null); chip?.focus(); } }}>
+                <p className="sb-openlist__h"><b>{`${formatDayLabel(openDay).weekday}, ${formatDayLabel(openDay).day}`}</b><span>{plural(listedOpen.length, "open shift", "open shifts")}</span></p>
+                <ul>{listedOpen.map(open => { const day = formatDayLabel(open.date); return <li key={open.id}>
+                  <span className="sb-openlist__t c-num">{range(open.startTime, open.endTime) === "All day" ? "All day" : `${compactTime(open.startTime)} – ${compactTime(open.endTime)}`}</span>
+                  <span className="sb-openlist__p">{open.location || "No one assigned"}</span>
+                  {ended(open) ? <BChip>Not filled</BChip>
+                    : <Link className="b-rowact b-rowact--go sb-openlist__go" href={open.href} aria-label={`Find cover for an open shift, ${day.weekday} ${day.day}, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>Fill</Link>}
+                </li>; })}</ul>
+              </div>
+            </td>
           </tr> : null}
           {scheduled.map(employee => personRow(employee))}
         </tbody>
@@ -480,7 +503,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
       {b.toPlan.length ? <BCard label="Locations the team can’t see yet"><BList label="Locations the team can’t see yet">{b.toPlan.map(row =>
         <BRow key={row.id} lead={<BIcon tone="amber"><WarningIcon weight="bold" /></BIcon>} title={row.title} sub={row.detail} href={row.href} label={row.label}
           end={<span className="b-link">{row.action}<CaretRightIcon size={16} weight="bold" aria-hidden="true" /></span>} chevron={false} />)}</BList></BCard> : null}
-      {employees.length ? <BCard id="b-schedule-day" title={corpDayLabel} meta={<span className="c-num">{`${plural(bRows.length, "shift", "shifts")}${corpHours ? ` · ${corpHours} h` : ""}`}</span>}>
+      {employees.length ? <BCard id="b-schedule-day" title={corpDayLabel} meta={<span className="c-num">{`${plural(bRows.length, "shift", "shifts")}${corpHours ? ` · ${corpHours}` : ""}`}</span>}>
         {bRows.length ? <BList label={`Shifts on ${longWeekday(phoneDay)}`}>{(showAll ? bRows : bRows.slice(0, SHOWN_B)).map(row => row.node)}</BList> : <p className="b-state">Nothing scheduled.</p>}
         {!showAll && bRows.length > SHOWN_B ? <button type="button" className="b-add" onClick={() => setMoreDay(phoneDay)}>{`Show ${bRows.length - SHOWN_B} more`}</button> : null}
         {absences.state === "unavailable" || employees.some(employee => !absenceKnown(employee.id)) ? <p className="b-state" role="status">Time off unavailable. Reload before adding shifts.</p> : null}

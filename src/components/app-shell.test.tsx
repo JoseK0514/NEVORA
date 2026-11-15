@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, vi } from "vitest";
@@ -92,11 +93,12 @@ it.each(["LEAD"] as const)("gives %s the Employee tabs, with More on the avatar"
 
 // Corporate (Release 1, approved Oct 26): five tabs and no More tab; More opens from the header avatar. Without payroll
 // review, Inbox takes Payroll's place.
+// Phase 3 (MG-006): a Manager's To do tab is second, as in the Manager's sidebar; the Owner's order is unchanged.
 it.each(["MANAGER", "OWNER"] as const)("gives %s Home, Schedule, Time, Inbox and Team tabs without payroll review", (role) => {
   const { html, mobile } = render(role);
-  expect([...mobile.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
-    "/app", "/app/schedule", "/app/timecards", "/app/inbox", "/app/employees",
-  ]);
+  expect([...mobile.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual(role === "MANAGER"
+    ? ["/app", "/app/inbox", "/app/schedule", "/app/timecards", "/app/employees"]
+    : ["/app", "/app/schedule", "/app/timecards", "/app/inbox", "/app/employees"]);
   expect(mobile).toContain('<span>Time</span>');
   expect(mobile).not.toContain('<span>More</span>');
   expect(mobile).not.toContain('manager-more-navigation');
@@ -358,4 +360,78 @@ it.each(['EMPLOYEE','LEAD','OWNER','MANAGER'] as const)('lights no %s tab or sid
   expect(sidebar).not.toContain('nav-link active');
   expect(sidebar).not.toContain('aria-current');
  }
+});
+
+// Phase 3, package F (Nov 15, 2026): the Owner and Manager shell.
+const ownPay={enabled:true,canConfigure:false,canReview:false,canApprove:false,internalCalculatorAvailable:false,bankCompatibility:'UNVERIFIED'} as const;
+function shell(role:'OWNER'|'MANAGER'|'EMPLOYEE',pathname:string,payroll:ComponentProps<typeof AppShell>['payrollCapabilities']=ownPay){
+ navigationMock.pathname=pathname;
+ const html=renderToStaticMarkup(<AppShell workspaceName="Northside Café &amp; Bakery" operationalAuthority={company} payrollCapabilities={payroll} user={{id:'actor',firstName:'Sam',lastName:'Cruz',role}}>Content</AppShell>);
+ return {html,sidebar:html.split('aria-label="Primary navigation"')[1].split('</nav>')[0],mobile:html.split('aria-label="Mobile navigation"')[1].split('</nav>')[0],pill:html.split('class="portal-account-menu"')[1].split('</button>')[0],menu:html.split('id="portal-account-menu"')[1].split('</header>')[0]};
+}
+it('MG-006, MG-007: a Manager\'s sidebar reads Home, Things to do, Schedule, Time, Team, then an unnamed group with Scheduling rules and My pay',()=>{
+ const {sidebar,menu}=shell('MANAGER','/app');
+ expect([...sidebar.matchAll(/class="nav-label">([^<]+)</g)].map(match=>match[1])).toEqual(['Home','Things to do','Schedule','Time','Team','Insights','Updates','Scheduling rules','My pay']);
+ expect(sidebar).not.toContain('sidebar-group-label');
+ expect(sidebar.match(/class="sidebar-nav-group"/g)).toHaveLength(2);
+ // My pay has one place on tablets and desktop: the sidebar, not the account menu as well.
+ expect(menu).not.toContain('href="/app/my-pay"');
+ // The Owner keeps the "More" heading and My pay in the account menu.
+ const owner=shell('OWNER','/app');
+ expect(owner.sidebar).toContain('<h2 class="sidebar-group-label">More</h2>');
+ expect(owner.sidebar).not.toContain('href="/app/my-pay"');
+ expect(owner.menu).toContain('href="/app/my-pay"');
+});
+it.each(['/app/schedule/settings','/app/my-pay'])('MG-007: a Manager\'s %s lights its own sidebar entry and nothing else',pathname=>{
+ const {sidebar,pill}=shell('MANAGER',pathname);
+ expect(sidebar.match(/aria-current=/g)).toHaveLength(1);
+ expect(sidebar).toContain(`href="${pathname}" class="nav-link active" aria-current="page"`);
+ expect(pill).not.toContain('aria-current');
+});
+it.each([['OWNER','/app/more'],['OWNER','/app/profile'],['OWNER','/app/my-pay'],['MANAGER','/app/more'],['MANAGER','/app/profile']] as const)('TB-009: for %s, %s lights no sidebar entry and marks the account pill',(role,pathname)=>{
+ const {sidebar,pill,mobile}=shell(role,pathname);
+ expect(sidebar).not.toContain('aria-current');
+ expect(sidebar).not.toContain('nav-link active');
+ expect(pill).toContain('aria-current="true"');
+ expect(mobile).not.toContain('aria-current');
+});
+it.each(['/app','/app/schedule','/app/inbox','/app/reports'])('TB-009: the account pill is not marked on %s',pathname=>{
+ const {sidebar,pill}=shell('OWNER',pathname);
+ expect(pill).not.toContain('aria-current');
+ expect(sidebar.match(/aria-current="page"/g)).toHaveLength(1);
+});
+// MG-014: a Manager's closed Payroll and Settings pages and Insights light no tab; the closed pages light no sidebar entry.
+it.each(['/app/payroll','/app/settings','/app/reports'])('MG-014: a Manager\'s %s lights no tab',pathname=>{
+ const {mobile,sidebar}=shell('MANAGER',pathname);
+ expect(mobile).not.toContain('mobile-nav-link active');
+ expect(mobile).not.toContain('aria-current');
+ if(pathname==='/app/reports') expect(sidebar).toContain('href="/app/reports" class="nav-link active" aria-current="page"');
+ else expect(sidebar).not.toContain('aria-current');
+});
+it('TB-001, TB-009: the current sidebar entry\'s glyph is filled and the others are bold',()=>{
+ const fill=renderToStaticMarkup(<NavIcon name="schedule" size={20} weight="fill"/>),bold=renderToStaticMarkup(<NavIcon name="schedule" size={20}/>);
+ expect(fill).not.toBe(bold);
+ for(const role of ['OWNER','EMPLOYEE'] as const){
+  const {sidebar}=shell(role,'/app/schedule');
+  expect(sidebar.split('href="/app/schedule"')[1].split('</a>')[0]).toContain(fill);
+  expect(sidebar.split('href="/app"')[1].split('</a>')[0]).not.toContain(renderToStaticMarkup(<NavIcon name="dashboard" size={20} weight="fill"/>));
+ }
+});
+it('an Employee\'s account menu and sidebar are unchanged by the Manager rules',()=>{
+ const {sidebar,pill}=shell('EMPLOYEE','/app/profile');
+ expect([...sidebar.matchAll(/class="nav-label">([^<]+)</g)].map(match=>match[1])).toEqual(['Home','Schedule','Time','Pay','Requests','Updates','Notifications']);
+ expect(sidebar).toContain('<h2 class="sidebar-group-label">More</h2>');
+ expect(pill).not.toContain('aria-current');
+});
+// The Phase 3 shell rules live in one marked block of owner-b-shell.css and never reach an Employee's or Lead's shell.
+it('keeps every Phase 3 shell rule scoped to Owner and Manager shells',()=>{
+ const css=readFileSync(new URL('../app/app/owner-b-shell.css',import.meta.url),'utf8');
+ const block=css.split('Phase 3, package F (Nov 15, 2026)')[1].split('end of Phase 3, package F')[0];
+ const selectors=block.replace(/\/\*[\s\S]*?\*\//g,'').split('\n').map(line=>line.trim()).filter(line=>line.startsWith(':is(#c-root, html)'));
+ expect(selectors.length).toBeGreaterThan(10);
+ for(const selector of selectors) expect(selector).toContain(':not([data-employee-mobile])');
+ // One count pill: teal, 20px, 12/700; and the touch rule is touch-only from 768px.
+ expect(block).toMatch(/\.nav-count \{[^}]*min-width: 20px !important; height: 20px !important;[^}]*background: var\(--b-teal\) !important; font: 700 var\(--b-fs-count\)/);
+ expect(block).toContain('@media (min-width: 768px) and (pointer: coarse)');
+ expect(css).not.toMatch(/\.b-tab-badge \{[^}]*var\(--b-red\)/);
 });

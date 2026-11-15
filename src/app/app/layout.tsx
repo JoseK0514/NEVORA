@@ -43,6 +43,12 @@ import "./owner-b-desktop.css";
 import "./employee-b-desktop.css";
 // Review B1 (Nov 10, 2026): shared Direction B foundation fixes (focus, targets, press, disabled, contrast). Loaded last.
 import "./b-foundation.css";
+// Phase 3 (Nov 15, 2026): one Direction B sheet per Owner and Manager area. After the foundation, so an area rule wins.
+import "./owner-b-home.css";
+import "./owner-b-schedule.css";
+import "./owner-b-time-pay.css";
+import "./owner-b-requests.css";
+import "./owner-b-settings.css";
 import {communicationAuthority} from "@/lib/communications/service.server";
 import {cookies, headers} from "next/headers";
 import {createHash} from "node:crypto";

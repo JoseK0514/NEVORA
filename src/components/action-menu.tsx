@@ -22,6 +22,8 @@ type ActionMenuProps = {
   title?: string;
   /** The popover's preferred width on wider screens (default 318px; the account menu uses 240px). */
   width?: number;
+  /** Marks the trigger as the current place (the account pill while a page it opens is on screen). */
+  triggerCurrent?: boolean;
 };
 
 export function ActionMenu({
@@ -37,6 +39,7 @@ export function ActionMenu({
   sheet = false,
   title,
   width,
+  triggerCurrent = false,
 }: ActionMenuProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -150,6 +153,7 @@ export function ActionMenu({
         className={triggerClassName ?? "button ghost nevora-action-menu-trigger"}
         popoverTarget={id}
         aria-label={ariaLabel ?? label}
+        aria-current={triggerCurrent ? "true" : undefined}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
             keyboardOpenRef.current = true;

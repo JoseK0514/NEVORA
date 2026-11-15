@@ -40,8 +40,9 @@ describe("role navigation", () => {
     // Review F2 (NV-070): every shift request page goes back to Schedule, so Schedule lights at every width.
     expect(activeNavigationHref('EMPLOYEE','/app/exchange?tab=mine',payroll)).toBe('/app/schedule');
     expect(activeNavigationHref('EMPLOYEE','/app/requests',payroll)).toBe('/app/requests/hub');
-    // NV-294: More lights Home for Owners and Managers (tablet rail, desktop sidebar).
-    expect(activeNavigationHref('OWNER','/app/more',payroll)).toBe('/app');
+    // Phase 3 (MG-007, TB-009): More lights no sidebar or rail entry for Owners and Managers (it lit Home, NV-294).
+    expect(activeNavigationHref('OWNER','/app/more',payroll)).toBeUndefined();
+    expect(activeNavigationHref('MANAGER','/app/more',payroll)).toBeUndefined();
   });
 });
 
@@ -106,7 +107,8 @@ describe('phone tabs', () => {
   });
   it.each(['MANAGER','OWNER'] as const)('gives %s Home, Schedule, Time, Inbox and Team without payroll review, with every other destination in More', role => {
     const context={operational:company};
-    expect(mobileTabsForRole(role,undefined,context).map(tab => tab.href)).toEqual(['/app','/app/schedule','/app/timecards','/app/inbox','/app/employees']);
+    // Phase 3 (MG-006): a Manager's To do tab is second (Home, To do, Schedule, Time, Team); the Owner's stays fourth.
+    expect(mobileTabsForRole(role,undefined,context).map(tab => tab.href)).toEqual(role==='MANAGER'?['/app','/app/inbox','/app/schedule','/app/timecards','/app/employees']:['/app','/app/schedule','/app/timecards','/app/inbox','/app/employees']);
     expect(navigationForRole(role,undefined,context).map(item => item.href).slice(0, 3)).toEqual(['/app','/app/inbox','/app/schedule']);
     const reachable = [...mobileTabsForRole(role,undefined,context).flatMap(tab => tab.owns), ...mobileMoreForRole(role,undefined,context).map(item => item.href)];
     for (const item of navigationForRole(role,undefined,context)) expect(reachable).toContain(item.href);

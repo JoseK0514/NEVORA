@@ -428,6 +428,27 @@ item names the lines it supersedes; line numbers are from the file before this s
   page keeps the band at 196 with one 560px state card and one retry (`BStateScreen`, `BRouteError`). The offline line
   is one dark pill: at the foot of the window from 768px, above the tab bar on phones; it never sits between the top
   bar and the band. Employee Home still clears private rows when offline.
+- **Owner and Manager screens (Phase 3, built Nov 15, 2026; see `docs/product/review-2026-11-14/fixes/phase-3/README.md`).**
+  - *Area sheets.* New Owner and Manager rules live in one sheet per area, loaded after `b-foundation.css`:
+    `owner-b-home.css`, `owner-b-schedule.css`, `owner-b-time-pay.css`, `owner-b-requests.css`, `owner-b-settings.css`;
+    the shell's are in `owner-b-shell.css`. Do not append to `owner-b-desktop.css` or `owner-b-pages.css`.
+  - *Counts.* One count pill everywhere (sidebar, rail, phone tab): 20px, teal, white 12/700. Red waits on an overdue
+    number from the server. Home, Things to do and the badge show the same number: what can be decided today.
+  - *Rows.* A row's title is the person; its sub-line is what and when. One 36px lead slot (avatar or icon circle).
+    From 768px a request row carries its quiet and tinted buttons inline at 64px. Chips are 22px, 12/16, 600; a chip
+    marks an exception, plain grey text marks the normal state.
+  - *Icons on Things to do.* Amber waits on you, teal is information, grey is done.
+  - *Right rail.* Payroll joins Team and Home on the list-plus-rail grid from 1024px.
+  - *Schedule.* Coverage is one line with a bar in the grid head. Open shifts are one "N open" chip per day that
+    opens that day's list under the row (`aria-expanded`; 44px on touch). Under 820px of card the grid drops avatars.
+  - *Closed pages.* One state card: whose page it is, the reader's own part, one tinted next step. The holder is a
+    48px circle.
+  - *Forms.* One error style: 16px bold warning glyph, red 13.5/18, no closing period. A locked value shows its
+    reason beneath it. Save appears after a change.
+  - *Shell.* The current sidebar and rail icon is drawn filled. Pages opened from the account pill light nothing and
+    the pill takes `aria-current`. Under 1024px Owners and Managers have the labelled rail only (no toggle).
+  - *Supersedes* the red count badge, "light Home" for account pages on tablets, and the per-day open-shift time
+    chips on the Owner grid noted further down.
 - **States and menus.** The state card's empty kind is grey with a tray glyph; the warning glyph is for failures.
   Menu items have 10px corners inside the 16px menu (supersedes 8px near 1891).
 - **Motion.** The press scale runs only under `prefers-reduced-motion: no-preference`.

@@ -60,7 +60,9 @@ it('splits Shifts into Open shifts and Missed clock-ins, keeps three cards at mo
   expect(html).not.toContain('Time off · ');
   // What isn't counted is a row in the More card, with no number. Nov 1 upscale: the Time off card ends with "See all
   // time off", and More is its own card under its own label: Shift requests and Done and older.
-  for (const id of ['todo-corrections', 'todo-timecards', 'todo-plan', 'todo-earlier']) expect(html).not.toContain(`id="${id}"`);
+  // Phase 3 (MG-005): a correction that waits on this person can be decided today, so it sits in the Time card and is counted.
+  expect(html.slice(html.indexOf('id="todo-review"'), html.indexOf('id="todo-card-requests"'))).toContain('id="todo-corrections"');
+  for (const id of ['todo-timecards', 'todo-plan', 'todo-earlier']) expect(html).not.toContain(`id="${id}"`);
   const timeOff = html.slice(html.indexOf('id="todo-time-off"'), html.indexOf('id="todo-swaps"'));
   expect(timeOff).toMatch(/<li class="c-todo__seeall"><a class="c-row c-row--one" href="\/app\/requests" aria-label="See all time off requests">/);
   expect(html).toMatch(/<\/div><\/section><section id="todo-more" class="c-section c-todo__more" aria-labelledby="todo-more-label"><h2 class="c-section__label" id="todo-more-label">More<\/h2><div class="c-card">/);
@@ -152,8 +154,8 @@ it('has a phone Back to Home, one live summary, and the same count as Home', () 
   expect(html).toContain('class="c-nav c-nav--phone"');
   expect(html).toMatch(/<a class="c-nav__back" href="\/app">.*Home<\/a>/);
   expect(html).toContain('class="c-title c-title--wide"');
-  // 1 no clock-in + 1 open shift + 2 requests = 4, as on Home and the sidebar badge.
-  expect(html.replace(/\u00a0/g, ' ')).toContain('role="status" class="c-sr">4 things to do today.</span>');
+  // 1 no clock-in + 1 open shift + 2 requests + 1 time correction (Phase 3, MG-005) = 5, as on Home and the sidebar badge.
+  expect(html.replace(/\u00a0/g, ' ')).toContain('role="status" class="c-sr">5 things to do today.</span>');
 });
 
 it('says all set only for a ready, empty observation, and offers Try again or Sign in otherwise', () => {
@@ -217,24 +219,41 @@ it('Direction B (phones): glass filters with counts, Find cover on each open shi
   expect(html).toMatch(/href="\/app\/availability"[^>]*>.*Availability.*Who can work, and when/);
 });
 
-it('Nov 14 inspection (BR-7): rows state the fact and the band says what its count leaves out', () => {
+it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count is what can be decided today, and what is not open is one closed card', () => {
   const swap = item('EXCHANGE:e2', 'EXCHANGE', 'requests', 'REVIEW', {title: 'Shift Request', detail: 'Ana Colon is waiting for review.', request: {startDate: '2026-11-21', endDate: '2026-11-21',
     partialDay: {start: '12:00', end: '20:00'}, lengthText: '8 h', locationName: 'Condado', counterpartName: 'James Ortiz', reviewHref: '/app/exchange?tab=requests&requestId=e2'}} as Partial<ActionItem>);
   const fix = item('TIME_CORRECTION:f1', 'TIME_CORRECTION', 'timekeeping', 'REVIEW', {title: 'Time correction waiting for review', detail: 'James Ortiz · Recorded time correction.', dateTime: '2026-10-10T15:00:00Z', href: '/app?view=attendance#correction-f1'});
   const card = (id: string, name: string, start: string, end: string, label: string) => item(id, 'TIMECARD', 'timekeeping', 'REVIEW', {title: 'Period timecard needs review', detail: `${name} · ${label}`, href: `/app/timecards?start=${start}&end=${end}#timecard-${id}`});
-  const html = onlyB(page({snapshot: ready([swap, fix, card('c1', 'Avery Lee', '2026-10-05', '2026-10-11', 'Oct 5 – 11'), card('c2', 'Blair Ruiz', '2026-10-12', '2026-10-18', 'Oct 12 – 18'), card('c3', 'Casey Diaz', '2026-10-12', '2026-10-18', 'Oct 12 – 18')])})).replace(/\u00a0/g, ' ');
-  // Who asked for what, and the day it was sent; the server's filler sentence is gone.
-  expect(html).toContain('James Ortiz asked for a time correction');
-  expect(html).toContain('>Sent Oct 10<');
+  const html = onlyB(page({snapshot: ready([swap, fix, card('c1', 'Avery Lee', '2026-10-05', '2026-10-11', 'Oct 5 – 11'), card('c2', 'Blair Ruiz', '2026-10-12', '2026-10-18', 'Oct 12 – 18'), card('c3', 'Casey Diaz', '2026-10-12', '2026-10-18', 'Oct 12 – 18'),
+    {...card('c4', 'Elena Ruiz', '2026-10-05', '2026-10-11', 'Oct 5 – 11'), title: 'Your timecard needs another reviewer'},
+    item('CALLOUT:k1', 'CALLOUT', 'requests', 'REVIEW', {title: 'Callout', detail: 'Luis Torres is waiting for review.', request: {startDate: '2026-10-20', endDate: '2026-10-20', partialDay: {start: '09:00', end: '17:00'}, lengthText: '8 h', locationName: 'Condado', reviewHref: '/app/exchange?tab=requests&requestId=k1'}} as Partial<ActionItem>)])})).replace(/\u00a0/g, ' ');
+  // The correction's title is the person; the line under it says what they asked for and the day it was sent.
+  expect(html).toMatch(/<span class="b-row__tt">James Ortiz<\/span><\/span><span class="b-row__s">Time correction · sent Oct 10</);
   expect(html).not.toContain('Recorded time correction');
-  // A shift request names both people.
-  expect(html).toContain('>Ana Colon and James Ortiz<');
+  expect(html).not.toContain('asked for a time correction');
+  // A swap names both people in its title; a can't-work request says the day, over the shift's time and place.
+  expect(html).toContain('>Ana Colon ⇄ James Ortiz<');
   expect(html).toContain('with James Ortiz"');
-  // Timecards: how many each period holds and whether the period has ended (Home counts only the ended ones).
-  expect(html).toContain('1 timecard · Avery');
-  expect(html).toContain('2 timecards · Blair, Casey');
+  expect(html).toContain('>Luis Torres can’t work Tue, Oct 20<');
+  expect(html).toContain('>9:00 AM – 5:00 PM · Condado<');
+  // Both end with the tinted Review pill, as time off does.
+  expect(html.match(/class="b-btn b-btn--ghost"[^>]*>Review</g)).toHaveLength(2);
+  // One glyph and tone per kind: swaps, can't work and corrections wait on you (amber); timecards are teal; not open is grey.
+  expect(html.match(/b-ico b-ico--amber/g)).toHaveLength(3);
+  expect(html.match(/b-ico b-ico--teal/g)).toHaveLength(1);
+  // Timecards whose period has ended can be approved: the reviewer's own card is left out and the line says so.
+  expect(html).toContain('1 of 2 timecards · Avery');
+  expect(html).not.toContain('Elena');
   expect(html).toMatch(/Oct 5 – 11<\/span><span class="b-chip b-chip--grey">Pay period ended</);
-  expect(html).toMatch(/Oct 12 – 18<\/span><span class="b-chip b-chip--grey">Pay period open</);
-  // One request is counted; the correction and the three timecards wait outside the count, and the band says so.
-  expect(html).toContain('<p class="b-sub">1 thing needs you · 4 more waiting for review<span');
+  expect(html).toMatch(/id="b-todo-waiting-timecards-h">Timecards to approve<span class="b-pill">1</);
+  // A period still open is one closed card at the bottom: when it opens and how many, no count pill, no "waiting" suffix.
+  expect(html).toMatch(/id="b-todo-closed-timecards-h">Not open yet<\/h2>/);
+  expect(html).toContain('>Opens Mon, Oct 19 · 2 timecards<');
+  expect(html).not.toContain('· waiting');
+  expect(html.indexOf('b-todo-closed-timecards')).toBeGreaterThan(html.indexOf('b-todo-waiting-timecards'));
+  // The band counts the two requests and the correction; the tabs add up to it; the timecards to approve are named after it.
+  expect(html).toContain('<p class="b-sub">3 things need you · 1 timecard to approve<span');
+  expect(html).toContain('aria-label="All, 3"');
+  expect(html).toContain('aria-label="Time, 1"');
+  expect(html).toContain('aria-label="Requests, 2"');
 });

@@ -35,7 +35,7 @@ const MANAGEMENT: Entry[] = [
   ["/app/payroll-export", { title: "Time exports", sub: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ head: true, lines: 3 }, { rows: 3 }] }],
   [/^\/app\/payroll\/.+/, { back: true, band: "short", frame: "read", lift: false, cards: [{ head: true, lines: 3 }, { rows: 3 }] }],
   // Payroll: a title, its scope line and the tabs, on the strip rung (the frequency line is hidden from 768px).
-  ["/app/payroll", { title: "Payroll", sub: true, strip: true, band: "strip", frame: "read", cards: [{ head: true, lines: 3 }, { rows: 3 }] }],
+  ["/app/payroll", { title: "Payroll", sub: true, strip: true, band: "strip", frame: "rail-desktop", cards: [{ head: true, rows: 3 }, { rail: true, head: true, lines: 3 }] }],
   ["/app/employees/new", { ...detail, cards: [{ head: true, lines: 4 }] }],
   ["/app/employees/import", form],
   [/^\/app\/employees\/.+/, detail],

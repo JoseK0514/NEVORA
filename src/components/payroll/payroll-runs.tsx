@@ -171,6 +171,8 @@ function UnpaidNotice({ data, oldest, href }: { data: PayrollRunsResponse; oldes
   const range = quietRange(oldest.period.startDate, oldest.period.endDate);
   const title = count === 1 ? `${range} has no payroll` : count !== null && count > 1 ? `${count} pay periods have no payroll` : 'Some pay periods have no payroll';
   return <section className="c-card c-pay__unpaid" aria-labelledby="payroll-unpaid-title">
+    {/* OW-018: as on the phone, the red is the icon's; the title is ink. */}
+    <BIcon tone="red"><WarningIcon weight="bold" /></BIcon>
     <div className="c-pay__unpaid-text">
       <h2 id="payroll-unpaid-title" className="c-pay__unpaid-title">{title}</h2>
       <p className="c-pay__unpaid-body">{count === 1 ? <>Scheduled payday was <Num>{quietDay(oldest.payday)}</Num>.</> : <>Oldest is <Num>{range}</Num>. Scheduled payday was <Num>{quietDay(oldest.payday)}</Num>.</>}</p>
@@ -201,14 +203,20 @@ function RunRow({ item, replaced = false }: { item: PayrollRun; replaced?: boole
   if (replaced) return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" weight="bold" />}
     title={<><Num>{quietRange(item.period.startDate, item.period.endDate)}</Num> <CorpPill tone="neutral">Replaced</CorpPill></>}
     detail={<>Replaced by correction · Payday <Num>{quietDay(item.payday)}</Num></>}
-    value={item.totals ? <Num>{formatPayrollMoney(item.totals.netMinor)}</Num> : undefined} valueTone="ink" chevron />;
+    value={item.totals ? <NetAmount minor={item.totals.netMinor} /> : undefined} valueTone="ink" chevron />;
   // Round 5 (Nov 7, 2026): drawn like Payroll's Recent payrolls: the receipt icon, a "Correction" pill instead of words in
   // the title, the amount bold. A status that needs the Owner still wins the pill.
   return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" weight="bold" />}
     title={<><Num>{quietRange(item.period.startDate, item.period.endDate)}</Num>{approved && item.correctionOf ? <> <CorpPill tone="neutral">Correction</CorpPill></> : null}</>}
     detail={<>Payday <Num>{quietDay(item.payday)}</Num>{approved ? ' · Approved' : ''}</>}
-    value={item.totals ? <Num>{formatPayrollMoney(item.totals.netMinor)}</Num> : undefined} valueTone="ink"
+    value={item.totals ? <NetAmount minor={item.totals.netMinor} /> : undefined} valueTone="ink"
     trail={!approved ? <CorpPill tone={statusTone[item.status]}>{statusLabels[item.status]}</CorpPill> : undefined} chevron />;
+}
+
+/** OW-018: a row's amount is the payroll's net total (`totals.netMinor`), so it says "Net" under the figure, as the
+ * phone's rows do. */
+function NetAmount({ minor }: { minor: string }) {
+  return <span className="c-pay__amt"><Num>{formatPayrollMoney(minor)}</Num><span className="c-pay__amt-k">Net</span></span>;
 }
 
 /** Closing F1 (NV-082): newest first, except that a payroll a correction replaced follows its correction (flagged
@@ -321,7 +329,7 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
             const approved = item.status === 'APPROVED';
             // Closing F1 (NV-082): a replaced payroll follows its correction with a grey "Replaced" chip.
             return <BRow key={item.id} href={reviewHref(item.id)} lead={<BIcon tone={replaced ? 'grey' : approved ? 'green' : 'grey'}><ReceiptIcon weight="bold" /></BIcon>}
-              title={<span className="c-num">{quietRange(item.period.startDate, item.period.endDate)}</span>} chip={replaced ? <BChip>Replaced</BChip> : item.correctionOf ? <BChip>Correction</BChip> : approved ? undefined : <BChip tone="amber">{statusLabels[item.status]}</BChip>}
+              title={<span className={replaced ? 'c-num c-pay__was' : 'c-num'}>{quietRange(item.period.startDate, item.period.endDate)}</span>} chip={replaced ? <BChip>Replaced</BChip> : item.correctionOf ? <BChip>Correction</BChip> : approved ? undefined : <BChip tone="amber">{statusLabels[item.status]}</BChip>}
               sub={replaced ? <>Replaced by correction · Payday <span className="c-num">{quietDay(item.payday)}</span></> : <>Payday <span className="c-num">{quietDay(item.payday)}</span></>}
               end={item.totals ? <><b className="c-num">{formatPayrollMoney(item.totals.netMinor)}</b><span>{approved ? 'Net · Approved' : 'Net'}</span></> : undefined} chevron={!item.totals} />;
           })}</BList> : <p className="b-state">No past payrolls yet. Approved payrolls appear here.</p>}
@@ -338,6 +346,10 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
     <PayrollTabs items={tabs} current="/app/payroll" />
     <Feedback operation={operation} />
     {state ?? <>
+      {/* OW-018: from 1024px Payroll is a list with a right rail, like Team. Up next (the period, its payday and the
+        * three steps) is the rail card; the notice and Recent payrolls are the list. Tablets keep one column in this
+        * order, which is also the reading and focus order at every width. */}
+      <div className="c-pay__cols">
       {data && oldest ? <UnpaidNotice data={data} oldest={oldest} href={`/app/payroll/prepare#${unpaidHash(oldest)}`} /> : null}
       {current ? <PayGroup id="payroll-next" label="Up next">
         <CorpRows label="Up next">
@@ -355,6 +367,7 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
         {past.length ? <CorpRows label="Past periods">{byCorrection(past).slice(0, 3).map(({ item, replaced }) => <li key={item.id} className={replaced ? 'c-pay__replaced' : undefined}><RunRow item={item} replaced={replaced} /></li>)}{exportsRow}</CorpRows>
           : <><div className="c-empty c-pay__empty"><b>No past payrolls yet</b><span>Approved payrolls appear here.</span></div><CorpRows label="Payroll tools">{exportsRow}</CorpRows></>}
       </PayGroup>
+      </div>
     </>}
   </CorpPage>;
 }

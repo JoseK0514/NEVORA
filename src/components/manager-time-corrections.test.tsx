@@ -42,6 +42,21 @@ describe('D2 manager correction surface',()=>{
     expect(html).toContain('Times in Puerto Rico time');
     expect(html).not.toContain('America/Puerto_Rico');
   });
+  it('OW-015: on the Time corrections page the count and the note about times are said once, under the title',()=>{
+    const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={ready} loading={false} busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null} band={{zone:'America/Puerto_Rico'}}/>);
+    const line=`${ready.requests.length} waiting · Fixes your team asked for. Original times are always kept. Times in Puerto Rico time.`;
+    // Twice in the markup (the phone's sub-line and the title's; one shows per width), never inside a card.
+    expect(html.split(line).length-1).toBe(2);
+    expect(html).not.toContain('correction-context-zone');
+    expect(html).not.toContain('Approving changes the timecard');
+    expect(html).toContain('class="manager-corrections-header sr-only"');
+    expect(html).toContain('<h1 id="tcx-title"');
+  });
+  it('OW-015: before the read lands the sub-line has no count and uses the workplace zone',()=>{
+    const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={null} loading={true} busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null} band={{zone:'America/Puerto_Rico'}}/>);
+    expect(html).toContain('>Fixes your team asked for. Original times are always kept. Times in Puerto Rico time.<');
+    expect(html).not.toContain('waiting ·');
+  });
   it('does not present a cleared, unverified snapshot as a confirmed empty queue',()=>{
     const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={null} loading={false} busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null}/>);
     expect(html).toContain('Updates paused');

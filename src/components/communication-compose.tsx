@@ -15,6 +15,7 @@ import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {SigBand,SigHead,SigPage} from './signature/signature';
 import cc from './communication-compose-signature.module.css';
 import {PendingLabel} from './employee-submit-button';
+import {BState} from './owner-b/b-kit';
 import {revealFeedback} from '@/lib/reveal-feedback';
 import {keepWhole} from '../lib/keep-whole';
 import {formatDisplayDate,formatTimeRange} from '../lib/date-utils';
@@ -186,7 +187,13 @@ function BoundCommunicationCompose({authority,mode,updateId}:{authority:string;m
   <QuietNav left={<Link className="q-nav__l q-nav__l--teal" href={updateId?'/app/updates/'+updateId:'/app/updates'}>Cancel</Link>} title={updateId?'Edit update':'New update'}
    right={context?<button type="submit" form="compose-form" className="q-nav__r q-nav__r--b">Next</button>:undefined}/>
   <h1 className="q-sr">{title}</h1>
-  {content}
+  {/* Phase 3 (package D): until the form is here, Owners and Managers get the kit's one state card (it was an older grey
+      tile with a disabled Try again while loading). The words are the same; the button shows only when it can act. */}
+  {context||mode!=='manager'?content:<section className="b-card b-compose-state"><BState
+    kind={offline?'offline':signedOut?'locked':resource.state.paused?'paused':resource.state.refreshing?'loading':'failed'}
+    title={offline?'You’re offline':signedOut?'Your session ended':resource.state.paused?'Paused while you were away':resource.state.refreshing?'Loading the form':'Couldn’t load the form'}
+    line={offline?'Connect to the internet, then try again.':signedOut?'Sign in again to keep writing.':resource.state.paused?'Come back to this page to keep writing.':resource.state.refreshing?'Getting your locations and today’s team…':'Check your connection, then try again.'}
+    action={signedOut?{label:'Sign in again',href:'/login'}:resource.state.paused||resource.state.refreshing?undefined:{label:'Try again',onClick:resource.refresh}}/></section>}
  </div>;
 }
 

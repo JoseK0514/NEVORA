@@ -8,6 +8,7 @@ const root = join(__dirname, '..', '..');
 const SHEETS = [
   'app/app/b-foundation.css', 'app/app/owner-b-shell.css', 'app/app/owner-b-pages.css', 'app/app/owner-b-desktop.css',
   'app/app/employee-b-desktop.css', 'components/owner-b/owner-b.css',
+  'app/app/owner-b-home.css', 'app/app/owner-b-schedule.css', 'app/app/owner-b-time-pay.css', 'app/app/owner-b-requests.css', 'app/app/owner-b-settings.css',
 ];
 const css = (path: string) => readFileSync(join(root, path), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
 

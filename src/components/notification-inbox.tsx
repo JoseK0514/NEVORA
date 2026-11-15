@@ -22,7 +22,7 @@ import {DeviceMobileIcon} from '@phosphor-icons/react/dist/ssr/DeviceMobile';
 import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import type {PrivatePanelState} from '../lib/private-snapshot-client';
 import type {EmployeeViewSnapshot,NotificationReviewState,NotificationActionState} from '../lib/employee-view';
-import {filterNotifications,groupNotifications,notificationPresentation,notificationTitle,type NotificationFilter} from '../lib/notification-inbox-view';
+import {collapseNotifications,filterNotifications,groupNotifications,notificationPresentation,notificationTitle,type NotificationFilter} from '../lib/notification-inbox-view';
 import {relativeTimeText} from '../lib/duration-format';
 import styles from './notification-inbox.module.css';
 import './notification-inbox-corp.css';
@@ -68,6 +68,9 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
   const unread=counts?.unread??0;
   const view=filter==='unread'?items:ready?filterNotifications(ready.items,'all',''):[];
   const sorted=[...view].sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));
+  // Phase 3 (OW-002): for Owners and Managers, repeats of one summary fold into its newest row. Employees keep one row each.
+  const rows=onMarkRead?collapseNotifications(sorted):sorted.map(item=>({item,count:1,unreadIds:item.reviewState==='unread'?[item.id]:[]}));
+  const markAll=async(ids:string[])=>{for(const id of ids)await markRead(id);};
   return <section ref={root} aria-label="Notifications" data-private-view="notifications">
    {/* Owner premium (N3): with nothing at all to filter, the All / Unread control steps aside for the empty card. */}
    {onMarkRead&&ready&&!ready.items.length?null:<div className="q-seg" role="group" aria-label="Filter notifications">
@@ -85,16 +88,16 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
       action={denied?{label:'Sign in',href:'/login'}:unavailable?{label:'Try again',onClick:onRetry}:undefined}/>
     </div>:<>
     {ready.coverage==='partial'?<div className="q-note" data-tone="info"><span className="q-note__body">Some notifications couldn’t be checked.</span></div>:null}
-    {sorted.length?<ul className="q-list q-notif-list">{sorted.map(item=>{
+    {sorted.length?<ul className="q-list q-notif-list">{rows.map(({item,count,unreadIds})=>{
       const Icon=icons[notificationPresentation(item.label).icon];
-      const review=item.reviewState??'unavailable';
+      const review=unreadIds.length?'unread':item.reviewState??'unavailable';
       // BR-6: the bold line says what the row is about; the grey line adds what else the list carries, then when.
       const text=notificationTitle(item);
       return <li key={item.id} data-inbox-row>
-       <Link className="q-row q-row--av" data-unread={review==='unread'||undefined} href={item.href} prefetch={false} aria-label={`${[text.title,text.detail].filter(Boolean).join(', ')}, ${reviewLabels[review]}, ${whenLong(item.at)}`}
-        onClick={()=>{if(review==='unread')void markRead(item.id);}}>
+       <Link className="q-row q-row--av" data-unread={review==='unread'||undefined} href={item.href} prefetch={false} aria-label={`${[text.title,count>1?`${count} notifications`:text.detail].filter(Boolean).join(', ')}, ${reviewLabels[review]}, ${whenLong(item.at)}`}
+        onClick={()=>{if(unreadIds.length)void markAll(unreadIds);}}>
         <span className="q-av" aria-hidden="true"><Icon weight="bold" className="q-ic" aria-hidden="true"/></span>
-        <span className="q-rt"><b>{text.title}</b><i>{text.detail?<>{text.detail} · </>:null}<time dateTime={item.at}>{relativeTimeText(item.at)}</time></i></span>
+        <span className="q-rt"><b>{text.title}</b><i>{count>1?<><span className="b-notif-nw">{count} notifications ·</span> <span className="b-notif-nw">latest <time dateTime={item.at}>{relativeTimeText(item.at)}</time></span></>:<>{text.detail?<>{text.detail} · </>:null}<time dateTime={item.at}>{relativeTimeText(item.at)}</time></>}</i></span>
         {/* Round 5: unread shows, not only in the label (a teal dot), and the row reads as a link (chevron). */}
         {review==='unread'?<span className="q-notif-dot" aria-hidden="true"/>:null}
         <svg className="q-chev" viewBox="0 0 256 256" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/></svg>

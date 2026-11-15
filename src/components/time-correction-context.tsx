@@ -25,7 +25,8 @@ export function CorrectionComparison({recordedStartAt,recordedEndAt,context,zone
   proposedLabel?:string;recordedLabel?:string;recordedStartAt:string|null;recordedEndAt:string|null;context:CorrectionContext;zone:string;proposedStartAt?:string;proposedEndAt?:string;
   /** Review B6 (NV-080), a manager deciding: two tiles (Recorded, Asked for) with the changed time in bold and how much it
    * changes; Current effective only when it differs from Recorded; the helper lines folded into one (`note`). */
-  compact?:boolean;note?:string;
+  /** `note: null` (compact only) leaves the zone line out: the page says it once under its title (OW-015). */
+  compact?:boolean;note?:string|null;
 }){
   const interval=(start:string,end:string)=><><time dateTime={start}>{correctionStamp(start,zone)}</time> → <time dateTime={end}>{correctionEnd(start,end,zone)}</time></>;
   if(compact&&proposedStartAt&&proposedEndAt){
@@ -43,7 +44,7 @@ export function CorrectionComparison({recordedStartAt,recordedEndAt,context,zone
         <div className="correction-comparison__ask"><small>Asked for{change?<span className="correction-comparison__chg">{change}</span>:null}</small>
           <strong>{base&&moved(base.start,proposedStartAt)?<b>{startTime}</b>:startTime} → {base&&moved(base.end,proposedEndAt)?<b>{endTime}</b>:endTime}</strong></div>
       </div>
-      <p className="correction-context-zone">{[`Times in ${timeZoneLabel(zone)}`,note].filter(Boolean).join('. ')}{note?'.':''}</p>
+      {note===null?null:<p className="correction-context-zone">{[`Times in ${timeZoneLabel(zone)}`,note].filter(Boolean).join('. ')}{note?'.':''}</p>}
     </>;
   }
   return <>

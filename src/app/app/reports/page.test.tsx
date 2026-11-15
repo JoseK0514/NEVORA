@@ -46,7 +46,7 @@ it('denied company authority withholds the report body and avoids workspace load
 it.each(['EMPLOYEE','LEAD'])('closes management reports to %s with a notice',async role=>{
  fixture.role=role;
  const output=renderToStaticMarkup(await ReportsPage({searchParams:Promise.resolve({})}));
- expect(output).toContain('Insights is for Owners and Managers.');
+ expect(output).toContain('Insights is for Owners and Managers');
  expect(output).toContain('href="/app/my-time"');
  expect(output).not.toContain('Protected period reports');
  expect(fixture.reports).not.toHaveBeenCalled();

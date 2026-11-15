@@ -9,7 +9,6 @@ import { phoneDisplay } from '@/components/team/phone';
 import { createPrivateSnapshotController, type PrivatePanelState } from '@/lib/private-snapshot-client';
 import { revealFeedback } from '@/lib/reveal-feedback';
 import { MANAGER_ALERTS_ENDPOINT, MANAGER_PROFILE_ENDPOINT, parseManagerProfile, type ManagerAlertTopic, type ManagerProfileSnapshot } from './contract';
-import { LockSimpleIcon } from '@phosphor-icons/react/dist/ssr/LockSimple';
 
 /** What the page already knows from today's session and workspace reads. */
 export type ManagerProfileIdentity = {
@@ -24,7 +23,23 @@ export type ManagerProfileIdentity = {
   deviceAlerts: boolean;
   /** Payroll is on, so an Owner's alert set includes "Payroll ready to review" (approved set, CODEX.md). */
   payrollAlerts?: boolean;
+  /** Review Nov 11 (MG-013): who can change a Manager's read-only details ("Jose Natal"); without it, "An Owner". */
+  changedBy?: string | null;
+  /** The company's word for its locations, lower case ("stores"); "locations" without it. */
+  locationsWord?: string;
 };
+
+/** Review Nov 11 (MG-013): a Manager's reach, from the locations the profile read already gives: "Manager, all locations"
+ * or "Manager, Calle Loíza, Condado". The line under it says what that access covers. A Manager kept to some locations
+ * has the Schedule and the Team only (src/lib/navigation.ts), so their line says that. Until the read arrives (or when it
+ * fails) only what the session knows is said: the role, and what is closed to every Manager. */
+export function managerAccess(locations: { scope: 'all' | 'assigned'; names: string[] } | null, word = 'locations') {
+  const closed = 'Payroll and Settings are for Owners.';
+  if (!locations) return { value: 'Manager', covers: closed };
+  if (locations.scope === 'all') return { value: `Manager, all ${word}`, covers: `Schedule, time, team and requests. ${closed}` };
+  if (!locations.names.length) return { value: 'Manager', covers: closed };
+  return { value: `Manager, ${locations.names.join(', ')}`, covers: `Schedule and team at your ${word}. ${closed}` };
+}
 
 export type AlertSave = { pending: boolean; error: null | 'offline' | 'signed_out' | 'failed' };
 type View = {
@@ -149,6 +164,8 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
   // Quiet (v4, approved Oct 23): who you are, three detail rows, then Notifications (its choices fold under it), this phone's
   // alerts, Privacy and terms, and Sign out in red.
   const onCount = shown ? shown.alerts.filter(topic => overrides[topic.id] ?? topic.on).length : null;
+  const changeLine = `${identity.changedBy || 'An Owner'} can change this.`;
+  const access = managerAccess(shown ? shown.locations : null, identity.locationsWord);
   return <>
     <div className="q-who"><span className="q-av q-av--lg" aria-hidden="true">{identity.name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase()}</span>
       <div><h1>{identity.name}</h1><p>{`${identity.owner ? 'Owner' : 'Manager'} · ${identity.company}`}</p></div></div>
@@ -159,12 +176,21 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
         read-only and says so with a lock. */}
       <li data-row="phone" style={rowStyle('phone')}>{identity.owner
         ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`} aria-label="Phone, edit"><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>Not added</span>)}</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>
-        : <div className="q-row q-row--one"><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>None</span>)}</span><LockSimpleIcon className="q-chev" weight="bold" aria-label="Read-only" /></div>}</li>
+        // Review Nov 11 (MG-013): a Manager's read-only value says who can change it, in a grey line under it (it was a bare lock).
+        : <div className="q-row q-row--one pmp-fixed"><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l"><span className="pmp-fixed__value">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>None</span>)}</span><small className="pmp-fixed__why">{changeLine}</small></span></div>}</li>
       <li data-row="email" style={rowStyle('email')}>{shown && !shown.contact.email && identity.owner
         // Nov 1 upscale: one trailing pattern, label + grey value + chevron (no teal "Add").
         ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`} aria-label="Email, not added. Add an email"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">Not added</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>
-        : <div className="q-row q-row--one"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>None</span>)}</span></div>}</li>
+        // MG-013: on a phone the address sits under its label with the row's whole width (manager-profile rules in
+        // owner-b-settings.css), so it stays on one line; if it must break, it still breaks only after the @ or before a
+        // dot (TC-02). A Manager's says who can change it.
+        : identity.owner
+          ? <div className="q-row q-row--one pmp-email"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>None</span>)}</span></div>
+          : <div className="q-row q-row--one pmp-email pmp-fixed"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l"><span className="pmp-fixed__value">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>None</span>)}</span><small className="pmp-fixed__why">{changeLine}</small></span></div>}</li>
       <li><div className="q-row q-row--one"><span className="q-rt"><b>Time zone</b></span><span className="q-rv q-rv--l">{identity.timeZone.replace(/ time$/, '')}</span></div></li>
+      {/* Review Nov 11 (MG-013): what a Manager's access reaches, and what it covers. */}
+      {identity.owner ? null : <li data-row="access"><div className="q-row pmp-access"><span className="q-rt"><b>Access</b><i>{access.covers}</i></span>
+        <span className="q-rv q-rv--l">{access.value}</span></div></li>}
     </ul>
     {read.kind === 'failed' ? <button type="button" className="q-btn q-btn--quiet" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={() => onRetry('details')}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}
     {read.kind === 'denied' ? <Link className="q-btn q-btn--quiet" href="/login">Sign in</Link> : null}

@@ -1,5 +1,7 @@
 import { CorpButtonLink, CorpEmpty, CorpNav, CorpPage, CorpTitle } from "./corp/corp";
-import { BCard, BHero, BScreen, BStack, BState } from "./owner-b/b-kit";
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { BButtonLink, BCard, BHero, BScreen, BStack, BState, BStateScreen } from "./owner-b/b-kit";
 
 /** "Jose Natal" or "Jose Natal or Ana Colon" (at most two names, then "an Owner"). */
 export function ownerNames(names: string[]) {
@@ -7,12 +9,24 @@ export function ownerNames(names: string[]) {
   return shown.length ? shown.join(" or ") : null;
 }
 
+/** Review Nov 11 (MG-002): what a Manager reads on the closed Payroll page. Their part of the job is Timecards, and their
+ * own pay is one tap away; each is offered only when the Manager's navigation has it (the rule More and the shell use).
+ * `who` is ownerNames(): "Jose Natal", or null when no Owner's name could be read. */
+export function closedPayrollForManager(has: (href: string) => boolean, who: string | null) {
+  const timecards = has("/app/timecards");
+  return {
+    line: timecards ? `Your part is timecards. ${who ?? "An Owner"} runs payroll after you approve them.` : who ? `${who} can give you payroll access.` : "Owners can give you payroll access.",
+    next: timecards ? { href: "/app/timecards", label: "Open Timecards" } : undefined,
+    also: has("/app/my-pay") ? { href: "/app/my-pay", label: "See my pay" } : undefined,
+  };
+}
+
 /** PD9 / UX10: a page closed to this person (a shared link, a bookmark) says why it is closed and who can help, in place of
  * a silent move. Permissions are unchanged: nothing on the page is read or shown.
  * Review B2 (NV-136, NV-137): every closed page uses this notice. A lock in a grey circle, the reason as the title, who can
  * help ("Jose Natal can give you payroll access.") and one way forward: the page that does the job for this role when there
  * is one, otherwise Home on desktop (phones have the band's "‹ Home"). */
-export function OwnerOnlyNotice({ title, reason, help = "Ask an Owner if you need a change here.", owners = [], ownersCan, next }: {
+export function OwnerOnlyNotice({ title, reason, help = "Ask an Owner if you need a change here.", owners = [], ownersCan, next, line: ownLine, also, state = false }: {
   /** `reason` is left out when the title already is the reason (/app/restricted): the card then holds the help line alone. */
   title: string; reason?: string; help?: string;
   /** The workspace's Owners, to name who can help. */
@@ -21,9 +35,28 @@ export function OwnerOnlyNotice({ title, reason, help = "Ask an Owner if you nee
   ownersCan?: string;
   /** Where this person does the job instead ("Your team's requests are in Things to do"). */
   next?: { href: string; label: string };
+  /** The card's sentence when the page writes its own (it then replaces `help` and `ownersCan`). */
+  line?: ReactNode;
+  /** A second, quieter way on, as a text link after `next` ("See my pay"). */
+  also?: { href: string; label: string };
+  /** Phase 3 (MG-002, MG-015): the pages closed to a Manager are the one Direction B state screen at every width (the band
+   * with "‹ Home" and the title, then one card: the lock in its 48px circle, the reason, the sentence and the way on as a
+   * tinted pill, never a second filled button). Without it the notice is drawn as before, so an Employee's closed pages
+   * are unchanged. */
+  state?: boolean;
 }) {
   const named = ownerNames(owners);
-  const line = named && ownersCan ? `${named} can ${ownersCan}.` : help;
+  const line = ownLine ?? (named && ownersCan ? `${named} can ${ownersCan}.` : help);
+  if (state) return <CorpPage className="c-page--narrow cm-owner-only c-route-state--checking" labelledBy="owner-only-title">
+    <BStateScreen title={title} titleId="owner-only-title" back={{ href: "/app", label: "Home" }}>
+      <BState kind="locked" title={reason} line={line}>
+        {next || also ? <div className="b-state-actions b-closed-actions">
+          {next ? <BButtonLink href={next.href} kind="ghost">{next.label}</BButtonLink> : null}
+          {also ? <Link className="b-closed-also" href={also.href}>{also.label}</Link> : null}
+        </div> : null}
+      </BState>
+    </BStateScreen>
+  </CorpPage>;
   return <CorpPage className="c-page--narrow cm-owner-only" labelledBy="owner-only-title">
     <BScreen back>
       <BHero title={title} back={{ href: "/app", label: "Home" }} />

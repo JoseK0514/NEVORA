@@ -12,9 +12,20 @@ import { conflictShift } from "@/lib/time-off-staffing/present";
 import "@/components/leave-staffing/leave-staffing.css";
 
 /** One waiting request as the server page lays it out. */
-export type WaitingTimeOff = { id: string; employeeName: string; avatar: string; startDate: string; endDate: string; when: string; ago?: string; href: string };
+export type WaitingTimeOff = { id: string; employeeName: string; avatar: string; startDate: string; endDate: string; when: string; ago?: string;
+  /** Sent more than a day ago. Phones show the age only then, under the dates (OW-011). */
+  aged?: boolean; href: string };
 
-/** Closing F1 (NV-077): Time off's waiting rows say what Things to do says. One staffing read covers the weeks of every
+/** OW-011: a row's "when" breaks only between its parts ("Mon, Nov 30 – Wed, Dec 2 ·" then "3 days"). A range never breaks
+ * inside itself and no line starts with the separator dot. */
+export function WholeParts({ text }: { text: string }) {
+  const parts = text.split(" · ");
+  return <>{parts.map((part, index) => <span key={index}><span className="b-req-nw">{part}{index < parts.length - 1 ? "\u00a0·" : null}</span>{index < parts.length - 1 ? " " : null}</span>)}</>;
+}
+
+/** Phase 3 (OW-013): at 768px and wider a request is the Things to do row (avatar, name and dates, age, then Decline and
+ * Approve inline, 64px); only the schedule note adds a line. The layout is in owner-b-requests.css; the markup order is the same.
+ * Closing F1 (NV-077): Time off's waiting rows say what Things to do says. One staffing read covers the weeks of every
  * waiting request; each row shows the amber "On the schedule" line when approving would leave a published shift uncovered,
  * then the compact Decline and Approve (the same review action as the request's page; Decline asks once). Approve shows only
  * once the check came back with no overlap; otherwise the teal pill is Review, which opens the request with its shifts. */
@@ -29,7 +40,9 @@ export function TimeOffWaitingList({ requests }: { requests: WaitingTimeOff[] })
     const note = conflicts?.length ? <span className="b-leave-note" data-tone="amber"><WarningIcon weight="bold" aria-hidden="true" />{`On the schedule: ${conflictShift(conflicts[0])}${conflicts.length > 1 ? ` +${conflicts.length - 1}` : ""}`}</span>
       : conflicts ? null : <span className="b-leave-note">{!checked.has(request.id) ? "Check the schedule on its page" : staffing.status === "loading" ? "Checking the schedule…" : staffing.status === "expired" ? "Schedule check expired" : staffing.status === "paused" ? "Schedule check paused" : "Couldn’t check the schedule"}</span>;
     return <li key={request.id} id={`request-${request.id}`} tabIndex={-1} className="q-request">
-      <QuietRow bare avatar={request.avatar} title={request.employeeName} detail={request.when} value={request.ago} href={request.href} />
+      <QuietRow bare avatar={request.avatar} title={request.employeeName} href={request.href}
+        detail={<><WholeParts text={request.when} />{request.aged && request.ago ? <span className="q-rt__line b-req-age">{request.ago}</span> : null}</>}
+        value={request.ago ? <span className="b-req-ago">{request.ago}</span> : undefined} />
       {note ? <p className="q-acts-note">{note}</p> : null}
       <form action={reviewTimeOffAction} className="q-acts-form">
         <input type="hidden" name="requestId" value={request.id} />

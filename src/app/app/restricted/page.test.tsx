@@ -42,8 +42,13 @@ it.each(["EMPLOYEE", "LEAD"])("tells a %s the page is for Owners and Managers, h
 it("never tells a Manager that an Owner's page is theirs", async () => {
   fixture.role = "MANAGER";
   const out = renderToStaticMarkup(await RestrictedPage());
-  expect(out).toContain('<h1 id="owner-only-title">That page is for Owners</h1>');
+  // Phase 3 (MG-015): a Manager's notice is the one state screen, whose title can take focus (tabindex); the words are the same.
+  expect(out).toMatch(/<h1 id="owner-only-title"[^>]*>That page is for Owners<\/h1>/);
+  expect(out.match(/<h1/g)).toHaveLength(1);
   expect(out).not.toContain("Owners and Managers");
+  // One way on, as the tinted pill (never a second filled button), and the lock in the kit's round holder.
+  expect(out).toContain('<a href="/app" class="b-btn b-btn--ghost">Go to Home</a>');
+  expect(out).toContain('data-kind="locked"');
   expect(out).toContain("Ask your Owner if you need access.");
   expect(await generateMetadata()).toEqual({ title: "That page is for Owners" });
 });

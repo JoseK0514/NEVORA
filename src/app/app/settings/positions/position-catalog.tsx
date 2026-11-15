@@ -20,7 +20,7 @@ type PositionAction = (data: FormData) => Promise<ConfigurationResult>;
 const subscribe = () => () => {};
 const clientSnapshot = () => true;
 const serverSnapshot = () => false;
-const nameMessages = { name: { missing: "Enter a position name." } };
+const nameMessages = { name: { missing: "Enter a position name" } };
 
 function PositionRow({ position, hidden, ready, action, people }: {
   position: Position; hidden: boolean; ready: boolean; action: PositionAction; people?: number;

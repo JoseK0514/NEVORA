@@ -1,0 +1,93 @@
+/* Direction B, Phase 3 (Nov 15, 2026): Owner and Manager Home and Things to do, at every width.
+ * One area per sheet, loaded after b-foundation.css. Rules follow the B8 layering rule: !important only inside
+ * @layer nv-b; media queries only the aliases in src/lib/b-viewport.ts; values from src/app/b-tokens.css.
+ * Every rule here is !important because the kit's base rules (owner-b.css) are unlayered, and each carries the
+ * :not(#p3a…) tail so it wins over the shared desktop sheet without editing it. */
+@layer nv-b {
+  /* ---------- Home, every width ---------- */
+  /* The two column wrappers have no box below desktop: their cards are the stack's own items, in source order. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-col:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { display: contents !important; }
+  /* OW-031: the Payday line stacks its detail under the count when the card is too narrow for both. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink__r2:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { flex-wrap: wrap !important; row-gap: var(--b-space-2) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink__own:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { margin-top: -6px !important; }
+  /* OW-006: coverage is one line: "Staffing 58%", a 6px bar, "193 h 30 min of 336 h". No tile. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-cov:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: var(--b-space-4) var(--b-space-12) !important; margin: 0 !important; padding: 0 var(--b-inset) var(--b-space-16) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-cov__k:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; font-weight: 600 !important; color: var(--b-ink) !important; white-space: nowrap !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-cov__k[data-short] > b:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { color: var(--b-amber) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-cov__k > b:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { font-weight: 700 !important; color: var(--b-green) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-cov__bar:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { flex: 0 1 160px !important; min-width: 72px !important; height: 6px !important; border-radius: 3px !important; overflow: hidden !important; background: var(--b-line) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-cov__bar > i:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { display: block !important; height: 100% !important; border-radius: 3px !important; background: var(--b-green-solid) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-cov__bar > i[data-short]:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { background: var(--b-amber-solid) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-cov__d:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; white-space: nowrap !important; }
+  /* MG-011: On now's "+2 more" line. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-on-more:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { margin: 0 !important; padding: var(--b-space-4) var(--b-inset) var(--b-gutter) !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; }
+
+  @media (max-width: 1023px) {
+    /* The wrappers have no box here, so their cards take the stack's entrance themselves (On now arrives with Today's
+     * read, after the entrance, so it has none). */
+    @media (prefers-reduced-motion: no-preference) {
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-col > :not(#b-home-on):not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { animation: b-enter var(--b-dur-enter) var(--b-ease-out) 200ms both !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-col > :not(#b-home-on):not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { animation: b-fade 200ms linear both !important; }
+    }
+  }
+
+  @media (max-width: 767px) {
+    /* MG-011: On now is a desktop and tablet card; on a phone the Clocked in tile opens the same list. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { display: none !important; }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    /* TB-005: every Home card spans the page; Payday is one horizontal card and This week sets its figures beside its bars. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-col > *:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { grid-column: 1 / -1 !important; grid-row: auto !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) {
+      display: grid !important; grid-template-columns: minmax(0, 1fr) auto auto !important; grid-template-areas: "k due btn" "big r2 btn" "m r2 btn" !important;
+      align-items: center !important; column-gap: var(--b-space-32) !important; row-gap: var(--b-space-2) !important; padding: var(--b-space-16) var(--b-inset-wide) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink > .b-ink__top:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { display: contents !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink .b-ink__k:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { grid-area: k !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink .b-ink__due:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { grid-area: due !important; justify-self: start !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink > .b-ink__big:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { grid-area: big !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink > .b-ink__m:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { grid-area: m !important; margin-top: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink > .b-ink__r2:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { grid-area: r2 !important; flex-direction: column !important; flex-wrap: nowrap !important; align-items: flex-start !important; justify-content: center !important; gap: var(--b-space-2) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink > .b-ink__r2 > :first-child:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { color: var(--b-on-band) !important; font-weight: 600 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink > .b-btn:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { grid-area: btn !important; display: inline-flex !important; width: auto !important; min-height: 48px !important; height: 48px !important; padding: 0 var(--b-space-24) !important; font-size: var(--b-fs-body) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-wk:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { display: grid !important; grid-template-columns: 320px minmax(0, 1fr) !important; column-gap: var(--b-space-24) !important; align-items: end !important; }
+  }
+
+  @media (min-width: 1024px) {
+    /* OW-031, MG-011: two columns that stack on their own. Things to do and On now at the left; Payday and This week at the right. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-col:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5):not(#p3a6) { display: flex !important; flex-direction: column !important; gap: var(--b-space-20) !important; min-width: 0 !important; grid-row: 1 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-col--a:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { grid-column: 1 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-col--b:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { grid-column: 2 !important; }
+    /* OW-031: three one- or two-digit figures don't need the whole grid. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { max-width: 640px !important; }
+  }
+
+  @media (max-width: 359px) {
+    /* At 320px "Not clocked in" ran into the next tile's edge: the three tiles give their labels 8px more room. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-live__i > .b-live__a:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-live__i:not(:has(> .b-live__a)):not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { padding-left: 6px !important; padding-right: 6px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-live__l:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { gap: var(--b-space-4) !important; letter-spacing: -0.01em !important; }
+  }
+
+  /* ---------- Things to do ---------- */
+  @media (max-width: 767px) {
+    /* MG-012: on a phone a swap's or a can't-work request's Review pill sits under the text, at the right, as Decline and
+     * Approve do under a time off request, so the names and the shift keep the row's width. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen :is(#b-todo-swaps, #b-todo-cant-work) .b-row:has(> .b-row__trail):not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { flex-wrap: wrap !important; row-gap: var(--b-space-8) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen :is(#b-todo-swaps, #b-todo-cant-work) .b-row > .b-row__trail:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { flex-basis: 100% !important; justify-content: flex-end !important; padding-left: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen :is(#b-todo-swaps, #b-todo-cant-work) .b-row > .b-row__trail > .b-btn:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { min-width: 96px !important; min-height: 40px !important; }
+  }
+  @media (max-width: 359px) {
+    /* A row's pill keeps its 36px height on the narrowest phones (it was 34px there); its hit area is 44px. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:is(.c-todo, .c-home) > .b-screen .b-row__trail > .b-btn:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { min-height: 36px !important; }
+  }
+  @media (min-width: 768px) {
+    /* OW-012: the row's positive pill (Approve, Review, Find cover, Fill) has one width, so the buttons before it share an edge. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen :is(.b-decide, .b-row__trail) > .b-btn--ghost:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { min-width: 96px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen .b-decide:not(.b-decide--confirm) > .b-btn--ghost:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { width: 96px !important; padding: 0 !important; }
+    /* OW-012: the schedule note under a time off request stays on one line. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen .b-leave-note:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { display: block !important; overflow: hidden !important; white-space: nowrap !important; text-overflow: ellipsis !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen .b-leave-note > svg:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { display: inline-block !important; vertical-align: -2px !important; margin-right: 6px !important; }
+  }
+}

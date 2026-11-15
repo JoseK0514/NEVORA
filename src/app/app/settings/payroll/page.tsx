@@ -17,7 +17,7 @@ export const metadata = { title: "Payroll settings" };
 
 /** Review F3 (NV-136): someone without payroll setup access is told why (and offered Payroll), never moved to Home. */
 function NoPayrollSetup() {
-  return <OwnerOnlyNotice title="Payroll settings" reason="Payroll settings need payroll setup access" help="Ask an Owner with payroll access if something here needs to change." next={{ href: '/app/payroll', label: 'Open Payroll' }} />;
+  return <OwnerOnlyNotice state title="Payroll settings" reason="Payroll settings need payroll setup access" help="Ask an Owner with payroll access if something here needs to change." next={{ href: '/app/payroll', label: 'Open Payroll' }} />;
 }
 
 export default async function PayrollSettingsPage({ searchParams }: { searchParams: Promise<{ open?: string | string[] }> }) {

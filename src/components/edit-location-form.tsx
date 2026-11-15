@@ -38,8 +38,8 @@ export function EditLocationForm({ location, action, words = { location: "Locati
   const dirty = draft.name !== saved.name || draft.shortName !== saved.shortName || draft.active !== saved.active;
   const clockerHref = `/clocker/${location.clockerKey}`;
   const { errors, handlers, clear } = useFieldErrors({
-    name: { missing: `Enter a ${place} name.` },
-    shortName: { missing: "Enter a short name." },
+    name: { missing: `Enter a ${place} name` },
+    shortName: { missing: "Enter a short name" },
   });
 
   useEffect(() => {

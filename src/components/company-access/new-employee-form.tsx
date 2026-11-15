@@ -38,10 +38,10 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
    <input type="hidden" name="active" value="true"/>
    <div className="c-step" ref={stepOne} hidden={step!==1}>
     <div className="c-field__row">
-     <CorpField label="First name" htmlFor="new-first"><input id="new-first" className="c-in" name="firstName" autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160}/></CorpField>
-     <CorpField label="Last name" htmlFor="new-last"><input id="new-last" className="c-in" name="lastName" autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160}/></CorpField>
+     <CorpField label="First name" htmlFor="new-first"><input id="new-first" className="c-in" name="firstName" autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} data-missing="Enter a first name"/></CorpField>
+     <CorpField label="Last name" htmlFor="new-last"><input id="new-last" className="c-in" name="lastName" autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} data-missing="Enter a last name"/></CorpField>
     </div>
-    <CorpField label="Mobile phone" htmlFor="new-phone"><PhoneField id="new-phone" name="phone" autoComplete="off" enterKeyHint="next" required/></CorpField>
+    <CorpField label="Mobile phone" htmlFor="new-phone"><PhoneField id="new-phone" name="phone" autoComplete="off" enterKeyHint="next" required missing="Enter a mobile phone number"/></CorpField>
     {/* Nov 14, 2026 inspection (BR-14): the field says what leaving it empty means. */}
     <CorpField label="Email (optional)" htmlFor="new-email" help={<span id="new-email-help">Without an email, this person can clock in on the tablet but can’t sign in to NEVORA.</span>}><input id="new-email" className="c-in" name="email" type="email" inputMode="email" autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done" maxLength={254} placeholder="name@example.com" aria-describedby="new-email-help"/></CorpField>
     <div className="c-field__row">
@@ -49,7 +49,7 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
       <option value="EMPLOYEE">Employee</option><option value="LEAD">Lead</option><option value="MANAGER">Manager</option>
       {actorRole==="OWNER"?<option value="OWNER">Owner</option>:null}
      </select></CorpField>
-     <CorpField label="Location" htmlFor="new-location"><select id="new-location" className="c-in" name="primaryLocationId" required value={primary} onChange={event=>setPrimary(event.target.value)}>
+     <CorpField label="Location" htmlFor="new-location"><select id="new-location" className="c-in" name="primaryLocationId" required data-missing="Choose a location" value={primary} onChange={event=>setPrimary(event.target.value)}>
       <option value="" disabled>Choose</option>
       {activeLocations.map(location=><option key={location.id} value={location.id}>{location.shortName}</option>)}
      </select></CorpField>
@@ -57,7 +57,7 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
     {role==='MANAGER'&&actorRole!=='OWNER'?<p className="c-note">An Owner assigns management access after this.</p>:null}
    </div>
    <div className="c-step" hidden={step!==2}>
-    <CorpField label="Employee ID" htmlFor="new-id" help="You can’t change this later."><input id="new-id" className="c-in" name="id" placeholder="e.g. 10482" autoComplete="off" autoCapitalize="characters" autoCorrect="off" spellCheck={false} enterKeyHint="done" required maxLength={128}/></CorpField>
+    <CorpField label="Employee ID" htmlFor="new-id" help="You can’t change this later."><input id="new-id" className="c-in" name="id" placeholder="e.g. 10482" autoComplete="off" autoCapitalize="characters" autoCorrect="off" spellCheck={false} enterKeyHint="done" required maxLength={128} data-missing="Enter an employee ID"/></CorpField>
     <ChoiceField label="Positions" name="positionIds" none="Choose positions" empty="No positions yet" choices={activePositions.map(position=>({value:position.id,label:position.name}))}/>
     <ChoiceField key={primary} label="Locations they can work at" name="eligibleLocationIds" choices={activeLocations.map(location=>({value:location.id,label:location.shortName,checked:location.id===primary,
      help:location.id===primary?'Their location, always included':undefined}))}/>

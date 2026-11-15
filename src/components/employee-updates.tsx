@@ -14,6 +14,7 @@ import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {CorpEmpty} from '@/components/corp/corp';
 import {useCommunicationResource, type CommunicationMode} from '../lib/communications/client';
 import type {CommunicationListRead, CommunicationRead} from '../lib/communications/types';
+import {BChip} from './owner-b/b-kit';
 import './updates-review.css';
 
 type ReadyUpdate = Extract<CommunicationRead, {state: 'ready'}>;
@@ -90,7 +91,8 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
      : visible.length ? <ul className="q-list updates-list" style={{ marginTop: 16 }}>{visible.map(item => <li key={item.id}><Link className="q-row" href={'/app/updates/' + item.id} prefetch={false}>
        <span className="q-rt"><b>{item.title}</b><i><time dateTime={item.publishedAt}>{day(item)}</time>{` · ${readLine(item)}`}</i></span>
        {/* Review B1 (NV-097): the update that needs a reply says so in amber, as the segment's count does. */}
-       {inReviewGroup(item) ? <span className="c-pill c-pill--amber">Needs reply</span> : null}
+       {/* Phase 3 (OW-034): the kit's amber chip; the older pill was repainted as bold plain text. */}
+       {inReviewGroup(item) ? <BChip tone="amber">Needs reply</BChip> : null}
        <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
       </Link></li>)}</ul>
      : <div className="c-page c-embed updates-empty" role="status"><CorpEmpty title={filter === 'all' ? 'No updates yet' : 'Nothing needs a reply'}

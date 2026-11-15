@@ -26,7 +26,7 @@ import {Avatar,Card,KitLink,Row,Rows,StatGrid,Status,Tile,type KitTone} from './
 import {keepWhole} from '../lib/keep-whole';
 import {timeZoneLabel} from '../lib/time-zone-label';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
-import { CORP_NO_VALUE,CorpBody,CorpButtonLink,CorpCard,CorpNav,CorpPage,CorpPill,CorpStats,CorpTitle } from './corp/corp';
+import { CorpBody,CorpButtonLink,CorpCard,CorpNav,CorpPage,CorpPill,CorpStats,CorpTitle } from './corp/corp';
 import './reports-corp.css';
 type State='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'paused'|'access_lost';
 /** IS-B1, IS-B29: a fresh snapshot is read a third of the way through the current one's life (and retried while there's time)
@@ -295,9 +295,11 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
   <CorpCard id="ins-attendance" label="Attendance">
    {/* Nov 1 upscale (review S14): a figure slot never holds words. A zero is "0"; a figure the period can't give is the
      kit's grey "—", and the reason is one 13px line under the figures. Figures are ink (R3). */}
+   {/* Review Nov 11 (OW-026): a figure the period cannot give is left out (it was a tile holding a grey dash); the line
+     under the figures still says why it is missing. Time off always has a figure, so the card is never empty. */}
    <CorpStats items={[
-    {label:'Late clock\u2011ins',value:lateKnown?late:CORP_NO_VALUE},
-    {label:'Cover filled',value:cover.observedCoverageRequests?`${cover.completedCoverageRequests} of ${cover.observedCoverageRequests}`:CORP_NO_VALUE},
+    ...(lateKnown?[{label:'Late clock\u2011ins',value:late}]:[]),
+    ...(cover.observedCoverageRequests?[{label:'Cover filled',value:`${cover.completedCoverageRequests} of ${cover.observedCoverageRequests}`}]:[]),
     {label:'Time off',value:offDays?plural(offDays,'day','days'):'0'},
    ]}/>
    {reasons.length?<p className="c-ins__reason">{reasons.join(' ')}</p>:null}

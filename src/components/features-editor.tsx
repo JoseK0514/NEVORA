@@ -98,14 +98,13 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
           const held = m.id === "updates" && updatesHeld;
           const unavailable = (m.requires === "payroll" && !payrollEnabled) || held;
           const locked = on && waiting > 0 && !disabled.includes(m.id);
-          const noteId = `module-${m.id}-note`;
           const note = held ? "Coming in a later release." : unavailable ? "Available when payroll is on." : locked ? blockerText(m.id, waiting) : null;
-          // A note belongs to its row: the row's divider moves under the note instead of striking through it.
           // Review B5 (NV-248): a feature that can't be turned off right now (requests still waiting) reads as on and locked.
-          return <li key={m.id} data-on={on && !unavailable} data-locked={locked || undefined} className={note ? "q-feature--note" : undefined}>
-            <SwitchRow id={`module-${m.id}`} label={m.name} checked={on && !unavailable}
-              disabled={busy || unavailable || locked} onChange={() => toggle(m.id)} describedBy={note ? noteId : undefined} />
-            {note ? <p className="q-help q-feature__note" id={noteId}>{note}</p> : null}
+          // Review Nov 11 (OW-025): the reason is the row's own sub-line, right under the label it explains (it was a
+          // separate paragraph 30px lower), and the switch is described by it.
+          return <li key={m.id} data-on={on && !unavailable} data-locked={locked || undefined}>
+            <SwitchRow id={`module-${m.id}`} label={m.name} description={note ?? undefined} checked={on && !unavailable}
+              disabled={busy || unavailable || locked} onChange={() => toggle(m.id)} />
           </li>;
         })}
       </ul>

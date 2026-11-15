@@ -50,11 +50,15 @@ it("explains a protected timezone without locking the workspace name", async () 
   // Owner premium R7: the reason in plain words (the server's own error keeps its wording for a rejected save).
   expect(html).toContain("Time zone is locked because you have shifts and timecards. Contact support to change it.");
   expect(html).toContain('aria-describedby="timezone-help"');
-  // Nov 1 upscale: one grouped card (name, time zone, week start); the locked values carry a Lock glyph, and one line
-  // under the card says why.
+  // Nov 1 upscale: one grouped card (name, time zone, week start); the locked values carry a Lock glyph.
+  // Review Nov 11 (OW-024): the reason sits in each locked row, under its value (it was one line under the card).
   expect(html.match(/<ul class="q-list c-coprof"/g)).toHaveLength(1);
   expect(html.match(/class="c-coprof__lock"/g)).toHaveLength(2);
-  expect(html).toContain('<p class="c-coprof__note" aria-hidden="true">Locked while you have shifts</p>');
+  expect(html.match(/<small class="c-coprof__why">Locked while you have shifts<\/small><\/div><\/li>/g)).toHaveLength(2);
+  expect(html).not.toContain("c-coprof__note");
+  // Save shows only after a change: the form says so, and the name stays the one thing that can change.
+  expect(html).toContain('data-save-on-change=""');
+  expect(html).not.toContain('data-dirty');
 });
 
 it("does not fetch or render workspace details when access is denied", async () => {

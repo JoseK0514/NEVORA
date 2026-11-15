@@ -39,6 +39,7 @@ import { CorpMotion } from "./corp/corp-motion";
 import { SidebarRailTooltip } from "./sidebar-rail-tooltip";
 import { OFFLINE_HELD_EVENT } from "@/lib/offline-hold";
 import { QuestionIcon } from "@phosphor-icons/react/dist/ssr/Question";
+import { B_TABLET } from "@/lib/b-viewport";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 
 /** "9:24 PM" in the device's clock, for the offline line. */
@@ -62,6 +63,13 @@ function readCookie(name: string) {
 }
 function subscribeTablet(changed: () => void) {
   const media = window.matchMedia(TABLET_SIDEBAR_QUERY);
+  media.addEventListener("change", changed);
+  return () => media.removeEventListener("change", changed);
+}
+/** Phase 3 (TB-017): under 1024px the labelled rail is the only sidebar (no toggle is drawn there; owner-b-shell.css), so a
+ * choice to expand made on a wider screen does not squeeze a tablet page. The choice returns from 1024px. */
+function subscribeRailOnly(changed: () => void) {
+  const media = window.matchMedia(B_TABLET);
   media.addEventListener("change", changed);
   return () => media.removeEventListener("change", changed);
 }
@@ -195,7 +203,9 @@ function AppShellView({
   // The stored tablet choice is read in the browser only (the server renders the default, the rail).
   const storedTablet = useSyncExternalStore(noSubscription, () => readCookie(tabletCookie), () => undefined);
   const [tabletChoice, setTabletChoice] = useState<boolean | null>(null);
-  const tabletRail = tabletChoice ?? storedTablet !== "expanded";
+  // An Employee's or Lead's shell keeps its toggle and its choice at every width (their shell is not part of Phase 3).
+  const railOnly = useSyncExternalStore(subscribeRailOnly, () => window.matchMedia(B_TABLET).matches, () => false) && user.role !== "EMPLOYEE" && user.role !== "LEAD";
+  const tabletRail = railOnly || (tabletChoice ?? storedTablet !== "expanded");
   const tabletWidth = useSyncExternalStore(subscribeTablet, () => window.matchMedia(TABLET_SIDEBAR_QUERY).matches, () => false);
   const [sidebarMotion, setSidebarMotion] = useState<"collapse" | "expand" | null>(null);
   const motionTimer = useRef(0);
@@ -242,7 +252,7 @@ function AppShellView({
   // Release 1 ("don't overwhelm"): the team tools have no sidebar group; the entry that holds each one lights instead.
   const toolHolder = activeTool ? teamToolHolder(activeTool.href) : undefined;
   const sidebarActive = toolHolder ?? sidebarActiveHref(user.role, pathname, sidebarItems, payrollCapabilities, context);
-  const navGroups = employee ? employeeNavigationGroups(sidebarItems) : managementNavigationGroups(sidebarItems);
+  const navGroups = employee ? employeeNavigationGroups(sidebarItems) : managementNavigationGroups(sidebarItems, [], user.role);
   // Top-bar location (D1): section, then page. The page links back when you are deeper in it.
   const activeGroup = navGroups.find(group => group.items.some(item => item.href === sidebarActive));
   // A page reached from the account menu (Profile, My pay) has no sidebar entry; the trail still names it.
@@ -399,14 +409,18 @@ function AppShellView({
   // and so does the sidebar's name button; an Employee gets the alerts page by its own name. With no profile page, the
   // menu keeps a "Device settings" entry so nothing is lost.
   const profilePage = employee || navigation.some(item => item.href === "/app/profile");
+  // Phase 3 (TB-009, MG-007): More, Profile and My pay open from the account pill and have no sidebar or rail entry (an
+  // Owner's or Manager's; a Manager's My pay is in the sidebar and lights there), so the pill is marked while one is open.
+  const accountPage = !employee && !sidebarActive && (pathname === "/app/more" || pathname === "/app/profile" || !!pathname?.startsWith("/app/profile/") || pathname === "/app/my-pay");
+  const myPayInSidebar = sidebarItems.some(item => item.href === "/app/my-pay");
   const accountMenu = (
-    <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`} detail={`${ROLE_LABELS[user.role] ?? ""} · ${workspaceName}`}>
+    <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`} detail={`${ROLE_LABELS[user.role] ?? ""} · ${workspaceName}`} current={accountPage}>
       {profilePage ? <Link href="/app/profile" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Your profile</Link> : null}
       {/* Desktop Employee: the calendar link page has no other way in at this width (phones reach it from More). */}
       {employee ? <Link href="/app/profile/calendar" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Add shifts to your calendar</Link> : null}
-      {!employee && navigation.some(item => item.href === "/app/my-pay") ? <Link href="/app/my-pay" className="nevora-action-menu-item"
+      {!employee && !myPayInSidebar && navigation.some(item => item.href === "/app/my-pay") ? <Link href="/app/my-pay" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>My pay</Link> : null}
       {notificationsEnabled && employee ? <Link href="/app/profile/device-alerts" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Alerts on this device</Link> : null}
@@ -463,7 +477,7 @@ function AppShellView({
         <button className="sidebar-toggle" type="button" aria-label={railed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!railed} aria-controls="desktop-primary-navigation" onClick={toggleSidebar}><NavIcon name="sidebar" size={20} /></button>
         </div>
         <nav id="desktop-primary-navigation" className="sidebar-nav" aria-label="Primary navigation">
-          {navGroups.map(group => <div className="sidebar-nav-group" data-group={group.label || undefined} key={group.label}>
+          {navGroups.map((group, index) => <div className="sidebar-nav-group" data-group={group.label || undefined} key={`${index}:${group.label}`}>
           {group.label ? <h2 className="sidebar-group-label">{group.label}</h2> : null}
           {group.items.map((item) => {
             const active = item.href === sidebarActive;
@@ -479,7 +493,8 @@ function AppShellView({
               >
                 <span className="nav-icon">
                   {/* Review B2 (NV-043): an Employee's Pay is the phone tab's receipt (FileText read as Requests' clipboard). */}
-                  <NavIcon name={employee && item.icon === "statement" ? "receipt" : item.icon} employee={employee} size={20} />
+                  {/* Phase 3 (TB-001, TB-009): the current entry's glyph is filled, in the sidebar and the rail, as the phone's current tab is. */}
+                  <NavIcon name={employee && item.icon === "statement" ? "receipt" : item.icon} employee={employee} size={20} weight={active ? "fill" : "bold"} />
                 </span>
                 <span className="nav-label">{item.label}</span>
                 <NavPending />
@@ -512,7 +527,7 @@ function AppShellView({
         </PortalSignout>
 
         {/* Review B2 (NV-011): a Help link above "Powered by" on tablets and desktop. */}
-        <Link href="/app/help" className="sidebar-help-link" aria-current={pathname === "/app/help" ? "page" : undefined}><QuestionIcon size={18} weight="bold" aria-hidden="true" /><span className="nav-label">Help</span></Link>
+        <Link href="/app/help" className="sidebar-help-link" aria-current={pathname === "/app/help" ? "page" : undefined}><QuestionIcon size={18} weight={pathname === "/app/help" ? "fill" : "bold"} aria-hidden="true" /><span className="nav-label">Help</span></Link>
         <div className="sidebar-platform-footer">
           <span>{workspaceName}</span>
           <small>{NUVORA_BRAND.poweredBy}</small>

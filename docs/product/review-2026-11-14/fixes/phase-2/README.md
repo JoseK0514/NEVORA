@@ -109,7 +109,7 @@ Your attendance words, in four older views. Nothing else changed on screen.
 | Update detail, payroll people and fix, employee edit, staff import steps | They take the frame by rule but were not photographed. |
 | Scheduling rules' open sections | They look unfinished (bullets, a bare icon). Same before this phase; not a frame issue. |
 | Wave C Settings placeholders, the shell error screen, Pay and Profile failure cards | Still on older patterns. Listed in report D. |
-| Phases 3 to 8 of the Nov 11 plan | Screen-by-screen work for Owner and Manager, Employee and Lead, signed-out pages, Clocker, motion, final check. Not started as phases; round 1 covered parts of each. |
+| Phases 4 to 8 of the Nov 11 plan | Phase 3 (Owner and Manager) is built: see [../phase-3/README.md](../phase-3/README.md). Employee and Lead, signed-out pages, Clocker, motion and the final check remain. |
 
 ## Release sequence
 

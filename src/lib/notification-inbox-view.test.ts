@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {filterNotifications,groupNotifications,notificationPresentation,notificationTitle} from './notification-inbox-view';
+import {collapseNotifications,filterNotifications,groupNotifications,notificationPresentation,notificationTitle} from './notification-inbox-view';
 import type {EmployeeNotificationItem} from './employee-view';
 
 const rows:EmployeeNotificationItem[]=[
@@ -45,4 +45,17 @@ it('adds the dates a row is about when the list carries them, and never guesses 
  expect(notificationTitle({label:'Team update',subject:null})).toEqual({title:'Team update',detail:null});
  expect(notificationTitle({label:'toString'})).toEqual({title:'toString',detail:null});
  expect(notificationTitle({label:'Operations'})).toEqual({title:'Operations',detail:null});
+});
+
+// Phase 3 (OW-002): repeats of one summary read as one row.
+it('folds rows that follow each other with the same kind, and keeps which are unread',()=>{
+ const summary=(id:string,at:string,reviewState:'read'|'unread'):EmployeeNotificationItem=>({id,label:'Operations need review',at,href:'/app/notifications/open?notificationId='+id,reviewState,actionState:'available'});
+ const list=[summary('a','2026-11-15T14:00:00Z','unread'),summary('b','2026-11-15T13:00:00Z','read'),summary('c','2026-11-15T12:00:00Z','unread'),rows[0],summary('d','2026-11-14T12:00:00Z','read')];
+ const folded=collapseNotifications(list);
+ expect(folded.map(row=>[row.item.id,row.count,row.unreadIds])).toEqual([['a',3,['a','c']],['read-required',1,[]],['d',1,[]]]);
+});
+it('never folds rows that carry their own dates or are of different kinds',()=>{
+ const dated=(id:string):EmployeeNotificationItem=>({id,label:'Time-off update',at:'2026-11-15T14:00:00Z',href:'/app/requests',reviewState:'read',actionState:'none',subject:{kind:'requestDate',startDate:'2026-11-26',endDate:'2026-11-26'}});
+ expect(collapseNotifications([dated('a'),dated('b')]).map(row=>row.count)).toEqual([1,1]);
+ expect(collapseNotifications(rows).map(row=>row.count)).toEqual([1,1,1]);
 });

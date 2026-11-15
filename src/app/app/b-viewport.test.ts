@@ -10,6 +10,7 @@ const B_SHEETS = [
   'app/app/b-foundation.css', 'components/owner-b/owner-b.css', 'components/employee-b/employee-b.css',
   'components/employee-b/account.css', 'components/employee-b/requests.css', 'components/employee-b/schedule.css',
   'components/employee-b/time.css', 'components/employee-b/pay.css',
+  'app/app/owner-b-home.css', 'app/app/owner-b-schedule.css', 'app/app/owner-b-time-pay.css', 'app/app/owner-b-requests.css', 'app/app/owner-b-settings.css',
 ];
 const css = (path: string) => readFileSync(join(root, path), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
 const viewportFeatures = (query: string) => query.match(/\((?:min|max)-width:\s*\d+px\)/g) ?? [];

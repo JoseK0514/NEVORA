@@ -5,7 +5,10 @@ import { PayrollRuns, type PayrollView } from '@/components/payroll/payroll-runs
 import { getWorkspace } from '@/lib/data/workspaces';
 import { listEmployees } from '@/lib/data/employees';
 import { payrollRecoveryScope } from '@/components/payroll/recovery-scope';
-import { OwnerOnlyNotice } from '@/components/owner-only-notice';
+import { OwnerOnlyNotice, closedPayrollForManager, ownerNames } from '@/components/owner-only-notice';
+import { readOperationalAuthority } from '@/lib/company-access/operational-scope.server';
+import { currentBrand } from '@/lib/workspace-presentation/current.server';
+import { navigationForRole } from '@/lib/navigation';
 import { currentPayPeriod } from '@/lib/payroll/pay-calendar.server';
 import { payrollTabs } from '@/components/payroll/payroll-tabs';
 import './payroll-workflow.css';
@@ -22,8 +25,19 @@ export async function PayrollRoute({ view, runId = null }: { view: PayrollView; 
   const capabilities = await readPayrollCapabilities(proof);
   // PD9 / UX10: someone without payroll access who opens the link is told why, instead of a silent move to Home.
   // Review B2 (NV-137): the notice names who can help (the workspace's Owners, from the team list the person already sees).
-  if (!capabilities.canReview) return <OwnerOnlyNotice title="Payroll" reason="Payroll is for Owners" help="Owners can give you payroll access." ownersCan="give you payroll access"
-    owners={await ownerNamesFor()} />;
+  if (!capabilities.canReview) {
+    const owners = await ownerNamesFor();
+    // Review Nov 11 (MG-002): a Manager is pointed to their part of the job (Timecards) and to their own pay, each only
+    // when their navigation has it (the rule More and the shell use). An Employee or Lead keeps the notice as it was.
+    if (proof.employee.role === 'MANAGER') {
+      // A read that fails leaves the notice without its two ways on; it never opens Payroll.
+      const navigation = await Promise.all([readOperationalAuthority(proof), currentBrand()])
+        .then(([operational, brand]) => navigationForRole('MANAGER', capabilities, { operational, modules: brand.modules })).catch(() => []);
+      const closed = closedPayrollForManager(href => navigation.some(item => item.href === href), ownerNames(owners));
+      return <OwnerOnlyNotice state title="Payroll" reason="Payroll is for Owners" line={closed.line} next={closed.next} also={closed.also} />;
+    }
+    return <OwnerOnlyNotice title="Payroll" reason="Payroll is for Owners" help="Owners can give you payroll access." ownersCan="give you payroll access" owners={owners} />;
+  }
   const workspace = await getWorkspace();
   const recoveryScope = payrollRecoveryScope(workspace.id, proof.employee.id);
   const current = await currentPayPeriod().catch(() => null);

@@ -8,6 +8,7 @@ import {isStaffingRepair,repairPerson,repairTitle,repairWhen} from '../time-off-
 
 const NBSP = ' ', NBHY = '‑';
 const WAITING = / is waiting for review\.?$/;
+const isOwnCorrection = (title: string) => /^Your correction/.test(title);
 
 /** "8:00 AM–4:00 PM" → "8:00 AM – 4:00 PM", with the times kept whole. */
 export function spacedRanges(text: string) {
@@ -78,11 +79,11 @@ export function presentItem(item: ActionItem, actionLabel: string, timeZone = 'U
       detail = detail.replace(/: (\d+) missing/g, ': $1 open');
       break;
     case 'TIME_CORRECTION': {
-      // Nov 14, 2026 inspection (BR-7): the row states the fact, who asked for what and the day they sent it. The read
-      // names the person and the kind of request; the recorded and asked-for times are on the review itself.
+      // Phase 3 (OW-002): the title is the person, the line under it what they asked for and the day they sent it. The
+      // read names the person and the kind of request; which punch and by how much is on the review itself.
       const who = detail.split(' · ')[0]?.trim(), sent = sentDate(item.dateTime, timeZone);
-      if (who && !/^Your correction/.test(title)) title = /Recorded entry not sent yet/.test(detail) ? `${who} asked to add unrecorded time` : `${who} asked for a time correction`;
-      detail = sent ? `S${sent.slice(1)}` : 'Waiting for review';
+      if (who && !isOwnCorrection(title)) title = who;
+      detail = [/Recorded entry not sent yet/.test(detail) ? 'Add unrecorded time' : 'Time correction', sent].filter(Boolean).join(' · ');
       break;
     }
   }
