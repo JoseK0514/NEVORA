@@ -25,6 +25,8 @@ beforeAll(async()=>{
  f=await ownedWorkspaceFixture();
  for(const c of f.companies){
   await c.db.pool.query(`ALTER TABLE employees ADD first_name text,ADD last_name text DEFAULT 'Example',ADD role text DEFAULT 'EMPLOYEE',ADD primary_location_id text DEFAULT 'LOC-1',ADD active boolean DEFAULT true; UPDATE employees SET first_name=label; CREATE TABLE employee_sessions(token_hash text PRIMARY KEY,employee_id text REFERENCES employees(id),expires_at timestamptz); GRANT SELECT ON employee_sessions TO ${c.role}`);
+  // Session admission now reads the canonical credential replacement state.
+  await c.db.pool.query(`CREATE TABLE employee_credentials(employee_id text PRIMARY KEY REFERENCES employees(id),password_hash text NOT NULL,must_change_password boolean NOT NULL DEFAULT true); INSERT INTO employee_credentials VALUES('EMP-1','fictional-established-hash',false); GRANT SELECT ON employee_credentials TO ${c.role}`);
   // Deliberately duplicated inner session digest on A/B: envelope must still deny cross-host use.
   await c.db.pool.query("INSERT INTO employee_sessions VALUES($1,'EMP-1',clock_timestamp()+interval '1 day')",[digest]);
   await c.db.pool.query(`CREATE TABLE nevora_workspace_presentation_assets(id uuid PRIMARY KEY,media_type text,sha256 text,bytes bytea); GRANT SELECT ON nevora_workspace_presentation_assets TO ${c.role}`);
@@ -49,6 +51,17 @@ it('rejects a legacy raw session in isolated mode and respects canonical employe
  const a=f.companies[0];cookies.set('fuel_session',inner);expect(await withWorkspaceBinding(a.binding,getSession)).toBeNull();
  await withWorkspaceBinding(a.binding,()=>writeSessionCookie({token:inner,expiresAt:new Date(Date.now()+60000)}));await a.db.pool.query("UPDATE employees SET active=false WHERE id='EMP-1'");
  try{expect(await withWorkspaceBinding(a.binding,getSession)).toBeNull();}finally{await a.db.pool.query("UPDATE employees SET active=true WHERE id='EMP-1'");}
+});
+it('refuses both session readers while the bound company requires password replacement',async()=>{
+ const a=f.companies[0];
+ await withWorkspaceBinding(a.binding,()=>writeSessionCookie({token:inner,expiresAt:new Date(Date.now()+60000)}));
+ await a.db.pool.query("UPDATE employee_credentials SET must_change_password=true WHERE employee_id='EMP-1'");
+ try{
+  expect(await withWorkspaceBinding(a.binding,getSession)).toBeNull();
+  expect(await withWorkspaceBinding(a.binding,readSessionMutationProof)).toBeNull();
+ }finally{await a.db.pool.query("UPDATE employee_credentials SET must_change_password=false WHERE employee_id='EMP-1'");}
+ expect(await withWorkspaceBinding(a.binding,getSession)).toMatchObject({id:'EMP-1',firstName:'Company A'});
+ expect(await withWorkspaceBinding(a.binding,readSessionMutationProof)).toMatchObject({employee:{id:'EMP-1'}});
 });
 it('rejects copied invitation and recovery proofs at their real HTTP entrypoints before any credential change',async()=>{
  const [a,b]=f.companies;

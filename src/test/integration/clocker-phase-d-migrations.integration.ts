@@ -9,7 +9,8 @@ it('D8 upgrades the frozen D2 schema without changing actual punches, breaks, re
  const f=await createPunchFixture({breaks:true,migrationStage:'phase-d2',companyAccess:true});
  try{
   const proof={employee:{id:'c34-owner',role:'OWNER' as const,firstName:'Owner',lastName:'QA',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
-  await f.q("INSERT INTO employee_credentials(employee_id,password_hash) VALUES('c34-a','fictional-existing-hash');INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('b',64),'c34-a',clock_timestamp()+interval '1 day')");
+  // The migration preserves an already established portal account, not an initial operator password.
+  await f.q("INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('c34-a','fictional-existing-hash',false);INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('b',64),'c34-a',clock_timestamp()+interval '1 day')");
   const service=new ClockerPunchService(f.key,f.db.executor),identity=await f.identity();
   for(const action of ['CLOCK_IN','START_BREAK','END_BREAK','CLOCK_OUT'] as const){const view=await service.read(identity.proof),s=view.snapshot;await service.execute(identity.proof,{commandId:randomUUID(),verificationId:view.verificationId,action,expected:{revision:s.revision,timeEntryId:s.entry?.id??null,timeEntryVersion:s.entry?.version??null,breakEntryId:s.break?.id??null,breakEntryVersion:s.break?.version??null},...(action==='START_BREAK'?{breakType:{id:f.breakType!.id,version:f.breakType!.version}}:{})});}
   const employee={...proof,employee:{...proof.employee,id:'c34-a',role:'EMPLOYEE' as const},sessionTokenHash:'b'.repeat(64)};

@@ -28,15 +28,42 @@ capabilities, centralized feature flags, lifecycle notices, the remaining read/A
 contracts, test-project inventory and source-qualified manuals. Preserve historical
 native payroll records; do not add new native tax calculations for this release.
 
-The publication adds source reconciliation and this handoff, with rebuilt manuals
-to bind the updated source inventory. It does not add application behavior beyond
-the completed backend checkpoint. Candidate and actual-development CI must pass
-on the exact published source; prior local evidence alone does not satisfy them.
+The publication adds source reconciliation, this handoff and the bounded
+integration corrections below, with rebuilt manuals. Candidate and
+actual-development CI must pass on the exact published source; prior local
+evidence alone does not satisfy them.
 
 The immutable publication SHA, candidate tag, CI URLs and results are recorded in
 the publishing chat's external receipt under
 `outputs/backend-development-publish-20261115/`. Do not append receipt-only commits
 to a qualified candidate merely to restate its own SHA.
+
+## Integration corrections found by candidate CI
+
+The first candidate, `600aafeffd1f2424365a46ea1360b0c2f4db43c0`, exposed four
+failing suites in [CI run 43746734385](https://github.com/JoseK0514/NEVORA/actions/runs/43746734385).
+The failed run, downloaded failure artifacts and local RED logs are retained.
+No failure was waived or assertion weakened.
+
+- `readInvitationBatch` now binds its status read to the explicitly supplied,
+  validated workplace, as dispatch already did. Without that binding, isolated
+  callers lost the runtime origin while reading delivery capability. The real
+  two-company onboarding journey reproduced the failure, then passed all four
+  tests after the one-line correction.
+- The existing Phase B authority, calendar and frozen Clocker migration fixtures
+  now explicitly model established passwords with `must_change_password=false`.
+  The runtime requirement remains enforced. Local existing assertions passed:
+  55 authority tests, 25 calendar tests and the migration preservation test.
+- The deliberately minimal isolation fixture now includes the credential table
+  read by session admission. All 14 isolation tests pass, including a new test
+  that blocks both session readers while replacement is required, then admits
+  the same company after completion. Another new calendar test verifies the
+  corresponding refusal and recovery without creating a subscription while blocked.
+
+These corrections affect one server module and four integration fixtures. They
+do not change the public interface, company grants, schema defaults or Claude's
+UI. Whole-suite and exact-source CI qualification still apply to the replacement
+candidate; the first candidate's passing jobs are not substituted for that gate.
 
 ## Claude's next integration
 

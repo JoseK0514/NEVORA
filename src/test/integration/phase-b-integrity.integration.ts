@@ -51,11 +51,12 @@ async function fixture(status: 'DRAFT' | 'PUBLISHED' = 'DRAFT', credential = tru
     INSERT INTO employee_location_eligibility VALUES('owner','loc-1'),('actor','loc-1'),('worker','loc-1');
     INSERT INTO positions(id,workspace_id,name) VALUES('p1','workspace-fuel','Fictional Position');
     INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) SELECT 'normal-'||d,'worker',d,'00:00','24:00' FROM generate_series(0,6) d;
-    INSERT INTO employee_credentials(employee_id,password_hash) VALUES('owner','FICTIONAL_OWNER_HASH');
+    INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('owner','FICTIONAL_OWNER_HASH',false);
     INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('schedule','loc-1','2030-10-07','${status}','owner');
     INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('existing','schedule','worker','2030-10-08','08:00','12:00');
     INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status) VALUES('request','worker','2030-10-09','2030-10-09','PENDING');`, values: [] });
-  if (credential) await db.executor.query({ text: "INSERT INTO employee_credentials(employee_id,password_hash) VALUES('worker','FICTIONAL_WORKER_HASH')", values: [] });
+  // These scenarios start with established portal credentials, after replacement.
+  if (credential) await db.executor.query({ text: "INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('worker','FICTIONAL_WORKER_HASH',false)", values: [] });
   // Seed the intended legacy census before atomic operational adoption; later Managers do not inherit Company.
   await db.executor.query({text:await readFile('db/migrations/0032_company_access_invitations.sql','utf8'),values:[]});
   const owner = await fixtureProof(db.executor, 'owner'), actor = await fixtureProof(db.executor, 'actor');
