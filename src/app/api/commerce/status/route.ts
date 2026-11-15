@@ -3,6 +3,7 @@ import { readBillingOwnerBinding } from "@/lib/commerce/owner-binding";
 import { currentCommerceConnection, commerceEnabled, fetchCommerceAuthority } from "@/lib/commerce/access";
 import { parseCommerceStatus } from "@/lib/commerce/status";
 import {BILLING_SNAPSHOT_LIFETIME_MS} from '@/lib/commerce/billing-snapshot';
+import {reportServerError} from '@/lib/server-error';
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -46,7 +47,8 @@ export async function GET(request: Request) {
     const observed=Date.now(),validForMs=Math.floor(Math.min(BILLING_SNAPSHOT_LIFETIME_MS,authority.validUntil-observed));
     if (validForMs <= 0) throw Error("invalid_commerce_authority");
     return Response.json({...parseCommerceStatus(authority),observedAt:new Date(observed).toISOString(),validForMs}, { headers });
-  } catch {
+  } catch (failure) {
+    reportServerError(failure, {route: '/api/commerce/status'});
     return error("billing_status_unavailable", 503);
   }
 }

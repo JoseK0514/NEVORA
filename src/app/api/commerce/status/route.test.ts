@@ -232,3 +232,20 @@ it("keeps existing unenrolled installations off", async () => {
   vi.stubEnv("NEVORA_COMMERCE_ENABLED", "false");
   expect((await GET(request())).status).toBe(404);
 });
+
+it('records a caught unexpected failure without logging request or provider secrets', async () => {
+  const sink = vi.spyOn(console, 'error').mockImplementation(() => {});
+  vi.stubGlobal('fetch', async () => {throw Object.assign(new Error('private-provider-token'), {code: '08006'});});
+  const response = await GET(request({authorization: 'Bearer private-request-token'}));
+  expect(response.status).toBe(503);
+  expect(sink).toHaveBeenCalledTimes(1);
+  expect(JSON.parse(sink.mock.calls[0][0])).toMatchObject({event: 'server_request_error', route: '/api/commerce/status', sqlState: '08006'});
+  expect(sink.mock.calls[0][0]).not.toContain('private');
+});
+
+it('does not report an expected unauthenticated read as a server failure', async () => {
+  const sink = vi.spyOn(console, 'error').mockImplementation(() => {});
+  deps.session.mockResolvedValue(null);
+  expect((await GET(request())).status).toBe(401);
+  expect(sink).not.toHaveBeenCalled();
+});
