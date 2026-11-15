@@ -70,7 +70,16 @@ Earlier local restore attempts lacked dump clients or paired a version-16 client
 with a version-17 server; those failures were retained and corrected by selecting
 the matching existing version-16 server/client runtime, without changing a test.
 
-These corrections affect two server/data modules and five integration/unit files. They
+Candidate `832912a9864bae64489aeedb76b61571d6ef572d` advanced through the calendar
+suite and exposed a later Profile privacy assertion that predated the approved
+own-email/phone contract. The assertion now proves exact own contact values,
+forbids all contact fields and own values in notification DTOs, and forbids the
+coworker's distinct contact values in both DTOs. All existing private-body,
+reason, URL, token and coworker-name exclusions remain. This changes only the
+integration test; the runtime Profile behavior is unchanged. The failing cloud
+run and exact-source local reproduction are retained.
+
+These corrections affect two server/data modules and six integration/unit files. They
 do not change the public interface, company grants, schema defaults or Claude's
 UI. Whole-suite and exact-source CI qualification still apply to the replacement
 candidate; the first candidate's passing jobs are not substituted for that gate.

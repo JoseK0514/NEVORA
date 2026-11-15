@@ -29,9 +29,15 @@ function beforeFinal(action:()=>Promise<void>):SqlExecutor{
  }};
 }
 it('current own Profile and inbox work without push; DTO excludes copied body, reason, URL, tokens and coworker records',async()=>{
- await intent();const profile=await readEmployeeProfile(proof,db.executor);expect(profile).toMatchObject({state:'ready',kind:'profile',profile:{name:'QA E41 Avery',role:'Lead'}});
+ const ownPhone='787-555-0101',ownEmail='self-profile@example.invalid',otherPhone='787-555-0198',otherEmail='coworker-private@example.invalid';
+ await q('UPDATE employees SET phone=$2,email=$3 WHERE id=$1',[proof.employee.id,ownPhone,ownEmail]);
+ await q('UPDATE employees SET phone=$2,email=$3 WHERE id=$1',[scenario.actors[1],otherPhone,otherEmail]);
+ await intent();const profile=await readEmployeeProfile(proof,db.executor);expect(profile).toMatchObject({state:'ready',kind:'profile',profile:{name:'QA E41 Avery',role:'Lead',phone:ownPhone,email:ownEmail}});
  const read=await inbox();expect(read).toMatchObject({state:'ready',kind:'notifications',coverage:'complete'});expect(ids(read)).toEqual(['current']);
- const text=JSON.stringify([read,profile]);for(const forbidden of ['PRIVATE','untrusted.invalid','QA E41 Blair','sessionTokenHash','bbbbbbbb','phone','reason'])expect(text).not.toContain(forbidden);
+ // The approved Profile contract includes only the signed-in person's contacts.
+ // Notification DTOs still exclude contact fields and even the person's own values.
+ const inboxText=JSON.stringify(read);for(const forbidden of ['phone','email',ownPhone,ownEmail])expect(inboxText).not.toContain(forbidden);
+ const text=JSON.stringify([read,profile]);for(const forbidden of ['PRIVATE','untrusted.invalid','QA E41 Blair','sessionTokenHash','bbbbbbbb','reason',otherPhone,otherEmail])expect(text).not.toContain(forbidden);
 });
 it.each(['EMPLOYEE','LEAD'] as const)('actual %s role authority and a replaced role/session cannot return private rows',async role=>{
  await q('UPDATE employees SET role=$1 WHERE id=$2',[role,proof.employee.id]);proof.employee.role=role;await intent();expect(ids(await inbox())).toEqual(['current']);
