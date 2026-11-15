@@ -60,7 +60,7 @@ export function CreateShiftForm({ action, employees, locations, positions, weekS
           <select className={location ? "q-select-row__control" : "q-select-row__control q-select-row__control--ph"} name="locationId" value={location} required aria-label="Location" onChange={event => setLocation(event.target.value)}>
             <option value="" disabled>Choose</option>
             {locations.map(item => <option key={item.id} value={item.id}>{item.shortName}</option>)}
-          </select><CaretRightIcon className="q-chev" aria-hidden="true" /></label></li>
+          </select><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></label></li>
       </ShiftAssignmentFields>
     </ul>
     <div className="q-grp"><h2>When</h2></div>

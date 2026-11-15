@@ -35,7 +35,7 @@ export function SchedulePublicationChange({ changes, locationNames = {} }: { cha
     const x = a.change.after ?? a.change.before, y = b.change.after ?? b.change.before;
     return (x?.date ?? '').localeCompare(y?.date ?? '') || (x?.startTime ?? '').localeCompare(y?.startTime ?? '') || a.index - b.index;
   });
-  return <details className="schedule-publication-change"><summary><span>What changed in your schedule</span><CaretDownIcon className="em-publication-caret" size={20} aria-hidden="true"/></summary><ul>{ordered.map(({ change, index }) => {
+  return <details className="schedule-publication-change"><summary><span>What changed in your schedule</span><CaretDownIcon className="em-publication-caret" size={20} weight="bold" aria-hidden="true"/></summary><ul>{ordered.map(({ change, index }) => {
     const shift = change.after ?? change.before;
     const moved = change.type === 'TIME_CHANGED' && change.before && change.after && change.before.date !== change.after.date;
     const prior = change.type === 'ADDED' || change.type === 'REMOVED' ? null : was(change, locationNames);

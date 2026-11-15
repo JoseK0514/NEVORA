@@ -13,7 +13,8 @@ export function ownerNames(names: string[]) {
  * help ("Jose Natal can give you payroll access.") and one way forward: the page that does the job for this role when there
  * is one, otherwise Home on desktop (phones have the band's "‹ Home"). */
 export function OwnerOnlyNotice({ title, reason, help = "Ask an Owner if you need a change here.", owners = [], ownersCan, next }: {
-  title: string; reason: string; help?: string;
+  /** `reason` is left out when the title already is the reason (/app/restricted): the card then holds the help line alone. */
+  title: string; reason?: string; help?: string;
   /** The workspace's Owners, to name who can help. */
   owners?: string[];
   /** What the named Owners can do, e.g. "give you payroll access"; with names, it replaces `help`. */
@@ -30,6 +31,6 @@ export function OwnerOnlyNotice({ title, reason, help = "Ask an Owner if you nee
     </BScreen>
     <CorpNav back={{ href: "/app", label: "Home" }} title={title} titleId="owner-only-nav-title" phoneOnly />
     <CorpTitle id="owner-only-title" title={title} />
-    <CorpEmpty label={title} title={reason} body={line} action={<CorpButtonLink href={next?.href ?? "/app"} kind={next ? "primary" : "secondary"}>{next?.label ?? "Back to Home"}</CorpButtonLink>} />
+    <CorpEmpty label={title} title={reason ?? line} body={reason ? line : undefined} action={<CorpButtonLink href={next?.href ?? "/app"} kind={next ? "primary" : "secondary"}>{next?.label ?? "Back to Home"}</CorpButtonLink>} />
   </CorpPage>;
 }

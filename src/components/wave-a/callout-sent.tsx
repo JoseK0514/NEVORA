@@ -27,7 +27,7 @@ export function CalloutSentBoundary({ shift, children }: { shift: ExchangeShift;
       <QuietRow title={<time dateTime={shift.date}>{swapBandDay(shift.date)}</time>} detail={swapBandLine(shift)} />
     </QuietList>
     <QuietList style={{ marginTop: 24 }}>
-      <QuietRow variant="tint" avatar={<CheckIcon className="q-ic" aria-hidden="true" />} title="It’s still your shift" detail="Until a manager approves it. If they do, the shift opens for someone else to pick up." />
+      <QuietRow variant="tint" avatar={<CheckIcon weight="bold" className="q-ic" aria-hidden="true" />} title="It’s still your shift" detail="Until a manager approves it. If they do, the shift opens for someone else to pick up." />
     </QuietList>
     <Link className="q-btn q-btn--sec" href="/app/exchange?tab=requests">See my requests</Link>
   </QuietPage>;

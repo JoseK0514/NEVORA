@@ -27,6 +27,10 @@ export function payPeriod(start:string,end:string){
  return `${short(start)} – ${short(end,start.slice(0,7)!==end.slice(0,7))}, ${end.slice(0,4)}`;
 }
 const documentHref=(statement:Statement)=>`/api/payroll/documents/${encodeURIComponent(statement.id)}`;
+/** Inspection Nov 14 (PY-7): who pays, said once on every Pay view. NEVORA shows a scheduled payday and a statement. */
+export const PAY_SCOPE_LINE='Your employer pays you. NEVORA shows your pay statement.';
+/** Inspection Nov 14 (PY-11): under a corrected or replaced statement, whom to ask when the amount received differs. */
+export const PAY_DIFFERENCE_LINE='If the amount differs from what you received, ask your manager.';
 
 /** Newest payday first; a correction comes before the statement it replaced. The latest is the newest statement
  * nothing replaced. Corrections are linked only when both statements are the person's own and published. */
@@ -91,12 +95,12 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
   const label=`${role(item)}, payday ${day(item.payday)}`,quiet=!!item.correctedBy;
   return <div className="em-pay-actions">
    {quiet&&item.correctedBy&&byId.has(item.correctedBy)?<button type="button" className="em-request-primary em-pay-use" onClick={()=>goTo(item.correctedBy!)}>Use the corrected statement</button>:null}
-   {item.viewUrl?<a id={`pay-view-${where}-${item.id}`} className={quiet?'em-request-secondary':'em-request-primary'} href={`${documentHref(item)}/view`} target="_blank" rel="noopener" aria-label={`View ${label} (opens separately)`} onClick={()=>{returnTo.current=`pay-view-${where}-${item.id}`;}}><ArrowSquareOutIcon size={20} aria-hidden="true"/>View</a>:null}
-   <a id={`pay-download-${where}-${item.id}`} className={item.viewUrl||quiet?'em-request-secondary':'em-request-primary'} href={documentHref(item)} aria-label={`Download ${label}`} onClick={()=>{returnTo.current=`pay-download-${where}-${item.id}`;}}><DownloadSimpleIcon size={20} aria-hidden="true"/>Download</a>
+   {item.viewUrl?<a id={`pay-view-${where}-${item.id}`} className={quiet?'em-request-secondary':'em-request-primary'} href={`${documentHref(item)}/view`} target="_blank" rel="noopener" aria-label={`View ${label} (opens separately)`} onClick={()=>{returnTo.current=`pay-view-${where}-${item.id}`;}}><ArrowSquareOutIcon size={20} weight="bold" aria-hidden="true"/>View</a>:null}
+   <a id={`pay-download-${where}-${item.id}`} className={item.viewUrl||quiet?'em-request-secondary':'em-request-primary'} href={documentHref(item)} aria-label={`Download ${label}`} onClick={()=>{returnTo.current=`pay-download-${where}-${item.id}`;}}><DownloadSimpleIcon size={20} weight="bold" aria-hidden="true"/>Download</a>
   </div>;
  };
- const relation=(item:Statement)=>item.correctedBy?<p className="em-pay-relation">A corrected statement replaced this one. Use the corrected statement for this period.</p>
-  :item.corrects?<p className="em-pay-relation">This corrects your earlier statement for the same period.</p>:null;
+ const relation=(item:Statement)=>item.correctedBy?<p className="em-pay-relation">A corrected statement replaced this one. Use the corrected statement for this period. {PAY_DIFFERENCE_LINE}</p>
+  :item.corrects?<p className="em-pay-relation">This corrects your earlier statement for the same period. {PAY_DIFFERENCE_LINE}</p>:null;
  const chip=(item:Statement)=>item.correctedBy?<span className="em-pay-chip em-pay-chip--muted">Replaced</span>:item.corrects?<span className="em-pay-chip">Correction</span>:null;
  const paused=errorCode==='PAUSED'||errorCode==='OFFLINE',signedOut=errorCode==='SIGNED_OUT',off=errorCode==='MODULE_OFF',denied=errorCode==='FORBIDDEN';
  const state=loading?'loading':signedOut?'signed-out':off?'module-off':denied?'denied':paused?'paused':error?'error':!arranged?.latest?'empty':'ready';
@@ -108,24 +112,24 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
   <header className="em-request-heading"><h1>Pay</h1><p>Your published pay statements</p></header>
   <div className="em-pay-body" aria-busy={loading}>
    {(failure||missing)&&listed&&state!=='loading'?<div ref={notice} tabIndex={-1} className="em-pay-notice em-pay-notice--caution" role="alert" aria-labelledby="pay-notice-title">
-    <div className="em-pay-notice-heading"><WarningCircleIcon size={24} aria-hidden="true"/><h2 id="pay-notice-title">{failure==='failed'||failure==='temporary'?'We couldn’t open that statement':'That statement isn’t available'}</h2></div>
+    <div className="em-pay-notice-heading"><WarningCircleIcon size={24} weight="bold" aria-hidden="true"/><h2 id="pay-notice-title">{failure==='failed'||failure==='temporary'?'We couldn’t open that statement':'That statement isn’t available'}</h2></div>
     <p>{failure==='failed'?'It didn’t pass NEVORA’s file check, so it wasn’t opened. Try again later, or ask your manager.':failure==='temporary'?'NEVORA couldn’t open it just now. Try again in a moment.':state==='empty'?'It may have been replaced, or your access changed.':'It may have been replaced, or your access changed. Your current statements are below.'}</p>
    </div>:null}
    {nextPay&&listed&&daysUntil!==null&&daysUntil>=0?<section className="em-pay-section em-pay-schedule" aria-labelledby="pay-next-title">
     <h2 id="pay-next-title">Next scheduled payday</h2>
-    <div className="em-pay-next"><CalendarBlankIcon size={22} aria-hidden="true"/><span>
+    <div className="em-pay-next"><CalendarBlankIcon size={22} weight="bold" aria-hidden="true"/><span>
      <strong>{day(nextPay.payday,true)}</strong>
      <small>{[daysUntil===0?'Today':daysUntil===1?'Tomorrow':`In ${daysUntil} days`,nextPay.period?`for ${payPeriod(nextPay.period.startDate,nextPay.period.endDate)}`:null].filter(Boolean).join(' · ')}</small>
-     <small>From your workplace’s pay schedule. A statement appears here after payroll is published.</small>
+     <small>From your workplace’s pay schedule. A statement appears here after your employer shares it.</small>
     </span></div>
    </section>:null}
    {state==='loading'?<div className="em-pay-card em-pay-quiet" role="status"><span><small>Loading your statements…</small></span></div>
-    :state==='signed-out'?surface('',<InfoIcon size={24} aria-hidden="true"/>,'Sign in to see your statements','Your session ended. Statements stay private until you sign in again.',<Link className="em-request-primary" href="/login?returnTo=%2Fapp%2Fmy-pay">Sign in</Link>,'alert')
-    :state==='denied'?surface('',<InfoIcon size={24} aria-hidden="true"/>,'Your access to pay statements changed','NEVORA can’t show your statements right now. If that seems wrong, ask your manager.')
-    :state==='module-off'?surface('',<InfoIcon size={24} aria-hidden="true"/>,'Pay statements are turned off','Your workplace isn’t sharing pay statements in NEVORA right now. Ask your manager where to find your pay information.')
-    :state==='paused'?surface('',<InfoIcon size={24} aria-hidden="true"/>,errorCode==='OFFLINE'?'You’re offline':'Statements are paused',errorCode==='OFFLINE'?'Reconnect to see your current statements.':'Statements are hidden while NEVORA is in the background. They reload when you return.')
-    :state==='error'?surface('',<InfoIcon size={24} aria-hidden="true"/>,'Couldn’t load your statements','Check your connection, then try again.',<button type="button" className="em-request-secondary" onClick={reload}>Try again</button>,'alert')
-    :state==='empty'?<div className="em-pay-card em-pay-quiet"><FileTextIcon size={22} aria-hidden="true"/><span><strong>No published statements yet</strong><small>Your statements appear here after your workplace publishes payroll.</small></span></div>
+    :state==='signed-out'?surface('',<InfoIcon size={24} weight="bold" aria-hidden="true"/>,'Sign in to see your statements','Your session ended. Statements stay private until you sign in again.',<Link className="em-request-primary" href="/login?returnTo=%2Fapp%2Fmy-pay">Sign in</Link>,'alert')
+    :state==='denied'?surface('',<InfoIcon size={24} weight="bold" aria-hidden="true"/>,'Your access to pay statements changed','NEVORA can’t show your statements right now. If that seems wrong, ask your manager.')
+    :state==='module-off'?surface('',<InfoIcon size={24} weight="bold" aria-hidden="true"/>,'Pay statements are turned off','Your workplace isn’t sharing pay statements in NEVORA right now. Ask your manager where to find your pay information.')
+    :state==='paused'?surface('',<InfoIcon size={24} weight="bold" aria-hidden="true"/>,errorCode==='OFFLINE'?'You’re offline':'Statements are paused',errorCode==='OFFLINE'?'Reconnect to see your current statements.':'Statements are hidden while NEVORA is in the background. They reload when you return.')
+    :state==='error'?surface('',<InfoIcon size={24} weight="bold" aria-hidden="true"/>,'Couldn’t load your statements','Check your connection, then try again.',<button type="button" className="em-request-secondary" onClick={reload}>Try again</button>,'alert')
+    :state==='empty'?<div className="em-pay-card em-pay-quiet"><FileTextIcon size={22} weight="bold" aria-hidden="true"/><span><strong>No published statements yet</strong><small>Your statements appear here after your employer shares them.</small></span></div>
     :arranged?.latest?<section className="em-pay-section" aria-labelledby="pay-latest-heading">
      <h2 id="pay-latest-heading">Latest statement</h2>
      <article className="em-pay-card em-pay-latest" aria-labelledby="pay-latest-title">
@@ -141,15 +145,16 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
     <h2 id="pay-earlier-title">Earlier statements</h2>
     <ul className="em-pay-list">{arranged.earlier.map(item=><li key={item.id}>
      <details open={open===item.id} onToggle={event=>{const isOpen=event.currentTarget.open;setOpen(current=>isOpen?item.id:current===item.id?null:current);}}>
-      <summary id={`pay-statement-${item.id}`}><span><strong>Payday {day(item.payday)}</strong><small>{payPeriod(item.period.startDate,item.period.endDate)} · PDF</small>{chip(item)}</span><CaretDownIcon size={20} aria-hidden="true"/></summary>
+      <summary id={`pay-statement-${item.id}`}><span><strong>Payday {day(item.payday)}</strong><small>{payPeriod(item.period.startDate,item.period.endDate)} · PDF</small>{chip(item)}</span><CaretDownIcon size={20} weight="bold" aria-hidden="true"/></summary>
       <div>{relation(item)}{actions(item,'earlier')}</div>
      </details>
     </li>)}</ul>
    </section>:null}
    <section className="em-pay-section" aria-labelledby="pay-hours-title">
     <h2 id="pay-hours-title">Your hours</h2>
-    <ul className="em-pay-links"><li><Link href="/app/my-time">My time<CaretRightIcon size={20} aria-hidden="true"/></Link></li><li><Link href="/app/timecards">Timecards<CaretRightIcon size={20} aria-hidden="true"/></Link></li></ul>
+    <ul className="em-pay-links"><li><Link href="/app/my-time">My time<CaretRightIcon size={20} weight="bold" aria-hidden="true"/></Link></li><li><Link href="/app/timecards">Timecards<CaretRightIcon size={20} weight="bold" aria-hidden="true"/></Link></li></ul>
    </section>
+   {listed?<p className="em-pay-privacy">{PAY_SCOPE_LINE}</p>:null}
    {listed?<p className="em-pay-privacy">Only your own published statements are available here. Downloaded files may contain personal pay information.</p>:null}
   </div>
  </div>;

@@ -36,14 +36,17 @@ describe('Employee mobile Pay',()=>{
   expect(plain).toContain('Earlier statements');expect(plain).toContain('Replaced');
   expect(plain).toContain('A corrected statement replaced this one.');
   expect(plain).toContain('Only your own published statements are available here.');
-  // No figures, deposits or payment status: statements carry none.
-  expect(plain).not.toMatch(/\$|deposit|paid|amount|net pay/i);
+  // No figures, deposits or payment status: statements carry none. The one "amount" is the line on whom to ask when a
+  // corrected statement differs from what was received (inspection Nov 14, PY-11); who pays is said once (PY-7).
+  const ask='If the amount differs from what you received, ask your manager.';
+  expect(plain.match(new RegExp(ask.replace('.','\\.'),'g'))).toHaveLength(2);expect(plain.match(/Your employer pays you\. NEVORA shows your pay statement\./g)).toHaveLength(1);
+  expect(plain.replaceAll(ask,'')).not.toMatch(/\$|deposit|paid|amount|net pay/i);
  });
 
  it('names the next scheduled payday from the pay schedule without calling it a payment',()=>{
   const plain=text(render({nextPay:{payday:'2030-02-07',daysUntil:3,period:{startDate:'2030-01-20',endDate:'2030-02-02'}}}));
   expect(plain).toContain('Next scheduled payday');expect(plain).toContain('Thursday, February 7');expect(plain).toContain('In 3 days · for Jan 20 – Feb 2, 2030');
-  expect(plain).toContain('From your workplace’s pay schedule. A statement appears here after payroll is published.');
+  expect(plain).toContain('From your workplace’s pay schedule. A statement appears here after your employer shares it.');
   expect(text(render())).not.toContain('Next scheduled payday');
  });
 

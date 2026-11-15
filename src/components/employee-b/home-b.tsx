@@ -21,7 +21,7 @@ import {BCardNote, BDay, Dotted, wallTime} from './parts';
 import './employee-b.css';
 
 /* Employee Home on the phone, Direction B (Jose approved the mock "Employee mobile, Direction B", Nov 6, 2026). The
- * greeting on the teal hero with hours this week and the next payday on glass, the next shift as the main card, then
+ * greeting on the teal hero with hours this week and the scheduled payday on glass, the next shift as the main card, then
  * things to do and the shifts coming up. Presentation only: the Home read, its states, links and private-data clearing
  * are the corporate view's; this screen shows on phones, the corporate cards on tablets and desktop. */
 
@@ -77,8 +77,8 @@ function Figures({week, payday, worked, onShift}: {week: HomeWeek | null; payday
   else if (worked !== null) items.push({label: 'This week', value: compactDuration(worked * 60), href: '/app/my-time', aria: `This week, ${boardDuration(worked * 60)} worked`});
   else if (scheduled !== null) items.push({label: 'This week', value: `${hoursNumber(scheduled)} h`, href: '/app/schedule', aria: `This week, ${hoursNumber(scheduled)} hours scheduled`});
   // Desktop has room for the date ("Fri, Nov 13") and how far off it is; the phone keeps the short word.
-  if (payday && week) items.push({label: 'Next payday', value: <><span className="eb-phone">{paydayWord(payday, week.today)}</span><span className="eb-desk">{fmt('UTC', {weekday: 'short', month: 'short', day: 'numeric'}).format(utcDay(payday))}</span></>,
-    meta: daysAway(payday, week.today), href: '/app/my-pay', aria: `Next payday, ${fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(utcDay(payday))}`});
+  if (payday && week) items.push({label: 'Scheduled payday', value: <><span className="eb-phone">{paydayWord(payday, week.today)}</span><span className="eb-desk">{fmt('UTC', {weekday: 'short', month: 'short', day: 'numeric'}).format(utcDay(payday))}</span></>,
+    meta: daysAway(payday, week.today), href: '/app/my-pay', aria: `Scheduled payday, ${fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(utcDay(payday))}`});
   return items.length ? <BLive label="This week at a glance" items={items}/> : null;
 }
 

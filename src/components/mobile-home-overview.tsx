@@ -21,16 +21,16 @@ export function MobileHomeOverview({ weekStart, weekLabel, previousWeek, nextWee
   return <section className="mobile-home-schedule" aria-labelledby="mobile-home-schedule-title">
     <h2 id="mobile-home-schedule-title">This week</h2>
     <div className="mobile-home-week">
-      <Link href={`/app?week=${encodeURIComponent(previousWeek)}`} aria-label="Previous schedule week" title="Previous schedule week"><CaretLeftIcon size={20} aria-hidden="true"/></Link>
+      <Link href={`/app?week=${encodeURIComponent(previousWeek)}`} aria-label="Previous schedule week" title="Previous schedule week"><CaretLeftIcon size={20} weight="bold" aria-hidden="true"/></Link>
       <strong>{weekLabel}</strong>
-      <Link href={`/app?week=${encodeURIComponent(nextWeek)}`} aria-label="Next schedule week" title="Next schedule week"><CaretRightIcon size={20} aria-hidden="true"/></Link>
+      <Link href={`/app?week=${encodeURIComponent(nextWeek)}`} aria-label="Next schedule week" title="Next schedule week"><CaretRightIcon size={20} weight="bold" aria-hidden="true"/></Link>
     </div>
     <dl className="mobile-home-week-facts">
       <div><dt>Planned shifts <small>Includes drafts</small></dt><dd><span className="home-fact-value">{plannedShifts}</span></dd></div>
       <div><dt>Availability received <small>Employees and leads</small></dt><Fraction value={availabilityReceived} total={availabilityEligible}/></div>
       <div><dt>Locations published</dt><Fraction value={publishedLocations} total={locations}/></div>
     </dl>
-    <Link href={`/app/schedule?week=${encodeURIComponent(weekStart)}`} className="mobile-home-schedule-action"><span>View schedule</span><CaretRightIcon size={18} aria-hidden="true"/></Link>
+    <Link href={`/app/schedule?week=${encodeURIComponent(weekStart)}`} className="mobile-home-schedule-action"><span>View schedule</span><CaretRightIcon size={18} weight="bold" aria-hidden="true"/></Link>
   </section>;
 }
 
@@ -39,10 +39,10 @@ export function HomeRecentActivity({ weekStart, label, detail, dateTime }: { wee
   return <section className="home-recent-activity" aria-labelledby="home-recent-activity-title">
     <h2 id="home-recent-activity-title">Recent activity</h2>
     <div className="home-recent-row">
-      <CalendarCheckIcon size={20} aria-hidden="true"/>
+      <CalendarCheckIcon size={20} weight="bold" aria-hidden="true"/>
       <p><strong>{label}</strong><span><time dateTime={dateTime}>{detail}</time></span></p>
     </div>
-    <Link className="mobile-home-schedule-action" href={`/app?week=${encodeURIComponent(weekStart)}&view=activity`}><span>View all activity</span><CaretRightIcon size={18} aria-hidden="true"/></Link>
+    <Link className="mobile-home-schedule-action" href={`/app?week=${encodeURIComponent(weekStart)}&view=activity`}><span>View all activity</span><CaretRightIcon size={18} weight="bold" aria-hidden="true"/></Link>
   </section>;
 }
 
@@ -59,7 +59,7 @@ export function MobileHomeTools({ weekStart, owner = false }: { weekStart: strin
   return <nav className="mobile-home-tools" aria-labelledby="mobile-home-tools-title">
     <h2 id="mobile-home-tools-title">Shortcuts</h2>
     {actions.filter(item=>owner||item.href!=="/app/clocker-recovery").map(({ href, label, Icon }) => <Link key={href} href={href}>
-      <Icon size={24} weight="regular" aria-hidden="true"/><span>{label}</span><CaretRightIcon size={18} aria-hidden="true"/>
+      <Icon size={24} weight="bold" aria-hidden="true"/><span>{label}</span><CaretRightIcon size={18} weight="bold" aria-hidden="true"/>
     </Link>)}
   </nav>;
 }

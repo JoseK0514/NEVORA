@@ -55,15 +55,28 @@ function errorId(field: Field) {
   return field.dataset.errorId;
 }
 
-function show(field: Field) {
+/** The field's aria-describedby with the message's id in it exactly once, whatever the attribute holds now. */
+export function describedByWith(current: string | null, id: string) {
+  const tokens = (current ?? "").split(/\s+/).filter(Boolean);
+  return (tokens.includes(id) ? tokens : [...tokens, id]).join(" ");
+}
+
+/** `announce` is false on submit: focus then moves to the first problem and its description (this message) is read, so an
+ * alert as well would say it twice. */
+function show(field: Field, announce = true) {
   const id = errorId(field);
   let node = document.getElementById(id);
   if (!node) {
     node = document.createElement("p");
     node.id = id; node.className = "field-error";
     field.insertAdjacentElement("afterend", node);
-    field.setAttribute("aria-describedby", [field.getAttribute("aria-describedby"), id].filter(Boolean).join(" "));
   }
+  // Nov 14 inspection (RA-9): the link from the field to its message is re-asserted every time the message shows (it was
+  // set only when the message was first created, so a re-render that reset aria-describedby left the field unlinked).
+  const describedBy = describedByWith(field.getAttribute("aria-describedby"), id);
+  if (field.getAttribute("aria-describedby") !== describedBy) field.setAttribute("aria-describedby", describedBy);
+  // …and a message that appears when the person leaves the field, or changes while they type, is announced (role="alert").
+  if (announce) node.setAttribute("role", "alert"); else node.removeAttribute("role");
   // Review F2 (NV-112): every message leads with the 16px bold warning glyph (Phosphor WarningCircle), so an error never
   // relies on its red colour alone.
   const text = message(field);
@@ -116,7 +129,7 @@ export function FormValidation() {
       const field = event.target;
       if (!isField(field)) return;
       event.preventDefault(); // replace the floating bubble with the inline message
-      show(field);
+      show(field, false);
       if (!firstInvalid) {
         firstInvalid = field;
         // After every invalid event of this submission has fired (microtasks

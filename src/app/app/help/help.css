@@ -11,3 +11,28 @@
 :is(#c-root, html) .c-help .c-help__a strong { font-weight: 600; color: var(--c-ink); }
 :is(#c-root, html) .c-help .c-help__note { margin: 0; }
 @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-help .c-help__q > summary > .c-chev { transition: none; } }
+
+/* Review Nov 14 (BR-4, BR-12). Direction B rules, in the one B layer (DESIGN.MD, CSS layering); the breakpoints are
+ * src/lib/b-viewport.ts (phone up to 767px, wide from 768px). */
+@layer nv-b {
+  /* The back link names the real parent for the width: "More" on a phone (the first bar), "Home" on tablets and desktop
+   * (the second), where Help opens from the sidebar and the account menu and no More page leads to it. */
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b] .c-page.c-help > .c-nav--phone ~ .c-nav--phone { display: none !important; }
+  }
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b] .c-page.c-help > .c-nav--phone:has(~ .c-nav--phone) { display: none !important; }
+  }
+  /* How to, for an Employee or Lead: one more card under the screen's own cards. The kept block is never a card itself
+   * (the card is inside it); the repeated class outranks the kept-form card rules other Employee pages load
+   * (employee-b/requests.css, account.css, employee-b-desktop.css). */
+  html body .app-shell[data-nv-b] .c-page.c-help:has(> .b-screen) > .b-keep.b-keep.b-keep.c-help__how { border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
+  @media (max-width: 767px) {
+    /* On the cards' 14px edge, 12px under the last one (the stack ends with 22px of its own). */
+    html body .app-shell[data-nv-b] .c-page.c-help:has(> .b-screen) > .b-keep.b-keep.b-keep.c-help__how { margin: -10px 0 0 !important; padding: 0 14px 22px !important; }
+  }
+  @media (min-width: 768px) {
+    /* Across the screen's two columns, one 20px gap under them (the stack ends with 24px of its own). */
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-page.c-help:has(> .b-screen) > .b-keep.b-keep.b-keep.c-help__how { max-width: none !important; margin: -4px 0 32px !important; padding: 0 !important; }
+  }
+}

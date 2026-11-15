@@ -25,7 +25,7 @@ it('carries the approved recorded and recording lines in English and Spanish',()
 // Every literal the kiosk passes to t() has its Spanish line, so a Spanish tablet never falls back to the generic sentence.
 it('has a Spanish line for every phrase the kiosk screens translate',async()=>{
  const {readFile}=await import('node:fs/promises');
- const files=['clocker-shell.tsx','clocker-setup.tsx','clocker-pin-gate.tsx','clocker-punch-panel.tsx','clocker-recovery.tsx','clocker-receipt.tsx','clocker-photo/punch-photo-flow.tsx','clocker-photo/photo-notice.tsx'];
+ const files=['clocker-shell.tsx','clocker-setup.tsx','clocker-pin-gate.tsx','clocker-punch-panel.tsx','clocker-recovery.tsx','clocker-receipt.tsx','clocker-fallback.tsx','clocker-paused.tsx','clocker-photo/punch-photo-flow.tsx','clocker-photo/photo-notice.tsx'];
  const missing:string[]=[];
  for(const file of files){const source=await readFile(new URL('./'+file,import.meta.url),'utf8');for(const m of source.matchAll(/\bt\((['"])((?:(?!\1).)+)\1/g))if(!(m[2] in CLOCKER_COPY))missing.push(file+': '+m[2]);}
  expect(missing).toEqual([]);
@@ -59,7 +59,7 @@ it('orders the receipt date for each language and writes one Saved sentence',()=
  const es=renderToStaticMarkup(<ClockerPresentation initialLocale="es"><ClockerReceipt action="CLOCK_IN" performedAt={at} commandId="c1" timeZone="America/Puerto_Rico" locale="es-PR" firstName="Ana"/></ClockerPresentation>);
  expect(es).toContain('Que tengas un buen turno, Ana.');expect(es).toMatch(/Registrado <time[^>]*>[^<]*p\.\sm\.<\/time> Esta pantalla se borra en 8 segundos\./);
  const en=renderToStaticMarkup(<ClockerReceipt action="CLOCK_OUT" performedAt={new Date().toISOString()} timeZone="UTC" locale="en-US" firstName="James"/>);
- expect(en).toMatch(/Saved <time[^>]*>\d{1,2}:\d{2}\s[AP]M<\/time>\. This screen clears in 8 seconds\./);expect(en).toContain('See you next time, James.');expect(en).not.toContain('Action reference');
+ expect(en).toMatch(/Saved <time[^>]*>\d{1,2}:\d{2}\s[AP]M<\/time>\. This screen clears in 8 seconds\./);expect(en).toContain('See you next time, James.');expect(en).not.toContain('Reference');
 });
 it.each([
  ['This punch reference belongs to a different punch. Ask your manager to check it.','Esta referencia pertenece a otra marcación. Pide a tu gerente que la revise.'],
@@ -80,4 +80,50 @@ it('has explicit Spanish entries for every stable PIN/setup failure',async()=>{
   expect(clockerErrorText('en',{code,error:'ignored'})).toBe(message);
   expect(clockerErrorText('es',{code})).toBe(CLOCKER_COPY[message]);
  }
+});
+
+// Nov 14 inspection (BR-10): kiosk buttons and headings are sentence case, in plain words, with their Spanish lines.
+it('uses sentence case and plain words for the kiosk actions',()=>{
+ for(const gone of ['Clock In','Clock Out','Clock In recorded','Clock Out recorded','Clock Out?','Confirm Clock Out','Try Again','Refresh clock state','Help with a saved action','Hide saved action help','Action reference'])expect(CLOCKER_COPY,gone).not.toHaveProperty([gone]);
+ expect(clockerText('es','Clock in')).toBe('Marcar entrada');expect(clockerText('es','Clock out')).toBe('Marcar salida');
+ expect(clockerText('es','Clock in recorded')).toBe('Entrada registrada');expect(clockerText('es','Clock out recorded')).toBe('Salida registrada');
+ expect(clockerText('es','Confirm clock out')).toBe('Confirmar salida');expect(clockerText('es','Try again')).toBe('Intentar de nuevo');
+ expect(clockerText('es','Refresh')).toBe('Actualizar');expect(clockerText('es','Something didn’t save?')).toBe('¿Algo no se guardó?');expect(clockerText('es','Reference')).toBe('Referencia');
+ const receipt=renderToStaticMarkup(<ClockerReceipt action="CLOCK_IN" performedAt="2026-11-10T02:47:00Z" commandId="c1" timeZone="UTC" locale="en-US" firstName="Ana"/>);
+ expect(receipt).toContain('Reference');expect(receipt).not.toContain('Action reference');
+});
+// Jose's approved lockout wording (Nov 11, 2026): the real wait as a clock time, in each language.
+it('writes when a pause ends as one sentence in English and Spanish',async()=>{
+ const {clockerRetryText}=await import('./clocker-copy');
+ expect(clockerRetryText('en','10:58 PM','10')).toBe('Try again at 10:58 PM.');
+ expect(clockerRetryText('es','10:58 p. m.','10')).toBe('Inténtalo de nuevo a las 10:58 p. m.');
+ expect(clockerRetryText('es','1:05 p. m.','1')).toBe('Inténtalo de nuevo a la 1:05 p. m.');
+ expect(clockerText('es','Your PIN is paused')).toBe('Tu PIN está en pausa');expect(clockerText('es','This tablet is paused')).toBe('Esta tableta está en pausa');
+ expect(Object.keys(CLOCKER_COPY).join(' ')).not.toContain('about five minutes');
+});
+// Nov 14 inspection (JR-26): a disabled time clock names the next step.
+it('gives a next step when punches are not enabled',()=>{
+ expect(clockerText('es','Ask your Owner to contact NEVORA support.')).toBe('Pide al dueño que contacte al soporte de NEVORA.');
+});
+// Nov 14 inspection (RA-4): the kiosk's own error and loading screens, in the tablet's language, with no sign-in link.
+it('renders the kiosk error and loading screens without a sign-in link',async()=>{
+ const {ClockerErrorScreen,ClockerLoadingScreen}=await import('./clocker-fallback');
+ const error=renderToStaticMarkup(<ClockerErrorScreen retry={()=>{}}/>);
+ expect(error).toContain('data-clocker-kiosk=""');expect(error).toContain('lang="en"');expect(error).toContain('Something went wrong. Try again.');
+ expect(error).toContain('If it keeps happening, ask a manager to record your time.');expect(error).toMatch(/<button[^>]*>.*Try again<\/button>/);
+ expect(error).not.toContain('<a ');expect(error).not.toMatch(/sign in/i);
+ const loading=renderToStaticMarkup(<ClockerLoadingScreen/>);
+ expect(loading).toContain('data-clocker-kiosk=""');expect(loading).toContain('aria-busy="true"');expect(loading).toContain('Checking this tablet…');expect(loading).not.toContain('<a ');
+ expect(clockerText('es','Something went wrong. Try again.')).toBe('Algo salió mal. Inténtalo de nuevo.');
+ expect(clockerText('es','If it keeps happening, ask a manager to record your time.')).toBe('Si sigue pasando, pide a un gerente que registre tu tiempo.');
+});
+// Nov 14 inspection (RA-13, JR-12): the paused page speaks the tablet's language and never offers sign-in on the tablet.
+it('renders the paused page in the given language with billing on the Owner’s own device',async()=>{
+ const {ClockerPaused}=await import('./clocker-paused');
+ const en=renderToStaticMarkup(<ClockerPaused from="/clocker/main" unavailable={false} initialLocale="en"/>);
+ expect(en).toContain('lang="en"');expect(en).toContain('Clocker access is paused');expect(en).toContain('Open billing on your own device. This tablet starts working again when billing is settled.');
+ expect(en).toContain('href="/clocker/main"');expect(en).not.toContain('/login');expect(en).not.toContain('Owner sign in');
+ const es=renderToStaticMarkup(<ClockerPaused from={null} unavailable initialLocale="es"/>);
+ expect(es).toContain('lang="es"');expect(es).toContain('No se puede comprobar el acceso');expect(es).toContain('Abre la facturación en tu propio dispositivo.');
+ expect(es).not.toContain('cuando la facturación esté al día');expect(es).not.toContain('<a ');
 });

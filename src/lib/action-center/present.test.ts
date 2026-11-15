@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {groupHeading, presentItem, spacedRanges} from './present';
+import {ATTENDANCE_WORDS, groupHeading, presentItem, spacedRanges, splitNoClockIn} from './present';
 import type {ActionItem} from './project';
 
 const plain = (text: string) => text.replace(/ /g, ' ').replace(/‑/g, '-');
@@ -30,6 +30,25 @@ describe('presented action items (Phase 7)', () => {
     const card = presentItem(item({type: 'TIMECARD', category: 'timekeeping', priority: 'REVIEW', title: 'Period timecard needs review', detail: 'Casey Rivera · 2026-10-19–2026-10-25 · Resolve recorded-time exceptions before finalizing.'}), 'Open timecard review');
     expect(plain(card.detail)).toBe('Casey Rivera · Oct 19 – Oct 25 · Fix recorded-time issues before finalizing.');
     expect(card.detail).not.toMatch(/\d{4}-\d{2}/);
+  });
+  it('says who asked for a time correction and when it was sent, never the filler sentence (Nov 14 inspection, BR-7)', () => {
+    const fix = presentItem(item({type: 'TIME_CORRECTION', category: 'timekeeping', priority: 'REVIEW', title: 'Time correction waiting for review', detail: 'James Ortiz · Recorded time correction.', dateTime: '2026-11-10T22:15:00Z'}), 'Review correction', 'America/Puerto_Rico');
+    expect(fix.title).toBe('James Ortiz asked for a time correction');
+    expect(plain(fix.detail)).toBe('Sent Nov 10');
+    const added = presentItem(item({type: 'TIME_CORRECTION', category: 'timekeeping', priority: 'REVIEW', title: 'Time correction waiting for review', detail: 'Sofía Méndez · Recorded entry not sent yet.'}), 'Review correction');
+    expect(added.title).toBe('Sofía Méndez asked to add unrecorded time');
+    expect(added.detail).toBe('Waiting for review');
+    // The reviewer's own request keeps its title: it needs someone else.
+    const own = presentItem(item({type: 'TIME_CORRECTION', category: 'timekeeping', priority: 'REVIEW', title: 'Your correction needs another reviewer', detail: 'Jose Natal · Recorded time correction.', dateTime: '2026-11-10'}), 'Review correction');
+    expect(own.title).toBe('Your correction needs another reviewer');
+    expect(plain(own.detail)).toBe('Sent Nov 10');
+    expect(`${fix.title} ${fix.detail} ${added.title} ${added.detail}`).not.toMatch(/Recorded time correction|not sent yet/);
+  });
+  it('keeps Jose’s attendance words apart: a shift in progress is not clocked in, an ended one is missed', () => {
+    expect(ATTENDANCE_WORDS).toEqual({notClockedIn: 'Not clocked in', late: 'Clocked in late', missed: 'Missed'});
+    const split = splitNoClockIn([{id: 'a', status: 'not_clocked_in'}, {id: 'b', status: 'no_punches'}, {id: 'c', status: 'not_clocked_in'}]);
+    expect(split.running.map(shift => shift.id)).toEqual(['a', 'c']);
+    expect(split.ended.map(shift => shift.id)).toEqual(['b']);
   });
   it('heads a group with its count and kind', () => {
     expect(plain(groupHeading('COVERAGE_GAP', 12, 'Coverage gap at Main Office'))).toBe('12 coverage gaps at Main Office');

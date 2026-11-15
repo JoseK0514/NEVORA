@@ -23,8 +23,9 @@ import {
   saveTemplateAction,
 } from "@/app/app/schedule/templates/actions";
 
-/** Review B1 (NV-022): the page title in the tab and for screen readers. */
-export const metadata = { title: "Templates" };
+/** Review B1 (NV-022): the page title in the tab and for screen readers. Review Nov 14 (AR-15): the page's own name, as in
+ * the menus and its heading. */
+export const metadata = { title: "Week templates" };
 
 export default async function ScheduleTemplatesPage({
   searchParams,

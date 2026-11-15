@@ -24,7 +24,7 @@ export function PositionQuotaFields({
           <label key={p.id} className="wb-field">
             <span>{p.name}</span>
             {!p.active
-              ? <span className="wb-error"><WarningCircleIcon size={16} aria-hidden="true" /><span>Inactive. Clear this quota or reactivate the position.</span></span>
+              ? <span className="wb-error"><WarningCircleIcon size={16} weight="bold" aria-hidden="true" /><span>Inactive. Clear this quota or reactivate the position.</span></span>
               : null}
             <input type="hidden" name="quotaPositionId" value={p.id} />
             <input

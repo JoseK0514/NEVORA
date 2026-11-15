@@ -19,13 +19,13 @@ export function hoursReason(count: number, words: {person: string; people: strin
 function StepLink({href, label, describedBy}: {href: string; label: string; describedBy: string}) {
   const words = label.split(' '), last = words.pop();
   return <Link className="owner-setup-link" href={href} aria-describedby={describedBy}>
-    {words.join(' ')} <span className="owner-setup-nowrap">{last}<CaretRightIcon size={16} aria-hidden="true"/></span>
+    {words.join(' ')} <span className="owner-setup-nowrap">{last}<CaretRightIcon size={16} weight="bold" aria-hidden="true"/></span>
   </Link>;
 }
 
 function Step({done, title, children}: {done: boolean; title: string; children?: ReactNode}) {
   return <li className="owner-setup-step" data-state={done ? 'done' : 'open'}>
-    {done ? <CheckCircleIcon className="owner-setup-mark" size={20} weight="fill" aria-hidden="true"/> : <CircleIcon className="owner-setup-mark" size={20} aria-hidden="true"/>}
+    {done ? <CheckCircleIcon className="owner-setup-mark" size={20} weight="fill" aria-hidden="true"/> : <CircleIcon className="owner-setup-mark" size={20} weight="bold" aria-hidden="true"/>}
     {done ? <p className="owner-setup-done-row"><strong>{title}</strong><span className="owner-setup-done">Done</span></p> : <div className="owner-setup-open">{children}</div>}
   </li>;
 }

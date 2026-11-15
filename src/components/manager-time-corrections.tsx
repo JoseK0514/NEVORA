@@ -86,7 +86,8 @@ export function ManagerTimeCorrectionsSurface({
               <strong>{item.employeeName}</strong>
               <small>{item.locationName} · {requestLabel(item)}</small>
             </div>
-            <span>Pending</span>
+            {/* OW-014: "Waiting" is the product's word for a request that needs a decision. */}
+            <span>Waiting</span>
           </div>
           {/* Review B6 (NV-080): Recorded and Asked for, the change in bold with how much it moves; Current effective only
             * when it differs; one line for the zone and what approving does; the reason as a labelled quote. */}
@@ -97,8 +98,8 @@ export function ManagerTimeCorrectionsSurface({
           {item.requestedByName?<p className="manager-correction-provenance">Requested by {item.requestedByName} for this employee.</p>:null}
           {item.isSelf?<p className="manager-correction-self" role="note">Another manager or an Owner reviews your own request.</p>:null}
           <div className="manager-correction-actions">
-            <button type="button" aria-label={`Decline correction for ${item.employeeName}`} disabled={item.isSelf||busyId!==null||retry!==null} onClick={()=>onDecision(item,'REJECT')}>Decline</button>
-            <button className="primary" type="button" aria-label={`Approve correction for ${item.employeeName}`} disabled={item.isSelf||busyId!==null||retry!==null} onClick={()=>onDecision(item,'APPROVE')}>Approve</button>
+            <button className="b-rowact b-rowact--quiet" type="button" aria-label={`Decline correction for ${item.employeeName}`} disabled={item.isSelf||busyId!==null||retry!==null} onClick={()=>onDecision(item,'REJECT')}>Decline</button>
+            <button className="primary b-rowact b-rowact--go" type="button" aria-label={`Approve correction for ${item.employeeName}`} disabled={item.isSelf||busyId!==null||retry!==null} onClick={()=>onDecision(item,'APPROVE')}>Approve</button>
           </div>
         </article>)}
       </div>:<div className="manager-corrections-empty" role="status"><span aria-hidden="true">✓</span><strong>Nothing to fix</strong><small>When someone asks to fix a time, it shows up here.</small></div>}

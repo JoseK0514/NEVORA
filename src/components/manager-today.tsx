@@ -46,7 +46,7 @@ export function TodayTilesSurface({ snapshot, refreshing = false, onRetry }: { s
   </section>;
   if (snapshot.state !== "ready") return <section className="today-tiles today-tiles-unavailable" aria-label="Today">
     <p role="status">Today&rsquo;s numbers aren&rsquo;t available right now.</p>
-    <button type="button" className="button secondary" onClick={onRetry} disabled={refreshing}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button>
+    <button type="button" className="button secondary" onClick={onRetry} disabled={refreshing}><ArrowsClockwiseIcon size={18} weight="bold" aria-hidden="true" />Try again</button>
   </section>;
   const { counts, timeZone, observedAt } = snapshot;
   const tiles = [
@@ -58,7 +58,7 @@ export function TodayTilesSurface({ snapshot, refreshing = false, onRetry }: { s
   return <section className="today-tiles" aria-labelledby="today-tiles-title">
     <h2 id="today-tiles-title" className="sr-only">Today</h2>
     {tiles.map(({ id, label, value, Icon, href, urgent }) => <Link key={id} href={href} className="today-tile" data-tile={id} data-urgent={urgent || undefined} data-zero={value === 0 || undefined}>
-      <span className="today-tile-label"><Icon size={18} aria-hidden="true" />{label}</span>
+      <span className="today-tile-label"><Icon size={18} weight="bold" aria-hidden="true" />{label}</span>
       <strong>{value}</strong>
     </Link>)}
     <p className="today-tiles-note">Published shifts only · Updated <time dateTime={observedAt}>{time(observedAt, timeZone)}</time></p>

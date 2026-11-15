@@ -67,7 +67,7 @@ function OpenShiftCards({ open, weekStart }: { open: EmployeeMyScheduleProps['op
     {open.requested.map(shift => card(shift, true))}
     {open.available.map(shift => card(shift, false))}
     {open.unavailable?.length ? <div className="c-esched__blocked"><BlockedOpenShifts shifts={open.unavailable} /></div> : null}
-    <CorpNote icon={<InfoIcon className="c-ic" aria-hidden="true" />}>Your manager confirms before the shift is yours. You’ll get a notification either way.</CorpNote>
+    <CorpNote icon={<InfoIcon weight="bold" className="c-ic" aria-hidden="true" />}>Your manager confirms before the shift is yours. You’ll get a notification either way.</CorpNote>
   </>;
 }
 

@@ -72,7 +72,7 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
 function confirmedMessage(command: { action?: string }) {
   switch (command.action) {
     case 'APPROVE': return 'Payroll approved';
-    case 'PUBLISH': return 'Pay statements published';
+    case 'PUBLISH': return 'Pay statements shared';
     case 'PAYMENT_EXPORT': return 'Payment file ready';
     default: return 'Saved';
   }

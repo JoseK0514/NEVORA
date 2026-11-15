@@ -16,11 +16,14 @@ export function EmployeeInvitationPanel(props:{employeeId:string;initialStatus:I
 }
 function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;initialStatus:InvitationStatusResult;actorId:string}){
  const [status,setStatus]=useState(initialStatus),[pending,setPending]=useState(false),[message,setMessage]=useState(''),[receipt,setReceipt]=useState<Extract<InvitationResult,{state:'saved'}>['receipt']|null>(null),[confirm,setConfirm]=useState<'ISSUE'|'REVOKE'|null>(null),[uncertain,setUncertain]=useState(false);
+ // Nov 14, 2026 inspection (JR-5): the server refused to issue because email delivery isn't configured for this workplace.
+ // Nothing was written and refreshing can't fix it, so the panel says so, names support and stops offering to send.
+ const [deliveryOff,setDeliveryOff]=useState(false);
  const command=useRef<InvitationCommand|null>(null),busy=useRef(false),mounted=useRef(false),request=useRef<AbortController|null>(null),generation=useRef(0);
  useEffect(()=>{mounted.current=true;function retire(){++generation.current;request.current?.abort();command.current=null;}return()=>{mounted.current=false;retire();};},[]);
  const headers={'x-nevora-company-access':'1','x-nevora-actor':actorId};
  const isCurrent=(version:number)=>mounted.current&&generation.current===version;
- function denied(){++generation.current;request.current?.abort();request.current=null;busy.current=false;setPending(false);setStatus({state:'unavailable',reason:'access_denied'});setReceipt(null);setConfirm(null);command.current=null;setUncertain(false);setMessage('Your current access does not allow invitation management. Sign in again or contact your Owner.');}
+ function denied(){++generation.current;request.current?.abort();request.current=null;busy.current=false;setPending(false);setStatus({state:'unavailable',reason:'access_denied'});setReceipt(null);setConfirm(null);command.current=null;setUncertain(false);setDeliveryOff(false);setMessage('Your current access does not allow invitation management. Sign in again or contact your Owner.');}
  async function currentStatus(signal:AbortSignal,version:number){
   const response=await fetch('/api/company-access/invitations/'+encodeURIComponent(employeeId),{headers,cache:'no-store',credentials:'same-origin',redirect:'error',signal});
   if(!isCurrent(version))return;
@@ -31,7 +34,7 @@ function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;i
   setStatus(current);
  }
  async function refresh(){
-  if(busy.current||command.current)return;busy.current=true;setPending(true);setConfirm(null);const version=generation.current,abort=new AbortController();request.current=abort;const timeout=setTimeout(()=>abort.abort(),15000);
+  if(busy.current||command.current)return;busy.current=true;setPending(true);setConfirm(null);setDeliveryOff(false);const version=generation.current,abort=new AbortController();request.current=abort;const timeout=setTimeout(()=>abort.abort(),15000);
   try{await currentStatus(abort.signal,version);}catch{if(isCurrent(version)){setStatus({state:'unavailable',reason:'read_failed'});setMessage('Current invitation information could not be loaded. Refresh before taking another action.');}}
   finally{clearTimeout(timeout);if(isCurrent(version)){busy.current=false;setPending(false);request.current=null;}}
  }
@@ -58,6 +61,8 @@ function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;i
    }else if(reconcile){
     // An unavailable historical read cannot prove that the original write failed.
     setUncertain(true);setMessage('The original action is still not confirmed. Check again before starting another invitation action.');
+   }else if(result.state==='unavailable'&&result.reason==='delivery_unavailable'){
+    command.current=null;setUncertain(false);setDeliveryOff(true);
    }else{
     command.current=null;setUncertain(false);setStatus({state:'unavailable',reason:'source_changed'});
     setMessage(result.state==='limited'?`Too many invitation actions. Wait at least ${Math.ceil(result.retryAfterMs/1000)} seconds, then refresh current information.`:result.state==='conflict'?'Employee or invitation information changed. Refresh and review it before choosing a new action.':result.state==='invalid'?result.fieldErrors.map(e=>e.message).join(' '):'Invitation email is unavailable. Refresh current information before trying again.');
@@ -78,10 +83,11 @@ function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;i
   </div>:<p role="status">{deniedAccess?'Your access changed, so you can’t manage invitations.':'The invitation didn’t load. Refresh to try again.'}</p>}
   {receipt&&<div className={styles.receipt}><strong>{receipt.action==='ISSUE'?'Invitation sent':'Invitation canceled'}</strong><p>{deliveryText[receipt.delivery]}</p><small>Refresh to see the current invitation status.</small></div>}
   {message&&<p role={uncertain?'alert':'status'} aria-live="polite">{message}</p>}
+  {deliveryOff&&<p role="status" aria-live="polite">Email invitations aren’t turned on for this workplace yet. Contact <a className="c-link" href="mailto:support@thevelani.com">support@thevelani.com</a>.</p>}
   {confirm&&<div className={styles.receipt} role="group" aria-label="Confirm invitation action"><p>{confirm==='REVOKE'?'Cancel this invitation? The link in their email stops working, and they’ll need a new invitation to activate.':status.state==='ready'&&status.invitation?'Send a new invitation to the registered email? The previous invitation will no longer be usable.':'Send an invitation to the registered employee email?'}</p><div className={styles.actions}><button type="button" className="button primary" disabled={pending} onClick={()=>void run()}>{confirm==='REVOKE'?'Cancel invitation':'Send invitation'}</button><button type="button" className="button secondary" disabled={pending} onClick={()=>setConfirm(null)}>{confirm==='REVOKE'?'Keep invitation':'Don’t send'}</button></div></div>}
   <div className={styles.actions}>
    {uncertain?<button type="button" className="button secondary" disabled={pending} onClick={()=>void run(true)}>{pending?'Checking…':'Check what happened'}</button>:<>
-    {available&&status.allowedCommands.includes('ISSUE')&&<button type="button" className="button primary" disabled={pending||!!confirm} onClick={()=>setConfirm('ISSUE')}>{status.invitation?'Send new invitation':'Send invitation'}</button>}
+    {available&&!deliveryOff&&status.allowedCommands.includes('ISSUE')&&<button type="button" className="button primary" disabled={pending||!!confirm} onClick={()=>setConfirm('ISSUE')}>{status.invitation?'Send new invitation':'Send invitation'}</button>}
     {available&&status.allowedCommands.includes('REVOKE')&&<button type="button" className="button secondary" disabled={pending||!!confirm} onClick={()=>setConfirm('REVOKE')}>Cancel invitation</button>}
     {!deniedAccess&&<button type="button" className="button secondary" disabled={pending||!!confirm} onClick={()=>void refresh()}>{pending?'Checking invitation…':'Refresh invitation'}</button>}
    </>}

@@ -7,8 +7,9 @@ import {ManagerProfilePage} from '@/components/manager-profile/manager-profile';
 import {readAuthLang} from '@/lib/auth-lang.server';
 
 export const metadata = { title: "Profile" };
-/** Board E-Profile. The calendar link and passkeys moved to their own pages (/app/profile/calendar, /passkeys). */
+/** Board E-Profile. The calendar link and passkeys moved to their own pages (/app/profile/calendar, /passkeys).
+ * Inspection Nov 14 (BR-13): the Employee ID a person signs in with is the session's own id, so Profile can show it. */
 export default async function ProfilePage(){
  const proof=await requireSessionMutationProof();if(['OWNER','MANAGER'].includes(proof.employee.role))return <ManagerProfilePage proof={proof}/>;if(!['EMPLOYEE','LEAD'].includes(proof.employee.role))redirect('/app');
- return <EmployeeProfilePage authority={employeeViewAuthority(proof,'profile')} lang={await readAuthLang()} policies={policiesVisible()} lead={proof.employee.role==='LEAD'} name={`${proof.employee.firstName} ${proof.employee.lastName}`.trim()||undefined}/>;
+ return <EmployeeProfilePage authority={employeeViewAuthority(proof,'profile')} lang={await readAuthLang()} policies={policiesVisible()} lead={proof.employee.role==='LEAD'} name={`${proof.employee.firstName} ${proof.employee.lastName}`.trim()||undefined} employeeId={proof.employee.id}/>;
 }

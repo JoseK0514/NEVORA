@@ -27,13 +27,14 @@ import type {TimecardIssue} from '@/lib/timecards/project';
 import {CorpAvatar,CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpDuration,CorpEmpty,CorpErrorCard,CorpPage,CorpRow,CorpRows,CorpStats,CorpTime,CorpTitle} from './corp/corp';
 import {QuietSheet,SheetCancel} from './quiet/quiet-sheet';
 import './timecards-corp.css';
-import {BAvatar,BButton,BCard,BChip,BHero,BIcon,BList,BLive,BRow,BScreen,BSeg,BStack} from './owner-b/b-kit';
+import {BAvatar,BButton,BCard,BChip,BHero,BIcon,BList,BLive,BNote,BRow,BScreen,BSeg,BStack} from './owner-b/b-kit';
 import {UploadSimpleIcon} from '@phosphor-icons/react/dist/ssr/UploadSimple';
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {Duration,SigBand,SigLinkRow,SigPage,SigSection} from './signature/signature';
 import sigStyles from './timecards-signature.module.css';
 import {announceOfflineHeld,steppedAway} from '@/lib/offline-hold';
+import {dateRangeText,durationRow,durationSentence,durationTotal,minutesFromNanoseconds,timeRangeText} from '@/lib/duration-format';
 
 /** "Oct 14–20", or "Sep 28 – Oct 4" across a month. */
 function signatureRange(start:string,end:string){
@@ -61,23 +62,21 @@ function Details({card}:{card:Timecard}){
       </dl>
     </details>):<p>No hours recorded in this period.</p>}
     {card.corrections.length?<details className={styles.entry}><summary>Corrections ({card.corrections.length})</summary>
-      <ul>{card.corrections.map(c=><li key={c.id}><strong>{c.status==='PENDING'?'Awaiting review':c.status==='APPROVED'?'Approved':'Rejected'}</strong> · {c.reason}<br/>{stamp(c.startAt,card.timeZone)} → {stamp(c.endAt,card.timeZone)}</li>)}</ul>
+      <ul>{card.corrections.map(c=><li key={c.id}><strong>{c.status==='PENDING'?'Waiting':c.status==='APPROVED'?'Approved':'Rejected'}</strong> · {c.reason}<br/>{stamp(c.startAt,card.timeZone)} → {stamp(c.endAt,card.timeZone)}</li>)}</ul>
     </details>:null}
   </div>;
 }
 /** The board's Days list: one row per local day with its times and hours (breaks included, as the definition says). */
 function dayRows(card:Timecard){
   const day=(iso:string)=>new Intl.DateTimeFormat('en-CA',{timeZone:card.timeZone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(iso));
-  const time=(iso:string)=>new Intl.DateTimeFormat('en-US',{timeZone:card.timeZone,hour:'numeric',minute:'2-digit'}).format(new Date(iso));
   const groups=new Map<string,TimecardEntryLike[]>();
   for(const entry of card.entries){const key=day(entry.startAt);groups.set(key,[...(groups.get(key)??[]),entry]);}
   return [...groups].sort(([a],[b])=>a.localeCompare(b)).map(([date,entries])=>{
     const open=entries.some(entry=>!entry.endAt);
     const minutes=entries.reduce((sum,entry)=>sum+(entry.endAt?Math.max(0,Math.round((Date.parse(entry.endAt)-Date.parse(entry.startAt))/60000)):0),0);
-    const h=Math.floor(minutes/60),m=minutes%60;
     return {date,label:`${new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'short'}).format(new Date(`${date}T12:00:00Z`))} ${Number(date.slice(8))}`,
-      times:entries.map(entry=>`${time(entry.startAt)} – ${entry.endAt?time(entry.endAt):'now'}`).join(', '),
-      hours:open?'In progress':h?`${h} h ${String(m).padStart(2,'0')}`:`${m} min`};
+      times:entries.map(entry=>timeRangeText(entry.startAt,entry.endAt,card.timeZone)).join(', '),
+      hours:open?'In progress':durationRow(minutes)};
   });
 }
 type TimecardEntryLike=Timecard['entries'][number];
@@ -100,7 +99,8 @@ function timecardSourceKey(cards:readonly TimecardItem[]){
 const needsReview=(item:TimecardItem)=>{const review=classifyTimecardReview(item);return review==='awaiting_approval'||review==='awaiting_finalization';};
 const isApproved=(item:TimecardItem)=>item.state==='APPROVED'||item.state==='FINALIZED';
 // A row says why it needs review in a few words; the detail keeps every reason in full.
-const reasonNames:Partial<Record<TimecardIssue,string>>={open_entry:'Missing clock-out',open_break:'Check breaks',pending_correction:'Correction awaiting review',overlapping_time:'Overlapping recorded time'};
+// OW-014: "Waiting" is the one word for something that needs a decision, so the chip reads "Correction waiting".
+const reasonNames:Partial<Record<TimecardIssue,string>>={open_entry:'Missing clock-out',open_break:'Check breaks',pending_correction:'Correction waiting',overlapping_time:'Overlapping recorded time'};
 type RowTone='review'|'done'|'neutral';
 // Owner premium R7/R10 (copy table 36–38): Approve is step 1 and Finalize step 2 on every surface (lead decision, Oct 31:
 // one vocabulary with Time exports; "approved for payroll" would read like Payroll's own Approved). "In progress" shows
@@ -122,10 +122,9 @@ const roleOf=(card:Timecard)=>card.entries.find(entry=>entry.positionName)?.posi
 const noTime=(item:TimecardItem)=>!needsReview(item)&&!isApproved(item)&&!item.card.entries.length&&!item.history.length&&item.card.recordedNanoseconds==='0';
 const byName=(a:TimecardItem,b:TimecardItem)=>a.card.employeeName.localeCompare(b.card.employeeName);
 const reviewFirst=(a:TimecardItem,b:TimecardItem)=>Number(needsReview(b))-Number(needsReview(a))||byName(a,b);
-const monthDay=(value:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short',day:'numeric'}).format(new Date(`${value}T12:00:00Z`));
 
-/** "Oct 19 – 25" in one month, "Sep 28 – Oct 4" across two. */
-const rangeText=(period:Period)=>period.startDate.slice(0,7)===period.endDate.slice(0,7)?`${monthDay(period.startDate)} – ${Number(period.endDate.slice(8))}`:`${monthDay(period.startDate)} – ${monthDay(period.endDate)}`;
+/** "Oct 19 – 25" in one month, "Sep 28 – Oct 4" across two (the shared date range, BR-1). */
+const rangeText=(period:Period)=>dateRangeText(period.startDate,period.endDate);
 /** "Mon, Nov 2": the first day the period can be approved (the day after it ends). */
 const approveFrom=(period:Period)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'short',month:'short',day:'numeric'}).format(new Date(`${addDays(period.endDate,1)}T12:00:00Z`));
 /** "this week" for a Monday-to-Sunday period, "this period" for any other range (a ?start=&end= link). */
@@ -133,13 +132,13 @@ const periodNoun=(period:Period)=>periodDays(period)===7?'week':'period';
 const periodDays=(period:Period)=>Math.round((Date.parse(`${period.endDate}T12:00:00Z`)-Date.parse(`${period.startDate}T12:00:00Z`))/86400000)+1;
 const shiftPeriod=(period:Period,direction:1|-1):Period=>{const days=periodDays(period)*direction;return {startDate:addDays(period.startDate,days),endDate:addDays(period.endDate,days)};};
 const samePeriod=(a:Period,b:Period)=>a.startDate===b.startDate&&a.endDate===b.endDate;
-/** Quiet (v4): "32 h", "23.5 h". */
-/** Board G-O-Time: "31 h 32 min", "32 h" or "45 min". */
-/** Direction B figures, as the mocks write them: "24 h 06" in rows and sheets, whole hours ("511 h") for a period total. */
-const minutesIn=(nanoseconds:string)=>/^\d+$/.test(nanoseconds)?Number(BigInt(nanoseconds)/BigInt(60_000_000_000)):null;
-const compactHours=(nanoseconds:string)=>{const minutes=minutesIn(nanoseconds);if(minutes===null)return '—';const h=Math.floor(minutes/60),m=minutes%60;return h?`${h} h ${String(m).padStart(2,'0')}`:`${m} min`;};
-const wholeHours=(nanoseconds:string)=>{const minutes=minutesIn(nanoseconds);return minutes===null?'—':minutes<60?`${minutes} min`:`${Math.floor(minutes/60)} h`;};
-const quietHours=(nanoseconds:string)=>{if(!/^\d+$/.test(nanoseconds))return '—';const minutes=Number(BigInt(nanoseconds)/BigInt(60_000_000_000)),h=Math.floor(minutes/60),m=minutes%60;return h&&m?`${h} h ${m} min`:h?`${h} h`:`${m} min`;};
+/** BR-1 (Nov 14, 2026): every figure on this page is one of the three shared forms in @/lib/duration-format, from the
+ * same whole minutes. Row figure "24 h 06" (a person's Recorded and Breaks in rows, the table and the sheet), headline
+ * total "383 h" (the phone's Recorded tile) and sentence "382 h 51 min" (the Total row, notes and sub lines). */
+const figure=(nanoseconds:string,write:(minutes:number)=>string)=>{const minutes=minutesFromNanoseconds(nanoseconds);return minutes===null?'—':write(minutes);};
+const compactHours=(nanoseconds:string)=>figure(nanoseconds,durationRow);
+const wholeHours=(nanoseconds:string)=>figure(nanoseconds,durationTotal);
+const quietHours=(nanoseconds:string)=>figure(nanoseconds,durationSentence);
 // Review B8 (NV-274): a phone turned sideways has the tablet layout, so only an upright phone is a phone here.
 const PHONE_QUERY='(max-width: 760px)';
 const INSPECTOR_QUERY='(min-width: 1024px)';
@@ -157,7 +156,10 @@ function TimecardsState({title,message,failed,signIn,onRetry,className}:{title:s
 const originFailure=(response:Response)=>{const code=nevoraFailure(response);return !!code&&failureRecovery(code)==='origin';};
 const ORIGIN_LINE=`${FAILURE_MESSAGES.origin.title}. ${FAILURE_MESSAGES.origin.body}`;
 
-export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false,today,signature=false,managementRecoveryScope}:{initialPeriod:Period;manager:boolean;actorId:string;employeeCorporate?:boolean;managementRecoveryScope?:string;
+export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false,today,signature=false,managementRecoveryScope,payrollStep}:{initialPeriod:Period;manager:boolean;actorId:string;employeeCorporate?:boolean;managementRecoveryScope?:string;
+  /** AR-11 (manager view): what follows a finalized period for this viewer. 'prepare' when they can review payroll,
+   * 'owner' when payroll is on and belongs to an Owner; left out when payroll is off (the next step is Time exports). */
+  payrollStep?:'prepare'|'owner';
   /** Employee Signature (phase 1, approved Oct 20, 2026; target docs/product/specs/employee-style/signature/phase-1/p1c-timecards.png). */
   signature?:boolean;
   /** The workspace's date (manager view): sets This week and Last week and whether approvals are open yet. */
@@ -406,6 +408,12 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     // behind): who and the period's figures, anything that needs attention, the days, then the one decision. Same
     // actions, history and wording.
     const days=openItem?dayRows(openItem.card):[];
+    // BR-2 (Nov 14, 2026): the two steps are said once, in plain words, wherever one of them is taken (the sheet's
+    // decision, the period card, the reviewed batch). Approve is step 1 for each card; Finalize is step 2 and locks it.
+    const stepsLine=`Approve each timecard, then finalize the ${periodNoun(period)} to lock it for payroll.`;
+    // Approving a card with nothing recorded is allowed (a reviewed person with no hours, counted in "Approve N ready"),
+    // so the button says that is what it does.
+    const openEmpty=!!openItem&&!openItem.card.entries.length&&openItem.card.recordedNanoseconds==='0';
     const btn=(kind:'primary'|'secondary')=>`c-btn c-btn--full${kind==='secondary'?' c-btn--secondary':''}`;
     // Nov 1 upscale: from 1024px up (the table's layout) the panel is non-modal: no scrim, the table stays live, Escape and
     // Done close it and give focus back to the person's row. Below that it stays the modal sheet.
@@ -454,6 +462,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           {/* Closing F1 (NV-029): the decision is confirmed in the panel at once, in words, while the fresh read runs. */}
           {done?.employeeId===openItem.card.employeeId?<p className="c-tc-sheet__done" role="status"><CheckIcon weight="bold" aria-hidden="true"/>{`${done.name==='This'?'This':`${done.name}’s`} timecard is ${done.action==='finalized'?'finalized':'approved'}.`}</p>:null}
           <div className="c-tc-sheet__actions">
+            {/* Nov 14 inspection: the viewer is fixing someone else's time here, so the button says so (same delegated correction). */}
             {!own&&!locked?<Link className={btn('secondary')} href={'/app/timecards/corrections/new/'+encodeURIComponent(openItem.card.employeeId)}>Request time correction</Link>:null}
             {!own&&managementRecoveryScope?<ManagementCloseForm key={managementRecoveryScope+':'+actorId+':'+openItem.card.employeeId} recoveryScope={managementRecoveryScope} actorId={actorId} timeZone={openItem.card.timeZone}
               timeEntryId={openItem.card.entries.find(entry=>entry.sourceKind==='RECORDED'&&!entry.endAt&&!entry.rawEndAt)?.id} onClosed={()=>void refresh(period,true)}/>:null}
@@ -465,7 +474,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               waiting&&!pending&&!outcomes?null:
               // Round 4: an approved card offers its next step only (Finalize), not Approve again.
               openItem.state==='APPROVED'?<button type="button" className={btn('primary')} disabled={locked||own||!!openItem.card.issues.length} onClick={()=>void act(openItem,'FINALIZE')}>Finalize period</button>:
-              <button type="button" className={btn('primary')} disabled={locked||own||!!openItem.card.issues.length} onClick={()=>void act(openItem,'APPROVE')}>Approve timecard</button>}
+              <button type="button" className={btn('primary')} disabled={locked||own||!!openItem.card.issues.length} onClick={()=>void act(openItem,'APPROVE')}>{openEmpty?'Approve with no hours':'Approve timecard'}</button>}
+            {!own&&openItem.state!=='FINALIZED'&&!(waiting&&!pending&&!outcomes)?<p className="c-tc-sheet__note">{stepsLine}</p>:null}
           </div>
           {openItem.history.length?<details className="c-tc-sheet__more c-tc-sheet__history"><summary>Historical revisions ({openItem.history.length})</summary>
             {openItem.history.map(h=><div key={h.operationId}><h3>Revision {h.revision} · {h.action==='APPROVE'?'Approved':h.action==='FINALIZE'?'Finalized':'Reopened'}</h3>
@@ -512,12 +522,13 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const reviewLabel=inProgress&&!reviewSummary.counts.awaitingFinalization?'In progress':'Needs review';
     const percent=cards.length?Math.round(approvedCount/cards.length*100):0;
     const allApproved=cards.length>0&&approvedCount===cards.length;
+    const finalizedCount=cards.filter(item=>item.state==='FINALIZED').length,allFinalized=cards.length>0&&finalizedCount===cards.length;
     const sumOf=(pick:(item:TimecardItem)=>string)=>quietHours(cards.reduce((sum,item)=>sum+(/^\d+$/.test(pick(item))?BigInt(pick(item)):BigInt(0)),BigInt(0)).toString());
     const recordedTotal=sumOf(item=>item.card.recordedNanoseconds),breaksTotal=sumOf(item=>item.card.breakNanoseconds);
     const recordedWhole=wholeHours(cards.reduce((sum,item)=>sum+(/^\d+$/.test(item.card.recordedNanoseconds)?BigInt(item.card.recordedNanoseconds):BigInt(0)),BigInt(0)).toString());
     // "Approve N ready" counts every card that can be approved, including people with no time; the note says how many.
     const noTimeReady=eligible.filter(item=>item.card.recordedNanoseconds==='0').length;
-    const summaryTitle=allApproved?`All ${cards.length} approved`:approvedCount?`${approvedCount} of ${cards.length} approved`:open?`You can approve from ${approveFrom(period)}`:'Not approved yet';
+    const summaryTitle=allFinalized?`All ${cards.length} finalized`:allApproved?`All ${cards.length} approved`:approvedCount?`${approvedCount} of ${cards.length} approved`:open?`You can approve from ${approveFrom(period)}`:'Not approved yet';
     // Nov 1 upscale (review S15): while approval hasn't opened and nothing is approved, the card would only say when it
     // opens, so that line joins the subtitle instead ("Oct 26 – Nov 1 · 9 people · Approval opens Mon, Nov 2").
     const folded=open&&!approvedCount;
@@ -530,9 +541,22 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         {open?approvedCount?<p className="c-tc-note">{`You can approve the rest from ${approveFrom(period)}`}<span className="c-tc-note__total">{` · ${recordedTotal} so far`}</span></p>
           :<p className="c-tc-note c-tc-note__total">{`${recordedTotal} recorded so far`}</p>
           :<p className="c-tc-note">{`${eligible.length} ready`}{noTimeReady?noTimeReady===eligible.length?' · no time recorded':` · ${noTimeReady} with no time`:null}{attention?<span className="c-tc-note__warn">{` · ${attention} need${attention===1?'s':''} attention`}</span>:null}{noTimeReady&&noTimeReady===eligible.length?null:<span className="c-tc-note__total">{` · ${recordedTotal} recorded`}</span>}</p>}
-        <p className="c-tc-note">{`${reviewSummary.counts.awaitingApproval} awaiting approval · ${reviewSummary.counts.awaitingFinalization} awaiting finalization`}</p>
+        {/* BR-2: the counts name the two steps as the chips do ("Ready to approve", "Ready to finalize"). */}
+        <p className="c-tc-note">{`${reviewSummary.counts.awaitingApproval} to approve · ${reviewSummary.counts.awaitingFinalization} to finalize`}</p>
+        {allFinalized?null:<p className="c-tc-note">{stepsLine}</p>}
       </div>
     </CorpCard>:null;
+    // AR-11 (Nov 14, 2026): once every timecard in a period that has ended is finalized, one row says what comes next.
+    // Someone who can review payroll goes on to prepare it; anyone else is told who does. With payroll off, the hours
+    // go out through Time exports. The row names the finalized period in its second line only: Payroll chooses its own
+    // pay period, which need not be this week.
+    const nextStepWhy=`Every timecard for ${rangeText(period)} is finalized.`;
+    const nextStep=ready&&allFinalized&&!open&&!showBulk?payrollStep==='prepare'?{href:'/app/payroll/prepare',title:'Prepare payroll'}
+      :payrollStep==='owner'?{href:null,title:'All done. Your Owner runs payroll.'}
+      :{href:`/app/payroll-export?start=${period.startDate}&end=${period.endDate}`,title:'Download hours for payroll'}:null;
+    const nextStepCard=nextStep?<CorpCard as="div" ariaLabel="Next step"><CorpRows label="Next step">
+      <li><CorpRow href={nextStep.href??undefined} icon={<CheckIcon className="c-ic" weight="bold"/>} title={nextStep.title} detail={nextStepWhy} bold chevron={!!nextStep.href}/></li>
+    </CorpRows></CorpCard>:null;
     // One error card (P3): what failed, the one way forward.
     // The kit's error card: a failed or expired read offers a fresh read here (this page's own protected fetch, so not the
     // kit's router refresh); signed out offers Sign in; a pause (window left) needs nothing and isn't announced as an alert.
@@ -555,10 +579,11 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       const bulk=ready&&showBulk?<section className="q-page q-tc-bulk c-tc-bulk" aria-label="Selected timecard review">
         <div className="q-grp"><h2>{selected.length} selected</h2></div>
         <p className="q-help">{eligible.length} eligible · {cards.length-eligible.length} excluded · Select up to 100 current timecards below.</p>
+        <p className="q-help">{stepsLine}</p>
         <ul className="q-list q-tc-bulk__list">
           <li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b>Selected action</b></span>
             <select className="q-select-row__control" value={batchAction} disabled={locked} onChange={e=>{setBatchAction(e.target.value as BatchAction);clearBatch();}}><option value="APPROVE">Approve selected</option><option value="FINALIZE">Finalize selected</option></select>
-            <CaretRightIcon className="q-chev" aria-hidden="true"/></label></li>
+            <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></label></li>
         </ul>
         {review||outcomes?null:<button type="button" className="q-btn q-btn--sec" disabled={locked||!selected.length} onClick={prepareBatch}>Review selected timecards</button>}
         {/* The confirm step: the reviewed set and its wording, unchanged (Approve is step 1, Finalize step 2). */}
@@ -582,8 +607,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       const breaksOf=(item:TimecardItem)=>/^\d+$/.test(item.card.breakNanoseconds)&&item.card.breakNanoseconds!=='0'?` · ${quietHours(item.card.breakNanoseconds)} breaks`:'';
       // Direction B (Jose approved Nov 5, 2026; mock "Owner · Time"): the hero with the week control and this period's figures,
       // then each person's recorded time. Selecting and the reviewed batch keep the layout below, unchanged.
-      const most=cards.reduce((max,item)=>{const n=/^\d+$/.test(item.card.recordedNanoseconds)?Number(BigInt(item.card.recordedNanoseconds)/BigInt(60_000_000_000)):0;return Math.max(max,n);},0);
-      const minutesOf=(item:TimecardItem)=>/^\d+$/.test(item.card.recordedNanoseconds)?Number(BigInt(item.card.recordedNanoseconds)/BigInt(60_000_000_000)):0;
+      const minutesOf=(item:TimecardItem)=>minutesFromNanoseconds(item.card.recordedNanoseconds)??0;
+      const most=cards.reduce((max,item)=>Math.max(max,minutesOf(item)),0);
       const bScreen=showBulk||selecting?null:<BScreen>
         <BHero title="Timecards" titleId="b-tc-title" sub={subtitle} right={canSelect?<BButton kind="glass" onClick={toggleSelecting}>Select</BButton>:undefined}>
           <BSeg label="Week" items={[
@@ -593,7 +618,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           ]}/>
           <BLive label="This period" items={[
             {label:'Recorded',value:ready?recordedWhole:'—'},
-            {label:'Approved',value:ready?approvedCount:'—',small:ready&&cards.length?`/${cards.length}`:undefined},
+            // BR-2: the tile names the step under way. Approved counts up first; once every card is approved it counts Finalized.
+            {label:allApproved?'Finalized':'Approved',value:ready?allApproved?finalizedCount:approvedCount:'—',small:ready&&cards.length?`/${cards.length}`:undefined},
             // Closing F1 (NV-006): Attention filters the list to the timecards it counts (each has an amber chip).
             {label:'Attention',dot:attention?'warn':undefined,value:ready?attention:'—',...(ready&&attention?{onSelect:()=>setAttentionOnly(on=>!on),pressed:attentionOnly,aria:attentionOnly?`Attention, ${attention}. Showing these only; show everyone`:`Attention, ${attention}. Show these only`}:{})},
           ]}/>
@@ -601,16 +627,21 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         <BStack>
           {stateCard}
           {emptyCard}
+          {nextStep?<BCard label="Next step"><BList label="Next step">
+            <BRow href={nextStep.href??undefined} lead={<BIcon tone="green"><CheckIcon weight="bold"/></BIcon>} title={nextStep.title} sub={nextStepWhy}/>
+          </BList></BCard>:null}
           {ready&&cards.length&&!open&&eligible.length?<BCard label="Ready to approve"><div className="b-notice"><BIcon tone="teal"><CheckIcon weight="bold"/></BIcon>
             <span className="b-notice__tx"><span className="b-notice__t">{`${Math.min(eligible.length,100)} ${eligible.length===1?'timecard':'timecards'} to approve`}</span><span className="b-notice__s">{/* Review B2 (NV-006): every count names its week. */}{`${rangeText(period)} · ${attention?`${attention} need${attention===1?'s':''} attention first`:`${recordedTotal} recorded`}`}</span></span>
             <BButton onClick={()=>{setSelecting(true);selectAll(true);}}>Review</BButton></div></BCard>
           :ready&&cards.length&&open&&approvedCount?<BCard label="Approval"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">{summaryTitle}</span><span className="b-notice__s">{`You can approve the rest from ${approveFrom(period)}`}</span></span></div></BCard>:null}
+          {ready&&cards.length&&!open&&!allFinalized?<BNote>{stepsLine}</BNote>:null}
           {ready&&cards.length?<BCard id="b-tc-team" title={attentionShown?'Needs attention':'Team'} count={attentionShown?phoneRows.length:cards.length}
             chip={attentionShown?<button type="button" className="b-card__a" onClick={()=>setAttentionOnly(false)}>Show all</button>:undefined}>
             <BList label={attentionShown?'Timecards that need attention':'Timecards in this period'}>{phoneRows.map(item=>{
               const id=item.card.employeeId,name=item.card.employeeName,row=rowCue(item),minutes=minutesOf(item),hours=noTime(item)?'':compactHours(item.card.recordedNanoseconds),tone=toneOf(item);
-              // Round 5 (Nov 8): "2 h 30 breaks" is one unit; non-breaking spaces keep it whole when the sub line wraps.
-              const breaks=/^\d+$/.test(item.card.breakNanoseconds)&&item.card.breakNanoseconds!=='0'?`${compactHours(item.card.breakNanoseconds)} breaks`.replaceAll(' ','\u00a0'):null;
+              // Round 5 (Nov 8): "2 h 30 min breaks" is one unit; non-breaking spaces keep it whole when the sub line wraps.
+              // BR-1: a sub line is a sentence, so the minutes carry their unit ("2 h 30 breaks" read as thirty breaks).
+              const breaks=/^\d+$/.test(item.card.breakNanoseconds)&&item.card.breakNanoseconds!=='0'?`${quietHours(item.card.breakNanoseconds)} breaks`.replaceAll(' ','\u00a0'):null;
               return <BRow key={id} onClick={()=>setOpenId(id)} label={[name,row.text,hours].filter(Boolean).join(', ')} lead={<BAvatar name={name}/>}
                 title={name} chip={tone?<BChip tone={tone}>{row.text}</BChip>:undefined} sub={[tone?null:row.text,breaks].filter(Boolean).join(' · ')||undefined}
                 extra={hours&&most?<span className="b-bar" aria-hidden="true"><i style={{width:`${Math.max(4,Math.round(minutes/most*100))}%`}}/></span>:undefined}
@@ -630,6 +661,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         <HoldHeight holding={!ready} memory="timecards-manager" className="c-tc-hold">
           {stateCard}
           {emptyCard}
+          {nextStepCard}
           {summary}
           {bulk}
           {/* Copy table 39: the card lists the whole team, so no See all. */}
@@ -639,7 +671,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               <span className="c-row__main"><span className="c-row__title c-row__title--b">Select all eligible</span></span><span className="c-row__value">{Math.min(eligible.length,100)}</span></label></li>:null}
             {rows.map(item=>{
               // Copy table 38: someone with no time yet reads "No time yet" with no "0 min" beside it.
-              const id=item.card.employeeId,name=item.card.employeeName,row=rowCue(item),hours=noTime(item)?'':quietHours(item.card.recordedNanoseconds);
+              // BR-1: a person's time is the row figure here too, so it reads the same with Select on as in the list.
+              const id=item.card.employeeId,name=item.card.employeeName,row=rowCue(item),hours=noTime(item)?'':compactHours(item.card.recordedNanoseconds);
               const excluded=selecting?exclusionShort(item):null;
               return <li key={id} id={`timecard-${id}`} tabIndex={-1}>{selecting?<label className="c-row c-tc-pick" data-off={pickDisabled(item)||undefined}>
                 <input type="checkbox" className="c-tc-box" aria-label={`Select ${name}`} title={exclusionText(item)} checked={selected.includes(id)} disabled={pickDisabled(item)} onChange={e=>select(id,e.target.checked)}/>
@@ -666,10 +699,11 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       <HoldHeight holding={!ready} memory="timecards-manager" className="c-tc-hold">
         {stateCard}
         {emptyCard}
+        {nextStepCard}
         {summary}
         {ready&&showBulk?<section className="c-card c-tc-dbulk" aria-label="Selected timecard review">
           <div className="c-tc-dbulk__bar">
-            <p className="c-tc-dbulk__count"><strong>{selected.length} selected</strong><span>{eligible.length} eligible · {cards.length-eligible.length} excluded · Select up to 100 current timecards below.</span></p>
+            <p className="c-tc-dbulk__count"><strong>{selected.length} selected</strong><span>{eligible.length} eligible · {cards.length-eligible.length} excluded · Select up to 100 current timecards below.</span><span>{stepsLine}</span></p>
             <label className="c-tc-dbulk__action"><span>Selected action</span><select className="c-in" value={batchAction} disabled={locked} onChange={e=>{setBatchAction(e.target.value as BatchAction);clearBatch();}}><option value="APPROVE">Approve selected</option><option value="FINALIZE">Finalize selected</option></select></label>
             <button type="button" className="c-btn c-btn--secondary c-btn--md" disabled={locked||!selected.length} onClick={prepareBatch}>Review selected timecards</button>
           </div>
@@ -788,7 +822,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     <p role="status" aria-live="polite" className={styles.status}><NavIcon name={busy?'refresh':'clock'} size={16}/>{message}</p>
     </div>
     {manager&&currentActor&&data?.state==='ready'&&cards.length?<dl className={styles.overview} aria-label="Period overview"><div><dt>Timecards</dt><dd>{cards.length}</dd></div><div><dt>Need attention</dt><dd>{cards.filter(item=>needsAttention(item.card)).length}</dd></div><div><dt>Finalized</dt><dd>{cards.filter(item=>item.state==='FINALIZED').length}</dd></div></dl>:null}
-    {!manager?<Link href="/app/my-time" className={corporate?employeeRowClass('employee-corporate-correction-link '+styles.link):styles.link}><NavIcon name="clock" size={18}/>{corporate?<><span className="employee-corporate-desktop-copy">Request a correction in My time →</span><span className="employee-corporate-mobile-copy">Request a correction<small>Continue in My time</small></span><CaretRightIcon className="employee-corporate-caret" size={20} aria-hidden="true"/></>:'Request a correction in My time →'}</Link>:null}
+    {!manager?<Link href="/app/my-time" className={corporate?employeeRowClass('employee-corporate-correction-link '+styles.link):styles.link}><NavIcon name="clock" size={18}/>{corporate?<><span className="employee-corporate-desktop-copy">Request a correction in My time →</span><span className="employee-corporate-mobile-copy">Request a correction<small>Continue in My time</small></span><CaretRightIcon className="employee-corporate-caret" size={20} weight="bold" aria-hidden="true"/></>:'Request a correction in My time →'}</Link>:null}
     {manager&&currentActor&&data?.state==='ready'?<section className={styles.batch} aria-label="Selected timecard review">
       <details open={selected.length>0||!!review||!!outcomes||!!pending}>
       <summary className={styles.batchHeading}>

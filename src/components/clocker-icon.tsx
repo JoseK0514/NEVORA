@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import type { Icon, IconWeight } from '@phosphor-icons/react';
 import { ArrowClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
+import { ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import { BackspaceIcon } from '@phosphor-icons/react/dist/ssr/Backspace';
 import { BuildingsIcon } from '@phosphor-icons/react/dist/ssr/Buildings';
@@ -27,7 +28,7 @@ import { XCircleIcon } from '@phosphor-icons/react/dist/ssr/XCircle';
 
 export type ClockerIconName = 'lock' | 'location' | 'arrow' | 'delete' | 'check' | 'clock-in' | 'clock-out' | 'break' | 'resume'
   | 'refresh' | 'shield' | 'globe' | 'rest' | 'meal' | 'tablet' | 'wait' | 'offline' | 'building' | 'stop' | 'warning' | 'camera'
-  | 'info' | 'caret' | 'pause';
+  | 'info' | 'caret' | 'pause' | 'back';
 
 /** Clocker icons (Direction B): Phosphor, the app's icon family, bold. Each headline glyph means one thing (Nov 10 review,
  * NV-171): the cup starts a break and play ends it; the hourglass is work in progress and pause is the tablet's lockout. */
@@ -36,7 +37,7 @@ const icons: Record<ClockerIconName, Icon> = {
   'clock-in': SignInIcon, 'clock-out': SignOutIcon, break: CoffeeIcon, resume: PlayIcon, refresh: ArrowClockwiseIcon,
   shield: ShieldCheckIcon, globe: GlobeIcon, rest: TimerIcon, meal: ForkKnifeIcon, tablet: DeviceTabletIcon,
   wait: HourglassMediumIcon, offline: WifiSlashIcon, building: BuildingsIcon, stop: XCircleIcon, warning: WarningCircleIcon,
-  camera: CameraIcon, info: InfoIcon, caret: CaretDownIcon, pause: PauseIcon,
+  camera: CameraIcon, info: InfoIcon, caret: CaretDownIcon, pause: PauseIcon, back: ArrowLeftIcon,
 };
 
 export function ClockerIcon({ name, size = 24, weight = 'bold', style }: { name: ClockerIconName; size?: number; weight?: IconWeight; style?: CSSProperties }) {

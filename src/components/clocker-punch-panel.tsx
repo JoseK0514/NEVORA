@@ -19,7 +19,7 @@ import {ClockerText,useClockerCopy,useClockerIntlLocale} from './clocker-languag
 import {FACE_TINTS} from '../lib/face-tint';
 import {ClockerReceipt,receiptTitles,shortTime} from './clocker-receipt';
 import {useReportTabletHealth} from './clocker-shell';
-const labels:Record<PunchAction,string>={CLOCK_IN:'Clock In',START_BREAK:'Start break',END_BREAK:'End break',CLOCK_OUT:'Clock Out'};
+const labels:Record<PunchAction,string>={CLOCK_IN:'Clock in',START_BREAK:'Start break',END_BREAK:'End break',CLOCK_OUT:'Clock out'};
 const actionIcons:Record<PunchAction,ClockerIconName>={CLOCK_IN:'clock-in',START_BREAK:'break',END_BREAK:'resume',CLOCK_OUT:'clock-out'};
 /* Direction B (approved Nov 8, 2026): what the recording card says, by action. The receipt is clocker-receipt.tsx. */
 const recording:Record<PunchAction,string>={CLOCK_IN:'Clocking in {first}…',CLOCK_OUT:'Clocking out {first}…',START_BREAK:'Starting {first}’s break…',END_BREAK:'Ending {first}’s break…'};
@@ -50,6 +50,8 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
  function recoveryJournal(){return journal.current??(journal.current=openClockerJournal());}
  const busy=useRef(false),alive=useRef(false),heading=useRef<HTMLHeadingElement>(null);
  const [now,setNow]=useState(()=>Date.now());
+ // Other people's saved punches on this tablet: a count only, for the saved-punch help (NV-185).
+ const [otherCount,setOtherCount]=useState(0);
  useEffect(()=>{if(mode!=='ready'&&mode!=='confirm-out')return;const tick=()=>setNow(Date.now());const first=window.setTimeout(tick,0),timer=window.setInterval(tick,15000);return()=>{clearTimeout(first);clearInterval(timer);};},[mode]);
  function failed(error:unknown,hasPending:boolean){
   if(error instanceof PunchRequestError&&(['AUTH_REQUIRED','CONTEXT_CHANGED'].includes(error.code)||error.status===401)){
@@ -67,7 +69,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
    try{
     const fresh=parseClockView(await postPunch(locationKey,{operation:'state'}));
     if(!current)return;
-    try{const store=await recoveryJournal();saved=await store.read(locationKey,fresh.subject);const {references:refs}=await store.references(locationKey,fresh.subject);if(!current)return;setReferences(refs);}
+    try{const store=await recoveryJournal();saved=await store.read(locationKey,fresh.subject);const {references:refs,otherCount:others}=await store.references(locationKey,fresh.subject);if(!current)return;setReferences(refs);setOtherCount(others);}
     catch{setMode('storage');setMessage('This tablet can’t read its saved punches right now. Ask your manager to check the tablet.');return;}
     setView(fresh);setPending(saved);setMode(saved?'recovery':resumeContinuation(resume,fresh));
    }catch(error){if(current){setPending(saved);failed(error,Boolean(saved));}}
@@ -83,7 +85,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
  async function confirmed(value:unknown,saved:PendingPunch){
   const result=parseReceiptReply(value,saved.command);
   let storageWarning:string|null=null;
-  try{const store=await recoveryJournal();await store.resolveExact(locationKey,saved,'recorded');if(!alive.current)return;setPending(null);setReferences((await store.references(locationKey,saved.subject)).references);}
+  try{const store=await recoveryJournal();await store.resolveExact(locationKey,saved,'recorded');if(!alive.current)return;setPending(null);const kept=await store.references(locationKey,saved.subject);setReferences(kept.references);setOtherCount(kept.otherCount);}
   catch{storageWarning='The action was recorded, but this browser could not clear its recovery data. Check it again after allowing browser storage.';}
   if(alive.current){setReceipt(result);setMessage(storageWarning);setMode('success');}
  }
@@ -147,7 +149,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
  async function reviewCurrent(){
   const proof=reviewProof.current;if(busy.current||mode!=='review-current'||!pending||!view||!proof||proof.commandId!==pending.command.commandId||proof.subject!==view.subject||proof.verificationId!==view.verificationId||!canRetirePendingPunch(pending.command,view))return;
   busy.current=true;
-  try{const store=await recoveryJournal();await store.resolveExact(locationKey,pending,'reviewed-context');if(!alive.current)return;setPending(null);setReferences((await store.references(locationKey,pending.subject)).references);reviewProof.current=null;setMode('ready');setMessage('The earlier punch was kept for review. Nothing was punched again.');}
+  try{const store=await recoveryJournal();await store.resolveExact(locationKey,pending,'reviewed-context');if(!alive.current)return;setPending(null);const kept=await store.references(locationKey,pending.subject);setReferences(kept.references);setOtherCount(kept.otherCount);reviewProof.current=null;setMode('ready');setMessage('The earlier punch was kept for review. Nothing was punched again.');}
   catch{if(alive.current){setMode('storage');setMessage('This tablet can’t read its saved punches right now. Ask your manager to check the tablet.');}}
   finally{busy.current=false;}
  }
@@ -163,12 +165,12 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
   onDone();
  }}/>;
  const entry=view?.snapshot.entry,pause=view?.snapshot.break,allowed=view?punchActions(view):[];
- // One teal action for the likeliest next step: End break on a break, otherwise Clock Out once clocked in.
+ // One teal action for the likeliest next step: End break on a break, otherwise Clock out once clocked in.
  const lead=(['END_BREAK','CLOCK_OUT','CLOCK_IN'] as PunchAction[]).find(action=>allowed.includes(action));
  const actions=lead?[lead,...allowed.filter(action=>action!==lead)]:allowed;
  const status=entry?.status==='ON_BREAK'?'On Break':entry?'Clocked In':'Off Clock';
  const cancelLabel=entry?.status==='ON_BREAK'?'Stay on break':'Cancel clock-out';
- const title=mode==='review-current'?'Review your current status':mode==='success'&&receipt?receiptTitles[receipt.action]:mode==='confirm-out'?'Clock Out?':mode==='select-break'?'Choose a break':mode==='sending'?'Recording your action…'
+ const title=mode==='review-current'?'Review your current status':mode==='success'&&receipt?receiptTitles[receipt.action]:mode==='confirm-out'?'Clock out?':mode==='select-break'?'Choose a break':mode==='sending'?'Recording your action…'
   :mode==='recovery'||mode==='retry'?'Check your last action':mode==='other-person'?'Previous action needs review'
   :mode==='auth'?'Verify your PIN again':mode==='loading'?'Checking your clock…':mode==='storage'?'Browser storage needed'
   :mode==='unavailable'?'Clock state unavailable':t('Hi, {name}.',{name:view?.firstName??''});
@@ -182,7 +184,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
  const tint=kioskTint(first);
  const face=(size?:'sm')=>first?<span className={styles.face} data-size={size} style={{background:tint[0],color:tint[1]}} aria-hidden="true">{first.slice(0,1).toUpperCase()}</span>:null;
  // Saved-action help stays off the two decision screens (Nov 10 review, NV-302).
- const handoff=(inline:boolean)=>references.length>0&&view&&(!pending||pending.subject===view.subject)&&!waiting&&!['success','select-break','confirm-out','auth','other-person'].includes(mode)?<ClockerRecoveryHandoff inline={inline} key={pending?.command.commandId??'tablet-assistance'} references={references} locationKey={locationKey} commandId={pending?.command.commandId??null}/>:null;
+ const handoff=(inline:boolean)=>references.length>0&&view&&(!pending||pending.subject===view.subject)&&!waiting&&!['success','select-break','confirm-out','auth','other-person'].includes(mode)?<ClockerRecoveryHandoff inline={inline} key={pending?.command.commandId??'tablet-assistance'} references={references} otherCount={otherCount} locationKey={locationKey} commandId={pending?.command.commandId??null}/>:null;
  /* Leaving (Nov 10 review, NV-184, NV-305): beside the state's own actions it is a text link in the same stack; when it is
   * the only way on, it is the primary button. The receipt keeps its grey Done. */
  const withActions=['recovery','retry','unavailable','review-current'].includes(mode);
@@ -216,7 +218,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
    <div className={styles.panelFoot}>
     <button tabIndex={0} className={styles.btn} data-kind="secondary" type="button" onClick={onDone}>{t("Done")}</button>
     <div className={styles.links}>
-     <button tabIndex={0} className={styles.link} type="button" onClick={()=>void refresh()}><ClockerIcon name="refresh" size={18}/>{t("Refresh clock state")}</button>
+     <button tabIndex={0} className={styles.link} type="button" onClick={()=>void refresh()}><ClockerIcon name="refresh" size={18}/>{t("Refresh")}</button>
      {handoff(true)}
     </div>
     <p className={styles.clears}>{t("This screen clears after 30 seconds.")}</p>
@@ -237,7 +239,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
    <p className={styles.smsg}>{t("Your shift will end at the time recorded by NEVORA.")}</p>
    {entry?<dl className={styles.facts}><div><dt>{t("Clocked in")}</dt><dd><time dateTime={entry.clockInAt}>{shortTime(entry.clockInAt,timeZone,now,locale)}</time></dd></div><div><dt>{t("Since clock-in")}</dt><dd>{elapsed(entry.clockInAt,now)==='under a minute'?t('under a minute'):elapsed(entry.clockInAt,now)}</dd></div></dl>:null}
    {entry?.status==='ON_BREAK'?<p data-clocker-notice className={styles.msg} data-tone="amber"><ClockerIcon name="warning" size={18}/><span>{t("This will also end your current break.")}</span></p>:null}
-   <div className={styles.stack}><button tabIndex={0} className={styles.btn} data-kind="primary" type="button" aria-label={t("Confirm Clock Out")} onClick={()=>act('CLOCK_OUT')}>{t("Confirm Clock Out")}</button><button tabIndex={0} className={styles.btn} data-kind="secondary" type="button" aria-label={t(cancelLabel)} onClick={()=>setMode('ready')}>{t(cancelLabel)}</button></div>
+   <div className={styles.stack}><button tabIndex={0} className={styles.btn} data-kind="primary" type="button" aria-label={t("Confirm clock out")} onClick={()=>act('CLOCK_OUT')}>{t("Confirm clock out")}</button><button tabIndex={0} className={styles.btn} data-kind="secondary" type="button" aria-label={t(cancelLabel)} onClick={()=>setMode('ready')}>{t(cancelLabel)}</button></div>
    <p className={styles.clears}>{t("This screen clears after 30 seconds.")}</p>
   </>:null}
   {mode==='success'&&receipt?<ClockerReceipt action={receipt.action} performedAt={receipt.performedAt} commandId={receipt.commandId} timeZone={timeZone} locale={locale} firstName={first}/>:null}
@@ -252,7 +254,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
    {mode==='retry'&&pending&&view?<button tabIndex={0} className={styles.btn} data-kind="secondary" type="button" onClick={()=>void send(pending,view)}>{t("Retry same action")}</button>:null}
    {leave}
   </div>:null}
-  {mode==='unavailable'?<div className={styles.stack}><button tabIndex={0} className={styles.btn} data-kind="primary" type="button" onClick={()=>void refresh()}>{t("Try Again")}</button>{leave}</div>:null}
+  {mode==='unavailable'?<div className={styles.stack}><button tabIndex={0} className={styles.btn} data-kind="primary" type="button" onClick={()=>void refresh()}>{t("Try again")}</button>{leave}</div>:null}
   {leave&&!withActions?<div className={styles.stack}>{leave}</div>:null}
   {mode!=='ready'?handoff(false):null}
  </div>;

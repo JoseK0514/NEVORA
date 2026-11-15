@@ -31,19 +31,21 @@ import './account.css';
 
 const Chev = () => <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" />;
 
-/** A read-only field: a small grey label over its value. */
-function Field({label, value}: {label: string; value: string}) {
-  return <li className="b-li"><div className="b-row eb-field"><span className="b-row__tx"><span className="b-row__s">{label}</span><span className="b-row__t">{value}</span></span></div></li>;
+/** A read-only field: a small grey label over its value, and an optional grey line saying what the value is for. */
+function Field({label, value, help}: {label: string; value: string; help?: string}) {
+  return <li className="b-li"><div className="b-row eb-field"><span className="b-row__tx"><span className="b-row__s">{label}</span><span className="b-row__t">{value}</span>{help ? <span className="b-row__s">{help}</span> : null}</span></div></li>;
 }
 
 /** Profile and settings (board E-Profile): Personal info as label-over-value rows, Display with the language switch,
  * Security. The read is the page's own (one controller for both presentations). */
-export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, ending, lead, name}: {
+export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, ending, lead, name, employeeId}: {
   state: PrivatePanelState<EmployeeViewSnapshot>; onRetry: () => void; lang: AuthLang; passkeys: boolean; policies: boolean; ending: boolean;
   /** A Lead's desktop adds a small Calendar and alerts card (eb-desk; Direction B, Nov 8, 2026). */
   lead?: boolean;
   /** The signed-in name the shell already shows, for Name while the profile read is unavailable (review B6, NV-285). */
   name?: string;
+  /** The Employee ID this person signs in with, from the page's session (inspection Nov 14, BR-13). Hidden while paused, like Name. */
+  employeeId?: string;
 }) {
   const ready = !state.paused && state.snapshot?.state === 'ready' && state.snapshot.kind === 'profile' ? state.snapshot : null;
   const denied = state.snapshot?.state === 'unavailable' && state.snapshot.reason === 'access_denied';
@@ -56,6 +58,7 @@ export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, endi
         <BCard title="Personal info" id="b-profile-personal">
           <ul className="b-list" aria-label="Your work profile">
             <Field label="Name" value={value(ready?.profile.name ?? (state.paused ? undefined : name))} />
+            <Field label="Employee ID" value={value(state.paused ? undefined : employeeId)} help="You sign in with this ID." />
             <Field label="Locations" value={value(ready?.profile.locations.join(' · '))} />
             <Field label="Time zone" value={value(ready ? timeZoneLabel(ready.profile.timeZone).replace(/ time$/, '') : undefined)} />
           </ul>

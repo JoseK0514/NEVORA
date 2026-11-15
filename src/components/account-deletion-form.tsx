@@ -126,11 +126,11 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
       <QuietGroup id="deletion-effects" label="What happens">
         <QuietList>
           {/* Review B6 (NV-143): the same flow for every role: "access ends" is red-tinted, consent is a checkbox. */}
-          <li><div className="q-row q-row--av q-deletion__fact"><span className="q-av q-av--red" aria-hidden="true"><SignOutIcon className="q-ic" /></span>
+          <li><div className="q-row q-row--av q-deletion__fact"><span className="q-av q-av--red" aria-hidden="true"><SignOutIcon weight="bold" className="q-ic" /></span>
             <span className="q-rt"><b>Your access ends now.</b><i>You’re signed out on every device and can’t sign in again. Calendar feed links stop working.</i></span></div></li>
-          <li><div className="q-row q-row--av q-deletion__fact"><span className="q-av" aria-hidden="true"><TrashIcon className="q-ic" /></span>
+          <li><div className="q-row q-row--av q-deletion__fact"><span className="q-av" aria-hidden="true"><TrashIcon weight="bold" className="q-ic" /></span>
             <span className="q-rt"><b>What is removed</b><i>Your profile, sign-in details, notification subscriptions, calendar links and the content you contributed, within {period ?? unresolved("DELETION_COMPLETION_PERIOD")}.</i></span></div></li>
-          <SheetRow sheetTitle="What may be kept" avatar={<ShieldCheckIcon className="q-ic" />} title="What may be kept"
+          <SheetRow sheetTitle="What may be kept" avatar={<ShieldCheckIcon weight="bold" className="q-ic" />} title="What may be kept"
             detail="Some attendance, payroll, security or dispute records your employer or we must keep. They’re restricted and never used to restore your account.">
             <div className="q-hd"><h1>What may be kept</h1></div>
             <div className="q-body q-deletion__effects">
@@ -147,7 +147,7 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
             <input ref={bindPassword} className="q-in" id="deletion-password" name="password" type={shown ? "text" : "password"} required autoComplete="current-password" disabled={pending} placeholder="Password"
               onChange={event => { typed.current = event.target.value; }}
               aria-describedby={passwordError ? "deletion-password-help deletion-password-error" : "deletion-password-help"} aria-invalid={passwordError ? true : undefined} />
-            <button type="button" className="q-in__eye" onClick={() => setShown(value => !value)} aria-pressed={shown} aria-label={shown ? "Hide password" : "Show password"}>{shown ? <EyeSlashIcon className="q-ic" aria-hidden="true" /> : <EyeIcon className="q-ic" aria-hidden="true" />}</button>
+            <button type="button" className="q-in__eye" onClick={() => setShown(value => !value)} aria-pressed={shown} aria-label={shown ? "Hide password" : "Show password"}>{shown ? <EyeSlashIcon weight="bold" className="q-ic" aria-hidden="true" /> : <EyeIcon weight="bold" className="q-ic" aria-hidden="true" />}</button>
           </div>
           <p className="q-fl__help" id="deletion-password-help">Enter the password you use to sign in.</p>
           {passwordError ? <p className="q-fl__error" id="deletion-password-error">{passwordError}</p> : null}

@@ -47,7 +47,7 @@ export function Pickup({operation,onRefresh,canSubmit=false,isCurrent=()=>false,
  const check=()=>{if(navigator.onLine)void operation.retry(reconcileShiftChangeAction,shiftChangeAction,canRecover);};
  const b=look==='b';
  const ready=canSubmit&&(!result||!resolved&&!current.uncertain),word=current.pending?'Submitting…':'Pick up';
- const action=ready?b?<BButton kind="teal" disabled={current.pending} onClick={run} label={label}>{word}</BButton>:<CorpButton kind="secondary" size="sm" disabled={current.pending} onClick={run} aria-label={label}>{word}</CorpButton>:null;
+ const action=ready?b?<BButton kind="ghost" disabled={current.pending} onClick={run} label={label}>{word}</BButton>:<CorpButton kind="secondary" size="sm" disabled={current.pending} onClick={run} aria-label={label}>{word}</CorpButton>:null;
  if(part==='action')return action;
  const next=resolved?{href:result.status==='completed'?'/app/schedule':'/app/exchange?tab=requests',text:result.status==='completed'?'View my schedule':'View my requests'}:null;
  const status=<>
@@ -179,8 +179,8 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
      {eligible.map(shift=>operations.has(shift.id)?<ShiftCard key={shift.id} shift={shift} selected={selected===shift.id||hash==='request-'+shift.id} nextWeek={!!nextWeekStart&&shift.date>=nextWeekStart} operation={operations.get(shift.id)!} onRefresh={refresh} isCurrent={isCurrent} canRecover={canRecover}/>:null)}
      {!eligible.length&&unconfirmed.length?<CorpButton kind="secondary" size="md" full disabled={state.refreshing} onClick={refresh}>Refresh</CorpButton>:null}
      {unconfirmed.length?<CorpCard label="We couldn’t check these shifts" id="em-unconfirmed"><CorpRows>{unconfirmed.map(row=><li key={row.id}><CorpRow title={`${day(row.date)} · ${formatTime(row.startTime)}`} detail={row.notice?`${row.location} · ${row.notice}`:row.location}/></li>)}</CorpRows></CorpCard>:null}
-     {refused.length?<details className="c-ereq__why"><summary>Why other shifts aren’t available <CaretDownIcon aria-hidden="true"/></summary><ul>{refused.map(row=><li key={row.id}><strong>{day(row.date)} · {formatTime(row.startTime)}</strong><span>{row.location}</span>{row.notice?<p>{row.notice}</p>:null}</li>)}</ul></details>:null}
-     {note?<CorpNote icon={<InfoIcon className="c-ic" aria-hidden="true"/>}>{note}</CorpNote>:null}
+     {refused.length?<details className="c-ereq__why"><summary>Why other shifts aren’t available <CaretDownIcon weight="bold" aria-hidden="true"/></summary><ul>{refused.map(row=><li key={row.id}><strong>{day(row.date)} · {formatTime(row.startTime)}</strong><span>{row.location}</span>{row.notice?<p>{row.notice}</p>:null}</li>)}</ul></details>:null}
+     {note?<CorpNote icon={<InfoIcon weight="bold" className="c-ic" aria-hidden="true"/>}>{note}</CorpNote>:null}
     </>}
    </>:<CorpCard ariaLabel="Open shifts"><div className="c-card__body"><p className="c-ereq__state" role="status">Shift pickup is turned off for your company.</p></div></CorpCard>)}
   </div>

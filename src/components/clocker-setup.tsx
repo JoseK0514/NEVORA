@@ -89,7 +89,7 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
         <h1 className={styles.title}>{t("Tablet connected")}</h1>
         {/* One sentence with a placeholder (Nov 10 review, NV-173). */}
         <p className={styles.lead}>{deviceBefore}<strong>{state.deviceName}</strong>{deviceAfter}</p>
-        <div className={styles.note} data-tone="amber"><ClockerIcon name="warning" size={20}/><p><strong>{t("Timekeeping is not available yet.")}</strong>{t("Punching in isn’t turned on yet. Don’t use this tablet to record time.")}</p></div>
+        <div className={styles.note} data-tone="amber"><ClockerIcon name="warning" size={20}/><p><strong>{t("Timekeeping is not available yet.")}</strong>{t("Punching in isn’t turned on yet. Don’t use this tablet to record time.")} {t("Ask your Owner to contact NEVORA support.")}</p></div>
         <p className={styles.clears}>{t("Owner access has been signed out on this tablet.")}</p>
         <div className={styles.stack}><button className={styles.btn} data-kind="secondary" type="button" disabled={pending} onClick={check}>{t("Check connection")}</button></div>
       </> : <>

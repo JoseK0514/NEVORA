@@ -91,7 +91,7 @@ export function ActionForm({ action, submit, failure, confirm, className, childr
     </div> : <button ref={openRef} type="submit" className={submit.className} data-kind={submit.kind === "danger" ? undefined : submit.kind} aria-label={pending ? submit.pendingLabel : submit.ariaLabel} aria-disabled={pending || undefined} aria-busy={pending || undefined}>
       <span aria-live="polite">{label}</span>{submit.icon}
     </button>}
-    {error ? <p ref={errorRef} className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>{error}</span></p> : null}
+    {error ? <p ref={errorRef} className="wb-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden="true" /><span>{error}</span></p> : null}
   </form>;
 }
 
@@ -126,7 +126,7 @@ export function RulesSaveForm({ action, children, bar }: {
       {result === "saved"
         ? <p className="wb-saved" role="status"><CheckCircleIcon size={18} weight="fill" aria-hidden="true" /><span>Scheduling rules saved.</span></p>
         : result
-          ? <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>{result}</span></p>
+          ? <p className="wb-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden="true" /><span>{result}</span></p>
           : <p className="wb-note">Staffing and weekly hours save together and apply right away.</p>}
       <button ref={button} className="nv-btn" data-kind="primary" type="submit" aria-disabled={pending || undefined} aria-busy={pending || undefined}>{pending ? "Saving…" : "Save staffing and hours"}</button>
     </div> : null}
@@ -159,7 +159,7 @@ export function InlineConfigForm({ action, children, submit, successText, classN
     <fieldset aria-disabled={pending || undefined} className="configuration-fields">{children}</fieldset>
     <div className="wb-actions"><button className="nv-btn" data-kind={submit.kind} type="submit" aria-disabled={pending || undefined} aria-busy={pending || undefined}>{pending ? submit.pendingLabel : submit.label}</button></div>
     {result === "saved" ? <p className="wb-saved" role="status"><CheckCircleIcon size={18} weight="fill" aria-hidden="true" /><span>{successText}</span></p>
-      : result ? <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>{result}</span></p> : null}
+      : result ? <p className="wb-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden="true" /><span>{result}</span></p> : null}
   </form>;
 }
 
@@ -168,7 +168,7 @@ const PolicyOrder = createContext<{ error: boolean; id: string }>({ error: false
 /** IS-B28: the trade policy's order message, placed under the finishing-time field it describes. */
 export function PolicyOrderError() {
   const { error, id } = useContext(PolicyOrder);
-  return error ? <span className="wb-error" id={id} role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>Finishing time can’t be more minutes ahead than the time to ask.</span></span> : null;
+  return error ? <span className="wb-error" id={id} role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden="true" /><span>Finishing time can’t be more minutes ahead than the time to ask.</span></span> : null;
 }
 
 /** Trade or coverage policy for one workflow (Owner). Same request as the shared PolicySaveForm (expected
@@ -221,7 +221,7 @@ export function PolicyForm({ revision, action, saveLabel, children }: {
     <PolicyOrder.Provider value={{ error: orderError, id: orderId }}><fieldset className="configuration-fields wb-form" aria-disabled={pending || undefined}>{children}</fieldset></PolicyOrder.Provider>
     <div className="wb-actions"><button type="submit" className="nv-btn" data-kind="primary" aria-disabled={pending || undefined} aria-busy={pending || undefined}>{pending ? "Saving…" : saveLabel}</button></div>
     {message?.tone === "saved" ? <p className="wb-saved" role="status"><CheckCircleIcon size={18} weight="fill" aria-hidden="true" /><span>{message.text}</span></p>
-      : message ? <><p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>{message.text}</span></p>{message.tone === "conflict" ? <div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" onClick={() => window.location.reload()}>Reload current policy</button></div> : null}</> : null}
+      : message ? <><p className="wb-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden="true" /><span>{message.text}</span></p>{message.tone === "conflict" ? <div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" onClick={() => window.location.reload()}>Reload current policy</button></div> : null}</> : null}
   </form>;
 }
 

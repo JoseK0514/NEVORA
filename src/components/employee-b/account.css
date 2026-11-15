@@ -25,11 +25,11 @@
   /* ---------- Help and the policy pages ---------- */
   /* ---------- kept pieces under a screen: Delete account's form, Write an update's form, Passkeys ---------- */
   /* The prefix carries the page layer's weight (owner-b-pages.css colours field labels with it), so the mock's values win. */
-  html body .app-shell[data-nv-b] :is(.c-page:has(> .b-screen) > .b-keep, .c-page.eb-host:has(> .b-screen) ~ .b-keep) { margin: -10px 0 0 !important; padding: 0 14px 22px !important; background: none !important; min-height: 0 !important; }
+  html body .app-shell[data-nv-b] :is(.c-page:has(> .b-screen) > .b-keep, .c-page.eb-host:has(> .b-screen) ~ .b-keep) { margin: -10px 0 0 !important; padding: 0 var(--b-gutter) 22px !important; background: none !important; min-height: 0 !important; }
   html body .app-shell[data-nv-b] .c-page:has(> .b-screen > .b-hero:only-child) > .b-keep, html body .app-shell[data-nv-b] .c-page.eb-host:has(> .b-screen > .b-hero:only-child) ~ .b-keep { margin-top: -40px !important; }
   /* Delete account: "Confirm it's you" as one card under the screen's two. */
   html body .app-shell[data-nv-b] .eb-delete-keep .eb-desk { display: none !important; }
-  html body .app-shell[data-nv-b] .eb-delete-keep .c-field__label { font-size: 13.5px !important; color: var(--b-grey) !important; }
+  html body .app-shell[data-nv-b] .eb-delete-keep .c-field__label { font-size: var(--b-fs-meta) !important; color: var(--b-grey) !important; }
   html body .app-shell[data-nv-b] .eb-delete-keep .em-delete-confirm { background: var(--b-red-50) !important; box-shadow: none !important; color: rgb(180 35 24 / 0.5) !important; }
   html body .app-shell[data-nv-b] .eb-delete-keep .em-delete-confirm[data-armed]:not(:disabled) { background: var(--b-red) !important; color: #FFFFFF !important; }
   /* Write an update: its form as one lifted card under the screen's hero (the page's own header is the hero). */
@@ -75,15 +75,15 @@
   }
   /* NV-159, NV-143: Delete my account is a working red pill from the start (errors show on submit); while it sends it
    * takes the disabled pair. The whole "I understand" line is a 48px target. */
-  html body .app-shell[data-nv-b] .eb-delete-keep .em-delete-confirm:not(:disabled) { background: var(--b-red) !important; color: #FFFFFF !important; border-radius: 999px !important; }
-  html body .app-shell[data-nv-b] .eb-delete-keep .em-delete-confirm:disabled { background: var(--b-disabled-bg) !important; color: var(--b-disabled-ink) !important; border-radius: 999px !important; }
+  html body .app-shell[data-nv-b] .eb-delete-keep .em-delete-confirm:not(:disabled) { background: var(--b-red) !important; color: #FFFFFF !important; border-radius: var(--b-radius-pill) !important; }
+  html body .app-shell[data-nv-b] .eb-delete-keep .em-delete-confirm:disabled { background: var(--b-disabled-bg) !important; color: var(--b-disabled-ink) !important; border-radius: var(--b-radius-pill) !important; }
   /* NV-285, NV-293: the language switch keeps its 34px look with a 44px tap area. */
   /* NV-105: you, on More's glass, as in the header: a white circle with teal initials. */
   /* NV-286: Help's Contact: one reply-time line, then the warning as a tinted note with the lock. */
   @media (min-width: 768px) {
     /* NV-143 (LN-034, TB-045): on desktop and tablets "Confirm it's you" is the card itself, not a card inside the form's card. */
     html body .app-shell[data-nv-b][data-employee-mobile] .c-page:has(> .b-screen--back) > .b-keep.eb-delete-keep { padding: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
-    html body .app-shell[data-nv-b] .eb-delete-keep .eb-confirm { padding: 0 22px 22px !important; }
+    html body .app-shell[data-nv-b] .eb-delete-keep .eb-confirm { padding: 0 var(--b-inset-wide) 22px !important; }
   }
 }
 
@@ -93,67 +93,67 @@
 .eb-keep, .eb-confirm { display: contents; }
 .eb-confirm__h { display: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-page.c-embed.eb-host { display: block; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id { margin: 16px 20px 0; border-radius: 18px; overflow: hidden; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__me { display: flex; align-items: center; gap: 12px; padding: 14px 14px 12px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id { margin: var(--b-space-16) var(--b-space-20) 0; border-radius: 18px; overflow: hidden; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__me { display: flex; align-items: center; gap: var(--b-space-12); padding: 14px var(--b-gutter) var(--b-space-12); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__tx { display: flex; flex-direction: column; flex: 1; min-width: 0; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__tx b { font-size: 17px; line-height: 22px; font-weight: 700; letter-spacing: -0.01em; color: #FFFFFF; overflow-wrap: anywhere; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__tx > span { font-size: 13.5px; line-height: 18px; color: var(--b-on-band-2); text-wrap: pretty; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__link { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 48px; padding: 0 14px; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14);
-  font-size: 15px; font-weight: 600; color: #FFFFFF; transition-property: background-color; transition-duration: 150ms; transition-timing-function: ease-out; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__tx b { font-size: var(--b-fs-title-sm); line-height: var(--b-lh-title-sm); font-weight: 700; letter-spacing: -0.01em; color: var(--b-on-band); overflow-wrap: anywhere; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__tx > span { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-on-band-2); text-wrap: pretty; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__link { display: flex; align-items: center; justify-content: space-between; gap: var(--b-space-8); height: 48px; padding: 0 var(--b-gutter); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14);
+  font-size: var(--b-fs-body); font-weight: 600; color: var(--b-on-band); transition-property: background-color; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__link:active { background-color: rgb(255 255 255 / 0.08); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__link:focus-visible { outline: 2px solid #FFFFFF; outline-offset: -2px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .q-count { display: inline-grid; place-items: center; min-width: 24px; height: 22px; padding: 0 8px; border-radius: 11px; background: var(--b-teal-50); color: var(--b-teal); font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__link:focus-visible { outline: 2px solid var(--b-focus-on-band); outline-offset: -2px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .q-count { display: inline-grid; place-items: center; min-width: 24px; height: 22px; padding: 0 var(--b-space-8); border-radius: var(--b-radius-pill); background: var(--b-teal-50); color: var(--b-teal); font-size: var(--b-fs-caption); font-weight: 700; font-variant-numeric: tabular-nums; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-signout form { display: block; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-signout__btn { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 56px; padding: 0 18px; color: var(--b-ink); font-size: 15.5px; font-weight: 600; text-align: center;
-  transition-property: background-color; transition-duration: 150ms; transition-timing-function: ease-out; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-signout__btn { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 56px; padding: 0 var(--b-inset); color: var(--b-ink); font-size: var(--b-fs-body); font-weight: 600; text-align: center;
+  transition-property: background-color; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-signout__btn:active { background-color: rgb(16 24 32 / 0.04); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-signout__btn:focus-visible { outline-offset: -3px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-para { font-size: 14.5px; line-height: 21px; color: var(--b-ink2); text-wrap: pretty; overflow-wrap: break-word; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pad { padding: 4px 18px 14px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-state.eb-pad { padding: 16px 18px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lead { font-size: 15.5px; line-height: 21px; font-weight: 600; color: var(--b-ink); text-wrap: balance; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-body { display: flex; flex-direction: column; gap: 12px; padding: 4px 18px 18px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-para { font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); text-wrap: pretty; overflow-wrap: break-word; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pad { padding: var(--b-space-4) var(--b-inset) 14px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-state.eb-pad { padding: var(--b-space-16) var(--b-inset); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lead { font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 600; color: var(--b-ink); text-wrap: balance; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-body { display: flex; flex-direction: column; gap: var(--b-space-12); padding: var(--b-space-4) var(--b-inset) 18px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-body--acts { padding-top: 0; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-body > .b-btn--big { margin-top: 2px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-btns { display: flex; flex-wrap: wrap; gap: 8px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-btns > .b-btn { flex: 1 1 0; min-height: 44px; border-radius: 22px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pager { padding: 0 2px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-body > .b-btn--big { margin-top: var(--b-space-2); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-btns { display: flex; flex-wrap: wrap; gap: var(--b-space-8); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-btns > .b-btn { flex: 1 1 0; min-height: 44px; border-radius: var(--b-radius-pill); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pager { padding: 0 var(--b-space-2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pager > .b-btn { background: #FFFFFF; box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-btn-danger { background: var(--b-red); color: #FFFFFF; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-btn-danger-quiet { background: var(--b-red-50); color: var(--b-red); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-btn-outline-danger { background: #FFFFFF; color: var(--b-red); box-shadow: inset 0 0 0 1.5px var(--b-red); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-textbtn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 12px; font-size: 15px; font-weight: 600; color: var(--b-ink2); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-textbtn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 var(--b-space-12); font-size: var(--b-fs-body); font-weight: 600; color: var(--b-ink2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-textbtn--danger { color: var(--b-red); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-textlink { display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; font-weight: 600; color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status .eb-textlink { min-height: 0; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 22px 18px 20px; text-align: center; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 22px var(--b-inset) var(--b-space-20); text-align: center; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty b { font-size: 16px; line-height: 21px; font-weight: 600; color: var(--b-ink); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty > span:not(.b-ico) { max-width: 30ch; font-size: 13.5px; line-height: 18px; color: var(--b-grey); text-wrap: balance; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-feedback { outline: none; display: flex; flex-direction: column; gap: 8px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty > span:not(.b-ico) { max-width: 30ch; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); text-wrap: balance; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-feedback { outline: none; display: flex; flex-direction: column; gap: var(--b-space-8); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-feedback:empty, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-feedback--empty { display: none; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-note.eb-callout { padding: 12px 16px; border-radius: 16px; background: var(--b-teal-50); color: var(--b-teal); font-size: 14px; line-height: 20px; font-weight: 500; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-note.eb-callout { padding: var(--b-space-12) var(--b-space-16); border-radius: var(--b-radius-field); background: var(--b-teal-50); color: var(--b-teal); font-size: 14px; line-height: 20px; font-weight: 500; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status .eb-para + .eb-para { margin-top: -4px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-label { font-size: 13.5px; line-height: 18px; font-weight: 600; color: var(--b-grey); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-label { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 600; color: var(--b-grey); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-in { display: flex; flex-direction: column; gap: 6px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-input { display: block; width: 100%; min-height: 48px; margin: 0; padding: 12px 14px; border: 1px solid var(--b-field-edge, #8C9397); border-radius: 14px; background: #FFFFFF; color: var(--b-ink);
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-input { display: block; width: 100%; min-height: 48px; margin: 0; padding: var(--b-space-12) var(--b-gutter); border: 1px solid var(--b-field-edge, #8C9397); border-radius: var(--b-radius-field); background: #FFFFFF; color: var(--b-ink);
   font: 400 16px/22px Inter, "Inter Fallback", -apple-system, sans-serif; outline: none; -webkit-appearance: none; appearance: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-input--area { resize: none; overflow-wrap: anywhere; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-input:focus { border-color: var(--b-teal); box-shadow: 0 0 0 1px var(--b-teal); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hint { font-size: 13px; line-height: 18px; color: var(--b-grey); text-wrap: pretty; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hint { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); text-wrap: pretty; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint { align-items: flex-start; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint .b-notice__s { margin-top: 0; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-notice { align-items: flex-start; padding: 8px 18px 18px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-notice .b-notice__s { margin-top: 2px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-notice { align-items: flex-start; padding: var(--b-space-8) var(--b-inset) 18px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-notice .b-notice__s { margin-top: var(--b-space-2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .eb-notice + .eb-cardnote { margin-top: -4px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-point { align-items: flex-start; padding: 12px 18px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-li:first-child > .eb-point { padding-top: 8px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-point { align-items: flex-start; padding: var(--b-space-12) var(--b-inset); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-li:first-child > .eb-point { padding-top: var(--b-space-8); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-li:last-child > .eb-point { padding-bottom: 18px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-point .b-notice__s { margin-top: 2px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-point .b-notice__s { margin-top: var(--b-space-2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-point .legal-unresolved { color: inherit; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-ref { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-ref__v { font-size: 20px; line-height: 26px; font-weight: 600; letter-spacing: 0.01em; color: var(--b-ink); overflow-wrap: anywhere; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-ref { display: flex; flex-direction: column; align-items: flex-start; gap: var(--b-space-2); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-ref__v { font-size: var(--b-fs-title); line-height: var(--b-lh-title); font-weight: 600; letter-spacing: 0.01em; color: var(--b-ink); overflow-wrap: anywhere; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-ref > .b-btn { margin-top: 10px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-ref > .eb-copied { padding: 4px 0 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-ref > .eb-copied { padding: var(--b-space-4) 0 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-ref > .eb-copied:empty { display: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.eb-cardnote, .eb-para) a { color: var(--b-teal); font-weight: 600; overflow-wrap: anywhere; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-list-top { box-shadow: inset 0 1px 0 var(--b-line); }
@@ -165,102 +165,102 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-unread { display: block; width: 9px; height: 9px; border-radius: 5px; background: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-spin { color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-notif--busy { background-color: rgb(16 24 32 / 0.04); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools { display: flex; gap: 8px; margin: 16px 20px 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools { display: flex; gap: var(--b-space-8); margin: var(--b-space-16) var(--b-space-20) 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search { flex: 1; min-width: 0; margin: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input::-webkit-search-cancel-button { filter: brightness(0) invert(1); opacity: 0.72; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-select { position: relative; display: inline-flex; align-items: center; gap: 6px; flex: none; height: 46px; padding: 0 14px; border-radius: 14px; color: #FFFFFF; font-size: 14px; font-weight: 600; white-space: nowrap; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-select { position: relative; display: inline-flex; align-items: center; gap: 6px; flex: none; height: 46px; padding: 0 var(--b-gutter); border-radius: var(--b-radius-field); color: var(--b-on-band); font-size: 14px; font-weight: 600; white-space: nowrap; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-select select { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; opacity: 0; font-size: 16px; -webkit-appearance: none; appearance: none; cursor: pointer; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-select select option { color: var(--b-ink); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-select svg { flex: none; pointer-events: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-select:has(select:focus-visible) { box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.6); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd { display: flex; flex-direction: column; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__head { min-height: 0; padding-bottom: 8px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__body { padding: 0 18px 12px 66px; font-size: 14.5px; line-height: 21px; color: var(--b-ink2); white-space: pre-line; overflow-wrap: break-word; text-wrap: pretty; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__acts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 0 18px 16px 66px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__acts > .b-btn { width: 100%; min-height: 40px; border-radius: 20px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__head { min-height: 0; padding-bottom: var(--b-space-8); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__body { padding: 0 var(--b-inset) var(--b-space-12) 66px; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); white-space: pre-line; overflow-wrap: break-word; text-wrap: pretty; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__acts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--b-space-8); padding: 0 var(--b-inset) var(--b-space-16) 66px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__acts > .b-btn { width: 100%; min-height: 40px; border-radius: var(--b-radius-pill); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__acts > .b-btn svg { flex: none; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update { padding: 16px 18px 18px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update__head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update__head h2 { font-size: 20px; line-height: 26px; font-weight: 700; letter-spacing: -0.015em; text-wrap: balance; overflow-wrap: break-word; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update__meta { margin-top: 4px; font-size: 13.5px; line-height: 18px; color: var(--b-grey); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update__body { margin-top: 12px; font-size: 15px; line-height: 1.6; color: var(--b-ink2); white-space: pre-line; overflow-wrap: break-word; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-field { min-height: 60px; padding: 10px 18px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update { padding: var(--b-space-16) var(--b-inset) 18px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-space-4) var(--b-space-8); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update__head h2 { font-size: var(--b-fs-title); line-height: var(--b-lh-title); font-weight: 700; letter-spacing: -0.015em; text-wrap: balance; overflow-wrap: break-word; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update__meta { margin-top: var(--b-space-4); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update__body { margin-top: var(--b-space-12); font-size: var(--b-fs-body); line-height: 1.6; color: var(--b-ink2); white-space: pre-line; overflow-wrap: break-word; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-field { min-height: 60px; padding: 10px var(--b-inset); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-field .b-row__t { overflow-wrap: anywhere; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pref { min-height: 68px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg { display: inline-grid; grid-auto-flow: column; flex: none; padding: 3px; border-radius: 13px; background: var(--b-quiet); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button { display: grid; place-items: center; height: 34px; padding: 0 14px; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--b-ink2); white-space: nowrap;
-  transition-property: background-color, color, box-shadow; transition-duration: 150ms; transition-timing-function: ease-out; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg { display: inline-grid; grid-auto-flow: column; flex: none; padding: 3px; border-radius: var(--b-radius-field); background: var(--b-quiet); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button { display: grid; place-items: center; height: 34px; padding: 0 var(--b-gutter); border-radius: var(--b-radius-small); font-size: 14px; font-weight: 600; color: var(--b-ink2); white-space: nowrap;
+  transition-property: background-color, color, box-shadow; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button[aria-pressed="true"] { background: #FFFFFF; color: var(--b-ink); box-shadow: 0 1px 3px rgb(16 40 38 / 0.18); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button:focus-visible { outline-offset: -2px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-danger .b-row__t { color: var(--b-red); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-expand { width: 100%; text-align: left; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-expand__caret { transition-property: rotate; transition-duration: 150ms; transition-timing-function: ease-out; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-expand__caret { transition-property: rotate; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-expand[aria-expanded="true"] .eb-expand__caret { rotate: 180deg; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-steps { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 0 18px 12px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-steps ol { margin: 0; padding: 0 0 0 20px; list-style: decimal; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-steps li { font-size: 14.5px; line-height: 21px; color: var(--b-ink2); text-wrap: pretty; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-steps { display: flex; flex-direction: column; align-items: flex-start; gap: var(--b-space-4); padding: 0 var(--b-inset) var(--b-space-12); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-steps ol { margin: 0; padding: 0 0 0 var(--b-space-20); list-style: decimal; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-steps li { font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); text-wrap: pretty; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-steps li + li { margin-top: 6px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-manage { display: flex; flex-direction: column; align-items: center; gap: 0; padding: 2px 0 0; text-align: center; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-manage .b-note { margin-top: -6px; padding-bottom: 4px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-help-note { padding: 12px 18px 16px; box-shadow: inset 0 1px 0 var(--b-line); font-size: 13.5px; line-height: 1.5; color: var(--b-grey); text-wrap: pretty; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-manage { display: flex; flex-direction: column; align-items: center; gap: 0; padding: var(--b-space-2) 0 0; text-align: center; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-manage .b-note { margin-top: -6px; padding-bottom: var(--b-space-4); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-help-note { padding: var(--b-space-12) var(--b-inset) var(--b-space-16); box-shadow: inset 0 1px 0 var(--b-line); font-size: var(--b-fs-meta); line-height: 1.5; color: var(--b-grey); text-wrap: pretty; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-help-note b { font-weight: 600; color: var(--b-ink2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.eb-q, .eb-doc__first, .eb-doc__sec) > summary { list-style: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.eb-q, .eb-doc__first, .eb-doc__sec) > summary::-webkit-details-marker { display: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.eb-q, .eb-doc__sec) > summary:focus-visible { outline: 2px solid var(--b-teal); outline-offset: -3px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__first > summary:focus-visible { outline: 2px solid var(--b-teal); outline-offset: 2px; border-radius: 6px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.eb-q, .eb-doc__sec) > summary:active { background-color: rgb(16 24 32 / 0.04); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-q__chev { transition-property: rotate; transition-duration: 150ms; transition-timing-function: ease-out; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-q__chev { transition-property: rotate; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-q[open] .eb-q__chev { rotate: 180deg; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-q__a { padding: 0 18px 16px 66px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-read { display: flex; flex-direction: column; gap: 12px; font-size: 15px; line-height: 1.6; color: var(--b-ink2); text-wrap: pretty; overflow-wrap: break-word; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-q__a.eb-read { font-size: 14.5px; line-height: 21px; gap: 8px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-read ul { display: flex; flex-direction: column; gap: 6px; padding-left: 20px; list-style: disc; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-q__a { padding: 0 var(--b-inset) var(--b-space-16) 66px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-read { display: flex; flex-direction: column; gap: var(--b-space-12); font-size: var(--b-fs-body); line-height: 1.6; color: var(--b-ink2); text-wrap: pretty; overflow-wrap: break-word; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-q__a.eb-read { font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); gap: var(--b-space-8); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-read ul { display: flex; flex-direction: column; gap: 6px; padding-left: var(--b-space-20); list-style: disc; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-read a { color: var(--b-teal); font-weight: 600; overflow-wrap: anywhere; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-read strong { font-weight: 600; color: var(--b-ink); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc { padding: 18px 18px 20px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__intro { margin: 0 0 16px; font-size: 15px; line-height: 1.5; color: var(--b-grey); text-wrap: pretty; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__first > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; padding-top: 16px; box-shadow: inset 0 1px 0 var(--b-line); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc { padding: 18px var(--b-inset) var(--b-space-20); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__intro { margin: 0 0 var(--b-space-16); font-size: var(--b-fs-body); line-height: 1.5; color: var(--b-grey); text-wrap: pretty; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__first > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; padding-top: var(--b-space-16); box-shadow: inset 0 1px 0 var(--b-line); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__first > summary h2 { font-size: 18px; line-height: 24px; font-weight: 700; letter-spacing: -0.01em; color: var(--b-ink); text-wrap: balance; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__first > summary .eb-doc__caret { flex: none; color: var(--b-grey); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__first > .eb-read { margin-top: 8px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__caret { transition-property: rotate; transition-duration: 150ms; transition-timing-function: ease-out; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__first > .eb-read { margin-top: var(--b-space-8); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__caret { transition-property: rotate; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.eb-doc__first, .eb-doc__sec)[open] > summary .eb-doc__caret { rotate: 180deg; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__sec > summary { min-height: 56px; padding: 10px 18px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__body { padding: 0 18px 18px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links { display: flex; flex-wrap: wrap; gap: 0 18px; padding: 0 18px; font-size: 13px; line-height: 18px; font-weight: 600; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__sec > summary { min-height: 56px; padding: 10px var(--b-inset); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__body { padding: 0 var(--b-inset) 18px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links { display: flex; flex-wrap: wrap; gap: 0 18px; padding: 0 var(--b-inset); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 600; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links > * { display: inline-flex; align-items: center; min-height: 32px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links a { color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links [aria-current="page"] { color: var(--b-ink2); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .legal-unresolved { padding: 0 2px; border-radius: 4px; background: var(--b-amber-50); color: var(--b-amber); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .legal-unresolved { padding: 0 var(--b-space-2); border-radius: 4px; background: var(--b-amber-50); color: var(--b-amber); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page:has(> .b-screen) > .b-keep, .c-page.eb-host:has(> .b-screen) ~ .b-keep) {
   position: relative; z-index: 2; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep.eb-keep { display: flex; flex-direction: column; gap: 12px; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep.eb-keep { display: flex; flex-direction: column; gap: var(--b-space-12); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-confirm {
-  display: flex; flex-direction: column; gap: 16px; padding: 0 18px 18px; border-radius: 22px; background: #FFFFFF; color: var(--b-ink);
-  box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-confirm__h { display: flex; align-items: center; margin: 0 0 -4px; padding: 16px 0 0; font-size: 17px; line-height: 22px; font-weight: 700; letter-spacing: -0.01em; color: var(--b-ink); }
+  display: flex; flex-direction: column; gap: var(--b-space-16); padding: 0 var(--b-inset) 18px; border-radius: var(--b-radius-card); background: #FFFFFF; color: var(--b-ink);
+  box-shadow: var(--b-elev-1); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-confirm__h { display: flex; align-items: center; margin: 0 0 -4px; padding: var(--b-space-16) 0 0; font-size: var(--b-fs-title-sm); line-height: var(--b-lh-title-sm); font-weight: 700; letter-spacing: -0.01em; color: var(--b-ink); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .c-field__label { line-height: 18px; font-weight: 600; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .c-in { height: 48px; padding: 0 52px 0 14px; border-radius: 14px; box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397); font-size: 16px; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .c-in { height: 48px; padding: 0 52px 0 var(--b-gutter); border-radius: var(--b-radius-field); box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397); font-size: 16px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .c-in:focus { box-shadow: inset 0 0 0 2px var(--b-teal); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .c-in[aria-invalid="true"] { box-shadow: inset 0 0 0 2px var(--b-red); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-eye { width: 40px; height: 40px; border-radius: 20px; color: var(--b-grey); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check { gap: 12px; font-size: 15px; line-height: 1.45; color: var(--b-ink); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-eye { width: 40px; height: 40px; border-radius: var(--b-radius-pill); color: var(--b-grey); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check { gap: var(--b-space-12); font-size: var(--b-fs-body); line-height: 1.45; color: var(--b-ink); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check input { margin-top: 1px; accent-color: var(--b-teal); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .c-error { margin-top: -10px; font-size: 13px; line-height: 18px; color: var(--b-red); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .c-error { margin-top: -10px; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-red); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-confirm {
-  height: 56px; margin-top: 2px; border-radius: 18px; font-size: 17px; line-height: 22px; font-weight: 700;
-  transition-property: background-color, color, scale; transition-duration: 150ms; transition-timing-function: ease-out; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-confirm > .c-note--center { margin-top: -6px; font-size: 13.5px; line-height: 18px; color: var(--b-grey); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-outcome { padding: 14px 16px; border-radius: 22px; font-size: 14px; line-height: 20px;
-  box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-compose > .em-request-body { border-radius: 22px;
-  box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card { border: 0; border-radius: 22px; box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card__head { min-height: 44px; padding: 12px 18px 2px; box-shadow: none; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card__label { font-size: 17px; line-height: 22px; font-weight: 700; letter-spacing: -0.01em; color: var(--b-ink); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-btn:not(.c-btn--secondary):not(.c-btn--danger) { min-height: 52px; border-radius: 999px; background: var(--b-teal); color: #FFFFFF; font-size: 16px; font-weight: 600; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-btn:is(.c-btn--secondary, .c-btn--danger) { border-radius: 22px; background: var(--b-quiet); box-shadow: none; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep > .em-account-stack > .c-note { padding: 0 6px; font-size: 13px; line-height: 18px; color: var(--b-grey); }
+  height: 56px; margin-top: var(--b-space-2); border-radius: 18px; font-size: var(--b-fs-title-sm); line-height: var(--b-lh-title-sm); font-weight: 700;
+  transition-property: background-color, color, scale; transition-duration: var(--b-dur-press); transition-timing-function: var(--b-ease-out); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-confirm > .c-note--center { margin-top: -6px; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-outcome { padding: 14px var(--b-space-16); border-radius: var(--b-radius-card); font-size: 14px; line-height: 20px;
+  box-shadow: var(--b-elev-1); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-compose > .em-request-body { border-radius: var(--b-radius-card);
+  box-shadow: var(--b-elev-1); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card { border: 0; border-radius: var(--b-radius-card); box-shadow: var(--b-elev-1); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card__head { min-height: 44px; padding: var(--b-space-12) var(--b-inset) var(--b-space-2); box-shadow: none; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card__label { font-size: var(--b-fs-title-sm); line-height: var(--b-lh-title-sm); font-weight: 700; letter-spacing: -0.01em; color: var(--b-ink); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-btn:not(.c-btn--secondary):not(.c-btn--danger) { min-height: 52px; border-radius: var(--b-radius-pill); background: var(--b-teal); color: #FFFFFF; font-size: 16px; font-weight: 600; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-btn:is(.c-btn--secondary, .c-btn--danger) { border-radius: var(--b-radius-card); background: var(--b-quiet); box-shadow: none; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep > .em-account-stack > .c-note { padding: 0 6px; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
 @media (max-width: 359px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pref { flex-wrap: wrap; row-gap: 10px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pref .b-row__tx { flex: 1 1 100%; }
@@ -270,39 +270,43 @@
 @media (prefers-reduced-motion: no-preference) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-spin { animation: eb-spin 800ms linear infinite; }
   @keyframes eb-spin { to { rotate: 360deg; } }
-  :is(#c-root, html) .app-shell[data-nv-b] :is(.c-page:has(> .b-screen) > .b-keep, .c-page.eb-host:has(> .b-screen) ~ .b-keep) { animation: eb-keep-enter 300ms ease-out 300ms both; }
+  :is(#c-root, html) .app-shell[data-nv-b] :is(.c-page:has(> .b-screen) > .b-keep, .c-page.eb-host:has(> .b-screen) ~ .b-keep) { animation: eb-keep-enter var(--b-dur-enter) var(--b-ease-out) 300ms both; }
   @keyframes eb-keep-enter { from { opacity: 0; translate: 0 12px; filter: blur(4px); } to { opacity: 1; translate: 0 0; filter: blur(0); } }
 }
 @media (prefers-reduced-motion: reduce) {
-  :is(#c-root, html) .app-shell[data-nv-b] :is(.c-page:has(> .b-screen) > .b-keep, .c-page.eb-host:has(> .b-screen) ~ .b-keep) { animation: eb-keep-fade 200ms linear both; }
+  :is(#c-root, html) .app-shell[data-nv-b] :is(.c-page:has(> .b-screen) > .b-keep, .c-page.eb-host:has(> .b-screen) ~ .b-keep) { animation: eb-keep-fade var(--b-dur-hover) linear both; }
   @keyframes eb-keep-fade { from { opacity: 0; } to { opacity: 1; } }
 }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-field { padding-top: 12px; padding-bottom: 12px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-field { padding-top: var(--b-space-12); padding-bottom: var(--b-space-12); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input { text-overflow: ellipsis; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input::placeholder { text-overflow: ellipsis; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check input { flex: none; display: grid; place-items: center; cursor: pointer; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-para.eb-para--lg { font-size: 15px; line-height: 22.5px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-para.eb-para--lg { font-size: var(--b-fs-body); line-height: var(--b-lh-body); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input:placeholder-shown::-webkit-search-cancel-button { display: none; -webkit-appearance: none; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input::placeholder { font-size: 15px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links { row-gap: 6px; margin: 2px 0 -7px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input::placeholder { font-size: var(--b-fs-body); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links { row-gap: 6px; margin: var(--b-space-2) 0 -7px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links > * { margin: -7px 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__tx > span .eb-nowrap { white-space: nowrap; text-wrap: nowrap; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-form { display: none; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check:not(#e-none) { min-height: 48px; padding: 4px 0; align-items: center; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check:not(#e-none) { min-height: 48px; padding: var(--b-space-4) 0; align-items: center; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button { position: relative; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button::after { content: ""; position: absolute; inset: -6px 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-me { background: #FFFFFF; color: var(--b-teal); font-weight: 700; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-help-note__a { display: inline-block; margin: -12px 0; padding: 12px 0; color: var(--b-teal); font-weight: 600; white-space: nowrap; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-help-contact .eb-help-warn { margin: 0 18px 18px; padding: 12px 14px; border-radius: 14px; background: var(--b-quiet); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-help-contact .eb-help-warn .b-notice__t { font-size: 13.5px; line-height: 19px; font-weight: 600; color: var(--b-ink2); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-help-contact .eb-help-note { padding-bottom: 12px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-help-note__a { display: inline-block; margin: -12px 0; padding: var(--b-space-12) 0; color: var(--b-teal); font-weight: 600; white-space: nowrap; }
+/* Inspection Nov 14 (BR-11): a link inside a Help answer ("Forgot password?", the support email) takes a 44px-tall hit
+ * area the same way, without moving the line it sits in. Most of it is under the line, so a link on an answer's first
+ * line doesn't take taps from the question above it. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-q__a a { display: inline-block; margin: -6px 0 -17px; padding: 6px 0 17px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-help-contact .eb-help-warn { margin: 0 var(--b-inset) 18px; padding: var(--b-space-12) var(--b-gutter); border-radius: var(--b-radius-field); background: var(--b-quiet); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-help-contact .eb-help-warn .b-notice__t { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 600; color: var(--b-ink2); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-help-contact .eb-help-note { padding-bottom: var(--b-space-12); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-help-contact .eb-help-warn .b-ico { background: #FFFFFF; }
 @media (min-width: 768px) {
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-help-contact .eb-help-warn:not(#e-none) { margin: 0 22px 22px; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-help-contact .eb-help-warn:not(#e-none) { margin: 0 var(--b-inset-wide) 22px; }
 }
 
 /* Review F2 (NV-144): the policy page's one action, a white pill in the reading card's footer (a hairline, so it reads on white). */
 @media (max-width: 767px), (min-width: 768px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__foot { display: flex; margin-top: 18px; padding-top: 18px; box-shadow: inset 0 1px 0 var(--b-line); }
-  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] .b-screen .eb-doc__foot .b-btn--white { min-height: 44px; padding: 0 20px; box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397), 0 1px 2px rgb(16 40 38 / .08); }
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] .b-screen .eb-doc__foot .b-btn--white { min-height: 44px; padding: 0 var(--b-space-20); box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397), 0 1px 2px rgb(16 40 38 / .08); }
 }

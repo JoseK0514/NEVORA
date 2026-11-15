@@ -10,6 +10,7 @@ import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 import { periodLabel, type NextPay } from "@/components/payroll/my-pay";
 import type { ActionCenterConnection } from "./manager-action-center";
 import type { NeedsYou } from "@/lib/action-center/needs-you";
+import { ATTENDANCE_WORDS } from "@/lib/action-center/present";
 import type { ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor } from "@/lib/time-clock";
@@ -147,7 +148,7 @@ function TodayCard({ today, monitor, monitorPending, todayRefreshing, onRetryTod
 }
 /* Nov 1 upscale: one short word or two per figure, so all three labels sit on one line on a phone. "Clocked in" is the word
  * Who's working uses for the same people. */
-const LABELS = { on: "Clocked in", missed: "Missed", open: "Open shifts" } as const;
+const LABELS = { on: "Clocked in", missed: ATTENDANCE_WORDS.missed, open: "Open shifts" } as const;
 /** Home's Today card already says Today, so an open shift's detail starts at its place ("Condado · Needs 1 person"). */
 const homeGap = <T extends { detail?: string }>(row: T): T => row.detail ? { ...row, detail: row.detail.replace(/^Today · /, "") } : row;
 

@@ -10,8 +10,7 @@ import {ReceiptIcon} from '@phosphor-icons/react/dist/ssr/Receipt';
 import {BEmpty} from './requests-b';
 import {ClockCounterClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ClockCounterClockwise';
 import {BButtonLink, BCard, BChip, BHero, BList, BNote, BRow, BScreen, BStack} from '../owner-b/b-kit';
-import type {PayView} from '../employee-mobile/pay';
-import {BAddRow} from './parts';
+import {PAY_DIFFERENCE_LINE, PAY_SCOPE_LINE, type PayView} from '../employee-mobile/pay';
 import './pay.css';
 
 /* Employee Pay on the phone, Direction B (Jose approved the mock, Nov 6, 2026): money gets the dark ink hero. Statements
@@ -71,8 +70,8 @@ export function PayB(props: PayBProps) {
   const loading = state === 'loading';
   const empty = state === 'empty';
   const surface = status ? <StatusCard status={status} state={state}/> : null;
-  const loadingCard = <BCard title={view === 'history' ? 'Pay history' : 'Recent pay'}><p className="b-state" role="status">Loading your statements…</p></BCard>;
-  const emptyCard = <BCard label="Recent pay"><BEmpty icon={<ReceiptIcon weight="bold"/>} title="No published statements yet" sub="Your statements appear here after your workplace publishes payroll."/></BCard>;
+  const loadingCard = <BCard title={view === 'history' ? 'Pay history' : 'Recent pay statements'}><p className="b-state" role="status">Loading your statements…</p></BCard>;
+  const emptyCard = <BCard label="Recent pay statements"><BEmpty icon={<ReceiptIcon weight="bold"/>} title="No published statements yet" sub="Your statements appear here after your employer shares them."/></BCard>;
   const fallback = loading ? loadingCard : empty ? emptyCard : surface;
 
   if (view === 'paycheck') {
@@ -85,7 +84,9 @@ export function PayB(props: PayBProps) {
             <div className="ep-big"><p className="ep-big__k">Payday</p>
               <p className="ep-big__v">{fmt({weekday: 'short', month: 'short', day: 'numeric', ...(item.payday.slice(0, 4) === thisYear ? {} : {year: 'numeric'})}).format(utc(item.payday))}</p>
               {item.correctedBy ? <p className="ep-big__s">A corrected statement replaced this one. Use the corrected statement for this period.</p>
-                : item.corrects ? <p className="ep-big__s">This corrects your earlier statement for the same period.</p> : null}</div>
+                : item.corrects ? <p className="ep-big__s">This corrects your earlier statement for the same period.</p> : null}
+              {/* Inspection Nov 14 (PY-11): a correction can change the amount; say whom to ask. */}
+              {item.correctedBy || item.corrects ? <p className="ep-big__s">{PAY_DIFFERENCE_LINE}</p> : null}</div>
             <BList label="Statement">
               {item.correctedBy && byId.has(item.correctedBy) ? <BRow href={paycheckHref(item.correctedBy)} title="Use the corrected statement" label="Use the corrected statement"/> : null}
               <li className="b-li"><a id={`b-pay-pdf-${item.id}`} className="b-add ep-pdf" href={item.viewUrl ? `${documentHref(item)}/view` : documentHref(item)} {...(item.viewUrl ? {target: '_blank', rel: 'noopener'} : {})}
@@ -132,7 +133,7 @@ export function PayB(props: PayBProps) {
     {/* Desktop: Pay history is the band's glass action (eb-desk); the phone reaches it from the Earlier card. */}
     <BHero title="Pay" titleId="b-pay-title" right={<span className="eb-desk"><BButtonLink href="/app/my-pay?view=history" kind="glass"><ClockCounterClockwiseIcon size={16} weight="bold" aria-hidden="true"/>Pay history</BButtonLink></span>}>
       {showPayday ? <div className="b-hpad ep-next">
-        <p className="ep-next__k">Next payday · {when}</p>
+        <p className="ep-next__k">Scheduled payday · {when}</p>
         <p className="ep-next__v">{payday(nextPay!.payday)}</p>
         <div className="ep-next__row">
           {nextPay!.period ? <span className="b-chip b-chip--ok">For work {period(nextPay!.period.startDate, nextPay!.period.endDate)}</span> : null}
@@ -144,13 +145,16 @@ export function PayB(props: PayBProps) {
       {notice && listed && !loading ? <div ref={noticeRef} tabIndex={-1} className="b-card ep-notice" role="alert" aria-labelledby="b-pay-notice-title">
         <p className="ep-status__t" id="b-pay-notice-title">{notice.title}</p><p className="ep-status__s">{notice.body}</p>
       </div> : null}
-      {latest ? <BCard id="b-pay-last" title="Last pay statement" chip={tag(latest) ?? undefined}>
+      {/* Inspection Nov 14 (EM-003): the card says its state ("Statement ready", or Corrected) and ends in one real button. */}
+      {latest ? <BCard id="b-pay-last" title="Last pay statement" chip={tag(latest) ?? <BChip tone="green">Statement ready</BChip>}>
         <div className="ep-big"><p className="ep-big__v">{payday(latest.payday)}</p><p className="ep-big__s">For work {period(latest.period.startDate, latest.period.endDate)}</p></div>
-        <BList><BAddRow href={paycheckHref(latest.id)} icon={<FileTextIcon weight="bold"/>} label={`View statement, ${paydayLong(latest.payday)}`}>View statement</BAddRow></BList>
+        <div className="ep-act"><BButtonLink href={paycheckHref(latest.id)} kind="teal" full label={`View statement, ${paydayLong(latest.payday)}`}><FileTextIcon size={18} weight="bold" aria-hidden="true"/>View statement</BButtonLink></div>
       </BCard> : fallback}
-      {earlier.length ? <BCard id="b-pay-recent" title="Earlier" link={ordered.length > 3 ? {href: '/app/my-pay?view=history', label: 'See all', aria: 'See all pay'} : undefined}>
-        <BList label="Earlier pay">{earlier.map(item => <Row key={item.id} item={item} byId={byId}/>)}</BList>
+      {earlier.length ? <BCard id="b-pay-recent" title="Earlier" link={ordered.length > 3 ? {href: '/app/my-pay?view=history', label: 'See all', aria: 'See all statements'} : undefined}>
+        <BList label="Earlier statements">{earlier.map(item => <Row key={item.id} item={item} byId={byId}/>)}</BList>
       </BCard> : latest ? <BCard label="Pay history"><BList><BRow href="/app/my-pay?view=history" title="Pay history" sub="Every published statement"/></BList></BCard> : null}
+      {/* Inspection Nov 14 (PY-7): a scheduled payday is not a payment from NEVORA; one quiet line says who pays. */}
+      {listed ? <BNote>{PAY_SCOPE_LINE}</BNote> : null}
       {latest ? <BNote>Open a statement to download its PDF. Downloaded files may contain personal pay information.</BNote> : null}
     </BStack>
   </BScreen>;

@@ -1,4 +1,4 @@
-import {CentralBillingPage,centralBillingMetadata} from '@/components/commerce-recovery/central-page';
+import {CentralBillingPage,centralBillingMetadataEs} from '@/components/commerce-recovery/central-page';
 export const dynamic='force-dynamic';
-export const metadata=centralBillingMetadata;
-export default function Page(){return <CentralBillingPage lang="es"/>;}
+export const metadata=centralBillingMetadataEs;
+export default function Page(){return <CentralBillingPage lang="es" returning/>;}

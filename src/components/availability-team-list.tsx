@@ -68,7 +68,7 @@ export function AvailabilityTeamList({ employees, employeeId, before }: {
         </>;
         return <li ref={selected ? target : undefined} tabIndex={-1} id={`employee-${employee.employeeId}`} data-selected={selected ? "true" : undefined} key={employee.employeeId}>
           {/* Closing F1 (NV-104): a row that opens a page ends in a chevron; one that opens in place ends in a CaretDown that turns. */}
-          {!employee.submitted ? <Link className="q-row q-row--av" href={`/app/employees/${encodeURIComponent(employee.employeeId)}`} aria-label={`${employee.employeeName}, ${employee.locationName}, not sent`}>{head}<CaretRightIcon className="q-chev" aria-hidden="true" /></Link>
+          {!employee.submitted ? <Link className="q-row q-row--av" href={`/app/employees/${encodeURIComponent(employee.employeeId)}`} aria-label={`${employee.employeeName}, ${employee.locationName}, not sent`}>{head}<CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>
           : employee.windows.length ? <details className="q-details" open={selected || undefined}>
             <summary className="q-row q-row--av" aria-label={`${employee.employeeName}, ${detail}, sent${employee.updatedLabel ? ` ${employee.updatedLabel}` : ""}`}>{head}<CaretDownIcon className="q-chev q-chev--disc" weight="bold" aria-hidden="true" /></summary>
             <ul className="q-hours" aria-label={`${employee.employeeName} available hours`}>

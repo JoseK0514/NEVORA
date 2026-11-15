@@ -16,7 +16,7 @@ function ChoiceSheetRow<T extends string>({title, value, options, current, onPic
   const [open, setOpen] = useState(false);
   return <li>
     <button type="button" className="q-row q-row--one q-row--btn" aria-haspopup="dialog" onClick={() => setOpen(true)}>
-      <span className="q-rt"><b>{title}</b></span><span className="q-rv q-rv--l">{value}</span><CaretRightIcon className="q-chev" aria-hidden="true"/>
+      <span className="q-rt"><b>{title}</b></span><span className="q-rv q-rv--l">{value}</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/>
     </button>
     <QuietSheet open={open} label={title} onClose={() => setOpen(false)}>
       <div className="q-nav"><span/><span className="q-nav__t">{title}</span><SheetCancel href="/app/profile" className="q-nav__r q-nav__r--b">Done</SheetCancel></div>

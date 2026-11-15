@@ -110,9 +110,11 @@ export function ScheduleB(props: ScheduleBProps) {
       {swap ? <BCard title={<span role="status">{swap.title}</span>} link={{href: swap.doneHref, label: 'Done'}}><BCardNote>{swap.detail}</BCardNote></BCard> : null}
       {error ? <div className="b-card es-error" role="alert">{error}</div> : null}
       {receipt}
+      {/* Inspection Nov 14 (EM-004): Confirm is the screen's one filled teal pill; open shifts get a tinted pill that says
+        * where it goes. */}
       {open ? <BCard label="Open shifts">
         <BList>{open.count ? <BRow href={open.href} label={open.label} lead={<BIcon tone="teal"><PlusIcon weight="bold"/></BIcon>} title={`${open.count} open ${open.count === 1 ? 'shift' : 'shifts'} to pick up`} sub={open.detail}
-          trail={<BButtonLink href={open.href} kind="teal" label={`See ${open.count} open ${open.count === 1 ? 'shift' : 'shifts'}`} prefetch={false}>See</BButtonLink>}/>
+          trail={<BButtonLink href={open.href} kind="ghost" label={`See open shifts, ${open.count} to pick up`} prefetch={false}>See open shifts</BButtonLink>}/>
           // Review B2 (NV-275): none to pick up is a fact, not a row to open.
           : open.count === 0 ? <BRow lead={<BIcon tone="grey"><PlusIcon weight="bold"/></BIcon>} title="No open shifts right now" sub={open.detail}/>
           : <BRow href={open.href} label={open.label} lead={<BIcon tone="grey"><PlusIcon weight="bold"/></BIcon>} title="Open shifts" sub={open.detail}/>}</BList>
@@ -142,7 +144,7 @@ export function OpenShiftsB({backHref, rows, empty, blocked, unavailableHref, no
           <BList>{rows.map(row => <BRow key={row.id} lead={<BDay date={row.date}/>} title={row.hours} label={row.label}
             chip={row.requested ? <BChip tone="amber">Waiting</BChip> : undefined}
             sub={<><span className="eb-line"><Dotted text={row.facts}/></span><span className="eb-line"><Dotted text={row.nextWeek ? `${row.place} · Next week` : row.place}/></span></>}
-            trail={<BButtonLink href={row.href} kind={row.requested ? 'ghost' : 'teal'} label={row.label} prefetch={false}>{row.requested ? 'View' : 'Pick up'}</BButtonLink>}/>)}</BList>
+            trail={<BButtonLink href={row.href} kind="ghost" label={row.label} prefetch={false}>{row.requested ? 'View' : 'Pick up'}</BButtonLink>}/>)}</BList>
           <BCardNote>{note}</BCardNote>
         </BCard>}
       {blocked ? <BCard label="Why other shifts aren’t available"><div className="es-blocked"><span className="b-sr">Why other shifts aren’t available</span><BIcon tone="grey"><InfoIcon weight="bold"/></BIcon>{blocked}</div></BCard> : null}

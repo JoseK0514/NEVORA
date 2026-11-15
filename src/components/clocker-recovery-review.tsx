@@ -169,7 +169,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
     </section>
 
     <ul className="q-list" style={{ marginTop: 40 }}>
-      <li><Link href="/app/timecards" className="q-row"><span className="q-rt"><b>Time wrong or missing?</b><i>Fix it in Timecards</i></span><CaretRightIcon className="q-chev" aria-hidden="true"/></Link></li>
+      <li><Link href="/app/timecards" className="q-row"><span className="q-rt"><b>Time wrong or missing?</b><i>Fix it in Timecards</i></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></Link></li>
     </ul>
   </SettingsFrame>;
   return observation ? <ScopedReadFrame observation={observation}>{content}</ScopedReadFrame> : content;

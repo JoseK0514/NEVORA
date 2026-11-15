@@ -41,7 +41,10 @@ describe('Notifications', () => {
   // Review B1 (NV-142): every notification that needs an action has an amber icon, whatever its kind.
   it('All and Unread on glass, grouped by day, a grey icon per kind (amber for one that needs you), time and a teal dot', () => {
     const html = renderToStaticMarkup(<EmployeeNotificationsB list={list()} settingsHref="/app/profile/device-alerts" />), plain = text(html);
-    for (const value of ['Notifications', 'All', 'Unread 2', 'Today', 'Yesterday', 'Earlier', 'Schedule update', 'Action needed', 'Team update', 'Pay statement update', 'Settings']) expect(plain).toContain(value);
+    // Inspection Nov 14 (BR-6, EM-005): each title says what happened, not the category's name.
+    for (const value of ['Notifications', 'All', 'Unread 2', 'Today', 'Yesterday', 'Earlier', 'Confirm your schedule', 'Action needed', 'A team update needs your acknowledgement', 'A pay statement was shared with you', 'Settings']) expect(plain).toContain(value);
+    for (const gone of ['Schedule update', 'Team update', 'Pay statement update']) expect(plain).not.toContain(gone);
+    expect(html).toContain('aria-label="Confirm your schedule, unread, action needed, 2:10 PM"');
     expect(html).toContain('href="/app/profile/device-alerts"');expect(html).toContain('class="eb-noacts"');
     expect(html.match(/class="eb-unread"/g)).toHaveLength(2);expect(html.match(/b-ico b-ico--amber/g)).toHaveLength(2);
     expect(html).toContain('id="b-message-n1"');expect(html).toContain('href="/app/schedule"');expect(plain).toContain('Oct 30');
@@ -49,7 +52,7 @@ describe('Notifications', () => {
     const unique = ids(html);expect(new Set(unique).size).toBe(unique.length);
   });
   it('the Unread view, the empty states and the opening spinner', () => {
-    expect(text(renderToStaticMarkup(<EmployeeNotificationsB list={list({tab: 'unread'})} />))).not.toContain('Pay statement update');
+    expect(text(renderToStaticMarkup(<EmployeeNotificationsB list={list({tab: 'unread'})} />))).not.toContain('A pay statement was shared with you');
     expect(text(renderToStaticMarkup(<EmployeeNotificationsB list={list({items: []})} />))).toContain('No current notifications');
     expect(text(renderToStaticMarkup(<EmployeeNotificationsB list={list({items: [items[2]], tab: 'unread'})} />))).toContain('You’re all caught up');
     expect(renderToStaticMarkup(<EmployeeNotificationsB list={list({opening: 'n1'})} opening />)).toContain('aria-busy="true"');

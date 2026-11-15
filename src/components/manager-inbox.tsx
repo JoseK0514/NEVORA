@@ -83,7 +83,7 @@ function KitRow({ entry }: { entry: InboxEntry }) {
       {entry.leading}
       <span className="q-rt"><b>{entry.title}</b>{entry.meta ? <i>{entry.meta}</i> : null}</span>
       {entry.trailing ? <span className={`q-rv${entry.trailingTone === "urgent" ? " q-rv--alert" : ""}`} aria-hidden="true">{entry.trailing}</span> : null}
-      <CaretRightIcon className="q-chev" aria-hidden="true" />
+      <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
     </Link>}
   </li>;
 }
@@ -210,7 +210,7 @@ function ShiftRow({ shift, timeZone, observedAt, showPlace }: { shift: TodayShif
 function gapEntry(item: ActionItem, filter: InboxFilter, timeZone: string): InboxEntry {
   const entry = itemEntry(item, false, filter, timeZone);
   const parts = mobileActionDetail(item.detail).split(" · ");
-  return { ...entry, leading: <span className="q-av q-av--open" aria-hidden="true"><PlusIcon className="q-ic" aria-hidden="true" /></span>, title: gapPlace(item), meta: parts[1] ? keepWhole(parts[1]) : entry.meta, trailing: undefined, trailingTone: undefined, button: "Find cover" };
+  return { ...entry, leading: <span className="q-av q-av--open" aria-hidden="true"><PlusIcon weight="bold" className="q-ic" aria-hidden="true" /></span>, title: gapPlace(item), meta: parts[1] ? keepWhole(parts[1]) : entry.meta, trailing: undefined, trailingTone: undefined, button: "Find cover" };
 }
 export function gapPlace(item: ActionItem) {
   return /\bat (.+)$/.exec(item.title)?.[1] ?? item.detail.split(" · ")[0] ?? item.title;
@@ -223,7 +223,7 @@ function Disclosure({ title, meta, count, items, children }: { title: ReactNode;
       <summary className={meta ? "q-row" : "q-row q-row--one"}>
         <span className="q-rt"><b>{title}</b>{meta ? <i>{meta}</i> : null}</span>
         <span className="q-rv q-rv--l">{count}</span>
-        <CaretDownIcon className="q-chev inbox-group-caret" aria-hidden="true" />
+        <CaretDownIcon weight="bold" className="q-chev inbox-group-caret" aria-hidden="true" />
       </summary>
       <ul className="q-list inbox-list">{children}</ul>
     </GroupDisclosure>
@@ -408,7 +408,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
               {value!.noClockIn.slice(0, missedShown).map(shift => <ShiftRow key={shift.id} shift={shift} timeZone={timeZone} observedAt={ready?.observedAt} showPlace={missedPlaces} />)}
               {value!.noClockIn.length > missedShown ? <li className="premium-group cm-more">
                 <details open={value!.noClockIn.slice(missedShown).some(shift => `shift:${shift.id}` === shownKey) || undefined}>
-                  <summary className="q-row q-row--one"><span className="q-rt"><b>{`Show ${value!.noClockIn.length - missedShown} more`}</b></span><CaretDownIcon className="q-chev" aria-hidden="true" /></summary>
+                  <summary className="q-row q-row--one"><span className="q-rt"><b>{`Show ${value!.noClockIn.length - missedShown} more`}</b></span><CaretDownIcon weight="bold" className="q-chev" aria-hidden="true" /></summary>
                   <ul className="q-list inbox-list">{value!.noClockIn.slice(missedShown).map(shift => <ShiftRow key={shift.id} shift={shift} timeZone={timeZone} observedAt={ready?.observedAt} showPlace={missedPlaces} />)}</ul>
                 </details>
               </li> : null}
@@ -528,8 +528,8 @@ export function InboxDetail({ entry, sheet = false }: { entry: InboxEntry; sheet
     <div className="inbox-detail__actions">
       <Button href={entry.href}>{entry.action}</Button>
       {entry.contact ? <>
-        <a className="nv-btn" data-kind="secondary" href={`tel:${entry.contact.phone}`} aria-label={`Call ${entry.contact.name}`}><PhoneIcon size={18} aria-hidden="true" />Call</a>
-        <a className="nv-btn" data-kind="secondary" href={`sms:${entry.contact.phone}`} aria-label={`Text ${entry.contact.name}`}><ChatTextIcon size={18} aria-hidden="true" />Text</a>
+        <a className="nv-btn" data-kind="secondary" href={`tel:${entry.contact.phone}`} aria-label={`Call ${entry.contact.name}`}><PhoneIcon size={18} weight="bold" aria-hidden="true" />Call</a>
+        <a className="nv-btn" data-kind="secondary" href={`sms:${entry.contact.phone}`} aria-label={`Text ${entry.contact.name}`}><ChatTextIcon size={18} weight="bold" aria-hidden="true" />Text</a>
       </> : null}
       {entry.secondary?.map(link => <Link key={link.href} className="nv-btn" data-kind="secondary" href={link.href}>{link.label}</Link>)}
     </div>

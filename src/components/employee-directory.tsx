@@ -15,13 +15,15 @@ import { TeamB, type TeamBPerson } from "./owner-b/team-b";
 /** How many people the People card shows before "See all" (Jose: don't overwhelm). */
 export const TEAM_SHOWN = 8;
 
-export function EmployeeDirectory({ employees, visibleEmployees, locations, filters, positions = [], recovery = true, clockerRecovery = false, words = DEFAULT_WORDS.en, showAll = false }: {
+export function EmployeeDirectory({ employees, visibleEmployees, locations, filters, positions = [], recovery = true, clockerRecovery = false, canImport = false, words = DEFAULT_WORDS.en, showAll = false }: {
   /** Position names for each person's detail line. */
   positions?: readonly Pick<Position, "id" | "name">[];
   /** The recovery tools, for roles that have them. */
   recovery?: boolean;
   /** The Owner also resets Clocker PINs (Employee PINs is Owner-only). */
   clockerRecovery?: boolean;
+  /** Owners see "Import a staff list" (the roster import is Owner-only). */
+  canImport?: boolean;
   /** Company vocabulary (B2). */
   words?: WordSlots;
   employees: readonly Employee[]; visibleEmployees: readonly Employee[];
@@ -60,8 +62,11 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
       label: `${name}, ${employeeRoleLabel(employee.role)}, ${where(employee)}${employee.phone ? `, ${formatPhoneNumber(employee.phone)}` : ""}${employee.active ? "" : ", inactive"}` };
   };
   const inactiveCount = employees.filter(employee => !employee.active).length;
+  // Nov 14, 2026 inspection: Availability is one tap from Team (AR-9), and an Owner can import a staff list.
   const bTools = [
     { href: "/app?view=team", title: "Hours this week", detail: "Scheduled hours for each person", icon: "hours" as const },
+    { href: "/app/availability", title: "Availability", detail: "Who can work, and when", icon: "availability" as const },
+    ...(canImport ? [{ href: "/app/employees/import", title: "Import a staff list", detail: "Add many people at once", icon: "import" as const }] : []),
     ...(recovery ? [{ href: "/app/account-recovery", title: "Help someone sign in", detail: clockerRecovery ? "Reset a password or Clocker PIN" : "Reset a password or sign-in", icon: "key" as const }] : []),
     ...(!all && inactiveCount ? [{ href: "/app/employees?all=1#team-inactive", title: "Inactive people", detail: `${inactiveCount} no longer active`, icon: "inactive" as const }] : []),
   ];
@@ -81,7 +86,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
         {filters.location ? <input type="hidden" name="location" value={filters.location} /> : null}
         <label className="c-in c-team-search__field">
           <span className="c-sr">Search {people}</span>
-          <MagnifyingGlass className="c-ic" aria-hidden="true" />
+          <MagnifyingGlass weight="bold" className="c-ic" aria-hidden="true" />
           <EmployeeSearchInput query={filters.query} placeholder="Search by name or position" />
         </label>
       </EmployeeDirectoryFilters>
@@ -103,6 +108,8 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
       <CorpCard as="div" ariaLabel="Team tools">
         <CorpRows label="Team tools">
           <li><CorpRow href="/app?view=team" bold title="Hours this week" detail="Scheduled hours for each person" chevron /></li>
+          <li><CorpRow href="/app/availability" bold title="Availability" detail="Who can work, and when" chevron /></li>
+          {canImport ? <li><CorpRow href="/app/employees/import" bold title="Import a staff list" detail="Add many people at once" chevron /></li> : null}
           {/* Board G-O-Team: one row for both ways back in. Its page resets a password and, for an Owner, links to Employee PINs. */}
           {recovery ? <li><CorpRow href="/app/account-recovery" bold title="Help someone sign in" detail={clockerRecovery ? "Reset a password or Clocker PIN" : "Reset a password or sign-in"} chevron /></li> : null}
           {!all && employees.some(employee => !employee.active) ? <li><CorpRow href="/app/employees?all=1#team-inactive" bold title="Inactive people" detail={`${employees.filter(employee => !employee.active).length} no longer active`} chevron /></li> : null}

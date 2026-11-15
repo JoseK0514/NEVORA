@@ -17,7 +17,7 @@ export const updateKinds = {
 export function UpdateKind({type, iconOnly = false}: {type: CommunicationDraft['type']; iconOnly?: boolean}) {
  const {label, Icon} = updateKinds[type];
  return <span className={iconOnly ? 'update-kind-icon' : 'update-kind'}>
-  <Icon size={22} weight="regular" aria-hidden="true" focusable="false" />
+  <Icon size={22} weight="bold" aria-hidden="true" focusable="false" />
   {iconOnly ? null : <span>{label}</span>}
  </span>;
 }

@@ -15,7 +15,9 @@ export function AuthBackNav({ href, label, lang, t }: { href: string; label: str
   </div>;
 }
 
-/** The policy pages' white wordmark on the band, back to sign in (NV-200). */
-export function DocBrand() {
-  return <header className="q-auth__top q-doc__top"><Link href="/login" className="q-auth__wordmark" aria-label="NEVORA sign in"><BrandWordmark /></Link></header>;
+/** The policy pages' white wordmark on the band, back to sign in (NV-200). With `lang` (Support and Account deletion,
+ * inspection Nov 14, 2026, PB-001) the language switch sits on the same row, as on the sign-in pages. */
+export function DocBrand({ lang, langLabel }: { lang?: AuthLang; langLabel?: string }) {
+  return <header className="q-auth__top q-doc__top"><Link href="/login" className="q-auth__wordmark" aria-label={lang === "es" ? "NEVORA, iniciar sesión" : "NEVORA sign in"}><BrandWordmark /></Link>
+    {lang && langLabel ? <LangSwitch lang={lang} label={langLabel} quiet /> : null}</header>;
 }

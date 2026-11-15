@@ -52,9 +52,9 @@ export function PayrollExportMapping({draft, setDraft, cards, reviewed, setRevie
           <label><span>Column {i + 1} heading</span><input autoComplete="off" value={column.header} maxLength={80} onChange={e => setDraft({...draft, columns: draft.columns.map((c, n) => n === i ? {...c, header: e.target.value} : c)})} /></label>
           <label><span>Value source for column {i + 1}</span><span className={styles.selectFrame}><select aria-label={`Value source for column ${i + 1}`} value={column.source} onChange={e => setDraft({...draft, columns: draft.columns.map((c, n) => n === i ? {header: c.header, source: e.target.value as typeof c.source, ...(e.target.value === 'constant' ? {constant: ''} : {})} : c)})}>{mappingSources.map(source => <option key={source} value={source}>{sourceNames[source]}</option>)}</select></span></label>
           {column.source === 'constant' && <label className={styles.constantField}><span>Fixed value for column {i + 1}</span><input autoComplete="off" value={column.constant ?? ''} maxLength={100} onChange={e => setDraft({...draft, columns: draft.columns.map((c, n) => n === i ? {...c, constant: e.target.value} : c)})} /></label>}
-          <button type="button" className={`${styles.button} ${styles.iconButton} ${styles.removeColumn}`} aria-label={`Remove column ${i + 1}`} disabled={draft.format === 'ADP_RUN_GENERIC_V1' || draft.columns.length === 1} onClick={() => setDraft({...draft, columns: draft.columns.filter((_, n) => n !== i)})}><TrashIcon size={18} aria-hidden="true" /></button>
+          <button type="button" className={`${styles.button} ${styles.iconButton} ${styles.removeColumn}`} aria-label={`Remove column ${i + 1}`} disabled={draft.format === 'ADP_RUN_GENERIC_V1' || draft.columns.length === 1} onClick={() => setDraft({...draft, columns: draft.columns.filter((_, n) => n !== i)})}><TrashIcon size={18} weight="bold" aria-hidden="true" /></button>
         </div>)}
-        <button type="button" className={styles.button} disabled={draft.format === 'ADP_RUN_GENERIC_V1' || draft.columns.length >= 20} onClick={() => setDraft({...draft, columns: [...draft.columns, {header: `Column ${draft.columns.length + 1}`, source: 'constant', constant: ''}]})}><PlusIcon size={18} aria-hidden="true" />Add column</button>
+        <button type="button" className={styles.button} disabled={draft.format === 'ADP_RUN_GENERIC_V1' || draft.columns.length >= 20} onClick={() => setDraft({...draft, columns: [...draft.columns, {header: `Column ${draft.columns.length + 1}`, source: 'constant', constant: ''}]})}><PlusIcon size={18} weight="bold" aria-hidden="true" />Add column</button>
       </div>
       <div className={styles.mappingSection}>
         <h3>Provider employee identifiers</h3><p className={styles.note}>Use the identifiers from your payroll system when your template requires them.</p>
@@ -62,7 +62,7 @@ export function PayrollExportMapping({draft, setDraft, cards, reviewed, setRevie
       </div>
       <div className={styles.mappingFooter}>
         <label className={styles.reviewCheck}><input type="checkbox" checked={reviewed} onChange={e => setReviewed(e.target.checked)} /><span>I verified the required fields and employee identifiers. I reviewed the recorded-time basis, including breaks, and any selected rounding against my import requirements.</span></label>
-        <button type="button" className={`${styles.button} ${styles.primary}`} disabled={!reviewed} onClick={save}><FloppyDiskIcon size={18} aria-hidden="true" />Save mapping profile</button>
+        <button type="button" className={`${styles.button} ${styles.primary}`} disabled={!reviewed} onClick={save}><FloppyDiskIcon size={18} weight="bold" aria-hidden="true" />Save mapping profile</button>
       </div>
     </fieldset>
   </details>;

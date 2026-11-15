@@ -1,34 +1,24 @@
 'use client';
-import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise";
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Card, CardBody, KitStack, PageBand } from '@/components/kit/kit';
-import { focusAfterRetry } from '@/components/kit/focus-after-retry';
-import { SignatureError } from '@/components/signature/system-state';
+import { errorReference, portalErrorAdvice, useOnline } from '@/components/app-error-screen';
+import { BRouteError } from '@/components/owner-b/b-route-error';
 
-import { SigButton } from "@/components/signature/sig-button";
-export default function Error({reset,retry:refetch}:{error:Error & {digest?:string};reset:()=>void;retry?:()=>void}) {
+/* Inspection Nov 14, 2026 (RA-15): online, the screen says the fault is ours and shows Next's short reference
+ * (error.digest); offline, the connection wording stays (the same words as AppErrorScreen).
+ * Phase 2 (package D): the one Direction B state screen for every role (the band, then one red state card with Try again
+ * and Go to Home). It was the older kit page, which had no band under Direction B and whose title was cut off under the
+ * top bar; the Employee-only Signature copy was never shown and is gone. The words are unchanged. */
+/** The next step, by the browser's own online flag (the same words as AppErrorScreen). */
+function Advice() { return <>{portalErrorAdvice(useOnline())}</>; }
+/** IS-49: the one live region's whole message. */
+function Spoken({ reference }: { reference: string | null }) {
+ return <>{`This page didn’t load. Nothing was changed. ${portalErrorAdvice(useOnline())}${reference ? ` Reference: ${reference}` : ''}`}</>;
+}
+
+export default function Error({error,reset,retry:refetch}:{error:Error & {digest?:string};reset:()=>void;retry?:()=>void}) {
  const router = useRouter();
- const retry = () => { if(refetch)refetch();else{router.refresh();reset();} focusAfterRetry('[data-nv-page]:not(.premium-error) [data-nv-band] h1', '.premium-error .nv-btn[data-kind="primary"]'); };
- return <>
-  <div className="sg-sys-employee"><SignatureError action={<SigButton className="sg-cta" onClick={retry}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</SigButton>}/></div>
-  <div className="sg-sys-generic nv-page premium-error" data-nv-page="">
-   <PageBand title="This page didn’t load" summary="Nothing was changed." />
-   {/* IS-49: one live region with the whole message; the buttons sit outside it. */}
-   <p className="nv-sr" role="alert">This page didn’t load. Nothing was changed. Check your connection, then try again.</p>
-   <KitStack>
-    <Card>
-     <CardBody>
-      <div className="premium-error__body">
-       <p className="premium-error__text">Check your connection, then try again.</p>
-       <div className="premium-error__actions">
-        <button type="button" className="nv-btn" data-kind="primary" onClick={retry}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button>
-        <Link className="nv-btn" data-kind="secondary" href="/app">Go to Home</Link>
-       </div>
-      </div>
-     </CardBody>
-    </Card>
-   </KitStack>
-  </div>
- </>;
+ const reference = errorReference(error.digest);
+ return <BRouteError title="This page didn’t load" sub="Nothing was changed."
+  spoken={<Spoken reference={reference} />} line={<Advice />} reference={reference ? `Reference: ${reference}` : null}
+  onRetry={() => { if(refetch)refetch();else{router.refresh();reset();} }} away={{ href: '/app', label: 'Go to Home' }} />;
 }

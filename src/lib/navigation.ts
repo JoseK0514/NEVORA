@@ -260,17 +260,18 @@ export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities,
   }
   const authorized = new Set(navigationForRole(role, payroll, context).map(item=>item.href));
   // Corporate (Release 1, approved Oct 26): Home, Schedule, Time, Payroll and Team; More opens from the header avatar.
-  // Things to do (Inbox) and Notifications open from Home, so Home stays lit there. Without payroll review Inbox keeps a tab.
+  // Things to do (Inbox) opens from Home, so Home stays lit there. Without payroll review Inbox keeps a tab.
+  // Review Nov 14 (BR-4): Notifications opens from the bell and is not one of the tabs, so it lights none.
   const payrollTab = authorized.has("/app/payroll");
   const inboxPages = ["/app/inbox", "/app/requests", "/app/exchange", "/app/availability"];
   const tabs:MobileTab[] = [
-    { ...home, owns: ["/app", "/app/notifications", ...(payrollTab ? inboxPages : [])] },
+    { ...home, owns: ["/app", ...(payrollTab ? inboxPages : [])] },
     schedule,
     { href: "/app/timecards", label: "Time", icon: "clock", owns: ["/app/timecards", ...(payrollTab ? [] : ["/app/payroll-export"])] },
     payrollTab
       ? { href: "/app/payroll", label: "Payroll", icon: "payroll", owns: ["/app/payroll", "/app/payroll-export", "/app/settings/payroll"] }
       : { href: "/app/inbox", label: "To do", icon: "inbox", owns: inboxPages },
-    // Review F2 (NV-070): Clocker recovery belongs to Settings (its back link), which lights Home on a phone (MORE_FAMILY).
+    // Review F2 (NV-070): Clocker recovery belongs to Settings (its back link), which lights no tab on a phone.
     { href: "/app/employees", label: "Team", icon: "employees", owns: ["/app/employees", "/app/account-recovery"] },
   ];
   return tabs.filter(tab=>authorized.has(tab.href));
@@ -282,29 +283,24 @@ export function mobileMoreForRole(role: UserRole, payroll?: PayrollCapabilities,
   return navigationForRole(role, payroll, context).filter(item => !owned.has(item.href));
 }
 
-/** Pages opened from More (or the avatar and bell): on phones without a More tab they light Home. */
-export const MORE_FAMILY = /^\/app\/(more|profile|help|account|notifications|updates|settings|reports|my-pay|ai-manager|clocker-recovery)(\/|$)/;
-
-/** The tab that owns the current page: a tab href, "more", or none. */
+/** The tab that owns the current page: a tab href, "more", or none. Review Nov 14 (BR-4): a page that is not one of the
+ * tabs and belongs to none of them (More, Insights, Settings and its pages, Profile, Notifications, Help, Updates) lights
+ * no tab; the bar never says Home while another page is open. "more" matches no tab either (phones have no More tab). */
 export function activeMobileTab(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext = {}): string | undefined {
+  const bare = path.split(/[?#]/)[0];
+  const tabs = mobileTabsForRole(role, payroll, context);
   // Direction B (Employee phones, Nov 6, 2026): a page a tab owns lights that tab (shift swaps and Availability light
   // Schedule, where their back link goes), whatever the sidebar entry it belongs to.
   if (role === "EMPLOYEE" || role === "LEAD") {
-    const bare = path.split(/[?#]/)[0];
-    const own = mobileTabsForRole(role, payroll, context).find(tab => tab.owns.some(owned => owned !== "/app" && (bare === owned || bare.startsWith(`${owned}/`))));
+    const own = tabs.find(tab => tab.owns.some(owned => owned !== "/app" && (bare === owned || bare.startsWith(`${owned}/`))));
     if (own) return own.href;
-    // More and the pages it opens (Profile and its pages, Help, Account, Notifications, Updates) go back to Home, so they
-    // light Home, as on the approved boards.
-    if (/^\/app\/(more|profile|help|account|notifications|updates)(\/|$)/.test(bare)) return "/app";
   }
+  // More opens from the avatar. The desktop sidebar lights Home for it (activeNavigationHref); the phone bar lights none.
+  if (bare === "/app/more") return undefined;
   const active = activeNavigationHref(role, path, payroll, context);
-  // Quiet (v4): a tool page with no menu entry of its own (Account and Clocker recovery) lights the tab that owns it.
-  const lit = !active ? mobileTabsForRole(role, payroll, context).find(tab => tab.owns.some(owned => owned !== "/app" && (path === owned || path.startsWith(`${owned}/`))))?.href
-    : mobileTabsForRole(role, payroll, context).find(tab => tab.owns.includes(active))?.href ?? "more";
-  // Direction B (Owner and Manager phones, Nov 7, 2026): More opens from the avatar and goes back to Home, so More and the
-  // pages it opens light Home when no tab owns them (their phones have no More tab).
-  if ((role === "OWNER" || role === "MANAGER") && (lit === "more" || lit === undefined) && MORE_FAMILY.test(path.split(/[?#]/)[0])) return "/app";
-  return lit;
+  // Quiet (v4): a tool page with no menu entry of its own (Account recovery) lights the tab that owns it.
+  return !active ? tabs.find(tab => tab.owns.some(owned => owned !== "/app" && (bare === owned || bare.startsWith(`${owned}/`))))?.href
+    : tabs.find(tab => tab.owns.includes(active))?.href ?? "more";
 }
 
 export type SectionTabGroup = { label: string; items: { href: string; label: string }[] };

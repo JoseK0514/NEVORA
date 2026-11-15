@@ -21,7 +21,10 @@
     :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] :is(.c-icon-btn, header.mobile-header .portal-notification-bell) { min-width: 44px !important; }
     :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] :is(.b-btn--full, .b-btn--big, form button[type="submit"].c-btn) { min-height: 48px !important; }
     html body .app-shell[data-nv-b] .cm-grid :is(a, button) { min-height: 44px !important; }
-    /* The rail on touch: 48×48 links, and the labels show under the icons. */
+  }
+  /* The icon rail on a touch screen from 1024px: 48×48 links. Tablets (768–1023px) have the labelled 80px rail (TB-001, in
+   * the F5 block below). */
+  @media (min-width: 1024px) and (pointer: coarse) {
     html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar #desktop-primary-navigation .nav-link { width: 48px !important; min-width: 48px !important; min-height: 48px !important; }
   }
 
@@ -76,8 +79,8 @@
   /* ---------- Home's shift card follows the clock state (review B2, NV-039): green when clocked in, amber when not yet ---------- */
 
   /* ---------- A shift on a day of approved time off (review B2, NV-027): amber ring, warning glyph, "Needs cover" ---------- */
-  html body .app-shell[data-nv-b] .cm-block.conflict { box-shadow: inset 0 0 0 2px #E9A23B !important; background: var(--b-amber-50) !important; color: var(--b-amber) !important; }
-  html body .app-shell[data-nv-b] .cm-block.conflict { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 0 4px !important; height: auto !important; padding-top: 4px !important; padding-bottom: 4px !important; }
+  html body .app-shell[data-nv-b] .cm-block.conflict { box-shadow: inset 0 0 0 2px var(--b-amber-solid) !important; background: var(--b-amber-50) !important; color: var(--b-amber) !important; }
+  html body .app-shell[data-nv-b] .cm-block.conflict { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 0 var(--b-space-4) !important; height: auto !important; padding-top: var(--b-space-4) !important; padding-bottom: var(--b-space-4) !important; }
 
   /* ---------- Help in the sidebar (review B2, NV-011): a quiet row above "Powered by", 44px, grey until hovered or current ---------- */
 
@@ -93,8 +96,8 @@
   @media (min-width: 768px) {
     html body .app-shell[data-nv-b] .cm-block:not(.draft):not(.open):not(.conflict) { background: var(--b-teal-50) !important; color: var(--b-teal) !important; }
     html body .app-shell[data-nv-b] .cm-block.draft { background: var(--b-quiet) !important; color: var(--b-ink2) !important; }
-    html body .app-shell[data-nv-b] .cm-block.open { background: #FFFFFF !important; box-shadow: none !important; border: 1.5px dashed #E9A23B !important; color: var(--b-amber) !important; }
-    html body .app-shell[data-nv-b] .cm-block:has(.cm-block__pos) { flex-direction: column !important; align-items: flex-start !important; height: auto !important; padding-top: 4px !important; padding-bottom: 4px !important; }
+    html body .app-shell[data-nv-b] .cm-block.open { background: #FFFFFF !important; box-shadow: none !important; border: 1.5px dashed var(--b-amber-solid) !important; color: var(--b-amber) !important; }
+    html body .app-shell[data-nv-b] .cm-block:has(.cm-block__pos) { flex-direction: column !important; align-items: flex-start !important; height: auto !important; padding-top: var(--b-space-4) !important; padding-bottom: var(--b-space-4) !important; }
   }
 
   /* ---------- Schedule grid (review B5, NV-087): the person column at least 200px (names stay on one line more often; two at
@@ -105,13 +108,13 @@
 
   /* ---------- Timecard sheet (review B5, NV-245): AM and PM at full size in the Days list, as on every other phone screen;
    * the Needs attention note takes the card radius. ---------- */
-  html body .app-shell[data-nv-b] .c-tc-sheet__issue { border-radius: 22px !important; }
+  html body .app-shell[data-nv-b] .c-tc-sheet__issue { border-radius: var(--b-radius-card) !important; }
 
   /* ---------- One panel header for Owner and Manager sheets and side panels (review B5, NV-221, NV-252): the title
    * left-aligned at 20/26 700, Done a teal 600 text button with a 44px target at the top right, every width. ---------- */
   html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav:has(> span[aria-hidden="true"]:first-child) { grid-template-columns: minmax(0, 1fr) auto !important; }
   html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav > span[aria-hidden="true"]:first-child { display: none !important; }
-  html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav:has(> span[aria-hidden="true"]:first-child) .c-sheet__title { justify-self: start !important; text-align: left !important; font: 700 20px/26px Inter, "Inter Fallback", -apple-system, sans-serif !important; color: var(--b-ink) !important; }
+  html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav:has(> span[aria-hidden="true"]:first-child) .c-sheet__title { justify-self: start !important; text-align: left !important; font: 700 var(--b-fs-title)/var(--b-lh-title) Inter, "Inter Fallback", -apple-system, sans-serif !important; color: var(--b-ink) !important; }
   html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav .c-sheet__done { color: var(--b-teal) !important; font-weight: 600 !important; }
 
   /* ---------- Finder rows (review B5, NV-216, NV-218): each row leads with its kind in a 28px tinted circle (a bolt for
@@ -134,7 +137,7 @@
 
   /* ---------- One read-only field (review B5, NV-085): a grey value with no field edge, a 16px bold lock at the end, and the
    * reason under it. ---------- */
-  html body .app-shell[data-nv-b] .c-readonly > .c-in { padding-right: 40px !important; background: var(--b-quiet) !important; border-color: transparent !important; box-shadow: none !important; color: var(--b-ink) !important; }
+  html body .app-shell[data-nv-b] .c-readonly > .c-in { padding-right: var(--b-space-40) !important; background: var(--b-quiet) !important; border-color: transparent !important; box-shadow: none !important; color: var(--b-ink) !important; }
 
   /* ---------- Features (review B5, NV-248, NV-260): a feature that can't be turned off now is drawn on (full teal) with a
    * lock beside it, not a pale "maybe"; a single choice shows a radio circle (teal ring and dot when chosen). ---------- */
@@ -143,7 +146,7 @@
 
   /* ---------- Branding preview (review B5, NV-248, NV-260): framed as a preview (a dashed edge and a "Preview" tag), with the
    * real pill shape, so it never reads as a live button. ---------- */
-  html body .app-shell[data-nv-b] .wc-preview .wc-preview__btn { border-radius: 999px !important; }
+  html body .app-shell[data-nv-b] .wc-preview .wc-preview__btn { border-radius: var(--b-radius-pill) !important; }
 
   /* ---------- Things to do on desktop (review B5, NV-250): the More shortcuts stay in reach while the list scrolls. ---------- */
 
@@ -158,17 +161,19 @@
 }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.b-hero, .c-title, .q-hd) :is(input:not([type=checkbox], [type=radio]), select):focus-visible { outline-color: var(--b-focus-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d:is([aria-current="date"], [aria-pressed="true"]):focus-visible { outline-color: var(--b-focus); outline-offset: -3px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-hero .b-live__a:focus-visible { outline: none; position: relative; z-index: 1; box-shadow: inset 0 0 0 2px var(--b-focus-on-band); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .b-list:first-child > li:first-child :is(.b-row--link, .b-row__hit):focus-visible { border-top-left-radius: 21px; border-top-right-radius: 21px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .b-list:last-child > li:last-child :is(.b-row--link, .b-row__hit):focus-visible { border-bottom-left-radius: 21px; border-bottom-right-radius: 21px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-hero .b-live__a:focus-visible { outline: var(--b-focus-width) solid transparent; outline-offset: calc(-1 * var(--b-focus-width)); position: relative; z-index: 1; box-shadow: inset 0 0 0 2px var(--b-focus-on-band); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .b-list:first-child > li:first-child :is(.b-row--link, .b-row__hit):focus-visible { border-top-left-radius: var(--b-radius-card); border-top-right-radius: var(--b-radius-card); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .b-list:last-child > li:last-child :is(.b-row--link, .b-row__hit):focus-visible { border-bottom-left-radius: var(--b-radius-card); border-bottom-right-radius: var(--b-radius-card); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.b-week__arrow, .b-seg > *, .b-filters button, .b-ib) { position: relative; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__arrow::after { content: ""; position: absolute; inset: -4px; }
+/* Nov 14 inspection (BR-11): on narrow phones the arrow is 32px wide, so its target reaches 6px to each side (44×44). */
+@media (max-width: 359px) { :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__arrow::after { inset: -4px -6px; } }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.b-seg > *, .b-filters button)::after { content: ""; position: absolute; inset: -6px 0; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-filters { padding-inline-end: 18px; scroll-padding-inline-end: 18px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-filters { padding-inline-end: var(--b-inset); scroll-padding-inline-end: 18px; }
 @supports (mask-image: linear-gradient(#000, #000)) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-filters { mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent); }
 }
-:is(#c-root, html) body .app-shell[data-nv-b] .q-acts .q-bs { height: auto; min-height: 44px; min-width: 96px; border-radius: 999px; }
+:is(#c-root, html) body .app-shell[data-nv-b] .q-acts .q-bs { height: auto; min-height: 44px; min-width: 96px; border-radius: var(--b-radius-pill); }
 @media (min-width: 768px) {
   :is(#c-root, html) body .app-shell[data-nv-b] .q-acts { justify-content: flex-end; }
   :is(#c-root, html) body .app-shell[data-nv-b] .q-acts .q-bs { flex: 0 0 auto; }
@@ -176,14 +181,19 @@
 @media (min-width: 768px) and (pointer: coarse) {
   :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn, .cm-kbtn, .c-select-btn, .c-icon-btn, .q-nav__l, .q-nav__r, .c-nav__back, header.mobile-header :is(button, a)) { min-height: 44px !important; }
 }
-:is(#c-root, html) body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn) { transition-property: scale, background-color, color; transition-duration: var(--b-dur-press); transition-timing-function: var(--b-ease-out); }
-:is(#c-root, html) body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn):not(:disabled, [aria-disabled="true"]):active { scale: var(--b-press-scale); transform: none; }
+:is(#c-root, html) body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn, .nv-btn) { transition-property: scale, background-color, color; transition-duration: var(--b-dur-press); transition-timing-function: var(--b-ease-out); }
+/* Nov 14 inspection (SY-018, UI-7, RA-21): the press scale plays only when motion is allowed. The older kits' own press
+ * (a transform) stays off either way, so reduced motion gets no scale at all. */
+:is(#c-root, html) body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn, .nv-btn):not(:disabled, [aria-disabled="true"]):active { transform: none; }
+@media (prefers-reduced-motion: no-preference) {
+  :is(#c-root, html) body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn, .nv-btn):not(:disabled, [aria-disabled="true"]):active { scale: var(--b-press-scale); }
+}
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.c-btn, .q-btn, .q-bs, .wc-btn):is(:disabled, [aria-disabled="true"]) {
   opacity: 1; background: var(--b-disabled-bg); color: var(--b-disabled-ink); box-shadow: none; scale: 1; transform: none; cursor: not-allowed;
 }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.c-page, .q-page, .b-screen) select:not([multiple]) {
   min-height: 48px; border-radius: var(--b-radius-field); font-size: 16px; color: var(--b-ink);
-  -webkit-appearance: none; appearance: none; padding-inline-end: 40px;
+  -webkit-appearance: none; appearance: none; padding-inline-end: var(--b-space-40);
   background-color: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-field-edge);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%236A7176' d='M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-size: 16px 16px; background-position: right 14px center;
@@ -191,6 +201,16 @@
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.c-page, .q-page, .b-screen) select:not([multiple]):disabled { background-color: var(--b-disabled-bg); color: var(--b-disabled-ink); cursor: not-allowed; }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.q-rt i, .q-rv, .c-row__value--soft, .c-row__detail) { color: var(--b-grey); }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.b-notice, .b-quiet, .eb-callout, .b-cardnote--fill) :is(.b-notice__s, small) { color: var(--b-grey-on-fill); }
+/* Nov 14 inspection (SY-008, RA-14): grey text on a grey or tinted fill reads --b-grey-on-fill (5.0–5.3:1 on the quiet,
+ * teal-50, red-50, amber-50 and green-50 fills, where --b-grey is 4.3–4.5:1). The fills point the grey tokens at it, so a
+ * grey line inside one (a chosen row's second line, a callout's note) follows without a rule of its own. */
+:is(#c-root, html) body .app-shell[data-nv-b] :is(.b-notice, .b-quiet, .eb-callout, .b-cardnote--fill, .eb-tint, .eb-wsh--up, .eb-help-warn, .eb-lseg, .tof-seg, .em-delete-confirm, .form-error, .legal-unresolved, .portal-device-message, .correction-comparison__ask, .c-sched-weekstate, .c-request__status, .c-tc-sheet__done, .c-person__chip, .b-row--link[aria-current="true"], .c-hours-choices > .c-row:has(input:checked), .c-readonly > .c-in, .b-chip, .b-pill, .b-ico, .b-btn--quiet, .b-btn--ghost, .b-filters) {
+  --b-grey: var(--b-grey-on-fill); --c-grey: var(--b-grey-on-fill); --q-grey: var(--b-grey-on-fill); --q-soft: var(--b-grey-on-fill);
+}
+/* …and the second white (.86) is for the solid band only: on glass it reads 3.8:1 at the band's lightest stop, so inside a
+ * glass surface it resolves to white (4.5:1). The band's tabs, the week steppers and the search fields follow. */
+html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav.c-seg, .c-tc-seg, .q-seg, nav.c-week, .c-team-search__field, .c-pins__search, .c-sched-week__nav) { --b-on-band-2: var(--b-on-band); }
+@media (min-width: 768px) { html body .app-shell[data-nv-b] .c-page > header.c-title ~ .c-act__sub { --b-on-band-2: var(--b-on-band); } }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-stat__value--none { color: var(--b-grey); }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(details > summary, .q-details > summary) :is(.b-chev, .q-chev, .c-chev) { color: var(--b-grey); }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(details, .q-details)[open] > summary :is(.b-chev--down, .q-chev--down) { transform: rotate(180deg); }
@@ -207,13 +227,16 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn--danger { background: var(--b-red); color: #FFFFFF; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__trail > .b-btn { min-width: 96px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-decide > .b-btn { min-height: 44px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-days-cap { margin: 0; padding: 0 18px 6px; font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); color: var(--b-grey); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-days-v { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; padding: 0 18px 4px; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--b-ink2); text-align: center; }
+/* Phase 2, package C (Nov 15, 2026): Pick up on an open-shift row is the tinted pill now (it was the filled teal one); it
+ * keeps its own width at the row's start, as employee-b/requests.css set for the teal pill. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pickup .b-btn--ghost { align-self: flex-start; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-days-cap { margin: 0; padding: 0 var(--b-inset) 6px; font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); color: var(--b-grey); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-days-v { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; padding: 0 var(--b-inset) var(--b-space-4); font-size: 12px; line-height: 16px; font-weight: 600; color: var(--b-ink2); text-align: center; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-days-l { text-align: center; }
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] dialog.q-sheet .c-sheet__actions .c-row__icon { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 18px; background: var(--b-quiet); color: var(--b-ink2); }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] dialog.q-sheet .c-sheet__actions .c-row__icon { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: var(--b-radius-pill); background: var(--b-quiet); color: var(--b-ink2); }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] dialog.q-sheet .c-sheet__actions .c-row--danger .c-row__icon { background: var(--b-red-50); color: var(--b-red); }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] dialog.q-sheet .c-sheet__actions .c-row__icon svg { width: 18px; height: 18px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__legend { display: flex; align-items: center; gap: 6px; margin: 6px 6px 0; font-size: 12.5px; line-height: 16px; color: var(--b-on-band); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__legend { display: flex; align-items: center; gap: 6px; margin: 6px 6px 0; font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); color: var(--b-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__legend i { width: 6px; height: 6px; border-radius: 3px; background: #FFC46B; }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-page {
   --c-ink: var(--b-ink); --c-ink2: var(--b-ink2); --c-grey: var(--b-grey); --c-line: var(--b-line); --c-bg: var(--b-canvas);
@@ -230,15 +253,15 @@
 :is(#c-root, html) body .app-shell[data-nv-b] .c-help__q > summary { background: #FFFFFF; }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-help__q > summary .c-chev--down { color: var(--b-grey); transition: rotate var(--b-dur-press) var(--b-ease-out); }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-help__q[open] > summary .c-chev--down { rotate: 180deg; }
-:is(#c-root, html) body .app-shell[data-nv-b] .c-help__a, :is(#c-root, html) body .app-shell[data-nv-b] .c-help__a :is(p, li) { font-size: 15px; line-height: 22px; color: var(--b-ink2); }
+:is(#c-root, html) body .app-shell[data-nv-b] .c-help__a, :is(#c-root, html) body .app-shell[data-nv-b] .c-help__a :is(p, li) { font-size: var(--b-fs-body); line-height: var(--b-lh-body); color: var(--b-ink2); }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-help__a a { display: inline-block; padding-block: 11px; margin-block: -11px; font-size: inherit; }
 @media (prefers-reduced-motion: reduce) { :is(#c-root, html) body .app-shell[data-nv-b] .c-help__q > summary .c-chev--down { transition: none; } }
-:is(#c-root, html) body .app-shell[data-nv-b] .c-offline[data-held]::before { content: ""; flex: none; display: inline-block; width: 8px; height: 8px; margin-right: 8px; border-radius: 4px; background: #E9A23B; vertical-align: 1px; }
-:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 14px; align-items: start; padding: 16px; text-align: left; }
+:is(#c-root, html) body .app-shell[data-nv-b] .c-offline[data-held]::before { content: ""; flex: none; display: inline-block; width: 8px; height: 8px; margin-right: var(--b-space-8); border-radius: 4px; background: var(--b-amber-solid); vertical-align: 1px; }
+:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 14px; align-items: start; padding: var(--b-space-16); text-align: left; }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard > .b-ico { width: 48px; height: 48px; }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard > .b-ico svg { width: 22px; height: 22px; }
-:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__main { display: grid; gap: 4px; justify-items: start; min-width: 0; }
-:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__t { margin: 2px 0 0; font: 600 16px/22px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--b-ink); }
+:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__main { display: grid; gap: var(--b-space-4); justify-items: start; min-width: 0; }
+:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__t { margin: var(--b-space-2) 0 0; font: 600 16px/22px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--b-ink); }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__s { margin: 0; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__main > .b-btn { margin-top: 10px; min-height: 44px; }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-spin { display: block; width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid currentColor; border-right-color: transparent; }
@@ -248,25 +271,25 @@
 :is(#c-root, html) body .app-shell[data-nv-b] .cm-block.conflict .cm-block__warn { flex: none; color: var(--b-amber); }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .cm-block.conflict:not(#nv-none) { white-space: nowrap; }
 :is(#c-root, html) body .app-shell[data-nv-b] .cm-block.conflict .cm-block__need { flex-basis: 100%; font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); font-weight: 600; }
-:is(#c-root, html) body .app-shell[data-nv-b] .sidebar .sidebar-help-link { display: flex; align-items: center; gap: 10px; min-height: 44px; margin: 4px 12px 0; padding: 0 12px; border-radius: 10px; color: var(--b-ink2); font-size: 14.5px; font-weight: 500; text-decoration: none; }
+:is(#c-root, html) body .app-shell[data-nv-b] .sidebar .sidebar-help-link { display: flex; align-items: center; gap: 10px; min-height: 44px; margin: var(--b-space-4) var(--b-space-12) 0; padding: 0 var(--b-space-12); border-radius: var(--b-radius-small); color: var(--b-ink2); font-size: var(--b-fs-body-sm); font-weight: 500; text-decoration: none; }
 :is(#c-root, html) body .app-shell[data-nv-b] .sidebar .sidebar-help-link[aria-current="page"] { background: var(--b-teal-50); color: var(--b-teal); }
 @media (hover: hover) { :is(#c-root, html) body .app-shell[data-nv-b] .sidebar .sidebar-help-link:hover { background: var(--b-hover); } }
-:is(#c-root, html) body .app-shell[data-nv-b] .sidebar[data-collapsed="true"] .sidebar-help-link { justify-content: center; margin: 4px auto 0; width: 48px; padding: 0; }
+:is(#c-root, html) body .app-shell[data-nv-b] .sidebar[data-collapsed="true"] .sidebar-help-link { justify-content: center; margin: var(--b-space-4) auto 0; width: 48px; padding: 0; }
 :is(#c-root, html) body .app-shell[data-nv-b] .sidebar[data-collapsed="true"] .sidebar-help-link .nav-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-:is(#c-root, html) body .app-shell.nevora-portal[data-nv-b] .command-finder { border: 0; border-radius: 22px; box-shadow: var(--b-elev-2); overflow: hidden; }
+:is(#c-root, html) body .app-shell.nevora-portal[data-nv-b] .command-finder { border: 0; border-radius: var(--b-radius-card); box-shadow: var(--b-elev-2); overflow: hidden; }
 :is(#c-root, html) body .app-shell.nevora-portal[data-nv-b] .command-finder::backdrop { background: rgb(10 24 23 / .32); }
 @media (max-width: 767px) {
   :is(#c-root, html) body .app-shell[data-nv-b] dialog.q-sheet[open] { position: fixed; top: auto; bottom: 0; margin-bottom: 0; }
 }
-:is(#c-root, html) body .app-shell .schedule-publication-change li { padding-top: 12px; padding-bottom: 12px; }
-:is(#c-root, html) body .app-shell .schedule-publication-change .spc-chip { margin-right: 8px; vertical-align: 1px; }
+:is(#c-root, html) body .app-shell .schedule-publication-change li { padding-top: var(--b-space-12); padding-bottom: var(--b-space-12); }
+:is(#c-root, html) body .app-shell .schedule-publication-change .spc-chip { margin-right: var(--b-space-8); vertical-align: 1px; }
 @media (min-width: 768px) {
   :is(#c-root, html) body .app-shell[data-nv-b] .cm-block__pos { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; line-height: 15px; font-weight: 500; }
-  :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend { display: inline-flex; align-items: center; gap: 12px; margin-left: auto; margin-right: 12px; font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); color: var(--b-grey); }
+  :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend { display: inline-flex; align-items: center; gap: var(--b-space-12); margin-left: auto; margin-right: var(--b-space-12); font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); color: var(--b-grey); }
   :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend > span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 5px; border-radius: 3px; vertical-align: -1px; }
   :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend > [data-k="published"]::before { background: var(--b-teal-50); box-shadow: inset 0 0 0 1px var(--b-teal); }
   :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend > [data-k="draft"]::before { background: var(--b-quiet); box-shadow: inset 0 0 0 1px var(--b-field-edge); }
-  :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend > [data-k="open"]::before { background: #FFFFFF; box-shadow: none; outline: 1.5px dashed #E9A23B; outline-offset: -1.5px; }
+  :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend > [data-k="open"]::before { background: #FFFFFF; box-shadow: none; outline: 1.5px dashed var(--b-amber-solid); outline-offset: -1.5px; }
 }
 @media (max-width: 767px) { :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend { display: none; } }
 @media (min-width: 768px) {
@@ -276,15 +299,15 @@
 :is(#c-root, html) body .app-shell[data-nv-b] .c-tc-sheet__issue .c-tc-sheet__go { margin-top: 10px; }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav:has(> span[aria-hidden="true"]:first-child):not(#nv-none) { min-height: 60px; }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav:has(> span[aria-hidden="true"]:first-child) .c-sheet__title:not(#nv-none) { letter-spacing: -0.01em; }
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav .c-sheet__done:not(#nv-none) { justify-self: end; min-height: 44px; min-width: 44px; padding: 0 4px; }
-:is(#c-root, html) body .app-shell.nevora-portal .command-finder-results li.command-finder-option { grid-template-columns: 28px minmax(0, 1fr) auto; column-gap: 12px; min-height: 44px; }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav .c-sheet__done:not(#nv-none) { justify-self: end; min-height: 44px; min-width: 44px; padding: 0 var(--b-space-4); }
+:is(#c-root, html) body .app-shell.nevora-portal .command-finder-results li.command-finder-option { grid-template-columns: 28px minmax(0, 1fr) auto; column-gap: var(--b-space-12); min-height: 44px; }
 :is(#c-root, html) body .app-shell.nevora-portal .command-finder-ico { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--b-teal-50); color: var(--b-teal); font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 :is(#c-root, html) body .app-shell.nevora-portal .command-finder-ico svg { width: 15px; height: 15px; }
 :is(#c-root, html) body .app-shell.nevora-portal .command-finder-ico[data-group="People"] { background: var(--b-quiet); color: var(--b-ink2); }
 :is(#c-root, html) body .app-shell.nevora-portal .command-finder-ico[data-group="Locations"] { background: var(--b-amber-50); color: var(--b-amber); }
-:is(#c-root, html) body .app-shell.nevora-portal .command-finder-more { margin: 0; padding: 8px 18px 0; font-size: 13px; line-height: 18px; color: var(--b-grey); }
+:is(#c-root, html) body .app-shell.nevora-portal .command-finder-more { margin: 0; padding: var(--b-space-8) var(--b-inset) 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
 :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-b] #portal-account-menu :is(.portal-account-head__name, .portal-account-head__detail):not(#nv-none) { overflow-wrap: anywhere; }
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-row > .c-row__icon:not(#nv-none) { width: 36px; height: 36px; border-radius: 18px; background: var(--b-teal-50); color: var(--b-teal); }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-row > .c-row__icon:not(#nv-none) { width: 36px; height: 36px; border-radius: var(--b-radius-pill); background: var(--b-teal-50); color: var(--b-teal); }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-row > .c-row__icon svg:not(#nv-none) { width: 18px; height: 18px; }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-row--danger > .c-row__icon:not(#nv-none) { background: var(--b-red-50); color: var(--b-red); }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-photos__events { margin: 0; padding: 0; border: 0; min-width: 0; }
@@ -300,7 +323,7 @@
 :is(#c-root, html) body .app-shell[data-nv-b] .q-radio[data-on] { border-color: var(--b-teal); background: radial-gradient(circle, var(--b-teal) 0 5px, #FFFFFF 5.5px); }
 :is(#c-root, html) body .app-shell[data-nv-b] label:has(> input[type="radio"]:focus-visible) .q-radio { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .wc-preview:not(#nv-none) { position: relative; outline: 1.5px dashed var(--b-field-edge); outline-offset: 6px; }
-:is(#c-root, html) body .app-shell[data-nv-b] .wc-preview::before { content: "Preview"; position: absolute; top: 12px; right: 14px; z-index: 1; padding: 2px 8px; border-radius: 999px; background: var(--b-quiet); color: var(--b-grey-on-fill); font-size: 12px; line-height: 16px; font-weight: 600; }
+:is(#c-root, html) body .app-shell[data-nv-b] .wc-preview::before { content: "Preview"; position: absolute; top: 12px; right: 14px; z-index: 1; padding: var(--b-space-2) var(--b-space-8); border-radius: var(--b-radius-pill); background: var(--b-quiet); color: var(--b-grey-on-fill); font-size: 12px; line-height: 16px; font-weight: 600; }
 @media (min-width: 1024px) {
   :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] #b-todo-more:not(#nv-none) { position: sticky; top: 84px; align-self: start; }
 }
@@ -319,8 +342,8 @@
   @media (max-width: 767px) {
     html body .app-shell[data-nv-b][data-employee-mobile] .c-sheet.c-esheet .c-sheet__nav { grid-template-columns: minmax(0, 1fr) auto !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .c-sheet.c-esheet .c-sheet__nav > span:empty { display: none !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .c-sheet.c-esheet .c-sheet__title { justify-self: start !important; text-align: left !important; font: 700 20px/26px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.01em !important; color: var(--b-ink) !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .c-sheet.c-esheet .c-sheet__done { justify-self: end !important; display: inline-flex !important; align-items: center !important; min-height: 44px !important; min-width: 44px !important; padding: 0 4px !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-sheet.c-esheet .c-sheet__title { justify-self: start !important; text-align: left !important; font: 700 var(--b-fs-title)/var(--b-lh-title) Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.01em !important; color: var(--b-ink) !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-sheet.c-esheet .c-sheet__done { justify-self: end !important; display: inline-flex !important; align-items: center !important; min-height: 44px !important; min-width: 44px !important; padding: 0 var(--b-space-4) !important; }
   }
   /* NV-082 (left by closing F1): on tablets and desktop a payroll's money is ink 600, tabular, at the row's end, and a payroll a
    * correction replaced sits under it, its icon indented 44px (x66 in the card, the phone's nesting). */
@@ -330,7 +353,7 @@
   }
   /* …and on phones (closing F1's 44px row padding loses to the phone rows' padding there), 32px in. */
   @media (max-width: 767px) {
-    html body .app-shell[data-nv-b] .c-pay li.c-pay__replaced > .c-row > .c-row__icon { margin-left: 32px !important; }
+    html body .app-shell[data-nv-b] .c-pay li.c-pay__replaced > .c-row > .c-row__icon { margin-left: var(--b-space-32) !important; }
   }
   /* NV-130 (left by closing F1): Clocker PINs' search and its No PIN / PIN set filter join the band on glass, as Team's search
    * and the band tabs do; the people card follows under the band. */
@@ -339,18 +362,18 @@
      * from the content's 16px top margin to 16px past the filter. */
     html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins { position: relative !important; padding-top: 0 !important; }
     html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins::before { content: "" !important; position: absolute !important; top: -16px !important; left: 0 !important; right: 0 !important; height: 150px !important; z-index: 0 !important; background: #08504C !important; pointer-events: none !important; }
-    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search { margin: 0 !important; height: 46px !important; min-height: 46px !important; padding: 0 14px !important; border: 0 !important; border-radius: 14px !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; color: var(--b-on-band) !important; }
-    html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] { margin: 12px 0 0 !important; padding: var(--b-seg-pad) !important; border: 0 !important; border-radius: var(--b-seg-r) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
-    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg + * { margin-top: 40px !important; }
+    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search { margin: 0 !important; height: 46px !important; min-height: 46px !important; padding: 0 var(--b-gutter) !important; border: 0 !important; border-radius: var(--b-radius-field) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; color: var(--b-on-band) !important; }
+    html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] { margin: var(--b-space-12) 0 0 !important; padding: var(--b-seg-pad) !important; border: 0 !important; border-radius: var(--b-seg-r) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
+    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg + * { margin-top: var(--b-space-40) !important; }
   }
   @media (min-width: 768px) {
     /* (id steps: it orders after owner-b-desktop.css's band rule, which has them) */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page > .q-hd:has(~ .wc-content > .c-pins > .c-pins__search) { border-image-outset: 240px 100vw 130px 100vw !important; }
     html body .app-shell[data-nv-b] .q-page > .wc-content:has(> .c-pins > .c-pins__search) { margin-top: 52px !important; }
-    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins { display: flex !important; flex-flow: row wrap !important; align-items: flex-start !important; column-gap: 12px !important; row-gap: 12px !important; padding: 0 !important; }
+    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins { display: flex !important; flex-flow: row wrap !important; align-items: flex-start !important; column-gap: var(--b-space-12) !important; row-gap: var(--b-space-12) !important; padding: 0 !important; }
     html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > * { flex: 1 1 100% !important; min-width: 0 !important; }
-    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search { flex: 0 1 520px !important; height: 46px !important; min-height: 46px !important; margin: 0 !important; padding: 0 16px !important; border: 0 !important; border-radius: 23px !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; color: var(--b-on-band) !important; }
-    html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] { flex: none !important; width: auto !important; height: var(--b-seg-h) !important; margin: 0 0 36px 12px !important; padding: var(--b-seg-pad) !important; border: 0 !important; border-radius: var(--b-seg-r) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
+    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search { flex: 0 1 520px !important; height: 46px !important; min-height: 46px !important; margin: 0 !important; padding: 0 var(--b-space-16) !important; border: 0 !important; border-radius: var(--b-radius-pill) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; color: var(--b-on-band) !important; }
+    html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] { flex: none !important; width: auto !important; height: var(--b-seg-h) !important; margin: 0 0 36px var(--b-space-12) !important; padding: var(--b-seg-pad) !important; border: 0 !important; border-radius: var(--b-seg-r) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
     html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg > button { height: var(--b-seg-item-h) !important; min-height: var(--b-seg-item-h) !important; padding: 0 var(--b-seg-item-px) !important; border-radius: var(--b-seg-item-r) !important; }
   }
   html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search :is(.c-ic, input) { color: var(--b-on-band) !important; }
@@ -362,48 +385,52 @@
   html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] > button[aria-pressed="true"] { background: #FFFFFF !important; color: #0B3B38 !important; box-shadow: 0 2px 6px rgb(0 0 0 / .18) !important; }
   html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg > button:focus-visible { outline: 2px solid var(--b-focus-on-band) !important; outline-offset: 2px !important; }
   html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg[data-slide]::before, html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg > button::before { display: none !important; }
-  /* NV-265: on phones the form band's Save / Next pill (36px drawn) gets a 44px target. */
+  /* NV-265: on phones the form band's Save / Next pill (36px drawn) gets a 44px target. Nov 14 inspection (BR-11): so do the
+   * band's other white pills (a pushed page's action at the top right, 36px) and a correction's Approve / Decline (40px). */
   @media (max-width: 767px) {
-    html body .app-shell[data-nv-b] :is(.c-formhead > :last-child :is(a, button), .c-shift__save) { position: relative !important; }
-    html body .app-shell[data-nv-b] :is(.c-formhead > :last-child :is(a, button), .c-shift__save)::after { content: "" !important; position: absolute !important; inset: -4px 0 !important; }
+    html body .app-shell[data-nv-b] :is(.c-formhead > :last-child :is(a, button), .c-shift__save, .c-nav--phone .c-nav__right > :is(a, button), .q-nav > :is(a, button).q-nav__r, .q-nav > :last-child:is(a, button):not(.q-nav__l), .c-tcx .manager-correction-actions button) { position: relative !important; }
+    html body .app-shell[data-nv-b] :is(.c-formhead > :last-child :is(a, button), .c-shift__save, .c-nav--phone .c-nav__right > :is(a, button), .q-nav > :is(a, button).q-nav__r, .q-nav > :last-child:is(a, button):not(.q-nav__l))::after { content: "" !important; position: absolute !important; inset: -4px 0 !important; }
+    html body .app-shell[data-nv-b] .c-tcx .manager-correction-actions button::after { content: "" !important; position: absolute !important; inset: -2px 0 !important; }
   }
   /* NV-267: on phones Hours this week's week stepper is the band's glass stepper (as Schedule and Activity), not a white pill
    * on the band's edge. The band is one rectangle behind it (::before: 32px above, 16px each side, 60px below, so the first
    * card lifts over the teal), the glass pill another (::after); spread shadows would follow the pill's round corners. */
   @media (max-width: 767px) {
-    html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week { isolation: isolate !important; display: flex !important; align-items: center !important; justify-content: space-between !important; height: 44px !important; min-height: 44px !important; padding: 0 6px !important; border: 0 !important; border-radius: 22px !important; background: none !important; box-shadow: none !important; color: var(--b-on-band) !important; }
+    html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week { isolation: isolate !important; display: flex !important; align-items: center !important; justify-content: space-between !important; height: 44px !important; min-height: 44px !important; padding: 0 6px !important; border: 0 !important; border-radius: var(--b-radius-pill) !important; background: none !important; box-shadow: none !important; color: var(--b-on-band) !important; }
     html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week::before { content: "" !important; position: absolute !important; inset: -32px -16px -60px !important; z-index: -1 !important; background: #08504C !important; }
-    html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week::after { content: "" !important; position: absolute !important; inset: 0 !important; z-index: -1 !important; border-radius: 22px !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
+    html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week::after { content: "" !important; position: absolute !important; inset: 0 !important; z-index: -1 !important; border-radius: var(--b-radius-pill) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
     html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week :is(a, span, b, svg) { color: var(--b-on-band) !important; }
-    html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week .c-week__arrow { display: grid !important; place-items: center !important; width: 32px !important; height: 32px !important; min-height: 32px !important; padding: 0 !important; border: 0 !important; border-radius: 16px !important; background: transparent !important; box-shadow: none !important; }
-    html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week .c-week__label { font-size: 15px !important; font-weight: 600 !important; }
+    html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week .c-week__arrow { position: relative !important; display: grid !important; place-items: center !important; width: 32px !important; height: 32px !important; min-height: 32px !important; padding: 0 !important; border: 0 !important; border-radius: var(--b-radius-pill) !important; background: transparent !important; box-shadow: none !important; }
+    /* Nov 14 inspection (BR-11): the 32px arrows take a 44px target (the stepper is 44px tall). */
+    html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week .c-week__arrow::after { content: "" !important; position: absolute !important; inset: -6px !important; }
+    html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week .c-week__label { font-size: var(--b-fs-body) !important; font-weight: 600 !important; }
     html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week :focus-visible { outline: 2px solid var(--b-focus-on-band) !important; outline-offset: 2px !important; }
   }
   /* NV-251: a right-hand inspector (the timecard panel) leaves the way it came: it fades over 150ms while moving 12px to the
    * right; reduced motion fades only. quiet-sheet.tsx closes it (and the table re-flows) when the fade ends. */
   @media (min-width: 768px) {
-    html body .app-shell[data-nv-b] dialog.q-sheet[data-inspector][data-closing] { transform: translateX(12px) !important; opacity: 0 !important; transition: opacity 150ms ease-out, transform 150ms ease-out !important; }
+    html body .app-shell[data-nv-b] dialog.q-sheet[data-inspector][data-closing] { transform: translateX(12px) !important; opacity: 0 !important; transition: opacity var(--b-dur-exit) var(--b-ease-out), transform var(--b-dur-exit) var(--b-ease-out) !important; }
   }
   @media (min-width: 768px) and (prefers-reduced-motion: reduce) {
-    html body .app-shell[data-nv-b] dialog.q-sheet[data-inspector][data-closing] { transform: none !important; transition: opacity 150ms ease-out !important; }
+    html body .app-shell[data-nv-b] dialog.q-sheet[data-inspector][data-closing] { transform: none !important; transition: opacity var(--b-dur-exit) var(--b-ease-out) !important; }
   }
   /* NV-096: on phones Update detail's title and its date line sit in the band under "‹ Updates", like every other pushed
    * page's hero (they were 28px ink on the canvas under an empty bar). */
   @media (max-width: 767px) {
-    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child { position: relative !important; z-index: 1 !important; margin: 0 calc(50% - 50vw) !important; padding: 0 16px 18px !important; border: 0 !important; border-radius: 0 !important; background: #08504C !important; box-shadow: 0 -16px 0 #08504C !important; color: var(--b-on-band-2) !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child { position: relative !important; z-index: 1 !important; margin: 0 calc(50% - 50vw) !important; padding: 0 var(--b-space-16) 18px !important; border: 0 !important; border-radius: 0 !important; background: #08504C !important; box-shadow: 0 -16px 0 #08504C !important; color: var(--b-on-band-2) !important; }
     html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child h1 { margin: 0 !important; font: 700 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important; }
-    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child p { margin: 2px 0 0 !important; font-size: 14px !important; line-height: 19px !important; color: var(--b-on-band-2) !important; }
-    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child + * { margin-top: 16px !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child p { margin: var(--b-space-2) 0 0 !important; font-size: 14px !important; line-height: 19px !important; color: var(--b-on-band-2) !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child + * { margin-top: var(--b-space-16) !important; }
   }
   /* NV-090: the route note's Dismiss stays the teal text link wherever the note sits (list links are painted ink). */
   html body .app-shell[data-nv-b] .c-route-note > a.c-route-note__dismiss { color: var(--b-teal) !important; text-decoration: none !important; }
   /* NV-219: one menu look on tablets and desktop (account, Location, Schedule options, Insights period and Export): white,
-   * 16px corners, the popover elevation, 6px in; 44px items with 8px corners, 15/400 ink; the hover tint only where a pointer
-   * hovers. Phones keep their bottom sheets. */
+   * 16px corners, the popover elevation, 6px in; 44px items with 10px corners (concentric: 16 = 10 + 6; they were 8px,
+   * Nov 14 inspection SY-010), 15/400 ink; the hover tint only where a pointer hovers. Phones keep their bottom sheets. */
   @media (min-width: 768px) {
     html body .app-shell[data-nv-b] :is(.nevora-action-menu-popover, .cm-insights__menu):not(#manager-more-navigation) { background: #FFFFFF !important; border: 0 !important; border-radius: 16px !important; box-shadow: var(--b-elev-2) !important; padding: 6px !important; }
-    html body .app-shell[data-nv-b] :is(.nevora-action-menu-popover, .cm-insights__menu) :is(.nevora-action-menu-item, .cm-insights__menu-item) { min-height: 44px !important; border-radius: 8px !important; }
-    html body .app-shell[data-nv-b] .cm-insights__menu .cm-insights__menu-item { color: var(--b-ink) !important; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; }
+    html body .app-shell[data-nv-b] :is(.nevora-action-menu-popover, .cm-insights__menu) :is(.nevora-action-menu-item, .cm-insights__menu-item) { min-height: 44px !important; border-radius: var(--b-radius-small) !important; }
+    html body .app-shell[data-nv-b] .cm-insights__menu .cm-insights__menu-item { color: var(--b-ink) !important; font: 400 var(--b-fs-body)/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; }
     html body .app-shell[data-nv-b] .cm-insights__menu .cm-insights__menu-item[aria-pressed="true"] { font-weight: 500 !important; }
     @media (hover: hover) {
       html body .app-shell[data-nv-b] :is(.nevora-action-menu-popover, .cm-insights__menu) :is(.nevora-action-menu-item, .cm-insights__menu-item):not(:disabled):hover,
@@ -412,12 +439,12 @@
   }
 }
 /* NV-090: a schedule route error is a white note under the band: a red warning in a tinted circle, the message, Dismiss. */
-html body .app-shell[data-nv-b] .c-route-note { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; padding: 12px 18px; border-radius: var(--b-radius-card); background: #FFFFFF; box-shadow: var(--b-elev-1); color: var(--b-ink); }
-html body .app-shell[data-nv-b] .c-route-note__icon { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; background: var(--b-red-50); color: var(--b-red); }
+html body .app-shell[data-nv-b] .c-route-note { display: flex; align-items: center; gap: var(--b-space-12); margin: 0 0 var(--b-space-12); padding: var(--b-space-12) var(--b-inset); border-radius: var(--b-radius-card); background: #FFFFFF; box-shadow: var(--b-elev-1); color: var(--b-ink); }
+html body .app-shell[data-nv-b] .c-route-note__icon { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: var(--b-radius-pill); background: var(--b-red-50); color: var(--b-red); }
 html body .app-shell[data-nv-b] .c-route-note__icon svg { width: 20px; height: 20px; }
-html body .app-shell[data-nv-b] .c-route-note__text { flex: 1; min-width: 0; margin: 0; font-size: 15px; line-height: 21px; color: var(--b-ink); text-wrap: pretty; }
-html body .app-shell[data-nv-b] .c-route-note__dismiss { flex: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; color: var(--b-teal); font-size: 15px; font-weight: 600; text-decoration: none; }
-html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); border-radius: 8px; }
+html body .app-shell[data-nv-b] .c-route-note__text { flex: 1; min-width: 0; margin: 0; font-size: var(--b-fs-body); line-height: var(--b-lh-body); color: var(--b-ink); text-wrap: pretty; }
+html body .app-shell[data-nv-b] .c-route-note__dismiss { flex: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--b-space-4); color: var(--b-teal); font-size: var(--b-fs-body); font-weight: 600; text-decoration: none; }
+html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); border-radius: var(--b-radius-small); }
 
 /* ---------- Review fix pass F4 (Nov 10, 2026; Jose approved NV-114 and NV-102). Every declaration here is !important, so
  * the whole block is in nv-b; nothing new is unlayered. ---------- */
@@ -440,7 +467,7 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
    * CaretDown in #6A7176. A wrapper's own caret (.q-in__caret) steps aside so the select keeps one. */
   html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page, dialog) select:not([multiple]):not(:is(header.c-title, .b-hero, .q-hd, .q-nav, .b-search, .q-search, form.c-team-search, .c-pins__search, .command-finder, .q-select-row) *, .q-select-row__control, .q-sr) {
     height: 48px !important; min-height: 48px !important; box-sizing: border-box !important; border-radius: var(--b-radius-field) !important;
-    font-size: 16px !important; line-height: 20px !important; padding-inline-end: 40px !important; -webkit-appearance: none !important; appearance: none !important;
+    font-size: 16px !important; line-height: 20px !important; padding-inline-end: var(--b-space-40) !important; -webkit-appearance: none !important; appearance: none !important;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%236A7176' d='M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") !important;
     background-repeat: no-repeat !important; background-size: 16px 16px !important; background-position: right 14px center !important;
   }
@@ -452,8 +479,8 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
   /* A select that is a row's value (How you checked) is not a field: the row's chevron is its one caret, so the select
    * draws no edge, box or caret of its own. */
   html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page, dialog) .q-select-row select.q-select-row__control:not([multiple]) {
-    min-height: 44px !important; height: 44px !important; border: 0 !important; border-radius: 8px !important; box-shadow: none !important;
-    background: transparent none !important; padding: 0 4px 0 0 !important; text-align: right !important; text-align-last: right !important;
+    min-height: 44px !important; height: 44px !important; border: 0 !important; border-radius: var(--b-radius-small) !important; box-shadow: none !important;
+    background: transparent none !important; padding: 0 var(--b-space-4) 0 0 !important; text-align: right !important; text-align-last: right !important;
   }
 
   /* NV-102 (Jose: "Save at the bottom of the card"): on tablets and desktop a single-card settings tool's Save is a
@@ -481,23 +508,23 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
       background-image: linear-gradient(var(--b-line), var(--b-line)) !important; background-position: 22px 0 !important; background-size: calc(100% - 22px) 1px !important; background-repeat: no-repeat !important;
     }
     html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page) .wc-savecard .wc-savefoot {
-      display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: flex-end !important; gap: 12px !important;
-      margin: 0 !important; padding: 14px 22px 18px !important; border: 0 !important; background: linear-gradient(var(--b-line), var(--b-line)) 22px 0 / calc(100% - 22px) 1px no-repeat !important;
+      display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: flex-end !important; gap: var(--b-space-12) !important;
+      margin: 0 !important; padding: 14px var(--b-inset-wide) 18px !important; border: 0 !important; background: linear-gradient(var(--b-line), var(--b-line)) 22px 0 / calc(100% - 22px) 1px no-repeat !important;
     }
     /* One footer button: a 48px pill sized to its label, never a bar; also in the footers that already sat in their card
      * (Punch photos, Clocker tablets), so no footer stretches to 726px on a tablet. */
     html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page) :is(.wc-savecard .wc-savefoot, .wc-page .c-card__foot, .c-photos__foot) > :is(button, a):is(.q-btn, .c-btn, .wc-btn) {
       flex: none !important; width: auto !important; min-width: 96px !important; height: 48px !important; min-height: 48px !important; margin: 0 !important;
-      padding: 0 24px !important; border-radius: var(--b-radius-pill) !important; font-size: 15px !important; line-height: 20px !important;
+      padding: 0 var(--b-space-24) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-body) !important; line-height: 20px !important;
     }
     /* Employee single-card forms (TB-031, EM-038): Send request and Create or Copy calendar link were full-width bars (734px
      * on a 900px tablet, 1042px on desktop); they are right-aligned 48px pills at the card's foot. */
     html body .app-shell[data-nv-b] .c-page > .tof-form.b-keep .tof-foot { display: flex !important; flex-direction: row !important; justify-content: flex-end !important; }
     html body .app-shell[data-nv-b] .c-page > .tof-form.b-keep .tof-foot > .c-btn {
-      flex: none !important; width: auto !important; min-width: 96px !important; height: 48px !important; min-height: 48px !important; padding: 0 24px !important; border-radius: var(--b-radius-pill) !important;
+      flex: none !important; width: auto !important; min-width: 96px !important; height: 48px !important; min-height: 48px !important; padding: 0 var(--b-space-24) !important; border-radius: var(--b-radius-pill) !important;
     }
     html body .app-shell[data-nv-b] .b-screen section.b-card[aria-labelledby="b-calendar-heading"] .eb-body > .b-btn--full {
-      display: flex !important; width: fit-content !important; min-width: 96px !important; min-height: 48px !important; margin-left: auto !important; padding: 0 24px !important;
+      display: flex !important; width: fit-content !important; min-width: 96px !important; min-height: 48px !important; margin-left: auto !important; padding: 0 var(--b-space-24) !important;
     }
   }
 }
@@ -514,13 +541,37 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
       content: "" !important; display: block !important; position: absolute !important; inset: 0 !important; height: auto !important;
       margin: 0 !important; z-index: 2 !important; border-radius: inherit !important; pointer-events: none !important;
       box-shadow: inset 0 0 0 var(--b-focus-width) var(--b-focus) !important; background: none !important;
+      /* Nov 14 inspection (RA-17): forced colours drop the shadow; they paint this outline instead. */
+      outline: var(--b-focus-width) solid transparent !important; outline-offset: calc(-1 * var(--b-focus-width)) !important;
     }
   }
-  /* NV-170: on tablets the rail's entries are 48px (touch targets), so its column is 48px too; at 40px it clipped their
-   * right edge, the focus ring's included. */
+  /* TB-001 (Nov 14 inspection; Nov 11 plan, Phase 2): on tablets the rail is 80px wide and names each entry under its icon
+   * (the label was always in the page, hidden; NV-170's 48px column is gone with it). An entry is a 72px column, at least
+   * 56px tall: the 20px icon in a 56×30 pill (teal-50 when it is the current page, as the phone tab bar marks its tab),
+   * then the label at 10.5/13 on up to two lines. One count badge: the 20px pill of 12/700 at the icon's top right, ringed
+   * in white (red for Things to do; an Employee's Notifications is teal, in employee-b-desktop.css). The entry's size and
+   * type are set beside the rule they replace (owner-b-desktop.css, "The rail"). Help at the foot is labelled the same way.
+   * The focus ring (NV-170, above) follows the entry's 14px corners. */
   @media (min-width: 768px) and (max-width: 1023px) {
-    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar { padding-left: 12px !important; padding-right: 12px !important; }
-    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar :is(.sidebar-nav, .sidebar-nav-group) { width: 48px !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] { grid-template-columns: 80px minmax(0, 1fr) !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar { width: 80px !important; min-width: 80px !important; padding-left: var(--b-space-4) !important; padding-right: var(--b-space-4) !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar :is(.sidebar-nav, .sidebar-nav-group) { width: 72px !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar :is(#desktop-primary-navigation .nav-link, .sidebar-help-link) {
+      display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; box-sizing: border-box !important;
+      padding: 5px var(--b-space-2) !important; margin-left: 0 !important; margin-right: 0 !important; text-align: center !important;
+    }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar #desktop-primary-navigation .nav-link.active { background: transparent !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar #desktop-primary-navigation .nav-link > .c-nav-pending { display: none !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar .sidebar-help-link { width: 72px !important; min-height: 56px !important; gap: var(--b-space-2) !important; border-radius: var(--b-radius-field) !important; font-size: 10.5px !important; line-height: 13px !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar :is(#desktop-primary-navigation .nav-link .nav-icon, .sidebar-help-link > svg) { box-sizing: content-box !important; flex: none !important; width: 20px !important; height: 20px !important; padding: 5px 18px !important; border-radius: var(--b-radius-pill) !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar :is(#desktop-primary-navigation .nav-link.active .nav-icon, .sidebar-help-link[aria-current="page"] > svg) { background: var(--b-teal-50) !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar .sidebar-help-link[aria-current="page"] { background: transparent !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar :is(#desktop-primary-navigation .nav-link, .sidebar-help-link) .nav-label {
+      position: static !important; display: -webkit-box !important; -webkit-box-orient: vertical !important; -webkit-line-clamp: 2 !important; width: auto !important; max-width: 100% !important; height: auto !important;
+      margin: 0 !important; padding: 0 !important; overflow: hidden !important; clip-path: none !important; white-space: normal !important; overflow-wrap: break-word !important;
+      font-size: 10.5px !important; line-height: 13px !important; letter-spacing: 0 !important; color: inherit !important;
+    }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar #desktop-primary-navigation .nav-link .nav-count { top: 2px !important; right: auto !important; left: calc(50% + 4px) !important; line-height: 20px !important; box-shadow: 0 0 0 2px #FFFFFF !important; }
   }
   /* NV-074: while a main tab loads, its band is as tall as the loaded tab's (--b-ph-band, set below per tab and role), so
    * the page lands without the cards jumping. Three placeholders take it: the access check's and a tab tap's (the shared
@@ -569,17 +620,17 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
    * 320). A track whose thumb slides (data-slide) keeps its equal columns, which the thumb's position is computed from. */
   @media (max-width: 359px) {
     html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg):not([data-slide]):has(> :nth-child(3)) { grid-template-columns: none !important; grid-auto-flow: column !important; grid-auto-columns: auto !important; }
-    html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg):not([data-slide]):has(> :nth-child(3)) > :is(a, button) { flex: 1 1 auto !important; min-width: 0 !important; padding-left: 4px !important; padding-right: 4px !important; }
+    html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg):not([data-slide]):has(> :nth-child(3)) > :is(a, button) { flex: 1 1 auto !important; min-width: 0 !important; padding-left: var(--b-space-4) !important; padding-right: var(--b-space-4) !important; }
   }
   /* Team's filters (on white, in the people card): the same track as the other controls on white, scrolling on a phone. */
   html body .app-shell[data-nv-b] .b-filters {
-    display: flex !important; width: fit-content !important; max-width: calc(100% - 36px) !important; margin: 14px 18px 4px !important; overflow-x: auto !important;
+    display: flex !important; width: fit-content !important; max-width: calc(100% - 36px) !important; margin: 14px var(--b-inset) var(--b-space-4) !important; overflow-x: auto !important;
     background: var(--b-quiet) !important; box-shadow: inset 0 0 0 1px #E3E6E7 !important;
   }
-  html body .app-shell[data-nv-b] .b-filters > button { flex: none !important; padding: 0 14px !important; background: transparent !important; box-shadow: none !important; color: var(--b-grey-on-fill) !important; }
+  html body .app-shell[data-nv-b] .b-filters > button { flex: none !important; padding: 0 var(--b-gutter) !important; background: transparent !important; box-shadow: none !important; color: var(--b-grey-on-fill) !important; }
   html body .app-shell[data-nv-b] .b-filters > button[aria-pressed="true"] { background: #FFFFFF !important; color: var(--b-ink) !important; box-shadow: 0 1px 3px rgb(16 40 38 / 0.14) !important; }
   @media (min-width: 768px) {
-    html body .app-shell[data-nv-b] .b-filters { max-width: calc(100% - 44px) !important; margin: 16px 22px 8px !important; -webkit-mask-image: none !important; mask-image: none !important; }
+    html body .app-shell[data-nv-b] .b-filters { max-width: calc(100% - 44px) !important; margin: var(--b-space-16) var(--b-inset-wide) var(--b-space-8) !important; -webkit-mask-image: none !important; mask-image: none !important; }
     html body .app-shell[data-nv-b] .b-filters > button { padding: 0 var(--b-seg-item-px) !important; }
   }
 }
@@ -617,4 +668,70 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
   html body .app-shell[data-nv-b][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link[href="/app/my-time"][aria-current="page"]) { --b-ph-band: 247px; }
   html body .app-shell[data-nv-b][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link[href="/app/my-pay"][aria-current="page"]) { --b-ph-band: 259px; }
   html body .app-shell[data-nv-b][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link[href="/app/requests/hub"][aria-current="page"]) { --b-ph-band: 269px; }
+}
+
+/* ---------- Nov 14, 2026 inspection: foundation fixes (the first slice of the Nov 11 plan's Phase 1). The !important
+ * declarations are in this nv-b block; the normal ones and the forced-colours block follow it. ---------- */
+@layer nv-b {
+  /* SY-015, UI-5: the last square buttons. nv-btn (reports, time-off review, calendar links, update detail, the older forms,
+   * passkeys, route errors, PendingButton) had no Direction B rule and drew as a rectangle with 8 or 12px corners in three
+   * teals. It is the B button now: a pill, 44px tall (48px when it fills its row), 14.5/20 600 (15.5/22 at 48px); primary
+   * is the teal primary, secondary (and a button with no kind) the tinted pill, danger red; disabled is the one disabled
+   * pair, and a busy button keeps its fill. A label that wraps keeps 6px above and below. The class and its data-kind
+   * values are unchanged; widths and side padding stay with each page. */
+  html body .app-shell[data-nv-b] .nv-btn {
+    box-sizing: border-box !important; height: auto !important; min-height: 44px !important; padding-top: 6px !important; padding-bottom: 6px !important; border: 0 !important; border-radius: var(--b-radius-pill) !important;
+    background: var(--b-teal-50) !important; color: var(--b-teal) !important; box-shadow: none !important;
+    font: 600 var(--b-fs-body-sm)/var(--b-lh-body-sm) Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: 0 !important; text-decoration: none !important;
+  }
+  html body .app-shell[data-nv-b] .nv-btn[data-block="true"] { min-height: 48px !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; }
+  html body .app-shell[data-nv-b] .nv-btn[data-kind="primary"] { background: var(--b-teal) !important; color: #FFFFFF !important; }
+  html body .app-shell[data-nv-b] .nv-btn[data-kind="primary"]:not(:disabled, [aria-disabled="true"]) { box-shadow: var(--b-elev-glow) !important; }
+  html body .app-shell[data-nv-b] .nv-btn[data-kind="danger"] { background: var(--b-red) !important; color: #FFFFFF !important; }
+  html body .app-shell[data-nv-b] .nv-btn[data-tone="urgent"]:not([data-kind="primary"], [data-kind="danger"]) { background: var(--b-red-50) !important; color: var(--b-red) !important; }
+  html body .app-shell[data-nv-b] .nv-btn:is(:disabled, [aria-disabled="true"]):not([aria-busy="true"]) { opacity: 1 !important; background: var(--b-disabled-bg) !important; color: var(--b-disabled-ink) !important; box-shadow: none !important; cursor: not-allowed !important; }
+  html body .app-shell[data-nv-b] .nv-btn:focus-visible { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; }
+  /* …and the older kits' buttons are pills wherever a B sheet had not reached them: a red secondary on a phone (8px), a plain
+   * q-bs, a text button's focus shape. Rules that already set a pill for their own height (21px at 42px, 24px at 48px) are
+   * more specific and keep it. */
+  html body .app-shell[data-nv-b] :is(.c-btn, .q-btn, .q-bs, .wc-btn) { border-radius: var(--b-radius-pill) !important; }
+  /* The Employee phone forms kept beside a B screen drew 16, 18 and 20px corners (employee-b/requests.css); one class more
+   * than those rules, so the pill holds whichever sheet loads last. */
+  html body .app-shell.nevora-portal[data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn,
+  html body .app-shell.nevora-portal[data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-callout .c-btn,
+  html body .app-shell.nevora-portal[data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep :is(.c-btn--primary, button[type="submit"].c-btn) { border-radius: var(--b-radius-pill) !important; }
+
+  /* Phase 2, package C (Nov 15, 2026): one primary per screen. A button repeated on list rows is never the filled teal
+   * (or the filled grey) pill. `b-rowact--go` is the row's positive action (Approve, Review, Pick up, Accept, Claim,
+   * Acknowledge): the tinted pill, as the kit's `b-btn--ghost`. `b-rowact--quiet` is the other one (Decline, Dismiss,
+   * Close request, Open): a quiet text button, as Decline on Things to do. Only the look changes; the button keeps its own
+   * class (q-bs, q-btn, c-btn, b-btn), size, 44px target, handler and name. The older eras fill these with !important at up
+   * to five id steps (owner-b-desktop.css "Round 5 D6"), so this answers with six. Disabled is the one disabled pair; a
+   * busy button keeps its look. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-rowact.b-rowact--go:not(#b-ra1):not(#b-ra2):not(#b-ra3) { border-color: transparent !important; background: var(--b-teal-50) !important; color: var(--b-teal) !important; box-shadow: none !important; text-decoration: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-rowact.b-rowact--quiet:not(#b-ra1):not(#b-ra2):not(#b-ra3) { border-color: transparent !important; background: transparent !important; color: var(--b-ink2) !important; box-shadow: none !important; text-decoration: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-rowact:is(:disabled, [aria-disabled="true"]):not([aria-busy="true"]):not(#b-ra1):not(#b-ra2):not(#b-ra3) { opacity: 1 !important; background: var(--b-disabled-bg) !important; color: var(--b-disabled-ink) !important; box-shadow: none !important; cursor: not-allowed !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-rowact:focus-visible:not(#b-ra1):not(#b-ra2):not(#b-ra3) { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; }
+
+  /* SY-008, RA-14: the bell's coral dot is 2.1:1 on the band, so its 2px ring is white (5.8:1 on the band, 4.5:1 on the
+   * bell's glass): the mark is found by its ring, and coral stays its colour. The Owner's rings are set where the dot is
+   * (owner-b-shell.css, owner-b-desktop.css, employee-b-desktop.css); this is the Employee phone's (employee-b.css), one
+   * class more than its rule. */
+  @media (max-width: 767px) {
+    html body .app-shell.employee-shell.nevora-portal[data-nv-corp][data-nv-b][data-employee-mobile]:has(.c-page > .b-screen) .mobile-header .portal-notification-count { box-shadow: 0 0 0 2px var(--b-on-band) !important; }
+  }
+
+  /* RA-17: Windows High Contrast and other forced-colours modes drop box-shadow, which drew these focus rings. Each keeps a
+   * transparent outline beside its shadow (the mode paints it); here it is named as the system's highlight colour. */
+  @media (forced-colors: active) {
+    html body .app-shell[data-nv-b] .b-screen .b-hero .b-live__a:focus-visible,
+    html body .app-shell[data-nv-b] aside.sidebar .nav-link:focus-visible::after,
+    html body .app-shell[data-nv-b] :is(.b-search, form.c-team-search .c-team-search__field):focus-within { outline-color: Highlight !important; }
+  }
+}
+/* RA-17, the normal declarations: in forced colours a surface whose only edge was a shadow or a fill gets a real one (the
+ * B1 select, the glass fields and buttons on the band, the chosen segment and filter). */
+@media (forced-colors: active) {
+  html body .app-shell[data-nv-b] :is(.c-page, .q-page, .b-screen) select:not([multiple]),
+  html body .app-shell[data-nv-b] :is(.b-search, .c-team-search__field, .c-pins__search, .b-glass, .b-btn--glass, .b-seg > [aria-current="page"], .b-seg > [aria-pressed="true"], .b-filters > [aria-pressed="true"]) { outline: 1px solid ButtonText; outline-offset: -1px; }
 }

@@ -66,7 +66,7 @@ it('unmounts retained shell state and cancels late billing reads/handoffs in nat
    responseLifetime=1000;await page.getByRole('button',{name:'Refresh status',exact:true}).click();await page.getByText('2 / 15',{exact:true}).waitFor();delete held.handoff;
    const handoffAbortsBefore=await page.evaluate(()=>window.recoveryReceipt.aborted.filter(path=>path==='/api/commerce/handoff').length);
    await page.getByRole('button',{name:'Open billing in Velani'}).click();await expect.poll(()=>Boolean(held.handoff)).toBe(true);
-   await page.getByText('Billing status is unavailable. Try again in a moment.',{exact:true}).waitFor();
+   await page.getByText('We can’t check billing right now. Try again in a few minutes.',{exact:true}).waitFor();
    await expect.poll(()=>page.evaluate(()=>window.recoveryReceipt.aborted.filter(path=>path==='/api/commerce/handoff').length)).toBe(handoffAbortsBefore+1);
    const expiredHandoff=readHandoff(held);if(!expiredHandoff)throw Error('Expired held handoff missing');
    await expiredHandoff.fulfill({contentType:'application/json',body:JSON.stringify({url:'https://www.thevelani.com/pages/plans#handoff='+'a'.repeat(43)})}).catch(()=>undefined);

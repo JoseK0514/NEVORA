@@ -42,5 +42,5 @@ export function ShiftTicket({ give, get, giveLabel = "You give", getLabel = "You
     return <div><small>{label}</small><b aria-hidden="true">{Number(shift.date.slice(8))}</b><span>{longWeekday(shift.date)}</span><span>{range(shift)}</span>
       <span className="nv-sr">{day.weekday}, {day.day}. </span><em>{shiftPlace(shift, zone)}</em></div>;
   };
-  return <div className="sg-ticket">{half(give, giveLabel)}<i aria-hidden="true"><ArrowsLeftRightIcon size={18} /></i>{half(get, getLabel)}</div>;
+  return <div className="sg-ticket">{half(give, giveLabel)}<i aria-hidden="true"><ArrowsLeftRightIcon size={18} weight="bold" /></i>{half(get, getLabel)}</div>;
 }

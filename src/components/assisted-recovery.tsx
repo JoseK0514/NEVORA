@@ -80,7 +80,7 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
        <select className="q-select-row__control" name={method === "other" ? undefined : "attestation"} value={method} onChange={event => setMethod(event.target.value)} aria-label="How you checked who they are">
         {METHODS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
        </select>
-       <CaretRightIcon className="q-chev" aria-hidden="true"/>
+       <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/>
       </label></li>
       <li><label className="q-row q-row--one" data-invalid={errors.confirm?'true':undefined}>
        <span className="q-rt"><b>I confirmed who they are</b></span>
@@ -105,7 +105,7 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
   </form>}
   {pins&&!issued?<section className="wc-recovery__pins" aria-labelledby="assisted-pins-title">
    <h2 className="q-sr" id="assisted-pins-title">Clocker PIN</h2>
-   <ul className="q-list"><li><Link className="q-row" href="/app/settings/clocker/pins"><span className="q-rt"><b>Reset a Clocker PIN</b><i>Set a new PIN for someone who forgot theirs</i></span><CaretRightIcon className="q-chev" aria-hidden="true"/></Link></li></ul>
+   <ul className="q-list"><li><Link className="q-row" href="/app/settings/clocker/pins"><span className="q-rt"><b>Reset a Clocker PIN</b><i>Set a new PIN for someone who forgot theirs</i></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></Link></li></ul>
   </section>:null}
  </SettingsFrame>;
 }

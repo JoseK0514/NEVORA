@@ -65,7 +65,7 @@ export function MyPay({ nextPay = null, statement = null, document = null, corpo
     <QuietHeader title="Pay" />
     {/* A statement link that failed returns here on desktop too, with the same explanation as the phone view. */}
     {document ? <div className="q-emptyblock" role="alert"><p className="q-empty">{document === 'failed' ? 'We couldn’t open that statement. It didn’t pass NEVORA’s file check. Try again later, or ask your manager.' : document === 'temporary' ? 'We couldn’t open that statement just now. Try again in a moment.' : 'That statement isn’t available. It may have been replaced, or your access changed.'}</p></div> : null}
-    {payday ? <div className="q-lead"><b>{`Next payday is ${payday}`}</b><i>{[when, nextPay?.period ? `for ${periodLabel(nextPay.period.startDate, nextPay.period.endDate).replace('–', ' – ')}` : null].filter(Boolean).join(' · ')}</i></div> : null}
+    {payday ? <div className="q-lead"><b>{`Scheduled payday is ${payday}`}</b><i>{[when, nextPay?.period ? `for ${periodLabel(nextPay.period.startDate, nextPay.period.endDate).replace('–', ' – ')}` : null].filter(Boolean).join(' · ')}</i></div> : null}
     <div className="q-grp" style={{ marginTop: payday ? 32 : 28 }}><h2 id="mp-week">This week</h2></div>
     <QuietList label="This week">
       <QuietRow one href="/app/my-time" title="My time" />
@@ -80,8 +80,8 @@ export function MyPay({ nextPay = null, statement = null, document = null, corpo
           <QuietRow bare href={documentHref(statement)} title={`Payday ${formatDisplayDate(statement.payday)}`} detail={`${periodLabel(statement.period.startDate, statement.period.endDate)} · PDF`} label={`Download ${statement.filename}`} />
           {statement.viewUrl ? <a className="q-pay__view" href={`${documentHref(statement)}/view`} aria-label={`View ${statement.filename}`}>View</a> : null}
         </li>)}</QuietList>
-      : <p className="q-empty">No published statements yet.</p>}
-    <p className="q-help">Only your own published statements are available here. Downloaded files may contain personal pay information.</p>
+      : <p className="q-empty">No pay statements shared yet.</p>}
+    <p className="q-help">Only your own pay statements are available here. Downloaded files may contain personal pay information.</p>
   </QuietPage>;
 }
 
@@ -97,8 +97,8 @@ export function QuietMyPay({ nextPay = null }: { nextPay?: NextPay }) {
   return <CorpPage className="c-mypay c-page--narrow" labelledBy="mypay-title">
     <CorpNav back={{ href: '/app/more', label: 'More' }} title="My pay" titleId="mypay-nav-title" phoneOnly />
     <CorpTitle id="mypay-title" title="My pay" wide />
-    {payday ? <CorpCard id="mypay-payday" label="Payday">
-      <CorpRows label="Payday"><li><CorpRow title={payday} bold detail={nextPay?.period ? `Pay period ${periodLabel(nextPay.period.startDate, nextPay.period.endDate).replace('–', ' – ')}` : undefined} trail={away ? <CorpPill tone="teal">{away}</CorpPill> : undefined} /></li></CorpRows>
+    {payday ? <CorpCard id="mypay-payday" label="Scheduled payday">
+      <CorpRows label="Scheduled payday"><li><CorpRow title={payday} bold detail={nextPay?.period ? `Pay period ${periodLabel(nextPay.period.startDate, nextPay.period.endDate).replace('–', ' – ')}` : undefined} trail={away ? <CorpPill tone="teal">{away}</CorpPill> : undefined} /></li></CorpRows>
     </CorpCard> : null}
     {loading ? <CorpCard id="mypay-statements" label="Statements"><div className="c-empty c-empty--card" role="status"><span className="c-empty__body">Loading…</span></div></CorpCard>
       : error ? <CorpErrorCard title={error === PAYROLL_SIGNED_OUT ? 'Sign in again to see your statements.' : 'Couldn’t load your statements.'} body={null}

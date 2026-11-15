@@ -20,10 +20,13 @@ import { SparkleIcon } from "@phosphor-icons/react/dist/ssr/Sparkle";
 import { GearSixIcon } from "@phosphor-icons/react/dist/ssr/GearSix";
 import { SlidersHorizontalIcon } from "@phosphor-icons/react/dist/ssr/SlidersHorizontal";
 import { QuestionIcon } from "@phosphor-icons/react/dist/ssr/Question";
+import { CreditCardIcon } from "@phosphor-icons/react/dist/ssr/CreditCard";
 import { CorpAvatar, CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
 import { PortalSignout } from "@/components/portal-signout";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { pathEnabled } from "@/lib/workspace-presentation/modules";
+import { commerceEnabled } from "@/lib/commerce/access";
+import { durationTotal } from "@/lib/duration-format";
 import "./more-corp.css";
 import "@/components/employee-mobile/account-corp.css";
 import { readEmployeeProfile } from "@/lib/data/employee-profile.server";
@@ -76,14 +79,16 @@ async function EmployeeMoreCorp({ firstName, lastName, workspaceName }: { firstN
 }
 
 /** Insights' grey value on More: the hours recorded this week so far (Monday to today, as Insights opens), from the same
- * read Insights uses. It streams in after the page; a failed or empty read shows nothing, never a zero it doesn't know. */
+ * read Insights uses. It streams in after the page; a failed or empty read shows nothing, never a zero it doesn't know.
+ * Review Nov 14 (BR-1): the figure is the read's whole minutes written by the shared duration formatter, so More,
+ * Timecards and Insights round one way. */
 async function weekHours(proof: SessionMutationProof, timeZone: string): Promise<string | null> {
   try {
     const today = Temporal.Now.zonedDateTimeISO(timeZone).toPlainDate();
     const monday = today.subtract({ days: today.dayOfWeek - 1 });
     const result = await readReports(proof, { startDate: monday.toString(), endDate: today.toString() });
     if (result.state !== "ready" || !/^\d+$/.test(result.report.summary.recordedNanoseconds)) return null;
-    return `${Math.round(Number(BigInt(result.report.summary.recordedNanoseconds) / BigInt(60_000_000_000)) / 60)} h this week`;
+    return `${durationTotal(Number(BigInt(result.report.summary.recordedNanoseconds) / BigInt(60_000_000_000)))} this week`;
   } catch { return null; }
 }
 async function WeekHours({ proof, timeZone }: { proof: SessionMutationProof; timeZone: string }) {
@@ -111,10 +116,13 @@ export default async function MorePage() {
   // do) and ends with its chevron; a row may end in a grey value before the chevron ("24 h this week").
   const rowIcons: Record<string, ReactNode> = { "/app/reports": <ChartBarIcon weight="bold" />, "/app/updates": <MegaphoneSimpleIcon weight="bold" />,
     "/app/my-pay": <WalletIcon weight="bold" />, "/app/ai-manager": <SparkleIcon weight="bold" />, "/app/settings": <GearSixIcon weight="bold" />,
-    "/app/schedule/settings": <SlidersHorizontalIcon weight="bold" />, "/app/help": <QuestionIcon weight="bold" /> };
+    "/app/schedule/settings": <SlidersHorizontalIcon weight="bold" />, "/app/help": <QuestionIcon weight="bold" />, "/app/billing": <CreditCardIcon weight="bold" /> };
   const row = (href: string, title: string, value?: ReactNode) =>
     <li key={href}><CorpRow href={href} title={title} value={value} valueTone="soft" icon={rowIcons[href]} one chevron /></li>;
   const settings = owner && pathEnabled("/app/settings", brand.modules);
+  // Review Nov 14 (AR-13, JR-4): an Owner reaches the subscription from More (and Settings) wherever this deployment has
+  // billing on; the page itself is closed everywhere else, so the row is left out there.
+  const billing = owner && commerceEnabled();
   const name = `${session.firstName} ${session.lastName}`;
   const company = workspace.name;
   // Review F2 (NV-105): "you" is drawn as in the header (white circle, teal initials, more-corp.css), as on Profile.
@@ -141,6 +149,7 @@ export default async function MorePage() {
     <CorpSection ariaLabel="Settings and help"><CorpCard as="div">
       <CorpRows label="Settings and help">
         {settings ? row("/app/settings", "Settings") : null}
+        {billing ? row("/app/billing", "Plan and billing") : null}
         {/* A Manager has no Settings; Scheduling rules is theirs to open (it also opens from Schedule). */}
         {!settings && has("/app/schedule/settings") ? row("/app/schedule/settings", "Scheduling rules") : null}
         {row("/app/help", "Help")}

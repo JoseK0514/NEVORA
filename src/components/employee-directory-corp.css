@@ -12,3 +12,12 @@
 :is(#c-root, html) .app-shell[data-nv-b] .c-team .c-card > .b-filters { padding: 16px 22px 8px; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-team .c-card > .b-filters button { border: 0; font-family: inherit; cursor: pointer; }
 :is(#c-root, html) .c-team .c-team__empty--filter { padding: 16px 22px 20px; }
+
+/* Nov 14, 2026 inspection (BR-11): the phone search's magnifier is its Apply button, a 44px target around the 19px icon.
+ * Its own margins pull it in, so the field lays out as it did when the icon was a plain glyph. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-search > .b-search__go { flex: none; display: inline-grid; place-items: center; width: 44px; height: 44px; min-height: 44px; margin: 0 -12.5px; padding: 0;
+  border: 0; border-radius: 12px; background: none; box-shadow: none; color: inherit; cursor: pointer; -webkit-appearance: none; appearance: none; }
+@layer nv-b {
+  /* Offline, action pills take the one disabled fill (b-foundation.css); this glyph on the band keeps no fill. */
+  html body .app-shell[data-nv-b][data-offline] #main-content .b-search > button.b-search__go[type="submit"] { background: none !important; color: inherit !important; }
+}

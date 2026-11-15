@@ -8,7 +8,7 @@ import styles from './clocker.module.css';
 
 /* The one Clocker receipt (Direction B, Nov 8, 2026; shared by the normal and photo paths since the Nov 10 review, NV-054):
  * the recorded time as the hero figure, the approved line, "Saved …", the eight-second bar and the action reference. */
-export const receiptTitles: Record<PunchAction, string> = { CLOCK_IN: 'Clock In recorded', START_BREAK: 'Break start recorded', END_BREAK: 'Break end recorded', CLOCK_OUT: 'Clock Out recorded' };
+export const receiptTitles: Record<PunchAction, string> = { CLOCK_IN: 'Clock in recorded', START_BREAK: 'Break start recorded', END_BREAK: 'Break end recorded', CLOCK_OUT: 'Clock out recorded' };
 const goodbyes: Record<PunchAction, string> = { CLOCK_IN: 'Have a good shift, {first}.', CLOCK_OUT: 'See you next time, {first}.', START_BREAK: 'Enjoy your break.', END_BREAK: 'Welcome back.' };
 
 /** "Nov 9 · 10:47 PM"; in Spanish "9 nov · 10:47 p. m.". Intl orders the date for each language (Nov 10 review, NV-183). */
@@ -44,6 +44,6 @@ export function ClockerReceipt({ action, performedAt, commandId, timeZone, local
     {children}
     <p role="status" className={styles.saved}>{before}<time dateTime={performedAt}>{savedAt}</time>{rest}</p>
     <span className={styles.countdown} aria-hidden="true"><i/></span>
-    {commandId ? <details className={styles.reference}><summary>{t('Action reference')}<ClockerIcon name="caret" size={16}/></summary><code>{commandId}</code></details> : null}
+    {commandId ? <details className={styles.reference}><summary>{t('Reference')}<ClockerIcon name="caret" size={16}/></summary><code>{commandId}</code></details> : null}
   </>;
 }

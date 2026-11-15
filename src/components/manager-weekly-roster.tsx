@@ -13,6 +13,8 @@ import { Avatar } from "./kit/kit";
 import { QuietGroup, QuietRow, QuietSection } from "./quiet/quiet";
 import { CorpAvatar, CorpCard, CorpTime } from "./corp/corp";
 import { useToday } from "./manager-today";
+import { ATTENDANCE_WORDS } from "../lib/action-center/present";
+import { notClockedInText } from "./team-live";
 import type { Today, TodayShift } from "../lib/today/project";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
@@ -126,11 +128,11 @@ function liveState(shift: RosterShift, employeeId: string, today: Today | null, 
   if (!live) return null;
   if (live.status === "clocked_in") return { text: "Working", tone: "teal" };
   if (live.status === "on_break") return { text: "On break", tone: "blue" };
-  if (live.status === "no_punches") return { text: "Missed clock-in", tone: "neutral", problem: true };
+  if (live.status === "no_punches") return { text: ATTENDANCE_WORDS.missed, tone: "neutral", problem: true };
   if (live.status === "not_clocked_in") {
     const minutes = Math.floor((Date.parse(today.observedAt) - Date.parse(live.startAt)) / 60_000);
-    const late = minutes >= 60 ? `${Math.floor(minutes / 60)} h ${minutes % 60 ? `${minutes % 60} min ` : ""}late` : `${Math.max(minutes, 1)} min late`;
-    return { text: late, tone: "neutral", problem: true };
+    // Jose's attendance words: a started shift with no punch is "Not clocked in · 24 min", never "late".
+    return { text: notClockedInText(Math.max(minutes, 1)), tone: "neutral", problem: true };
   }
   return null;
 }

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { keepWhole } from "@/lib/keep-whole";
 import {ResponsiveEmployeeRequests} from "@/components/employee-mobile/requests";
 import {ResponsiveEmployeeExchange} from "@/components/employee-mobile/exchange";
@@ -90,7 +91,11 @@ function marketplaceDate(date: string) {
   return `${label.weekday}, ${label.day}`;
 }
 
-export const metadata = { title: "Shift requests" };
+/** Review Nov 14 (AR-15): the browser tab names the page as its heading does: "Shift requests" for an Owner or Manager,
+ * "Pick up and swap" for an Employee or Lead. */
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: isManagerRole((await requireSession()).role) ? "Shift requests" : "Pick up and swap" };
+}
 
 export default async function ExchangePage({
   searchParams,

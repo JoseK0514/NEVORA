@@ -23,7 +23,7 @@ export default async function WorkspacePage() {
   // Quiet (v4, approved Oct 23): Save at the top right. Nov 1 upscale: one grouped card: the business name as an input
   // row, then the time zone and the week start as value rows (labels 15/500); a locked value carries a grey Lock glyph,
   // with one line under the card saying why.
-  const lock = <LockSimpleIcon className="c-coprof__lock" aria-hidden="true" />;
+  const lock = <LockSimpleIcon weight="bold" className="c-coprof__lock" aria-hidden="true" />;
   return (
     // Review F4 (NV-102): on tablets and desktop Save is in the card's footer; phones keep it in the top bar.
     <SettingsFrame title="Company profile" save={{ form: "company-profile-form", card: true }}>

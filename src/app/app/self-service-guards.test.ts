@@ -60,9 +60,12 @@ it.each(["EMPLOYEE", "LEAD"] as const)("%s retains the self-service permission b
   const viewer = { id: "viewer", firstName: "Sam", lastName: "Cruz", role, primaryLocationId: "loc-1" };
   vi.mocked(requireSession).mockResolvedValue(viewer);
   expect(await requireSelfService()).toEqual(viewer);
-  for (const review of [reviewTimeOffAction, reviewExchangeAction, reviewCalloutAction, saveScheduleHealthSettingsAction]) {
-    await expect(review(new FormData())).rejects.toThrow("redirect:/app");
+  // Review Nov 14 (AR-18): the shared role gate sends a wrong-role visitor to the in-app notice; Scheduling rules' own
+  // action guard still returns Home.
+  for (const review of [reviewTimeOffAction, reviewExchangeAction, reviewCalloutAction]) {
+    await expect(review(new FormData())).rejects.toThrow(/^redirect:\/app\/restricted$/);
   }
+  await expect(saveScheduleHealthSettingsAction(new FormData())).rejects.toThrow(/^redirect:\/app$/);
   expect(getDb).not.toHaveBeenCalled();
   expect(reviewTimeOffRequest).not.toHaveBeenCalled();
 });

@@ -8,15 +8,20 @@ import {parsePeriod} from '@/lib/timecards/project';
 import { EmployeeTimePanel } from "@/components/employee-time-panel";
 import { isManagerRole } from "@/lib/auth/permissions";
 import {correctionAuthority} from '@/lib/time-corrections/authority.server';
-import { requireSession,requireSessionMutationProof } from "@/lib/auth/session";
+import { getSession,requireSession,requireSessionMutationProof } from "@/lib/auth/session";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { currentPayPeriod } from "@/lib/payroll/pay-calendar.server";
 import { payrollFeatureEnabled, readPayrollCapabilities } from "@/lib/payroll/service";
 import { currentBrand } from "@/lib/workspace-presentation/current.server";
 import { mobileTabsForRole } from "@/lib/navigation";
 
-/** Review B1 (NV-022): the page title in the tab and for screen readers. */
-export const metadata = { title: "My time" };
+/** Review B1 (NV-022): the page title in the tab and for screen readers. Inspection Nov 14 (AR-15): an Employee or Lead
+ * reads the name on their tab and heading ("Time"); an Owner or Manager keeps "My time", the title of the notice they see.
+ * The session is the render's own cached read. */
+export async function generateMetadata() {
+  const session = await getSession().catch(() => null);
+  return { title: session && !isManagerRole(session.role) ? "Time" : "My time" };
+}
 
 export default async function MyTimePage({searchParams}:{searchParams:Promise<{view?:string;start?:string;end?:string;entry?:string;requestId?:string;edit?:string;filter?:string;from?:string}>}={searchParams:Promise.resolve({})}) {
   const session = await requireSession();

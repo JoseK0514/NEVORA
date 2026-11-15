@@ -28,7 +28,7 @@ export function SigSheet({ open, onClose, title, children, closeLabel = "Close" 
       <span className="sig-sheet__handle" aria-hidden="true" />
       <header className="sig-sheet__head">
         <h2 id={titleId}>{title}</h2>
-        <button type="button" className="sig-sheet__close" onClick={onClose} aria-label={closeLabel}><XIcon size={20} aria-hidden="true" /></button>
+        <button type="button" className="sig-sheet__close" onClick={onClose} aria-label={closeLabel}><XIcon size={20} weight="bold" aria-hidden="true" /></button>
       </header>
       <div className="sig-sheet__body">{children}</div>
     </div>
@@ -53,6 +53,6 @@ export function SigToast({ message, action, onDismiss, duration = 6000, dismissL
     onFocus={() => setHeld(true)} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setHeld(false); }}>
     <p className="sig-toast__message" role="status" aria-live="polite">{message}</p>
     {action ? <button type="button" className="sig-toast__action" onClick={() => { action.onClick(); onDismiss(); }}>{action.label}</button> : null}
-    <button type="button" className="sig-toast__close" onClick={onDismiss} aria-label={dismissLabel}><XIcon size={18} aria-hidden="true" /></button>
+    <button type="button" className="sig-toast__close" onClick={onDismiss} aria-label={dismissLabel}><XIcon size={18} weight="bold" aria-hidden="true" /></button>
   </div>;
 }

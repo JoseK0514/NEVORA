@@ -1,4 +1,5 @@
 import { faceTint } from "@/lib/face-tint";
+import { BState } from "../owner-b/b-kit";
 import "./corp.css";
 import Link from "next/link";
 import type { ReactNode, ButtonHTMLAttributes, AnchorHTMLAttributes, CSSProperties } from "react";
@@ -264,10 +265,10 @@ export function CorpEmptyRow({ children, as = "div" }: { children: ReactNode; as
 /** Owner premium P3 (phone-native L3): the one failure style. Title ("Couldn't load timecards"), one 13px line and an
  * action (usually <CorpRetryButton />, which refreshes the page's data). */
 export function CorpErrorCard({ title, body = "Check your connection, then try again.", action, live = true }: { title: ReactNode; body?: ReactNode; action?: ReactNode; live?: boolean }) {
+  // Phase 2 (package D): the kit's one state card inside this card (the red circle, the title, the line), with the same
+  // words, the same action and the same alert on the section. It was three plain lines and a grey button.
   return <section className="c-card c-error-card" role={live ? "alert" : undefined}>
-    <span className="c-error-card__title">{title}</span>
-    {body ? <span className="c-error-card__body">{body}</span> : null}
-    {action ? <span className="c-error-card__action">{action}</span> : null}
+    <BState silent kind="failed" title={title} line={body || undefined}>{action ? <span className="c-error-card__action">{action}</span> : null}</BState>
   </section>;
 }
 
@@ -370,5 +371,5 @@ export function CorpCardSub({ children, id }: { children: ReactNode; id?: string
 export function CorpMenuButton({ id, label, title, ariaLabel, align, children }: { id: string; label: string; title?: string; ariaLabel?: string; align?: "start" | "end"; children: ReactNode }) {
   return <ActionMenu id={id} label={label} ariaLabel={ariaLabel} title={title ?? label} align={align}
     triggerClassName="c-btn c-btn--secondary c-btn--menu"
-    triggerContent={<>{label}<CaretDownIcon className="c-btn__caret" size={16} aria-hidden="true" /></>}>{children}</ActionMenu>;
+    triggerContent={<>{label}<CaretDownIcon className="c-btn__caret" size={16} weight="bold" aria-hidden="true" /></>}>{children}</ActionMenu>;
 }

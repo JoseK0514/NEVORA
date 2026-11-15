@@ -3,7 +3,9 @@ import {readEmployeeClockerPin,type EmployeePinView} from '@/lib/clocker/pins.se
 
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
-import {readOperationalEmployeeProfile} from '@/lib/company-access/operational-read.server';
+import {readOperationalEmployeeHours,readOperationalEmployeeProfile} from '@/lib/company-access/operational-read.server';
+import type {PersonHours} from '@/lib/person-hours';
+import {durationSentence} from '@/lib/duration-format';
 import {readInvitationStatus} from '@/lib/auth/invitations/service.server';
 import {EmployeeInvitationPanel} from '@/components/company-access/employee-invitation-panel';
 import {ManagerOperationalScopePanel} from '@/components/company-access/manager-operational-scope-panel';
@@ -20,7 +22,7 @@ import { listPositions } from "@/lib/data/positions";
 import { readOperationalRuleProfileView } from "@/lib/data/shift-change-views";
 import { employeeRoleLabel } from "@/lib/employee-display";
 import Link from "next/link";
-import { CorpAvatar, CorpBody, CorpButtonLink, CorpCard, CorpMeta, CorpNav, CorpNote, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
+import { CORP_NO_VALUE, CorpAvatar, CorpBody, CorpButtonLink, CorpCard, CorpMeta, CorpNav, CorpNote, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
 import { TeamLivePill, TeamLiveProvider } from "@/components/team-live";
 import { ChatTextIcon } from "@phosphor-icons/react/dist/ssr/ChatText";
 import { PhoneIcon } from "@phosphor-icons/react/dist/ssr/Phone";
@@ -44,18 +46,24 @@ export default async function EmployeeProfilePage({
 
   const proof=await requireSessionMutationProof();
   const actor=proof.employee;
+  const query = (await searchParams) ?? {};
+  const editing = query.edit === "1" ? "core" : query.edit === "positions" ? "positions" : query.edit === "rules" ? "rules" : null;
+  const accessView = !editing && query.view === "access";
   const source=await withOperationalCompany(proof,async()=>{
     const profile=await readOperationalEmployeeProfile(proof,employeeId);
-    if(profile.state==='unavailable')return {profile,positions:[],operational:null,profileUnavailable:false,invitation:null,pin:null};
+    if(profile.state==='unavailable')return {profile,positions:[],operational:null,profileUnavailable:false,invitation:null,pin:null,hours:null};
     const positions=await listPositions({includeInactive:true});
     let operational=null,profileUnavailable=false;
     try{operational=await readOperationalRuleProfileView(proof,profile.data.profile.id);}catch{profileUnavailable=true;}
     const invitation=proof.employee.role==='OWNER'?await readInvitationStatus(proof,employeeId):null;
     let pin:EmployeePinView|null=null;if(proof.employee.role==='OWNER'&&profile.data.profile.active){try{pin=await readEmployeeClockerPin({employeeId:proof.employee.id,sessionTokenHash:proof.sessionTokenHash},employeeId);}catch{}}
-    return {profile,positions,operational,profileUnavailable,invitation,pin};
+    // Nov 14, 2026 inspection (BR-3): the person's hours, for the overview only, through the existing protected read. A read
+    // that fails or is refused leaves the card out; it never takes the page down.
+    let hours:PersonHours|null=null;if(!editing&&!accessView&&profile.data.profile.active){try{const read=await readOperationalEmployeeHours(proof,employeeId);if(read.state==='ready')hours=read.data;}catch{}}
+    return {profile,positions,operational,profileUnavailable,invitation,pin,hours};
   });
   if(source.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={source.reason}/>;
-  const {profile,positions,operational,profileUnavailable,invitation,pin}=source.data;
+  const {profile,positions,operational,profileUnavailable,invitation,pin,hours}=source.data;
   if(profile.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={profile.reason}/>;
   const {profile:employee,locations,ownerScope}=profile.data;
   const primaryLocation = locations.find(
@@ -64,9 +72,6 @@ export default async function EmployeeProfilePage({
   const canManageCore = actor.role === "OWNER" || employee.role !== "OWNER";
 
   const roleLabel = employeeRoleLabel(employee.role);
-  const query = (await searchParams) ?? {};
-  const editing = query.edit === "1" ? "core" : query.edit === "positions" ? "positions" : query.edit === "rules" ? "rules" : null;
-  const accessView = !editing && query.view === "access";
   const positionList = employee.positionIds.map(id => positions.find(position => position.id === id)?.name).filter((name): name is string => !!name);
   const positionNames = positionList.join(", ");
   const name = `${employee.firstName} ${employee.lastName}`;
@@ -78,13 +83,30 @@ export default async function EmployeeProfilePage({
   const accountValue = !employee.active ? "Inactive" : invitation?.state === "ready" && invitation.eligibility !== "ALREADY_ACTIVATED" ? (invitation.invitation?.state === "ISSUED" ? "Invited" : "Not activated") : "Active";
   const inviting = invitation !== null && !(invitation.state === "ready" && invitation.eligibility === "ALREADY_ACTIVATED");
   const place = primaryLocation ? `${primaryLocation.shortName}${primaryLocation.active ? "" : " (inactive)"}` : null;
+  // Nov 14, 2026 inspection (BR-3): where this person stands on signing in, said under their name. Only an Owner's page
+  // reads the invitation, so a Manager's page says nothing rather than guess. The date is the workplace's day.
+  const issued = invitation?.state === "ready" && invitation.invitation?.state === "ISSUED" ? new Date(invitation.invitation.issuedAt) : null;
+  let invitedOn: string | null = null;
+  if (issued && hours && Number.isFinite(issued.getTime())) { try { invitedOn = new Intl.DateTimeFormat("en-US", { timeZone: hours.timeZone, month: "short", day: "numeric" }).format(issued); } catch { /* no date: "Invited, not activated" */ } }
+  const signIn = !employee.active || invitation?.state !== "ready" || invitation.eligibility === "SELF_ISSUE_DENIED" ? null
+    : invitation.eligibility === "ALREADY_ACTIVATED" ? "Sign-in active"
+    : invitation.eligibility === "NO_EMAIL" ? "No email, can’t sign in"
+    : invitation.invitation?.state === "ISSUED" ? `Invited${invitedOn ? ` ${invitedOn}` : ""}, not activated`
+    : invitation.invitation?.state === "EXPIRED" ? "Invitation expired" : "Not invited yet";
+  const signInOpen = signIn && signIn !== "Sign-in active" ? signIn : null;
+  const pinOpen = pinShown && pin && !pin.configured ? "No Clocker PIN yet" : null;
+  // The person's hours as figures; one the read couldn't work out is the kit's grey dash.
+  const minutes = (value: number | null) => value === null ? CORP_NO_VALUE : durationSentence(value, "0 h");
+  // AR-10: Shifts opens the schedule at this person's location (the schedule has no one-person view), and Availability
+  // opens this person's availability.
+  const shiftsHref = primaryLocation?.active ? `/app/schedule?location=${encodeURIComponent(primaryLocation.id)}` : "/app/schedule";
 
   // Release 1, board O-Person: who they are with Call and Message, their work, then one row to Access and sign-in.
   if (!editing && !accessView) return (<ScopedReadFrame observation={scopedObservation(source)}>
     <TeamLiveProvider>
     <CorpPage className="c-person c-page--narrow" labelledBy="person-title">
       <CorpNav back={{ href: "/app/employees", label: "Team" }} title={name} titleId="person-nav-title" right={canManageCore ? <Link href={`${base}?edit=1`}>Edit</Link> : undefined} phoneOnly />
-      <CorpTitle id="person-title" title={name} wide actions={canManageCore ? <CorpButtonLink href={`${base}?edit=1`} kind="secondary" size="sm">Edit</CorpButtonLink> : undefined} />
+      <CorpTitle id="person-title" title={name} sub={signIn ?? undefined} wide actions={canManageCore ? <CorpButtonLink href={`${base}?edit=1`} kind="secondary" size="sm">Edit</CorpButtonLink> : undefined} />
       {/* Owner premium R7: what they do and where first; the employee ID moves to the detail line, and their state is grey
         words beside it (R3), not a header or a pill. */}
       <CorpCard id="person-who" ariaLabel={name}>
@@ -100,21 +122,29 @@ export default async function EmployeeProfilePage({
             <span className="c-row__detail"><span className="c-person__bits"><span className="c-person__bit">{employee.phone ? phoneDisplay(employee.phone) : "No phone number"}</span></span>
               {employee.active ? <TeamLivePill employeeId={employee.id} /> : <CorpMeta>Inactive</CorpMeta>}</span>
           </span>
-          {dial ? <a className="c-person__act" href={`tel:${dial}`} aria-label={`Call ${name}`}><PhoneIcon className="c-ic" aria-hidden="true" /></a> : null}
-          {dial ? <a className="c-person__act" href={`sms:${dial}`} aria-label={`Message ${name}`}><ChatTextIcon className="c-ic" aria-hidden="true" /></a> : null}
+          {dial ? <a className="c-person__act" href={`tel:${dial}`} aria-label={`Call ${name}`}><PhoneIcon weight="bold" className="c-ic" aria-hidden="true" /></a> : null}
+          {dial ? <a className="c-person__act" href={`sms:${dial}`} aria-label={`Message ${name}`}><ChatTextIcon weight="bold" className="c-ic" aria-hidden="true" /></a> : null}
         </div>
       </CorpCard>
+      {hours ? <CorpCard id="person-hours" label="Hours">
+        <CorpRows label="Hours">
+          <li><CorpRow title="Scheduled today" value={minutes(hours.scheduledTodayMinutes)} valueTone="soft" /></li>
+          <li><CorpRow title="Scheduled this week" value={minutes(hours.scheduledWeekMinutes)} valueTone="soft" /></li>
+          {/* Worked time is time on the clock with breaks in it, so the row never says "paid". */}
+          <li><CorpRow title="Clocked this week" detail="Includes breaks" value={minutes(hours.workedWeekMinutes)} valueTone="soft" /></li>
+        </CorpRows>
+      </CorpCard> : null}
       <CorpCard as="div" ariaLabel="Work">
         <CorpRows label="Work">
-          <li><CorpRow href="/app/schedule" title="Shifts" label={`Shifts for ${name}`} chevron /></li>
+          <li><CorpRow href={shiftsHref} title="Shifts" label={`Shifts for ${name}`} chevron /></li>
           <li><CorpRow href={`/app/timecards#timecard-${encodeURIComponent(employee.id)}`} title="Timecards" label={`Timecards for ${name}`} chevron /></li>
-          <li><CorpRow href="/app/availability" title="Availability" label={`Availability for ${name}`} chevron /></li>
+          <li><CorpRow href={`/app/availability?employeeId=${encodeURIComponent(employee.id)}`} title="Availability" label={`Availability for ${name}`} chevron /></li>
         </CorpRows>
       </CorpCard>
       <CorpCard as="div" ariaLabel="Access and sign-in">
         {/* Owner premium R7: the one thing to act on (no Clocker PIN yet, an invitation), else their role. */}
         <CorpRow href={`${base}?view=access`} bold title="Access and sign-in" chevron
-          detail={pinShown && pin && !pin.configured ? "No Clocker PIN yet" : accountValue !== "Active" ? accountValue : roleLabel} />
+          detail={signInOpen || pinOpen ? [signInOpen, pinOpen].filter(Boolean).join(" · ") : accountValue !== "Active" ? accountValue : roleLabel} />
       </CorpCard>
     </CorpPage>
     </TeamLiveProvider>

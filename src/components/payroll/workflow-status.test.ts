@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { PayrollBacklogSummary, PayrollCapabilities } from '@/lib/payroll/contracts';
-import { backlogDescription, noticeOutcome, noticeReadiness, payrollExceptionMessage, payrollReviewNotes, reminderWindow } from './workflow-status';
+import { UNKNOWN_BLOCKER, backlogDescription, noticeOutcome, noticeReadiness, payrollBlockerPlace, payrollExceptionMessage, payrollReviewNotes, reminderWindow } from './workflow-status';
 
 const capabilities: PayrollCapabilities = { enabled: true, canConfigure: true, canReview: true, canApprove: true, internalCalculatorAvailable: false, bankCompatibility: 'UNVERIFIED' };
 const backlog: PayrollBacklogSummary = { asOfDate: '2026-10-12', rangeStart: '2026-09-01', rangeEnd: '2026-10-12', missingCount: 2, remainingCount: 0, returnedCount: 2, ambiguousCount: 0, overflow: false };
@@ -40,8 +40,31 @@ describe('payroll operational status', () => {
   it('turns known draft and custody states into the next action while preserving unknown failures', () => {
     expect(payrollExceptionMessage('WAITING_FOR_AMOUNTS')).toContain('Import provider');
     expect(payrollExceptionMessage('TIME_NOT_FINALIZED:fictional-a')).toContain('Finalize timecards for employee reference fictional-a');
-    expect(payrollExceptionMessage('POPULATION_DISPOSITION:fictional-a')).toContain('Review the period population');
+    expect(payrollExceptionMessage('POPULATION_DISPOSITION:fictional-a')).toContain('Choose what to do with employee reference fictional-a');
     expect(payrollExceptionMessage('Unrecognized actionable source issue')).toBe('Unrecognized actionable source issue');
+  });
+  it('words every blocked-payroll code as a sentence with a next step, never the code itself (PY-10)', () => {
+    expect(payrollExceptionMessage('RULESET_NOT_APPLICABLE')).toBe('NEVORA can’t calculate paydays in that year yet. Contact support.');
+    for (const code of ['RULE_ACCEPTANCE_REQUIRED', 'EXACT_CENT_REQUIRED', 'WAGE_ROUNDING_REQUIRED', 'PR_ROUNDING_REQUIRED', 'PR_ROUNDING_RULE_UNVERIFIED', 'WAGE_CENT_RULE_UNVERIFIED', 'OWNER_CALCULATION_POLICY_REQUIRED']) {
+      expect(payrollExceptionMessage(code)).toBe('NEVORA can’t calculate this payroll until its payroll rules are confirmed. Contact support.');
+      expect(payrollBlockerPlace(code)).toBe('support');
+    }
+    for (const code of ['BELOW_APPLICABLE_MINIMUM_WAGE', 'MINIMUM_WAGE_COVERAGE_REQUIRED', 'UNSUPPORTED_DEDUCTION', 'RECORDED_SOURCE_STALE_SOURCE', 'RECORDED_SOURCE_NOT_FINALIZED', 'OPEN_RECORDED_BREAK', 'NATIVE_SOURCE_LIMIT', 'YTD_LINEAGE_CONFLICT', 'SETTINGS_REQUIRED', 'SOME_CODE_ADDED_LATER']) {
+      const message = payrollExceptionMessage(`${code}:fictional-a`);
+      expect(message).not.toContain(code);
+      expect(message).toMatch(/[a-z]\. /);
+    }
+    expect(payrollExceptionMessage('SOME_CODE_ADDED_LATER:fictional-a')).toBe(UNKNOWN_BLOCKER);
+    expect(payrollExceptionMessage('constructor')).toBe('constructor');
+  });
+  it('names the place each next step happens, keeping the earlier Timecards, people and setup links', () => {
+    for (const code of ['TIME_NOT_FINALIZED', 'RECORDED_SOURCE_COVERAGE_MISSING', 'RECORDED_SOURCE_STALE', 'RECORDED_SOURCE_UNAVAILABLE', 'OPEN_RECORDED_TIME', 'TIME_FINALIZATION_REQUIRED', 'FINALIZED_TIME_REQUIRED']) expect(payrollBlockerPlace(code)).toBe('time');
+    for (const code of ['POPULATION_DISPOSITION', 'POPULATION_REVIEW_REQUIRED', 'POPULATION_SOURCE_CONFLICT']) expect(payrollBlockerPlace(code)).toBe('people');
+    for (const code of ['WORKWEEK_EVIDENCE_REQUIRED', 'INVALID_WORKWEEK_POLICY', 'INVALID_NATIVE_PROFILE', 'WORKWEEK_EMPLOYEE_COVERAGE_REQUIRED', 'WORKWEEK_PROFILE_CONFLICT', 'WORKWEEK_EFFECTIVE_COVERAGE_REQUIRED', 'EMPLOYER_YTD_BASE_CONFLICT',
+      'ATTESTED_YTD_REQUIRED', 'EMPLOYER_YTD_BASE_REQUIRED', 'WAGE_PROFILE_REQUIRED', 'TAX_PROFILE_REQUIRED', 'OPENING_YTD_REQUIRED', 'YTD_ATTESTATION_REQUIRED', 'NATIVE_INPUT_REQUIRED', 'BELOW_APPLICABLE_MINIMUM_WAGE']) expect(payrollBlockerPlace(code)).toBe('setup');
+    expect(payrollBlockerPlace('SETTINGS_REQUIRED')).toBe('settings');
+    expect(payrollBlockerPlace('DAILY_BOUNDARY_SENSITIVE')).toBeNull();
+    expect(payrollBlockerPlace('SOME_CODE_ADDED_LATER')).toBeNull();
   });
   it('explains missing recorded-source coverage using a safe timecard review action', () => {
     expect(payrollExceptionMessage('RECORDED_SOURCE_COVERAGE_MISSING:fictional-a')).toBe('Review and finalize the employee timecards, including confirmed zero-hour periods, before recalculating. Employee reference fictional-a.');
@@ -49,6 +72,6 @@ describe('payroll operational status', () => {
   it('turns native missing YTD and recorded-source prerequisites into recovery actions', () => {
     expect(payrollExceptionMessage('ATTESTED_YTD_REQUIRED:fictional-a')).toContain('year-to-date');
     expect(payrollExceptionMessage('RECORDED_SOURCE_STALE:fictional-a')).toContain('timecards');
-    /* B7 wording (NV-124) */expect(payrollExceptionMessage('ROUNDING_POLICY_ACCEPTANCE_REQUIRED:fictional-a')).toContain('confirm the payroll rounding rules');
+    /* PY-10 (Nov 14): no screen confirms rules, so the next step is support */expect(payrollExceptionMessage('ROUNDING_POLICY_ACCEPTANCE_REQUIRED:fictional-a')).toContain('until its payroll rules are confirmed. Contact support.');
   });
 });

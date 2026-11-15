@@ -1,23 +1,39 @@
 /* Sign-in and recovery words (E4 redesign, docs/product/specs/auth-premium/SPEC.md). English is today's wording; the
- * Spanish is the spec's draft for Jose's review. Only these four pages switch; the rest of the app stays English. */
+ * Spanish is the spec's draft for Jose's review. Only the signed-out pages switch (sign-in, recovery, activation, the 404
+ * and, since the Nov 14, 2026 inspection, the public error screen; Support and Account deletion keep their words beside
+ * their pages); the rest of the app stays English. */
 
 export type AuthLang = "en" | "es";
 export const AUTH_LANG_COOKIE = "nv-lang";
 
 export const isAuthLang = (value: unknown): value is AuthLang => value === "en" || value === "es";
 
+/** First visit, no saved choice (inspection Nov 14, PB-020): the language the browser prefers, from an Accept-Language
+ * header or the browser's own list joined with commas. Spanish only when it ranks ahead of English; English otherwise. */
+export function preferredAuthLang(accepted: string | null | undefined): AuthLang {
+  if (!accepted) return "en";
+  const ranked = accepted.split(",").map((part, index) => {
+    const [tag, ...params] = part.trim().toLowerCase().split(";");
+    const weight = params.map(param => param.trim()).find(param => param.startsWith("q="));
+    const q = weight ? Number(weight.slice(2)) : 1;
+    return { lang: tag.split("-")[0], q: Number.isFinite(q) ? q : 0, index };
+  }).filter(item => item.q > 0 && isAuthLang(item.lang)).sort((a, b) => b.q - a.q || a.index - b.index);
+  return ranked[0]?.lang === "es" ? "es" : "en";
+}
+
 const en = {
   langLabel: "Language",
   english: "English",
   spanish: "Español",
-  greeting: { welcome: "Welcome back", morning: "Good morning", afternoon: "Good afternoon", evening: "Good evening" },
-  signInSubtitle: "Sign in to see your schedule, time and pay.",
+  /** `eveningFrom` is the hour the evening greeting starts: 5 PM in English, 7 PM in Spanish (Puerto Rico usage, PB-019). */
+  greeting: { welcome: "Welcome back", morning: "Good morning", afternoon: "Good afternoon", evening: "Good evening", eveningFrom: 17 },
+  signInSubtitle: "Sign in to see your schedule, time and pay statements.",
   bandLine: "Your week, in one place.",
   panelEyebrow: "NEVORA Workforce",
-  panelSupport: "Shifts, hours, time off and pay, ready the moment you sign in.",
+  panelSupport: "Shifts, hours, time off and pay statements, ready the moment you sign in.",
   /** The decorative device screen (aria-hidden, fictional). */
   device: { date: "Tuesday, October 20", greeting: "Good morning, Alex", nextShift: "Next shift", inMinutes: "In 22 min", time: "8:00 AM – 4:00 PM",
-    place: "Front desk · Main Office", clockIn: "Clock in", thisWeek: "This week", scheduled: "Scheduled", worked: "Worked", nextPayday: "Next payday",
+    place: "Front desk · Main Office", clockIn: "Clock in", thisWeek: "This week", scheduled: "Scheduled", worked: "Worked", nextPayday: "Scheduled payday",
     payday: "Fri, Oct 23", timeOff: "Time off · Oct 26", approvedBy: "Approved by Morgan", approved: "Approved", tabs: ["Home", "Schedule", "Requests", "Pay"] },
   workspaceUnavailable: "Workspace unavailable",
   employeeId: "Employee ID",
@@ -52,6 +68,7 @@ const en = {
   loginBusy: "Too many sign-in attempts. Wait 15 minutes, then try again.",
   loginDeleting: "This account is being deleted, so it can’t be used to sign in. Email support@thevelani.com with your deletion reference if you have questions.",
   activated: "Account activated. You can sign in now.",
+  sessionEnded: "Your session ended. Sign in to continue.",
   backToSignIn: "Back to sign in",
   signInPill: "Sign in",
   forgotTitle: "Forgot password",
@@ -60,7 +77,11 @@ const en = {
   requestRecovery: "Request recovery",
   requestingRecovery: "Requesting recovery…",
   requestingRecoveryStatus: "Requesting recovery…",
-  requestReceived: "Request received",
+  /** After a recovery request (inspection Nov 14, PB-004). Never says the ID or the email matched: the hedged sentence
+   * from the request itself is shown with these. */
+  checkEmail: { title: "Check your email", sub: "Look in your inbox and your spam folder.",
+    expires: "The recovery link works once and expires in 15 minutes.",
+    nothing: "Nothing after a few minutes? Check your Employee ID and email, then try again.", review: "Check your details" },
   haveRecoveryCode: "I already have a recovery code",
   cantUseEmail: "Can’t use your recovery email?",
   cantUseEmailBody: "Contact your manager or Owner for assisted recovery. They must verify your identity before issuing a recovery code.",
@@ -117,11 +138,13 @@ const en = {
   },
   /** Review B4 (Nov 10, 2026): the desktop activation words, so a Spanish page never shows English mid-flow. */
   activation: {
-    activatedTitle: "Account activated", activatedSub: "Keep your Employee ID. You will use it with the password you just created.",
+    activatedTitle: "Account activated", activatedSub: "Sign in with your Employee ID and the password you just created.",
     idForSignIn: "Employee ID for sign-in", copyId: "Copy Employee ID", copied: "Copied", idCopied: "Employee ID copied",
-    continueSignIn: "Continue to sign in", opening: "Opening your invitation…", verified: "Invitation verified",
+    continueSignIn: "Continue to sign in", opening: "Opening your invitation…",
+    choose: "Choose a password to join {workspace}.", chooseNoWorkspace: "Choose a password to finish setting up your account.",
+    saveId: "Save this ID. You sign in with it.",
     notConfirmed: "Activation could not be confirmed.", intro: "Open your email invitation, then choose a password.",
-    invalid: "This invitation link can’t be used. Ask your Owner for a new invitation. You can sign in if you have already activated.",
+    invalid: "This link has expired or was already used.", invalidNext: "Ask your Owner or manager to send a new invitation.",
     unknown: "Ask your Owner to confirm your account status and Employee ID. If you know your ID, try signing in before requesting a new invitation. Your account may already be activated.",
     missing: "Open the invitation link from your email to activate your account.",
     unavailable: "Activation is temporarily unavailable. Your invitation was not confirmed. Try again later.",
@@ -144,6 +167,12 @@ const en = {
     clockerHintBody: "Ask a manager to set up this tablet again. They can get the current link in Settings, under Clocker tablets.",
     notClocker: "Not a time clock?",
   },
+  /** The public error screen (inspection Nov 14, PB-025 and RA-15): a server fault and a lost connection read differently. */
+  errorScreen: {
+    title: "This page didn’t load", eyebrow: "Something went wrong",
+    server: "Something went wrong on our side. Try again.", offline: "Nothing was changed. Check your connection, then try again.",
+    reference: "Reference: {reference}", retry: "Try again", signIn: "Go to sign in",
+  },
 };
 
 export type AuthCopy = typeof en;
@@ -152,13 +181,13 @@ const es: AuthCopy = {
   langLabel: "Idioma",
   english: "English",
   spanish: "Español",
-  greeting: { welcome: "Te damos la bienvenida", morning: "Buenos días", afternoon: "Buenas tardes", evening: "Buenas noches" },
-  signInSubtitle: "Inicia sesión para ver tu horario, tus horas y tu pago.",
+  greeting: { welcome: "Te damos la bienvenida", morning: "Buenos días", afternoon: "Buenas tardes", evening: "Buenas noches", eveningFrom: 19 },
+  signInSubtitle: "Inicia sesión para ver tu horario, tus horas y tus comprobantes de pago.",
   bandLine: "Tu semana, en un solo lugar.",
   panelEyebrow: "NEVORA Workforce",
-  panelSupport: "Turnos, horas, días libres y pago, listos al iniciar sesión.",
+  panelSupport: "Turnos, horas, días libres y tus comprobantes de pago, listos al iniciar sesión.",
   device: { date: "Martes, 20 de octubre", greeting: "Buenos días, Alex", nextShift: "Próximo turno", inMinutes: "En 22 min", time: "8:00 AM – 4:00 PM",
-    place: "Recepción · Oficina principal", clockIn: "Marcar entrada", thisWeek: "Esta semana", scheduled: "Programadas", worked: "Trabajadas", nextPayday: "Próximo pago",
+    place: "Recepción · Oficina principal", clockIn: "Marcar entrada", thisWeek: "Esta semana", scheduled: "Programadas", worked: "Trabajadas", nextPayday: "Día de pago programado",
     payday: "vie, 23 oct", timeOff: "Tiempo libre · 26 oct", approvedBy: "Aprobado por Morgan", approved: "Aprobado", tabs: ["Inicio", "Horario", "Solicitudes", "Pago"] },
   workspaceUnavailable: "No pudimos cargar tu lugar de trabajo",
   employeeId: "ID de empleado",
@@ -193,6 +222,7 @@ const es: AuthCopy = {
   loginBusy: "Demasiados intentos de inicio de sesión. Espera 15 minutos e inténtalo de nuevo.",
   loginDeleting: "Esta cuenta se está eliminando, así que no se puede usar para iniciar sesión. Si tienes preguntas, escribe a support@thevelani.com con tu referencia de eliminación.",
   activated: "Cuenta activada. Ya puedes iniciar sesión.",
+  sessionEnded: "Tu sesión terminó. Inicia sesión para continuar.",
   backToSignIn: "Volver a iniciar sesión",
   signInPill: "Iniciar sesión",
   forgotTitle: "¿Olvidaste tu contraseña?",
@@ -201,7 +231,9 @@ const es: AuthCopy = {
   requestRecovery: "Solicitar recuperación",
   requestingRecovery: "Solicitando recuperación…",
   requestingRecoveryStatus: "Solicitando recuperación…",
-  requestReceived: "Solicitud recibida",
+  checkEmail: { title: "Revisa tu correo", sub: "Busca en tu bandeja de entrada y en el correo no deseado.",
+    expires: "El enlace de recuperación funciona una sola vez y vence en 15 minutos.",
+    nothing: "¿No llega nada en unos minutos? Revisa tu ID de empleado y tu correo, e inténtalo de nuevo.", review: "Revisar tus datos" },
   haveRecoveryCode: "Ya tengo un código de recuperación",
   cantUseEmail: "¿No puedes usar tu correo de recuperación?",
   cantUseEmailBody: "Comunícate con tu gerente o con el dueño para una recuperación asistida. Deben verificar tu identidad antes de darte un código de recuperación.",
@@ -256,11 +288,13 @@ const es: AuthCopy = {
     resetSub: "Usa el código de recuperación que recibiste.", haveRecoveryCode: "Tengo un código de recuperación",
   },
   activation: {
-    activatedTitle: "Cuenta activada", activatedSub: "Guarda tu ID de empleado. Lo usarás con la contraseña que acabas de crear.",
+    activatedTitle: "Cuenta activada", activatedSub: "Inicia sesión con tu ID de empleado y la contraseña que acabas de crear.",
     idForSignIn: "ID de empleado para iniciar sesión", copyId: "Copiar ID de empleado", copied: "Copiado", idCopied: "ID de empleado copiado",
-    continueSignIn: "Continuar al inicio de sesión", opening: "Abriendo tu invitación…", verified: "Invitación verificada",
+    continueSignIn: "Continuar al inicio de sesión", opening: "Abriendo tu invitación…",
+    choose: "Elige una contraseña para unirte a {workspace}.", chooseNoWorkspace: "Elige una contraseña para terminar de configurar tu cuenta.",
+    saveId: "Guarda este ID. Lo usas para iniciar sesión.",
     notConfirmed: "No pudimos confirmar la activación.", intro: "Abre la invitación de tu correo y elige una contraseña.",
-    invalid: "Este enlace de invitación no se puede usar. Pide una invitación nueva al dueño. Si ya activaste tu cuenta, puedes iniciar sesión.",
+    invalid: "Este enlace venció o ya se usó.", invalidNext: "Pide al dueño o a tu gerente que te envíe una invitación nueva.",
     unknown: "Pide al dueño que confirme el estado de tu cuenta y tu ID de empleado. Si sabes tu ID, intenta iniciar sesión antes de pedir una invitación nueva. Puede que tu cuenta ya esté activada.",
     missing: "Abre el enlace de invitación de tu correo para activar tu cuenta.",
     unavailable: "La activación no está disponible por ahora. Tu invitación no se confirmó. Inténtalo más tarde.",
@@ -280,6 +314,11 @@ const es: AuthCopy = {
     hintBody: "Vuelve a configurar esta tableta. Un gerente o el dueño puede obtener el enlace actual en Settings, en Clocker tablets.",
     clockerHintBody: "Pide a un gerente que vuelva a configurar esta tableta. Puede obtener el enlace actual en Settings, en Clocker tablets.",
     notClocker: "¿No es un reloj de asistencia?",
+  },
+  errorScreen: {
+    title: "Esta página no cargó", eyebrow: "Algo salió mal",
+    server: "Algo salió mal de nuestro lado. Inténtalo de nuevo.", offline: "No se cambió nada. Revisa tu conexión e inténtalo de nuevo.",
+    reference: "Referencia: {reference}", retry: "Intentar de nuevo", signIn: "Ir a iniciar sesión",
   },
 };
 

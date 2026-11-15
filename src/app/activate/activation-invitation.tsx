@@ -6,6 +6,7 @@ import {AUTH_COPY,type AuthCopy,type AuthLang} from '@/lib/auth-copy';
 import {AuthValidation} from '@/components/auth-premium/auth-validation';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {MobileActivationView} from '@/components/mobile-access/activation-view';
+import {useAccessJourney} from '@/components/mobile-access/journey';
 import {useLayoutEffect,useRef,useState,type FormEvent,type RefObject} from 'react';
 import type {ActivationResult} from '@/lib/auth/invitations/model';
 import {ActivationPasswords} from './activation-passwords';
@@ -32,14 +33,19 @@ export function readActivationResult(value:unknown):ActivationResult {
 export function ActivationInvitation({loginHref,workspaceName=null,lang='en',mobileAccess=false}:{loginHref:string;workspaceName?:string|null;lang?:AuthLang;mobileAccess?:boolean}) {
  const [phase,setPhase]=useState<ActivationPhase>('checking');const [mismatch,setMismatch]=useState(false),[formVersion,setFormVersion]=useState(0),[employeeId,setEmployeeId]=useState<string|null>(null);
  const success=useRef<HTMLDivElement|null>(null);
+ // Inspection Nov 14, 2026 (PB-007): a link that arrived but can't be read is not "no link". Shape only, checked in the
+ // browser: nothing is asked of the server, so nothing about any account is learned or shown.
+ const unusable=useRef(false);
  const proof=useRef<string|null>(null),captured=useRef(false),mounted=useRef(false),request=useRef<AbortController|null>(null),busy=useRef(false),generation=useRef(0),formRef=useRef<HTMLFormElement|null>(null);
  useLayoutEffect(()=>{
   mounted.current=true;
-  function publishCurrent(version:number){queueMicrotask(()=>{if(mounted.current&&generation.current===version){setEmployeeId(null);setMismatch(false);setFormVersion(version);setPhase(proof.current?'ready':'missing');}});}
+  function publishCurrent(version:number){queueMicrotask(()=>{if(mounted.current&&generation.current===version){setEmployeeId(null);setMismatch(false);setFormVersion(version);setPhase(proof.current?'ready':unusable.current?'invalid':'missing');}});}
   function cancelRequest(){++generation.current;request.current?.abort();request.current=null;busy.current=false;formRef.current?.reset();}
   function capture(){
    cancelRequest();const version=generation.current;proof.current=null;
+   const arrived=window.location.hash.length>1;
    try{proof.current=takeActivationFragment(window.location,window.history);}catch{window.location.replace('/activate');return;}
+   unusable.current=arrived&&!proof.current;
    publishCurrent(version);
   }
   if(!captured.current){captured.current=true;capture();}else publishCurrent(generation.current);
@@ -79,9 +85,12 @@ function CopyId({value,a}:{value:string;a:AuthCopy['activation']}) {
 }
 /* Quiet (v4, approved Oct 23): Activate account with one line under the title. With no usable invitation: Back to sign in
  * and "No invitation? Ask your Owner." With one: the two passwords and Activate account. Activated: the Employee ID to keep.
- * The flow above is unchanged. */
+ * The flow above is unchanged.
+ * Inspection Nov 14, 2026: the line under the title says only what is true before the server has checked anything
+ * (PB-002); an expired, used or unreadable link has its own message and one next step (PB-007); the success card leads
+ * with a done mark, says to save the ID, and hands the ID to Sign in at every width (PB-003, JR-7). */
 export function ActivationInvitationView({phase,mismatch=false,employeeId,loginHref,workspaceName=null,onSubmit,formRef,successRef,lang='en',mobileAccess=false}:{phase:ActivationPhase;lang?:AuthLang;mobileAccess?:boolean;mismatch?:boolean;employeeId?:string|null;loginHref:string;workspaceName?:string|null;onSubmit:(event:FormEvent<HTMLFormElement>)=>void;formRef?:RefObject<HTMLFormElement|null>;successRef?:RefObject<HTMLDivElement|null>}) {
- const mobile=useMobilePresentation(mobileAccess,'activation-password activation-confirm-password');
+ const mobile=useMobilePresentation(mobileAccess,'activation-password activation-confirm-password'),journey=useAccessJourney();
  if(mobile)return <MobileActivationView {...{phase,mismatch,employeeId,loginHref,workspaceName,onSubmit,formRef,successRef,lang}}/>;
  const canSubmit=['ready','pending','unavailable'].includes(phase);const error=mismatch||phase==='unavailable';
  const signInHref=loginHref.replace('?activated=1&','?').replace('?activated=1','');
@@ -93,16 +102,18 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
  if(phase==='activated'&&employeeId)return <>
   <div className="q-hd"><h1>{a.activatedTitle}</h1><p>{a.activatedSub}</p></div>
   <div className="activation-success q-card" role="status" ref={successRef} tabIndex={-1}>
+   <span className="q-auth__mark" aria-hidden="true"><CheckIcon size={28} weight="bold"/></span>
    <p className="q-sr">{a.activatedTitle}. {a.activatedSub}</p>
    <div className="q-fl"><label htmlFor="activation-employee-id">{a.idForSignIn}</label>
-    <div className="q-in__wrap"><input id="activation-employee-id" className="q-in" value={employeeId} readOnly autoComplete="off" onFocus={event=>event.currentTarget.select()}/><CopyId value={employeeId} a={a}/></div></div>
-   <Link href={loginHref} className="q-btn">{a.continueSignIn}</Link>
+    <div className="q-in__wrap"><input id="activation-employee-id" className="q-in" value={employeeId} readOnly autoComplete="off" aria-describedby="activation-employee-id-note" onFocus={event=>event.currentTarget.select()}/><CopyId value={employeeId} a={a}/></div>
+    <p className="q-help" id="activation-employee-id-note">{a.saveId}</p></div>
+   <Link href={loginHref} className="q-btn" onClick={()=>journey.confirm(employeeId)}>{a.continueSignIn}</Link>
   </div>
  </>;
- const sub=phase==='checking'?`${a.opening} · ${workspace}`:canSubmit?`${a.verified} · ${workspace}`
-  :phase==='outcome_unknown'?a.notConfirmed:t.quiet.activateSub;
+ const sub=phase==='checking'?`${a.opening} · ${workspace}`:canSubmit?(workspaceName?a.choose.replace('{workspace}',workspaceName):a.chooseNoWorkspace)
+  :phase==='outcome_unknown'?a.notConfirmed:phase==='invalid'?null:t.quiet.activateSub;
  return <>
-  <div className="q-hd"><h1>{t.activateTitle}</h1><p role={phase==='checking'?'status':undefined}>{sub}</p></div>
+  <div className="q-hd"><h1>{t.activateTitle}</h1>{sub?<p role={phase==='checking'?'status':undefined}>{sub}</p>:null}</div>
   <p className="q-sr" id="activation-intro">{a.intro}</p>
   {phase==='missing'?<span className="q-sr activation-invitation-state" role="status">{a.missing}</span>:null}
   {canSubmit&&<form ref={formRef} className="q-auth__form activation-form" onSubmit={onSubmit} aria-busy={phase==='pending'} aria-describedby="activation-intro">
@@ -117,7 +128,7 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
    {phase==='invalid'?<p className="q-auth__alert q-auth__alert--wait activation-invitation-state" role="status"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{a.invalid}</span></p>:null}
    {phase==='outcome_unknown'?<p className="q-auth__alert q-auth__alert--wait activation-invitation-state" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{a.unknown}</span></p>:null}
    {mobileAccess?<Link href="/access-help/invitation" className="q-btn">{a.inviteHelp}</Link>:null}
-   <p className="q-auth__note">{t.quiet.noInvitation}</p>
+   <p className="q-auth__note">{phase==='invalid'?a.invalidNext:t.quiet.noInvitation}</p>
    <Link href={signInHref} className="q-btn q-btn--quiet">{t.alreadyActivated}</Link>
   </div>:<Link href={signInHref} className="q-btn q-btn--quiet">{t.alreadyActivated}</Link>}
   <noscript><p className="q-help q-auth__alert">{a.noScript}</p></noscript>

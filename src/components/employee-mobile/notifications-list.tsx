@@ -4,6 +4,7 @@ import {useState,type MouseEvent,type ReactNode} from 'react';
 import {CircleNotchIcon} from '@phosphor-icons/react/dist/ssr/CircleNotch';
 import type {EmployeeNotificationItem,EmployeeViewSnapshot} from '../../lib/employee-view';
 import type {PrivatePanelState} from '../../lib/private-snapshot-client';
+import {notificationKind} from '../../lib/notification-labels';
 import {CorpCard,CorpCount} from '../corp/corp';
 import './account-corp.css';
 
@@ -15,6 +16,29 @@ const day=(at:string,zone:string)=>new Intl.DateTimeFormat('en-US',{timeZone:zon
 export function notificationGroup(at:string,zone:string,now=new Date()):'Today'|'Yesterday'|'Earlier'{
  const key=dayKey(at,zone),today=dayKey(now,zone),yesterday=dayKey(new Date(now.getTime()-86400000),zone);
  return key===today?'Today':key===yesterday?'Yesterday':'Earlier';
+}
+
+const shortDate=(date:string,month=true)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',...(month?{month:'short'}:{}),day:'numeric'}).format(new Date(`${date}T12:00:00Z`));
+/** " for Nov 26", " for Nov 26 – 28" or " for Nov 28 – Dec 2": the dates a notice is about, when the list sends them. */
+const forDates=(subject:EmployeeNotificationItem['subject'])=>!subject?'':subject.startDate===subject.endDate?` for ${shortDate(subject.startDate)}`
+ :` for ${shortDate(subject.startDate)} – ${shortDate(subject.endDate,subject.startDate.slice(0,7)!==subject.endDate.slice(0,7))}`;
+/** Inspection Nov 14 (BR-6, EM-005): a notice's title says what happened instead of naming its category, as far as the
+ * list's own fields tell: the kind (from its label), the dates it is about (`subject`) and whether it still needs the
+ * person (`actionState`). The list doesn't send a request's outcome or what changed in a schedule, so those titles stop
+ * at what is known to be true ("was answered", "was updated"). An unknown label is shown as it is. The label stays the
+ * row's kind: its icon and how it opens still follow it. */
+export function notificationTitle(item:EmployeeNotificationItem):string{
+ const dates=forDates(item.subject),needed=item.actionState==='required';
+ switch(notificationKind(item.label)){
+  case 'SCHEDULE':return needed?`Confirm your schedule${dates}`:`Your schedule${dates} was updated`;
+  case 'TIME_OFF':return `Your time-off request${dates} was answered`;
+  case 'CALLOUT':return `Your can’t-work request${dates} was answered`;
+  case 'EXCHANGE':return item.actionState==='available'?`You can respond to a shift request${dates}`:item.actionState==='complete'?`A shift request${dates} is closed`:`A shift request${dates} was updated`;
+  case 'AVAILABILITY':return needed?'Reminder to submit your availability':item.actionState==='complete'?'Your availability was submitted':'Reminder about your availability';
+  case 'COMMUNICATION':return needed?'A team update needs your acknowledgement':'A team update was shared with you';
+  case 'PAYROLL_STATEMENT':return 'A pay statement was shared with you';
+  default:return item.label;
+ }
 }
 
 /** Board E-Notifications (upscale B7): All / Unread tabs, then the notices grouped by day in cards, one row per notice.
@@ -34,11 +58,11 @@ export function EmployeeNotificationList({items,partial,tab,onTab,timeZone,onOpe
   {partial?<p className="c-note c-note--warn" role="status">Some current notices couldn’t be checked. Refresh before relying on this list.</p>:null}
   {groups.length?groups.map(group=><CorpCard key={group.name} label={group.name} id={'notifications-'+group.name.toLowerCase()}>
    <ul className="c-rows" aria-label={group.name+' notifications'}>{group.rows.map(item=>{
-    const isUnread=item.reviewState==='unread',required=item.actionState==='required',busy=opening===item.id;
+    const isUnread=item.reviewState==='unread',required=item.actionState==='required',busy=opening===item.id,title=notificationTitle(item);
     const time=group.name==='Earlier'?`${day(item.at,zone)} · ${clock(item.at,zone)}`:clock(item.at,zone);
     return <li key={item.id}><Link id={'message-'+item.id} className={`c-row em-notif-row${isUnread?' em-notif-row--unread':''}${busy?' em-notif-row--busy':''}`} href={item.href} prefetch={false} onClick={onOpen?event=>onOpen(event,item.id,item.href):undefined}
-     aria-busy={busy||undefined} aria-label={`${item.label}${isUnread?', unread':''}${required?', action needed':''}, ${time}`}>
-     <span className="c-row__main"><span className={isUnread?'c-row__title c-row__title--b':'c-row__title'}>{item.label}</span><span className="c-row__detail"><span>{required?'Action needed · ':''}{time}</span></span></span>
+     aria-busy={busy||undefined} aria-label={`${title}${isUnread?', unread':''}${required?', action needed':''}, ${time}`}>
+     <span className="c-row__main"><span className={isUnread?'c-row__title c-row__title--b':'c-row__title'}>{title}</span><span className="c-row__detail"><span>{required?'Action needed · ':''}{time}</span></span></span>
      {busy?<CircleNotchIcon className="em-notif-spin" weight="bold" aria-hidden="true"/>:isUnread?<span className="em-notif-dot" aria-hidden="true"/>:null}
     </Link></li>;})}</ul>
   </CorpCard>):<CorpCard><p className="c-empty"><b>{tab==='unread'?'You’re all caught up':partial?'Nothing confirmed on this page':'No current notifications'}</b>{tab==='unread'?'No unread notifications.':partial?'Some notices couldn’t be checked. Refresh to check again.':'New schedule, request and pay notices will show here.'}{more?' Older items may be on another page.':''}</p></CorpCard>}

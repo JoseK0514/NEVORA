@@ -42,7 +42,8 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
      <CorpField label="Last name" htmlFor="new-last"><input id="new-last" className="c-in" name="lastName" autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160}/></CorpField>
     </div>
     <CorpField label="Mobile phone" htmlFor="new-phone"><PhoneField id="new-phone" name="phone" autoComplete="off" enterKeyHint="next" required/></CorpField>
-    <CorpField label="Email (optional)" htmlFor="new-email"><input id="new-email" className="c-in" name="email" type="email" inputMode="email" autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done" maxLength={254} placeholder="name@example.com"/></CorpField>
+    {/* Nov 14, 2026 inspection (BR-14): the field says what leaving it empty means. */}
+    <CorpField label="Email (optional)" htmlFor="new-email" help={<span id="new-email-help">Without an email, this person can clock in on the tablet but can’t sign in to NEVORA.</span>}><input id="new-email" className="c-in" name="email" type="email" inputMode="email" autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done" maxLength={254} placeholder="name@example.com" aria-describedby="new-email-help"/></CorpField>
     <div className="c-field__row">
      <CorpField label="Role" htmlFor="new-role"><select id="new-role" className="c-in" name="role" value={role} onChange={event=>setRole(event.target.value as UserRole)}>
       <option value="EMPLOYEE">Employee</option><option value="LEAD">Lead</option><option value="MANAGER">Manager</option>

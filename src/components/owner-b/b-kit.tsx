@@ -8,6 +8,7 @@ import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle"
 import { WifiSlashIcon } from "@phosphor-icons/react/dist/ssr/WifiSlash";
 import { PauseIcon } from "@phosphor-icons/react/dist/ssr/Pause";
 import { LockSimpleIcon } from "@phosphor-icons/react/dist/ssr/LockSimple";
+import { TrayIcon } from "@phosphor-icons/react/dist/ssr/Tray";
 import { faceTint } from "@/lib/face-tint";
 
 /* Direction B (Jose approved Nov 5, 2026; mock "NEVORA mobile, Direction B"): the Owner and Manager phone screens. Each page
@@ -188,8 +189,8 @@ export function partOfDay(timeZone?: string, now = new Date()) {
   return hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 }
 
-/** One state card (review B2, NV-075): a 48px icon circle (grey while loading or locked, amber offline or paused, red when
- * something failed), a 16/22 title, one line, and one teal recovery pill, left-aligned. Say the state once. */
+/** One state card (review B2, NV-075): a 48px icon circle (grey while loading, locked or empty, amber offline or paused, red
+ * when something failed), a 16/22 title, one line, and one teal recovery pill, left-aligned. Say the state once. */
 export type BStateKind = "failed" | "offline" | "paused" | "locked" | "loading" | "empty";
 const STATE_LOOK: Record<BStateKind, { tone: BTone; icon: ReactNode }> = {
   failed: { tone: "red", icon: <WarningCircleIcon weight="bold" /> },
@@ -197,21 +198,78 @@ const STATE_LOOK: Record<BStateKind, { tone: BTone; icon: ReactNode }> = {
   paused: { tone: "amber", icon: <PauseIcon weight="bold" /> },
   locked: { tone: "grey", icon: <LockSimpleIcon weight="bold" /> },
   loading: { tone: "grey", icon: <span className="b-spin" /> },
-  // Review B5 (NV-254): nothing here yet; pass the page's own glyph as `icon`.
-  empty: { tone: "grey", icon: <WarningCircleIcon weight="bold" /> },
+  // Review B5 (NV-254): nothing here yet; pass the page's own glyph as `icon`. Nov 14 inspection (SY-023): without one the
+  // card shows an empty tray, never the warning glyph (that is the failed kind's).
+  empty: { tone: "grey", icon: <TrayIcon weight="bold" /> },
 };
-/** Review F2/F5 (NV-074): a page's loading placeholder in Direction B: the band (each main tab's own height, from
- * b-foundation.css) with a title bar, then two 22px cards of #ECEEEF bars. The access check (ScopedReadFrame) and a route's
- * loading.tsx (CorpSkeleton) both draw it, so a tab tap and the check that follows look the same. */
-export function BLoadingScreen() {
-  return <BScreen><BHero title={<><span className="b-skel b-skel--title" aria-hidden="true" /><span className="b-sr">Loading…</span></>} />
-    <BStack>{[0, 1].map(card => <BCard key={card}><div className="b-skel-card" aria-hidden="true"><span className="b-skel b-skel--head" /><span className="b-skel" /><span className="b-skel" /><span className="b-skel b-skel--short" /></div></BCard>)}</BStack></BScreen>;
+/** Review F2/F5 (NV-074) and Phase 2 (package D): a page's loading placeholder in Direction B. It keeps the page's frame:
+ * the band at the height the page will have, the page's title when it is known (a bar when it is not), the strip the page
+ * carries on its band, and card-shaped blocks where its cards will be. Without a shape it is the first version: a title
+ * bar and two cards of #ECEEEF bars. The bars are static (no shimmer), so reduced motion needs nothing more.
+ * - band: where the band ends on tablets and desktop ("short", "sub" or "strip", the three heights in b-tokens.css). A
+ *   main tab leaves it out and keeps its own loaded height (b-foundation.css, --b-ph-band). Phones keep their heights.
+ *   A number is a page that ends its band off the ladder (Payroll, 314): the same px from the top of the window.
+ * - frame: "rail" is Home's two columns, "rail-desktop" the same from 1024px and one column on tablets (Team), "wide"
+ *   the full grid, "pair" two equal columns from 1024px, "read" one reading column, "state" a state card's width.
+ * - lift: the first card overlaps the band (Home and the main tabs); without it the cards start under the band
+ *   (data-b-under, which stays when a state card replaces the cards, so the band keeps its height).
+ * The access check (ScopedReadFrame) and a route's loading.tsx (CorpSkeleton) both draw it through BRouteLoading. */
+export type BLoadingCard = { head?: boolean; lines?: number; rows?: number; avatar?: boolean; stats?: number; rail?: boolean };
+export type BLoadingShape = { title?: ReactNode; back?: boolean; sub?: boolean; strip?: boolean | "figures"; action?: boolean;
+  band?: "short" | "sub" | "strip" | number; frame?: "rail" | "rail-desktop" | "wide" | "pair" | "read" | "state"; lift?: boolean; cards?: BLoadingCard[];
+  /** A state card in place of the placeholder cards (the page is slow, or the device is offline): the band and the title
+   * stay, one card says what is happening, and it is a state card's width. */
+  state?: ReactNode;
+  /** Whose shell this frame is for, when both are drawn (owner-b.css shows the shell its own). */
+  shell?: "management" | "employee" };
+const LOADING_CARDS: BLoadingCard[] = [{ head: true, lines: 3 }, { head: true, lines: 3 }];
+const SKEL_WIDTHS = ["52%", "40%", "60%", "46%", "36%", "56%", "44%", "50%"];
+export function BLoadingScreen({ title, back, sub, strip, action, band, frame = "rail", lift = true, cards = LOADING_CARDS, state, shell }: BLoadingShape = {}) {
+  return <div className={back ? "b-screen b-screen--back" : "b-screen"} data-b-load="" data-b-shell={shell} data-b-band={typeof band === "number" ? "own" : band}
+    style={typeof band === "number" ? { ["--b-band-own" as string]: `${band}px` } : undefined} data-b-frame={state ? "state" : frame} data-b-lift={lift && !state ? "" : undefined} data-b-under={lift ? undefined : ""}>
+    <header className="b-hero">
+      {back ? <span className="b-skel b-skel--back" aria-hidden="true" /> : null}
+      <div className="b-title">
+        <div className="b-title__text">
+          <h1>{title ?? <span className="b-skel b-skel--title" aria-hidden="true" />}{state ? null : <span className="b-sr">{title ? " " : ""}Loading…</span>}</h1>
+          {sub ? <span className="b-skel b-skel--sub" aria-hidden="true" /> : null}
+        </div>
+        {action ? <span className="b-skel b-skel--action" aria-hidden="true" /> : null}
+      </div>
+      {strip ? <span className={strip === "figures" ? "b-skel b-skel--figures" : "b-skel b-skel--strip"} aria-hidden="true" /> : null}
+    </header>
+    <BStack>{state ? <BCard>{state}</BCard> : cards.map((card, index) => <section key={index} className="b-card" data-b-rail={card.rail ? "" : undefined} aria-hidden="true">
+      <div className="b-skel-card">
+        {card.head ? <span className="b-skel b-skel--head" /> : null}
+        {card.stats ? <div className="b-skel-stats">{Array.from({ length: card.stats }, (_, stat) => <span key={stat}><span className="b-skel b-skel--short" /><span className="b-skel b-skel--figure" /></span>)}</div> : null}
+        {Array.from({ length: card.lines ?? 0 }, (_, line) => <span key={line} className={line === (card.lines ?? 0) - 1 && line > 0 ? "b-skel b-skel--short" : "b-skel"} />)}
+        {Array.from({ length: card.rows ?? 0 }, (_, row) => <div key={row} className="b-skel-row">
+          {card.avatar ? <span className="b-skel b-skel--av" /> : null}
+          <span className="b-skel-row__tx"><span className="b-skel" style={{ width: SKEL_WIDTHS[(row + index) % SKEL_WIDTHS.length] }} /><span className="b-skel b-skel--thin" style={{ width: SKEL_WIDTHS[(row + index + 3) % SKEL_WIDTHS.length] }} /></span>
+        </div>)}
+      </div>
+    </section>)}</BStack>
+  </div>;
 }
 
-export function BState({ kind, title, line, action, children, icon, alert }: { kind: BStateKind; title?: ReactNode; line?: ReactNode;
-  action?: { label: ReactNode; onClick?: () => void; href?: string; busy?: boolean }; children?: ReactNode; icon?: ReactNode; alert?: boolean }) {
+/** A whole page that is one state (Phase 2, package D): the band with the page's title and its way back, then one state
+ * card, at every width. The band ends at the short height and the card is a state card's width on tablets and desktop
+ * (b-tokens.css). The older screens (the access check's paused and failed views, "… unavailable", the error pages) draw
+ * through it, so a state looks the same wherever it comes from. `children` is the card's content, a BState. */
+export function BStateScreen({ title, titleId, sub, back, children, after }: { title: ReactNode; titleId?: string; sub?: ReactNode; back?: { href: string; label: string }; children: ReactNode; after?: ReactNode }) {
+  return <div className={back ? "b-screen b-screen--back" : "b-screen"} data-b-state="" data-b-band="short" data-b-frame="state">
+    <BHero title={title} titleId={titleId} sub={sub} back={back} />
+    <BStack><BCard>{children}</BCard>{after ?? null}</BStack>
+  </div>;
+}
+
+export function BState({ kind, title, line, action, children, icon, alert, silent }: { kind: BStateKind; title?: ReactNode; line?: ReactNode;
+  action?: { label: ReactNode; onClick?: () => void; href?: string; busy?: boolean }; children?: ReactNode; icon?: ReactNode; alert?: boolean;
+  /** No live region here: the screen says its message once in its own alert (the route error pages), and this card is
+   * the visible copy. */
+  silent?: boolean }) {
   const look = STATE_LOOK[kind];
-  return <div className="b-statecard" data-kind={kind} role={alert ? "alert" : "status"} aria-busy={kind === "loading" || action?.busy || undefined}>
+  return <div className="b-statecard" data-kind={kind} role={silent ? undefined : alert ? "alert" : "status"} aria-busy={kind === "loading" || action?.busy || undefined}>
     <BIcon tone={look.tone}>{icon ?? look.icon}</BIcon>
     <div className="b-statecard__main">
       {title ? <p className="b-statecard__t">{title}</p> : null}

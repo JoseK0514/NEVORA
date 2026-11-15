@@ -24,7 +24,7 @@ export default async function EmployeePolicyPage({params}:{params:Promise<{docum
  return <><BHost><EmployeeDocumentB doc={doc} sub={sub} back={back} documents={POLICY_DOCUMENTS}/></BHost><EmployeeProfileDocumentFrame title={doc.title} sub={sub} back={back}>
   <p className="em-document-summary">{doc.summary}</p>
   {doc.sections.map((section,index)=><details className="em-document-section" key={section.heading} open={index===0}>
-   <summary><span>{section.heading}</span><CaretDownIcon size={20} aria-hidden="true"/></summary>
+   <summary><span>{section.heading}</span><CaretDownIcon size={20} weight="bold" aria-hidden="true"/></summary>
    <div>{section.blocks.map((block,index)=><BlockView key={index} block={block} context="employee"/>)}</div>
   </details>)}
   {doc.slug==='account-deletion'?<p><Link className="em-request-secondary" href="/app/account/delete">Review deletion request</Link></p>:null}

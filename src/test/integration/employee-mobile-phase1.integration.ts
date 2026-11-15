@@ -248,7 +248,7 @@ it('integrates the Release 1 Employee phone Home and Schedule with real own read
     await q("UPDATE workspaces SET active=true WHERE id='workspace-fuel'");await load('/app');await ready();authorityLoss=false;record('Current workspace deactivation clears own facts and restoration requires a fresh authorized read');
    }
    authorityLoss=true;await q('DELETE FROM employee_sessions WHERE employee_id=$1',[actor]);await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await page.locator('[data-home-state="unauthorized"],[data-home-state="unavailable"]').waitFor();await privateHomeCleared('session-revoked');
-   await page.goto(app.url+'/app/schedule?week='+f.week);await page.waitForURL(app.url+'/login');expect(new URL(page.url()).pathname).toBe('/login');await Promise.all(responseChecks);authorityLoss=false;record('Revoked sessions clear own Home and refuse a direct protected Schedule route');
+   await page.goto(app.url+'/app/schedule?week='+f.week);await page.waitForURL((url:URL)=>url.pathname==='/login');expect(new URL(page.url()).pathname).toBe('/login');await Promise.all(responseChecks);authorityLoss=false;record('Revoked sessions clear own Home and refuse a direct protected Schedule route');
 
    if(engine==='chromium'){
     await q("UPDATE employees SET role='MANAGER' WHERE id=$1",[f.actors[2]]);await assignOwnedManagerCompanyAccess(app.database.executor,f.actors[2]);
@@ -261,7 +261,7 @@ it('integrates the Release 1 Employee phone Home and Schedule with real own read
       await page.locator('[data-nv-clean]').waitFor();expect(await page.locator('[data-employee-mobile]').count()).toBe(0);expect(await page.locator('.app-shell').evaluate((el:HTMLElement)=>getComputedStyle(el).getPropertyValue('--em-canvas').trim())).toBe('');
       if(role==='MANAGER'){const response=await page.request.get(app.url+'/api/company-access/operational-authority',{headers:{'x-nevora-company-access':'1'}});expect(response.status()).toBe(200);const grant=await response.json();expect(grant.state).toBe('ready');expect(grant.scope?.mode).toBe('COMPANY');}await page.locator('.mobile-nav').getByRole('link',{name:'Inbox',exact:true}).waitFor();expect(await page.locator('.mobile-nav a').allTextContents()).toContain('Inbox');
      }
-     await shot(role.toLowerCase()+'-scope');if(role==='LEAD'){await q("UPDATE employee_sessions SET expires_at=clock_timestamp()-interval '1 second' WHERE employee_id=$1",[id]);await page.goto(app.url+'/app/schedule?week='+f.week);await page.waitForURL(app.url+'/login');expect(await page.locator('[data-employee-mobile]').count()).toBe(0);record('Expired Lead session cannot enter protected Schedule');}record(role+' real session retains role-owned navigation and presentation');
+     await shot(role.toLowerCase()+'-scope');if(role==='LEAD'){await q("UPDATE employee_sessions SET expires_at=clock_timestamp()-interval '1 second' WHERE employee_id=$1",[id]);await page.goto(app.url+'/app/schedule?week='+f.week);await page.waitForURL((url:URL)=>url.pathname==='/login');expect(await page.locator('[data-employee-mobile]').count()).toBe(0);record('Expired Lead session cannot enter protected Schedule');}record(role+' real session retains role-owned navigation and presentation');
     }
    }
    await context.close();await activeBrowser.close();browser=undefined;

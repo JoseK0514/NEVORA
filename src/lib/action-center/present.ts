@@ -77,6 +77,14 @@ export function presentItem(item: ActionItem, actionLabel: string, timeZone = 'U
       title = title.replace(/^Position coverage missing at /, 'Position not covered at ').replace(/^Lead coverage missing at /, 'No lead scheduled at ');
       detail = detail.replace(/: (\d+) missing/g, ': $1 open');
       break;
+    case 'TIME_CORRECTION': {
+      // Nov 14, 2026 inspection (BR-7): the row states the fact, who asked for what and the day they sent it. The read
+      // names the person and the kind of request; the recorded and asked-for times are on the review itself.
+      const who = detail.split(' · ')[0]?.trim(), sent = sentDate(item.dateTime, timeZone);
+      if (who && !/^Your correction/.test(title)) title = /Recorded entry not sent yet/.test(detail) ? `${who} asked to add unrecorded time` : `${who} asked for a time correction`;
+      detail = sent ? `S${sent.slice(1)}` : 'Waiting for review';
+      break;
+    }
   }
   // Review B7 (NV-262): a detail that ends in a bare date range ("Casey · Nov 2 – Nov 8.") is a label, not a sentence.
   if (item.type === 'TIMECARD') detail = detail.replace(/(\d)\.$/, '$1');
@@ -96,6 +104,14 @@ export function groupHeading(type: ActionItem['type'], count: number, title: str
     case 'TIME_OFF': return n('time-off request', 'time-off requests');
     default: return `${title} (${count})`;
   }
+}
+
+/** Jose's attendance words (Nov 11, 2026). "Not clocked in": the shift started and there is no punch. "Missed": the shift
+ * ended with no punch. "Clocked in late": the person arrived after the start. Today's read tells the first two apart by
+ * the shift's status, so a shift still in progress is never called missed. */
+export const ATTENDANCE_WORDS = {notClockedIn: 'Not clocked in', late: 'Clocked in late', missed: 'Missed'} as const;
+export function splitNoClockIn<T extends {status: string}>(shifts: readonly T[]): {running: T[]; ended: T[]} {
+  return {running: shifts.filter(shift => shift.status !== 'no_punches'), ended: shifts.filter(shift => shift.status === 'no_punches')};
 }
 
 /** "clock-in" that never breaks at its hyphen. */

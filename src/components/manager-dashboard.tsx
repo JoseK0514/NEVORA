@@ -189,7 +189,7 @@ function ActivityCorp(props: Props) {
   const dayLabel = (key: string) => { const text = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${key}T12:00:00Z`)); return key === today ? `Today · ${text}` : text; };
   const row = (event: Event) => {
     const body = <>
-      <span className={event.tint ? "c-act__icon c-act__icon--tint" : dayKey(event.at) > today ? "c-act__icon c-act__icon--amber" : "c-act__icon"} aria-hidden="true"><event.Icon className="c-ic c-ic--s" /></span>
+      <span className={event.tint ? "c-act__icon c-act__icon--tint" : dayKey(event.at) > today ? "c-act__icon c-act__icon--amber" : "c-act__icon"} aria-hidden="true"><event.Icon weight="bold" className="c-ic c-ic--s" /></span>
       <span className="c-row__main"><span className="c-row__title c-row__title--b">{event.title}</span><span className="c-row__detail"><span>{event.detail}</span></span></span>
     </>;
     return <li key={event.key}>{event.href ? <Link className="c-row c-act__row" href={event.href} aria-label={event.label}>{body}</Link> : <div className="c-row c-act__row">{body}</div>}</li>;

@@ -11,11 +11,13 @@ import {getWorkspace} from '@/lib/data/workspaces';
 import {parsePeriod} from '@/lib/timecards/project';
 import {Timecards} from '@/components/timecards';
 import {addDays,weekStartFor} from '@/lib/date-utils';
+import {payrollFeatureEnabled,readPayrollCapabilities} from '@/lib/payroll/service';
 
 export const metadata = { title: "Timecards" };
 export default async function TimecardsPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
   const session=await requireSession(),workspace=await getWorkspace(),params=await searchParams;
-  const access=isManagerRole(session.role)?await withOperationalCompany(await requireSessionMutationProof(),async()=>null):null;
+  const proof=isManagerRole(session.role)?await requireSessionMutationProof():null;
+  const access=proof?await withOperationalCompany(proof,async()=>null):null;
   if(access?.state==='unavailable')return <OperationalUnavailable title="Timecards unavailable" reason={access.reason}/>;
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();
   let period={startDate:today.subtract({days:6}).toString(),endDate:today.toString()};
@@ -27,8 +29,13 @@ export default async function TimecardsPage({searchParams}:{searchParams:Promise
     const weekStart=weekStartFor(today.toString());
     let managerPeriod={startDate:weekStart,endDate:addDays(weekStart,6)};
     try{if(params.start&&params.end)managerPeriod=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current week. */}
+    // AR-11 (Nov 14, 2026): a finalized period says what comes next. The same capability read Payroll and More use decides
+    // whether this person prepares payroll or an Owner does; with payroll off (or the read unavailable) the page offers
+    // Time exports instead. Display only: Payroll's own page still checks access.
+    const payroll=proof&&payrollFeatureEnabled()?await readPayrollCapabilities(proof).catch(()=>null):null;
+    const payrollStep=payroll?.enabled?payroll.canReview?'prepare' as const:'owner' as const:undefined;
     return <ScopedReadFrame observation={scopedObservation(access)}><div className="cm-timecards" data-nv-page="">
-      <Timecards key={session.id} initialPeriod={managerPeriod} manager actorId={session.id} managementRecoveryScope={managementRecoveryScope(workspace.id)} employeeCorporate={false} today={today.toString()}/>
+      <Timecards key={session.id} initialPeriod={managerPeriod} manager actorId={session.id} managementRecoveryScope={managementRecoveryScope(workspace.id)} employeeCorporate={false} today={today.toString()} payrollStep={payrollStep}/>
     </div></ScopedReadFrame>;
   }
   // Signature (phase 1): the employee page is the Timecards component's own band and sheet.

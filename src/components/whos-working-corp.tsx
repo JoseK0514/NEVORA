@@ -7,6 +7,7 @@ import { useClockMonitor } from "./clean/use-clock-monitor";
 import { useToday } from "./manager-today";
 import type { ClockMonitor } from "@/lib/time-clock";
 import type { Today } from "@/lib/today/project";
+import { ATTENDANCE_WORDS } from "@/lib/action-center/present";
 
 /* Who's working (Release 1, board O-OnShift): Home's "Who's working" link. Who is clocked in now (the clock monitor), who
  * hasn't clocked in for a shift that started, and published shifts that ended with no clock-in (Today). The attendance
@@ -14,9 +15,11 @@ import type { Today } from "@/lib/today/project";
 
 const initials = (name: string) => name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
 const clock = (iso: string, timeZone: string) => new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso));
+/** How long ago the shift started ("24 min", "1 h 5 min"). The card's heading says "Not clocked in"; "late" is kept for
+ * someone who clocked in after their start (Jose's attendance words, Nov 11, 2026). */
 const lateBy = (start: string, observedAt: string) => {
   const minutes = Math.floor((Date.parse(observedAt) - Date.parse(start)) / 60_000);
-  return minutes >= 60 ? `${Math.floor(minutes / 60)} h ${minutes % 60 ? `${minutes % 60} min ` : ""}late` : `${Math.max(minutes, 1)} min late`;
+  return minutes >= 60 ? `${Math.floor(minutes / 60)} h${minutes % 60 ? ` ${minutes % 60} min` : ""}` : `${Math.max(minutes, 1)} min`;
 };
 const SHOWN = 5;
 /** R3: one count voice. The label, then the figure in grey, no brackets ("Clocked in 2"). */
@@ -79,7 +82,7 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
       <p className="c-who__state">Today’s shifts aren’t available right now.</p>
       {onRetry ? <CorpButton kind="secondary" size="md" onClick={onRetry}>Try again</CorpButton> : null}
     </CorpBody></CorpCard> : null}
-    {late.length ? <CorpCard id="who-late" label={headed("Not in yet", late.length)}><ul className="c-rows" aria-label="Not in yet">{late.map(shift => <li key={shift.id}>
+    {late.length ? <CorpCard id="who-late" label={headed(ATTENDANCE_WORDS.notClockedIn, late.length)}><ul className="c-rows" aria-label={ATTENDANCE_WORDS.notClockedIn}>{late.map(shift => <li key={shift.id}>
       <CorpRow href={`/app/employees/${encodeURIComponent(shift.employeeId)}`} bold title={shift.employeeName} avatar={<CorpAvatar name={shift.employeeName} initials={initials(shift.employeeName)} />}
         detail={`Due ${clock(shift.startAt, timeZone)}${where(shift.locationName)}`} value={day ? lateBy(shift.startAt, day.observedAt) : undefined} valueTone="amber" chevron />
     </li>)}</ul></CorpCard> : null}

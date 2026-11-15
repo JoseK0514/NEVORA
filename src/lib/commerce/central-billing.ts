@@ -7,10 +7,20 @@ export type BillingAction='checkout'|'portal'|'small'|'team';
 export type BillingCatalog={currency:'usd';trialDays:30;plans:{key:'small'|'team';employees:number;amount:number}[]};
 export type CentralStatus=CommerceStatus&{businessName:string|null;applicationUrl:string|null;timeZone:string|null;billingAction:'checkout'|'portal'|null};
 export type CentralRead={state:'ready';observedAt:string;validForMs:number;status:CentralStatus;catalog:BillingCatalog}|{state:'unavailable';reason:'read_failed'|'access_denied'};
-export type BillingResult={kind:'navigate';url:string}|{kind:'unknown'|'refused'|'conflict'|'denied'|'busy'};
+/** Refusals the Owner can act on. The codes are the commerce service's; the page holds the words
+ * (services/commerce/README.md, "Consumer error copy"). Every other code keeps the general refusal. */
+export type BillingRefusal='changed'|'pending'|'review'|'expired'|'quote'|'employees'|'manage'|'syncing';
+export type BillingResult={kind:'navigate';url:string}|{kind:'unknown'|'denied'|'busy'}|{kind:'refused'|'conflict';refusal?:BillingRefusal};
+const refusals=new Map<string,BillingRefusal>([['idempotency_conflict','changed'],['billing_operation_pending','pending'],['checkout_pending','pending'],
+ ['billing_operation_reconciliation_required','review'],['legacy_operation_reconciliation_required','review'],['checkout_expired','expired'],['billing_operation_expired','expired'],
+ ['assisted_quote_required','quote'],['plan_employee_limit','employees'],['use_billing_portal','manage'],['subscription_sync_pending','syncing']]);
 type Transport=(input:string,init:RequestInit)=>Promise<Response>;
 type Intent={action:BillingAction;lang:BillingLanguage;key:string;path:string;body:Readonly<{lang:BillingLanguage;plan?:'small'|'team'}>};
 const object=(value:unknown):value is Record<string,unknown>=>!!value&&typeof value==='object'&&!Array.isArray(value);
+/** Reads only the bounded error code of a refusal; nothing else in the body is kept or shown. */
+export function billingRefusal(value:unknown):BillingRefusal|null{
+ return object(value)&&object(value.error)&&typeof value.error.code==='string'?refusals.get(value.error.code)??null:null;
+}
 export function takeBillingFragment(location:{hash:string;pathname:string;search:string},scrub:(url:string)=>void):string|null{
  const proof=location.search?'':/^#handoff=([A-Za-z0-9_-]{43})$/.exec(location.hash)?.[1]??null;
  if(location.hash||location.search)scrub(location.pathname);
@@ -67,7 +77,7 @@ export function createCentralBillingClient(origin:string|null,transport:Transpor
    const result=await call(original.path,'POST',original.body,true,controller.signal,original.key);
    if(disposed||generation!==epoch||controller.signal.aborted||result.status===0)return {kind:'unknown'};
    if([401,403].includes(result.status)){clear();return {kind:'denied'};}
-   if(result.status<200||result.status>=300)return {kind:result.status===409?'conflict':'refused'};
+   if(result.status<200||result.status>=300){const refusal=billingRefusal(result.data);return {kind:result.status===409?'conflict':'refused',...(refusal?{refusal}:{})};}
    try{return {kind:'navigate',url:stripeBillingDestination(result.data)};}catch{return {kind:'unknown'};}
   }finally{signal?.removeEventListener('abort',abort);if(financial===controller)financial=null;}
  }

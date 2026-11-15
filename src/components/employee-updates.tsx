@@ -91,7 +91,7 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
        <span className="q-rt"><b>{item.title}</b><i><time dateTime={item.publishedAt}>{day(item)}</time>{` · ${readLine(item)}`}</i></span>
        {/* Review B1 (NV-097): the update that needs a reply says so in amber, as the segment's count does. */}
        {inReviewGroup(item) ? <span className="c-pill c-pill--amber">Needs reply</span> : null}
-       <CaretRightIcon className="q-chev" aria-hidden="true" />
+       <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
       </Link></li>)}</ul>
      : <div className="c-page c-embed updates-empty" role="status"><CorpEmpty title={filter === 'all' ? 'No updates yet' : 'Nothing needs a reply'}
       body={filter === 'all' ? 'Tell your team about hours, menus or events.' : 'Updates that must be read show up here.'}
@@ -113,7 +113,7 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
  const sub = !current ? '\u00a0' : required ? `${required} to confirm` : toReview ? `${toReview} to review` : 'All caught up';
  const kind = (item: ReadyUpdate) => updateKinds[item.type];
  return <div className="q-page q-updates-e" data-nv-page="">
-  <QuietNav back={{href: '/app/more', label: 'More'}} right={<Link className="q-nav__r q-nav__r--ink" href="/app/updates/compose" aria-label="Message today’s team"><PlusIcon className="q-ic" aria-hidden="true" /></Link>} />
+  <QuietNav back={{href: '/app/more', label: 'More'}} right={<Link className="q-nav__r q-nav__r--ink" href="/app/updates/compose" aria-label="Message today’s team"><PlusIcon weight="bold" className="q-ic" aria-hidden="true" /></Link>} />
   <QuietHeader title="Updates" sub={sub} />
   <section aria-label="Workplace updates" aria-busy={refreshing}>
    <div className="q-seg" role="group" aria-label="Filter updates">{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} disabled={!current} onClick={() => setFilter(option.id)}>{option.id !== 'all' && current && option.count ? `${option.label} ${option.count}` : option.label}</button>)}</div>
@@ -123,9 +123,9 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
     : visible.length ? <ul className="q-list updates-list" style={{marginTop: 16}}>{visible.map(item => {
      const {Icon, label} = kind(item);
      return <li key={item.id}><Link className="q-row q-row--av" href={'/app/updates/' + item.id} prefetch={false} aria-label={`${item.title}, ${label}, ${status(item)}, ${longDate(item)}`}>
-      <span className={`q-av${!isReviewed(item) ? ' q-av--tint' : ''}`} aria-hidden="true"><Icon className="q-ic" /></span>
+      <span className={`q-av${!isReviewed(item) ? ' q-av--tint' : ''}`} aria-hidden="true"><Icon weight="bold" className="q-ic" /></span>
       <span className="q-rt"><b>{item.title}</b><i>{[item.authorContext, `${status(item)} ${shortDate(item)}`].filter(Boolean).join(' · ')}</i></span>
-      <CaretRightIcon className="q-chev" aria-hidden="true" />
+      <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
      </Link></li>;
     })}</ul>
     : <div role="status" style={{marginTop: 24}}><p className="q-empty">{emptyTitle}. {emptyDescription}</p>{filter !== 'all' ? <button type="button" className="q-btn q-btn--quiet" onClick={() => setFilter('all')}>View all updates</button> : null}</div>}

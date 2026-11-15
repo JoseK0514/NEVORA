@@ -134,7 +134,7 @@ export function IncomingB({count, onRetry}: {count: number | null; onRetry: () =
     <button className="eb-inline__b" type="button" onClick={onRetry}>Try again</button></div>;
   return count ? <BList label="Needs your answer"><BRow href="/app/exchange?tab=foryou" lead={<BIcon tone="amber"><ArrowsLeftRightIcon weight="bold"/></BIcon>}
     title={count === 1 ? 'A teammate requested a swap' : `${count} swaps need your answer`} chip={<BChip tone="amber">Needs your answer</BChip>} sub="Review the shifts before responding"
-    trail={<BButtonLink href="/app/exchange?tab=foryou" kind="teal" label={count === 1 ? 'Review the swap request' : 'Review swap requests'}>Review</BButtonLink>}/></BList> : null;
+    trail={<BButtonLink href="/app/exchange?tab=foryou" kind="ghost" label={count === 1 ? 'Review the swap request' : 'Review swap requests'}>Review</BButtonLink>}/></BList> : null;
 }
 
 /** A failed part of a read, said inside its card with a quiet Try again. */

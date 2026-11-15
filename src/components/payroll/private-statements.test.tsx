@@ -49,10 +49,10 @@ describe('private employee statement presentation', () => {
   });
   it('distinguishes empty own history from a failed private read', () => {
     boundary.statements = [];
-    expect(renderToStaticMarkup(<MyPay />)).toContain('No published statements yet');
+    expect(renderToStaticMarkup(<MyPay />)).toContain('No pay statements shared yet');
     boundary.error = 'Fictional private access unavailable';
     expect(renderToStaticMarkup(<MyPay />)).toContain('Couldn’t load your statements');
-    expect(renderToStaticMarkup(<MyPay />)).not.toContain('No published statements yet');
+    expect(renderToStaticMarkup(<MyPay />)).not.toContain('No pay statements shared yet');
   });
 });
 

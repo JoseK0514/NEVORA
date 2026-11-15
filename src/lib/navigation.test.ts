@@ -58,9 +58,9 @@ describe('phone tabs', () => {
     expect(activeMobileTab('EMPLOYEE', '/app/my-time', payroll)).toBe('/app/my-time');
     expect(activeMobileTab('EMPLOYEE', '/app/timecards', payroll)).toBe('/app/my-time');
     const tabs = mobileTabsForRole('EMPLOYEE', payroll).map(tab => tab.href);
-    // Direction B (Nov 7, 2026): More and the pages it opens go back to Home, so they light Home; an unknown address lights none.
+    // Review Nov 14 (BR-4): More and the pages it opens are not tabs, so they light none (not Home); an unknown address too.
     for (const path of ['/app/notifications', '/app/more', '/app/updates', '/app/updates/own-update', '/app/profile', '/app/profile/calendar', '/app/help', '/app/account/delete']) {
-      expect(activeMobileTab('EMPLOYEE', path, payroll)).toBe('/app');
+      expect(tabs).not.toContain(activeMobileTab('EMPLOYEE', path, payroll));
     }
     expect(tabs).not.toContain(activeMobileTab('EMPLOYEE', '/app/no-such-page', payroll));
     expect(mobileTabsForRole('EMPLOYEE', payroll)[0].owns).toEqual(['/app']);
@@ -94,6 +94,13 @@ describe('phone tabs', () => {
     expect(activeMobileTab(role,'/app/requests',review,context)).toBe('/app');
     expect(activeMobileTab(role,'/app/payroll-export',review,context)).toBe('/app/payroll');
     expect(activeMobileTab(role,'/app/timecards',review,context)).toBe('/app/timecards');
+    // Review Nov 14 (BR-4): More, Insights, Settings and its pages, Profile, Notifications, Help and Updates light no tab.
+    const tabs = mobileTabsForRole(role,review,context).map(tab => tab.href);
+    for (const path of ['/app/more', '/app/reports', '/app/settings', '/app/settings/locations', '/app/profile', '/app/notifications', '/app/help', '/app/updates', '/app/my-pay'])
+      expect(tabs).not.toContain(activeMobileTab(role,path,review,context));
+    // Payroll settings belongs to Payroll, and Help someone sign in to Team (with or without a prefilled person).
+    expect(activeMobileTab(role,'/app/settings/payroll',{...review,canConfigure:true},context)).toBe('/app/payroll');
+    expect(activeMobileTab(role,'/app/account-recovery?employee=E-1',review,context)).toBe('/app/employees');
     const reachable = [...mobileTabsForRole(role,review,context).flatMap(tab => tab.owns), ...mobileMoreForRole(role,review,context).map(item => item.href)];
     for (const item of navigationForRole(role,review,context)) expect(reachable).toContain(item.href);
   });
@@ -106,7 +113,7 @@ describe('phone tabs', () => {
     // Quiet (v4): Templates and Scheduling rules open from Schedule, so Schedule stays lit there (approved mockups).
     expect(activeMobileTab(role, '/app/schedule/templates',undefined,context)).toBe('/app/schedule');
     expect(activeMobileTab(role, '/app/schedule/settings',undefined,context)).toBe('/app/schedule');
-    expect(activeMobileTab(role, '/app/notifications',undefined,context)).toBe('/app');
+    expect(activeMobileTab(role, '/app/notifications',undefined,context)).toBeUndefined();
     expect(activeMobileTab(role, '/app/schedule/new',undefined,context)).toBe('/app/schedule');
     expect(activeMobileTab(role, '/app/payroll',undefined,context)).toBeUndefined();
   });

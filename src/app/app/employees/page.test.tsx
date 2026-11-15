@@ -2,17 +2,19 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, expect, it, vi } from "vitest";
 
-const fixture = vi.hoisted(() => ({ inactiveLocation: false, empty: false, denied: false, positionsFailed:false, events: [] as string[] }));
-beforeEach(() => { fixture.inactiveLocation = false; fixture.empty = false; fixture.denied = false; fixture.positionsFailed=false; fixture.events = []; });
+const fixture = vi.hoisted(() => ({ inactiveLocation: false, empty: false, denied: false, positionsFailed:false, owner: false, importOff: false, events: [] as string[] }));
+beforeEach(() => { fixture.inactiveLocation = false; fixture.empty = false; fixture.denied = false; fixture.positionsFailed=false; fixture.owner = false; fixture.importOff = false; fixture.events = []; });
 
 vi.mock("next/link", () => ({
   default: ({ href, children, ...props }: React.ComponentProps<"a">) =>
     createElement("a", { href, ...props }, children),
 }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
+// The staff list import works only where company workspaces are routed; Team offers its link on the same condition.
+vi.mock('@/lib/workspace-routing/config.server', () => ({ readWorkspaceRoutingConfig: () => { if (fixture.importOff) throw Error('Fictional single-company deployment'); return {}; } }));
 vi.mock("@/lib/auth/permissions", () => ({
   MANAGER_ROLES: ["OWNER", "MANAGER"],
-  requireRoles: async () => { fixture.events.push("authorize"); if (fixture.denied) throw new Error("forbidden"); return { id: "manager", role: "MANAGER" }; },
+  requireRoles: async () => { fixture.events.push("authorize"); if (fixture.denied) throw new Error("forbidden"); return { id: "manager", role: fixture.owner ? "OWNER" : "MANAGER" }; },
 }));
 vi.mock("@/components/page-header", () => ({ PageHeader: () => null }));
 vi.mock("@/components/status-pill", () => import("../../../components/status-pill"));
@@ -44,6 +46,30 @@ it("keeps inactive employees discoverable with an explicit status", async () => 
   // IS-P4-15: the label also says the phone number shown in the desktop table.
   expect(html).toContain('aria-label="Inactive Person, LEAD, Main, 7875550102, inactive"');
   expect(html).toContain('href="/app/employees/inactive"');
+});
+
+it("offers Availability in Team tools to every manager and the staff list import to Owners only, and makes the phone search's magnifier a real Apply target", async () => {
+  // Nov 14, 2026 inspection (AR-9, BR-11). Both layouts (the phone screen and the desktop card) carry the rows.
+  const manager = renderToStaticMarkup(await EmployeesPage());
+  expect(manager.match(/href="\/app\/availability"/g)).toHaveLength(2);
+  expect(manager).toContain("Who can work, and when");
+  expect(manager).not.toContain("/app/employees/import");
+  expect(manager).toMatch(/<button type="submit"[^>]*class="b-search__go"[^>]*><svg[^>]*aria-hidden="true"[^>]*>.*?<\/svg><span class="b-sr">Apply search<\/span><\/button>/);
+  fixture.owner = true;
+  const owner = renderToStaticMarkup(await EmployeesPage());
+  expect(owner.match(/href="\/app\/employees\/import"/g)).toHaveLength(2);
+  expect(owner).toContain("Import a staff list");
+  // Where the import cannot work (a single-company deployment) the Owner is not sent to a closed page.
+  fixture.importOff = true;
+  expect(renderToStaticMarkup(await EmployeesPage())).not.toContain("/app/employees/import");
+});
+
+it("says Not clocked in for a started shift with no punch, with how long ago it started (Jose's attendance words, Nov 11, 2026)", async () => {
+  const { notClockedInText } = await import("@/components/team-live");
+  expect(notClockedInText(55)).toBe("Not clocked in · 55 min");
+  expect(notClockedInText(125)).toBe("Not clocked in · 2 h 5 min");
+  expect(notClockedInText(120)).toBe("Not clocked in · 2 h");
+  expect(notClockedInText(0)).toBe("Not clocked in");
 });
 
 it("renders the retained inactive primary location truthfully in the employee directory", async () => {

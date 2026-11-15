@@ -29,7 +29,7 @@ export function RulesHoursList({ rows }: { rows: RulesHoursRow[] }) {
   return <>
     {rows.length > 1 ? <div className="wb-filterbar">
       <label className="wb-search">
-        <MagnifyingGlassIcon size={20} aria-hidden="true" />
+        <MagnifyingGlassIcon size={20} weight="bold" aria-hidden="true" />
         <span className="sr-only">Find a person</span>
         <input ref={search} type="search" placeholder="Find a person" value={query} onChange={event => setQuery(event.target.value)}
           onKeyDown={event => { if (event.key === "Enter") event.preventDefault(); }} />

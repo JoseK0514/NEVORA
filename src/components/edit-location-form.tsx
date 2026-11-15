@@ -112,8 +112,8 @@ export function EditLocationForm({ location, action, words = { location: "Locati
             <li>{location.active ? <div className="q-row q-row--one"><span className="q-rt"><b><Link href={clockerHref}>Clocker link</Link></b></span>
               <button type="button" className="q-bs q-bs--hit" onClick={copyLink} aria-label="Copy Clocker link">Copy</button></div>
               : <div className="q-row q-row--one"><span className="q-rt"><b>Clocker link</b></span><span className="q-rv q-rv--l">Unavailable while inactive</span></div>}</li>
-            <li><Link className="q-row q-row--one" href="/app/schedule/settings#coverage-staffing"><span className="q-rt"><b>Staffing</b></span><span className="q-rv q-rv--l">{staffing ?? "Not set"}</span><CaretRightIcon className="q-chev" aria-hidden="true" /></Link></li>
-            <li><Link className="q-row q-row--one" href="/app/employees"><span className="q-rt"><b>Who can work here</b></span>{eligible === undefined ? null : <span className="q-rv q-rv--l">{eligible}</span>}<CaretRightIcon className="q-chev" aria-hidden="true" /></Link></li>
+            <li><Link className="q-row q-row--one" href="/app/schedule/settings#coverage-staffing"><span className="q-rt"><b>Staffing</b></span><span className="q-rv q-rv--l">{staffing ?? "Not set"}</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link></li>
+            <li><Link className="q-row q-row--one" href="/app/employees"><span className="q-rt"><b>Who can work here</b></span>{eligible === undefined ? null : <span className="q-rv q-rv--l">{eligible}</span>}<CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link></li>
           </ul>
           <p className="q-sr" id="edit-location-active-help">{draft.active ? "Turning this off keeps history. The Clocker stops working here." : "Inactive: new assignments and the Clocker are unavailable."}</p>
         </FieldErrors>

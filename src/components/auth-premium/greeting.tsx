@@ -5,9 +5,10 @@ import type { AuthCopy } from "@/lib/auth-copy";
 
 type Greetings = AuthCopy["greeting"];
 
-/** Good morning 5:00–11:59, Good afternoon 12:00–16:59, Good evening otherwise, from the device clock. */
+/** Good morning 5:00–11:59, Good afternoon from 12:00 until the language's evening hour (English 5 PM; Spanish 7 PM, as
+ * "Buenas tardes" is said in Puerto Rico: inspection Nov 14, PB-019), Good evening otherwise, from the device clock. */
 export function greetingFor(hour: number, words: Greetings): string {
-  return hour >= 5 && hour < 12 ? words.morning : hour >= 12 && hour < 17 ? words.afternoon : words.evening;
+  return hour >= 5 && hour < 12 ? words.morning : hour >= 12 && hour < words.eveningFrom ? words.afternoon : words.evening;
 }
 
 const subscribe = () => () => {};

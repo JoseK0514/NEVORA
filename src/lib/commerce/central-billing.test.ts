@@ -1,5 +1,5 @@
 import {afterEach,expect,it,vi} from 'vitest';
-import {createCentralBillingClient,parseBillingCatalog,parseCentralStatus,publicBillingApiOrigin,stripeBillingDestination,takeBillingFragment} from './central-billing';
+import {billingRefusal,createCentralBillingClient,parseBillingCatalog,parseCentralStatus,publicBillingApiOrigin,stripeBillingDestination,takeBillingFragment} from './central-billing';
 const proof='a'.repeat(43),token='b'.repeat(43),operation='12121212-1212-4212-8212-121212121212',origin='http://127.0.0.1:39991';
 const catalog={currency:'usd',trialDays:30,plans:[{key:'small',employees:15,amount:1900},{key:'team',employees:30,amount:2900}]};
 const status={state:'paid',operational:true,trialEndsAt:null,paidThrough:'2026-12-01T00:00:00.000Z',graceEndsAt:null,plan:'small',employeeLimit:15,activeEmployees:4,reason:null,billing:true,export:true,businessName:'Fictional business',applicationUrl:'https://fixture.example.invalid',timeZone:'America/Puerto_Rico'};
@@ -41,3 +41,12 @@ it('disposes a held exchange without accepting the late credential',async()=>{co
 it('projects authoritative plans and current workplace status without caller selectors',()=>{expect(parseBillingCatalog(catalog)).toEqual(catalog);expect(parseCentralStatus({...status,customerId:'private-provider-id'})).not.toHaveProperty('customerId');expect(()=>parseCentralStatus({...status,timeZone:'not-a-zone'})).toThrow();expect(()=>parseBillingCatalog({...catalog,plans:[catalog.plans[0],catalog.plans[0]]})).toThrow();});
 
 it('refuses selector-bearing handoffs and removes query and fragment material from the address bar',()=>{for(const search of ['?handoff='+proof,'?customer=fictional','?lang=es']){const scrub=vi.fn();expect(takeBillingFragment({hash:'#handoff='+proof,pathname:'/pages/plans',search},scrub)).toBeNull();expect(scrub).toHaveBeenCalledExactlyOnceWith('/pages/plans');}});
+it.each([[409,'idempotency_conflict','conflict','changed'],[409,'billing_operation_pending','conflict','pending'],[409,'checkout_pending','conflict','pending'],[409,'billing_operation_reconciliation_required','conflict','review'],[409,'legacy_operation_reconciliation_required','conflict','review'],[409,'checkout_expired','conflict','expired'],[409,'billing_operation_expired','conflict','expired'],[400,'assisted_quote_required','refused','quote'],[409,'plan_employee_limit','conflict','employees'],[409,'use_billing_portal','conflict','manage'],[409,'subscription_sync_pending','conflict','syncing']] as const)('names the refusal for %i %s without releasing the original request',async(status,code,kind,refusal)=>{
+ const f=fixture();await f.client.enter(proof);f.transport.mockResolvedValueOnce(json({error:{code}},status));
+ expect(await f.client.action('checkout','en')).toEqual({kind,refusal});expect(f.client.hasPending()).toBe(true);expect(f.key).toHaveBeenCalledTimes(1);
+});
+it('keeps the general refusal for an unknown, inherited or malformed error code',async()=>{
+ const f=fixture();await f.client.enter(proof);f.transport.mockResolvedValueOnce(json({error:{code:'temporarily_unavailable'}},503));expect(await f.client.action('checkout','en')).toEqual({kind:'refused'});
+ f.transport.mockResolvedValueOnce(json({error:'checkout_pending'},409));expect(await f.client.retry()).toEqual({kind:'conflict'});
+ for(const value of [null,[],'checkout_pending',{code:'checkout_pending'},{error:{code:'constructor'}},{error:{code:['checkout_pending']}}])expect(billingRefusal(value)).toBeNull();
+});

@@ -296,9 +296,9 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
     <header className="employee-time-section-heading">
       <div><h2 id="employee-corrections-title">Corrections</h2><p>Your manager reviews each request. Your original times are kept.</p></div>
       <button className="employee-time-correction-trigger" data-open={open||undefined} type="button" aria-expanded={open} aria-controls="employee-missing-time-correction" onClick={()=>{setOpen(value=>!value);setReplacementTarget(null);setStart('');setEnd('');setReason('');}} disabled={!ready||ready.locations.length===0}>
-        <span className="employee-time-correction-trigger__tile" aria-hidden="true">{open?<XIcon size={18}/>:<PlusIcon size={20}/>}</span>
+        <span className="employee-time-correction-trigger__tile" aria-hidden="true">{open?<XIcon size={18} weight="bold"/>:<PlusIcon size={20} weight="bold"/>}</span>
         <span className="employee-time-correction-trigger__copy"><b>{open?'Cancel':'Request a correction'}</b>{open?null:<small aria-hidden="true">Add time that wasn’t recorded</small>}</span>
-        {open?null:<ArrowRightIcon className="employee-time-correction-trigger__go" size={18} aria-hidden="true"/>}
+        {open?null:<ArrowRightIcon className="employee-time-correction-trigger__go" size={18} weight="bold" aria-hidden="true"/>}
       </button>
     </header>
     {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback)}{feedback.state==='unavailable'?<> <Link href="/login">Sign in</Link></>:null}</p>:null}
@@ -319,7 +319,7 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
       recent.length?<div className="employee-correction-history">
         {recent.map((item)=><div className="employee-correction-history-row" key={item.id}>
           <span className="employee-correction-day" aria-hidden="true"><small>{dayPart(item.proposedStartAt,zone,'short')}</small><b>{dayPart(item.proposedStartAt,zone,'day')}</b></span>
-          <div><strong>{item.kind==='MISSING_ENTRY'?'Unrecorded time':item.kind==='BREAK_BOUNDARY'?(item.breakName??'Break'):'Clock in / clock out'}</strong><span className="employee-correction-change">{item.originalStartAt?<s>{clock(item.originalStartAt,zone)}</s>:<s>Not recorded</s>}<ArrowRightIcon size={14} aria-hidden="true"/><b>{clock(item.proposedStartAt,zone)} – {clock(item.proposedEndAt,zone)}</b></span><small>{item.locationName} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}</small>
+          <div><strong>{item.kind==='MISSING_ENTRY'?'Unrecorded time':item.kind==='BREAK_BOUNDARY'?(item.breakName??'Break'):'Clock in / clock out'}</strong><span className="employee-correction-change">{item.originalStartAt?<s>{clock(item.originalStartAt,zone)}</s>:<s>Not recorded</s>}<ArrowRightIcon size={14} weight="bold" aria-hidden="true"/><b>{clock(item.proposedStartAt,zone)} – {clock(item.proposedEndAt,zone)}</b></span><small>{item.locationName} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}</small>
             <CorrectionComparison recordedLabel={item.kind==='MISSING_ENTRY'&&item.originalStartAt?'Approved missing time':'Recorded'} recordedStartAt={item.originalStartAt} recordedEndAt={item.originalEndAt} context={item.context} zone={zone}/>
             <p className="employee-time-correction-note">{item.status==='PENDING'?'Pending proposal':item.status==='APPROVED'?'Approved proposal':'Declined proposal'} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}{item.status==='REJECTED'?' · does not change effective time':''}</p>
             <PriorCorrectionDecisions context={item.context} zone={zone}/>
@@ -330,7 +330,7 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
             setStart(localValue(item.proposedStartAt,zone));setEnd(localValue(item.proposedEndAt,zone));setReason('');setResult(null);setOpen(true);
           }}>Correct missing time</button>:null}
           </div>
-          <span className={'employee-correction-state '+item.status.toLowerCase()}>{item.status==='PENDING'?'Pending':item.status==='APPROVED'?'Approved':'Declined'}</span>
+          <span className={'employee-correction-state '+item.status.toLowerCase()}>{item.status==='PENDING'?'Waiting':item.status==='APPROVED'?'Approved':'Declined'}</span>
         </div>)}
         {ready&&ready.totalRequests>recent.length?<small className="employee-correction-more">Showing {recent.length} of {ready.totalRequests} correction requests.</small>:null}
       </div>:<p className="employee-time-empty">No correction requests yet.</p>}

@@ -5,6 +5,10 @@ import {OperationalUnavailable} from '@/components/company-access/operational-un
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import { EmployeeDirectory } from "@/components/employee-directory";
+import {readWorkspaceRoutingConfig} from '@/lib/workspace-routing/config.server';
+/** The import page answers "not available" unless company workspaces are routed (the roster routes read the same
+ * configuration first), so Team offers the link only where the page can work. */
+function rosterImportAvailable(){try{readWorkspaceRoutingConfig();return true;}catch{return false;}}
 import { currentPresentation } from "@/lib/workspace-presentation/current.server";
 import { wordPreset } from "@/lib/workspace-presentation/words";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
@@ -28,6 +32,6 @@ export default async function EmployeesPage({ searchParams }: {
   let positions: Awaited<ReturnType<typeof listPositions>>;
   try { positions = await listPositions({ includeInactive: true }); }
   catch { return <OperationalUnavailable title="Employees unavailable" reason="read_failed"/>; }
-  return <ScopedReadFrame observation={scopedObservation(source)}><EmployeeDirectory clockerRecovery={actor.role==='OWNER'} positions={positions} words={wordPreset((await currentPresentation()).words).en} employees={employees} locations={locations} filters={filters}
+  return <ScopedReadFrame observation={scopedObservation(source)}><EmployeeDirectory clockerRecovery={actor.role==='OWNER'} canImport={actor.role==='OWNER'&&rosterImportAvailable()} positions={positions} words={wordPreset((await currentPresentation()).words).en} employees={employees} locations={locations} filters={filters}
     visibleEmployees={filterDirectoryEmployees(employees, filters, new Map(positions.map(position => [position.id, position.name])))} showAll={(params as DirectorySearchParams).all === '1'} /></ScopedReadFrame>;
 }

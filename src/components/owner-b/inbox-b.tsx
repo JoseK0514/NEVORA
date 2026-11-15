@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
+import { CalendarCheckIcon } from "@phosphor-icons/react/dist/ssr/CalendarCheck";
 import { ArrowsLeftRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowsLeftRight";
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
@@ -59,11 +60,15 @@ export function InboxB({ ready, families, waiting = [], total, connection, statu
   const weeks = useMemo(() => [...new Set(leaves.flatMap(leave => leave.weeks ?? []))].sort().slice(0, MAX_STAFFING_WEEKS), [leaves]);
   const { state: staffing } = useLeaveStaffing(weeks.length ? { weeks } : null);
   const checked = useMemo(() => new Set(leaves.filter(leave => leave.weeks?.every(week => weeks.includes(week))).map(leave => leave.id)), [leaves, weeks]);
+  // Nov 14, 2026 inspection (BR-7): the band says what its count leaves out. Corrections and timecards that wait for a
+  // review are listed under "· waiting" and are not part of "N things need you"; the same read, no count changed.
+  const waitingCount = waiting.reduce((sum, group) => sum + count(group), 0);
+  const needs = total === null ? null : total === 0 ? "Nothing needs you right now" : `${plural(total, "thing needs", "things need")} you`;
   const cards: ReactNode[] = [];
   for (const family of shown) for (const group of family.groups) cards.push(<GroupCard key={group.id} group={group} items={items} staffing={staffing} checked={checked} />);
   return <BScreen back={back}>
     <BHero back={back ? { href: "/app", label: "Home" } : undefined} title="Things to do" titleId="b-todo-title"
-      sub={total === null ? undefined : <>{total === 0 ? "Nothing needs you right now" : `${plural(total, "thing needs", "things need")} you`}<span role="status" className="b-sr">{statusLine}</span></>}>
+      sub={needs === null ? undefined : <>{waitingCount ? `${needs} · ${waitingCount}\u00a0more waiting for review` : needs}<span role="status" className="b-sr">{statusLine}</span></>}>
       {families.length ? <BSeg label="Show" items={[
         // Review F5 (NV-103): each count is the segmented control's count pill; the name still reads "All, 13".
         { key: "all", label: total === null ? "All" : <>All<span className="c-count c-num">{total}</span></>, aria: total === null ? undefined : `All, ${total}`, current: filter === "all", onSelect: () => setFilter("all") },
@@ -72,7 +77,10 @@ export function InboxB({ ready, families, waiting = [], total, connection, statu
       ]} /> : null}
     </BHero>
     <BStack>
-      {todayFailed ? <BCard label="Clock-ins"><BState kind="failed" title="Clock-ins can’t be checked right now" line="Missed clock-ins may be missing from this list." action={{ label: "Try again", onClick: onRefresh }} /></BCard> : null}
+      {/* Phase 2 (package D): one Try again for one failure. When the list failed too, its card under this one carries the
+        retry (the same refresh), so this card only says what is missing. */}
+      {todayFailed ? <BCard label="Clock-ins"><BState kind="failed" title="Clock-ins can’t be checked right now" line="People who haven’t clocked in may not be listed."
+        action={!ready && !["loading", "reconnecting", "offline", "paused", "access_lost"].includes(connection) ? undefined : { label: "Try again", onClick: onRefresh }} /></BCard> : null}
       {!ready ? <BCard label="Things to do"><ReadState connection={connection} statusLine={statusLine} onRefresh={onRefresh} /></BCard>
         : cards.length || waiting.length ? <>{cards}{/* Review B2 (NV-002): reviews that wait (not due today) are listed after today's cards. */}
           {filter === "all" || filter === "review" ? waiting.map(group => <GroupCard key={group.id} group={{ ...group, title: `${group.title} · waiting` }} items={items} staffing={staffing} checked={checked} />) : null}</> : <BCard label="Things to do"><div className="b-notice"><BIcon tone="green"><CheckIcon weight="bold" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">You’re all set</span><span className="b-notice__s">Nothing needs you right now.</span></span></div></BCard>}
@@ -81,6 +89,8 @@ export function InboxB({ ready, families, waiting = [], total, connection, statu
         <BList label="More">
           <BRow lead={<BIcon tone="grey"><SunIcon weight="bold" /></BIcon>} title="Time off requests" sub="Waiting and decided" href="/app/requests" />
           <BRow lead={<BIcon tone="grey"><ArrowsLeftRightIcon weight="bold" /></BIcon>} title="Shift requests" sub="Swaps and covers" href="/app/exchange" />
+          {/* Nov 14, 2026 inspection (AR-9): who can work is one tap from the requests it helps decide. */}
+          <BRow lead={<BIcon tone="grey"><CalendarCheckIcon weight="bold" /></BIcon>} title="Availability" sub="Who can work, and when" href="/app/availability" />
           <BRow lead={<BIcon tone="grey"><CheckIcon weight="bold" /></BIcon>} title="Later and done" sub={laterLine(later)} href="/app/inbox?view=more" label={`Later and done: ${laterLine(later).toLowerCase()}`} />
         </BList>
       </BCard>
@@ -118,8 +128,10 @@ function GroupCard({ group, items, staffing, checked }: { group: Group; items: M
       if (group.id === "repair") return <BRow key={row.key} lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={row.title}
         chip={row.value ? <BChip tone="amber">{row.value}</BChip> : <BChip tone="amber">Approved time off</BChip>} sub={row.detail} href={row.href} label={row.label}
         trail={<BButtonLink href={row.href} kind="ghost" label={`Fill shift: ${row.title}`}>Fill</BButtonLink>} />;
-      if (group.id === "missed") return <BRow key={row.key} lead={<BAvatar name={row.title} ring="late" />} title={row.title} chip={row.value ? <BChip tone="amber">{`${row.value} late`}</BChip> : undefined}
-        sub={row.detail} href={row.href} label={row.label} />;
+      // Jose's attendance words (Nov 11, 2026): a shift in progress with no punch is "Not clocked in" (its chip says how
+      // long ago it started); "Missed" is only a shift that ended with no punch.
+      if (group.id === "missed" || group.id === "not-clocked-in") return <BRow key={row.key} lead={<BAvatar name={row.title} ring="late" />} title={row.title}
+        chip={row.value ? <BChip tone="amber">{`Started ${row.value} ago`}</BChip> : undefined} sub={row.detail} href={row.href} label={row.label} />;
       const item = items.get(row.key);
       const requestId = group.id === "time-off" ? requestIdOf(item) : null;
       if (requestId) {
@@ -141,7 +153,9 @@ function GroupCard({ group, items, staffing, checked }: { group: Group; items: M
   </BCard>;
 }
 
-/** Decline and Approve, side by side under the request. While the decision is out both are disabled and the pressed one says so. */
+/** Decline and Approve, side by side under the request. While the decision is out both are disabled and the pressed one says so.
+ * Nov 14, 2026 inspection (OW-001): a list of requests carries no filled primary. Approve (or Review) is the tinted pill and
+ * Decline a quiet text button (manager-inbox-corp.css); the handlers and the 44px targets are the same. */
 function Decide({ name, approve, reviewHref }: { name: string; approve: boolean; reviewHref: string }) {
   const { pending, data } = useFormStatus();
   const decision = data?.get("decision");
@@ -157,8 +171,8 @@ function Decide({ name, approve, reviewHref }: { name: string; approve: boolean;
   return <span ref={pair} className="b-decide" aria-busy={pending}>
     <BButton kind="quiet" onClick={() => setConfirming(true)} disabled={pending} label={pending ? undefined : `Decline time off for ${name}`}>{pending && decision === "DENIED" ? "Declining…" : "Decline"}</BButton>
     {/* Approve only once the schedule check came back with no overlap; otherwise its page shows the shifts first. */}
-    {approve ? <BButton kind="teal" type="submit" name="decision" value="APPROVED" disabled={pending} label={pending ? undefined : `Approve time off for ${name}`}>{pending && decision === "APPROVED" ? "Approving…" : "Approve"}</BButton>
-      : <BButtonLink href={reviewHref} kind="teal" label={`Review time off for ${name}`}>Review</BButtonLink>}
+    {approve ? <BButton kind="ghost" type="submit" name="decision" value="APPROVED" disabled={pending} label={pending ? undefined : `Approve time off for ${name}`}>{pending && decision === "APPROVED" ? "Approving…" : "Approve"}</BButton>
+      : <BButtonLink href={reviewHref} kind="ghost" label={`Review time off for ${name}`}>Review</BButtonLink>}
     <span className="b-sr" role="status">{pending ? "Saving your decision…" : ""}</span>
   </span>;
 }

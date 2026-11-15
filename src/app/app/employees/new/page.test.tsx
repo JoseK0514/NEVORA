@@ -71,6 +71,9 @@ it("preserves submitted field names, required contact fields and optional email"
   expect(html).toMatch(/<a href="\/app\/employees" class="c-formhead__up">.*?Team<\/a>/);
   expect(html).toMatch(/<div class="c-form-foot"><a href="\/app\/employees" class="c-btn c-btn--secondary">Cancel<\/a><button type="button" class="c-btn">Next<\/button><\/div>/);
   expect(html).toContain("Email (optional)");
+  // Nov 14, 2026 inspection (BR-14): the field says what leaving it empty means, tied to the input for screen readers.
+  expect(html).toContain('<span id="new-email-help">Without an email, this person can clock in on the tablet but can’t sign in to NEVORA.</span>');
+  expect(html).toMatch(/<input id="new-email"[^>]*aria-describedby="new-email-help"/);
 });
 
 it("blocks creation when no active location exists and supplies the Owner setup route", async () => {

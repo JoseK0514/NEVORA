@@ -27,23 +27,29 @@ const PAGE_KEYWORDS: Record<string, string> = {
   '/app/schedule/templates': 'patterns templates repeat',
 };
 
-/** UX7: Settings pages, found by name for Owners (who are the only ones who can open Settings). */
 /** Owner premium A3: the team tools are named by their page titles now; their earlier names still find them. */
 const TOOL_KEYWORDS: Record<string, string> = {
   '/app?view=attendance': 'attendance clocked in on shift now',
   '/app?view=team': 'team overview hours targets',
   '/app?view=activity': 'schedule activity changes publications',
 };
+/** UX7: Settings pages, found by name for Owners (who are the only ones who can open Settings). Review Nov 14 (AR-14,
+ * AR-15): each is named as its row in the Settings hub (src/app/app/settings/page.tsx), and Clocker PINs and Punch photos
+ * are listed too. */
 const SETTINGS_PAGES: { href: string; label: string; keywords: string }[] = [
   { href: '/app/settings/workspace', label: 'Company profile', keywords: 'business name timezone time zone company' },
   { href: '/app/settings/locations', label: 'Locations', keywords: 'places sites stores offices clocker links' },
   { href: '/app/settings/branding', label: 'Branding', keywords: 'logo colour color brand' },
-  { href: '/app/settings/features', label: 'Features & words', keywords: 'modules features words terms language' },
+  { href: '/app/settings/features', label: 'Features and team terms', keywords: 'modules features words terms language' },
   { href: '/app/settings/company-policies', label: 'Company policies', keywords: 'policies attendance thresholds rules' },
   { href: '/app/settings/breaks', label: 'Break types', keywords: 'breaks lunch meal rest' },
   { href: '/app/settings/positions', label: 'Positions', keywords: 'positions jobs roles qualifications' },
   { href: '/app/settings/clocker', label: 'Clocker tablets', keywords: 'clocker tablets devices kiosk' },
+  { href: '/app/settings/clocker/pins', label: 'Clocker PINs', keywords: 'pin pins code codes clocker time clock' },
+  { href: '/app/settings/clocker/photos', label: 'Punch photos', keywords: 'photos pictures camera punch clocker' },
 ];
+/** Review Nov 14 (AR-14): Payroll settings, for an Owner who can set payroll up (the Settings hub's Pay row). */
+const PAYROLL_SETTINGS = { href: '/app/settings/payroll', label: 'Payroll settings', keywords: 'pay schedule payday pay period payroll setup' };
 
 /** Employee desktop, Direction B (Nov 8, 2026): an Employee searches only their own places and, since Nov 10, three
  * actions. No people or locations (the finder route is the manager's). Pay pages follow the Pay entry, the rest their
@@ -93,8 +99,11 @@ export function finderItems(role: UserRole, payroll: PayrollCapabilities | undef
   const known = new Set(pages.map(page => page.href));
   const tools = teamToolsForRole(role, context).filter(item => !known.has(item.href))
     .map(item => ({ id: `page:${item.href}`, group: 'Pages' as const, label: item.label, detail: 'Team tools', href: item.href, keywords: TOOL_KEYWORDS[item.href], searchOnly: true }));
-  const settings = known.has('/app/settings') ? SETTINGS_PAGES.filter(page => !known.has(page.href) && pathEnabled(page.href, context.modules))
+  const settings: FinderItem[] = known.has('/app/settings') ? SETTINGS_PAGES.filter(page => !known.has(page.href) && pathEnabled(page.href, context.modules))
     .map(page => ({ id: `page:${page.href}`, group: 'Pages' as const, label: page.label, detail: 'Settings', href: page.href, keywords: page.keywords, searchOnly: true })) : [];
+  // Every Settings page is closed to everyone but Owners (settings/layout.tsx), Payroll settings included.
+  if (known.has('/app/settings') && payroll?.enabled && payroll.canConfigure)
+    settings.push({ id: `page:${PAYROLL_SETTINGS.href}`, group: 'Pages' as const, label: PAYROLL_SETTINGS.label, detail: 'Payroll', href: PAYROLL_SETTINGS.href, keywords: PAYROLL_SETTINGS.keywords, searchOnly: true });
   const people = (data?.people ?? []).map(person => ({ id: `person:${person.id}`, group: 'People' as const, label: person.name, detail: person.role, href: `/app/employees/${encodeURIComponent(person.id)}`, keywords: person.id }));
   const locations = (data?.locations ?? []).map(location => ({ id: `location:${location.id}`, group: 'Locations' as const, label: location.name, detail: 'Schedule', href: `/app/schedule?location=${encodeURIComponent(location.id)}` }));
   // Actions follow the company's modules and words too.

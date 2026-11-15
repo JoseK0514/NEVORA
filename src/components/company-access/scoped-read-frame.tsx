@@ -6,10 +6,11 @@ import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import {readOperationalNavigation} from './commands';
 import {useAppNavigation} from '../app-navigation';
 import {QuietSkeleton} from '../quiet/quiet';
-import {BCard,BHero,BLoadingScreen,BScreen,BStack,BState} from '../owner-b/b-kit';
+import {BState,BStateScreen} from '../owner-b/b-kit';
+import {BRouteLoading} from '../owner-b/b-loading';
+import {ScopedRefreshContext} from './scoped-refresh';
 import {OPERATIONAL_RETRY_EVENT} from './use-operational-navigation';
 import {announceOfflineHeld,steppedAway} from '@/lib/offline-hold';
-import {CorpBody,CorpButton,CorpCard,CorpTitle} from '../corp/corp';
 
 export type ScopedObservation={authority:string;observedAt:string;validForMs:number};
 type CurrentAuthority=Extract<OperationalAuthorityView,{state:'ready'}>&{requestStartedAt:number};
@@ -195,7 +196,9 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  },[ready,navigation]);
 
  if(ready)return body.content;
- if(!observation&&unavailable)return <div className="scoped-unavailable">{unavailable}<button className="button secondary scoped-unavailable__refresh" type="button" onClick={refreshCurrent}>Refresh current view</button></div>;
+ // Phase 2 (package D): the state the page handed over draws its own "Refresh current view" inside its card (it reads
+ // this frame's fresh check from the context), so the page has one card with all its actions.
+ if(!observation&&unavailable)return <ScopedRefreshContext.Provider value={refreshCurrent}><div className="scoped-unavailable">{unavailable}</div></ScopedRefreshContext.Provider>;
  const checking=body.phase!=='paused'&&!stuck;
  const stateSection=<section className="portal-route-state" role="status" data-checking={checking?'':undefined}>{checking?<QuietSkeleton/>:null}<h2>{body.phase==='paused'?'View paused':recovery.required?'Current view needs a fresh check':'Checking current view…'}</h2><p>{body.phase==='paused'?'Return to this window while online to see current information.':'We’ll show updated information when your current access and the page have been checked.'}</p><button className="button secondary" type="button" onClick={refreshCurrent}>Refresh current view</button></section>;
  // Review F2 (NV-074): under Direction B the brief check draws the page's band and 22px card placeholders (the same top
@@ -204,19 +207,20 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  // desktop draw it too (owner-b-desktop.css treats the placeholder like Home's B screen). Its hero says "Loading…" to
  // assistive technology; the quiet section below shows only where no B screen does.
  if(checking)return <div className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
-  <BLoadingScreen/>
+  <BRouteLoading/>
   {stateSection}
  </div>;
  // Round 5 (Nov 7, 2026): paused or stuck, the page says so in the page's own look. Review B2 (NV-032, NV-075): one
  // message under the hero in the shared state card (amber offline or paused, red when the check failed) with one Try
  // again, which also re-checks the shell's menus; the brief "checking" state above keeps its skeleton.
+ // Phase 2 (package D): the same state screen at every width. Tablets and desktop drew a second copy of the message in
+ // the older corporate card with a grey Try again; that copy is gone (the wrapper's class lets the desktop layer draw the
+ // Direction B screen there, as it does for the placeholder).
  const offlineNow=typeof navigator!=='undefined'&&!navigator.onLine;
  const kind=body.phase==='paused'?offlineNow?'offline':'paused':'failed';
  const title=kind==='offline'?'You’re offline':kind==='paused'?'View paused':'Couldn’t check your access';
  const line=kind==='offline'?'Reconnect to see this page.':kind==='paused'?'Come back to this window to see current information.':'Try again to load this page.';
- return <div className="c-page c-page--narrow c-route-state" data-corp="">
-  <BScreen back><BHero title={title} back={{href:'/app',label:'Home'}}/><BStack><BCard><BState kind={kind} line={line} action={{label:'Try again',onClick:refreshCurrent}}/></BCard></BStack></BScreen>
-  <CorpTitle title={title}/>
-  <CorpCard><CorpBody><p className="c-route-state__line" role="status">{line}</p><CorpButton kind="secondary" onClick={refreshCurrent}>Try again</CorpButton></CorpBody></CorpCard>
+ return <div className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
+  <BStateScreen title={title} back={{href:'/app',label:'Home'}}><BState kind={kind} line={line} action={{label:'Try again',onClick:refreshCurrent}}/></BStateScreen>
  </div>;
 }

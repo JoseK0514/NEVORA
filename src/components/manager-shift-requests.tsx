@@ -104,7 +104,7 @@ function RequestDetails({ name, line, sent, label, open, children }: { name: str
       <span className="q-av" aria-hidden="true">{initialsOf(name)}</span>
       <span className="q-rt"><b>{name}</b><i>{line}</i></span>
       <span className="q-rv">{sent}</span>
-      <CaretRightIcon className="q-chev" aria-hidden="true" />
+      <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
     </summary>
     <div className="q-details__body q-done__body">{children}</div>
   </details>;
@@ -115,8 +115,8 @@ function Decision({ id, revision, decline, approve, allowed, notice, noticeHref,
   return <ShiftChangeForm fields={{ requestId: id, expectedRevision: revision }} className="q-acts-form">
     {notice ? <p className="q-help q-acts-note">{notice}{noticeHref ? <> <Link href={noticeHref}>Publish changes</Link></> : null}</p> : null}
     <div className="q-acts">
-      <PendingButton className="q-bs" name="kind" value={decline} pending="Declining…" label={`Decline ${what}`}>Decline</PendingButton>
-      {allowed ? <PendingButton className="q-bs q-bs--go" name="kind" value={approve} pending="Approving…" label={`Approve ${what}`}>Approve</PendingButton> : null}
+      <PendingButton className="q-bs b-rowact b-rowact--quiet" name="kind" value={decline} pending="Declining…" label={`Decline ${what}`}>Decline</PendingButton>
+      {allowed ? <PendingButton className="q-bs q-bs--go b-rowact b-rowact--go" name="kind" value={approve} pending="Approving…" label={`Approve ${what}`}>Approve</PendingButton> : null}
     </div>
   </ShiftChangeForm>;
 }
@@ -188,7 +188,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
         <RequestDetails name={exchange.requestedByName} line={exchangeLine(exchange)} sent={sent(exchange.createdAt)} open={false}
           label={`${exchange.requestedByName}, ${exchangeLine(exchange)}. Show the shift.`}><ExchangeFacts exchange={exchange} /></RequestDetails>
         {exchange.requestRevision ? <ShiftChangeForm fields={{ kind: "MANAGER_CLOSE", requestId: exchange.id, expectedRevision: exchange.requestRevision }} className="q-acts-form">
-          <div className="q-acts"><PendingButton className="q-bs" pending="Closing…" label={`Close the coverage request from ${exchange.requestedByName}. The shift stays with them.`}>Close request</PendingButton></div>
+          <div className="q-acts"><PendingButton className="q-bs b-rowact b-rowact--quiet" pending="Closing…" label={`Close the coverage request from ${exchange.requestedByName}. The shift stays with them.`}>Close request</PendingButton></div>
         </ShiftChangeForm> : null}
       </li>)}
     </ul> : <p className="q-empty q-first">No open cover.</p>) : null}

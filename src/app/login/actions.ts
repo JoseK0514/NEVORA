@@ -10,22 +10,25 @@ import { safeReturnTo } from "@/lib/notifications/destinations";
 import { prepareInstallationForLogin } from "@/lib/notifications/logout";
 import { activeDeletionRequest } from "@/lib/account-deletion/requests.server";
 import { passwordLoginAllowed } from "@/lib/auth/login-limits";
+import { clearLoginId, keepLoginId } from "./kept-id";
 
 /**
  * Password sign-in boundary: normalize the employee ID, admit the attempt before
  * verification, check account state and issue an opaque session. Passwords are
  * not trimmed. Successful authentication redirects only to a vetted return path;
  * Next's redirect throws to end the action and must not be swallowed.
+ * Every return to the sign-in page keeps the Employee ID as typed for the form (kept-id.ts), the same way whatever
+ * the reason, so it says nothing about the account; the password is never kept.
  */
 export async function login(formData: FormData) {
   const returnTo = safeReturnTo(String(formData.get("returnTo") ?? ""));
   const returnQuery = returnTo ? `&returnTo=${encodeURIComponent(returnTo)}` : "";
-  const employeeId = String(formData.get("employeeId") ?? "")
-    .trim()
-    .toUpperCase();
+  const typedId = String(formData.get("employeeId") ?? "").trim();
+  const employeeId = typedId.toUpperCase();
   const password = String(formData.get("password") ?? "");
 
   if (!employeeId || !password) {
+    await keepLoginId(typedId);
     redirect(`/login?error=invalid${returnQuery}`);
   }
 
@@ -33,16 +36,18 @@ export async function login(formData: FormData) {
   const address = clientAddress((await headers()).get("x-forwarded-for"));
   const admission = await admitLogin(employeeId, address);
   if (!admission.admitted) {
+    await keepLoginId(typedId);
     redirect(`/login?error=busy${returnQuery}`);
   }
 
-  if (!(await passwordLoginAllowed(employeeId))) redirect(`/login?error=invalid${returnQuery}`);
+  if (!(await passwordLoginAllowed(employeeId))) { await keepLoginId(typedId); redirect(`/login?error=invalid${returnQuery}`); }
 
   const employee = await findEmployeeCredential(employeeId);
   // Unknown and inactive IDs are checked against a dummy hash so every failure takes the same time.
   const passwordMatches = await verifyPassword(password, employee?.active ? employee.password_hash : await dummyPasswordHash());
 
   if (!employee || !employee.active || !passwordMatches) {
+    await keepLoginId(typedId);
     redirect(`/login?error=invalid${returnQuery}`);
   }
 
@@ -51,14 +56,15 @@ export async function login(formData: FormData) {
 
   // An account with an open deletion request stays signed out. Checked only after the password matches,
   // so the message never reveals anything about an account to someone who doesn't control it.
-  if (await activeDeletionRequest(employee.id)) redirect(`/login?error=deleting${returnQuery}`);
+  if (await activeDeletionRequest(employee.id)) { await keepLoginId(typedId); redirect(`/login?error=deleting${returnQuery}`); }
 
   await prepareInstallationForLogin(employee.id);
   try { await createSession(employee.id, employee); }
   catch (error) {
-    if (error instanceof Error && error.message.includes('session_login_changed')) redirect(`/login?error=invalid${returnQuery}`);
+    if (error instanceof Error && error.message.includes('session_login_changed')) { await keepLoginId(typedId); redirect(`/login?error=invalid${returnQuery}`); }
     throw error;
   }
+  await clearLoginId();
   redirect(returnTo ?? "/app");
 }
 

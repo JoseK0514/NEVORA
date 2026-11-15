@@ -39,7 +39,9 @@ export function TimeOffWaitingList({ requests }: { requests: WaitingTimeOff[] })
   })}</ul>;
 }
 
-/** Decline and Approve (or Review) under one request; while the decision is out both are disabled and the pressed one says so. */
+/** Decline and Approve (or Review) under one request; while the decision is out both are disabled and the pressed one says so.
+ * Phase 2 (Nov 15, 2026): a list of requests carries no filled primary, as on Things to do. Approve (or Review) is the tinted
+ * pill and Decline a quiet text button (`b-rowact`, b-foundation.css); the confirm step (Keep beside the red Decline) is as it was. */
 function WaitingDecide({ name, approve, reviewHref }: { name: string; approve: boolean; reviewHref: string }) {
   const { pending, data } = useFormStatus();
   const decision = data?.get("decision");
@@ -52,9 +54,9 @@ function WaitingDecide({ name, approve, reviewHref }: { name: string; approve: b
     <button type="submit" className="q-bs q-bs--stop" name="decision" value="DENIED" aria-label={`Decline time off for ${name}`}>Decline</button>
   </div>;
   return <div ref={pair} className="q-acts" aria-busy={pending}>
-    <button type="button" className="q-bs" onClick={() => setConfirming(true)} disabled={pending} aria-label={pending ? undefined : `Decline time off for ${name}`}>{pending && decision === "DENIED" ? "Declining…" : "Decline"}</button>
-    {approve ? <button type="submit" className="q-bs q-bs--go" name="decision" value="APPROVED" disabled={pending} aria-label={pending ? undefined : `Approve time off for ${name}`}>{pending && decision === "APPROVED" ? "Approving…" : "Approve"}</button>
-      : <Link className="q-bs q-bs--go" href={reviewHref} aria-label={`Review time off for ${name}`}>Review</Link>}
+    <button type="button" className="q-bs b-rowact b-rowact--quiet" onClick={() => setConfirming(true)} disabled={pending} aria-label={pending ? undefined : `Decline time off for ${name}`}>{pending && decision === "DENIED" ? "Declining…" : "Decline"}</button>
+    {approve ? <button type="submit" className="q-bs q-bs--go b-rowact b-rowact--go" name="decision" value="APPROVED" disabled={pending} aria-label={pending ? undefined : `Approve time off for ${name}`}>{pending && decision === "APPROVED" ? "Approving…" : "Approve"}</button>
+      : <Link className="q-bs q-bs--go b-rowact b-rowact--go" href={reviewHref} aria-label={`Review time off for ${name}`}>Review</Link>}
     <span className="q-sr" role="status">{pending ? "Saving your decision…" : ""}</span>
   </div>;
 }

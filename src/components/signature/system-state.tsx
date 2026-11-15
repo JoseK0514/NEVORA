@@ -26,15 +26,15 @@ export function SignatureNotFound() {
   </SigBand>}>
     <SigHead id="ss-places" title="Pick up where you left off" />
     <ul className="sg-card" aria-labelledby="ss-places">{places.map(({ href, label, sub, Icon }) => <li key={href}>
-      <Link className={`sg-r ${styles.ssRow}`} href={href}><span className="sg-tile" aria-hidden="true"><Icon size={22} /></span>
-        <span className="sg-copy"><b>{label}</b><span>{sub}</span></span><CaretRightIcon className={styles.ssChev} size={16} aria-hidden="true" /></Link>
+      <Link className={`sg-r ${styles.ssRow}`} href={href}><span className="sg-tile" aria-hidden="true"><Icon size={22} weight="bold" /></span>
+        <span className="sg-copy"><b>{label}</b><span>{sub}</span></span><CaretRightIcon className={styles.ssChev} size={16} weight="bold" aria-hidden="true" /></Link>
     </li>)}</ul>
   </SigPage>;
 }
 
 export function SignatureError({ action }: { action: ReactNode }) {
   return <SigPage className={styles.ssRoot} band={<SigBand eyebrow="Error" mark={false}>
-    <span className={styles.ssOrb} aria-hidden="true"><WarningIcon size={32} /></span>
+    <span className={styles.ssOrb} aria-hidden="true"><WarningIcon size={32} weight="bold" /></span>
     <h1 className="sg-head2">This page<br />didn’t load</h1>
     <p className="sg-sub"><span>Nothing was changed. Check your connection, then try again.</span></p>
   </SigBand>}>

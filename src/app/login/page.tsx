@@ -8,6 +8,7 @@ import {CaretDownIcon} from "@phosphor-icons/react/dist/ssr/CaretDown";
 import {WarningCircleIcon} from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import {HourglassMediumIcon} from "@phosphor-icons/react/dist/ssr/HourglassMedium";
 import {CheckCircleIcon} from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import {InfoIcon} from "@phosphor-icons/react/dist/ssr/Info";
 import { getPublicWorkspaceName } from "@/lib/data/workspaces";
 import { safeReturnTo } from "@/lib/notifications/destinations";
 import { login } from "@/app/login/actions";
@@ -20,13 +21,14 @@ import { PasskeySlot, PasswordSignInMarker } from "@/components/auth-premium/pas
 import { AuthValidation, FieldInvalid } from "@/components/auth-premium/auth-validation";
 import "@/components/quiet/quiet.css";
 import { LoginSubmit } from "./login-submit";
+import { readKeptLoginId } from "./kept-id";
 import "./auth-premium.css";
 import "./auth-signature.css";
 
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; activated?: string; returnTo?: string | string[] }>;
+  searchParams: Promise<{ error?: string; activated?: string; ended?: string; returnTo?: string | string[] }>;
 }) {
   const params = await searchParams;
   const [workspaceName, lang] = await Promise.all([getPublicWorkspaceName(), readAuthLang()]);
@@ -38,6 +40,10 @@ export default async function LoginPage({
   // attempts is a wait (amber) and a deleting account is not a field problem, so neither marks the fields.
   const fieldsInvalid = params.error && params.error !== "busy" && params.error !== "deleting" ? true : undefined;
   const wait = params.error === "busy";
+  // Inspection Nov 14, 2026. PB-006: after an error the Employee ID comes back as typed and only the password is retyped.
+  // RA-5: a session that ended says so, calmly (teal, not red), and sign-in returns to the page the person was on.
+  const keptId = params.error ? await readKeptLoginId() : null;
+  const ended = params.ended === "1" && !params.error && !params.activated;
   const greeting = <div className="q-hd q-auth__hd"><Greeting words={t.greeting} className=""/><p>{workspaceName ?? t.workspaceUnavailable}</p></div>;
 
   // Quiet (v4, approved Oct 23): the wordmark and Español, the greeting and the workspace, two fields, Sign in, Face ID,
@@ -57,11 +63,13 @@ export default async function LoginPage({
             * amber means wait, green is done; each note leads with its icon. */}
           {params.error ? <p className={`q-error q-auth__alert${wait ? " q-auth__alert--wait" : ""}`} id="login-error" role="alert">{wait ? <HourglassMediumIcon size={20} weight="bold" aria-hidden="true" /> : <WarningCircleIcon size={20} weight="bold" aria-hidden="true" />}<span>{params.error === "deleting" ? t.loginDeleting : wait ? t.loginBusy : t.loginError}</span></p> : null}
           {params.activated ? <p className="q-help q-auth__alert" role="status"><CheckCircleIcon size={20} weight="bold" aria-hidden="true" /><span>{t.activated}</span></p> : null}
+          {ended ? <p className="q-auth__alert q-auth__alert--info" role="status"><InfoIcon size={20} weight="bold" aria-hidden="true" /><span>{t.sessionEnded}</span></p> : null}
           <PasswordSignInMarker />
           <div className="q-fl">
             <label htmlFor="login-employee-id">{t.employeeId}</label>
             <AccessEmployeeIdInput id="login-employee-id" className="q-in" name="employeeId" placeholder={t.quiet.idPlaceholder}
               autoComplete="username" autoCapitalize="none" spellCheck={false} aria-describedby={[errorId, "login-employee-id-invalid"].filter(Boolean).join(" ")} required
+              defaultValue={keptId ?? undefined}
               aria-invalid={fieldsInvalid} data-msg-required={t.invalid.employeeId} />
             <FieldInvalid id="login-employee-id" />
           </div>
@@ -73,7 +81,7 @@ export default async function LoginPage({
             <FieldInvalid id="login-password" />
             {mobile ? <Link className="ma-forgot ma-only" href="/forgot-access">{t.forgotAccess}</Link> : null}
           </div>
-          <LoginSubmit idle={t.signIn} busy={t.signingIn} className="q-btn" />
+          <LoginSubmit idle={t.signIn} busy={t.signingIn} className="q-btn" focusPassword={Boolean(params.error || params.activated)} />
         </form>
         <PasskeySlot t={mobile ? {...t,passkeyPhone:t.passkeyDesktop,passkeyBusyPhone:t.passkeyBusyDesktop,passkeyNotFoundPhone:t.passkeyNotFoundDesktop,passkeyUnavailablePhone:t.passkeyUnavailableDesktop} : t} quiet />
       </AccessCard>

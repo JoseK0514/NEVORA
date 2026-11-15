@@ -5,12 +5,13 @@ import {useClockerCopy} from './clocker-language';
 import styles from './clocker.module.css';
 import {ClockerIcon} from './clocker-icon';
 /** Opaque references are assistance evidence, never permission to replay time. */
-/** Direction B: a small teal link ("Help with a saved action") that opens the saved references below it. Inline, it sits
- * in the ready screen's link row beside Refresh clock state; otherwise under the state's actions.
+/** Direction B: a small teal link ("Something didn’t save?") that opens the saved references below it. Inline, it sits
+ * in the ready screen's link row beside Refresh; otherwise under the state's actions.
  * Nov 10 review (NV-185): the panel scrolls inside itself, so opening it never stretches the page or moves the band's
- * clock; the current person's reference leads and the tablet's others wait behind "Show N more"; a locked kiosk has no app
- * to paste into, so there is no Copy reference. Ask Owner to review and its request are unchanged. */
-export function ClockerRecoveryHandoff({references,locationKey,commandId,inline=false}:{references:JournalReference[];locationKey:string;commandId:string|null;inline?:boolean}){
+ * clock; the current person's reference leads and their others wait behind "Show N more"; a locked kiosk has no app
+ * to paste into, so there is no Copy reference. Ask Owner to review and its request are unchanged.
+ * Nov 14 inspection: other people's saved punches on this tablet show as a count only (otherCount), never a reference. */
+export function ClockerRecoveryHandoff({references,otherCount=0,locationKey,commandId,inline=false}:{references:JournalReference[];otherCount?:number;locationKey:string;commandId:string|null;inline?:boolean}){
  const requestId=useRef<string|null>(null);const [displayId,setDisplayId]=useState<string|null>(null),[requestState,setRequestState]=useState<'idle'|'sending'|'saved'|'unknown'>('idle');
  const t=useClockerCopy(),[open,setOpen]=useState(false),[all,setAll]=useState(false);
  async function requestReview(){
@@ -20,7 +21,7 @@ export function ClockerRecoveryHandoff({references,locationKey,commandId,inline=
  const ordered=commandId?[...references.filter(r=>r.commandId===commandId),...references.filter(r=>r.commandId!==commandId)]:references;
  const shown=all?ordered:ordered.slice(0,1),more=ordered.length-shown.length;
  return <aside className={styles.handoff} data-inline={inline||undefined}>
-  <button type="button" className={styles.link} aria-expanded={open} onClick={()=>setOpen(value=>!value)}>{t(open?'Hide saved action help':'Help with a saved action')}<ClockerIcon name="caret" size={16}/></button>
-  {open?<div data-clocker-notice className={styles.handoffPanel}><p>{t('Ask your Owner to review a saved reference in their portal. You can leave this screen; the records stay saved.')}</p><button type="button" className={styles.btn} data-kind="primary" disabled={requestState==='sending'||requestState==='saved'} onClick={()=>void requestReview()}>{t(requestState==='sending'?'Requesting review…':requestState==='saved'?'Review requested':requestState==='unknown'?'Retry original review request':'Ask Owner to review')}</button>{displayId?<p role="status">{t('Review request reference')}: <code>{displayId}</code> {t(requestState==='sending'?'Waiting for request confirmation.':requestState==='saved'?'Your Owner can find this in Clocker recovery.':'Request confirmation is unavailable. Keep this reference; retry uses the same request.')}</p>:null}<ul>{shown.map((r,i)=><li key={r.commandId??i}>{r.commandId?<code>{r.commandId}</code>:<p>{t('One saved punch can’t be read. Ask your manager to check it.')}</p>}</li>)}</ul>{more>0||all&&ordered.length>1?<button type="button" className={styles.link} aria-expanded={all} onClick={()=>setAll(value=>!value)}>{all?t('Show fewer'):t('Show {count} more',{count:more})}</button>:null}<button type="button" className={styles.link} onClick={()=>setOpen(false)}>{t('Dismiss')}</button></div>:null}
+  <button type="button" className={styles.link} aria-expanded={open} onClick={()=>setOpen(value=>!value)}>{t(open?'Hide help':'Something didn’t save?')}<ClockerIcon name="caret" size={16}/></button>
+  {open?<div data-clocker-notice className={styles.handoffPanel}><p>{t('Ask your Owner to review a saved reference in their portal. You can leave this screen; the records stay saved.')}</p><button type="button" className={styles.btn} data-kind="primary" disabled={requestState==='sending'||requestState==='saved'} onClick={()=>void requestReview()}>{t(requestState==='sending'?'Requesting review…':requestState==='saved'?'Review requested':requestState==='unknown'?'Retry original review request':'Ask Owner to review')}</button>{displayId?<p role="status">{t('Review request reference')}: <code>{displayId}</code> {t(requestState==='sending'?'Waiting for request confirmation.':requestState==='saved'?'Your Owner can find this in Clocker recovery.':'Request confirmation is unavailable. Keep this reference; retry uses the same request.')}</p>:null}<ul>{shown.map((r,i)=><li key={r.commandId??i}>{r.commandId?<code>{r.commandId}</code>:<p>{t('One saved punch can’t be read. Ask your manager to check it.')}</p>}</li>)}</ul>{more>0||all&&ordered.length>1?<button type="button" className={styles.link} aria-expanded={all} onClick={()=>setAll(value=>!value)}>{all?t('Show fewer'):t('Show {count} more',{count:more})}</button>:null}{otherCount>0?<p>{t('{count} more saved on this tablet. Each person can check their own after their PIN.',{count:otherCount})}</p>:null}<button type="button" className={styles.link} onClick={()=>setOpen(false)}>{t('Dismiss')}</button></div>:null}
  </aside>;
 }

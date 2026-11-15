@@ -77,3 +77,17 @@ it('requires Owner authorization before returning any settings content',async()=
  await expect(SettingsPage()).rejects.toBe(denied);
  expect(guard).toHaveBeenCalledExactlyOnceWith(['OWNER']);
 });
+
+// Review Nov 14 (AR-13, JR-4): the subscription has a row in Company, only where this deployment has billing on.
+it('lists Plan and billing in Company only while billing is on for this deployment',async()=>{
+ expect(renderToStaticMarkup(await SettingsPage())).not.toContain('href="/app/billing"');
+ vi.stubEnv('NEVORA_COMMERCE_ENABLED','true');
+ try{
+  const html=renderToStaticMarkup(await SettingsPage());
+  expect(html.match(/<a href="\/app\/billing" class="c-row c-row--one"/g)).toHaveLength(1);
+  expect(html).toContain('<span class="c-row__title">Plan and billing</span>');
+  // It sits in Company, after Company policies and before Scheduling.
+  expect(html.indexOf('href="/app/settings/company-policies"')).toBeLessThan(html.indexOf('href="/app/billing"'));
+  expect(html.indexOf('href="/app/billing"')).toBeLessThan(html.indexOf('href="/app/settings/positions"'));
+ }finally{vi.unstubAllEnvs();}
+});

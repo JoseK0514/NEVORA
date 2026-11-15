@@ -1,12 +1,11 @@
 import {scopedObservation} from '@/lib/company-access/observation';
 import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
 import {MobileOnboardingGuide} from "@/components/mobile-access/onboarding-guide";
-import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise";
 import {correctionAuthority} from '@/lib/time-corrections/authority.server';
 import Link from 'next/link';
-import {Card,CardBody,KitStack,PageBand} from '@/components/kit/kit';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {BRouteError} from '@/components/owner-b/b-route-error';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {ManagerCorrectionRecoveryBoundary} from '@/components/manager-correction-recovery';
 import {managerReviewRecoveryKey} from '@/lib/time-corrections/review-recovery';
@@ -100,16 +99,11 @@ export default async function DashboardPage({
   // WR-59: the same kit error page as app/app/error.tsx. IS-50: "Try again" reloads this exact view (week, day, location, person).
   // IS-51: only the view's own context; one-time flags (decided=…) stay out so a toast never repeats.
   const retry=new URLSearchParams((['view','week','day','location','employee'] as const).flatMap(key=>{const value=params[key];return typeof value==='string'&&value?[[key,value]]:[];})).toString();
-  if(!dashboardData)return <ManagerCorrectionRecoveryBoundary key={recoveryKey}><div className="nv-page premium-error" data-nv-page="">
-    <PageBand title="This page didn’t load" summary="Nothing was changed."/>
-    <KitStack><Card><CardBody><div className="premium-error__body">
-      <p className="premium-error__text">Check your connection, then try again.</p>
-      <div className="premium-error__actions">
-        <Link className="nv-btn" data-kind="primary" href={retry?`/app?${retry}`:'/app'}><ArrowsClockwiseIcon size={18} aria-hidden="true"/>Try again</Link>
-        {view!=='overview'?<Link className="nv-btn" data-kind="secondary" href="/app">Back to Home</Link>:null}
-      </div>
-    </div></CardBody></Card></KitStack>
-  </div></ManagerCorrectionRecoveryBoundary>;
+  // Phase 2 (package D, optional): the one Direction B route error screen. It was the older kit page, which had no band
+  // under Direction B. The words and both actions are unchanged; Try again stays a link to this exact view.
+  if(!dashboardData)return <ManagerCorrectionRecoveryBoundary key={recoveryKey}><BRouteError title="This page didn’t load" sub="Nothing was changed."
+    spoken="This page didn’t load. Nothing was changed. Check your connection, then try again." line="Check your connection, then try again."
+    retryHref={retry?`/app?${retry}`:'/app'} away={view!=='overview'?{href:'/app',label:'Back to Home'}:undefined}/></ManagerCorrectionRecoveryBoundary>;
   const {dashboard,locations,availabilitySubmissionSummary,coverageRulesConfigured,managerActions,daySummaries,hourRows,latestRevision,coverageMinutes}=dashboardData;
 
   const {modules}=await currentPresentation();

@@ -21,7 +21,7 @@ export function MobileRecoveryRequest({hydrated,busy,done,message,onSubmit,lang,
  const t=MOBILE_ACCESS_COPY[lang],v=AUTH_COPY[lang].invalid,feedback=useRef<HTMLDivElement>(null);
  useEffect(()=>{if(done||message)feedback.current?.focus();},[done,message]);
  return <>
-  <AccessCard>{done?<div className="ma-receipt-mark"><EnvelopeSimpleIcon size={28} aria-hidden="true"/></div>:null}
+  <AccessCard>{done?<div className="ma-receipt-mark"><EnvelopeSimpleIcon size={28} weight="bold" aria-hidden="true"/></div>:null}
   <div className="q-hd"><h1>{done?t.received:t.forgotTitle}</h1><p>{done?t.checkEmail:t.forgotSub}</p></div>
   {done?<div className="ma-receipt" ref={feedback} role="status" tabIndex={-1}><p>{t.receivedSub}</p><p>{t.expires}</p></div>:<>
    <noscript><p className="q-help">{lang==='es'?'Activa JavaScript para solicitar la recuperación.':'Enable JavaScript to request recovery.'}</p></noscript>
@@ -43,7 +43,7 @@ export function MobileRecoveryReset({hydrated,busy,done,message,onSubmit,proofRe
  const t=MOBILE_ACCESS_COPY[lang],v=AUTH_COPY[lang].invalid,feedback=useRef<HTMLDivElement>(null);
  const mismatch=message==='Passwords do not match.',invalid=message.startsWith('This recovery code'),uncertain=message.startsWith('The reset outcome');
  useEffect(()=>{if(done||message)feedback.current?.focus();},[done,message]);
- return <><AccessCard>{done?<div className="ma-receipt-mark"><CheckIcon size={28} aria-hidden="true"/></div>:null}
+ return <><AccessCard>{done?<div className="ma-receipt-mark"><CheckIcon size={28} weight="bold" aria-hidden="true"/></div>:null}
   <div className="q-hd"><h1>{done?t.resetDone:t.resetTitle}</h1>{done?<p>{t.resetDoneSub}</p>:!linkProof?<p>{t.resetSub}</p>:null}</div>
   {done?<div ref={feedback} tabIndex={-1} className="ma-receipt" role="status"><Link className="q-btn" href="/login">{t.signInNew}</Link></div>:<>
    {linkProof?<p className="ma-note">{t.linkLoaded}</p>:null}

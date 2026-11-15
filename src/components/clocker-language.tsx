@@ -7,8 +7,9 @@ import styles from './clocker.module.css';
 
 /* The Clocker speaks one complete language at a time, English or Spanish (Puerto Rico), chosen on the tablet and
  * remembered per tablet. Direction B (Nov 8, 2026) is the only presentation; the earlier Spanish-second-line labels
- * went with the retired Signature look. Button names stay the exact English the phase-c scripts press when English is
- * chosen; in Spanish every visible and accessible phrase comes from clocker-copy.ts. */
+ * went with the retired Signature look. In English the button names are the kiosk's sentence-case labels (Nov 14
+ * inspection, BR-10: "Clock in", "Clock out", "Try again"); in Spanish every visible and accessible phrase comes from
+ * clocker-copy.ts. */
 
 /** Switches the kiosk between English and Spanish. */
 export function ClockerLanguageToggle() {

@@ -27,7 +27,7 @@ export function QuietBarIcon({ href, label, children }: { href: string; label: s
 export function QuietNav({ back, left, title, right }: { back?: { href: string; label: string }; left?: ReactNode; title?: ReactNode; right?: ReactNode }) {
   return <div className="q-nav">
     {/* Owner premium P6: the back link goes back in history when its page is the previous one (no loop, scroll kept). */}
-    {back ? <CorpBackLink className="q-nav__l" href={back.href}><CaretLeftIcon className="q-ic q-ic--s" aria-hidden="true" />{back.label}</CorpBackLink> : left ?? <span />}
+    {back ? <CorpBackLink className="q-nav__l" href={back.href}><CaretLeftIcon weight="bold" className="q-ic q-ic--s" aria-hidden="true" />{back.label}</CorpBackLink> : left ?? <span />}
     {title ? <span className="q-nav__t">{title}</span> : <span />}
     {right ?? <span />}
   </div>;
@@ -85,7 +85,7 @@ export type QuietRowProps = {
 
 export function QuietRow({ title, detail, value, tone, avatar, href, control, chevron, label, one, id, bare, icon, variant }: QuietRowProps) {
   const leading = avatar === undefined || avatar === null ? null
-    : avatar === "open" ? <span className="q-av q-av--open" aria-hidden="true"><PlusIcon className="q-ic" aria-hidden="true" /></span>
+    : avatar === "open" ? <span className="q-av q-av--open" aria-hidden="true"><PlusIcon weight="bold" className="q-ic" aria-hidden="true" /></span>
     : typeof avatar === "string" ? <span className={variant === "tint" ? "q-av q-av--tint" : "q-av"} aria-hidden="true">{avatar}</span>
     : variant === "tint" ? <span className="q-av q-av--tint" aria-hidden="true">{avatar}</span> : avatar;
   const single = one ?? !detail;
@@ -97,7 +97,7 @@ export function QuietRow({ title, detail, value, tone, avatar, href, control, ch
     <span className="q-rt"><b>{title}</b>{detail ? <i>{detail}</i> : null}</span>
     {value !== undefined && value !== null && value !== "" ? <span className={`q-rv${tone ? ` q-rv--${tone}` : ""}`}>{value}</span> : null}
     {control}
-    {showChev ? <CaretRightIcon className="q-chev" aria-hidden="true" /> : null}
+    {showChev ? <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /> : null}
   </>;
   const row = href ? <Link className={className} href={href} aria-label={label}>{body}</Link> : <div className={className} aria-label={label}>{body}</div>;
   return bare ? row : <li id={id}>{row}</li>;

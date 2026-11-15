@@ -51,7 +51,7 @@ function ToastItem({ item, onClose }: { item: Toast; onClose: (id: number) => vo
     onFocus={() => { focused.current = true; pause(); }} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { focused.current = false; run(); } }}>
     <Icon size={20} weight="fill" aria-hidden="true" />
     <span>{item.message}</span>
-    <button type="button" aria-label="Dismiss message" onClick={close}><XIcon size={16} aria-hidden="true" /></button>
+    <button type="button" aria-label="Dismiss message" onClick={close}><XIcon size={16} weight="bold" aria-hidden="true" /></button>
   </li>;
 }
 

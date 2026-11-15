@@ -104,7 +104,7 @@ export function Field(props: FieldProps) {
   // Quiet (v4): grey label above a filled 50pt field; an error in red words under it.
   const shared = { ...control, className: className ? `q-in ${className}` : "q-in", "aria-describedby": describedBy, "aria-invalid": shown ? true : undefined, ref: inputRef };
   const element = kind === "select"
-    ? <span className="q-in__wrap q-in__wrap--select"><select {...(shared as SelectHTMLAttributes<HTMLSelectElement>)} /><CaretDownIcon className="q-in__caret" aria-hidden="true" /></span>
+    ? <span className="q-in__wrap q-in__wrap--select"><select {...(shared as SelectHTMLAttributes<HTMLSelectElement>)} /><CaretDownIcon weight="bold" className="q-in__caret" aria-hidden="true" /></span>
     : kind === "textarea" ? <textarea {...(shared as TextareaHTMLAttributes<HTMLTextAreaElement>)} />
       : unit ? <span className="q-in__wrap q-in__wrap--unit"><input {...(shared as InputHTMLAttributes<HTMLInputElement>)} /><span className="q-in__unit" aria-hidden="true">{unit}</span></span>
         : <input {...(shared as InputHTMLAttributes<HTMLInputElement>)} />;

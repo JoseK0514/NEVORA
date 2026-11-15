@@ -32,7 +32,7 @@ export function CorrectionTimeTicket({ start, end, disabled = false, onStart, on
   const length = valid(start) && valid(end) ? minutes(end) - minutes(start) : null;
   return <div className={`employee-time-correction-grid ${styles.ctTicket}`}>
     <Half label="Start" value={start} disabled={disabled} onChange={onStart} />
-    <i className={styles.ctMid} aria-hidden="true"><ArrowRightIcon size={18} /></i>
+    <i className={styles.ctMid} aria-hidden="true"><ArrowRightIcon size={18} weight="bold" /></i>
     <Half label="End" value={end} disabled={disabled} min={start || undefined} onChange={onEnd} />
     <p className={styles.ctLength} data-invalid={length !== null && length <= 0 ? '' : undefined} aria-live="polite">
       {length === null ? 'Select a time to change it' : length <= 0 ? 'End must be after start' : durationRow(length)}

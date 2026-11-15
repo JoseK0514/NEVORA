@@ -84,10 +84,12 @@ export const CLOCKER_COPY:Record<string,string>={
  "Review current status":"Revisar estado actual",
  "No confirmation was found. This earlier request can no longer be applied. Review your current status before choosing a new action.":"No se encontró confirmación. Esta solicitud anterior ya no puede aplicarse. Revisa tu estado actual antes de elegir una nueva acción.",
  "The earlier punch was kept for review. Nothing was punched again.":"La marcación anterior se conservó para revisión. No se volvió a marcar nada.",
- "Action reference":"Referencia de la marcación",
+ "Reference":"Referencia",
  "Saved {time}. This screen clears in 8 seconds.":"Registrado {time}. Esta pantalla se borra en 8 segundos.",
- "Hide saved action help":"Ocultar ayuda de marcaciones guardadas",
- "Help with a saved action":"Ayuda con una marcación guardada",
+ "Hide help":"Ocultar ayuda",
+ "Something didn’t save?":"¿Algo no se guardó?",
+ // Nov 14 inspection (NV-185): only a count of other people’s saved punches, never their references.
+ "{count} more saved on this tablet. Each person can check their own after their PIN.":"Otras guardadas en esta tableta: {count}. Cada persona puede revisar la suya después de ingresar su PIN.",
  "Ask your Owner to review a saved reference in their portal. You can leave this screen; the records stay saved.":"Pide al dueño que revise una referencia guardada en su portal. Puedes salir de esta pantalla; los registros se conservan.",
  "Show {count} more":"Mostrar {count} más",
  "Show fewer":"Mostrar menos",
@@ -151,13 +153,15 @@ export const CLOCKER_COPY:Record<string,string>={
  "Your PIN is verified for this tablet.": "Tu PIN está verificado para esta tableta.",
  "Time punches are not enabled yet.": "El registro de tiempo aún no está habilitado.",
  "No worked time has been recorded.": "No se ha registrado tiempo trabajado.",
+ // Nov 14 inspection (JR-26): the next step when punches are off.
+ "Ask your Owner to contact NEVORA support.": "Pide al dueño que contacte al soporte de NEVORA.",
  "This screen clears automatically after 30 seconds.": "Esta pantalla se borra automáticamente después de 30 segundos.",
  "Checking tablet verification…": "Verificando la tableta…",
- "Clock In recorded": "Entrada registrada",
+ "Clock in recorded": "Entrada registrada",
  "Break start recorded": "Inicio de descanso registrado",
  "Break end recorded": "Fin de descanso registrado",
- "Clock Out recorded": "Salida registrada",
- "Clock Out?": "¿Marcar salida?",
+ "Clock out recorded": "Salida registrada",
+ "Clock out?": "¿Marcar salida?",
  "Clocked In": "En turno",
  "On Break": "En descanso",
  "Off Clock": "Fuera de turno",
@@ -183,7 +187,7 @@ export const CLOCKER_COPY:Record<string,string>={
  "Breaks aren’t recorded on the Clocker here.": "Aquí no se registran descansos en Clocker.",
  "No break types are configured. Ask your Owner to add one.": "No hay tipos de descanso configurados. Pide al dueño que añada uno.",
  "This shift was started at another location. Use that location’s registered Clocker to continue.": "Este turno comenzó en otra ubicación. Usa su tableta Clocker registrada para continuar.",
- "Refresh clock state": "Actualizar estado",
+ "Refresh": "Actualizar",
  "New tablet setup is paused. Use an already registered tablet to finish an existing shift.": "La configuración de tabletas nuevas está pausada. Usa una tableta ya registrada para terminar un turno en curso.",
  "New clock-ins are paused. Only a shift recorded before the trial ended can continue. Ask your Owner about workplace access.": "Las nuevas entradas están pausadas. Solo puede continuar un turno registrado antes de que terminara la prueba. Consulta con tu empleador sobre el acceso al lugar de trabajo.",
  "New clock-ins are paused. Ask your Owner about workplace access.": "Las nuevas entradas están pausadas. Consulta con tu empleador sobre el acceso al lugar de trabajo.",
@@ -192,7 +196,7 @@ export const CLOCKER_COPY:Record<string,string>={
  "Your shift will end at the time recorded by NEVORA.": "Tu turno terminará a la hora registrada por NEVORA.",
  "Since clock-in": "Desde la entrada",
  "This will also end your current break.": "Esto también terminará tu descanso actual.",
- "Confirm Clock Out": "Confirmar salida",
+ "Confirm clock out": "Confirmar salida",
  "Keep working": "Seguir trabajando",
  ". This screen will clear shortly.": ". Esta pantalla se borrará en unos segundos.",
  "A previous employee’s action needs verification on this tablet. Ask that employee to enter their PIN again. No new action was sent.": "La acción de otra persona necesita verificación en esta tableta. Pídele que ingrese su PIN de nuevo. No se envió ninguna acción nueva.",
@@ -204,7 +208,7 @@ export const CLOCKER_COPY:Record<string,string>={
  "Reading the latest saved information.": "Consultando la información más reciente.",
  "Check action status": "Revisar estado de la marcación",
  "Retry same action": "Reintentar la misma marcación",
- "Try Again": "Intentar de nuevo",
+ "Try again": "Intentar de nuevo",
  "Don’t clear this tablet’s browser data while a punch is unconfirmed. Your manager can help check it.": "No borres los datos del navegador de esta tableta mientras haya una marcación sin confirmar. Tu gerente puede ayudarte a revisarla.",
  "Loading location time": "Cargando la hora local",
  "Checking setup": "Revisando configuración",
@@ -223,8 +227,8 @@ export const CLOCKER_COPY:Record<string,string>={
  "&middot;": "·",
  "PIN not recognized. Try again or ask your manager to check your PIN.": "PIN no reconocido. Inténtalo de nuevo o pide a tu gerente que revise tu PIN.",
  "We could not confirm this information. Ask your Owner for help.": "No pudimos confirmar esta información. Pide ayuda al dueño.",
- "Clock In": "Marcar entrada",
- "Clock Out": "Marcar salida",
+ "Clock in": "Marcar entrada",
+ "Clock out": "Marcar salida",
  "Start break": "Iniciar descanso",
  "End break": "Terminar descanso",
  "Choose a break": "Elige un descanso",
@@ -246,7 +250,26 @@ export const CLOCKER_COPY:Record<string,string>={
  "Paused: too many attempts": "En pausa: demasiados intentos",
  "Storage blocked": "Almacenamiento bloqueado",
  "This tablet is paused": "Esta tableta está en pausa",
- "Too many wrong PINs were entered on this tablet. Wait about five minutes, or ask a manager to record your time.": "Se ingresaron demasiados PIN incorrectos en esta tableta. Espera unos cinco minutos o pide a un gerente que registre tu tiempo.",
+ // Nov 14 inspection (RA-3; Jose's Nov 11 decisions): Employee ID then PIN, and a pause that names who is paused. The
+ // retry time is clockerRetryText below.
+ "Enter your Employee ID": "Ingresa tu ID de empleado",
+ "Employee ID": "ID de empleado",
+ "Change Employee ID": "Cambiar ID de empleado",
+ "Don’t know your Employee ID? Ask your manager.": "¿No sabes tu ID de empleado? Pregúntale a tu gerente.",
+ "Employee ID or PIN not recognized. Check both, or ask your manager.": "ID de empleado o PIN no reconocido. Revisa ambos o pide ayuda a tu gerente.",
+ "Your PIN is paused": "Tu PIN está en pausa",
+ "You can ask a manager to record your time.": "Puedes pedirle a un gerente que registre tu tiempo.",
+ // The kiosk's own error screen (RA-4).
+ "Something went wrong": "Algo salió mal",
+ "Something went wrong. Try again.": "Algo salió mal. Inténtalo de nuevo.",
+ "If it keeps happening, ask a manager to record your time.": "Si sigue pasando, pide a un gerente que registre tu tiempo.",
+ // The paused page (RA-13, JR-12): the tablet's language, and no sign-in on a shared tablet.
+ "Access could not be checked": "No se puede comprobar el acceso",
+ "Clocker access is paused": "El acceso al Clocker está pausado",
+ "Clocking is unavailable right now. Ask your workplace Owner to review access and billing.": "No se puede registrar tiempo en este momento. Pídele al propietario de tu negocio que revise el acceso y la facturación.",
+ "Open billing on your own device.": "Abre la facturación en tu propio dispositivo.",
+ "This tablet starts working again when billing is settled.": "Esta tableta vuelve a funcionar cuando la facturación esté al día.",
+ "Try Clocker again": "Intentar el Clocker de nuevo",
  "Ask a manager to set up this tablet again (Settings → Clocker tablets).": "Pide a un gerente que vuelva a configurar esta tableta (Settings → Clocker tablets).",
  "Check again": "Revisar de nuevo",
  "Checking…": "Verificando…",
@@ -284,6 +307,13 @@ export function clockerHasText(locale:ClockerLocale,key:string):boolean{return l
 export function clockerText(locale:ClockerLocale,key:string,params:Record<string,string|number>={}):string{
  const text=locale==='es'&&Object.hasOwn(CLOCKER_COPY,key)?CLOCKER_COPY[key]:key;
  return text.replace(/\{([a-zA-Z]+)\}/g,(match,name)=>String(params[name]??match));
+}
+
+/** When a pause ends, as a sentence: "Try again at 10:58 PM." Spanish says "a la 1:05" but "a las 10:58", and its times end
+ * in "p. m.", so the sentence doesn't add a second full stop. */
+export function clockerRetryText(locale:ClockerLocale,time:string,hour:string):string{
+ const text=locale==='es'?`Inténtalo de nuevo a ${hour==='1'?'la':'las'} ${time}.`:`Try again at ${time}.`;
+ return text.replace(/\.\.$/,'.');
 }
 
 /** Prefer stable codes while accepting older servers that send only an error message. */

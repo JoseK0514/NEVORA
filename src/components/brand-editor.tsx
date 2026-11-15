@@ -112,7 +112,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, sample
     <ul className="q-list" style={{ marginTop: 16 }}>
       <li><button type="button" className="q-row q-row--one" disabled={!hydrated} onClick={() => setPicking(true)} aria-label={`Color, ${colourName}, change`}>
         <span className="q-rt"><b>Color</b></span><span className="q-rv q-rv--l">{colourName}</span>
-        <span className="q-swatch" style={{ background: brand.tokens.accent }} aria-hidden="true" /><CaretRightIcon className="q-chev" aria-hidden="true" />
+        <span className="q-swatch" style={{ background: brand.tokens.accent }} aria-hidden="true" /><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
       </button></li>
       <li><div className="q-row q-row--one">
         <span className="q-rt"><b>Logo</b></span>
@@ -140,10 +140,10 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, sample
     <button type="submit" className="q-sr" tabIndex={-1} disabled={!valid || !dirty || busy !== null}>Save</button>
     <dialog ref={picker} className="wc-dialog" aria-labelledby="brand-colour-title" onClose={() => setPicking(false)} onCancel={() => setPicking(false)}>
       <div className="wc-dialog__head"><div><h2 className="wc-dialog__title" id="brand-colour-title">Color</h2></div>
-        <button type="button" className="wc-dialog__close" aria-label="Close" onClick={() => setPicking(false)}><XIcon aria-hidden="true" /></button></div>
+        <button type="button" className="wc-dialog__close" aria-label="Close" onClick={() => setPicking(false)}><XIcon weight="bold" aria-hidden="true" /></button></div>
       <div className="q-swatches" role="group" aria-label="Suggested colors">
         {PRESETS.map(p => <button key={p.hex} type="button" aria-pressed={effectiveSeed === p.hex} aria-label={`${p.name}, ${p.hex}`} title={p.name} disabled={!hydrated}
-          onClick={() => choose(p.hex)} style={{ background: p.hex }}>{effectiveSeed === p.hex ? <CheckIcon aria-hidden="true" /> : null}</button>)}
+          onClick={() => choose(p.hex)} style={{ background: p.hex }}>{effectiveSeed === p.hex ? <CheckIcon weight="bold" aria-hidden="true" /> : null}</button>)}
       </div>
       <Field label="Hex code" helpId="brand-hex-help"
         error={valid || (!hexTouched && draft.length < 7) ? undefined : "Enter a color like #1D4ED8."}

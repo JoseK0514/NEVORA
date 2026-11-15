@@ -189,14 +189,14 @@ it('shows own published statements, linked corrections and protected PDFs with t
    expect(body).toContain('Recent pay');expect(body).toContain('Correction');expect(body).toContain('Replaced');expect(body).not.toMatch(/\$|deposit|net pay/i);
    expect(body).toContain('This pay period');expect(body).not.toContain('From your workplace’s pay schedule');expect(body).not.toContain('Downloaded files may contain personal pay information.');
    /* Upscale S16: the next payday is said once: the card's body is the payday's date and the line under it how far away it is (no Payday pill). */
-   expect(await page.locator('#pay-period .c-pill').count()).toBe(0);expect((await page.locator('#pay-period .c-big').innerText()).replace(/ /g,' ')).toMatch(/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), [A-Z][a-z]{2} \d{1,2}$/);expect(await page.locator('#pay-period .c-line3').innerText()).toMatch(/^Payday (is today|is tomorrow|in \d+ days)$/);
+   expect(await page.locator('#pay-period .c-pill').count()).toBe(0);expect((await page.locator('#pay-period .c-big').innerText()).replace(/ /g,' ')).toMatch(/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), [A-Z][a-z]{2} \d{1,2}$/);expect(await page.locator('#pay-period .c-line3').innerText()).toMatch(/^Scheduled payday is (today|tomorrow|in \d+ days)$/);
    const rows=page.locator('#pay-recent .c-rows > li > a');expect(await rows.count()).toBe(3);
    expect(await rows.first().getAttribute('id')).toBe(`pay-statement-${correction.id}`);expect((await rows.first().getAttribute('aria-label'))!.replace(/ /g,' ')).toContain(`February 2, ${year}, corrected statement`);
    expect(await rows.nth(1).getAttribute('id')).toBe(`pay-statement-${original.id}`);expect(await rows.nth(1).innerText()).toContain('Replaced');
    expect(await page.locator('#employee-mobile').getAttribute('data-employee-mobile-page')).toBe('pay');await shot('next-payday');
    expect(await page.locator(`a[href="/app/my-pay?paycheck=${correction.id}"]`).count()).toBe(1);
    const html=await page.locator('.c-pay').innerHTML();expect(html).not.toContain(peer.id);
-   await page.getByRole('link',{name:'See all pay',exact:true}).click();await page.waitForURL(app.url+'/app/my-pay?view=history');await page.locator('.c-pay[data-pay-view="history"][data-pay-state="ready"]').waitFor();expect(await page.locator('.c-pay [id^="pay-statement-"]').count()).toBe(4);expect(await page.locator('.c-pay').innerHTML()).not.toContain(peer.id);await shot('pay-history');await page.locator('.c-pay .c-nav__back').click();await page.waitForURL(app.url+'/app/my-pay');await state('ready');
+   await page.getByRole('link',{name:'See all statements',exact:true}).click();await page.waitForURL(app.url+'/app/my-pay?view=history');await page.locator('.c-pay[data-pay-view="history"][data-pay-state="ready"]').waitFor();expect(await page.locator('.c-pay [id^="pay-statement-"]').count()).toBe(4);expect(await page.locator('.c-pay').innerHTML()).not.toContain(peer.id);await shot('pay-history');await page.locator('.c-pay .c-nav__back').click();await page.waitForURL(app.url+'/app/my-pay');await state('ready');
    record('More opens Pay: own published statements, correction first, replaced original labelled, Pay history lists all four, no figures, no peer document');
 
    // Release 1: an Employee's Time is its own tab (no Back to Pay); Pay's See your hours opens it.

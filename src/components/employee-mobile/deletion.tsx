@@ -91,7 +91,7 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,outcomeRefB
      <span className="c-in__wrap"><input className="c-in em-delete-password" ref={passwordRef} id="deletion-password" name="password" type={shown?'text':'password'} autoComplete="current-password" required disabled={pending}
       onChange={event=>{onPassword(event.target.value);setTyped({state,value:event.target.value!==''});if(invalid==='password')setInvalid(null);}}
       aria-describedby={passwordError?'deletion-password-help deletion-password-error':'deletion-password-help'} aria-invalid={passwordError?true:undefined}/>
-      <button type="button" className="c-in__btn em-delete-eye" onClick={onShown} aria-pressed={shown} aria-label="Show password">{shown?<EyeSlashIcon size={22} aria-hidden="true"/>:<EyeIcon size={22} aria-hidden="true"/>}</button></span>
+      <button type="button" className="c-in__btn em-delete-eye" onClick={onShown} aria-pressed={shown} aria-label="Show password">{shown?<EyeSlashIcon size={22} weight="bold" aria-hidden="true"/>:<EyeIcon size={22} weight="bold" aria-hidden="true"/>}</button></span>
      <span className="c-sr" id="deletion-password-help">The password you use to sign in.</span>
      {passwordError?<span className="c-error" id="deletion-password-error">{passwordError}</span>:null}
     </div>

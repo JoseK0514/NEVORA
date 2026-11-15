@@ -2,7 +2,7 @@ import {createElement,type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {expect,it,vi} from 'vitest';
 vi.mock('next/link',()=>({default:({children,prefetch:_prefetch,...props}:ComponentProps<'a'>&{prefetch?:boolean})=>createElement('a',props,children)}));
-import {EmployeeNotificationList,notificationGroup} from './notifications-list';
+import {EmployeeNotificationList,notificationGroup,notificationTitle} from './notifications-list';
 import type {EmployeeNotificationItem} from '../../lib/employee-view';
 const zone='America/Puerto_Rico',now=new Date('2026-10-31T16:00:00Z');
 const item=(id:string,at:string,label='Schedule update',extra:Partial<EmployeeNotificationItem>={}):EmployeeNotificationItem=>({id,label,at,href:'/app/notifications/open?notificationId='+id,reviewState:'read',actionState:'none',...extra});
@@ -23,8 +23,28 @@ it('board E-Notifications: All / Unread tabs, Yesterday and Earlier cards, an un
  expect(html).toContain('href="/app/notifications/open?notificationId=a"');
 });
 it('Unread shows only unread notices, and says when there are none',()=>{
- const text=plain(draw('unread'));expect(text).toContain('Schedule update');expect(text).not.toContain('Time off update');
+ const text=plain(draw('unread'));expect(text).toContain('Confirm your schedule');expect(text).not.toContain('time-off request');
  expect(plain(draw('unread',[items[1]]))).toContain('You’re all caught up');expect(plain(draw('all',[]))).toContain('No current notifications');
+});
+it('a notice says what happened, from its kind, its dates and whether it still needs you (inspection Nov 14, BR-6)',()=>{
+ const title=(label:string,extra:Partial<EmployeeNotificationItem>={})=>notificationTitle(item('x','2026-10-30T15:20:00Z',label,extra));
+ const week={kind:'scheduleWeek' as const,startDate:'2026-11-09',endDate:'2026-11-15'},day={kind:'requestDate' as const,startDate:'2026-11-26',endDate:'2026-11-26'};
+ expect(title('Schedule update',{actionState:'required',subject:week})).toBe('Confirm your schedule for Nov 9 – 15');
+ expect(title('Schedule update',{actionState:'complete',subject:week})).toBe('Your schedule for Nov 9 – 15 was updated');expect(title('Schedule update')).toBe('Your schedule was updated');
+ expect(title('Time-off update',{subject:{kind:'requestDate',startDate:'2026-11-28',endDate:'2026-12-02'}})).toBe('Your time-off request for Nov 28 – Dec 2 was answered');
+ expect(title('Time off update',{subject:null})).toBe('Your time-off request was answered');
+ expect(title('Can’t-work update',{subject:day})).toBe('Your can’t-work request for Nov 26 was answered');
+ expect(title('Shift request update',{actionState:'available',subject:day})).toBe('You can respond to a shift request for Nov 26');
+ expect(title('Shift request update',{actionState:'complete',subject:day})).toBe('A shift request for Nov 26 is closed');expect(title('Shift request update',{subject:day})).toBe('A shift request for Nov 26 was updated');
+ expect(title('Availability update',{actionState:'required'})).toBe('Reminder to submit your availability');expect(title('Availability update',{actionState:'complete'})).toBe('Your availability was submitted');
+ expect(title('Team update',{actionState:'required'})).toBe('A team update needs your acknowledgement');expect(title('Team update')).toBe('A team update was shared with you');
+ expect(title('Pay statement update',{actionState:'available'})).toBe('A pay statement was shared with you');
+ // A kind with nothing more to say, and a label that isn't a known kind, keep their own words.
+ expect(title('Device notification test')).toBe('Device notification test');expect(title('Holiday hours')).toBe('Holiday hours');
+ // The row and its accessible name carry the title; the category name is gone from the list.
+ const html=draw();expect(html).toContain('aria-label="Confirm your schedule, unread, action needed, 7:45 PM"');
+ for(const gone of ['Schedule update','Time off update','Pay statement update'])expect(plain(html)).not.toContain(gone);
+ expect(plain(html)).toContain('Your time-off request was answered');expect(plain(html)).toContain('A pay statement was shared with you');
 });
 it('a tapped notice stays pressed with its own spinner while it opens',()=>{
  const html=renderToStaticMarkup(<EmployeeNotificationList items={items} partial={false} tab="all" onTab={()=>{}} timeZone={zone} now={now} opening="a"/>);

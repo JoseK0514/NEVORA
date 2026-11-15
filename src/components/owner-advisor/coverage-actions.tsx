@@ -17,7 +17,7 @@ export function CoverageActionPanel({ view, actions }: { view: CoverageActionVie
   const busy = view.stage === "busy", review = view.stage === "review";
   const format = (stamp: string, zone: string) => new Date(stamp).toLocaleString("en-US", { timeZone: zone, month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
   return <section className="oa-section oa-draft-panel" aria-label="Reviewed coverage draft" aria-busy={busy}>
-    <div className="oa-draft-heading"><span className="oa-draft-icon" aria-hidden="true">{receipt ? <CheckCircleIcon size={24}/> : <ClockIcon size={24}/>}</span>
+    <div className="oa-draft-heading"><span className="oa-draft-icon" aria-hidden="true">{receipt ? <CheckCircleIcon size={24} weight="bold"/> : <ClockIcon size={24} weight="bold"/>}</span>
       <div><p className="oa-muted">Coverage · Draft only</p><h2 ref={heading} tabIndex={-1}>{receipt ? "Draft saved" : r ? "Review draft changes" : view.stage === "uncertain" ? "Check your original request" : "Coverage draft"}</h2></div>
     </div>
     {view.message && <p role="status">{view.message}</p>}

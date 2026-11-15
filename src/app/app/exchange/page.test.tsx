@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
-import ExchangePage from './page';
+import ExchangePage, { generateMetadata } from './page';
 import type { ExchangeRecord } from '../../../lib/data/exchanges';
 import type { CalloutRecord } from '../../../lib/data/callouts';
 const f=vi.hoisted(()=>({activity:[] as ExchangeRecord[],callouts:[] as CalloutRecord[],selected:null as ExchangeRecord|null,selectedCallout:null as CalloutRecord|null,allowed:['2'],assigned:[] as ReturnType<typeof exchange>['sourceShift'][],reviewed:null as {source:Record<string,string|boolean|number>;sourceTermsFingerprint:string;target:null;targetTermsFingerprint:null}|null,coverageAllowed:false,coverageNotice:'Coverage unavailable',operation:null as {status:'pending'|'completed';operationId:string;requestId:string;revision:number}|null}));
@@ -112,4 +112,10 @@ it('an empty shift board says so once, in the band (inspection Oct 24)',async()=
  const board=renderToStaticMarkup(await ExchangePage({searchParams:Promise.resolve({})})).replace(/<br\/?>/g,' ');
  expect(board).toContain('No open shifts right now');
  expect(board).not.toContain('The shift board is clear');
+});
+
+// Review Nov 14 (AR-15): the browser tab says what the heading says. An Employee's or Lead's page is "Pick up and swap"
+// (an Owner's or Manager's stays "Shift requests").
+it('names the browser tab Pick up and swap for an Employee',async()=>{
+ expect(await generateMetadata()).toEqual({title:'Pick up and swap'});
 });

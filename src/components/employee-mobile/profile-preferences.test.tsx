@@ -38,3 +38,14 @@ it('Direction B phone screen: Personal info as label-over-value rows, the langua
  flags.passkeys=false;expect(phone()).not.toContain('/app/profile/passkeys');expect(phone(false)).not.toContain('Security');
  const ids=[...full().matchAll(/\sid="([^"]+)"/g)].map(match=>match[1]);expect(new Set(ids).size).toBe(ids.length);
 });
+it('Personal info shows the Employee ID a person signs in with, from the page’s session, on both layouts (inspection Nov 14, BR-13)',()=>{
+ const html=renderToStaticMarkup(<EmployeeProfilePage authority={'a'.repeat(64)} lang="en" policies employeeId="FICTIONAL-E1"/>);
+ for(const side of [withoutB(html),onlyB(html)]){
+  const text=side.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ');
+  expect(text).toContain('Employee ID');expect(text).toContain('FICTIONAL-E1');expect(text).toContain('You sign in with this ID.');
+  expect(text.indexOf('Name')).toBeLessThan(text.indexOf('Employee ID'));expect(text.indexOf('Employee ID')).toBeLessThan(text.indexOf('Locations'));
+  expect(side).not.toMatch(/<input|Email|Phone/);
+ }
+ // Without a session id the row keeps its place and shows the same dash as the other rows.
+ expect(full()).not.toContain('FICTIONAL-E1');expect(full()).toContain('You sign in with this ID.');
+});

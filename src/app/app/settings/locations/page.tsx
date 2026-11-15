@@ -65,7 +65,7 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
             <span className="q-rt"><b>{location.shortName}</b>{location.name !== location.shortName || readiness.state !== "READY" ? <i>{[location.name !== location.shortName ? location.name : null,
               readiness.state === "INACTIVE" ? "Inactive" : readiness.state === "NEEDS_SETUP" ? "Needs setup" : null].filter(Boolean).join(" · ")}</i> : null}</span>
             <span className="wc-meta">{`${eligibleCount} ${peopleWord(eligibleCount)}`}</span>
-            <CaretRight className="q-chev" aria-hidden="true" />
+            <CaretRight weight="bold" className="q-chev" aria-hidden="true" />
           </Link>
         </li>)}
         <li><Link className="wc-addrow" href={`${directoryPath}/new`}><Plus aria-hidden="true" weight="bold" />{`Add ${place}`}</Link></li>

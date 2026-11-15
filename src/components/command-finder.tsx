@@ -19,6 +19,9 @@ const DESKTOP_PLACEHOLDER = "Search pages, people and places";
 /** The phone chrome query (portal-gusto.css). A phone turned sideways has the tablet layout since review B8 (NV-274). */
 const PHONE_QUERY = "(max-width: 760px)";
 
+/** A mouse or trackpad is the main way in (a keyboard is then at hand for the shortcut). */
+const FINE_POINTER_QUERY = "(pointer: fine)";
+
 /** Other entries (More › Search) open the one finder dialog through this event. */
 export const OPEN_FINDER_EVENT = "nevora:open-finder";
 export type OpenFinderDetail = { returnFocusTo?: HTMLElement | null };
@@ -150,7 +153,9 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
 
   useEffect(() => {
     // Review B2 (NV-323): the hint is filled once on mount for this device (it no longer swaps from ⌘K on Windows and Linux).
-    if (hint.current) hint.current.textContent = /Mac|iPhone|iPad/.test(navigator.platform) ? "⌘K" : "Ctrl K";
+    // Review Nov 14 (TB-012): only a device whose main pointer is a mouse or trackpad gets it. A touch screen has no ⌘K or
+    // Ctrl K to press, so there the hint stays empty, and an empty hint is not drawn.
+    if (hint.current) hint.current.textContent = !window.matchMedia?.(FINE_POINTER_QUERY).matches ? "" : /Mac|iPhone|iPad/.test(navigator.platform) ? "⌘K" : "Ctrl K";
     const shortcut = (event: globalThis.KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); if (dialog.current?.open) close(); else open(); }
     };
@@ -180,14 +185,14 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
 
   return <>
     <button type="button" className="command-finder-trigger" onClick={event => open(event.currentTarget)} aria-haspopup="dialog" aria-keyshortcuts="Meta+K Control+K">
-      <MagnifyingGlassIcon size={18} aria-hidden="true" /><span>Search</span><kbd ref={hint} aria-hidden="true" suppressHydrationWarning />
+      <MagnifyingGlassIcon size={18} weight="bold" aria-hidden="true" /><span>Search</span><kbd ref={hint} aria-hidden="true" suppressHydrationWarning />
     </button>
     <dialog ref={dialog} className="command-finder" aria-label={own ? "Search your pages" : "Find a page, person or place"} onClose={closed}
       onClick={event => { if (event.target === event.currentTarget) close(); }}>
       <div className="command-finder-panel">
         <div className="command-finder-search">
           <div className="command-finder-field">
-            <MagnifyingGlassIcon size={20} aria-hidden="true" />
+            <MagnifyingGlassIcon size={20} weight="bold" aria-hidden="true" />
             <input ref={input} type="text" role="combobox" aria-expanded="true" aria-controls="command-finder-results" aria-autocomplete="list"
               aria-activedescendant={results[current] ? `command-finder-${current}` : undefined} aria-label="Search pages, people and places"
               placeholder={placeholder} value={query} autoComplete="off" spellCheck={false} enterKeyHint="go" autoCapitalize="none" autoCorrect="off"

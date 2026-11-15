@@ -23,7 +23,7 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
  it('shows an accepted request without asserting successful email delivery',()=>{
   const message='If these details match an active account, recovery instructions will be sent.';
   const html=renderToStaticMarkup(<RecoveryRequest hydrated busy={false} done message={message} onSubmit={()=>{}}/>);
-  expect(html).toContain('Request received');expect(html).toContain(message);expect(html).toContain('role="status"');
+  expect(html).toContain('Check your email');expect(html).toContain(message);expect(html).toContain('role="status"');
   expect(html).not.toContain('<form');expect(html).not.toContain('Email sent');
  });
  it('keeps reset proof validation and new-password autocomplete',()=>{

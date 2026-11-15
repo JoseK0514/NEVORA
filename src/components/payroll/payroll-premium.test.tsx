@@ -58,7 +58,7 @@ describe('Unpaid periods first (A6, round 2 R3)', () => {
     boundary.data = { ...boundary.data!, missingPeriods: [missing], backlog } as unknown as PayrollRunsResponse;
     const html = home();
     expect(html).toContain('3 pay periods have no payroll');
-    expect(html).toContain(thin('Oldest is <span class="c-num">Sep 21 – 27</span>. Its payday was <span class="c-num">Tue, Sep 29</span>.'));
+    expect(html).toContain(thin('Oldest is <span class="c-num">Sep 21 – 27</span>. Scheduled payday was <span class="c-num">Tue, Sep 29</span>.'));
     // Nov 1 upscale: the page's one filled button, which opens the period on Prepare payroll (it never prepares anything
     // by itself).
     expect(html).toMatch(/class="c-btn c-btn--md c-pay__unpaid-go" href="\/app\/payroll\/prepare#unpaid-2026-09-21">Prepare Sep 21 – 27</);
@@ -101,10 +101,10 @@ describe('One status for the open period (R7)', () => {
     expect(html).not.toContain('Prepare by payday');
     expect(html).toMatch(/ · Payday <span class="c-num">[A-Z][a-z]{2}, Oct 16<\/span>/);
   });
-  it('names Pay history once, as the Recent payrolls link', () => {
+  it('names Payroll history once, as the Recent payrolls link', () => {
     const html = home();
     expect(html.match(/href="\/app\/payroll\/history"/g)?.length).toBe(1);
-    expect(html).toContain('>Pay history</a>');
+    expect(html).toContain('>Payroll history</a>');
   });
 });
 
@@ -184,6 +184,93 @@ describe('Direction B phone screen (Payroll)', () => {
     expect(html).toContain('Up next · Weekly payroll');
     expect(html).toMatch(/class="b-step b-step--now"><span class="b-step__n" aria-hidden="true">1<\/span>/);
     expect(html).toMatch(/class="b-btn b-btn--teal b-btn--full b-btn--big"[^>]*href="\/app\/payroll\/prepare"[^>]*>Prepare payroll<\/a>/);
-    expect(html).toContain('<a class="b-card__a" href="/app/payroll/history">Pay history</a>');
+    expect(html).toContain('<a class="b-card__a" href="/app/payroll/history">Payroll history</a>');
   });
 });
+
+// Nov 14, 2026 inspection (payroll scope wording and hand-offs): NEVORA calculates pay and shares statements; the screens
+// say so where it matters. Wording and links only; no command or payload is exercised here.
+describe('Payroll scope and hand-offs (Nov 14 inspection)', () => {
+  const importRun = (overrides: Parameters<typeof nativeRun>[0] = {}) => nativeRun({ sourceAuthority: 'PROVIDER_IMPORT', nativeCalculation: undefined, ...overrides });
+  const review = () => renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="review" runId={nativeRun().id} />);
+  it('keeps the scope line under the Payroll title on the phone screen and on wider screens (PY-14)', () => {
+    const all = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="home" current={current} canEditSettings />);
+    const line = 'Calculate pay and share statements. You pay your team outside NEVORA.';
+    expect(onlyB(all)).toContain(`<p class="b-sub c-pay__scope c-pay__scope--hero">${line}</p>`);
+    expect(withoutB(all)).toContain(`<span class="c-pay__scope">${line}</span></span>`);
+  });
+  it('says a passed payday was the scheduled one (PY-14)', () => {
+    boundary.data = { ...boundary.data!, missingPeriods: [missing], backlog: { ...backlog, missingCount: 1 } } as unknown as PayrollRunsResponse;
+    const all = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="home" current={{ ...current, payday: '2026-01-02' }} timeZone="America/Puerto_Rico" />);
+    expect(withoutB(all)).toContain('Scheduled payday was <span class="c-num">Tue, Sep 29</span>.');
+    expect(onlyB(all)).toContain('Scheduled payday was Tue, Sep 29');
+    expect(onlyB(all)).toContain('>Scheduled payday passed<');
+    expect(all).not.toContain('Its payday was');
+  });
+  it('shows the three steps on wider screens too, worded for how statements are shared (OW-005, PY-4)', () => {
+    const html = home();
+    expect(html.match(/class="b-step[ "]/g)).toHaveLength(3);
+    expect(html).toContain('Statements are shared with your team automatically');
+    expect(html).not.toContain('Then share pay statements');
+    boundary.data!.capabilities = { ...nativeCapabilities, internalCalculatorAvailable: false };
+    expect(home()).toContain('Then share pay statements');
+    boundary.data!.runs = [importRun()];
+    expect(home()).toContain('Then share pay statements');
+  });
+  it('keeps one button on the phone while an overdue period leads: this period’s step is a quiet link (OW-005)', () => {
+    boundary.data = { ...boundary.data!, missingPeriods: [missing], backlog } as unknown as PayrollRunsResponse;
+    const html = onlyB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="home" current={current} />));
+    expect(html.match(/class="b-btn[ "]/g)).toHaveLength(1);
+    expect(html).toMatch(/class="b-btn b-btn--teal"[^>]*href="\/app\/payroll\/prepare#unpaid-2026-09-21"[^>]*>Prepare</);
+    expect(html).toMatch(/<a class="b-link c-pay__steplink"[^>]*href="\/app\/payroll\/prepare"[^>]*>Prepare payroll<\/a>/);
+  });
+  it('tells the Owner what is still theirs once a payroll is approved, on Payroll and on Payroll details (PY-3)', () => {
+    boundary.data!.runs = [nativeRun({ status: 'APPROVED', approvedAt: '2026-10-12T16:00:00Z' })];
+    for (const html of [home(), onlyB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="home" current={current} />)), review()]) {
+      expect(html).toContain('What’s next');
+      expect(html).toContain('<li>Pay each person their net pay.</li><li>Send withheld taxes and employer contributions.</li><li>Keep the company summary for your accountant.</li>');
+      expect(html).toContain('NEVORA doesn’t pay anyone or send taxes.');
+    }
+  });
+  it('leaves the hand-off off a correction and the payroll it replaced, and says to settle any difference (PY-3, PY-11)', () => {
+    const original = nativeRun({ id: 'fictional-original', status: 'APPROVED' });
+    const correction = nativeRun({ status: 'APPROVED', correctionOf: 'fictional-original' });
+    boundary.data!.runs = [original, correction];
+    const html = review();
+    expect(html).not.toContain('What’s next');
+    expect(html).toContain('If pay changes, settle the difference with the employee outside NEVORA.');
+    expect(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="review" runId="fictional-original" />)).not.toContain('What’s next');
+  });
+  it('says what approving does and doesn’t do before the Approve button (PY-4, PY-9)', () => {
+    boundary.data!.runs = [nativeRun()];
+    const native = review();
+    expect(native.indexOf('NEVORA calculated these amounts from your setup. Check withholding with your accountant.')).toBeGreaterThan(0);
+    expect(native).toContain('Approving doesn’t pay anyone or send taxes. Pay statements are shared with each employee once they’re ready.');
+    expect(native.indexOf('Approving doesn’t pay anyone')).toBeLessThan(native.search(/<button[^>]*>Approve payroll/));
+    boundary.data!.runs = [importRun()];
+    const imported = review();
+    expect(imported).toContain('<p>Approving doesn’t pay anyone or send taxes.</p>');
+    expect(imported).not.toContain('NEVORA calculated these amounts');
+    expect(imported).not.toContain('once they’re ready');
+  });
+  it('doesn’t offer payment instructions on a correction, and says why (PY-17)', () => {
+    boundary.data!.runs = [importRun({ status: 'APPROVED' })];
+    expect(review()).toContain('Prepare payment instructions');
+    boundary.data!.runs = [importRun({ status: 'APPROVED', correctionOf: 'fictional-original' })];
+    const html = review();
+    expect(html).not.toContain('Prepare payment instructions');
+    expect(html).toContain('NEVORA doesn’t make payment instructions for a correction.');
+  });
+  it('opens Time exports at “Who’s included” from the blocker, in plain words (AR-4)', () => {
+    boundary.data!.runs = [nativeRun({ status: 'BLOCKED', rows: null, totals: null, reviewToken: null, exceptions: ['POPULATION_DISPOSITION:E1', 'RULESET_NOT_APPLICABLE:E1'] })];
+    const html = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="fix" runId={nativeRun().id} names={{ E1: 'Fictional Person' }} />);
+    expect(html).toContain('Choose what to do with 1 person this period');
+    expect(html).toMatch(/href="\/app\/payroll-export\?start=2026-10-05&amp;end=2026-10-11#who-is-included">Choose who’s included</);
+    // PY-10: a blocker NEVORA can't fix in the app names support, never its code.
+    expect(html).toContain('NEVORA can’t calculate paydays in that year yet. Contact support.');
+    expect(html).toMatch(/href="\/app\/help">Contact support</);
+    expect(html).not.toContain('RULESET_NOT_APPLICABLE');
+    expect(html).not.toContain('population');
+  });
+});
+

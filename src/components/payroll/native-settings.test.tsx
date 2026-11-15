@@ -13,7 +13,7 @@ it('explains native company preferences and automatic publication without asking
   const html = renderToStaticMarkup(<PayrollSettings recoveryScope="fictional-owner" nativeSources={{employees:[],locations:[],breakTypes:[]}} />);
   // B7 wording (NV-124): payroll settings in plain language, same meaning.
   expect(html).toContain('NEVORA payroll uses finalized timecards');
-  expect(html).toContain('then publishes it to the employee');
+  expect(html).toContain('then shares it with the employee');
   expect(html).toContain('Save company preferences');
   expect(html).toContain('specific payroll locations');
   expect(html).not.toContain('name="bankProfile"');

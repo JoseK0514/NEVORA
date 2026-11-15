@@ -1,5 +1,5 @@
 ---
-version: "nevora-signature-2026-10-20"
+version: "nevora-direction-b-2026-11-08"
 name: "NEVORA Workforce portal"
 description: "Workforce scheduling, time and pay app. Current direction (November 8, 2026): Direction B for every surface: Owner, Manager, Employee and Lead on phones, tablets (768-1023, small desktop with the icon rail) and desktop; sign-in, recovery, activation, policy, 404 and public error pages; and the Clocker kiosk. Inter, teal #0B6E69 with the teal band, canvas #F2F5F4, white 22px cards, pills, Phosphor bold icons, light only. See the Current direction table below and the Direction B sections (approved mocks in docs/product/direction-b/). The Signature and clean-manager v3 tokens below are retained as the base layer and history; where they disagree with Direction B, Direction B wins."
 colors:
@@ -52,7 +52,7 @@ colors:
   login-refined-hero-ink: "#062959"
   auth-still-surface: "#F1F4F8"
 typography:
-  # Signature type roles (CURRENT). The family is the platform's own system stack on the employee app and sign-in; the Clocker
+  # Signature type roles (SUPERSEDED by Direction B, Nov 8, 2026; kept as history). The family is the platform's own system stack on the employee app and sign-in; the Clocker
   # and PIN bundle Inter ("Nevora Clocker"). Which one wins is a pending decision (SIGNATURE-SPEC.md section 11).
   sig-hero-word:
     fontFamily: "system-ui (SF Pro Display, Segoe UI, Roboto)"
@@ -189,7 +189,7 @@ spacing:
   activation-secondary-gap: "28px"
   activation-secondary-gap-mobile: "24px"
 rounded:
-  # Signature radii (CURRENT): cards 22, sheet top corners 28, pills full. Button radii are being normalised (SIGNATURE-SPEC.md 6.7).
+  # Signature radii (SUPERSEDED by Direction B, Nov 8, 2026; kept as history): cards 22, sheet top corners 28, pills full. Button radii are being normalised (SIGNATURE-SPEC.md 6.7).
   sig-card: "22px"
   sig-sheet: "28px"
   sig-pill: "999px"
@@ -205,7 +205,7 @@ rounded:
   auth-popover: "14px"
   activation-password-toggle: "13px"
 components:
-  # Signature components (CURRENT, as built). Full list, states and targets: SIGNATURE-SPEC.md section 6.
+  # Signature components (SUPERSEDED by Direction B, Nov 8, 2026; kept as history). Full list, states and targets: SIGNATURE-SPEC.md section 6.
   sig-band:
     backgroundColor: "{colors.sig-deep}"
     textColor: "{colors.sig-on-deep}"
@@ -371,6 +371,86 @@ tiles; white cards (22px radius, soft layered shadow) sit on the `#F2F5F4` canva
 Inter throughout, ink `#111517`, grey `#6A7176`, Phosphor bold icons in tinted circles, pills for actions and chips,
 48px+ targets, light only. Status colours: red stops you, amber means wait or check, green is done, teal is information.
 The screenshot harness for checking it is in `tools/ui-scan/`.
+
+## Inspection fixes (November 15, 2026)
+
+Source: the Nov 14 inspection, [docs/product/review-2026-11-14](docs/product/review-2026-11-14/README.md), and its fix
+reports in `docs/product/review-2026-11-14/fixes/`. Jose asked for all fixes on Nov 14; the changes below are built and
+wait for his review before any commit. Where an older line in this file disagrees with this list, this list wins. Each
+item names the lines it supersedes; line numbers are from the file before this section was added, so add about 47.
+
+- **One band.** Payroll and Pay no longer draw a near-black ("ink") band or top bar; every page uses the teal band.
+  Supersedes the ink hero, band and top bar notes near lines 1378, 1419, 1432, 1450 and 1465.
+- **Tablet rail (768 to 1023px).** An 80px rail with a short label under each icon, a tinted pill behind the current
+  icon and one 20px badge style. Supersedes "labels as tooltips" and the 48px column (near 1523 to 1530, 1692 and 1916).
+- **Buttons.** Every button class under Direction B is a pill, including `nv-btn`, `c-btn`, `q-btn`, `q-bs` and
+  `wc-btn`. A kit button's hit area is at least 44px at any drawn height. Row actions use the tinted pill for Approve
+  and Review and a quiet text button for Decline; a filled teal pill is the page's one primary.
+- **Contrast tokens.** `--b-field-edge` is `#838A8F` and also colours the row chevron. Grey text on any tinted fill
+  uses `--b-grey-on-fill`. New `--b-amber-solid` `#B8760F` and `--b-green-solid` `#239A6D` for rings, bars and dashed
+  edges. The bell's coral dot has a white ring. `--b-on-band-2` resolves to white inside glass tiles. Supersedes the
+  values near 1376, 1382, 1470, 1679 to 1682, 1686, 1740 and 1756.
+- **Phase 1 tokens (built Nov 15, 2026; see `docs/product/review-2026-11-14/fixes/phase-1/README.md`).** The Direction B
+  stylesheets read them now. Type: eight roles with separate size and line-height tokens in rem, `--b-fs-*` and
+  `--b-lh-*` (display 30/36, figure 24/30, title 20/26, title-sm 17/22, body 15.5/22, body-sm 14.5/20, meta 13.5/18,
+  caption 12.5/16); `--b-type-*` are the same pairs for the `font` shorthand. 13px and 15px text folded into meta and
+  body; 12, 14 and 16px stay as approved. Spacing: `--b-space-2` to `--b-space-64`, with `--b-gutter` (14),
+  `--b-inset` (18) and `--b-inset-wide` (22) for horizontal insets; 6px and 10px are still literals. Radius: pill, card
+  (22), field (14) and `--b-radius-small` (10). Elevation: `--b-elev-1`, `--b-elev-2`, a proposed `--b-elev-3` that
+  nothing uses yet, and the glow, all in one shadow colour. Motion: `--b-dur-press`, `--b-dur-hover`, `--b-dur-exit`
+  (150ms), `--b-dur-enter` (300ms), ease-out. Supersedes "five type roles" and "defined, adopt page by page" in the
+  token notes further down. Sign-in reads the shared band, pill and focus tokens; the kiosk reads the palette, radius,
+  elevation and motion tokens and keeps its own large type.
+- **Icons.** Every Phosphor icon draws bold; fill marks a filled or current state. Nine duotone icons remain by
+  exception. `src/test/phosphor-icon-weight.test.ts` fails when an icon has no weight.
+- **The desktop and tablet frame (Phase 2, built Nov 15, 2026; see `docs/product/review-2026-11-14/fixes/phase-2/README.md`).**
+  From 768px, every role. Tokens in `src/app/b-tokens.css`: `--b-frame-wide` 1080, `--b-frame-read` 812,
+  `--b-frame-form` 560; `--b-band-short` 196, `--b-band-sub` 224, `--b-band-strip` 296, `--b-band-figures` 363;
+  `--b-title-top` 88, `--b-title-top-back` 130.
+  - *Title.* Its top edge is at 88 on a sidebar page and at 130 under a back link. Home's sits at 109 under the greeting.
+  - *Band.* It ends at 196 (a title alone, with one sub-line, or under a back link), 224 (back link, title and
+    sub-line) or 296 (a strip of tabs, search or a week stepper on the band). Owner Home keeps 383. The Employee tabs
+    with figures (Home, Time, Pay, Requests) share 363. Desktop Payroll shows the title, the scope sentence and the
+    tabs (Jose dropped the pay frequency and business line there on Nov 15, 2026; phones keep it), so Payroll, Time
+    exports and Payroll settings end at 296 with their tabs at one height.
+  - *Card to band.* On a sidebar page with a strip or figures, the first card overlaps the band by 52px. Under a
+    back link, and on short bands, content starts 24px under the band.
+  - *Width.* Work pages (grids, tables, a list with a right rail) fill the grid up to 1080px. Pages opened from them
+    read in one 812px column, band action included. A form's field block stops at 560px (two halves of 272px with
+    16px between), with its buttons on the block's right edge. A state card is at most 560px.
+  - *Right rail.* Team uses Home's grid from 1024px (main 2fr, rail 1fr, 20px gap); tablets stay one column.
+  - *Supersedes* the "860px column" comments in `owner-b-desktop.css` and the per-page band depths noted further down.
+- **List rows (Phase 2).** Filled teal is the page's one main action. A button repeated on list rows is the tinted
+  pill for the positive action (Approve, Pick up, Review, Acknowledge) and a quiet text button for the other (Decline,
+  Close request): classes `b-rowact b-rowact--go` and `b-rowact--quiet` in `b-foundation.css`, or the kit's ghost kind.
+- **Loading, error and offline (Phase 2).** A loading screen keeps the page's frame: its band at the page's height, its
+  title, strip and card shapes, from one table (`src/components/owner-b/b-loading.tsx`); it does not animate. A failed
+  page keeps the band at 196 with one 560px state card and one retry (`BStateScreen`, `BRouteError`). The offline line
+  is one dark pill: at the foot of the window from 768px, above the tab bar on phones; it never sits between the top
+  bar and the band. Employee Home still clears private rows when offline.
+- **States and menus.** The state card's empty kind is grey with a tray glyph; the warning glyph is for failures.
+  Menu items have 10px corners inside the 16px menu (supersedes 8px near 1891).
+- **Motion.** The press scale runs only under `prefers-reduced-motion: no-preference`.
+- **Forms.** Inline validation re-asserts `aria-describedby` each time and announces with `role="alert"` on blur and
+  input (supersedes the note near 769).
+- **Phone bottom bar.** Pages outside the five tabs (More, Insights, Settings, Profile, Notifications, Help, Updates,
+  My pay) light no tab. This reverses the Nov 7 rule "More and the pages it opens light Home". Jose to confirm.
+- **Clocker.** Sign-in is Employee ID, then PIN (Jose's Nov 11 decision). The lockout card names who is paused ("Your
+  PIN is paused" or "This tablet is paused") and shows the clock time ("Try again at 10:58 PM."); a person-level pause
+  card clears after 30 seconds. Buttons are sentence case ("Clock in", "Clock out", "Try again"); "Refresh clock state"
+  is "Refresh"; "Help with a saved action" is "Something didn't save?"; "Action reference" is "Reference". The kiosk
+  has its own error screen in the tablet's language with no sign-in link, and the paused page follows the tablet's
+  language. Supersedes the exempt-word list near 751, 955 and 1637 to 1639, "No lockout countdown" near 1650, and the
+  labels near 1654 to 1667. `.21st/DESIGN.md:68` carries the same old list.
+- **Billing pages.** `/app/billing`, `/pages/plans`, `/pages/nevora-billing`, `/pages/nevora-billing-return`,
+  `/pages/es-*` and the paused Clocker page use the sign-in frame: wordmark, Inter, teal band or panel, white 22px
+  card, pills. The Signature look is retired there too.
+- **Attendance words (Jose, Nov 11).** "Not clocked in" for a shift that started with no punch, "Clocked in late" for
+  a late arrival, "Missed" for a shift that ended with no punch.
+- **Payroll scope wording.** Owner screens carry "Calculate pay and share statements. You pay your team outside
+  NEVORA.", a "What's next" card after approval, and "Scheduled payday" in place of "Payday" or "Next payday" wherever
+  NEVORA shows a date from the pay schedule. The pay statement PDF text near line 1347 ("You take home") is unchanged
+  and waits for Jose's and counsel's wording; see PY-2 in the inspection.
 
 ## Previous direction (October 20, 2026; superseded)
 

@@ -8,7 +8,7 @@ import { useEffect, useLayoutEffect, useRef, useSyncExternalStore, type ReactNod
 
 import { QuietBar, QuietBarIcon, QuietHeader, QuietList, QuietRow, QuietSection } from "@/components/quiet/quiet";
 import { BellIcon } from "@phosphor-icons/react/dist/ssr/Bell";
-import { CLOCK_IN, presentItem } from "@/lib/action-center/present";
+import { ATTENDANCE_WORDS, CLOCK_IN, presentItem } from "@/lib/action-center/present";
 import { useToday } from "./manager-today";
 import { useSharedHomeRead, type ActionCenterConnection } from "./manager-action-center";
 import { mobileActionDetail } from "./manager-action-center";
@@ -156,7 +156,7 @@ export function PremiumHomeSurface({ greeting, dateLabel, timeZone, workspaceNam
     timecards={items.filter(item => item.type === "TIMECARD")} timecardsReady={!!readyActions} businessDay={readyToday?.today ?? day} nextPay={nextPay} payrollStatus={payrollStatus} setup={setup} liveReaders={liveReaders} week={homeB} />;
   // Quiet (v4, approved Oct 23): top bar, title, Right now, Needs you, Setup. Nothing else on Home.
   return <div className="q-page premium-home cm-home" data-nv-page="" data-live-readers={liveReaders}>
-    <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label="Notifications"><BellIcon className="q-ic" aria-hidden="true" /></QuietBarIcon></QuietBar>
+    <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label="Notifications"><BellIcon weight="bold" className="q-ic" aria-hidden="true" /></QuietBarIcon></QuietBar>
     <QuietHeader title="Today" sub={<>{dateLabel}<span role="status" className="q-sr">{summary}</span></>} />
     <QuietRightNow today={today} monitor={monitor} monitorPending={monitorPending} refreshing={todayRefreshing} onRetry={onRetryToday} timeZone={timeZone} offline={offline} paused={actionsConnection === "paused"} />
     <div className="cm-home__now" ref={nowColumn}>
@@ -212,11 +212,11 @@ function QuietNeedsYou({ value, timeZone, observedAt }: { value: NeedsYou; timeZ
     : kinds.length === 1 ? `${kinds[0][0].toUpperCase()}${kinds[0].slice(1)}` : `${kinds.slice(0, -1).join(", ").replace(/^./, c => c.toUpperCase())} and ${kinds.at(-1)}`;
   return <QuietSection id="home-needs-you" title="Things to do">
     <QuietList label="Things to do">
-      {one ? <QuietRow href="/app/inbox?filter=now" title={ended ? `${one.employeeName} didn’t clock in` : `${one.employeeName} is late`}
+      {one ? <QuietRow href="/app/inbox?filter=now" title={`${ended ? ATTENDANCE_WORDS.missed : ATTENDANCE_WORDS.notClockedIn}: ${one.employeeName}`}
         detail={ended ? `Shift ended at ${clock(one.endAt, timeZone)}` : `Shift began at ${clock(one.startAt, timeZone)}`}
         value={ended || !minutes ? undefined : minutes >= 60 ? `${Math.floor(minutes / 60)} h ${minutes % 60 ? `${minutes % 60} min` : ""}`.trim() : `${minutes} min`} tone="alert"
         label={`${one.employeeName} hasn’t clocked in, open in Inbox`} />
-      : late.length ? <QuietRow href="/app/inbox?filter=now" title={`${late.length} people haven’t clocked in`} detail={firstNames(late.map(shift => shift.employeeName))}
+      : late.length ? <QuietRow href="/app/inbox?filter=now" title={`${late.length}\u00a0not clocked in`} detail={firstNames(late.map(shift => shift.employeeName))}
         label={`${late.length} shifts with no ${CLOCK_IN}, open in Inbox`} /> : null}
       {gaps.length ? <QuietRow href="/app/inbox?filter=now" title={plural(gaps.length, "open shift", "open shifts").replace("\u00a0", " ")}
         detail={locationCounts(gaps.map(item => ({ locationName: gapLocation(item) }))) || "Today"} label={`${plural(gaps.length, "open shift", "open shifts").replace("\u00a0", " ")} today, open in Inbox`} /> : null}

@@ -39,7 +39,7 @@ const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Frida
 /** Quiet (v4): a rule's row; it opens the rule's settings under it. */
 function Summary({ title, value, detail }: { title: string; value: string; detail?: string }) {
   return <summary className={detail ? "q-row" : "q-row q-row--one"}>
-    <span className="q-rt"><b>{title}</b>{detail ? <i>{detail}</i> : null}</span><span className="q-rv q-rv--l">{value}</span><CaretRightIcon className="q-chev" aria-hidden="true" />
+    <span className="q-rt"><b>{title}</b>{detail ? <i>{detail}</i> : null}</span><span className="q-rv q-rv--l">{value}</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
   </summary>;
 }
 
@@ -161,7 +161,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
           <div className="q-rule__body manager-issue-target" id="coverage-windows" tabIndex={-1}>
             <p className="q-help">Periods you expect every week. The schedule flags open coverage even before shifts are added.</p>
             {locations.length ? <details className="wb-disclosure wb-disclosure--ruled wb-add-period" open={!coverageWindows.length}>
-              <summary><span className="wb-inline-icon"><PlusIcon size={20} aria-hidden="true" />Add coverage period</span><CaretDownIcon size={20} aria-hidden="true" /></summary>
+              <summary><span className="wb-inline-icon"><PlusIcon size={20} weight="bold" aria-hidden="true" />Add coverage period</span><CaretDownIcon size={20} weight="bold" aria-hidden="true" /></summary>
               <InlineConfigForm action={addCoverageWindowFormAction} className="wb-period-form" submit={{ label: "Add coverage period", pendingLabel: "Adding…", kind: "primary" }} successText="Coverage period added.">
                 <div className="wb-grid">
                   <label className="wb-field wb-field--wide"><span>Location</span><select name="locationId" required defaultValue={locations[0]?.id}>{locations.map(location => <option key={location.id} value={location.id}>{locationLabel(location.id, location.shortName)}</option>)}</select></label>
@@ -175,7 +175,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
             </details> : <p className="q-empty">Add a location first. <Link className="q-link" href="/app/settings/locations">Locations</Link></p>}
             {coverageGroups.map(group => (
               <details className="wb-disclosure wb-disclosure--ruled wb-period-group" key={group.locationId} open={coverageGroups.length === 1 || group.needsReview}>
-                <summary><span className="wb-summary-text"><span className="wb-record__title">{group.label}</span><span>{group.windows.length} {group.windows.length === 1 ? "period" : "periods"} · {group.days} {group.days === 1 ? "day" : "days"} a week</span></span><CaretDownIcon size={20} aria-hidden="true" /></summary>
+                <summary><span className="wb-summary-text"><span className="wb-record__title">{group.label}</span><span>{group.windows.length} {group.windows.length === 1 ? "period" : "periods"} · {group.days} {group.days === 1 ? "day" : "days"} a week</span></span><CaretDownIcon size={20} weight="bold" aria-hidden="true" /></summary>
                 <ul className="wb-periods">
                   {group.windows.map(window => (
                     <li className="wb-period manager-issue-target" id={"coverage-" + window.id} tabIndex={-1} key={window.id}>
@@ -185,7 +185,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
                         <ActionForm action={deleteCoverageWindowAction} className="wb-period-remove" failure="Not removed. Check your connection and try again." confirm={{ prompt: `Remove ${dayNames[window.dayOfWeek]}, ${formatTimeRange(window.startTime, window.endTime)}?`, keepLabel: "Keep period" }} submit={{ label: "Remove", pendingLabel: "Removing…", ariaLabel: "Remove " + locationLabel(window.locationId, window.locationId) + " " + dayNames[window.dayOfWeek] + " " + formatTimeRange(window.startTime, window.endTime) + " coverage period", className: "wb-remove", kind: "danger" }}><input type="hidden" name="windowId" value={window.id} /></ActionForm>
                       </div>
                       <details className="wb-quantities" open={window.positionRequirements.some(requirement => positions.some(position => position.id === requirement.positionId && !position.active))}>
-                        <summary><span>Position quantities</span><span className="wb-record__meta">{window.positionRequirements.length ? window.positionRequirements.length + " set" : "Optional"}</span><CaretDownIcon size={18} aria-hidden="true" /></summary>
+                        <summary><span>Position quantities</span><span className="wb-record__meta">{window.positionRequirements.length ? window.positionRequirements.length + " set" : "Optional"}</span><CaretDownIcon size={18} weight="bold" aria-hidden="true" /></summary>
                         <InlineConfigForm action={replaceCoverageWindowPositionRequirementsAction} submit={{ label: "Save quantities", pendingLabel: "Saving…", kind: "secondary" }} successText="Position quantities saved."><input type="hidden" name="windowId" value={window.id} /><PositionQuotaFields positions={positions} requirements={window.positionRequirements} /></InlineConfigForm>
                       </details>
                     </li>

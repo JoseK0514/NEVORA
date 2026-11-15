@@ -24,7 +24,7 @@ export function BlockedOpenShifts({ shifts, availabilityHref = '/app/availabilit
           <time className="blocked-open-date" dateTime={shift.date}><span>{label.weekday}</span><strong>{Number(shift.date.slice(8))}</strong></time>
           <div className="blocked-open-copy">
             <strong>{formatTime(shift.startTime)} <span aria-hidden="true">–</span> {formatTime(shift.endTime)}</strong>
-            <span className="blocked-open-place"><MapPinIcon size={16} aria-hidden="true" />{shift.location}{shift.position ? ` · ${shift.position}` : ''}</span>
+            <span className="blocked-open-place"><MapPinIcon size={16} weight="bold" aria-hidden="true" />{shift.location}{shift.position ? ` · ${shift.position}` : ''}</span>
             <ul className="blocked-open-reasons" aria-label="Why you can’t pick this up">{(shift.reasons ?? []).map(reason => <li key={reason}>{reason}</li>)}</ul>
           </div>
         </li>;

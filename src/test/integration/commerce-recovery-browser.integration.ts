@@ -62,7 +62,7 @@ it('renders actual recovery routes with current sessions, bounded status reads a
     await page.waitForURL(origin+'/app/billing?reason=billing_status_unavailable');
     requests.length=0;
     if(owner){
-     await page.getByText('Billing status is unavailable. Try again in a moment.',{exact:true}).waitFor();
+     await page.getByText('We can’t check billing right now. Try again in a few minutes.',{exact:true}).waitFor();
      expect(await page.locator('.app-shell').count()).toBe(0);expect(await page.locator('[data-commerce-recovery]').count()).toBe(1);
      await page.getByRole('button',{name:'Open billing in Velani',exact:true}).click();await page.getByRole('alert').filter({hasText:'Billing could not be opened'}).waitFor();
      mode='restricted';await page.getByRole('button',{name:'Refresh status',exact:true}).click();await page.getByText('Access paused',{exact:true}).waitFor();expect(await page.getByText('2 / 15',{exact:true}).count()).toBe(1);expect(await page.getByRole('link',{name:'Return to workspace'}).count()).toBe(0);
@@ -72,7 +72,7 @@ it('renders actual recovery routes with current sessions, bounded status reads a
      await page.goBack();await page.waitForURL(origin+'/app/billing?reason=billing_status_unavailable');await page.getByText('Access paused',{exact:true}).waitFor();expect(await page.locator('.app-shell').count()).toBe(0);
      await page.getByRole('button',{name:'Open billing in Velani',exact:true}).focus();expect(await page.getByRole('button',{name:'Open billing in Velani',exact:true}).evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);
      mode='paid';await page.getByRole('button',{name:'Refresh status',exact:true}).click();await page.getByText('Active',{exact:true}).waitFor();expect(await page.getByRole('link',{name:'Return to workspace'}).count()).toBe(1);
-     mode='invalid';await page.getByRole('button',{name:'Refresh status',exact:true}).click();await page.getByText('Billing status is unavailable. Try again in a moment.',{exact:true}).waitFor();expect(await page.getByText('2 / 15',{exact:true}).count()).toBe(0);expect(await page.locator('body').innerText()).not.toContain('must-not-render');
+     mode='invalid';await page.getByRole('button',{name:'Refresh status',exact:true}).click();await page.getByText('We can’t check billing right now. Try again in a few minutes.',{exact:true}).waitFor();expect(await page.getByText('2 / 15',{exact:true}).count()).toBe(0);expect(await page.locator('body').innerText()).not.toContain('must-not-render');
      mode='denied';await page.getByRole('button',{name:'Refresh status',exact:true}).click();await page.getByRole('alert').filter({hasText:'Sign in with the current workplace Owner'}).waitFor();expect(await page.getByRole('button',{name:'Open billing in Velani'}).count()).toBe(0);
      mode='actual';checks.push(engine+': real Owner session, unavailable/handoff failure, bounded presentation fixtures restricted/paid/invalid/revoked, no stale private status');
     }else{

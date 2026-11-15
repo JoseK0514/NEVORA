@@ -35,7 +35,7 @@ it('draws the phone’s first frame as the page’s Direction B hero, checking, 
 });
 it('draws the same pickup operation for the phone screen: a teal Pick up, then its outcome and recovery',()=>{
  const eligible=renderToStaticMarkup(<Pickup look="b" part="action" operation={new PickupOperation('current',2)} onRefresh={()=>{}} canSubmit label="Pick up Fri, Nov 6"/>);
- expect(eligible).toMatch(/class="b-btn b-btn--teal"[^>]*aria-label="Pick up Fri, Nov 6"[^>]*>Pick up</);
+ expect(eligible).toMatch(/class="b-btn b-btn--ghost"[^>]*aria-label="Pick up Fri, Nov 6"[^>]*>Pick up</);
  const operation=new PickupOperation('old-request',1);operation.state.result={status:'conflict'};
  const stale=renderToStaticMarkup(<Pickup look="b" effects={false} operation={operation} onRefresh={()=>{}} canSubmit={false}/>);
  expect(stale).not.toContain('>Pick up<');expect(stale).toContain('Refresh shift options');expect(stale).toContain('b-btn--quiet');

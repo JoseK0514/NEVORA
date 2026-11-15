@@ -158,11 +158,11 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
       {/* Review B5 (NV-259): Phone follows Email's pattern: an Owner edits it on their team page (a chevron); otherwise it is
         read-only and says so with a lock. */}
       <li data-row="phone" style={rowStyle('phone')}>{identity.owner
-        ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`} aria-label="Phone, edit"><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>Not added</span>)}</span><CaretRightIcon className="q-chev" aria-hidden="true" /></Link>
+        ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`} aria-label="Phone, edit"><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>Not added</span>)}</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>
         : <div className="q-row q-row--one"><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>None</span>)}</span><LockSimpleIcon className="q-chev" weight="bold" aria-label="Read-only" /></div>}</li>
       <li data-row="email" style={rowStyle('email')}>{shown && !shown.contact.email && identity.owner
         // Nov 1 upscale: one trailing pattern, label + grey value + chevron (no teal "Add").
-        ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`} aria-label="Email, not added. Add an email"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">Not added</span><CaretRightIcon className="q-chev" aria-hidden="true" /></Link>
+        ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`} aria-label="Email, not added. Add an email"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">Not added</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>
         : <div className="q-row q-row--one"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>None</span>)}</span></div>}</li>
       <li><div className="q-row q-row--one"><span className="q-rt"><b>Time zone</b></span><span className="q-rv q-rv--l">{identity.timeZone.replace(/ time$/, '')}</span></div></li>
     </ul>
@@ -175,14 +175,14 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
           {shown ? shown.alerts.map(topic => <TopicRow key={topic.id} topic={topic} save={saves[topic.id]} on={overrides[topic.id] ?? topic.on} onToggle={ready ? onToggle : undefined} />)
             : <li><p className="q-help" style={{ margin: '0 20px 12px 36px' }}>{read.kind === 'loading' ? 'Checking…' : note}</p>
               {read.kind === 'failed' ? <button type="button" className="q-btn q-btn--sec" aria-busy={retrying || undefined} onClick={() => onRetry('alerts')}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}</li>}
-          <li><Link className="q-row q-row--one" href="/app/notifications" style={{ paddingLeft: 36 }}><span className="q-rt"><b>All notifications</b></span><CaretRightIcon className="q-chev" aria-hidden="true" /></Link></li>
+          <li><Link className="q-row q-row--one" href="/app/notifications" style={{ paddingLeft: 36 }}><span className="q-rt"><b>All notifications</b></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link></li>
         </ul>
         <p className="q-sr" role="status">{announcement}</p>
       </details></li>
       {identity.deviceAlerts
         // Nov 1 upscale: a row like its neighbours (label and chevron; the settings it opens say whether they're on), named
         // for the device in hand: "this phone" on a phone, "this device" on tablets and desktop.
-        ? <li><button type="button" className="q-row q-row--one" id="profile-device-alerts" popoverTarget="portal-device-settings"><span className="q-rt"><b>Alerts on this <span className="pmp-device-phone">phone</span><span className="pmp-device-other">device</span></b></span><CaretRightIcon className="q-chev" aria-hidden="true" /></button></li>
+        ? <li><button type="button" className="q-row q-row--one" id="profile-device-alerts" popoverTarget="portal-device-settings"><span className="q-rt"><b>Alerts on this <span className="pmp-device-phone">phone</span><span className="pmp-device-other">device</span></b></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></button></li>
         : null}
       {accountCards}
     </ul>

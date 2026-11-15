@@ -37,9 +37,9 @@ function BalanceMap({kind,title,prior,entries,change}:{kind:string;title:string;
   <input type="hidden" name={kind+'RowId'} value={row.id}/>
   <label>Balance code<input name={kind+'Code'} value={row.code} required pattern="[A-Z][A-Z0-9_]{0,79}" maxLength={80} onChange={e=>{e.stopPropagation();update(rows.map(r=>r.id===row.id?{...r,code:e.target.value}:r),e.currentTarget.form);}}/></label>
   <label>Documented amount · USD<input name={`${kind}.${row.code}`} value={row.amount} required maxLength={300} onChange={e=>{e.stopPropagation();update(rows.map(r=>r.id===row.id?{...r,amount:e.target.value}:r),e.currentTarget.form);}}/></label>
-  <button type="button" className="pw-icon-button" aria-label={`Remove ${title} row ${i+1}`} onClick={e=>update(rows.filter(r=>r.id!==row.id),e.currentTarget.form)}><TrashIcon size={18} aria-hidden/></button>
+  <button type="button" className="pw-icon-button" aria-label={`Remove ${title} row ${i+1}`} onClick={e=>update(rows.filter(r=>r.id!==row.id),e.currentTarget.form)}><TrashIcon size={18} weight="bold" aria-hidden/></button>
  </div>)}{!rows.length&&<p className="pw-small">No opening entries supplied in this category.</p>}
- <button className="pw-button pw-secondary" type="button" onClick={e=>update([...rows,{id:crypto.randomUUID(),code:'',amount:''}],e.currentTarget.form)}><PlusIcon size={18} aria-hidden/>Add opening entry</button></section>;
+ <button className="pw-button pw-secondary" type="button" onClick={e=>update([...rows,{id:crypto.randomUUID(),code:'',amount:''}],e.currentTarget.form)}><PlusIcon size={18} weight="bold" aria-hidden/>Add opening entry</button></section>;
 }
 export function NativeScopeForm({draft,sources,operation,change}:EditorProps){const scope=draft.scope;const [error,setError]=useState('');const [review,setReview]=useState(draft.scopeFields===null?scope?.review??false:draft.scopeFields.some(([k])=>k==='review'));const [approve,setApprove]=useState(draft.scopeFields===null?scope?.approve??false:draft.scopeFields.some(([k])=>k==='approve'));const permissions=(form:HTMLFormElement|null,nextReview:boolean,nextApprove:boolean)=>{
  setReview(nextReview);setApprove(nextApprove);

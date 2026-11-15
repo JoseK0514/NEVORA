@@ -23,6 +23,8 @@ import { PasswordIcon } from "@phosphor-icons/react/dist/ssr/Password";
 import { CameraIcon } from "@phosphor-icons/react/dist/ssr/Camera";
 import { ArrowCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowCounterClockwise";
 import { CurrencyDollarIcon } from "@phosphor-icons/react/dist/ssr/CurrencyDollar";
+import { CreditCardIcon } from "@phosphor-icons/react/dist/ssr/CreditCard";
+import { commerceEnabled } from "@/lib/commerce/access";
 import type { ReactNode } from "react";
 import "./settings-corp.css";
 
@@ -56,7 +58,7 @@ export default async function SettingsPage() {
   const count = (value: number | null | undefined) => value === null || value === undefined ? undefined : value === 0 ? "None yet" : String(value);
   // Review B1 (NV-247): something waiting ("1 not set up") reads amber; plain counts stay grey.
   // Review B5 (NV-099): every navigation row leads with its Phosphor bold icon in a tinted circle, as on More, Team and Time.
-  const icons: Record<string, ReactNode> = { "/app/settings/workspace": <BuildingsIcon weight="bold" />, "/app/settings/locations": <MapPinIcon weight="bold" />, "/app/settings/branding": <PaintBrushIcon weight="bold" />, "/app/settings/features": <ToggleRightIcon weight="bold" />, "/app/settings/company-policies": <ScrollIcon weight="bold" />, "/app/settings/positions": <BriefcaseIcon weight="bold" />, "/app/settings/breaks": <CoffeeIcon weight="bold" />, "/app/schedule/settings": <CalendarCheckIcon weight="bold" />, "/app/settings/clocker": <DeviceTabletIcon weight="bold" />, "/app/settings/clocker/pins": <PasswordIcon weight="bold" />, "/app/settings/clocker/photos": <CameraIcon weight="bold" />, "/app/clocker-recovery?from=settings": <ArrowCounterClockwiseIcon weight="bold" />, "/app/settings/payroll": <CurrencyDollarIcon weight="bold" /> };
+  const icons: Record<string, ReactNode> = { "/app/settings/workspace": <BuildingsIcon weight="bold" />, "/app/settings/locations": <MapPinIcon weight="bold" />, "/app/settings/branding": <PaintBrushIcon weight="bold" />, "/app/settings/features": <ToggleRightIcon weight="bold" />, "/app/settings/company-policies": <ScrollIcon weight="bold" />, "/app/settings/positions": <BriefcaseIcon weight="bold" />, "/app/settings/breaks": <CoffeeIcon weight="bold" />, "/app/schedule/settings": <CalendarCheckIcon weight="bold" />, "/app/settings/clocker": <DeviceTabletIcon weight="bold" />, "/app/settings/clocker/pins": <PasswordIcon weight="bold" />, "/app/settings/clocker/photos": <CameraIcon weight="bold" />, "/app/clocker-recovery?from=settings": <ArrowCounterClockwiseIcon weight="bold" />, "/app/settings/payroll": <CurrencyDollarIcon weight="bold" />, "/app/billing": <CreditCardIcon weight="bold" /> };
   const row = (href: string, title: string, value?: string | number | null, tone: "soft" | "amber" = "soft") => pathEnabled(href, presentation.modules)
     // Review B5 (NV-247, NV-260): something waiting is an amber chip, not grey or amber text.
     ? <li key={href}><CorpRow href={href} title={title} icon={icons[href]} one value={tone === "amber" || value === null || value === undefined ? undefined : typeof value === "number" ? count(value) : value} valueTone="soft"
@@ -72,6 +74,9 @@ export default async function SettingsPage() {
           {row("/app/settings/branding", "Branding")}
           {row("/app/settings/features", "Features and team terms")}
           {row("/app/settings/company-policies", "Company policies")}
+          {/* Review Nov 14 (AR-13, JR-4): the subscription has a way in while the workplace is in good standing. Only where
+            this deployment has billing on (the page is closed everywhere else). */}
+          {commerceEnabled() ? row("/app/billing", "Plan and billing") : null}
         </CorpRows>
       </CorpCard></CorpSection>
       <CorpSection id="settings-scheduling" label="Scheduling"><CorpCard as="div">

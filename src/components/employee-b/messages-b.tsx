@@ -21,7 +21,7 @@ import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BScreen, BSeg, BStack,
 import type {EmployeeNotificationItem} from '../../lib/employee-view';
 import {notificationKind, type NotificationKind} from '../../lib/notification-labels';
 import type {CommunicationRecoveryState} from '../../lib/communications/recovery';
-import {notificationGroup, type NotificationTab} from '../employee-mobile/notifications-list';
+import {notificationGroup, notificationTitle, type NotificationTab} from '../employee-mobile/notifications-list';
 import {messageTime, type MessageFilter, type ReadyUpdate} from '../employee-mobile/messages-view';
 import {NoHeaderActions} from './account-host';
 import {Dotted} from './parts';
@@ -111,13 +111,15 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
             // Review B1 (NV-142): every item that needs an action is amber, whatever its kind.
             const Icon = kind ? KIND_ICON[kind] : BellIcon, tone: BTone = required ? 'amber' : 'grey';
             const earlier = group.name === 'Earlier', time = clock(item.at, zone);
+            // Inspection Nov 14 (BR-6, EM-005): the title says what happened; the label stays the row's kind (its icon).
+            const title = notificationTitle(item);
             // Review B6 (NV-271): an earlier notice's date is on the right, so its sub-line carries only the time.
             const sub = [required ? 'Action needed' : null, earlier ? time : null].filter(Boolean).join(' · ');
             return <li className="b-li" key={item.id}><Link id={'b-message-' + item.id} className={`b-row b-row--link eb-notif${busy ? ' eb-notif--busy' : ''}`} href={item.href} prefetch={false}
               onClick={event => list.onOpen(event, item.id, item.href)} aria-busy={busy || undefined}
-              aria-label={`${item.label}${isUnread ? ', unread' : ''}${required ? ', action needed' : ''}, ${earlier ? `${longDay(item.at, zone)} · ${time}` : time}`}>
+              aria-label={`${title}${isUnread ? ', unread' : ''}${required ? ', action needed' : ''}, ${earlier ? `${longDay(item.at, zone)} · ${time}` : time}`}>
               <BIcon tone={tone}><Icon weight="bold" /></BIcon>
-              <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.label}</span></span>{sub ? <span className="b-row__s"><Dotted text={sub}/></span> : null}</span>
+              <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{title}</span></span>{sub ? <span className="b-row__s"><Dotted text={sub}/></span> : null}</span>
               <span className="b-row__end eb-when"><span>{earlier ? shortDate(item.at, zone) : time}</span>
                 {busy ? <CircleNotchIcon className="eb-spin" size={16} weight="bold" aria-hidden="true" /> : isUnread ? <i className="eb-unread" aria-hidden="true" /> : null}</span>
               <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" />
@@ -174,8 +176,8 @@ export function EmployeeUpdatesB({list, notice, recovery, returnHref, status, pa
               <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.title}</span><BChip tone="amber">Must read</BChip></span><span className="b-row__s"><Dotted text={`${item.authorContext} · ${longDay(at, list.timeZone)}`} /></span></span></div>
             <p className="eb-upd__body">{item.body}</p>
             <div className="eb-upd__acts">
-              <Link id={'b-message-' + item.id} className="b-btn b-btn--quiet" href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)} aria-label={`Open ${item.title}`}>Open</Link>
-              <BButton kind="teal" onClick={() => list.onConfirm(item)} disabled={list.busy} label={`Acknowledge ${item.title}`}><CheckIcon size={16} weight="bold" aria-hidden="true" />Acknowledge</BButton>
+              <Link id={'b-message-' + item.id} className="b-btn b-btn--quiet b-rowact b-rowact--quiet" href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)} aria-label={`Open ${item.title}`}>Open</Link>
+              <BButton kind="ghost" onClick={() => list.onConfirm(item)} disabled={list.busy} label={`Acknowledge ${item.title}`}><CheckIcon size={16} weight="bold" aria-hidden="true" />Acknowledge</BButton>
             </div>
           </div></li>)}</ul>
         </BCard> : null}

@@ -50,4 +50,21 @@ describe('finder', () => {
     expect(finderItems('MANAGER', undefined, null).some(i => i.href.startsWith('/app/settings/'))).toBe(false);
     expect(rankFinder(owner, '').some(i => i.detail === 'Settings')).toBe(false);
   });
+  // Review Nov 14 (AR-14, AR-15): Search lists Clocker PINs, Punch photos and Payroll settings, named as the Settings hub names them.
+  it('finds Clocker PINs, Punch photos and Payroll settings by their Settings names, for the roles that can open them', () => {
+    const payroll = { enabled: true, canConfigure: true, canReview: true, canApprove: true, internalCalculatorAvailable: false, bankCompatibility: 'UNVERIFIED' as const };
+    const owner = finderItems('OWNER', payroll, null);
+    expect(owner.find(i => i.href === '/app/settings/features')?.label).toBe('Features and team terms');
+    expect(rankFinder(owner, 'clocker pins')[0]).toMatchObject({ href: '/app/settings/clocker/pins', label: 'Clocker PINs', detail: 'Settings' });
+    expect(rankFinder(owner, 'punch photos')[0]).toMatchObject({ href: '/app/settings/clocker/photos', label: 'Punch photos', detail: 'Settings' });
+    expect(rankFinder(owner, 'payroll settings')[0]).toMatchObject({ href: '/app/settings/payroll', label: 'Payroll settings', detail: 'Payroll' });
+    expect(owner.filter(i => i.href === '/app/settings/payroll')).toHaveLength(1);
+    // Listed for a typed query only, like the other Settings pages.
+    expect(rankFinder(owner, '').some(i => i.href.startsWith('/app/settings/'))).toBe(false);
+    // Payroll settings follows payroll setup access; Settings pages stay with Owners.
+    expect(finderItems('OWNER', undefined, null).some(i => i.href === '/app/settings/payroll')).toBe(false);
+    expect(finderItems('OWNER', { ...payroll, canConfigure: false }, null).some(i => i.href === '/app/settings/payroll')).toBe(false);
+    expect(finderItems('MANAGER', payroll, null).some(i => i.href.startsWith('/app/settings/'))).toBe(false);
+    for (const role of ['EMPLOYEE', 'LEAD'] as const) expect(finderItems(role, payroll, null).some(i => i.href.startsWith('/app/settings/'))).toBe(false);
+  });
 });

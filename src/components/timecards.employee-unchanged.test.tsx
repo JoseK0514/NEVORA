@@ -27,7 +27,8 @@ afterEach(()=>{host2.cleanup?.();host2.cleanup=undefined;vi.unstubAllGlobals();v
 const views=[{employeeCorporate:false,signature:false},{employeeCorporate:true,signature:false},{employeeCorporate:false,signature:true},{employeeCorporate:true,signature:true}];
 const fixtures:Record<string,unknown[]>={'no time':[card('E1')],'closed punch with a role':[withEntries('E1',[entry])],'open punch':[withEntries('E1',[open])]};
 // Review B1 (NV-118, Nov 10, 2026): the snapshot was refreshed once for the shell's one icon weight (NavIcon is Phosphor bold
-// by default); only the icon path data changed, every element, class and word is the same.
+// by default); only the icon path data changed, every element, class and word is the same. Refreshed again on Nov 15, 2026
+// for SY-012 (every Phosphor icon draws bold): again only the icon path data differs.
 it('renders every employee Timecards view exactly as before the upscale (UI-9, UX4)',async()=>{
  const out:string[]=[];
  for(const view of views)for(const [name,cards] of Object.entries(fixtures)){

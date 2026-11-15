@@ -332,3 +332,34 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 /* Closing F1 (NV-082): money in ink 600, tabular, at the row's end; a payroll a correction replaced sits under it, indented. */
 :is(#c-root, html) .c-pay .c-row__value--ink { font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; color: var(--c-ink); }
 :is(#c-root, html) .c-pay li.c-pay__replaced > .c-row { padding-left: 44px; }
+
+/* ---- Nov 14, 2026 inspection: payroll scope wording and hand-offs ---- */
+
+/* PY-14: the standing scope line under the Payroll title. On the phone hero it runs the hero's width under the title row;
+ * on tablets and desktop it is the second line of the band's subtitle. */
+:is(#c-root, html) .c-pay .c-pay__scope { display: block; text-wrap: pretty; }
+:is(#c-root, html) .c-pay .c-title__sub > .c-pay__scope { margin-top: 2px; }
+:is(#c-root, html) .c-pay .b-hero > .c-pay__scope--hero { padding: 6px 20px 0; }
+
+/* PY-3: "What’s next" on an approved payroll (Payroll and Payroll details): three plain lines and the scope note. */
+:is(#c-root, html) .c-pay .c-pay__next { padding: 4px 16px 14px; }
+:is(#c-root, html) .c-pay .b-card > .c-pay__next { padding: 2px 18px 16px; }
+:is(#c-root, html) .c-pay .c-pay__next > ul { margin: 0; padding: 0; list-style: none; }
+:is(#c-root, html) .c-pay .c-pay__next li { position: relative; margin: 0; padding: 9px 0 9px 18px; font-size: 15px; line-height: 20px; color: var(--b-ink); text-wrap: pretty; }
+:is(#c-root, html) .c-pay .c-pay__next li + li { box-shadow: inset 0 1px 0 var(--b-line); }
+:is(#c-root, html) .c-pay .c-pay__next li::before { content: ""; position: absolute; left: 2px; top: 16px; width: 6px; height: 6px; border-radius: 50%; background: var(--b-teal); }
+:is(#c-root, html) .c-pay .c-pay__next .c-pay__next-note { margin: 8px 0 0; font-size: 13.5px; line-height: 18px; color: var(--b-grey); }
+
+/* PY-4, PY-9: what approving does and doesn't do, above the Approve button. */
+:is(#c-root, html) .c-pay .c-pay__approve > .c-pay__approve-notes { align-self: stretch; display: flex; flex-direction: column; gap: 4px; }
+:is(#c-root, html) .c-pay .c-pay__approve-notes > p { margin: 0; font-size: 14px; line-height: 20px; color: var(--c-ink2); text-wrap: pretty; }
+
+/* OW-005 / BR-8: the phone card's three steps, also under Up next on tablets and desktop (no button there: the row above
+ * is the step). A done step is the same green tint as on the phone. */
+:is(#c-root, html) .c-pay .c-card > .b-steps.c-pay__steps { padding-top: 6px; padding-bottom: 10px; box-shadow: inset 0 1px 0 var(--b-line); }
+:is(#c-root, html) .c-pay .c-card > .c-pay__steps .b-step--done .b-step__n { background: var(--b-green-50); color: var(--b-green); }
+/* OW-005: while an overdue period leads on the phone, this period's step is a quiet teal link under the steps (44px tall). */
+:is(#c-root, html) .c-pay .b-card .b-steps > .c-pay__steplink { align-self: flex-start; margin: 2px -8px -8px; padding: 0 8px; font-size: 15px; }
+
+/* AR-4: "Who’s included" opens from Payroll's blocker and scrolls clear of the app header. */
+:is(#c-root, html) .c-exp .c-exp__included { scroll-margin-top: 96px; }

@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {filterNotifications,groupNotifications,notificationPresentation} from './notification-inbox-view';
+import {filterNotifications,groupNotifications,notificationPresentation,notificationTitle} from './notification-inbox-view';
 import type {EmployeeNotificationItem} from './employee-view';
 
 const rows:EmployeeNotificationItem[]=[
@@ -31,4 +31,18 @@ it.each(['Can’t-work update','Unable to work update','Callout update'])('prese
 });
 it.each(['Time-off update','Time off update'])('preserves time-off presentation for current and stored label %s',label=>{
  expect(notificationPresentation(label)).toEqual({icon:'timeOff',destination:'Review your time-off request',action:'View request'});
+});
+
+// BR-6 (Nov 14, 2026): a row says what it is about from the fields the list carries.
+it('titles a manager summary by what it gathers, since the list carries no counts or names',()=>{
+ expect(notificationTitle({label:'Operations need review'})).toEqual({title:'Things to do are waiting for you',detail:'Open shifts, requests or missing availability'});
+ expect(filterNotifications([{id:'summary',label:'Operations need review',at:'2026-11-14T12:00:00Z',href:'/app/notifications/open?notificationId=summary'}],'all','things to do').map(row=>row.id)).toEqual(['summary']);
+});
+it('adds the dates a row is about when the list carries them, and never guesses a kind from its words',()=>{
+ expect(notificationTitle({label:'Schedule update',subject:{kind:'scheduleWeek',startDate:'2026-11-09',endDate:'2026-11-15'}})).toEqual({title:'Schedule update',detail:'Week of Nov 9 – 15'});
+ expect(notificationTitle({label:'Time-off update',subject:{kind:'requestDate',startDate:'2026-11-30',endDate:'2026-12-02'}})).toEqual({title:'Time-off update',detail:'Nov 30 – Dec 2'});
+ expect(notificationTitle({label:'Time-off update',subject:{kind:'requestDate',startDate:'2026-11-30',endDate:'2026-11-30'}}).detail).toBe('Nov 30');
+ expect(notificationTitle({label:'Team update',subject:null})).toEqual({title:'Team update',detail:null});
+ expect(notificationTitle({label:'toString'})).toEqual({title:'toString',detail:null});
+ expect(notificationTitle({label:'Operations'})).toEqual({title:'Operations',detail:null});
 });

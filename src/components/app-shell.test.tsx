@@ -197,13 +197,13 @@ it.each(['EMPLOYEE','LEAD'] as const)('push_disabled_profile_and_inbox_accessibl
  const {html}=render(role);expect(html).toContain('href="/app/profile"');expect(html).toContain('href="/app/notifications"');expect(html).not.toContain('portal-device-settings');
 });
 
-// Direction B (Nov 7, 2026): Updates opens from More, which goes back to Home, so the phone lights Home ("current", not this page).
-it.each(['MANAGER','OWNER'] as const)('keeps %s Updates under More, lights Home on the phone, with a pushed page header',role=>{
+// Review Nov 14 (BR-4): Updates opens from More and is not one of the tabs, so the phone lights no tab (it used to light Home).
+it.each(['MANAGER','OWNER'] as const)('keeps %s Updates under More, lights no tab on the phone, with a pushed page header',role=>{
  const {html,mobile}=render(role,'/app/updates/compose');
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
  expect(mobile).not.toContain('href="/app/updates"');
- expect(mobile).toContain('href="/app" class="mobile-nav-link active" aria-current="true"');
- expect(mobile.match(/mobile-nav-link active/g)).toHaveLength(1);
+ expect(mobile).not.toContain('mobile-nav-link active');
+ expect(mobile).not.toContain('aria-current');
  expect(html).not.toContain('data-corp-root=""');
  expect(sidebar).toMatch(/href="\/app\/updates"[^>]*aria-current="true"/);
  expect(sidebar.match(/href="\/app\/updates"/g)).toHaveLength(1);
@@ -237,18 +237,23 @@ it('shows no section tabs on pages outside a shared group',()=>{
  expect(render('OWNER','/app/schedule').html).not.toContain('class="section-tabs"');
 });
 
-// Direction B (Nov 7, 2026): pages opened from the avatar (More, Updates, Profile) and the bell (Notifications) go back to
-// Home, so they light Home, as on the approved boards; Home is "current", not the page itself.
-it.each(['/app/updates/own-update','/app/updates','/app/more','/app/profile','/app/notifications','/app/help'])('lights Home for EMPLOYEE on %s, which opens from the avatar or bell',pathname=>{
+// Review Nov 14 (BR-4): pages opened from the avatar (More, Updates, Profile), the bell (Notifications) and Help are not
+// tabs, so no tab is lit while one is open (they used to light Home).
+it.each(['/app/updates/own-update','/app/updates','/app/more','/app/profile','/app/notifications','/app/help'])('lights no tab for EMPLOYEE on %s, which opens from the avatar or bell',pathname=>{
  const {mobile}=render('EMPLOYEE',pathname);
- expect(mobile).toContain('href="/app" class="mobile-nav-link active" aria-current="true"');
- expect(mobile.match(/mobile-nav-link active/g)).toHaveLength(1);
- expect(mobile).not.toContain('aria-current="page"');
+ expect(mobile).not.toContain('mobile-nav-link active');
+ expect(mobile).not.toContain('aria-current');
 });
-// Direction B for Leads (Nov 8, 2026): Updates opens from More, which goes back to Home, so Home is lit (as for Employees).
-it.each(['LEAD'] as const)('lights Home for the %s Updates destination',role=>{
+// A Lead has the Employee's rule (Direction B, Nov 8, 2026).
+it.each(['LEAD'] as const)('lights no tab for the %s Updates destination',role=>{
  const {mobile}=render(role,'/app/updates/own-update');
- expect(mobile).toContain('href="/app" class="mobile-nav-link active" aria-current="true"');
+ expect(mobile).not.toContain('mobile-nav-link active');
+});
+// Review Nov 14 (BR-4): an Owner's or Manager's More, Insights, Settings, Profile and Notifications light no tab either.
+it.each(['/app/more','/app/reports','/app/settings','/app/settings/locations','/app/profile','/app/notifications'])('lights no tab for OWNER on %s',pathname=>{
+ const {mobile}=render('OWNER',pathname);
+ expect(mobile).not.toContain('mobile-nav-link active');
+ expect(mobile).not.toContain('aria-current');
 });
 it('D1: the desktop top bar shows workspace and page; a primary section has no group name',()=>{
  const {html}=render('OWNER','/app/timecards');
@@ -337,15 +342,15 @@ it.each([['EMPLOYEE','/app/schedule','schedule'],['OWNER','/app/timecards','cloc
 });
 
 // Upscale (Nov 1): the in-app Help page and the signed-in "not found" page belong to no tab or sidebar entry.
-it.each(['OWNER','MANAGER'] as const)('lights Home on a %s phone for Help, with no sidebar entry',role=>{
+it.each(['OWNER','MANAGER'] as const)('lights no tab on a %s phone for Help, with no sidebar entry',role=>{
  const {html,mobile}=render(role,'/app/help');
- expect(mobile).toContain('href="/app" class="mobile-nav-link active" aria-current="true"');
+ expect(mobile).not.toContain('mobile-nav-link active');
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
  expect(sidebar).not.toContain('nav-link active');
 });
 it.each(['EMPLOYEE','LEAD','OWNER','MANAGER'] as const)('lights no %s tab or sidebar entry on Help or an unknown address',role=>{
- // Help lights Home on every role's phone (it opens from More; Leads too since Nov 8, 2026); an unknown address lights nothing.
- for(const pathname of ['/app/no-such-page','/app/nothing/here']){
+ // Review Nov 14 (BR-4): Help lights no tab on any role's phone, like an unknown address.
+ for(const pathname of ['/app/help','/app/no-such-page','/app/nothing/here']){
   const {html,mobile}=render(role,pathname);
   expect(mobile).not.toContain('mobile-nav-link active');
   expect(mobile).not.toContain('aria-current');

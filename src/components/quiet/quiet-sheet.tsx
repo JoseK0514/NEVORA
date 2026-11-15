@@ -166,7 +166,7 @@ export function SheetRow({ title, detail, value, sheetTitle, anchor, avatar, sta
       {avatar ? <span className="q-av" aria-hidden="true">{avatar}</span> : null}
       <span className="q-rt"><b>{title}</b>{detail ? <i>{detail}</i> : null}</span>
       {value ? <span className="q-rv">{value}</span> : null}
-      <CaretRightIcon className="q-chev" aria-hidden="true" />
+      <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
     </button>
     <QuietSheet open={open} label={sheetTitle} onClose={() => {
       setOpen(false);

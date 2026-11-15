@@ -44,7 +44,7 @@ export function ShiftSheetRow({shift, href, closeHref, title, detail, initiallyO
       setOpen(true);
     }}>
       <span className="q-rt"><b>{title}</b><i>{detail}</i></span>
-      <CaretRightIcon className="q-chev" aria-hidden="true"/>
+      <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/>
     </Link>
     <QuietSheet open={open} labelledBy={`shift-${shift.id}-title`} onClose={() => {
       setOpen(false);
@@ -62,9 +62,9 @@ export function ShiftSheetRow({shift, href, closeHref, title, detail, initiallyO
       {shift.canSwap || shift.canReport ? <>
         <div className="q-grp"><h2>Change this shift</h2></div>
         <ul className="q-list" onClick={event => { if ((event.target as HTMLElement).closest('a')) setOpen(false); }}>
-          {shift.canSwap ? <li><Link className="q-row q-row--one" href={`/app/exchange/swap?sourceShiftId=${id}`}><span className="q-row__ic" aria-hidden="true"><ArrowsLeftRightIcon className="q-ic"/></span><span className="q-rt"><b>Swap with a teammate</b></span><CaretRightIcon className="q-chev" aria-hidden="true"/></Link></li> : null}
-          {shift.canSwap ? <li><Link className="q-row q-row--one" href={`/app/exchange/swap?sourceShiftId=${id}&mode=cover`}><span className="q-row__ic" aria-hidden="true"><HandCoinsIcon className="q-ic"/></span><span className="q-rt"><b>Offer it for cover</b></span><CaretRightIcon className="q-chev" aria-hidden="true"/></Link></li> : null}
-          {shift.canReport ? <li><Link className="q-row q-row--one q-row--danger" href={`/app/exchange/callout?shiftId=${id}`}><span className="q-row__ic" aria-hidden="true"><CalendarXIcon className="q-ic"/></span><span className="q-rt"><b>Can’t work this shift</b></span><CaretRightIcon className="q-chev" aria-hidden="true"/></Link></li> : null}
+          {shift.canSwap ? <li><Link className="q-row q-row--one" href={`/app/exchange/swap?sourceShiftId=${id}`}><span className="q-row__ic" aria-hidden="true"><ArrowsLeftRightIcon weight="bold" className="q-ic"/></span><span className="q-rt"><b>Swap with a teammate</b></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></Link></li> : null}
+          {shift.canSwap ? <li><Link className="q-row q-row--one" href={`/app/exchange/swap?sourceShiftId=${id}&mode=cover`}><span className="q-row__ic" aria-hidden="true"><HandCoinsIcon weight="bold" className="q-ic"/></span><span className="q-rt"><b>Offer it for cover</b></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></Link></li> : null}
+          {shift.canReport ? <li><Link className="q-row q-row--one q-row--danger" href={`/app/exchange/callout?shiftId=${id}`}><span className="q-row__ic" aria-hidden="true"><CalendarXIcon weight="bold" className="q-ic"/></span><span className="q-rt"><b>Can’t work this shift</b></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></Link></li> : null}
         </ul>
         <p className="q-help">It stays your shift until a swap completes or your manager approves your request.</p>
       </> : null}

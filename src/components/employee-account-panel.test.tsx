@@ -43,7 +43,9 @@ it('gives Owners and Managers Quiet rows with All and Unread and no Mark read bu
 it('keeps the filters and offers Try again or Sign in when a read fails or the session ends',()=>{
  const failed=renderToStaticMarkup(<EmployeeAccountView kind="notifications" state={{snapshot:{state:'unavailable',reason:'read_failed'},paused:false,refreshing:false}} onRetry={()=>{}} onMarkRead={async()=>{}}/>);
  expect(failed).toContain('Filter notifications');// Review B2 (NV-012): online, the failure doesn't blame the connection.
- expect(failed).toContain('Notifications didn’t load');expect(failed).toMatch(/<button type="button" class="q-btn q-btn--sec">Try again<\/button>/);
+ expect(failed).toContain('Notifications didn’t load');
+ // Phase 2 (package D): the kit's state card, with its one teal pill.
+ expect(failed).toContain('<div class="b-statecard" data-kind="failed" role="status">');expect(failed.match(/>Try again<\/button>/g)).toHaveLength(1);expect(failed).toMatch(/<button class="b-btn b-btn--teal" type="button">Try again<\/button>/);
  const denied=renderToStaticMarkup(<EmployeeAccountView kind="notifications" state={{snapshot:{state:'unavailable',reason:'access_denied'},paused:false,refreshing:false}} onRetry={()=>{}} onMarkRead={async()=>{}}/>);
- expect(denied).toContain('Filter notifications');expect(denied).toContain('<a class="q-btn q-btn--sec" href="/login">Sign in</a>');expect(denied).not.toContain('Try again');
+ expect(denied).toContain('Filter notifications');expect(denied).toMatch(/<a [^>]*class="b-btn b-btn--teal"[^>]*>Sign in<\/a>/);expect(denied).toContain('href="/login"');expect(denied).not.toContain('Try again');
 });

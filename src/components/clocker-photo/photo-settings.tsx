@@ -68,7 +68,7 @@ export function ClockerPhotoSettings({initialPolicy,saveAction,readAction,childr
         <div className="c-field c-photos__keep"><label className="c-field__label" htmlFor="photo-retention-days">Keep photos for</label>
           <span className="c-photos__days"><input id="photo-retention-days" className="c-in" aria-describedby="photo-retention-help" type="number" min={1} max={30} step={1} inputMode="numeric" enterKeyHint="done" value={draft.retentionDays} onChange={e=>setDraft({...draft,retentionDays:e.target.value})}/><span aria-hidden="true">days</span></span>
           <span id="photo-retention-help" className="c-field__help">1 to 30 days. Shortening it deletes older photos.</span></div>
-        <details className="c-photos__more"><summary className="c-row c-row--one"><span className="c-row__main"><span className="c-row__title">When a photo is missing</span></span><CaretDownIcon className="c-chev c-photos__caret" aria-hidden="true"/></summary>
+        <details className="c-photos__more"><summary className="c-row c-row--one"><span className="c-row__main"><span className="c-row__title">When a photo is missing</span></span><CaretDownIcon weight="bold" className="c-chev c-photos__caret" aria-hidden="true"/></summary>
           <div className="c-photos__moretext"><p>The clock-in or clock-out still counts if someone declines the photo or the camera fails. They can ask for help and carry on.</p><p>Only an Owner can see photos. The tablet takes one photo for that moment. It never records video or recognizes faces.</p></div></details>
       </fieldset>
       <ReturnToNext/>
