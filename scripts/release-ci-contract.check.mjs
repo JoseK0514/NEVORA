@@ -266,10 +266,11 @@ test('independent Attendance stages retain fatal outcomes and run after earlier 
  assert.match(steps.find(step=>step.name==='Verify whole-phase SHA and mandatory UX evidence').run,/report\.errors\.length/);
  assert.match(steps.find(step=>step.name==='Verify remediation SHA-bound evidence').run,/r\.runtimeErrors/);
 });
-test('Clocker rendering controls run before the unchanged authenticated regression and retain their receipt',()=>{
+test('Clocker journal and rendering controls run before the unchanged authenticated regression and retain their receipts',()=>{
  const steps=workflow.jobs['phase-d-browser-suite'].steps;
  const step=steps.find(value=>value.name==='Existing Clocker lifecycle and recovery browser regression');
  assert.deepEqual(step.run.trim().split('\n'),[
+  'node scripts/clocker-journal-lifecycle.check.mjs',
   'node scripts/clocker-break-filter-readiness.check.mjs',
   'node scripts/phase-c-clocker-postgres.mjs --punch-ui',
  ]);
