@@ -39,6 +39,15 @@ it('clears local credentials immediately on sign out while attempting only the o
 });
 it('disposes a held exchange without accepting the late credential',async()=>{const f=fixture();let release!:(r:Response)=>void;f.transport.mockImplementationOnce(()=>new Promise<Response>(resolve=>{release=resolve;}));const request=f.client.enter(proof);f.client.dispose();release(json({accessToken:token,expiresIn:28800}));expect(await request).toBe('unavailable');expect(f.client.hasSession()).toBe(false);expect(f.client.hasPending()).toBe(false);});
 it('projects authoritative plans and current workplace status without caller selectors',()=>{expect(parseBillingCatalog(catalog)).toEqual(catalog);expect(parseCentralStatus({...status,customerId:'private-provider-id'})).not.toHaveProperty('customerId');expect(()=>parseCentralStatus({...status,timeZone:'not-a-zone'})).toThrow();expect(()=>parseBillingCatalog({...catalog,plans:[catalog.plans[0],catalog.plans[0]]})).toThrow();});
+it('preserves an unfamiliar subscription status as read-only when the server disables billing actions',()=>{
+ expect(parseCentralStatus({...status,subscriptionStatus:'unknown-provider-state',billingAction:null})).toMatchObject({state:'paid',subscriptionStatus:'unknown-provider-state',billingAction:null});
+});
+it.each(['checkout','portal'])('rejects an unfamiliar provider status with an actionable %s destination',billingAction=>{
+ expect(()=>parseCentralStatus({...status,subscriptionStatus:'unknown-provider-state',billingAction})).toThrow();
+});
+it.each([['active'],{},'',123,'x'.repeat(101),'active\n'].map(subscriptionStatus=>({subscriptionStatus})))('rejects a malformed subscription status',({subscriptionStatus})=>{
+ expect(()=>parseCentralStatus({...status,subscriptionStatus,billingAction:null})).toThrow();
+});
 
 it('refuses selector-bearing handoffs and removes query and fragment material from the address bar',()=>{for(const search of ['?handoff='+proof,'?customer=fictional','?lang=es']){const scrub=vi.fn();expect(takeBillingFragment({hash:'#handoff='+proof,pathname:'/pages/plans',search},scrub)).toBeNull();expect(scrub).toHaveBeenCalledExactlyOnceWith('/pages/plans');}});
 it('retires a durably recorded final refusal but retains unknown and conflicting operations',async()=>{const f=fixture();await f.client.enter(proof);f.transport.mockResolvedValueOnce(json({error:{code:'subscription_required',operationState:'refused'}},409));expect(await f.client.action('portal','en')).toEqual({kind:'refused'});expect(f.client.hasPending()).toBe(false);});

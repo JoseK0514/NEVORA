@@ -29,7 +29,13 @@ export function parseBillingCatalog(value:unknown):BillingCatalog{
 export function parseCentralStatus(value:unknown):CentralStatus{
  const status=parseCommerceStatus(value);if(!object(value))throw Error('Invalid status');
  const billingAction=value.billingAction??null;
- if(value.subscriptionStatus!==undefined&&value.subscriptionStatus!==null&&!['active','trialing','past_due','unpaid','incomplete','incomplete_expired','canceled','paused'].includes(String(value.subscriptionStatus)))throw Error('Invalid subscription status');
+ const subscriptionStatus=value.subscriptionStatus;
+ if(subscriptionStatus!==undefined&&subscriptionStatus!==null){
+  if(typeof subscriptionStatus!=='string'||!subscriptionStatus.length||subscriptionStatus.length>100||subscriptionStatus.trim()!==subscriptionStatus||/[\u0000-\u001f\u007f]/.test(subscriptionStatus))throw Error('Invalid subscription status');
+  // Preserve an opaque future provider fact only when the authoritative API
+  // has disabled financial actions. Never invent a payable state from it.
+  if(!['active','trialing','past_due','unpaid','incomplete','incomplete_expired','canceled','paused'].includes(subscriptionStatus)&&billingAction!==null)throw Error('Unknown actionable subscription status');
+ }
  if(billingAction!==null&&billingAction!=='checkout'&&billingAction!=='portal')throw Error('Invalid billing action');
  if(value.businessName!==null&&(typeof value.businessName!=='string'||value.businessName.length>200))throw Error('Invalid workplace');
  let applicationUrl:string|null=null;

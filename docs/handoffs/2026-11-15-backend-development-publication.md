@@ -40,7 +40,7 @@ to a qualified candidate merely to restate its own SHA.
 
 ## Integration corrections found by candidate CI
 
-The first candidate, `600aafeffd1f2424365a46ea1360b0c2f4db43c0`, exposed four
+The first candidate, `600aafeffd1f2424365a46ea1360b0c2f4db43c0`, exposed five
 failing suites in [CI run 43746734385](https://github.com/JoseK0514/NEVORA/actions/runs/43746734385).
 The failed run, downloaded failure artifacts and local RED logs are retained.
 No failure was waived or assertion weakened.
@@ -59,8 +59,18 @@ No failure was waived or assertion weakened.
   that blocks both session readers while replacement is required, then admits
   the same company after completion. Another new calendar test verifies the
   corresponding refusal and recovery without creating a subscription while blocked.
+- The billing DTO parser rejected a future provider status even though the API
+  correctly returned `billingAction=null`. The parser now preserves a bounded
+  primitive status only in that non-actionable state; unknown actionable states,
+  malformed values and coercible arrays remain refused. The new unit cases
+  reproduced the failure before the fix; all 32 billing-client tests pass.
 
-These corrections affect one server module and four integration fixtures. They
+The complete owned onboarding suite passed all 251 tests on PostgreSQL 16.15.
+Earlier local restore attempts lacked dump clients or paired a version-16 client
+with a version-17 server; those failures were retained and corrected by selecting
+the matching existing version-16 server/client runtime, without changing a test.
+
+These corrections affect two server/data modules and five integration/unit files. They
 do not change the public interface, company grants, schema defaults or Claude's
 UI. Whole-suite and exact-source CI qualification still apply to the replacement
 candidate; the first candidate's passing jobs are not substituted for that gate.
