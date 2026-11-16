@@ -6,6 +6,7 @@ import { formatRecordedHours } from "@/lib/timecards/project";
 import type { readPeriodClose, MemberReview } from "@/lib/period-close/service";
 import { MobileHomeDisclosure } from "./mobile-home-disclosure";
 import { payrollReviewIssues, payrollReviewState } from "./payroll-review-copy";
+import { PeriodCloseHistory } from "./period-close-history";
 type Review = Awaited<ReturnType<typeof readPeriodClose>>;
 type PendingCommand = { action: string; command: unknown };
 type Props={period:Period;actorId:string};
@@ -430,10 +431,11 @@ function PeriodCloseView({period,actorId}:Props) {
                   No connected provider verifies import or payroll processing.
                 </p>
               </form>
-              <h4>Artifact and handoff history</h4>
+              <h4>Latest artifact and handoff events</h4>
+              <p>{m.eventCoverage.returnedEvents} of {m.eventCoverage.totalEvents} events in this summary. {m.eventCoverage.complete ? 'All events for this manifest are shown.' : 'Latest event of each kind only. Load full period history below for older events.'}</p>
               <ul>
-                {m.events.map((event, i) => (
-                  <li key={i}>
+                {m.events.map((event) => (
+                  <li key={event.id}>
                     {event.kind.replaceAll("_", " ")} · {event.createdAt} ·
                     actor {event.actorId}
                     {event.payload.destination && (
@@ -454,6 +456,7 @@ function PeriodCloseView({period,actorId}:Props) {
               </ul>
             </article>
           ))}
+          {review.manifests.length > 0 && <PeriodCloseHistory period={period} actorId={actorId} />}
         </div>
       )}
       </MobileHomeDisclosure>

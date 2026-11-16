@@ -14,6 +14,7 @@ vi.mock('react', async original => ({ ...await original<Record<string, unknown>>
   return hooks.slots[index];
 } }));
 import { ConfigurationForm, type ConfigurationResult } from './configuration-form';
+import { ShiftReviewRecovery } from './shift-review-recovery';
 
 const NativeFormData = FormData;
 beforeEach(() => {
@@ -23,9 +24,9 @@ beforeEach(() => {
   });
 });
 afterEach(() => vi.unstubAllGlobals());
-function mount(action: (data: FormData) => Promise<ConfigurationResult>, reviewedUpdatedAt: string) {
+function mount(action: (data: FormData) => Promise<ConfigurationResult>, reviewedUpdatedAt: string, reviewedShiftVersion?: string) {
   hooks.index = 0;
-  return (ConfigurationForm as (props: { action: typeof action; children: ReactNode; reviewedUpdatedAt: string }) => ReturnType<typeof ConfigurationForm>)({ action, children: null, reviewedUpdatedAt });
+  return (ConfigurationForm as (props: { action: typeof action; children: ReactNode; reviewedUpdatedAt: string; reviewedShiftVersion?: string }) => ReturnType<typeof ConfigurationForm>)({ action, children: null, reviewedUpdatedAt, reviewedShiftVersion });
 }
 async function submit(form: ReturnType<typeof ConfigurationForm>, refreshedVersion: string) {
   const data = new NativeFormData(); data.set('expectedUpdatedAt', refreshedVersion); data.set('firstName', 'Retained dirty draft');
@@ -46,4 +47,15 @@ it('only this form successful exact returned revision advances consecutive saves
   await submit(mount(action, 'reviewed.123456'), 'reviewed.123456');
   await submit(mount(action, 'another-manager.123459'), 'another-manager.123459');
   expect(sent).toEqual(['reviewed.123456', 'own.123457']);
+});
+
+it('shift retries retain the originally reviewed fingerprint through unrelated prop refreshes', async () => {
+  const sent: string[] = [];
+  const action = async (data: FormData) => { sent.push(String(data.get('expectedReviewVersion'))); return { error: 'Shift changed. Keep your draft.', issueCode: 'SHIFT_REVIEW_CONFLICT' }; };
+  mount(action, 'profile-version', 'a'.repeat(64));
+  await submit(mount(action, 'profile-version', 'b'.repeat(64)), 'unused');
+  await submit(mount(action, 'profile-version', 'c'.repeat(64)), 'unused');
+  expect(sent).toEqual(['a'.repeat(64), 'a'.repeat(64)]);
+  const form = mount(action, 'profile-version', 'c'.repeat(64));
+  expect(form.props.children.some((child: unknown) => child && typeof child === 'object' && 'type' in child && child.type === ShiftReviewRecovery)).toBe(true);
 });

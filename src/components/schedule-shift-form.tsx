@@ -52,6 +52,7 @@ export type ScheduleShiftFormProps = {
   notes?: string;
   /** Hidden fields the action reads (shiftId, weekStart). */
   hidden: Record<string, string>;
+  reviewedShiftVersion?: string;
   cancelHref: string;
   /** Edit: a line above the fields (the held edit's "Was 12:00 PM – 8:00 PM"). */
   status?: ReactNode;
@@ -101,7 +102,7 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
         : <h1 className="c-shift__title">{title}</h1>}
       <button type="submit" form={formId} className="c-shift__save c-only-phone" disabled={!!props.blocked}>Save</button>
     </header>
-    <ConfigurationForm action={props.action} id={formId} className="c-shift__form">
+    <ConfigurationForm action={props.action} reviewedShiftVersion={props.reviewedShiftVersion} id={formId} className="c-shift__form">
       {Object.entries(props.hidden).map(([field, value]) => <input key={field} type="hidden" name={field} value={value} />)}
       {props.blocked ? <p className="c-shift__alert" role="alert">{props.blocked}</p> : null}
       {props.error ? <div className="c-shift__alert" role="alert"><b>{props.error.title}</b><span>{props.error.body}</span></div> : null}
