@@ -12,7 +12,7 @@ import {Client} from 'pg';
 import {randomUUID,createHash} from 'node:crypto';
 import {hashPassword} from '../src/lib/auth/password.ts';
 import {seedOwnedScenario,seedOwnedScenarioOwner,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
-import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
+import {ensureSchedule,publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
 import {ownedBusinessWeek} from './owned-browser-calendar.mjs';
 
 // Corporate Employee Home (approved Oct 26): the shift card is the CorpCard #home-shift, labelled by its own header.
@@ -466,8 +466,11 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  // The ongoing shift can start Sunday while this read runs Monday. Publish the
  // actual current week too before asserting complete current-week coverage.
  const [publicationClock]=await q('SELECT clock_timestamp()::text AS "observedAt"');
- for(const weekStart of new Set([clock.week,scenario.week,ownedBusinessWeek(publicationClock.observedAt)]))
-  await publishScheduleWithRevision({locationId:'loc-1',weekStart,managerId:'QAOWNER'},app.database.executor);
+ for(const weekStart of new Set([clock.week,scenario.week,ownedBusinessWeek(publicationClock.observedAt)])){
+  await ensureSchedule({locationId:'loc-1',weekStart,createdBy:'QAOWNER'},app.database.executor);
+  const publication=await publishScheduleWithRevision({locationId:'loc-1',weekStart,managerId:'QAOWNER'},app.database.executor);
+  assert.equal(publication.published,true,'Complete-source Home fixture requires an actual published schedule');
+ }
  await refresh();await next().getByText('No upcoming shift. New shifts show here once they’re published.',{exact:true}).waitFor();assert.equal(await assignments().count(),0);assert.equal(await page.getByText('On shift now',{exact:true}).count(),0);assert.equal(await allSet().count(),0);await shot('empty');checks.push('H12 actual held edit stays invisible until published; then the no-future-assignment state uses precise empty copy and incomplete publication/other attention prevents all-clear');
  stage='last-shift-removal';
  // The removal was published in the empty stage (held edits publish together); this is its current review.
