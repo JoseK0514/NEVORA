@@ -207,12 +207,12 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   assert(managerFocus.active);assert.equal(managerFocus.outlineStyle,'solid');assert(parseFloat(managerFocus.outlineWidth)>=2);observations.keyboard.push({role:'manager',focus:managerFocus});
 
   // Cleared states use real lifecycle events and preserve the authoritative count.
-  stage='offline';phase='offline';await owner.setOffline(true);await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('offline','.portal-route-state');await shots(mp,'.portal-route-state','offline');
+  stage='offline';phase='offline';await owner.setOffline(true);await mp.evaluate(()=>{window.dispatchEvent(new Event('offline'));window.dispatchEvent(new Event('blur'));});await mp.getByRole('heading',{name:'You’re offline',exact:true}).waitFor();await safePause('offline','.c-route-state [data-b-state]');await shots(mp,'.c-route-state [data-b-state]','offline');
   await owner.setOffline(false);await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();phase='normal';checked(`${engine}: offline → online protected refresh`);
-  stage='pagehide-pageshow';await mp.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('pagehide','.portal-route-state');
+  stage='pagehide-pageshow';await mp.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('pagehide','.c-route-state [data-b-state]');
   await mp.evaluate(()=>window.dispatchEvent(new Event('pageshow')));await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   stage='hidden-visible';await mp.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'));});
-  await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('hidden','.portal-route-state');
+  await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('hidden','.c-route-state [data-b-state]');
   await mp.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'visible'});document.dispatchEvent(new Event('visibilitychange'));});
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
 

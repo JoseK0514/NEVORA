@@ -108,6 +108,10 @@ it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned 
               url,
               message,
             });
+          const pageNavigations=new WeakMap();
+          const observedPages=[page];
+          const instrumentPage=(observedPage:typeof page)=>{
+            const page=observedPage;
           const navigation = observeDocumentNavigation(page, () => origin,{allowSameUrlReload:reloadProbe?.verified===true});
           const knownPath = (value: string) => {
             try {
@@ -116,10 +120,6 @@ it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned 
                 ? url.pathname : "other";
             } catch { return "unavailable"; }
           };
-          if(navigationProbe?.verified!==true&&reloadProbe?.verified!==true)await observeWindowExceptions(context, (_page: unknown, kind: string) =>{
-            record("window:" + kind, knownPath(page.url()), JSON.stringify(navigation.snapshot()));
-            runtimeErrors.push({type:'window-javascript-error',engine,actor,kind});
-          });
           page.on("request", (request: { url(): string; method(): string; isNavigationRequest(): boolean; frame(): unknown; headers(): Record<string, string> }) => {
             const path = knownPath(request.url());
             if (request.isNavigationRequest() && request.frame() === page.mainFrame())
@@ -170,6 +170,13 @@ it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned 
               engine + ":" + actor + ":" + page.url() + ":" + error.message,
             );
           });
+            pageNavigations.set(page,navigation);
+          };
+          instrumentPage(page);
+          if(navigationProbe?.verified!==true&&reloadProbe?.verified!==true)await observeWindowExceptions(context, (observedPage:{url():string}, kind: string)=>{
+            record("window:"+kind,new URL(observedPage.url()).pathname,JSON.stringify(pageNavigations.get(observedPage)?.snapshot()??null));
+            runtimeErrors.push({type:'window-javascript-error',engine,actor,kind});
+          });
           try {
             await page.goto(origin + "/login");
             await page.getByLabel("Employee ID", { exact: true }).fill(actor);
@@ -191,8 +198,10 @@ it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned 
                   .getByRole("link", { name: "AI manager", exact: true })
                   .count(),
               ).toBe(0);
-              await page.goto(origin + "/app/ai-manager");
-              expect(await page.getByLabel("Your question").count()).toBe(0);
+              const denialPage=await context.newPage();observedPages.push(denialPage);instrumentPage(denialPage);
+              await denialPage.goto(origin + "/app/ai-manager");
+              expect(await denialPage.getByLabel("Your question").count()).toBe(0);
+              expect(await page.getByRole("link",{name:"AI manager",exact:true}).count()).toBe(0);
               const api = await context.request.get(
                 origin + "/api/owner/advisor",
                 { headers: { "x-nevora-owner-advisor": "1" } },
@@ -630,7 +639,7 @@ it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned 
           } finally {
             phase = "teardown";
             cell.setPhase('context-close');
-            await page.evaluate(() =>
+            for(const observedPage of observedPages)await observedPage.evaluate(() =>
               window.dispatchEvent(new Event("pagehide")),
             );
             // Context close drains canceled reads; pagehide deliberately pauses the bell.

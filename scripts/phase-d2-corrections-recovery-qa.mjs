@@ -133,7 +133,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
     // B7 wording (NV-020): the unknown-outcome notice is plain language now.
     await page.getByText('We couldn’t confirm your decision. Try again; it won’t be applied twice.',{exact:true}).waitFor();
     await c.setOffline(true);
-    await page.evaluate(()=>{window.dispatchEvent(new Event('offline'));window.dispatchEvent(new Event('blur'));});await page.getByRole('heading',{name:'View paused',exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);assert.equal(await page.locator('.manager-correction-row').count(),0);
+    await page.evaluate(()=>{window.dispatchEvent(new Event('offline'));window.dispatchEvent(new Event('blur'));});await page.getByRole('heading',{name:'You’re offline',exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);assert.equal(await page.locator('.manager-correction-row').count(),0);
     await c.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));
     const ready=await c.request.get(app.url+'/api/manager/time-corrections',{headers});
     assert.equal((await ready.json()).requests.some(item=>item.id===pending.requestId),loss==='before');
