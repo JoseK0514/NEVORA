@@ -245,7 +245,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    await page.goBack();await page.waitForURL(u=>u.pathname===moreFrom);await settle();
    checks.push('More page reached by native Enter with explicit row order; Back returns');
   }else{await nav('/app/profile',true);checks.push('Native keyboard desktop account-menu Profile navigation and focus handoff');}
-  stage='layout';await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);assert.equal(await page.locator('main a[href="/app/profile/device-alerts"]').count(),0,'Profile offers no device alerts while the workplace has none');await bounds();await screenshot('profile');await accessibility('Profile');
+  stage='layout';await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);const profileAlerts=page.locator('main a[href="/app/profile/device-alerts"]');assert.equal(await profileAlerts.count(),actualRole==='LEAD'?1:0,'Only the current Lead profile supplies the Calendar and alerts entry');assert.equal(await profileAlerts.filter({visible:true}).count(),actualRole==='LEAD'&&width>=768?1:0,'The Lead entry is visible only in the desktop/tablet card; its destination still reports disabled workplace alerts');await bounds();await screenshot('profile');await accessibility('Profile');
   // Board E-Profile: device alerts are their own page (opened from Notifications' Settings when the workplace has alerts).
   // With push off it says so and keeps notifications in NEVORA.
   await page.goto(app.url+'/app/profile/device-alerts');await settle();
