@@ -209,3 +209,24 @@ Checks: `tsc` and `eslint` clean; 43 files, 411 tests pass; weekly browser pass 
   exhausted, complete). Browser (mocked API): `w8-partialInfo-options-390` and `w8-exhausted-options-390`.
 - Checks: `tsc` and `eslint` clean; 43 files, 414 tests pass; weekly browser pass: all flows, 32 measured screens, no
   overflow or clipping, no page errors. Local and unpushed.
+
+## Axe back-link contrast at 768px (Nov 16, 2026, Codex real-API QA on 9ba86c4d)
+
+Codex's axe run reported `.c-nav__back` at 1.08:1 (`#fdfefd` on `#f2f5f4`) at 768px. Investigated before changing any
+design; Codex's failure evidence is untouched.
+
+- **Not specific to the Rondo screens.** The same axe rule reports the identical 1.08:1 on the band back link of every
+  approved pushed page checked (Company profile `.q-nav__l`, a person's page, Positions, Help) at 768, 1024 and 1440px,
+  and on the knowledge and weekly pages alike. Phones pass because their hero is a real background.
+- **Cause.** From 768px the teal band is painted with `border-image` on the page title; the back link's own ancestors
+  (`.c-nav`, `.c-page`, `main.page-frame`) report transparent or the canvas `#f2f5f4`, so axe compares white with the
+  grey canvas. It is the same row at the same height whatever the scroll or resize state, so it isn't transient.
+- **Real contrast.** Sampled from the rendered pixels right of the link: band `rgb(12,114,108)` (`#0C726C`), text
+  `rgba(255,255,255,.86)` composites to `rgb(221,235,234)`: **4.71:1**, above AA 4.5:1, on the weekly page and on the
+  approved references at 768 and 1440 alike (matches DESIGN.MD's "4.7:1 at the lightest stop").
+- **No UI change made.** A per-page patch would diverge from the approved pages. If a clean automated axe result is
+  wanted, the fix belongs in the shared band layer (paint `--b-band-solid` as a real background behind the band's back
+  link row, as DESIGN.MD B1 already intends for border-image bands), checked across all pushed pages; that is a shared
+  shell decision, not part of this slice. The top bar's `⌘K` hint (3.55:1) is also shared shell, not Rondo.
+
+UI source for QA remains `ddcc2194`; this entry is documentation only.
