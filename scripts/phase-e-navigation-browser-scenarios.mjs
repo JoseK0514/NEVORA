@@ -251,17 +251,18 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   await page.goto(app.url+'/app/profile/device-alerts');await settle();
   // DirectionB supplies the visible phone screen; the original device card is
   // retained for the layout that shows it. Never measure its hidden duplicate.
-  const alerts=page.locator('.b-screen:has(#b-alerts-title):visible, [data-device-state="disabled"]:visible');await alerts.waitFor();assert.equal(await alerts.count(),1,'Exactly one disabled-alert presentation is visible');
+  const alerts=page.locator('main .b-screen:has(#b-alerts-title):visible, main .em-device[data-device-state]:visible');await alerts.waitFor();assert.equal(await alerts.count(),1,'Exactly one disabled-alert presentation is visible');
   if(await alerts.evaluate(node=>node.classList.contains('b-screen'))){
    await alerts.getByText('Your workplace hasn’t turned on device alerts',{exact:true}).waitFor();assert(await alerts.getByText('Unavailable',{exact:true}).isVisible());assert(await alerts.getByText('Your notifications always stay in NEVORA, and your phone’s settings can turn off every alert.',{exact:true}).isVisible());
-  }else{await alerts.getByText('Workplace alerts are unavailable',{exact:true}).waitFor();assert(await alerts.getByText('Your workplace has not made device alerts available. Your notifications remain in NEVORA.',{exact:true}).isVisible());}
-  assert.equal(await alerts.getByRole('button',{name:/^(Turn on alerts|Turn off alerts|Test notification|Review setup)$/}).count(),0,'Disabled workplace alerts offer no enrollment, send or removal action');
+  }else{assert.equal(await alerts.getAttribute('data-device-state'),'disabled');await alerts.getByText('Workplace alerts are unavailable',{exact:true}).waitFor();assert(await alerts.getByText('Your workplace has not made device alerts available. Your notifications remain in NEVORA.',{exact:true}).isVisible());}
+  assert.equal(await alerts.getByRole('button').filter({visible:true}).count(),0,'Disabled workplace alerts offer no enrollment, send or removal action');
   checks.push('Actual visible disabled-device alert state preserves in-app notifications and offers no activation or send action');
   await nav('/app/profile');await ready('profile');await contrastStates();
   await nav('/app/notifications');await ready('notifications');assert.equal(await page.locator(inboxLinks).count(),1);
   assert.equal(await page.locator('main').getByRole('link',{name:'Settings',exact:true}).count(),0,'No alert Settings while the workplace has no device alerts');
-  // Desktop opens through the guarded open route; the phone messages view opens through its own guarded open read.
-  assert.equal(await page.locator(inboxLinks).getAttribute('id'),'b-message-'+noticeId);assert.equal(new URL(await page.locator(inboxLinks).getAttribute('href'),app.url).pathname,'/app/requests');
+  // Both current list renderers expose the guarded notification-open URL. The
+  // phone handler also verifies its own protected open read before navigation.
+  assert.equal(await page.locator(inboxLinks).getAttribute('id'),'b-message-'+noticeId);assert.equal(await page.locator(inboxLinks).getAttribute('href'),'/app/notifications/open?notificationId='+encodeURIComponent(noticeId));
   assert(!await page.locator(inboxRoot).innerText().then(t=>t.includes('STORED PRIVATE')));await bounds();await screenshot('inbox');await accessibility('Notifications');
   const before=await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]);await page.locator(inboxLinks).click();await page.waitForURL(u=>u.pathname==='/app/requests');
   // The guarded open loads a new document. Wait for its current bell read before Back;
