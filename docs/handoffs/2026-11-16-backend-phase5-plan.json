@@ -1,0 +1,420 @@
+{
+  "schemaVersion": 1,
+  "version": "NEVORA_BACKEND_PHASE5_QUALIFICATION_PLAN_V1",
+  "date": "2026-11-16",
+  "timeZone": "America/Puerto_Rico",
+  "frozenSource": null,
+  "status": "BLOCKED_AWAITING_INTEGRATOR_FREEZE",
+  "preparationSource": "8ec7470a79fb2e638c900965708297b384cd9646",
+  "entryGate": [
+    "Integrator supplies immutable final SHA, root/src tree, application digest, included application AND handoff commits, environment/feature flags and rollback reference",
+    "Verify Phase 2 69da1c5d/34d8a854, Phase 3 7bd3e224/219e92bd and Phase 4 74421d91/4016c136 by lineage and changed-file/semantic review; inspect cherry-pick provenance if SHAs differ",
+    "Shared auth/security owner resolves P4-AUTH-01 with spoofed host/Referer/language regression evidence",
+    "Integrator explicitly selects intended Rondo delivery and inclusion/hold with its owner; no automatic omission or inferred model quality",
+    "Canonical migration/bootstrap and synthetic/environment custody established before mutating tests",
+    "Existing execution handoff grants a concrete heavy execution slot; one owned runtime, existing pinned tools"
+  ],
+  "environment": {
+    "PHASE_E_EXPECTED_SHA": "<exact integrator-supplied frozen SHA>",
+    "PHASE_E_EVIDENCE_DIR": "<owned external evidence directory>",
+    "PHASE_C_EXPECTED_SHA": "<same frozen SHA>",
+    "PHASE_C_EVIDENCE_DIR": "<owned external evidence directory>",
+    "NEVORA_BUILD_RECEIPT": "<owned external build receipt>",
+    "NEVORA_TEST_PG_BIN": "/Users/josek0514/Documents/Codex/2026-11-15/ple/work/pg-xml/runtime/bin",
+    "removeInherited": [
+      "DATABASE_URL",
+      "FUEL_TEST_DATABASE_URL",
+      "TEST_DATABASE_URL",
+      "NEVORA_CONTROL_DATABASE_URL",
+      "NEVORA_COMMERCE_DATABASE_URL"
+    ],
+    "rule": "Read each selected runner admission first. Use its required safe environment/ownership and exact fixture prefixes. No production secrets, .env copies, external sending or provider/model calls. Browser prerequisites/evidence paths are mandatory."
+  },
+  "commands": [
+    {
+      "id": "source-inventory",
+      "argv": [
+        "npm",
+        "run",
+        "check:development-sources"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Frozen final source + current fetched remotes, classified phase deliveries and reviewed integration provenance",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "bootstrap",
+      "argv": [
+        "node",
+        "scripts/onboarding-manifest.mjs"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Canonical BASE/FINAL/HELD order, matching generated manifest; selected Rondo 0064/0065 reconciliation first",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "format",
+      "argv": [
+        "npm",
+        "run",
+        "format:check"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Required critical source formatting; do not modify logs to satisfy source checks",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "units",
+      "argv": [
+        "npm",
+        "test",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Default unit/API/producer-parser tests; enumerate every skip/todo and its independently run SQL gate",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "types",
+      "argv": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Whole-source TypeScript",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "lint",
+      "argv": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Whole-source ESLint; preserve actual warnings",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "release-infrastructure",
+      "argv": [
+        "npm",
+        "run",
+        "test:release-engineering"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Required existing release/fixture/transport/cleanup guards",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "inspection-evidence",
+      "argv": [
+        "npm",
+        "run",
+        "check:inspection-evidence"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Current source-bound required inspection documentation",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "test-projects",
+      "argv": [
+        "npm",
+        "run",
+        "check:test-projects"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "No unregistered or empty mandatory suite",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "release-postgres",
+      "argv": [
+        "npm",
+        "run",
+        "test:release:postgres"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Fresh fictional PostgreSQL foundation/authority/generation/exchange/notification, lock races and zero-effect refusal",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "fresh-company",
+      "argv": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.company-setup-integration.config.mts"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Actual empty-schema company/Owner bootstrap matches selected canonical SQL order",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "paid-export",
+      "argv": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.payroll-export-integration.config.mts"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Exact paid-break identity, lost reply/reopen interleaving, immutable receipts, original-body retries; include 30-person case",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "imports",
+      "argv": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.configurable-payroll-integration.config.mts"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "CSV and JSON, exact cents, corrections, inactive/zero/excluded full roster, document worker partial failures",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "company-period-export",
+      "argv": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.company-access-integration.config.mts",
+        "src/test/integration/company-access-period-export.integration.ts"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Company versus location/foreign/revoked scope, period manifest/history and immutable artifact custody",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "billing",
+      "argv": [
+        "node",
+        "scripts/commerce-postgres.mjs"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Controlled SDK/fictional transport only; signed duplicate/reordered events and durable original billing operation recovery",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "restrictions",
+      "argv": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.generation-integration.config.mts",
+        "src/test/integration/scheduling-restrictions.integration.ts"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Current/future/legacy versions, earliestWeek, lock races, original review, overnight and cross-location authority",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "decision-facts",
+      "argv": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.exchanges-integration.config.mts",
+        "src/test/integration/shift-change-phase3-facts.integration.ts"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Actual producer-to-public-parser counterpart/history facts, foreign and scope revocation refusal",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "reminders",
+      "argv": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.employee-mobile-communications.config.mts",
+        "src/test/integration/phase-e-communications.integration.ts"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Read-only eligibility, final session/source/receipt fences, quiet hours, budget, concurrent retries and held delivery",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "recovery",
+      "argv": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.clocker-integration.config.mts",
+        "src/test/integration/clocker-account-recovery.integration.ts"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Full proof, single use, replacement/activation, session revocation and preserved Clocker/work data",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "deletion",
+      "argv": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.employee-mobile-deletion.config.mts",
+        "src/test/integration/employee-mobile-deletion-sql.integration.ts"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Usable last Owner, deletion/demotion races, original-request recovery and no side effects on refusal",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "passkeys",
+      "argv": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.passkeys-integration.config.mts"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Current auth/credential/challenge boundaries; physical platform gate separate",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "phase-e-sql",
+      "argv": [
+        "node",
+        "scripts/phase-e-owned.mjs",
+        "sql",
+        "--suite",
+        "all"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Required Phase E owned SQL receipts, no mandatory pending/skipped cases",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "build",
+      "argv": [
+        "node",
+        "scripts/release-build.mjs"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Clean unchanged exact-SHA production-format build with external source/artifact receipt",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "manuals",
+      "argv": [
+        "node",
+        "scripts/manuals/check-manuals.mjs"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Six current guides and actual canonical app hash after integrator regeneration; old hashes are not final evidence",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "phase-e-browser",
+      "argv": [
+        "node",
+        "scripts/phase-e-owned.mjs",
+        "browser",
+        "--suite",
+        "all"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Relevant current consumers and complete required engines/widths, response completion, finite privacy and owned cleanup",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "management-browser",
+      "argv": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.all-ui-browser.config.mts",
+        "src/test/integration/readiness-ui-browser.integration.ts",
+        "src/test/integration/readiness-shift-concurrency-browser.integration.ts"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Originally reviewed edit/delete/reassignment, lost replies and complete immutable history; Claude current consumers required",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "clocker-browser",
+      "argv": [
+        "node",
+        "scripts/phase-c-clocker-postgres.mjs",
+        "--punch-ui"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Current ID then PIN, activation/password lifecycle and privacy/recovery; retired driver target remains to reconcile",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    },
+    {
+      "id": "mobile-browser",
+      "argv": [
+        "npm",
+        "run",
+        "test:mobile-access:owned"
+      ],
+      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "criteria": "Supported browser/emulation; actual iOS/Android/iPad/native acceptance remains independent",
+      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "result": null
+    }
+  ],
+  "additionalRequiredWorkflowGates": [
+    "All current required jobs in .github/workflows/ci.yml and .github/workflows/mobile-access.yml on the same exact SHA; this command list does not replace their complete job/fixture/evidence aggregation",
+    "Clocker SQL four-shard allocation and aggregate, staff tasks, correction/review/report, invitation/activation, timestamp-token, payroll pagination and relevant native-held refusal gates from existing CI",
+    "Remaining Phase D attendance/remediation/corrections/navigation/attention/communications/calendar gates; keep original failed jobs and missing downstream reports",
+    "Hosted exact-source/provider/restore/responder proof is a separate gate, never satisfied by local loops or fixtures"
+  ],
+  "phase2RealisticCapacity": {
+    "paidPeople": 30,
+    "fullRoster": 33,
+    "recordedBreaks": 600,
+    "expectedBatchPeople": [
+      12,
+      12,
+      6
+    ],
+    "referenceBatchBytes": [
+      62030,
+      62030,
+      31112
+    ],
+    "wireBoundaryBytes": [
+      65535,
+      65536,
+      65537
+    ],
+    "referenceOnly": "Re-measure actual selected-source bytes; preserve accepted <=65536 and refused 65537. Recover exact lost batch and refuse partial manifest; all 33 roster dispositions remain. Do not silently increase supported offer."
+  },
+  "protectedAssertions": [
+    "Current eligibility and originally reviewed expectedReviewVersion through retries",
+    "Independent review and Company/cross-location/session authority before and after waits",
+    "Privacy expiry and immediate clearing according to each current product contract",
+    "Exact cents, paid-break identity, UTF-8 byte limits and whole-population custody",
+    "Original-operation idempotency/retry/partial failure; unknown never fabricated as success",
+    "Zero writes/revisions/outbox effects on refusal",
+    "Immutable original documents and complete paginated history beyond 1000 events",
+    "Unexpected errors remain fatal, diagnostics redact payloads, teardown failures retain ownership"
+  ],
+  "skipPolicy": "Record actual skips/todos/deselections and why. Mandatory final SQL/browser/report jobs may not be skipped or waived. Existing unit integration guards require their separately executed owned suite, not an assumed pass.",
+  "repeatPolicy": "One complete final backend qualification after assembly; repeat affected suites only after source/config changes or unresolved failure. Never add overlapping phase test counts as unique coverage.",
+  "documentation": "Integrator regenerates source-qualified six guides only after final application changes; node scripts/manuals/build-manuals.mjs --date 2026-11-16 then check. Revisit date when execution occurs; Claude UI changes reopen relevant guides and consumer acceptance."
+}
