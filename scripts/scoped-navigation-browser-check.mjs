@@ -52,7 +52,7 @@ export async function verifyReportRecoveryNavigation(page,app,engine,report,mana
   }
  }
  await verifyExplicitRecovery(page,origin,engine,report);
- await verifyRoleRedirect(page,app,engine,report,managerId);
+ await verifyRoleDenial(page,app,engine,report,managerId);
  markReportNavigationStage(page,engine,'restored-period-report','source-entry');
  await page.goto(origin+'/app/payroll-export?start=2026-09-21&end=2026-09-27');
  await exportSendTo(page).waitFor();
@@ -109,8 +109,8 @@ async function verifyExplicitRecovery(page,origin,engine,report){
  finally{release();for(const stop of stops)stop();await page.unroute('**/app/reports?*',handler);}
 }
 
-async function verifyRoleRedirect(page,app,engine,report,managerId){
- const row={engine,case:'actual-role-redirect',actor:managerId,status:'pending',events:[],omittedEvents:0,fallbackErrorIndices:[]};report.scopedNavigation.push(row);
+async function verifyRoleDenial(page,app,engine,report,managerId){
+ const row={engine,case:'actual-role-denial',actor:managerId,status:'pending',events:[],omittedEvents:0,fallbackErrorIndices:[]};report.scopedNavigation.push(row);
  const mark=phase=>markReportNavigationStage(page,engine,row.case,phase);
  const stopTrace=observeReportNavigation(page,app.url,row,()=>{row.fallbackErrorIndices.push(report.errors.length);report.errors.push('Role redirect emitted a framework RSC fallback.');});
  try{
@@ -129,15 +129,16 @@ async function verifyRoleRedirect(page,app,engine,report,managerId){
  await page.route('**/app/reports?*',handler);
  try{
   mark('request-destination');
-  await Promise.all([page.waitForURL(url=>url.pathname==='/app'),page.locator('#desktop-primary-navigation a[href="/app/reports"]').click()]);
+  await Promise.all([page.waitForURL(url=>url.pathname==='/app/reports'),page.locator('#desktop-primary-navigation a[href="/app/reports"]').click()]);
   assert(used&&changed,'The actual Reports request must encounter the fictional actor role change');
-  await page.locator('.employee-home').waitFor();
+  await page.getByText('Insights is for Owners and Managers',{exact:true}).filter({visible:true}).waitFor();assert.equal(new URL(page.url()).pathname,'/app/reports','The current closed-page contract explains the denial in place');assert.equal(await page.locator('#ins-labor,.c-ins-print').count(),0,'No private or printable report survives the role change');
+  const denied=await page.request.post(app.url+'/api/reports',{headers:{origin:app.url,'x-nevora-reports':'1'},data:{startDate:'2026-09-21',endDate:'2026-09-27'}});assert.equal(denied.status(),403,'Current server role refuses the protected report API');assert.equal(denied.headers()['x-nevora-failure'],'access_denied','The role gate, not a malformed request boundary, denies this read');assert.deepEqual(await denied.json(),{state:'unavailable'});row.reportApiDenied=true;
   // Employee shell (corporate since Phase 6; data-nv-e5 now marks only a Lead's v5 shell).
   await page.locator('.app-shell.employee-shell[data-employee-mobile="true"][data-nv-corp]').waitFor();
   assert.equal(await page.locator('[data-nv-clean]').count(),0,'The server must replace the old management shell after the role change');
   row.identityShellVerified=true;
   assert.equal(await exportSendTo(page).count(),0);
-  row.sourcePrivateAbsent=true;row.destinationVerified=true;
+  row.sourcePrivateAbsent=true;const ownTime=page.getByRole('link',{name:'Open Time',exact:true});assert.equal(await ownTime.getAttribute('href'),'/app/my-time');await ownTime.click();await page.waitForURL(url=>url.pathname==='/app/my-time');await page.locator('.c-hours[data-hours-state="ready"]').waitFor();row.destinationVerified=true;
   mark('complete');
   row.status='passed';
  }catch(error){row.status='failed';throw error;}
