@@ -248,7 +248,15 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   stage='layout';await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);assert.equal(await page.locator('main a[href="/app/profile/device-alerts"]').count(),0,'Profile offers no device alerts while the workplace has none');await bounds();await screenshot('profile');await accessibility('Profile');
   // Board E-Profile: device alerts are their own page (opened from Notifications' Settings when the workplace has alerts).
   // With push off it says so and keeps notifications in NEVORA.
-  await page.goto(app.url+'/app/profile/device-alerts');await settle();await page.locator('[data-device-state="disabled"]').getByText('Workplace alerts are unavailable',{exact:true}).waitFor();assert(await page.getByText('Your workplace has not made device alerts available. Your notifications remain in NEVORA.',{exact:true}).isVisible());
+  await page.goto(app.url+'/app/profile/device-alerts');await settle();
+  // DirectionB supplies the visible phone screen; the original device card is
+  // retained for the layout that shows it. Never measure its hidden duplicate.
+  const alerts=page.locator('.b-screen:has(#b-alerts-title):visible, [data-device-state="disabled"]:visible');await alerts.waitFor();assert.equal(await alerts.count(),1,'Exactly one disabled-alert presentation is visible');
+  if(await alerts.evaluate(node=>node.classList.contains('b-screen'))){
+   await alerts.getByText('Your workplace hasn’t turned on device alerts',{exact:true}).waitFor();assert(await alerts.getByText('Unavailable',{exact:true}).isVisible());assert(await alerts.getByText('Your notifications always stay in NEVORA, and your phone’s settings can turn off every alert.',{exact:true}).isVisible());
+  }else{await alerts.getByText('Workplace alerts are unavailable',{exact:true}).waitFor();assert(await alerts.getByText('Your workplace has not made device alerts available. Your notifications remain in NEVORA.',{exact:true}).isVisible());}
+  assert.equal(await alerts.getByRole('button',{name:/^(Turn on alerts|Turn off alerts|Test notification|Review setup)$/}).count(),0,'Disabled workplace alerts offer no enrollment, send or removal action');
+  checks.push('Actual visible disabled-device alert state preserves in-app notifications and offers no activation or send action');
   await nav('/app/profile');await ready('profile');await contrastStates();
   await nav('/app/notifications');await ready('notifications');assert.equal(await page.locator(inboxLinks).count(),1);
   assert.equal(await page.locator('main').getByRole('link',{name:'Settings',exact:true}).count(),0,'No alert Settings while the workplace has no device alerts');
