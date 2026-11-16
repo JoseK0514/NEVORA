@@ -214,7 +214,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   const decided=page.locator('main').getByRole('link',{name:'See all decided requests',exact:true});assert.equal(await decided.getAttribute('href'),'/app/requests?filter=decided');
   const shifts=phone?null:page.locator('main').getByRole('link',{name:/^Swaps, cover and can’t work\b/});if(shifts)assert.equal(await shifts.getAttribute('href'),'/app/exchange');
   // Phones go Back to Requests from each page; a computer keeps Requests current in the sidebar (its hub one click away).
-  const backToRequests='main a:is(.c-nav__back,.q-nav__l,.em-request-back)[href="/app/requests/hub"]:visible';
+  const backToRequests='main a:is(.b-back,.c-nav__back,.q-nav__l,.em-request-back)[href="/app/requests/hub"]:visible';
   for(const [link,path] of [[decided,'/app/requests'],[shifts??'/app/exchange?tab=requests','/app/exchange']]){
    if(typeof link==='string')await page.goto(app.url+link);else await link.click();await page.waitForURL(u=>u.pathname===path);await settle();
    assert.equal(await page.locator('.section-tabs').count(),0);

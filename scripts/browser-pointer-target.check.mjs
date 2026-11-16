@@ -16,6 +16,7 @@ for (const engine of ['chromium', 'webkit']) {
         {name: '36px visual without expansion', height: 36, extra: '', expected: false},
         {name: 'declared expansion with disabled pointer events', height: 36, extra: '#target::after{content:"";position:absolute;left:0;right:0;top:50%;height:44px;translate:0 -50%;pointer-events:none}', expected: false},
         {name: 'expansion clipped by parent', height: 36, extra: '#wrap{height:36px;overflow:hidden}#target::after{content:"";position:absolute;left:0;right:0;top:50%;height:44px;translate:0 -50%}', expected: false},
+        {name: '44px visual box clipped around its visible center', height: 44, extra: '#wrap{height:36px;overflow:hidden}#target{top:-4px}', expected: false},
         {name: 'hidden target', height: 44, extra: '#target{visibility:hidden}', expected: false},
       ];
       for (const fixture of cases) {
