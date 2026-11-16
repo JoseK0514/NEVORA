@@ -65,6 +65,28 @@ describe("reading weekly answers", () => {
   });
 });
 
+describe("saved coverage scope", () => {
+  const receipt = { operationId: OP, reviewId: REVIEW, termsDigest: DIGEST, savedAt: "2026-11-16T12:05:00Z", added: 2, removed: 0, preservedAssignments: 3, createdParentIds: ["sched-1"] };
+  const saved = (progress: Record<string, unknown>) => result({ state: "saved", comparison: null, receipt,
+    progress: { state: "draft", observedAt: "2026-11-16T12:06:00Z", assignmentsPresent: 2, assignmentsTotal: 2, publishedAssignments: 0, coverage: measure(480), ...progress } });
+  it("keeps the reviewed locations when the scope is unchanged", () => {
+    expect(parseWeeklyResult(saved({ coverageScope: { includedLocationIds: ["loc-1"], changed: false } })).progress?.coverageScope).toEqual({ includedLocationIds: ["loc-1"], changed: false });
+  });
+  it("reads a changed scope only with the changed state", () => {
+    expect(parseWeeklyResult(saved({ state: "changed", coverageScope: { includedLocationIds: ["loc-1"], changed: true } })).progress?.coverageScope?.changed).toBe(true);
+    expect(() => parseWeeklyResult(saved({ state: "draft", coverageScope: { includedLocationIds: ["loc-1"], changed: true } }))).toThrow();
+  });
+  it("reads coverage that can't be measured for the reviewed locations as null", () => {
+    expect(parseWeeklyResult(saved({ coverage: null, coverageScope: { includedLocationIds: ["loc-1", "loc-2"], changed: false } })).progress?.coverage).toBeNull();
+  });
+  it("still reads older answers without a scope, and refuses a malformed one", () => {
+    expect(parseWeeklyResult(saved({})).progress?.coverageScope).toBeUndefined();
+    expect(() => parseWeeklyResult(saved({ coverageScope: { includedLocationIds: ["loc-1", "loc-1"], changed: false } }))).toThrow();
+    expect(() => parseWeeklyResult(saved({ coverageScope: { includedLocationIds: ["loc-1"] } }))).toThrow();
+    expect(() => parseWeeklyResult(saved({ coverageScope: { includedLocationIds: "loc-1", changed: false } }))).toThrow();
+  });
+});
+
 describe("day-end boundaries", () => {
   const gap = (startTime: string, endTime: string) => ({ date: "2026-11-16", locationId: "loc-1", locationName: "Fictional Bakery", startTime, endTime, missingStaff: 1, requiresLead: null, positions: [], positionsOmitted: 0 });
   const withGap = (g: unknown) => result({ comparison: comparison([summary({ coverage: measure(720), remaining: { total: 1, items: [g] } })]) });

@@ -125,10 +125,20 @@ function receipt(value: unknown): WeeklyReceipt {
 }
 function progress(value: unknown): WeeklyProgress {
   if (!object(value)) return fail();
-  const result = { state: oneOf(value.state, ["draft", "published", "mixed", "changed", "unavailable"] as const), observedAt: instant(value.observedAt),
+  const result: WeeklyProgress = { state: oneOf(value.state, ["draft", "published", "mixed", "changed", "unavailable"] as const), observedAt: instant(value.observedAt),
     assignmentsPresent: count(value.assignmentsPresent), assignmentsTotal: count(value.assignmentsTotal), publishedAssignments: count(value.publishedAssignments),
     coverage: value.coverage === null ? null : measure(value.coverage) };
   if (result.assignmentsPresent > result.assignmentsTotal || result.publishedAssignments > result.assignmentsPresent) fail();
+  // Optional (Codex, Nov 16, 2026): coverage counts only the locations the reviewed comparison included. Older answers
+  // without it stay readable. A changed scope always comes with the "changed" state.
+  if (value.coverageScope !== undefined) {
+    const scope = value.coverageScope;
+    if (!object(scope) || typeof scope.changed !== "boolean") return fail();
+    const includedLocationIds = list(scope.includedLocationIds, 200).map(id);
+    if (new Set(includedLocationIds).size !== includedLocationIds.length) fail();
+    if (scope.changed && result.state !== "changed") fail();
+    result.coverageScope = { includedLocationIds, changed: scope.changed };
+  }
   return result;
 }
 
@@ -263,7 +273,7 @@ export const LOCATION_STATE_TEXT: Record<WeeklyComparison["locations"][number]["
   INCLUDED: "Included", PUBLISHED: "Published", ARCHIVED: "Archived", NEEDS_SETUP: "Needs setup", NOT_SELECTED: "Not selected", INACTIVE: "Inactive",
 };
 export const PROGRESS_TEXT: Record<WeeklyProgress["state"], string> = {
-  draft: "Still a draft", published: "Published", mixed: "Partly published", changed: "Changed since saving", unavailable: "Can't check right now",
+  draft: "Still a draft", published: "Published", mixed: "Partly published", changed: "Changed", unavailable: "Can't check right now",
 };
 /** "20 of 24 h" for a coverage measure (covered of required). */
 export const coverageText = (measure: CoverageMeasure) => `${hours(measure.coveredMinutes).replace(" h", "")} of ${hours(measure.requiredMinutes)}`;

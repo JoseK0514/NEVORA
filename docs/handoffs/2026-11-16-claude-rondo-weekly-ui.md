@@ -156,3 +156,29 @@ Client-only; no backend file was edited (Codex's worktree was only read).
 Checks: `tsc` and `eslint` clean; `vitest run src/lib/owner-advisor src/components/owner-advisor
 src/test/phosphor-icon-weight.test.ts`: 42 files, 404 tests pass; weekly browser pass (mocked API): all flows, 25
 measured screens, no overflow or clipping, no page errors. Kept local and unpushed.
+
+## Saved coverage scope follow-up (Nov 16, 2026)
+
+Client-only, for Codex's backend fix that measures saved coverage only over the locations the reviewed comparison
+included. No backend file or shared flag was changed; Codex's worktree was only read.
+
+- `weekly-contracts.ts` re-copied unchanged from Codex's current working tree (adds optional
+  `WeeklyProgress.coverageScope`; sha256 prefix `ab8c477118ae97fd`, identical bytes).
+- `weekly-client.ts` parses the optional `coverageScope` (`includedLocationIds` unique location IDs, `changed`
+  boolean) and keeps it. A changed scope is accepted only with the `changed` state. Answers without it stay readable.
+- Saved screen ("The schedule now"): the Coverage row now says it counts only the N locations in the reviewed plan,
+  naming them when there are up to three. When the scope changed, a row reads "Locations changed since the review: The
+  locations that can be planned this week changed after you reviewed. Coverage still counts only the N locations in the
+  reviewed plan." When coverage can't be measured, the row reads "Not available" with "A location in the reviewed plan
+  can't be measured right now". An older answer without the scope keeps its plain Coverage row. The status chip reads
+  "Changed" (was "Changed since saving") so it stays on the card's title line on phones.
+- Row details in both Rondo areas now wrap on desktop instead of ending in an ellipsis; the browser clip check now
+  covers row details too.
+- Tests: four parser regressions in `weekly-client.test.ts` (unchanged, changed, null coverage, older and malformed);
+  42 files, 408 tests pass; `tsc` and `eslint` clean. Browser (mocked API): no scope, unchanged, changed and
+  unmeasurable at 390, changed at 1440, unchanged at 320 (`w5b-scope-*`), plus every other weekly and knowledge flow:
+  weekly 31 and knowledge 28 measured screens, no overflow or clipping, no page errors.
+- Harness note: right after a page load in the dev server, the weekly form can be present 0 or 2 times for a moment
+  before settling to exactly 1; the script now waits for that. It isn't visible in the product.
+
+Kept local and unpushed.

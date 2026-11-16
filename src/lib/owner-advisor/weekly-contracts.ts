@@ -55,7 +55,8 @@ export type WeeklyInspectionReference = { comparisonId: string; occurrence: numb
 export type WeeklyReceipt = { operationId: string; reviewId: string; termsDigest: string; savedAt: string;
   added: number; removed: number; preservedAssignments: number; createdParentIds: string[] };
 export type WeeklyProgress = { state: 'draft' | 'published' | 'mixed' | 'changed' | 'unavailable'; observedAt: string;
-  assignmentsPresent: number; assignmentsTotal: number; publishedAssignments: number; coverage: CoverageMeasure | null };
+  assignmentsPresent: number; assignmentsTotal: number; publishedAssignments: number; coverage: CoverageMeasure | null;
+  coverageScope?: { includedLocationIds: string[]; changed: boolean } };
 export type WeeklyResult = { state: 'ready' | 'stale' | 'saved' | 'declined' | 'not_saved' | 'unavailable';
   comparison: WeeklyComparison | null; review: WeeklyPlanReview | null; readReceiptId: string | null;
   receipt: WeeklyReceipt | null; progress: WeeklyProgress | null;

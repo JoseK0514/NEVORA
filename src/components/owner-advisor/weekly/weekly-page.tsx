@@ -445,7 +445,7 @@ function ReviewView({ reviewId, review, outcome, reading, hidden, weeklyEnabled,
   acknowledged: boolean; setAcknowledged: (value: boolean) => void; busy: boolean; approvalLocked: boolean;
   onRefresh: () => void; onApprove: (plan: WeeklyPlanReview, readReceiptId: string) => void; onDecline: (id: string) => void;
 }) {
-  if (outcome) return <Outcome result={outcome.result} reviewId={reviewId} timeZone={timeZone} onRefresh={onRefresh} onDecline={onDecline} busy={busy} weeklyEnabled={weeklyEnabled} />;
+  if (outcome) return <Outcome result={outcome.result} reviewId={reviewId} timeZone={timeZone} locations={locations} onRefresh={onRefresh} onDecline={onDecline} busy={busy} weeklyEnabled={weeklyEnabled} />;
   if (review?.result.review) return <FullPlan plan={review.result.review} readReceiptId={review.result.readReceiptId} baseline={review.result.comparison?.baseline ?? null}
     locations={locations} timeZone={timeZone} now={now} acknowledged={acknowledged} setAcknowledged={setAcknowledged} busy={busy} approvalLocked={approvalLocked}
     onApprove={onApprove} onDecline={onDecline} weeklyEnabled={weeklyEnabled} />;
@@ -459,7 +459,24 @@ function Skeleton() {
     {[58, 44, 66, 50].map(width => <span key={width} className="wk-skel__bar" style={{ width: `${width}%` }} />)}
   </section>;
 }
-function Outcome({ result, reviewId, timeZone, onRefresh, onDecline, busy, weeklyEnabled }: { result: WeeklyResult; reviewId: string; timeZone: string; onRefresh: () => void; onDecline: (id: string) => void; busy: boolean; weeklyEnabled: boolean }) {
+/** Saved coverage counts only the locations the reviewed plan included (Codex, Nov 16, 2026), so it says which, and says
+ * when the week's plannable locations changed since. An older answer without the scope keeps its plain coverage row. */
+function coverageRows(progress: NonNullable<WeeklyResult["progress"]>, locations: WeeklyLocation[]) {
+  const scope = progress.coverageScope;
+  if (!scope) return progress.coverage ? <li><CorpRow one title="Coverage" value={coverageText(progress.coverage)} valueTone="soft" /></li> : null;
+  const names = scope.includedLocationIds.map(id => locations.find(l => l.id === id)?.name).filter((name): name is string => !!name);
+  const count = scope.includedLocationIds.length;
+  const which = count === 1 ? "the 1 location in the reviewed plan" : `the ${count} locations in the reviewed plan`;
+  const named = names.length === count && count > 0 && count <= 3 ? `: ${names.join(", ")}` : "";
+  return <>
+    <li><CorpRow title="Coverage" detail={progress.coverage ? `Counts only ${which}${named}` : `A location in the reviewed plan can’t be measured right now`}
+      value={progress.coverage ? coverageText(progress.coverage) : "Not available"} valueTone="soft" /></li>
+    {scope.changed ? <li><CorpRow title="Locations changed since the review"
+      detail={`The locations that can be planned this week changed after you reviewed. Coverage still counts only ${which}.`} /></li> : null}
+  </>;
+}
+
+function Outcome({ result, reviewId, timeZone, locations, onRefresh, onDecline, busy, weeklyEnabled }: { result: WeeklyResult; reviewId: string; timeZone: string; locations: WeeklyLocation[]; onRefresh: () => void; onDecline: (id: string) => void; busy: boolean; weeklyEnabled: boolean }) {
   const when = (iso: string) => new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(iso));
   if (result.state === "stale") return <CorpCard as="div"><BState kind="paused" icon={<WarningIcon weight="bold" />} title="This plan is out of date"
     line="The schedule or your setup changed, or the plan expired. Compare again for current options. You can still decline it.">
@@ -481,11 +498,11 @@ function Outcome({ result, reviewId, timeZone, onRefresh, onDecline, busy, weekl
         <li><CorpRow one title="Kept" value={`${receipt.preservedAssignments} ${receipt.preservedAssignments === 1 ? "shift" : "shifts"}`} valueTone="soft" /></li>
       </CorpRows>
     </CorpCard>
-    <CorpCard as="div" label="On the schedule now" aside={progress ? <CorpPill tone={progress.state === "published" ? "green" : progress.state === "changed" ? "amber" : "neutral"}>{PROGRESS_TEXT[progress.state]}</CorpPill> : undefined}>
+    <CorpCard as="div" label="The schedule now" aside={progress ? <CorpPill tone={progress.state === "published" ? "green" : progress.state === "changed" ? "amber" : "neutral"}>{PROGRESS_TEXT[progress.state]}</CorpPill> : undefined}>
       {progress && progress.state !== "unavailable" ? <CorpRows label="The saved shifts now">
         <li><CorpRow one title="Still as saved" value={`${progress.assignmentsPresent} of ${progress.assignmentsTotal}`} valueTone="soft" /></li>
         <li><CorpRow one title="Published" value={`${progress.publishedAssignments} of ${progress.assignmentsPresent}`} valueTone="soft" /></li>
-        {progress.coverage ? <li><CorpRow one title="Coverage" value={coverageText(progress.coverage)} valueTone="soft" /></li> : null}
+        {coverageRows(progress, locations)}
       </CorpRows> : <CorpBody><p className="wk-para">{progress ? "NEVORA couldn’t look at the schedule just now." : weeklyEnabled ? "The saved shifts can’t be compared with the schedule right now." : "Weekly planning is off, so only this record is shown."}</p></CorpBody>}
     </CorpCard>
     <p className="wk-foot">This records what was saved as a draft. It doesn’t show attendance, and it isn’t proof the week is covered. Publishing happens in Schedule, and nobody was notified.</p>

@@ -19,45 +19,66 @@ W4 save enabled after ack (keyboard): true
 W4 applies: [[200,"saved"]] | pending left: null
 W4 saved 390 h-overflow: false clipped: [] under44: []
 W4 saved 1440 h-overflow: false clipped: [] under44: ["Weekly plan 32"]
-W5 published: On the schedule now | Published | Still as saved | 4 of 4 | Published | 4 of 4 | Coverage | 40 of 40 h
-W5 mixed: On the schedule now | Partly published | Still as saved | 4 of 4 | Published | 1 of 4 | Coverage | 40 of 40 h
-W5 changed: On the schedule now | Changed since saving | Still as saved | 3 of 4 | Published | 0 of 3 | Coverage | 40 of 40 h
-W5 unavailable: On the schedule now | Can't check right now | NEVORA couldn’t look at the schedule just now.
+W5 published: The schedule now | Published | Still as saved | 4 of 4 | Published | 4 of 4 | Coverage | 40 of 40 h
+W5 mixed: The schedule now | Partly published | Still as saved | 4 of 4 | Published | 1 of 4 | Coverage | 40 of 40 h
+W5 changed: The schedule now | Changed | Still as saved | 3 of 4 | Published | 0 of 3 | Coverage | 40 of 40 h
+W5 unavailable: The schedule now | Can't check right now | NEVORA couldn’t look at the schedule just now.
 W5 opening a saved plan used: [["read_week_plan",409,"error"],["check_week_plan",200,"saved"]]
+W5b none 390: The schedule now | Still a draft | Still as saved | 4 of 4 | Published | 0 of 4 | Coverage | 40 of 40 h
+W5b none 390 h-overflow: false clipped: [] under44: []
+W5b same 390: The schedule now | Still a draft | Still as saved | 4 of 4 | Published | 0 of 4 | Coverage | Counts only the 2 locations in the reviewed plan: Northside Main Office, Northside West Office | 40 of 40 h
+W5b same 390 h-overflow: false clipped: [] under44: []
+W5b changed 390: The schedule now | Changed | Still as saved | 4 of 4 | Published | 0 of 4 | Coverage | Counts only the 2 locations in the reviewed plan: Northside Main Office, Northside West Office | 40 of 40 h | Locations changed since the review | The locations that can be planned this week changed after you reviewed. Coverage still counts only the 2 locations in the reviewed plan.
+W5b changed 390 h-overflow: false clipped: [] under44: []
+W5b null 390: The schedule now | Still a draft | Still as saved | 4 of 4 | Published | 0 of 4 | Coverage | A location in the reviewed plan can’t be measured right now | Not available
+W5b null 390 h-overflow: false clipped: [] under44: []
+W5b changed 1440: The schedule now | Changed | Still as saved | 4 of 4 | Published | 0 of 4 | Coverage | Counts only the 2 locations in the reviewed plan: Northside Main Office, Northside West Office | 40 of 40 h | Locations changed since the review | The locations that can be planned this week changed after you reviewed. Coverage still counts only the 2 locations in the reviewed plan.
+W5b changed 1440 h-overflow: false clipped: [] under44: ["Weekly plan 32"]
+W5b same 320: The schedule now | Still a draft | Still as saved | 4 of 4 | Published | 0 of 4 | Coverage | Counts only the 2 locations in the reviewed plan: Northside Main Office, Northside West Office | 40 of 40 h
+W5b same 320 h-overflow: false clipped: [] under44: []
 W6 option B 390 h-overflow: false clipped: [] under44: []
 W6 declined: Plan declined | Nothing on the schedule changed. You can review another option. | Back to options | writes: [["decline_week_plan","declined"]]
 W7 replaced section: Draft shifts replaced2 | Pablo Medina | Mon, Nov 16 · 8:00 AM–12:00 PM · Northside Main Office | Replaced | Elisa Torres | Thu, Nov 19 · 12:00 PM–4:00 PM · Northside Main Office · Counter | Replaced
 W7 build 1440 h-overflow: false clipped: [] under44: ["Weekly plan 32"]
 W7 build 390 h-overflow: false clipped: [] under44: []
+NOTE compare(): forms 0 radios 1 -> after settle 1 1 [["wk-mode",null],["wk-mode",null],["wk-scope",null],["wk-scope",null]]
 W8 noChange options h-overflow: false clipped: [] under44: []
 W8 noChange: The schedule now | Nov 16 – 22 · Fill open gaps · All locations | Coverage | 24 of 40 h | Still open | 4 blocks | Option A | Look only | Adds | 0 shifts · 0 h | Keeps | 9 shifts | Coverage | 24 of 40 h · no change | Still open | 0 blocks | Can’t be saved | It changes nothing | Review option A | Locations2 | Northside Main Office | Included | Northside West Office | Included | Fictional Warehouse | Left out of this plan | Published | Fictional Pop-up | Left out of this plan · No staffing needs are set | Needs setup | Hours are scheduled business hours, not time worked or pay, and costs aren’t included. Fairness uses each person’s targets, preferences and 8 weeks of weekend history (6 known, 1 unknown).
 W8 noChange decide: Decide | This plan can be looked at but not saved: it changes nothing. | Decline | Back to options | Hours are scheduled business hours, not time worked or pay; costs aren’t included. Fairness uses targets, preferences and 8 weeks of weekend history (6 known, 1 unknown). | ack present: 0
 W8 noChange review h-overflow: false clipped: [] under44: []
 W8 blocked options h-overflow: false clipped: [] under44: []
 W8 blocked: The schedule now | Nov 16 – 22 · Fill open gaps · All locations | Coverage | 24 of 40 h | Still open | 4 blocks | Option A | Look only | Adds | 2 shifts · 8 h | Keeps | 9 shifts | Coverage | 32 of 40 h · +8 h | Still open | 2 blocks | Things to check | 1 | Can’t be saved | A schedule rule blocks it | Review option A | Locations2 | Northside Main Office | Included | Northside West Office | Included | Fictional Warehouse | Left out of this plan | Published | Fictional Pop-up | Left out of this plan · No staffing needs are set | Needs setup | Hours are scheduled business hours, not time worked or pay, and costs aren’t included. Fairness uses each person’s targets, preferences and 8 weeks of weekend history (6 known, 1 unknown).
+W8 day-end gap: Still open2 | Wed, Nov 18 · 8:00 AM–12:00 PM | Northside Main Office · 1 more person · lead needed · Counter ×1 | Sat, Nov 21 · 8:00 PM–12:00 AM | Northside West Office · 1 more person · Counter ×1
 W8 blocked decide: Decide | This plan can be looked at but not saved: a schedule rule blocks it. | Decline | Back to options | Hours are scheduled business hours, not time worked or pay; costs aren’t included. Fairness uses targets, preferences and 8 weeks of weekend history (6 known, 1 unknown). | ack present: 0
 W8 blocked review h-overflow: false clipped: [] under44: []
 W8 exhausted options h-overflow: false clipped: [] under44: []
 W8 exhausted: The schedule now | Nov 16 – 22 · Fill open gaps · All locations | Coverage | 24 of 40 h | Still open | 4 blocks | Option A | Search stopped early | Adds | 2 shifts · 8 h | Keeps | 9 shifts | Coverage | 32 of 40 h · +8 h | Still open | 2 blocks | Review option A | Locations2 | Northside Main Office | Included | Northside West Office | Included | Fictional Warehouse | Left out of this plan | Published | Fictional Pop-up | Left out of this plan · No staffing needs are set | Needs setup | The search stopped before checking every possibility, so a better option may exist. Hours are scheduled business hours, not time worked or pay, and costs aren’t included. Fairness uses each person’s targets, preferences and 8 weeks of weekend history (6 known, 1 unknown).
+NOTE compare(): forms 0 radios 0 -> after settle 1 1 [["wk-mode",null],["wk-mode",null],["wk-scope",null],["wk-scope",null]]
 W8 unavailable options h-overflow: false clipped: [] under44: []
 W8 unavailable: Rondo couldn’t compare this week | The week has more to plan than one comparison can hold. Try fewer locations. | Locations2 | Northside Main Office | Included | Northside West Office | Included | Fictional Warehouse | Left out of this plan | Published | Fictional Pop-up | Left out of this plan · No staffing needs are set | Needs setup | Hours are scheduled business hours, not time worked or pay, and costs aren’t included. Fairness uses each person’s targets, preferences and 8 weeks of weekend history (6 known, 1 unknown).
+NOTE compare(): forms 0 radios 1 -> after settle 1 1 [["wk-mode",null],["wk-mode",null],["wk-scope",null],["wk-scope",null]]
 W9 stale: This plan is out of date | The schedule or your setup changed, or the plan expired. Compare again for current options. You can still decline it. | Compare again | Decline it
 W9 declined a stale plan
 W10 stored keys: acknowledged,authority,readReceiptId,requestId,reviewId,termsDigest | has names: false
 W10 card focused: true
 W10 uncertain 390 h-overflow: false clipped: [] under44: []
 W10 after reload: [["apply_week_plan","saved"],["check_week_plan","injected"],["check_week_plan","saved"]] | applies: 1 | pending left: null
+NOTE compare(): forms 0 radios 1 -> after settle 1 1 [["wk-mode",null],["wk-mode",null],["wk-scope",null],["wk-scope",null]]
 W11 not saved 390 h-overflow: false clipped: [] under44: []
 W11 apply ids equal: true [503,200]
 W12 foreign: An earlier approval was cleared | It belonged to a different sign-in, so it can’t be checked from here. Nothing was sent again. | OK | pending left: null | applies: 1
 W13 revoked: Your session ended | Sign in again as an Owner to plan a week. Plans were cleared from this screen. | Sign in | names left: 0 | pending: null
+NOTE compare(): forms 2 radios 2 -> after settle 1 1 [["wk-mode",null],["wk-mode",null],["wk-scope",null],["wk-scope",null]]
 W14 shown: 1
 W14 after renewals still shown: 1 | reads: 3
 W14 renewal failing -> hidden: 1 | names left: 0
 W14 shown again
 W14 blur clears: true
 W15 conflict: Something changed first | The schedule, your access or this plan changed. Look again before deciding. | pending: null
+NOTE compare(): forms 0 radios 1 -> after settle 1 1 [["wk-mode",null],["wk-mode",null],["wk-scope",null],["wk-scope",null]]
 W15 limit: Too many saved plans | This company has reached the limit for saved plans. Nothing changed. | pending: null
+NOTE compare(): forms 0 radios 1 -> after settle 1 1 [["wk-mode",null],["wk-mode",null],["wk-scope",null],["wk-scope",null]]
 W15 invalid: That request wasn’t accepted | Something in it doesn’t match this company. Check the week and locations, then try again. Nothing changed. | pending: null
+NOTE compare(): forms 0 radios 1 -> after settle 1 1 [["wk-mode",null],["wk-mode",null],["wk-scope",null],["wk-scope",null]]
 W16 AI manager links: 1 1
 page errors: []

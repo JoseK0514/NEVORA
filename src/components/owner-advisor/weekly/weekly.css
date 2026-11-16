@@ -4,7 +4,7 @@
 :is(#c-root, html) .wk .wk-meta { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 500; color: var(--b-grey-on-fill); text-align: right; }
 :is(#c-root, html) .wk .wk-foot { margin: var(--b-space-12) 0 0; padding: 0 var(--b-inset-wide); max-width: 72ch; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey-on-fill); }
 :is(#c-root, html) .wk .wk-para { margin: 0; max-width: 64ch; font-size: var(--b-fs-body); line-height: var(--b-lh-body); color: var(--b-ink2); }
-:is(#c-root, html) .wk .c-row__title { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+:is(#c-root, html) .wk :is(.c-row__title, .c-row__detail, .c-row__detail > span) { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
 
 /* One action pair everywhere: the quiet text action, then the one teal pill, on the right edge at every width (the kit's
  * Decline + Approve pattern). Inside a state card they start under its text, as the card's own action does. */
