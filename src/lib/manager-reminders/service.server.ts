@@ -10,18 +10,20 @@ import {workspaceReadGuard} from '../data/workspaces';
 import {employeeReadLimits} from '../data/employee-profile.server';
 import {neonNotificationExecutor} from '../data/notification-transactions';
 import {notificationIntentStatements} from '../data/notifications';
-import {businessDate} from '../business-time';
+import {businessDate,localDateTimeToInstant} from '../business-time';
+import {addDays} from '../date-utils';
 import {notificationPolicyFor} from '../notifications/policy';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {SqlExecutor,SqlStatement,NotificationIntent} from '../notifications/types';
-import type {ManagerReminderCommand,ManagerReminderResult} from './types';
+import type {ManagerReminderCommand,ManagerReminderResult,ManagerReminderEligibility} from './types';
 import {validManagerReminderCommand,reminderUuid} from './validation';
 import {planManagerReminder} from './plan';
+import {reportHandledServerError} from '../server-error';
 
 type Access=Awaited<ReturnType<typeof assertOperationalAccess>>;
 type Receipt={hash:string;result:Record<string,string>};
-const blocked:ManagerReminderResult={status:'blocked',reason:'access_denied'};
-const conflict:ManagerReminderResult={status:'conflict',reason:'source_or_operation_changed'};
+const blocked={status:'blocked',reason:'access_denied'} satisfies ManagerReminderResult;
+const conflict={status:'conflict',reason:'source_or_operation_changed'} satisfies ManagerReminderResult;
 const denied=(error:unknown)=>isManagementAuthorizationError(error)||isOperationalAuthorizationError(error);
 function admitted(proof:SessionMutationProof,authority:string):boolean{
  try{assertManagementProof(proof,proof?.employee?.id);return ['OWNER','MANAGER'].includes(proof.employee.role)&&authority===communicationAuthority(proof);}catch{return false;}
@@ -41,7 +43,7 @@ function prefix(proof:SessionMutationProof,a:Access,c?:ManagerReminderCommand):S
   ]:[]),...authority(proof,a)];
 }
 function operation(proof:SessionMutationProof,a:Access,id:string):SqlStatement{return {text:`SELECT command_hash::text AS hash,result FROM employee_attention_operations WHERE workspace_id=$1 AND employee_id=$2 AND operation_id=$3::uuid`,values:[a.workspace.id,proof.employee.id,id]};}
-function publicResult(receipt:Receipt,proof:SessionMutationProof,id:string):ManagerReminderResult{
+function publicResult(receipt:Receipt,proof:SessionMutationProof,id:string):Extract<ManagerReminderResult,{status:'committed'}>|{status:'unavailable';reason:string}{
  const r=receipt.result;
  if(r.kind!=='MANAGER_REMINDER'||r.authority!==communicationAuthority(proof))return {status:'unavailable',reason:'operation_not_found'};
  if(!r.notificationId||!['queued','already_queued'].includes(r.disposition))return {status:'unavailable',reason:'operation_unavailable'};
@@ -81,6 +83,52 @@ function sourceGuard(a:Access,c:ManagerReminderCommand,intent:NotificationIntent
 }
 function payloadHash(c:ManagerReminderCommand):string{return createHash('sha256').update(JSON.stringify(['manager-reminder:v1',c.kind,c.operationId,c.authority,c.employeeId,c.kind==='AVAILABILITY'?c.weekStart:c.communicationId,c.kind==='AVAILABILITY'?c.expectedDeadline:c.expectedRevisionId])).digest('hex');}
 const sentinel=(error:unknown,name:string)=>!!error&&typeof error==='object'&&'code'in error&&error.code==='22P02'&&'message'in error&&error.message===`invalid input syntax for type integer: "${name}"`;
+
+/** Read one explicit target under existing Company authority/activation fences.
+ * No roster, content, provider call, operation receipt or notification is created.
+ * The client retains the same command for original-operation recovery. */
+export async function readManagerReminderEligibility(proof:SessionMutationProof,c:ManagerReminderCommand,executor:SqlExecutor=neonNotificationExecutor()):Promise<ManagerReminderEligibility>{
+ if(!validManagerReminderCommand(c))return {status:'blocked',reason:'invalid_command'};
+ if(!admitted(proof,c.authority))return blocked;
+ try{
+  const signal=AbortSignal.timeout(8000),a=await assertOperationalAccess(proof,{kind:'COMPANY'},executor);
+  // Prefer the original receipt even if its source has since resolved/expired.
+  // Source locks precede both reads, so a writer cannot commit between them.
+  const p=prefix(proof,a,c),rows=await executor.transaction([...p,operation(proof,a,c.operationId),sourceStatement(a,c),...authority(proof,a)],signal);
+  const prior=rows[p.length]?.[0] as Receipt|undefined;
+  if(prior){await responseFence(proof,a,executor,signal);return prior.hash===payloadHash(c)?publicResult(prior,proof,c.operationId):conflict;}
+  const source=rows[p.length+1]?.[0] as {observedAt:string;expiresAt:string}|undefined;
+  if(!source)return conflict;
+  const intent=planManagerReminder({kind:c.kind,id:c.kind==='AVAILABILITY'?c.weekStart:c.communicationId,version:c.kind==='AVAILABILITY'?c.expectedDeadline:c.expectedRevisionId,employeeId:c.employeeId,expiresAt:source.expiresAt},new Date(source.observedAt),a.workspace.timeZone);
+  if(!intent)return {status:'conflict',reason:'source_expires_before_delivery'};
+  const day=businessDate(new Date(intent.dueAt),a.workspace.timeZone),budget:SqlStatement={
+   text:`SELECT id FROM notifications WHERE environment=$1 AND employee_id=$2 AND source_kind=$3 AND source_id=$4 AND purpose='REMINDER' AND (due_at AT TIME ZONE $5)::date=$6::date LIMIT 1`,
+   values:[intent.environment,c.employeeId,intent.source.kind,intent.source.id,a.workspace.timeZone,day]};
+  // Read receipt/source/budget under the same source locks as the writer. An
+  // original operation may have committed after the first lookup; prefer it.
+  const current=prefix(proof,a,c),budgetRows=await executor.transaction([...current,operation(proof,a,c.operationId),sourceStatement(a,c),budget,...authority(proof,a)],signal);
+  await responseFence(proof,a,executor,signal);
+  const raced=budgetRows[current.length]?.[0] as Receipt|undefined;
+  if(raced)return raced.hash===payloadHash(c)?publicResult(raced,proof,c.operationId):conflict;
+  const checked=budgetRows[current.length+1]?.[0] as typeof source;
+  if(!checked)return conflict;
+  const latest=planManagerReminder({kind:c.kind,id:intent.source.id,version:intent.source.version,employeeId:c.employeeId,expiresAt:checked.expiresAt},new Date(checked.observedAt),a.workspace.timeZone);
+  if(!latest||businessDate(new Date(latest.dueAt),a.workspace.timeZone)!==day)return conflict;
+  if(budgetRows[current.length+2]?.length){
+   const policy=notificationPolicyFor(a.workspace.timeZone),hour=(value:number)=>String(value).padStart(2,'0');
+   const opens=localDateTimeToInstant(`${day}T${hour(policy.quietStartHour)}:00`,a.workspace.timeZone);
+   const due=localDateTimeToInstant(`${addDays(day,1)}T${hour(policy.quietEndHour)}:00`,a.workspace.timeZone);
+   return {status:'cooldown',canQueue:false,reason:'daily_budget_used',nextEligibleAt:Date.parse(due)<Date.parse(checked.expiresAt)?opens:null};
+  }
+  return {status:'ready',canQueue:true,scope:'COMPANY',targetEmployeeId:c.employeeId,observedAt:checked.observedAt,dueAt:latest.dueAt,expiresAt:checked.expiresAt,timeZone:a.workspace.timeZone};
+ }catch(error){
+  if(denied(error))return blocked;
+  if(sentinel(error,'communication_activation_held'))return {status:'held',reason:'activation_held'};
+  if(sentinel(error,'manager_reminder_source_changed')||sentinel(error,'workspace_version_conflict'))return conflict;
+  reportHandledServerError(error,'/api/manager/reminders/eligibility');
+  return {status:'unavailable',reason:'read_failed'};
+ }
+}
 
 /** Every new operation records its queued/already-queued result atomically. Existing
  * operations replay before source checks, so completed actions remain recoverable. */

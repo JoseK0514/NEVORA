@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {executeManagerReminder,findManagerReminderOperation} from './service.server';
+import {executeManagerReminder,findManagerReminderOperation,readManagerReminderEligibility} from './service.server';
 import {communicationAuthority} from '../communications/service.server';
 import type {SessionMutationProof} from '../shift-changes/types';
 const proof:SessionMutationProof={employee:{id:'owner',role:'OWNER',primaryLocationId:'loc-1',firstName:'Fictional',lastName:'Owner'},sessionTokenHash:'a'.repeat(64)};
@@ -13,4 +13,9 @@ it('rejects malformed, employee, and replacement-session commands before databas
 it('status lookup requires valid ID and same session authority before database work',async()=>{
  expect(await findManagerReminderOperation(proof,'invalid',command.authority,executor)).toEqual({status:'blocked',reason:'access_denied'});
  expect(await findManagerReminderOperation({...proof,sessionTokenHash:'b'.repeat(64)},command.operationId,command.authority,executor)).toEqual({status:'blocked',reason:'access_denied'});
+});
+it('eligibility rejects arbitrary targets/extra fields, unauthorized role and foreign session binding before reads',async()=>{
+ expect(await readManagerReminderEligibility(proof,{...command,recipientIds:['other']} as never,executor)).toEqual({status:'blocked',reason:'invalid_command'});
+ expect(await readManagerReminderEligibility({...proof,employee:{...proof.employee,role:'EMPLOYEE'}},command,executor)).toEqual({status:'blocked',reason:'access_denied'});
+ expect(await readManagerReminderEligibility({...proof,sessionTokenHash:'b'.repeat(64)},command,executor)).toEqual({status:'blocked',reason:'access_denied'});
 });
