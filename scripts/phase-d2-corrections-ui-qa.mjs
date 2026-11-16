@@ -13,6 +13,7 @@ import {verifyD2UiRemediation} from './phase-d2-ui-remediation-qa.mjs';
 import { missingTimeBrowserScenarios } from './phase-d2-missing-time-browser-scenarios.mjs';
 import {clockText,fixForm,fixValues,hoursPage,recordedReceipt,sendFix} from './employee-fix-time-browser.mjs';
 import {verifyD2SessionAuthority} from './d2-session-authority.mjs';
+import {ownedCorrectionEntryView} from './owned-browser-calendar.mjs';
 
 const WIDTHS=[320,375,390,430,768,1024,1440];
 const ENGINES=['chromium','webkit'];
@@ -123,7 +124,7 @@ try{
     date_trunc('minute',clock_timestamp()-interval '4 hours'),
     date_trunc('minute',clock_timestamp()-interval '2 hours'),
     'CLOCKED_OUT',4)
-  RETURNING clock_in_at::text AS "startAt",clock_out_at::text AS "endAt"`);
+  RETURNING clock_in_at::text AS "startAt",clock_out_at::text AS "endAt",clock_timestamp()::text AS "observedAt"`);
  const proposedStart=localValue(entry.startAt);
  const proposedEnd=localValue(Temporal.Instant.from(entry.endAt).subtract({minutes:5}).toString());
  await q(`INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at,version)
@@ -138,11 +139,12 @@ try{
   checked(engine+': employee correction authority boundaries');
 
   const ep=await employee.newPage();ep.setDefaultTimeout(15000);
-  await ep.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
+  const entryView=ownedCorrectionEntryView(entry.startAt,entry.observedAt);
+  await ep.goto(app.url+entryView.href,{waitUntil:'networkidle'});
   await ep.bringToFront();
   // Corporate Time (Release 1): "This week" lists each day; a day opens its punches, where "Request a correction" opens the
   // Fix my time sheet for that entry (Day, Start, End and a required Note; Send in the sheet's header).
-  const entryRow=hoursPage(ep,'records').locator('a.c-row#hours-entry-d2-browser-entry');
+  const entryRow=hoursPage(ep,entryView.view).locator('a.c-row#hours-'+(entryView.view==='cards'?'card-entry-':'entry-')+'d2-browser-entry');
   await entryRow.waitFor();
   await entryRow.click();
   await ep.waitForURL(url=>url.searchParams.get('entry')==='d2-browser-entry');
