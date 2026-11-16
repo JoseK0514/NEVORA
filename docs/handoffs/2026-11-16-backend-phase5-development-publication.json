@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "date": "2026-11-16",
-  "frozenAt": "2026-11-16T21:11:09.982512+00:00",
-  "publicationRef": "refs/tags/candidate/backend-completion/phase5-development-20261116-r2",
+  "frozenAt": "2026-11-16T23:01:38.275931+00:00",
+  "publicationRef": "refs/tags/candidate/backend-completion/phase5-development-20261116-r3",
   "publicationCommitResolution": "Peel the immutable annotated publicationRef to its commit; that exact commit alone is eligible for the authorized non-forced Development fast-forward.",
-  "applicationSourceSha": "9b8b75f6a1d5163d67ee4360dc752bbf8fee76d3",
-  "applicationHash": "74c06efb44e0b17acc64c630e33b0b05fe99bdba7618b4961ef2560c157e469c",
+  "applicationSourceSha": "d6af305afc3fe64f84562ad23899c3ba53b754af",
+  "applicationHash": "7a3b88014ad468d72826a715a6730bb31372df9f7c8d990db445f1df6fb324fc",
   "historicalBackendQualificationSha": "a40aaf669fb7731f00dd73b8d54909d82eb77174",
   "historicalDeliveredSourceSha": "52d9f54638095d76685bcf0446600df8761ab049",
   "developmentAtPreparation": "22a9d598eb470cd380ee739d7396f06ecf335ed5",
@@ -43,5 +43,16 @@
     "includedBackendContracts": "READY_FOR_CLAUDE_LOCAL_CONTRACTS",
     "hosted": "NOT_VERIFIED",
     "combinedOperatingRelease": "PENDING_CLAUDE_CONSUMERS_HOSTED_PHYSICAL_AND_INDEPENDENT_ACCEPTANCE"
+  },
+  "failedPreviousPublication": {
+    "source": "ca40d40dc92d732924eeb08c583b2100bd51c4cc",
+    "ref": "refs/tags/candidate/backend-completion/phase5-development-20261116-r2",
+    "ciRuns": [
+      43958387231,
+      43958387234
+    ],
+    "conclusion": "FAILURE",
+    "developmentUpdated": false,
+    "retainedRecord": "2026-11-16-backend-phase5-publication-evidence/history/r2-2026-11-16-backend-phase5-development-publication.json"
   }
 }

@@ -3,7 +3,7 @@
 November 16, 2026 · America/Puerto_Rico. Jose reassigned bounded final integration to this chat. This supersedes the earlier preparation-only/source-missing restriction; its original receipts remain preserved.
 
 
-**Development publication follow-up:** [source/ref and gate record](2026-11-16-backend-phase5-development-publication.json) and [consolidated follow-up](2026-11-16-backend-phase5-development-publication.md) supersede publication status and guide distribution here. The A40 execution tables below remain historical, source-qualified evidence. Backend runtime/locked inputs are unchanged; exactly two bounded UI exceptions were explicitly authorized.
+**Development publication follow-up:** [source/ref and gate record](2026-11-16-backend-phase5-development-publication.json) and [consolidated follow-up](2026-11-16-backend-phase5-development-publication.md) supersede publication status and guide distribution here. The A40 execution tables below remain historical, source-qualified evidence. Backend runtime/locked inputs are unchanged; exactly four bounded UI exceptions were explicitly authorized.
 
 ## Three conclusions
 
