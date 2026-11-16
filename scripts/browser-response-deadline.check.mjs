@@ -5,6 +5,56 @@ import {finishPeriodReportResponse,observeReportNavigation,reportNavigationObser
 import {EventEmitter} from 'node:events';
 import {projectCommunicationRead,observeCommunicationRead,readCommunicationResponse,finalizeCommunicationRead} from './communication-read-diagnostics.mjs';
 import {projectCommunicationPreview,readCommunicationPreviewResponse,previewEventBuffer,projectPreviewDom,observeCommunicationPreview} from './communication-preview-diagnostics.mjs';
+import {waitForAttentionLoginReady} from './attention-login-readiness.mjs';
+
+function attentionLoginFixture(overrides={}){
+ const origin='http://127.0.0.1:12345',frame={},calls=[];
+ const body={state:'ready',kind:'hours',view:'records',selection:'overview',validForMs:45000,data:{state:'ready'}};
+ const response={url:()=>origin+'/api/employee/hours/records/overview',request:()=>({method:()=> 'GET',frame:()=>frame}),status:()=>200,finished:async()=>null,json:async()=>body,...overrides.response};
+ let predicate;
+ const page={mainFrame:()=>frame,
+  waitForResponse(test){calls.push('observe-hours');predicate=test;return overrides.headers??Promise.resolve(response);},
+  waitForURL(test){assert(test(new URL(origin+'/app')));assert(!test(new URL('http://127.0.0.1:9/app')));calls.push('observe-home');return Promise.resolve();},
+  locator(selector){assert.equal(selector,'.app-shell.nevora-portal');return {waitFor:async()=>{calls.push('portal-shell');}};},
+  waitForFunction:async()=>{calls.push('portal-read');await overrides.portal;},
+  waitForLoadState:async state=>{assert.equal(state,'networkidle');calls.push('network-idle');await overrides.idle;},
+ };
+ const signIn=async()=>{assert(calls.includes('observe-hours'));calls.push('sign-in');};
+ return {origin,page,signIn,response,calls,predicate:()=>predicate,run:options=>waitForAttentionLoginReady({page,origin,signIn,deadline:performance.now()+1000,...options})};
+}
+
+test('attention login cannot leave Home before the late-starting Hours read and body finish',async()=>{
+ let headers,finish,parsed=false,settled=false;
+ const fixture=attentionLoginFixture({headers:new Promise(resolve=>{headers=resolve;}),response:{finished:()=>new Promise(resolve=>{finish=resolve;}),json:async()=>{parsed=true;return {state:'ready',kind:'hours',view:'records',selection:'overview',validForMs:45000,data:{state:'ready'}};}}});
+ const result=fixture.run().then(value=>{settled=true;return value;});
+ await new Promise(setImmediate);assert(fixture.calls.includes('sign-in'));assert.equal(settled,false);assert(!fixture.calls.includes('network-idle'));
+ headers(fixture.response);await new Promise(setImmediate);assert.equal(parsed,false);assert.equal(settled,false);assert(!fixture.calls.includes('portal-shell'));
+ finish(null);assert.deepEqual(await result,{status:200,bodyFinished:true,hoursReady:true,portalReady:true,networkIdle:true});assert.equal(parsed,true);
+ assert.deepEqual(fixture.calls.slice(-3),['portal-shell','portal-read','network-idle']);
+});
+test('attention login observes only the exact current-page same-origin GET without query or credentials',async()=>{
+ const fixture=attentionLoginFixture();await fixture.run();const match=fixture.predicate();assert(match(fixture.response));
+ for(const url of ['http://elsewhere.test/api/employee/hours/records/overview',fixture.origin+'/api/employee/hours/records/overview?query=1',fixture.origin+'/api/employee/hours/cards/overview',fixture.origin.replace('http://','http://user:private-sentinel@')+'/api/employee/hours/records/overview',fixture.origin+'/api/employee/hours/records/overview#fragment'])assert.equal(match({...fixture.response,url:()=>url}),false);
+ for(const request of [{method:()=> 'POST',frame:fixture.page.mainFrame},{method:()=> 'GET',frame:()=>({})}])assert.equal(match({...fixture.response,request:()=>request}),false);
+ assert.equal(match({...fixture.response,request:()=>{throw Error('private-sentinel');}}),false);
+});
+test('attention login rejects denied, unavailable and mismatched Hours reads without private payloads',async()=>{
+ for(const response of [{status:()=>403},{status:()=>503},{finished:async()=>Error('private-sentinel')},...[
+  null,{state:'unavailable',reason:'private-sentinel'},{state:'ready',kind:'hours',view:'cards',selection:'overview',validForMs:45000,data:{state:'ready'}},
+  {state:'ready',kind:'hours',view:'records',selection:'other',validForMs:45000,data:{state:'ready'}},{state:'ready',kind:'hours',view:'records',selection:'overview',validForMs:0,data:{state:'ready'}},
+ ].map(body=>({json:async()=>body}))]){
+  const fixture=attentionLoginFixture({response});await assert.rejects(fixture.run(),error=>!error.message.includes('private-sentinel'));assert(!fixture.calls.includes('network-idle'));
+ }
+});
+test('all attention login readiness waits share the original deadline and late completion stays fatal',async()=>{
+ for(const phase of ['headers','body','json','portal','idle']){
+  let release;const stalled=new Promise(resolve=>{release=resolve;});
+  const fixture=attentionLoginFixture({...(phase==='headers'?{headers:stalled}:{}),...(phase==='portal'?{portal:stalled}:{}),...(phase==='idle'?{idle:stalled}:{}),response:{...(phase==='body'?{finished:()=>stalled}:{}),...(phase==='json'?{json:()=>stalled}:{})}});
+  const result=fixture.run({deadline:performance.now()+40});await assert.rejects(result,/recovery deadline/);
+  release(phase==='headers'?fixture.response:phase==='json'?{state:'ready',kind:'hours',view:'records',selection:'overview',validForMs:45000,data:{state:'ready'}}:null);
+  await assert.rejects(result,/recovery deadline/);
+ }
+});
 
 test('report observation binds a live main-frame document without retaining addresses or private queries',()=>{
  const page=new EventEmitter(),origin='http://127.0.0.1:12345',frame={url:()=>origin+'/app/reports'},child={url:()=>origin+'/embedded'};let frames=[frame];page.url=frame.url;page.mainFrame=()=>frame;page.frames=()=>frames;

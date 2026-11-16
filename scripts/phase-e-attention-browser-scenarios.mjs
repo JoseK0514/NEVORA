@@ -9,6 +9,7 @@ import {observeDocumentNavigation} from './browser-navigation-diagnostic.mjs';
 import {runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
 import {waitForPrivateIntentClear} from './browser-render-readiness.mjs';
 import {observeRevocationActions,captureRevocationFailure} from './attention-revocation-diagnostic.mjs';
+import {waitForAttentionLoginReady} from './attention-login-readiness.mjs';
 
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,runtimeErrors:cellRuntimeErrors}){
  const label=`AT${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
@@ -41,7 +42,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  });
  cellRuntimeErrors.setStageReader(()=>stage);
  const screenshot=async (name,options={})=>page.screenshot({path:join(evidenceDirectory,`attention-${engine}-${width}-${name}.png`),fullPage:true,...options});
- async function login(target=page){await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(actor);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app'),target.getByRole('button',{name:'Sign in',exact:true}).click()]);await target.waitForLoadState('networkidle');}
+ async function login(target=page){await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(actor);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);const readiness=await waitForAttentionLoginReady({page:target,origin:app.url,signIn:()=>target.getByRole('button',{name:'Sign in',exact:true}).click()});(details.loginReadiness??=[]).push(readiness);}
  async function schedule(extra=''){await page.goto(app.url+`/app/schedule?week=${scenario.week}${extra}`);await page.waitForLoadState('networkidle');}
  async function publish(start){if(start)await q('UPDATE shifts SET start_time=$1 WHERE id=$2',[start,scenario.sourceId]);await publishScheduleWithRevision({locationId:'loc-1',weekStart:scenario.week,managerId:'QAOWNER'},app.database.executor);}
  const confirm=()=>page.getByRole('button',{name:'Confirm schedule',exact:true});
