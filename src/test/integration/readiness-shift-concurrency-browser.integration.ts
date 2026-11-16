@@ -60,7 +60,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       const edit = async (n: number, note: string, reassign = false) => { if (reassign) await form(n).locator('select[name="employeeId"]').selectOption('MATRIX-OTHER'); await form(n).locator('[name="notes"]').fill(note); await form(n).evaluate((element: HTMLFormElement) => element.requestSubmit()); };
       const remove = async (n: number) => { const p = page(n); await p.getByRole('button', { name: n ? 'Review deletion' : 'Delete shift', exact: true }).click(); await p.getByRole('button', { name: n ? 'Delete this draft shift' : 'Delete this shift', exact: true }).click(); };
       const refused = async (n: number, version: string, unavailable = false) => { await page(n).getByRole('alert').filter({ hasText: unavailable ? 'Operational access is unavailable' : 'changed since you opened' }).first().waitFor(); expect(await form(n).locator('[name="expectedReviewVersion"]').inputValue()).toBe(version); await page(n).getByRole('button', { name: 'Reload current shift', exact: true }).first().waitFor(); };
-      const loseNextResponse = async (n: number, id: string) => {
+      const loseNextResponse = async (n: number, id: string, deletion = false) => {
         const pattern = '**/app/schedule/edit?shiftId=' + id;
         const loss = { intercepted: false, completed: false, failed: false, upstreamStatus: 0 };
         await page(n).route(pattern, async (route: { request(): { method(): string }; fetch(options: { maxRedirects: number }): Promise<{ status(): number }>; abort(reason: string): Promise<void>; continue(): Promise<void> }) => {
@@ -82,7 +82,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         return { pattern, loss, wait: async () => {
           await expect.poll(() => loss.completed, { timeout: 20000 }).toBe(true);
           expect(loss).toMatchObject({ intercepted: true, failed: false, upstreamStatus: 200 });
-          await page(n).getByRole('alert').filter({ hasText: n ? 'This change could not be confirmed' : 'could not be' }).first().waitFor();
+          await page(n).getByRole('alert').filter({ hasText: n ? 'This change could not be confirmed' : deletion ? 'Check your connection and try again.' : 'Changes could not be saved.' }).first().waitFor();
         } };
       };
       for (const stale of [0, 1]) {
@@ -123,7 +123,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       // A committed edit whose response is lost must never acquire a fresh token
       // from the server behind the manager's retained draft.
       for (const n of [0, 1]) {
-        const id = await seed(); await open(n, id);
+        const id = await seed(); await open(n, id); failureShot = () => page(n).screenshot({ path: resolve(evidence, `${engine}-failure.png`), fullPage: true });
         const version = await form(n).locator('[name="expectedReviewVersion"]').inputValue();
         const lost = await loseNextResponse(n, id);
         await edit(n, 'Lost response saved once');
@@ -138,10 +138,10 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         checks.push(`${engine}: ${n ? 'location unknown-outcome lock' : 'Company original-review retry'} after committed lost response; row unchanged`);
       }
       for (const n of [0, 1]) {
-        const id = await seed(); await open(n, id);
+        const id = await seed(); await open(n, id); failureShot = () => page(n).screenshot({ path: resolve(evidence, `${engine}-failure.png`), fullPage: true });
         const version = await form(n).locator('[name="expectedReviewVersion"]').inputValue();
         await form(n).locator('[name="notes"]').fill('Retained before lost deletion');
-        const lost = await loseNextResponse(n, id);
+        const lost = await loseNextResponse(n, id, true);
         await remove(n); await lost.wait();
         expect(await q('SELECT id FROM shifts WHERE id=$1', [id])).toEqual([]);
         expect(await form(n).locator('[name="notes"]').inputValue()).toBe('Retained before lost deletion');

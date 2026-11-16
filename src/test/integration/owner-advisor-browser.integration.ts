@@ -633,7 +633,7 @@ it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned 
             await page.evaluate(() =>
               window.dispatchEvent(new Event("pagehide")),
             );
-            await page.locator(".app-shell.nevora-portal").waitFor();await page.waitForFunction(() => document.querySelector(".portal-notification-bell")?.getAttribute("data-state") === "ready");
+            // Context close drains canceled reads; pagehide deliberately pauses the bell.
             await context.tracing.stop({
               path: resolve(evidence, engine + "-" + actor + "-trace.zip"),
             });

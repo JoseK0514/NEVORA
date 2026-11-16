@@ -179,7 +179,7 @@ try{
   await sendFix(ep).click();
   await recordedReceipt(ep).waitFor();
   await ep.getByRole('link',{name:'View my request',exact:true}).click();
-  await hoursPage(ep,'corrections').locator('#hours-correction').getByText('Waiting',{exact:true}).waitFor();
+  await hoursPage(ep,'corrections').locator(':is(#hours-correction,#b-hours-correction):visible').getByText('Waiting',{exact:true}).waitFor();
   checked(engine+': employee submits correction through real D2 API');
 
   const employeeState=await employee.request.get(app.url+'/api/employee/time-corrections',{headers:{'X-Nevora-Time-Correction':'1'}});
@@ -196,7 +196,7 @@ try{
 
   const mp=await owner.newPage();mp.setDefaultTimeout(15000);
   // Corporate Who's working (board O-OnShift): the correction review opens behind "Time corrections"; #review opens it.
-  await mp.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});
+  await mp.goto(app.url+'/app/timecards/corrections',{waitUntil:'networkidle'});
   await mp.getByRole('heading',{name:'Correction requests',exact:true}).waitFor();
   await mp.getByText('Avery Correction QA',{exact:true}).waitFor();
   /* B7 wording (NV-020) */await mp.getByText('Approving changes the timecard. The original clock times stay in the history.',{exact:true}).waitFor();

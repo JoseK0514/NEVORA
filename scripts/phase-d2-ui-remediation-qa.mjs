@@ -119,7 +119,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
    assert(item.context.decisions.every(d=>d.status==='APPROVED'));
   }
   observations.comparison={raw,rawBreak,canonical,canonicalBreak,requests:snapshot.requests.filter(r=>[pendingEntry,pendingBreak].includes(r.id))};
-  stage='manager-initial';await mp.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});
+  stage='manager-initial';await mp.goto(app.url+'/app/timecards/corrections',{waitUntil:'networkidle'});
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   assert.equal(await mp.locator('.manager-correction-row').filter({hasText:name}).getByText('Current effective',{exact:true}).count(),2);
   await shots(mp,'.manager-corrections','multiple-supersessions');
@@ -159,12 +159,12 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   const entryWeek=weekStartFor(entryDate),fromCards=entryWeek<thisWeek;
   observations.entryPath={entryDate,thisWeek,view:fromCards?'cards':'records'};
   await ep.goto(app.url+(fromCards?`/app/my-time?view=cards&start=${entryWeek}&end=${addDays(entryWeek,6)}`:'/app/my-time'),{waitUntil:'networkidle'});
-  const entryRow=fromCards?hoursPage(ep,'cards').locator('a.c-row#hours-card-entry-'+entryId):hoursPage(ep,'records').locator('a.c-row#hours-entry-'+entryId);
+  const entryRow=hoursPage(ep,fromCards?'cards':'records').locator('a[href*="entry='+entryId+'"]:visible');
   const nativeRouteDeadline=performance.now()+15000;
   await entryRow.focus();await entryRow.press('Enter');
   await ep.waitForURL(url=>url.searchParams.get('entry')===entryId);
   const trigger=ep.getByRole('link',{name:'Request a correction',exact:true});await trigger.waitFor();
-  observations.keyboard.push({stage:'entry-route-heading-focus',state:await waitForD2HoursRouteFocus(ep.locator('.c-hours #hours-title'),entryId,nativeRouteDeadline)});
+  observations.keyboard.push({stage:'entry-route-heading-focus',state:await waitForD2HoursRouteFocus(ep.locator('.c-hours :is(#hours-title,#b-hours-title):visible'),entryId,nativeRouteDeadline)});
   await trigger.focus();observations.keyboard.push({stage:'trigger-focus',state:await trigger.evaluate(e=>({documentFocused:document.hasFocus(),linkFocused:document.activeElement===e,activeTag:document.activeElement?.tagName}))});assert(await trigger.evaluate(e=>document.hasFocus()&&document.activeElement===e),'Correction trigger must have native foreground focus');await trigger.press('Enter');
   await ep.waitForURL(url=>url.searchParams.get('edit')==='entry:'+entryId);
   const form=fixForm(ep);await form.waitFor();
@@ -201,7 +201,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   assert.equal(managerRscRequests.size,0,'Foreground RSC must remain drained after console extraction');
   assert.equal(managerRscVersion,quiescent.version,'A new foreground recovery cannot cross the reload boundary');
   record({role:'manager',event:'foreground-recovery-ready',pendingRscRequests:managerRscRequests.size,rscVersion:quiescent.version,quietMs:500,freshRscRequestId:requests.get(foregroundResponse.request()),freshCorrectionRequestId:requests.get(correctionResponse.request())});
-  await mp.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});
+  await mp.goto(app.url+'/app/timecards/corrections',{waitUntil:'networkidle'});
   const approve=mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first();await approve.waitFor();await approve.focus();
   const managerFocus=await approve.evaluate(el=>({active:document.activeElement===el,outlineStyle:getComputedStyle(el).outlineStyle,outlineWidth:getComputedStyle(el).outlineWidth}));
   assert(managerFocus.active);assert.equal(managerFocus.outlineStyle,'solid');assert(parseFloat(managerFocus.outlineWidth)>=2);observations.keyboard.push({role:'manager',focus:managerFocus});
