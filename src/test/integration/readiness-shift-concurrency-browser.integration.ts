@@ -15,10 +15,12 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
   const evidence = process.env.NEVORA_READINESS_MATRIX_EVIDENCE;
   if (!evidence) throw Error('Choose an external readiness matrix evidence directory');
   await mkdir(evidence, { recursive: true });
+  const { observeBrowserCell } = await import(new URL('../../../scripts/phase-e-browser-qa.mjs', import.meta.url).href);
+  const { verifyNavigationFetchDiagnostic } = await import(new URL('../../../scripts/browser-navigation-diagnostic.mjs', import.meta.url).href);
   const runtime = createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE ?? resolve('tools/ci-browser-runtime/package.json'))('playwright');
   const app = await createOwnedNextApp(evidence);
   const q = <T = Record<string, unknown>>(text: string, values: unknown[] = []) => app.database.executor.query<T>({ text, values });
-  const browsers: { close(): Promise<void> }[] = [], checks: string[] = [], errors: string[] = [];
+  const browsers: { close(): Promise<void> }[] = [], checks: string[] = [], errors: unknown[] = [], runtimeExecutions: unknown[] = [], runtimeControls: unknown[] = [];
   let complete = false, failureShot: (() => Promise<void>) | undefined, serial = 0;
   try {
     await seedOwnedApp(app.database.executor);
@@ -48,10 +50,17 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       const b2 = await runtime[engine].launch({ headless: true }); browsers.push(b2);
       const c0 = await b0.newContext({ viewport: { width: 390, height: 1000 }, serviceWorkers: 'block' }), c1 = await b1.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block' });
       const c2 = await b2.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block' });
+      // Reuse the release suite's witnessed native-navigation diagnostic. Its
+      // negative controls prove real window exceptions/rejections remain fatal.
+      const control = await verifyNavigationFetchDiagnostic(b0); runtimeControls.push({ engine, ...control });
+      for (const [index, context] of [c0, c1, c2].entries()) {
+        const execution = { engine, width: index === 0 ? 390 : 1440, kind: 'readiness-schedule' };
+        const observer = observeBrowserCell(execution, errors, { navigationDiagnosticVerified: control.windowObserverVerified, navigationReadKinds: ['manager-today-read'] });
+        await observer.observeContext(context, index === 1 ? 'manager' : 'primary'); runtimeExecutions.push(execution);
+      }
       const p0 = await c0.newPage(), p1 = await c1.newPage(), p2 = await c2.newPage(), page = (n: number) => n === 2 ? p2 : n ? p1 : p0;
       for (const n of [0, 1, 2]) {
         const p = page(n); p.setDefaultTimeout(20000);
-        p.on('pageerror', (error: Error) => errors.push(`${engine} ${n}: ${error.message}`));
         await p.route('**/*', async (route: { request(): { url(): string }; abort(): Promise<void>; continue(): Promise<void> }) => { const url = new URL(route.request().url()); if (['http:', 'https:'].includes(url.protocol) && url.origin !== app.url) await route.abort(); else await route.continue(); });
         await p.goto(app.url + '/login'); await p.getByLabel('Employee ID', { exact: true }).fill(n === 2 ? 'MATRIX-SECOND' : n ? 'MATRIX-LOCAL' : 'MATRIX-COMPANY'); await p.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD); await p.getByRole('button', { name: 'Sign in', exact: true }).click(); await p.waitForURL(app.url + '/app');
       }
@@ -171,5 +180,5 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
     expect(await q('SELECT id FROM notifications')).toEqual([]);
     expect(errors).toEqual([]); complete = true;
   } catch (error) { await failureShot?.().catch(() => {}); throw error; }
-  finally { await Promise.all(browsers.map(b => b.close())); await app.close(); await writeFile(resolve(evidence, 'report.json'), JSON.stringify({ complete, checks, errors, fictionalOnly: true, source: app.sourceHashes }, null, 2)); }
+  finally { await Promise.all(browsers.map(b => b.close())); await app.close(); await writeFile(resolve(evidence, 'report.json'), JSON.stringify({ complete, checks, errors, runtimeControls, runtimeExecutions, fictionalOnly: true, source: app.sourceHashes }, null, 2)); }
 }, 480000);
