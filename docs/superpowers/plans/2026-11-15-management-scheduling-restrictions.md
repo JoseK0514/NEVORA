@@ -31,10 +31,10 @@
 
 **Interfaces:** `RestrictionDocument`, `RestrictionVersion`, `RestrictionCommand`; strict parse/transition functions; guarded `readSchedulingRestrictions` and `mutateSchedulingRestrictions` services using explicit `SqlExecutor`.
 
-- [ ] Write and observe failing domain tests for normalization, approval/request isolation, effective dates and operation replay/conflicts.
-- [ ] Implement minimal pure document transitions and append-only versions.
-- [ ] Add nullable storage migration and guarded own/management reads/writes with transaction-time authority, optimistic revision and closed-week protection.
-- [ ] Verify real disposable PostgreSQL persistence, replay, scopes, stale writes and published/deadline cases.
+- [x] Write and observe failing domain tests for normalization, approval/request isolation, effective dates and operation replay/conflicts.
+- [x] Implement minimal pure document transitions and append-only versions.
+- [x] Add nullable storage migration and guarded own/management reads/writes with transaction-time authority, optimistic revision and closed-week protection.
+- [x] Verify real disposable PostgreSQL persistence, replay, scopes, stale writes and published/deadline cases.
 
 ### Task 2: Shared scheduling semantics
 
@@ -42,10 +42,10 @@
 
 **Interfaces:** Shared day resolution consumes approved versions and current preferences; validation exposes firm restriction failures and advisory preference mismatch.
 
-- [ ] Observe failures proving preferences do not block while restrictions, approved leave, overlaps and caps still do.
-- [ ] Wire coherent source mapping, advisory preview, canonical mutations, exchanges and generation through the same rule inputs.
-- [ ] Test overnight/effective-version boundaries and feasible cross-location/role coverage despite conflicting preferences.
-- [ ] Run the scheduling unit and generation/exchange SQL cohorts.
+- [x] Observe failures proving preferences do not block while restrictions, approved leave, overlaps and caps still do.
+- [x] Wire coherent source mapping, advisory preview, canonical mutations, exchanges and generation through the same rule inputs.
+- [x] Test overnight/effective-version boundaries and feasible cross-location/role coverage despite conflicting preferences.
+- [x] Run the scheduling unit and generation/exchange SQL cohorts.
 
 ### Task 3: Weekend fairness and protected API contract
 
@@ -53,8 +53,12 @@
 
 **Interfaces:** Published scheduling history yields explainable weekend burden metrics; planner ranks eligible candidates without changing legality or coverage scores. APIs consume the Task1 command/service contract.
 
-- [ ] Observe failing recent-weekend, leave/restriction, missing-history, duplicate and overnight tests.
-- [ ] Implement bounded scheduled-history projection and preference-aware ranking after coverage/qualification constraints.
-- [ ] Add protected JSON reads/commands with own/manager scope, actor/session/view binding, origin/body limits and private errors.
-- [ ] Run domain/API/planner tests, full unit suite, relevant real SQL suites, typecheck, lint, build and independent review.
-- [ ] Commit a source-bound repository handoff and Claude contract with exact evidence and integration/hosted holds.
+- [x] Observe failing recent-weekend, leave/restriction, missing-history, duplicate and overnight tests.
+- [x] Implement bounded scheduled-history projection and preference-aware ranking after coverage/qualification constraints.
+- [x] Add protected JSON reads/commands with own/manager scope, actor/session/view binding, origin/body limits and private errors.
+- [x] Run domain/API/planner tests, full unit suite, relevant real SQL suites, typecheck, lint, build and independent review.
+- [x] Commit a source-bound repository handoff and Claude contract with exact evidence and integration/hosted holds.
+
+## Completion receipt
+
+All three implementation tasks completed and locally qualified at8366493c1345d7d896e16dff51f79754426bc258. Full unit13,111passed/944existing skipped;791 real owned PostgreSQL checks passed;build/static/manual checks passed. Independent review findings were reproduced and corrected; no second independent approval is asserted. See `docs/handoffs/2026-11-15-management-scheduling-backend.md` for source/evidence, deferred minor, rulings and integration/hosted holds. Shared development integration remains an explicit separate ownership handoff, not a completed plan task.

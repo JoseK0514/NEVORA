@@ -5,7 +5,8 @@ Jose authorized this backend after the restrictions/preferences/scheduler discus
 ## Source and state
 
 - Base development: `b5085edb33d1bccc440588f950e728566c8a79ac`.
-- Initial implementation: `846b76d37` (local detached candidate; final verification/review supplement follows).
+- Initial implementation: `846b76d37`; review fixes: `9633b69ec`; final overnight/draft fixes: `12cf9fb6924990749ca6dab968e3721a29ba7e3d`.
+- Qualified application/manual candidate: `8366493c1345d7d896e16dff51f79754426bc258`, tree `da9ed5bfa52f43a220e5f9aee7e46bab288bc9f6`. Subsequent closeout documentation does not change application/test inputs. Application hash: `f9da87f0115db53988f70dd1f5bbf4afff676c3000e6f1fd1ac9736d8d8b9bac`.
 - New migration: `0065_scheduling_restrictions.sql`, prepared for owned disposable PostgreSQL only. `0064_owner_company_knowledge.sql` belongs to the other active chat and must be combined by the single development integrator with both migration registry/fixture changes preserved.
 - No remote branch, hosted database, live email, provider, main or production changes.
 - Shared-development integration lease has not transferred to this chat. Earlier local finisher confirms no reservation on isolated implementation; its last integration handoff names Cloud Chat1. Do not infer integration permission from this source-local candidate.
@@ -75,8 +76,30 @@ Before any hosted cutover, close new restriction commands/confirmation and prese
 
 ## Verification status
 
-Focused domain/API/planner/projection and real SQL checks passed during implementation; full unit, broad SQL, production build and independent review are still being collected. This paragraph is intentionally not a release-ready claim. See the final evidence supplement for exact commands, counts, source hashes, remaining failures and review disposition.
+Final local qualification passed on8366493c1, with no source changes during execution:
+
+| Check | Actual result |
+| --- | --- |
+| Full unit: `npm test -- --maxWorkers=1` | 13,111 passed;944 existing skipped;886 passed files/35 skipped;exit0 |
+| Foundation PostgreSQL | 286 passed/12 files |
+| Authority PostgreSQL | 46 passed/3 files |
+| Generation PostgreSQL | 201 passed/5 files, including19 restriction SQL regressions |
+| Exchanges PostgreSQL | 178 passed/15 files |
+| Notifications PostgreSQL | 80 passed/2 files |
+| Typecheck | Passed |
+| ESLint | 0errors;one pre-existing anonymous-export warning in hosted workforce-monitor entry |
+| Critical format / canonical migration manifest / diff whitespace | Passed |
+| `node scripts/release-build.mjs` | Exit0;clean/unchanged source;4,927 output files |
+| Web manuals build/check | Six rebuilt/verified guides;source12cf9fb69;application hash above |
+
+All791 SQL checks used new ownership-marked loopback PostgreSQL clusters, closed by their runners. Configurations: `vitest.foundation-integration.config.mts`, `vitest.phase-b-c-authority.config.mts`, `vitest.generation-integration.config.mts`, `vitest.exchanges-integration.config.mts`, `vitest.notifications-integration.config.mts`, each invoked by `node scripts/payroll-postgres.mjs <config>` with the owned PostgreSQL binary and no external DATABASE_URL. No real mail, customer data or provider was used. Browser/UI and hosted acceptance were not performed for this new feature.
+
+Evidence directory: `/Users/josek0514/.codex/visualizations/2026/11/13/01a1d5d4-5741-7e93-ab62-b7705c0e403b/nevora-scheduling-backend-20261115/`. `qualification-final.json` records source/counts/limits; `final-frozen-source.json` binds all16,472 tracked file hashes; `final-build-source.json` retains the exact build inventory; `final-confirmed-postgres-cohorts.json` plus the final generation log retain actual cohort results. `backend-candidate-final.bundle` is a verified portable candidate requiring baseb5085edb33d1bccc440588f950e728566c8a79ac. Closeout-source metadata records any documentation-only commit after the qualified candidate.
 
 Independent review of846b76d37 identified seven important findings. The bounded correction pass reproduced13 failing pure-path cases plus the real first-publication failure, then passed115 focused cases and14 actual PostgreSQL cases. PostgreSQL additionally proved the UTF-8/JSONB capacity edge (old result1,109,708bytes exceeded1,048,576); the corrected admission bound reserves canonical storage and future decisions. No second independent approval is asserted from the author's regressions.
+
+Final author boundary checks then reproduced2 failing retained-draft planner cases and3 failing actual overnight-custody SQL cases. The fixes passed8 scoped planner cases and all19 restriction SQL cases, then the complete unit/SQL qualification above. No assertions, test timeouts or controls were relaxed. Earlier failed broad runs and unchanged-source reruns remain retained. A documented30-second Mac clamshell sleep coincided with earlier SMTP/process-launch/SQL expiry failures; their isolated unchanged-source checks and subsequent full serial runs passed. The original review disposition was NO pending fixes; this is an author-qualified correction, not a new independent GO or a shared-development/hosted release receipt.
+
+Recorded design rulings and costs: conservative future-only custody can delay changes beyond far-future closed weeks and historical overnight captures; explicit employee confirmation requires a truthful mixed legacy rollout; ambiguous archived absence reduces fairness precision rather than inventing weekends off; historical off inference requires agreement/full-current-location publication evidence and counts positive unreleased work first, so legacy gaps remain neutral and never claim actual attendance.
 
 Deferred minor: the initial read's earliestWeek is the workspace open-week lower bound; an employee's already-approved future version may require a still-later week. The command returns the actual required week on a lock. Claude can derive the later lower bound from the returned version history until the read DTO is aligned.
