@@ -74,3 +74,30 @@ Claude's combined UI discrepancies and the separate Rondo dependency remain in
 `2026-11-16-readiness-development-integration.md`. This repair does not close
 those gates or authorize a development push. Keep SCRUM-205 In Progress until
 combined development acceptance; independent audit closure is separate.
+
+## Exact-candidate Actions qualification
+
+Candidate 04 is `321a7bb5f6a9165ec29fb6cb90d0059540070b4a`, tagged
+`candidate/backend-completion/20261116-readiness-combined-04`.
+[CI run 43903205719](https://github.com/JoseK0514/NEVORA/actions/runs/43903205719)
+passed **management-review-ui**, job `133425030966`. Its source/closure verifier
+also passed. The downloaded exact-source artifacts report:
+
+| Browser suite | Checks | Unexpected errors | Source and owned runtime |
+| --- | ---: | ---: | --- |
+| Management close | 6 | 0 | Exact candidate, verified, closed |
+| Delegated correction | 3 | 0 | Exact candidate, verified, closed |
+| Stale-action/history UI | 14 | 0 | Exact candidate, verified, closed |
+| Two-Manager scheduling concurrency | 40 | 0 | Exact candidate, verified, closed |
+
+The scheduling gate that failed on candidate 03 now passes locally and in the
+original hosted CI environment. Compact report hashes/source/closure receipts
+are in `readiness-development-evidence-20261116/candidate04-management-receipt.json`.
+The candidate's optimized local build passed clean/unchanged; 21 focused units,
+23 diagnostic controls, typecheck, lint and six-manual verification passed.
+
+This resolves Codex's scheduling WebKit verification blocker. It does not claim
+the entire Actions workflow passed: other combined UI gates remain failed or
+unqualified, and development/main were not pushed. Claude and the separate Rondo
+owner retain their existing work; integration must still qualify one combined
+release. Keep Jira In Progress until development acceptance.
