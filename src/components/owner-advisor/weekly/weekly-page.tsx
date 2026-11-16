@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { CalendarCheckIcon } from "@phosphor-icons/react/dist/ssr/CalendarCheck";
@@ -259,7 +260,7 @@ export function WeeklyPage({ timeZone, currentWeek, locations, weeklyEnabled, re
   /* ---------- Render ---------- */
   const reviewing = !!reviewId;
   const head = reviewing
-    ? <><CorpNav phoneOnly back={{ href: WEEKLY_PATH, label: "Weekly plan" }} title="Review plan" titleId="wk-nav-title" />
+    ? <><CorpNav phoneOnly back={{ href: WEEKLY_PATH, label: "Weekly plan" }} title={outcome?.result.state === "saved" ? "Saved" : outcome?.result.state === "declined" ? "Declined" : "Review plan"} titleId="wk-nav-title" />
         <CorpTitle wide id="wk-title" title={outcome?.result.state === "saved" ? "Saved as a draft" : outcome?.result.state === "declined" ? "Plan declined" : "Review the plan"}
           sub={review?.result.review ? settingsText(review.result.review.weekStart, review.result.review.mode, review.result.review.locationScope, locations) : undefined} /></>
     : <><CorpNav phoneOnly back={{ href: "/app/ai-manager", label: "AI manager" }} title="Weekly plan" titleId="wk-nav-title" />
@@ -320,11 +321,11 @@ function ProblemCard({ problem }: { problem: NonNullable<Problem> }) {
 function ApprovalCard({ approval, onCheck, onResend, onDiscard }: { approval: Approval; onCheck: () => void; onResend: () => void; onDiscard: () => void }) {
   if (approval.status === "checking") return <section className="c-card wk-issue" tabIndex={-1} aria-busy="true"><BState kind="loading" title="Checking your approval" line="Asking NEVORA whether it was saved." /></section>;
   if (approval.status === "foreign") return <IssueCard tone="amber" title="An earlier approval was cleared" line="It belonged to a different sign-in, so it can’t be checked from here. Nothing was sent again."
-    actions={<CorpButton kind="secondary" size="md" onClick={onDiscard}>OK</CorpButton>} />;
+    actions={<CorpButton kind="primary" size="md" onClick={onDiscard}>OK</CorpButton>} />;
   if (approval.status === "not_saved") return <IssueCard tone="amber" title="Your approval wasn’t saved" line="NEVORA checked: nothing from this plan is on the schedule. You can send the same approval again, or leave it."
-    actions={<><CorpButton kind="primary" size="md" onClick={onResend}>Send the same approval again</CorpButton><CorpButton kind="secondary" size="md" onClick={onDiscard}>Leave it</CorpButton></>} />;
+    actions={<><CorpButton kind="primary" size="md" onClick={onResend}>Send the same approval again</CorpButton><CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" onClick={onDiscard}>Leave it</CorpButton></>} />;
   return <IssueCard tone="amber" title="We couldn’t confirm your approval" line="It may or may not have been saved. Check again asks NEVORA; sending again repeats the very same approval, so it can’t be saved twice."
-    actions={<><CorpButton kind="primary" size="md" onClick={onCheck}>Check again</CorpButton><CorpButton kind="secondary" size="md" onClick={onResend}>Send the same approval again</CorpButton></>} />;
+    actions={<><CorpButton kind="primary" size="md" onClick={onCheck}>Check again</CorpButton><CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" onClick={onResend}>Send the same approval again</CorpButton></>} />;
 }
 function HiddenCard({ onRefresh }: { onRefresh: () => void }) {
   return <CorpCard as="div"><BState kind="locked" icon={<EyeSlashIcon weight="bold" />} title="Details hidden" line="Plans stay on screen only for a short time, and leave when you step away." action={{ label: "Show again", onClick: onRefresh }} /></CorpCard>;
@@ -392,14 +393,13 @@ function statusTone(option: WeeklyAlternativeSummary): "green" | "amber" | "neut
 }
 function Comparison({ data, locations }: { data: WeeklyComparison; locations: WeeklyLocation[] }) {
   const included = data.locations.filter(l => l.state === "INCLUDED"), excluded = data.locations.filter(l => l.state !== "INCLUDED");
-  // Its own heading and separate cards (not a labelled kit section, which desktop draws as one card): options are
-  // compared side by side from 1024px.
-  return <section id="wk-results" className="wk-results" aria-labelledby="wk-results-t">
-    <div className="wk-head"><h2 id="wk-results-t" className="wk-head__t">Options</h2><p className="wk-head__s">{settingsText(data.weekStart, data.mode, data.locationScope, locations)}</p></div>
+  const settings = <span className="wk-meta">{settingsText(data.weekStart, data.mode, data.locationScope, locations)}</span>;
+  // Separate cards (a labelled kit section would draw as one card on desktop); two options sit side by side from 1024px.
+  return <section id="wk-results" className="wk-results" aria-label={`Options for ${weekText(data.weekStart)}`}>
     {data.state === "unavailable" ? <CorpCard as="div"><BState kind="failed" title="Rondo couldn’t compare this week"
       line={data.reason === "INPUT_LIMIT" ? "The week has more to plan than one comparison can hold. Try fewer locations." : "There were more changes than one plan can hold. Try fewer locations or Fill open gaps."} /></CorpCard>
       : <>
-        {data.baseline ? <CorpCard as="div" label="The schedule now">
+        {data.baseline ? <CorpCard as="div" label="The schedule now" aside={settings}>
           <CorpRows label="The schedule now">
             <li><CorpRow one title="Coverage" value={coverageText(data.baseline)} valueTone="soft" /></li>
             <li><CorpRow one title="Still open" value={`${data.baseline.remainingBlocks} ${data.baseline.remainingBlocks === 1 ? "block" : "blocks"}`} valueTone="soft" /></li>
@@ -411,14 +411,15 @@ function Comparison({ data, locations }: { data: WeeklyComparison; locations: We
       </>}
     <CorpCard as="div" label="Locations" count={included.length}>
       <CorpRows label="Locations">
-        {[...included, ...excluded].map(location => <li key={location.id}><CorpRow title={location.name} detail={location.issues.length ? location.issues.join(" · ") : undefined}
-          value={LOCATION_STATE_TEXT[location.state]} valueTone="soft" one={!location.issues.length} /></li>)}
+        {[...included, ...excluded].map(location => <li key={location.id}><CorpRow title={location.name}
+          detail={[location.state === "INCLUDED" ? null : "Left out of this plan", ...location.issues].filter(Boolean).join(" · ") || undefined}
+          value={LOCATION_STATE_TEXT[location.state]} valueTone="soft" /></li>)}
       </CorpRows>
     </CorpCard>
     <p className="wk-foot">
       {data.partial ? "The search stopped before checking every possibility, so a better option may exist. " : ""}
-      Hours are scheduled business hours, not time worked or pay; costs aren’t included. Fairness uses each person’s targets and preferences and {data.fairness.windowWeeks} weeks of weekend history
-      ({data.fairness.employeesWithKnownWeekends} known, {data.fairness.employeesWithoutKnownWeekends} unknown). Compared in {(data.computation.elapsedMs / 1000).toFixed(1)} s.
+      Hours are scheduled business hours, not time worked or pay, and costs aren’t included. Fairness uses each person’s targets, preferences and {data.fairness.windowWeeks} weeks of weekend history
+      ({data.fairness.employeesWithKnownWeekends} known, {data.fairness.employeesWithoutKnownWeekends} unknown).
     </p>
   </section>;
 }
@@ -427,17 +428,14 @@ function OptionCard({ option, index, baseline }: { option: WeeklyAlternativeSumm
   return <CorpCard as="div" label={`Option ${letter(index)}`} aside={<CorpPill tone={statusTone(option)}>{option.applyEligible ? STATUS_TEXT[option.status] : "Look only"}</CorpPill>}>
     <CorpRows label={`Option ${letter(index)}`}>
       <li><CorpRow one title="Adds" value={`${option.added} ${option.added === 1 ? "shift" : "shifts"} · ${hours(option.addedMinutes)}`} valueTone="soft" /></li>
-      {option.removed ? <li><CorpRow one title="Replaces" value={`${option.removed} draft ${option.removed === 1 ? "shift" : "shifts"} · ${hours(option.removedMinutes)}`} valueTone="soft" /></li> : null}
+      {option.removed ? <li><CorpRow one title="Replaces" value={`${option.removed} ${option.removed === 1 ? "draft" : "drafts"} · ${hours(option.removedMinutes)}`} valueTone="soft" /></li> : null}
       <li><CorpRow one title="Keeps" value={`${option.preservedAssignments} ${option.preservedAssignments === 1 ? "shift" : "shifts"}`} valueTone="soft" /></li>
       <li><CorpRow one title="Coverage" value={`${coverageText(option.coverage)}${baseline ? ` · ${delta(option.coverage.coveredMinutes, baseline.coveredMinutes)}` : ""}`} valueTone="soft" /></li>
       <li><CorpRow one title="Still open" value={`${option.remaining.total} ${option.remaining.total === 1 ? "block" : "blocks"}`} valueTone="soft" /></li>
+      {option.issues.total ? <li><CorpRow one title="Things to check" value={String(option.issues.total)} valueTone="soft" /></li> : null}
+      {reasons.length ? <li><CorpRow title={option.applyEligible ? "Worth a look" : "Can’t be saved"} detail={reasons.join(" · ")} /></li> : null}
+      <li><Link className="wk-linkrow" href={`${WEEKLY_PATH}?review=${option.id}`}>Review option {letter(index)}<CaretRightIcon weight="bold" aria-hidden="true" /></Link></li>
     </CorpRows>
-    <CorpBody>
-      {reasons.length ? <p className="wk-note"><WarningIcon weight="bold" aria-hidden="true" /><span>{option.applyEligible ? "Worth a look: " : "Can’t be saved: "}{reasons.join(". ")}.</span></p> : null}
-      {option.issues.items.length ? <ul className="wk-issues">{option.issues.items.slice(0, 3).map((item, i) => <li key={i}><span>{item.message}</span><small>{PROVENANCE_TEXT[item.provenance]}</small></li>)}
-        {option.issues.total > 3 ? <li className="wk-more">{option.issues.total - 3} more in the full plan</li> : null}</ul> : null}
-      <div className="wk-acts wk-acts--end"><CorpButtonLink href={`${WEEKLY_PATH}?review=${option.id}`} kind="secondary" size="md">Review option {letter(index)}</CorpButtonLink></div>
-    </CorpBody>
   </CorpCard>;
 }
 
@@ -466,7 +464,7 @@ function Outcome({ result, reviewId, timeZone, onRefresh, onDecline, busy, weekl
   if (result.state === "stale") return <CorpCard as="div"><BState kind="paused" icon={<WarningIcon weight="bold" />} title="This plan is out of date"
     line="The schedule or your setup changed, or the plan expired. Compare again for current options. You can still decline it.">
     <span className="wk-acts"><CorpButtonLink href={WEEKLY_PATH} kind="primary" size="md">Compare again</CorpButtonLink>
-      {weeklyEnabled ? <CorpButton kind="secondary" size="md" disabled={busy} onClick={() => onDecline(reviewId)}>Decline it</CorpButton> : null}</span>
+      {weeklyEnabled ? <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={busy} onClick={() => onDecline(reviewId)}>Decline it</CorpButton> : null}</span>
   </BState></CorpCard>;
   if (result.state === "declined") return <CorpCard as="div"><BState kind="empty" icon={<CalendarCheckIcon weight="bold" />} title="Plan declined" line="Nothing on the schedule changed. You can review another option."
     action={{ label: "Back to options", href: WEEKLY_PATH }} /></CorpCard>;
@@ -475,15 +473,15 @@ function Outcome({ result, reviewId, timeZone, onRefresh, onDecline, busy, weekl
     line={weeklyEnabled ? "NEVORA couldn’t confirm what happened to it. Try again in a moment." : "Weekly planning is off, so only a saved plan’s record can be shown."} action={{ label: "Check again", onClick: onRefresh }} /></CorpCard>;
   const receipt = result.receipt, progress = result.progress;
   return <>
-    <CorpCard as="div" label="Saved">
+    <CorpCard as="div" label="What was saved">
       <CorpRows label="What was saved">
-        <li><CorpRow one title="Saved" value={when(receipt.savedAt)} valueTone="soft" /></li>
+        <li><CorpRow one title="Saved at" value={when(receipt.savedAt)} valueTone="soft" /></li>
         <li><CorpRow one title="Added" value={`${receipt.added} ${receipt.added === 1 ? "shift" : "shifts"}`} valueTone="soft" /></li>
         {receipt.removed ? <li><CorpRow one title="Replaced" value={`${receipt.removed} draft ${receipt.removed === 1 ? "shift" : "shifts"}`} valueTone="soft" /></li> : null}
         <li><CorpRow one title="Kept" value={`${receipt.preservedAssignments} ${receipt.preservedAssignments === 1 ? "shift" : "shifts"}`} valueTone="soft" /></li>
       </CorpRows>
     </CorpCard>
-    <CorpCard as="div" label="Now" aside={progress ? <CorpPill tone={progress.state === "published" ? "green" : progress.state === "changed" ? "amber" : "neutral"}>{PROGRESS_TEXT[progress.state]}</CorpPill> : undefined}>
+    <CorpCard as="div" label="On the schedule now" aside={progress ? <CorpPill tone={progress.state === "published" ? "green" : progress.state === "changed" ? "amber" : "neutral"}>{PROGRESS_TEXT[progress.state]}</CorpPill> : undefined}>
       {progress && progress.state !== "unavailable" ? <CorpRows label="The saved shifts now">
         <li><CorpRow one title="Still as saved" value={`${progress.assignmentsPresent} of ${progress.assignmentsTotal}`} valueTone="soft" /></li>
         <li><CorpRow one title="Published" value={`${progress.publishedAssignments} of ${progress.assignmentsPresent}`} valueTone="soft" /></li>
@@ -492,7 +490,7 @@ function Outcome({ result, reviewId, timeZone, onRefresh, onDecline, busy, weekl
     </CorpCard>
     <p className="wk-foot">This records what was saved as a draft. It doesn’t show attendance, and it isn’t proof the week is covered. Publishing happens in Schedule, and nobody was notified.</p>
     <div className="wk-acts wk-acts--end wk-acts--page">
-      <CorpButtonLink href={WEEKLY_PATH} kind="secondary" size="md">Plan another week</CorpButtonLink>
+      <CorpButtonLink href={WEEKLY_PATH} kind="secondary" size="md" className="b-rowact b-rowact--quiet">Plan another week</CorpButtonLink>
       <CorpButtonLink href="/app/schedule" kind="primary" size="md">Open Schedule</CorpButtonLink>
     </div>
   </>;
@@ -516,7 +514,7 @@ function FullPlan({ plan, readReceiptId, baseline, locations, timeZone, now, ack
         <li><CorpRow one title="Adds" value={`${plan.added} ${plan.added === 1 ? "shift" : "shifts"} · ${hours(plan.addedMinutes)}`} valueTone="soft" /></li>
         {plan.removed ? <li><CorpRow one title="Replaces" value={`${plan.removed} draft ${plan.removed === 1 ? "shift" : "shifts"} · ${hours(plan.removedMinutes)}`} valueTone="soft" /></li> : null}
         <li><CorpRow one title="Keeps" value={`${plan.preservedAssignments} ${plan.preservedAssignments === 1 ? "shift" : "shifts"}`} valueTone="soft" /></li>
-        <li><CorpRow one title="Coverage" value={`${baseline ? `${hours(baseline.coveredMinutes)} → ` : ""}${coverageText(plan.coverage)}`} valueTone="soft" /></li>
+        <li><CorpRow one title="Coverage" value={`${baseline ? `${hours(baseline.coveredMinutes).replace(" h", "")} → ` : ""}${coverageText(plan.coverage)}`} valueTone="soft" /></li>
         <li><CorpRow one title="Still open" value={`${plan.remaining.total} ${plan.remaining.total === 1 ? "block" : "blocks"}`} valueTone="soft" /></li>
         <li><CorpRow one title="Available until" value={expired ? "Expired" : until} valueTone="soft" /></li>
       </CorpRows>
@@ -524,13 +522,12 @@ function FullPlan({ plan, readReceiptId, baseline, locations, timeZone, now, ack
 
     <CorpSection id="wk-added" label="Shifts added" count={additions.length}>
       <CorpCard as="div"><CorpRows label="Shifts added">{additions.length ? additions.map((a, i) => <li key={i}><CorpRow title={a.employeeName} detail={shift(a)}
-        detailEnd={a.isDesignatedLead ? <CorpPill tone="teal">Lead</CorpPill> : undefined} /></li>)
+        value={a.isDesignatedLead ? <CorpPill tone="teal">Lead</CorpPill> : undefined} /></li>)
         : <li className="c-empty c-empty--row">No shifts added</li>}</CorpRows></CorpCard>
     </CorpSection>
     {removals.length ? <CorpSection id="wk-removed" label="Draft shifts replaced" count={removals.length}>
       <CorpCard as="div"><CorpRows label="Draft shifts replaced">{removals.map((r, i) => <li key={i}><CorpRow title={r.employeeName} detail={shift(r)}
-        detailEnd={<CorpPill tone="neutral">Replaced</CorpPill>} /></li>)}</CorpRows></CorpCard>
-      <p className="wk-foot">Only draft shifts generated earlier can be replaced. Manual shifts, published weeks and shifts with history stay.</p>
+        value={<CorpPill tone="neutral">Replaced</CorpPill>} /></li>)}</CorpRows></CorpCard>
     </CorpSection> : null}
     <CorpSection id="wk-open" label="Still open" count={plan.remaining.total}>
       <CorpCard as="div"><CorpRows label="Still open">{plan.remaining.items.length ? plan.remaining.items.map((g, i) => <li key={i}><CorpRow
@@ -549,15 +546,15 @@ function FullPlan({ plan, readReceiptId, baseline, locations, timeZone, now, ack
     <CorpSection id="wk-decide" label="Decide">
       <CorpCard as="div"><CorpBody><div className="wk-decide">
         {canSave ? <>
-          <p className="wk-para">Saving adds all {plan.added} {plan.added === 1 ? "shift" : "shifts"}{plan.removed ? ` and replaces ${plan.removed}` : ""} as a draft, in one step. Nothing is published and nobody is notified; you publish from Schedule.</p>
+          <p className="wk-para">Saving adds all {plan.added} {plan.added === 1 ? "shift" : "shifts"}{plan.removed ? ` and replaces ${plan.removed}` : ""} as a draft, in one step. Nothing is published and nobody is notified; you publish from Schedule.{plan.removed ? " Manual shifts, published weeks and shifts with history stay." : ""}</p>
           <label className="wk-ack"><input type="checkbox" checked={acknowledged} disabled={busy || approvalLocked} onChange={event => setAcknowledged(event.target.checked)} />
             <span>I reviewed all proposed changes and remaining gaps</span></label>
         </> : <p className="wk-note"><WarningIcon weight="bold" aria-hidden="true" /><span>{!weeklyEnabled ? "Weekly planning is off, so this plan can’t be saved." : expired ? "This plan has expired. Compare again for current options."
           : `This plan can be looked at but not saved${reasons.length ? `: ${reasons.join(". ").toLowerCase()}` : ""}.`}</span></p>}
         <div className="wk-acts wk-acts--end">
-          {weeklyEnabled ? <CorpButton kind="secondary" size="md" disabled={busy} onClick={() => onDecline(plan.id)}>Decline</CorpButton> : null}
+          {weeklyEnabled ? <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={busy} onClick={() => onDecline(plan.id)}>Decline</CorpButton> : null}
           {canSave ? <CorpButton kind="primary" size="md" disabled={!acknowledged || busy || approvalLocked} onClick={() => onApprove(plan, readReceiptId!)}>{busy ? "Saving…" : "Save as draft"}</CorpButton>
-            : <CorpButtonLink href={WEEKLY_PATH} kind="primary" size="md">Back to options</CorpButtonLink>}
+            : <CorpButtonLink href={WEEKLY_PATH} kind="secondary" size="md" className="b-rowact b-rowact--go">Back to options</CorpButtonLink>}
         </div>
       </div></CorpBody></CorpCard>
       <p className="wk-foot">Hours are scheduled business hours, not time worked or pay; costs aren’t included. Fairness uses targets, preferences and {plan.fairness.windowWeeks} weeks of weekend history ({plan.fairness.employeesWithKnownWeekends} known, {plan.fairness.employeesWithoutKnownWeekends} unknown).</p>

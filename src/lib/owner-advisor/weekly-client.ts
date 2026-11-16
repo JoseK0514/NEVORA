@@ -233,11 +233,10 @@ export const PROVENANCE_TEXT: Record<WeeklyAlternativeSummary["issues"]["items"]
   RETAINED_ASSIGNMENT: "A shift already scheduled", SELECTED_ASSIGNMENT: "A shift in this plan",
 };
 export const LOCATION_STATE_TEXT: Record<WeeklyComparison["locations"][number]["state"], string> = {
-  INCLUDED: "Included", PUBLISHED: "Left out: week already published", ARCHIVED: "Left out: archived week", NEEDS_SETUP: "Left out: needs setup",
-  NOT_SELECTED: "Not selected", INACTIVE: "Left out: inactive",
+  INCLUDED: "Included", PUBLISHED: "Published", ARCHIVED: "Archived", NEEDS_SETUP: "Needs setup", NOT_SELECTED: "Not selected", INACTIVE: "Inactive",
 };
 export const PROGRESS_TEXT: Record<WeeklyProgress["state"], string> = {
   draft: "Still a draft", published: "Published", mixed: "Partly published", changed: "Changed since saving", unavailable: "Can't check right now",
 };
-/** "20 of 24 h covered" for a coverage measure. */
-export const coverageText = (measure: CoverageMeasure) => `${hours(measure.coveredMinutes)} of ${hours(measure.requiredMinutes)} covered`;
+/** "20 of 24 h" for a coverage measure (covered of required). */
+export const coverageText = (measure: CoverageMeasure) => `${hours(measure.coveredMinutes).replace(" h", "")} of ${hours(measure.requiredMinutes)}`;

@@ -250,7 +250,7 @@ function IssueCard({ kind, op, onRetry, onAbandon }: { kind: Issue["kind"]; op: 
   const failed = kind === "limit" || kind === "invalid";
   return <section className="c-card kn-issue" tabIndex={-1} aria-label={copy.title}>
     <BState kind={failed ? "failed" : "paused"} icon={failed ? undefined : <WarningIcon weight="bold" />} alert title={copy.title} line={copy.line}>
-      {onRetry ? <span className="kn-issue__acts"><CorpButton kind="primary" size="md" onClick={onRetry}>Check again</CorpButton><CorpButton kind="secondary" size="md" onClick={onAbandon}>Stop and reload</CorpButton></span> : null}
+      {onRetry ? <span className="kn-issue__acts"><CorpButton kind="primary" size="md" onClick={onRetry}>Check again</CorpButton><CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" onClick={onAbandon}>Stop and reload</CorpButton></span> : null}
     </BState>
   </section>;
 }
@@ -271,8 +271,7 @@ function Library({ ctx, problem }: { ctx: Ctx; problem: ReactNode }) {
       icon={isProfile ? <StorefrontIcon weight="bold" /> : <FileTextIcon weight="bold" />}
       title={isProfile ? "Business profile" : latest.title}
       detail={isProfile ? `${LOCALE_LABELS[latest.locale]} · updated ${shortDay(latest.createdAt, ctx.timeZone)}` : `${categoryLabel(latest.category)} · ${LOCALE_LABELS[latest.locale]}`}
-      detailEnd={summary.chip ? <CorpPill tone={summary.chip.tone}>{summary.chip.label}</CorpPill> : undefined}
-      value={summary.chip ? undefined : summary.value ?? undefined} valueTone="soft" /></li>;
+      value={summary.chip ? <CorpPill tone={summary.chip.tone}>{summary.chip.label}</CorpPill> : summary.value ?? undefined} valueTone="soft" /></li>;
   };
   return <>
     {problem}
@@ -363,7 +362,7 @@ function EditorState({ state, back }: { state: { kind: string }; back: string })
 }
 function SaveFooter({ ctx, cancel }: { ctx: Ctx; cancel: string }) {
   return <CorpFormFooter>
-    <CorpButtonLink href={cancel} kind="secondary" size="md">Cancel</CorpButtonLink>
+    <CorpButtonLink href={cancel} kind="secondary" size="md" className="b-rowact b-rowact--quiet">Cancel</CorpButtonLink>
     <CorpButton type="submit" kind="primary" size="md" disabled={ctx.busy}>{ctx.busy ? "Saving…" : "Save draft"}</CorpButton>
   </CorpFormFooter>;
 }
@@ -502,7 +501,7 @@ function DocumentForm({ ctx, entry, cancel, version, problem }: { ctx: Ctx; entr
     </CorpField>
     <div className="kn-file">
       <input ref={fileInput} className="kn-file__input" id="kn-doc-file" type="file" accept=".txt,.md,text/plain,text/markdown" onChange={event => void load(event)} tabIndex={-1} aria-hidden="true" />
-      <CorpButton kind="secondary" size="sm" onClick={() => fileInput.current?.click()} aria-describedby="kn-doc-file-help">{sourceName ? "Load another file" : "Load a .txt or .md file"}</CorpButton>
+      <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--go" onClick={() => fileInput.current?.click()} aria-describedby="kn-doc-file-help">{sourceName ? "Load another file" : "Load a .txt or .md file"}</CorpButton>
       <span className="c-field__help" id="kn-doc-file-help">{sourceName
         ? <>From {sourceName} · <button type="button" className="kn-textbtn" onClick={() => setSourceName(null)}>Forget file name</button></>
         : "PDF, Word and scanned files can’t be loaded. Paste their text instead"}</span>
@@ -544,10 +543,9 @@ function EntryDetail({ ctx, entry, problem }: { ctx: Ctx; entry: KnowledgeEntry;
           detail={entry.archived ? "Rondo doesn’t use it. Edit and publish to use it again" : !published ? "Publish a draft so Rondo can use it"
             : `Version ${number(published.versionId)}, published ${companyTime(published.publishedAt, ctx.timeZone)}${published.effectiveUntil && !ended ? ` · until ${companyTime(published.effectiveUntil, ctx.timeZone)}` : ""}`} /></li>
         {state.draft ? <li><CorpRow href={viewHref({ name: "version", documentId: entry.documentId, versionId: state.draft.versionId })} icon={<PencilSimpleIcon weight="bold" />}
-          title="Draft waiting for review" detail={`Version ${number(state.draft.versionId)}, saved ${companyTime(state.draft.createdAt, ctx.timeZone)}`}
-          detailEnd={<CorpPill tone="amber">Review</CorpPill>} /></li> : null}
+          title="Draft waiting for review" detail={`Version ${number(state.draft.versionId)}, saved ${companyTime(state.draft.createdAt, ctx.timeZone)}`} /></li> : null}
         {published?.reviewDue && !entry.archived ? <li><CorpRow icon={<ClockIcon weight="bold" />} title={`Review by ${companyTime(published.reviewDue, ctx.timeZone)}`}
-          detail={overdue ? "Past due. Rondo still uses it" : "Rondo keeps using it after this date"} detailEnd={overdue ? <CorpPill tone="amber">Due</CorpPill> : undefined} /></li> : null}
+          detail={overdue ? "Past due. Rondo still uses it" : "Rondo keeps using it after this date"} value={overdue ? <CorpPill tone="amber">Past due</CorpPill> : undefined} /></li> : null}
       </CorpRows></CorpCard>
     </CorpSection>
 
@@ -557,8 +555,7 @@ function EntryDetail({ ctx, entry, problem }: { ctx: Ctx; entry: KnowledgeEntry;
         return <li key={version.versionId}><CorpRow href={viewHref({ name: "version", documentId: entry.documentId, versionId: version.versionId })}
           title={`Version ${number(version.versionId)}`}
           detail={`Saved ${companyTime(version.createdAt, ctx.timeZone)}${version.sourceName ? ` · ${version.sourceName}` : ""}`}
-          detailEnd={!version.publishedAt ? <CorpPill tone="amber">Draft</CorpPill> : undefined}
-          value={current ? "In use" : version.publishedAt ? "Earlier" : undefined} valueTone="soft" /></li>;
+          value={!version.publishedAt ? <CorpPill tone="amber">Draft</CorpPill> : current ? "In use" : "Earlier"} valueTone="soft" /></li>;
       })}</CorpRows></CorpCard>
     </CorpSection>
 
@@ -574,7 +571,7 @@ function EntryDetail({ ctx, entry, problem }: { ctx: Ctx; entry: KnowledgeEntry;
             </ul>}
         {confirm === "delete" ? <label className="kn-check"><input type="checkbox" checked={acknowledged} onChange={event => setAcknowledged(event.target.checked)} /><span>I understand this can’t be undone</span></label> : null}
         <div className="kn-actions">
-          <CorpButton kind="secondary" size="md" disabled={ctx.busy} onClick={cancel}>Cancel</CorpButton>
+          <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={ctx.busy} onClick={cancel}>Cancel</CorpButton>
           <CorpButton kind={confirm === "delete" ? "danger" : "primary"} size="md" disabled={ctx.busy || (confirm === "delete" && !acknowledged)} onClick={() => void act(confirm)}>
             {ctx.busy ? (confirm === "archive" ? "Archiving…" : "Deleting…") : confirm === "archive" ? "Archive" : "Delete"}</CorpButton>
         </div>
@@ -641,7 +638,7 @@ function VersionReview({ ctx, entry, versionId, problem }: { ctx: Ctx; entry: Kn
           <p className="kn-para">{effect} Answers Rondo gave from earlier text are retired.</p>
           {mismatch ? <p className="c-error" role="alert"><ErrorText>This screen is out of date. Go back and open the newest draft</ErrorText></p> : null}
           <div className="kn-actions">
-            <CorpButtonLink href={edit} kind="secondary" size="md">Edit</CorpButtonLink>
+            <CorpButtonLink href={edit} kind="secondary" size="md" className="b-rowact b-rowact--quiet">Edit</CorpButtonLink>
             <CorpButton kind="primary" size="md" disabled={ctx.busy || mismatch} onClick={() => void publish()}>{ctx.busy ? "Publishing…" : "Publish for Rondo"}</CorpButton>
           </div>
         </div>

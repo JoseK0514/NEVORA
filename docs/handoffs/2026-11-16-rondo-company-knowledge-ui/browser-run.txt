@@ -24,7 +24,7 @@ E toast: Draft saved. Review it, then publish when it’s right. | focus: H1 Rev
 E review 1440 h-overflow: false clipped: [] under44: ["Profile 32"]
 E review 390 h-overflow: false clipped: [] under44: []
 E text: "businessDescription:\nPanadería ficticia para pruebas.\n\nescalationRoles:\nEl Owner decide excepciones." digest chars: 64
-E publish toast: Published. Rondo uses this version for every Owner. | status: Status | In use by Rondo | Version 1, published Mon, Nov 16, 2026, 1:45 PM | Review by Mon, Feb 1, 2027, 9:00 AM | Rondo keeps using it after this date
+E publish toast: Published. Rondo uses this version for every Owner. | status: Status | In use by Rondo | Version 1, published Mon, Nov 16, 2026, 3:22 PM | Review by Mon, Feb 1, 2027, 9:00 AM | Rondo keeps using it after this date
 N pdf: Only .txt and .md files can be loaded. For a PDF or Word file, copy its text and paste it here
 N latin1: This file isn’t UTF-8 text. Save it as UTF-8, or paste its text here
 N md: title= Closing checklist body= "# Cierre\n\n- Contar la caja.\n" help= From closing-checklist.md · Forget file name
@@ -48,7 +48,7 @@ I retry new requestId: true codes: 409,200
 J card: Company knowledge is full | It holds 20 documents, 100 saved versions and 10 MB of text. Delete a document you no longer need; archived ones still count.
 M confirm focus: H2 Archive “Closing checklist”?
 M confirm 390 h-overflow: false clipped: [] under44: ["Edit 36"]
-M toast: Archived. Rondo no longer uses it. | status: Status | Archived | Rondo doesn’t use it. Edit and publish to use it again | Draft waiting for review | Version 3, saved Mon, Nov 16, 2026, 1:45 PM | Review
+M toast: Archived. Rondo no longer uses it. | status: Status | Archived | Rondo doesn’t use it. Edit and publish to use it again | Draft waiting for review | Version 3, saved Mon, Nov 16, 2026, 3:22 PM
 L delete disabled before check: true
 L delete 390 h-overflow: false clipped: [] under44: ["Edit 36"]
 L delete 1440 h-overflow: false clipped: [] under44: ["Knowledge 32","Edit 42"]

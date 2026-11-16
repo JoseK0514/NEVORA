@@ -123,3 +123,8 @@ focus. Leaving the page while a write is unconfirmed asks first (beforeunload).
 ## Next
 
 Waiting for Codex's weekly-manager UI contract. No weekly or import endpoint was invented.
+
+## Craft pass (Nov 16, 2026)
+
+The screens were revised to the app's own button pairs, rows, type sizes and spacing after Jose's review. Details, measurements
+and before/after captures: `docs/handoffs/2026-11-16-ui-craft-pass/`. No contract, request or recovery rule changed.
