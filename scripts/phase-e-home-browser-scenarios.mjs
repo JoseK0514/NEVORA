@@ -1,3 +1,4 @@
+import {waitForPortalReady} from './browser-render-readiness.mjs';
 import {measureRenderedContrast} from './browser-contrast.mjs';
 import {fulfillHeldResponse} from './browser-held-response.mjs';
 import {safeLoginServerRequests,safeEvaluationFailure} from './release-browser-diagnostics.mjs';
@@ -145,7 +146,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
    await target.bringToFront();await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
    await target.getByRole('button',{name:'Sign in',exact:true}).click({noWaitAfter:true});
    await target.waitForFunction(()=>location.pathname==='/app'&&!!document.querySelector('.app-shell.nevora-portal'));
-   await target.locator('.app-shell.nevora-portal').waitFor();attempt.arrival={documentRoute:'app',pageRoute:routeOf(target.url()),shellVisible:true};if(waitForIdle)await target.waitForLoadState('networkidle');
+   await target.locator('.app-shell.nevora-portal').waitFor();attempt.arrival={documentRoute:'app',pageRoute:routeOf(target.url()),shellVisible:true};if(waitForIdle)await waitForPortalReady(target);
    attempt.serverTrace=readOwnedLoginEvents(await readFile(join(app.root,'next.log'),'utf8'),attemptId);assert(attempt.serverTrace.some(event=>event.event==='request-start'&&event.method==='POST'),'Owned native login server observation required');attempt.status='ready';
   }catch(error){
    const url=new URL(target.url()),code=url.searchParams.get('error');details.loginFailure={route:routeOf(target.url()),error:['busy','invalid','missing','locked'].includes(code)?code:code?'other':null};attempt.status='failed';attempt.failure=details.loginFailure;
