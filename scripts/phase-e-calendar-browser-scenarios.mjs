@@ -81,16 +81,18 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
  await app.database.executor.query({text:"UPDATE employees SET role='EMPLOYEE' WHERE id=$1",values:[fixture.actors[0]]});
  const q=(text,values=[])=>app.database.executor.query({text,values});
  await step('Real fictional login and secondary calendar entry from the Employee shell',async()=>{
-  await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(fixture.actors[0]);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
+  const landingPage=await context.newPage();
+  await landingPage.goto(app.url+'/login');await landingPage.getByLabel('Employee ID',{exact:true}).fill(fixture.actors[0]);await landingPage.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
   try{
-   await Promise.all([page.waitForURL(url=>url.pathname==='/app',{waitUntil:'commit'}),page.getByRole('button',{name:'Sign in',exact:true}).click()]);await page.locator('.app-shell.nevora-portal').waitFor();await currentPageReady();
+   await Promise.all([landingPage.waitForURL(url=>url.pathname==='/app',{waitUntil:'commit'}),landingPage.getByRole('button',{name:'Sign in',exact:true}).click()]);await waitForPortalReady(landingPage);
   }catch(error){
-   const url=new URL(page.url()),reason=url.searchParams.get('error');
+   const url=new URL(landingPage.url()),reason=url.searchParams.get('error');
    await writeFile(join(evidenceDirectory,`calendar-login-${engine}-${width}-report.json`),JSON.stringify({engine,width,route:['/login','/app'].includes(url.pathname)?url.pathname:'other',reason:['busy','invalid','deleting'].includes(reason)?reason:null,failure:safeBrowserFailure(error,{suite:'calendar',engine,width,status:'failed'})},null,2));
-   await page.screenshot({path:join(evidenceDirectory,`calendar-login-${engine}-${width}-failure.png`),fullPage:true});throw error;
+   await landingPage.screenshot({path:join(evidenceDirectory,`calendar-login-${engine}-${width}-failure.png`),fullPage:true});throw error;
   }
   // Board E-Calendar: the link is its own page. The older Profile deep link (#employee-calendar-title) still lands there.
-  await page.goto(app.url+'/app/profile#employee-calendar-title');await page.waitForURL(url=>url.pathname==='/app/profile/calendar');await panel.waitFor();
+  // Preserve the login landing document and its pending reads; exercise the direct legacy URL in this same-session tab.
+  await page.bringToFront();await page.goto(app.url+'/app/profile#employee-calendar-title');await page.waitForURL(url=>url.pathname==='/app/profile/calendar');await panel.waitFor();await state('none');
   // The approved Schedule board (G-E-Schedule) has no calendar control. Phones reach it from the header avatar's More page
   // (board E-More, "Add shifts to your calendar"); wider viewports, which have no More page, from the account menu.
   await page.goto(app.url+'/app/schedule');await currentPageReady();

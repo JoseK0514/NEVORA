@@ -717,6 +717,9 @@ jobs:
       - name: Install Chromium and WebKit
         timeout-minutes: 8
         run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+      - name: Actual pointer target and clipping regressions
+        if: ${{ matrix.suite == 'home' }}
+        run: node --test scripts/browser-pointer-target.check.mjs
       - name: Home fresh-generation scheduling regression
         if: ${{ matrix.suite == 'home' }}
         env:
