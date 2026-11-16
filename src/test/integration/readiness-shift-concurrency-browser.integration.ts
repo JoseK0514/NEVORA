@@ -69,16 +69,18 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         runtimeExecutions.push(execution);
       }
       const p0 = await c0.newPage(), p1 = await c1.newPage(), p2 = await c2.newPage(), page = (n: number) => n === 2 ? p2 : n ? p1 : p0;
+      const pendingRouterReads = [new Set<object>(), new Set<object>(), new Set<object>()];
+      const documentRequests = [0, 0, 0], drainReceipts: { page: number; pending: number }[] = [];
       for (const n of [0, 1, 2]) {
         const p = page(n); p.setDefaultTimeout(20000);
         type TracedRequest = { url(): string; method(): string; headers(): Record<string, string>; isNavigationRequest(): boolean; failure(): { errorText?: string } | null };
         const requestIds = new WeakMap<object, number>(); let requestSerial = 0;
         const kind = (address: string) => { const url = new URL(address); if (url.origin !== app.url) return null; const paths: Record<string, string> = { '/login': 'login', '/app': 'manager-home', '/app/schedule': 'schedule', '/app/schedule/edit': 'schedule-edit', '/api/manager/today': 'manager-today', '/api/company-access/operational-authority': 'authority', '/api/notifications': 'notifications', '/__nextjs_original-stack-frames': 'framework-frames' }; return paths[url.pathname] ?? null; };
         const requestMetadata = (request: TracedRequest) => { const resource = kind(request.url()); if (!resource) return null; if (!requestIds.has(request)) requestIds.set(request, ++requestSerial); return { resource, requestId: requestIds.get(request), method: request.method(), document: request.isNavigationRequest(), rsc: request.headers().rsc === '1', serverAction: typeof request.headers()['next-action'] === 'string' }; };
-        p.on('request', (request: TracedRequest) => { const metadata = requestMetadata(request); if (metadata) trace({ engine, index: n, event: 'request', ...metadata }); });
+        p.on('request', (request: TracedRequest) => { const metadata = requestMetadata(request); if (metadata) { if (metadata.document) documentRequests[n]++; if (metadata.method === 'GET' && metadata.rsc && ['manager-home', 'schedule', 'schedule-edit'].includes(metadata.resource)) pendingRouterReads[n].add(request); trace({ engine, index: n, event: 'request', ...metadata }); } });
         p.on('response', (response: { request(): TracedRequest; status(): number }) => { const metadata = requestMetadata(response.request()); if (metadata) trace({ engine, index: n, event: 'response', status: response.status(), ...metadata }); });
-        p.on('requestfinished', (request: TracedRequest) => { const metadata = requestMetadata(request); if (metadata) trace({ engine, index: n, event: 'finished', ...metadata }); });
-        p.on('requestfailed', (request: TracedRequest) => { const metadata = requestMetadata(request); if (metadata) trace({ engine, index: n, event: 'failed', category: requestFailureCategory(request.failure()?.errorText), ...metadata }); });
+        p.on('requestfinished', (request: TracedRequest) => { pendingRouterReads[n].delete(request); const metadata = requestMetadata(request); if (metadata) trace({ engine, index: n, event: 'finished', ...metadata }); });
+        p.on('requestfailed', (request: TracedRequest) => { pendingRouterReads[n].delete(request); const metadata = requestMetadata(request); if (metadata) trace({ engine, index: n, event: 'failed', category: requestFailureCategory(request.failure()?.errorText), ...metadata }); });
         p.on('framenavigated', (frame: { url(): string }) => { if (frame === p.mainFrame()) trace({ engine, index: n, event: 'document', resource: kind(frame.url()) }); });
         p.on('pageerror', () => { trace({ engine, index: n, event: 'pageerror' }); if (runtimeFailureTraces.length < 8) runtimeFailureTraces.push({ engine, index: n, events: [...runtimeTrace] }); else failureTracesOmitted++; });
         stage = 'login';
@@ -86,7 +88,40 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         await p.goto(app.url + '/login'); await p.getByLabel('Employee ID', { exact: true }).fill(n === 2 ? 'MATRIX-SECOND' : n ? 'MATRIX-LOCAL' : 'MATRIX-COMPANY'); await p.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD); await p.getByRole('button', { name: 'Sign in', exact: true }).click(); await p.waitForURL(app.url + '/app');
       }
       const form = (n: number) => page(n).locator('form').filter({ has: page(n).locator('[name="employeeId"]') });
-      const open = async (n: number, id: string) => { const p = page(n); await p.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await p.waitForLoadState('networkidle'); await p.goto(app.url + '/app/schedule/edit?shiftId=' + id); await form(n).locator('[name="expectedReviewVersion"]').waitFor({ state: 'attached' }); };
+      const drainRouterReads = async (n: number) => {
+        const receipt = { page: n, pending: pendingRouterReads[n].size }; drainReceipts.push(receipt);
+        // A client-side redirect updates history before its RSC stream ends.
+        // networkidle may already belong to the old document; require actual
+        // request completion before this test initiates another hard navigation.
+        await expect.poll(() => pendingRouterReads[n].size, { timeout: 20000 }).toBe(0);
+        trace({ engine, index: n, event: 'router-reads-drained', pendingAtStart: receipt.pending });
+      };
+      const open = async (n: number, id: string) => { const p = page(n); await drainRouterReads(n); await p.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await p.goto(app.url + '/app/schedule/edit?shiftId=' + id); await form(n).locator('[name="expectedReviewVersion"]').waitFor({ state: 'attached' }); };
+      // Negative control: even a previously idle document must not let a held
+      // real Next RSC read be cancelled by the next fixture navigation.
+      const probeSource = await seed(), probeDestination = await seed();
+      await open(0, probeSource);
+      await p0.waitForLoadState('networkidle');
+      let releaseProbe: () => void = () => {}, probeArrived: () => void = () => {}, holdProbe = true;
+      const probeGate = new Promise<void>(resolve => { releaseProbe = resolve; }), probeSeen = new Promise<void>(resolve => { probeArrived = resolve; });
+      const probePattern = '**/app/schedule/edit?*';
+      await p0.route(probePattern, async (route: { request(): TracedRequest; continue(): Promise<void> }) => { if (holdProbe && route.request().headers().rsc === '1') { probeArrived(); await probeGate; } await route.continue(); });
+      let nextProbe: Promise<void> | undefined;
+      try {
+        await p0.evaluate(() => { void fetch(location.pathname + location.search, { cache: 'no-store', headers: { RSC: '1' } }).then(response => response.text()).catch(() => {}); });
+        await Promise.race([probeSeen, new Promise<never>((_, reject) => setTimeout(() => reject(Error('Owned RSC control was not requested')), 10000))]);
+        await p0.waitForLoadState('networkidle');
+        expect(pendingRouterReads[0].size).toBeGreaterThan(0);
+        trace({ engine, index: 0, event: 'old-idle-barrier-returned-with-pending-router-read' });
+        const before = documentRequests[0], receiptCount = drainReceipts.length;
+        nextProbe = open(0, probeDestination);
+        await expect.poll(() => drainReceipts.length).toBe(receiptCount + 1);
+        expect(drainReceipts.at(-1)?.pending).toBeGreaterThan(0);
+        expect(documentRequests[0]).toBe(before);
+        holdProbe = false; releaseProbe(); await nextProbe;
+        expect(documentRequests[0]).toBeGreaterThan(before);
+        checks.push(`${engine}: held real RSC read blocks next hard navigation until response completion`);
+      } finally { holdProbe = false; releaseProbe(); await nextProbe?.catch(() => {}); await p0.unroute(probePattern); await q('DELETE FROM shifts WHERE id=ANY($1::text[])', [[probeSource, probeDestination]]); }
       const edit = async (n: number, note: string, reassign = false) => { if (reassign) await form(n).locator('select[name="employeeId"]').selectOption('MATRIX-OTHER'); await form(n).locator('[name="notes"]').fill(note); await form(n).evaluate((element: HTMLFormElement) => element.requestSubmit()); };
       const remove = async (n: number) => { const p = page(n); await p.getByRole('button', { name: n ? 'Review deletion' : 'Delete shift', exact: true }).click(); await p.getByRole('button', { name: n ? 'Delete this draft shift' : 'Delete this shift', exact: true }).click(); };
       const refused = async (n: number, version: string, unavailable = false) => { await page(n).getByRole('alert').filter({ hasText: unavailable ? 'Operational access is unavailable' : 'changed since you opened' }).first().waitFor(); expect(await form(n).locator('[name="expectedReviewVersion"]').inputValue()).toBe(version); await page(n).getByRole('button', { name: 'Reload current shift', exact: true }).first().waitFor(); };
