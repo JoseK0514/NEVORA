@@ -28,6 +28,7 @@ it('connects original shift reviews and explicit period history in owned Chromiu
     await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('UI-COMPANY','Fictional','Company Manager','NONE','MANAGER','loc-1'),('UI-LOCAL','Fictional','Location Manager','NONE','MANAGER','loc-1'),('UI-WORKER','Fictional','Worker','NONE','EMPLOYEE','loc-1')");
     await q("INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('UI-COMPANY',$1,false),('UI-LOCAL',$1,false)", [await hashPassword(TEST_PASSWORD)]);
     await q("INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('UI-WORKER','loc-1')");
+    await q("INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) SELECT 'ui-availability-'||d,'UI-WORKER',d,'00:00','24:00' FROM generate_series(0,6)d; INSERT INTO weekly_availability_submissions(week_start,employee_id,uses_normal_availability) VALUES('2026-10-12','UI-WORKER',true)");
     await assignOwnedManagerCompanyAccess(app.database.executor, 'UI-COMPANY');
     const owner = await fixtureProof(app.database.executor, 'QAOWNER');
     const scope = await readOwnerOperationalScope(owner, 'UI-LOCAL', app.database.executor);
