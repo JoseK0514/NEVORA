@@ -57,6 +57,9 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  await confirm().evaluate(element=>{window.__confirmationTargetHit=false;element.addEventListener('click',event=>{event.preventDefault();event.stopImmediatePropagation();window.__confirmationTargetHit=event.isTrusted;},{capture:true,once:true});});
  await page.mouse.click(rect.x+rect.width/2,rect.y+(rect.visualHeight<44?-3:1));assert.equal(await page.evaluate(()=>window.__confirmationTargetHit),true,'The outer native target reaches the confirmation control');assert.equal((await q('SELECT * FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,scenario.week])).length,0,'Geometry probe records no acknowledgement');
  await screenshot('review');checks.push('Actual authenticated weekly content and displayed revision; forged success query ignored; 44px bounded control; no raw session proof in form');
+ // The trusted pointer probe focuses the button. Start the independent keyboard
+ // traversal at the title so Tab reaches it before leaving browser content.
+ await page.getByRole('heading',{name:'Schedule',exact:true}).click();
  stage='native-focus';const tab=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab';let reached=false;
  for(let i=0;i<50;i++){await page.keyboard.press(tab);if(await confirm().evaluate(e=>e===document.activeElement)){reached=true;break;}}
  assert(reached,'native keyboard reaches confirmation');assert(await confirm().evaluate(e=>e.matches(':focus-visible')));checks.push('Native keyboard traverses to visible confirmation focus');
