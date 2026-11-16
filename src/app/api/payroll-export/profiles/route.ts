@@ -1,6 +1,7 @@
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {parseExportProfile} from '@/lib/payroll-export/model';
 import {readExportProfiles,saveExportProfile} from '@/lib/payroll-export/service';
+import {payrollExportReviewReason} from '@/lib/payroll-export/errors';
 import {correctionBoundary,correctionJson,readCorrectionJson} from '@/lib/time-corrections/http.server';
 export const runtime='nodejs';export const dynamic='force-dynamic';
 export async function GET(request:Request){
@@ -12,5 +13,5 @@ export async function POST(request:Request){
  try{const session=await getSession();if(!session)return correctionJson({state:'unavailable'},401);if(request.headers.get('x-nevora-actor')&&request.headers.get('x-nevora-actor')!==session.id)return correctionJson({state:'unavailable'},403);if(!['OWNER','MANAGER'].includes(session.role))return correctionJson({state:'unavailable'},403);
  let body;try{body=await readCorrectionJson(request,65536);if(!body||typeof body!=='object'||Array.isArray(body))throw new Error('Invalid mapping command');parseExportProfile((body as {profile?:unknown}).profile);}catch{return correctionJson({state:'invalid'},400);}
  const profile=await saveExportProfile(await requireSessionMutationProof(),body);return correctionJson({state:'saved',profile});
- }catch(error){const message=error instanceof Error?error.message:'';return correctionJson({state:message.includes('CONFLICT')?'conflict':'unavailable'},message.includes('CONFLICT')?409:503);}
+ }catch(error){const reason=payrollExportReviewReason(error);if(reason)return correctionJson({state:'invalid',reason},400);const message=error instanceof Error?error.message:'';return correctionJson({state:message.includes('CONFLICT')?'conflict':'unavailable'},message.includes('CONFLICT')?409:503);}
 }

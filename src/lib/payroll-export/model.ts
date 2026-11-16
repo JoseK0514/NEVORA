@@ -8,6 +8,7 @@ import {parsePeriod,projectTimecard,type TimecardEntry,type Period} from '../tim
 import {csvDocument} from '../reports/csv';
 import type {CompleteReadManifest} from '../complete-read-pages';
 import {projectPaidPayrollExport,type PaidTimeReview,type PaidDurations,type DailyPaidTime} from './paid-time';
+import {PayrollExportReviewError} from './errors';
 export type CanonicalPayrollExport={version:1;workspaceId:string;timeZone:string;period:Period;timeBasis:'RECORDED_ELAPSED_INCLUDING_BREAKS';paidTime?:PaidTimeReview;rows:({employeeId:string;employeeName:string;revision:number;sourceHash:string;finalizationOperationId:string;recordedNanoseconds:string;breakNanoseconds:string;entries:(TimecardEntry&{recordedNanoseconds:string;breakNanoseconds:string})[]}&Partial<PaidDurations>&{days?:DailyPaidTime[]})[]};
 export type MappingSource='employeeId'|'employeeName'|'providerEmployeeId'|'periodStart'|'periodEnd'|'recordedHours'|'breakHours'|'recordedNanoseconds'|'breakNanoseconds'|'revision'|'sourceHash'|'constant'|'businessDate'|'paidHours'|'unpaidBreakHours'|'paidRestHours'|'paidNanoseconds'|'unpaidBreakNanoseconds'|'paidRestNanoseconds';
 export type ExportColumn={header:string;source:MappingSource;constant?:string};
@@ -56,13 +57,13 @@ function validateAdp(p:ExportProfile){
  if(!/^[A-Za-z0-9]{1,10}$/.test(constant(0))||!['B','W','S','M','Q'].includes(constant(1))||!text(constant(5),10)||!text(constant(10),10)||constant(7)!==''||!/^[0-9]$/.test(constant(8))||!/^\d{0,6}$/.test(constant(9))||p.employeeMappings.some(m=>m.providerEmployeeId.length>15||!/^[A-Za-z0-9]+$/.test(m.providerEmployeeId)))throw new Error('Verify RUN company, frequency, employee, earnings, department and rate codes');
 }
 export function requiresPaidTimeReview(profile:ExportProfile):boolean{return profile.format==='ADP_RUN_GENERIC_V1'&&profile.columns[6]?.source==='recordedHours';}
-export function assertReviewedPaidProfile(profile:ExportProfile){if(requiresPaidTimeReview(profile))throw new Error('Review the legacy RUN recorded-hours mapping and explicitly replace Pay Hours with paidHours before generating a new file');}
+export function assertReviewedPaidProfile(profile:ExportProfile){if(requiresPaidTimeReview(profile))throw new PayrollExportReviewError('LEGACY_MAPPING_REVIEW_REQUIRED');}
 /** Convert nonnegative nanoseconds with integer arithmetic. A reviewed HALF_UP profile
  * may round; REJECT_INEXACT fails when the requested decimal scale loses precision. */
 export function decimalHours(nanoseconds:string,decimals:number,precision:ExportProfile['precision']):string{
  if(!/^\d+$/.test(nanoseconds))throw new Error('Invalid canonical time');
  const divisor=BigInt(3_600_000_000_000),scale=BigInt(10)**BigInt(decimals),numerator=BigInt(nanoseconds)*scale;
- const remainder=numerator%divisor;if(remainder&&precision==='REJECT_INEXACT')throw new Error('Time cannot be represented exactly at this profile precision. Review a rounding profile explicitly.');
+ const remainder=numerator%divisor;if(remainder&&precision==='REJECT_INEXACT')throw new PayrollExportReviewError('INEXACT_HOURS');
  const result=numerator/divisor+(precision==='HALF_UP'&&remainder*BigInt(2)>=divisor?BigInt(1):BigInt(0));
  if(!decimals)return result.toString();const value=result.toString().padStart(decimals+1,'0');return `${value.slice(0,-decimals)}.${value.slice(-decimals)}`;
 }
@@ -72,7 +73,7 @@ export function mappedPayrollCsv(model:CanonicalPayrollExport,input:ExportProfil
  const profile=parseExportProfile(input);const date=(d:string)=>profile.dateFormat==='US'?`${d.slice(5,7)}/${d.slice(8,10)}/${d.slice(0,4)}`:d;
  if(purpose!=='HISTORICAL_RECEIPT')assertReviewedPaidProfile(profile);
  const needsPaid=profile.columns.some(c=>paidMappingSources.includes(c.source));
- if(needsPaid&&(!model.paidTime||model.rows.some(r=>r.paidNanoseconds===undefined||r.unpaidBreakNanoseconds===undefined||r.paidRestNanoseconds===undefined||!Array.isArray(r.days))))throw new Error('Review explicit paid-time recorded-break treatments before generating paid hours');
+ if(needsPaid&&(!model.paidTime||model.rows.some(r=>r.paidNanoseconds===undefined||r.unpaidBreakNanoseconds===undefined||r.paidRestNanoseconds===undefined||!Array.isArray(r.days))))throw new PayrollExportReviewError('PAID_TIME_REVIEW_REQUIRED');
  const daily=profile.columns.some(c=>c.source==='businessDate');
  const projected=model.rows.flatMap(row=>daily?(row.days!.length?row.days!.map(day=>({...row,...day})):[{...row,businessDate:''}]):[{...row,businessDate:''}]);
  const rows=projected.map(row=>profile.columns.map(column=>{

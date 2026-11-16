@@ -1,6 +1,7 @@
 import {Temporal} from '@js-temporal/polyfill';
 import {periodInstants,projectTimecard} from '../timecards/project';
 import type {CanonicalPayrollExport} from './model';
+import {PayrollExportReviewError} from './errors';
 
 export type BreakTreatment={employeeId:string;entryId:string;breakId:string;treatment:'PAID_REST'|'UNPAID_RELIEVED_MEAL'};
 /** An export-only attestation about each effective recorded break, never an
@@ -13,12 +14,12 @@ const object=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&
 const id=(v:unknown):v is string=>typeof v==='string'&&v.length>0&&v.length<=300&&v===v.trim()&&!/[\u0000-\u001f\u007f]/.test(v);
 const identity=(b:Pick<BreakTreatment,'employeeId'|'entryId'|'breakId'>)=>JSON.stringify([b.employeeId,b.entryId,b.breakId]);
 export function parsePaidTimeReview(v:unknown):PaidTimeReview{
- if(!object(v)||v.version!==1||Object.keys(v).some(k=>!['version','breakTreatments'].includes(k))||!Array.isArray(v.breakTreatments)||v.breakTreatments.length>1000)throw new Error('Review explicit recorded-break treatments');
+ if(!object(v)||v.version!==1||Object.keys(v).some(k=>!['version','breakTreatments'].includes(k))||!Array.isArray(v.breakTreatments)||v.breakTreatments.length>1000)throw new PayrollExportReviewError('BREAK_CLASSIFICATION_REVIEW_REQUIRED');
  const breakTreatments=v.breakTreatments.map((b):BreakTreatment=>{
-  if(!object(b)||Object.keys(b).length!==4||!id(b.employeeId)||!id(b.entryId)||!id(b.breakId)||(b.treatment!=='PAID_REST'&&b.treatment!=='UNPAID_RELIEVED_MEAL'))throw new Error('Invalid recorded-break treatment');
+  if(!object(b)||Object.keys(b).length!==4||!id(b.employeeId)||!id(b.entryId)||!id(b.breakId)||(b.treatment!=='PAID_REST'&&b.treatment!=='UNPAID_RELIEVED_MEAL'))throw new PayrollExportReviewError('BREAK_CLASSIFICATION_REVIEW_REQUIRED');
   return {employeeId:b.employeeId,entryId:b.entryId,breakId:b.breakId,treatment:b.treatment};
  }).sort((a,b)=>identity(a)<identity(b)?-1:identity(a)>identity(b)?1:0);
- if(new Set(breakTreatments.map(identity)).size!==breakTreatments.length)throw new Error('Duplicate recorded-break treatment');
+ if(new Set(breakTreatments.map(identity)).size!==breakTreatments.length)throw new PayrollExportReviewError('BREAK_CLASSIFICATION_REVIEW_REQUIRED');
  return {version:1,breakTreatments};
 }
 const ns=(at:string)=>Temporal.Instant.from(at).epochNanoseconds;
@@ -41,7 +42,7 @@ export function projectPaidPayrollExport(model:CanonicalPayrollExport,input:unkn
   if(validated.issues.length||validated.recordedNanoseconds!==row.recordedNanoseconds||validated.breakNanoseconds!==row.breakNanoseconds)throw new Error('Invalid finalized recorded-break source');
   const entries=validated.entries.map(entry=>({entry,start:ns(entry.startAt),end:ns(entry.endAt!),breaks:entry.breaks.map(b=>{
    const left=ns(b.startAt),right=ns(b.endAt!),key=identity({employeeId:row.employeeId,entryId:entry.id,breakId:b.id});
-   if(overlap(left,right,start,end)>0){if(!treatments.has(key))throw new Error('Classify every relevant recorded break explicitly');used.add(key);}
+   if(overlap(left,right,start,end)>0){if(!treatments.has(key))throw new PayrollExportReviewError('BREAK_CLASSIFICATION_REVIEW_REQUIRED');used.add(key);}
    return {start:left,end:right,treatment:treatments.get(key)};
   })}));
   const days:DailyPaidTime[]=[];
@@ -59,6 +60,6 @@ export function projectPaidPayrollExport(model:CanonicalPayrollExport,input:unkn
   }
   return {...row,paidNanoseconds:totalPaid.toString(),unpaidBreakNanoseconds:totalUnpaid.toString(),paidRestNanoseconds:totalRest.toString(),days};
  });
- if(used.size!==treatments.size)throw new Error('Recorded-break treatment does not match the selected source and period');
+ if(used.size!==treatments.size)throw new PayrollExportReviewError('BREAK_CLASSIFICATION_REVIEW_REQUIRED');
  return {...model,paidTime,rows};
 }

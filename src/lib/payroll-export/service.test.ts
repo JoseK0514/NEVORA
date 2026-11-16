@@ -5,6 +5,7 @@ import type {SessionMutationProof} from '../shift-changes/types';
 import {neutralProfile} from './model';
 import {stableExportJson} from './json';
 import {createPayrollExport,readExportProfiles,saveExportProfile,type ExportCommand} from './service';
+import {PayrollExportReviewError} from './errors';
 
 const proof:SessionMutationProof={employee:{id:'M',role:'MANAGER',firstName:'Fictional',lastName:'Manager',primaryLocationId:'L'},sessionTokenHash:'a'.repeat(64)};
 const profileId='11111111-1111-4111-8111-111111111111';
@@ -117,6 +118,21 @@ describe('NVA-001 real export-service validation boundaries',()=>{
  it('denies missing server proof before database access',async()=>{
   const f=fixture();
   await expect(readExportProfiles({...proof,sessionTokenHash:''},f.executor)).rejects.toThrow('authorization');expect(f.queries).toEqual([]);
+ });
+ it('does not classify a post-write receipt verification failure as a safe pre-write review refusal',async()=>{
+  const f=fixture(),base=f.executor.transaction;
+  f.executor.transaction=async statements=>{
+   const rows=await base(statements);
+   if(statements.some(s=>s.text.includes('SELECT nevora_payroll_export_command'))){
+    const result=rows.flat().find(r=>r.result)?.result as {model:Record<string,unknown>;canonicalSha256:string};
+    const model=structuredClone(result.model) as {rows:{breakNanoseconds:string;entries:{breaks:unknown[]}[]}[]};
+    model.rows[0].breakNanoseconds='1800000000000';model.rows[0].entries[0].breaks=[{id:'unexpected',startAt:'2026-09-22T12:30:00Z',endAt:'2026-09-22T13:00:00Z',rawStartAt:'2026-09-22T12:30:00Z',rawEndAt:'2026-09-22T13:00:00Z',name:'Fictional break',adjustmentId:null}];
+    result.model=model;result.canonicalSha256=digest(model);
+   }
+   return rows;
+  };
+  let failure:unknown;try{await createPayrollExport(proof,{...command,profileId:null,profileRevision:0,paidTime:{version:1,breakTreatments:[]}},f.executor);}catch(error){failure=error;}
+  expect(failure).toBeInstanceOf(Error);expect(failure).not.toBeInstanceOf(PayrollExportReviewError);expect((failure as Error).message).toBe('Export paid-time receipt could not be verified');expect(f.writes).toHaveLength(1);
  });
 });
 

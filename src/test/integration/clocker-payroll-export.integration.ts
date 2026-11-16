@@ -1,5 +1,6 @@
 import {createHash,randomUUID} from 'node:crypto';
-import {OperationalAuthorizationError} from '../../lib/company-access/operational-scope.server';
+import {OperationalAuthorizationError,isOperationalAuthorizationError} from '../../lib/company-access/operational-scope.server';
+import {isManagementAuthorizationError} from '../../lib/data/management-session';
 import {afterEach,beforeEach,describe,expect,it} from 'vitest';
 import {createPunchFixture} from './clocker-punch-fixture';
 import {readTimecards,mutateTimecard} from '../../lib/timecards/service';
@@ -41,7 +42,7 @@ describe('D6 mapping and immutable export protocol',()=>{
   await f.q("INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at) VALUES('meal','D6-T','2026-09-22T16:00:00Z','2026-09-22T16:30:00Z')");
   await finalize();const base=await command();
   for(const breakTreatments of [[],[{employeeId:'c34-a',entryId:'D6-T',breakId:'other',treatment:'PAID_REST'}]]){
-   await expect(createPayrollExport(proof,{...base,paidTime:{version:1,breakTreatments}},f.db.executor)).rejects.toThrow(/break/i);
+   await expect(createPayrollExport(proof,{...base,paidTime:{version:1,breakTreatments}},f.db.executor)).rejects.toMatchObject({reason:'BREAK_CLASSIFICATION_REVIEW_REQUIRED'});
   }
   expect(await f.q('SELECT count(*)::integer n FROM payroll_export_receipts')).toEqual([{n:0}]);
  });
@@ -66,6 +67,25 @@ describe('D6 mapping and immutable export protocol',()=>{
   expect(await createPayrollExport(proof,historicalCommand,f.db.executor)).toEqual(historical);
  });
  it('stores versioned mapping profiles with idempotent save and rejects stale updates',async()=>{const cmd={operationId:randomUUID(),id:randomUUID(),expectedRevision:0,profile:neutralProfile()};const first=await saveExportProfile(proof,cmd,f.db.executor);expect(first.revision).toBe(1);expect(await saveExportProfile(proof,cmd,f.db.executor)).toEqual(first);expect(await readExportProfiles(proof,f.db.executor)).toEqual([first]);await expect(saveExportProfile(proof,{...cmd,operationId:randomUUID()},f.db.executor)).rejects.toThrow('CONFLICT');await expect(f.q('DELETE FROM payroll_export_profile_revisions')).rejects.toThrow('append_only');});
+ it('recovers only the exact historical legacy save operation after later profile edits under current scope',async()=>{
+  const profile={...neutralProfile(),format:'ADP_RUN_GENERIC_V1' as const,dateFormat:'US' as const,hourDecimals:2,columns:adpRunPaidColumns('FICTIONAL','W','TEST','TEST').map(c=>c.header==='Pay Hours'?{...c,source:'recordedHours' as const}:c),employeeMappings:[{employeeId:'c34-a',providerEmployeeId:'001'}]};
+  const input={id:randomUUID(),operationId:randomUUID(),expectedRevision:0,profile},hash=createHash('sha256').update(stableExportJson(input)).digest('hex');
+  await f.q('INSERT INTO payroll_export_profile_revisions(workspace_id,profile_id,revision,operation_id,actor_employee_id,command_hash,profile) SELECT id,$1,1,$2,$3,$4,$5::jsonb FROM workspaces',[input.id,input.operationId,proof.employee.id,hash,JSON.stringify(profile)]);
+  const changed=await saveExportProfile(proof,{...input,operationId:randomUUID(),expectedRevision:1,profile:neutralProfile()},f.db.executor);expect(changed.revision).toBe(2);
+  expect(await saveExportProfile(proof,input,f.db.executor)).toEqual({id:input.id,revision:1,profile,requiresTimeBasisReview:true});
+  await expect(saveExportProfile(proof,{...input,profile:{...profile,name:'Changed replay'}},f.db.executor)).rejects.toThrow('CONFLICT');
+  await expect(saveExportProfile(proof,{...input,operationId:randomUUID()},f.db.executor)).rejects.toMatchObject({reason:'LEGACY_MAPPING_REVIEW_REQUIRED'});
+  await f.q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('legacy-other-owner','Other','Owner','legacy-other-owner','OWNER','loc-1'); INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('b',64),'legacy-other-owner',clock_timestamp()+interval '1 day')");
+  await expect(saveExportProfile({employee:{...proof.employee,id:'legacy-other-owner'},sessionTokenHash:'b'.repeat(64)},input,f.db.executor)).rejects.toThrow('CONFLICT');
+  const executor={...f.db.executor,transaction:async(statements:Parameters<typeof f.db.executor.transaction>[0])=>{
+   const result=await f.db.executor.transaction(statements);
+   if(statements.some(s=>s.text.includes('FROM payroll_export_profile_revisions')&&s.text.includes('operation_id'))){await f.q("UPDATE employees SET role='LEAD' WHERE id='c34-owner'");}
+   return result;
+  }};
+  let denied:unknown;try{await saveExportProfile(proof,input,executor);}catch(error){denied=error;}
+  expect(isOperationalAuthorizationError(denied)||isManagementAuthorizationError(denied)).toBe(true);
+  expect(await f.q('SELECT revision FROM payroll_export_profile_revisions WHERE profile_id=$1 ORDER BY revision',[input.id])).toEqual([{revision:1},{revision:2}]);
+ });
  it('exports only reviewed finalized snapshots and preserves exact canonical values',async()=>{await finalize();const input=await command(),result=await createPayrollExport(proof,input,f.db.executor);expect(result.model.rows[0].recordedNanoseconds).toBe('28800000000000');expect(result.model.period).toEqual(period);expect(result.csv).toContain('28800000000000');expect(await createPayrollExport(proof,input,f.db.executor)).toEqual(result);await expect(f.q('DELETE FROM payroll_export_receipts')).rejects.toThrow('append_only');});
  it('replays the original export after explicit reopen without exporting a new unfinalized revision',async()=>{await finalize();const input=await command(),result=await createPayrollExport(proof,input,f.db.executor),c=await card();await mutateTimecard(proof,{operationId:randomUUID(),employeeId:'c34-a',...period,expectedRevision:c.revision,expectedSourceHash:c.sourceHash,action:'REOPEN',note:'Fictional review'},f.db.executor);expect(await createPayrollExport(proof,input,f.db.executor)).toEqual(result);await expect(createPayrollExport(proof,{...input,operationId:randomUUID()},f.db.executor)).rejects.toThrow('finalized');});
  it('refuses a period reopened between projection and receipt generation',async()=>{await finalize();const input=await command();const executor={...f.db.executor,transaction:async(statements:Parameters<typeof f.db.executor.transaction>[0])=>{if(statements.some(s=>s.text.includes('SELECT nevora_payroll_export_command'))){const c=await card();await mutateTimecard(proof,{operationId:randomUUID(),employeeId:'c34-a',...period,expectedRevision:c.revision,expectedSourceHash:c.sourceHash,action:'REOPEN',note:'Concurrent fictional correction'},f.db.executor);}return f.db.executor.transaction(statements);}};await expect(createPayrollExport(proof,input,executor)).rejects.toThrow('CONFLICT');expect(await f.q('SELECT count(*)::int AS count FROM payroll_export_receipts')).toEqual([{count:0}]);});

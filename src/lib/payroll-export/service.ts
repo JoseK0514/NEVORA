@@ -30,9 +30,17 @@ export async function readExportProfiles(proof:SessionMutationProof,executor:Sql
  * replay and expectedRevision control; current company scope is rechecked on return. */
 export async function saveExportProfile(proof:SessionMutationProof,input:unknown,executor:SqlExecutor=neonNotificationExecutor()):Promise<SavedExportProfile>{
  management(proof);if(!object(input)||!uuid(input.operationId)||!uuid(input.id)||!Number.isSafeInteger(input.expectedRevision)||Number(input.expectedRevision)<0||Object.keys(input).some(k=>!['operationId','id','expectedRevision','profile'].includes(k)))throw new Error('Invalid mapping command');
- const profile=parseExportProfile(input.profile);assertReviewedPaidProfile(profile);const access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor),{workspace,authority}=access,ids=[...new Set([proof.employee.id,...profile.employeeMappings.map(m=>m.employeeId)])].sort();
+ const profile=parseExportProfile(input.profile),commandHash=digest({...input,profile}),access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor),{workspace,authority}=access,ids=[...new Set([proof.employee.id,...profile.employeeMappings.map(m=>m.employeeId)])].sort();
  const guards=[...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE',values:[ids]},...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)];
- const result=await executor.transaction([...guards,{text:'SELECT nevora_payroll_profile_command($1,$2,$3::uuid,$4::uuid,$5::integer,$6,$7::jsonb) AS result',values:[workspace.id,proof.employee.id,input.operationId,input.id,input.expectedRevision,digest({...input,profile}),JSON.stringify(profile)]},...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)]);
+ if(requiresPaidTimeReview(profile)){
+  // Recover the immutable operation revision, not today's latest profile. This
+  // lookup has current authority guards and never permits a new legacy write.
+  const priorResult=await executor.transaction([...guards,{text:'SELECT profile_id AS id,revision,profile,actor_employee_id AS actor,command_hash AS hash FROM payroll_export_profile_revisions WHERE workspace_id=$1 AND operation_id=$2::uuid',values:[workspace.id,input.operationId]},...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)]);
+  const prior=priorResult[guards.length]?.[0] as {actor:string;hash:string}|undefined;
+  if(prior){if(prior.actor!==proof.employee.id||prior.hash!==commandHash)throw new Error('nevora_export_CONFLICT');const projected=saved(prior);await currentCompany(proof,access,executor);return projected;}
+  assertReviewedPaidProfile(profile);
+ }
+ const result=await executor.transaction([...guards,{text:'SELECT nevora_payroll_profile_command($1,$2,$3::uuid,$4::uuid,$5::integer,$6,$7::jsonb) AS result',values:[workspace.id,proof.employee.id,input.operationId,input.id,input.expectedRevision,commandHash,JSON.stringify(profile)]},...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)]);
  const row=result[guards.length]?.[0] as {result:unknown};const projected=saved(row?.result);await currentCompany(proof,access,executor);return projected;
 }
 export type ExportCommand=Period&{operationId:string;profileId:string|null;profileRevision:number;cards:{employeeId:string;revision:number;sourceHash:string;finalizationOperationId:string}[];paidTime?:PaidTimeReview};
@@ -47,7 +55,8 @@ export type PayrollExportPayload={operationId:string;model:CanonicalPayrollExpor
 function payload(value:unknown,command:ExportCommand):PayrollExportPayload{
  if(!object(value)||value.operationId!==command.operationId||typeof value.csv!=='string'||typeof value.csvSha256!=='string'||typeof value.canonicalSha256!=='string'||!object(value.model)||value.model.version!==1||!Array.isArray(value.model.rows)||value.profileId!==command.profileId||value.profileRevision!==command.profileRevision||createHash('sha256').update(value.csv).digest('hex')!==value.csvSha256||digest(value.model)!==value.canonicalSha256)throw new Error('Export receipt could not be verified');
  parseExportProfile(value.profile);const model=value.model as CanonicalPayrollExport;
- if(command.paidTime===undefined?model.paidTime!==undefined:stableExportJson(projectPaidPayrollExport(model,command.paidTime))!==stableExportJson(model))throw new Error('Export paid-time receipt could not be verified');
+ try{if(command.paidTime===undefined?model.paidTime!==undefined:stableExportJson(projectPaidPayrollExport(model,command.paidTime))!==stableExportJson(model))throw new Error();}
+ catch{throw new Error('Export paid-time receipt could not be verified');}
  return value as PayrollExportPayload;
 }
 /** Create/recover an actor-scoped export receipt under current company authority.
