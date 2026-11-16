@@ -199,3 +199,13 @@ Kept local and unpushed.
 
 Checks: `tsc` and `eslint` clean; 43 files, 411 tests pass; weekly browser pass (mocked API) on this code: all flows,
 31 measured screens, no overflow or clipping, no page errors. Local and unpushed.
+
+## Search row follow-up (Nov 16, 2026, Codex combined QA on 9ba86c4d)
+
+- "Search · Stopped early" now appears only when an option's status is `BUDGET_EXHAUSTED`. A `partial` comparison whose
+  searches completed (unknown weekend history, left-out locations, omitted details) shows a neutral "Information ·
+  Partial" row instead. A complete comparison shows neither.
+- Regressions in `src/components/owner-advisor/weekly/weekly-page.test.tsx` (partial with completed searches, budget
+  exhausted, complete). Browser (mocked API): `w8-partialInfo-options-390` and `w8-exhausted-options-390`.
+- Checks: `tsc` and `eslint` clean; 43 files, 414 tests pass; weekly browser pass: all flows, 32 measured screens, no
+  overflow or clipping, no page errors. Local and unpushed.

@@ -416,7 +416,10 @@ export function Comparison({ data, locations }: { data: WeeklyComparison; locati
             <li><CorpRow one title="Coverage" value={coverageText(data.baseline)} valueTone="soft" /></li>
             <li><CorpRow one title="Still open" value={`${data.baseline.remainingBlocks} ${data.baseline.remainingBlocks === 1 ? "block" : "blocks"}`} valueTone="soft" /></li>
             <li><CorpRow one title="Weekend history" value={`${data.fairness.employeesWithKnownWeekends} of ${data.fairness.employeesWithKnownWeekends + data.fairness.employeesWithoutKnownWeekends} known`} valueTone="soft" /></li>
-            {data.partial ? <li><CorpRow one title="Search" value={<CorpPill tone="amber">Stopped early</CorpPill>} /></li> : null}
+            {/* "partial" also covers unknown weekend history, left-out locations and omitted details (Codex, Nov 16, 2026):
+              * only an option whose search ran out of budget says the search stopped early. */}
+            {data.alternatives.some(option => option.status === "BUDGET_EXHAUSTED") ? <li><CorpRow one title="Search" value={<CorpPill tone="amber">Stopped early</CorpPill>} /></li>
+              : data.partial ? <li><CorpRow one title="Information" value="Partial" valueTone="soft" /></li> : null}
           </CorpRows>
         </CorpCard> : null}
         {data.alternatives.length ? <div className={data.alternatives.length > 1 ? "wk-grid wk-grid--two" : "wk-grid"}>
