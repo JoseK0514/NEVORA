@@ -10,3 +10,13 @@ it.each<Record<string,string>>([{origin:'https://other.test'},{'sec-fetch-site':
 it('D7 rejects absent login and Employee/Lead authority',async()=>{state.session=null;expect((await POST(req())).status).toBe(401);for(const role of ['EMPLOYEE','LEAD']){state.session={id:'M1',role};expect((await POST(req())).status).toBe(403);}expect(state.read).not.toHaveBeenCalled();});
 it.each([{weekStart:'2026-10-06'},{weekStart:'2026-02-30'},{weekStart:'2026-10-05',employeeId:'OTHER'},{}])('D7 rejects invalid/unscoped body %j',async body=>{expect((await POST(req(body))).status).toBe(400);expect(state.read).not.toHaveBeenCalled();});
 it('D7 unavailable and revoked sources never become a verified empty response',async()=>{state.read.mockResolvedValue({state:'unavailable',reason:'read_failed'});expect((await POST(req())).status).toBe(503);state.read.mockResolvedValue({state:'unavailable',reason:'access_denied'});expect((await POST(req())).status).toBe(403);state.read.mockRejectedValue(Error('Offline'));expect((await POST(req())).status).toBe(503);});
+it('unexpected action-center failure correlates without exposing source details',async()=>{
+ const sink=vi.spyOn(console,'error').mockImplementation(()=>{});
+ try{
+  state.read.mockRejectedValue(Object.assign(new Error('private source SQL'),{code:'08006'}));
+  const response=await POST(req());expect(response.status).toBe(503);expect(await response.json()).toEqual({state:'unavailable'});
+  const id=response.headers.get('X-Nevora-Request-Id');expect(id).toMatch(/^[a-f0-9-]{36}$/);
+  expect(JSON.parse(sink.mock.calls[0][0])).toMatchObject({route:'/api/manager/action-center',requestId:id,sqlState:'08006'});
+  expect(JSON.stringify(sink.mock.calls)).not.toContain('private source');
+ }finally{sink.mockRestore();}
+});

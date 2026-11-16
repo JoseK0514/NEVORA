@@ -1,3 +1,4 @@
+import {decodeHistoryCursor,encodeHistoryCursor,type EventKey} from './history';
 import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import { createHash, randomUUID } from "node:crypto";
 import type { SessionMutationProof } from "../shift-changes/types";
@@ -187,16 +188,18 @@ export async function readPeriodClose(
       ],
     },
     {
-      text: 'SELECT e.manifest_id::text AS "manifestId",e.kind,e.payload,e.actor_employee_id AS "actorId",e.created_at::text AS "createdAt" FROM payroll_period_events e JOIN payroll_period_manifests m ON m.workspace_id=e.workspace_id AND m.id=e.manifest_id WHERE e.workspace_id=$1 AND m.start_date=$2 AND m.end_date=$3 ORDER BY e.created_at DESC LIMIT 1001',
+      text: 'SELECT DISTINCT ON (e.manifest_id,e.kind) e.id::text,e.manifest_id::text AS "manifestId",e.kind,e.payload,e.actor_employee_id AS "actorId",e.created_at::text AS "createdAt" FROM payroll_period_events e JOIN payroll_period_manifests m ON m.workspace_id=e.workspace_id AND m.id=e.manifest_id WHERE e.workspace_id=$1 AND m.start_date=$2 AND m.end_date=$3 ORDER BY e.manifest_id,e.kind,e.created_at DESC,e.id DESC',
       values: [
         state.workspace.id,
         state.period.startDate,
         state.period.endDate,
       ],
     },
+    {text:'SELECT e.manifest_id::text AS id,count(*)::integer AS total FROM payroll_period_events e JOIN payroll_period_manifests m ON m.workspace_id=e.workspace_id AND m.id=e.manifest_id WHERE e.workspace_id=$1 AND m.start_date=$2 AND m.end_date=$3 GROUP BY e.manifest_id',values:[state.workspace.id,state.period.startDate,state.period.endDate]},
     ...operationalScopeStatements(proof,state.workspace,{kind:'COMPANY'},state.authority),
   ]);
   const events = results[guards.length + 2] as {
+    id:string;
     manifestId: string;
     kind: string;
     payload: {
@@ -209,7 +212,7 @@ export async function readPeriodClose(
     actorId: string;
     createdAt: string;
   }[];
-  if (events.length > 1000) throw Error("PERIOD_EVENT_SOURCE_LIMIT");
+  const eventCounts=results[guards.length+3] as {id:string;total:number}[];
   const manifests = results[guards.length] as {
       id: string;
       payload: Manifest;
@@ -249,7 +252,9 @@ export async function readPeriodClose(
         digest(m.payload.exportCustody) === digest(state.exportCustody),
       populationRevision: m.payload.population.revision,
       totals: m.payload.totals,
+      // Compatibility field now contains the explicit latest-per-kind summary.
       events: events.filter((e) => e.manifestId === m.id),
+      eventCoverage:{kind:'LATEST_PER_KIND' as const,totalEvents:eventCounts.find(c=>c.id===m.id)?.total??0,returnedEvents:events.filter(e=>e.manifestId===m.id).length,complete:(eventCounts.find(c=>c.id===m.id)?.total??0)===events.filter(e=>e.manifestId===m.id).length},
       exports: m.payload.exports.map((e, index) => ({
         index,
         operationId: e.operationId,
@@ -825,3 +830,36 @@ export async function recordPeriodHandoff(
     throw error;
   }
 }
+
+/** Immutable history is a separate, explicitly bounded keyset read. The upper
+ * watermark is retained across pages; new downloads start a new traversal.
+ * A table SHARE lock drains pre-existing inserts before choosing the watermark.
+ * Exact timestamp text plus UUID breaks ties without losing microseconds. */
+export async function readPeriodCloseHistory(proof:SessionMutationProof,input:unknown,executor:SqlExecutor=neonNotificationExecutor()){
+ if(!object(input)||Object.keys(input).some(k=>!['startDate','endDate','cursor','limit'].includes(k)))throw Error('INVALID_HISTORY_REQUEST');
+ const period=parsePeriod(String(input.startDate??''),String(input.endDate??''));
+ const limit=input.limit===undefined?50:input.limit;
+ if(typeof limit!=='number'||!Number.isInteger(limit)||limit<1||limit>100)throw Error('INVALID_HISTORY_LIMIT');
+ const {workspace,guards,authority}=await scope(proof,executor);
+ const cursor=decodeHistoryCursor(input.cursor,workspace.id,period);
+ const result=await executor.transaction([...guards,
+  {text:'LOCK TABLE payroll_period_events IN SHARE MODE',values:[]},
+  {text:`WITH matching AS (
+    SELECT e.id,e.manifest_id,e.kind,e.payload,e.actor_employee_id,e.created_at
+    FROM payroll_period_events e JOIN payroll_period_manifests m ON m.workspace_id=e.workspace_id AND m.id=e.manifest_id
+    WHERE e.workspace_id=$1 AND m.start_date=$2 AND m.end_date=$3
+  ), bounded AS (SELECT * FROM matching WHERE $4::timestamptz IS NULL OR (created_at,id)<=($4::timestamptz,$5::uuid)),
+  page AS (SELECT * FROM bounded WHERE $6::timestamptz IS NULL OR (created_at,id)<($6::timestamptz,$7::uuid) ORDER BY created_at DESC,id DESC LIMIT $8)
+  SELECT jsonb_build_object('upper',(SELECT jsonb_build_object('at',created_at::text,'id',id::text) FROM bounded ORDER BY created_at DESC,id DESC LIMIT 1),
+   'total',(SELECT count(*)::integer FROM bounded),'events',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id::text,'manifestId',manifest_id::text,'kind',kind,'payload',payload,'actorId',actor_employee_id,'createdAt',created_at::text) ORDER BY created_at DESC,id DESC) FROM page),'[]'::jsonb)) AS history`,
+   values:[workspace.id,period.startDate,period.endDate,cursor?.upper.at??null,cursor?.upper.id??null,cursor?.after.at??null,cursor?.after.id??null,limit+1]},
+  ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)]);
+ const history=(result[guards.length+1]?.[0] as {history:{upper:EventKey|null;total:number;events:PeriodHistoryEvent[]}}|undefined)?.history;
+ if(!history)throw Error('PERIOD_HISTORY_UNAVAILABLE');
+ const hasMore=history.events.length>limit,events=history.events.slice(0,limit),last=events.at(-1);
+ const upper=cursor?.upper??history.upper;
+ const nextCursor=hasMore&&last&&upper?encodeHistoryCursor({v:1,workspaceId:workspace.id,period,upper,after:{at:last.createdAt,id:last.id}}):null;
+ await currentCompany(proof,{workspace,authority},executor);
+ return {period,events,nextCursor,coverage:{kind:'PAGE' as const,order:'createdAt DESC, id DESC' as const,totalEvents:history.total,returnedEvents:events.length,hasMore,complete:!cursor&&!hasMore,through:upper}};
+}
+export type PeriodHistoryEvent={id:string;manifestId:string;kind:string;payload:Record<string,unknown>;actorId:string;createdAt:string};

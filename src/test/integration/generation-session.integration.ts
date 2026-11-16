@@ -1,3 +1,4 @@
+import {getShiftForManagement} from '../../lib/data/schedules';
 import { createHash } from 'node:crypto';
 import { Client } from 'pg';
 import { afterAll, beforeAll, beforeEach, expect, it, vi } from 'vitest';
@@ -61,7 +62,7 @@ async function prepare(operation: Operation) {
   if (operation === 'CLEAR') {
     await generateWeekDraft({ ...request, proof }, database.executor);
     const id = String((await q('SELECT id FROM shifts'))[0].id);
-    exclusionId = (await deleteGeneratedDraftShift({ ...request, proof, locationId: 'loc-1', shiftId: id }, database.executor)).exclusionId!;
+    exclusionId = (await deleteGeneratedDraftShift({ ...request,expectedReviewVersion:(await getShiftForManagement(id,database.executor))!.reviewVersion, proof, locationId: 'loc-1', shiftId: id }, database.executor)).exclusionId!;
   }
   const write = async (executor: SqlExecutor) => operation === 'CLEAR'
     ? clearGenerationExclusion({ ...request, proof, locationId: 'loc-1', exclusionId }, executor)

@@ -44,3 +44,24 @@ it('cannot turn logging failures or hostile thrown objects into a second request
   const hostile = new Proxy({}, {getOwnPropertyDescriptor() {throw Error('denied');}, getPrototypeOf() {throw Error('denied');}});
   expect(() => reportServerError(hostile, {route: '/api/example'})).not.toThrow();
 });
+
+it('keeps simultaneous handled requests correlated separately without altering domain bodies',async()=>{
+ const sink=vi.spyOn(console,'error').mockImplementation(()=>{});
+ const {reportHandledServerError,withServerErrorDiagnostics}=await import('./server-error');
+ const responses=await Promise.all(['/api/first','/api/second'].map(route=>withServerErrorDiagnostics(route,async()=>{
+  await Promise.resolve();reportHandledServerError(new Error('private'),'/app/fallback');
+  reportHandledServerError(new Error('second private'),'/app/fallback');
+  return Response.json({state:'unavailable'},{status:503});
+ })));
+ const events=sink.mock.calls.map(([encoded])=>JSON.parse(encoded));expect(events).toHaveLength(2);
+ expect(new Set(events.map(e=>e.requestId)).size).toBe(2);
+ for(let i=0;i<responses.length;i++){
+  const response=responses[i],id=response.headers.get('X-Nevora-Request-Id');
+  expect(events.find(e=>e.requestId===id)?.route).toBe(i?'/api/second':'/api/first');
+  expect(await response.json()).toEqual({state:'unavailable'});
+ }
+});
+it('leaves successful and expected-refusal responses without diagnostic IDs',async()=>{
+ const {withServerErrorDiagnostics}=await import('./server-error');
+ for(const status of [200,400,403,409])expect((await withServerErrorDiagnostics('/api/example',async()=>Response.json({state:'expected'},{status}))).headers.get('X-Nevora-Request-Id')).toBeNull();
+});

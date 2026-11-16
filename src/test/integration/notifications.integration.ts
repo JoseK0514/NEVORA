@@ -12,6 +12,7 @@ import { createECDH, createHash, randomUUID } from 'node:crypto';
 import { Client } from 'pg';
 import { createDisposableNotificationDatabase } from './local-postgres';
 
+import {getShiftForManagement,updateShift as reviewedUpdateShift,deleteShift as reviewedDeleteShift} from '../../lib/data/schedules';
 import { commitPublishedWeekChange, personalProjections, readNotificationWeekState } from '../../lib/data/notification-transactions';
 import { notificationIntentStatements, cancelNotificationStatements } from '../../lib/data/notifications';
 import { sqlSubscriptionRepository } from '../../lib/data/push-subscriptions';
@@ -105,6 +106,39 @@ it('bounds concurrent queue claims and records FIFO urgent backlog without a pro
 });
 
 describe('actual ordered publication and request SQL', () => {
+  const eligibilityChanges = [
+    ['employee',"UPDATE employees SET active=false WHERE id='QA-E'"],
+    ['eligibility',"DELETE FROM employee_location_eligibility WHERE employee_id='QA-E' AND location_id='loc-1'"],
+    ['location',"UPDATE locations SET active=false WHERE id='loc-1'"],
+    ['position',"UPDATE positions SET active=false WHERE id='QA-position'"],
+    ['membership',"DELETE FROM employee_positions WHERE employee_id='QA-E'"],
+  ] as const;
+  it.each(eligibilityChanges)('first publication refuses current %s changes atomically',async(_kind,change)=>{
+    await sql("INSERT INTO positions(id,workspace_id,name) SELECT 'QA-position',id,'Fictional' FROM workspaces");
+    await sql("INSERT INTO employee_positions(employee_id,position_id) VALUES ('QA-E','QA-position')");
+    await sql("UPDATE shifts SET position_id='QA-position' WHERE id='QA-sh1'");
+    await sql(change);
+    await expect(publish()).rejects.toThrow();
+    expect((await sql("SELECT status FROM schedules WHERE id='QA-s1'"))[0].status).toBe('DRAFT');
+    expect(await count('schedule_publication_revisions')).toBe(0);expect(await count('notifications')).toBe(0);
+  });
+  it.each(eligibilityChanges)('publication rechecks %s committed during a real lock wait',async(_kind,change)=>{
+    await sql("INSERT INTO positions(id,workspace_id,name) SELECT 'QA-position',id,'Fictional' FROM workspaces");
+    await sql("INSERT INTO employee_positions(employee_id,position_id) VALUES ('QA-E','QA-position')");
+    await sql("UPDATE shifts SET position_id='QA-position' WHERE id='QA-sh1'");
+    const holder=new Client({connectionString:database.connectionString});await holder.connect();
+    let pending:Promise<unknown>|undefined;
+    try{
+      await holder.query('BEGIN');await holder.query(change);
+      // Attach the rejection handler immediately while observing the actual wait.
+      pending=publish().then(value=>({value}),error=>({error}));
+      await vi.waitFor(async()=>{expect(await sql("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND pid<>pg_backend_pid()")).not.toHaveLength(0);},{timeout:3000,interval:20});
+      await holder.query('COMMIT');
+      expect(await pending).toHaveProperty('error');
+      expect((await sql("SELECT status FROM schedules WHERE id='QA-s1'"))[0].status).toBe('DRAFT');
+      expect(await count('schedule_publication_revisions')).toBe(0);expect(await count('notifications')).toBe(0);
+    }finally{await holder.query('ROLLBACK');await holder.end();await pending;}
+  });
   it('outbox_failure_rolls_back_publication', async () => {
     await sql(`ALTER TABLE notifications ADD CONSTRAINT qa_reject_intent CHECK (employee_id <> 'QA-E')`);
     try {
@@ -660,3 +694,62 @@ describe('real SQL worker recovery with a no-network sender', () => {
 
 // Explicit Puerto Rico fixture policy; production callers load the configured workspace.
 function readNotificationConfig(env: Record<string,string|undefined>) {return {...readRuntimeConfig(env),policy:fixtureNotificationPolicy};}
+
+// The original review is retained even when server snapshots/retries are fresh.
+describe('original shift review concurrency',()=>{
+ beforeEach(async()=>{await sql("INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) SELECT 'review-normal-'||e.id||'-'||d,e.id,d,'00:00','24:00' FROM employees e CROSS JOIN generate_series(0,6)d");});
+ const edit=async(version:string|undefined,executor=db,employeeId='QA-E')=>reviewedUpdateShift({shiftId:'QA-sh1',expectedReviewVersion:version,employeeId,date:'2030-10-11',startTime:'10:00',endTime:'17:00',notes:'Fictional draft',actorEmployeeId:'QA-M',proof:await fixtureProof(db,'QA-M')},executor);
+ const review=async()=> (await getShiftForManagement('QA-sh1',db))!.reviewVersion;
+ it.each(['edit','reassign','delete'] as const)('refuses original edit after a newer %s and leaves its effects exact',async kind=>{
+  const version=await review();
+  await sql(kind==='delete'?"DELETE FROM shifts WHERE id='QA-sh1'":kind==='reassign'?"UPDATE shifts SET employee_id='QA-F' WHERE id='QA-sh1'":"UPDATE shifts SET notes='Newer fictional note' WHERE id='QA-sh1'");
+  const before=await sql("SELECT to_jsonb(sh) AS row FROM shifts sh WHERE id='QA-sh1'");
+  await expect(edit(version)).rejects.toMatchObject({code:'SHIFT_REVIEW_CONFLICT'});
+  expect(await sql("SELECT to_jsonb(sh) AS row FROM shifts sh WHERE id='QA-sh1'")).toEqual(before);
+  expect(await count('schedule_pending_edits')).toBe(0);expect(await count('notifications')).toBe(0);
+ });
+ it('refuses original delete after an edit and allows a fresh delete once',async()=>{
+  const version=await review(),proof=await fixtureProof(db,'QA-M');
+  await edit(version);
+  await expect(reviewedDeleteShift('QA-sh1',proof,db,version)).rejects.toMatchObject({code:'SHIFT_REVIEW_CONFLICT'});
+  expect(await reviewedDeleteShift('QA-sh1',proof,db,await review())).toBe(true);
+  await expect(reviewedDeleteShift('QA-sh1',proof,db,version)).rejects.toMatchObject({code:'SHIFT_REVIEW_CONFLICT'});
+  expect(await sql("SELECT id FROM shifts WHERE id='QA-sh1'")).toEqual([]);
+ });
+ it('retains original expectation after a lock-wait snapshot retry and refuses a lost-response replay',async()=>{
+  const version=await review();
+  const holder=new Client({connectionString:database.connectionString});await holder.connect();let pending:Promise<unknown>|undefined;
+  try{
+   await holder.query('BEGIN');await holder.query("UPDATE shifts SET notes='Concurrent fictional edit' WHERE id='QA-sh1'");
+   pending=edit(version).then(value=>({value}),error=>({error}));
+   await vi.waitFor(async()=>expect(await sql("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock'")).not.toHaveLength(0),{timeout:3000,interval:20});
+   await holder.query('COMMIT');expect(await pending).toMatchObject({error:{code:'SHIFT_REVIEW_CONFLICT'}});
+  }finally{await holder.query('ROLLBACK');await holder.end();await pending;}
+  const fresh=await review();expect(await edit(fresh)).toBe(true);
+  const after=await sql("SELECT to_jsonb(sh) AS row FROM shifts sh WHERE id='QA-sh1'");
+  await expect(edit(fresh)).rejects.toMatchObject({code:'SHIFT_REVIEW_CONFLICT'});
+  expect(await sql("SELECT to_jsonb(sh) AS row FROM shifts sh WHERE id='QA-sh1'")).toEqual(after);
+ });
+ it.each([undefined,'', 'not-a-review'])('refuses missing/malformed original review %s',async version=>{
+  await expect(edit(version)).rejects.toMatchObject({code:'SHIFT_REVIEW_CONFLICT'});
+  expect((await getShiftForManagement('QA-sh1',db))!.startTime).toBe('09:00');
+ });
+});
+
+it.each(['update','delete'] as const)('original review %s fence pins the shift until commit against a writer outside the week protocol',async kind=>{
+ const proof=await fixtureProof(db,'QA-M'),version=(await getShiftForManagement('QA-sh1',db))!.reviewVersion;
+ const client=new Client({connectionString:database.connectionString});await client.connect();
+ let release!:()=>void,reached!:()=>void;
+ const held=new Promise<void>(resolve=>{release=resolve;}),guarded=new Promise<void>(resolve=>{reached=resolve;});
+ const ex:SqlExecutor={query:db.query,transaction:async statements=>{
+  await client.query('BEGIN');try{const results:unknown[][]=[];for(const s of statements){results.push((await client.query(s.text,[...s.values])).rows);if(s.text.includes("ELSE 'shift_review_conflict'")){reached();await held;}}await client.query('COMMIT');return results;}catch(error){await client.query('ROLLBACK');throw error;}
+ }};
+ let pending:Promise<unknown>|undefined,raw:Promise<unknown>|undefined;
+ try{
+  pending=(kind==='delete'?reviewedDeleteShift('QA-sh1',proof,ex,version):reviewedUpdateShift({proof,actorEmployeeId:'QA-M',shiftId:'QA-sh1',expectedReviewVersion:version,employeeId:'QA-E',date:'2030-10-11',startTime:'09:00',endTime:'17:00',notes:'Manager reviewed note'},ex)).then(value=>({value}),error=>({error}));
+  await Promise.race([guarded,pending.then(()=>{throw Error('Review fence not reached');})]);
+  raw=sql("UPDATE shifts SET notes='Concurrent writer after manager' WHERE id='QA-sh1'");
+  await vi.waitFor(async()=>expect(await sql("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE 'UPDATE shifts SET notes=%'")).not.toHaveLength(0),{timeout:1500,interval:20});
+  release();expect(await pending).toMatchObject({value:true});await raw;
+ }finally{release();await pending;await raw;await client.end();}
+});

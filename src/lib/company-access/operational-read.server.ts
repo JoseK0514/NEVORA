@@ -1,3 +1,4 @@
+import {shiftReviewSql} from '../data/shift-review';
 import {projectPersonHours,type PersonHours,type PersonHoursSource} from '../person-hours';
 import 'server-only';
 import {createHash} from 'node:crypto';
@@ -92,9 +93,9 @@ export async function readOperationalDirectory(proof:SessionMutationProof,ex:Sql
   return {data:{mode:'COMPANY' as const,locations:catalog,employees:employees.map(e=>({id:e.id,firstName:e.firstName,lastName:e.lastName,phone:e.phone,...(e.email?{email:e.email}:{}),role:e.role,primaryLocationId:e.primaryLocationId,active:e.active,eligibleLocationIds:[...e.eligibleLocationIds],positionIds:[...(e.positionIds??[])]}))}};
  },ex);
 }
-type ShiftRow=OperationalShiftRow&{weekStart:string;assignmentOrigin:string|null};
+type ShiftRow=OperationalShiftRow&{reviewVersion:string;weekStart:string;assignmentOrigin:string|null};
 async function shifts(ctx:Context,weekStart:string|null,ids:string[]|null,shiftId:string|null=null):Promise<ShiftRow[]>{
- return bounded(await ctx.ex.query<ShiftRow>({text:`SELECT sh.id,sh.schedule_id AS "scheduleId",sh.employee_id AS "employeeId",e.first_name||' '||e.last_name AS "employeeName",s.location_id AS "locationId",
+ return bounded(await ctx.ex.query<ShiftRow>({text:`SELECT ${shiftReviewSql} AS "reviewVersion",sh.id,sh.schedule_id AS "scheduleId",sh.employee_id AS "employeeId",e.first_name||' '||e.last_name AS "employeeName",s.location_id AS "locationId",
    sh.date::text,sh.start_time::text AS "startTime",sh.end_time::text AS "endTime",sh.notes,sh.position_id AS "positionId",sh.is_designated_lead AS "isDesignatedLead",
    EXISTS(SELECT 1 FROM shift_callouts c WHERE ${currentCalloutReleaseSql()}) AS "isCalloutApproved",s.status AS "scheduleStatus",s.week_start::text AS "weekStart",sh.assignment_origin AS "assignmentOrigin",
    CASE WHEN s.status='DRAFT' THEN p.name WHEN capture.source_shift_id IS NOT NULL THEN capture.position_name ELSE p.name END AS "positionName"
@@ -143,7 +144,7 @@ export async function readOperationalShiftEditor(proof:SessionMutationProof,quer
   const ids=[...new Set(employeeOptions.flatMap(e=>e.positionIds))].sort();
   const positionOptions=bounded(await ctx.ex.query<{id:string;name:string}>({text:'SELECT id,name FROM positions WHERE workspace_id=$1 AND active AND id=ANY($2::text[]) ORDER BY id LIMIT 5001',values:[ctx.workspace.id,ids]}));
   let editable:OperationalEditableShift|null=null;
-  if(shift){const safe=publicShift(shift);editable={id:safe.id,scheduleId:safe.scheduleId,employeeId:safe.employeeId,employeeName:safe.employeeName,locationId:safe.locationId,weekStart,date:safe.date,startTime:safe.startTime,endTime:safe.endTime,
+  if(shift){const safe=publicShift(shift);editable={reviewVersion:shift.reviewVersion,id:safe.id,scheduleId:safe.scheduleId,employeeId:safe.employeeId,employeeName:safe.employeeName,locationId:safe.locationId,weekStart,date:safe.date,startTime:safe.startTime,endTime:safe.endTime,
    ...(safe.notes?{notes:safe.notes}:{}),...(safe.positionId?{positionId:safe.positionId}:{}),isDesignatedLead:safe.isDesignatedLead,isCalloutApproved:safe.isCalloutApproved,scheduleStatus:safe.scheduleStatus};}
   const saveAvailability=!location.active?'unavailable' as const:ctx.ids!==null&&shift&&(shift.scheduleStatus!=='DRAFT'||normalizeAssignmentOrigin(shift.assignmentOrigin)==='GENERATED')?'requires_company' as const:'available' as const;
   const data={weekStart,locationId,shift:editable,employeeOptions:employeeOptions.map(e=>({id:e.id,name:e.name,positionIds:[...e.positionIds]})),positionOptions:positionOptions.map(p=>({id:p.id,name:p.name})),saveAvailability};

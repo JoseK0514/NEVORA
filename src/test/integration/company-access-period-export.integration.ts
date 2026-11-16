@@ -8,7 +8,7 @@ import {isManagementAuthorizationError} from '../../lib/data/management-session'
 import {readTimecards,mutateTimecard} from '../../lib/timecards/service';
 import {createPayrollExport,readExportProfiles,saveExportProfile} from '../../lib/payroll-export/service';
 import {neutralProfile} from '../../lib/payroll-export/model';
-import {readPeriodClose,savePeriodPopulation,preparePeriodManifest,readPeriodArtifact,recordPeriodHandoff} from '../../lib/period-close/service';
+import {readPeriodCloseHistory,readPeriodClose,savePeriodPopulation,preparePeriodManifest,readPeriodArtifact,recordPeriodHandoff} from '../../lib/period-close/service';
 const ctx=vi.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
 vi.mock('server-only',()=>({}));
 vi.mock('@/lib/auth/session',()=>({getSession:async()=>ctx.proof?.employee??null,requireSessionMutationProof:async()=>ctx.proof}));
@@ -58,6 +58,7 @@ const cases=[
  {name:'manifest prepare',run:(f:Fixture,ex:SqlExecutor)=>preparePeriodManifest(f.manager,{...f.manifestInput,operationId:randomUUID()},ex)},
  {name:'artifact serve',run:(f:Fixture,ex:SqlExecutor)=>readPeriodArtifact(f.manager,f.manifest.id,'csv',0,ex)},
  {name:'handoff recording',run:(f:Fixture,ex:SqlExecutor)=>recordPeriodHandoff(f.manager,{...f.handoffInput,operationId:randomUUID()},ex)},
+ {name:'period history read',run:(f:Fixture,ex:SqlExecutor)=>readPeriodCloseHistory(f.manager,period,ex)},
 ];
 it.each(cases)('$name requires Company and preserves existing immutable export/period history',async test=>{const f=await setup();try{await choose(f,'LOCATIONS');const before=await snapshot(f);await denied(()=>test.run(f,f.db.executor));expect(await snapshot(f)).toEqual(before);}finally{await close(f);}});
 const replays=[
@@ -77,6 +78,7 @@ it('Owner and Company preserve complete canonical B time, mappings, manifest tot
 });
 const reads=[
  {name:'mapping projection',match:'SELECT profile_id AS id',run:(f:Fixture,ex:SqlExecutor)=>readExportProfiles(f.manager,ex)},
+ {name:'history projection',match:'WITH matching AS',run:(f:Fixture,ex:SqlExecutor)=>readPeriodCloseHistory(f.manager,period,ex)},
  {name:'close projection',match:'SELECT id::text,payload,manifest_hash',run:(f:Fixture,ex:SqlExecutor)=>readPeriodClose(f.manager,period,ex)},
  {name:'cached export verification',match:'SELECT command_hash AS hash,payload',run:(f:Fixture,ex:SqlExecutor)=>createPayrollExport(f.manager,f.exportInput,ex)},
  {name:'artifact audit',match:'INSERT INTO payroll_period_events',run:(f:Fixture,ex:SqlExecutor)=>readPeriodArtifact(f.manager,f.manifest.id,'csv',0,ex)},
@@ -125,5 +127,44 @@ it('P4 leaving someone with recorded hours out of pay needs an Owner and a real 
   await expect(savePeriodPopulation(f.manager,input('Left the company on 9/26; paid by final check'),f.db.executor)).rejects.toThrow('EXCLUDE_WITH_RECORDED_TIME_REQUIRES_OWNER');
   await expect(savePeriodPopulation(f.owner,input('x'),f.db.executor)).rejects.toThrow('EXCLUDE_WITH_RECORDED_TIME_REQUIRES_OWNER');
   expect((await savePeriodPopulation(f.owner,input('Left the company on 9/26; paid by final check'),f.db.executor)).revision).toBe(2);
+ }finally{await close(f);}
+});
+
+it.each([1000,1001,4000])('period summary remains usable with %s immutable events',async size=>{
+ const f=await setup();try{
+  await f.q(`INSERT INTO payroll_period_events(workspace_id,manifest_id,id,actor_employee_id,kind,command_hash,payload,created_at)
+   SELECT $1,$2::uuid,gen_random_uuid(),'manager','ARTIFACT_SERVED','owned-fixture',jsonb_build_object('sha256',$3::text),timestamptz '2026-09-28 00:00:00+00' FROM generate_series(1,$4::integer)`,[(await f.q<{id:string}>('SELECT id FROM workspaces'))[0].id,f.manifest.id,f.exported.csvSha256,size-1]);
+  const view=await readPeriodClose(f.manager,period,f.db.executor);
+  const summary=view.manifests.find(m=>m.id===f.manifest.id)!;
+  expect(summary.hash).toBeDefined();expect(summary.events.length).toBeLessThanOrEqual(3);
+  expect(summary.eventCoverage).toMatchObject({kind:'LATEST_PER_KIND',totalEvents:size,complete:false});
+  const expected=await f.q<{id:string}>("SELECT id::text FROM payroll_period_events ORDER BY created_at DESC,id DESC");
+  const ids:string[]=[];let cursor:string|null=null,first=true;
+  do{const page=await readPeriodCloseHistory(f.manager,{...period,limit:100,cursor},f.db.executor);
+   expect(page.events.length).toBeLessThanOrEqual(100);expect(page.coverage.totalEvents).toBe(size);
+   ids.push(...page.events.map(e=>e.id));cursor=page.nextCursor;
+   if(first){first=false;await readPeriodArtifact(f.manager,f.manifest.id,'csv',0,f.db.executor);}
+  }while(cursor);
+  expect(ids).toEqual(expected.map(e=>e.id));expect(new Set(ids).size).toBe(size);
+  const firstPage=await readPeriodCloseHistory(f.manager,{...period,limit:1},f.db.executor);
+  await expect(readPeriodCloseHistory(f.manager,{startDate:'2026-10-05',endDate:'2026-10-11',cursor:firstPage.nextCursor},f.db.executor)).rejects.toThrow('INVALID_HISTORY_CURSOR');
+  for(const limit of [0,101,1.5])await expect(readPeriodCloseHistory(f.manager,{...period,limit},f.db.executor)).rejects.toThrow('INVALID_HISTORY_LIMIT');
+  await choose(f,'LOCATIONS');await denied(()=>readPeriodCloseHistory(f.manager,{...period,cursor:firstPage.nextCursor},f.db.executor));
+  await choose(f,'COMPANY');
+  expect(view.members.some(m=>m.employeeId==='period-private-b')).toBe(true);
+  const artifact=await readPeriodArtifact(f.manager,f.manifest.id,'csv',0,f.db.executor);
+  expect(artifact.content).toBe(f.exported.csv);expect(artifact.sha256).toBe(f.exported.csvSha256);
+ }finally{await close(f);}
+});
+
+it('history rejects invalid and cross-period cursors and exposes no foreign workspace events',async()=>{
+ const f=await setup();try{
+  await readPeriodArtifact(f.manager,f.manifest.id,'csv',0,f.db.executor);
+  const first=await readPeriodCloseHistory(f.manager,{...period,limit:1},f.db.executor);expect(first.nextCursor).not.toBeNull();
+  const cursor=JSON.parse(Buffer.from(first.nextCursor!,'base64url').toString());
+  for(const command of [{...period,limit:0},{...period,limit:101},{...period,limit:1.5},{...period,cursor:'malformed'}, {...period,cursor:Buffer.from(JSON.stringify({...cursor,workspaceId:'foreign'})).toString('base64url')}, {startDate:'2026-09-28',endDate:'2026-10-04',cursor:first.nextCursor}])
+   await expect(readPeriodCloseHistory(f.manager,command,f.db.executor)).rejects.toThrow(/INVALID/);
+  const response=await periodPOST(new Request('https://example.test/api/period-close',{method:'POST',headers:{origin:'https://example.test','content-type':'application/json','x-nevora-period-close':'1','x-nevora-actor':'manager'},body:JSON.stringify({action:'HISTORY',command:{...period,limit:1}})}));
+  expect(response.status).toBe(200);const body=await response.json();expect(body.result.events).toHaveLength(1);expect(body.result.coverage.hasMore).toBe(true);
  }finally{await close(f);}
 });

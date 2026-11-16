@@ -1,3 +1,4 @@
+import {reportHandledServerError} from '../server-error';
 import {assertOperationalAccess,operationalScopeStatements,isOperationalAuthorizationError} from '../company-access/operational-scope.server';
 import { createHash } from 'node:crypto';
 import type { SqlExecutor } from '../notifications/types';
@@ -150,9 +151,10 @@ async function readTimecardsCore(proof:SessionMutationProof,requested:Period,exe
     }
     return {...result,validForMs};
   }catch(error){
-    if(isManagementAuthorizationError(error))return {state:'unavailable',reason:'access_denied'};
+    if(isManagementAuthorizationError(error)||isOperationalAuthorizationError(error))return {state:'unavailable',reason:'access_denied'};
     const message=error instanceof Error?error.message:'';
     const code=object(error)?String(error.code):'';
+    if(!/SOURCE_LIMIT|source limit|Timecards expired/.test(message))reportHandledServerError(error,'/app/timecards/read');
     return {state:'unavailable',reason:/SOURCE_LIMIT|source limit/.test(message)?'source_limit':['42P01','42883'].includes(code)?'schema_missing':'read_failed'};
   }
 }
@@ -187,7 +189,7 @@ export async function mutateTimecard(proof:SessionMutationProof,input:unknown,ex
   const command=parseTimecardCommand(input);
   let workspace;
   let authority:string;
-  try{const access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor);workspace=access.workspace;authority=access.authority;}catch{return {status:'unavailable'};}
+  try{const access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor);workspace=access.workspace;authority=access.authority;}catch(error){if(!isManagementAuthorizationError(error)&&!isOperationalAuthorizationError(error))reportHandledServerError(error,'/app/timecards/command');return {status:'unavailable'};}
   const actor=proof.employee.id;
   const statements=[...workspaceReadGuard(workspace),
     {text:'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE',values:[[...new Set([actor,command.employeeId])].sort()]},
@@ -212,7 +214,8 @@ export async function mutateTimecard(proof:SessionMutationProof,input:unknown,ex
       const reasons=[['SELF_REVIEW','self_review'],['UNRESOLVED','unresolved_time'],['APPROVAL_REQUIRED','approval_required'],['PAYROLL_APPROVED','payroll_approved'],['STATE','period_state'],['OVERLAPPING_PERIOD','overlapping_period']] as const;
       for(const [pattern,reason] of reasons)if(message.includes('nevora_timecard_'+pattern))return {status:'blocked',reason};
       if(['40001','40P01','55P03'].includes(code)){if(attempt<2)continue;return {status:'conflict'};}
-      if(/AUTH_REQUIRED|SOURCE_LIMIT|INVALID/.test(message)||['42P01','42883','23503','23514'].includes(code))return {status:'unavailable'};
+      if(/AUTH_REQUIRED|SOURCE_LIMIT|INVALID/.test(message)||['23503','23514'].includes(code))return {status:'unavailable'};
+      reportHandledServerError(error,'/app/timecards/command');
       if(!code||/^(ECONN|ETIMEDOUT|UND_ERR|57014)/.test(code))return {status:'outcome-unknown',operationId:command.operationId};
       return {status:'unavailable'};
     }

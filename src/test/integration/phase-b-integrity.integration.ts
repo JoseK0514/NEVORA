@@ -1,3 +1,4 @@
+import {getShiftForManagement} from '../../lib/data/schedules';
 import { createHash,randomUUID } from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import { Client } from 'pg';
@@ -82,7 +83,7 @@ it.each(['DRAFT', 'PUBLISHED'].flatMap(status => ['create', 'edit'].map(operatio
     const intentsBefore = await q(db, 'SELECT id FROM notifications ORDER BY id');
     context.cookies.set('fuel_session', 'owned-integration-proof:actor');
     const data = new FormData();
-    Object.entries({ shiftId: 'existing', weekStart: week, locationId: 'loc-1', employeeId: 'E', date: operation === 'create' ? week : '2030-10-08', startTime: '13:00', endTime: '17:00', notes: 'Private editable draft', positionId: '' }).forEach(([key, value]) => data.set(key, value));
+    Object.entries({ expectedReviewVersion:(await getShiftForManagement('existing',db.executor))!.reviewVersion,shiftId: 'existing', weekStart: week, locationId: 'loc-1', employeeId: 'E', date: operation === 'create' ? week : '2030-10-08', startTime: '13:00', endTime: '17:00', notes: 'Private editable draft', positionId: '' }).forEach(([key, value]) => data.set(key, value));
     let reached = false;
     context.executor = { transaction: db.executor.transaction, query: async <T>(statement: SqlStatement, signal?: AbortSignal) => {
       const result = await db.executor.query<T>(statement, signal);
@@ -123,9 +124,10 @@ async function withWriter(db: Fixture, work: (writer: Client) => Promise<void>) 
   finally { await writer.query('ROLLBACK').catch(() => {}); await writer.end(); }
 }
 async function managementWrite(db: Fixture, op: string, sql: SqlExecutor, designated = false) {
+  const review=(await getShiftForManagement('existing',db.executor))?.reviewVersion;
   if (op === 'insert') return insertShift({ scheduleId: 'schedule', employeeId: 'worker', date: '2030-10-09', startTime: '09:00', endTime: '13:00', isDesignatedLead: designated, actorEmployeeId: 'actor', proof: db.actor }, sql);
-  if (op === 'update') return updateShift({ shiftId: 'existing', employeeId: 'worker', date: '2030-10-08', startTime: '13:00', endTime: '17:00', isDesignatedLead: designated, actorEmployeeId: 'actor', proof: db.actor }, sql);
-  if (op === 'delete') return deleteShift('existing', db.actor, sql);
+  if (op === 'update') return updateShift({ expectedReviewVersion:review,shiftId: 'existing', employeeId: 'worker', date: '2030-10-08', startTime: '13:00', endTime: '17:00', isDesignatedLead: designated, actorEmployeeId: 'actor', proof: db.actor }, sql);
+  if (op === 'delete') return deleteShift('existing', db.actor, sql,review);
   if (op === 'publish') return publishScheduleWithRevision({ locationId: 'loc-1', weekStart: week, managerId: 'actor', proof: db.actor }, sql);
   return reviewTimeOffRequest({ requestId: 'request', status: 'APPROVED', managerId: 'actor', proof: db.actor }, sql);
 }

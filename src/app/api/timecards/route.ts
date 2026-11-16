@@ -1,3 +1,6 @@
+import {withServerErrorDiagnostics,reportHandledServerError} from '@/lib/server-error';
+import {isManagementAuthorizationError} from '@/lib/data/management-session';
+import {isOperationalAuthorizationError} from '@/lib/company-access/operational-scope.server';
 import {readCompanyResult} from '@/lib/company-access/company-result.server';
 import {neonNotificationExecutor} from '@/lib/data/sql-executor';
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
@@ -7,6 +10,7 @@ import {correctionBoundaryResponse,correctionJson,readCorrectionJson} from '@/li
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
 export async function POST(request:Request):Promise<Response>{
+ return withServerErrorDiagnostics('/api/timecards',async()=>{
   const boundary=correctionBoundaryResponse(request,true,'x-nevora-timecards');
   if(boundary)return boundary;
   try{
@@ -25,5 +29,6 @@ export async function POST(request:Request):Promise<Response>{
       ?await readCompanyResult(proof,()=>readTimecards(proof,period),neonNotificationExecutor())
       :await readTimecards(proof,period);
     return correctionJson(result,result.state==='ready'?200:result.reason==='access_denied'?403:503);
-  }catch{return correctionJson({state:'unavailable'},503);}
+  }catch(error){if(!isManagementAuthorizationError(error)&&!isOperationalAuthorizationError(error))reportHandledServerError(error,'/api/timecards');return correctionJson({state:'unavailable'},503);}
+ });
 }

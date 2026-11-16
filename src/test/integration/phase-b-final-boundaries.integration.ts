@@ -1,3 +1,4 @@
+import {getShiftForManagement} from '../../lib/data/schedules';
 import { Client } from 'pg';
 import { expect, it, vi } from 'vitest';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
@@ -56,7 +57,7 @@ for (const scenario of scenarios) for (const expires of [false, true]) {
       if (['delete-generated','clear-exclusion'].includes(scenario)) {
         await generateWeekDraft(request, db.executor);
         shiftId = String((await q('SELECT id FROM shifts'))[0].id);
-        if (scenario === 'clear-exclusion') exclusionId = (await deleteGeneratedDraftShift({ ...request, locationId: 'loc-1', shiftId }, db.executor)).exclusionId!;
+        if (scenario === 'clear-exclusion') exclusionId = (await deleteGeneratedDraftShift({ ...request,expectedReviewVersion:(await getShiftForManagement(shiftId,db.executor))!.reviewVersion, locationId: 'loc-1', shiftId }, db.executor)).exclusionId!;
       }
       const table = scenario === 'publish' ? 'schedule_publication_revisions' : scenario === 'time-off' ? 'time_off_requests'
         : scenario === 'deadline' ? 'schedule_week_settings' : ['delete-generated','clear-exclusion'].includes(scenario) ? 'schedule_generation_exclusions'
@@ -83,16 +84,17 @@ for (const scenario of scenarios) for (const expires of [false, true]) {
         },
       };
       context.executor = executor;
+      const review=(await getShiftForManagement(shiftId,db.executor))?.reviewVersion;
       const action = () => {
         if (scenario === 'schedule-create') return ensureSchedule({ locationId: 'loc-1', weekStart: request.weekStart, createdBy: 'fr-owner', proof }, executor);
         if (scenario === 'shift-create') return insertShift({ scheduleId, employeeId: 'fr-worker', date: request.weekStart, startTime: '08:00', endTime: '10:00', actorEmployeeId: 'fr-owner', proof }, executor);
-        if (scenario === 'shift-update') return updateShift({ shiftId, employeeId: 'fr-worker', date: request.weekStart, startTime: '09:00', endTime: '11:00', actorEmployeeId: 'fr-owner', proof }, executor);
-        if (scenario === 'shift-delete') return deleteShift(shiftId, proof, executor);
+        if (scenario === 'shift-update') return updateShift({ expectedReviewVersion:review,shiftId, employeeId: 'fr-worker', date: request.weekStart, startTime: '09:00', endTime: '11:00', actorEmployeeId: 'fr-owner', proof }, executor);
+        if (scenario === 'shift-delete') return deleteShift(shiftId, proof, executor,review);
         if (scenario === 'publish') return publishScheduleWithRevision({ locationId: 'loc-1', weekStart: request.weekStart, managerId: 'fr-owner', proof }, executor);
         if (scenario === 'time-off') return reviewTimeOffRequest({ requestId: 'fr-leave', managerId: 'fr-owner', status: 'APPROVED', proof }, executor);
         if (scenario === 'deadline') return setAvailabilityDeadline({ weekStart: request.weekStart, deadlineIso: '2030-10-06T12:00:00Z', updatedBy: 'fr-owner', proof });
         if (scenario === 'generate' || scenario === 'fill-gaps') return generateWeekDraft({ ...request, mode: scenario === 'generate' ? 'BUILD_WEEK' : 'FILL_GAPS_ONLY' }, executor);
-        if (scenario === 'delete-generated') return deleteGeneratedDraftShift({ ...request, locationId: 'loc-1', shiftId }, executor);
+        if (scenario === 'delete-generated') return deleteGeneratedDraftShift({ ...request,expectedReviewVersion:review, locationId: 'loc-1', shiftId }, executor);
         return clearGenerationExclusion({ ...request, locationId: 'loc-1', exclusionId }, executor);
       };
       pending = action().then(value => ({ value }), error => ({ error }));

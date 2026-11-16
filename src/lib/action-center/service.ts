@@ -1,3 +1,5 @@
+import {reportHandledServerError} from '../server-error';
+import {isOperationalAuthorizationError} from '../company-access/operational-scope.server';
 import {readCompanyResult} from '../company-access/company-result.server';
 import 'server-only';
 import {withActionRequestFacts} from '../data/action-request-facts.server';
@@ -29,9 +31,12 @@ async function readActionCenterCore(proof:SessionMutationProof,weekStart:string,
   const workspace=await getWorkspace(executor),started=performance.now();
   await executor.transaction([...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=$1 FOR SHARE',values:[proof.employee.id]},...managementSessionStatements(proof,proof.employee.id)]);
   const settled=await Promise.allSettled([readScheduling(proof,weekStart,executor),readAttendanceReview(proof,executor),readManagerTimeCorrections(proof,executor),readTimecards(proof,{startDate:weekStart,endDate:addDays(weekStart,6)},executor),readTimecards(proof,{startDate:addDays(weekStart,-7),endDate:addDays(weekStart,-1)},executor),readLeaveStaffing(proof,{weekStart},executor)]);
-  if(settled.some(result=>result.status==='rejected'))throw Error('Source unavailable');
+  const rejected=settled.find(result=>result.status==='rejected');if(rejected?.status==='rejected')throw rejected.reason;
   const [scheduling,attendance,corrections,thisWeekCards,lastWeekCards,staffing]=settled.map(result=>result.status==='fulfilled'?result.value:null) as [ManagerActionItem[],Awaited<ReturnType<typeof readAttendanceReview>>,Awaited<ReturnType<typeof readManagerTimeCorrections>>,Awaited<ReturnType<typeof readTimecards>>,Awaited<ReturnType<typeof readTimecards>>,StaffingSnapshot];
-  for(const source of [attendance,corrections,thisWeekCards,lastWeekCards,staffing])if(source.state!=='ready')return {state:'unavailable',reason:source.reason==='access_denied'?'access_denied':'read_failed'};
+  for(const source of [attendance,corrections,thisWeekCards,lastWeekCards,staffing])if(source.state!=='ready'){
+   if(source.reason==='read_failed'||source.reason==='schema_missing')reportHandledServerError(new Error('Action source unavailable'),'/app/actions/read');
+   return {state:'unavailable',reason:source.reason==='access_denied'?'access_denied':'read_failed'};
+  }
   if(attendance.state!=='ready'||corrections.state!=='ready'||thisWeekCards.state!=='ready'||lastWeekCards.state!=='ready'||staffing.state!=='ready')throw Error('Incomplete sources');
   // Round 5 (Nov 7, 2026): last week's cards still waiting to be approved or finalized are work too (Home's Payday step
   // counted only this week's, so it said "From Mon" while last week waited). Each card keeps its own period in its id.
@@ -45,7 +50,11 @@ async function readActionCenterCore(proof:SessionMutationProof,weekStart:string,
   if(!authority[0])return {state:'unavailable',reason:'access_denied'};
   const validForMs=Math.floor(Math.min(authority[0].remaining,attendance.validForMs,corrections.validForMs,thisWeekCards.validForMs,lastWeekCards.validForMs,staffing.validForMs,45000)-(performance.now()-started));if(validForMs<1)throw Error('Sources expired');
   return {state:'ready',observedAt:authority[0].observedAt,weekStart,validForMs,items,counts:{total:items.length,scheduling:items.filter(i=>i.category==='scheduling').length,requests:items.filter(i=>i.category==='requests').length,timekeeping:items.filter(i=>i.category==='timekeeping').length},limitedAttendance:attendance.coverage.state==='limited'};
- }catch(error){return {state:'unavailable',reason:isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
+ }catch(error){
+  const denied=isManagementAuthorizationError(error)||isOperationalAuthorizationError(error);
+  if(!denied&&!(error instanceof Error&&['Invalid week','Action source limit','Sources expired'].includes(error.message)))reportHandledServerError(error,'/app/actions/read');
+  return {state:'unavailable',reason:denied?'access_denied':'read_failed'};
+ }
 }
 
 /** Company-authorized aggregate of scheduling, attendance, corrections and timecards.

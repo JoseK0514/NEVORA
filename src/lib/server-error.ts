@@ -1,4 +1,5 @@
 import 'server-only';
+import {AsyncLocalStorage} from 'node:async_hooks';
 
 /** Read data properties only: thrown objects may have getters or hostile proxies. */
 function field(value: unknown, name: string): unknown {
@@ -45,4 +46,24 @@ export function reportServerError(error: unknown, context: {route: string; reque
       ...(code ? {sqlState: code} : {}),
     }));
   } catch { /* Diagnostics cannot turn the original failure into another one. */ }
+}
+
+
+// Request-local correlation keeps existing domain bodies/receipt parsers intact.
+// Only source-code route templates are passed here; client headers are not IDs.
+const handledContext=new AsyncLocalStorage<{route:string;requestId:string;reported:boolean}>();
+export function reportHandledServerError(error:unknown,route:string):string {
+  const context=handledContext.getStore();
+  const requestId=context?.requestId??crypto.randomUUID();
+  if(!context?.reported)reportServerError(error,{route:context?.route??route,requestId});
+  if(context)context.reported=true;
+  return requestId;
+}
+export async function withServerErrorDiagnostics(route:string,work:()=>Promise<Response>):Promise<Response>{
+  const context={route,requestId:crypto.randomUUID(),reported:false};
+  return handledContext.run(context,async()=>{
+    const response=await work();
+    if(context.reported)response.headers.set('X-Nevora-Request-Id',context.requestId);
+    return response;
+  });
 }

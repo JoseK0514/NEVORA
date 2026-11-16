@@ -13,7 +13,7 @@ function fixture(published=false) {
   const executor:SqlExecutor={query:vi.fn(async statement=>statement.text.startsWith('SELECT id, name, time_zone')?[{id:'test-workspace',name:'Test',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}]:statement.text.includes('AS state')?[{state:structuredClone(state),source:schedulingSourceFixture(state),read_at:'2030-10-07 12:00:00.111112+00'}]:[{week_start:week,location_id:'loc-1',status:state.schedules[0]?.status??'DRAFT'}]) as SqlExecutor['query'],transaction:vi.fn(async statements=>{batches.push([...statements]);return statements.map(()=>[]);})};
   return {state,batches,executor};
 }
-const operations={insert:(executor:SqlExecutor)=>insertShift({proof:managementProof('M'),scheduleId:'a',employeeId:'E',date:'2030-10-12',startTime:'09:00',endTime:'17:00',actorEmployeeId:'M'},executor),update:(executor:SqlExecutor)=>updateShift({proof:managementProof('M'),shiftId:'s1',employeeId:'E',date:'2030-10-11',startTime:'10:00',endTime:'17:00',actorEmployeeId:'M'},executor),delete:(executor:SqlExecutor)=>deleteShift('s1',managementProof('M'),executor)};
+const operations={insert:(executor:SqlExecutor)=>insertShift({proof:managementProof('M'),scheduleId:'a',employeeId:'E',date:'2030-10-12',startTime:'09:00',endTime:'17:00',actorEmployeeId:'M'},executor),update:(executor:SqlExecutor)=>updateShift({proof:managementProof('M'),shiftId:'s1',expectedReviewVersion:'a'.repeat(64),employeeId:'E',date:'2030-10-11',startTime:'10:00',endTime:'17:00',actorEmployeeId:'M'},executor),delete:(executor:SqlExecutor)=>deleteShift('s1',managementProof('M'),executor,'a'.repeat(64))};
 it.each(Object.entries(operations))('draft %s touches exact schedule write version without creating a revision or notification',async(_,run)=>{
   const r=fixture();await run(r.executor);
   expect(r.batches).toHaveLength(1);expect(r.batches[0].some(s=>s.text.includes('UPDATE schedules')&&s.text.includes('updated_at'))).toBe(true);
@@ -48,21 +48,21 @@ it('ensuring a schedule participates in the same week lock/version protocol',asy
 });
 it('delete with exchange history reports false without changing business state',async()=>{
   const r=fixture(true);r.state.shifts[0].hasExchangeHistory=true;
-  expect(await deleteShift('s1',managementProof('M'),r.executor)).toBe(false);expect(r.batches).toHaveLength(0);
+  expect(await deleteShift('s1',managementProof('M'),r.executor,'a'.repeat(64))).toBe(false);expect(r.batches).toHaveLength(0);
 });
 it.each(Object.entries(operations))('%s propagates one atomic batch failure without a successful result',async(_,run)=>{
   const r=fixture(true);vi.mocked(r.executor.transaction).mockRejectedValue(new Error('outbox insert failure'));
   await expect(run(r.executor)).rejects.toThrow('outbox insert failure');expect(r.executor.transaction).toHaveBeenCalledTimes(1);
 });
 it('draft mutations verify the actual resulting shift set before reporting success',async()=>{
-  const r=fixture();await deleteShift('s1',managementProof('M'),r.executor);
+  const r=fixture();await deleteShift('s1',managementProof('M'),r.executor,'a'.repeat(64));
   const deleteIndex=r.batches[0].findIndex(s=>s.text.includes('DELETE FROM shifts'));
   const verifyIndex=r.batches[0].findIndex(s=>s.text.includes('guarded_after'));
   expect(verifyIndex).toBeGreaterThan(deleteIndex);
 });
 it('reassigning back to the original employee does not revive a prior assignment episode release',async()=>{
   const r=fixture(true);Object.assign(r.state.shifts[0],{employeeId:'F',isCalloutApproved:false,approvedCalloutEmployeeId:'E'});
-  await updateShift({proof:managementProof('M'),shiftId:'s1',employeeId:'E',date:'2030-10-11',startTime:'09:00',endTime:'17:00',actorEmployeeId:'M'},r.executor);
+  await updateShift({proof:managementProof('M'),shiftId:'s1',expectedReviewVersion:'a'.repeat(64),employeeId:'E',date:'2030-10-11',startTime:'09:00',endTime:'17:00',actorEmployeeId:'M'},r.executor);
   const guard=r.batches[0].find(s=>s.text.includes('guarded_after'))!;
   expect(JSON.parse(String(guard.values[1]))[0].isCalloutApproved).toBe(false);
 });
@@ -74,7 +74,7 @@ it('create carries position into the write and resulting canonical assignment',a
 });
 it.each([{value:undefined,want:'barista'},{value:null,want:null},{value:'',want:null},{value:'cashier',want:'cashier'}])('edit position $value retains or clears explicitly',async({value,want})=>{
  const r=fixture(true);r.state.shifts[0].positionId='barista';Object.assign(r.state.revisions[0].shifts[0],{positionId:'barista'});
- await updateShift({proof:managementProof('M'),shiftId:'s1',employeeId:'E',date:'2030-10-11',startTime:'09:00',endTime:'17:00',actorEmployeeId:'M',...(value!==undefined?{positionId:value}:{})},r.executor);
+ await updateShift({proof:managementProof('M'),shiftId:'s1',expectedReviewVersion:'a'.repeat(64),employeeId:'E',date:'2030-10-11',startTime:'09:00',endTime:'17:00',actorEmployeeId:'M',...(value!==undefined?{positionId:value}:{})},r.executor);
  const guard=r.batches[0].find(s=>s.text.includes('guarded_after'))!;
  expect(JSON.parse(String(guard.values[1]))[0].positionId).toBe(want);
  // A published edit is held: a changed position records history instead of notifying now.

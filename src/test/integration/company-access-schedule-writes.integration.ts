@@ -7,7 +7,7 @@ import {readCoverageRepairSelection} from '../../lib/data/coverage-repair.server
 import {randomUUID} from 'node:crypto';
 import {companyAccessFixture} from './company-access-fixture';
 import {readOwnerOperationalScope,assignOperationalScope,OperationalAuthorizationError} from '../../lib/company-access/operational-scope.server';
-import {ensureSchedule,insertShift,insertShiftAtLocation,updateShift,deleteShift} from '../../lib/data/schedules';
+import {ensureSchedule,insertShift,insertShiftAtLocation,updateShift,deleteShift,getShiftForManagement} from '../../lib/data/schedules';
 import {commitPublishedWeekChange} from '../../lib/data/notification-transactions';
 import {getWorkspace} from '../../lib/data/workspaces';
 import {generationNeedKey} from '../../lib/scheduling/generation-claims';
@@ -48,8 +48,8 @@ it('manual A ensure/create/edit/delete stays authorized and leaves B schedule me
   expect(await ensureSchedule({locationId:'loc-1',weekStart:week,createdBy:'manager',proof:f.manager},f.db.executor)).toBe('write-a');
   expect(await f.q("SELECT to_jsonb(s) AS value FROM schedules s WHERE id='write-b'")).toEqual(b);
   const id=await insertShift({scheduleId:'write-a',employeeId:'target',date:week,startTime:'10:00',endTime:'11:00',actorEmployeeId:'manager',proof:f.manager},f.db.executor);
-  expect(await updateShift({shiftId:id,employeeId:'target',date:week,startTime:'10:00',endTime:'11:30',actorEmployeeId:'manager',proof:f.manager},f.db.executor)).toBe(true);
-  expect(await deleteShift(id,f.manager,f.db.executor)).toBe(true);
+  expect(await updateShift({expectedReviewVersion:(await getShiftForManagement(id,f.db.executor))!.reviewVersion,shiftId:id,employeeId:'target',date:week,startTime:'10:00',endTime:'11:30',actorEmployeeId:'manager',proof:f.manager},f.db.executor)).toBe(true);
+  expect(await deleteShift(id,f.manager,f.db.executor,(await getShiftForManagement(id,f.db.executor))!.reviewVersion)).toBe(true);
   expect(await f.q("SELECT to_jsonb(s) AS value FROM schedules s WHERE id='write-b'")).toEqual(b);
   expect(await f.q("SELECT to_jsonb(s) AS value FROM shifts s WHERE id='existing-b'")).toEqual(bShift);
  }finally{await f.db.dispose();}
@@ -170,9 +170,37 @@ it('explicit Company restoration permits generated deletion and exclusion cleari
   const claims={version:1,claims:[{...need,needKey:generationNeedKey(scope,need),coveredStart:need.needStart,coveredEnd:need.needEnd,quantity:1}]};
   await f.q("UPDATE shifts SET assignment_origin='GENERATED',generated_claims=$1::jsonb WHERE id='existing-a'",[JSON.stringify(claims)]);
   await choose(f,'COMPANY');const input={workspaceId:workspace.id,locationId:'loc-1',weekStart:week,actorEmployeeId:'manager',proof:f.manager};
-  const result=await deleteGeneratedDraftShift({...input,shiftId:'existing-a'},f.db.executor);expect(result.status).toBe('deleted');expect(result.exclusionId).toBeTruthy();
+  const result=await deleteGeneratedDraftShift({...input,expectedReviewVersion:(await getShiftForManagement('existing-a',f.db.executor))!.reviewVersion,shiftId:'existing-a'},f.db.executor);expect(result.status).toBe('deleted');expect(result.exclusionId).toBeTruthy();
   expect(await clearGenerationExclusion({...input,exclusionId:result.exclusionId!},f.db.executor)).toEqual({status:'cleared'});
   expect(await clearGenerationExclusion({...input,exclusionId:result.exclusionId!},f.db.executor)).toEqual({status:'already-cleared'});
   expect(await f.q('SELECT id FROM schedule_publication_revisions')).toEqual([]);expect(await f.q('SELECT id FROM notifications')).toEqual([]);
+ }finally{await f.db.dispose();}
+});
+
+it.each(['COMPANY','LOCATIONS'] as const)('%s Manager original review refuses stale edits and deletes without touching either location',async mode=>{
+ const f=await fixture();try{
+  await choose(f,mode);
+  const version=(await getShiftForManagement('existing-a',f.db.executor))!.reviewVersion;
+  await f.q("UPDATE shifts SET notes='Newer fictional review' WHERE id='existing-a'");
+  const before=await snapshot(f);
+  await expect(updateShift({expectedReviewVersion:version,shiftId:'existing-a',employeeId:'target',date:week,startTime:'08:00',endTime:'09:00',notes:'Old draft',actorEmployeeId:'manager',proof:f.manager},f.db.executor)).rejects.toMatchObject({code:'SHIFT_REVIEW_CONFLICT'});
+  await expect(deleteShift('existing-a',f.manager,f.db.executor,version)).rejects.toMatchObject({code:'SHIFT_REVIEW_CONFLICT'});
+  expect(await snapshot(f)).toEqual(before);
+ }finally{await f.db.dispose();}
+});
+it('original review fences both manual/generated provenance transitions and creates no stale exclusion',async()=>{
+ const f=await fixture();try{
+  await choose(f,'COMPANY');
+  const original=(await getShiftForManagement('existing-a',f.db.executor))!.reviewVersion;
+  const workspace=await getWorkspace(f.db.executor),scope={workspaceId:workspace.id,timeZone:workspace.timeZone,weekStart:week,locationId:'loc-1'};
+  const need={kind:'STAFFING' as const,needStart:week+'T08:00',needEnd:week+'T09:00',configuredCapacity:1,staffingBasis:{requiredStaff:1,positions:[]}};
+  const claims={version:1,claims:[{...need,needKey:generationNeedKey(scope,need),coveredStart:need.needStart,coveredEnd:need.needEnd,quantity:1}]};
+  await f.q("UPDATE shifts SET assignment_origin='GENERATED',generated_claims=$1::jsonb WHERE id='existing-a'",[JSON.stringify(claims)]);
+  await expect(deleteShift('existing-a',f.manager,f.db.executor,original)).rejects.toMatchObject({code:'SHIFT_REVIEW_CONFLICT'});
+  const generated=(await getShiftForManagement('existing-a',f.db.executor))!.reviewVersion;
+  expect(await updateShift({expectedReviewVersion:generated,shiftId:'existing-a',employeeId:'target',date:week,startTime:'08:00',endTime:'09:00',actorEmployeeId:'manager',proof:f.manager},f.db.executor)).toBe(true);
+  await expect(deleteShift('existing-a',f.manager,f.db.executor,generated)).rejects.toMatchObject({code:'SHIFT_REVIEW_CONFLICT'});
+  expect(await f.q('SELECT id FROM schedule_generation_exclusions')).toEqual([]);
+  expect(await f.q("SELECT assignment_origin,generated_claims FROM shifts WHERE id='existing-a'")).toEqual([{assignment_origin:'MANAGER',generated_claims:null}]);
  }finally{await f.db.dispose();}
 });

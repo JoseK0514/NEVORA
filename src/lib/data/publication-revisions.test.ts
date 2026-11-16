@@ -36,6 +36,25 @@ it('first publication commits update, actual immutable snapshot and durable inte
   expect(notificationValues(r.batches[0]).map(v=>[v[1],v[2]])).toEqual([['E','SCHEDULE_PUBLISHED']]);
   expect(notificationValues(r.batches[0],'REMINDER')).toHaveLength(1);
 });
+it.each(['employee','eligibility','location','position','membership'] as const)('first publication refuses stale %s eligibility without effects',async kind=>{
+  const s=state();s.shifts[0].positionId='cashier';s.assignmentFacts.memberships=[{employeeId:'E',positionId:'cashier'}];
+  if(kind==='employee')s.recipients[0].active=false;
+  if(kind==='eligibility')s.recipients[0].allowedLocationIds=[];
+  if(kind==='location')s.assignmentFacts.locations[0].active=false;
+  if(kind==='position')s.assignmentFacts.positions.find(p=>p.id==='cashier')!.active=false;
+  if(kind==='membership')s.assignmentFacts.memberships=[];
+  const r=recorder(s);
+  await expect(publishScheduleWithRevision({proof:managementProof('M'),locationId:'loc-1',weekStart:week,managerId:'M'},r.executor)).rejects.toThrow();
+  expect(r.batches).toEqual([]);
+});
+it('publishing held reassignment checks its current eligibility but retains unchanged inactive published history',async()=>{
+  const s=published();s.recipients[0].active=false;
+  await expect(publishScheduleWithRevision({proof:managementProof('M'),locationId:'loc-1',weekStart:week,managerId:'M'},recorder(s).executor)).resolves.toMatchObject({published:true});
+  s.shifts[0].employeeId='F';s.recipients[1].active=false;
+  const r=recorder(s);
+  await expect(publishScheduleWithRevision({proof:managementProof('M'),locationId:'loc-1',weekStart:week,managerId:'M'},r.executor)).rejects.toThrow();
+  expect(r.batches).toEqual([]);
+});
 it.each(['notes','unchanged','other-location'])('%s preserves acknowledgement and effective reminder version',async mode=>{
   const s=published(); s.acknowledgements=[];
   if(mode==='notes') s.shifts[0].notes='new note';
@@ -55,9 +74,9 @@ it.each(['remove','reassign','lead','location','callout'])('%s notifies only mea
 });
 it('snapshot conflict recomputes from fresh microsecond versions and changed recipient access, at most three attempts',async()=>{
   const r=recorder(); let attempts=0;
-  vi.mocked(r.executor.transaction).mockImplementation(async statements=>{r.batches.push([...statements]);if(++attempts<3){r.db.state.schedules[0].updatedAt='2030-10-07 12:00:00.123457+00';r.db.state.recipients[0].active=false;throw Object.assign(new Error('schedule_week_version_conflict'),{code:'22P02'});}return statements.map(()=>[]);});
+  vi.mocked(r.executor.transaction).mockImplementation(async statements=>{r.batches.push([...statements]);if(++attempts<3){r.db.state.schedules[0].updatedAt='2030-10-07 12:00:00.123457+00';r.db.state.recipients[0].role='LEAD';throw Object.assign(new Error('schedule_week_version_conflict'),{code:'22P02'});}return statements.map(()=>[]);});
   await publishScheduleWithRevision({proof:managementProof('M'),locationId:'loc-1',weekStart:week,managerId:'M'},r.executor);
-  expect(attempts).toBe(3); expect(notificationValues(r.batches[2])).toEqual([]);
+  expect(attempts).toBe(3); expect(notificationValues(r.batches[2]).map(v=>v[1])).toEqual(['E']);
   expect(JSON.stringify(r.batches[0])).toContain('123456');expect(JSON.stringify(r.batches[2])).toContain('123457');
 });
 it('persistent guard failure stops after three full attempts; outbox failure is not retried or reported successful',async()=>{

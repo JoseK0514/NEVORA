@@ -8,7 +8,7 @@ const m=vi.hoisted(()=>({
   shifts:[{id:'s',employeeId:'E',locationId:'loc-1',date:'2030-09-30',startTime:'09:00',endTime:'17:00',isDesignatedLead:false}],
 }));
 vi.mock('@/lib/company-access/operational-scope.server',()=>({assertOriginalOperationalAccess:async(_proof:unknown,original:{authority:string})=>{expect(original.authority).toBe('f'.repeat(64));},assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},authority:'f'.repeat(64)}),isOperationalAuthorizationError:()=>false}));
-vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',data:{saveAvailability:'available',shift:{id:'s',employeeId:'E',locationId:'loc-1',weekStart:m.existingWeek,date:'2030-10-08'},employeeOptions:[],positionOptions:[]}})}));
+vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',data:{saveAvailability:'available',shift:{reviewVersion:'a'.repeat(64),id:'s',employeeId:'E',locationId:'loc-1',weekStart:m.existingWeek,date:'2030-10-08'},employeeOptions:[],positionOptions:[]}})}));
 vi.mock('@/lib/data/schedule-copy',()=>({executeScheduleCopy:m.copy}));
 vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>managementProof('M',m.role as 'MANAGER')}));
 vi.mock('@/lib/notifications/provider',()=>({createPushSender:m.provider.mockImplementation(()=>({send:m.send}))}));
@@ -27,11 +27,11 @@ vi.mock('@/lib/data/acknowledgements',()=>({clearWeekAcknowledgements:m.clear}))
 vi.mock('@/lib/data/publication-revisions',()=>({publishScheduleWithRevision:m.publish,publishScheduleChanges:m.publishChanges}));
 vi.mock('@/lib/data/positions',()=>({listPositions:async()=>[]}));
 vi.mock('@/lib/data/employees',()=>({listEmployees:vi.fn()}));
-vi.mock('@/lib/data/schedules',()=>({listScheduleStatuses:m.statuses,insertShiftAtLocation:m.insert,insertShift:m.insert,updateShift:m.update,deleteShift:m.remove,ensureSchedule:async()=> 'a',getShiftValidationContext:async()=>({}),getShiftForManagement:async()=>({id:'s',employeeId:'E',locationId:'loc-1',weekStart:m.existingWeek,date:'2030-10-08'}),listWeekShifts:async()=>m.shifts}));
+vi.mock('@/lib/data/schedules',()=>({listScheduleStatuses:m.statuses,insertShiftAtLocation:m.insert,insertShift:m.insert,updateShift:m.update,deleteShift:m.remove,ensureSchedule:async()=> 'a',getShiftValidationContext:async()=>({}),getShiftForManagement:async()=>({reviewVersion:'a'.repeat(64),id:'s',employeeId:'E',locationId:'loc-1',weekStart:m.existingWeek,date:'2030-10-08'}),listWeekShifts:async()=>m.shifts}));
 vi.mock('@/lib/data/schedule-templates',()=>({listTemplateShifts:async()=>[{employeeId:'E',locationId:'loc-1',positionId:'barista',dayOffset:6,startTime:m.templateStart,endTime:'17:00'},{employeeId:'BLOCKED',locationId:'loc-1',dayOffset:1,startTime:'09:00',endTime:'17:00'}],archiveScheduleTemplate:vi.fn(),createTemplateFromWeek:vi.fn()}));
 import { applyTemplateAction } from './templates/actions';
 import { createShiftAction,updateShiftAction,deleteShiftAction,publishScheduleAction,publishScheduleChangesAction,copyPreviousWeekAction,setAvailabilityDeadlineAction } from './actions';
-function form(){const data=new FormData();Object.entries({operationId:'11111111-1111-4111-8111-111111111111',shiftId:'s',employeeId:'E',locationId:'loc-1',weekStart:'2030-10-07',date:'2030-10-07',startTime:'09:00',endTime:'17:00',confirmWarnings:'yes'}).forEach(([k,v])=>data.set(k,v));return data;}
+function form(){const data=new FormData();Object.entries({expectedReviewVersion:'a'.repeat(64),operationId:'11111111-1111-4111-8111-111111111111',shiftId:'s',employeeId:'E',locationId:'loc-1',weekStart:'2030-10-07',date:'2030-10-07',startTime:'09:00',endTime:'17:00',confirmWarnings:'yes'}).forEach(([k,v])=>data.set(k,v));return data;}
 beforeEach(()=>{vi.clearAllMocks();m.role='MANAGER';m.existingWeek='2030-10-07';m.templateStart='09:00';});
 it.each([['publish',publishScheduleAction,'&location=loc-1&published=loc-1'],['create',createShiftAction,'&location=loc-1&day=2030-10-07#schedule-employee-E'],['update',updateShiftAction,'&location=loc-1&day=2030-10-07&updated=1#schedule-employee-E'],['delete',deleteShiftAction,'&location=loc-1&day=2030-10-08&deleted=1#schedule-employee-E']] as const)('%s returns without provider contact or blanket acknowledgement invalidation',async(_,action,suffix)=>{
   await expect(action(form())).rejects.toMatchObject({destination:`/app/schedule?week=2030-10-07${suffix}`});
@@ -41,7 +41,7 @@ it('create update delete and copy use only server actor identity',async()=>{
   const data=form();data.set('actorEmployeeId','FORGED');
   for(const action of [createShiftAction,updateShiftAction,deleteShiftAction,copyPreviousWeekAction]){try{await action(data);}catch{}}
   expect(m.insert.mock.calls.every(call=>(call[0] as unknown as {actorEmployeeId:string}).actorEmployeeId==='M')).toBe(true);
-  expect(m.update).toHaveBeenCalledWith(expect.objectContaining({actorEmployeeId:'M'}));expect(m.remove).toHaveBeenCalledWith('s',managementProof('M'));
+  expect(m.update).toHaveBeenCalledWith(expect.objectContaining({actorEmployeeId:'M'}));expect(m.remove).toHaveBeenCalledWith('s',managementProof('M'),undefined,'a'.repeat(64));
 });
 it('copy sends the server-authorized command and navigates to its durable per-row receipt',async()=>{
   const original=m.shifts;m.shifts=[...original,{...original[0],id:'blocked',employeeId:'BLOCKED'}];
@@ -160,4 +160,22 @@ it('Publish changes rejects an invalid week without publishing',async()=>{
  const data=form();data.set('weekStart','2030-10-08');
  await expect(publishScheduleChangesAction(data)).rejects.toMatchObject({destination:'/app/schedule?error=INVALID_PUBLISH'});
  expect(m.publishChanges).not.toHaveBeenCalled();
+});
+
+it.each([updateShiftAction,deleteShiftAction])('missing original shift review preserves form values and refuses the writer',async action=>{
+ const data=form();data.delete('expectedReviewVersion');
+ expect(await action(data)).toMatchObject({issueCode:'SHIFT_REVIEW_CONFLICT'});
+ expect(data.get('employeeId')).toBe('E');expect(m.update).not.toHaveBeenCalled();expect(m.remove).not.toHaveBeenCalled();
+});
+it.each([updateShiftAction,deleteShiftAction])('stale original shift review is an inline conflict without redirecting or clearing input',async action=>{
+ const data=form();data.set('expectedReviewVersion','b'.repeat(64));data.set('notes','My unsaved fictional draft');
+ expect(await action(data)).toMatchObject({issueCode:'SHIFT_REVIEW_CONFLICT'});
+ expect(data.get('notes')).toBe('My unsaved fictional draft');expect(m.update).not.toHaveBeenCalled();expect(m.remove).not.toHaveBeenCalled();
+});
+
+import {ManualAssignmentConflictError} from '@/lib/data/manual-assignment-validation';
+it.each([publishScheduleAction,publishScheduleChangesAction])('publication hard eligibility refusal uses the existing rule feedback route',async action=>{
+ const writer=action===publishScheduleAction?m.publish:m.publishChanges;writer.mockRejectedValueOnce(new ManualAssignmentConflictError('EMPLOYEE_INACTIVE','Inactive employees cannot be scheduled.'));
+ await expect(action(form())).rejects.toMatchObject({destination:'/app/schedule?week=2030-10-07&error=EMPLOYEE_INACTIVE'});
+ expect(m.provider).not.toHaveBeenCalled();
 });

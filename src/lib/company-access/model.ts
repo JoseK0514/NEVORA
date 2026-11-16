@@ -86,7 +86,7 @@ export type OperationalShiftRow = Pick<ScheduleShiftRow,
     positionName: string | null;
   };
 export type OperationalEditableShift = Pick<ManagementShift,
-  'id'|'scheduleId'|'employeeId'|'employeeName'|'locationId'|'weekStart'|'date'|'startTime'|'endTime'|'notes'|'positionId'|'isDesignatedLead'|'scheduleStatus'|'isCalloutApproved'>;
+  'reviewVersion'|'id'|'scheduleId'|'employeeId'|'employeeName'|'locationId'|'weekStart'|'date'|'startTime'|'endTime'|'notes'|'positionId'|'isDesignatedLead'|'scheduleStatus'|'isCalloutApproved'>;
 
 export type OperationalScheduleData = {
   weekStart:string;selectedLocationId:string|null;
