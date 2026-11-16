@@ -146,7 +146,14 @@
         "src/lib/payroll/source-coverage.ts",
         "src/lib/commerce/installation-facts.server.ts",
         "services/commerce/lifecycle-mail.ts",
-        "services/commerce/billing-operations.ts"
+        "services/commerce/billing-operations.ts",
+        "src/lib/payroll-export/batches.ts",
+        "src/lib/action-center/review-facts.ts",
+        "src/lib/employee-home/task-summary.ts",
+        "src/lib/manager-reminders/types.ts",
+        "src/lib/auth/session.ts",
+        "src/lib/auth/request-destination.ts",
+        "src/proxy.ts"
       ]
     },
     {

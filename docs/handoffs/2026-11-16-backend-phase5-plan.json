@@ -4,15 +4,15 @@
   "date": "2026-11-16",
   "timeZone": "America/Puerto_Rico",
   "frozenSource": null,
-  "status": "BLOCKED_AWAITING_INTEGRATOR_FREEZE",
+  "status": "ASSEMBLED_PENDING_FINAL_FREEZE",
   "preparationSource": "8ec7470a79fb2e638c900965708297b384cd9646",
   "entryGate": [
-    "Integrator supplies immutable final SHA, root/src tree, application digest, included application AND handoff commits, environment/feature flags and rollback reference",
-    "Verify Phase 2 69da1c5d/34d8a854, Phase 3 7bd3e224/219e92bd and Phase 4 74421d91/4016c136 by lineage and changed-file/semantic review; inspect cherry-pick provenance if SHAs differ",
-    "Shared auth/security owner resolves P4-AUTH-01 with spoofed host/Referer/language regression evidence",
-    "Integrator explicitly selects intended Rondo delivery and inclusion/hold with its owner; no automatic omission or inferred model quality",
-    "Canonical migration/bootstrap and synthetic/environment custody established before mutating tests",
-    "Existing execution handoff grants a concrete heavy execution slot; one owned runtime, existing pinned tools"
+    "Jose assigned bounded final integration/qualification to this chat, replacing prior assembly restriction; reuse existing single detached worktree",
+    "Phase 2\u20134 six reviewed application/documentation commits integrated byte-for-byte with cherry-pick provenance; all four later driver files unchanged",
+    "P4-AUTH-01 implemented with failing-before/passing-after regressions and CLEAR implementation review",
+    "Rondo implementation remains separately owned: baseline adviser code included, selected company knowledge/provider/tools/actual model evidence remains explicit dependency; no 0064 inferred",
+    "Freeze clean combined source after source-qualified guide generation; bind all final commands/evidence to that exact SHA",
+    "Execute serialized local owned fictional cohorts; no real messages/provider activation/spending/deployment"
   ],
   "environment": {
     "PHASE_E_EXPECTED_SHA": "<exact integrator-supplied frozen SHA>",
@@ -38,9 +38,9 @@
         "run",
         "check:development-sources"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Frozen final source + current fetched remotes, classified phase deliveries and reviewed integration provenance",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -49,9 +49,9 @@
         "node",
         "scripts/onboarding-manifest.mjs"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Canonical BASE/FINAL/HELD order, matching generated manifest; selected Rondo 0064/0065 reconciliation first",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -61,9 +61,9 @@
         "run",
         "format:check"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Required critical source formatting; do not modify logs to satisfy source checks",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -74,9 +74,9 @@
         "--",
         "--maxWorkers=1"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Default unit/API/producer-parser tests; enumerate every skip/todo and its independently run SQL gate",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -86,9 +86,9 @@
         "run",
         "typecheck"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Whole-source TypeScript",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -98,9 +98,9 @@
         "run",
         "lint"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Whole-source ESLint; preserve actual warnings",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -110,9 +110,9 @@
         "run",
         "test:release-engineering"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Required existing release/fixture/transport/cleanup guards",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -122,9 +122,9 @@
         "run",
         "check:inspection-evidence"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Current source-bound required inspection documentation",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -134,9 +134,9 @@
         "run",
         "check:test-projects"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "No unregistered or empty mandatory suite",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -146,9 +146,9 @@
         "run",
         "test:release:postgres"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Fresh fictional PostgreSQL foundation/authority/generation/exchange/notification, lock races and zero-effect refusal",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -158,9 +158,9 @@
         "scripts/payroll-postgres.mjs",
         "vitest.company-setup-integration.config.mts"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Actual empty-schema company/Owner bootstrap matches selected canonical SQL order",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -170,9 +170,9 @@
         "scripts/payroll-postgres.mjs",
         "vitest.payroll-export-integration.config.mts"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Exact paid-break identity, lost reply/reopen interleaving, immutable receipts, original-body retries; include 30-person case",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -182,9 +182,9 @@
         "scripts/payroll-postgres.mjs",
         "vitest.configurable-payroll-integration.config.mts"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "CSV and JSON, exact cents, corrections, inactive/zero/excluded full roster, document worker partial failures",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -195,9 +195,9 @@
         "vitest.company-access-integration.config.mts",
         "src/test/integration/company-access-period-export.integration.ts"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Company versus location/foreign/revoked scope, period manifest/history and immutable artifact custody",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -206,9 +206,9 @@
         "node",
         "scripts/commerce-postgres.mjs"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Controlled SDK/fictional transport only; signed duplicate/reordered events and durable original billing operation recovery",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -219,9 +219,9 @@
         "vitest.generation-integration.config.mts",
         "src/test/integration/scheduling-restrictions.integration.ts"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Current/future/legacy versions, earliestWeek, lock races, original review, overnight and cross-location authority",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -232,9 +232,9 @@
         "vitest.exchanges-integration.config.mts",
         "src/test/integration/shift-change-phase3-facts.integration.ts"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Actual producer-to-public-parser counterpart/history facts, foreign and scope revocation refusal",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -245,9 +245,9 @@
         "vitest.employee-mobile-communications.config.mts",
         "src/test/integration/phase-e-communications.integration.ts"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Read-only eligibility, final session/source/receipt fences, quiet hours, budget, concurrent retries and held delivery",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -258,9 +258,9 @@
         "vitest.clocker-integration.config.mts",
         "src/test/integration/clocker-account-recovery.integration.ts"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Full proof, single use, replacement/activation, session revocation and preserved Clocker/work data",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -271,9 +271,9 @@
         "vitest.employee-mobile-deletion.config.mts",
         "src/test/integration/employee-mobile-deletion-sql.integration.ts"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Usable last Owner, deletion/demotion races, original-request recovery and no side effects on refusal",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -283,9 +283,9 @@
         "scripts/payroll-postgres.mjs",
         "vitest.passkeys-integration.config.mts"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Current auth/credential/challenge boundaries; physical platform gate separate",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -297,9 +297,9 @@
         "--suite",
         "all"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Required Phase E owned SQL receipts, no mandatory pending/skipped cases",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -308,9 +308,9 @@
         "node",
         "scripts/release-build.mjs"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Clean unchanged exact-SHA production-format build with external source/artifact receipt",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -319,9 +319,9 @@
         "node",
         "scripts/manuals/check-manuals.mjs"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Six current guides and actual canonical app hash after integrator regeneration; old hashes are not final evidence",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -333,9 +333,9 @@
         "--suite",
         "all"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Relevant current consumers and complete required engines/widths, response completion, finite privacy and owned cleanup",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -347,9 +347,9 @@
         "src/test/integration/readiness-ui-browser.integration.ts",
         "src/test/integration/readiness-shift-concurrency-browser.integration.ts"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Originally reviewed edit/delete/reassignment, lost replies and complete immutable history; Claude current consumers required",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -359,9 +359,9 @@
         "scripts/phase-c-clocker-postgres.mjs",
         "--punch-ui"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Current ID then PIN, activation/password lifecycle and privacy/recovery; retired driver target remains to reconcile",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     },
     {
@@ -371,9 +371,9 @@
         "run",
         "test:mobile-access:owned"
       ],
-      "status": "NOT_RUN_FINAL_SOURCE_GATE",
+      "status": "PENDING_FINAL_FREEZE",
       "criteria": "Supported browser/emulation; actual iOS/Android/iPad/native acceptance remains independent",
-      "execution": "existing integrator execution handoff; serialize build/browser/database cohorts",
+      "execution": "This Phase 5 integration owner; one heavy build/browser/database cohort at a time under recorded execution custody",
       "result": null
     }
   ],

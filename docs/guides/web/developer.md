@@ -160,3 +160,37 @@ ID even outside the latest-300 display window and rechecked before returning a d
 The [test inventory](../../handoffs/2026-11-15-test-projects.md) names every test
 configuration. `npm test` runs the unit project. Use existing owned runners for
 SQL/browser projects; their admission and cleanup are still mandatory.
+
+## Integrated backend contracts and remaining consumers
+
+The [Phase 5 contract index](../../handoffs/2026-11-16-backend-phase5-claude-contract-index.json)
+joins the reviewed financial, scheduling/decision and access/reminder contracts.
+It records the actual qualification source separately from each original phase
+commit. Consult its final source/evidence binding before claiming a tested or
+deployed capability.
+
+- Finance retains CSV/JSON exact amounts, immutable correction artifacts,
+  per-break paid-time review and byte-aware whole-employee export batches.
+  Successful batch receipts do not establish a complete period manifest or a
+  verified downstream provider import. Recover original operations unchanged.
+- Scheduling exposes typed independent-review eligibility, complete versus
+  observed task totals, effective restriction versions, historical coverage
+  outcomes and explicit report/coverage units. Null, partial and unassigned
+  facts must not become zero, complete, overdue or a named reviewer.
+- Reminder eligibility is read-only and currently scoped. Persisted queue
+  receipts do not establish provider/device delivery. Shared recovery, activation,
+  last-Owner and request-local support-reference protections remain required.
+
+Session-ended explanations require a presented session cookie. Proxy replaces
+the internal `x-nevora-auth-return-to` marker with the actual allowlisted request
+path and strips caller markers on other matched routes, including auth bypasses.
+Session code applies `safeReturnTo` again. Referer, Host and forwarded-host values
+establish neither a prior session nor a return destination; the hint grants no
+business authority. Language remains validated cookie/Accept-Language handling.
+
+Claude must still implement the indexed consumers and qualify their current
+mobile/keyboard/EN/ES/private-state behavior. Revisit user-guide instructions
+after those consumers change; source-qualified PDFs alone do not pass an unwired
+journey. Rondo knowledge/provider/tool work and actual-model quality evidence
+remain with its existing owner. Hosted/provider activation and physical-device
+acceptance remain separate from local backend checks.
