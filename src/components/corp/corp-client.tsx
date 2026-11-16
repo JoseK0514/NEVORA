@@ -4,6 +4,8 @@ import "./corp.css";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
+import { BLoadingScreen, BState } from "../owner-b/b-kit";
+import { BRouteLoading, loadingShape } from "../owner-b/b-loading";
 
 /* Owner premium (Oct 31, 2026): the kit's client pieces. Presentation and navigation only; no data is read or written. */
 
@@ -176,6 +178,20 @@ function SkelShape({ shape, title, variant }: { shape: Shape; title: string | nu
   </span>;
 }
 
+/** Phase 2 (package D): a slow page keeps its frame. The band and the title stay where the page will put them, and one
+ * state card under the band says what is happening, with the one Try again (the same words and the same refresh as the
+ * older white card, which dropped the band). Offline is the amber card; slow is the grey one, still loading. It is drawn
+ * only after the timer, so the shell is there to ask whose it is. */
+function CorpSkeletonSlow({ pathname, title, offline }: { pathname: string; title: string | null; offline: boolean }) {
+  const router = useRouter();
+  const shape = loadingShape(pathname, document.querySelector(".app-shell[data-employee-mobile]") !== null);
+  return <div className="c-page c-embed c-skel c-skel--slow c-route-state--checking" data-corp="">
+    <BLoadingScreen {...shape} title={title ?? shape.title} state={<BState alert kind={offline ? "offline" : "loading"}
+      title={offline ? "You’re offline" : "This is taking longer than usual"} line={offline ? "Reconnect, then try again." : "Check your connection, then try again."}
+      action={{ label: "Try again", onClick: () => router.refresh() }} />} />
+  </div>;
+}
+
 /** P3/P7: the corporate loading placeholder. After 2.5s without the page, it says so and offers Try again; if the page
  * then arrives it simply replaces this. The wording never claims a failure it can't know about. */
 export function CorpSkeleton({ route, label }: { route?: string; label: string }) {
@@ -195,18 +211,16 @@ export function CorpSkeleton({ route, label }: { route?: string; label: string }
     window.setTimeout(() => root.removeAttribute("data-c-arrived"), 200);
   }, []);
   void label;
-  if (slow) return <div className="c-page c-embed c-skel c-skel--slow" data-corp="">
-    <section className="c-card c-error-card" role="alert">
-      {/* Round 2 copy (row 180): one sentence that reads right for every page name, singular or plural. */}
-      <span className="c-error-card__title">{offline ? "You’re offline" : "This is taking longer than usual"}</span>
-      <span className="c-error-card__body">{offline ? "Reconnect, then try again." : "Check your connection, then try again."}</span>
-      <span className="c-error-card__action"><CorpRetryButton /></span>
-    </section>
-  </div>;
+  if (slow) return <CorpSkeletonSlow pathname={pathname || "/app"} title={remembered} offline={offline} />;
   const owner = (route && OWNER[route]) || null, employee = (route && EMPLOYEE[route]) || null;
   const titleOf = (shape: Shape) => remembered ?? shape.title ?? null;
   // A route both roles open with different pages draws both; the Employee shell (#employee-mobile) shows its own.
-  return <div className="c-page c-embed c-skel" data-corp="" data-route={route} aria-hidden="true">
+  // Review F5 (NV-074): under Direction B (every shell) a tab tap draws the same placeholder as the access check that
+  // follows: the band at the tab's loaded height and card blocks (b-foundation.css), never the retired white header and
+  // corporate title. The class lets the B layers treat it as that placeholder at every width; the shapes below stay for
+  // any surface without a B screen.
+  return <div className="c-page c-embed c-skel c-route-state--checking" data-corp="" data-route={route} aria-hidden="true">
+    <BRouteLoading pathname={pathname} title={remembered ?? undefined} />
     {owner && employee ? <>
       <SkelShape shape={owner} title={titleOf(owner)} variant="owner" />
       <SkelShape shape={employee} title={titleOf(employee)} variant="employee" />

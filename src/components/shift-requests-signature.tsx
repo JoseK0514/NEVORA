@@ -18,7 +18,7 @@ const range = (shift: ExchangeShift) => `${keepWhole(formatTime(shift.startTime)
 /** "Customer Support · Main Office", with Lead and a time zone note when the shift's zone isn't the workspace's. */
 export function shiftPlace(shift: ExchangeShift, zone?: string) {
   const position = shift.positionName ?? (shift.positionId ? `Position ${shift.positionId}` : null);
-  return [position, shift.locationName, shift.isDesignatedLead ? "Designated lead" : null, shift.timeZone && zone && shift.timeZone !== zone ? `Times in ${timeZoneLabel(shift.timeZone)}` : null].filter(Boolean).join(" · ");
+  return [position, shift.locationName, shift.isDesignatedLead ? "Shift lead" : null, shift.timeZone && zone && shift.timeZone !== zone ? `Times in ${timeZoneLabel(shift.timeZone)}` : null].filter(Boolean).join(" · ");
 }
 
 export function ShiftDay({ shift }: { shift: ExchangeShift }) {
@@ -42,5 +42,5 @@ export function ShiftTicket({ give, get, giveLabel = "You give", getLabel = "You
     return <div><small>{label}</small><b aria-hidden="true">{Number(shift.date.slice(8))}</b><span>{longWeekday(shift.date)}</span><span>{range(shift)}</span>
       <span className="nv-sr">{day.weekday}, {day.day}. </span><em>{shiftPlace(shift, zone)}</em></div>;
   };
-  return <div className="sg-ticket">{half(give, giveLabel)}<i aria-hidden="true"><ArrowsLeftRightIcon size={18} /></i>{half(get, getLabel)}</div>;
+  return <div className="sg-ticket">{half(give, giveLabel)}<i aria-hidden="true"><ArrowsLeftRightIcon size={18} weight="bold" /></i>{half(get, getLabel)}</div>;
 }

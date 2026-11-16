@@ -17,7 +17,7 @@ export function CoverageActionPanel({ view, actions }: { view: CoverageActionVie
   const busy = view.stage === "busy", review = view.stage === "review";
   const format = (stamp: string, zone: string) => new Date(stamp).toLocaleString("en-US", { timeZone: zone, month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
   return <section className="oa-section oa-draft-panel" aria-label="Reviewed coverage draft" aria-busy={busy}>
-    <div className="oa-draft-heading"><span className="oa-draft-icon" aria-hidden="true">{receipt ? <CheckCircleIcon size={24}/> : <ClockIcon size={24}/>}</span>
+    <div className="oa-draft-heading"><span className="oa-draft-icon" aria-hidden="true">{receipt ? <CheckCircleIcon size={24} weight="bold"/> : <ClockIcon size={24} weight="bold"/>}</span>
       <div><p className="oa-muted">Coverage · Draft only</p><h2 ref={heading} tabIndex={-1}>{receipt ? "Draft saved" : r ? "Review draft changes" : view.stage === "uncertain" ? "Check your original request" : "Coverage draft"}</h2></div>
     </div>
     {view.message && <p role="status">{view.message}</p>}
@@ -26,7 +26,7 @@ export function CoverageActionPanel({ view, actions }: { view: CoverageActionVie
       <p className="oa-draft-context">{r.date} <span>· {r.timeZone}</span></p>
       <ul className="oa-draft-list">{r.assignments.map((a, i) => <li key={i}>
         <div className="oa-draft-person"><strong>{a.employeeName}</strong><span>{a.startTime}–{a.endTime}</span></div>
-        <p>{a.locationName} · {a.positionName ?? "Team member"}{a.isDesignatedLead ? " · Designated lead" : ""}</p>
+        <p>{a.locationName} · {a.positionName ?? "Team member"}{a.isDesignatedLead ? " · Shift lead" : ""}</p>
       </li>)}</ul>
       {review && <>
         <p>These {r.assignments.length} additions preserve existing assignments. They remain drafts; publishing is a separate decision.</p>

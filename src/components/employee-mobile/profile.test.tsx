@@ -3,6 +3,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import {expect,it,vi} from 'vitest';
 import {EmployeeAccountView} from '../employee-account-panel';
 import type {EmployeeProfile} from '../../lib/employee-view';
+import {ProfileSignInId} from './profile-view';
 vi.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children)}));
 const own:EmployeeProfile={state:'ready',kind:'profile',observedAt:'2026-10-27T12:00:00Z',validForMs:45000,profile:{name:'Own private name',role:'Lead',workspace:'Fictional workplace',timeZone:'America/Puerto_Rico',locations:['Main Office','West Office']}};
 const draw=(snapshot:EmployeeProfile|{state:'unavailable';reason:'read_failed'|'access_denied'}|null,paused=false,refreshing=false)=>renderToStaticMarkup(<EmployeeAccountView kind="profile" employeeMobile state={{snapshot,paused,refreshing}} onRetry={()=>{}} quiet/>);
@@ -22,4 +23,9 @@ it('pause/loading/failure never expose an earlier own identity or a false empty 
 it('current denial offers sign in and no stale identity or editable work controls',()=>{
  const html=draw({state:'unavailable',reason:'access_denied'});
  expect(html).toContain('href="/login"');expect(html).toContain('Sign in');expect(html).not.toContain('Own private name');expect(html).not.toContain('Try again');
+});
+it('the Employee ID comes from the session beside the read, and is hidden like the other rows while the view is paused (BR-13)',()=>{
+ const withId=(paused:boolean)=>renderToStaticMarkup(<ProfileSignInId.Provider value="FICTIONAL-E1"><EmployeeAccountView kind="profile" employeeMobile state={{snapshot:own,paused,refreshing:false}} onRetry={()=>{}} quiet/></ProfileSignInId.Provider>);
+ expect(withId(false)).toContain('FICTIONAL-E1');expect(withId(false)).toContain('You sign in with this ID.');
+ expect(withId(true)).not.toContain('FICTIONAL-E1');expect(draw(own)).not.toContain('FICTIONAL-E1');
 });

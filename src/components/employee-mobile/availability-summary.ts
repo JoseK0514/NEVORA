@@ -13,5 +13,7 @@ export function availabilitySummary(windows: { dayOfWeek: number; startTime: str
   const label = key === "0123456" ? "Every day" : key === "12345" ? "Weekdays" : key === "06" ? "Weekends" : days.length <= 3 ? days.map(day => DAY_NAMES[day]).join(", ") : `${days.length} days a week`;
   if (ranges.size !== 1 || windows.length !== days.length) return label;
   const [first] = windows;
+  // Midnight to midnight is the whole day ("Every day · all day", not "12 AM – 12 AM").
+  if (first.startTime.startsWith("00:00") && /^(24:00|00:00|23:59)/.test(first.endTime)) return `${label} · all day`;
   return `${label} · ${hour(first.startTime)} – ${hour(first.endTime)}`;
 }

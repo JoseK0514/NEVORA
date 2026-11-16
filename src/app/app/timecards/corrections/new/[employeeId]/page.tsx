@@ -9,6 +9,8 @@ import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {CorpPage,CorpNav,CorpTitle,CorpCard,CorpBody} from '@/components/corp/corp';
 import {DelegatedTimeCorrectionForm} from '@/components/delegated-time-correction-form';
+/** RA-25 (Nov 14, 2026): the tab and screen readers name the page as its heading does ("Request time correction · NEVORA"). */
+export const metadata={title:'Request time correction'};
 export default async function DelegatedCorrectionPage({params}:{params:Promise<{employeeId:string}>}){
  const session=await requireRoles(MANAGER_ROLES),proof=await requireSessionMutationProof(),workspace=await getWorkspace(),access=await withOperationalCompany(proof,async()=>null),{employeeId}=await params;
  if(access.state==='unavailable')return <OperationalUnavailable title="Time corrections unavailable" reason={access.reason}/>;

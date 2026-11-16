@@ -33,7 +33,8 @@ export type EmployeeMyScheduleProps = {
   /** Own locations that haven't published this week; names them in the week's note. */
   unpublishedLocationIds?: readonly string[];
   /** "swap": the person came to pick a shift to swap (Home's Swap a shift); options open on eligible shifts. */
-  intent?: 'swap';
+  /** "callout": the person came to report a shift they can't work (review B6, NV-290), without a shift chosen yet. */
+  intent?: 'swap' | 'callout';
   /** Company modules (B2): shift swaps and time off links follow them. */
   modules?: EnabledModules;
   openShifts?: { available: OpenShift[]; requested: OpenShift[]; unavailable?: OpenShift[] } | null;
@@ -55,6 +56,8 @@ export type EmployeeMyScheduleProps = {
   error?: boolean | string;
   receipt?: boolean;
   changes?: ReactNode;
+  /** The signed-in person is a Lead: the desktop week marks the shifts they lead (Direction B, Nov 8, 2026). */
+  lead?: boolean;
 };
 
 export function hasNotEnded(shift: Shift, observedAt: string, timeZone: string) {
@@ -173,12 +176,12 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps & { corporate?
   return <QuietPage className="q-sched-e">
     <div className="em-schedule-top"><QuietHeader title="Schedule" sub={summary} />
     <QuietBar start={<span className="q-weeknav">
-      <Link className="q-bar__icon" href={`/app/schedule?week=${addDays(weekStart, -7)}${keep}`} aria-label="Previous week"><CaretLeftIcon className="q-ic" aria-hidden="true" /></Link>
+      <Link className="q-bar__icon" href={`/app/schedule?week=${addDays(weekStart, -7)}${keep}`} aria-label="Previous week"><CaretLeftIcon weight="bold" className="q-ic" aria-hidden="true" /></Link>
       <EmployeeMobileWeekPicker weekStart={weekStart} keep={view === 'open' ? '&view=open' : keep}/>
-      <Link className="q-bar__icon" href={`/app/schedule?week=${addDays(weekStart, 7)}${keep}`} aria-label="Next week"><CaretRightIcon className="q-ic" aria-hidden="true" /></Link>
+      <Link className="q-bar__icon" href={`/app/schedule?week=${addDays(weekStart, 7)}${keep}`} aria-label="Next week"><CaretRightIcon weight="bold" className="q-ic" aria-hidden="true" /></Link>
       {weekStart !== currentWeek ? <Link className="q-weeknav__today" href={`/app/schedule?week=${currentWeek}&day=${today}`}>Today</Link> : null}
     </span>}>
-      <QuietBarIcon href="/app/profile#employee-calendar-title" label="Add shifts to your calendar"><CalendarCheckIcon className="q-ic" aria-hidden="true" /></QuietBarIcon>
+      <QuietBarIcon href="/app/profile#employee-calendar-title" label="Add shifts to your calendar"><CalendarCheckIcon weight="bold" className="q-ic" aria-hidden="true" /></QuietBarIcon>
     </QuietBar>
     </div>
     {modules.marketplace ? <QuietSegments label="Schedule views" items={[
@@ -198,7 +201,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps & { corporate?
       </nav>
 
       {swapIntent ? <QuietList style={{ marginTop: 20 }}>
-        <QuietRow variant="tint" avatar={<ArrowsLeftRightIcon className="q-ic" aria-hidden="true" />} title={<span role="status">{swapCount ? 'Choose the shift you want to swap' : 'No shifts to swap this week'}</span>}
+        <QuietRow variant="tint" avatar={<ArrowsLeftRightIcon weight="bold" className="q-ic" aria-hidden="true" />} title={<span role="status">{swapCount ? 'Choose the shift you want to swap' : 'No shifts to swap this week'}</span>}
           detail={swapCount ? 'Tap the shift, then Swap with a teammate.' : 'Only upcoming shifts can be swapped.'}
           control={<Link className="q-bs" href={`/app/schedule?week=${weekStart}`}>Done</Link>} />
       </QuietList> : null}
@@ -210,7 +213,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps & { corporate?
         <li className="q-confrow">
           {acknowledged && props.acknowledgedRevisionId ? <Celebration kind="SCHEDULE_CONFIRMED" eventKey={`${weekStart}:${props.acknowledgedRevisionId}`} confirmed /> : null}
           <div className="q-row q-row--av">
-            <span className="q-av q-av--tint" aria-hidden="true">{acknowledged ? <CheckIcon className="q-ic" /> : <CalendarCheckIcon className="q-ic" />}</span>
+            <span className="q-av q-av--tint" aria-hidden="true">{acknowledged ? <CheckIcon weight="bold" className="q-ic" /> : <CalendarCheckIcon weight="bold" className="q-ic" />}</span>
             <div className="q-rt"><h2 id="my-review-title" className="q-confrow__t">{acknowledged ? 'You’re up to date' : confirmationNeeded ? 'Confirm this week' : 'Schedule review'}</h2>
               <i>{acknowledged ? 'You’ve confirmed this week.' : confirmationNeeded ? (shifts.length ? 'Your manager asked you to check it' : 'No assignments remain this week. Review the changes, then confirm.') : 'Review the current week again.'}</i></div>
             {acknowledged ? null : confirmation}

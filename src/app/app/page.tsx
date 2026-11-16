@@ -2,13 +2,11 @@ import {readFeatureFlags} from '../../lib/feature-flags';
 import {scopedObservation} from '@/lib/company-access/observation';
 import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
 import {MobileOnboardingGuide} from "@/components/mobile-access/onboarding-guide";
-import {readAuthLang} from "@/lib/auth-lang.server";
-import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise";
 import {correctionAuthority} from '@/lib/time-corrections/authority.server';
 import Link from 'next/link';
-import {Card,CardBody,KitStack,PageBand} from '@/components/kit/kit';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {BRouteError} from '@/components/owner-b/b-route-error';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {ManagerCorrectionRecoveryBoundary} from '@/components/manager-correction-recovery';
 import {managerReviewRecoveryKey} from '@/lib/time-corrections/review-recovery';
@@ -29,6 +27,8 @@ import {requestTypeAllowed} from '@/lib/workspace-presentation/modules';
 import {addDays,formatWeekRange,isValidWeekStart,weekStartFor} from '@/lib/date-utils';
 import {redirect} from 'next/navigation';
 import {readHomePayrollStatus,readNextPay} from './my-pay/next-pay';
+import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
+import {payrollFeatureEnabled} from '@/lib/payroll/service';
 import {retiredViewDestination} from '@/lib/retired-views';
 
 const DASHBOARD_VIEWS: ManagerDashboardView[] = [
@@ -71,11 +71,14 @@ export default async function DashboardPage({
     // Upscale M7: the following week too (same read), so "Coming up" can list the next shifts across the week boundary.
     const followingWeek=addDays(currentWeek,7);
     const [review,following]=await Promise.all([readEmployeeWeeklyReview(proof,currentWeek),readEmployeeWeeklyReview(proof,followingWeek)]);
-    const own=(read:typeof review)=>read.shifts.map(({id,date,startTime,endTime,locationId,positionName})=>({id,date,startTime,endTime,where:[positionName,read.locations.find(location=>location.id===locationId)?.shortName].filter(Boolean).join(' · ')}));
+    const own=(read:typeof review)=>read.shifts.map(({id,date,startTime,endTime,locationId,positionName,isDesignatedLead})=>({id,date,startTime,endTime,lead:isDesignatedLead,where:[positionName,read.locations.find(location=>location.id===locationId)?.shortName].filter(Boolean).join(' · ')}));
     const week:HomeWeek|null=review.state==='unavailable'?null:{weekStart:currentWeek,today:currentDate,dates:Array.from({length:7},(_,day)=>addDays(currentWeek,day)),shifts:own(review),next:following.state==='unavailable'?null:{weekStart:followingWeek,shifts:own(following)}};
     // A Lead's Home adds Today's team: message everyone on today's team (the existing Updates compose), when Updates is on.
-    const teamMessage=session.role==='LEAD'&&(await currentPresentation()).modules.updates;
-    return <EmployeeDashboard intro={mobileAccessEnabled()?<MobileOnboardingGuide employeeId={session.id} lang={await readAuthLang()} timeOffEnabled={(await currentPresentation()).modules.timeOff}/>:null} authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone} workspaceName={workspace.name} week={week} teamMessage={teamMessage} corporate={session.role==='EMPLOYEE'}/>;
+    const presentation=await currentPresentation();
+    const teamMessage=session.role==='LEAD'&&presentation.modules.updates;
+    // Direction B: hours worked this week (the Time tab's own read) and the next payday (pay schedule), Employees and Leads.
+    const b=session.role==='EMPLOYEE'||session.role==='LEAD'?{lead:session.role==='LEAD',hoursAuthority:employeeViewAuthority(proof,'hours'),payday:payrollFeatureEnabled()&&presentation.modules.payStatements?(await readNextPay(workspace.timeZone).catch(()=>null))?.payday??null:null}:undefined;
+    return <EmployeeDashboard b={b} intro={mobileAccessEnabled()?<MobileOnboardingGuide employeeId={session.id} lang="en" timeOffEnabled={(await currentPresentation()).modules.timeOff}/>:null} authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone} workspaceName={workspace.name} week={week} teamMessage={teamMessage} corporate={session.role==='EMPLOYEE'||session.role==='LEAD'}/>;
   }
 
   const proof=await requireSessionMutationProof();
@@ -97,17 +100,12 @@ export default async function DashboardPage({
   // WR-59: the same kit error page as app/app/error.tsx. IS-50: "Try again" reloads this exact view (week, day, location, person).
   // IS-51: only the view's own context; one-time flags (decided=…) stay out so a toast never repeats.
   const retry=new URLSearchParams((['view','week','day','location','employee'] as const).flatMap(key=>{const value=params[key];return typeof value==='string'&&value?[[key,value]]:[];})).toString();
-  if(!dashboardData)return <ManagerCorrectionRecoveryBoundary key={recoveryKey}><div className="nv-page premium-error" data-nv-page="">
-    <PageBand title="This page could not be loaded" summary="Your current information is unavailable."/>
-    <KitStack><Card><CardBody><div className="premium-error__body">
-      <p className="premium-error__text">Try loading the page again before taking an action.</p>
-      <div className="premium-error__actions">
-        <Link className="nv-btn" data-kind="primary" href={retry?`/app?${retry}`:'/app'}><ArrowsClockwiseIcon size={18} aria-hidden="true"/>Try again</Link>
-        {view!=='overview'?<Link className="nv-btn" data-kind="secondary" href="/app">Back to Home</Link>:null}
-      </div>
-    </div></CardBody></Card></KitStack>
-  </div></ManagerCorrectionRecoveryBoundary>;
-  const {dashboard,locations,availabilitySubmissionSummary,coverageRulesConfigured,managerActions,daySummaries,hourRows,latestRevision}=dashboardData;
+  // Phase 2 (package D, optional): the one Direction B route error screen. It was the older kit page, which had no band
+  // under Direction B. The words and both actions are unchanged; Try again stays a link to this exact view.
+  if(!dashboardData)return <ManagerCorrectionRecoveryBoundary key={recoveryKey}><BRouteError title="This page didn’t load" sub="Nothing was changed."
+    spoken="This page didn’t load. Nothing was changed. Check your connection, then try again." line="Check your connection, then try again."
+    retryHref={retry?`/app?${retry}`:'/app'} away={view!=='overview'?{href:'/app',label:'Back to Home'}:undefined}/></ManagerCorrectionRecoveryBoundary>;
+  const {dashboard,locations,availabilitySubmissionSummary,coverageRulesConfigured,managerActions,daySummaries,hourRows,latestRevision,coverageMinutes}=dashboardData;
 
   const {modules}=await currentPresentation();
   // MK1: Home's "Next payday" row, from the date My pay shows (none when pay statements are off or there's no schedule).
@@ -139,6 +137,7 @@ export default async function DashboardPage({
       managerActions={managerActions.filter(item=>requestTypeAllowed(item.type,modules))}
       locations={dashboard.locationReadiness}
       days={daySummaries}
+      coverage={coverageMinutes?.all}
       hours={hourRows}
       nextPay={nextPay}
       payrollStatus={payrollStatus}

@@ -13,7 +13,7 @@ function failure(error: unknown): ConfigurationResult {
   if (error instanceof LocationConcurrencyError || error instanceof PositionConcurrencyError) return { error: error.message };
   const message = error instanceof Error ? error.message : "";
   const safe =
-    /^(?:Location name|Short name|Position name|Clocker key|Workspace name|A valid|Time zone|Changing the business timezone|Choose|Only an active|Workspace configuration|Position not found|Location not found)/;
+    /^(?:Location name|Short name|Position name|Clocker key|Workspace name|Enter your business name|A valid|Time zone|Changing the business timezone|Choose|Only an active|Workspace configuration|Position not found|Location not found)/;
   return {
     error: safe.test(message)
       ? message
@@ -37,7 +37,7 @@ export async function saveWorkspaceProfileAction(
       proof,
     });
     revalidatePath("/app", "layout");
-    return { success: "Workspace updated." };
+    return { success: "Company profile saved." };
   } catch (error) {
     return failure(error);
   }

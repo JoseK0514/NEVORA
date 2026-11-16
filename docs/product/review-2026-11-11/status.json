@@ -1,0 +1,1532 @@
+[
+  {
+    "id": "EM-001",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 2 (Nov 15, 2026). Built and measured in a browser on fictional data; uncommitted, waiting for Jose. The Availability card starts 24px under the band; its action ends on the card edge.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-002",
+    "severity": "High",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-003",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-004",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-005",
+    "severity": "High",
+    "status": "partly",
+    "remainder": "Titles built from kind, dates and action state; outcomes (approved or declined) need the event type from the server.",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-006",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-007",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-008",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-009",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-010",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-011",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-012",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 2 (Nov 15, 2026). Built and measured in a browser on fictional data; uncommitted, waiting for Jose. Forms and state cards are 812 with a 560 field block; state cards 560.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-013",
+    "severity": "Medium",
+    "status": "partly",
+    "remainder": "Schedule lower row not changed.",
+    "by": "Claude",
+    "note": "Phase 2 (Nov 15, 2026). Built and measured in a browser on fictional data; uncommitted, waiting for Jose. Help and More columns end together.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-014",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-015",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-016",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-017",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-018",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-019",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-020",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-021",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-022",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-023",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-024",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-025",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-026",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-027",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-028",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-029",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-030",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-031",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-032",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-033",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "EM-034",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "MG-001",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. With MG-002: one state card at every width with the next step.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "MG-002",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "MG-003",
+    "severity": "High",
+    "status": "partly",
+    "remainder": "An \"approve by\" date needs a field (Codex); the card shows the count, the period state and payday.",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. The Manager's Home card is framed as Timecards.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "MG-004",
+    "severity": "High",
+    "status": "partly",
+    "remainder": "The Owner's name for \"Jose approves this one\" on Home and Things to do needs a field there (Codex); Timecards has it.",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Own timecard marked \"You\" and left out of the approve counts on Timecards, Home and Things to do.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "MG-005",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "MG-006",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "MG-007",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "MG-008",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "MG-009",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "MG-010",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Managers can finalize too, so no \"Jose finalizes\" line was added.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "MG-011",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "MG-012",
+    "severity": "Medium",
+    "status": "partly",
+    "remainder": "The other person's shift on a swap and \"No cover yet\" need fields (Codex).",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Titles state who and what.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "MG-013",
+    "severity": "Medium",
+    "status": "partly",
+    "remainder": "What a Manager's access covers and who can change their details come from fixed sentences until the profile read carries them (Codex).",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Access row on Profile.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "MG-014",
+    "severity": "Low",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Verified: round 1's rule holds.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "MG-015",
+    "severity": "Low",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. The state holder is a 48px circle everywhere.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "MG-016",
+    "severity": "Low",
+    "status": "partly",
+    "remainder": "The Remind button waits on the reminder wiring gate and an authority value on the Availability page (Codex).",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. One \"Not sent\" card.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "MG-017",
+    "severity": "Low",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-001",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-002",
+    "severity": "High",
+    "status": "partly",
+    "remainder": "Titles cannot name the punch, the minutes, the count by kind or the outcome until the reads carry them (Codex).",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Rows lead with the person; repeated notifications fold into one row.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-003",
+    "severity": "High",
+    "status": "partly",
+    "remainder": "Phone Schedule day list still writes compact ranges (\"3–4:30 PM\") while Home writes them in full; Jose to choose.",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Durations, date and time ranges read the shared formatters on Schedule, Timecards, Time exports, Requests and Shift requests.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-004",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-005",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-006",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Coverage is one line with a small bar on Home and Schedule.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-007",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-008",
+    "severity": "High",
+    "status": "partly",
+    "remainder": "The finding asked for a pill inside the hero; Phase 2 built one pill at the foot of the window (above the tab bar on phones). Jose to choose.",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Phase 2.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-009",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Payroll is a list with a right rail from 1024px, like Team.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-010",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 2 (Nov 15, 2026). Built and measured in a browser on fictional data; uncommitted, waiting for Jose. Band ends at 196, 224 or 296 (Home 383); titles at 88 or 130.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-011",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-012",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-013",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-014",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-015",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-016",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-017",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-018",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-019",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-020",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-021",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-022",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Positions buttons sit side by side; the 651px element on Company policies is an invisible select, not a field.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-023",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-024",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-025",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-026",
+    "severity": "Medium",
+    "status": "partly",
+    "remainder": "Planned hours per day as a backing bar need a field in the period report (Codex).",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Bars reshaped; empty attendance tiles hidden.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-027",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-028",
+    "severity": "Medium",
+    "status": "partly",
+    "remainder": "Red for a count past its deadline needs an overdue flag from the inbox count read (Codex); every count is teal until then.",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Workspace name wraps; one teal count pill.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-029",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-030",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-031",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. \"On now\" card under Things to do on desktop Home.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-032",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-033",
+    "severity": "Low",
+    "status": "partly",
+    "remainder": "The spaced dash in a place name is fixture data, not app text.",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Sub-lines wrap and carry no closing period.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-034",
+    "severity": "Low",
+    "status": "partly",
+    "remainder": "Home and Things to do chips were not re-measured against the one chip size.",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. One chip size on Schedule, Timecards, corrections, Payroll and Updates.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-035",
+    "severity": "Low",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-036",
+    "severity": "Low",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-037",
+    "severity": "Low",
+    "status": "partly",
+    "remainder": "The 1.2s hold and automatic advance to the next timecard is not built; it moves focus on its own. Jose to choose.",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Green success block and a tinted Finalize period pill.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-038",
+    "severity": "Low",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "OW-039",
+    "severity": "Low",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-001",
+    "severity": "High",
+    "status": "partly",
+    "remainder": "Support, Account deletion and the public error screen follow the language; Privacy and Terms stay English pending counsel.",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-002",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-003",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-004",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-005",
+    "severity": "High",
+    "status": "partly",
+    "remainder": "Session-ended note and return path when the request shows where the person came from; a hard load after natural expiry gets neither.",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-006",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-007",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-008",
+    "severity": "High",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-009",
+    "severity": "High",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-010",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-011",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-012",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-013",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-014",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-015",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-016",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-017",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-018",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-019",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-020",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-021",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-022",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-023",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-024",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-025",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-026",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-027",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-028",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-029",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-030",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-031",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-032",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-033",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-034",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-035",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-036",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "PB-037",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-001",
+    "severity": "High",
+    "status": "partly",
+    "remainder": "Direction B sheets read eight type roles in rem; 13px and 15px folded. 12, 14 and 16px kept by decision; legacy sheets not migrated.",
+    "by": "Phase 1 (Nov 15, 2026)",
+    "note": "Uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-002",
+    "severity": "Medium",
+    "status": "partly",
+    "remainder": "Line-heights 19 and 21 folded where paired with a role size.",
+    "by": "Phase 1 (Nov 15, 2026)",
+    "note": "Uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-003",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-004",
+    "severity": "High",
+    "status": "partly",
+    "remainder": "Spacing on the scale: Owner desktop 68 to 81%, Employee 43 to 65%, kit and sign-in 50 to 58%. 6px and 10px left for a decision.",
+    "by": "Phase 1 (Nov 15, 2026)",
+    "note": "Uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-005",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-006",
+    "severity": "High",
+    "status": "partly",
+    "remainder": "Hex literals in the Direction B sheets 554 to 321; token reads 1,074 to 3,407.",
+    "by": "Phase 1 (Nov 15, 2026)",
+    "note": "Uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-007",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-008",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-009",
+    "severity": "Medium",
+    "status": "partly",
+    "remainder": "Distinct radius values roughly halved; pills, cards, fields and small corners read four tokens.",
+    "by": "Phase 1 (Nov 15, 2026)",
+    "note": "Uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-010",
+    "severity": "Low",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-011",
+    "severity": "Medium",
+    "status": "partly",
+    "remainder": "Card and glow shadows read the elevation tokens; one-off shadows listed in the reports.",
+    "by": "Phase 1 (Nov 15, 2026)",
+    "note": "Uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-012",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Phase 1 (Nov 15, 2026)",
+    "note": "Every Phosphor icon draws bold; a guard test keeps it so. Uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-013",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-014",
+    "severity": "High",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-015",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-016",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-017",
+    "severity": "Low",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-018",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-019",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-020",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-021",
+    "severity": "Medium",
+    "status": "partly",
+    "remainder": "Clocker disabled colours fixed; employee-b sheets still use opacity.",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-022",
+    "severity": "High",
+    "status": "partly",
+    "remainder": "Empty state glyph fixed; the nine state patterns are not yet merged.",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-023",
+    "severity": "Low",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "SY-024",
+    "severity": "Medium",
+    "status": "partly",
+    "remainder": "Tokens are now read widely; a count budget is not yet enforced.",
+    "by": "Phase 1 (Nov 15, 2026)",
+    "note": "Uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-001",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. The current rail icon is drawn filled.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-002",
+    "severity": "High",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "Employee screen: Phase 4.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-003",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Person column 128px and rows 68px, not the finding's 124 and 60: the longest name and a long time need them.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-004",
+    "severity": "High",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Verified at 900 and 768: the Phase 2 frame holds.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-005",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-006",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "Employee screen: Phase 4.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-007",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-008",
+    "severity": "Medium",
+    "status": "open",
+    "remainder": "",
+    "by": "",
+    "note": "Needs Jose: Employee and Lead tablets show a bell in the rail and in the top bar. Employee phase.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-009",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-010",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-011",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. The list opens in place under the row, not as a popover.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-012",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Round 1 (Nov 15, 2026)",
+    "note": "Built and checked in a browser on fictional data; uncommitted, waiting for Jose.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-013",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-014",
+    "severity": "Medium",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Verified.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-015",
+    "severity": "Low",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-016",
+    "severity": "Low",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-017",
+    "severity": "Low",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-018",
+    "severity": "Low",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  },
+  {
+    "id": "TB-019",
+    "severity": "Low",
+    "status": "fixed",
+    "remainder": "",
+    "by": "Claude",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths.",
+    "inCodexHandoff": false
+  }
+]

@@ -27,15 +27,15 @@ it('removes the unreachable pre-Phase-C local-state Clocker implementation', asy
   }
 });
 
-it('uses shared tokens for exact approved NEVORA palette equivalents in active Clocker CSS', async () => {
-  const css = [
-    await readFile('src/components/clocker-punch.module.css', 'utf8'),
-    await readFile('src/components/clocker-pin.module.css', 'utf8'),
-    await readFile('src/components/clocker-setup.module.css', 'utf8'),
-  ].join('\n');
-  expect(css).not.toMatch(/#0756d9|#18191f|#676a73|#f0fbff|#f6f6f8|#eaf5ea|#1d6f42|#fff\b/i);
-  expect(css).toContain('var(--nevora-blue)');
-  expect(css).toContain('var(--color-brand-primary)');
+// Direction B (Nov 8, 2026) replaced the Signature Clocker sheets (punch, PIN, setup modules read the legacy
+// --nevora-blue / --color-brand-primary aliases) with one kiosk sheet on Direction B's own palette. The guard keeps its
+// intent: no retired raw legacy colours, text wraps, and the old modules are gone.
+it('keeps the active Clocker CSS on the Direction B palette without retired legacy colours', async () => {
+  const css = await readFile('src/components/clocker.module.css', 'utf8');
+  expect(css).not.toMatch(/#0756d9|#18191f|#676a73|#f0fbff|#f6f6f8|#eaf5ea|#1d6f42/i);
+  expect(css).toContain('var(--clocker-accent, #0C726C)');
   expect(css).not.toMatch(/var\([^)]*\)-space/);
   expect(css).toContain('white-space: normal');
+  for (const retired of ['clocker-punch.module.css', 'clocker-pin.module.css', 'clocker-setup.module.css', 'clocker-shell.module.css', 'clocker-v2.module.css'])
+    expect(existsSync('src/components/' + retired)).toBe(false);
 });

@@ -3,17 +3,17 @@
 import { useEffect, useId, useMemo, useState, type FormEvent, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpNav, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle } from '../corp/corp';
+import { CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpEmpty, CorpNav, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle } from '../corp/corp';
 import './payroll-home-corp.css';
 import './payroll-corp.css';
 import type { OpenPayPeriod } from '@/lib/payroll/pay-calendar.server';
 import type { PayrollCapabilities, PayrollJob, PayrollMissingPeriod, PayrollRun, PayrollRunsResponse } from '@/lib/payroll/contracts';
 import { parsePayrollImport, readRuns } from './api';
-import { formatPayrollMoney } from './money';
+import { formatPayrollMoney, formatSignedPayrollMoney } from './money';
 import { usePayrollOperation, usePayrollResource } from './use-payroll';
 import { NativeReview } from './native-review';
 import { PortalStatements } from './portal-statements';
-import { backlogDescription, noticeOutcome, payrollExceptionMessage, payrollReviewNotes } from './workflow-status';
+import { backlogDescription, noticeOutcome, payrollBlockerPlace, payrollExceptionMessage, payrollReviewNotes } from './workflow-status';
 import { PayDateField } from './pay-date-field';
 import { DocumentRow } from './document-row';
 import { Feedback } from './payroll-feedback';
@@ -21,14 +21,35 @@ import { PayrollTabs, type PayrollTab } from './payroll-tabs';
 import { flagProblems, formKeys } from './form-keys';
 import { payDay, periodRange } from './payroll-format';
 import { Num, PayGroup } from './pay-group';
+import { BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BRow, BScreen, BStack, BState } from '../owner-b/b-kit';
+import { GearIcon } from '@phosphor-icons/react/dist/ssr/Gear';
+import { ReceiptIcon } from '@phosphor-icons/react/dist/ssr/Receipt';
+import { UploadSimpleIcon } from '@phosphor-icons/react/dist/ssr/UploadSimple';
+import { WarningIcon } from '@phosphor-icons/react/dist/ssr/Warning';
+import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown';
+import { ListChecksIcon } from '@phosphor-icons/react/dist/ssr/ListChecks';
+import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
+import { keepWhole } from '@/lib/keep-whole';
 
 export type PayrollView = 'home' | 'review' | 'fix' | 'people' | 'prepare' | 'history';
 type Operation = ReturnType<typeof usePayrollOperation>;
 
 const statusLabels = { BLOCKED: 'Needs attention', WAITING_FOR_AMOUNTS: 'Waiting for amounts', REVIEW_REQUIRED: 'Review required', APPROVED: 'Approved' };
-
-const jobLabels = { PREPARE: 'Draft preparation', PDF: 'PDF generation', PUBLISH: 'Statement publication', REMINDER: 'Private payroll notice' };
+// Closing F1 (NV-071): done is green on every screen (an approved payroll, like a published week).
+const statusTone = { BLOCKED: 'red', WAITING_FOR_AMOUNTS: 'neutral', REVIEW_REQUIRED: 'amber', APPROVED: 'green' } as const;
+const jobLabels = { PREPARE: 'Draft preparation', PDF: 'PDF generation', PUBLISH: 'Pay statement sharing', REMINDER: 'Private payroll notice' };
 const FREQUENCY = { WEEKLY: 'Weekly', BIWEEKLY: 'Every two weeks', SEMIMONTHLY: 'Twice a month', MONTHLY: 'Monthly' } as const;
+
+/** PY-14 (Nov 14 inspection): the standing scope line under the Payroll title. NEVORA calculates pay and makes pay
+ * statements; it never pays anyone or sends taxes. */
+const SCOPE_LINE = 'Calculate pay and share statements. You pay your team outside NEVORA.';
+/** PY-3: what is still the Owner's to do once a payroll is approved, and the line that closes it. */
+const NEXT_STEPS = ['Pay each person their net pay.', 'Send withheld taxes and employer contributions.', 'Keep the company summary for your accountant.'];
+const NEXT_NOTE = 'NEVORA doesn’t pay anyone or send taxes.';
+/** PY-11: a correction changes amounts on paper only; any difference in pay is settled by the employer. */
+const SETTLE_NOTE = 'If pay changes, settle the difference with the employee outside NEVORA.';
+/** AR-4: Time exports' "Who’s included" section; Payroll's blocker opens the page there (payroll-export.tsx reads it). */
+const INCLUDED_HASH = 'who-is-included';
 
 const quietRange = periodRange;
 const quietDay = payDay;
@@ -57,10 +78,11 @@ function Pushed({ back, title, id, sub }: { back: { href: string; label: string 
 
 /** Owner premium (visual-craft K): one empty or "not available" state, a centred card with a 15/600 line, an optional
  * 13px line and at most one secondary next step. No icon or illustration. */
+/** Review B5 (NV-254): the one empty-state pattern: an icon in a tinted circle, a 16/22 title, the line, the action as a pill,
+ * left-aligned (it was centred with a grey button). */
 export function EmptyCard({ title, detail, action, alert, label = 'Payroll' }: { title: string; detail?: ReactNode; action?: { href: string; label: string }; alert?: boolean; label?: string }) {
   return <CorpCard as="div" ariaLabel={label}>
-    <div className="c-empty c-pay__empty" role={alert ? 'alert' : 'status'}><b>{title}</b>{detail ? <span>{detail}</span> : null}</div>
-    {action ? <div className="c-pay__empty-action"><CorpButtonLink href={action.href} kind="secondary" size="md">{action.label}</CorpButtonLink></div> : null}
+    <div className="c-pay__empty"><BState kind={alert ? 'failed' : 'empty'} alert={alert} icon={alert ? undefined : <ReceiptIcon weight="bold" />} title={title} line={detail} action={action ? { label: action.label, href: action.href } : undefined} /></div>
   </CorpCard>;
 }
 
@@ -76,13 +98,15 @@ function Check({ checked, onChange, disabled, children }: { checked: boolean; on
   return <label className="c-pay__check"><input type="checkbox" checked={checked} disabled={disabled} onChange={event => onChange(event.target.checked)} /><span>{children}</span></label>;
 }
 
-export function PayrollRuns({ recoveryScope, current = null, canEditSettings = false, view = 'home', runId = null, names = {}, company, tabs = null }: {
+export function PayrollRuns({ recoveryScope, current = null, canEditSettings = false, view = 'home', runId = null, names = {}, company, tabs = null, timeZone }: {
   recoveryScope: string; current?: OpenPayPeriod | null; canEditSettings?: boolean; view?: PayrollView; runId?: string | null; names?: Record<string, string>; company?: string; tabs?: PayrollTab[] | null;
+  /** The workspace's zone: "today" (paydays, overdue periods) is the company's day, as on Home (review B2, NV-024). */
+  timeZone?: string;
 }) {
   const resource = usePayrollResource('/api/payroll/runs', readRuns);
   const operation = usePayrollOperation('/api/payroll/runs', resource.reload, recoveryScope);
   const router = useRouter();
-  const [today] = useState(() => new Date().toISOString().slice(0, 10));
+  const [today] = useState(() => companyDay(timeZone));
   // A recorded action that made or replaced a run (a prepared draft, a correction) opens that run's review.
   useEffect(() => {
     const next = operation.receipt?.runId;
@@ -96,25 +120,33 @@ export function PayrollRuns({ recoveryScope, current = null, canEditSettings = f
   const missingRun = data && (view === 'review' || view === 'fix' || view === 'people') && !run
     ? <EmptyCard alert title="This payroll isn’t available" detail="It may have been replaced by a newer revision." action={{ href: '/app/payroll', label: 'Go to Payroll' }} /> : null;
 
-  if (view === 'home') return <PayrollHome current={current} data={data} state={state} today={today} canEditSettings={canEditSettings} company={company} operation={operation} tabs={tabs} />;
+  // Backend (Nov 15, 2026): the runs read names the current period, its payday and the workplace's day (asOfDate). It is
+  // the page's period once read; null means no effective pay schedule. Before it arrives (or from an older read) the
+  // route's period stands, as before. The route's frequency still names the payroll.
+  const fromRead = data?.currentPeriod;
+  const period: OpenPayPeriod | null = fromRead === undefined ? current : fromRead === null ? null
+    : { period: fromRead.period, payday: fromRead.payday, ...(current?.frequency ? { frequency: current.frequency } : {}) };
+  const asOf = fromRead?.asOfDate ?? today;
+  if (view === 'home') return <PayrollHome current={period} data={data} state={state} today={asOf} canEditSettings={canEditSettings} company={company} operation={operation} tabs={tabs} />;
   // Single-column pushed pages use the 720px desktop width (visual-craft F).
   if (view === 'prepare') return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-prepare-title">
     <Pushed back={{ href: '/app/payroll', label: 'Payroll' }} title="Prepare payroll" id="payroll-prepare-title" />
     <Feedback operation={operation} />
-    {state ?? (data && <PreparePayroll current={current} data={data} today={today} operation={operation} />)}
+    {state ?? (data && <PreparePayroll current={period} data={data} today={asOf} operation={operation} />)}
   </CorpPage>;
   if (view === 'history') return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-history-title">
-    <Pushed back={{ href: '/app/payroll', label: 'Payroll' }} title="Pay history" id="payroll-history-title" />
+    <Pushed back={{ href: '/app/payroll', label: 'Payroll' }} title="Payroll history" id="payroll-history-title" />
     <Feedback operation={operation} />
     {state ?? (data && <PayHistory data={data} names={names} operation={operation} />)}
   </CorpPage>;
   if (view === 'fix') return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-fix-title">
-    <Pushed back={{ href: runId ? reviewHref(runId) : '/app/payroll', label: 'Review payroll' }} title="Fix before payroll" id="payroll-fix-title" />
+    <Pushed back={{ href: runId ? reviewHref(runId) : '/app/payroll', label: run?.status === 'APPROVED' ? 'Payroll details' : 'Review payroll' }} title="Fix before payroll" id="payroll-fix-title" />
     <Feedback operation={operation} />
     {state ?? missingRun ?? (run && data && <FixList run={run} capabilities={data.capabilities} names={names} operation={operation} />)}
   </CorpPage>;
   if (view === 'people') return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-people-title">
-    <Pushed back={{ href: runId ? reviewHref(runId) : '/app/payroll', label: 'Review payroll' }} title="People" id="payroll-people-title" />
+    {/* Round 5 (Nov 8): the way back is named like the page it returns to ("Payroll details" once approved). */}
+    <Pushed back={{ href: runId ? reviewHref(runId) : '/app/payroll', label: run?.status === 'APPROVED' ? 'Payroll details' : 'Review payroll' }} title="People" id="payroll-people-title" />
     {state ?? missingRun ?? (run && <PeopleAmounts run={run} />)}
   </CorpPage>;
   return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-review-title">
@@ -128,6 +160,13 @@ export function PayrollRuns({ recoveryScope, current = null, canEditSettings = f
 
 /** The oldest completed period with no payroll whose payday has already passed (missing periods arrive oldest first;
  * sorted again here so the notice never depends on that order). Null when none has passed, or nothing is known. */
+/** Today's date (YYYY-MM-DD) in the company's zone; the device's day only if the zone is unknown or invalid. */
+function companyDay(timeZone?: string) {
+  const now = new Date();
+  try { if (timeZone) return new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(now); } catch { /* fall through */ }
+  return new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+}
+
 function overduePeriod(data: PayrollRunsResponse | null, today: string) {
   const passed = (data?.missingPeriods ?? []).filter(item => item.payday < today);
   return passed.sort((a, b) => a.period.startDate.localeCompare(b.period.startDate))[0] ?? null;
@@ -142,9 +181,11 @@ function UnpaidNotice({ data, oldest, href }: { data: PayrollRunsResponse; oldes
   const range = quietRange(oldest.period.startDate, oldest.period.endDate);
   const title = count === 1 ? `${range} has no payroll` : count !== null && count > 1 ? `${count} pay periods have no payroll` : 'Some pay periods have no payroll';
   return <section className="c-card c-pay__unpaid" aria-labelledby="payroll-unpaid-title">
+    {/* OW-018: as on the phone, the red is the icon's; the title is ink. */}
+    <BIcon tone="red"><WarningIcon weight="bold" /></BIcon>
     <div className="c-pay__unpaid-text">
       <h2 id="payroll-unpaid-title" className="c-pay__unpaid-title">{title}</h2>
-      <p className="c-pay__unpaid-body">{count === 1 ? <>Its payday was <Num>{quietDay(oldest.payday)}</Num>.</> : <>Oldest is <Num>{range}</Num>. Its payday was <Num>{quietDay(oldest.payday)}</Num>.</>}</p>
+      <p className="c-pay__unpaid-body">{count === 1 ? <>Scheduled payday was <Num>{quietDay(oldest.payday)}</Num>.</> : <>Oldest is <Num>{range}</Num>. Scheduled payday was <Num>{quietDay(oldest.payday)}</Num>.</>}</p>
     </div>
     <CorpButtonLink href={href} size="md" className="c-pay__unpaid-go">{unpaidAction(oldest)}</CorpButtonLink>
   </section>;
@@ -165,14 +206,54 @@ function nextStep(open: PayrollRun | undefined): { label: string; href: string; 
 /** A payroll row (R7, R9): the period first, " · Correction" when it corrects another, so two rows for one week differ
  * at a glance; then the payday and "Approved" as quiet words (never "Paid"). A status that needs the Owner stays a pill,
  * in grey (R3). The amount shows only when the payroll holds one (a missing amount is never a zero). */
-function RunRow({ item }: { item: PayrollRun }) {
+function RunRow({ item, replaced = false }: { item: PayrollRun; replaced?: boolean }) {
   const approved = item.status === 'APPROVED';
-  return <CorpRow href={reviewHref(item.id)} bold
-    title={<><Num>{quietRange(item.period.startDate, item.period.endDate)}</Num>{item.correctionOf ? ' · Correction' : ''}</>}
+  // Closing F1 (NV-082): a payroll a correction replaced says so (a grey "Replaced" chip, "Replaced by correction") and is
+  // listed right under its correction (byCorrection), indented.
+  if (replaced) return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" weight="bold" />}
+    title={<><Num>{quietRange(item.period.startDate, item.period.endDate)}</Num> <CorpPill tone="neutral">Replaced</CorpPill></>}
+    detail={<>Replaced by correction · Payday <Num>{quietDay(item.payday)}</Num></>}
+    value={item.totals ? <NetAmount minor={item.totals.netMinor} /> : undefined} valueTone="ink" chevron />;
+  // Round 5 (Nov 7, 2026): drawn like Payroll's Recent payrolls: the receipt icon, a "Correction" pill instead of words in
+  // the title, the amount bold. A status that needs the Owner still wins the pill.
+  return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" weight="bold" />}
+    title={<><Num>{quietRange(item.period.startDate, item.period.endDate)}</Num>{approved && item.correctionOf ? <> <CorpPill tone="neutral">Correction</CorpPill></> : null}</>}
     detail={<>Payday <Num>{quietDay(item.payday)}</Num>{approved ? ' · Approved' : ''}</>}
-    value={item.totals ? <Num>{formatPayrollMoney(item.totals.netMinor)}</Num> : undefined}
-    trail={approved ? undefined : <CorpPill tone="neutral">{statusLabels[item.status]}</CorpPill>} chevron />;
+    value={item.totals ? <NetAmount minor={item.totals.netMinor} /> : undefined} valueTone="ink"
+    trail={!approved ? <CorpPill tone={statusTone[item.status]}>{statusLabels[item.status]}</CorpPill> : undefined} chevron />;
 }
+
+/** OW-018: a row's amount is the payroll's net total (`totals.netMinor`), so it says "Net" under the figure, as the
+ * phone's rows do. */
+function NetAmount({ minor }: { minor: string }) {
+  return <span className="c-pay__amt"><Num>{formatPayrollMoney(minor)}</Num><span className="c-pay__amt-k">Net</span></span>;
+}
+
+/** Closing F1 (NV-082): newest first, except that a payroll a correction replaced follows its correction (flagged
+ * `replaced`), so "Oct 19 – 25" twice reads as one correction and the run it replaced. */
+function byCorrection(runs: PayrollRun[]): { item: PayrollRun; replaced: boolean }[] {
+  const replacedBy = new Map<string, string>();
+  for (const run of runs) if (run.correctionOf && runs.some(other => other.id === run.correctionOf)) replacedBy.set(run.correctionOf, run.id);
+  const out: { item: PayrollRun; replaced: boolean }[] = [];
+  const place = (run: PayrollRun) => {
+    out.push({ item: run, replaced: replacedBy.has(run.id) });
+    for (const original of runs) if (original.id === run.correctionOf && replacedBy.get(original.id) === run.id) place(original);
+  };
+  for (const run of runs) if (!replacedBy.has(run.id)) place(run);
+  return out;
+}
+
+/** PY-3 (Nov 14 inspection): an approved payroll's hand-off, on Payroll and on Payroll details. Approval ends NEVORA's
+ * part; paying people and sending taxes stay with the Owner. Not shown for a correction or a payroll a correction
+ * replaced (their amounts aren't the ones to pay in full). */
+function WhatsNext() {
+  return <div className="c-pay__next">
+    <ul>{NEXT_STEPS.map(text => <li key={text}>{text}</li>)}</ul>
+    <p className="c-pay__next-note">{NEXT_NOTE}</p>
+  </div>;
+}
+/** Whether an approved payroll still stands as the one to act on (no correction replaced it). */
+const standsApproved = (run: PayrollRun | undefined, runs: PayrollRun[]) => !!run && run.status === 'APPROVED' && !run.correctionOf && !runs.some(item => item.correctionOf === run.id);
 
 /** Corporate (Release 1, board G-O-Payroll), round 2: one 720px column. Unpaid periods first, then Up next (the open
  * period, its payday, one status and its next step), Recent payrolls with the way to Pay history, then the phone's
@@ -194,16 +275,102 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
   const isTab = (href: string) => !!tabs?.some(item => item.href === href);
   const exportsHref = current ? `/app/payroll-export?start=${current.period.startDate}&end=${current.period.endDate}` : '/app/payroll-export';
   const exportsRow = <li className={isTab('/app/payroll-export') ? 'c-only-phone' : undefined}><CorpRow href={exportsHref} one title="Time exports" chevron /></li>;
+  // Backend (Nov 15, 2026): this period's timecards, with the day approval opens while the period runs and "Pay period
+  // ended" after (the words Things to do uses; it doesn't claim what's left to approve). It opens Timecards on that period.
+  const timecards = current ? { href: `/app/timecards?start=${current.period.startDate}&end=${current.period.endDate}`,
+    line: today > current.period.endDate ? 'Pay period ended' : `Can be approved from ${quietDay(new Date(Date.parse(`${current.period.endDate}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10))}` } : null;
   const settings = canEditSettings ? <Link className={isTab('/app/settings/payroll') ? 'c-link c-link--l c-only-phone' : 'c-link c-link--l'} href="/app/settings/payroll" aria-label="Payroll settings">Settings</Link> : undefined;
   const frequency = `${current?.frequency ? FREQUENCY[current.frequency] : ''} payroll`.trim().replace(/^payroll$/, 'Payroll');
   // Up next is one row (Nov 1 upscale): the payroll, its period and payday; it opens the next step (Prepare, Review issues,
   // Review payroll or the approved details). Once a draft exists, that step is the row's grey value ("Review issue").
   const nextValue = open && open.status !== 'APPROVED' ? step.label : undefined;
+  // Direction B (Jose approved Nov 5, 2026; mock "Owner · Payroll"): the dark ink hero for money, the open period as its
+  // headline with this payroll's own figures (people, gross, net once it holds amounts; never an estimate), the three
+  // steps with the same next-step button, then Recent payrolls. Tablets and desktop keep the layout below.
+  const days = current ? Math.round((Date.parse(`${current.payday}T12:00:00Z`) - Date.parse(`${today}T12:00:00Z`)) / 86_400_000) : null;
+  const paydayChip = days === null ? null : days === 0 ? 'Payday today' : days === 1 ? 'Payday tomorrow' : days > 1 ? `Payday in ${days} days` : 'Scheduled payday passed';
+  const fixing = /issue/i.test(step.label);
+  // PY-4: a payroll NEVORA calculates shares its pay statements by itself once approved (the worker queues it); an imported
+  // one keeps the manual share step. Before a draft exists, new payrolls are calculated here whenever the calculator is on.
+  const native = open ? open.sourceAuthority === 'NATIVE_RECORDED_TIME' : !!data?.capabilities.internalCalculatorAvailable;
+  const handOff = standsApproved(open, runs);
+  const stepState = (n: 1 | 2 | 3) => n === 1 ? (open ? 'done' : 'now') : n === 2 ? (open?.status === 'APPROVED' ? 'done' : open ? 'now' : '') : open?.status === 'APPROVED' ? 'done' : '';
+  const bStep = (n: 1 | 2 | 3, title: string, detail: string) => <div className={`b-step${stepState(n) ? ` b-step--${stepState(n)}` : ''}`}>
+    <span className="b-step__n" aria-hidden="true">{n}</span><span className="b-step__tx"><span className="b-step__t">{title}</span><span className="b-step__s">{detail}</span></span>
+    <span className="b-sr">{stepState(n) === 'done' ? 'Done' : stepState(n) === 'now' ? 'Next' : 'Later'}</span></div>;
+  // OW-005 / BR-8: the same three steps on the phone card and, without the button, under desktop's Up next row.
+  const steps = <>
+    {bStep(1, 'Prepare payroll', open ? 'Started from approved time' : 'Bring in approved time for this period')}
+    {bStep(2, fixing ? 'Fix issues' : 'Review pay', fixing ? 'Something stops this payroll' : 'Hours, rates and deductions')}
+    {bStep(3, 'Approve payroll', native ? 'Statements are shared with your team automatically' : 'Then share pay statements')}
+  </>;
+  const bScreen = <BScreen ink>
+    <BHero title="Payroll" titleId="b-payroll-title" sub={sub || undefined} right={canEditSettings ? <BButtonLink href="/app/settings/payroll" kind="glass" label="Payroll settings"><GearIcon size={16} weight="bold" aria-hidden="true" />Settings</BButtonLink> : undefined}>
+      <p className="b-sub c-pay__scope c-pay__scope--hero">{SCOPE_LINE}</p>
+      {current ? <div className="b-hpad">
+        <div className="b-hkicker"><span>{`Up next · ${frequency}`}</span>{/* Closing F1 (NV-024): one payday chip rule, as on Home: amber while this payroll still waits (not approved), green once it is. */}
+          {paydayChip ? <span className={open?.status === 'APPROVED' ? 'b-chip b-chip--ok' : 'b-chip b-chip--due'}>{paydayChip}</span> : null}</div>
+        <p className="b-hbig c-num">{quietRange(current.period.startDate, current.period.endDate)}</p>
+      </div> : null}
+      {current ? <BLive label="This payroll" items={[
+        { label: 'Payday', value: quietDay(current.payday).replace(/^\w+,\s*/, '') },
+        { label: 'People', value: open?.totals ? open.totals.employeeCount : people.length || '—' },
+        { label: open?.totals ? 'Net pay' : 'Gross', value: open?.totals ? formatPayrollMoney(open.totals.netMinor) : '—' },
+      ]} /> : null}
+    </BHero>
+    <BStack>
+      <Feedback operation={operation} />
+      {state ?? <>
+        {data && oldest ? <BCard label="Pay periods with no payroll"><div className="b-notice"><BIcon tone="red"><WarningIcon weight="bold" /></BIcon>
+          <span className="b-notice__tx"><span className="b-notice__t">{data.backlog && !data.backlog.overflow && data.backlog.missingCount !== null && data.backlog.missingCount > 1 ? `${data.backlog.missingCount} pay periods have no payroll` : `${quietRange(oldest.period.startDate, oldest.period.endDate)} has no payroll`}</span>
+            <span className="b-notice__s">{data.backlog && !data.backlog.overflow && data.backlog.missingCount === 1 ? `Scheduled payday was ${quietDay(oldest.payday)}` : `Oldest is ${quietRange(oldest.period.startDate, oldest.period.endDate).replace(/ /g, '\u00a0').replace(/\u2009/g, '\u202f').replace(/–/g, '–\u2060')}, scheduled payday ${quietDay(oldest.payday).replace(/ /g, '\u00a0').replace(/\u2009/g, '\u202f')}`}</span></span>
+          {/* Review B5 (NV-081): the overdue period is the page's one filled action; the current period's steps back. */}
+          <BButtonLink href={`/app/payroll/prepare#${unpaidHash(oldest)}`} kind="teal" label={`Prepare ${quietRange(oldest.period.startDate, oldest.period.endDate)}`}>Prepare</BButtonLink></div></BCard> : null}
+        {current ? <BCard title={open?.status === 'APPROVED' ? 'Payroll approved' : 'Prepare payroll'} id="b-payroll-steps">
+          <div className="b-steps">
+            {steps}
+            {/* The period's timecards read as one more line of the steps (same circle, text column and divider), above the
+              * card's action, so it doesn't trail after the button. */}
+            {timecards ? <Link className="b-step b-step--link" href={timecards.href} aria-label={`Timecards, ${timecards.line}`}>
+              <span className="b-step__n" aria-hidden="true"><ListChecksIcon weight="bold" /></span>
+              <span className="b-step__tx"><span className="b-step__t">Timecards</span><span className="b-step__s">{keepWhole(timecards.line)}</span></span>
+              <CaretRightIcon className="b-step__chev" size={18} weight="bold" aria-hidden="true" />
+            </Link> : null}
+            {/* OW-005: while an overdue period leads, its Prepare is the screen's one button and this period's step is a
+              * quiet teal link (as on Prepare payroll), not a second button in another style. */}
+            {data && oldest ? <Link className="b-link c-pay__steplink" href={step.href} aria-label={`${step.label}, ${quietRange(current.period.startDate, current.period.endDate)}`}>{step.label}</Link>
+              : <BButtonLink href={step.href} kind={step.quiet ? 'ghost' : 'teal'} full big label={`${step.label}, ${quietRange(current.period.startDate, current.period.endDate)}`}>{step.label}</BButtonLink>}
+          </div>
+          {missing && !oldest ? <BList label="Periods with no payroll"><BRow href="/app/payroll/prepare" title="Periods with no payroll" sub="Prepare payroll for each one" end={<b className="c-num">{missing.missingCount === null ? 'Check' : String(missing.missingCount)}</b>} /></BList> : null}
+        </BCard> : <BCard label="Pay schedule"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">No pay schedule yet</span><span className="b-notice__s">Set your pay schedule to see the current period.</span></span>
+          {canEditSettings ? <BButtonLink href="/app/settings/payroll" kind="ghost">Settings</BButtonLink> : null}</div></BCard>}
+        {handOff ? <BCard title="What’s next" id="b-payroll-handoff"><WhatsNext /></BCard> : null}
+        <BCard title="Recent payrolls" id="b-payroll-recent" link={{ href: '/app/payroll/history', label: 'Payroll history' }}>
+          {past.length ? <BList label="Past periods">{byCorrection(past).slice(0, 3).map(({ item, replaced }) => {
+            const approved = item.status === 'APPROVED';
+            // Closing F1 (NV-082): a replaced payroll follows its correction with a grey "Replaced" chip.
+            return <BRow key={item.id} href={reviewHref(item.id)} lead={<BIcon tone={replaced ? 'grey' : approved ? 'green' : 'grey'}><ReceiptIcon weight="bold" /></BIcon>}
+              title={<span className={replaced ? 'c-num c-pay__was' : 'c-num'}>{quietRange(item.period.startDate, item.period.endDate)}</span>} chip={replaced ? <BChip>Replaced</BChip> : item.correctionOf ? <BChip>Correction</BChip> : approved ? undefined : <BChip tone="amber">{statusLabels[item.status]}</BChip>}
+              sub={replaced ? <>Replaced by correction · Payday <span className="c-num">{quietDay(item.payday)}</span></> : <>Payday <span className="c-num">{quietDay(item.payday)}</span></>}
+              end={item.totals ? <><b className="c-num">{formatPayrollMoney(item.totals.netMinor)}</b><span>{approved ? 'Net · Approved' : 'Net'}</span></> : undefined} chevron={!item.totals} />;
+          })}</BList> : <p className="b-state">No past payrolls yet. Approved payrolls appear here.</p>}
+        </BCard>
+        <BCard label="Payroll tools"><BList label="Payroll tools">
+          <BRow href={exportsHref} lead={<BIcon tone="grey"><UploadSimpleIcon weight="bold" /></BIcon>} title="Time exports" sub="Hours by person and pay period" />
+        </BList></BCard>
+      </>}
+    </BStack>
+  </BScreen>;
   return <CorpPage className="c-payroll c-pay c-pay--home c-page--narrow" labelledBy="payroll-title">
-    <CorpTitle id="payroll-title" title="Payroll" sub={sub || undefined} actions={settings} />
+    {bScreen}
+    <CorpTitle id="payroll-title" title="Payroll" sub={<><span className="c-pay__cadence">{sub}</span><span className="c-pay__scope">{SCOPE_LINE}</span></>} actions={settings} />
     <PayrollTabs items={tabs} current="/app/payroll" />
     <Feedback operation={operation} />
     {state ?? <>
+      {/* OW-018: from 1024px Payroll is a list with a right rail, like Team. Up next (the period, its payday and the
+        * three steps) is the rail card; the notice and Recent payrolls are the list. Tablets keep one column in this
+        * order, which is also the reading and focus order at every width. */}
+      <div className="c-pay__cols">
       {data && oldest ? <UnpaidNotice data={data} oldest={oldest} href={`/app/payroll/prepare#${unpaidHash(oldest)}`} /> : null}
       {current ? <PayGroup id="payroll-next" label="Up next">
         <CorpRows label="Up next">
@@ -211,16 +378,36 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
             detail={<><Num>{quietRange(current.period.startDate, current.period.endDate)}</Num>{' · Payday '}<Num>{quietDay(current.payday)}</Num></>}
             value={nextValue} valueTone="soft" chevron
             label={`${frequency}, ${quietRange(current.period.startDate, current.period.endDate)}, payday ${quietDay(current.payday)}${people.length ? `, ${plural(people.length, 'person', 'people')}` : ''}. ${step.label}`} /></li>
+          {timecards ? <li><CorpRow href={timecards.href} title="Timecards" detail={timecards.line} chevron /></li> : null}
           {missing && !oldest ? <li><CorpRow href="/app/payroll/prepare" bold title="Periods with no payroll" detail="Prepare payroll for each one" value={missing.missingCount === null ? 'Check' : <Num>{String(missing.missingCount)}</Num>} chevron /></li> : null}
         </CorpRows>
+        <div className="b-steps c-pay__steps" role="group" aria-label="Payroll steps">{steps}</div>
       </PayGroup> : <EmptyCard label="Pay schedule" title="No pay schedule yet" detail="Set your pay schedule to see the current period."
         action={canEditSettings ? { href: '/app/settings/payroll', label: 'Payroll settings' } : undefined} />}
-      <PayGroup id="payroll-recent" label="Recent payrolls" aside={<Link className="c-link" href="/app/payroll/history">Pay history</Link>}>
-        {past.length ? <CorpRows label="Past periods">{past.slice(0, 3).map(item => <li key={item.id}><RunRow item={item} /></li>)}{exportsRow}</CorpRows>
+      {handOff ? <PayGroup id="payroll-handoff" label="What’s next"><WhatsNext /></PayGroup> : null}
+      <PayGroup id="payroll-recent" label="Recent payrolls" aside={<Link className="c-link" href="/app/payroll/history">Payroll history</Link>}>
+        {past.length ? <CorpRows label="Past periods">{byCorrection(past).slice(0, 3).map(({ item, replaced }) => <li key={item.id} className={replaced ? 'c-pay__replaced' : undefined}><RunRow item={item} replaced={replaced} /></li>)}{exportsRow}</CorpRows>
           : <><div className="c-empty c-pay__empty"><b>No past payrolls yet</b><span>Approved payrolls appear here.</span></div><CorpRows label="Payroll tools">{exportsRow}</CorpRows></>}
       </PayGroup>
+      </div>
     </>}
   </CorpPage>;
+}
+
+/** Backend (Nov 15, 2026): a correction's `correctionDelta` compares net pay on the earlier statements with this draft,
+ * in signed USD minor units, per person and in total. It is a statement comparison: it never says money was paid or
+ * taxes remitted (the settle note under it says what to do). Only people whose net pay changes are listed; a person's
+ * name is shown when the page has it, otherwise "A team member". */
+function CorrectionDelta({ delta, names }: { delta: NonNullable<PayrollRun['correctionDelta']>; names: Record<string, string> }) {
+  const changed = delta.employees.filter(row => row.deltaNetMinor !== '0');
+  return <div className="c-pay__delta">
+    <p className="c-pay__detail"><b>{`Net pay on statements: ${formatSignedPayrollMoney(delta.totalNetMinor)}`}</b>{changed.length ? ` across ${plural(changed.length, 'person', 'people')}` : delta.totalNetMinor === '0' ? ' (no one’s net pay changes)' : ''}</p>
+    {changed.length ? <ul className="c-pay__deltalist" aria-label="Net pay changes by person">{changed.map(row => <li key={row.employeeId}>
+      <span>{names[row.employeeId] ?? 'A team member'}</span>
+      <span className="c-num">{`was ${formatPayrollMoney(row.previousNetMinor)} · now ${formatPayrollMoney(row.netMinor)}`}</span>
+      <b className="c-num">{formatSignedPayrollMoney(row.deltaNetMinor)}</b>
+    </li>)}</ul> : null}
+  </div>;
 }
 
 /** Board O-PayrollReview: the period and its totals, what stops payroll, then one Approve. Everything an approved run
@@ -242,7 +429,8 @@ function RunReview({ run, data, names, operation }: { run: PayrollRun; data: Pay
   const canApproveNow = !locked && !operation.revisionConflict && reviewed && !!run.reviewToken && !!run.rows && !!run.totals && notes.blocking.length === 0;
   const unpublished = !native && run.documents.some(document => document.kind === 'EMPLOYEE_STATEMENT' && !document.published);
   return <>
-    <PayGroup id="payroll-run" label={periodText(run)}>
+    {/* Closing F1 (NV-237): the band already names the period and payday, so the card is "Totals". */}
+    <PayGroup id="payroll-run" label="Totals">
       {run.totals ? <dl className="c-pay__totals">
         <div><dt>Gross pay</dt><dd><Num>{formatPayrollMoney(run.totals.grossMinor)}</Num></dd></div>
         <div><dt>Employee deductions</dt><dd><Num>{`−${formatPayrollMoney(run.totals.deductionsMinor)}`}</Num></dd></div>
@@ -253,7 +441,10 @@ function RunReview({ run, data, names, operation }: { run: PayrollRun; data: Pay
     {run.correctionOf ? <CorpCard as="div" ariaLabel="Correction"><CorpBody>
       <b className="c-pay__strong">{original ? `Correction of ${quietRange(original.period.startDate, original.period.endDate)}` : 'Correction of an earlier payroll'}</b>
       <p className="c-pay__detail">{reasons.length ? reasons.join(' · ') : 'The original approval and statements remain in history.'}</p>
+      {run.correctionDelta ? <CorrectionDelta delta={run.correctionDelta} names={names} /> : null}
+      <p className="c-pay__detail">{SETTLE_NOTE}</p>
     </CorpBody></CorpCard> : reasons.length ? <CorpCard as="div" ariaLabel="Correction"><CorpBody><b className="c-pay__strong">Correction reason</b><p className="c-pay__detail">{reasons.join(' · ')}</p></CorpBody></CorpCard> : null}
+    {standsApproved(run, data.runs) ? <PayGroup id="payroll-handoff" label="What’s next"><WhatsNext /></PayGroup> : null}
     {fixes.length ? <CorpCard as="div" ariaLabel="Things to fix"><CorpRows label="Things to fix"><li>
       <CorpRow href={`/app/payroll/fix?run=${encodeURIComponent(run.id)}`} tall bold title={`${plural(fixes.length, 'thing', 'things')} to fix before approving`} detail={<CorpPill tone="red">Stops payroll</CorpPill>} chevron />
     </li></CorpRows></CorpCard> : null}
@@ -261,7 +452,7 @@ function RunReview({ run, data, names, operation }: { run: PayrollRun; data: Pay
     {native && correctionOpen ? <PayGroup id="payroll-correction" label="Create a linked correction"><CorpBody>
       <form className="c-form" {...formKeys} onSubmit={event => { event.preventDefault(); setCorrectionError(''); const problem = flagProblems(event.currentTarget); if (problem) { setCorrectionError(problem); return; } const reason = String(new FormData(event.currentTarget).get('nativeCorrectionReason') ?? '').trim(); if (reason) void operation.submit({ action: 'CORRECT_NATIVE', runId: run.id, expectedRevision: run.revision, reason }); }}>
         <fieldset className="c-pay__fieldset" disabled={locked || !capabilities.canReview}>
-          <p className="c-pay__detail">Corrections recalculate a separate linked draft from recorded time and current facts. The replacement requires a new review and approval; original statements stay in history.</p>
+          <p className="c-pay__detail">Corrections recalculate a separate linked draft from recorded time and current facts. The replacement requires a new review and approval; original statements stay in history. {SETTLE_NOTE}</p>
           <label className="c-field"><span className="c-field__label">Correction reason</span><textarea className="c-in" name="nativeCorrectionReason" required maxLength={300} rows={3} /></label>
           {correctionError ? <p className="c-error" role="alert">{correctionError}</p> : null}
           <CorpButton type="submit" full>Create correction draft</CorpButton>
@@ -275,21 +466,30 @@ function RunReview({ run, data, names, operation }: { run: PayrollRun; data: Pay
         title="Recalculate draft" detail="A fresh revision from current recorded time" chevron /></li> : null}
       {approved ? <li><CorpRow onClick={locked || !capabilities.canReview ? undefined : () => setCorrectionOpen(value => !value)} disabled={locked || !capabilities.canReview}
         title={correctionOpen ? 'Close correction' : 'Fix this payroll'} detail="Starts a correction you approve separately" chevron /></li> : null}
-      {approved && !native && capabilities.canApprove ? <li><CorpRow onClick={locked ? undefined : () => void operation.submit({ action: 'PAYMENT_EXPORT', runId: run.id, expectedRevision: run.revision })} disabled={locked}
+      {/* PY-17: the server never makes payment instructions for a correction (payment-policy.ts), so the row isn't offered there. */}
+      {approved && !native && !run.correctionOf && capabilities.canApprove ? <li><CorpRow onClick={locked ? undefined : () => void operation.submit({ action: 'PAYMENT_EXPORT', runId: run.id, expectedRevision: run.revision })} disabled={locked}
         title="Prepare payment instructions" detail="A file only. NEVORA doesn’t send money." chevron /></li> : null}
-    </CorpRows></CorpCard> : null}
+    </CorpRows>
+      {approved && !native && run.correctionOf && capabilities.canApprove ? <CorpBody tight><p className="c-pay__detail">NEVORA doesn’t make payment instructions for a correction. {SETTLE_NOTE}</p></CorpBody> : null}
+    </CorpCard> : null}
     {(run.status === 'REVIEW_REQUIRED' || run.status === 'BLOCKED') ? (capabilities.canApprove ? <div className="c-pay__approve">
       {run.status === 'REVIEW_REQUIRED' ? <Check checked={reviewed} onChange={setReviewed} disabled={locked || operation.revisionConflict}>I reviewed revision {run.revision}, {native ? 'the recorded-time calculation' : 'the provider amounts'} and all employee details.</Check> : null}
       {/* Owner premium A2 (Codex priority 2): while something stops payroll, the step the Owner can take (Review issues)
         * is the primary; the unavailable Approve stays visible as a quiet secondary. Its rule (canApproveNow) is unchanged. */}
       {fixes.length ? <CorpButtonLink full href={`/app/payroll/fix?run=${encodeURIComponent(run.id)}`}>{fixes.length === 1 ? 'Review issue' : 'Review issues'}</CorpButtonLink> : null}
+      {/* PY-4, PY-9: what approving does and doesn't do, said before the button. Only a payroll NEVORA calculated carries
+        * the calculation caveat and shares its statements by itself; an imported one keeps its own share step below. */}
+      {run.status === 'REVIEW_REQUIRED' ? <div className="c-pay__approve-notes">
+        {native ? <p>NEVORA calculated these amounts from your setup. Check withholding with your accountant.</p> : null}
+        <p>Approving doesn’t pay anyone or send taxes.{native ? ' Pay statements are shared with each employee once they’re ready.' : ''}</p>
+      </div> : null}
       <CorpButton full kind={fixes.length ? 'secondary' : undefined} disabled={!canApproveNow} onClick={() => run.reviewToken && void operation.submit({ action: 'APPROVE', runId: run.id, expectedRevision: run.revision, reviewToken: run.reviewToken })}>Approve payroll</CorpButton>
-      <p className="c-note c-note--center">{fixes.length ? `Fix the ${fixes.length === 1 ? 'thing' : `${fixes.length} things`} above to approve.` : 'Approval freezes the reviewed amounts, finalized time, settings and employee exceptions. A changed source requires a fresh review.'}</p>
-    </div> : <p className="c-note c-note--center">An authorized payroll approver must approve this revision.</p>) : null}
+      <p className="c-note c-note--center">{fixes.length ? `Fix the ${fixes.length === 1 ? 'thing' : `${fixes.length} things`} above to approve.` : 'Approving locks the reviewed amounts, finalized time, settings and employee exceptions. If any of them change, review again.'}</p>
+    </div> : <p className="c-note c-note--center">Someone who can approve payroll needs to approve this version.</p>) : null}
     {approved && unpublished ? (capabilities.canApprove ? <div className="c-pay__approve">
       <Check checked={publishConfirmed} onChange={setPublishConfirmed} disabled={locked}>Share the approved pay statements with each employee.</Check>
       <CorpButton full disabled={locked || !publishConfirmed} onClick={() => void operation.submit({ action: 'PUBLISH', runId: run.id, expectedRevision: run.revision })}>Share pay statements</CorpButton>
-    </div> : <p className="c-note c-note--center">An authorized payroll approver must share the pay statements.</p>) : null}
+    </div> : <p className="c-note c-note--center">Someone who can approve payroll needs to share the pay statements.</p>) : null}
   </>;
 }
 
@@ -300,8 +500,8 @@ function Documents({ run, native, names }: { run: PayrollRun; native: boolean; n
   const nameOf = (employeeId: string | null) => employeeId ? run.rows?.find(row => row.employeeId === employeeId)?.employeeName ?? names[employeeId] ?? null : null;
   return <PayGroup id="payroll-documents" label="Documents">
     {run.documents.length ? <CorpRows label="Documents">{run.documents.map(document => <li key={document.id}><DocumentRow document={document} name={nameOf(document.employeeId)} revision={run.revision} /></li>)}</CorpRows>
-      : <CorpBody><p className="c-payroll__state" role="status">Documents are being prepared. They appear when generation succeeds.</p></CorpBody>}
-    {native && !published ? <CorpBody tight><p className="c-pay__detail" role="status"><b className="c-pay__strong">Statements not shared yet</b>Approved statements are shared with employees automatically once they are made and checked. Approval alone doesn’t mean a PDF is ready.</p></CorpBody> : null}
+      : <CorpBody><p className="c-payroll__state" role="status">Documents are being made. They show here when they’re ready.</p></CorpBody>}
+    {native && !published ? <CorpBody tight><p className="c-pay__detail" role="status"><b className="c-pay__strong">Pay statements not shared yet</b>Approved pay statements are shared with employees automatically once they are made and checked. Approval alone doesn’t mean a PDF is ready.</p></CorpBody> : null}
   </PayGroup>;
 }
 
@@ -348,17 +548,13 @@ function ImportAmounts({ run, capabilities, operation, correction, primary }: { 
         <label className="c-field"><span className="c-field__label">Import JSON</span><textarea className="c-in" rows={8} value={importText} onChange={event => setImportText(event.target.value)} spellCheck={false} /></label>
       </details>
       {importText ? <p className="c-pay__detail">Import loaded in this page. Review employee amounts after the server validates it.</p> : null}
+      {correction ? <p className="c-pay__detail">{SETTLE_NOTE}</p> : null}
       {correction ? <label className="c-field"><span className="c-field__label">Correction reason</span><textarea className="c-in" name="correctionReason" required maxLength={300} rows={3} /></label> : null}
       {importError ? <p className="c-error" role="alert">{importError}</p> : null}
       <CorpButton type="submit" full kind={primary ? undefined : 'secondary'} disabled={!importText}>{correction ? 'Create correction draft' : 'Validate and import amounts'}</CorpButton>
     </fieldset></form>
   </CorpBody></PayGroup>;
 }
-
-const SETUP_CODES = new Set(['WORKWEEK_EVIDENCE_REQUIRED', 'INVALID_WORKWEEK_POLICY', 'INVALID_NATIVE_PROFILE', 'WORKWEEK_EMPLOYEE_COVERAGE_REQUIRED', 'WORKWEEK_PROFILE_CONFLICT', 'WORKWEEK_EFFECTIVE_COVERAGE_REQUIRED',
-  'EMPLOYER_YTD_BASE_CONFLICT', 'ATTESTED_YTD_REQUIRED', 'EMPLOYER_YTD_BASE_REQUIRED', 'WAGE_PROFILE_REQUIRED', 'TAX_PROFILE_REQUIRED', 'OPENING_YTD_REQUIRED', 'YTD_ATTESTATION_REQUIRED', 'NATIVE_INPUT_REQUIRED']);
-const TIME_CODES = new Set(['TIME_NOT_FINALIZED', 'RECORDED_SOURCE_COVERAGE_MISSING', 'RECORDED_SOURCE_STALE', 'RECORDED_SOURCE_UNAVAILABLE', 'OPEN_RECORDED_TIME', 'TIME_FINALIZATION_REQUIRED', 'FINALIZED_TIME_REQUIRED']);
-const POPULATION_CODES = new Set(['POPULATION_DISPOSITION', 'POPULATION_REVIEW_REQUIRED', 'POPULATION_SOURCE_CONFLICT']);
 
 /** Board O-PayrollFix: one card per thing that stops payroll, each with the place to fix it. */
 function FixList({ run, capabilities, names, operation }: { run: PayrollRun; capabilities: PayrollCapabilities; names: Record<string, string>; operation: Operation }) {
@@ -379,20 +575,25 @@ function FixList({ run, capabilities, names, operation }: { run: PayrollRun; cap
     const known = people.map(nameOf).filter((name): name is string => !!name);
     const unknown = people.length - known.length;
     const who = people.length ? `${listNames(known.map(firstName))}${unknown ? `${known.length ? ' and ' : ''}${plural(unknown, 'other person', 'other people')}` : ''}` : '';
-    const title = code === 'TIME_NOT_FINALIZED' ? `${plural(people.length, 'timecard', 'timecards')} not approved`
-      : code === 'POPULATION_DISPOSITION' ? `${plural(people.length, 'person needs', 'people need')} a population review`
+    const title = code === 'TIME_NOT_FINALIZED' ? `${plural(people.length, 'timecard', 'timecards')} not finalized`
+      : code === 'POPULATION_DISPOSITION' ? `Choose what to do with ${plural(people.length, 'person', 'people')} this period`
       : payrollExceptionMessage(code);
     const detail = code === 'TIME_NOT_FINALIZED' || code === 'POPULATION_DISPOSITION' ? who : who ? `For ${who}` : '';
-    const action = TIME_CODES.has(code) ? { href: `/app/timecards?${period}`, label: 'Review timecards' }
-      : POPULATION_CODES.has(code) ? { href: `/app/payroll-export?${period}`, label: 'Review payroll population' }
-      : SETUP_CODES.has(code) && capabilities.canConfigure ? { href: '/app/settings/payroll?open=setup', label: 'Open payroll setup' } : null;
+    // PY-10: the button goes where the sentence says the next step is. AR-4: "Who’s included" opens on arrival.
+    const place = payrollBlockerPlace(code);
+    const action = place === 'time' ? { href: `/app/timecards?${period}`, label: 'Review timecards' }
+      : place === 'people' ? { href: `/app/payroll-export?${period}#${INCLUDED_HASH}`, label: 'Choose who’s included' }
+      : place === 'setup' && capabilities.canConfigure ? { href: '/app/settings/payroll?open=setup', label: 'Open payroll setup' }
+      : place === 'settings' && capabilities.canConfigure ? { href: '/app/settings/payroll', label: 'Open Payroll settings' }
+      : place === 'support' ? { href: '/app/help', label: 'Contact support' } : null;
     return <CorpCard as="div" key={code} ariaLabel={title}>
       <div className="c-pay__fix"><b className="c-pay__strong">{title}</b>{detail ? <span className="c-pay__detail">{detail}</span> : null}</div>
       {action ? <div className="c-card__foot"><CorpButtonLink href={action.href} kind="secondary" size="md" full>{action.label}</CorpButtonLink></div> : null}
     </CorpCard>;
   });
   return <>
-    {cards.length ? cards : <EmptyCard title="Nothing stops this payroll" />}
+    {/* Nov 8: the Owner empty-state card (title on the card's text edge), as on the other Owner pages. */}
+    {cards.length ? cards : <CorpEmpty title="Nothing stops this payroll" label="Payroll" />}
     {cards.length ? <p className="c-note">{cards.length === 1 ? 'Payroll can be approved once this is fixed.' : cards.length === 2 ? 'Payroll can be approved once both are fixed.' : 'Payroll can be approved once these are fixed.'}{native ? ' Then recalculate the draft.' : ''}</p> : null}
     {native ? <CorpButton kind="secondary" full disabled={locked || !capabilities.canReview} onClick={() => void operation.submit({ action: 'RECALCULATE', runId: run.id, expectedRevision: run.revision })}>Recalculate draft</CorpButton> : null}
   </>;
@@ -473,7 +674,8 @@ function PreparePayroll({ current, data, today, operation }: { current: OpenPayP
     <CorpCard as="div" id="payroll-other" ariaLabel="Other dates">
       <button type="button" className="c-row c-pay__other" aria-expanded={other} aria-controls="payroll-other-form" onClick={() => setOther(value => !value)}>
         <span className="c-row__main"><span className="c-row__title c-row__title--b">Other dates</span><span className="c-row__detail"><span>Outside your pay schedule</span></span></span>
-        <span className="c-link c-link--l">{other ? 'Close' : 'Choose dates'}</span>
+        {other ? null : <span className="c-pay__rowpill" aria-hidden="true">Choose dates</span>}
+        <CaretDownIcon className="c-pay__caret" weight="bold" aria-hidden="true" />
       </button>
       {other ? <CorpBody><form id="payroll-other-form" className="c-form" {...formKeys} onSubmit={event => {
         event.preventDefault(); setOtherError('');
@@ -521,7 +723,7 @@ function Backlog({ data, operation, lead }: { data: PayrollRunsResponse; operati
   const visible = expanded ? missing : missing.slice(0, 3);
   // R7: the count is the label; the sentence that repeated it is gone. A scan that hit its limit still says so.
   const count = !backlog.overflow && backlog.missingCount !== null ? backlog.missingCount : null;
-  return <PayGroup id="payroll-backlog" label={count !== null ? <>Periods with no payroll <span className="c-pay__count"><Num>{count}</Num></span></> : 'Periods with no payroll'}
+  return <PayGroup id="payroll-backlog" label={count !== null ? <>Periods with no payroll <span className="c-pay__count c-num">{count}</span></> : 'Periods with no payroll'}
     aside={missing.length > 3 ? <button type="button" className="c-link" disabled={locked} onClick={() => setExpanded(value => !value)}>{expanded ? 'Show fewer' : `Show all ${missing.length}`}</button> : undefined}>
     {count === null || (backlog.ambiguousCount !== null && backlog.ambiguousCount > 0) ? <CorpBody tight>
       {count === null ? <p className="c-pay__detail">{backlogDescription(backlog)}</p> : null}
@@ -537,7 +739,10 @@ function Backlog({ data, operation, lead }: { data: PayrollRunsResponse; operati
         <button type="button" className="c-row" aria-expanded={open} aria-controls={id} disabled={locked} onClick={() => { setSelected(open ? null : key(item)); setAcknowledged(false); }}>
           <span className="c-row__main"><span className="c-row__title c-row__title--b"><Num>{range}</Num></span><span className="c-row__detail"><span>Payday <Num>{quietDay(item.payday)}</Num></span></span></span>
           {item.state === 'AMBIGUOUS_TRANSITION' ? <CorpPill tone="neutral">Check dates</CorpPill> : null}
-          <span className="c-link c-link--l">{open ? 'Close' : 'Prepare'}</span>
+          {/* Closing F1 (NV-081): a closed period shows a quiet "Prepare" pill (the open one's Prepare payroll is the filled
+            action) and every row a CaretDown that turns when it is open; no "Close" text link. */}
+          {open ? null : <span className="c-pay__rowpill" aria-hidden="true">Prepare</span>}
+          <CaretDownIcon className="c-pay__caret" weight="bold" aria-hidden="true" />
         </button>
         {open ? <div id={id} className="c-pay__expand">
           {item.state === 'AMBIGUOUS_TRANSITION' ? <div className="c-pay__check-dates"><b className="c-pay__strong">Check this period’s dates</b><p className="c-pay__detail">{item.issues.join(' ')} Confirm these period boundaries and payday before you prepare it.</p></div> : null}
@@ -558,7 +763,7 @@ function PayHistory({ data, names, operation }: { data: PayrollRunsResponse; nam
   const loose = data.jobs.filter(job => !job.runId);
   return <>
     <PayGroup id="payroll-all" label="Payrolls">
-      {runs.length ? <CorpRows label="Payrolls">{runs.map(item => <li key={item.id}><RunRow item={item} /></li>)}</CorpRows>
+      {runs.length ? <CorpRows label="Payrolls">{byCorrection(runs).map(({ item, replaced }) => <li key={item.id} className={replaced ? 'c-pay__replaced' : undefined}><RunRow item={item} replaced={replaced} /></li>)}</CorpRows>
         : <div className="c-empty c-pay__empty"><b>No payrolls yet</b><span>Prepare payroll from Up next.</span></div>}
     </PayGroup>
     <PortalStatements runs={data.runs} names={names} />

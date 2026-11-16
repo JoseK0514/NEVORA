@@ -9,6 +9,8 @@ export function keepWhole(text: string) {
     .replace(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (?=(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d)/g, '$1, ')
     .replace(/\b((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*) (\d{1,2})(, (\d{4}))?/g, (_, month, day, _y, year) => `${month} ${day}${year ? `, ${year}` : ''}`)
     .replace(/\b(\d+h) (\d+m)\b/g, '$1 $2')
-    .replace(/ – /g, ' – ')
+    // Review B6 (NV-069): an hours figure keeps its unit ("11.5 h", "8 h 30").
+    .replace(/\b(\d+(?:\.\d+)?) h\b/g, '$1 h')
+    .replace(/ – /g,' – ')
     .replace(/ · /g, ' · ');
 }

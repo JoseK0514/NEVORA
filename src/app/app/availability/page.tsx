@@ -28,6 +28,7 @@ import {
 } from "@/lib/date-utils";
 import type { AvailabilityState } from "@/lib/availability-presets";
 import "../requests/owner-lists.css";
+import { AvailabilityB, AvailabilityStatusB, availabilitySubB } from "@/components/employee-b/availability-b";
 
 const ALL_DAYS = [0, 1, 2, 3, 4, 5, 6];
 
@@ -189,6 +190,10 @@ export default async function AvailabilityPage({
   const proof=await requireSessionMutationProof();
   return (
     <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="availability" selection={selectedWeek??'normal'}><CorpPage className="c-avail c-page--narrow">
+      {/* Direction B (phones): the phone page replaces this one once it loads; until then the same hero, not the old layout. */}
+      <AvailabilityB sub={availabilitySubB(selectedWeek ?? null, selectedWeek ? formatWeekRange(selectedWeek) : undefined)} change={selectedWeek ? null : `/app/availability?week=${nextWeek}`}>
+        <AvailabilityStatusB message="Loading your planning…" />
+      </AvailabilityB>
       <CorpNav back={{ href: "/app/schedule", label: "Schedule" }} title="Availability" phoneOnly />
       <CorpTitle wide title="Availability" sub={sub} />
       {notices}

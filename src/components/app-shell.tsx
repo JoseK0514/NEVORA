@@ -27,6 +27,7 @@ import { SectionTabs } from "./section-tabs";
 import { isPopoverOpen, hidePopover } from "./kit/popover-open";
 import { CommandFinder } from "./command-finder";
 import { PresentationProvider } from "./presentation-context";
+import { BOfflineContext } from "./owner-b/b-offline";
 import { NUVORA_BRAND } from "../lib/brand";
 import { handleRowNavigation } from "../lib/row-navigation";
 import type { PayrollCapabilities } from '@/lib/payroll/contracts';
@@ -37,6 +38,15 @@ import {rootChromeClaimed,subscribeRootChrome} from '@/lib/root-chrome';
 import { recordNavigation } from "./corp/corp-client";
 import { CorpMotion } from "./corp/corp-motion";
 import { SidebarRailTooltip } from "./sidebar-rail-tooltip";
+import { OFFLINE_HELD_EVENT } from "@/lib/offline-hold";
+import { QuestionIcon } from "@phosphor-icons/react/dist/ssr/Question";
+import { B_TABLET } from "@/lib/b-viewport";
+import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
+
+/** "9:24 PM" in the device's clock, for the offline line. */
+function clockTime(iso: string) {
+  return new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(new Date(iso)).replace(" ", "\u202f");
+}
 
 /** Home's views share Home's address; the trail names them as their bands do. */
 const HOME_VIEWS = { attendance: "Who’s working", team: "Hours this week", activity: "Activity" } as const;
@@ -54,6 +64,13 @@ function readCookie(name: string) {
 }
 function subscribeTablet(changed: () => void) {
   const media = window.matchMedia(TABLET_SIDEBAR_QUERY);
+  media.addEventListener("change", changed);
+  return () => media.removeEventListener("change", changed);
+}
+/** Phase 3 (TB-017): under 1024px the labelled rail is the only sidebar (no toggle is drawn there; owner-b-shell.css), so a
+ * choice to expand made on a wider screen does not squeeze a tablet page. The choice returns from 1024px. */
+function subscribeRailOnly(changed: () => void) {
+  const media = window.matchMedia(B_TABLET);
   media.addEventListener("change", changed);
   return () => media.removeEventListener("change", changed);
 }
@@ -86,7 +103,9 @@ type AppShellProps = {
 
 
 /** The corporate tab bar's glyphs (boards C-Owner, C-Employee); the sidebar keeps its own. */
-function tabIcon(icon: NavIconName): NavIconName {
+function tabIcon(icon: NavIconName, employee = false): NavIconName {
+  // Direction B (Employee phones, Nov 6, 2026): Pay is a receipt and Requests a clipboard, as in the approved mock.
+  if (employee) return icon;
   return icon === "payroll" || icon === "receipt" ? "tabPay" : icon === "requests" ? "tabRequests" : icon;
 }
 
@@ -113,6 +132,39 @@ function useOnline() {
     return () => { window.removeEventListener("online", update); window.removeEventListener("offline", update); };
   }, []);
   return online;
+}
+
+/** Review B2 (NV-001; Jose, Nov 10, 2026): while offline, the pages keep what the person loaded (read-only). The oldest
+ * time a page reports holding is the line's "updated" time; none held means the page cleared, so the line says so. */
+function useOfflineHeldAt(online: boolean) {
+  const [heldAt, setHeldAt] = useState<string | null>(null);
+  // Always listening: readers announce in their own 'offline' listeners, before this shell re-renders offline.
+  useEffect(() => {
+    const held = (event: Event) => {
+      const at = (event as CustomEvent<string>).detail;
+      if (typeof at === "string" && Number.isFinite(Date.parse(at))) setHeldAt(previous => previous && Date.parse(previous) <= Date.parse(at) ? previous : at);
+    };
+    const reset = () => setHeldAt(null);
+    window.addEventListener(OFFLINE_HELD_EVENT, held);
+    window.addEventListener("online", reset);
+    return () => { window.removeEventListener(OFFLINE_HELD_EVENT, held); window.removeEventListener("online", reset); };
+  }, []);
+  return online ? null : heldAt;
+}
+
+/** The page's actions (pill buttons and submit buttons); links and rows that only open details stay usable offline. */
+const OFFLINE_ACTIONS = "button.b-btn, button.c-btn, button.q-btn, button.q-bs, button.button, button[type='submit'], input[type='submit']";
+
+/** Offline, the page's actions are disabled (the information stays readable): a press or a submit inside the page does
+ * nothing, and b-foundation.css draws them in the disabled pair. Links still move between pages. */
+function blockOfflineActions(event: Event) {
+  if (navigator.onLine) return;
+  const target = event.target instanceof Element ? event.target : null;
+  if (!target?.closest("#main-content")) return;
+  if (event.type === "submit" || target.closest(OFFLINE_ACTIONS)) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
 }
 
 /**
@@ -152,7 +204,9 @@ function AppShellView({
   // The stored tablet choice is read in the browser only (the server renders the default, the rail).
   const storedTablet = useSyncExternalStore(noSubscription, () => readCookie(tabletCookie), () => undefined);
   const [tabletChoice, setTabletChoice] = useState<boolean | null>(null);
-  const tabletRail = tabletChoice ?? storedTablet !== "expanded";
+  // An Employee's or Lead's shell keeps its toggle and its choice at every width (their shell is not part of Phase 3).
+  const railOnly = useSyncExternalStore(subscribeRailOnly, () => window.matchMedia(B_TABLET).matches, () => false) && user.role !== "EMPLOYEE" && user.role !== "LEAD";
+  const tabletRail = railOnly || (tabletChoice ?? storedTablet !== "expanded");
   const tabletWidth = useSyncExternalStore(subscribeTablet, () => window.matchMedia(TABLET_SIDEBAR_QUERY).matches, () => false);
   const [sidebarMotion, setSidebarMotion] = useState<"collapse" | "expand" | null>(null);
   const motionTimer = useRef(0);
@@ -177,8 +231,9 @@ function AppShellView({
   const identityReload=useIdentityReload(()=>router.refresh());
   const accessChanged=useCallback((reason:'identity'|'scope')=>{if(reason==='identity')identityReload.request();else {window.dispatchEvent(new Event('nevora:notifications-changed'));router.refresh();}},[router,identityReload]);
   const operational=useOperationalNavigation(user.id,user.role,operationalAuthority,accessChanged);
-  const inboxCount = useInboxCount(!employee && (user.role === 'OWNER' || operational.view?.state === 'ready' && operational.view.scope?.mode === 'COMPANY'), pathname);
-  const context:NavContext = {...presentation, operational:operational.view??undefined};
+  const inboxCount = useInboxCount(!employee && (user.role === 'OWNER' || operational.navigation?.state === 'ready' && operational.navigation.scope?.mode === 'COMPANY'), pathname);
+  // Review B2 (NV-030): menus follow the last current scope while a check is slow, failed or offline.
+  const context:NavContext = {...presentation, operational:operational.navigation??undefined};
   const navigation = navigationForRole(user.role, payrollCapabilities, context);
   const mobileTabs = mobileTabsForRole(user.role, payrollCapabilities, context);
   // Release 1: a few pages are views of another page (Schedule activity, Open shifts), so the query takes part.
@@ -198,7 +253,7 @@ function AppShellView({
   // Release 1 ("don't overwhelm"): the team tools have no sidebar group; the entry that holds each one lights instead.
   const toolHolder = activeTool ? teamToolHolder(activeTool.href) : undefined;
   const sidebarActive = toolHolder ?? sidebarActiveHref(user.role, pathname, sidebarItems, payrollCapabilities, context);
-  const navGroups = employee ? user.role === "EMPLOYEE" ? employeeNavigationGroups(sidebarItems) : [{ label: "", items: sidebarItems }] : managementNavigationGroups(sidebarItems);
+  const navGroups = employee ? employeeNavigationGroups(sidebarItems) : managementNavigationGroups(sidebarItems, [], user.role);
   // Top-bar location (D1): section, then page. The page links back when you are deeper in it.
   const activeGroup = navGroups.find(group => group.items.some(item => item.href === sidebarActive));
   // A page reached from the account menu (Profile, My pay) has no sidebar entry; the trail still names it.
@@ -292,6 +347,14 @@ function AppShellView({
     return () => { if (frame) cancelAnimationFrame(frame); window.removeEventListener("scroll", onScroll); };
   }, [pathname]);
   const online = useOnline();
+  const offlineHeldAt = useOfflineHeldAt(online);
+  const offlineLine = online ? null : offlineHeldAt ? `Offline · updated ${clockTime(offlineHeldAt)}` : "You’re offline. Reconnect to see the latest.";
+  useEffect(() => {
+    if (online) return;
+    document.addEventListener("click", blockOfflineActions, true);
+    document.addEventListener("submit", blockOfflineActions, true);
+    return () => { document.removeEventListener("click", blockOfflineActions, true); document.removeEventListener("submit", blockOfflineActions, true); };
+  }, [online]);
 
   // Arrow keys move between rows of dense lists that opt in (D6).
   useEffect(() => {
@@ -348,18 +411,29 @@ function AppShellView({
   // and so does the sidebar's name button; an Employee gets the alerts page by its own name. With no profile page, the
   // menu keeps a "Device settings" entry so nothing is lost.
   const profilePage = employee || navigation.some(item => item.href === "/app/profile");
+  // Phase 3 (TB-009, MG-007): More, Profile and My pay open from the account pill and have no sidebar or rail entry (an
+  // Owner's or Manager's; a Manager's My pay is in the sidebar and lights there), so the pill is marked while one is open.
+  const accountPage = !employee && !sidebarActive && (pathname === "/app/more" || pathname === "/app/profile" || !!pathname?.startsWith("/app/profile/") || pathname === "/app/my-pay");
+  const myPayInSidebar = sidebarItems.some(item => item.href === "/app/my-pay");
   const accountMenu = (
-    <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`} detail={`${ROLE_LABELS[user.role] ?? ""} · ${workspaceName}`}>
+    <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`} detail={`${ROLE_LABELS[user.role] ?? ""} · ${workspaceName}`} current={accountPage}>
       {profilePage ? <Link href="/app/profile" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Your profile</Link> : null}
       {/* Desktop Employee: the calendar link page has no other way in at this width (phones reach it from More). */}
       {employee ? <Link href="/app/profile/calendar" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Add shifts to your calendar</Link> : null}
-      {!employee && navigation.some(item => item.href === "/app/my-pay") ? <Link href="/app/my-pay" className="nevora-action-menu-item"
+      {!employee && !myPayInSidebar && navigation.some(item => item.href === "/app/my-pay") ? <Link href="/app/my-pay" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>My pay</Link> : null}
       {notificationsEnabled && employee ? <Link href="/app/profile/device-alerts" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Alerts on this device</Link> : null}
       {notificationsEnabled && !profilePage ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings">Device settings</button> : null}
+      {/* Review B2 (NV-011): Help is one click away at every width (on desktop it was only a back-link target or in Ctrl K). */}
+      <Link href="/app/help" className="nevora-action-menu-item"
+        onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Help</Link>
+      {/* Review F5 (NV-011): an Employee's or Lead's phone More lists Help and Privacy and terms together ("Help and legal");
+        * on tablets and desktop the account menu holds both, so nothing More reaches is further away there. */}
+      {employee ? <Link href="/privacy" className="nevora-action-menu-item"
+        onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Privacy and terms</Link> : null}
       <div className="nevora-action-menu-divider" />
       <PortalSignout><button className="nevora-action-menu-item portal-account-signout" type="submit">Sign out</button></PortalSignout>
     </PortalAccountMenu>
@@ -371,22 +445,27 @@ function AppShellView({
       id={employee ? "employee-mobile" : undefined}
       data-employee-mobile={employee ? "true" : undefined}
       data-employee-mobile-active={employeeMobile ? "true" : undefined}
-      data-employee-mobile-chrome={rootChrome && user.role === "EMPLOYEE" ? "root" : employeeMobileChrome(user.role,pathname,mobileTabs,search)}
+      data-employee-mobile-chrome={rootChrome && employee ? "root" : employeeMobileChrome(user.role,pathname,mobileTabs,search)}
+      // Jose (Nov 15, 2026, item 12): Notifications left the Employee sidebar, so the page names itself for the band rules.
+      data-shell-page={pathname === "/app/notifications" ? "notifications" : undefined}
       data-employee-mobile-page={employee ? pathname === "/app" ? "home" : pathname === "/app/schedule" ? "schedule" : pathname === "/app/my-time" || pathname === "/app/timecards" ? "hours" : pathname === "/app/my-pay" ? "pay" : (pathname === "/app/requests/hub" || pathname === "/app/requests" || pathname === "/app/availability") || (pathname === "/app/exchange" || pathname.startsWith("/app/exchange/")) ? "requests" : "other" : undefined}
       data-nv-clean={employee ? undefined : ""}
       // Quiet (v4, Jose approved Oct 23, docs/product/specs/owner-v4-quiet): the Owner and Manager pages and their tab bar.
       data-nv-quiet=""
       // Employee app, new style (Jose approved Oct 20, docs/product/specs/employee-style): employee-style.css applies only under this attribute.
-      data-nv-e5={user.role === "LEAD" ? "" : undefined}
       style={brand?.style as CSSProperties | undefined} data-company-brand={brand?.style ? "custom" : undefined}
       // One phone shell on every tab, Home included, for every role (Phase 7 WR-03; employees since Phase 3, P3-ST-01).
       data-mobile-workforce={pathname ? "true" : undefined}
       data-employee-corporate={employee && (pathname === "/app/my-time" || pathname === "/app/timecards") ? "true" : undefined}
       // Corporate (Release 1, approved Oct 26): Owner and Manager. A tab's own page shows the white header (logo, bell, avatar).
-      // Employees joined in Phase 6; a Lead keeps the v5 look while that role is on hold.
+      // Employees joined in Phase 6, Leads on Nov 8, 2026 (Direction B).
       // Owner premium (A7): a page that is itself a sidebar entry needs no "‹ Back" line on tablets and desktop.
       data-nav-root={!employee && !toolView && sidebarItems.some(item => item.href === pathname) ? "" : undefined}
-      data-nv-corp={user.role === "LEAD" ? undefined : ""} data-corp-root={user.role !== "LEAD" && (rootChrome || mobileTabs.some(tab => tab.href === pathname)) && !(pathname === "/app" && search?.get("view")) && !(pathname === "/app/schedule" && search?.get("view") === "open") ? "" : undefined}>
+      // Direction B (Jose approved Nov 5, 2026): the Owner and Manager phone screens draw a teal hero; see owner-b-shell.css.
+      // Employees joined Nov 6, 2026 (phones only; their desktop is unchanged, see owner-b-desktop.css). Leads joined Nov 8, 2026 with the Employee's screens (desktop included).
+      data-nv-b=""
+      data-offline={online ? undefined : ""}
+      data-nv-corp="" data-corp-root={(rootChrome || mobileTabs.some(tab => tab.href === pathname)) && !(pathname === "/app" && search?.get("view")) && !(pathname === "/app/schedule" && search?.get("view") === "open") && !(pathname === "/app/inbox" && search?.get("view") === "more") && !(pathname === "/app/my-pay" && (search?.get("view") || search?.get("paycheck"))) ? "" : undefined}>
       {/* IS-P4-14: on desktop, the sidebar and header come first; this skips them. Shown only on focus, and only on desktop. */}
       <a className="portal-skip-link" href="#main-content">Skip to content</a>
       <aside className="sidebar" data-collapsed={railed} ref={sidebarRef}>
@@ -397,12 +476,12 @@ function AppShellView({
         {companyLogo}
         {/* v3: the workspace at the top of the sidebar (desktop only). Upscale B2: one desktop shell, so Employees have it too;
           in the rail it is the 32px initials avatar. */}
-        {user.role !== "LEAD" ? <p className="cm-org"><span className="cm-org__mark" aria-hidden="true">{workspaceName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()}</span><span className="cm-org__name">{workspaceName}</span></p> : null}
+        <p className="cm-org" title={workspaceName}><span className="cm-org__mark" aria-hidden="true">{workspaceName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()}</span><span className="cm-org__name">{workspaceName}</span>{/* A Lead's role line under the workspace (Direction B, Nov 8, 2026); the shell has no location in hand. */}{user.role === "LEAD" ? <span className="cm-org__role">Lead</span> : null}</p>
 
         <button className="sidebar-toggle" type="button" aria-label={railed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!railed} aria-controls="desktop-primary-navigation" onClick={toggleSidebar}><NavIcon name="sidebar" size={20} /></button>
         </div>
         <nav id="desktop-primary-navigation" className="sidebar-nav" aria-label="Primary navigation">
-          {navGroups.map(group => <div className="sidebar-nav-group" data-group={group.label || undefined} key={group.label}>
+          {navGroups.map((group, index) => <div className="sidebar-nav-group" data-group={group.label || undefined} key={`${index}:${group.label}`}>
           {group.label ? <h2 className="sidebar-group-label">{group.label}</h2> : null}
           {group.items.map((item) => {
             const active = item.href === sidebarActive;
@@ -414,10 +493,12 @@ function AppShellView({
                 className={active ? "nav-link active" : "nav-link"}
                 // IS-P4-08: a holder (Inbox on Time off) is the current section, not the current page.
                 aria-current={active ? (activeTool?.href === item.href || (item.href === activeHref && !pageItem && !deeper) ? "page" : "true") : undefined}
-                aria-label={item.href === "/app/inbox" && inboxCount ? `${item.label}, ${inboxCount} need${inboxCount === 1 ? "s" : ""} you` : item.label}
+                aria-label={item.href === "/app/inbox" && inboxCount ? `Things to do, ${inboxCount}` : item.label}
               >
                 <span className="nav-icon">
-                  <NavIcon name={item.icon} employee={employee} size={employee ? 20 : 18} />
+                  {/* Review B2 (NV-043): an Employee's Pay is the phone tab's receipt (FileText read as Requests' clipboard). */}
+                  {/* Phase 3 (TB-001, TB-009): the current entry's glyph is filled, in the sidebar and the rail, as the phone's current tab is. */}
+                  <NavIcon name={employee && item.icon === "statement" ? "receipt" : item.icon} employee={employee} size={20} weight={active ? "fill" : "bold"} />
                 </span>
                 <span className="nav-label">{item.label}</span>
                 <NavPending />
@@ -446,6 +527,8 @@ function AppShellView({
           </button>
         </PortalSignout>
 
+        {/* Review B2 (NV-011): a Help link above "Powered by" on tablets and desktop. */}
+        <Link href="/app/help" className="sidebar-help-link" aria-current={pathname === "/app/help" ? "page" : undefined}><QuestionIcon size={18} weight={pathname === "/app/help" ? "fill" : "bold"} aria-hidden="true" /><span className="nav-label">Help</span></Link>
         <div className="sidebar-platform-footer">
           <span>{workspaceName}</span>
           <small>{NUVORA_BRAND.poweredBy}</small>
@@ -472,25 +555,26 @@ function AppShellView({
           <div className="mobile-header-actions">
           {/* v3: the desktop top bar's one action (Owner and Manager); phones add shifts from Schedule. */}
           {!employee && navigation.some(item => item.href === "/app/schedule") ? <Link href="/app/schedule/new" className="cm-add-shift"><PlusIcon size={14} weight="bold" aria-hidden="true" />Add shift</Link> : null}
-          {!employee && (user.role === "OWNER" || operational.view?.state === "ready" && operational.view.scope?.mode === "COMPANY") ? <CommandFinder role={user.role} payroll={payrollCapabilities} context={context} /> : null}
-          {/* A Lead (v5 look, on hold) keeps its header: the avatar first, then a round "+" for a new request, then the bell. */}
-          {user.role === "LEAD" ? accountMenu : null}
-          {user.role === "LEAD" ? <Link href="/app/requests" className="e5-new" aria-label="New request"><PlusIcon size={20} aria-hidden="true" /></Link> : null}
+          {/* Employee desktop (Nov 8, 2026): Employees search their own pages (desktop only; see employee-b-desktop.css). */}
+          {(!employee && (user.role === "OWNER" || operational.navigation?.state === "ready" && operational.navigation.scope?.mode === "COMPANY")) || employee ? <CommandFinder role={user.role} payroll={payrollCapabilities} context={context} /> : null}
           {notificationAuthority ? <NotificationBell key={operationalAuthority?.state==='ready'?operationalAuthority.authority:'unavailable'} authority={notificationAuthority} /> : null}
           {/* Upscale B2: one desktop top bar for every role, Search · bell · avatar. The Employee "+" retired (New request
             lives on Requests). */}
-          {user.role !== "LEAD" ? accountMenu : null}
+          {accountMenu}
           {/* Corporate phone header: the avatar opens More (profile, settings and the rest). Desktop keeps the account menu. */}
-          {user.role !== "LEAD" ? <Link href="/app/more" prefetch className="c-top-avatar" aria-label={`More, ${user.firstName} ${user.lastName}`} aria-current={pathname === "/app/more" ? "page" : undefined}><span aria-hidden="true">{initials}</span></Link> : null}
+          <Link href="/app/more" prefetch className="c-top-avatar" aria-label={`More, ${user.firstName} ${user.lastName}`} aria-current={pathname === "/app/more" ? "page" : undefined}><span aria-hidden="true">{initials}</span>{/* Review F2 (NV-099): a small visible cue that the avatar opens More. */}<i className="c-top-avatar__more" aria-hidden="true"><CaretDownIcon weight="bold" /></i></Link>
           </div>
         </header>
         {/* Owner premium P7 and P11: the thin progress bar while a page is on its way, and the offline line over the page. */}
         <div className="c-progress" aria-hidden="true"><i /></div>
-        {!online ? <div className="c-offline" role="status">You’re offline. Showing what was loaded.</div> : null}
+        {/* Jose (Nov 15, 2026, item 9): a page with a band shows this line inside it, under the title (BOffline); this
+          * one stays for pages without a band and is hidden when the band's pill is on the page (owner-b-shell.css). */}
+        {offlineLine ? <div className="c-offline" role="status" data-held={offlineHeldAt ? "" : undefined}>{offlineLine}</div> : null}
 
-        <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{user.role==='MANAGER'&&operational.view?.state==='unavailable'&&!operational.refreshing&&<section className="portal-route-state" role="status"><h2>Management menu unavailable</h2><p>Your current management access could not be checked. Reconnect and refresh before opening another management page.</p><button className="button secondary" type="button" disabled={operational.paused} onClick={operational.retry}>Refresh management access</button></section>}<EmployeeMessageReturn/>{children}</PresentationProvider></main>
+        <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{/* Review B2 (NV-032): no separate "Management menu unavailable" card above the hero; the page's own state says it once
+          and its Try again re-checks the menus too. */}<EmployeeMessageReturn/><BOfflineContext.Provider value={offlineLine}>{children}</BOfflineContext.Provider></PresentationProvider></main>
 
-        <nav className="mobile-nav" aria-label="Mobile navigation" style={user.role !== "LEAD"?{gridTemplateColumns:`repeat(${mobileTabs.length},minmax(0,1fr))`}:undefined}>
+        <nav className="mobile-nav" aria-label="Mobile navigation" style={{gridTemplateColumns:`repeat(${mobileTabs.length},minmax(0,1fr))`}}>
           {/* v5 One look (approved Oct 24): one Quiet tab bar for every role; More is a page. */}
             <>
               {mobileTabs.map((item) => {
@@ -506,8 +590,9 @@ function AppShellView({
                     // periodic refresh re-renders only the open page, so these prefetches are not repeated every few seconds.
                     prefetch
                     className={active ? "mobile-nav-link active" : "mobile-nav-link"}
+                    // Review Nov 14 (BR-4): More and the pages it opens light no tab, so a lit tab is always the page's own place.
                     aria-current={active ? "page" : undefined}
-                    aria-label={needsYou !== null ? `${item.label}, ${needsYou} need${needsYou === 1 ? "s" : ""} you` : undefined}
+                    aria-label={needsYou !== null ? `Things to do, ${needsYou}` : undefined}
                     // Owner premium P8: tapping the tab you are on scrolls its page back to the top, as on iOS.
                     onClick={event => {
                       if (location !== item.href || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -516,20 +601,15 @@ function AppShellView({
                     }}
                   >
                     {/* Corporate (boards C-Owner, C-Employee): outline glyphs; the current tab is teal and filled (upscale S1: every
-                      tab, not Home alone). Team is two people, Pay and Payroll a card, Requests a page. A Lead keeps the v5 tab bar. */}
-                    <NavIcon name={user.role === "LEAD" ? (item.icon === "employees" ? "team" : item.icon) : tabIcon(item.icon)} size={24}
-                      weight={user.role === "LEAD" ? (!employeeMobile && active ? "fill" : "regular") : active ? "fill" : "regular"} />
+                      tab, not Home alone). Team is two people, Pay and Payroll a card, Requests a page. A Lead has the Employee's tab bar. */}
+                    <NavIcon name={tabIcon(item.icon, employee)} size={24} weight={active ? "fill" : "bold"} />
                     <span>{item.label}</span>
+                    {/* Direction B: the count is visible on the tab too (phones, Owner and Manager); the label above reads it. */}
+                    {needsYou !== null && !employee ? <span className="b-tab-badge" aria-hidden="true">{needsYou > 99 ? "99+" : needsYou}</span> : null}
                     <TabPending />
                   </Link>
                 );
               })}
-              {/* A Lead: More is a tab-bar page. Every other role opens More from the header avatar. */}
-              {user.role === "LEAD" ? <Link href="/app/more" prefetch className={activeTab === "more" || pathname === "/app/more" ? "mobile-nav-link manager-more-trigger active" : "mobile-nav-link manager-more-trigger"}
-                aria-current={pathname === "/app/more" ? "page" : undefined}>
-                <NavIcon name="moreCircle" size={24} weight={!employeeMobile && (activeTab === "more" || pathname === "/app/more") ? "fill" : "regular"} /><span>More</span>
-                <TabPending />
-              </Link> : null}
             </>
         </nav>
       </div>

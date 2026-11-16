@@ -20,7 +20,7 @@ const shapes: [RegExp, Props][] = [
   [/^\/app\/settings\/positions/, { eyebrow: true, title: "Positions", summary: "The job qualifications your team brings to each shift.", label: "positions", cards: [1, 4] }],
   [/^\/app\/settings\/clocker/, { title: "Clocker tablets", summary: "A shared tablet at each location, with access you control.", label: "Clocker tablets", cards: [2, 4] }],
 ];
-const hub: Props = { back: null, eyebrow: true, title: "Settings", summary: "Set up your workspace and the way your team works.", label: "settings", cards: [4, 4], aside: false };
+const hub: Props = { back: null, eyebrow: true, title: "Settings", summary: "Set up your company and the way your team works.", label: "settings", cards: [4, 4], aside: false };
 
 export function SettingsRouteLoading() {
   const pathname = usePathname() ?? "/app/settings";

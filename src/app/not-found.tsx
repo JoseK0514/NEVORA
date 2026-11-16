@@ -1,27 +1,34 @@
 import Link from 'next/link';
-import { AuthBrand } from '@/components/auth-brand';
-import { BrandLegal } from '@/components/brand-legal';
+import { BrandWordmark } from '@/components/brand-mark';
+import { QuietLegal } from '@/components/brand-legal';
+import { LangSwitch } from '@/components/auth-premium/lang-switch';
+import { AUTH_COPY } from '@/lib/auth-copy';
+import { readAuthLang } from '@/lib/auth-lang.server';
 import { NUVORA_BRAND } from '@/lib/brand';
 import { NotFoundHint } from './not-found-hint';
 import './not-found.css';
 
-/** Any unknown public address, including a tablet with a wrong Clocker key. Signature style (phase 4): the deep band
- * with a large 404, then a soft white sheet with one card and the way back. */
-export default function NotFound() {
-  return <main className="nf-page">
+/** Any unknown public address, including a tablet with a wrong Clocker key. Direction B (Nov 8, 2026): the teal band
+ * with the title and "Error 404", then one reading card and the way back.
+ * Review B4 (Nov 10, 2026): in the sign-in language with its switch (NV-316), and the one-line legal footer the other
+ * public pages use instead of the old lockup (NV-206). */
+export default async function NotFound() {
+  const lang = await readAuthLang();
+  const t = AUTH_COPY[lang], words = t.notFound;
+  return <main className="nf-page" lang={lang}>
     <header className="nf-band">
-      <svg className="nf-mark" viewBox="0 0 360 340" aria-hidden="true" focusable="false"><path d="M20 330 L180 30 L340 330 L276 330 L180 150 L84 330 Z" fill="#164B48"/><path d="M146 330 L180 266 L214 330 Z" fill="#35B6EC"/></svg>
-      <p className="nf-eyebrow">Error 404</p>
-      <b className="nf-404" aria-hidden="true">404</b>
-      <h1 id="not-found-title">Page not found</h1>
+      <div className="nf-top"><span className="nf-wordmark"><BrandWordmark/></span><LangSwitch lang={lang} label={t.langLabel} quiet/></div>
+      {/* Direction B (Jose, Nov 8, 2026): the decorative "404" goes; "Page not found · Error 404" stays. */}
+      <h1 id="not-found-title">{words.title}</h1>
+      <p className="nf-eyebrow">{words.eyebrow}</p>
     </header>
     <section className="nf-sheet" aria-labelledby="not-found-title">
       <div className="nf-card">
-        <p className="not-found-text">This link doesn’t go anywhere in NEVORA. Check the address, or sign in to find what you need.</p>
-        <NotFoundHint/>
+        <p className="not-found-text">{words.body}</p>
+        <NotFoundHint title={words.hintTitle} body={words.hintBody}/>
+        <Link href="/login" className="nf-cta">{words.cta}</Link>
       </div>
-      <Link href="/login" className="nf-cta">Go to sign in</Link>
-      <footer className="nf-foot"><AuthBrand/><small>{NUVORA_BRAND.poweredBy}</small><BrandLegal/></footer>
+      <footer className="nf-foot"><small>{NUVORA_BRAND.poweredBy}</small><QuietLegal lang={lang}/></footer>
     </section>
   </main>;
 }

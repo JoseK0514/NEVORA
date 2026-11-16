@@ -8,14 +8,15 @@ it.each(['unauthorized','unavailable'] as const)('never renders a private URL or
  const html=renderToStaticMarkup(<CalendarSubscriptionView {...base} status={{state,reason:'read_failed'}}/>);
  expect(html).not.toContain(base.url);expect(html).not.toContain('Copy link');expect(html).not.toContain('Select link');
 });
-it('lost URL offers deliberate Replace while explaining copied-data limits and client refresh',()=>{const html=renderToStaticMarkup(<CalendarSubscriptionView {...base} url={null}/>);expect(html).toContain('Replace link');expect(html).toContain('Calendar apps refresh on their own schedule');expect(html).toContain('cannot remove information already copied');expect(html).not.toContain('Calendar connected');});
+// B7 wording (glossary "Calendar feed"): Replace/Revoke link are now "Get a new link" and "Turn off link".
+it('lost URL offers deliberate Replace while explaining copied-data limits and client refresh',()=>{const html=renderToStaticMarkup(<CalendarSubscriptionView {...base} url={null}/>);expect(html).toContain('Get a new link');expect(html).toContain('Calendar apps refresh on their own schedule');expect(html).toContain('can’t remove shifts a calendar app already copied');expect(html).not.toContain('Calendar connected');});
 it('copy feedback belongs to completed copy only and manual selection remains available',()=>{const html=renderToStaticMarkup(<CalendarSubscriptionView {...base}/>);expect(html).toContain('Copy link');expect(html).toContain('Select link');expect(html).not.toContain('Link copied');expect(html).toContain('Apple Calendar');expect(html).toContain('Google Calendar');expect(html).toContain('Outlook');});
 
 it('unknown issuance keeps only original-operation recovery available',()=>{
  const html=renderToStaticMarkup(<CalendarSubscriptionView {...base} url={null} notice="The result is unknown. Retry the same operation to check it."/>);
  const buttons=[...html.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/button>/g)];
  const attributes=(label:string)=>{const match=buttons.find(button=>button[2].includes(label));expect(match).toBeDefined();return match![1];};
- expect(attributes('Replace link')).toContain('disabled=""');
- expect(attributes('Revoke link')).toContain('disabled=""');
+ expect(attributes('Get a new link')).toContain('disabled=""');
+ expect(attributes('Turn off link')).toContain('disabled=""');
  expect(attributes('Try again')).not.toContain('disabled=""');
 });

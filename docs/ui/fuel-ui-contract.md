@@ -1,5 +1,7 @@
 # NEVORA UI contract
 
+> **Superseded (Nov 14, 2026).** This contract describes the October 2026 blue/cyan look. The current design is Direction B: read the "Current direction" section of [DESIGN.MD](../../DESIGN.MD). Do not take colours, fonts or component geometry from this file. It stays for history and for the workflow rules that DESIGN.MD does not restate.
+
 > The file path is retained for compatibility with existing plans. The product identity is now **NEVORA**, the current module is **Workforce**, Fuel Coffee Drive is the customer/workspace, and VELANI LLC is the parent company.
 
 **Reference:** Phase 0, 2026-10-02, plus the NEVORA correction pass, 2026-10-03. Preserve the approved Apple-style layouts, spacing, typography, control geometry, responsive behavior, and semantic states. Branding changes do not authorize a redesign.

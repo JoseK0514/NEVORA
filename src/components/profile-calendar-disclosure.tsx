@@ -28,7 +28,7 @@ export function ProfileCalendarDisclosure({children}: {children: ReactNode}) {
   return <details ref={ref} id="employee-calendar-title" className="profile-calendar-disclosure" open={open} onToggle={event => setOpen(event.currentTarget.open)}>
     <summary className="profile-setting-row">
       <span className="profile-setting-copy"><NavIcon name="calendar" size={20}/><span><strong>Add shifts to your calendar</strong><small>Apple Calendar, Google Calendar or Outlook</small></span></span>
-      <CaretDownIcon className="profile-setting-caret" size={18} aria-hidden="true"/>
+      <CaretDownIcon className="profile-setting-caret" size={18} weight="bold" aria-hidden="true"/>
     </summary>
     {children}
   </details>;

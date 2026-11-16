@@ -1,5 +1,5 @@
 .em-requests-mobile { display:none; }
-@media (max-width:767px), (max-height:500px) and (orientation:landscape) and (pointer:coarse) {
+@media (max-width:767px) {
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .page-frame:has(> .em-requests-mobile) > :is(.q-reqhub,.q-shiftreq) { display:none; }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-requests-mobile { display:block; }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .page-frame:has(.em-requests-mobile) { padding:0 0 var(--em-space-8) !important; margin:0; max-width:none; background:var(--em-canvas); }

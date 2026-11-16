@@ -1,9 +1,9 @@
 ---
-version: "nevora-signature-2026-10-20"
+version: "nevora-direction-b-2026-11-08"
 name: "NEVORA Workforce portal"
-description: "Workforce scheduling, time and pay app. Current direction (October 20, 2026): the employee app, sign-in/activation and the Clocker use Signature (deep band #0D3634, soft-white sheet #F7F6F3, system font today, Phosphor regular icons), specified in docs/product/specs/employee-style/signature/SIGNATURE-SPEC.md and tokenised in src/components/signature/tokens.css. Manager and Owner use the clean-manager v3 design (docs/product/specs/clean-manager/spec.md). The Gusto portal tokens below remain the base layer and the B1 brand default. The body of this file records each approved refinement; older sections are history."
+description: "Workforce scheduling, time and pay app. Current direction (November 8, 2026): Direction B for every surface: Owner, Manager, Employee and Lead on phones, tablets (768-1023, small desktop with the icon rail) and desktop; sign-in, recovery, activation, policy, 404 and public error pages; and the Clocker kiosk. Inter, teal #0B6E69 with the teal band, canvas #F2F5F4, white 22px cards, pills, Phosphor bold icons, light only. See the Current direction table below and the Direction B sections (approved mocks in docs/product/direction-b/). The Signature and clean-manager v3 tokens below are retained as the base layer and history; where they disagree with Direction B, Direction B wins."
 colors:
-  # Signature (CURRENT for the employee app, sign-in/activation and the Clocker). Full roles in SIGNATURE-SPEC.md section 3.
+  # Signature (superseded by Direction B, Nov 2026; tokens kept as the base layer). Full roles in SIGNATURE-SPEC.md section 3.
   sig-page: "#F7F6F3"
   sig-card: "#FFFFFF"
   sig-ink-1: "#161C1B"
@@ -52,7 +52,7 @@ colors:
   login-refined-hero-ink: "#062959"
   auth-still-surface: "#F1F4F8"
 typography:
-  # Signature type roles (CURRENT). The family is the platform's own system stack on the employee app and sign-in; the Clocker
+  # Signature type roles (SUPERSEDED by Direction B, Nov 8, 2026; kept as history). The family is the platform's own system stack on the employee app and sign-in; the Clocker
   # and PIN bundle Inter ("Nevora Clocker"). Which one wins is a pending decision (SIGNATURE-SPEC.md section 11).
   sig-hero-word:
     fontFamily: "system-ui (SF Pro Display, Segoe UI, Roboto)"
@@ -189,7 +189,7 @@ spacing:
   activation-secondary-gap: "28px"
   activation-secondary-gap-mobile: "24px"
 rounded:
-  # Signature radii (CURRENT): cards 22, sheet top corners 28, pills full. Button radii are being normalised (SIGNATURE-SPEC.md 6.7).
+  # Signature radii (SUPERSEDED by Direction B, Nov 8, 2026; kept as history): cards 22, sheet top corners 28, pills full. Button radii are being normalised (SIGNATURE-SPEC.md 6.7).
   sig-card: "22px"
   sig-sheet: "28px"
   sig-pill: "999px"
@@ -205,7 +205,7 @@ rounded:
   auth-popover: "14px"
   activation-password-toggle: "13px"
 components:
-  # Signature components (CURRENT, as built). Full list, states and targets: SIGNATURE-SPEC.md section 6.
+  # Signature components (SUPERSEDED by Direction B, Nov 8, 2026; kept as history). Full list, states and targets: SIGNATURE-SPEC.md section 6.
   sig-band:
     backgroundColor: "{colors.sig-deep}"
     textColor: "{colors.sig-on-deep}"
@@ -353,19 +353,146 @@ components:
     textColor: "{colors.login-blue-hover}"
 ---
 
-# Current direction (October 20, 2026)
+# Current direction (November 8, 2026)
 
 Read this first. The rest of the file is a dated history of approved refinements; where an older section disagrees with
 this one, this one wins.
 
 | Surface | Current design | Source of truth |
 |---|---|---|
-| Employee app (Employee and Lead, `data-nv-e5`) | **Signature**, approved by Jose on October 20, 2026 | [SIGNATURE-SPEC.md](docs/product/specs/employee-style/signature/SIGNATURE-SPEC.md) |
-| Sign-in, forgot access, reset access, account activation (`.ap`) | **Signature** (the E4 sign-in carried forward, then restyled in phase 4 and activation v3) | SIGNATURE-SPEC.md; E4 base in [auth-premium/SPEC.md](docs/product/specs/auth-premium/SPEC.md) |
-| Clocker tablet and PIN setup | **Signature** (approved c4 boards) | SIGNATURE-SPEC.md |
-| Manager and Owner (`data-nv-clean`) | **Clean manager v3** (Wave A v3 light mockups, approved October 19) | [clean-manager/spec.md](docs/product/specs/clean-manager/spec.md), `src/app/app/premium-clean-manager.css` |
+| Owner and Manager, phones and desktop | **Direction B** (approved Nov 5–6, 2026) | "Owner and Manager phones: Direction B" and "Owner and Manager desktop: Direction B" below; mocks 1–2 in [docs/product/direction-b](docs/product/direction-b/README.md) |
+| Employee and Lead, phones and desktop | **Direction B** (approved Nov 6 and Nov 8, 2026) | "Employee phones: Direction B" and "Direction B for the remaining surfaces" below; mocks 3–5 |
+| Tablets 768–1023, every role | **Direction B, Option B "small desktop"** with the icon rail | "Direction B for the remaining surfaces"; mock 6 |
+| Sign-in, recovery, activation, Mobile Access, policy pages, 404, public error page | **Direction B** (teal band, lifted card; desktop brand panel) | "Direction B for the remaining surfaces"; mock 7 |
+| Clocker kiosk | **Direction B**, the only kiosk look (Signature and `NEVORA_CLOCKER_UI_V2` retired) | "Clocker Direction B" below; mock 8 |
 
-Signature in one paragraph: a deep band (`#0D3634`) with the NEVORA Λ mark and grain carries each page's key fact in
+Direction B in one paragraph: a teal band (`#0C726C` to `#08504C`) carries the page title and its key figures in glass
+tiles; white cards (22px radius, soft layered shadow) sit on the `#F2F5F4` canvas, overlapping the band's lower edge.
+Inter throughout, ink `#111517`, grey `#6A7176`, Phosphor bold icons in tinted circles, pills for actions and chips,
+48px+ targets, light only. Status colours: red stops you, amber means wait or check, green is done, teal is information.
+The screenshot harness for checking it is in `tools/ui-scan/`.
+
+## Inspection fixes (November 15, 2026)
+
+Source: the Nov 14 inspection, [docs/product/review-2026-11-14](docs/product/review-2026-11-14/README.md), and its fix
+reports in `docs/product/review-2026-11-14/fixes/`. Jose asked for all fixes on Nov 14; the changes below are built and
+wait for his review before any commit. Where an older line in this file disagrees with this list, this list wins. Each
+item names the lines it supersedes; line numbers are from the file before this section was added, so add about 47.
+
+- **One band.** Payroll and Pay no longer draw a near-black ("ink") band or top bar; every page uses the teal band.
+  Supersedes the ink hero, band and top bar notes near lines 1378, 1419, 1432, 1450 and 1465.
+- **Tablet rail (768 to 1023px).** An 80px rail with a short label under each icon, a tinted pill behind the current
+  icon and one 20px badge style. Supersedes "labels as tooltips" and the 48px column (near 1523 to 1530, 1692 and 1916).
+- **Buttons.** Every button class under Direction B is a pill, including `nv-btn`, `c-btn`, `q-btn`, `q-bs` and
+  `wc-btn`. A kit button's hit area is at least 44px at any drawn height. Row actions use the tinted pill for Approve
+  and Review and a quiet text button for Decline; a filled teal pill is the page's one primary.
+- **Contrast tokens.** `--b-field-edge` is `#838A8F` and also colours the row chevron. Grey text on any tinted fill
+  uses `--b-grey-on-fill`. New `--b-amber-solid` `#B8760F` and `--b-green-solid` `#239A6D` for rings, bars and dashed
+  edges. The bell's coral dot has a white ring. `--b-on-band-2` resolves to white inside glass tiles. Supersedes the
+  values near 1376, 1382, 1470, 1679 to 1682, 1686, 1740 and 1756.
+- **Phase 1 tokens (built Nov 15, 2026; see `docs/product/review-2026-11-14/fixes/phase-1/README.md`).** The Direction B
+  stylesheets read them now. Type: eight roles with separate size and line-height tokens in rem, `--b-fs-*` and
+  `--b-lh-*` (display 30/36, figure 24/30, title 20/26, title-sm 17/22, body 15.5/22, body-sm 14.5/20, meta 13.5/18,
+  caption 12.5/16); `--b-type-*` are the same pairs for the `font` shorthand. 13px and 15px text folded into meta and
+  body; 12, 14 and 16px stay as approved. Spacing: `--b-space-2` to `--b-space-64`, with `--b-gutter` (14),
+  `--b-inset` (18) and `--b-inset-wide` (22) for horizontal insets; 6px and 10px are still literals. Radius: pill, card
+  (22), field (14) and `--b-radius-small` (10). Elevation: `--b-elev-1`, `--b-elev-2`, a proposed `--b-elev-3` that
+  nothing uses yet, and the glow, all in one shadow colour. Motion: `--b-dur-press`, `--b-dur-hover`, `--b-dur-exit`
+  (150ms), `--b-dur-enter` (300ms), ease-out. Supersedes "five type roles" and "defined, adopt page by page" in the
+  token notes further down. Sign-in reads the shared band, pill and focus tokens; the kiosk reads the palette, radius,
+  elevation and motion tokens and keeps its own large type.
+- **Icons.** Every Phosphor icon draws bold; fill marks a filled or current state. Nine duotone icons remain by
+  exception. `src/test/phosphor-icon-weight.test.ts` fails when an icon has no weight.
+- **The desktop and tablet frame (Phase 2, built Nov 15, 2026; see `docs/product/review-2026-11-14/fixes/phase-2/README.md`).**
+  From 768px, every role. Tokens in `src/app/b-tokens.css`: `--b-frame-wide` 1080, `--b-frame-read` 812,
+  `--b-frame-form` 560; `--b-band-short` 196, `--b-band-sub` 224, `--b-band-strip` 296, `--b-band-figures` 363;
+  `--b-title-top` 88, `--b-title-top-back` 130.
+  - *Title.* Its top edge is at 88 on a sidebar page and at 130 under a back link. Home's sits at 109 under the greeting.
+  - *Band.* It ends at 196 (a title alone, with one sub-line, or under a back link), 224 (back link, title and
+    sub-line) or 296 (a strip of tabs, search or a week stepper on the band). Owner Home keeps 383. The Employee tabs
+    with figures (Home, Time, Pay, Requests) share 363. Desktop Payroll shows the title, the scope sentence and the
+    tabs (Jose dropped the pay frequency and business line there on Nov 15, 2026; phones keep it), so Payroll, Time
+    exports and Payroll settings end at 296 with their tabs at one height.
+  - *Card to band.* On a sidebar page with a strip or figures, the first card overlaps the band by 52px. Under a
+    back link, and on short bands, content starts 24px under the band.
+  - *Width.* Work pages (grids, tables, a list with a right rail) fill the grid up to 1080px. Pages opened from them
+    read in one 812px column, band action included. A form's field block stops at 560px (two halves of 272px with
+    16px between), with its buttons on the block's right edge. A state card is at most 560px.
+  - *Right rail.* Team uses Home's grid from 1024px (main 2fr, rail 1fr, 20px gap); tablets stay one column.
+  - *Supersedes* the "860px column" comments in `owner-b-desktop.css` and the per-page band depths noted further down.
+- **List rows (Phase 2).** Filled teal is the page's one main action. A button repeated on list rows is the tinted
+  pill for the positive action (Approve, Pick up, Review, Acknowledge) and a quiet text button for the other (Decline,
+  Close request): classes `b-rowact b-rowact--go` and `b-rowact--quiet` in `b-foundation.css`, or the kit's ghost kind.
+- **Loading, error and offline (Phase 2).** A loading screen keeps the page's frame: its band at the page's height, its
+  title, strip and card shapes, from one table (`src/components/owner-b/b-loading.tsx`); it does not animate. A failed
+  page keeps the band at 196 with one 560px state card and one retry (`BStateScreen`, `BRouteError`). The offline line
+  is one pill and is said once. On a page with a band (`BHero`) it is a glass pill inside the band, under the title,
+  on every width (Jose, Nov 15, 2026; finding OW-008). A page without a band keeps the dark pill: at the foot of the
+  window from 768px, above the tab bar on phones. It never sits between the top bar and the band. Employee Home still
+  clears private rows when offline.
+- **Owner and Manager screens (Phase 3, built Nov 15, 2026; see `docs/product/review-2026-11-14/fixes/phase-3/README.md`).**
+  - *Area sheets.* New Owner and Manager rules live in one sheet per area, loaded after `b-foundation.css`:
+    `owner-b-home.css`, `owner-b-schedule.css`, `owner-b-time-pay.css`, `owner-b-requests.css`, `owner-b-settings.css`;
+    the shell's are in `owner-b-shell.css`. Do not append to `owner-b-desktop.css` or `owner-b-pages.css`.
+  - *Counts.* One count pill everywhere (sidebar, rail, phone tab): 20px, teal, white 12/700. Red waits on an overdue
+    number from the server. Home, Things to do and the badge show the same number: what can be decided today.
+  - *Rows.* A row's title is the person; its sub-line is what and when. One 36px lead slot (avatar or icon circle).
+    From 768px a request row carries its quiet and tinted buttons inline at 64px. Chips are 22px, 12/16, 600; a chip
+    marks an exception, plain grey text marks the normal state.
+  - *Icons on Things to do.* Amber waits on you, teal is information, grey is done.
+  - *Right rail.* Payroll joins Team and Home on the list-plus-rail grid from 1024px.
+  - *Schedule.* Coverage is one line with a bar in the grid head. Open shifts are one "N open" chip per day that
+    opens that day's list under the row (`aria-expanded`; 44px on touch). Under 820px of card the grid drops avatars.
+  - *Closed pages.* One state card: whose page it is, the reader's own part, one tinted next step. The holder is a
+    48px circle.
+  - *Forms.* One error style: 16px bold warning glyph, red 13.5/18, no closing period. A locked value shows its
+    reason beneath it. Save appears after a change.
+  - *Shell.* The current sidebar and rail icon is drawn filled. Pages opened from the account pill light nothing and
+    the pill takes `aria-current`. Under 1024px Owners and Managers have the labelled rail only (no toggle).
+  - *Supersedes* the red count badge, "light Home" for account pages on tablets, and the per-day open-shift time
+    chips on the Owner grid noted further down.
+  - *Jose's thirteen decisions (Nov 15, 2026).* Listed in the Phase 3 README under "Decided". The rules they set:
+    timecards of an open period are one card, "Pay period still open", with the day approval opens on a line under its
+    heading. After a save the reviewer moves on with "Next timecard"; nothing advances on a timer. A time range is short
+    on a phone ("3–4:30 PM") and full from 768px ("3:00 PM – 4:30 PM") on Home and Things to do (`BWhen`), as the
+    Schedule's day list already was. A folded
+    notification opens in place and lists each notification, each read on its own. One bell, in the top bar, for every
+    role (no Notifications entry in the Employee sidebar or rail). My pay has no back link from 768px. Under "Shift
+    lead": "Must be an Owner, Manager or Lead."
+- **States and menus.** The state card's empty kind is grey with a tray glyph; the warning glyph is for failures.
+  Menu items have 10px corners inside the 16px menu (supersedes 8px near 1891).
+- **Motion.** The press scale runs only under `prefers-reduced-motion: no-preference`.
+- **Forms.** Inline validation re-asserts `aria-describedby` each time and announces with `role="alert"` on blur and
+  input (supersedes the note near 769).
+- **Phone bottom bar.** Pages outside the five tabs (More, Insights, Settings, Profile, Notifications, Help, Updates,
+  My pay) light no tab. This reverses the Nov 7 rule "More and the pages it opens light Home". Jose to confirm.
+- **Clocker.** Sign-in is Employee ID, then PIN (Jose's Nov 11 decision). The lockout card names who is paused ("Your
+  PIN is paused" or "This tablet is paused") and shows the clock time ("Try again at 10:58 PM."); a person-level pause
+  card clears after 30 seconds. Buttons are sentence case ("Clock in", "Clock out", "Try again"); "Refresh clock state"
+  is "Refresh"; "Help with a saved action" is "Something didn't save?"; "Action reference" is "Reference". The kiosk
+  has its own error screen in the tablet's language with no sign-in link, and the paused page follows the tablet's
+  language. Supersedes the exempt-word list near 751, 955 and 1637 to 1639, "No lockout countdown" near 1650, and the
+  labels near 1654 to 1667. `.21st/DESIGN.md:68` carries the same old list.
+- **Billing pages.** `/app/billing`, `/pages/plans`, `/pages/nevora-billing`, `/pages/nevora-billing-return`,
+  `/pages/es-*` and the paused Clocker page use the sign-in frame: wordmark, Inter, teal band or panel, white 22px
+  card, pills. The Signature look is retired there too.
+- **Attendance words (Jose, Nov 11).** "Not clocked in" for a shift that started with no punch, "Clocked in late" for
+  a late arrival, "Missed" for a shift that ended with no punch.
+- **Payroll scope wording.** Owner screens carry "Calculate pay and share statements. You pay your team outside
+  NEVORA.", a "What's next" card after approval, and "Scheduled payday" in place of "Payday" or "Next payday" wherever
+  NEVORA shows a date from the pay schedule. The pay statement PDF text near line 1347 ("You take home") is unchanged
+  and waits for Jose's and counsel's wording; see PY-2 in the inspection.
+
+## Previous direction (October 20, 2026; superseded)
+
+| Surface | Design then | Source |
+|---|---|---|
+| Employee app (Employee and Lead, `data-nv-e5`) | Signature, approved October 20, 2026 | [SIGNATURE-SPEC.md](docs/product/specs/employee-style/signature/SIGNATURE-SPEC.md) |
+| Sign-in, forgot access, reset access, account activation (`.ap`) | Signature (E4 sign-in carried forward) | SIGNATURE-SPEC.md; [auth-premium/SPEC.md](docs/product/specs/auth-premium/SPEC.md) |
+| Clocker tablet and PIN setup | Signature (approved c4 boards) | SIGNATURE-SPEC.md |
+| Manager and Owner (`data-nv-clean`) | Clean manager v3 (approved October 19) | [clean-manager/spec.md](docs/product/specs/clean-manager/spec.md) |
+
+Signature in one paragraph (history): a deep band (`#0D3634`) with the NEVORA Λ mark and grain carries each page's key fact in
 large light type; a soft-white sheet (`#F7F6F3`) rises over it with 28px top corners and holds white cards (22px
 radius). One message per card, no glass, Phosphor regular icons (fill only for the active tab), no illustration on Home.
 Shared values are in `src/components/signature/tokens.css` (`--sig-*`). Pages read those tokens and never declare their
@@ -732,7 +859,7 @@ Verified on an owned, disposable local PostgreSQL runtime with fictional account
 #### Phase 2: language, dates and empty states (2026-10-15)
 
 The portal follows `docs/design/voice.md`.
-- **Labels:** about 80 Title Case labels moved to sentence case. Exceptions are proper nouns and acronyms (NEVORA, Clocker, PIN, ID, Apple/Google Calendar), "Sign In", and the status words shared with the public Clocker kiosk ("Clock In", "Clock Out", "On Break", "Clocked In", "Off Clock", "Try Again"). The kiosk itself is unchanged. QA scripts and tests follow the new labels.
+- **Labels:** about 80 Title Case labels moved to sentence case. Exceptions are proper nouns and acronyms (NEVORA, Clocker, PIN, ID, Apple/Google Calendar), "Sign In", and the status words shared with the public Clocker kiosk ("Clock In", "Clock Out", "On Break", "Clocked In", "Off Clock", "Try Again"). The kiosk's buttons and headings are sentence case too (NV-173, Jose, Nov 10, 2026: "Check action status", "Retry same action", "Refresh clock state", "Verify your PIN again", "Clock In recorded"); only these exempt words keep their Title Case there. QA scripts and tests follow the new labels.
 - **Links:** in-app links use a caret; the external arrow only marks links that leave NEVORA or open the Clocker URL.
 - **Dates:** people see `formatDisplayDate` ("Tue, Oct 6") and `formatDateRange` ("Sep 28 – Oct 4, 2026") from `src/lib/date-utils.ts`. Payroll runs, backlog, settings and My pay no longer show ISO dates. Freshness lines read "Updated 7:31 PM"; the employee record-details disclosure keeps exact seconds.
 - **Empty states:** `src/components/empty-state.tsx` (structure adapted from the 21st "Empty" block) is the empty-state pattern. Older full-panel variants share its look through `portal-gusto.css`.
@@ -1343,3 +1470,578 @@ Jose approved the company summary mock in the pay statement v2 style. Mock: http
 - **Order:** company as a spaced-capital teal line with the run-kind chip; "Payroll summary" at 22pt bold; period and payday, with the employee count on the right; "Net pay to your team" at 44pt; one line on employer contributions paid on top (left out when they are zero); one strip "Employees · Gross pay – Employee deductions = Net pay"; the split bar; "Pay by employee" (name, then the employee ID beneath it, with gross and net pay, and a bold total); "Paid by the company" with employer contributions; References in two columns.
 - **Long runs:** names and IDs wrap in their column; a very large amount shrinks to fit, never below 7pt. The list continues under "Pay by employee (continued)" with a slim header (company, title and period).
 - **Words:** English and Spanish copy live in `WORDS` in that file. The summary uses the company's language setting.
+
+## Owner and Manager phones: Direction B, Brand hero (Jose approved Nov 5, 2026)
+
+Jose picked Direction B from the three premium directions ("NEVORA mobile, Direction B" mock) and asked for the Owner phone
+screens to match it exactly. This section supersedes, on phones (max-width 767px) for Owner and Manager only, the corporate
+phone header, page titles and card look on Home, Things to do, Schedule, Time (Timecards), Payroll and Team. Tablets,
+desktop, Employees and Leads keep their current rules. Server reads, actions, links and counts are unchanged.
+
+- **Where it lives.** `src/components/owner-b/` (kit `b-kit.tsx`, styles `owner-b.css`, Home, Things to do and Team screens)
+  and `src/app/app/owner-b-shell.css` (header and tab bar). The shell sets `data-nv-b` for Owner and Manager. Each page
+  renders one `BScreen` as the first child of its CorpPage; on a phone it replaces the page's other children (a `b-keep`
+  child, such as Time's sheet, stays), elsewhere it is not displayed. Schedule skips it while a planning, publish-check or
+  review view is open, and Time while Select or a reviewed batch is open, so those flows keep their layout.
+- **Hero.** The brand teal is a place: a gradient hero under the shell's header (white wordmark; bell and avatar as 40px
+  frosted circles inside 44px targets; unread is a coral dot). Title 30/36 700 white (Home's sentence 34/40), a 14px line
+  under it, one white action, and live figures on frosted glass (24/30 600, 12.5px labels; a green dot for live, amber for
+  late). Money screens (Payroll) use the dark ink hero. Pushed Things to do shows "‹ Home" in the wordmark's place.
+- **Cards.** White, 22px corners, layered shadows instead of borders, lifted 40px over the hero, 12px apart, 14px side
+  inset. Rows are 64px: face or 36px tinted icon, 15.5/600 title with its status chip beside it, 13.5px grey line, then a
+  value, a button or a chevron. Chips: amber late or waiting, red stops something, green done, grey neutral; always words.
+- **Faces.** Initials on one of six soft tints chosen from the name; amber ring for late, green for working.
+- **Tab bar.** Frosted white, a 56×30 teal-50 pill behind the current tab's icon, 10.5px labels, a visible red count where
+  the Inbox is a tab.
+- **Motion.** First load staggers the hero title and each card 100ms apart (opacity, 4px blur, 12px rise, 300ms ease-out);
+  reduced motion cross-fades. Buttons press to 0.96 over 150ms. No motion on routine taps.
+- **Narrow phones (320–359px).** A title's actions wrap under it rather than breaking the word; a row's button moves under
+  its text.
+- **Honest figures.** Nothing estimated: This week shows scheduled hours, shifts per day and people from the dashboard's
+  reads; Payroll shows the open payroll's own people, gross and net only once it holds amounts. Home's hero shows the date
+  (Home has no location filter); the mock's labor estimate and location switcher wait for a decision and real data.
+
+### Direction B on every other Owner and Manager phone page (Jose, Nov 5, 2026: "do all 3 passes, everything like the mocks")
+
+Every other phone page (More, Notifications, Updates, Profile, Help, Insights, Settings and each settings page, Scheduling
+rules, Week templates, Add shift, Build and publish, Activity, Who's working, Hours this week, Time corrections, Time
+exports, Payroll's pages, Add employee, a person's page, account recovery, Clocker recovery, Done and older, Time off
+requests, Shift requests, Availability and Delete account) takes the same look from `src/app/app/owner-b-pages.css`, a
+phone-only layer (max-width 767px, under `data-nv-b`) over the corporate and Quiet kits, so markup and behavior are the
+pages' own:
+
+- **Back bars become the hero.** "‹ Back" is a 40px frosted circle with its label in white; the page title is 28/34 700
+  white under it, left aligned; the bar's action (Edit, Save, New update) is a white pill. A Quiet page's large title and a
+  segmented control right under it join the hero; the control is frosted glass with a white thumb.
+- **Forms are sheets with a compact band:** Cancel (white) · title (17/22 white, centred) · Save as a white pill; the form
+  below is one lifted white card.
+- **Cards and lists** are white with 22px corners and layered shadows (no hairline borders); the teal runs 44px under the
+  hero only when a card or list comes next, so a form's first label or a plain line never lands on teal.
+- **Rows** use 15.5px titles and 13.5px lines with 18px sides; pills are 22px chips; primary buttons are teal pills with a
+  soft shadow, secondary ones grey pills; fields have 14px corners.
+
+## Owner and Manager desktop: Direction B (Jose, Nov 6, 2026: "i like this new design just make sure it looks organize and clean and premium")
+
+Jose approved the "Owner desktop, Direction B" mock (50 pages at 1440px). Desktop only (1024px and wider), Owner and Manager
+(`data-nv-b`); tablets (768–1023px), phones, Employees and Leads keep their own rules. One stylesheet,
+`src/app/app/owner-b-desktop.css`, loaded last; no markup, server reads, links, actions or counts change.
+
+- **Shell.** The sidebar is calm off-white with a hairline edge; the current entry is a teal-50 pill with teal text (the phone
+  tab bar's mark); the Things to do count is a red badge. The top bar is flat teal (dark ink on payroll pages) with glass
+  search, bell and account controls.
+- **The band.** Each page's own title paints the brand band under the top bar with `border-image` (outset up under the sticky
+  bar and to both edges), so the title, its sub line, back link and actions sit on teal: the main action is a white pill, the
+  rest glass. Strips that belong to the title (section tabs, the Team search, week steppers, segmented tabs, Insights' and
+  Activity's date lines) join the band on glass. Handled headers: corporate titles, Quiet headers, back-bar-only pages (New
+  update, New location), Add employee, Add shift and Build and publish sheets, and Profile.
+- **Content.** 24px under the band on the canvas; reading pages use an 860px column. Cards are white, 22px corners, layered
+  shadows; a titled section is one card with its label as the header; rows are 60–64px with 22px sides and one inset
+  divider; pills are chips; buttons are pills; fields have 14px corners. The Settings hub flows into two columns.
+- **Main screens.** Home and Things to do show their Direction B screens (the phone kit's `b-*` look now also applies at
+  1024px and wider; its layout rules stay phone-only) in a two-column grid with the live figures on glass and cards lifted
+  52px over the band. Schedule, Timecards, Payroll and Team keep their desktop content (week grid, batch approval, payroll
+  tabs, people list) under a taller band, with the first card lifted 52px over it. Payroll pages use the dark ink band.
+- **Checked** on fictional data in a desktop browser: all 53 Owner page loads at 1440px, Home, Things to do, Payroll,
+  Settings and Schedule at 1280px (no overflow) and at 900px (tablet look unchanged); the phone audit at 390 and 320px is
+  identical to the previous run.
+- **Inspected (Nov 6, 2026).** Five UI inspectors checked every Owner desktop page at 1440 and 1280 over three rounds
+  (pixel measurements, focus, hover, open menus). Results: one 296px column edge everywhere; content 24px under the band on
+  secondary pages and cards lifted exactly 52px over it on the six main screens; cards 20px apart; white focus rings on the
+  band and top bar; menus on the band read dark on white; every page keeps its own actions (Save, New update) as the band's
+  white pill. Left as they are: the Schedule week grid's inner insets, the dense Timecards table (52px rows, underline tabs),
+  document titles, which forms carry actions on the band vs in a footer, and the loading and paused states.
+
+### Owner and Manager: filled-data round (Nov 7, 2026)
+Checked with a rich fictional business (11 people, 2 locations, approvals, requests, payroll history) at 390, 320, 1440
+and 1280. Rules that came out of it: a person keeps one face tint on every screen (corporate avatars use BAvatar's tint);
+lateness is amber, never red; More and the pages it opens light Home on phones; an approved timecard offers Finalize only,
+live shifts read "Clocked in now"/"On break now", period totals are whole hours ("511 h") and rows "24 h 06"; the desktop
+timecard opens as a right-hand panel under the top bar (QuietSheet dialogs must never be put into the page flow); the
+Schedule grid is wide enough that shift times never truncate; Approve is always the teal pill and Decline the grey one;
+band tabs keep their count on one line; field groups are one white card; payroll pages wear the ink hero on phones too;
+owner-only pages (Payroll, Settings) show a Direction B notice to Managers. Never nest :has() inside :has() — browsers drop
+the whole rule.
+
+## Employee phones: Direction B (Jose, Nov 6, 2026: "lets built it, lets make sure everything is exactly the same")
+
+Jose approved the "Employee mobile, Direction B" mock (25 phone pages, polished twice). Phones only (below 768px), Employee
+role only: a Lead keeps the v5 look while that role is on hold, and the employee's tablet and desktop layouts are unchanged
+(`owner-b-desktop.css` skips `[data-employee-mobile]`). The shell sets `data-nv-b` for employees; the kit, shell and page
+layers are the Owner's, plus `src/components/employee-b/` (one screen file and stylesheet per group).
+
+- **How a page is built.** Each employee page draws a `BScreen` as a direct child of its `.c-page`, from the same reads,
+  links, actions and states as the corporate layout beside it; CSS shows one per width. Pieces that hold state exist once:
+  forms stay in the page and are restyled as the screen's card (`b-keep`); the shift sheet and the weekly confirmation mount
+  by viewport (`employee-b/viewport.tsx`, the CSS breakpoint exactly). Focus moves to whichever presentation is on screen.
+- **The look.** Teal hero (dark ink on Pay), white title 30/36 with a 14px sub 2px under it, glass figures and segments
+  (34px thumbs), white cards lifting 40px over the hero, 12px apart, 46px card headers, 64px two-line rows and 56px one-line
+  rows with text 18px in, Phosphor bold icons in 36px tinted circles (grey by default; colour only for meaning), 22px chips in
+  rows and 24px in card headers, one empty state (48px grey icon, title, line), notes 18px in, forms as one white card with
+  48px fields and the full-width primary at the bottom. Header: white wordmark or the back circle and label, the bold bell
+  with a coral dot, a 36px avatar; forms (Fix my time, Request time off, swaps, can't work) and More and Notifications hide
+  the bell and avatar; forms also hide the tab bar. Tab bar: Pay is a receipt, Requests a clipboard, filled when active;
+  shift swaps, open shifts and Availability light Schedule.
+- **Data rules over the mock.** Pay statements carry no amounts, so Pay shows paydays, work weeks and the PDF; employees
+  can't see who else is on a shift; Home's figures are hours worked this week (the Time tab's own read) and the next payday
+  (pay schedule); hero figures hide when there is nothing to show.
+- **Inspected (Nov 6, 2026).** Three rounds of UI inspectors checked every employee page at 390 and 320px (and 1440px for
+  desktop leakage) against the mock with pixel measurements; their findings are fixed in the round commits.
+- **Round 4 (Nov 7, 2026, filled data and interaction states).** Status chips keep their tone at a row's end (amber
+  waiting, green approved, grey decided, including Declined), and a row's value is 15.5/700 ink; on 320px phones a chip at a
+  row's end moves under the row's text. "Waiting on teammate" reads "With teammate" on phones. Dotted lines ("Customer
+  Support · Main Office") wrap between whole segments and never start or end a line with a "·" (`Dotted` in
+  `employee-b/parts.tsx`). More and the pages it opens (Profile, Help, Account, Notifications, Updates) light Home, with
+  `aria-current="true"`. Focus rings are white on the teal hero and drawn inside full-width rows. A field's error sits
+  under that field. Offline is one dark pill above the tab bar. The shift sheet's shift card keeps its 16/18px inset. Open
+  shifts say "Next week" on the place line, not as a chip. Help, Calendar and Privacy open with the same grey down caret.
+  A phone held sideways keeps the corporate page (unchanged; an 844x390 full-page screenshot loses touch emulation and
+  draws the desktop rail, which is a capture artifact).
+
+## Direction B for the remaining surfaces (Jose, Nov 8, 2026: decisions on the mocks)
+Mocks: Lead (phone + desktop), Employee desktop, Tablets (Option A vs B), Sign-in/public pages + Clocker.
+- **Lead.** Leads use the Employee's Direction B screens and tab bar (Home, Schedule, Time, Pay when statements are on,
+  Requests; More on the avatar). Their extras live where they belong: "Today's team" (Message today's team) on Home and the
+  "Shift lead" marker on shifts and in Schedule. Desktop: the Owner desktop shell with Lead's entries; Home's white action
+  is "Message today's team"; desktop Profile adds a small "Calendar and alerts" card.
+  Built Nov 8, 2026: the shell sets `data-nv-b` and `data-nv-corp` for every role, so a Lead gets the Employee's
+  Direction B screens, tab bar (Home, Schedule, Time, Pay when statements are on, Requests; More on the avatar), sidebar,
+  desktop layout and finder (`navigation.ts`, `app-shell.tsx`, and each page's `corporate` choice now include LEAD). The
+  Lead's own pieces are small additions to the Employee screens: Today's team on Home (Message today's team opens the
+  existing Updates compose; shown when Updates is on, as before) and, on desktop, the band's white "Message today's team";
+  "Shift lead" with "You're the shift lead today" on the shift card and a Shift lead chip in Coming up; a "Calendar and
+  alerts" card on desktop Profile. Tablets (768–1023px) show what an Employee's tablet shows (Today's team waits for the
+  tablet layout). Not matched: the mock's third glass figure (On shift now), the sidebar's role line and profile footer and
+  the top bar's breadcrumb (the Employee desktop shell is kept, with its Search), a Shift lead chip in the Schedule week
+  card, and the single-column desktop More (the Employee's two columns are kept). The On shift now figure, a role line
+  and the week card's Shift lead chip were built in the final round (below).
+- **Employee desktop.** The Owner desktop Direction B system for Employee pages (sidebar Home, Schedule, Time, Pay,
+  Requests, More: Updates, Notifications). A shift opens as a right-hand panel (like Owner timecards); Schedule has a
+  seven-day week card; the Notifications sidebar count is teal (not urgent); the Requests band shows Waiting and Needs your
+  answer counts. Pay statements show no amounts.
+  Built Nov 8, 2026: from 1024px an Employee page shows its Direction B screen (the phone's `BScreen`, same reads, links,
+  actions and states), laid out by `src/app/app/employee-b-desktop.css` over the Owner desktop shell (`owner-b-desktop.css`
+  now serves every `data-nv-b` role). Pages whose B screen lives in the phone presentation (Requests, Pick up and swap,
+  Time off, Availability, the request forms, Updates, Notifications) take it there too (`useEmployeeBScreen`), and the
+  shift sheet and weekly confirmation mount on the B side (`employee-b/viewport.tsx`). Desktop-only pieces are marked
+  `eb-desk` (the seven-day week card, band actions, the Requests figures and Shift requests card); phones and tablets are
+  unchanged. Round 2 (Nov 8): Past timecards opens the week beside the list, Pay history is one table, Availability draws
+  each day's hours as bars on a 6 AM – 12 AM line, Privacy and Terms list their sections on the left, Write an update and
+  the other band actions sit on the band, tabs carry their counts, and the shift panel says what changing it means.
+  Search (a default until Jose decides): Employees get the top bar's Search on desktop, listing only their own pages
+  (Home, Schedule, Time, Pay, Pay history, Requests, Time off, Pick up and swap, Availability, Notifications, Profile,
+  Help); no actions, people or places, and no manager read. For you as a list and its detail side by side was built in the
+  final round (below), with the request's own read fetched when it is chosen.
+- **Tablets (768–1023px), all roles: Option B "small desktop"** — the desktop Direction B with the collapsed icon rail (48px
+  touch targets), as workforce web apps do on tablets; phones keep the bottom tab bar, landscape phones keep the phone
+  layout. The Schedule week grid stays a week grid at 768 (long times may take two lines).
+  Built Nov 8, 2026: the desktop Direction B layers (`owner-b-desktop.css`, `employee-b-desktop.css`, the kit and Employee
+  look rules, and the Employee B-screen hooks) now start at 768px, except on a phone held sideways: a touch screen
+  (`pointer: coarse`) under 501px tall keeps today's phone presentation (media `(min-width: 1024px), (min-width: 768px) and
+  (min-height: 501px), (min-width: 768px) and (pointer: fine)`). The sidebar is the existing icon rail (48px targets, labels
+  as tooltips and aria-labels, a red Things to do badge, a teal Notifications badge, the workspace tile on top); a tablet
+  block at the end of each layer moves the page 28px from the rail, keeps Owner Home's Needs you across with Payday and This
+  week side by side, keeps the Employee and Lead Home's two columns, and stacks the other two-column screens in the phone's
+  order. The Owner week grid holds from 560px of content (it was 760), so it stays a week grid at 768. The shift panel and
+  the timecard panel are right-hand panels as on desktop.
+- **Sign-in and public pages.** Phone: teal brand area (wordmark, Español, greeting, workspace) with the form as a lifted
+  white card. Desktop: teal brand panel (the app's own product line) beside a 440px form card; policy, 404 and error pages
+  use the band with an 860px reading card. Keep the time-of-day greeting on phones. The decorative "404" goes ("Page not
+  found · Error 404" stays). Status colours: red stops you, amber means wait, green is done.
+  Built Nov 8, 2026: the Quiet sign-in shell (`QuietAuthShell`: sign in, Forgot access, New password, Activate account,
+  Welcome and Access help) and the policy pages (Privacy, Terms, Support, Account deletion) take
+  `src/components/auth-premium/auth-b.css`. Below 1024px (phones, tablets and phones held sideways) the top bar, the back
+  link and the title paint a teal band and the form is a lifted white card; from 1024px a teal brand panel (wordmark,
+  "NEVORA Workforce", the brand line and its support line in EN or ES, Powered by VELANI LLC) sits beside the 440px form
+  card, with Español as a pill at the top right and the links under the card. Policy pages are the band with an 860px
+  reading card on every width. 404 drops the decorative "404" and reads "Page not found" over "Error 404" on the band with
+  its card and the Clocker hint. Errors are red, notices green. Forms, actions, messages, redirects and copy are unchanged;
+  the Clocker's routes and styles are untouched. The shared error screen and the mobile-access variant were done in the
+  final round (below); not built: the error line inside the card as the mock draws it.
+  Nov 8, 2026 (small round): on a desktop the policy pages (Privacy, Terms, Account deletion) list their sections on the
+  left as a sticky contents card beside the reading card (a link jumps to its section and opens it); Support, with no
+  sections, keeps one card; phones and tablets are unchanged. Owner payroll's Fix page says "Nothing stops this payroll"
+  in the Owner empty-state card (on the card's text edge, not centred), and on phones a payroll's totals sit on the
+  18px text edge like the People row and every other row.
+- **Clocker.** Release 1 kept its tablet design until Nov 8, 2026; it is now Direction B (next section).
+- **Final round (Nov 8, 2026; decisions taken for Jose by the coordinator).**
+  Decisions: (1) Search: Employees and Leads keep the desktop Search listing only their own pages (the default recorded
+  under Employee desktop is now the decision). (2) Lead desktop shell: it stays the Employee shell; the only addition is
+  a role line under the workspace tile, "Lead · <their location>" from data the shell already has. The shell has no
+  location in hand, so it reads "Lead"; Employees show nothing new. The line shows with the workspace name only (not on
+  the icon rail, not on phones).
+  Built: For you on a desktop (1024px and wider) is the list with the chosen swap or offer beside it: the right-hand pane
+  shows the first request until one is chosen (the My schedule card when the list is empty) and holds the request
+  page's own cards (status, the shifts, Your response, history). Its details come from the same per-request read the
+  request page uses, fetched in the browser when it is chosen; the list read, the endpoints and the response handlers are
+  unchanged, and a response is sent only while the pane still shows that request. Enter on a row shows it and moves focus
+  to the pane's heading; Escape (or the Back to the list control, shown on keyboard focus) returns focus to the row; a
+  click keeps focus on the row; a row's address still opens the request page in a new tab. Phones and tablets keep
+  opening the request's page. Lead Home: with a current shift the hero's first glass figure is the green dot with "On
+  shift now", the time range and "Shift lead · <role>" when they lead it (from the snapshot's current shift); on a phone
+  it takes the first row and This week and Next payday share the second, so it fits at 320; tablets and desktops keep
+  three across. Employee Home is unchanged. Schedule week card (desktop and tablet), Lead only: a "Shift lead" chip on
+  the day block of each shift they lead ("Lead" on a tablet's narrow day), from the existing designated-lead flag; the
+  block's status chip no longer repeats it. Public error screen: the root and global error boundaries show the 404's
+  Direction B band ("This page could not be loaded" over "Something went wrong") and reading card with the same words,
+  Try again (the same retry) and Go to sign in, for every address outside /app; /app addresses keep the in-app screen
+  exactly. Mobile Access (off in production) on a phone: its header and back link paint the teal band and its form card
+  (or Welcome's and Access help's content) is the lifted white card with the title in ink and the passkey button at the
+  card's foot; tablets and desktops were already the Direction B sign-in. The Clocker is unchanged (captured before and
+  after, pixel-identical).
+- **Phone app screens and the Owner device popover (Nov 9, 2026).** In the NEVORA phone app (user agent
+  `NEVORA-Native/iOS/1` or `/Android/1`) the Employee's Alerts page is the browser Alerts screen's Direction B: the band
+  with the way back to Notifications, one card with the state as a 64px ring (teal on, red blocked, amber check, grey off
+  or checking), its explanation and the stacked pills (Turn on alerts, Check again, Turn off alerts as a red outline,
+  Review app setup); the turn-off and use-for-this-account confirmations are their own cards under it, and when the
+  workplace hasn't made app alerts available the card says so. Same words, handlers, focus and `data-native-*` hooks;
+  the card view stays as the sideways-phone fallback (`native-shell/device-settings.tsx`). "Use NEVORA in your web
+  browser" (the app's Manager and Lead screen) is the 404's band with the wordmark and title, one card with its two
+  lines and the Sign out pill (same form action). The Owner's Device settings popover (browser web push, and the phone
+  app's card) is a 22px white card with the soft layered shadow, an Inter title with Done as a quiet pill and 48px pill
+  actions; above the tab bar on phones, centred over a light scrim from 768px (`portal-device-setup.css`). In the app
+  the Owner has no visible opener for it (the Profile row is gated by the browser web push flag).
+
+## Leave, staffing repairs, coverage and failure recovery (Nov 9, 2026; Jose approved Codex's backend repairs)
+Contract: `docs/handoffs/business-backend-repairs-20261109/CLAUDE-CONTRACT.md`. Direction B values only; no new colours, type
+or components beyond the small pieces below (`src/components/leave-staffing/`, `src/components/coverage-minutes/`).
+- **Before Approve.** A waiting time-off request's page (Owner, Manager) reads `/api/manager/time-off-staffing` for the
+  request's weeks and shows a "Published shifts" card above Decline / Approve: no overlap (green ring), or the person's
+  overlapping published shifts (day · time · place) with what approving does ("The whole shift (8 h) would need someone
+  else", from `overlapMinutes`) and that approving keeps the shift published and makes it a shift to fill. Checking,
+  "Couldn't check for shift conflicts" (with Try again; never "no conflicts"), expired ("Check again before you decide"),
+  paused and too long (over six weeks) are their own states. Approve is the same form and handler. In Things to do a
+  waiting row keeps Decline and shows Approve only once that check came back clear; otherwise its teal button is Review
+  (the request's page) and the row says "On the schedule: Tue, Nov 10 · 7:00 AM – 3:00 PM · …" or why it couldn't check.
+- **Shifts to fill.** An approved-leave repair (`purpose: STAFFING_REPAIR`) is scheduling work, never a decision: "Fill
+  Maria Rivera's shift" over its day, time and place, an amber "Approved leave" chip (red "Needs an Owner" when the approval
+  had no reviewer) and Fill, which opens the schedule with week, location, person and repair kept (`#leave-repair`). It is
+  its own group first in the Open shifts card of Things to do (`#todo-repair`), a row in Home's Needs you ("Fill 2 shifts
+  for approved leave"), "Shifts to fill" on the older Home card, and its own group in Tasks. No Approve, Decline or dismiss
+  anywhere; it goes away only when a published schedule no longer overlaps the leave.
+- **Schedule from a repair.** A note card (amber edge, calendar ring) leads the page: "Fill Maria Rivera's shift", the
+  approved leave over this published shift with its length, "Assign someone else or change the shift, then publish. Draft
+  changes don't clear this", who owns it (you, the approving manager, or an Owner when unassigned) and Open the shift (the
+  existing edit). It takes focus on arrival; the phone opens on that day and marks the person's shift "Approved leave";
+  the desktop grid marks the person's row with an amber edge. Once published away it says "This shift no longer needs a
+  replacement". The note reads its data through the authorized read; the link's parameters only choose it.
+- **Employee and Lead.** A request's page adds "Your shifts during this time off" when it overlaps their published
+  shifts: approved leave reads "Your time off is approved" (green), the shifts are listed apart, and a calm line says the
+  manager will take care of them (no cover or swap needed); waiting requests say the manager will see them. Nothing shows
+  until the check is back; a failed or expired check says so with Check again. Only their own records are read.
+- **Coverage.** Coverage is schedule health's `coverageMinutes`: Staffing, Positions and Lead as three separate figures
+  ("58%" over "193 h 30 min of 336 h"), never summed; no requirement reads "—" ("No lead required"); coverage rules not set
+  up read "Not set up", never 0% or 100%; a shortfall's figure is amber and never rounds to 100%. Shown on Home's This week
+  and the Schedule (phone: the hero's week card; tablet and desktop: under the grid's bar), for the chosen location. The
+  phone Schedule's day bar (assigned rows over assigned plus open rows) is gone; open shifts keep their own counts.
+- **X-Nevora-Failure.** One mapping (`src/lib/http/nevora-failure.ts`) and one notice (a white 22px card above the tab bar
+  on phones, bottom right on desktop): session ended (Sign in), access changed, page out of date (refreshed with current
+  authority), connection can't be confirmed (no sign-in suggestion, no address shown) and a malformed request (no retry as
+  another command). Reads clear their data for the first four and say "couldn't load" (unknown, never zero) for an
+  unavailable source; a conflict rereads. Command bodies (unknown outcomes) still decide outcomes and operation IDs are
+  never remade. Used by the Action Center, Things to do's count, timecards, Insights, time corrections and the leave reads.
+
+## Clocker Direction B (Jose approved the round-2 mock, Nov 8, 2026)
+Mock: scratchpad mock-clocker (37 frames, sections 1–6). Direction B is now the **only** Clocker presentation.
+- **Retired:** the `NEVORA_CLOCKER_UI_V2` switch (no longer read; harmless if still set) and the Signature deep-teal
+  Clocker look with its Spanish second lines. Removed: `clocker-shell/setup/pin/punch/v2.module.css`, `clocker-motion.ts`,
+  `CLOCKER_ES`/`<Es>`, and the Clocker's dark-mode rules. Kept from the light presentation: the complete English/Spanish
+  switch remembered per tablet, "Stay on break", and the status words the scripts press. Kiosk buttons and headings are
+  sentence case apart from the exempt words (Clock In, Clock Out, On Break, Clocked In, Off Clock, Try Again, PIN, NEVORA,
+  Clocker; NV-173, Nov 10, 2026).
+- **Layout:** a teal band (landscape: a left panel, 320–480px; portrait and phones: across the top) with the wordmark and
+  "Time clock", the company logo chip when a logo is set or else the workspace name chip, the live clock as the large
+  figure (about 120px landscape) with the location pill and date under it, and the tablet status in glass at the foot.
+  The task is one lifted white card (22px); in portrait it sits low, toward the hand. Light only, Inter (bundled).
+- **Rings and icons:** every headline status icon is a 64px ring: red stop, amber wait or check, green done, teal
+  information. Phosphor bold. Action rows are 84px with a 56px icon circle and 28px icon.
+- **PIN:** 76px keys in landscape, up to 96px in portrait (grow with the screen's height), a teal-ringed field, dots fill
+  teal, a pressed key takes a teal tint. A wrong PIN: the field turns red and shakes once (220ms), the digits are already
+  cleared (as before), and the message sits under the field with an icon. Too many attempts (amber hourglass) and PIN
+  check unavailable or no connection (red Wi-Fi-off; red tablet for "Reconnect this tablet"; red for "could not clear")
+  replace the keypad with one state card and the existing Check connection. No lockout countdown: the server's
+  `retryAfterSeconds` is a fixed 300, not the time left. A browser-level failure ("Failed to fetch") now reads as the
+  server's own "PIN verification is unavailable. Check the connection and try again."
+- **Clock state:** the person's initial in their face tint (from the first name, the only name the kiosk has) beside
+  "Hi, James."; the state chip (Off clock grey, Clocked in green, On break amber); the likeliest action leads in teal. Done
+  is a full-width 56px secondary button; Refresh clock state and, when the tablet holds saved references, Help with a
+  saved action are teal links under it. No scheduled-shift line (the clock-state read has no schedule).
+- **Recorded:** a 96px green check that draws in, the recorded time as the hero figure, and a new line (approved copy):
+  "Have a good shift, {first}." / "See you next time, {first}." / "Enjoy your break." / "Welcome back." (Spanish in
+  clocker-copy.ts). "Saved at …", the action reference and the 8-second bar stay. Recording says what is being recorded
+  ("Clocking in {first}…" and the others) with a progress bar.
+- **Motion:** the shake, check draw-in and progress run only without reduced motion; under reduced motion the field only
+  turns red, the check fades in, and bars and spinners are still. Buttons press to .96; keys use the tint; hover only on
+  hover-capable screens; no tap-highlight flash.
+- **Unchanged:** the flow, every timer (20s PIN idle clear, 30s private screen, 10s reminder, 8s receipt), PIN limits,
+  punch rules, the recovery journal, the photo flow, privacy clearing (Escape, hide, leave), and every request and
+  response contract. Keyboard: the PIN field has focus, digits type in, Enter submits, Escape clears; Tab starts at Skip to
+  time clock, then the keys, Continue and Español; each new state focuses its heading.
+
+
+## Direction B foundation: tokens and shared specs (review batch B1, Nov 10, 2026)
+Source: `docs/product/review-2026-11-10/` (batch B1). These settle values the review found drifting between layers. They
+change no flow, read, handler or contract.
+- **Tokens:** `src/app/b-tokens.css` defines the `--b-*` set on `:root` (imported in the root layout), so the shell, the
+  desktop and tablet layers, the Clocker and the public pages can read it; `owner-b.css` keeps its own copy with the same
+  values. Only colours, sizes and timings live there; it paints nothing. `src/app/app/b-foundation.css` (imported last in
+  the app layout) holds the shared rules below.
+- **Band:** one gradient, `--b-band` = 160deg #0C726C 0% / #0B6E69 40% / #08504C 100% (no lighter start, no highlight under
+  text); `--b-band-solid` #0C726C is painted beneath wherever the band is a border-image, so contrast tools read the real
+  pair. Text on the band: `--b-on-band` #FFFFFF for titles, figures, labels and anything on glass; `--b-on-band-2`
+  rgb(255 255 255 / .86) for sub-lines on the solid band only (4.7:1 at the lightest stop). No other white alphas.
+- **Greys:** `--b-grey` #6A7176 on white (inactive tab labels too, 10.5px stays); `--b-grey-on-fill` #5E666B on grey and
+  tinted fills; `--b-field-edge` #8C9397 for field and switch edges (3:1). Counts are 12px/700; nothing else below 12px
+  except the 10.5px tab labels; `.c-ampm` is .85em.
+- **Status colours:** red stop, amber wait or check (an unassigned repair is amber "Not assigned"; a call-out, an
+  update that needs you, "not set up" counts, Needs reply), green done (Published, finished setup steps), teal
+  information. The bell's unread mark is a coral dot (`--b-coral` #FF6B5E) at every width; sidebar counts are teal.
+- **Elevation:** `--b-elev-1` (cards), `--b-elev-2` (sheets and menus), `--b-elev-glow` (the teal primary), one shadow
+  colour rgb(16 40 38).
+- **Pills:** every button, chip and segment thumb on B surfaces is a pill (999px), including `.b-btn--full`, `--big`
+  and the ink tile's button. One teal primary per screen; rows in a list share one kind (ghost), 44px tall, 96px min.
+- **Targets:** 44px hit areas (the kit's `::after`) on week arrows, sheet Save/Edit, segments, glass buttons and row
+  buttons; 48px footer actions. Touch tablets (`pointer: coarse`, 768px and up) get a 44px control floor and a 48×48
+  rail with labels.
+- **Focus:** one ring, `--b-focus-width` 2px at a 2px offset: teal #0B6E69 on cards and the canvas, white on the band;
+  inside rings where a card or strip clips (first/last rows, live tiles, the selected day).
+- **Hover, press, disabled:** hover only inside `@media (hover: hover)`, `--b-hover` #F7F9F9 in white cards; press is
+  scale .96 over 150ms ease-out (none under reduced motion); disabled is #F0F2F3 with #8C9397 text, no opacity fades.
+- **One select:** 48px, radius 14, 16px text, 1px `--b-field-edge`, a bold 16px CaretDown in #6A7176.
+- **Disclosures:** CaretDown (rotates when open) for anything that expands; CaretRight only for rows that navigate;
+  timecard rows always show their chevron.
+- **Icons:** Phosphor bold in the shell (tab bar, sidebar, rail, desktop bell, menus); the current tab is filled.
+- **Theme:** light only. `nv-theme` is cleared and dark rules are gone from the B layers.
+- **Type roles (defined, adopt page by page):** caption 12.5/16, meta 13.5/18, body-sm 14.5/20, body 15.5/22,
+  title-sm 17/22.
+- **CSS layering plan (NV-066, NV-234, NV-235, NV-236; not done in B1):** move each era into `@layer base, signature,
+  clean, corp, quiet, b` imported from the app layout, then remove `!important` and the fake-id `:not()` steps file by file,
+  starting with `owner-b-shell.css`; fold the shared B-screen desktop rules of `owner-b-desktop.css` and
+  `employee-b-desktop.css` into one block keyed on `[data-nv-b] .b-screen` and decide their 13 conflicts once; fold
+  same-file duplicate rules and split mega-selectors per page pattern; only then audit what B still takes from
+  `premium-clean-manager.css`, `portal-premium.css` and `globals.css` and stop setting `data-nv-clean`. Each step needs a
+  full-route visual diff, so it is a batch of its own. B1 did the safe part: `:not([data-nv-b-off])` became `[data-nv-b]`,
+  the dead `employee-style.css` / `data-nv-e5` rules and the dark blocks were removed.
+- **Still to adopt elsewhere:** the Clocker ("TIME CLOCK" label) and the sign-in and public pages (band text, auth
+  buttons) should read `--b-on-band`/`--b-on-band-2`, `--b-band`, the pill radius and the focus pair from `b-tokens.css`.
+
+## Flows and states (review batch B2, Nov 10, 2026)
+Source: `docs/product/review-2026-11-10/` (batch B2). No read, handler, authorization or contract changed.
+- **Offline (Jose, Nov 10):** when the connection drops and the person is still here, every page keeps what it loaded,
+  read-only: no more reads, no expiry, and the page's action pills and form submits are disabled (the disabled pair;
+  rows that only open details still work). The shell's line says "Offline · updated 9:24 PM" with an amber dot (the oldest
+  time a page holds); if nothing is held it says "You're offline. Reconnect to see the latest." Stepping away (window
+  hidden or blurred) still clears, as before, and reconnecting runs a fresh check. The X-Nevora-Failure clears are
+  unchanged. Readers use `controller.hold()` (`src/lib/private-snapshot-client.ts`) or the same rule
+  (`src/lib/offline-hold.ts`); the access frame keeps its page the same way.
+- **One state card:** `BState` in the kit: a 48px icon circle (grey loading or locked, amber offline or paused, red
+  failed), a 16/22 title, one line and one teal pill, left-aligned. The access frame's paused/failed state, the
+  employee state cards, the in-app 404 and every closed page use it. Say the state once.
+- **Closed pages:** never a silent redirect. `OwnerOnlyNotice` says whose page it is, names the workspace's Owners when
+  they can help ("Jose Natal can give you payroll access.") and offers the page that does the job for this role.
+- **Manager navigation** is built from the last current scope while a check is slow, failed or offline; an access
+  denial forgets it. The separate "Management menu unavailable" card is gone; the page's one Try again also re-checks the
+  menus.
+- **Things to do** lists reviews that wait (time corrections, timecards) after today's cards under "Waiting for review";
+  today's count is unchanged. "Done and older" is "Later and done" (plan ahead and earlier this week).
+- **Counts name their scope** ("Oct 26 – Nov 1 · 3 need attention first"); the Timecards filter is "Need review", distinct
+  from "Approve N ready". Home's Payday never says "Ready now" for unreviewed work, and its unlabelled segments are gone.
+- **Approving a timecard** keeps the table while the fresh read runs in the background; the batch controls show only for
+  a selection, a review, results or an unknown outcome.
+- **Schedule:** Add shift and Build and publish are in the "…" menu at every width; the band's white pill is Publish while
+  something waits, otherwise Add shift. A shift on a day of full-day time off has an amber ring, a warning glyph and
+  "Needs cover".
+- **Menus and sheets:** a sheet is modal (the rest of the page is inert); a menu popover is a named group; the finder keeps
+  the current option in view, is 22px with the popover elevation, and lists every Employee page plus three actions
+  (Request time off, Swap a shift, Set availability; Jose, Nov 10). Phone sheets sit on the bottom edge; scrims cover the
+  whole window.
+- **Help** is in the account menu and above "Powered by" in the sidebar.
+
+## Owner and Manager polish (review batch B5, Nov 10, 2026)
+Source: `docs/product/review-2026-11-10/` (batch B5). Presentation only; reads, handlers and contracts unchanged.
+- **Later and done** is a Direction B page on phones too (the band with "‹ Things to do"), no white header.
+- **Row icons:** every corporate row that leads with an icon (More, Settings, Pay history, Time tools) draws it in a 36px
+  teal-50 circle with an 18px bold glyph; Settings rows each have one.
+- **Status chips:** off-target hours are chips (amber "16 h over", grey "8 h under"); Insights' over-plan bar is teal to
+  the plan and amber past it, with an amber "+38 h over plan" chip; "not set up" is an amber chip; decided time off has a
+  green "Approved" or grey "Declined" chip; relative times always read "… ago".
+- **Desktop schedule grid:** published blocks teal-50 with teal text, drafts grey, open shifts an amber dashed outline, a
+  12px position line, and a three-chip legend beside the week's state; the person column is at least 200px.
+- **One read-only field:** a grey value with no field edge, a 16px bold lock and the reason under it (Edit shift's
+  Location; the Company profile pattern). Phone in an Owner's profile opens their team page (a chevron) like Email.
+- **Single choices** show a radio circle (teal ring and dot when chosen). A feature that can't be turned off now is drawn
+  on, with a lock. The Branding preview has a dashed edge and a "Preview" tag, and its button is a pill.
+- **Panels and sheets (Owner/Manager):** title left at 20/26 700, Done a teal 600 text button with a 44px target.
+- **Empty states** use the state card (icon circle, 16/22 title, line, pill), left-aligned (Payroll's "This payroll isn't
+  available").
+- **Payroll:** an overdue period's Prepare is the page's one filled action; the current period's button steps back.
+  Documents have one labelled Download pill beside View.
+- **Finder:** each row leads with its kind in a 28px circle (bolt, page, initials, pin); a typed query that matches more
+  than a group shows says "6 of 11 people · keep typing to narrow".
+- **Activity:** newest first with Today on top; anything dated after today is one "Coming up" card with amber icons.
+- **Punch photos off:** the moment switches are disabled and look it. Things to do's More shortcuts are sticky on desktop.
+
+## Employee, Lead, tablets and the phone app (review batch B6, Nov 10, 2026)
+Source: `docs/product/review-2026-11-10/` (batch B6). No read, handler, authorization or contract changed; server and
+native needs are listed for Codex.
+- **Lead Home (Jose approved NV-161, NV-289):** when the hero already shows "On shift now", the shift card is "Your shift"
+  with the Shift lead chip only (no "Until" chip, no sentence). Things to do comes before Today's team; on desktop and
+  tablets Today's team and Coming up are one right-hand column (no hole; focus goes left column, then right). The
+  "isn't published yet" note is Coming up's footer.
+- **Shift lead marker:** it leads a row's sub-line ("Shift lead · Customer Support · Main Office") on Home and Schedule, so
+  Now, Starts in and Tomorrow never hide it. When a Lead leads every shift of the week, Schedule says "You lead all 7
+  shifts" once (week card header, list header) and only today's block keeps the chip.
+- **Schedule (desktop, tablets):** Confirm this week leads the page across its width; a confirmed week shows a green
+  "Week confirmed" card in its place; the button keeps its place and width while it confirms. The week card's footer
+  keeps only the publication sentence; Coming up beside it shows two rows on desktop. Day blocks share one height, their
+  chips sit in one row at the foot on white; on tablets a block is the time (two lines when long) and its chip.
+- **One edge:** the glass figure strip spans the grid; reading pages are one 812px column, band action included; card
+  text blocks use the rows' 22px inset on desktop; Updates' search starts on the band's text edge.
+- **Counts on tabs** are a small pill beside the label at every width (amber for For you). **Write an update** is the
+  band's action at every width (glass on the phone). Earlier notifications show their date once, with a chevron.
+- **Forms:** Delete account hides the tab bar, bell and avatar on a phone; Delete my account is a working red pill from the
+  start; the "I understand" line is a 48px target; on desktop "Confirm it's you" is the card (no card in a card). Every
+  role's delete flow uses a checkbox and a red-tinted "access ends" icon. Fix my time is one white card over the hero.
+- **Bare links:** `/app/exchange/swap` and `/app/exchange/callout` without a shift open Schedule asking for the shift
+  (`?intent=swap`, `?intent=callout`), never a silent list.
+- **Phone app:** the Alerts card has "This device" as a grey eyebrow over the ring and a failure's own message inside the
+  card (amber); the Owner's Profile row "Alerts on this phone" opens the app's alerts popover; the unsupported page shows
+  one wordmark.
+- **Motion:** the hero never fades in; the cards' entrance plays on a session's first page only (`b-entrance.tsx`).
+- **Not done here:** landscape phones (NV-274) still keep the corporate phone page: moving them needs the B layers'
+  phone media queries rewritten as one alias (B8's layering work); recommended target is the tablet layout. Done in review B8 (below).
+
+## CSS layering (review batch B8, Nov 10, 2026)
+Source: `docs/product/review-2026-11-10/` (batch B8: NV-066, NV-234, NV-235, NV-236, NV-274). Presentation only; no read,
+handler or contract changed. Proved with a before/after pixel diff of every Owner, Manager, Employee, Lead and public route at
+390, 768, 900, 1024, 1440 and 844×390 (touch), and a computed-style comparison of every element (interactive states forced).
+- **One layer for Direction B (the rule for new CSS).** The Direction B app stylesheets (`owner-b-shell.css`,
+  `owner-b-pages.css`, `owner-b-desktop.css`, `employee-b-desktop.css`, `b-foundation.css`, `components/owner-b/owner-b.css`
+  and `components/employee-b/*.css`) put every `!important` declaration in `@layer nv-b { }`. A layered `!important` beats
+  every unlayered `!important` (globals, Signature, Clean, Corp, Quiet) whatever its specificity, so a Direction B rule needs
+  no fake-id ladder (`:is(#c-root, html)`, `:not(#nvd-none)`, repeated attributes) to win; inside `nv-b` only Direction B rules
+  compete, by specificity, then load order. New Direction B CSS:
+  - goes in the file's `@layer nv-b { }` block with plain selectors (`html body .app-shell[data-nv-b] …`), `!important` when it
+    must beat an older era's rule; no new fake ids;
+  - keeps normal declarations outside the layer (a layered normal declaration loses to every unlayered one), in the file's
+    "Unlayered" tail;
+  - never adds another layer name and never puts an older era's file in a layer: its `!important` rules would then beat
+    Direction B (for `!important`, the earlier layer wins and layered beats unlayered). Wrapping only some eras is how
+    precedence flips silently;
+  - never moves an `nv-b` declaration out of the layer without a check: outside, it loses to every layered one.
+  The unlayered tail of each file also keeps 42 `!important` declarations whose older competitor must keep winning
+  (the phone bell's count, which renders as a teal numbered badge, not the coral dot the B1 spec describes; a few sidebar
+  and avatar colours; see the files). Where a fake id is still in a layered selector it orders two Direction B rules
+  (206 rules); remove it only with a computed-style check.
+- **Counts (whole B set, comments excluded):** `!important` 4,003 → 3,982 (3,940 of them now inside `nv-b`); fake ids
+  `:not(#…)` 1,193 → 282 and `:is(#c-root, …)` 4,993 → 2,009. Of what is left, 47 `:not(#…)` and 1,391 `:is(#c-root, …)` sit in
+  the unlayered tails on normal declarations, which keep their original selectors (they still compete with the older eras by
+  specificity); inside the layer 235 and 596 remain, each one ordering two Direction B rules.
+- **One phone (NV-274).** `src/lib/b-viewport.ts` defines the B breakpoints once: phone `(max-width: 767px)`, wide
+  `(min-width: 768px)` (tablet `and (max-width: 1023px)`, desktop from 1024px). The B stylesheets use only these (and 359px,
+  819px, 1279/1280px refinements, `(pointer: coarse)`, `(hover: hover)`, reduced motion); never height or orientation
+  (`src/app/app/b-viewport.test.ts`). The Employee viewport hooks, the finder, Timecards and the top-bar slot read the same
+  alias. **A phone held sideways (844×390, 932×430) gets the tablet layout** (icon rail, flat teal top bar, the band) for
+  every role, as the B6 agent recommended: at 390px tall the phone layout's floating header and tab bar left too little page.
+  `kit.css` tablet tokens follow, and the older app stylesheets lost their "phone held sideways" alternatives (every media
+  alternative that needs `max-height` ≤ 500px with `pointer: coarse`, and every "except a phone held sideways" condition;
+  `src/app/globals.css`, `corp-shell.css`, `portal-*.css`, `premium-*.css`, `clean-manager/*`, `quiet.css`,
+  `employee-mobile/*` and a few page files), so their phone shell no longer bleeds under the tablet layout; the five
+  `globals.css` "short window" phone-shell queries (`(max-width: 1000px) and (max-height: 500px)`) now add
+  `(pointer: fine)`, so a short desktop window keeps them and a phone held sideways doesn't. Nothing changed for any
+  viewport that is not a touch screen 500px tall or less. Public pages (sign-in, recovery, Mobile Access) and the
+  Clocker keep their own landscape rules.
+- **One B screen on wide screens (NV-234).** `owner-b-desktop.css` opens with one block keyed on `[data-nv-b] .b-screen` (every
+  Employee and Lead screen, and Owner and Manager Home and Things to do, the only Owner screens shown wide) holding the 37
+  declarations both roles repeated; `employee-b-desktop.css` keeps only what differs. The 13 conflicts were decided once there:
+  
+  | Piece | Owner | Employee | Decided | Why |
+  |---|---|---|---|---|
+  | Band action (white/glass pill) height | 48px (kit) | 42px | 48px, pill | 48px targets; pills (B1) |
+  | Figure label (`.b-live__l`) | 13/16 | 13.5/19 | 13.5/18 | meta type role (B1) |
+  | Figure strip max width | 920px | none | none (spans the grid) | B6 "the glass figure strip spans the grid" |
+  | Tab with a count (`.b-seg` item) | grid, no gap | flex, 6px gap | inline-flex, 6px gap | B6 "counts on tabs are a small pill beside the label" |
+  | Cards' bottom padding (`.b-stack`) | 24px | 32px | 24px | Owner value |
+  | Hero row top padding (`.b-hrow`, `.b-hpad`) | 20px | 18px | 20px | Owner value |
+  | Tabs' top margin (`.b-seg`) | 22px | 20px | 22px | Owner value |
+  | Tab item padding | 0 16px | 0 18px | 0 16px | Owner value |
+  | Tab item size | 14px | 14.5px | 14px | Owner value |
+  | Eyebrow bottom margin | 0 | 2px | 0 | Owner value |
+  | Sub-line top margin | 2px | 3px | 2px | Owner value |
+  | Figure's small unit (`.b-live__v small`) | 14px | 15px | 14px | Owner value |
+  | Back link on the screen | hidden (Home, Things to do are root pages) | shown on pushed pages | unchanged | not a conflict: root pages have no way back |
+- **Folded and split (NV-235).** Same-file duplicates folded into the declaration that won (25 declarations in the B files (for example Owner desktop Home's max width 1104px, then 1152px, now 1152px once), 5 in
+  `corp-shell.css`, 7 in `auth-b.css`). 24 selector branches
+  that nested `:has()` inside `:has()` (never valid, so they never matched) were removed from `owner-b-pages.css`: its
+  "teal runs on under the hero" rules were 3,040–3,050 characters and are now about 1,100; selector lists over 400 characters
+  were split into one rule per selector (each keeps its own specificity). Note for a later round: those dead branches meant
+  the teal never ran under a card wrapped in a `div`, `section`, `form` or `.wc-content`; reviving it is a visible change.
+- **What Direction B still takes from the older stylesheets (NV-236 audit).** `data-nv-clean` stays on Owner and Manager:
+  removing it changes 280–1,630 elements on every Owner page checked. Direction B depends on:
+  - tokens declared under `[data-nv-clean]` in `premium-clean-manager.css` (`--cm-tint`, `--cm-tint-press`, `--cm-label`,
+    `--cm-label-2/3`, `--cm-sep`, `--cm-fill`, `--cm-grouped`, `--cm-sys`, `--cm-green/amber/orange/red`, `--nv-accent`,
+    `--nv-accent-strong/-hover`, `--font-family-apple`), read by Corp and B rules through `var()`;
+  - the Clean Manager schedule grid (`clean-manager/schedule.css`, `schedule/schedule-corp.css`: `.cm-block`, `.cm-add`, the
+    week table cells), Timecards, Insights, Notifications and Updates layouts, all scoped to `[data-nv-clean]`;
+  - type and spacing for shared rows and times (`.c-row__title`, `.c-time`, `.c-ampm`, `.c-num`), the sidebar (`.nav-link`,
+    `.nav-label`, `.nav-icon`), the finder options and the account menu items, and `.sr-only`;
+  - `portal-premium.css` and `globals.css` for the shell grid, base type and the legacy page components B restyles.
+  Retiring them is page-by-page work: move each dependency into `b-tokens.css` or an `nv-b` rule, then check the page with
+  the computed-style comparison before dropping the older rule. Don't delete the large files wholesale.
+
+
+## Closing pass F3 (review, Nov 10, 2026)
+Source: `docs/product/review-2026-11-10/` (closing F3). Presentation only; reads, handlers, authorization and contracts are
+unchanged. New `!important` rules are in `@layer nv-b`; the F3 rules are at the end of `b-foundation.css`.
+- **Schedule week grid (NV-044, NV-087).** The person column is 200px on a desktop grid (B5) and 148px when the grid card is
+  under 820px wide (tablets, B6), where long times take two lines. A table cell ignores `min-width`, so both are widths.
+  The three-chip legend sits inside the card's top-right corner on the "Covered this week" line.
+- **Route errors (NV-090).** A schedule route error is a white note under the band (red warning in a tinted circle, the
+  message, Dismiss, which drops `?error`), above the grid; never a pink banner inside the band.
+- **Glass on the band:** Notifications' All / Unread (tablets and desktop), Clocker PINs' search and filter (every width),
+  and Hours this week's week stepper (phones) join the band like Team's search and Updates' tabs.
+- **One menu (NV-219)** on tablets and desktop: white, 16px corners, the popover elevation, 6px in, 44px items with 8px
+  corners; a chosen option's check trails its label. **One panel header (NV-221)** for every role: title 20/26 700 at the
+  left, Done a teal text button with a 44px target. An inspector panel leaves by fading 150ms while moving 12px right, and
+  the page re-flows after (NV-251).
+- **Tokens (NV-229, partly):** in the Direction B files a colour literal that equals a `--b-*` value is written as the token.
+  Teal glows are `--b-elev-glow`; disabled controls use the one pair; empty-state titles are 16/22 600 and sheet and dialog
+  titles 20/26 700; row hovers are `--b-hover` inside `@media (hover: hover)`.
+- **Bands (NV-115, partly):** sign-in and the 404 band read `--b-band`; the Clocker keeps its approved band glow (round 2) until Jose decides. The phone hero keeps its 180deg
+  piece-by-piece gradient and the desktop band its solid top under the flat top bar, so the pieces meet without a seam.
+- **Small rules:** the Settings hub starts 24px under the band and ends on Home's right edge; tabbed Payroll pages have no
+  back link on tablets and desktop; payroll money is ink 600 and a replaced payroll nests under its correction on every
+  width; Availability's Save appears once something changed; Time's Right now is the first cell on desktop; Update detail's
+  title is in the phone band; the Branding preview's tag sits inside the preview.
+
+## Fix pass F5 (review, Nov 11, 2026)
+Source: `docs/product/review-2026-11-10/` (NV-074, NV-170, NV-103, NV-012, NV-011). Presentation and client code only; reads,
+handlers, authorization and contracts are unchanged. The new rules are at the end of `b-foundation.css`.
+- **Loading placeholder (NV-074).** The access check (`ScopedReadFrame`) and a tab tap's `loading.tsx` (`CorpSkeleton`) draw one
+  Direction B placeholder, `BLoadingScreen` in the kit: the band, a title bar and two 22px cards of #ECEEEF bars, never the retired
+  white header. Its band is each main tab's loaded height (`--b-ph-band`, keyed by role and by the sidebar entry that is the current
+  page): Owner and Manager Home, Schedule, Time, Payroll and Team; Employee and Lead Home, Schedule, Time, Pay and Requests. An
+  Employee or Lead screen whose first card is still loading keeps the same height. Tablets and desktop draw it too (it is treated
+  like Home's wide B screen). Other routes get the band at its default height. Verified Nov 11 at 390 and 1440 with the access check
+  held 1.6 s (Owner, Manager) and a tab tap over a throttled connection (`loading.tsx`, every role): the band's bottom moved 0px
+  between placeholder and page on all ten tabs. The placeholder band is teal; Payroll's loaded band is its darker green.
+- **Sidebar and rail focus (NV-170).** On tablets and desktop an entry's focus ring is its 2px inset teal edge, drawn above its count
+  badge; the tablet rail's column is 48px, like its entries, so nothing clips the ring.
+- **One segmented control (NV-103).** On the band (glass) and on white: a 44px pill track 4px in, 36px pill items (the 44px hit area
+  is the track), 14/600 labels, 16px item padding on tablets and desktop, and a 20px count pill of 12/700 beside the label (the
+  label's colour at 16%, teal on the white thumb, amber for For you). Tokens `--b-seg-*` in `b-tokens.css`; the older B rules read
+  them. Team's filters are this control on white. Underline tabs inside a card (Timecards' All / In progress) stay. Phone tracks
+  keep equal columns, and a phone track with three or more items keeps its narrower type. On narrow phones (320–359px) a track of
+  three or more items takes 12.5px labels and an 18px count pill (11/700, 4px in and 4px from its label), and, unless its thumb
+  slides (`data-slide`, whose position assumes equal columns), sizes each item to its label plus an equal share of the rest, so
+  Things to do's four filters fit their track and Insights' "This week" isn't clipped. Updates' filter on tablets and desktop sits
+  on the band like Notifications' (it sat on the canvas with white labels): the band rule reads its depth from `--b-band-below`
+  (28px unless a page sets it; Updates 128px), and the grey on-white track rule skips it.
+- **Notifications "didn't load" in the harness (NV-012).** Not a client race: the first read fires about a second after load and
+  answers 200. The Owner and Manager notifications read takes 5–6 s in the dev harness (Employee: 1–2 s), so the 15 s private-read
+  window, less two round trips, expires before the renewal lands; the controller then drops the data on purpose. Nothing changed.
+  Re-checked Nov 11 (fictional data, 1440): the Owner's page and bell reads answered 200 in 5.6–6.1 s; rows showed at about 8 s and
+  "Notifications didn't load / Try again." at 11–12 s, before the renewal could land. The Employee's reads answered in 0.5–0.8 s and
+  stayed. The 15 s window is a privacy rule and stays.
+- **Desktop More (NV-011).** Every page a phone's More reaches is on tablets and desktop in the sidebar (its More group), the account
+  menu, or one step away on the page that holds it (D3): a Manager's Scheduling rules in Schedule's menu, an Employee's Availability
+  on Schedule. An Employee's or Lead's account menu also has Privacy and terms, with Help, as on the phone's More.

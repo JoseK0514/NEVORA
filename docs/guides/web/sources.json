@@ -30,7 +30,12 @@
         "src/lib/payroll/calculation-mode.ts",
         "src/lib/auth/recovery.server.ts",
         "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
-        "src/lib/payroll/source-coverage.ts"
+        "src/lib/payroll/source-coverage.ts",
+        "src/app/app/schedule/edit/page.tsx",
+        "src/components/company-access/scoped-manual-shift-form.tsx",
+        "src/components/shift-review-recovery.tsx",
+        "src/components/payroll-period-close.tsx",
+        "src/components/period-close-history.tsx"
       ]
     },
     {
@@ -52,7 +57,12 @@
         "src/app/app/ai-manager/page.tsx",
         "src/components/management-close-form.tsx",
         "src/components/delegated-time-correction-form.tsx",
-        "src/lib/payroll/source-coverage.ts"
+        "src/lib/payroll/source-coverage.ts",
+        "src/app/app/schedule/edit/page.tsx",
+        "src/components/company-access/scoped-manual-shift-form.tsx",
+        "src/components/shift-review-recovery.tsx",
+        "src/components/payroll-period-close.tsx",
+        "src/components/period-close-history.tsx"
       ]
     },
     {

@@ -29,7 +29,7 @@ it('known confirmation succeeds only with actual confirmation state',()=>{
 });
 it('closed and approved-callout shifts do not offer requests while future own shifts use encoded source identities',()=>{
  const ended=html({observedAt:'2026-10-12T22:00:00Z'});
- expect(ended).not.toContain('Swap with a teammate');expect(ended).not.toContain('Unable to work this shift');
+ expect(ended).not.toContain('Swap with a teammate');/* B7 wording (NV-119): the action is "Can’t work this shift" */expect(ended).not.toContain('Can’t work this shift');
  expect(html({shifts:[{...shift,isCalloutApproved:true}]})).not.toContain('Change this shift');
  const future=html({shifts:[{...shift,id:'source & /',date:'2026-10-13'}]});
  expect(future).toContain('sourceShiftId=source%20%26%20%2F');expect(future).toContain('shiftId=source%20%26%20%2F');
@@ -38,7 +38,7 @@ it('closed and approved-callout shifts do not offer requests while future own sh
 });
 it('an active overnight shift from yesterday retains callout but does not invent a same-day swap',()=>{
  const output=html({weekStart:'2026-10-05',selectedDay:'2026-10-11',shifts:[{...shift,date:'2026-10-11',startTime:'22:00',endTime:'08:00'}]});
- expect(output).toContain('Ends Mon, Oct 12');expect(output).toContain('Unable to work this shift');expect(output).not.toContain('Swap with a teammate');
+ expect(output).toContain('Ends Mon, Oct 12');expect(output).toContain('Can’t work this shift');expect(output).not.toContain('Swap with a teammate');
 });
 it('midnight end, real position names, lead and approved-callout labels remain explicit',()=>{
  const output=html({shifts:[{...shift,startTime:'16:00',endTime:'24:00',positionName:'Customer Support',isDesignatedLead:true,isCalloutApproved:true}]});
@@ -77,7 +77,7 @@ it('B3: shifts the claim rules refuse sit collapsed below the claimable ones, wi
  const refused={...open,id:'blocked-1',href:'/app/exchange?tab=available#request-blocked-1',reasons:['You have approved time off then','It’s outside your availability']};
  const output=html({view:'open',openShifts:{available:[open],requested:[],unavailable:[refused]}});
  expect(output).toContain('<details class="blocked-open-shifts">');
- for(const value of ['Shifts you can’t pick up','>1<','You have approved time off then','It’s outside your availability','Update your availability','/app/availability']) expect(output).toContain(value);
+ /* B7 wording (NV-283): one title for the refused-shift list on Schedule and Pick up and swap */for(const value of ['Why other shifts aren’t available','>1<','You have approved time off then','It’s outside your availability','Update your availability','/app/availability']) expect(output).toContain(value);
  expect(output.split('blocked-open-shifts')[1]).not.toContain('View and claim');
  expect(output).not.toContain('#request-blocked-1');
  const onlyRefused=html({view:'open',openShifts:{available:[],requested:[],unavailable:[{...refused,reasons:['It needs a position you’re not set up for']}]}});

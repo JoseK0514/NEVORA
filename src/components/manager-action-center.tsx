@@ -1,7 +1,9 @@
 'use client';
+import {offlineListener} from '@/lib/offline-hold';
 import Link from 'next/link';
 import {createContext,useContext,useEffect,useRef,useState,type ReactNode} from 'react';
 import {createPrivateSnapshotController} from '../lib/private-snapshot-client';
+import {privateReadBody} from '../lib/http/nevora-failure';
 import {parseActionCenter,type ActionCenter,type ActionItem} from '../lib/action-center/project';
 import styles from './manager-action-center.module.css';
 import {ArrowsClockwiseIcon, CalendarBlankIcon, CaretDownIcon, CheckCircleIcon, ClockIcon, InfoIcon, UserCheckIcon} from '@phosphor-icons/react/ssr';
@@ -11,6 +13,8 @@ import {MobileHomeDisclosure} from './mobile-home-disclosure';
 import {SkeletonRows} from './skeleton';
 import {hasSetupGaps,setupSteps,withoutSetupItems,type SetupSteps} from '../lib/action-center/setup';
 import {isPastCoverageGap} from '../lib/action-center/inbox';
+import {isStaffingRepair} from '../lib/time-off-staffing/present';
+import {presentItem} from '../lib/action-center/present';
 type Connection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
 type Category='all'|'scheduling'|'requests'|'timekeeping';
 const categoryLabels={scheduling:'Scheduling',requests:'Requests',timekeeping:'Timekeeping'};
@@ -54,7 +58,7 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
  const today=ready?new Intl.DateTimeFormat('en-CA',{timeZone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(ready.observedAt)):undefined;
  const past=(item:ActionItem)=>isPastCoverageGap(item,today);
  const grouped=new Map<string,ActionItem[]>();
- for(const item of matching){const key=JSON.stringify([past(item),item.priority,item.type,item.locationId??null]);const group=grouped.get(key)??[];group.push(item);grouped.set(key,group);}
+ for(const item of matching){const key=JSON.stringify([past(item),item.priority,item.type,isStaffingRepair(item),item.locationId??null]);const group=grouped.get(key)??[];group.push(item);grouped.set(key,group);}
  const groups=[...grouped.values()].sort((a,b)=>Number(past(a[0]))-Number(past(b[0]))||({URGENT:0,REVIEW:1,MISSING_INPUT:2}[a[0].priority]-{URGENT:0,REVIEW:1,MISSING_INPUT:2}[b[0].priority]));
  const tag=(item:ActionItem)=>past(item)?{priority:'PAST',label:'Earlier this week'}:{priority:item.priority,label:priorityLabel(item.priority)};
  // Reserve a place for each group before filling the bounded preview. A large
@@ -71,14 +75,16 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
  const renderItem=(item:ActionItem,nested=false)=>{
     const Icon=item.category==='timekeeping'?ClockIcon:item.category==='requests'?UserCheckIcon:CalendarBlankIcon;
     const action=actionCenterNavigation(item);
+    // Approved leave over a published shift reads as the person's shift to fill (scheduling, no decision controls).
+    const repair=isStaffingRepair(item)?presentItem(item,action.label,timeZone):null;
     return <article key={item.id} data-action-id={item.id} data-action-kind={item.category}>
-     <span className={styles.icon} aria-hidden="true"><Icon size={20}/></span>
-     <div className={styles.copy}>{nested?null:<><small className={item.priority==='URGENT'&&!past(item)?styles.priority:undefined}><span className="task-tag" data-priority={tag(item).priority}>{past(item)?tag(item).label:item.priority==='URGENT'?'Coverage need':item.priority==='MISSING_INPUT'?'Setup needed':'Review'}</span> {item.category==='timekeeping'?'Timekeeping':item.category==='requests'?'Request':'Scheduling'}</small><h3>{item.title}</h3></>}<p className="manager-desktop-action-detail">{item.detail}</p><p className="manager-mobile-action-detail">{mobileActionDetail(item.detail)}</p></div>
-     <Link className={styles.review} href={action.href} aria-label={`${action.label}: ${item.title}`}>{action.label}</Link>
+     <span className={styles.icon} aria-hidden="true"><Icon size={20} weight="bold"/></span>
+     <div className={styles.copy}>{nested?null:<><small className={item.priority==='URGENT'&&!past(item)?styles.priority:undefined}><span className="task-tag" data-priority={tag(item).priority}>{past(item)?tag(item).label:item.priority==='URGENT'?'Coverage need':item.priority==='MISSING_INPUT'?'Setup needed':'Review'}</span> {item.category==='timekeeping'?'Timekeeping':item.category==='requests'?'Request':'Scheduling'}</small><h3>{repair?repair.title:item.title}</h3></>}{repair?<p>{repair.detail}</p>:<><p className="manager-desktop-action-detail">{item.detail}</p><p className="manager-mobile-action-detail">{mobileActionDetail(item.detail)}</p></>}</div>
+     <Link className={styles.review} href={action.href} aria-label={`${action.label}: ${repair?repair.title:item.title}`}>{action.label}</Link>
     </article>;
    };
  return <section className={styles.root} aria-label="Manager Action Center">
-  <header><div><h2>Tasks</h2>{ready?<p className="manager-tasks-updated">Updated <time dateTime={ready.observedAt}>{formatUpdated(ready.observedAt,timeZone)}</time></p>:null}</div>{ready?<strong className={styles.total} aria-label="Total tasks">{ready.counts.total}</strong>:null}<button className="button secondary" type="button" onClick={onRefresh} aria-label="Refresh tasks"><ArrowsClockwiseIcon size={18} aria-hidden="true"/><span>Refresh</span></button></header>
+  <header><div><h2>Tasks</h2>{ready?<p className="manager-tasks-updated">Updated <time dateTime={ready.observedAt}>{formatUpdated(ready.observedAt,timeZone)}</time></p>:null}</div>{ready?<strong className={styles.total} aria-label="Total tasks">{ready.counts.total}</strong>:null}<button className="button secondary" type="button" onClick={onRefresh} aria-label="Refresh tasks"><ArrowsClockwiseIcon size={18} weight="bold" aria-hidden="true"/><span>Refresh</span></button></header>
   <MobileHomeDisclosure id="mobile-action-review" available={Boolean(ready)} expandedLabel="Close task review"
     label={ready?(category==='all'?`Review ${plural(ready.counts.total,'task','tasks')}`:category==='requests'?`Review ${matching.length} ${matching.length===1?'request':'requests'}`:`Review ${category} tasks`):'Review tasks'}
     summary={ready?<div>
@@ -89,13 +95,13 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
   {ready?<>
    {activeCategories>1||category!=='all'?<div className={styles.counts} role="group" aria-label="Filter tasks by category"><button type="button" data-action-category="all" aria-pressed={category==='all'} aria-controls="manager-action-list" onClick={()=>onCategoryChange?.('all')}>All tasks</button>{(['scheduling','requests','timekeeping'] as const).map(value=><button type="button" key={value} data-action-category={value} aria-label={`${categoryLabels[value]}: ${plural(ready.counts[value],'task','tasks')}`} aria-pressed={category===value} aria-controls="manager-action-list" onClick={()=>onCategoryChange?.(value)}><span>{categoryLabels[value]}</span><strong>{ready.counts[value]}</strong></button>)}</div>:null}
    <div className={styles.filterBar}><p role="status" aria-live="polite" className={visible.length===matching.length?'sr-only':undefined}>Showing {visible.length} of {matching.length} {noun}{matching.length===1?'':'s'}</p></div>
-   {matching.length?<div id="manager-action-list" className={styles.list} data-row-nav="">{visibleGroups.map((group,index)=>groups[index].length===1?renderItem(group[0]):<details className={styles.actionGroup} key={group[0].id}><summary><span><small><span className="task-tag" data-priority={tag(group[0]).priority}>{tag(group[0]).label}</span> {categoryLabels[group[0].category]}</small><strong>{taskGroupHeading(group[0].type,groups[index].length,group[0].title)}</strong></span><span className={styles.groupCount}><span className="manager-task-review-label">Review</span><CaretDownIcon className="manager-task-caret" size={18} aria-hidden="true"/></span></summary><div>{group.length<groups[index].length?<p className={styles.groupPreview}>Showing {group.length} of {groups[index].length}. Use “Show all tasks” below to review the rest.</p>:null}{group.map(item=>renderItem(item,true))}</div></details>)}</div>:<p id="manager-action-list" className={category==='all'?`${styles.status} manager-tasks-clear`:styles.status} role="status">{category==='all'?<><CheckCircleIcon size={28} aria-hidden="true"/><strong>You’re all caught up</strong><span>{emptyLine}</span></>:`No ${category==='requests'?'requests':`${category} tasks`} to review in the checked sources.`}</p>}
+   {matching.length?<div id="manager-action-list" className={styles.list} data-row-nav="">{visibleGroups.map((group,index)=>groups[index].length===1?renderItem(group[0]):<details className={styles.actionGroup} key={group[0].id}><summary><span><small><span className="task-tag" data-priority={tag(group[0]).priority}>{tag(group[0]).label}</span> {categoryLabels[group[0].category]}</small><strong>{isStaffingRepair(group[0])?`${plural(groups[index].length,'shift','shifts')} to fill for approved leave`:taskGroupHeading(group[0].type,groups[index].length,group[0].title)}</strong></span><span className={styles.groupCount}><span className="manager-task-review-label">Review</span><CaretDownIcon className="manager-task-caret" size={18} weight="bold" aria-hidden="true"/></span></summary><div>{group.length<groups[index].length?<p className={styles.groupPreview}>Showing {group.length} of {groups[index].length}. Use “Show all tasks” below to review the rest.</p>:null}{group.map(item=>renderItem(item,true))}</div></details>)}</div>:<p id="manager-action-list" className={category==='all'?`${styles.status} manager-tasks-clear`:styles.status} role="status">{category==='all'?<><CheckCircleIcon size={28} weight="bold" aria-hidden="true"/><strong>You’re all caught up</strong><span>{emptyLine}</span></>:`No ${category==='requests'?'requests':`${category} tasks`} to review in the checked sources.`}</p>}
    {(matching.length>visible.length&&!expanded)||sourceTotal?<div className="manager-tasks-footer">
     {matching.length>visible.length&&!expanded?<button className="button secondary" onClick={onExpand}>Show all {matching.length} tasks</button>:null}
     {sourceTotal?<Link className={styles.inboxLink} href="/app/inbox">Open inbox</Link>:null}
    </div>:null}
    {ready.limitedAttendance?<p className={styles.status}>Some attendance comparisons are unavailable. Check the attendance view for source limitations.</p>:null}
-   <div className={styles.provenance}><details className={styles.note}><summary><InfoIcon size={16} aria-hidden="true"/>About these tasks</summary><p>Counts identify review tasks, not policy violations. Attendance observations concern today and open entries; period timecards use the selected week. These sources are checked under current authority and are refreshed together.</p></details></div>
+   <div className={styles.provenance}><details className={styles.note}><summary><InfoIcon size={16} weight="bold" aria-hidden="true"/>About these tasks</summary><p>Counts identify review tasks, not policy violations. Attendance observations concern today and open entries; period timecards use the selected week. These sources are checked under current authority and are refreshed together.</p></details></div>
   </>:<>{status==='loading'||status==='reconnecting'?<SkeletonRows rows={3}/>:null}<p className={status==='loading'||status==='reconnecting'?`${styles.status} nevora-skeleton-status`:styles.status} role="status">{({loading:'Loading tasks',ready:'Tasks unavailable',offline:'Tasks unavailable offline',reconnecting:'Reconnecting to tasks',unavailable:'Tasks unavailable',access_lost:'Task access ended',paused:'Task updates paused'})[status]}{status==='loading'||status==='reconnecting'?'…':`. ${status==='access_lost'?'Sign in with a currently authorized management account.':'The task list is unconfirmed. Refresh a current protected read before reviewing.'}`}</p></>}
   </MobileHomeDisclosure>
  </section>;
@@ -112,12 +118,13 @@ export function useActionCenter(weekStart:string,actorId:string){
    if(value.refreshing&&!value.paused&&value.snapshot?.state==='ready')return;
    setSnapshot(value.refreshing?null:value.snapshot);if(value.paused)setConnection(navigator.onLine?'paused':'offline');else if(value.refreshing)setConnection(previous=>previous==='reconnecting'?'reconnecting':'loading');else if(value.snapshot?.state==='ready')setConnection('ready');else setConnection(value.snapshot?.state==='unavailable'&&value.snapshot.reason==='access_denied'?'access_lost':'unavailable');},async signal=>{
    const response=await fetch('/api/manager/action-center',{method:'POST',credentials:'same-origin',cache:'no-store',signal,headers:{'Content-Type':'application/json','X-Nevora-Action-Center':'1','X-Nevora-Actor':actorId},body:JSON.stringify({weekStart})});
-   if(response.status===401||response.status===403)return {state:'unavailable',reason:'access_denied'};if(!response.ok)throw Error('Unavailable');return response.json();
+   // X-Nevora-Failure (Nov 9, 2026): one shared mapping; anything that clears data reads as access ended, the rest as unavailable.
+   const read=await privateReadBody(response);return read.ok?read.body:{state:'unavailable',reason:read.reason};
   },value=>parseActionCenter(value,weekStart),reason=>({state:'unavailable',reason}),()=> 'read_failed');controller.current=c;
   let active=false;
   const current=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||active))return;active=document.visibilityState==='visible'&&navigator.onLine;if(active)c.start();else c.pause();},pause=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;active=false;c.pause();},online=()=>{setConnection('reconnecting');current();};
-  for(const name of ['focus','pageshow','storage','nevora:time-correction-changed'])window.addEventListener(name,current);for(const name of ['blur','pagehide','offline'])window.addEventListener(name,pause);window.addEventListener('online',online);document.addEventListener('visibilitychange',current);current();
-  return()=>{c.stop();controller.current=null;for(const name of ['focus','pageshow','storage','nevora:time-correction-changed'])window.removeEventListener(name,current);for(const name of ['blur','pagehide','offline'])window.removeEventListener(name,pause);window.removeEventListener('online',online);document.removeEventListener('visibilitychange',current);};
+  for(const name of ['focus','pageshow','storage','nevora:time-correction-changed'])window.addEventListener(name,current);const offline=offlineListener({pause:()=>pause(),hold:()=>{active=false;c.hold();}});for(const name of ['blur','pagehide'])window.addEventListener(name,pause);window.addEventListener('offline',offline);window.addEventListener('online',online);document.addEventListener('visibilitychange',current);current();
+  return()=>{c.stop();controller.current=null;for(const name of ['focus','pageshow','storage','nevora:time-correction-changed'])window.removeEventListener(name,current);for(const name of ['blur','pagehide'])window.removeEventListener(name,pause);window.removeEventListener('offline',offline);window.removeEventListener('online',online);document.removeEventListener('visibilitychange',current);};
  },[weekStart,actorId]);
  return {snapshot,connection,refresh:()=>controller.current?.refresh()};
 }

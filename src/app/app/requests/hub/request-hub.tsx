@@ -27,7 +27,7 @@ export function RequestHub({ modules = ALL_MODULES_ON, requests }: {
   const waiting = list.filter(request => request.status === "PENDING");
   const sub = modules.timeOff && requests === null ? "Couldn’t load your requests" : requestsSubtitle(modules);
   const shiftRequests = modules.marketplace ? <CorpCard id="requests-shifts" label="Shift requests">
-    <CorpRows><li><CorpRow href="/app/exchange" icon={<ArrowsLeftRightIcon className="c-ic" />} bold title="Swaps, cover and can’t work" detail="Start one from a shift on your schedule" /></li></CorpRows>
+    <CorpRows><li><CorpRow href="/app/exchange" icon={<ArrowsLeftRightIcon weight="bold" className="c-ic" />} bold title="Swaps, cover and can’t work" detail="Start one from a shift on your schedule" /></li></CorpRows>
   </CorpCard> : null;
   return <EmployeeRequestsCorp sub={sub} newHref={modules.timeOff ? "/app/requests?tab=new" : null}
       waiting={modules.timeOff && requests ? waiting.map(row) : null}

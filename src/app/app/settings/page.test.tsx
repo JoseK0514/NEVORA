@@ -50,7 +50,8 @@ it('says Set up for a zero count, and counts tablets waiting for setup instead o
  reads.devices=[{state:'UNREGISTERED'},{state:'PENDING'}];
  let html=renderToStaticMarkup(await SettingsPage());
  expect(html).toMatch(/Break types<\/span><\/span><span class="c-row__value c-row__value--soft">None yet</);
- expect(html).toMatch(/Clocker tablets<\/span><\/span><span class="c-row__value c-row__value--soft">2 not set up</);
+ // Review B5 (NV-247): tablets waiting for setup are an amber chip; plain counts stay grey.
+ expect(html).toMatch(/Clocker tablets<\/span><\/span><span class="c-row__trail"><span class="c-pill c-pill--amber">2 not set up</);
  reads.devices=[{state:'ACTIVE'}];reads.breaks=[{active:true}];
  html=renderToStaticMarkup(await SettingsPage());
  expect(html).toMatch(/Clocker tablets<\/span><\/span><span class="c-row__value c-row__value--soft">1</);
@@ -75,4 +76,18 @@ it('requires Owner authorization before returning any settings content',async()=
  guard.mockRejectedValueOnce(denied);
  await expect(SettingsPage()).rejects.toBe(denied);
  expect(guard).toHaveBeenCalledExactlyOnceWith(['OWNER']);
+});
+
+// Review Nov 14 (AR-13, JR-4): the subscription has a row in Company, only where this deployment has billing on.
+it('lists Plan and billing in Company only while billing is on for this deployment',async()=>{
+ expect(renderToStaticMarkup(await SettingsPage())).not.toContain('href="/app/billing"');
+ vi.stubEnv('NEVORA_COMMERCE_ENABLED','true');
+ try{
+  const html=renderToStaticMarkup(await SettingsPage());
+  expect(html.match(/<a href="\/app\/billing" class="c-row c-row--one"/g)).toHaveLength(1);
+  expect(html).toContain('<span class="c-row__title">Plan and billing</span>');
+  // It sits in Company, after Company policies and before Scheduling.
+  expect(html.indexOf('href="/app/settings/company-policies"')).toBeLessThan(html.indexOf('href="/app/billing"'));
+  expect(html.indexOf('href="/app/billing"')).toBeLessThan(html.indexOf('href="/app/settings/positions"'));
+ }finally{vi.unstubAllEnvs();}
 });

@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useRef, useState,
   type FormEvent, type InputHTMLAttributes, type ReactNode, type Ref, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
+import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 
 import type { ConfigurationResult } from "@/components/configuration-form";
 import { Notice } from "./wave-c-kit";
@@ -23,7 +24,7 @@ function message(control: Control, messages: FieldMessages) {
     || ((validity.rangeUnderflow || validity.rangeOverflow || validity.stepMismatch || validity.badInput) && words.range)
     || ((validity.tooLong || validity.tooShort) && words.length)
     || (validity.typeMismatch && words.type)
-    || words.fallback || "Check this entry.";
+    || words.fallback || "Check this entry";
 }
 
 /** Field errors for one form: spread `handlers` on the <form>, wrap fields in <FieldErrors>. */
@@ -104,7 +105,7 @@ export function Field(props: FieldProps) {
   // Quiet (v4): grey label above a filled 50pt field; an error in red words under it.
   const shared = { ...control, className: className ? `q-in ${className}` : "q-in", "aria-describedby": describedBy, "aria-invalid": shown ? true : undefined, ref: inputRef };
   const element = kind === "select"
-    ? <span className="q-in__wrap q-in__wrap--select"><select {...(shared as SelectHTMLAttributes<HTMLSelectElement>)} /><CaretDownIcon className="q-in__caret" aria-hidden="true" /></span>
+    ? <span className="q-in__wrap q-in__wrap--select"><select {...(shared as SelectHTMLAttributes<HTMLSelectElement>)} /><CaretDownIcon weight="bold" className="q-in__caret" aria-hidden="true" /></span>
     : kind === "textarea" ? <textarea {...(shared as TextareaHTMLAttributes<HTMLTextAreaElement>)} />
       : unit ? <span className="q-in__wrap q-in__wrap--unit"><input {...(shared as InputHTMLAttributes<HTMLInputElement>)} /><span className="q-in__unit" aria-hidden="true">{unit}</span></span>
         : <input {...(shared as InputHTMLAttributes<HTMLInputElement>)} />;
@@ -115,7 +116,9 @@ export function Field(props: FieldProps) {
         {labelAside}
       </div>
       {element}
-      {shown ? <p className="q-fl__error" id={errorId}>{shown}</p> : null}
+      {/* Review Nov 11 (OW-023): one error style on every form: the 16px bold warning glyph, then the sentence (no closing
+        period), so an error never relies on its red colour alone. The shared validation (form-validation.tsx) draws the same. */}
+      {shown ? <p className="q-fl__error" id={errorId}><WarningCircleIcon weight="bold" className="q-fl__error-ic" aria-hidden="true" />{shown}</p> : null}
       {help ? <div className="q-fl__help" id={describedHelp}>{help}</div> : null}
     </div>
   );
@@ -179,14 +182,45 @@ export function FormActions({ children, sticky = false }: { children: ReactNode;
   return <div ref={bar} className="q-actions wc-actions" role={sticky ? "group" : undefined} aria-label={sticky ? "Save" : undefined}>{children}</div>;
 }
 
+/** The form's entries as one string, to tell whether anything differs from what was loaded (the concurrency stamp aside). */
+function formEntries(data: FormData) {
+  return JSON.stringify([...data.entries()].filter(([name]) => name !== "expectedUpdatedAt").map(([name, value]) => [name, typeof value === "string" ? value : ""]));
+}
+
+type DefaultControl = { name?: string; type?: string; disabled?: boolean; value?: string; defaultValue?: string; defaultChecked?: boolean;
+  options?: ArrayLike<{ value: string; defaultSelected: boolean }> };
+/** OW-024: the entries the form was rendered with (each control's default, not what it holds now), in the order and shape
+ * formEntries gives. A value the browser restored after a reload therefore still counts as a change, and Save shows. */
+export function defaultEntries(controls: Iterable<DefaultControl>) {
+  const entries: [string, string][] = [];
+  for (const control of controls) {
+    const type = control.type ?? "";
+    if (!control.name || control.name === "expectedUpdatedAt" || control.disabled || ["submit", "button", "reset", "image", "file", "fieldset"].includes(type)) continue;
+    if (type === "checkbox" || type === "radio") { if (control.defaultChecked) entries.push([control.name, control.value ?? "on"]); }
+    else if (control.options) {
+      const options = Array.from(control.options), chosen = options.filter(option => option.defaultSelected);
+      if (type === "select-multiple") for (const option of chosen) entries.push([control.name, option.value]);
+      else if (options.length) entries.push([control.name, (chosen[chosen.length - 1] ?? options[0]).value]);
+    }
+    else entries.push([control.name, control.defaultValue ?? ""]);
+  }
+  return JSON.stringify(entries);
+}
+
 /** The settings save form: the browser posts once per tap, entries stay on failure,
  * and the outcome appears just above the buttons and takes focus. */
 export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {}, submitLabel, pendingLabel = "Saving…",
-  secondary, successTitle = "Saved", showServerSuccess = true, errorTitle = "Not saved", onResult, className, sticky = false, disabled = false, label, id, topSave = false }: {
+  secondary, successTitle = "Saved", showServerSuccess = true, errorTitle = "Not saved", onResult, className, sticky = false, disabled = false, label, id, topSave = false, cardSave = false, saveOnChange = false }: {
+  /** Review Nov 11 (OW-024): Save shows only once an entry differs from what was loaded or last saved (as Availability
+   * does). The form says so with data-dirty; the page's top-bar Save (phones) follows it in owner-b-settings.css. */
+  saveOnChange?: boolean;
   /** Quiet (v4): the form's id, so the page's top-right Save can submit it. */
   id?: string;
   /** Quiet (v4): Save lives in the page's top bar; the form shows no button of its own. */
   topSave?: boolean;
+  /** With topSave (review F4, NV-102): the fields are one card whose footer holds Save on tablets and desktop; phones keep
+   * the top bar's Save. Same form, same submit. */
+  cardSave?: boolean;
   action: (data: FormData) => Promise<ConfigurationResult>;
   children: ReactNode;
   reviewedUpdatedAt?: string;
@@ -211,6 +245,15 @@ export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {
   const feedback = useRef<HTMLDivElement>(null);
   const { errors, handlers, clear } = useFieldErrors(messages);
   useEffect(() => { if (result.error || result.success) feedback.current?.focus({ preventScroll: false }); }, [result]);
+  // OW-024: what the form held when it loaded, or when it was last saved; an entry that differs from it shows Save.
+  const form = useRef<HTMLFormElement>(null);
+  const baseline = useRef<string | null>(null);
+  const [dirty, setDirty] = useState(false);
+  useEffect(() => {
+    if (!saveOnChange || !form.current) return;
+    baseline.current = defaultEntries(Array.from(form.current.elements) as DefaultControl[]);
+    setDirty(formEntries(new FormData(form.current)) !== baseline.current);
+  }, [saveOnChange]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -226,6 +269,7 @@ export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {
     try {
       const saved = await action(data);
       const next = saved.error || saved.success ? saved : { error: "It may not have saved. Your entries are kept; check the page before you try again." };
+      if (saveOnChange && saved.success && !saved.error) { baseline.current = formEntries(data); setDirty(false); }
       setResult(next);
       onResult?.(next);
       if (saved.success && !saved.error && saved.updatedAt && draftUpdatedAt !== undefined) setDraftUpdatedAt(saved.updatedAt);
@@ -240,12 +284,19 @@ export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {
   }
 
   return (
-    <form noValidate id={id} onSubmit={submit} className={className ? `wc-form ${className}` : "wc-form"} aria-busy={pending} aria-label={label} data-guard={disabled ? "" : undefined} {...handlers}
-      onInput={() => { if (result.error || result.success) setResult({}); }}>
-      <fieldset disabled={pending || disabled} className="q-fieldset wc-fieldset">
-        {draftUpdatedAt !== undefined ? <input type="hidden" name="expectedUpdatedAt" value={draftUpdatedAt} /> : null}
-        <FieldErrors errors={errors}>{children}</FieldErrors>
-      </fieldset>
+    <form ref={form} noValidate id={id} onSubmit={submit} className={className ? `wc-form ${className}` : "wc-form"} aria-busy={pending} aria-label={label} data-guard={disabled ? "" : undefined} {...handlers}
+      data-save-on-change={saveOnChange ? "" : undefined} data-dirty={saveOnChange && (dirty || pending) ? "" : undefined}
+      onInput={event => { if (result.error || result.success) setResult({}); if (saveOnChange) setDirty(formEntries(new FormData(event.currentTarget)) !== baseline.current); }}>
+      {(() => {
+        const fields = <fieldset disabled={pending || disabled} className="q-fieldset wc-fieldset">
+          {draftUpdatedAt !== undefined ? <input type="hidden" name="expectedUpdatedAt" value={draftUpdatedAt} /> : null}
+          <FieldErrors errors={errors}>{children}</FieldErrors>
+        </fieldset>;
+        return topSave && cardSave ? <div className="wc-savecard">{fields}
+          {saveOnChange && !dirty && !pending ? null
+            : <div className="wc-savefoot wc-savefoot--wide"><button type="submit" className="q-btn" disabled={pending || disabled}><ButtonLabel pending={pending} idle={submitLabel} busy={pendingLabel} /></button></div>}
+        </div> : fields;
+      })()}
       <p className="nv-sr" role="status" aria-live="polite">{pending ? pendingLabel : ""}</p>
       {result.error || result.success ? (
         <div ref={feedback} tabIndex={-1} className="wc-feedback" role={result.error ? "alert" : "status"}>

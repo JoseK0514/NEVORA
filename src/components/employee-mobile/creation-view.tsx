@@ -11,6 +11,9 @@ import {CALLOUT_REASONS,creationKey,creationPayload,type CreationDraft,type Crea
 import type {RequestSlot} from '@/lib/employee-exchange';
 import type {PrivatePanelState} from '@/lib/private-snapshot-client';
 import type {EmployeeCreationOperation} from './creation-operation';
+import {BHero,BScreen} from '../owner-b/b-kit';
+import {FormMark} from '../employee-b/requests-b';
+import '../employee-b/requests.css';
 
 /* Swap shift, Offer for cover and Can't work this shift on the corporate kit (Release 1, boards E-SwapSheet, E-CoverSheet,
  * E-CantWorkSheet). Opened from a shift it is a bottom sheet over Schedule (Cancel · title); opened by its URL, the same
@@ -143,8 +146,11 @@ export function CreationView({state,authority,mode,sourceId,draft,operation,onDr
  </>:null;
 
  return <div className={`c-page c-xsheet em-creation${inSheet?' c-embed':' c-xsheet--page'}${firstLoad?' c-xsheet--skel':''}`} data-corp="" data-creation-state={state.paused?'paused':read?'ready':denied?'denied':state.refreshing?'loading':'unavailable'} aria-labelledby={titleId}>
+  {/* Direction B (phones only, opened by its URL): Cancel and the title on the teal hero; the form below stays once in this
+    * page (b-keep) and is drawn as the screen's one card. Opened from a shift it stays Schedule's sheet. */}
+  {inSheet?null:<BScreen back><FormMark/><BHero back={{href:back,label:'Cancel',close:true}} title={titles[mode]} titleId={titleId+'-b'}/></BScreen>}
   {inSheet?<div className="c-sheet-head"><SheetCancel href={back} className="c-sheet-head__l">Cancel</SheetCancel><h2 id={titleId}>{titles[mode]}</h2><span/></div>
    :<CorpNav back={{href:back,label:'Schedule'}} title={titles[mode]} titleId={titleId}/>}
-  <div className="c-sheet-body">{body}{extras}</div>
+  <div className={inSheet?'c-sheet-body':'c-sheet-body b-keep'}>{body}{extras}</div>
  </div>;
 }

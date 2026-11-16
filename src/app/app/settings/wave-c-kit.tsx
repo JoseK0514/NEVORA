@@ -28,9 +28,12 @@ export type SettingsFrameProps = {
 
 export function SettingsFrame({ title, summary, eyebrow: _eyebrow, back = { href: "/app/settings", label: "Settings" }, bandAside, aside: _aside, width = "wide", settingsCrumb = true, className, save, modal, children }: SettingsFrameProps & {
   /** Quiet (v4): the page's Save sits at the top right and submits this form id. */
-  save?: { form: string; label?: string; disabled?: boolean };
+  /** card: on tablets and desktop the form shows its own Save in its card's footer and the bar's Save is hidden (review F4,
+   * NV-102: Jose, "Save at the bottom of the card"); phones keep the bar's Save. */
+  save?: { form: string; label?: string; disabled?: boolean; card?: boolean };
   /** Quiet (v4): a create page is a sheet: Cancel, the title in the bar, and the submit at the top right. */
-  modal?: { cancelHref: string; form: string; submitLabel: string; disabled?: boolean };
+  /** card: as save.card, for Cancel and the submit (the form shows both in its card's footer on tablets and desktop). */
+  modal?: { cancelHref: string; form: string; submitLabel: string; disabled?: boolean; card?: boolean };
 }) {
   // Quiet (v4, approved Oct 23): back and Save in the bar, the title, then the page. No band, no guidance column.
   // Release 1 (boards O-Locations, O-Breaks): on a phone the bar names the page ("‹ More   Locations") and the large
@@ -38,7 +41,7 @@ export function SettingsFrame({ title, summary, eyebrow: _eyebrow, back = { href
   void _eyebrow; void _aside;
   return (
     // Owner premium A7: every Settings page is one column, so it takes the kit's 720px desktop width (c-page--narrow).
-    <div className={className ? `q-page wc-page c-page--narrow ${className}` : "q-page wc-page c-page--narrow"} data-nv-page="" data-q-sheet={modal ? "" : undefined} data-wc-width={width} data-wc-crumb={settingsCrumb ? "settings" : undefined}>
+    <div className={className ? `q-page wc-page c-page--narrow ${className}` : "q-page wc-page c-page--narrow"} data-nv-page="" data-q-sheet={modal ? "" : undefined} data-wc-width={width} data-wc-crumb={settingsCrumb ? "settings" : undefined} data-wc-save={save?.card || modal?.card ? "card" : undefined}>
       {modal ? <QuietNav left={<Link className="q-nav__l q-nav__l--teal" href={modal.cancelHref}>Cancel</Link>} title={title}
           right={<button type="submit" form={modal.form} className="q-nav__r q-nav__r--b" disabled={modal.disabled}>{modal.submitLabel}</button>} />
         : back ? <QuietNav back={back} title={title} right={save ? <button type="submit" form={save.form} className="q-nav__r q-nav__r--b" disabled={save.disabled}>{save.label ?? "Save"}</button> : bandAside} />

@@ -38,7 +38,7 @@ export function ActionForm({ action, children, className, label, failure, review
     try {
       const result = await action(data);
       if (result && typeof result === 'object' && 'error' in result && typeof result.error === 'string') {
-        setRefusal({ error: result.error, conflict: 'issueCode' in result && result.issueCode === 'SHIFT_REVIEW_CONFLICT', draft });
+        setRefusal({ error: result.error, conflict: 'issueCode' in result && (result.issueCode === 'SHIFT_REVIEW_CONFLICT' || shiftVersion !== undefined && result.issueCode === 'ACCESS_DENIED'), draft });
         setFailed(++failures.current);
       }
       setBusy(false);

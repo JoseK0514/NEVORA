@@ -12,7 +12,7 @@ export function MobileHomeDisclosure({ id, label, expandedLabel = label, availab
     {summary ? <div className="mobile-home-disclosure-summary">{summary}</div> : null}
     <button className="mobile-home-disclosure-trigger" type="button" aria-expanded={expanded}
       aria-controls={id} disabled={!available} onClick={() => setExpanded(value => !value)}>
-      <span>{expanded ? expandedLabel : label}</span><CaretDownIcon size={20} weight="regular" aria-hidden="true"/>
+      <span>{expanded ? expandedLabel : label}</span><CaretDownIcon size={20} weight="bold" aria-hidden="true"/>
     </button>
     <div id={id} className="mobile-home-disclosure-content">{children}</div>
   </div>;

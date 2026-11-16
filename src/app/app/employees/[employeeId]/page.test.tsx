@@ -5,7 +5,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 const m = vi.hoisted(() => ({
   actorRole: "MANAGER",
   employeeRole: "EMPLOYEE",
-  profileUnavailable:false, invitation:vi.fn(),
+  profileUnavailable:false, invitation:vi.fn(), hours:vi.fn(),
 }));
 
 vi.mock("next/link", () => ({
@@ -74,6 +74,49 @@ beforeEach(() => {
   m.profileUnavailable=false;m.invitation.mockReset().mockResolvedValue({state:'ready',employeeId:'worker',employeeVersion:'2026-10-05 12:00:00+00',eligibility:'INVITABLE',registeredEmailMasked:'s***@example.invalid',invitationRevision:0,invitation:null,delivery:'UNAVAILABLE',deliveryAvailable:true,allowedCommands:['ISSUE'],retryAfterMs:null});
   m.actorRole = "MANAGER";
   m.employeeRole = "EMPLOYEE";
+  m.hours.mockReset().mockResolvedValue({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'COMPANY',locationIds:[]},
+    data:{employeeId:'worker',today:'2026-10-14',weekStart:'2026-10-12',timeZone:'America/Puerto_Rico',scheduledTodayMinutes:480,scheduledWeekMinutes:1920,workedWeekMinutes:null,workedBasis:'EFFECTIVE_ELAPSED_INCLUDING_BREAKS'}});
+});
+
+it('shows the person’s hours, opens their own availability and their location’s schedule, and says where sign-in stands (Nov 14 inspection, BR-3 and AR-10)', async () => {
+  const overview = async () => renderToStaticMarkup(await EmployeeProfilePage({ params: Promise.resolve({ employeeId: "worker" }) }));
+  // A Manager's page reads no invitation, so it says nothing about sign-in rather than guess.
+  const manager = await overview();
+  expect(manager).toMatch(/Scheduled today<\/span><\/span><span class="c-row__value c-row__value--soft">8 h</);
+  expect(manager).toMatch(/Scheduled this week<\/span><\/span><span class="c-row__value c-row__value--soft">32 h</);
+  // A figure the read couldn't work out is the grey dash, and worked time says it includes breaks.
+  expect(manager).toMatch(/Clocked this week<\/span><span class="c-row__detail"><span>Includes breaks<\/span><\/span><\/span><span class="c-row__value c-row__value--soft">—</);
+  expect(manager).toContain('href="/app/schedule?location=loc"');
+  expect(manager).toContain('href="/app/availability?employeeId=worker"');
+  expect(manager).toContain('href="/app/timecards#timecard-worker"');
+  expect(manager).not.toContain('c-title__sub');
+  expect(m.hours).toHaveBeenCalledOnce();
+  // An Owner sees where sign-in stands under the name and on the Access row.
+  m.actorRole = "OWNER";
+  const notInvited = await overview();
+  expect(notInvited).toContain('<span class="c-title__sub">Not invited yet</span>');
+  expect(notInvited).toMatch(/Access and sign-in<\/span><span class="c-row__detail"><span>Not invited yet</);
+  m.invitation.mockResolvedValue({state:'ready',employeeId:'worker',employeeVersion:'v',eligibility:'INVITABLE',registeredEmailMasked:'s***@example.invalid',invitationRevision:1,
+    invitation:{id:'i1',state:'ISSUED',issuedAt:'2026-10-13T02:30:00Z',expiresAt:'2026-10-20T02:30:00Z',issuerName:'Owner'},delivery:'PROVIDER_ACCEPTED',allowedCommands:['ISSUE','REVOKE'],retryAfterMs:null});
+  // The invitation's day is the workplace's day (Oct 12 in Puerto Rico, not the UTC Oct 13).
+  expect(await overview()).toContain('<span class="c-title__sub">Invited Oct 12, not activated</span>');
+  m.invitation.mockResolvedValue({state:'ready',employeeId:'worker',employeeVersion:'v',eligibility:'ALREADY_ACTIVATED',registeredEmailMasked:null,invitationRevision:1,invitation:null,delivery:'UNAVAILABLE',allowedCommands:[],retryAfterMs:null});
+  expect(await overview()).toContain('<span class="c-title__sub">Sign-in active</span>');
+  m.invitation.mockResolvedValue({state:'ready',employeeId:'worker',employeeVersion:'v',eligibility:'NO_EMAIL',registeredEmailMasked:null,invitationRevision:0,invitation:null,delivery:'UNAVAILABLE',allowedCommands:[],retryAfterMs:null});
+  expect(await overview()).toContain('<span class="c-title__sub">No email, can’t sign in</span>');
+});
+
+it('keeps the person page when the hours read fails or is refused, and reads hours for the overview only', async () => {
+  m.hours.mockRejectedValue(new Error('read failed'));
+  const failed = renderToStaticMarkup(await EmployeeProfilePage({ params: Promise.resolve({ employeeId: "worker" }) }));
+  expect(failed).toContain('Sam Rivera');
+  expect(failed).not.toContain('id="person-hours"');
+  m.hours.mockReset().mockResolvedValue({state:'unavailable',reason:'access_denied'});
+  expect(renderToStaticMarkup(await EmployeeProfilePage({ params: Promise.resolve({ employeeId: "worker" }) }))).not.toContain('id="person-hours"');
+  m.hours.mockClear();
+  await EmployeeProfilePage({ params: Promise.resolve({ employeeId: "worker" }), searchParams: Promise.resolve({ view: "access" }) });
+  await EmployeeProfilePage({ params: Promise.resolve({ employeeId: "worker" }), searchParams: Promise.resolve({ edit: "1" }) });
+  expect(m.hours).not.toHaveBeenCalled();
 });
 
 it("shows core employee management to a Manager for a non-Owner employee", async () => {
@@ -137,7 +180,7 @@ beforeEach(()=>{operationalPageFixture.denied=false;});
 
 it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({params:Promise.resolve({employeeId:'worker'})}));expect(html).toContain('current company-wide management access');expect(html).not.toContain('Sam');expect(html).not.toContain('employee-core-profile-form');});
 
-vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalEmployeeProfile:async()=>{
+vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalEmployeeHours:m.hours,readOperationalEmployeeProfile:async()=>{
  if(m.profileUnavailable)return {state:'unavailable',reason:'source_changed'};
  const source=await import('@/lib/data/employees'),profile=await source.getEmployeeManagementProfile('worker'),locations=await source.listLocations();
  return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'COMPANY',locationIds:[]},data:{profile,locations,ownerScope:m.actorRole==='OWNER'?{employeeId:'worker',employeeUpdatedAt:'2026-10-05 12:00:00+00',role:m.employeeRole,active:true,roleGeneration:'9',scopeRevision:7,scopeState:'UNASSIGNED',scope:null}:null}};

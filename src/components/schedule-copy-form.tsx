@@ -119,7 +119,8 @@ export function ScheduleCopyForm({
         disabled={!ready || busy}
         onClick={() => void send()}
       >
-        {pending ? "Check / retry original copy" : label}
+        {/* Round 5 (Nov 8): a server-built label sits beside children; its own fragment keeps React's list check quiet. */}
+        {pending ? "Check / retry original copy" : <>{label}</>}
         {!pending && children}
       </button>
       {pending && (

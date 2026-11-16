@@ -1,3 +1,4 @@
+import {announceOfflineHeld} from './offline-hold';
 export type PrivateSnapshot={state:'ready';observedAt:string;validForMs:number}|{state:'unavailable';reason:string};
 export type PrivatePanelState<T>={snapshot:T|null;refreshing:boolean;paused:boolean};
 
@@ -10,6 +11,8 @@ export type PrivatePanelState<T>={snapshot:T|null;refreshing:boolean;paused:bool
  * trip, and expiry stays armed during renewal; a slow response cannot extend
  * access to the previous snapshot. Access denial stops polling until restarted.
  * pause clears displayed data; stop also prevents all later callbacks.
+ * hold is read-only within the original server validity. Offline never extends
+ * private-data authority; reconnecting rechecks it and stepping away clears it.
  */
 export function createPrivateSnapshotController<T extends PrivateSnapshot>(changed:(state:PrivatePanelState<T>)=>void,request:(signal:AbortSignal)=>Promise<unknown>,parse:(value:unknown)=>T,failure:(reason:'read_failed'|'access_denied')=>T,expiryFailure:(validForMs:number)=>'read_failed'|'access_denied'=(validForMs)=>validForMs<45000?'access_denied':'read_failed'){
  let stopped=false,paused=true,sequence=0,current:T|null=null,active:AbortController|undefined;
@@ -41,7 +44,7 @@ export function createPrivateSnapshotController<T extends PrivateSnapshot>(chang
    // Renew within the remaining authority budget; keep the original expiry armed
    // while that read is in flight so a slow renewal cannot prolong private data.
    current=result;publish();
-   expiry=setTimeout(()=>{if(stopped||paused)return;sequence++;cancelRequest();unavailable(expiryFailure(result.validForMs));},remaining);
+   expiry=setTimeout(()=>{if(stopped)return;sequence++;cancelRequest();unavailable(expiryFailure(result.validForMs));},remaining);
    schedule(Math.min(30000,Math.max(1000,remaining*.7)));
   }).catch(()=>{if(stopped||paused||generation!==sequence)return;cancelRequest();unavailable('read_failed');});
  }
@@ -49,6 +52,12 @@ export function createPrivateSnapshotController<T extends PrivateSnapshot>(chang
   start(){if(stopped)return;paused=false;refresh();},
   refresh,
   pause(){if(stopped)return;paused=true;sequence++;cancelRequest();clearExpiry();current=null;publish();},
+  hold(){
+   if(stopped)return;
+   if(current?.state!=='ready'){this.pause();return;}
+   paused=true;sequence++;cancelRequest();announceOfflineHeld(current.observedAt);
+   changed({snapshot:current,refreshing:false,paused:false});
+  },
   stop(){stopped=true;paused=true;sequence++;cancelRequest();clearExpiry();current=null;},
  };
 }

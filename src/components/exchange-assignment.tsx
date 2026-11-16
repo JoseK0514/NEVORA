@@ -12,7 +12,7 @@ export function ExchangeAssignment({ shift, label }: { shift: ExchangeShift; lab
     <strong className="exchange-assignment-time">{keepWhole(formatTime(shift.startTime))}{"\u00a0"}<span>–</span> {keepWhole(formatTime(shift.endTime))}</strong>
     <span className="exchange-assignment-detail"><NavIcon name="location" size={16} />{shift.locationName}</span>
     <span className="exchange-assignment-detail"><NavIcon name="shift" size={16} />{shift.positionName ?? (shift.positionId ? `Position ${shift.positionId}` : "No assigned position")}</span>
-    <span className="exchange-assignment-lead">{shift.isDesignatedLead ? "Designated lead" : "No designated lead"}</span>
+    <span className="exchange-assignment-lead">{shift.isDesignatedLead ? "Shift lead" : "No shift lead"}</span>
     {shift.timeZone ? <span className="exchange-assignment-zone">Times in {timeZoneLabel(shift.timeZone)}</span> : null}
   </div>;
 }

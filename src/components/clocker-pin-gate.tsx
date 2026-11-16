@@ -1,16 +1,26 @@
 'use client';
-import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent as PadKeyboardEvent } from 'react';
 import {privateScreenWindow,privateScreenRemaining,type PrivateScreenWindow,type ClockContinuation} from './clocker-privacy';
-import styles from './clocker-pin.module.css';
+import styles from './clocker.module.css';
 import { ClockerPunchPanel } from './clocker-punch-panel';
 import { ClockerIcon } from './clocker-icon';
-import { useClockerMotion } from './clocker-motion';
-import { ClockerLanguageToggle, Es, useClockerSpanish } from './clocker-language';
-import {useClockerCopy,useClockerPresentation} from './clocker-language';
+import { clockerErrorText, clockerRetryText } from './clocker-copy';
+import { ClockerLanguageToggle, ClockerText, useClockerCopy, useClockerIntlLocale, useClockerPresentation } from './clocker-language';
+import { useReportTabletHealth } from './clocker-shell';
 type Verified={state:'verified';firstName:string;expiresAt:string};
 type Reply=Verified|{state:'idle'};
-class PinRequestError extends Error { constructor(message:string,readonly recover:boolean){super(message);} }
-async function requestPin(locationKey:string,body:object):Promise<Reply>{
+/** Who a 429 pauses (the reply's limitScope): one person, or the tablet. A device or workplace limit stops every sign-in
+ * on this tablet, so both read as the tablet. The wait is the reply's retryAfterSeconds. */
+type Pause={scope:'person'|'tablet';retryAfterSeconds:number|null};
+export class PinRequestError extends Error { constructor(message:string,readonly recover:boolean,readonly status=0,readonly code:string|null=null,readonly pause:Pause|null=null){super(message);} }
+/** A browser-level failure (no connection, timeout, an unreadable reply) never shows its raw text ("Failed to fetch"):
+ * it reads as the server's own "unavailable" message (Direction B, Nov 8, 2026). Flow and blocking are unchanged. */
+const UNAVAILABLE='PIN verification is unavailable. Check the connection and try again.';
+/* The server never says which of the two was wrong, so the kiosk names both (it sends an Employee ID with every PIN). */
+const DENIED='Employee ID or PIN not recognized. Check both, or ask your manager.';
+const browserFailure=(reason:unknown)=>reason instanceof TypeError||reason instanceof SyntaxError||(typeof DOMException!=='undefined'&&reason instanceof DOMException);
+/** One PIN request. Exported for its test; the gate is its only caller. */
+export async function requestPin(locationKey:string,body:object):Promise<Reply>{
  const response=await fetch(`/api/clocker/${encodeURIComponent(locationKey)}/pin`,{
   method:'POST',credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/json','X-Nevora-Clocker':'1'},
   // Privacy clearing may be initiated by pagehide during reload/navigation.
@@ -18,41 +28,60 @@ async function requestPin(locationKey:string,body:object):Promise<Reply>{
   body:JSON.stringify(body),signal:AbortSignal.timeout(12000),
  });
  const data=await response.json();
- if(!response.ok)throw new PinRequestError(typeof data?.error==='string'?data.error:'PIN verification could not be confirmed.', response.status>=500 || response.status===429 || data.state==='device_required');
+ if(!response.ok){
+  // The stable code picks the sentence, so a reworded server message keeps its Spanish line (NV-045); a code the kiosk
+  // doesn't know keeps the server's own words.
+  const message=clockerErrorText('en',{code:data?.code,error:typeof data?.error==='string'?data.error:'PIN verification could not be confirmed.'});
+  const seconds:unknown=data?.retryAfterSeconds;
+  const pause:Pause|null=response.status===429?{scope:data?.limitScope==='person'?'person':'tablet',retryAfterSeconds:typeof seconds==='number'&&Number.isFinite(seconds)&&seconds>0?seconds:null}:null;
+  throw new PinRequestError(message, response.status>=500 || response.status===429 || data?.state==='device_required', response.status, typeof data?.code==='string'?data.code:null, pause);
+ }
  if(data.state==='idle')return {state:'idle'};
  if(data.state==='verified'&&typeof data.firstName==='string'&&typeof data.expiresAt==='string')return {state:'verified',firstName:data.firstName,expiresAt:data.expiresAt};
  throw new PinRequestError('PIN verification could not be confirmed.',true);
 }
 export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{locationKey:string;timeZone?:string;punchEnabled?:boolean}){
- const t=useClockerCopy(),presentation=useClockerPresentation();
+ const t=useClockerCopy(),{locale}=useClockerPresentation(),intl=useClockerIntlLocale();
  const input=useRef<HTMLInputElement>(null),busy=useRef(false),epoch=useRef(0);
  const [count,setCount]=useState(0),[pending,setPending]=useState(true);
- const spanish=useClockerSpanish();
+ // Jose's approved sign-in (Nov 11, 2026): the Employee ID first, typed on the tablet's keyboard with capitals, then the
+ // PIN on the number pad. Like the PIN, the typed ID lives in the field and a ref, never in React state.
+ const idInput=useRef<HTMLInputElement>(null),employeeId=useRef('');
+ const [step,setStep]=useState<'id'|'pin'>('id'),[idFilled,setIdFilled]=useState(false);
+ // Presentation only: who the last 429 paused and when the wait ends (wall clock, from retryAfterSeconds).
+ const [pause,setPause]=useState<{scope:'person'|'tablet';until:number|null}|null>(null);
+ // Presentation only: a PIN check is in flight, so Continue shows it (Nov 10 review, NV-179).
+ const [checking,setChecking]=useState(false);
+ // Presentation only: the ring on a blocked PIN screen (amber wait for the lockout, red otherwise) and the wrong-PIN shake.
+ const [tone,setTone]=useState<'wait'|'device'|'stop'>('stop'),[shake,setShake]=useState(0);
  const [identity,setIdentity]=useState<(Verified&PrivateScreenWindow)|null>(null);
  const draft=useRef<ClockContinuation|null>(null);
  const [held,setHeld]=useState<ClockContinuation|null>(null),[remaining,setRemaining]=useState(30000),[editedAt,setEditedAt]=useState(0);
  const receiveDraft=useCallback((value:ClockContinuation|null)=>{draft.current=value;},[]);
  const [error,setError]=useState<string|null>(null),[blocked,setBlocked]=useState(false);
- const motion=useClockerMotion(identity?'verified':'pin');
  const clearQueue=useRef<Promise<unknown>|null>(null);
  const advanceEpoch=useCallback(()=>++epoch.current,[]);
  const clearServer=useCallback(()=>{
   const operation=(clearQueue.current??Promise.resolve()).catch(()=>undefined).then(()=>requestPin(locationKey,{action:'clear'}));
   clearQueue.current=operation;return operation;
  },[locationKey]);
+ // Privacy: the typed Employee ID and PIN leave together, and the next person starts at the Employee ID.
+ const clearEntry=useCallback(()=>{
+  if(input.current)input.current.value='';if(idInput.current)idInput.current.value='';
+  employeeId.current='';setCount(0);setIdFilled(false);setStep('id');
+ },[]);
  const reset=useCallback(async(keepDraft=false)=>{
   if(!keepDraft)setHeld(null);draft.current=null;
-  const generation=advanceEpoch();busy.current=true;setPending(true);setIdentity(null);setCount(0);setError(null);
-  if(input.current)input.current.value='';
+  const generation=advanceEpoch();busy.current=true;setPending(true);setIdentity(null);clearEntry();setError(null);setPause(null);
   try{await clearServer();if(generation===epoch.current)setBlocked(false);}
-  catch{if(generation===epoch.current){setBlocked(true);setError('We could not clear tablet verification. Check the connection before continuing.');}}
+  catch{if(generation===epoch.current){setBlocked(true);setTone('stop');setError('We could not clear tablet verification. Check the connection before continuing.');}}
   finally{if(generation===epoch.current){busy.current=false;setPending(false);}}
- },[clearServer,advanceEpoch]);
+ },[clearServer,advanceEpoch,clearEntry]);
  const finish=useCallback(()=>void reset(),[reset]);
  useEffect(()=>{
   const generation=advanceEpoch();busy.current=true;
   void clearServer().then(()=>{if(generation===epoch.current)setBlocked(false);})
-   .catch(()=>{if(generation===epoch.current){setBlocked(true);setError('We could not clear tablet verification. Check the connection before continuing.');}})
+   .catch(()=>{if(generation===epoch.current){setBlocked(true);setTone('stop');setError('We could not clear tablet verification. Check the connection before continuing.');}})
    .finally(()=>{if(generation===epoch.current){busy.current=false;setPending(false);}});
   const hidden=()=>{if(document.hidden)void reset();};
   const escape=(event:KeyboardEvent)=>{if(event.key==='Escape')void reset();};
@@ -71,66 +100,158 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
   check();const timer=window.setInterval(check,250),hard=window.setTimeout(expire,left());
   return()=>{clearInterval(timer);clearTimeout(hard);};
  },[identity,reset]);
+ // The 20-second idle clear covers the Employee ID as well as the PIN; a wrong-entry message leaves with them.
+ const holding=count>0||idFilled||step==='pin';
  useEffect(()=>{
-  if(!count||pending||identity)return;
-  const clear=()=>{if(input.current)input.current.value='';setCount(0);};
+  if(!holding||pending||identity||blocked)return;
+  const clear=()=>{clearEntry();setError(null);};
   const timer=window.setTimeout(clear,Math.max(0,editedAt+20000-performance.now()));return()=>clearTimeout(timer);
- },[count,editedAt,pending,identity]);
+ },[holding,editedAt,pending,identity,blocked,clearEntry]);
  async function continueSecurely(){const target=draft.current;setHeld(target);await reset(true);}
- useEffect(()=>{if(!pending&&!identity&&!blocked)input.current?.focus({preventScroll:true});},[pending,identity,blocked]);
- function key(value:string,editedAt:number){
+ useEffect(()=>{
+  if(pending||identity||blocked)return;
+  if(step==='pin'){input.current?.focus({preventScroll:true});return;}
+  // Back from the PIN step, the Employee ID is still there to check or correct.
+  if(idInput.current){idInput.current.value=employeeId.current;idInput.current.focus();}
+ },[pending,identity,blocked,step]);
+ // The red wrong-PIN state answers one submit; the next keystroke starts a new PIN (Nov 10 review, NV-178).
+ function typed(){if(error&&!blocked)setError(null);}
+ function key(value:string,editedAt:number,refocus=false){
   if(busy.current||blocked||!input.current)return;
+  typed();
   const current=input.current.value;
   input.current.value=value==='clear'?'':value==='delete'?current.slice(0,-1):current.length<4?current+value:current;
   setCount(input.current.value.length);setEditedAt(editedAt);
+  // A tap leaves focus on the pad key; hand it back to the PIN field so a keyboard's digits, Backspace and Enter keep
+  // working (Nov 14 inspection, RA-26). The field's inputMode is "none", so no on-screen keyboard opens.
+  if(refocus)input.current.focus({preventScroll:true});
+ }
+ // A pad key pressed from the keyboard keeps its focus (and the person's place); digits typed there still reach the PIN.
+ function padTyped(event:PadKeyboardEvent<HTMLButtonElement>,editedAt:number){
+  if(event.altKey||event.ctrlKey||event.metaKey)return;
+  if(/^[0-9]$/.test(event.key)){event.preventDefault();key(event.key,editedAt);}
+  else if(event.key==='Backspace'){event.preventDefault();key('delete',editedAt);}
+ }
+ function continueToPin(event:FormEvent<HTMLFormElement>){
+  event.preventDefault();if(busy.current||blocked)return;
+  const value=(idInput.current?.value??'').trim();
+  if(!value)return;
+  employeeId.current=value;typed();setStep('pin');setEditedAt(performance.now());
+ }
+ function changeId(){
+  if(busy.current||blocked)return;
+  typed();if(input.current)input.current.value='';setCount(0);setStep('id');setEditedAt(performance.now());
  }
  async function submit(event:FormEvent<HTMLFormElement>){
   event.preventDefault();if(busy.current||blocked)return;
-  const pin=performance.now()-editedAt>=0&&performance.now()-editedAt<20000?input.current?.value??'':'';
+  const fresh=performance.now()-editedAt>=0&&performance.now()-editedAt<20000;
+  const pin=fresh?input.current?.value??'':'',id=fresh?employeeId.current:'';
   if(input.current)input.current.value='';setCount(0);
-  if(pin.length!==4||!/^[0-9]{4}$/.test(pin)){setError('Enter exactly four PIN digits.');return;}
-  const generation=advanceEpoch();busy.current=true;setPending(true);setIdentity(null);setError(null);
+  if(!id){clearEntry();return;}
+  if(pin.length!==4||!/^[0-9]{4}$/.test(pin)){setError('Enter exactly four PIN digits.');setShake(n=>n+1);return;}
+  const generation=advanceEpoch();busy.current=true;setPending(true);setIdentity(null);setError(null);setChecking(true);
   try{
-   await requestPin(locationKey,{action:'verify',pin});
-   const confirmed=await requestPin(locationKey,{action:'status'});
+   // The verify reply carries the first name and the expiry, so the kiosk no longer asks for status as well: one round
+   // trip fewer before the clock. The clock-state read that follows proves the identity cookie was stored.
+   const confirmed=await requestPin(locationKey,{action:'verify',employeeId:id,pin});
    if(generation!==epoch.current){await clearServer();return;}
    if(confirmed.state!=='verified')throw new Error('Verification changed. Please enter your PIN again.');
    if(document.hidden){void reset();return;}
    const timing=privateScreenWindow(Date.now(),confirmed.expiresAt,performance.now());
    if(!timing)throw new PinRequestError('Verification changed. Please enter your PIN again.',true);
+   clearEntry();
    setIdentity({...confirmed,...timing});setRemaining(privateScreenRemaining(timing,Date.now(),performance.now()));
-  }catch(reason){if(generation===epoch.current){setError(reason instanceof Error?reason.message:'Verification could not be confirmed. Please try again.');setBlocked(!(reason instanceof PinRequestError)||reason.recover);}}
-  finally{if(generation===epoch.current){busy.current=false;setPending(false);}}
+  }catch(reason){if(generation===epoch.current){
+   const blocking=!(reason instanceof PinRequestError)||reason.recover;
+   const denied=reason instanceof PinRequestError&&reason.code==='PIN_DENIED';
+   setError(browserFailure(reason)?UNAVAILABLE:denied?DENIED:reason instanceof Error?reason.message:'Verification could not be confirmed. Please try again.');setBlocked(blocking);
+   setTone(reason instanceof PinRequestError&&reason.status===429?'wait':reason instanceof PinRequestError&&reason.status===401?'device':'stop');
+   setPause(reason instanceof PinRequestError&&reason.pause?{scope:reason.pause.scope,until:reason.pause.retryAfterSeconds===null?null:Date.now()+reason.pause.retryAfterSeconds*1000}:null);
+   // A blocked screen keeps nothing typed. After a wrong entry the Employee ID stays for another try, inside a new idle window.
+   if(blocking)clearEntry();else{setShake(n=>n+1);setEditedAt(performance.now());}
+  }}
+  finally{setChecking(false);if(generation===epoch.current){busy.current=false;setPending(false);}}
  }
- const problem=error?<div className={styles.problem}><p role="alert" className={styles.error}>{t(error)}</p>{blocked?<button type="button" className="button secondary" onClick={()=>void reset()}>{t("Check Connection")}</button>:null}</div>:null;
- return <div ref={motion} className={styles.terminal} aria-busy={pending} data-clocker-pin={identity?'verified':'entry'}>
+ const shown=error&&!blocked;
+ const paused=Boolean(error&&blocked&&tone==='wait');
+ /* Jose's approved lockout wording (Nov 11, 2026): name who is paused and show the real wait as a clock time. "Your PIN is
+  * paused" when the limit is the person's; "This tablet is paused" only when the whole tablet is. A paused person doesn't
+  * mark the tablet paused in the band: the next person can still sign in. */
+ const personPaused=paused&&pause?.scope==='person';
+ const pausedTitle=personPaused?'Your PIN is paused':'This tablet is paused';
+ // The band follows the card (Nov 10 review, NV-049): a blocked PIN screen names the tablet's state there too.
+ useReportTabletHealth('gate',error&&blocked?tone==='wait'?personPaused?null:'paused':tone==='device'?'reconnect':'offline':null);
+ // The wait's end in the tablet's language and the location's time zone (as the band's clock), rounded up to the minute so
+ // the time shown is never too early.
+ const retryParts=paused&&pause&&pause.until!==null?new Intl.DateTimeFormat(intl,{timeZone,hour:'numeric',minute:'2-digit',hour12:true}).formatToParts(new Date(Math.ceil(pause.until/60000)*60000)):null;
+ const retryAt=retryParts?clockerRetryText(locale,retryParts.map(part=>part.value).join(''),retryParts.find(part=>part.type==='hour')?.value??''):null;
+ // A paused person's card is about one person, so it clears like every private screen (30 seconds), ready for the next one.
+ useEffect(()=>{
+  if(!personPaused)return;
+  const timer=window.setTimeout(()=>void reset(),30000);return()=>clearTimeout(timer);
+ },[personPaused,reset]);
+ const ring=tone==='wait'?<span className={styles.ring} data-tone="amber"><ClockerIcon name="pause" size={28}/></span>
+  :<span className={styles.ring} data-tone="red"><ClockerIcon name={tone==='device'?'tablet':'offline'} size={28}/></span>;
+ /* One primary action that fits the cause (Nov 10 review, NV-051, NV-052). A pause says when to try again and offers a
+  * way to still get time recorded; a tablet that must be set up again says who can do that; no connection keeps Check
+  * connection. Every button still clears and re-checks, as before. The alert carries the whole sentence ("Your PIN is
+  * paused. Try again at 10:58 PM."); the eye reads its first half in the heading. Without a wait from the server, the
+  * server's own message shows. */
+ const blockedCard=error&&blocked?<div className={styles.blocked} data-clocker-blocked={tone} data-clocker-paused={paused?personPaused?'person':'tablet':undefined}>{ring}
+  <p role="alert" className={styles.smsg}>{retryAt?<><span className={styles.sr}>{t(pausedTitle)}. </span>{retryAt}</>:<ClockerText text={error}/>}</p>
+  {paused?<p className={styles.blockedHint}>{t('You can ask a manager to record your time.')}</p>:null}
+  {tone==='device'?<p className={styles.blockedHint}>{t('Ask a manager to set up this tablet again (Settings → Clocker tablets).')}</p>:null}
+  <button type="button" className={styles.btn} data-kind="primary" onClick={()=>void reset()}>{t(tone==='wait'?personPaused?'Done':'Try again':tone==='device'?'Check again':'Check connection')}</button>
+  {personPaused?<p className={styles.clears}>{t('This screen clears after 30 seconds.')}</p>:null}</div>:null;
+ // The visible count changes every second; screen readers hear the reminder twice, at 10 and 3 seconds (NV-182).
+ const seconds=Math.ceil(remaining/1000),warning=Boolean(identity&&remaining<=10000&&remaining>0);
+ const milestone=warning?seconds<=3?3:10:null;
+ return <div className={styles.content} data-align="center" aria-busy={pending} data-clocker-pin={identity?'verified':'entry'} data-clocker-step={identity?undefined:step}>
   {identity&&punchEnabled?<ClockerPunchPanel screenMonotonicExpiresAt={identity.monotonicDeadline} screenExpiresAt={identity.deadline} locationKey={locationKey} timeZone={timeZone} onDone={finish} resume={held} onContinuationChange={receiveDraft}/>:identity?<>
-   <span className={styles.seal}><ClockerIcon name="check" size={52} weight={presentation.v2?'regular':'bold'}/></span>
-   <h1>{t('Hi, {name}.',{name:identity.firstName})}</h1><p className={styles.lead}>{t("Your PIN is verified for this tablet.")}</p>
-   <div className={styles.previewNotice}><strong>{t("Time punches are not enabled yet.")}</strong><span>{t("No worked time has been recorded.")}</span></div>
-   <button className="button primary" type="button" onClick={()=>void reset()}>{t("Done")}</button>
-   <p className={styles.note}>{t("This screen clears automatically after 30 seconds.")}</p>
+   <span className={styles.ring} data-tone="green"><ClockerIcon name="check" size={28}/></span>
+   <h1 className={styles.title}>{t('Hi, {name}.',{name:identity.firstName})}</h1><p className={styles.lead}>{t("Your PIN is verified for this tablet.")}</p>
+   <div className={styles.note} data-tone="amber"><ClockerIcon name="warning" size={20}/><p><strong>{t("Time punches are not enabled yet.")}</strong>{t("No worked time has been recorded.")} {t("Ask your Owner to contact NEVORA support.")}</p></div>
+   <div className={styles.stack}><button className={styles.btn} data-kind="secondary" type="button" onClick={()=>void reset()}>{t("Done")}</button></div>
+   <p className={styles.clears}>{t("This screen clears automatically after 30 seconds.")}</p>
   </>:<>
-   <p data-clocker-eyebrow className={styles.eyebrow}>{t("Employee PIN")}</p>
-   <h1>{t("Enter your PIN")}</h1>{spanish?<p className={styles.titleEs}><Es phrase="Enter your PIN"/></p>:null}
-   {problem}
-   <form onSubmit={submit}>
-    <fieldset disabled={pending||blocked}>
-     <label className={styles.pinLabel} htmlFor="clocker-pin">{t("Employee PIN")}</label>
-     <div data-clocker-pin-entry className={styles.pinEntry}>
-      <input id="clocker-pin" ref={input} name="pin" type="password" inputMode="none" autoComplete="off" maxLength={4} minLength={4} required pattern="[0-9]{4}" onChange={e=>{setCount(e.currentTarget.value.length);setEditedAt(performance.now());}} aria-describedby="clocker-pin-help" aria-invalid={error&&!blocked?true:undefined}/>
-      <div className={styles.pinSlots} aria-hidden="true">{[0,1,2,3].map(index=><span key={index} data-filled={index<count}/>)}</div>
+   <div className={styles.head} data-back={step==='pin'&&!blocked?'':undefined}>
+    {step==='pin'&&!blocked?<button type="button" className={styles.back} aria-label={t('Change Employee ID')} disabled={pending} onClick={changeId}><ClockerIcon name="back" size={22}/></button>:null}
+    <h1 className={styles.title}>{t(paused?pausedTitle:step==='pin'?'Enter your PIN':'Enter your Employee ID')}</h1>
+   </div>
+   {blockedCard}
+   {/* The Employee ID step: the tablet's own keyboard, capitals on, no autocorrect; Enter or Continue moves to the PIN. */}
+   {!blocked&&step==='id'?<form onSubmit={continueToPin} className={styles.pinForm}>
+    <fieldset disabled={pending}>
+     <label className={styles.sr} htmlFor="clocker-employee-id">{t("Employee ID")}</label>
+     <div data-clocker-id-entry className={styles.idEntry}>
+      <input id="clocker-employee-id" ref={idInput} name="employeeId" type="text" inputMode="text" autoCapitalize="characters" autoCorrect="off" autoComplete="off" spellCheck={false} enterKeyHint="next" maxLength={128} onChange={e=>{typed();employeeId.current=e.currentTarget.value;setIdFilled(e.currentTarget.value.trim().length>0);setEditedAt(performance.now());}} aria-describedby="clocker-pin-help"/>
      </div>
-     <div data-clocker-keypad className={styles.keypad} aria-label={t("PIN keypad")}>
-      {['1','2','3','4','5','6','7','8','9','clear','0','delete'].map(value=><button key={value} type="button" data-key={value==='clear'||value==='delete'?'tool':'digit'} onClick={()=>key(value,performance.now())} aria-label={value==='clear'?t('Clear PIN'):value==='delete'?t('Delete digit'):t('Number {number}',{number:value})}>{value==='clear'?t('Clear'):value==='delete'?<ClockerIcon name="delete" size={30}/>:value}</button>)}
-     </div>
-     <button className={`button primary ${styles.continue}`} type="submit" aria-label={t("Continue")} disabled={count!==4}><span className="clocker-label"><span>{t("Continue")}</span>{spanish?<Es phrase="Continue" inButton/>:null}</span><ClockerIcon name="arrow" size={20}/></button>
+     <button className={`${styles.btn} ${styles.continue}`} data-kind="primary" type="submit" aria-label={t("Continue")} disabled={!idFilled}><span>{t("Continue")}</span><ClockerIcon name="arrow" size={20}/></button>
     </fieldset>
-   </form>
-   <div className={styles.meta}><p id="clocker-pin-help">{t("Your PIN is separate from your portal password.")}</p><ClockerLanguageToggle/></div>
+   </form>:null}
+   {/* While blocked, the state card above replaces the keypad (Direction B); the form returns on Check connection. */}
+   {!blocked&&step==='pin'?<form onSubmit={submit} className={styles.pinForm}>
+    <fieldset disabled={pending}>
+     <label className={styles.sr} htmlFor="clocker-pin">{t("Employee PIN")}</label>
+     <div data-clocker-pin-entry className={styles.pin} data-error={shown?true:undefined} data-shake={shake?shake%2?'a':'b':undefined}>
+      <input id="clocker-pin" ref={input} name="pin" type="password" inputMode="none" autoComplete="off" maxLength={4} minLength={4} required pattern="[0-9]{4}" onChange={e=>{typed();setCount(e.currentTarget.value.length);setEditedAt(performance.now());}} aria-describedby={shown?'clocker-pin-error clocker-pin-help':'clocker-pin-help'} aria-invalid={shown?true:undefined}/>
+      <div className={styles.slots} aria-hidden="true">{[0,1,2,3].map(index=><span key={index} data-filled={index<count}/>)}</div>
+     </div>
+     {/* The message line is always there, so a wrong PIN never moves the keypad (Nov 10 review, NV-177, NV-180). */}
+     <p id="clocker-pin-error" role="alert" className={`${styles.msg} ${styles.pinMsg}`}>{shown?<><ClockerIcon name="warning" size={18}/><span><ClockerText text={error}/></span></>:null}</p>
+     <div data-clocker-keypad className={styles.keys} aria-label={t("PIN keypad")}>
+      {['1','2','3','4','5','6','7','8','9','clear','0','delete'].map(value=><button key={value} type="button" className={styles.key} data-key={value==='clear'||value==='delete'?'tool':'digit'} onClick={event=>key(value,performance.now(),event.detail>0)} onKeyDown={event=>padTyped(event,performance.now())} aria-label={value==='clear'?t('Clear PIN'):value==='delete'?t('Delete digit'):t('Number {number}',{number:value})}>{value==='clear'?t('Clear'):value==='delete'?<ClockerIcon name="delete" size={28}/>:value}</button>)}
+     </div>
+     {checking?<button className={`${styles.btn} ${styles.continue}`} data-kind="primary" data-busy="" type="submit" disabled><span className={styles.spin} aria-hidden="true"/><span>{t('Checking…')}</span></button>
+     :<button className={`${styles.btn} ${styles.continue}`} data-kind="primary" type="submit" aria-label={t("Continue")} disabled={count!==4}><span>{t("Continue")}</span><ClockerIcon name="arrow" size={20}/></button>}
+    </fieldset>
+   </form>:null}
+   <div className={styles.meta} data-align={blocked?'center':undefined}>{blocked?null:<p id="clocker-pin-help">{step==='pin'?t("Your PIN is not your NEVORA password."):t("Don’t know your Employee ID? Ask your manager.")}</p>}<ClockerLanguageToggle/></div>
   </>}
-  {identity&&remaining<=10000&&remaining>0?<aside className={styles.privacyWarning} aria-label={t('Privacy reminder')}><p role="status">{t('This screen clears in {seconds} seconds.',{seconds:Math.ceil(remaining/1000)})}</p><button type="button" className="button secondary" onClick={()=>void continueSecurely()}>{t('Continue securely')}</button></aside>:null}
-  {pending?<p role="status" className={styles.note}>{t("Checking tablet verification…")}</p>:null}
-  {identity?problem:null}
+  {warning?<aside className={styles.privacy} aria-label={t('Privacy reminder')}><span className={styles.count} aria-hidden="true">{seconds}</span><p aria-hidden="true">{t('Clears in {seconds} s',{seconds})}</p><button type="button" className={styles.btn} data-kind="secondary" onClick={()=>void continueSecurely()}>{t('Continue securely')}</button></aside>:null}
+  <p role="status" className={styles.sr}>{milestone?t('This screen clears in {seconds} seconds.',{seconds:milestone}):''}</p>
+  {/* The check's status for screen readers; the eye gets it in Continue (Nov 10 review, NV-179). */}
+  <p role="status" className={styles.sr}>{pending?t("Checking tablet verification…"):''}</p>
+  {identity&&error?<p role="alert" className={styles.msg}><ClockerIcon name="warning" size={18}/><span><ClockerText text={error}/></span></p>:null}
  </div>;
 }

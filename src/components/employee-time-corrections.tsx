@@ -54,7 +54,7 @@ function actionMessage(result:CorrectionActionResponse|null){
   if(!result)return null;
   if(result.state==='pending')return 'Correction request sent for manager review.';
   if(result.state==='conflict')return 'This record changed or already has a pending correction. Refresh before trying again.';
-  if(result.state==='outcome_unknown')return 'The server outcome could not be confirmed. Retry the same request safely.';
+  if(result.state==='outcome_unknown')return 'We couldn’t confirm your request was sent. Check it before you send another.';
   if(result.state==='unavailable'&&result.httpStatus===401)return 'Your session ended. Sign in again to send your correction.';
   if(result.state==='unavailable'&&result.httpStatus===403)return 'Your access changed. Sign in again to check your current access.';
   if(result.state==='unavailable')return 'We couldn’t send your correction. Try again. If this keeps happening, sign in again.';
@@ -63,9 +63,9 @@ function actionMessage(result:CorrectionActionResponse|null){
     if(result.reason==='finalized_period')return 'Ask a manager to reopen the finalized timecard period before requesting a correction.';
     if(result.reason==='live_state')return 'Close the live entry in Clocker before requesting a correction.';
     if(result.reason==='overlap')return 'The proposed time overlaps another recorded entry.';
-    if(result.reason==='stale_source')return 'The recorded source changed. Refresh before trying again.';
-    if(result.reason==='invalid_interval')return 'The proposed interval is not valid.';
-    return 'This request cannot be completed by the current account.';
+    if(result.reason==='stale_source')return 'The recorded times changed. Refresh before trying again.';
+    if(result.reason==='invalid_interval')return 'The end time must be after the start time.';
+    return 'You can’t send this request from this account.';
   }
   return null;
 }
@@ -296,9 +296,9 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
     <header className="employee-time-section-heading">
       <div><h2 id="employee-corrections-title">Corrections</h2><p>Your manager reviews each request. Your original times are kept.</p></div>
       <button className="employee-time-correction-trigger" data-open={open||undefined} type="button" aria-expanded={open} aria-controls="employee-missing-time-correction" onClick={()=>{setOpen(value=>!value);setReplacementTarget(null);setStart('');setEnd('');setReason('');}} disabled={!ready||ready.locations.length===0}>
-        <span className="employee-time-correction-trigger__tile" aria-hidden="true">{open?<XIcon size={18}/>:<PlusIcon size={20}/>}</span>
+        <span className="employee-time-correction-trigger__tile" aria-hidden="true">{open?<XIcon size={18} weight="bold"/>:<PlusIcon size={20} weight="bold"/>}</span>
         <span className="employee-time-correction-trigger__copy"><b>{open?'Cancel':'Request a correction'}</b>{open?null:<small aria-hidden="true">Add time that wasn’t recorded</small>}</span>
-        {open?null:<ArrowRightIcon className="employee-time-correction-trigger__go" size={18} aria-hidden="true"/>}
+        {open?null:<ArrowRightIcon className="employee-time-correction-trigger__go" size={18} weight="bold" aria-hidden="true"/>}
       </button>
     </header>
     {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback)}{feedback.state==='unavailable'?<> <Link href="/login">Sign in</Link></>:null}</p>:null}
@@ -319,18 +319,18 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
       recent.length?<div className="employee-correction-history">
         {recent.map((item)=><div className="employee-correction-history-row" key={item.id}>
           <span className="employee-correction-day" aria-hidden="true"><small>{dayPart(item.proposedStartAt,zone,'short')}</small><b>{dayPart(item.proposedStartAt,zone,'day')}</b></span>
-          <div><strong>{item.kind==='MISSING_ENTRY'?'Unrecorded time':item.kind==='BREAK_BOUNDARY'?(item.breakName??'Break'):'Clock in / clock out'}</strong><span className="employee-correction-change">{item.originalStartAt?<s>{clock(item.originalStartAt,zone)}</s>:<s>Not recorded</s>}<ArrowRightIcon size={14} aria-hidden="true"/><b>{clock(item.proposedStartAt,zone)} – {clock(item.proposedEndAt,zone)}</b></span><small>{item.locationName} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}</small>
+          <div><strong>{item.kind==='MISSING_ENTRY'?'Unrecorded time':item.kind==='BREAK_BOUNDARY'?(item.breakName??'Break'):'Clock in / clock out'}</strong><span className="employee-correction-change">{item.originalStartAt?<s>{clock(item.originalStartAt,zone)}</s>:<s>Not recorded</s>}<ArrowRightIcon size={14} weight="bold" aria-hidden="true"/><b>{clock(item.proposedStartAt,zone)} – {clock(item.proposedEndAt,zone)}</b></span><small>{item.locationName} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}</small>
             <CorrectionComparison recordedLabel={item.kind==='MISSING_ENTRY'&&item.originalStartAt?'Approved missing time':'Recorded'} recordedStartAt={item.originalStartAt} recordedEndAt={item.originalEndAt} context={item.context} zone={zone}/>
             <p className="employee-time-correction-note">{item.status==='PENDING'?'Pending proposal':item.status==='APPROVED'?'Approved proposal':'Declined proposal'} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}{item.status==='REJECTED'?' · does not change effective time':''}</p>
             <PriorCorrectionDecisions context={item.context} zone={zone}/>
             {item.requestedByName?<p className="employee-time-correction-note">Requested by {item.requestedByName} for you.</p>:null}
-            {item.status==='PENDING'&&item.baseChanged?<p className="employee-time-correction-note">The source or approved baseline changed since this request.</p>:null}
+            {item.status==='PENDING'&&item.baseChanged?<p className="employee-time-correction-note">Your timecard changed after this request.</p>:null}
           {item.kind==='MISSING_ENTRY'&&item.status==='APPROVED'&&item.currentAdjustmentId?<button className="employee-time-correction-trigger" type="button" disabled={busy||Boolean(retry)} aria-controls="employee-missing-time-correction" onClick={()=>{
             setReplacementTarget({id:item.currentAdjustmentId!,revision:item.revision});setLocation(item.locationId);
             setStart(localValue(item.proposedStartAt,zone));setEnd(localValue(item.proposedEndAt,zone));setReason('');setResult(null);setOpen(true);
           }}>Correct missing time</button>:null}
           </div>
-          <span className={'employee-correction-state '+item.status.toLowerCase()}>{item.status==='PENDING'?'Pending':item.status==='APPROVED'?'Approved':'Declined'}</span>
+          <span className={'employee-correction-state '+item.status.toLowerCase()}>{item.status==='PENDING'?'Waiting':item.status==='APPROVED'?'Approved':'Declined'}</span>
         </div>)}
         {ready&&ready.totalRequests>recent.length?<small className="employee-correction-more">Showing {recent.length} of {ready.totalRequests} correction requests.</small>:null}
       </div>:<p className="employee-time-empty">No correction requests yet.</p>}

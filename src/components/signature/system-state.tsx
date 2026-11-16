@@ -21,24 +21,24 @@ const places = [
 export function SignatureNotFound() {
   return <SigPage className={styles.ssRoot} band={<SigBand eyebrow="Error 404">
     <b className={styles.ss404} aria-hidden="true">404</b>
-    <h1 className="sg-head2">This page<br />isn’t here</h1>
+    <h1 className="sg-head2">Page<br />not found</h1>
     <p className="sg-sub"><span>The link may be old, mistyped, or not available to your account.</span></p>
   </SigBand>}>
     <SigHead id="ss-places" title="Pick up where you left off" />
     <ul className="sg-card" aria-labelledby="ss-places">{places.map(({ href, label, sub, Icon }) => <li key={href}>
-      <Link className={`sg-r ${styles.ssRow}`} href={href}><span className="sg-tile" aria-hidden="true"><Icon size={22} /></span>
-        <span className="sg-copy"><b>{label}</b><span>{sub}</span></span><CaretRightIcon className={styles.ssChev} size={16} aria-hidden="true" /></Link>
+      <Link className={`sg-r ${styles.ssRow}`} href={href}><span className="sg-tile" aria-hidden="true"><Icon size={22} weight="bold" /></span>
+        <span className="sg-copy"><b>{label}</b><span>{sub}</span></span><CaretRightIcon className={styles.ssChev} size={16} weight="bold" aria-hidden="true" /></Link>
     </li>)}</ul>
   </SigPage>;
 }
 
 export function SignatureError({ action }: { action: ReactNode }) {
-  return <SigPage className={styles.ssRoot} band={<SigBand eyebrow="Something went wrong" mark={false}>
-    <span className={styles.ssOrb} aria-hidden="true"><WarningIcon size={32} /></span>
-    <h1 className="sg-head2">We couldn’t<br />open this page</h1>
-    <p className="sg-sub"><span>Your current information is unavailable. Nothing was changed.</span></p>
+  return <SigPage className={styles.ssRoot} band={<SigBand eyebrow="Error" mark={false}>
+    <span className={styles.ssOrb} aria-hidden="true"><WarningIcon size={32} weight="bold" /></span>
+    <h1 className="sg-head2">This page<br />didn’t load</h1>
+    <p className="sg-sub"><span>Nothing was changed. Check your connection, then try again.</span></p>
   </SigBand>}>
-    <p className="nv-sr" role="alert">This page could not be loaded. Your current information is unavailable. Try loading the page again before taking an action.</p>
+    <p className="nv-sr" role="alert">This page didn’t load. Nothing was changed. Check your connection, then try again.</p>
     {action}
     <div className="sg-center"><Link className="sg-link" href="/app">Go to Home</Link></div>
     <p className="sg-after">Still stuck? Sign out and back in, or ask your manager.</p>

@@ -4,7 +4,9 @@ import { usePathname } from "next/navigation";
 import { useSyncExternalStore } from "react";
 import { RouteSkeleton } from "@/components/route-skeleton";
 
-type Shape = { route: string; label: string; shape: "grid" | "list" | "cards"; band: number; overlap?: boolean };
+/** `route` names the page's own placeholder (its band heights live in the stylesheets); an entry without one draws the
+ * plain shape with its band height set here. */
+type Shape = { route?: string; label: string; shape: "grid" | "list" | "cards"; band: number; overlap?: boolean };
 
 /* ST-22: on a tab tap Next can show this parent placeholder for a frame before the destination's own.
  * Draw the destination's shape (the same props as its loading.tsx), so that frame matches what follows. */
@@ -18,6 +20,9 @@ const shapes: [string | RegExp, Shape][] = [
   ["/app/updates/compose", { route: "wb-compose", label: "the update form", shape: "list", band: 312 }],
   ["/app/settings/payroll", { route: "wb-payroll-settings", label: "payroll settings", shape: "cards", band: 128, overlap: false }],
   ["/app/schedule", { route: "schedule", label: "schedule", shape: "grid", band: 244 }],
+  // Review Nov 14 (RA-24): Time corrections, More, Help, Plan and billing, AI manager, Delete account and the closed-page
+  // notice had no entry, so they drew Home's shape and were announced as "Loading your workspace…".
+  ["/app/timecards/corrections", { label: "time corrections", shape: "list", band: 152, overlap: false }],
   ["/app/timecards", { route: "timecards", label: "timecards", shape: "list", band: 172, overlap: false }],
   ["/app/payroll-export", { route: "exports", label: "time exports", shape: "cards", band: 152, overlap: false }],
   ["/app/payroll", { route: "payroll", label: "payroll", shape: "cards", band: 152, overlap: false }],
@@ -29,6 +34,12 @@ const shapes: [string | RegExp, Shape][] = [
   ["/app/my-time", { route: "mytime", label: "your time", shape: "cards", band: 172, overlap: false }],
   ["/app/my-pay", { route: "mypay", label: "your pay", shape: "cards", band: 128, overlap: false }],
   ["/app/profile", { route: "profile", label: "profile", shape: "cards", band: 128, overlap: false }],
+  ["/app/more", { label: "More", shape: "list", band: 128, overlap: false }],
+  ["/app/help", { label: "help", shape: "list", band: 128, overlap: false }],
+  ["/app/billing", { label: "plan and billing", shape: "cards", band: 128, overlap: false }],
+  ["/app/ai-manager", { label: "AI manager", shape: "cards", band: 128, overlap: false }],
+  ["/app/account/delete", { label: "delete account", shape: "cards", band: 128, overlap: false }],
+  ["/app/restricted", { label: "this page", shape: "cards", band: 128, overlap: false }],
   // Wave B: a direct load of one update draws Update detail's shape; its band heights are in premium-wave-b.css.
   [/^\/app\/updates\/[^/]+$/, { route: "wb-update", label: "update", shape: "cards", band: 288 }],
   ["/app/updates", { route: "updates", label: "updates", shape: "list", band: 128, overlap: false }],
@@ -38,7 +49,7 @@ const shapes: [string | RegExp, Shape][] = [
   ["/app/settings/locations/new", { route: "settings-location-new", label: "the new location form", shape: "cards", band: 208 }],
   ["/app/settings/locations", { route: "settings-locations", label: "locations", shape: "cards", band: 276 }],
   ["/app/settings/branding", { route: "settings-branding", label: "branding", shape: "cards", band: 256 }],
-  ["/app/settings/features", { route: "settings-features", label: "features and words", shape: "cards", band: 256 }],
+  ["/app/settings/features", { route: "settings-features", label: "features and team terms", shape: "cards", band: 256 }],
   ["/app/settings/company-policies", { route: "settings-policies", label: "company policies", shape: "cards", band: 232 }],
   ["/app/settings/breaks", { route: "settings-breaks", label: "break types", shape: "cards", band: 276 }],
   ["/app/settings/positions", { route: "settings-positions", label: "positions", shape: "cards", band: 276 }],

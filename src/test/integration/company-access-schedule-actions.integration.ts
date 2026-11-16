@@ -62,7 +62,7 @@ it('normal actions deny B targets, forged foreign employee and A publication wit
   expect(await createShiftAction(form({employeeId:'FOREIGN'}))).toEqual({error:'Operational access is unavailable. Reload and try again.',issueCode:'ACCESS_DENIED'});
   expect(await createShiftAction(form({locationId:'loc-2',employeeId:'FOREIGN'}))).toEqual({error:'Operational access is unavailable. Reload and try again.',issueCode:'ACCESS_DENIED'});
   expect(await updateShiftAction(form({shiftId:'foreign-shift',employeeId:'FOREIGN'}))).toEqual({error:'Operational access is unavailable. Reload and try again.',issueCode:'ACCESS_DENIED'});
-  await expect(deleteShiftAction(form({shiftId:'foreign-shift'}))).rejects.toMatchObject({destination:'/app/schedule?error=ACCESS_DENIED'});
+  expect(await deleteShiftAction(form({shiftId:'foreign-shift'}))).toEqual({error:'Operational access is unavailable. Reload and try again.',issueCode:'ACCESS_DENIED'});
   await expect(publishScheduleAction(form())).rejects.toMatchObject({destination:'/app/schedule?error=ACCESS_DENIED'});
   expect(await f.q('SELECT to_jsonb(s) AS row FROM shifts s ORDER BY id')).toEqual(before);
   expect(await f.q('SELECT id FROM schedule_publication_revisions')).toEqual([]);

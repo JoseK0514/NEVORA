@@ -32,7 +32,7 @@ export function SwapSentBoundary({ children }: { children: ReactNode }) {
       <QuietRow title="You receive" detail={keepWhole(`${shortDay(sent.receive.date)} · ${swapTimeLabel(sent.receive)} · from ${sent.receive.employeeName}`)} />
     </QuietList>
     <QuietList style={{ marginTop: 24 }}>
-      <QuietRow variant="tint" avatar={<CheckIcon className="q-ic" aria-hidden="true" />} title="What happens next" detail="Your schedule changes only after they agree and any review is done." />
+      <QuietRow variant="tint" avatar={<CheckIcon weight="bold" className="q-ic" aria-hidden="true" />} title="What happens next" detail="Your schedule changes only after they agree and any review is done." />
     </QuietList>
     <Link className="q-btn q-btn--sec" href="/app/exchange?tab=requests">View request status</Link>
   </QuietPage>;

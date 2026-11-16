@@ -10,6 +10,9 @@ import { listLocationStaffingSettings, listCoverageWindows } from "@/lib/data/sc
 import { evaluateLocationReadiness } from "@/lib/scheduling/location-readiness";
 import { EmptyState, SettingsFrame } from "../wave-c-kit";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Locations" };
+
 type Search = { q?: string | string[]; status?: string | string[] };
 type Filter = "all" | "setup" | "ready" | "inactive";
 const directoryPath = "/app/settings/locations";
@@ -53,14 +56,16 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
   return (
     <SettingsFrame title={words.locations}>
       <p className="q-sr" role="status">{activeCount} active of {locations.length} {locations.length === 1 ? place : places}</p>
-      {visible.length ? <ul className="q-list" aria-label={words.locations}>
-        <li className="wc-cardhead" aria-hidden="true"><span>{`${activeCount} ${activeCount === 1 ? place : places}`}</span></li>
+      {/* Closing F1 (NV-238): the card's title is the page's noun with a count pill ("Locations 2"), as on every index card;
+        (NV-248) a long name wraps to two lines instead of being cut. */}
+      {visible.length ? <ul className="q-list wc-locations" aria-label={words.locations}>
+        <li className="wc-cardhead" aria-hidden="true"><span>{words.locations}<span className="wc-count c-num">{activeCount}</span></span></li>
         {visible.map(({ location, readiness, eligibleCount }) => <li key={location.id} data-location={location.id}>
           <Link className={location.name !== location.shortName || readiness.state !== "READY" ? "q-row" : "q-row q-row--one"} href={`${directoryPath}/${encodeURIComponent(location.id)}`} aria-label={`Edit ${location.name}`}>
             <span className="q-rt"><b>{location.shortName}</b>{location.name !== location.shortName || readiness.state !== "READY" ? <i>{[location.name !== location.shortName ? location.name : null,
               readiness.state === "INACTIVE" ? "Inactive" : readiness.state === "NEEDS_SETUP" ? "Needs setup" : null].filter(Boolean).join(" · ")}</i> : null}</span>
             <span className="wc-meta">{`${eligibleCount} ${peopleWord(eligibleCount)}`}</span>
-            <CaretRight className="q-chev" aria-hidden="true" />
+            <CaretRight weight="bold" className="q-chev" aria-hidden="true" />
           </Link>
         </li>)}
         <li><Link className="wc-addrow" href={`${directoryPath}/new`}><Plus aria-hidden="true" weight="bold" />{`Add ${place}`}</Link></li>

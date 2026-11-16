@@ -1,6 +1,7 @@
 "use client";
 import {NativeDeviceSettings} from './native-shell/device-settings';
 import {isPopoverOpen} from "./kit/popover-open";
+import './portal-device-setup.css';
 
 import { useEffect, useRef, useState } from 'react';
 import { AuthBrand } from './auth-brand';

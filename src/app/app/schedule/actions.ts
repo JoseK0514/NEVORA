@@ -318,7 +318,10 @@ export async function deleteShiftAction(formData: FormData) {
   try{admission=await assertOperationalAccess(proof,undefined);}catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
   const editor=await readOperationalShiftEditor(proof,{shiftId});
   if(!await currentAdmission(proof,admission))redirect('/app/schedule?error=ACCESS_DENIED');
-  if(editor.state!=='ready'||editor.data.saveAvailability!=='available'||!editor.data.shift)redirect('/app/schedule?error=ACCESS_DENIED');
+  // Missing and out-of-scope shifts deliberately share the same private refusal.
+  // Keep the reviewed draft mounted; a redirect would discard recovery after a
+  // concurrent deletion or a lost successful delete response.
+  if(editor.state!=='ready'||editor.data.saveAvailability!=='available'||!editor.data.shift)return accessError();
   const existing=editor.data.shift;
   try{requireShiftReview(expectedReviewVersion);}catch{return shiftConflict();}
   if(existing.reviewVersion!==expectedReviewVersion)return shiftConflict();

@@ -20,6 +20,6 @@ export default async function InboxPage({ searchParams }: { searchParams?: Promi
   const weekStart = weekStartFor(businessDate(new Date(), workspace.timeZone));
   // ?view=more: Older items, the items Things to do lists but doesn't count (Home and the sidebar count the rest).
   const view = (await searchParams)?.view === "more" ? "more" : "today";
-  return <ManagerInboxCorp weekStart={weekStart} actorId={session.id} timeZone={workspace.timeZone} coverageFirst={session.role === "OWNER"} view={view} />;
+  return <ManagerInboxCorp weekStart={weekStart} actorId={session.id} timeZone={workspace.timeZone} coverageFirst view={view} />;
 }
 

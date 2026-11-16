@@ -39,9 +39,9 @@ export function ClockerBreakTypes({ initialTypes, action }: {
   const trigger = useRef<HTMLElement | null>(null);
   const busy = useRef(false);
   const { errors, handlers, clear } = useFieldErrors({
-    name: { missing: 'Enter a break name.' },
-    category: { missing: 'Choose a classification.' },
-    targetMinutes: { pattern: 'Enter whole minutes, from 1 to 1,440.', length: 'Enter whole minutes, from 1 to 1,440.' },
+    name: { missing: 'Enter a break name' },
+    category: { missing: 'Choose a classification' },
+    targetMinutes: { pattern: 'Enter whole minutes, from 1 to 1,440', length: 'Enter whole minutes, from 1 to 1,440' },
   });
 
   useEffect(() => {
@@ -120,7 +120,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
     <button type="button" className={type.targetMinutes === null ? 'q-row q-row--one' : 'q-row'} data-break-type={type.id} aria-label={`Edit ${type.name}`} onClick={event => open({ operation: 'EDIT', type }, event)}>
       <span className="q-rt"><b>{type.name}</b>{type.targetMinutes === null ? null : <i>{`${type.targetMinutes}\u00a0min`}</i>}</span>
       <span className="q-pill-cat">{categoryLabel(type.category)}</span>
-      <CaretRightIcon className="q-chev" aria-hidden="true" />
+      <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
     </button>
   </li>;
   const archived = types.filter(type => !type.active);
@@ -129,13 +129,14 @@ export function ClockerBreakTypes({ initialTypes, action }: {
   return <SettingsFrame className={ownerStyles.owner} title="Break types">
     <p className="q-sr" role="status">Showing {activeCount} of {types.length} {types.length === 1 ? 'break type' : 'break types'}</p>
     <ul className="q-list" aria-label="Configured break types">
-      {activeCount ? <li className="wc-cardhead" aria-hidden="true"><span>{`${activeCount} ${activeCount === 1 ? 'break type' : 'break types'}`}</span></li> : null}
+      {/* Closing F1 (NV-238): "Break types 3", the title inside the card with its count pill. */}
+      {activeCount ? <li className="wc-cardhead" aria-hidden="true"><span>Break types<span className="wc-count c-num">{activeCount}</span></span></li> : null}
       {types.filter(type => type.active).map(row)}
       {!activeCount ? <li className="wc-emptyrow"><b>{types.length ? 'No active break types' : 'No break types yet'}</b>{types.length ? null : <span>Add the breaks your team takes, like a 30-minute meal.</span>}</li> : null}
       <li><button ref={addButton} type="button" className="wc-addrow" onClick={event => open({ operation: 'CREATE' }, event)}><PlusIcon aria-hidden="true" weight="bold" />Add break type</button></li>
     </ul>
     {archived.length ? <ul className="q-list" aria-label="Archived break types">
-      <li className="wc-cardhead" aria-hidden="true"><span>{`Archived (${archived.length})`}</span></li>
+      <li className="wc-cardhead" aria-hidden="true"><span>Archived<span className="wc-count c-num">{archived.length}</span></span></li>
       {archived.map(row)}
     </ul> : null}
     <p className="wc-foot">Changes apply to new breaks only.</p>
@@ -144,7 +145,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
         <div className="wc-dialog__head">
           <div><h2 className="wc-dialog__title" id="break-editor-title">{title}</h2>
             <p className="wc-dialog__text" id="break-editor-description">{selection.operation === 'CREATE' ? 'It’s offered for new breaks as soon as you create it.' : editing ? 'Changes apply to future breaks only.' : selection.operation === 'ARCHIVE' ? 'It won’t be offered for new breaks.' : 'It will be offered for new breaks again.'}</p></div>
-          <button type="button" className="wc-dialog__close" aria-label="Close break editor" disabled={pending} onClick={close}><XIcon size={22} aria-hidden="true" /></button>
+          <button type="button" className="wc-dialog__close" aria-label="Close break editor" disabled={pending} onClick={close}><XIcon size={22} weight="bold" aria-hidden="true" /></button>
         </div>
         <fieldset className="wc-fieldset" disabled={pending || Boolean(error?.refresh)}>
           {editing ? <FieldErrors errors={errors}><div className="wc-fields">
@@ -158,7 +159,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
               id="break-minutes" name="targetMinutes" type="text" inputMode="numeric" pattern="(?:[1-9][0-9]{0,2}|1[0-3][0-9]{2}|14[0-3][0-9]|1440)" maxLength={4}
               defaultValue={selection.type?.targetMinutes ?? ''} placeholder="e.g. 15" />
           </div></FieldErrors> : <div className="wc-fact">
-            <span className="wc-fact__icon" aria-hidden="true">{selection.operation === 'ARCHIVE' ? <ArchiveIcon size={20} /> : <ArrowClockwiseIcon size={20} />}</span>
+            <span className="wc-fact__icon" aria-hidden="true">{selection.operation === 'ARCHIVE' ? <ArchiveIcon size={20} weight="bold" /> : <ArrowClockwiseIcon size={20} weight="bold" />}</span>
             <div><span className="wc-fact__value">{selection.type?.name}</span>
               <span className="wc-fact__note">{selection.operation === 'ARCHIVE' ? 'Breaks already in progress can still end. Recorded settings stay unchanged.' : 'Earlier records stay unchanged.'}</span></div>
           </div>}

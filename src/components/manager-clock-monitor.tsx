@@ -43,7 +43,7 @@ export function ClockMonitorCard({state,onRefresh}:{state:MonitorPanelState;onRe
    <small>{paused?'Reconnect and return to this page to check current activity.':denied?'Current Manager or Owner access is required.':monitor?.state==='unavailable'?'The latest clock records could not be confirmed. Try refreshing.':'Checking recorded clock-ins and breaks.'}</small>
   </div></>}
   <footer className="manager-live-footer">
-   <small>{ready?<>Updated <time dateTime={ready.observedAt}>{checkedAt(ready.observedAt,ready.timeZone)}</time><span>Updates every 30s while this page is active.</span></>:'Only recorded punches appear here.'}</small>
+   <small>{ready?<>Updated <time dateTime={ready.observedAt}>{checkedAt(ready.observedAt,ready.timeZone)}</time><span>Updates every 30 seconds while this page is open.</span></>:'Only recorded punches appear here.'}</small>
    {denied?<Link className="manager-live-refresh" href="/login">Sign in</Link>:<button className="manager-live-refresh" type="button" onClick={onRefresh} disabled={refreshing||paused} aria-label="Refresh live activity">{refreshing?'Refreshing…':'Refresh'}</button>}
   </footer>
  </section>;

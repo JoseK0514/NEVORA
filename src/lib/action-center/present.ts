@@ -1,4 +1,5 @@
 import type {ActionItem} from './project';
+import {isStaffingRepair,repairPerson,repairTitle,repairWhen} from '../time-off-staffing/present';
 
 /* Phase 7: how an action center item reads on Home and in the Inbox.
  * Display only. The server's item (and the notifications built from it) is unchanged;
@@ -7,6 +8,7 @@ import type {ActionItem} from './project';
 
 const NBSP = ' ', NBHY = '‑';
 const WAITING = / is waiting for review\.?$/;
+const isOwnCorrection = (title: string) => /^Your correction/.test(title);
 
 /** "8:00 AM–4:00 PM" → "8:00 AM – 4:00 PM", with the times kept whole. */
 export function spacedRanges(text: string) {
@@ -28,7 +30,7 @@ export function readableDates(text: string) {
     .replace(/Resolve recorded-time exceptions before finalizing\./g, 'Fix recorded-time issues before finalizing.');
 }
 
-const requestKind: Partial<Record<ActionItem['type'], string>> = {TIME_OFF: 'Time off', EXCHANGE: 'Shift request', CALLOUT: 'Unable to work'};
+const requestKind: Partial<Record<ActionItem['type'], string>> = {TIME_OFF: 'Time off', EXCHANGE: 'Shift request', CALLOUT: 'Can’t work'};
 
 const sentDate = (iso: string | undefined, timeZone: string) => {
   if (!iso) return '';
@@ -40,8 +42,40 @@ const sentDate = (iso: string | undefined, timeZone: string) => {
   catch { return ''; }
 };
 
+/** A length in minutes, said the way the rest of Time says it: "30 min", "1 h", "1 h 15 min". */
+const lengthText = (minutes: number) => {
+  const h = Math.floor(minutes / 60), m = minutes % 60;
+  return h ? `${h}${NBSP}h${m ? ` ${m}${NBSP}min` : ''}` : `${m}${NBSP}min`;
+};
+
+/** Backend contract (Nov 15, 2026): a correction item carries its work day, the workplace zone, the recorded interval
+ * (either end may be missing) and the requested one. The line says what changes, in the workplace's clock:
+ * "Wed, Nov 11 · 8:30 AM – 5:00 PM, was 9:00 AM – 5:00 PM · +30 min". The length difference is only given when both
+ * intervals are complete; nothing recorded reads "Add …", never a zero-minute entry. Null when the facts can't be read. */
+export function correctionLine(correction: NonNullable<ActionItem['correction']>): string | null {
+  const at = (iso: string | null) => { if (!iso) return null; const value = Date.parse(iso); return Number.isFinite(value) ? value : null; };
+  const askedStart = at(correction.requestedStartAt), askedEnd = at(correction.requestedEndAt);
+  const wasStart = at(correction.recordedStartAt), wasEnd = at(correction.recordedEndAt);
+  if (askedStart === null || askedEnd === null || askedEnd <= askedStart || !/^\d{4}-\d{2}-\d{2}$/.test(correction.workDate)) return null;
+  let clock: Intl.DateTimeFormat;
+  try { clock = new Intl.DateTimeFormat('en-US', {timeZone: correction.timeZone, hour: 'numeric', minute: '2-digit'}); } catch { return null; }
+  // Each time stays whole on a narrow phone ("10:55 AM" never breaks before AM): a narrow no-break space, which the row
+  // keeps (Things to do turns ordinary no-break spaces back into spaces).
+  const time = (value: number) => clock.format(new Date(value)).replace(/[ \u00a0\u202f]([AP]M)$/, '\u202f$1');
+  const day = new Intl.DateTimeFormat('en-US', {weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC'}).format(new Date(`${correction.workDate}T12:00:00Z`)).replace(/ (\d+)$/, `${NBSP}$1`);
+  const asked = `${time(askedStart)} – ${time(askedEnd)}`;
+  if (wasStart === null && wasEnd === null) return `${day} · Add ${asked}`;
+  // Only a start recorded: an open entry. A recorded end with no start, or an end not after the start, can't be described
+  // truthfully, so the line gives the requested time alone.
+  if (wasStart !== null && wasEnd === null) return `${day} · ${asked}, was ${time(wasStart)} with no clock-out`;
+  if (wasStart === null || wasEnd === null || wasEnd <= wasStart) return `${day} · ${asked}`;
+  const change = Math.round(((askedEnd - askedStart) - (wasEnd - wasStart)) / 60_000);
+  return `${day} · ${asked}, was ${time(wasStart)} – ${time(wasEnd)} · ${change === 0 ? 'same length' : `${change > 0 ? '+' : '−'}${lengthText(Math.abs(change))}`}`;
+}
+
 /** The person an item is about, when its text names one. */
 export function itemPerson(item: ActionItem) {
+  if (isStaffingRepair(item)) return repairPerson(item);
   if (item.category === 'requests') return item.detail.replace(WAITING, '').trim() || null;
   const named = /^(.+?) (?:is not included|has not acknowledged|has not submitted|has no weekly)/.exec(item.detail);
   return named ? named[1] : null;
@@ -52,11 +86,16 @@ export type PresentedItem = {title: string; detail: string; person: string | nul
 export function presentItem(item: ActionItem, actionLabel: string, timeZone = 'UTC'): PresentedItem {
   const person = itemPerson(item);
   let title = item.title, detail = item.detail;
+  // Approved leave over a published shift (Nov 9, 2026): scheduling work named for the person, never a request to decide.
+  if (isStaffingRepair(item)) return {title: repairTitle(item), detail: spacedRanges(['Approved time off', repairWhen(item)].filter(Boolean).join(' · ')), person, action: actionLabel};
   switch (item.type) {
-    case 'TIME_OFF': case 'EXCHANGE': case 'CALLOUT':
+    case 'TIME_OFF': case 'EXCHANGE': case 'CALLOUT': {
       title = person ?? title;
-      detail = [requestKind[item.type], sentDate(item.dateTime, timeZone)].filter(Boolean).join(' · ');
+      // Backend (Nov 15, 2026): a shift request says whether it is a swap or a cover; without it, "Shift request".
+      const kind = item.type === 'EXCHANGE' && item.request?.exchangeKind ? (item.request.exchangeKind === 'SWAP' ? 'Shift swap' : 'Cover request') : requestKind[item.type];
+      detail = [kind, sentDate(item.dateTime, timeZone)].filter(Boolean).join(' · ');
       break;
+    }
     case 'TARGET_MISSING':
       title = 'No weekly hour target';
       detail = person ? `${person} has no weekly hour target yet.` : 'Set a weekly hour target.';
@@ -73,7 +112,18 @@ export function presentItem(item: ActionItem, actionLabel: string, timeZone = 'U
       title = title.replace(/^Position coverage missing at /, 'Position not covered at ').replace(/^Lead coverage missing at /, 'No lead scheduled at ');
       detail = detail.replace(/: (\d+) missing/g, ': $1 open');
       break;
+    case 'TIME_CORRECTION': {
+      // Phase 3 (OW-002): the title is the person, the line under it what they asked for.
+      const who = detail.split(' · ')[0]?.trim(), sent = sentDate(item.dateTime, timeZone);
+      if (who && !isOwnCorrection(title)) title = who;
+      // Backend (Nov 15): with the correction's facts the line says what changes; without them, the kind and the day sent.
+      detail = (item.correction ? correctionLine(item.correction) : null)
+        ?? [/Recorded entry not sent yet/.test(detail) ? 'Add unrecorded time' : 'Time correction', sent].filter(Boolean).join(' · ');
+      break;
+    }
   }
+  // Review B7 (NV-262): a detail that ends in a bare date range ("Casey · Nov 2 – Nov 8.") is a label, not a sentence.
+  if (item.type === 'TIMECARD') detail = detail.replace(/(\d)\.$/, '$1');
   const action = actionLabel === 'Set hour target' ? 'Set weekly hour target' : actionLabel;
   return {title, detail: spacedRanges(readableDates(detail)), person, action};
 }
@@ -90,6 +140,14 @@ export function groupHeading(type: ActionItem['type'], count: number, title: str
     case 'TIME_OFF': return n('time-off request', 'time-off requests');
     default: return `${title} (${count})`;
   }
+}
+
+/** Jose's attendance words (Nov 11, 2026). "Not clocked in": the shift started and there is no punch. "Missed": the shift
+ * ended with no punch. "Clocked in late": the person arrived after the start. Today's read tells the first two apart by
+ * the shift's status, so a shift still in progress is never called missed. */
+export const ATTENDANCE_WORDS = {notClockedIn: 'Not clocked in', late: 'Clocked in late', missed: 'Missed'} as const;
+export function splitNoClockIn<T extends {status: string}>(shifts: readonly T[]): {running: T[]; ended: T[]} {
+  return {running: shifts.filter(shift => shift.status !== 'no_punches'), ended: shifts.filter(shift => shift.status === 'no_punches')};
 }
 
 /** "clock-in" that never breaks at its hyphen. */

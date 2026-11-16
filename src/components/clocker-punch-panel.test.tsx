@@ -1,8 +1,9 @@
 import {expect,it,vi} from 'vitest';
 const hooks=vi.hoisted(()=>({states:[] as unknown[],index:0}));
-vi.mock('react',async original=>({...await original<Record<string,unknown>>(),useState:(initial:unknown)=>[hooks.states[hooks.index++]??initial,()=>{}],useRef:(initial:unknown)=>({current:initial}),useEffect:()=>{}}));
+vi.mock('react',async original=>({...await original<Record<string,unknown>>(),useState:(initial:unknown)=>[hooks.states[hooks.index++]??initial,()=>{}],useRef:(initial:unknown)=>({current:initial}),useEffect:()=>{},useContext:()=>null}));
+vi.mock('./clocker-shell',()=>({useReportTabletHealth:()=>{}}));
 vi.mock('./clocker-motion',()=>({useClockerMotion:()=>({current:null})}));
-vi.mock('./clocker-language',()=>({useClockerCopy:()=>((key:string)=>key),useClockerPresentation:()=>({v2:true,locale:'en'}),useClockerSpanish:()=>false,Es:()=>null}));
+vi.mock('./clocker-language',()=>({useClockerCopy:()=>((key:string)=>key),useClockerPresentation:()=>({v2:true,locale:'en'}),useClockerIntlLocale:()=>'en-US',useClockerSpanish:()=>false,Es:()=>null}));
 import {ClockerPunchPanel} from './clocker-punch-panel';
 import {ClockerRecoveryHandoff} from './clocker-recovery';
 function findHandoff(value:unknown):unknown{
@@ -13,9 +14,15 @@ function findHandoff(value:unknown):unknown{
 }
 const subject='a'.repeat(64),view={subject,firstName:'Avery',snapshot:{entry:null,break:null,revision:0},allowedActions:['CLOCK_IN'],breakTypes:[]};
 function render(mode:string,pendingSubject=subject){
- hooks.index=0;hooks.states=[view,{subject:pendingSubject,command:{commandId:'private-reference'}},mode,null,null,null,[{commandId:'private-reference',action:'CLOCK_IN'}],0];
+ hooks.index=0;// State order in the Direction B panel: view, pending, mode, message, sendingAction, photo, receipt, references, now, otherCount.
+ hooks.states=[view,{subject:pendingSubject,command:{commandId:'private-reference'}},mode,null,null,null,null,[{commandId:'private-reference',action:'CLOCK_IN'}],1,3];
  return ClockerPunchPanel({locationKey:'2',timeZone:'UTC',onDone:()=>{}});
 }
 it('retains the current verified person recovery handoff',()=>{expect(findHandoff(render('recovery'))).toBeTruthy();});
 it.each(['auth','other-person'])('withholds saved identifiers when the panel requires %s recovery',mode=>{expect(findHandoff(render(mode))).toBeUndefined();});
 it('withholds a pending reference belonging to a different verified subject',()=>{expect(findHandoff(render('recovery','b'.repeat(64)))).toBeUndefined();});
+// Nov 14 inspection (NV-185): other people's saved punches reach the help as a count only.
+it('passes only a count of other people’s saved punches to the handoff',()=>{
+ const handoff=findHandoff(render('recovery')) as {props:{otherCount:number;references:{commandId:string}[]}};
+ expect(handoff.props.otherCount).toBe(3);expect(handoff.props.references).toEqual([{commandId:'private-reference',action:'CLOCK_IN'}]);
+});

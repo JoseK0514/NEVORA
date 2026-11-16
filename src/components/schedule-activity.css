@@ -10,3 +10,4 @@
 :is(#c-root, html) .c-act .c-act__icon .c-ic { width: 18px; height: 18px; }
 :is(#c-root, html) .c-act .c-act__empty { font-size: 15px; line-height: 20px; color: var(--c-ink2); }
 :is(#c-root, html) .c-act .c-card__foot { justify-content: center; padding: 0 16px; }
+:is(#c-root, html) .c-act .c-act__icon--amber { background: var(--b-amber-50, #FDF3E4); color: var(--b-amber, #8A4B00); } /* review B5, NV-109 */

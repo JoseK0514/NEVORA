@@ -117,7 +117,7 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         if (actor === 'UI-COMPANY') {
           await visit('/app/payroll-export?start=' + period.startDate + '&end=' + period.endDate);
           await page.getByText('Who’s included and sent files', { exact: true }).click();
-          const mobile = page.getByRole('button', { name: 'Review payroll population', exact: true });
+          const mobile = page.getByRole('button', { name: 'Choose who’s included', exact: true });
           if (await mobile.isVisible()) await mobile.click();
           const history = page.getByRole('region', { name: 'Period artifact and handoff history' });
           await history.getByRole('button', { name: 'Load history', exact: true }).click();

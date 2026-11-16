@@ -8,7 +8,7 @@ vi.mock('@/app/app/exchange/actions',()=>({shiftChangeAction:async()=>({status:'
 import CalloutPage from './page';
 vi.mock('@/lib/workspace-presentation/service', async importOriginal => ({ ...(await importOriginal<typeof import('@/lib/workspace-presentation/service')>()), readActivePresentation: async () => ({ style: undefined, tokens: null, logoAssetId: null, revision: 0, words: 'standard' as const, modules: (await import('@/lib/workspace-presentation/modules')).ALL_MODULES_ON }) })); // no saved settings: every module on
 const clock=vi.hoisted(()=>({observedAt:'2026-10-04T09:00:00Z'}));
-it('genuine ongoing overnight absence remains reportable from the previous business date',async()=>{vi.useFakeTimers();vi.setSystemTime(new Date('2026-10-04T09:00:00Z'));try{const h=renderToStaticMarkup(await CalloutPage({searchParams:Promise.resolve({shiftId:'shift'})}));expect(h).toContain('Unable to work');expect(h).toContain('Service coordinator');expect(h).toContain('Shift lead');expect(h).toContain('name="reasonCode"');}finally{vi.useRealTimers();}});
+it('genuine ongoing overnight absence remains reportable from the previous business date',async()=>{vi.useFakeTimers();vi.setSystemTime(new Date('2026-10-04T09:00:00Z'));try{const h=renderToStaticMarkup(await CalloutPage({searchParams:Promise.resolve({shiftId:'shift'})}));/* B7 wording (NV-119) */expect(h).toContain('Can’t work this shift');expect(h).toContain('Service coordinator');expect(h).toContain('Shift lead');expect(h).toContain('name="reasonCode"');}finally{vi.useRealTimers();}});
 vi.mock('@/components/employee-submit-button',async(importOriginal)=>({...await importOriginal<typeof import('@/components/employee-submit-button')>(),EmployeeSubmitButton:({children,...p}:React.ComponentProps<'button'>)=>createElement('button',p,children)}));
 vi.mock('@/app/app/exchange/callout/actions',()=>({submitCalloutAction:async()=>{}}));
 
@@ -25,8 +25,8 @@ it('ended-shift exclusion uses the coherent server observation even when renderi
  try {await expect(CalloutPage({searchParams:Promise.resolve({shiftId:'shift'})})).rejects.toThrow('error=INVALID_SHIFT');}
  finally {clock.observedAt='2026-10-04T09:00:00Z';vi.useRealTimers();}
 });
-it('opened without choosing a shift returns to My requests with no false error (inspection Oct 24)',async()=>{
- await expect(CalloutPage({searchParams:Promise.resolve({})})).rejects.toThrow(/^\/app\/exchange\?tab=my$/);
+it('opened without choosing a shift asks for the shift on Schedule (review B6, NV-290)',async()=>{
+ await expect(CalloutPage({searchParams:Promise.resolve({})})).rejects.toThrow(/^\/app\/schedule\?intent=callout$/);
 });
 // Jose, 2026-10-31: a shift with held edits still opens. The employee sees the
 // published version; the report binds to the live assignment (later end here).
@@ -35,7 +35,7 @@ it('a held shift opens with its published times and binds the report to the live
  shown.held={held:true,timeZone:'America/Puerto_Rico',assignmentEpisodeId:'episode',termsRevision:1,id:'shift',employeeId:'self',date:'2026-10-03',startTime:'22:00',endTime:'06:30',locationName:'West Drive',positionName:'Service coordinator',isDesignatedLead:true};
  try{
   const h=renderToStaticMarkup(await CalloutPage({searchParams:Promise.resolve({shiftId:'shift'})}));
-  expect(h).toContain('Unable to work');expect(h).toContain('name="reasonCode"');
+  /* B7 wording (NV-119) */expect(h).toContain('Can’t work this shift');expect(h).toContain('name="reasonCode"');
   expect(h).toContain('value="v1:reviewed"');expect(h).toContain('value="SUBMIT_CALLOUT"');
   expect(h).toMatch(/10:00\s?PM|22:00/);expect(h).not.toMatch(/11:00\s?PM|23:00/);
   expect(h).not.toMatch(/held/i);

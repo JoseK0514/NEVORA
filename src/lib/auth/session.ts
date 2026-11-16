@@ -4,7 +4,9 @@ import { prepareSession, type PreparedSession, type ReviewedLoginCredential } fr
 export type { ReviewedLoginCredential } from "./session-issuance";
 import { cache } from "react";
 import {workspaceCookies as cookies} from "@/lib/workspace-routing/cookies.server";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { safeReturnTo } from "@/lib/notifications/destinations";
 import {queryRows} from "@/lib/db";
 import {applicationSql} from "@/lib/data/app-sql";
 import type { UserRole } from "@/lib/domain";
@@ -119,11 +121,32 @@ const readSessionForToken = cache(async (token: string): Promise<SessionEmployee
   };
 });
 
+/** Where a missing or ended session lands (inspection Nov 14, 2026, RA-5). Destination only: when a session ends and
+ * how it is validated are unchanged.
+ * - The reason (`ended=1`) is added only when this browser plainly had a session: it still presents a session cookie, or
+ *   the request comes from a portal page on this origin. A first visit keeps the bare /login, with no claim.
+ * - The way back (`returnTo`) is that portal page, and only in the form sign-in already accepts (safeReturnTo). */
+async function endedSessionLogin(): Promise<string> {
+  let ended = false, returnTo: string | null = null;
+  try { ended = Boolean((await cookies()).get(SESSION_COOKIE)?.value); } catch { /* No cookie store: no claim. */ }
+  try {
+    const request = await headers();
+    const referer = request.get("referer");
+    const from = referer ? new URL(referer) : null;
+    if (from && [request.get("host"), request.get("x-forwarded-host")].includes(from.host) && (from.pathname === "/app" || from.pathname.startsWith("/app/"))) {
+      ended = true;
+      returnTo = safeReturnTo(`${from.pathname}${from.search}`);
+    }
+  } catch { /* No request headers, or an unreadable Referer: sign-in opens Home afterwards, as before. */ }
+  if (!ended) return "/login";
+  return `/login?ended=1${returnTo && returnTo !== "/app" ? `&returnTo=${encodeURIComponent(returnTo)}` : ""}`;
+}
+
 /** Redirect missing/expired/inactive sessions to login; database failures still
  * propagate so an outage is not silently presented as a signed-out state. */
 export async function requireSession() {
   const session = await getSession();
-  if (!session) redirect("/login");
+  if (!session) redirect(await endedSessionLogin());
   return session;
 }
 
@@ -131,9 +154,9 @@ export async function requireSession() {
 export async function requireSessionMutationProof(): Promise<import('../shift-changes/types').SessionMutationProof> {
   const store = await cookies();
   const token = store.get(SESSION_COOKIE)?.value;
-  if (!token) redirect('/login');
+  if (!token) redirect(await endedSessionLogin());
   const proof = await readMutationProofForToken(token);
-  if (!proof) redirect('/login');
+  if (!proof) redirect(await endedSessionLogin());
   return proof;
 }
 

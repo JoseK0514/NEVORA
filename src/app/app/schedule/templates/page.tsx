@@ -12,6 +12,8 @@ import { ActionForm } from "@/components/wave-b-forms";
 import { QuietHeader, QuietNav, QuietPage, weekLabel as compactWeek } from "@/components/quiet/quiet";
 import "../../settings/settings-corp.css";
 import { getWorkspace } from "@/lib/data/workspaces";
+import { BState } from "@/components/owner-b/b-kit";
+import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
 import { businessDate } from "@/lib/business-time";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { formatWeekRange, isValidWeekStart, weekStartFor } from "@/lib/date-utils";
@@ -20,6 +22,10 @@ import {
   archiveTemplateAction,
   saveTemplateAction,
 } from "@/app/app/schedule/templates/actions";
+
+/** Review B1 (NV-022): the page title in the tab and for screen readers. Review Nov 14 (AR-15): the page's own name, as in
+ * the menus and its heading. */
+export const metadata = { title: "Week templates" };
 
 export default async function ScheduleTemplatesPage({
   searchParams,
@@ -47,7 +53,7 @@ export default async function ScheduleTemplatesPage({
   const hasFeedback = Boolean(params.error || params.saved || params.archived || params.applied !== undefined);
 
   // Release 1 (board O-Templates): "‹ Schedule  Week templates", how many weeks are saved, then a card per template (its
-  // name, how many shifts, Archive and Apply to this week), then Save this week. The first Apply is the page's one primary.
+  // name, how many shifts, Archive and Apply to this week), then New template (Review B1, NV-084: a teal Save template, not the grey that reads as disabled).
   const shortWeek = compactWeek(weekStart);
   return (<ScopedReadFrame observation={scopedObservation(source)}>
     <QuietPage className="q-templates">
@@ -67,7 +73,10 @@ export default async function ScheduleTemplatesPage({
           {" "}<Link className="q-link" href={`/app/schedule?week=${weekStart}`}>Review schedule</Link></p> : null}
       </TemplateFeedback> : null}
 
-      <p className="wc-intro" id="st-library">{templates.length ? `${templates.length} saved ${templates.length === 1 ? "week" : "weeks"}` : "No saved weeks yet"}</p>
+      {/* Closing F1 (NV-084): no saved weeks is the kit's empty card (a tinted icon, the state and what a template is for). */}
+      {templates.length ? <p className="wc-intro" id="st-library">{`${templates.length} saved ${templates.length === 1 ? "week" : "weeks"}`}</p>
+        : <section className="q-list wc-tcard st-empty" aria-label="Saved weeks"><BState kind="empty" icon={<CalendarBlankIcon weight="bold" />} title="No saved weeks yet"
+          line="Save a week’s shifts as a template, then use it for any week." /></section>}
       {templates.length ? <ul className="wc-cards" aria-labelledby="st-library">
         {templates.map((template, index) => <li className="q-list wc-tcard" key={template.id}>
           <div className="wc-cardhead"><span>{template.name}</span></div>
@@ -83,8 +92,8 @@ export default async function ScheduleTemplatesPage({
       </ul> : null}
 
       <section className="q-list wc-tcard" aria-labelledby="st-save-title" id="st-save">
-        <div className="wc-cardhead"><h2 id="st-save-title">Save this week</h2><span className="wc-meta" aria-label={`Week of ${keepWhole(`${weekLabel}, ${weekStart.slice(0, 4)}`)}`}>{shortWeek}</span></div>
-        <ActionForm action={saveTemplateAction} className="q-template-form wc-tcard__body" failure="Template not saved. Check your connection and try again; your name is kept." submit={{ label: "Save this week", pendingLabel: "Saving…", className: "wc-btn wc-btn--sec wc-btn--full" }}>
+        <div className="wc-cardhead"><h2 id="st-save-title">New template</h2><span className="wc-meta" aria-label={`Week of ${keepWhole(`${weekLabel}, ${weekStart.slice(0, 4)}`)}`}>{shortWeek}</span></div>
+        <ActionForm action={saveTemplateAction} className="q-template-form wc-tcard__body" failure="Template not saved. Check your connection and try again; your name is kept." submit={{ label: "Save template", pendingLabel: "Saving…", className: "wc-btn wc-btn--full" }}>
           <input type="hidden" name="weekStart" value={weekStart} />
           <div className="q-fl">
             <label htmlFor="st-template-name">Name</label>

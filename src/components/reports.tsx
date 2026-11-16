@@ -1,5 +1,7 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
+import {announceFailure,clearsProtectedData,failureRecovery,nevoraFailure} from '@/lib/http/nevora-failure';
+import {announceOfflineHeld,offlineListener} from '@/lib/offline-hold';
 import {isPopoverOpen} from './kit/popover-open';
 import type React from 'react';
 import type {CSSProperties} from 'react';
@@ -8,6 +10,7 @@ import {Temporal} from '@js-temporal/polyfill';
 import {projectReports,type PeriodReports,type ReportHours} from '@/lib/reports/project';
 import {formatRecordedHours,parsePeriod,projectTimecard,type Period} from '@/lib/timecards/project';
 import {formatDateRange,formatDisplayDate} from '@/lib/date-utils';
+import {dateRangeText,durationSentence,minutesFromNanoseconds} from '@/lib/duration-format';
 import {DownloadSimpleIcon} from '@phosphor-icons/react/dist/ssr/DownloadSimple';
 import {PrinterIcon} from '@phosphor-icons/react/dist/ssr/Printer';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
@@ -23,7 +26,7 @@ import {Avatar,Card,KitLink,Row,Rows,StatGrid,Status,Tile,type KitTone} from './
 import {keepWhole} from '../lib/keep-whole';
 import {timeZoneLabel} from '../lib/time-zone-label';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
-import { CORP_NO_VALUE,CorpBody,CorpButtonLink,CorpCard,CorpNav,CorpPage,CorpStats,CorpTitle } from './corp/corp';
+import { CorpBody,CorpButtonLink,CorpCard,CorpNav,CorpPage,CorpPill,CorpStats,CorpTitle } from './corp/corp';
 import './reports-corp.css';
 type State='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'paused'|'access_lost';
 /** IS-B1, IS-B29: a fresh snapshot is read a third of the way through the current one's life (and retried while there's time)
@@ -46,7 +49,7 @@ const readable=(value:string)=>value.toLowerCase().replaceAll('_',' ');
 const observedLabel=(at:string,timeZone:string)=>{try{return keepWhole(new Intl.DateTimeFormat('en-US',{timeZone,dateStyle:'medium',timeStyle:'short'}).format(new Date(at)));}catch{return at;}};
 const changeEvents:Record<string,string>={CREATED:'sent',SUBMITTED:'sent',APPROVED:'approved',COMPLETED:'completed',DECLINED:'declined',REJECTED:'declined',CANCELLED:'withdrawn',WITHDRAWN:'withdrawn',EXPIRED:'expired'};
 /** TC-B-13: a shift change in words, never as raw codes. */
-const changeText=(e:PeriodReports['shiftChanges'][number])=>{const what=e.requestKind==='CALLOUT'?'Unable to work':e.kind==='COVERAGE'?'Coverage request':e.kind==='SWAP'?'Shift trade':'Older shift change';const event=e.kind==='COVERAGE'&&e.eventKind==='COMPLETED'?'filled':changeEvents[e.eventKind]??'updated';return `${what} ${event}`;};
+const changeText=(e:PeriodReports['shiftChanges'][number])=>{const what=e.requestKind==='CALLOUT'?'Can’t work':e.kind==='COVERAGE'?'Coverage request':e.kind==='SWAP'?'Shift trade':'Older shift change';const event=e.kind==='COVERAGE'&&e.eventKind==='COMPLETED'?'filled':changeEvents[e.eventKind]??'updated';return `${what} ${event}`;};
 const sentence=(value:string)=>value.charAt(0).toUpperCase()+value.slice(1);
 const plural=(count:number,one:string,many:string)=>`${count} ${count===1?one:many}`;
 const initials=(name:string)=>name.split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
@@ -161,7 +164,7 @@ export function ReportsView({report,state,onThisWeek}:{report:PeriodReports|null
  },[report]);
  if(!report){
   const waiting=state==='loading'||state==='reconnecting';
-  return <section className="nv-card wb-report-state" role="status" aria-busy={waiting}><div className="wb-body"><div className="wb-receipt"><Tile tone={waiting?'neutral':'review'}>{waiting?<ClockIcon size={22}/>:<WarningCircleIcon size={22}/>}</Tile><div><h2 className="wb-strong">{({loading:'Loading insights',offline:'You’re offline',reconnecting:'Reconnecting',unavailable:'Couldn’t load insights',paused:'Insights paused',access_lost:'Your session ended',ready:'Couldn’t load insights'})[state]}</h2><p className="wb-note">{state==='access_lost'?'Sign in again with a manager or owner account.':state==='paused'?'Return to this page to see the current numbers.':state==='offline'?'Connect to the internet, then refresh to see this period.':state==='unavailable'?'Check your connection, then try again.':'Getting this period’s numbers…'}</p></div></div>{state==='access_lost'?<div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href="/login">Sign in</Link></div>:null}</div></section>;
+  return <section className="nv-card wb-report-state" role="status" aria-busy={waiting}><div className="wb-body"><div className="wb-receipt"><Tile tone={waiting?'neutral':'review'}>{waiting?<ClockIcon size={22} weight="bold"/>:<WarningCircleIcon size={22} weight="bold"/>}</Tile><div><h2 className="wb-strong">{({loading:'Loading insights',offline:'You’re offline',reconnecting:'Reconnecting',unavailable:'Couldn’t load insights',paused:'Insights paused',access_lost:'Your session ended',ready:'Couldn’t load insights'})[state]}</h2><p className="wb-note">{state==='access_lost'?'Sign in again with a manager or owner account.':state==='paused'?'Return to this page to see the current numbers.':state==='offline'?'Connect to the internet, then refresh to see this period.':state==='unavailable'?'Check your connection, then try again.':'Getting this period’s numbers…'}</p></div></div>{state==='access_lost'?<div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href="/login">Sign in</Link></div>:null}</div></section>;
  }
  const requests=[...report.callouts,...report.timeOff];
  const href=timecardsHref(report.period);
@@ -210,31 +213,30 @@ export function ReportsView({report,state,onThisWeek}:{report:PeriodReports|null
    </Rows>
   </Card>
   {/* Every other section of the report, closed by default; print opens it (and every disclosure) first. */}
-  <details className="cm-insights__more wb-disclosure"><summary><span>Period details</span><CaretDownIcon size={20} aria-hidden="true"/></summary>
+  <details className="cm-insights__more wb-disclosure"><summary><span>Period details</span><CaretDownIcon size={20} weight="bold" aria-hidden="true"/></summary>
    <div className="cm-insights__detail">
     <nav className="wb-jump" aria-label="Report sections"><span className="wb-jump__label">Jump to</span><a href="#report-hours">Hours</a><a href="#report-attendance">Attendance</a><a href="#report-changes">Changes</a><a href="#report-approvals">Approvals</a></nav>
-    <section className="nv-card" id="report-hours" tabIndex={-1}><Heading title="Scheduled vs recorded"/>{planned?null:<div className="wb-body wb-body--tight"><p className="wb-box wb-note wb-inline-icon" role="status"><InfoIcon size={18} aria-hidden="true"/><span>The published plan is incomplete for this period. Scheduled totals and differences are unavailable.</span></p></div>}{report.scheduleVsActual.length?<div className="wb-table-scroll" role="region" tabIndex={0} aria-label="Scheduled vs recorded columns"><table role="table" className={planned?'wb-table wb-table--four':'wb-table'}><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Employee</th>{planned?<th scope="col" role="columnheader">Published plan</th>:null}<th scope="col" role="columnheader">Recorded time</th>{planned?<th scope="col" role="columnheader">Difference</th>:null}</tr></thead><tbody role="rowgroup">{report.scheduleVsActual.map(r=><tr key={r.employeeId} role="row"><th scope="row" role="rowheader">{r.employeeName}</th>{planned?<Cell label="Published plan" value={r.scheduledNanoseconds===null?null:hours(r.scheduledNanoseconds)}/>:null}<Cell label="Recorded time" value={hours(r.recordedNanoseconds)}/>{planned?<Cell label="Difference" value={r.differenceNanoseconds===null?null:hours(r.differenceNanoseconds)}/>:null}</tr>)}</tbody></table></div>:<Empty>Nothing scheduled or recorded in this period.</Empty>}</section>
+    <section className="nv-card" id="report-hours" tabIndex={-1}><Heading title="Scheduled vs recorded"/>{planned?null:<div className="wb-body wb-body--tight"><p className="wb-box wb-note wb-inline-icon" role="status"><InfoIcon size={18} weight="bold" aria-hidden="true"/><span>The published plan is incomplete for this period. Scheduled totals and differences are unavailable.</span></p></div>}{report.scheduleVsActual.length?<div className="wb-table-scroll" role="region" tabIndex={0} aria-label="Scheduled vs recorded columns"><table role="table" className={planned?'wb-table wb-table--four':'wb-table'}><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Employee</th>{planned?<th scope="col" role="columnheader">Published plan</th>:null}<th scope="col" role="columnheader">Recorded time</th>{planned?<th scope="col" role="columnheader">Difference</th>:null}</tr></thead><tbody role="rowgroup">{report.scheduleVsActual.map(r=><tr key={r.employeeId} role="row"><th scope="row" role="rowheader">{r.employeeName}</th>{planned?<Cell label="Published plan" value={r.scheduledNanoseconds===null?null:hours(r.scheduledNanoseconds)}/>:null}<Cell label="Recorded time" value={hours(r.recordedNanoseconds)}/>{planned?<Cell label="Difference" value={r.differenceNanoseconds===null?null:hours(r.differenceNanoseconds)}/>:null}</tr>)}</tbody></table></div>:<Empty>Nothing scheduled or recorded in this period.</Empty>}</section>
     <div className="wb-insights-grid"><HoursTable title="Hours by employee" rows={report.hoursByEmployee}/><HoursTable title="Hours by location" rows={report.hoursByLocation}/><HoursTable title="Hours by position" rows={report.hoursByPosition}/></div>
-    <section className="nv-card" id="report-attendance" tabIndex={-1}><Heading title="Clock-in notes"/><div className="wb-body wb-body--tight"><p className="wb-note">Clock-ins compared with each person’s schedule and break targets. These notes don’t decide lateness, discipline or pay.</p>{report.attendance.state==='limited'&&<p className="wb-box wb-note wb-inline-icon" role="status"><InfoIcon size={18} aria-hidden="true"/><span>Some clock-ins couldn’t be compared with the schedule.</span></p>}</div>{report.attendance.groups.length?<ul className="wb-records">{report.attendance.groups.map(g=><li key={g.entryId}><span className="wb-record__title">{report.hoursByEmployee.find(e=>e.id===g.employeeId)?.name??'Former employee'}</span><span className="wb-record__meta">{report.hoursByLocation.find(l=>l.id===g.locationId)?.name??'Former location'}</span><ul className="wb-observations">{g.observations.map(o=><li key={o.id}>{o.message}</li>)}</ul></li>)}</ul>:report.attendance.state==='ready'?<Empty>Nothing to note for this period.</Empty>:null}</section>
+    <section className="nv-card" id="report-attendance" tabIndex={-1}><Heading title="Clock-in notes"/><div className="wb-body wb-body--tight"><p className="wb-note">Clock-ins compared with each person’s schedule and break targets. These notes don’t decide lateness, discipline or pay.</p>{report.attendance.state==='limited'&&<p className="wb-box wb-note wb-inline-icon" role="status"><InfoIcon size={18} weight="bold" aria-hidden="true"/><span>Some clock-ins couldn’t be compared with the schedule.</span></p>}</div>{report.attendance.groups.length?<ul className="wb-records">{report.attendance.groups.map(g=><li key={g.entryId}><span className="wb-record__title">{report.hoursByEmployee.find(e=>e.id===g.employeeId)?.name??'Former employee'}</span><span className="wb-record__meta">{report.hoursByLocation.find(l=>l.id===g.locationId)?.name??'Former location'}</span><ul className="wb-observations">{g.observations.map(o=><li key={o.id}>{o.message}</li>)}</ul></li>)}</ul>:report.attendance.state==='ready'?<Empty>Nothing to note for this period.</Empty>:null}</section>
     <div className="wb-insights-grid wb-insights-grid--two" id="report-changes" tabIndex={-1}>
-     <section className="nv-card"><Heading title="Time off and unable to work" meta={requests.length?String(requests.length):undefined}/>{requests.length?<ul className="wb-records">{requests.map(r=><li key={`${r.kind}:${r.id}`}><span className="wb-record__head"><span className="wb-record__title">{r.employeeName}</span><Status tone={requestTone(r.status)}>{sentence(readable(r.status))}</Status></span><span className="wb-record__meta">{r.kind==='CALLOUT'?'Unable to work':'Time off'} · {keepWhole(r.endDate!==r.date?formatDateRange(r.date,r.endDate):formatDisplayDate(r.date))}</span></li>)}</ul>:<Empty>No requests in this period.</Empty>}</section>
-     <section className="nv-card"><Heading title="Shift changes and coverage"/><div className="wb-body"><p className="wb-text">{report.coverageReliability.observedCoverageRequests?`${report.coverageReliability.completedCoverageRequests} of ${report.coverageReliability.observedCoverageRequests} coverage requests filled.`:'No coverage requests in this period.'}{report.coverageReliability.unclassifiedEvents?` ${report.coverageReliability.unclassifiedEvents} older ${report.coverageReliability.unclassifiedEvents===1?'change':'changes'} couldn’t be classified.`:''}</p></div>{report.shiftChanges.length>0&&<details className="wb-disclosure wb-disclosure--ruled"><summary><span>View {report.shiftChanges.length} {report.shiftChanges.length===1?'change':'changes'}</span><CaretDownIcon size={20} aria-hidden="true"/></summary><ul className="wb-records">{report.shiftChanges.map(e=><li key={e.id}><span className="wb-record__meta">{keepWhole(formatDisplayDate(e.sourceDate))} · {changeText(e)}</span></li>)}</ul></details>}</section>
+     <section className="nv-card"><Heading title="Time off and can’t work" meta={requests.length?String(requests.length):undefined}/>{requests.length?<ul className="wb-records">{requests.map(r=><li key={`${r.kind}:${r.id}`}><span className="wb-record__head"><span className="wb-record__title">{r.employeeName}</span><Status tone={requestTone(r.status)}>{sentence(readable(r.status))}</Status></span><span className="wb-record__meta">{r.kind==='CALLOUT'?'Can’t work':'Time off'} · {keepWhole(r.endDate!==r.date?formatDateRange(r.date,r.endDate):formatDisplayDate(r.date))}</span></li>)}</ul>:<Empty>No requests in this period.</Empty>}</section>
+     <section className="nv-card"><Heading title="Shift changes and coverage"/><div className="wb-body"><p className="wb-text">{report.coverageReliability.observedCoverageRequests?`${report.coverageReliability.completedCoverageRequests} of ${report.coverageReliability.observedCoverageRequests} coverage requests filled.`:'No coverage requests in this period.'}{report.coverageReliability.unclassifiedEvents?` ${report.coverageReliability.unclassifiedEvents} older ${report.coverageReliability.unclassifiedEvents===1?'change':'changes'} couldn’t be classified.`:''}</p></div>{report.shiftChanges.length>0&&<details className="wb-disclosure wb-disclosure--ruled"><summary><span>View {report.shiftChanges.length} {report.shiftChanges.length===1?'change':'changes'}</span><CaretDownIcon size={20} weight="bold" aria-hidden="true"/></summary><ul className="wb-records">{report.shiftChanges.map(e=><li key={e.id}><span className="wb-record__meta">{keepWhole(formatDisplayDate(e.sourceDate))} · {changeText(e)}</span></li>)}</ul></details>}</section>
      <section className="nv-card"><Heading title="Schedule stability"/><div className="wb-body"><p className="wb-text">{report.scheduleStability.revisionCount} {report.scheduleStability.revisionCount===1?'schedule change':'schedule changes'} published for this period.</p></div></section>
     </div>
-    <section className="nv-card" id="report-approvals" tabIndex={-1}><Heading title="Approval status" meta={report.approvals.length?`${report.approvals.length} ${report.approvals.length===1?'timecard':'timecards'}`:undefined}/>{report.approvals.length?<ul className="wb-records">{report.approvals.map(c=><li key={c.employeeId}><span className="wb-record__head"><span className="wb-record__title">{c.employeeName}</span><Status tone={cardTone[c.state]??'neutral'}>{sentence(readable(c.state))}</Status></span><span className="wb-record__meta">{c.issueCount} {c.issueCount===1?'item':'items'} to review</span></li>)}</ul>:<Empty>No timecards to review in this period.</Empty>}<div className="nv-card__foot wb-foot-action"><span>Open this period in Timecards to review recorded time and approval details.</span><Link className="nv-link" href={href}>Review timecards<ArrowRightIcon size={18} aria-hidden="true"/></Link></div></section>
+    <section className="nv-card" id="report-approvals" tabIndex={-1}><Heading title="Approval status" meta={report.approvals.length?`${report.approvals.length} ${report.approvals.length===1?'timecard':'timecards'}`:undefined}/>{report.approvals.length?<ul className="wb-records">{report.approvals.map(c=><li key={c.employeeId}><span className="wb-record__head"><span className="wb-record__title">{c.employeeName}</span><Status tone={cardTone[c.state]??'neutral'}>{sentence(readable(c.state))}</Status></span><span className="wb-record__meta">{c.issueCount} {c.issueCount===1?'item':'items'} to review</span></li>)}</ul>:<Empty>No timecards to review in this period.</Empty>}<div className="nv-card__foot wb-foot-action"><span>Open this period in Timecards to review recorded time and approval details.</span><Link className="nv-link" href={href}>Review timecards<ArrowRightIcon size={18} weight="bold" aria-hidden="true"/></Link></div></section>
    </div>
   </details>
-  <details className="cm-insights__more wb-disclosure"><summary><span>Report definitions</span><CaretDownIcon size={20} aria-hidden="true"/></summary><div className="wb-body"><ul className="wb-definitions">{definitions.map(d=><li key={d}>{d}</li>)}</ul><p className="wb-note">As of <time dateTime={report.observedAt}>{observedLabel(report.observedAt,report.timeZone)}</time></p></div></details>
+  <details className="cm-insights__more wb-disclosure"><summary><span>Report definitions</span><CaretDownIcon size={20} weight="bold" aria-hidden="true"/></summary><div className="wb-body"><ul className="wb-definitions">{definitions.map(d=><li key={d}>{d}</li>)}</ul><p className="wb-note">As of <time dateTime={report.observedAt}>{observedLabel(report.observedAt,report.timeZone)}</time></p></div></details>
  </div>;
 }
 /** Quiet (v4): "159.5 h". */
 const quietHours=(nanoseconds:string)=>{if(!/^-?\d+$/.test(nanoseconds))return '—';const negative=nanoseconds.startsWith('-');const minutes=Number(BigInt(negative?nanoseconds.slice(1):nanoseconds)/BigInt(60_000_000_000));return `${negative?'−':''}${Math.round(minutes/6)/10} h`;};
-/** "Oct 19 – 23", or "Sep 28 – Oct 4". */
-const quietRange=(period:Period)=>{const month=(date:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short'}).format(new Date(`${date}T12:00:00Z`));
- return period.startDate.slice(0,7)===period.endDate.slice(0,7)?`${month(period.startDate)} ${Number(period.startDate.slice(8))} – ${Number(period.endDate.slice(8))}`:`${month(period.startDate)} ${Number(period.startDate.slice(8))} – ${month(period.endDate)} ${Number(period.endDate.slice(8))}`;};
+/** "Oct 19 – 23", or "Sep 28 – Oct 4" (the shared date range, BR-1). */
+const quietRange=(period:Period)=>dateRangeText(period.startDate,period.endDate);
 
 function QuietFigure({title,value,children,href}:{title:string;value:string;children?:React.ReactNode;href?:string}){
- const row=<><span className="q-rt"><b>{title}</b></span><span className="q-rv q-rv--l">{value}</span><CaretRightIcon className="q-chev" aria-hidden="true"/></>;
+ const row=<><span className="q-rt"><b>{title}</b></span><span className="q-rv q-rv--l">{value}</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></>;
  if(href||!children)return <li>{href?<Link className="q-row q-row--one" href={href}>{row}</Link>:<div className="q-row q-row--one">{row}</div>}</li>;
  return <li><details className="q-details"><summary className="q-row q-row--one">{row}</summary><div className="q-figure__body">{children}</div></details></li>;
 }
@@ -250,8 +252,10 @@ function wholeWeek(days:{date:string;minutes:number}[]|null,period:Period):{date
  }catch{return days;}
 }
 
-/** R2/R7: one hour format, "24 h 7 min", "6 h", "45 min" (never decimals); a negative gap keeps its sign out of the text. */
-const spoken=(nanoseconds:bigint)=>{const minutes=Number((nanoseconds<BigInt(0)?-nanoseconds:nanoseconds)/MINUTE_NS),h=Math.floor(minutes/60),m=minutes%60;return h?m?`${h}\u00a0h ${m}\u00a0min`:`${h}\u00a0h`:`${m}\u00a0min`;};
+/** R2/R7: one hour format, "24 h 7 min", "6 h", "45 min" (never decimals); a negative gap keeps its sign out of the text.
+ * BR-1 (Nov 14, 2026): it is the shared sentence form, from the same whole minutes Timecards totals, so the week's
+ * hours read the same on both pages. Each number stays with its unit when a line wraps. */
+const spoken=(nanoseconds:bigint)=>durationSentence(minutesFromNanoseconds(nanoseconds<BigInt(0)?-nanoseconds:nanoseconds)??0).replace(/(\d) /g,'$1\u00a0');
 /** R7 (copy row 177): how the page counts, in three plain sentences. The full definitions stay in the printed report. */
 const HOW_WE_COUNT=['Hours come from clock-ins and include breaks.','Late means after the scheduled start. It doesn’t change pay.','These are not payroll hours.'];
 
@@ -275,28 +279,35 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
  const late=report.attendance.groups.reduce((total,group)=>total+group.observations.filter(o=>o.kind==='CLOCK_IN_AFTER_SCHEDULE_START').length,0);
  const cover=report.coverageReliability;
  const lateKnown=report.attendance.state==='ready'||late>0;
- const reasons=[lateKnown?null:'Late clock-ins aren’t tracked yet.',cover.observedCoverageRequests?null:'No cover requests this period.'].filter((line):line is string=>!!line);
+ // Nov 14 inspection: the reason under an empty figure is one short line that says why it is empty (the same words
+ // the printed report uses). The figure slot keeps the kit's grey dash: words there would wrap at figure size.
+ const reasons=[lateKnown?null:'Some clock-ins couldn’t be compared with the schedule.',cover.observedCoverageRequests?null:'No cover requests this period.'].filter((line):line is string=>!!line);
  const days=wholeWeek(recordedByDay(report),report.period);
  const most=days?Math.max(1,...days.map(day=>day.minutes??0)):1;
  return <>
-  {/* R3: the gap to plan is grey text, not a pill. */}
-  <CorpCard id="ins-labor" label="Hours worked" aside={gap!==null&&gap!==BigInt(0)?<span className="c-meta">{`${spoken(gap)} ${gap>BigInt(0)?'under':'over'} plan`}</span>:undefined}>
+  <CorpCard id="ins-labor" label="Hours worked" aside={gap!==null&&gap!==BigInt(0)?<CorpPill tone={gap>BigInt(0)?'neutral':'amber'}>{`${gap>BigInt(0)?'':'+'}${spoken(gap)} ${gap>BigInt(0)?'under':'over'} plan`}</CorpPill>:undefined}>{/* Review B5 (NV-072): over plan is an amber chip */}
    <div className="c-ins__labor"><b className="c-num">{spoken(recorded)}</b>{planned!==null?<span className="c-num">{`of ${spoken(planned)} planned`}</span>:null}</div>
-   {planned!==null?<span className="c-ins__bar" aria-hidden="true"><span style={{width:`${percent}%`}}/></span>:null}
+   {/* Review B5 (NV-072): over plan, the planned part is teal and the excess amber (the bar never looks calm and full). */}
+   {planned!==null?gap!==null&&gap<BigInt(0)&&recorded>BigInt(0)
+    ?<span className="c-ins__bar" data-over="" aria-hidden="true"><span style={{width:`${Number(planned*BigInt(100)/recorded)}%`}}/><span className="c-ins__bar-over"/></span>
+    :<span className="c-ins__bar" aria-hidden="true"><span style={{width:`${percent}%`}}/></span>:null}
   </CorpCard>
   <CorpCard id="ins-attendance" label="Attendance">
    {/* Nov 1 upscale (review S14): a figure slot never holds words. A zero is "0"; a figure the period can't give is the
      kit's grey "—", and the reason is one 13px line under the figures. Figures are ink (R3). */}
+   {/* Review Nov 11 (OW-026): a figure the period cannot give is left out (it was a tile holding a grey dash); the line
+     under the figures still says why it is missing. Time off always has a figure, so the card is never empty. */}
    <CorpStats items={[
-    {label:'Late clock\u2011ins',value:lateKnown?late:CORP_NO_VALUE},
-    {label:'Cover filled',value:cover.observedCoverageRequests?`${cover.completedCoverageRequests} of ${cover.observedCoverageRequests}`:CORP_NO_VALUE},
+    ...(lateKnown?[{label:'Late clock\u2011ins',value:late}]:[]),
+    ...(cover.observedCoverageRequests?[{label:'Cover filled',value:`${cover.completedCoverageRequests} of ${cover.observedCoverageRequests}`}]:[]),
     {label:'Time off',value:offDays?plural(offDays,'day','days'):'0'},
    ]}/>
    {reasons.length?<p className="c-ins__reason">{reasons.join(' ')}</p>:null}
   </CorpCard>
   {/* R13: the period's total is said once, in Hours worked; this card shows how it falls across the days. */}
   <CorpCard id="ins-days" label="Hours by day">
-   {days&&days.some(day=>(day.minutes??0)>0)?<><div className="c-ins__chart" aria-hidden="true" data-dense={days.length>7||undefined} style={{'--c-bars':days.length} as CSSProperties}>
+   {/* Closing F1 (NV-239): bars only once two days have time (one bar on a whole week's track says nothing yet). */}
+   {days&&days.filter(day=>(day.minutes??0)>0).length>=2?<><div className="c-ins__chart" aria-hidden="true" data-dense={days.length>7||undefined} style={{'--c-bars':days.length} as CSSProperties}>
     {days.map(day=><span key={day.date} className="c-ins__col">
      {/* Visual-craft J: a day with no recorded time gets no bar and no "0", only the baseline; days to come get nothing. */}
      {days.length<=7?<small className="c-num">{day.minutes?Math.round(day.minutes/60):''}</small>:null}
@@ -304,6 +315,7 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
      <em>{days.length<=7?dayName(day.date):''}</em>
     </span>)}
    </div><ul className="c-sr" aria-label="Hours by day">{days.filter(day=>day.minutes!==null).map(day=><li key={day.date}>{dayLabel(day.date)}: {day.minutes?spoken(BigInt(day.minutes!)*MINUTE_NS):'no hours'}</li>)}</ul></>
+    :days&&days.some(day=>(day.minutes??0)>0)?<div className="c-empty c-empty--card"><b className="c-empty__title">Not enough data yet</b><span className="c-empty__body">The chart appears once two days have recorded time.</span></div>
     :<div className="c-empty c-empty--card"><b className="c-empty__title">No recorded time in this period</b><span className="c-empty__body">Hours appear here as people clock in and out.</span></div>}
    <details className="c-ins__counted">
     <summary>How we count<CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true"/></summary>
@@ -342,7 +354,7 @@ export function QuietReportsView({report,state}:{report:PeriodReports|null;state
    </QuietFigure>
    <QuietFigure title="Timecards to finish" value={String(toFinish)} href={href}/>
    <QuietFigure title="Time off taken" value={offDays?plural(offDays,'day','days'):'None'}>
-    {requests.length?<ul className="q-sublist">{requests.map(r=><li key={`${r.kind}:${r.id}`}><span>{r.employeeName}</span><span>{`${r.kind==='CALLOUT'?'Unable to work':'Time off'} · ${r.endDate!==r.date?formatDateRange(r.date,r.endDate):formatDisplayDate(r.date)}`}</span></li>)}</ul>:<p className="q-help">No time off in this period.</p>}
+    {requests.length?<ul className="q-sublist">{requests.map(r=><li key={`${r.kind}:${r.id}`}><span>{r.employeeName}</span><span>{`${r.kind==='CALLOUT'?'Can’t work':'Time off'} · ${r.endDate!==r.date?formatDateRange(r.date,r.endDate):formatDisplayDate(r.date)}`}</span></li>)}</ul>:<p className="q-help">No time off in this period.</p>}
    </QuietFigure>
   </ul>
   <details className="q-counted">
@@ -358,26 +370,34 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
  const reloadRef=useRef<()=>void>(()=>{}),exportRef=useRef<()=>Promise<void>>(async()=>{}),printRef=useRef<()=>void>(()=>{});
  const [exporting,setExporting]=useState(false);
  const [custom,setCustom]=useState(false);
+ // Review B2 / closing F1 (NV-001): offline with the person still here, the loaded report stays read-only; the period
+ // controls wait for the connection (a new period can't load offline).
+ const [held,setHeld]=useState(false);
  useEffect(()=>{
+  let holding=false,loadedAt:string|null=null;
   let active=true,focused=document.hasFocus(),printing=false,printBlurred=false,validUntil=0,generation=0,controller:AbortController|null=null,exportController:AbortController|null=null,timer:ReturnType<typeof setTimeout>|null=null,refresher:ReturnType<typeof setTimeout>|null=null,heldScroll:number|null=null;
   // ST-B01: if a snapshot expires before its replacement arrives, the page keeps its height and the reader's place
   // while the new one loads (only the size is kept, never the content).
   const holdPlace=()=>{const box=document.querySelector?.('.wb-insights') as HTMLElement|null;if(!box)return;box.style.minHeight=`${box.getBoundingClientRect().height}px`;heldScroll=typeof window.scrollY==='number'?window.scrollY:null;};
   const releasePlace=()=>{const box=document.querySelector?.('.wb-insights') as HTMLElement|null;if(box)box.style.minHeight='';if(heldScroll!==null&&typeof window.scrollTo==='function')window.scrollTo({top:heldScroll});heldScroll=null;};
-  const clear=(next:State)=>{if(next!=='loading'&&next!=='reconnecting'&&heldScroll!==null){const box=document.querySelector?.('.wb-insights') as HTMLElement|null;if(box)box.style.minHeight='';heldScroll=null;}generation++;controller?.abort();exportController?.abort();if(timer)clearTimeout(timer);timer=null;if(refresher)clearTimeout(refresher);refresher=null;validUntil=0;printing=false;printBlurred=false;if(active){setReport(null);setState(next);setExporting(false);}};
+  const clear=(next:State)=>{if(next!=='loading'&&next!=='reconnecting'&&heldScroll!==null){const box=document.querySelector?.('.wb-insights') as HTMLElement|null;if(box)box.style.minHeight='';heldScroll=null;}generation++;controller?.abort();exportController?.abort();if(timer)clearTimeout(timer);timer=null;if(refresher)clearTimeout(refresher);refresher=null;validUntil=0;printing=false;printBlurred=false;holding=false;loadedAt=null;if(active){setReport(null);setState(next);setExporting(false);setHeld(false);}};
   const load=async(reconnecting=false,silent=false)=>{
    if(!active||!focused||printing||document.visibilityState==='hidden')return;
+   // Holding the loaded report offline: no reads until the connection is back ('online' runs a fresh check).
+   if(holding&&!navigator.onLine)return;
    // A silent refresh keeps the verified report on screen; its own expiry timer still retires it if this read fails.
    if(silent){if(!navigator.onLine)return;}else{clear(navigator.onLine?(reconnecting?'reconnecting':'loading'):'offline');if(!navigator.onLine)return;}
    const current=generation;controller=new AbortController();const started=performance.now();
    try{
     const response=await fetch('/api/reports',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','x-nevora-reports':'1'},body:JSON.stringify(period),signal:controller.signal});
     if(!active||current!==generation)return;
+    // X-Nevora-Failure (Nov 9, 2026): the page-level notice says why; data-clearing failures read as access ended here.
+    if(!response.ok){const code=nevoraFailure(response);announceFailure(code);if(code&&clearsProtectedData(failureRecovery(code))){clear(failureRecovery(code)==='origin'?'unavailable':'access_lost');return;}}
     if(response.status===401||response.status===403){clear('access_lost');return;}
     const body=await response.json();if(!active||current!==generation)return;if(!response.ok||body?.state!=='ready'||!Number.isSafeInteger(body.validForMs)||body.validForMs<1||body.validForMs>15000)throw new Error('Unavailable');
     const result=projectReports(body.source);if(result.period.startDate!==period.startDate||result.period.endDate!==period.endDate)throw new Error('Incorrect period');
     const remaining=body.validForMs-(performance.now()-started);if(remaining<=0)throw new Error('Expired snapshot');
-    validUntil=started+body.validForMs;setReport(result);setState('ready');
+    validUntil=started+body.validForMs;loadedAt=result.observedAt;setReport(result);setState('ready');
     if(timer)clearTimeout(timer);if(refresher)clearTimeout(refresher);refresher=null;
     timer=setTimeout(()=>{holdPlace();clear('loading');void load();},remaining);
     // ST-B13: restore the place only once the report is back on the page (React may commit after the next frame).
@@ -394,6 +414,7 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
    try{
     const response=await fetch('/api/reports/export',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','x-nevora-reports':'1'},body:JSON.stringify(period),signal:exportController.signal});
     if(!active||generation!==current)return;
+    if(!response.ok){const code=nevoraFailure(response);announceFailure(code);if(code&&clearsProtectedData(failureRecovery(code))){clear(failureRecovery(code)==='origin'?'unavailable':'access_lost');return;}}
     if(response.status===401||response.status===403){clear('access_lost');return;}
     if(!response.ok||!response.headers.get('content-type')?.startsWith('text/csv'))throw new Error('Unavailable export');
     const blob=await response.blob();if(!active||generation!==current||!focused||performance.now()>=validUntil)return;
@@ -411,7 +432,12 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
    clear('paused');
   };
   const focus=(event:FocusEvent)=>{if(event.target!==window||printing||focused)return;focused=document.hasFocus();if(focused)void load();};
-  const refresh=()=>{focused=document.hasFocus();void load();},reconnect=()=>{focused=document.hasFocus();void load(true);},offline=()=>clear('offline'),hide=()=>{focused=false;clear('paused');},visibility=()=>{if(document.visibilityState==='hidden')hide();else refresh();};
+  const refresh=()=>{focused=document.hasFocus();void load();},reconnect=()=>{focused=document.hasFocus();holding=false;void load(true);},offline=offlineListener({pause:()=>{focused=false;clear('paused');},hold:()=>{
+   // Keep the verified report read-only only until its original expiry.
+   if(holding)return;if(!loadedAt){clear('offline');return;}
+   holding=true;generation++;controller?.abort();exportController?.abort();if(refresher)clearTimeout(refresher);refresher=null;
+   if(active){setExporting(false);setHeld(true);}announceOfflineHeld(loadedAt);
+  }}),hide=()=>{focused=false;clear('paused');},visibility=()=>{if(document.visibilityState==='hidden')hide();else refresh();};
   const accountChanged=()=>{clear('unavailable');focused=document.hasFocus();void load();};
   const media=window.matchMedia('print'),printChange=()=>media.matches?beginPrint():endPrint();
   void load();window.addEventListener('blur',blur);window.addEventListener('focus',focus);window.addEventListener('beforeprint',beginPrint);window.addEventListener('afterprint',endPrint);media.addEventListener('change',printChange);window.addEventListener('pageshow',refresh);window.addEventListener('storage',accountChanged);window.addEventListener('online',reconnect);window.addEventListener('offline',offline);window.addEventListener('pagehide',hide);document.addEventListener('visibilitychange',visibility);
@@ -438,12 +464,12 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
    <div className="cm-insights__tools c-ins__tools">
     <button type="button" className="cm-insights__button cm-insights__picker" popoverTarget="report-period-menu"><span><span className="nv-sr">Report period: </span>{current.long}</span><CaretDownIcon size={16} weight="bold" aria-hidden="true"/></button>
     <div id="report-period-menu" className="cm-insights__menu" popover="auto" role="group" aria-label="Report period">
-     {MODES.map(item=><button key={item.mode} type="button" className="cm-insights__menu-item" aria-pressed={mode===item.mode} disabled={item.mode!=='custom'&&!presets} onClick={()=>choose(item.mode)}>{mode===item.mode?<CheckIcon size={16} weight="bold" aria-hidden="true"/>:<span className="cm-insights__menu-gap" aria-hidden="true"/>}{item.mode==='custom'?'Custom period…':item.long}</button>)}
+     {MODES.map(item=><button key={item.mode} type="button" className="cm-insights__menu-item" aria-pressed={mode===item.mode} disabled={item.mode!=='custom'&&(!presets||held)} onClick={()=>choose(item.mode)}>{item.mode==='custom'?'Custom period…':item.long}{mode===item.mode?<CheckIcon className="cm-insights__menu-check" size={16} weight="bold" aria-hidden="true"/>:null}</button>)}
     </div>
-    <button type="button" className="cm-insights__button cm-insights__export" popoverTarget="report-export-menu" aria-busy={exporting||undefined}><ExportIcon size={18} aria-hidden="true"/><span className="cm-insights__export-text">Export</span></button>
+    <button type="button" className="cm-insights__button cm-insights__export" popoverTarget="report-export-menu" aria-busy={exporting||undefined}><ExportIcon size={18} weight="bold" aria-hidden="true"/><span className="cm-insights__export-text">Export</span></button>
     <div id="report-export-menu" className="cm-insights__menu" popover="auto" role="group" aria-label="Export this period">
-     <button className="cm-insights__menu-item" type="button" aria-label={exporting?'Preparing CSV…':'Download CSV'} aria-busy={exporting||undefined} disabled={!report||exporting} onClick={()=>{closeMenu('report-export-menu');void exportRef.current();}}><DownloadSimpleIcon size={18} aria-hidden="true"/>{exporting?'Preparing CSV…':'Download CSV'}</button>
-     <button className="cm-insights__menu-item" type="button" aria-label="Print / Save PDF" disabled={!report} onClick={()=>{closeMenu('report-export-menu');printRef.current();}}><PrinterIcon size={18} aria-hidden="true"/>Print / Save PDF</button>
+     <button className="cm-insights__menu-item" type="button" aria-label={exporting?'Preparing CSV…':'Download CSV'} aria-busy={exporting||undefined} disabled={!report||exporting} onClick={()=>{closeMenu('report-export-menu');void exportRef.current();}}><DownloadSimpleIcon size={18} weight="bold" aria-hidden="true"/>{exporting?'Preparing CSV…':'Download CSV'}</button>
+     <button className="cm-insights__menu-item" type="button" aria-label="Print / Save PDF" disabled={!report} onClick={()=>{closeMenu('report-export-menu');printRef.current();}}><PrinterIcon size={18} weight="bold" aria-hidden="true"/>Print / Save PDF</button>
      <p className="cm-insights__menu-note">For a PDF, choose Save as PDF in the print dialog.</p>
     </div>
    </div>
@@ -465,16 +491,17 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
   <CorpNav back={{href:'/app/more',label:'More'}} title="Insights" phoneOnly/>
   <CorpTitle id="ins-title" title="Insights" wide actions={tools}/>
   <div className="c-seg c-ins__seg" role="group" aria-label="Report period" data-report-entrance="">
-   {MODES.map(item=><button key={item.mode} type="button" aria-pressed={mode===item.mode} disabled={item.mode!=='custom'&&(!presets||busy)} onClick={()=>choose(item.mode)}>{item.short}</button>)}
+   {MODES.map(item=><button key={item.mode} type="button" aria-pressed={mode===item.mode} disabled={item.mode!=='custom'&&(!presets||busy||held)} onClick={()=>choose(item.mode)}>{item.short}</button>)}
   </div>
   {/* R7 (copy row 174): this week reads "Oct 26 – 31 so far", which says why it stops before Sunday. */}
-  <p className="c-ins__range c-num">{`${quietRange(period)}${mode==='now'?' so far':''} · All locations`}</p>
+  {/* Closing F1 (NV-239): a one-day period reads "Mon, Nov 9 so far", never "Nov 9 – 9 so far". */}
+  <p className="c-ins__range c-num">{`${period.startDate===period.endDate?dayLabel(period.startDate):quietRange(period)}${mode==='now'?' so far':''} · All locations`}</p>
   {custom_}
   {notice&&notice!==PERIOD_ERROR?<p className="c-ins__error" id="report-export-error" role="alert">{notice}</p>:null}
   <div className="wb-insights c-ins__body" data-report-entrance=""><CorpReportsView report={report} state={state}/></div>
   {/* Print only. The report refreshes itself; its old Refresh footer stays with the printable report, out of view. */}
   <div className="c-ins-print"><ReportsView report={report} state={state} onThisWeek={presets&&mode!=='now'?()=>choose('now'):undefined}/>
-   <p className="cm-page-foot"><span>{keepWhole(rangeText(period))}{report?<> · {timeZoneLabel(report.timeZone)}</>:null}</span><button type="button" className="cm-refresh" aria-label="Refresh" aria-busy={busy||undefined} onClick={()=>reloadRef.current()}><ArrowsClockwiseIcon size={16} aria-hidden="true"/>Refresh</button></p>
+   <p className="cm-page-foot"><span>{keepWhole(rangeText(period))}{report?<> · {timeZoneLabel(report.timeZone)}</>:null}</span><button type="button" className="cm-refresh" aria-label="Refresh" aria-busy={busy||undefined} onClick={()=>reloadRef.current()}><ArrowsClockwiseIcon size={16} weight="bold" aria-hidden="true"/>Refresh</button></p>
   </div>
  </CorpPage>;
  return page;

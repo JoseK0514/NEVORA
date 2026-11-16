@@ -81,7 +81,21 @@ export function SidebarRailTooltip({ sidebar, enabled }: { sidebar: RefObject<HT
     aside.addEventListener("pointerout", out);
     aside.addEventListener("focusin", focusIn);
     aside.addEventListener("focusout", hide);
-    aside.addEventListener("pointerdown", hide);
+    // Review B2 (NV-043): on touch, a press held for the tooltip delay shows the name (lifting sooner just taps).
+    const down = (event: PointerEvent) => {
+      if (event.pointerType !== "touch") { hide(); return; }
+      const target = (event.target as Element | null)?.closest<HTMLElement>(TARGETS);
+      if (target && aside.contains(target)) schedule(target); else hide();
+    };
+    const up = (event: PointerEvent) => {
+      if (event.pointerType !== "touch") return;
+      window.clearTimeout(showTimer); window.clearTimeout(hideTimer);
+      // A shown name stays a moment after the finger lifts, so it can be read.
+      if (element.hasAttribute("data-open")) hideTimer = window.setTimeout(hide, 1200); else hide();
+    };
+    aside.addEventListener("pointerdown", down);
+    aside.addEventListener("pointerup", up);
+    aside.addEventListener("pointercancel", up);
     aside.addEventListener("scroll", hide, true);
     element.addEventListener("pointerenter", stayOnTip);
     element.addEventListener("pointerleave", leaveSoon);
@@ -93,7 +107,9 @@ export function SidebarRailTooltip({ sidebar, enabled }: { sidebar: RefObject<HT
       aside.removeEventListener("pointerout", out);
       aside.removeEventListener("focusin", focusIn);
       aside.removeEventListener("focusout", hide);
-      aside.removeEventListener("pointerdown", hide);
+      aside.removeEventListener("pointerdown", down);
+      aside.removeEventListener("pointerup", up);
+      aside.removeEventListener("pointercancel", up);
       aside.removeEventListener("scroll", hide, true);
       element.removeEventListener("pointerenter", stayOnTip);
       element.removeEventListener("pointerleave", leaveSoon);

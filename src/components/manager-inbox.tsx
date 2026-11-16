@@ -1,10 +1,11 @@
 "use client";
 import { focusAfterRetry } from "@/components/kit/focus-after-retry";
+import { isStaffingRepair, repairOwnerLine } from "@/lib/time-off-staffing/present";
 
 import Link from "next/link";
 import { ScopedReadFrame, type ScopedObservation } from "./company-access/scoped-read-frame";
 import { useToday } from "./manager-today";
-import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type MouseEvent, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowsLeftRightIcon,CaretDownIcon,CaretRightIcon,ChatTextIcon,PhoneIcon,PlusIcon } from "@phosphor-icons/react/ssr";
 import { useActionCenter, mobileActionDetail, type ActionCenterConnection } from "./manager-action-center";
@@ -16,9 +17,11 @@ import { QuietHeader } from "./quiet/quiet";
 import { usePresentation } from "./presentation-context";
 import { pathEnabled } from "@/lib/workspace-presentation/modules";
 import { CLOCK_IN, presentItem } from "@/lib/action-center/present";
-import { groupInboxItems, inboxFilter, type InboxFilter } from "@/lib/action-center/inbox";
+import { groupInboxItems, inboxFilter, workspaceNow, type InboxFilter } from "@/lib/action-center/inbox";
 import { needsYou, needsYouSentence } from "@/lib/action-center/needs-you";
 import { keepWhole } from "@/lib/keep-whole";
+import { faceTint } from "@/lib/face-tint";
+const faceStyle = (name: string) => { const [bg, fg] = faceTint(name); return { "--fa": bg, "--fc": fg } as CSSProperties; };
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 
@@ -80,7 +83,7 @@ function KitRow({ entry }: { entry: InboxEntry }) {
       {entry.leading}
       <span className="q-rt"><b>{entry.title}</b>{entry.meta ? <i>{entry.meta}</i> : null}</span>
       {entry.trailing ? <span className={`q-rv${entry.trailingTone === "urgent" ? " q-rv--alert" : ""}`} aria-hidden="true">{entry.trailing}</span> : null}
-      <CaretRightIcon className="q-chev" aria-hidden="true" />
+      <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
     </Link>}
   </li>;
 }
@@ -135,18 +138,23 @@ function requestFacts(facts: RequestFacts): [string, ReactNode][] {
   ];
 }
 
+/** Approved leave over a published shift (Nov 9, 2026): who fixes it, and that the leave itself is settled. */
+const repairNote = (item: ActionItem) => `The time off is approved and the published shift is kept. Assign a replacement or change the shift, then publish. ${repairOwnerLine(item)}`;
+
 export function itemEntry(item: ActionItem, calm: boolean, filter: InboxFilter, timeZone: string): InboxEntry {
+  const repair = isStaffingRepair(item);
   const urgent = item.priority === "URGENT" && !calm;
   const request = item.category === "requests";
   const action = actionCenterNavigation(item);
   const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, action.label, timeZone);
   const facts = request ? (item as ActionItem & { request?: RequestFacts }).request : undefined;
   return { key: item.id, href: withFilter(action.href, filter, item.id), label: `${shown.action}: ${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, urgent,
-    leading: request && shown.person ? <span className="q-av" aria-hidden="true">{initials(shown.person)}</span> : undefined,
+    // Review B6 (NV-105): a person keeps one face tint on every screen (the B kit's faceTint).
+    leading: request && shown.person ? <span className="q-av" aria-hidden="true" style={faceStyle(shown.person)}>{initials(shown.person)}</span> : undefined,
     title: shown.title, meta: <MetaParts text={shown.detail} />, action: shown.action,
-    status: request ? <Status tone="review">Waiting</Status> : urgent ? <Status tone="urgent">Not covered</Status> : undefined,
+    status: request ? <Status tone="review">Waiting</Status> : repair ? <Status tone="urgent">Needs a replacement</Status> : urgent ? <Status tone="urgent">Not covered</Status> : undefined,
     trailing: undefined,
-    note: calm ? "This time has passed. Review it for the record; it doesn’t need action now."
+    note: repair ? repairNote(item) : calm ? "This time has passed. Review it for the record; it doesn’t need action now."
       : facts ? "Approve or decline it on the full request." : item.category === "requests" ? requestNote : typeNote[item.type] ?? categoryNote[item.category],
     facts: facts ? requestFacts(facts) : undefined };
 }
@@ -202,7 +210,7 @@ function ShiftRow({ shift, timeZone, observedAt, showPlace }: { shift: TodayShif
 function gapEntry(item: ActionItem, filter: InboxFilter, timeZone: string): InboxEntry {
   const entry = itemEntry(item, false, filter, timeZone);
   const parts = mobileActionDetail(item.detail).split(" · ");
-  return { ...entry, leading: <span className="q-av q-av--open" aria-hidden="true"><PlusIcon className="q-ic" aria-hidden="true" /></span>, title: gapPlace(item), meta: parts[1] ? keepWhole(parts[1]) : entry.meta, trailing: undefined, trailingTone: undefined, button: "Find cover" };
+  return { ...entry, leading: <span className="q-av q-av--open" aria-hidden="true"><PlusIcon weight="bold" className="q-ic" aria-hidden="true" /></span>, title: gapPlace(item), meta: parts[1] ? keepWhole(parts[1]) : entry.meta, trailing: undefined, trailingTone: undefined, button: "Find cover" };
 }
 export function gapPlace(item: ActionItem) {
   return /\bat (.+)$/.exec(item.title)?.[1] ?? item.detail.split(" · ")[0] ?? item.title;
@@ -215,7 +223,7 @@ function Disclosure({ title, meta, count, items, children }: { title: ReactNode;
       <summary className={meta ? "q-row" : "q-row q-row--one"}>
         <span className="q-rt"><b>{title}</b>{meta ? <i>{meta}</i> : null}</span>
         <span className="q-rv q-rv--l">{count}</span>
-        <CaretDownIcon className="q-chev inbox-group-caret" aria-hidden="true" />
+        <CaretDownIcon weight="bold" className="q-chev inbox-group-caret" aria-hidden="true" />
       </summary>
       <ul className="q-list inbox-list">{children}</ul>
     </GroupDisclosure>
@@ -315,7 +323,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   const shifts = today?.state === "ready" ? today.missed : [];
   // IS-6: when clock-ins can't be read, say so instead of quietly dropping them.
   const todayFailed = today?.state === "unavailable";
-  const value = ready ? needsYou(ready.items, day, shifts) : null;
+  const value = ready ? needsYou(ready.items, day, shifts, workspaceNow(ready.observedAt, timeZone)) : null;
   const total = value ? value.count + value.planning.length + value.past.length : 0;
 
   const show = (group: InboxFilter) => filter === "all" || filter === group;
@@ -400,7 +408,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
               {value!.noClockIn.slice(0, missedShown).map(shift => <ShiftRow key={shift.id} shift={shift} timeZone={timeZone} observedAt={ready?.observedAt} showPlace={missedPlaces} />)}
               {value!.noClockIn.length > missedShown ? <li className="premium-group cm-more">
                 <details open={value!.noClockIn.slice(missedShown).some(shift => `shift:${shift.id}` === shownKey) || undefined}>
-                  <summary className="q-row q-row--one"><span className="q-rt"><b>{`Show ${value!.noClockIn.length - missedShown} more`}</b></span><CaretDownIcon className="q-chev" aria-hidden="true" /></summary>
+                  <summary className="q-row q-row--one"><span className="q-rt"><b>{`Show ${value!.noClockIn.length - missedShown} more`}</b></span><CaretDownIcon weight="bold" className="q-chev" aria-hidden="true" /></summary>
                   <ul className="q-list inbox-list">{value!.noClockIn.slice(missedShown).map(shift => <ShiftRow key={shift.id} shift={shift} timeZone={timeZone} observedAt={ready?.observedAt} showPlace={missedPlaces} />)}</ul>
                 </details>
               </li> : null}
@@ -520,8 +528,8 @@ export function InboxDetail({ entry, sheet = false }: { entry: InboxEntry; sheet
     <div className="inbox-detail__actions">
       <Button href={entry.href}>{entry.action}</Button>
       {entry.contact ? <>
-        <a className="nv-btn" data-kind="secondary" href={`tel:${entry.contact.phone}`} aria-label={`Call ${entry.contact.name}`}><PhoneIcon size={18} aria-hidden="true" />Call</a>
-        <a className="nv-btn" data-kind="secondary" href={`sms:${entry.contact.phone}`} aria-label={`Text ${entry.contact.name}`}><ChatTextIcon size={18} aria-hidden="true" />Text</a>
+        <a className="nv-btn" data-kind="secondary" href={`tel:${entry.contact.phone}`} aria-label={`Call ${entry.contact.name}`}><PhoneIcon size={18} weight="bold" aria-hidden="true" />Call</a>
+        <a className="nv-btn" data-kind="secondary" href={`sms:${entry.contact.phone}`} aria-label={`Text ${entry.contact.name}`}><ChatTextIcon size={18} weight="bold" aria-hidden="true" />Text</a>
       </> : null}
       {entry.secondary?.map(link => <Link key={link.href} className="nv-btn" data-kind="secondary" href={link.href}>{link.label}</Link>)}
     </div>

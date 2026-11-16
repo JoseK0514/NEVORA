@@ -11,6 +11,7 @@ vi.mock('next/navigation', () => ({notFound: () => {throw new Error('preview-dis
 vi.mock('./home-preview', () => ({HomePreview: () => <div>Sample Home</div>}));
 
 import {ManagerDashboard} from '../manager-dashboard';
+import {withoutB} from '../owner-b/test-support';
 import {homePreviewRecords, previewEmployeeHome, previewManagerHome, previewActionCenter, previewToday} from './home-fixtures';
 import HomePreviewPage from '@/app/ui-preview/home/page';
 
@@ -45,7 +46,8 @@ it('the preview composition replaces private readers while the native Home keeps
 });
 
 it('the clean Overview is "Today", drops the tab row, and Home\'s own views still open from their addresses', () => {
-  const html = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome}/>);
+  // The corporate layout (the Direction B phone screen greets by time of day; tested in owner-home-corp.test.tsx).
+  const html = withoutB(renderToStaticMarkup(<ManagerDashboard {...previewManagerHome}/>));
   // Release 1 (corporate board C-Owner): the title is the welcome line; no week summary, no team tools on Home
   // (they live in More and the sidebar). Today, Payday and Things to do are the cards.
   expect(html).toContain('>Welcome back, Fictional</h1>');

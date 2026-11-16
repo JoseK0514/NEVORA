@@ -511,9 +511,6 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .n
   /* ST-02: the toast sits 8px above the save bar's measured height, so it never covers Save at large text. */
   html body:has(.wc-page.wc-page .wc-actions.nv-actionbar) .nevora-toaster.nevora-toaster { bottom: calc(var(--wc-tabbar, 68px) + var(--wc-bar, 76px) + 8px); }
 }
-@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
-  html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar { position: static; margin-inline: 0; padding-inline: 0; background: none; }
-}
 /* ST-08: on phones a page with a save bar shows its guide first, so the bar stays docked to the end of the page. */
 @media (max-width: 1179px) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-layout:has(.nv-actionbar) > .wc-aside { order: -1; }
@@ -555,11 +552,6 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page in
 /* ST-16: before hydration the swatches and color well keep their finished look too. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page [data-guard] :is(.wc-swatch, input.wc-colour):disabled { opacity: 1; cursor: default; }
 /* ST-05: the parent placeholder's band in landscape (measured at 844×390). */
-@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
-  .route-skeleton:is([data-route="settings"], [data-route="settings-profile"], [data-route="settings-policies"], [data-route="settings-location-new"], [data-route="account-recovery"], [data-route="clocker-recovery"]) { --route-band: 168px; }
-  .route-skeleton:is([data-route="settings-branding"], [data-route="settings-features"]) { --route-band: 192px; }
-  .route-skeleton:is([data-route="settings-locations"], [data-route="settings-breaks"], [data-route="settings-positions"], [data-route="settings-devices"]) { --route-band: 212px; }
-}
 
 /* ST-18: on the narrowest phones the save state says "Unsaved", so it stays beside Save on one row. */
 @media (max-width: 359px) { html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-wide-state { display: none; } }
@@ -614,7 +606,7 @@ html:has(body .app-shell.nevora-portal .page-frame .wc-page .wc-actions.nv-actio
 /* Desktop page heading (final desktop pass): every title at the same place as Inbox, Timecards and Profile.
  * Nothing sits above the title. A Back that repeats the top bar's Settings crumb is left out; any other Back and
  * the Add actions sit at the right of the title row. The summary sits 8px under the title, then the count line. */
-@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 761px) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page > .nv-pageband.nv-pageband {
     display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "body bar" "extra extra"; column-gap: var(--nv-s-5); align-items: start;
   }

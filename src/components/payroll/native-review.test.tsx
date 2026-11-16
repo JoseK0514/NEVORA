@@ -53,7 +53,7 @@ describe('source-aware payroll review presentation', () => {
   it('separates approved native payroll from automatic publication and exposes no bank/payment export', () => {
     boundary.data!.runs = [nativeRun({ status: 'APPROVED', approvedBy: 'fictional-owner', approvedAt: '2026-10-12T16:00:00Z', documents: [{ ...statement, published: false }] })];
     const html = render();
-    expect(html).toContain('Statements not shared yet');
+    expect(html).toContain('Pay statements not shared yet');
     expect(html).toContain('automatically');
     expect(html).not.toContain('Share pay statements');
     expect(html).not.toContain('Prepare payment instructions');

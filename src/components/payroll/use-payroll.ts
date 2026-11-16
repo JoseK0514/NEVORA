@@ -14,8 +14,8 @@ export const PAYROLL_SIGNED_OUT = 'Your session ended. Sign in again to see payr
 
 /**
  * Loads a decoded private payroll resource and ignores superseded responses.
- * Hiding/leaving the page or going offline clears data and invalidates in-flight
- * reads; becoming visible/online reloads current server authority. Keep decode
+ * Hiding/leaving the page or going offline clears data and invalidates in-flight reads
+ * and drops in-flight reads; becoming visible/online reloads current server authority. Keep decode
  * referentially stable, because it is part of reload's effect dependencies.
  */
 export function usePayrollResource<T>(path: string, decode: (value: unknown) => T) {
@@ -31,7 +31,7 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
     setLoading(true); setError(''); setErrorCode('');
     try {
       const next = decode(await payrollRequest(path));
-      if (generation.current.value === current) setData(next);
+      if (generation.current.value === current) { setData(next); }
     } catch (failure) {
       if (generation.current.value === current) {
         setData(null);
@@ -47,14 +47,19 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
     let active = true; const lifecycle = generation.current;
     queueMicrotask(() => { if (active) void reload(); });
     const clear = () => { lifecycle.value++; setData(null); setLoading(false); setErrorCode(navigator.onLine ? 'PAUSED' : 'OFFLINE'); setError(navigator.onLine ? 'Payroll is paused while this page is hidden. Return to reload current access.' : 'Payroll is unavailable offline. Reconnect to reload current access.'); };
+    // Review B2 (NV-001): offline with the person still here, the loaded pay stays on screen read-only (in-flight reads are
+    // dropped); stepping away still clears.
+    // This legacy resource has no finite authority lease. Preserve development's
+    // fail-closed offline behavior rather than retaining unbounded pay data.
+    const hold = () => clear();
     const visible = () => { if (document.visibilityState === 'hidden') clear(); else void reload(); };
     const refresh = () => { if (document.visibilityState !== 'hidden') void reload(); };
-    window.addEventListener('offline', clear); window.addEventListener('online', refresh);
+    window.addEventListener('offline', hold); window.addEventListener('online', refresh);
     window.addEventListener('pagehide', clear); window.addEventListener('pageshow', refresh);
     document.addEventListener('visibilitychange', visible);
     return () => {
       active = false; lifecycle.value++;
-      window.removeEventListener('offline', clear); window.removeEventListener('online', refresh);
+      window.removeEventListener('offline', hold); window.removeEventListener('online', refresh);
       window.removeEventListener('pagehide', clear); window.removeEventListener('pageshow', refresh);
       document.removeEventListener('visibilitychange', visible);
     };
@@ -65,10 +70,10 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
 /** Toast copy for a receipt-confirmed command; never shown before the receipt. */
 function confirmedMessage(command: { action?: string }) {
   switch (command.action) {
-    case 'APPROVE': return 'Payroll revision approved';
-    case 'PUBLISH': return 'Statements published to employees';
-    case 'PAYMENT_EXPORT': return 'Payment instructions prepared';
-    default: return 'Action recorded';
+    case 'APPROVE': return 'Payroll approved';
+    case 'PUBLISH': return 'Pay statements shared';
+    case 'PAYMENT_EXPORT': return 'Payment file ready';
+    default: return 'Saved';
   }
 }
 
@@ -107,7 +112,7 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
       const receipt = readReceipt(await payrollRequest(`/api/payroll/receipts?operationId=${encodeURIComponent(id)}`));
       if (receipt && receipt.operationId !== id) throw new Error('The returned receipt does not match this action reference. Check the same reference again.');
       if (receipt && receipt.operationId === id) {
-        setReceipt(receipt); finish(id); setMessage('Action recorded. Review the current status below.'); toast('Action recorded'); await reload();
+        setReceipt(receipt); finish(id); setMessage('Saved. Check the status below.'); toast('Saved'); await reload();
       } else {
         setUnconfirmed(true);
         setMessage('No receipt is available yet. Check this same reference again; the action has not been confirmed.');
@@ -134,7 +139,7 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
     try {
       const receipt = readReceipt(await payrollRequest(path, next));
       if (!receipt || receipt.operationId !== next.operationId) throw new Error('The action response is unconfirmed. Check its saved reference.');
-      setReceipt(receipt); finish(next.operationId); setMessage('Action recorded. Review the current status below.'); toast(confirmedMessage(next)); await reload();
+      setReceipt(receipt); finish(next.operationId); setMessage('Saved. Check the status below.'); toast(confirmedMessage(next)); await reload();
     } catch (failure) {
       if (failure instanceof PayrollRequestError && (failure.code === 'OPERATION_CONFLICT' || (reconstructed && [400, 409].includes(failure.status)))) {
         command.current = null; setRetryAvailable(false);

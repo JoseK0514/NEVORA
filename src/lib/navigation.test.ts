@@ -37,7 +37,12 @@ describe("role navigation", () => {
     expect(activeNavigationHref('MANAGER','/app/payroll',{...payroll,canReview:true})).toBe('/app/payroll');
     expect(activeNavigationHref('EMPLOYEE','/app/my-pay',payroll)).toBe('/app/my-pay');
     expect(activeNavigationHref('EMPLOYEE','/app/my-pay',{...payroll,enabled:false})).toBeUndefined();
-    expect(activeNavigationHref('EMPLOYEE','/app/exchange?tab=mine',payroll)).toBe('/app/requests/hub');
+    // Review F2 (NV-070): every shift request page goes back to Schedule, so Schedule lights at every width.
+    expect(activeNavigationHref('EMPLOYEE','/app/exchange?tab=mine',payroll)).toBe('/app/schedule');
+    expect(activeNavigationHref('EMPLOYEE','/app/requests',payroll)).toBe('/app/requests/hub');
+    // Phase 3 (MG-007, TB-009): More lights no sidebar or rail entry for Owners and Managers (it lit Home, NV-294).
+    expect(activeNavigationHref('OWNER','/app/more',payroll)).toBeUndefined();
+    expect(activeNavigationHref('MANAGER','/app/more',payroll)).toBeUndefined();
   });
 });
 
@@ -47,37 +52,39 @@ it.each(['EMPLOYEE','LEAD'] as const)('Home_Schedule_MyTime_More_all_routes_reac
 
 describe('phone tabs', () => {
   // Corporate (Release 1, board C-Employee): an Employee's tabs are Home, Schedule, Time, Pay and Requests. Upscale (Nov 1):
-  // More, Updates, Profile and Notifications open from the header avatar or bell, so no tab is lit there (nor on Help or
-  // an unknown address).
+  // More, Updates, Profile and Notifications open from the header avatar or bell; on phones they go back to Home.
   it('gives EMPLOYEE Home, Schedule, Time, Pay and Requests, with Pay only while payroll is on', () => {
     expect(mobileTabsForRole('EMPLOYEE').map(tab => tab.label)).toEqual(['Home','Schedule','Time','Requests']);
     expect(mobileTabsForRole('EMPLOYEE', payroll).map(tab => [tab.label, tab.href])).toEqual([['Home','/app'],['Schedule','/app/schedule'],['Time','/app/my-time'],['Pay','/app/my-pay'],['Requests','/app/requests/hub']]);
     expect(activeMobileTab('EMPLOYEE', '/app/my-time', payroll)).toBe('/app/my-time');
     expect(activeMobileTab('EMPLOYEE', '/app/timecards', payroll)).toBe('/app/my-time');
     const tabs = mobileTabsForRole('EMPLOYEE', payroll).map(tab => tab.href);
-    for (const path of ['/app/notifications', '/app/more', '/app/updates', '/app/updates/own-update', '/app/profile', '/app/profile/calendar', '/app/help', '/app/no-such-page']) {
+    // Review Nov 14 (BR-4): More and the pages it opens are not tabs, so they light none (not Home); an unknown address too.
+    for (const path of ['/app/notifications', '/app/more', '/app/updates', '/app/updates/own-update', '/app/profile', '/app/profile/calendar', '/app/help', '/app/account/delete']) {
       expect(tabs).not.toContain(activeMobileTab('EMPLOYEE', path, payroll));
     }
+    expect(tabs).not.toContain(activeMobileTab('EMPLOYEE', '/app/no-such-page', payroll));
     expect(mobileTabsForRole('EMPLOYEE', payroll)[0].owns).toEqual(['/app']);
     expect(activeMobileTab('EMPLOYEE', '/app', payroll)).toBe('/app');
-    expect(activeMobileTab('EMPLOYEE', '/app/exchange', payroll)).toBe('/app/requests/hub');
-    // Release 1: opened from Schedule, these stay on Schedule; the rest of Requests stays on Requests.
+    // Direction B (Nov 6, 2026): Pick up and swap (all its tabs), swaps, can't work and Availability go back to Schedule, so
+    // they light Schedule; time off stays on Requests.
+    expect(activeMobileTab('EMPLOYEE', '/app/exchange', payroll)).toBe('/app/schedule');
     for (const path of ['/app/availability', '/app/exchange/swap?shiftId=s1', '/app/exchange/callout?shiftId=s1', '/app/exchange?tab=available']) expect(activeMobileTab('EMPLOYEE', path, payroll)).toBe('/app/schedule');
-    expect(activeMobileTab('EMPLOYEE', '/app/exchange?tab=my', payroll)).toBe('/app/requests/hub');
-    expect(activeMobileTab('LEAD', '/app/availability', payroll)).toBe('/app/requests/hub');
+    expect(activeMobileTab('EMPLOYEE', '/app/exchange?tab=my', payroll)).toBe('/app/schedule');
+    expect(activeMobileTab('EMPLOYEE', '/app/requests', payroll)).toBe('/app/requests/hub');
+    // Direction B for Leads (Nov 8, 2026): a Lead's Availability lights Schedule, as an Employee's does.
+    expect(activeMobileTab('LEAD', '/app/availability', payroll)).toBe('/app/schedule');
     expect(activeMobileTab('OWNER', '/app?view=activity', payroll)).toBe('/app/schedule');
     expect(activeMobileTab('OWNER', '/app', payroll)).toBe('/app');
   });
-  it.each(['LEAD'] as const)('gives %s Pay while payroll is on and Hours while it is off', role => {
-    expect(mobileTabsForRole(role).map(tab => tab.label)).toEqual(['Home','Schedule','Requests','Hours']);
-    expect(mobileTabsForRole(role, payroll).map(tab => [tab.label, tab.href])).toEqual([['Home','/app'],['Schedule','/app/schedule'],['Requests','/app/requests/hub'],['Pay','/app/my-pay']]);
-    expect(activeMobileTab(role, '/app/my-time', payroll)).toBe('/app/my-pay');
-    // v5 One look: Notifications opens from Home's bell (Home stays lit there), as for Owners; the More page lists it by name.
-    expect(activeMobileTab(role, '/app/notifications', payroll)).toBe('/app');
-    expect(activeMobileTab(role, '/app/exchange', payroll)).toBe('/app/requests/hub');
-    expect(activeMobileTab(role, '/app/account/delete', payroll)).toBe('more');
-    expect(activeMobileTab(role, '/app/account-recovery', payroll)).toBeUndefined();
-    expect(mobileMoreForRole(role, payroll).map(item => item.href)).toEqual(['/app/updates','/app/profile']);
+  // Direction B for Leads (Jose, Nov 8, 2026): a Lead has the Employee's tabs (Home, Schedule, Time, Pay while statements
+  // are on, Requests; More opens from the avatar) and the same current-tab rules; the v5 Hours tab and More tab are gone.
+  it('gives LEAD the Employee tabs and current-tab rules', () => {
+    expect(mobileTabsForRole('LEAD').map(tab => tab.label)).toEqual(['Home','Schedule','Time','Requests']);
+    expect(mobileTabsForRole('LEAD', payroll)).toEqual(mobileTabsForRole('EMPLOYEE', payroll));
+    for (const path of ['/app/my-time', '/app/notifications', '/app/exchange', '/app/availability', '/app/account/delete', '/app/account-recovery', '/app/help', '/app/updates'])
+      expect(activeMobileTab('LEAD', path, payroll)).toBe(activeMobileTab('EMPLOYEE', path, payroll));
+    expect(mobileMoreForRole('LEAD', payroll).map(item => item.href)).toEqual(mobileMoreForRole('EMPLOYEE', payroll).map(item => item.href));
   });
   // Corporate (Release 1, approved Oct 26): Owner and company-wide Manager tabs are Home, Schedule, Time, Payroll and Team.
   // Things to do (Inbox) opens from Home, which stays lit there. Without payroll review, Inbox takes Payroll's place.
@@ -88,19 +95,27 @@ describe('phone tabs', () => {
     expect(activeMobileTab(role,'/app/requests',review,context)).toBe('/app');
     expect(activeMobileTab(role,'/app/payroll-export',review,context)).toBe('/app/payroll');
     expect(activeMobileTab(role,'/app/timecards',review,context)).toBe('/app/timecards');
+    // Review Nov 14 (BR-4): More, Insights, Settings and its pages, Profile, Notifications, Help and Updates light no tab.
+    const tabs = mobileTabsForRole(role,review,context).map(tab => tab.href);
+    for (const path of ['/app/more', '/app/reports', '/app/settings', '/app/settings/locations', '/app/profile', '/app/notifications', '/app/help', '/app/updates', '/app/my-pay'])
+      expect(tabs).not.toContain(activeMobileTab(role,path,review,context));
+    // Payroll settings belongs to Payroll, and Help someone sign in to Team (with or without a prefilled person).
+    expect(activeMobileTab(role,'/app/settings/payroll',{...review,canConfigure:true},context)).toBe('/app/payroll');
+    expect(activeMobileTab(role,'/app/account-recovery?employee=E-1',review,context)).toBe('/app/employees');
     const reachable = [...mobileTabsForRole(role,review,context).flatMap(tab => tab.owns), ...mobileMoreForRole(role,review,context).map(item => item.href)];
     for (const item of navigationForRole(role,review,context)) expect(reachable).toContain(item.href);
   });
   it.each(['MANAGER','OWNER'] as const)('gives %s Home, Schedule, Time, Inbox and Team without payroll review, with every other destination in More', role => {
     const context={operational:company};
-    expect(mobileTabsForRole(role,undefined,context).map(tab => tab.href)).toEqual(['/app','/app/schedule','/app/timecards','/app/inbox','/app/employees']);
+    // Phase 3 (MG-006): a Manager's To do tab is second (Home, To do, Schedule, Time, Team); the Owner's stays fourth.
+    expect(mobileTabsForRole(role,undefined,context).map(tab => tab.href)).toEqual(role==='MANAGER'?['/app','/app/inbox','/app/schedule','/app/timecards','/app/employees']:['/app','/app/schedule','/app/timecards','/app/inbox','/app/employees']);
     expect(navigationForRole(role,undefined,context).map(item => item.href).slice(0, 3)).toEqual(['/app','/app/inbox','/app/schedule']);
     const reachable = [...mobileTabsForRole(role,undefined,context).flatMap(tab => tab.owns), ...mobileMoreForRole(role,undefined,context).map(item => item.href)];
     for (const item of navigationForRole(role,undefined,context)) expect(reachable).toContain(item.href);
     // Quiet (v4): Templates and Scheduling rules open from Schedule, so Schedule stays lit there (approved mockups).
     expect(activeMobileTab(role, '/app/schedule/templates',undefined,context)).toBe('/app/schedule');
     expect(activeMobileTab(role, '/app/schedule/settings',undefined,context)).toBe('/app/schedule');
-    expect(activeMobileTab(role, '/app/notifications',undefined,context)).toBe('/app');
+    expect(activeMobileTab(role, '/app/notifications',undefined,context)).toBeUndefined();
     expect(activeMobileTab(role, '/app/schedule/new',undefined,context)).toBe('/app/schedule');
     expect(activeMobileTab(role, '/app/payroll',undefined,context)).toBeUndefined();
   });

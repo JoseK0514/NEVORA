@@ -88,7 +88,7 @@ export function ShiftAssignmentFields({
         onChange={event => changeEmployee(event.target.value, event.currentTarget.form)}>
         <option value="" disabled>Choose</option>
         {employees.filter(item => item.active).map(item => <option key={item.id} value={item.id}>{`${item.firstName} ${item.lastName}`}</option>)}
-      </select><CaretRightIcon className="q-chev" aria-hidden="true" /></label></li>
+      </select><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></label></li>
     {children}
     <li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b>Position</b></span>
       <select className="q-select-row__control" name="positionId" value={selectedPosition} aria-label="Position"
@@ -96,7 +96,7 @@ export function ShiftAssignmentFields({
         <option value="">None</option>
         {choices.map(position => <option key={position.id} value={position.id}>{position.name}</option>)}
         {retained ? <option value={selectedPosition} disabled>{`${positions.find(position => position.id === selectedPosition)?.name ?? "Existing position"} (unavailable)`}</option> : null}
-      </select><CaretRightIcon className="q-chev" aria-hidden="true" /></label></li>
+      </select><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></label></li>
   </>;
   return (
     <>

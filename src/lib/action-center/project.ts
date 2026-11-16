@@ -8,7 +8,8 @@ export type ActionItem=Omit<ManagerActionItem,'type'>&{type:ManagerActionItem['t
 export type ActionCenter={state:'ready';observedAt:string;validForMs:number;weekStart:string;items:ActionItem[];counts:{total:number;scheduling:number;requests:number;timekeeping:number};limitedAttendance:boolean}|{state:'unavailable';reason:'access_denied'|'read_failed'};
 function validateRequestFacts(value:NonNullable<ActionItem['request']>) {
  const date=(v:unknown):v is string=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
- if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!['startDate','endDate','partialDay','lengthText','locationName','note','counterpartName','reviewHref'].includes(k))||
+ if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!['exchangeKind','startDate','endDate','partialDay','lengthText','locationName','note','counterpartName','reviewHref'].includes(k))||
+  value.exchangeKind!==undefined&&value.exchangeKind!=='SWAP'&&value.exchangeKind!=='COVERAGE'||
   !date(value.startDate)||!date(value.endDate)||value.endDate<value.startDate||typeof value.lengthText!=='string'||!value.lengthText||value.lengthText.length>200||
   typeof value.locationName!=='string'||!value.locationName||value.locationName.length>200||
   value.counterpartName!==undefined&&(typeof value.counterpartName!=='string'||!value.counterpartName.trim()||value.counterpartName.length>200||/[\u0000-\u001f\u007f]/.test(value.counterpartName))||

@@ -5,6 +5,7 @@ import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor } from "@/lib/time-clock";
 import type { ActionItem } from "@/lib/action-center/project";
 import { needsYou } from "@/lib/action-center/needs-you";
+import { onlyB, withoutB } from "./owner-b/test-support";
 
 vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
 // The kit's "Couldn't load · Try again" refreshes the page through the router when no retry is given.
@@ -36,7 +37,8 @@ const base = {
   value: needsYou(items, "2026-10-30", [shift("c", "no_punches")]), timecards: items.filter(i => i.type === "TIMECARD"),
   nextPay: { payday: "2026-11-03", daysUntil: 1, period: { startDate: "2026-10-26", endDate: "2026-11-01" } },
 };
-const html = (props: Partial<ComponentProps<typeof OwnerHomeCorp>> = {}) => renderToStaticMarkup(<OwnerHomeCorp {...base} {...props} />);
+// The corporate cards (tablets and desktop); the Direction B phone screen has its own tests (owner-b/owner-b.test.tsx).
+const html = (props: Partial<ComponentProps<typeof OwnerHomeCorp>> = {}) => withoutB(renderToStaticMarkup(<OwnerHomeCorp {...base} {...props} />));
 
 describe("Owner Home on the corporate kit (board C-Owner)", () => {
   it("has a title, at most three cards and the live summary for screen readers", () => {
@@ -146,6 +148,138 @@ describe("Owner Home on the corporate kit (board C-Owner)", () => {
   });
 });
 
+describe("Direction B phone screen (Owner and Manager Home)", () => {
+  const payrollWeek = { firstName: "Carmen", days: [], scheduledHours: 0, people: 0, payrollHref: "/app/payroll" };
+  const phone = (props: Partial<ComponentProps<typeof OwnerHomeCorp>> = {}) => onlyB(renderToStaticMarkup(<OwnerHomeCorp {...base} {...props} />)).replace(/ /g, " ");
+  // BR-16 with the backend's clockerRegistered (Nov 15, 2026).
+  it("with no time clock registered, one tile says so in place of the attendance tiles; unknown or registered keeps them", () => {
+    const shifts = [shift("a", "clocked_in"), shift("b", "upcoming"), shift("c", "no_punches")];
+    const none = phone({ today: { ...today(shifts), clockerRegistered: false } as Today, setup: <span>setup</span> });
+    expect(none).toContain('<a href="/app/settings/clocker" class="b-live__a" aria-label="Time clock not set up. Set up your time clock">');
+    expect(none).toContain('>Time clock</span><span class="b-live__v">Not set up</span>');
+    expect(none).not.toContain("Clocked in: ");
+    expect(none).not.toContain('aria-label="Missed clock-ins: 1"');
+    expect(none).toContain("Open shifts");
+    // A Manager's Home (no setup card) says the same, without a link.
+    expect(phone({ today: { ...today(shifts), clockerRegistered: false } as Today })).not.toContain('href="/app/settings/clocker"');
+    for (const registered of [true, undefined]) {
+      const out = phone({ today: { ...today(shifts), ...(registered === undefined ? {} : { clockerRegistered: registered }) } as Today });
+      expect(out).toContain('aria-label="Clocked in: 1 of 3. Who’s working"');
+      expect(out).not.toContain(">Time clock<");
+    }
+  });
+  it("leads with the shared needs-you count as a sentence and three live figures that open their lists", () => {
+    const out = phone();
+    expect(out).toMatch(/<h1>5 things need you<\/h1>/);
+    expect(out).toContain('<a href="/app?view=attendance" class="b-live__a" aria-label="Clocked in: 1 of 3. Who’s working">');
+    // B7 wording (NV-123): the stat and the row use one name ("Missed", as on the corporate Home).
+    expect(out).toContain('<a href="/app/inbox#todo-missed" class="b-live__a" aria-label="Missed clock-ins: 1">');
+    expect(out).toContain('aria-label="Find cover: Barista 1:00 PM – 3:00 PM">Find cover</a>');
+    // B7 wording (NV-068): outside the dense week grid, ranges keep full times with a spaced en dash.
+    // Jose (Nov 15, 2026, item 5): the short form shows on a phone, the full one from 768px (b-foundation.css picks).
+    expect(out).toMatch(/>Next: today, <span class="b-when-s">Barista 1–3\s?PM<\/span><span class="b-when-f">Barista 1:00\s?PM\s–\s3:00\s?PM</);
+    expect(out).toContain(">1 missed clock-in<");
+  });
+  it("uses Jose's attendance words: a shift still running is Not clocked in, and only an ended shift is Missed", () => {
+    // Nov 11, 2026 decision; Nov 14 inspection (BR-9). A shift that began and has no punch is never called missed.
+    const running = phone({ value: needsYou(items, "2026-10-30", [shift("b", "not_clocked_in")]) });
+    expect(running).toContain('<a href="/app/inbox#todo-not-clocked-in" class="b-live__a" aria-label="Not clocked in: 1">');
+    expect(running).toContain('>Not clocked in</span><span class="b-live__v">1</span>');
+    expect(running).toContain(">1\u00a0not clocked in<");
+    expect(running).not.toMatch(/Missed|missed/);
+    // Both kinds: the live tile counts who is waiting to clock in, and each kind has its own row.
+    const both = phone({ value: needsYou(items, "2026-10-30", [shift("b", "not_clocked_in"), shift("c", "no_punches")]) });
+    expect(both).toContain('aria-label="Not clocked in: 1. Missed clock-ins: 1"');
+    expect(both).toContain(">1\u00a0not clocked in<");
+    expect(both).toContain(">1\u00a0missed clock-in<");
+    // Nobody waiting and nothing missed: the tile keeps its name with a zero.
+    expect(phone({ value: needsYou(items, "2026-10-30", []) })).toContain('aria-label="Not clocked in: 0"');
+  });
+  it("names both people on a shift request, says which timecards Payday counts, and leads with setup until it is done", () => {
+    // Nov 14 inspection (BR-7): the other person in a swap or cover, when the read carries them.
+    const swap = item("EXCHANGE:s9", "EXCHANGE", "REVIEW", "requests", { detail: "Ana Colon is waiting for review.", request: { startDate: "2026-11-21", endDate: "2026-11-21", lengthText: "8 h",
+      locationName: "Condado", counterpartName: "James Ortiz", reviewHref: "/app/exchange?tab=requests&requestId=s9" } });
+    const out = phone({ value: needsYou([swap], "2026-10-30", []) });
+    // Phase 3 (OW-002, OW-007): the people are the title, the kind and the date the line under it; the lead is 36px.
+    expect(out).toContain(">Ana Colon ⇄ James Ortiz<");
+    expect(out).toContain(">Shift swap · Nov 21<");
+    expect(out).toContain('aria-label="Shift request, Ana Colon and James Ortiz"');
+    expect(out).toMatch(/<span class="b-av" style="--s:36px;[^"]*" aria-hidden="true">AC<\/span>/);
+    // Payday counts only timecards whose pay period has ended, and says so (Things to do also lists the open period's).
+    const cards = [item("c1", "TIMECARD", "REVIEW", "timekeeping", { href: "/app/timecards?start=2026-10-19&end=2026-10-25" }), item("c2", "TIMECARD", "REVIEW", "timekeeping", { href: "/app/timecards?start=2026-10-26&end=2026-11-01" })];
+    const payday = phone({ timecards: cards, timecardsReady: true, businessDay: "2026-10-30", week: payrollWeek });
+    expect(payday).toContain("<span>1\u00a0timecard to review</span><span>Pay period ended</span>");
+    expect(payday).not.toContain("Before payroll");
+    // BR-16: the setup card is the first card while there is something to finish.
+    const setup = phone({ setup: <span>setup row</span> });
+    expect(setup.indexOf('aria-label="Finish setting up"')).toBeGreaterThan(0);
+    expect(setup.indexOf('aria-label="Finish setting up"')).toBeLessThan(setup.indexOf('id="b-home-needs"'));
+  });
+  it("shows Payday as the ink tile for someone who can open Payroll, and never without a payday", () => {
+    expect(phone({ week: payrollWeek })).toContain('<a href="/app/payroll" class="b-btn b-btn--white b-btn--full" aria-label="Prepare payroll">');
+    expect(phone({ week: payrollWeek })).toContain('<section class="b-ink" aria-label="Payday">');
+    expect(phone({ nextPay: undefined })).not.toContain('class="b-ink"');
+  });
+  it("frames the ink tile around timecards for someone who can't open Payroll (Phase 3, MG-003, MG-004)", () => {
+    const card = (id: string, start: string, end: string, extra: Partial<ActionItem> = {}) => item(id, "TIMECARD", "REVIEW", "timekeeping", { href: `/app/timecards?start=${start}&end=${end}`, ...extra });
+    const ended = [card("c1", "2026-10-19", "2026-10-25"), card("c2", "2026-10-19", "2026-10-25"), card("mine", "2026-10-19", "2026-10-25", { title: "Your timecard needs another reviewer" })];
+    // Something to approve today: the count leads (the reviewer's own card is left out and the line says so), payday is
+    // the detail, and the one white button reviews timecards.
+    const open = phone({ timecards: ended, timecardsReady: true, businessDay: "2026-10-30" });
+    expect(open).toContain('<section class="b-ink" aria-label="Timecards">');
+    expect(open).toContain('<span class="b-ink__k">Timecards</span><span class="b-ink__due">Open now</span>');
+    expect(open).toMatch(/<div class="b-ink__big">2\sto approve<\/div>/);
+    expect(open).toContain("<span>2 of 3 timecards · Pay period ended</span><span>Payday Tue, Nov 3</span>");
+    expect(open).toContain("An Owner approves your timecard");
+    expect(open).toContain('<a href="/app/timecards" class="b-btn b-btn--white b-btn--full" aria-label="Review timecards">');
+    expect(open).not.toMatch(/Prepare payroll|Open timecards/);
+    // Not open yet: the day approval opens leads, and the button is the quiet glass pill, never the white one.
+    const closed = phone({ timecards: [card("c3", "2026-10-26", "2026-11-01")], timecardsReady: true, businessDay: "2026-10-30" });
+    expect(closed).toContain('<div class="b-ink__big">Opens Mon, Nov 2</div>');
+    expect(closed).toContain('<span class="b-ink__due b-ink__due--ok">In 3 days</span>');
+    expect(closed).toContain('<a href="/app/timecards" class="b-btn b-btn--glass b-btn--full" aria-label="See this week’s hours">');
+    expect(closed).not.toContain("b-btn--white");
+    // The Owner's Payday leaves the reviewer's own card out of its count too.
+    expect(phone({ timecards: ended, timecardsReady: true, businessDay: "2026-10-30", week: payrollWeek })).toMatch(/<span>2\stimecards to review<\/span><span>Pay period ended<\/span>/);
+  });
+  it("lists who is on now from Today's shifts, in Jose's words, and counts the corrections that can be decided (Phase 3, MG-011, MG-005)", () => {
+    const late = { ...shift("d", "clocked_in"), late: true, employeeName: "Gabriela Santos" };
+    const out = phone({ today: today([shift("a", "clocked_in"), late, shift("e", "not_clocked_in"), shift("b", "upcoming"), shift("c", "no_punches")]) });
+    const card = out.slice(out.indexOf('id="b-home-on"'), out.indexOf('class="b-home-col b-home-col--b"'));
+    expect(card).toContain('<a href="/app?view=attendance" class="b-card__a" aria-label="See everyone working today">See everyone</a>');
+    expect(card.match(/<li class="b-li">/g)).toHaveLength(3);
+    expect(card).toContain('<span class="b-chip b-chip--green">Working</span>');
+    expect(card).toContain('<span class="b-chip b-chip--amber">Clocked in late</span>');
+    expect(card).toContain('<span class="b-chip b-chip--amber">Not clocked in</span>');
+    expect(card).toContain("9:00 AM – 5:00 PM");
+    expect(card).not.toMatch(/Person b|Person c/);
+    // Nobody on: the card says so and names the next start; it never lists a shift that hasn't begun.
+    expect(phone({ today: today([shift("b", "upcoming")]) })).toContain("Nobody is working right now. Next shift starts 9:00 AM.");
+    // A correction that waits on this person is counted and has its row; their own is not.
+    const fix = (id: string, title: string, name: string) => item(id, "TIME_CORRECTION", "REVIEW", "timekeeping", { title, detail: `${name} · Recorded time correction.` });
+    const counted = phone({ value: needsYou([fix("f1", "Time correction waiting for review", "James Ortiz"), fix("f2", "Your correction needs another reviewer", "Carmen Ruiz")], "2026-10-30", []) });
+    expect(counted).toMatch(/<h1>1\sthing needs you<\/h1>/);
+    expect(counted).toMatch(/>1\stime correction</);
+    expect(counted).toContain('href="/app/inbox#todo-corrections"');
+    expect(counted).not.toContain("Carmen Ruiz");
+  });
+  it("says coverage as one line with a bar, and nothing about what isn't required (Phase 3, OW-006)", () => {
+    const coverage = { state: "ready" as const, staffing: { required: 20160, covered: 11610, percent: 57.6 }, positions: { required: 0, covered: 0, percent: null }, lead: { required: 0, covered: 0, percent: null } };
+    const out = phone({ week: { firstName: "Carmen", days: [], scheduledHours: 0, people: 0, coverage } });
+    expect(out).toContain('<div class="b-cov" role="group" aria-label="Covered this week"><span class="b-cov__k" data-short="true">Staffing <b class="c-num">58%</b></span>');
+    expect(out).toContain('<span class="b-cov__bar" aria-hidden="true"><i style="width:57.6%" data-short="true"></i></span>');
+    expect(out).toMatch(/193\sh 30\smin of 336\sh/);
+    expect(out).not.toMatch(/aren’t required|class="cov /);
+  });
+  it("draws This week from the page's own hours and shifts per day, today in teal, and nothing estimated", () => {
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((weekday, i) => ({ date: `2026-10-${26 + i}`, weekday, shiftCount: i + 1 }));
+    const out = phone({ week: { firstName: "Carmen", days, scheduledHours: 112, people: 3 } });
+    expect(out).toContain(">112 h</b><span>Scheduled</span>");
+    expect(out).toContain(">28</b><span>Shifts</span>");
+    expect(out).toContain('class="today" style="height:71%"');
+    expect(out).not.toMatch(/estimate|\$/i);
+  });
+});
 // Closed action items include both review and finalization work; the Home total must not call all of them unapproved.
 it("describes mixed closed timecard actions as review work before payroll", () => {
   const cards = [

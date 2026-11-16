@@ -39,7 +39,7 @@ from application evidence. Physical iPad acceptance remains required.
 
 ## T3 — Approved presentation and locale
 
-- Separate `NEVORA_CLOCKER_UI_V2=true` switch controls presentation only; default remains false and punch enablement stays independent.
+- Separate `NEVORA_CLOCKER_UI_V2=true` switch controls presentation only; default remains false and punch enablement stays independent. (Superseded Nov 8, 2026: the switch is gone; Direction B is the only Clocker presentation.)
 - Scoped pale rail, system typography, regular Phosphor icons, 12px controls and 64px keypad/action geometry use the approved Clocker roles. Official wordmark, real location/timezone and explicit company branding remain.
 - Complete English/Spanish setup, PIN, action, recovery and accessible labels replace the secondary glossary in V2. Locale survives in memory when storage is blocked.
 - 12 render/copy/route tests and TypeScript passed.

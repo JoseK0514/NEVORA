@@ -23,7 +23,7 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
  it('shows an accepted request without asserting successful email delivery',()=>{
   const message='If these details match an active account, recovery instructions will be sent.';
   const html=renderToStaticMarkup(<RecoveryRequest hydrated busy={false} done message={message} onSubmit={()=>{}}/>);
-  expect(html).toContain('Request received');expect(html).toContain(message);expect(html).toContain('role="status"');
+  expect(html).toContain('Check your email');expect(html).toContain(message);expect(html).toContain('role="status"');
   expect(html).not.toContain('<form');expect(html).not.toContain('Email sent');
  });
  it('keeps reset proof validation and new-password autocomplete',()=>{
@@ -40,7 +40,8 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
   expect(html).not.toContain('href="/reset-access"');
  });
  it('shows success only after confirmation and supplies the next sign-in action',()=>{
-  const message='Password reset. All portal sessions have ended. Sign in with your new password.';
+  // B7 wording (NV-188): no "portal sessions" jargon.
+  const message='Password reset. You’re signed out on every device. Sign in with your new password.';
   const html=renderToStaticMarkup(<RecoveryReset hydrated busy={false} done message={message} onSubmit={()=>{}} proofRef={()=>{}}/>);
   expect(html).toContain('Password updated');expect(html).toContain(message);
   expect(html).toContain('role="status"');expect(html).toContain('Sign in with new password');
@@ -64,7 +65,7 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
   expect(html).toContain('aria-invalid="true"');expect(html).toContain('Check your passwords');
   const pending=renderToStaticMarkup(<RecoveryReset hydrated busy done={false} message="" onSubmit={()=>{}} proofRef={()=>{}}/>);
   expect(pending).toMatch(/<fieldset[^>]*disabled=""/);expect(pending).toContain('aria-busy="true"');
-  expect(pending).toContain('Resetting password. Please wait.');
+  expect(pending).toContain('Resetting your password…');
  });
  it('keeps assisted identity attestation rather than exposing the employee request form',()=>{
   const html=renderToStaticMarkup(<AccountRecovery kind="assisted" actorId="QAOWNER"/>);
@@ -77,7 +78,8 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
 describe('Sign-in pages in Spanish',()=>{
  it('shows the request and reset forms and their known messages in Spanish, keeping the English outcome logic',()=>{
   const request=renderToStaticMarkup(<AccountRecovery kind="request" lang="es"/>);
-  expect(request).toContain('Recuperar acceso');expect(request).toContain('Correo de recuperación');expect(request).toContain('Solicitar recuperación');
+  // Review B4 (copy audit S3): the page shares the link's name, "¿Olvidaste tu contraseña?".
+  expect(request).toContain('¿Olvidaste tu contraseña?');expect(request).toContain('Correo de recuperación');expect(request).toContain('Solicitar recuperación');
   const reset=renderToStaticMarkup(<RecoveryReset lang="es" hydrated busy={false} done={false} message="Passwords do not match." onSubmit={()=>{}} proofRef={()=>{}}/>);
   expect(reset).toContain('aria-invalid="true"');expect(reset).toContain('Revisa tus contraseñas');expect(reset).toContain('Las contraseñas no coinciden.');
   const unknown=renderToStaticMarkup(<RecoveryReset lang="es" hydrated busy={false} done={false} message="Something new from the server." onSubmit={()=>{}} proofRef={()=>{}}/>);

@@ -19,7 +19,8 @@ export function DocumentRow({ document, name = null, revision }: { document: Pay
     <span className="c-row__main"><span className="c-row__title c-row__title--b">{title}</span><span className="c-row__detail"><span>{detail}</span></span></span>
     <span className="c-pay__stmt-actions">
       {document.kind !== 'PAYMENT_INSTRUCTIONS' && document.viewUrl ? <a className="c-link c-link--l c-pay__stmt-view" href={`${path}/view`} aria-label={`View ${subject}`}>View</a> : null}
-      <a className="c-pay__icon-btn" href={path} title={file} aria-label={`Download ${subject} (${file})`}><DownloadSimpleIcon className="c-ic" aria-hidden="true" /></a>
+      {/* Review B5 (NV-237): one labelled Download pill (with View as a link), not a bare glyph beside View. */}
+      <a className="c-btn c-btn--secondary c-btn--sm c-pay__download" href={path} title={file} aria-label={`Download ${subject} (${file})`}><DownloadSimpleIcon className="c-ic" weight="bold" aria-hidden="true" />Download</a>
     </span>
   </div>;
 }

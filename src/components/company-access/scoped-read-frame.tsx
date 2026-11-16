@@ -6,6 +6,11 @@ import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import {readOperationalNavigation} from './commands';
 import {useAppNavigation} from '../app-navigation';
 import {QuietSkeleton} from '../quiet/quiet';
+import {BState,BStateScreen} from '../owner-b/b-kit';
+import {BRouteLoading} from '../owner-b/b-loading';
+import {ScopedRefreshContext} from './scoped-refresh';
+import {OPERATIONAL_RETRY_EVENT} from './use-operational-navigation';
+import {announceOfflineHeld,steppedAway} from '@/lib/offline-hold';
 
 export type ScopedObservation={authority:string;observedAt:string;validForMs:number};
 type CurrentAuthority=Extract<OperationalAuthorityView,{state:'ready'}>&{requestStartedAt:number};
@@ -15,6 +20,8 @@ type Recovery={required:boolean;view:CurrentAuthority|null};
 export const STUCK_MS=2500;
 type Body={authority:string|null;phase:'ready'|'expired'|'paused';content:ReactNode};
 const online=()=>document.visibilityState!=='hidden'&&navigator.onLine&&document.hasFocus();
+/** A frame holding its page offline keeps it while the device is still offline and the person is still here. */
+const keepOffline=(held:{current:boolean})=>held.current&&!navigator.onLine&&!steppedAway();
 
 /** One browser tab's fence, shared by every frame instance (inspection Oct 24). Any instance's retirement (hidden,
  * blur, pagehide, offline, storage, pageshow, online, expiry) is recorded here synchronously, so a frame that mounts
@@ -50,6 +57,7 @@ export function resetScopedReadTab(){tab.retiredAt=-Infinity;tab.cutoff=null;tab
 export function ScopedReadFrame({observation,children,unavailable}:{observation?:ScopedObservation|null;children?:ReactNode;unavailable?:ReactNode}){
  const router=useRouter();
  const navigation=useAppNavigation(),deferredRefresh=useRef(false);
+ const viewDeadline=useRef(0),offlineExpiry=useRef<ReturnType<typeof setTimeout>|null>(null);
  const [body,setBody]=useState<Body>({authority:null,phase:'expired',content:null});
  // A replacement view cannot know whether an earlier instance retired while an
  // RSC response was in flight. Mounts therefore use the same fresh barrier.
@@ -59,6 +67,9 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  const observationRef=useRef(observation),versionRef=useRef('');
  // Explicit recovery uses a fresh authority read; a stalled navigation also needs a source navigation to preempt it.
  const explicitRefresh=useRef(false),explicitSource=useRef<string|null>(null);
+ // Offline with the person still here (review B2, NV-001): the page they loaded stays, read-only, until they reconnect
+ // (a fresh check) or step away (cleared, as before).
+ const held=useRef(false);
  const controls=useRef<{recover:(tabWide?:boolean)=>void;pause:()=>void;complete:(view:CurrentAuthority)=>void}|null>(null);
  const observed=observation?Date.parse(observation.observedAt):NaN,duration=observation?.validForMs??0;
  const version=observation?JSON.stringify([observation.authority,observation.observedAt,duration]):'unavailable';
@@ -95,8 +106,18 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    if(Date.parse(result.observedAt)<latest.current)throw Error('Authority observation moved backwards');
    return {...result,requestStartedAt};
   },reason=>({state:'unavailable',reason}),()=> 'read_failed');
-  function pause(){foreground=false;retire('paused');controller.pause();}
-  function recover(tabWide=true){foreground=online();retire('expired',tabWide);lastRefresh='';controller.pause();if(foreground)controller.start();}
+  function pause(){if(offlineExpiry.current)clearTimeout(offlineExpiry.current);offlineExpiry.current=null;held.current=false;foreground=false;retire('paused');controller.pause();}
+  function recover(tabWide=true){if(keepOffline(held))return;if(offlineExpiry.current)clearTimeout(offlineExpiry.current);offlineExpiry.current=null;held.current=false;foreground=online();retire('expired',tabWide);lastRefresh='';controller.pause();if(foreground)controller.start();}
+  // Offline: stop checking (the controller's own pause publishes nothing here while the page is current), record the
+  // retirement for the tab, and require a fresh check when the person reconnects. Nothing on screen changes.
+  function hold(){
+   // Already holding (the browser can send 'offline' more than once): nothing changes.
+   if(held.current&&!navigator.onLine)return;
+   if(steppedAway()||required.current||performance.now()>=viewDeadline.current){pause();return;}
+   held.current=true;foreground=false;controller.pause();retireTab();required.current=true;retiredThrough.current=Math.max(retiredThrough.current,latest.current);
+   const page=observationRef.current;if(page)announceOfflineHeld(page.observedAt);
+   offlineExpiry.current=setTimeout(pause,Math.max(0,viewDeadline.current-performance.now()));
+  }
   const recoverTab=()=>recover();
   const focus=(event:Event)=>{if(event.target!==window||(foreground&&online()))return;recover();};
   function complete(current:CurrentAuthority){
@@ -106,7 +127,8 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
   const resume=navigation?.subscribe(()=>{if(!active||!online())return;if(required.current)recover(false);else if(deferredRefresh.current){deferredRefresh.current=false;refreshPage(router,versionRef);}});
   const visibility=()=>{if(document.visibilityState==='hidden')pause();else recover();};
   document.addEventListener('visibilitychange',visibility);
-  for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);
+  for(const event of ['blur','pagehide'])window.addEventListener(event,pause);
+  window.addEventListener('offline',hold);
   window.addEventListener('focus',focus);
   for(const event of ['pageshow','online','storage'])window.addEventListener(event,recoverTab);
   // A page rendered after this tab's current cutoff, with the fence's authority, needs no second check or render.
@@ -121,14 +143,14 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    foreground=true;complete(fence);return true;
   }
   queueMicrotask(()=>{if(active&&!adoptTabFence())recover(false);});
-  return()=>{active=false;resume?.();controller.stop();controls.current=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('focus',focus);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['pageshow','online','storage'])window.removeEventListener(event,recoverTab);};
+  return()=>{active=false;if(offlineExpiry.current)clearTimeout(offlineExpiry.current);resume?.();controller.stop();controls.current=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('focus',focus);for(const event of ['blur','pagehide'])window.removeEventListener(event,pause);window.removeEventListener('offline',hold);for(const event of ['pageshow','online','storage'])window.removeEventListener(event,recoverTab);};
  },[router,navigation]);
 
  useEffect(()=>{
   let active=true,early:ReturnType<typeof setTimeout>|undefined,expiry:ReturnType<typeof setTimeout>|undefined;
   queueMicrotask(()=>{
    if(!active)return;
-   if(!online()){controls.current?.pause();return;}
+   if(!online()){if(!keepOffline(held))controls.current?.pause();return;}
    if(required.current&&!recovery.view)return;
    const current=recovery.view??anchor.current;
    // A known server observation anchors elapsed time to the monotonic request
@@ -148,7 +170,8 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    latest.current=observed;
    if(required.current&&recovery.view)controls.current?.complete(recovery.view);
    setBody({authority:observation!.authority,phase:'ready',content:children});
-   early=setTimeout(()=>{if(proactiveVersion.current!==version){proactiveVersion.current=version;if(navigation?.pending())deferredRefresh.current=true;else refreshPage(router,versionRef);}},remaining*.65);
+   viewDeadline.current=performance.now()+remaining;
+   early=setTimeout(()=>{if(!online())return;if(proactiveVersion.current!==version){proactiveVersion.current=version;if(navigation?.pending())deferredRefresh.current=true;else refreshPage(router,versionRef);}},remaining*.65);
    expiry=setTimeout(()=>controls.current?.recover(false),remaining);
   });
   return()=>{active=false;if(early)clearTimeout(early);if(expiry)clearTimeout(expiry);};
@@ -160,6 +183,8 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
   // NAVIGATE preempts Next's pending queue; REFRESH waits behind it. Capture the accepted source before discarding.
   explicitSource.current=navigation?.current()?.source??null;
   explicitRefresh.current=true;navigation?.discard();controls.current?.recover();
+  // Review B2 (NV-032): one Try again, so the shell's management menus re-check too.
+  window.dispatchEvent(new Event(OPERATIONAL_RETRY_EVENT));
  };
  const ready=!recovery.required&&!!observation&&body.phase==='ready'&&body.authority===observation.authority;
  // Every tab tap runs a fresh check (about a second on the hosted preview). It draws the page's own quiet shape; only a
@@ -174,7 +199,31 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  },[ready,navigation]);
 
  if(ready)return body.content;
- if(!observation&&unavailable)return <div className="scoped-unavailable">{unavailable}<button className="button secondary scoped-unavailable__refresh" type="button" onClick={refreshCurrent}>Refresh current view</button></div>;
+ // Phase 2 (package D): the state the page handed over draws its own "Refresh current view" inside its card (it reads
+ // this frame's fresh check from the context), so the page has one card with all its actions.
+ if(!observation&&unavailable)return <ScopedRefreshContext.Provider value={refreshCurrent}><div className="scoped-unavailable">{unavailable}</div></ScopedRefreshContext.Provider>;
  const checking=body.phase!=='paused'&&!stuck;
- return <section className="portal-route-state" role="status" data-checking={checking?'':undefined}>{checking?<QuietSkeleton/>:null}<h2>{body.phase==='paused'?'View paused':recovery.required?'Current view needs a fresh check':'Checking current view…'}</h2><p>{body.phase==='paused'?'Return to this window while online to see current information.':'We’ll show updated information when your current access and the page have been checked.'}</p><button className="button secondary" type="button" onClick={refreshCurrent}>Refresh current view</button></section>;
+ const stateSection=<section className="portal-route-state" role="status" data-checking={checking?'':undefined}>{checking?<QuietSkeleton/>:null}<h2>{body.phase==='paused'?'View paused':recovery.required?'Current view needs a fresh check':'Checking current view…'}</h2><p>{body.phase==='paused'?'Return to this window while online to see current information.':'We’ll show updated information when your current access and the page have been checked.'}</p><button className="button secondary" type="button" onClick={refreshCurrent}>Refresh current view</button></section>;
+ // Review F2 (NV-074): under Direction B the brief check draws the page's band and 22px card placeholders (the same top
+ // bar as the loaded page, which floats over the band), so nothing jumps when the page lands. Review F5: the band takes
+ // each main tab's loaded height (b-foundation.css, keyed by the sidebar entry that is the current page), and tablets and
+ // desktop draw it too (owner-b-desktop.css treats the placeholder like Home's B screen). Its hero says "Loading…" to
+ // assistive technology; the quiet section below shows only where no B screen does.
+ if(checking)return <div className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
+  <BRouteLoading/>
+  {stateSection}
+ </div>;
+ // Round 5 (Nov 7, 2026): paused or stuck, the page says so in the page's own look. Review B2 (NV-032, NV-075): one
+ // message under the hero in the shared state card (amber offline or paused, red when the check failed) with one Try
+ // again, which also re-checks the shell's menus; the brief "checking" state above keeps its skeleton.
+ // Phase 2 (package D): the same state screen at every width. Tablets and desktop drew a second copy of the message in
+ // the older corporate card with a grey Try again; that copy is gone (the wrapper's class lets the desktop layer draw the
+ // Direction B screen there, as it does for the placeholder).
+ const offlineNow=typeof navigator!=='undefined'&&!navigator.onLine;
+ const kind=body.phase==='paused'?offlineNow?'offline':'paused':'failed';
+ const title=kind==='offline'?'You’re offline':kind==='paused'?'View paused':'Couldn’t check your access';
+ const line=kind==='offline'?'Reconnect to see this page.':kind==='paused'?'Come back to this window to see current information.':'Try again to load this page.';
+ return <div className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
+  <BStateScreen title={title} back={{href:'/app',label:'Home'}} offlineInTitle={kind==='offline'}><BState kind={kind} line={line} action={{label:'Try again',onClick:refreshCurrent}}/></BStateScreen>
+ </div>;
 }

@@ -22,7 +22,7 @@ export function EmployeePasskeyView({state,supported,confirm,onAdd,onRefresh,onR
   <section className="c-card em-passkeys" aria-labelledby="passkeys-title" data-passkey-state={state.phase}>
    <div className="c-card__head"><h2 className="c-card__label" id="passkeys-title">Saved passkeys</h2></div>
    {ready&&keys.length?<ul className="c-rows" aria-label="Your passkeys">{keys.map(key=><li key={key.id}><div className="c-row">
-    <span className="c-row__icon" aria-hidden="true"><KeyIcon className="c-ic"/></span>
+    <span className="c-row__icon" aria-hidden="true"><KeyIcon weight="bold" className="c-ic"/></span>
     <span className="c-row__main"><span className="c-row__title c-row__title--b">{key.name}</span><span className="c-row__detail"><span>Added {date(key.createdAt)} · {key.lastUsedAt?'Last used '+date(key.lastUsedAt):'Not used yet'}</span></span></span>
     <button type="button" className="em-account-textbtn em-account-textbtn--danger" aria-label={'Remove '+key.name} disabled={busy||state.needsRefresh||!!reviewed} onClick={event=>onReview(key,event.currentTarget)}>Remove</button>
    </div></li>)}</ul>:null}

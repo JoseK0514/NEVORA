@@ -42,6 +42,21 @@ describe('D2 manager correction surface',()=>{
     expect(html).toContain('Times in Puerto Rico time');
     expect(html).not.toContain('America/Puerto_Rico');
   });
+  it('OW-015: on the Time corrections page the count and the note about times are said once, under the title',()=>{
+    const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={ready} loading={false} busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null} band={{zone:'America/Puerto_Rico'}}/>);
+    const line=`${ready.requests.length} waiting · Fixes your team asked for. Original times are always kept. Times in Puerto Rico time.`;
+    // Twice in the markup (the phone's sub-line and the title's; one shows per width), never inside a card.
+    expect(html.split(line).length-1).toBe(2);
+    expect(html).not.toContain('correction-context-zone');
+    expect(html).not.toContain('Approving changes the timecard');
+    expect(html).toContain('class="manager-corrections-header sr-only"');
+    expect(html).toContain('<h1 id="tcx-title"');
+  });
+  it('OW-015: before the read lands the sub-line has no count and uses the workplace zone',()=>{
+    const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={null} loading={true} busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null} band={{zone:'America/Puerto_Rico'}}/>);
+    expect(html).toContain('>Fixes your team asked for. Original times are always kept. Times in Puerto Rico time.<');
+    expect(html).not.toContain('waiting ·');
+  });
   it('does not present a cleared, unverified snapshot as a confirmed empty queue',()=>{
     const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={null} loading={false} busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null}/>);
     expect(html).toContain('Updates paused');
@@ -70,19 +85,22 @@ describe('D2 manager correction surface',()=>{
     expect(html).toContain('Correction requests');
     expect(html).toContain('Avery QA');
     expect(html).toContain('Recorded');
-    expect(html).toContain('Proposed');
+    // Review B6 (NV-080): the decision's tiles are Recorded and Asked for, with how much it changes.
+    expect(html).toContain('Asked for');expect(html).toContain('+20 min');
     expect(html).toContain('The tablet stayed open after I left.');
     expect(html).toContain('Approve');
     expect(html).toContain('Decline');
     expect(html).toContain('aria-label="Approve correction for Avery QA"');
     expect(html).toContain('aria-label="Decline correction for Avery QA"');
-    expect(html).toContain('Original recorded punches stay unchanged');
+    // B7 wording (NV-020): the provenance line is plain language.
+    expect(html).toContain('the original clock times stay in the history.');
   });
 
   it('disables self-review and explains that another reviewer is required',()=>{
     const snapshot={...ready,requests:[{...ready.requests[0],isSelf:true,employeeName:'Owner QA'}]};
     const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={snapshot} loading={false} busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null}/>);
-    expect(html).toContain('Another manager or owner must review your request.');
+    // B7 wording (NV-020): plain self-review note, Owner capitalised as a role.
+    expect(html).toContain('Another manager or an Owner reviews your own request.');
     expect(html).toMatch(/<button[^>]*disabled[^>]*>Approve<\/button>/);
     expect(html).toMatch(/<button[^>]*disabled[^>]*>Decline<\/button>/);
   });

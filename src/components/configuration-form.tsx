@@ -66,7 +66,7 @@ export function ConfigurationForm({
           {result.error}
         </p>
       ) : null}
-      {result.issueCode === 'SHIFT_REVIEW_CONFLICT' ? <ShiftReviewRecovery draft={submittedShift} /> : null}
+      {shiftVersion !== undefined && (result.issueCode === 'SHIFT_REVIEW_CONFLICT' || result.issueCode === 'ACCESS_DENIED') ? <ShiftReviewRecovery draft={submittedShift} /> : null}
       {result.success ? (
         <p role="status" className="form-success">
           {result.success}

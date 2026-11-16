@@ -1,0 +1,85 @@
+/* Direction B shared tokens (review B1, Nov 10, 2026). Defined on :root so the shell, the desktop and tablet layers, the
+ * Clocker and the public pages can all read them; the B screens (owner-b.css) keep their own copy with the same values.
+ * Light only. Values are DESIGN.MD's: one band, one ink and grey family, one elevation set, one focus, one disabled pair,
+ * one press. Only colours, sizes and timings live here; no selector here paints anything. */
+:root {
+  /* palette */
+  --b-teal: #0B6E69; --b-teal-50: #E8F3F1; --b-ink: #111517; --b-ink2: #3F464B; --b-grey: #6A7176; --b-line: #ECEEEF; --b-canvas: #F2F5F4;
+  --b-amber: #8A4B00; --b-amber-50: #FDF3E4; --b-red: #B42318; --b-red-50: #FDECEA; --b-green: #1D6B45; --b-green-50: #E7F4EC; --b-quiet: #F0F2F3;
+  --b-coral: #FF6B5E;
+  /* grey text on a tinted or grey fill (#F0F2F3, #E8F3F1, #FDECEA, #FDF3E4, #E7F4EC, #ECEEEF): 5.0–5.3:1, where --b-grey
+   * falls to 4.3–4.4:1. b-foundation.css points --b-grey at this value inside those fills (Nov 14 inspection, SY-008). */
+  --b-grey-on-fill: #5E666B;
+  /* field and switch edges and the row chevron: 3.5:1 on white, 3.2:1 on the canvas, 3.1:1 on the quiet and teal-50 fills
+   * (WCAG 1.4.11). Was #8C9397 (3.1:1 on white, 2.8:1 on the canvas). */
+  --b-field-edge: #838A8F;
+  /* status solids that stand on a light surface (rings, bars, dashed edges): 3:1 or more on white, the tints and the grey
+   * track. Amber was #E9A23B / #E2A13B (2.2:1), green #2FB37F (2.7:1). On the band the lighter #FFC46B stays (3.7:1). */
+  --b-amber-solid: #B8760F; --b-green-solid: #239A6D;
+  /* the band: one gradient (#0C726C to #08504C) on every page (Payroll and Pay included since the Nov 14 inspection; the ink
+   * gradient is kept for the ink tile only); text on it is white (titles, figures, labels on glass) or white .86 (sub-lines
+   * on the solid band only: 4.7:1 at the band's lightest stop; inside glass it resolves to white, see b-foundation.css) */
+  --b-band: linear-gradient(160deg, #0C726C 0%, #0B6E69 40%, #08504C 100%);
+  --b-band-solid: #0C726C;
+  --b-band-ink: linear-gradient(150deg, #17302D 0%, #0C1918 100%);
+  --b-on-band: #FFFFFF;
+  --b-on-band-2: rgb(255 255 255 / 0.86);
+  --b-glass: rgb(255 255 255 / 0.12); --b-glass-edge: rgb(255 255 255 / 0.16);
+  /* elevation: one shadow colour */
+  --b-shadow-rgb: 16 40 38;
+  --b-elev-1: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18);
+  --b-elev-2: 0 0 0 1px rgb(16 40 38 / 0.06), 0 2px 4px rgb(16 40 38 / 0.08), 0 24px 48px -16px rgb(16 40 38 / 0.32);
+  /* one step above elev-2, for a dialog or something being dragged (Phase 1) */
+  --b-elev-3: 0 0 0 1px rgb(16 40 38 / 0.07), 0 4px 8px rgb(16 40 38 / 0.10), 0 40px 72px -20px rgb(16 40 38 / 0.40);
+  --b-elev-glow: 0 6px 14px -6px rgb(11 110 105 / 0.6);
+  /* focus: teal on white and tinted surfaces, white on the band */
+  --b-focus: #0B6E69; --b-focus-on-band: #FFFFFF; --b-focus-width: 2px; --b-focus-offset: 2px;
+  /* interaction */
+  --b-hover: #F7F9F9;
+  --b-disabled-bg: #F0F2F3; --b-disabled-ink: #8C9397;
+  --b-press-scale: 0.96; --b-dur-press: 150ms; --b-ease-out: ease-out;
+  /* motion (Phase 1 names): 150ms for press, hover and every exit, 300ms for an entrance, all ease-out */
+  --b-dur-hover: 150ms; --b-dur-exit: 150ms; --b-dur-enter: 300ms;
+  /* shape and targets */
+  --b-radius-card: 22px; --b-radius-pill: 999px; --b-radius-field: 14px; --b-radius-small: 10px;
+  --b-target: 44px; --b-target-touch: 48px;
+  /* one segmented control (review F5, NV-103), on the band (glass) and on white: a 44px pill track, 4px in, a 36px pill
+   * thumb (the 44px hit area is the track's height), 14/600 labels, 16px item padding, 20px count pills of 12/700 */
+  --b-seg-h: 44px; --b-seg-pad: 4px; --b-seg-r: var(--b-radius-pill); --b-seg-item-h: 36px; --b-seg-item-r: var(--b-radius-pill);
+  --b-seg-fs: 14px; --b-seg-item-px: 16px; --b-seg-count-h: 20px; --b-seg-count-fs: 12px; --b-seg-count-px: 6px; --b-seg-count-gap: 6px;
+  /* type roles (Phase 1): eight sizes and their line-heights, in rem so they follow the reader's text size (px at a 16px
+   * root in the comments). --b-fs-count is the 12px of a count pill, not a role. */
+  --b-fs-display: 1.875rem; --b-lh-display: 2.25rem;     /* 30/36px */
+  --b-fs-figure: 1.5rem; --b-lh-figure: 1.875rem;        /* 24/30px */
+  --b-fs-title: 1.25rem; --b-lh-title: 1.625rem;         /* 20/26px */
+  --b-fs-title-sm: 1.0625rem; --b-lh-title-sm: 1.375rem; /* 17/22px */
+  --b-fs-body: 0.96875rem; --b-lh-body: 1.375rem;        /* 15.5/22px */
+  --b-fs-body-sm: 0.90625rem; --b-lh-body-sm: 1.25rem;   /* 14.5/20px */
+  --b-fs-meta: 0.84375rem; --b-lh-meta: 1.125rem;        /* 13.5/18px */
+  --b-fs-caption: 0.78125rem; --b-lh-caption: 1rem;      /* 12.5/16px */
+  --b-fs-count: 12px;
+  /* the same roles as "size/line-height" for the font shorthand: font: 600 var(--b-type-body) Inter, …; */
+  --b-type-display: var(--b-fs-display)/var(--b-lh-display);
+  --b-type-figure: var(--b-fs-figure)/var(--b-lh-figure);
+  --b-type-title: var(--b-fs-title)/var(--b-lh-title);
+  --b-type-title-sm: var(--b-fs-title-sm)/var(--b-lh-title-sm);
+  --b-type-body: var(--b-fs-body)/var(--b-lh-body);
+  --b-type-body-sm: var(--b-fs-body-sm)/var(--b-lh-body-sm);
+  --b-type-meta: var(--b-fs-meta)/var(--b-lh-meta);
+  --b-type-caption: var(--b-fs-caption)/var(--b-lh-caption);
+  /* the spacing scale, named by its px value */
+  --b-space-2: 2px; --b-space-4: 4px; --b-space-8: 8px; --b-space-12: 12px; --b-space-16: 16px; --b-space-20: 20px;
+  --b-space-24: 24px; --b-space-32: 32px; --b-space-40: 40px; --b-space-48: 48px; --b-space-64: 64px;
+  /* the three named insets (horizontal only): phone page gutter, card and row inset, wide card and row inset */
+  --b-gutter: 14px; --b-inset: 18px; --b-inset-wide: 22px;
+  /* the desktop and tablet frame (Phase 2, Nov 15, 2026). Three content widths: work pages fill the grid up to
+   * --b-frame-wide; pages opened from them read in one --b-frame-read column; a form's field block stops at --b-frame-form. */
+  --b-frame-wide: 1080px; --b-frame-read: 812px; --b-frame-form: 560px;
+  /* where the band ends, measured from the top of the window (the 64px top bar included): a title alone or under a back
+   * link; a back link, title and one sub-line; a title with a strip (tabs, search, week) on the band. Home keeps its own. */
+  --b-band-short: 196px; --b-band-sub: 224px; --b-band-strip: 296px;
+  /* the Employee and Lead tabs that carry figures on the band (Home, Time, Pay, Requests) share Home's height */
+  --b-band-figures: 363px;
+  /* where the page title starts: on a sidebar page, and under a back link */
+  --b-title-top: 88px; --b-title-top-back: 130px;
+}

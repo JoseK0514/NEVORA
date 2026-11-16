@@ -69,7 +69,7 @@ export function PublishWarningReviewSurface({ result, connection, expected, now,
  else if (review?.state === 'blocked') message = review.reason === 'NO_SCHEDULE' ? 'Save a draft schedule before publishing.' :
   'Cannot publish while required schedule protections fail. Return to review and resolve them.';
  else if (candidate && !current) message = 'The publication review is no longer current. Return to review before publishing.';
- const labels = { coverage: 'Coverage', positions: 'Positions', lead: 'Designated lead', hours: 'Hour targets' };
+ const labels = { coverage: 'Coverage', positions: 'Positions', lead: 'Shift lead', hours: 'Hour targets' };
  const checkLabels = { CHECKED: 'Checked', NEEDS_SETUP: 'Needs setup', NOT_CHECKED: 'Not checked' };
  return <section className="schedule-publication-controls" aria-label="Review schedule publication" aria-busy={result.state === 'loading' || connection === 'loading'}>
   <h2>Review before publishing</h2>

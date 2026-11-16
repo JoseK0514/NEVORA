@@ -132,7 +132,7 @@ describe("modules", () => {
   it("ignores unknown ids and explains blockers", () => {
     expect(enabledModules(["timeOff", "kudos", 7])).toEqual({ ...ALL_MODULES_ON, timeOff: false });
     expect(blockerText("timeOff", 1)).toBe("1 request for time off is waiting for a decision. Decide it first.");
-    expect(blockerText("marketplace", 3)).toBe("3 shift swap or cover requests are still open. Let them finish first.");
+    expect(blockerText("marketplace", 3)).toBe("3 shift requests (swaps, cover and can’t work) are still open. Let them finish first.");
     for (const m of MODULES) expect(m.offNote.length).toBeGreaterThan(20);
   });
 });

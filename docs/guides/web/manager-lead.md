@@ -64,6 +64,10 @@ not grant company access to a Manager assigned only to locations.
 2. Open **Schedule**, choose a managed location and week, and review its shifts.
    **Add shift** and editable draft forms appear only when the current source
    and permissions allow them. Use only the offered employee/position choices.
+   Edit and delete apply to the shift you originally reviewed. A changed shift
+   refuses the old submission and keeps the entered fields. Copy needed values
+   from **Unsaved changes to copy** before choosing **Reload current shift**;
+   reloading replaces the draft and requires a fresh review.
 3. Follow a read-only message when a protected or published shift requires
    company-wide access. Escalate publishing, company rules and protected changes
    to the Owner or a company-scoped Manager.

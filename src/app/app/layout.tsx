@@ -19,8 +19,7 @@ import "./clean-manager/timecards.css";
 import "./clean-manager/insights.css";
 import "./clean-manager/updates.css";
 import "./clean-manager/notifications.css";
-// Employee app, new style (Withings-inspired, Jose approved Oct 20): scoped to the shell's data-nv-e5.
-import "./employee-style.css";
+// Review B1 (NV-233): employee-style.css (data-nv-e5, retired) is no longer loaded here; only ui-preview/signature keeps it.
 // Quiet (v4, Jose approved Oct 23): the Owner and Manager phone shell. Loaded last.
 import "./quiet-shell.css";
 // Corporate (Release 1, approved Oct 26): the Owner and Manager phone header and tab bar. Loaded last.
@@ -34,6 +33,23 @@ import "@/components/employee-mobile/creation.css";
 import "@/components/employee-mobile/planning.css";
 import "@/components/employee-mobile/hours.css";
 import "@/components/employee-mobile/messages.css";
+// Direction B (Jose approved Nov 5, 2026): the Owner and Manager phone header and tab bar over the teal hero. Loaded last.
+import "./owner-b-shell.css";
+// Direction B on every other Owner and Manager phone page (the corporate and Quiet kits). Loaded last.
+import "./owner-b-pages.css";
+import "@/components/employee-b/employee-b.css";
+// Direction B on desktop (Owner and Manager, 1024px and wider). Last, so it wins over every older layer.
+import "./owner-b-desktop.css";
+// Employee desktop, Direction B (Jose approved Nov 8, 2026): the Employee screens on desktop. After the desktop layer.
+import "./employee-b-desktop.css";
+// Review B1 (Nov 10, 2026): shared Direction B foundation fixes (focus, targets, press, disabled, contrast). Loaded last.
+import "./b-foundation.css";
+// Phase 3 (Nov 15, 2026): one Direction B sheet per Owner and Manager area. After the foundation, so an area rule wins.
+import "./owner-b-home.css";
+import "./owner-b-schedule.css";
+import "./owner-b-time-pay.css";
+import "./owner-b-requests.css";
+import "./owner-b-settings.css";
 import {communicationAuthority} from "@/lib/communications/service.server";
 import {cookies, headers} from "next/headers";
 import {createHash} from "node:crypto";
@@ -42,6 +58,9 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { preload } from "react-dom";
 import { AppShell } from "@/components/app-shell";
+import { BEntrance } from "@/components/b-entrance";
+import { LeaveStaffingProvider } from "@/components/leave-staffing/use-leave-staffing";
+import { NevoraFailureNotice } from "@/components/leave-staffing/failure-notice";
 import { readNotificationConfig } from "@/lib/notifications/config";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
@@ -119,11 +138,18 @@ export default async function PlatformLayout({ children, sheet }: { children: Re
         role: session.role,
       }}
     >
-      {children}
+      {/* Nov 9, 2026: the leave-staffing reads' actor and requests view binding (public freshness metadata, never a proof),
+        and the one page-level notice for X-Nevora-Failure. */}
+      <LeaveStaffingProvider authority={{ scope: ["OWNER", "MANAGER"].includes(session.role) ? "management" : "employee", actorId: session.id, view: employeeViewAuthority(proof, "requests") }}>
+        <NevoraFailureNotice />
+        {children}
+      </LeaveStaffingProvider>
       {/* v5: shift changes opened from a shift rise as sheets over the page (intercepted routes in @sheet). */}
       {sheet}
       {/* Face ID offer after a password sign-in (hidden unless NEXT_PUBLIC_NEVORA_PASSKEYS=on). */}
       <PasskeyOffer />
+      {/* Review B6 (NV-326): the B entrance plays on the first page of a session only. */}
+      <BEntrance />
     </AppShell>}>{children}</CommerceRecoveryBoundary>
   );
 }

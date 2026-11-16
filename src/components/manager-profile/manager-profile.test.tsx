@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { parseManagerProfile, type ManagerProfileSnapshot } from './contract';
-import { ALERT_TOPIC_COUNT, ManagerProfileView, type ManagerProfileIdentity } from './manager-profile-live';
+import { ALERT_TOPIC_COUNT, ManagerProfileView, managerAccess, type ManagerProfileIdentity } from './manager-profile-live';
 
 const FIXTURES = 'docs/product/specs/p35-profile/fixtures';
 const fixture = (name: string) => JSON.parse(readFileSync(`${FIXTURES}/${name}.json`, 'utf8'));
@@ -75,6 +75,29 @@ describe('Owner and Manager Profile', () => {
     // Nov 1 upscale: "this phone" on a phone and "this device" elsewhere (CSS picks one); a chevron, not a teal "Turn on".
     expect(html).toContain('Alerts on this <span class="pmp-device-phone">phone</span><span class="pmp-device-other">device</span>');
     expect(html).not.toContain('Turn on');
+  });
+
+  // Review Nov 11 (MG-013): a Manager's reach, from the locations the profile read gives; never more than the read says.
+  it('tells a Manager what their access reaches and who can change a read-only detail', () => {
+    const assigned = render({ ...manager, changedBy: 'Jose Natal', locationsWord: 'stores' }, parseManagerProfile(fixture('manager')));
+    expect(assigned).toContain('<b>Access</b><i>Schedule and team at your stores. Payroll and Settings are for Owners.</i>');
+    expect(assigned).toContain('<span class="q-rv q-rv--l">Manager, Main Office, West Office</span>');
+    expect(assigned.match(/<small class="pmp-fixed__why">Jose Natal can change this\.<\/small>/g)).toHaveLength(2);
+    expect(assigned).not.toContain('Read-only');
+    const all = render(manager, parseManagerProfile({ ...fixture('manager'), locations: { scope: 'all', names: ['Main Office'] } }));
+    expect(all).toContain('<span class="q-rv q-rv--l">Manager, all locations</span>');
+    expect(all).toContain('Schedule, time, team and requests. Payroll and Settings are for Owners.');
+    expect(all).toContain('An Owner can change this.');
+    // Before the read arrives, and when it fails, only the role is said: no locations are claimed.
+    for (const html of [render(manager, null), render(manager, { state: 'unavailable', reason: 'read_failed' })]) {
+      expect(html).toContain('<b>Access</b><i>Payroll and Settings are for Owners.</i></span><span class="q-rv q-rv--l">Manager</span>');
+      expect(html).not.toContain('all locations');
+    }
+    expect(managerAccess({ scope: 'assigned', names: [] })).toEqual({ value: 'Manager', covers: 'Payroll and Settings are for Owners.' });
+    // An Owner's page has no Access row and no "can change this" line.
+    const ownerHtml = render(owner, parseManagerProfile(fixture('owner')));
+    expect(ownerHtml).not.toContain('<b>Access</b>');
+    expect(ownerHtml).not.toContain('can change this');
   });
 
   it('says what is not there yet without blame words, and lets an Owner add an email', () => {

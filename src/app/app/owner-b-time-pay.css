@@ -1,0 +1,175 @@
+/* Direction B, Phase 3 (Nov 15, 2026): Timecards, time corrections, Time exports and Payroll, at every width.
+ * One area per sheet, loaded after b-foundation.css. Rules follow the B8 layering rule: !important only inside
+ * @layer nv-b; media queries only the aliases in src/lib/b-viewport.ts; values from src/app/b-tokens.css. */
+@layer nv-b {
+  /* ---------- Timecards ---------- */
+  /* MG-004: the grey "You" chip beside the viewer's own name (the kit's chip, one size). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-who { display: inline-flex !important; align-items: center !important; gap: var(--b-space-8) !important; max-width: 100% !important; min-width: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-who > .c-tc-person { min-width: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-you { flex: none !important; }
+
+  @media (min-width: 768px) {
+    /* OW-016: Status sits at the card's right edge with a chevron, so the table fills its card and a row shows it opens.
+     * The usual state is plain grey text; only something to act on (amber) or done (green) is a chip. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-desk .c-tc-table :is(th, td)[data-col="status"] { text-align: right !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-desk .c-tc-table:not([data-selecting]) thead th[data-col="status"] { padding-right: calc(var(--b-inset-wide) + 28px) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-desk .c-tc-st { display: inline-flex !important; align-items: center !important; justify-content: flex-end !important; gap: var(--b-space-12) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-desk .c-tc-plain { font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; color: var(--b-grey) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-desk .c-tc-chev { flex: none !important; width: 16px !important; height: 16px !important; color: var(--b-grey) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-desk .c-tc-table tbody tr.c-clickable { cursor: pointer !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-desk .c-tc-table tbody tr.c-clickable:focus-within:not([data-open]) > td { background: var(--b-hover) !important; }
+    /* Tab labels 14/600 with the 20px count pill from the --b-seg tokens (they were about 12px with a bare number). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-desk .c-tc-tabs button { gap: var(--b-seg-count-gap) !important; font-size: var(--b-seg-fs) !important; line-height: 20px !important; font-weight: 600 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-desk .c-tc-tabs button em { display: inline-grid !important; place-items: center !important; min-width: var(--b-seg-count-h) !important; height: var(--b-seg-count-h) !important; padding: 0 var(--b-seg-count-px) !important; border-radius: var(--b-radius-pill) !important; background: var(--b-quiet) !important; color: var(--b-ink2) !important; font-size: var(--b-seg-count-fs) !important; line-height: 1 !important; font-weight: 600 !important; font-variant-numeric: tabular-nums !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-desk .c-tc-tabs button[aria-pressed="true"] em { background: var(--b-teal-50) !important; color: var(--b-teal) !important; }
+  }
+  @media (min-width: 768px) and (hover: hover) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-desk .c-tc-table tbody tr.c-clickable:hover:not([data-open]) > td { background: var(--b-hover) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-desk .c-tc-table tbody tr.c-clickable:hover .c-tc-chev { color: var(--b-ink2) !important; }
+  }
+
+  /* OW-037: the saved timecard is a green block (a 36px green circle with a check, the word, how far the period is). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__done { display: flex !important; align-items: center !important; gap: var(--b-space-12) !important; margin: 0 !important; padding: 14px var(--b-space-16) !important; border-radius: var(--b-radius-field) !important; background: var(--b-green-50) !important; color: var(--b-ink) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__done > .b-ico { background: var(--b-green) !important; color: #FFFFFF !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__donetx { display: flex !important; flex-direction: column !important; min-width: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__donetx > b { font-size: var(--b-fs-body) !important; line-height: 20px !important; font-weight: 600 !important; color: var(--b-ink) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__donetx > .c-num { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 400 !important; color: var(--b-grey-on-fill) !important; }
+  /* Jose (Nov 15, 2026, item 4): "Next timecard" is the block's tinted pill at its right edge (44px, the kit's target);
+   * it drops under the words when the sheet is too narrow for both. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__done { flex-wrap: wrap !important; row-gap: var(--b-space-8) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__done > .c-tc-sheet__next { flex: none !important; width: auto !important; margin: 0 0 0 auto !important; min-height: var(--b-target) !important; padding: 0 var(--b-space-16) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-body-sm) !important; font-weight: 600 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet #cm-tc-sheet-title:focus:not(:focus-visible) { outline: none !important; }
+  /* Payroll's steps card: the period's Timecards is one more step line (a link), with a chevron at its end. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-steps > .b-step--link { align-items: center !important; color: var(--b-ink) !important; text-decoration: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-steps > .b-step--link .b-step__n > svg { width: 16px !important; height: 16px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-steps > .b-step--link .b-step__chev { flex: none !important; color: var(--b-field-edge) !important; }
+  /* Backend (Nov 15, 2026): a correction's net pay changes by person: name, then was/now, then the signed difference. */
+  /* On phones card text that isn't a row sits 2px in (owner-b-pages.css, "the last 2px to the row text"); the correction
+   * card's heading and its list of changes take the same 2px, so every line of the card starts at one edge. */
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay [aria-label="Correction"] :is(b.c-pay__strong, .c-pay__deltalist) { padding-left: var(--b-space-2) !important; padding-right: var(--b-space-2) !important; }
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-pay__deltalist { display: grid !important; gap: var(--b-space-8) !important; margin: var(--b-space-8) 0 !important; padding: 0 !important; list-style: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-pay__deltalist > li > span { min-width: 0 !important; overflow-wrap: anywhere !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-pay__deltalist > li { display: grid !important; grid-template-columns: minmax(0, 1fr) auto !important; column-gap: var(--b-space-12) !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; color: var(--b-ink) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-pay__deltalist > li > span:nth-child(2) { grid-column: 1 !important; grid-row: 2 !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-pay__deltalist > li > b { grid-column: 2 !important; grid-row: 1 / span 2 !important; align-self: center !important; font-weight: 600 !important; }
+  /* The sheet's one decision (its footer): a full-width button, 48px on touch. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__foot { display: flex !important; flex-direction: column !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__foot > .c-btn { width: 100% !important; margin: 0 !important; min-height: var(--b-target) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__foot > .c-btn.b-rowact { min-height: var(--b-target) !important; border-radius: var(--b-radius-pill) !important; font-weight: 600 !important; }
+
+  @media (max-width: 767px) {
+    /* OW-017: every Team row is two lines at 72px. The sub line shows as many whole parts as fit ("In progress", then
+     * " · 2 h 30 min breaks"); a part that does not fit is left out, never cut or left hanging on a separator. Hours sit
+     * in a fixed right-aligned column. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .b-row { box-sizing: border-box !important; height: 72px !important; min-height: 72px !important; padding-top: 0 !important; padding-bottom: 0 !important; align-items: center !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .b-row__t { flex-wrap: nowrap !important; justify-content: flex-start !important; gap: var(--b-space-8) !important; min-width: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .b-row__tt { flex: 0 1 auto !important; min-width: 0 !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .b-row__s { display: block !important; margin-top: var(--b-space-2) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .c-tc-sub { display: flex !important; flex-wrap: wrap !important; align-items: center !important; column-gap: 0 !important; height: 22px !important; overflow: hidden !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .c-tc-sub > span { flex: none !important; line-height: 22px !important; white-space: pre !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .c-tc-sub > .b-chip { margin-right: var(--b-space-4) !important; max-width: 100% !important; overflow: hidden !important; text-overflow: ellipsis !important; line-height: 22px !important; white-space: nowrap !important; display: block !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .b-row__end { flex: none !important; min-width: 72px !important; text-align: right !important; align-items: flex-end !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .c-tc-hours { font-variant-numeric: tabular-nums !important; white-space: nowrap !important; }
+
+    /* OW-039: the timecard sheet fills the screen but for 48px, and its one decision stays at the bottom, above the
+     * safe area, while the days scroll under it. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet[open]:has(.c-tc-sheet) { position: fixed !important; top: auto !important; bottom: 0 !important; height: calc(100dvh - 48px) !important; max-height: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet:has(.c-tc-sheet) > .q-sheet__in { box-sizing: border-box !important; min-height: 100% !important; display: flex !important; flex-direction: column !important; padding-bottom: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet { flex: 1 1 auto !important; padding-bottom: calc(var(--b-space-16) + env(safe-area-inset-bottom, 0px)) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet:has(> .c-tc-sheet__foot) { padding-bottom: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet > .c-tc-sheet__history { order: 1 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet > .cm-tc-sheet__message { order: 2 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet > .c-tc-sheet__foot { order: 3 !important; position: sticky !important; bottom: 0 !important; z-index: 3 !important; margin: auto calc(-1 * var(--b-space-16)) 0 !important; padding: var(--b-space-12) var(--b-space-16) calc(var(--b-space-16) + env(safe-area-inset-bottom, 0px)) !important; background: var(--b-canvas) !important; box-shadow: 0 -1px 0 var(--b-line) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet > .c-tc-sheet__foot > .c-btn { min-height: var(--b-target-touch) !important; }
+  }
+
+  @media (max-width: 767px) {
+    /* A status that is wider than its line ends with an ellipsis (it was cut mid-letter at 320px). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .c-tc-sub > span:first-child { flex: 0 1 auto !important; min-width: 0 !important; max-width: 100% !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+  }
+  @media (max-width: 359px) {
+    /* 320px: the hours column is as wide as its figure, so names and statuses keep the room. A status chip ("Correction
+     * waiting", "Missing clock-out") showed cut off ("Correction wai…"): the row's gaps, the chip's side padding and the
+     * hours figure (to the kit's body-small size) each give a little, which frees the room it needs. The row's outer inset
+     * (aligned with the card heading) is unchanged. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .b-row__end { min-width: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .b-row { gap: 6px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .b-row__end b { font-size: var(--b-fs-body-sm) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .c-tc-sub > .b-chip { padding-left: 6px !important; padding-right: 6px !important; }
+    /* The full word stays for screen readers (hidden only visually); the short one is aria-hidden. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .c-tc-chip-full { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .c-tc-chip-short { display: inline !important; }
+  }
+  /* The short status word is only for the narrowest phones (above). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-chip-short { display: none !important; }
+
+  /* ---------- Time corrections ---------- */
+  /* OW-015 and the Phase 2 leftover: the count and the note about times are the band's sub-line, so the heading leaves
+   * the canvas and the first card starts under the band. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tcx .manager-corrections[data-band] > .manager-corrections-header { position: absolute !important; width: 1px !important; height: 1px !important; min-height: 0 !important; margin: -1px !important; padding: 0 !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; display: block !important; }
+  /* OW-034: the "Waiting" chip is the one chip size on desktop too (it was 24px with 12.5px text). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tcx .manager-correction-topline > span { height: 22px !important; font-size: 12px !important; line-height: 1 !important; font-weight: 600 !important; }
+
+  @media (max-width: 767px) {
+    /* OW-004: the sub-line joins the band. The page's 12px row gap showed the canvas between the bar and the line; the
+     * line now starts where the bar ends and sits on the title's 16px inset. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tcx > .c-nav--phone ~ .c-phone-sub { margin-top: -12px !important; padding: 0 var(--b-space-16) 18px !important; }
+  }
+
+  /* ---------- Time exports ---------- */
+  /* Phase 2 leftover: File format's sections sat 24px inside the card's inset on both sides. They now share the inset of
+   * every other row in the card, and a section's note keeps 12px above its fields. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-exp .c-exp__mapping > fieldset > div { padding-left: 0 !important; padding-right: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-exp .c-exp__mapping > fieldset > div > p { margin-bottom: var(--b-space-12) !important; }
+
+  @media (min-width: 768px) {
+    /* A Manager has no Payroll tabs on Time exports (a back link and the title). The band was sized for the tabs: it ran
+     * to 338px and the first card sat 44px inside it. Without tabs the page is a plain back-link page: band 196, the
+     * first card 24px under it. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) main.page-frame .c-page.c-exp:not(:has(> nav.c-pay-tabs)) > header.c-title:not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4) { min-height: 0 !important; border-image-outset: 240px 100vw 28px 100vw !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) main.page-frame .c-page.c-exp:not(:has(> nav.c-pay-tabs)) > header.c-title ~ :not(.c-phone-sub, .c-pay__feedback:empty, :empty, .c-sr, .q-sr, [hidden], .b-screen, .c-nav--phone, dialog, script, style, template, .q-nav, nav.c-pay-tabs, nav.c-week, nav.c-seg, .c-tc-seg, form.c-team-search, .c-act__sub, .c-ins__range):not(.c-page.c-exp:not(:has(> nav.c-pay-tabs)) > header.c-title ~ :not(.c-phone-sub, .c-pay__feedback:empty, :empty, .c-sr, .q-sr, [hidden], .b-screen, .c-nav--phone, dialog, script, style, template, .q-nav, nav.c-pay-tabs, nav.c-week, nav.c-seg, .c-tc-seg, form.c-team-search, .c-act__sub, .c-ins__range) ~ *):not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4) { margin-top: 52px !important; }
+  }
+
+  /* ---------- Payroll ---------- */
+  /* OW-018: the notice's red is its icon circle; the title is ink 600. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-pay__unpaid > .b-ico { flex: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-pay__unpaid .c-pay__unpaid-title { color: var(--b-ink) !important; font-weight: 600 !important; }
+  /* A row's amount says what it is ("Net") under the figure; a replaced payroll's amount steps back. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-pay__amt { display: inline-flex !important; flex-direction: column !important; align-items: flex-end !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-pay__amt-k { font-size: var(--b-fs-caption) !important; line-height: var(--b-lh-caption) !important; font-weight: 400 !important; color: var(--b-grey) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay li.c-pay__replaced .c-pay__amt > .c-num { color: var(--b-grey) !important; font-weight: 400 !important; text-decoration: line-through !important; }
+  /* OW-034: Payroll's row pills are the one chip size. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-rows .c-pill { height: 22px !important; padding: 0 var(--b-space-8) !important; font-size: 12px !important; line-height: 1 !important; font-weight: 600 !important; }
+  /* The replaced payroll hangs from its correction: a connector from the row above to its icon. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay li.c-pay__replaced { position: relative !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay li.c-pay__replaced::before { content: "" !important; position: absolute !important; left: calc(var(--b-inset-wide) + 17px) !important; top: 0 !important; width: 14px !important; height: 50% !important; border-left: 2px solid var(--b-line) !important; border-bottom: 2px solid var(--b-line) !important; border-bottom-left-radius: var(--b-radius-small) !important; pointer-events: none !important; }
+  @media (max-width: 767px) {
+    /* Phone: the replaced row nests under its correction (24px indent, the same connector) and its amount is grey,
+     * struck through. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-li:has(.c-pay__was) { position: relative !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-li:has(.c-pay__was) > .b-row { padding-left: calc(var(--b-inset) + var(--b-space-24)) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-li:has(.c-pay__was)::before { content: "" !important; position: absolute !important; left: calc(var(--b-inset) + 4px) !important; top: 0 !important; width: 12px !important; height: 50% !important; border-left: 2px solid var(--b-line) !important; border-bottom: 2px solid var(--b-line) !important; border-bottom-left-radius: var(--b-radius-small) !important; pointer-events: none !important; }
+    /* The indent costs a line at 320px: the replaced row's sub-line shows whole (its payday was cut). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-li:has(.c-pay__was) .b-row__s { display: block !important; -webkit-line-clamp: unset !important; overflow: visible !important; white-space: normal !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-li:has(.c-pay__was) .b-row__end > b { color: var(--b-grey) !important; font-weight: 400 !important; text-decoration: line-through !important; }
+  }
+  @media (min-width: 768px) {
+    /* Payroll's cards keep their order and spacing inside the columns wrapper. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay--home > .c-pay__cols { display: flex !important; flex-direction: column !important; gap: var(--b-space-20) !important; min-width: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay--home > .c-pay__cols > * { margin-top: 0 !important; margin-bottom: 0 !important; min-width: 0 !important; }
+  }
+  @media (min-width: 1024px) {
+    /* OW-018: Payroll is a 1080 list with a right rail, like Team. Up next (the period, its payday, the three steps) is
+     * the rail card; the notice and Recent payrolls are the list. The fourth row takes any height the rail has over
+     * the list, so the list's cards keep their spacing. Reading and focus order is unchanged. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) main.page-frame .c-page.c-pay--home:not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4) { max-width: calc(var(--b-frame-wide) + 2 * var(--b-space-24)) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay--home > .c-pay__cols:has(> #payroll-next) { display: grid !important; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) !important; grid-template-rows: auto auto auto 1fr !important; column-gap: var(--b-space-20) !important; row-gap: 0 !important; align-items: start !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay--home > .c-pay__cols:has(> #payroll-next) > * { grid-column: 1 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay--home > .c-pay__cols:has(> #payroll-next) > #payroll-next { grid-column: 2 !important; grid-row: 1 / -1 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay--home > .c-pay__cols:has(> #payroll-next) > :not(#payroll-next) ~ :not(#payroll-next) { margin-top: var(--b-space-20) !important; }
+    /* In the rail a row's lines wrap (they were cut with an ellipsis at 268px). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay--home > .c-pay__cols > #payroll-next :is(.c-row__title, .c-row__detail, .c-row__detail > span:first-child) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+  }
+}

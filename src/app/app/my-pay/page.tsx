@@ -1,12 +1,20 @@
 import { notFound } from 'next/navigation';
 import { moduleGate } from "@/lib/workspace-presentation/current.server";
-import { requireSession } from '@/lib/auth/session';
+import { getSession, requireSession } from '@/lib/auth/session';
 import { payrollFeatureEnabled } from '@/lib/payroll/service';
 import { MyPay, QuietMyPay, type NextPay } from '@/components/payroll/my-pay';
 import { isManagerRole } from '@/lib/auth/permissions';
 import { currentPayPeriod } from '@/lib/payroll/pay-calendar.server';
 import { getWorkspace } from '@/lib/data/workspaces';
 import { businessDate } from '@/lib/business-time';
+
+/** Review B1 (NV-022): the page title in the tab and for screen readers. Inspection Nov 14 (AR-15): an Employee or Lead
+ * reads the name on their tab and heading ("Pay"); an Owner or Manager keeps their menu's name ("My pay"). The session is
+ * the render's own cached read. */
+export async function generateMetadata() {
+  const session = await getSession().catch(() => null);
+  return { title: session && !isManagerRole(session.role) ? "Pay" : "My pay" };
+}
 
 const STATEMENT = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
@@ -32,5 +40,5 @@ export default async function MyPayPage({ searchParams }: { searchParams: Promis
   }
   // Quiet: Owners and Managers get My pay (v4); Employees and Leads get the Pay tab (v5).
   if (isManagerRole(session.role)) return <QuietMyPay key={session.id} nextPay={nextPay} />;
-  return <MyPay key={session.id} nextPay={nextPay} statement={statement} document={document} corporate={session.role === 'EMPLOYEE'} />;
+  return <MyPay key={session.id} nextPay={nextPay} statement={statement} document={document} corporate={session.role === 'EMPLOYEE' || session.role === 'LEAD'} />;
 }

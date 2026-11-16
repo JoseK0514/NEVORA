@@ -17,7 +17,10 @@ new label, message and empty state.
 - **Buttons start with a verb** and name the result: "Publish schedule", "Approve time off", "Save PIN".
   Avoid "Submit", "OK" and "Click here".
 - **Links that stay in the app** end with "›". Use the external arrow only when a link leaves NEVORA.
-- **One word per concept**: tasks (not actions), shift requests, time off, timecards, Clocker.
+- **One word per concept**: things to do (tab: To do; not tasks, actions or Needs you as a heading), shift requests,
+  time off and a time-off request (not leave), can't work and a can't-work request, Withdraw request (Cancel only closes
+  a dialog), Clocked in, correction request (verb: Fix a punch), timecards, pay statement, Clocker. The full list, with
+  Puerto Rico Spanish, is the glossary at the end of `docs/product/review-2026-11-10/reviews/copy-audit.md` (B7, Nov 10, 2026).
 - **No terminal periods** on headings, labels and buttons. Full sentences in body copy get periods.
 
 ## Dates, times and numbers
@@ -25,9 +28,11 @@ new label, message and empty state.
   Never show raw ISO dates (2026-10-14) to people.
 - Times: "8:00 AM" in sentences; "8 am – 4 pm" on compact schedule chips. Freshness lines say
   "Updated 4:49 PM" with no seconds. Exact audit records may keep seconds.
-- Counts use the noun in agreement: "1 task", "3 tasks". Fractions read "6 of 10", optionally with
+- Counts use the noun in agreement: "1 thing needs you", "3 things need you". Fractions read "6 of 10", optionally with
   a bar.
-- Hours: "56h" in dense tables, "56 hours" in sentences. Money is right-aligned with two decimals.
+- Hours (B7, NV-068), through `src/lib/duration-format.ts`: "1 h 30 min" in sentences and cards, "8 h 06" for a row's
+  figure, whole hours ("511 h") for a period total. Dense tables and the week grid may stay compact. Money is
+  right-aligned with two decimals.
 - Figures use tabular numerals so columns line up.
 
 ## Empty states (`EmptyState`)
@@ -37,8 +42,8 @@ new label, message and empty state.
 - Use the "all caught up" tone only for a verified empty result, never for loading or errors.
 
 ## Errors and status
-- Lead with the state, then the next step: "Tasks unavailable. Refresh to try again."
-- Loading: "Loading tasks…". Offline: "Tasks unavailable offline".
+- Lead with the state, then the next step: "Things to do didn't load. Refresh to try again."
+- Loading: "Loading your time off…". Offline: "Time off unavailable offline".
 - Success: say what happened, past tense: "Schedule published", "PIN saved".
 
 ## Examples

@@ -9,6 +9,9 @@ import { getWorkspace } from '@/lib/data/workspaces';
 import { manageClockerDeviceAction } from './actions';
 import { EmptyState, SettingsFrame } from '../wave-c-kit';
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Clocker tablets" };
+
 export const dynamic = 'force-dynamic';
 export default async function ClockerDevicesPage() {
   await requireRoles(['OWNER']);

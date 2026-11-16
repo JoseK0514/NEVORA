@@ -1,11 +1,14 @@
 import { ManagerAttendanceReview } from "./manager-attendance-review";
+import type { CoverageMinutes } from '@/lib/scheduling/coverage-minutes';
 import type { HomePayrollStatus } from '@/lib/payroll/backlog-read';
 import { WhosWorkingCorp } from "./whos-working-corp";
 import { TeamOverviewCorp } from "./team/team-overview";
 import { ManagerTimeCorrections } from "./manager-time-corrections";
 import {HomeActionCenterProvider} from './manager-action-center';
 import {OwnerSetupCorpLive} from './owner-setup-card';
+import {OwnerBillingNotice} from './owner-b/billing-notice-card';
 import { formatBusinessTimestamp } from "@/lib/business-time";
+import { durationSentence } from "@/lib/duration-format";
 import Link from "next/link";
 import type { ManagerActionItem } from "@/lib/assistance/manager-actions";
 import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react/ssr';
@@ -97,6 +100,8 @@ type Props = {
   managerActions: ManagerActionItem[];
   locations: DashboardLocationItem[];
   days: DashboardDayItem[];
+  /** Nov 9, 2026: canonical coverage minutes for the week (staffing, positions and lead apart). */
+  coverage?: CoverageMinutes;
   hours: DashboardHourItem[];
   latestRevision: DashboardRevisionItem;
 };
@@ -119,8 +124,8 @@ function dashboardHref(
 
 function revisionSourceLabel(sourceType: string) {
   if (sourceType === "PUBLISH") return "Schedule published";
-  if (sourceType === "EXCHANGE") return "Shift exchange applied";
-  if (sourceType === "CALLOUT") return "Call-out applied";
+  if (sourceType === "EXCHANGE") return "Shift request applied";
+  if (sourceType === "CALLOUT") return "Can’t-work request applied";
   return "Published schedule updated";
 }
 
@@ -146,7 +151,7 @@ function TeamTab(props: Props) {
       {props.hours.length ? <Rows label="Hours this week">{props.hours.slice(0, 8).map(item => <Row key={item.employeeId}
         leading={<Avatar initials={item.employeeName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()} />}
         title={item.employeeName}
-        meta={item.targetHours === undefined ? "No weekly hour target yet" : `${item.scheduledHours}h scheduled · ${item.targetHours}h target`}
+        meta={item.targetHours === undefined ? "No weekly hour target yet" : `${durationSentence(item.scheduledHours * 60)} scheduled · ${durationSentence(item.targetHours * 60)} target`}
         status={<Status tone={item.status === "ON_TARGET" ? "done" : item.status === "TARGET_MISSING" ? "neutral" : "review"}>
           {item.status === "UNDER" ? "Below target" : item.status === "OVER" ? "Above target" : item.status === "TARGET_MISSING" ? "Not set" : "On target"}</Status>} />)}
       </Rows> : <CardBody><p className="premium-note">Hours appear here as shifts are added.</p></CardBody>}
@@ -162,8 +167,11 @@ const ACTIVITY_ICON: Partial<Record<ManagerActionItem["type"], typeof CalendarBl
 const ACTIVITY_SHOWN = 8;
 function ActivityCorp(props: Props) {
   const dated = props.managerActions.filter(item => Boolean(item.dateTime));
-  const dayKey = (iso: string) => { try { return new Intl.DateTimeFormat("en-CA", { timeZone: props.timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(iso)); } catch { return iso.slice(0, 10); } };
-  const clock = (iso: string) => { try { return new Intl.DateTimeFormat("en-US", { timeZone: props.timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso)); } catch { return ""; } };
+  // A coverage window's time is workspace-local with no zone ("2026-11-03T00:00"): its day is its own date, never
+  // re-read as UTC (that moved a midnight shift onto the previous day). Instants (with Z or an offset) convert.
+  const local = (iso: string) => /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(iso);
+  const dayKey = (iso: string) => { if (local(iso)) return iso.slice(0, 10); try { return new Intl.DateTimeFormat("en-CA", { timeZone: props.timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(iso)); } catch { return iso.slice(0, 10); } };
+  const clock = (iso: string) => { if (local(iso)) { const [h, m] = iso.slice(11, 16).split(":").map(Number); return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`; } try { return new Intl.DateTimeFormat("en-US", { timeZone: props.timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso)); } catch { return ""; } };
   const today = dayKey(new Date().toISOString());
   type Event = { key: string; at: string; title: string; detail: ReactNode; href?: string; label?: string; Icon: typeof CalendarBlankIcon; tint?: boolean };
   const events: Event[] = [
@@ -175,11 +183,14 @@ function ActivityCorp(props: Props) {
         label: `${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, Icon: ACTIVITY_ICON[item.type] ?? CalendarBlankIcon };
     }),
   ];
-  const days = [...new Set(events.map(event => dayKey(event.at)))].sort().reverse();
+  // Review B5 (NV-109): what happened reads newest first with Today on top; anything dated after today (coverage gaps are
+  // things to do, not events) is one "Coming up" card at the end, amber, with one link to Things to do.
+  const days = [...new Set(events.map(event => dayKey(event.at)).filter(key => key <= today))].sort().reverse();
+  const upcoming = events.filter(event => dayKey(event.at) > today).sort((a, b) => a.at.localeCompare(b.at));
   const dayLabel = (key: string) => { const text = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${key}T12:00:00Z`)); return key === today ? `Today · ${text}` : text; };
   const row = (event: Event) => {
     const body = <>
-      <span className={event.tint ? "c-act__icon c-act__icon--tint" : "c-act__icon"} aria-hidden="true"><event.Icon className="c-ic c-ic--s" /></span>
+      <span className={event.tint ? "c-act__icon c-act__icon--tint" : dayKey(event.at) > today ? "c-act__icon c-act__icon--amber" : "c-act__icon"} aria-hidden="true"><event.Icon weight="bold" className="c-ic c-ic--s" /></span>
       <span className="c-row__main"><span className="c-row__title c-row__title--b">{event.title}</span><span className="c-row__detail"><span>{event.detail}</span></span></span>
     </>;
     return <li key={event.key}>{event.href ? <Link className="c-row c-act__row" href={event.href} aria-label={event.label}>{body}</Link> : <div className="c-row c-act__row">{body}</div>}</li>;
@@ -197,7 +208,10 @@ function ActivityCorp(props: Props) {
     {days.length ? days.map((key, index) => <CorpCard key={key} id={`activity-${key}`} label={dayLabel(key)}
       footer={index === days.length - 1 && dated.length > ACTIVITY_SHOWN ? <CorpLink href="/app/inbox" large>{`Show ${dated.length - ACTIVITY_SHOWN} more in Things to do`}</CorpLink> : undefined}>
       <CorpRows label={dayLabel(key)}>{events.filter(event => dayKey(event.at) === key).sort((a, b) => b.at.localeCompare(a.at)).map(row)}</CorpRows>
-    </CorpCard>) : <CorpCard id="activity-list"><CorpBody><p className="c-act__empty">Schedule publications and requests show up here.</p></CorpBody></CorpCard>}
+    </CorpCard>) : upcoming.length ? null : <CorpCard id="activity-list"><CorpBody><p className="c-act__empty">Schedule publications and requests show up here.</p></CorpBody></CorpCard>}
+    {upcoming.length ? <CorpCard id="activity-upcoming" label="Coming up" footer={<CorpLink href="/app/inbox" large>Open Things to do</CorpLink>}>
+      <CorpRows label="Coming up">{upcoming.map(row)}</CorpRows>
+    </CorpCard> : null}
   </CorpPage>;
 }
 
@@ -225,13 +239,18 @@ function homeDateLabel(timeZone: string) {
 /** Manager and Owner Home (premium direction, phase 2): band, Today, Next up, This week. */
 function PremiumOverview(props: Props) {
   // Corporate (Release 1, board C-Owner): "Welcome back, Carmen".
-  const common = { greeting: `Welcome back, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props), workspaceName: props.workspaceName };
+  // Direction B (phones): This week's hours, shifts per day and people come from this page's own reads; nothing is estimated.
+  const homeB = { firstName: props.firstName, days: props.days.map(day => ({ date: day.date, weekday: day.weekday, shiftCount: day.shiftCount })),
+    scheduledHours: props.hours.reduce((total, row) => total + row.scheduledHours, 0), people: props.hours.filter(row => row.scheduledHours > 0).length,
+    payrollHref: props.role === 'OWNER' && props.nextPay ? '/app/payroll' : undefined, coverage: props.coverage };
+  const common = { greeting: `Welcome back, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props), workspaceName: props.workspaceName, homeB };
   const slots = props.overviewSlots;
   if (slots?.snapshots) return <PremiumHomeSurface {...common} corporate nextPay={props.nextPay ?? null} payrollStatus={props.payrollStatus} setup={slots.setup ?? null} setupHoldsItems={!!slots.setup}
     today={slots.snapshots.today} monitor={slots.snapshots.monitor ?? null} actions={slots.snapshots.actions} actionsConnection="ready" />;
   return <SharedHomeRead key={`${props.actorId}:${props.weekStart}`} live weekStart={props.weekStart} actorId={props.actorId ?? ''}
     owner={props.role === 'OWNER'} initialItems={props.managerActions}>
-    <PremiumHomeLive {...common} corporate nextPay={props.nextPay ?? null} payrollStatus={props.payrollStatus} setup={props.role === 'OWNER' ? <OwnerSetupCorpLive locationCount={props.totalLocations}/> : null} />
+    <PremiumHomeLive {...common} corporate nextPay={props.nextPay ?? null} payrollStatus={props.payrollStatus} setup={props.role === 'OWNER' ? <OwnerSetupCorpLive locationCount={props.totalLocations} payroll={!!props.payrollStatus}/> : null}
+      billing={props.role === 'OWNER' ? <OwnerBillingNotice timeZone={props.timeZone}/> : null} />
   </SharedHomeRead>;
 }
 
@@ -268,11 +287,11 @@ export function ManagerDashboard(props: Props) {
   if (props.view === 'overview') return <PremiumOverview {...props} />;
   // Release 1 (Team → Hours this week): the kit page, from the same read.
   if (props.view === 'team' && !props.overviewSlots) return <TeamOverviewCorp weekStart={props.weekStart} weekLabel={props.weekLabel} previousWeek={props.previousWeek}
-    nextWeek={props.nextWeek} hours={props.hours} activeEmployees={props.activeEmployees} availabilitySubmitted={props.availabilitySubmitted} availabilityEligible={props.availabilityEligible} />;
-  // Release 1 (board O-OnShift): Who's working, then the attendance review and time corrections as before.
+    nextWeek={props.nextWeek} hours={props.hours} activeEmployees={props.activeEmployees} availabilitySubmitted={props.availabilitySubmitted} availabilityEligible={props.availabilityEligible} viewerId={props.actorId} />;
+  // Release 1 (board O-OnShift): Who's working, then the attendance review. Closing F1 (NV-240): time corrections are
+  // reviewed under Time (Time corrections), not here.
   if (props.view === 'attendance' && !props.overviewSlots) return <WhosWorkingCorp homeHref={`/app?week=${encodeURIComponent(props.weekStart)}`}>
     <ManagerAttendanceReview />
-    <ManagerTimeCorrections key={props.correctionAuthority??props.actorId} actorId={props.actorId} authority={props.correctionAuthority}/>
     {props.role==='OWNER' ? <Link className="c-link c-link--l" href="/app/clocker-recovery">Clocker recovery</Link> : null}
   </WhosWorkingCorp>;
   // Release 1 (board O-Activity): Schedule activity is its own page under Schedule.

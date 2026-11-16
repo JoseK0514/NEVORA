@@ -57,8 +57,8 @@ export function TimeOffForm({ requestId, draftOwner = "" }: { requestId: string;
           <fieldset className="nto-fieldset">
             <legend>How much time do you need?</legend>
             <div className="nto-type-picker" role="group" aria-label="Request type">
-              <button type="button" aria-pressed={!partialDay} onClick={() => setPartialDay(false)}><CalendarBlankIcon size={20} aria-hidden="true" /> Full day</button>
-              <button type="button" aria-pressed={partialDay} onClick={() => setPartialDay(true)}><ClockIcon size={20} aria-hidden="true" /> Partial day</button>
+              <button type="button" aria-pressed={!partialDay} onClick={() => setPartialDay(false)}><CalendarBlankIcon size={20} weight="bold" aria-hidden="true" /> Full day</button>
+              <button type="button" aria-pressed={partialDay} onClick={() => setPartialDay(true)}><ClockIcon size={20} weight="bold" aria-hidden="true" /> Partial day</button>
             </div>
             <input type="hidden" name="partialDay" value={partialDay ? "on" : ""} />
             <p className="nto-hint">{partialDay ? "Choose one date and the hours you need away." : "Request one day or a range of days."}</p>
@@ -89,13 +89,13 @@ export function TimeOffForm({ requestId, draftOwner = "" }: { requestId: string;
             <p>{datesValid ? `${dateLabel(startDate)}${effectiveEnd !== startDate ? ` – ${dateLabel(effectiveEnd)}` : ""}` : "Your dates will appear here."}</p>
             {partialDay && startTime && endTime && !timesInvalid ? <p>{formatTime(startTime)} – {formatTime(endTime)}</p> : null}
           </div>
-          <div className="nto-next-step"><ClockIcon size={18} aria-hidden="true" /><p><strong>Manager review comes next</strong><span>Track the decision in My requests. Time away is confirmed when your request is approved.</span></p></div>
+          <div className="nto-next-step"><ClockIcon size={18} weight="bold" aria-hidden="true" /><p><strong>Manager review comes next</strong><span>Track the decision in My requests. Time away is confirmed when your request is approved.</span></p></div>
         </aside>
       </div>
       {failed ? <p ref={feedback} tabIndex={-1} className="form-error" role="alert">Your request wasn’t sent. Check your connection and send it again. If this keeps happening, <Link href="/login">sign in again</Link>.</p> : null}
       <footer className="nto-form-footer">
         <Link className="nto-button nto-secondary" href="/app/requests?tab=my" onClick={() => { unsent = null; }}>Cancel</Link>
-        <EmployeeSubmitButton className="nto-button nto-primary" pendingText="Submitting request…" disabled={partialDay && timesInvalid}>Submit request <ArrowRightIcon size={18} aria-hidden="true" /></EmployeeSubmitButton>
+        <EmployeeSubmitButton className="nto-button nto-primary" pendingText="Submitting request…" disabled={partialDay && timesInvalid}>Submit request <ArrowRightIcon size={18} weight="bold" aria-hidden="true" /></EmployeeSubmitButton>
       </footer>
     </form>
   );

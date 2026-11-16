@@ -6,14 +6,15 @@ import { TimeOffReviewActions } from "@/components/time-off-review-actions";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listPendingTimeOffRequests, listTeamTimeOffRequests } from "@/lib/data/requests";
 import { reviewTimeOffAction } from "@/app/app/requests/actions";
-import { formatTime, weekStartFor } from "@/lib/date-utils";
-
+import { formatTimeRange, weekStartFor } from "@/lib/date-utils";
+import { CorpPill } from "@/components/corp/corp";
 import { agoLabel, dayLabel, initialsOf, QuietHeader, QuietList, QuietNav, QuietPage, QuietRow } from "@/components/quiet/quiet";
-
-import { CorpAvatar, CorpCard, CorpNav, CorpNote, CorpPage, CorpRow, CorpSegments, CorpTitle } from "@/components/corp/corp";
+import { CorpAvatar, CorpCard, CorpNav, CorpNote, CorpPage, CorpRow, CorpRows, CorpSegments, CorpTitle } from "@/components/corp/corp";
 import "./manager-time-off.css";
 import { inboxFilter } from "@/lib/action-center/inbox";
+import { LeaveConflictCheck } from "@/components/leave-staffing/conflict-check";
 import { getWorkspace } from "@/lib/data/workspaces";
+import { TimeOffWaitingList } from "@/components/time-off-waiting-list";
 
 const tabs = [
   { id: "pending", label: "Waiting", status: "PENDING" },
@@ -44,7 +45,7 @@ const backTo = ({ from, filter, item }: Origin) => {
 /** Quiet (v4): "Thu, Oct 29 – Fri, Oct 30 · 2 days", "Thu, Oct 29 · 9:00 AM – 1:00 PM" or "Thu, Oct 29 · All day". */
 function whenLabel(request: { startDate: string; endDate: string; startTime?: string | null; endTime?: string | null }) {
   const days = Math.round((Date.parse(`${request.endDate}T12:00:00Z`) - Date.parse(`${request.startDate}T12:00:00Z`)) / 86_400_000) + 1;
-  if (request.startTime && request.endTime) return `${dayLabel(request.startDate)} · ${formatTime(request.startTime)} – ${formatTime(request.endTime)}`;
+  if (request.startTime && request.endTime) return `${dayLabel(request.startDate)} · ${formatTimeRange(request.startTime, request.endTime)}`;
   return days === 1 ? `${dayLabel(request.startDate)} · All day` : `${dayLabel(request.startDate)} – ${dayLabel(request.endDate)} · ${days} days`;
 }
 
@@ -55,7 +56,7 @@ type DecidedRequest = Awaited<ReturnType<typeof listTeamTimeOffRequests>>[number
 function requestDates(request: { startDate: string; endDate: string; startTime?: string | null; endTime?: string | null }) {
   const days = Math.round((Date.parse(`${request.endDate}T12:00:00Z`) - Date.parse(`${request.startDate}T12:00:00Z`)) / 86_400_000) + 1;
   const title = request.startDate === request.endDate ? dayLabel(request.startDate) : `${dayLabel(request.startDate)} – ${dayLabel(request.endDate)}`;
-  const length = request.startTime && request.endTime ? `${formatTime(request.startTime)} – ${formatTime(request.endTime)}` : days === 1 ? "All day" : `${days} days`;
+  const length = request.startTime && request.endTime ? formatTimeRange(request.startTime, request.endTime) : days === 1 ? "All day" : `${days} days`;
   return { title, length };
 }
 
@@ -82,13 +83,17 @@ function FocusedReview({ request, origin, error, others, timeZone }: { request: 
   // Copy table 15: "Also off that day · No one".
   const offLabel = request.startDate === request.endDate ? "Also off that day" : "Also off those days";
   return <CorpPage className="c-request c-page--narrow" labelledBy="request-title">
-    <CorpNav back={backTo(origin)} title="Time off request" titleId="request-nav-title" phoneOnly />
-    <CorpTitle id="request-title" title="Time off request" sub={request.employeeName} wide />
+    <CorpNav back={backTo(origin)} title="Time-off request" titleId="request-nav-title" phoneOnly />
+    {/* Closing F1 (NV-268): the card below names the person, so the band doesn't repeat it. */}
+    <CorpTitle id="request-title" title="Time-off request" wide />
     {error ? <p className="c-error" role="alert">The request may have changed. Check it and decide again.</p> : null}
+    {/* Review B6 (NV-093): one request card: who and its amber Waiting status, the dates, their note and when it was sent,
+      * then that week's schedule and who else is off as rows of the same card. */}
     <CorpCard ariaLabel={`Time off for ${request.employeeName}`}>
       <div className="c-request__who">
-        <CorpAvatar initials={initialsOf(request.employeeName)} large />
+        <CorpAvatar name={request.employeeName} initials={initialsOf(request.employeeName)} large />
         <span className="c-row__main"><span className="c-row__title c-row__title--b">{request.employeeName}</span></span>
+        <span className="c-request__status">Waiting</span>
       </div>
       <div className="c-request__body">
         <span className="c-big">{dates.title}</span>
@@ -96,20 +101,23 @@ function FocusedReview({ request, origin, error, others, timeZone }: { request: 
         {request.reason ? <p className="c-request__note">{`“${request.reason}”`}</p> : <p className="c-line3">No note</p>}
         {sent ? <span className="c-line3">{sent}</span> : null}
       </div>
+      <CorpRows label="That week">
+        <li><CorpRow href={`/app/schedule?week=${encodeURIComponent(week)}`} bold title="See that week’s schedule" chevron /></li>
+        {offNames ? <li><CorpRow title={offLabel} value={offNames.length ? offNames.join(", ") : "No one"} valueTone="soft" /></li> : null}
+      </CorpRows>
     </CorpCard>
-    <CorpCard as="div" ariaLabel="That week">
-      <CorpRow href={`/app/schedule?week=${encodeURIComponent(week)}`} bold title="See that week’s schedule" chevron />
-    </CorpCard>
-    {offNames ? <CorpCard as="div" ariaLabel={offLabel}>
-      <CorpRow title={offLabel} value={offNames.length ? offNames.join(", ") : "No one"} valueTone="soft" />
-    </CorpCard> : null}
-    <form action={reviewTimeOffAction} className="c-request__decide" aria-label={`Review time off for ${request.employeeName}`}>
-      <input type="hidden" name="requestId" value={request.id} />
-      <input type="hidden" name="returnTo" value={origin.from} />
-      <input type="hidden" name="returnFilter" value={origin.filter} />
-      <TimeOffReviewActions name={request.employeeName} corp />
-    </form>
-    <CorpNote center>{`${first} gets a notification either way.`}</CorpNote>
+    {/* Nov 9, 2026: the published shifts this time off overlaps, and what approving does to them, before Approve. */}
+    <LeaveConflictCheck request={{ id: request.id, startDate: request.startDate, endDate: request.endDate }} employeeName={request.employeeName} />
+    {/* Review B6 (NV-093): the decision is one footer: who hears about it, then Decline and Approve, on the right. */}
+    <div className="c-request__foot">
+      <CorpNote>{`${first} gets a notification either way.`}</CorpNote>
+      <form action={reviewTimeOffAction} className="c-request__decide" aria-label={`Review time off for ${request.employeeName}`}>
+        <input type="hidden" name="requestId" value={request.id} />
+        <input type="hidden" name="returnTo" value={origin.from} />
+        <input type="hidden" name="returnFilter" value={origin.filter} />
+        <TimeOffReviewActions name={request.employeeName} corp />
+      </form>
+    </div>
   </CorpPage>;
 }
 
@@ -168,17 +176,19 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
         label: item.id === "pending" && waiting ? `Waiting (${waiting})` : item.label }))} />
       {error ? <p className="q-error q-first" role="alert">That decision wasn’t saved. The request may have changed; check it and decide again.</p> : null}
       {reviewed ? <p className="q-help q-first" role="status">Decision saved.</p> : null}
-      {selected.id === "pending" ? (requests.length ? <ul className="q-list q-requests" aria-label="Waiting time off">{requests.map(request => {
+      {/* Closing F1 (NV-077): each waiting row carries the staffing check and the compact Decline / Approve, as on Things to
+        do (this replaces Release 1's "no decision in the list"; the row still opens the request with its shifts). */}
+      {selected.id === "pending" ? (requests.length ? <TimeOffWaitingList requests={requests.map(request => {
         const sent = (request as { createdAt?: string }).createdAt;
-        return <li key={request.id} id={`request-${request.id}`} tabIndex={-1} className="q-request">
-          {/* Release 1 (Jose's rule): no Approve or Decline in the list; the row opens the request, where the decision is made. */}
-          <QuietRow bare avatar={initialsOf(request.employeeName)} title={request.employeeName} detail={whenLabel(request)}
-            value={sent ? agoLabel(sent, source.observedAt) : undefined} href={`/app/requests?tab=pending&requestId=${encodeURIComponent(request.id)}`} />
-        </li>;
-      })}</ul> : <p className="q-empty q-first">You’re all caught up.</p>)
+        return { id: request.id, employeeName: request.employeeName, avatar: initialsOf(request.employeeName), startDate: request.startDate, endDate: request.endDate,
+          when: whenLabel(request), ago: sent ? agoLabel(sent, source.observedAt) : undefined,
+          aged: sent ? Date.parse(source.observedAt) - Date.parse(sent) >= 86_400_000 : undefined, href: `/app/requests?tab=pending&requestId=${encodeURIComponent(request.id)}` };
+      })} /> : <p className="q-empty q-first">You’re all caught up.</p>)
       : requests.length ? <QuietList label={`${selected.label} time off`} style={{ marginTop: 16 }}>{requests.map(request => (
           <QuietRow key={request.id} avatar={initialsOf(request.employeeName)} title={request.employeeName}
-            detail={decidedLine(request) ? <>{whenLabel(request)}<span className="q-rt__line">{decidedLine(request)}</span></> : whenLabel(request)} />
+            detail={decidedLine(request) ? <>{whenLabel(request)}<span className="q-rt__line">{decidedLine(request)}</span></> : whenLabel(request)}
+            // Review B5 (NV-268): a decided request carries its state as a chip (green approved, grey declined).
+            value={<CorpPill tone={selected.id === "approved" ? "green" : "neutral"}>{selected.id === "approved" ? "Approved" : "Declined"}</CorpPill>} />
         ))}</QuietList>
       : <p className="q-empty q-first">{`No ${selected.label.toLowerCase()} time off yet.`}</p>}
     </QuietPage>

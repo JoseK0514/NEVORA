@@ -16,16 +16,18 @@ export function ClockerPinInventory({statuses,details={}}:{statuses:OwnerPinStat
  const count=(filter:Filter)=>statuses.filter(p=>inFilter(p,filter)).length;
  const filters:Filter[]=count('Inactive')?['No PIN','PIN set','Inactive']:['No PIN','PIN set'];
  const [query,setQuery]=useState(''),[filter,setFilter]=useState<Filter>(()=>count('No PIN')||!count('PIN set')?'No PIN':'PIN set');
- const visible=statuses.filter(p=>inFilter(p,filter)&&`${p.firstName} ${p.lastName} ${p.employeeId} ${details[p.employeeId]??''}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
+ // Review B5 (NV-130): people in name order, as on Team.
+ const visible=statuses.filter(p=>inFilter(p,filter)&&`${p.firstName} ${p.lastName} ${p.employeeId} ${details[p.employeeId]??''}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()))
+  .sort((a,b)=>`${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`));
  return <div className="c-page c-embed c-pins c-page--narrow">
-  <label className="c-in c-pins__search"><span className="c-sr">Search by name</span><MagnifyingGlass className="c-ic" aria-hidden="true"/>
+  <label className="c-in c-pins__search"><span className="c-sr">Search by name</span><MagnifyingGlass weight="bold" className="c-ic" aria-hidden="true"/>
    <input type="search" enterKeyHint="search" autoComplete="off" autoCorrect="off" value={query} placeholder="Search by name" onChange={e=>setQuery(e.target.value)}/></label>
   <div className="c-seg c-pins__seg" role="group" aria-label="Filter Clocker PINs">{filters.map(label=><button key={label} type="button" aria-pressed={filter===label} aria-label={`${label}, ${count(label)}`} onClick={()=>setFilter(label)}>
    <span>{label}</span><span className="c-pins__count" aria-hidden="true">{count(label)}</span></button>)}</div>
   <CorpCard as="div" label={filter==='Inactive'?'Inactive people':'People'} >
    {visible.length?<CorpRows label="Clocker PINs">{visible.map(p=><li key={p.employeeId}>
     <CorpRow href={`/app/employees/${encodeURIComponent(p.employeeId)}${p.active?'/clocker-pin':''}`} bold title={`${p.firstName} ${p.lastName}`} detail={details[p.employeeId]}
-     avatar={<CorpAvatar initials={`${p.firstName[0]??''}${p.lastName[0]??''}`.toUpperCase()} grey={!p.active}/>}
+     avatar={<CorpAvatar name={`${p.firstName} ${p.lastName}`} initials={`${p.firstName[0]??''}${p.lastName[0]??''}`.toUpperCase()} grey={!p.active}/>}
      label={`${p.firstName} ${p.lastName}${details[p.employeeId]?`, ${details[p.employeeId]}`:''}, ${p.active?'':'inactive, '}${p.configured?'PIN set':'no PIN yet'}`} chevron/>
    </li>)}</CorpRows>:<CorpBody><p className="c-pins__empty" role="status">{query.trim()?'No one matches that name.':filter==='No PIN'?'Everyone has a PIN.':filter==='PIN set'?'No one has a PIN yet.':'No inactive people.'}</p></CorpBody>}
   </CorpCard>

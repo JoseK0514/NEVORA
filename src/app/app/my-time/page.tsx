@@ -1,25 +1,34 @@
+import { OwnerOnlyNotice } from "@/components/owner-only-notice";
 import {ResponsiveEmployeeHours} from '@/components/employee-mobile/hours';
 import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
 import {hoursRequestId,hoursRecordId} from '@/lib/employee-hours';
 import {businessDate} from '@/lib/business-time';
 import {addDays,weekStartFor} from '@/lib/date-utils';
 import {parsePeriod} from '@/lib/timecards/project';
-import { redirect } from "next/navigation";
 import { EmployeeTimePanel } from "@/components/employee-time-panel";
 import { isManagerRole } from "@/lib/auth/permissions";
 import {correctionAuthority} from '@/lib/time-corrections/authority.server';
-import { requireSession,requireSessionMutationProof } from "@/lib/auth/session";
+import { getSession,requireSession,requireSessionMutationProof } from "@/lib/auth/session";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { currentPayPeriod } from "@/lib/payroll/pay-calendar.server";
 import { payrollFeatureEnabled, readPayrollCapabilities } from "@/lib/payroll/service";
 import { currentBrand } from "@/lib/workspace-presentation/current.server";
 import { mobileTabsForRole } from "@/lib/navigation";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. Inspection Nov 14 (AR-15): an Employee or Lead
+ * reads the name on their tab and heading ("Time"); an Owner or Manager keeps "My time", the title of the notice they see.
+ * The session is the render's own cached read. */
+export async function generateMetadata() {
+  const session = await getSession().catch(() => null);
+  return { title: session && !isManagerRole(session.role) ? "Time" : "My time" };
+}
+
 export default async function MyTimePage({searchParams}:{searchParams:Promise<{view?:string;start?:string;end?:string;entry?:string;requestId?:string;edit?:string;filter?:string;from?:string}>}={searchParams:Promise.resolve({})}) {
   const session = await requireSession();
 
+  // Review B2 (NV-136): no silent redirect; the page says whose it is and where a manager's version is.
   if (isManagerRole(session.role)) {
-    redirect("/app");
+    return <OwnerOnlyNotice title="My time" reason="My time is for employees" help="Your team’s hours are in Timecards." next={{ href: "/app/timecards", label: "Open Timecards" }} />;
   }
 
   const proof=await requireSessionMutationProof(),authority=correctionAuthority(proof),params=await searchParams;
@@ -36,12 +45,12 @@ export default async function MyTimePage({searchParams}:{searchParams:Promise<{v
   const today=businessDate(new Date(),zone);let period={startDate:addDays(today,-6),endDate:today};try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{}
   const view=params.view==='cards'?'cards':params.view==='corrections'?'corrections':'records';
   // Corporate (board E-PastTimecards): an Employee's Past timecards open on last week, Monday to Sunday.
-  if(session.role==='EMPLOYEE'&&view==='cards'&&!(params.start&&params.end)){const monday=addDays(weekStartFor(today),-7);period={startDate:monday,endDate:addDays(monday,6)};}
+  if(corporate&&view==='cards'&&!(params.start&&params.end)){const monday=addDays(weekStartFor(today),-7);period={startDate:monday,endDate:addDays(monday,6)};}
   // Hours belongs to the Pay tab when Pay is shown (back to Pay); otherwise Hours is its own tab (no back link). Same rules as the layout.
   const [payroll,brand]=await Promise.all([payrollFeatureEnabled()?readPayrollCapabilities(proof):Promise.resolve(undefined),currentBrand()]);
   // Corporate (Release 1): an Employee's Time is its own tab; a Lead's Hours still sits under Pay.
   const parent=session.role==='LEAD'&&mobileTabsForRole(session.role,payroll,{modules:brand.modules}).some(tab=>tab.href==='/app/my-pay')?{href:'/app/my-pay',label:'Pay'}:null;
   // Corporate (Release 1): an Employee sees the kit page on every screen, so the older desktop panel isn't rendered.
-  const panel=session.role==='EMPLOYEE'?null:<EmployeeTimePanel key={authority} authority={authority} corporate={corporate} signature={{todayLabel,payLine:scheduledPayLine}} />;
-  return <ResponsiveEmployeeHours today={today} corporate={session.role==='EMPLOYEE'} tabTitle={session.role==='EMPLOYEE'?'Time':'Hours'} authority={employeeViewAuthority(proof,'hours')} parent={parent} view={view} period={period} entryId={hoursRecordId(params.entry)?params.entry:null} requestId={hoursRequestId(params.requestId)?params.requestId:null} edit={params.edit&&params.edit.length<=500?params.edit:null} filter={params.filter==='decided'?'decided':'waiting'} fromCards={params.from==='cards'}>{panel}</ResponsiveEmployeeHours>;
+  const panel=corporate?null:<EmployeeTimePanel key={authority} authority={authority} corporate={corporate} signature={{todayLabel,payLine:scheduledPayLine}} />;
+  return <ResponsiveEmployeeHours today={today} corporate={corporate} tabTitle={corporate?'Time':'Hours'} authority={employeeViewAuthority(proof,'hours')} parent={parent} view={view} period={period} entryId={hoursRecordId(params.entry)?params.entry:null} requestId={hoursRequestId(params.requestId)?params.requestId:null} edit={params.edit&&params.edit.length<=500?params.edit:null} filter={params.filter==='decided'?'decided':'waiting'} fromCards={params.from==='cards'} chosen={!!(params.start&&params.end)}>{panel}</ResponsiveEmployeeHours>;
 }

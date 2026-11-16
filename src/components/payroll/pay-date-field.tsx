@@ -19,7 +19,7 @@ export function PayDateField({ name, label, defaultValue = '', required, disable
     <label className="c-field__label" htmlFor={id}>{label}</label>
     <span className="c-in c-pay__date" data-empty={value ? undefined : ''}>
       <span aria-hidden="true">{shown(value) || 'Choose a date'}</span>
-      <CalendarBlankIcon className="c-ic c-ic--s" aria-hidden="true" />
+      <CalendarBlankIcon weight="bold" className="c-ic c-ic--s" aria-hidden="true" />
       <input id={id} type="date" name={name} required={required} disabled={disabled} defaultValue={defaultValue} aria-describedby={help ? `${id}-help` : undefined}
         onChange={event => { setValue(event.target.value); onChange?.(event.target.value); }}
         onClick={event => { try { event.currentTarget.showPicker?.(); } catch { /* Focus is enough where pickers can't open. */ } }} />

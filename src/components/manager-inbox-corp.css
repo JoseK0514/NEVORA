@@ -21,3 +21,7 @@
 @media (min-width: 768px) {
   :is(#c-root, html) .c-todo .c-todo__more > .c-section__label { padding: 0; }
 }
+/* Nov 14, 2026 inspection (OW-001): on a request row Decline is a quiet text button beside the tinted Approve pill, so a
+ * list of requests has no filled primary. Its size and 44px target are the kit's; the confirm step ("Keep" beside the red
+ * "Decline") and the disabled look while a decision saves are unchanged. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-decide:not(.b-decide--confirm) > .b-btn--quiet:not(:disabled) { background: transparent; color: var(--b-ink2); }

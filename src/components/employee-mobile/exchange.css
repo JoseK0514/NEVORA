@@ -1,4 +1,4 @@
-@media (max-width:767px), (max-height:500px) and (orientation:landscape) and (pointer:coarse) {
+@media (max-width:767px) {
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-exchange .em-request-back { gap:var(--em-space-1); }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-status { display:flex; flex-direction:column; gap:var(--em-space-2); padding:var(--em-space-4); background:var(--em-wash); color:var(--em-ink); border-radius:var(--em-small); }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-status strong { font-size:var(--em-size-body); line-height:var(--em-line-heading); font-weight:var(--em-weight-label); }

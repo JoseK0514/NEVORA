@@ -75,7 +75,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, sample
       if (!response.ok) throw Error();
       retry.current = null;
       setNotice({ tone: "success", text: "Everyone sees it the next time a page loads." });
-      toast("Brand saved");
+      toast("Branding saved");
       router.refresh();
     } catch {
       setNotice({ tone: "error", text: "It may not have saved. Save again to retry safely, or reload to check." });
@@ -107,10 +107,12 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, sample
   // Quiet (v4, approved Oct 23): Color and Logo as rows, then what the team sees. The page's Save (top right) submits.
   const colourName = PRESETS.find(p => p.hex === effectiveSeed)?.name.replace("NEVORA teal", "Teal") ?? "Custom";
   return <form id="brand-form" className="wc-brand" data-guard={hydrated ? undefined : ""} onSubmit={event => { event.preventDefault(); if (dirty) void save(); }}>
+    {/* Review F4 (NV-102): Color and Logo are one card whose footer holds Save on tablets and desktop (phones: the top bar). */}
+    <div className="wc-savecard" style={{ marginTop: 16 }}>
     <ul className="q-list" style={{ marginTop: 16 }}>
       <li><button type="button" className="q-row q-row--one" disabled={!hydrated} onClick={() => setPicking(true)} aria-label={`Color, ${colourName}, change`}>
         <span className="q-rt"><b>Color</b></span><span className="q-rv q-rv--l">{colourName}</span>
-        <span className="q-swatch" style={{ background: brand.tokens.accent }} aria-hidden="true" /><CaretRightIcon className="q-chev" aria-hidden="true" />
+        <span className="q-swatch" style={{ background: brand.tokens.accent }} aria-hidden="true" /><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
       </button></li>
       <li><div className="q-row q-row--one">
         <span className="q-rt"><b>Logo</b></span>
@@ -122,6 +124,8 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, sample
       </div></li>
       {logo ? <li><button type="button" className="q-row q-row--one" onClick={() => { retry.current = null; setLogo(null); }} disabled={busy !== null}><span className="q-rt"><b style={{ color: "#C42B1C" }}>Remove logo</b></span></button></li> : null}
     </ul>
+    <div className="wc-savefoot wc-savefoot--wide"><button type="submit" className="q-btn">Save</button></div>
+    </div>
     <div className="q-grp"><h2>What your team sees</h2></div>
     {/* Release 1: the preview is a card like the employee's Today's shift; clocking in happens on the location's tablet. */}
     <div className="q-list wc-preview" style={previewStyle} aria-hidden="true" inert>
@@ -130,16 +134,16 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, sample
         <span className="wc-preview__btn" style={{ background: brand.tokens.accent }}>{`Clock in on the ${sample?.place ?? "Main Street"} tablet`}</span></div>
     </div>
     {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"}
-      title={notice.tone === "error" ? (notice.text.startsWith("Sign in again") ? "Your session ended" : notice.text.startsWith("It may not have saved") ? "Not saved yet" : "Not saved") : notice.tone === "success" ? "Brand saved" : undefined}
+      title={notice.tone === "error" ? (notice.text.startsWith("Sign in again") ? "Your session ended" : notice.text.startsWith("It may not have saved") ? "Not saved yet" : "Not saved") : notice.tone === "success" ? "Branding saved" : undefined}
       action={notice.text.startsWith("Sign in again") ? <Link className="q-btn q-btn--quiet" href="/login">Sign in</Link> : undefined}>{notice.text}</Notice></div> : null}
     <p className="q-sr" role="status">{busy === "save" ? "Saving…" : dirty ? "Unsaved changes" : ""}</p>
     <button type="submit" className="q-sr" tabIndex={-1} disabled={!valid || !dirty || busy !== null}>Save</button>
     <dialog ref={picker} className="wc-dialog" aria-labelledby="brand-colour-title" onClose={() => setPicking(false)} onCancel={() => setPicking(false)}>
       <div className="wc-dialog__head"><div><h2 className="wc-dialog__title" id="brand-colour-title">Color</h2></div>
-        <button type="button" className="wc-dialog__close" aria-label="Close" onClick={() => setPicking(false)}><XIcon aria-hidden="true" /></button></div>
+        <button type="button" className="wc-dialog__close" aria-label="Close" onClick={() => setPicking(false)}><XIcon weight="bold" aria-hidden="true" /></button></div>
       <div className="q-swatches" role="group" aria-label="Suggested colors">
         {PRESETS.map(p => <button key={p.hex} type="button" aria-pressed={effectiveSeed === p.hex} aria-label={`${p.name}, ${p.hex}`} title={p.name} disabled={!hydrated}
-          onClick={() => choose(p.hex)} style={{ background: p.hex }}>{effectiveSeed === p.hex ? <CheckIcon aria-hidden="true" /> : null}</button>)}
+          onClick={() => choose(p.hex)} style={{ background: p.hex }}>{effectiveSeed === p.hex ? <CheckIcon weight="bold" aria-hidden="true" /> : null}</button>)}
       </div>
       <Field label="Hex code" helpId="brand-hex-help"
         error={valid || (!hexTouched && draft.length < 7) ? undefined : "Enter a color like #1D4ED8."}

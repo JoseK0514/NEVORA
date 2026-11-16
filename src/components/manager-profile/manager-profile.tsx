@@ -2,7 +2,10 @@ import Link from 'next/link';
 import { QuietNav } from '@/components/quiet/quiet';
 import { getWorkspace } from '@/lib/data/workspaces';
 import { navigationForRole } from '@/lib/navigation';
+import { headers } from 'next/headers';
 import { readNotificationConfig } from '@/lib/notifications/config';
+import { readNativeRegistrationConfig } from '@/lib/native-push/config';
+import { nativeContext } from '@/lib/native-shell/context';
 import { payrollFeatureEnabled } from '@/lib/payroll/service';
 import type { SessionMutationProof } from '@/lib/shift-changes/types';
 import { timeZoneLabel } from '@/lib/time-zone-label';
@@ -10,6 +13,9 @@ import { currentBrand } from '@/lib/workspace-presentation/current.server';
 import { readManagementProfile } from '@/lib/data/management-profile.server';
 import { parseManagerProfile } from './contract';
 import { ManagerProfileLive } from './manager-profile-live';
+import { listEmployees } from '@/lib/data/employees';
+import { ownerNames } from '@/components/owner-only-notice';
+import { wordPreset } from '@/lib/workspace-presentation/words';
 import { PasskeySection } from '@/components/passkeys/passkey-section';
 import { AccountPrivacyLinks } from '@/components/legal/account-privacy-links';
 import './manager-profile-upscale.css';
@@ -18,6 +24,7 @@ import './manager-profile-upscale.css';
  * Name, role, company, time zone, My pay and device alerts come from today's reads. Contact, locations and
  * alert choices come from the management profile read in CODEX.md, which the client asks for. */
 export async function ManagerProfilePage({ proof }: { proof: SessionMutationProof }) {
+  const nativeApp = nativeContext((await headers()).get('user-agent'));
   const [workspace, brand, initial] = await Promise.all([
     getWorkspace(),
     currentBrand(),
@@ -32,6 +39,9 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
   const payroll = payrollFeatureEnabled() ? { enabled: true, canConfigure: false, canReview: false, canApprove: false, internalCalculatorAvailable: false, bankCompatibility: 'UNVERIFIED' } as const : undefined;
   const offersPay = navigationForRole(proof.employee.role, payroll, { modules: brand.modules }).some(item => item.href === '/app/my-pay');
   const owner = proof.employee.role === 'OWNER';
+  // Review Nov 11 (MG-013): a Manager's read-only details name who can change them: the workspace's Owners, from the team
+  // list a Manager already sees (as the closed Settings notice does). A failed read leaves "An Owner".
+  const changedBy = owner ? null : await listEmployees().then(list => ownerNames(list.filter(employee => employee.role === 'OWNER' && employee.active !== false).map(employee => `${employee.firstName} ${employee.lastName}`.trim()))).catch(() => null);
   return <div className="q-page premium-manager-profile c-page--narrow" data-nv-page="">
     <QuietNav back={{ href: "/app/more", label: "More" }} right={owner ? <Link className="q-nav__r" href={`/app/employees/${encodeURIComponent(proof.employee.id)}?edit=1`}>Edit</Link> : undefined} />
     <div className="pmp-content">
@@ -42,8 +52,12 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
         company: workspace.name,
         timeZone: timeZoneLabel(workspace.timeZone),
         payHref: offersPay ? '/app/my-pay' : null,
-        deviceAlerts: readNotificationConfig(process.env).featureEnabled,
+        // Review B5 (NV-061): in the phone app the row opens the app's own alert settings, so it follows the app's
+        // registration config (as the shell's device popover does), not the browser's web-push switch.
+        deviceAlerts: nativeApp ? !!readNativeRegistrationConfig(process.env) : readNotificationConfig(process.env).featureEnabled,
         payrollAlerts: payrollFeatureEnabled(),
+        changedBy,
+        locationsWord: wordPreset(brand.words).en.locations.toLowerCase(),
       }} accountCards={<>
         {/* Right column, after Notifications and before Sign out (Jose, Oct 20). Each renders nothing while its feature is off. */}
         {/* Codex B-01: the passkeys row is a list item like its neighbours; the item hides while passkeys are off. */}

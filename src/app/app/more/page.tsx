@@ -1,5 +1,4 @@
 import {readFeatureFlags} from '../../../lib/feature-flags';
-import { keepWhole } from '@/lib/keep-whole';
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
 import { payrollFeatureEnabled, readPayrollCapabilities } from "@/lib/payroll/service";
 import { readOperationalAuthority } from "@/lib/company-access/operational-scope.server";
@@ -8,59 +7,36 @@ import { wordPreset } from "@/lib/workspace-presentation/words";
 import { navigationForRole } from "@/lib/navigation";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { redirect } from "next/navigation";
-import { QuietHeader, QuietList, QuietPage, QuietRow, initialsOf } from "@/components/quiet/quiet";
+import { initialsOf } from "@/components/quiet/quiet";
 import { NotificationCount } from "@/components/notification-bell";
 import { employeeViewAuthority } from "@/lib/employee-view-authority.server";
-import { MegaphoneIcon } from "@phosphor-icons/react/dist/ssr/Megaphone";
-import { BellIcon } from "@phosphor-icons/react/dist/ssr/Bell";
-import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
-import { CalendarCheckIcon } from "@phosphor-icons/react/dist/ssr/CalendarCheck";
-import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
-import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
 import { Suspense, type ReactNode } from "react";
 import { Temporal } from "@js-temporal/polyfill";
 import { readReports } from "@/lib/reports/service";
 import type { SessionMutationProof } from "@/lib/shift-changes/types";
+import { ChartBarIcon } from "@phosphor-icons/react/dist/ssr/ChartBar";
+import { MegaphoneSimpleIcon } from "@phosphor-icons/react/dist/ssr/MegaphoneSimple";
+import { WalletIcon } from "@phosphor-icons/react/dist/ssr/Wallet";
+import { SparkleIcon } from "@phosphor-icons/react/dist/ssr/Sparkle";
+import { GearSixIcon } from "@phosphor-icons/react/dist/ssr/GearSix";
+import { SlidersHorizontalIcon } from "@phosphor-icons/react/dist/ssr/SlidersHorizontal";
+import { QuestionIcon } from "@phosphor-icons/react/dist/ssr/Question";
+import { CreditCardIcon } from "@phosphor-icons/react/dist/ssr/CreditCard";
 import { CorpAvatar, CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
 import { PortalSignout } from "@/components/portal-signout";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { pathEnabled } from "@/lib/workspace-presentation/modules";
+import { commerceEnabled } from "@/lib/commerce/access";
+import { durationTotal } from "@/lib/duration-format";
 import "./more-corp.css";
 import "@/components/employee-mobile/account-corp.css";
 import { readEmployeeProfile } from "@/lib/data/employee-profile.server";
 import { listAvailability } from "@/lib/data/availability";
 import { availabilitySummary } from "@/components/employee-mobile/availability-summary";
+import { EmployeeMoreB } from "@/components/employee-b/account-b";
 
 export const metadata = { title: "More" };
 
-
-/** v5 One look (approved Oct 24, mockup E15): an Employee's or Lead's More is a page too. The profile first, then the
- * places that aren't tabs, then help. The calendar row opens Profile's calendar setup (its existing deep link). */
-async function EmployeeMore({ firstName, lastName, role }: { firstName: string; lastName: string; role: "EMPLOYEE" | "LEAD" }) {
-  const [proof, brand] = await Promise.all([requireSessionMutationProof(), currentBrand()]);
-  // Only places the company has switched on (Updates is a feature a company can turn off).
-  const has = new Set(navigationForRole(role, undefined, { modules: brand.modules, words: wordPreset(brand.words).en }).map(entry => entry.href));
-  const ic = (Icon: typeof BellIcon) => <Icon className="q-ic" aria-hidden="true" />;
-  return <QuietPage className="em-more">
-    <div className="q-top-gap" aria-hidden="true" />
-    <QuietHeader title="More" />
-    <QuietList style={{ marginTop: 16 }}>
-      <QuietRow href="/app/profile" avatar={initialsOf(`${firstName} ${lastName}`)} title={`${firstName} ${lastName}`} detail={keepWhole(`${role === "LEAD" ? "Lead" : "Employee"} · Profile`)} label={`Profile, ${firstName} ${lastName}`} />
-    </QuietList>
-    <QuietList label="Your work" style={{ marginTop: 24 }}>
-      {has.has("/app/updates") ? <QuietRow href="/app/updates" icon={ic(MegaphoneIcon)} title="Updates" /> : null}
-      {has.has("/app/notifications") ? <QuietRow href="/app/notifications" icon={ic(BellIcon)} title="Notifications" value={<NotificationCount authority={employeeViewAuthority(proof, "notifications")} />} /> : null}
-      {has.has("/app/availability") ? <QuietRow href="/app/availability" icon={ic(ClockIcon)} title="Availability" /> : null}
-      <QuietRow href="/app/profile#employee-calendar-title" icon={ic(CalendarCheckIcon)} title="Add shifts to your calendar" />
-    </QuietList>
-    <QuietList label="Help" style={{ marginTop: 24 }}>
-      <QuietRow href="/app/help" icon={ic(InfoIcon)} title="Support" />
-      <QuietRow href="/privacy" icon={ic(ShieldCheckIcon)} title="Privacy and terms" />
-    </QuietList>
-    {/* Profile's Session section moved off Profile (board E-Profile); on a phone a Lead signs out here. */}
-    <PortalSignout><button type="submit" className="q-btn q-btn--sec q-btn--danger" style={{ marginTop: 24 }}>Sign out</button></PortalSignout>
-  </QuietPage>;
-}
 
 /** Corporate (Release 1, board E-More): an Employee's More opens from the header avatar, with Home as its back link. The
  * profile card (name; work locations and company under it), Your work with the availability summary, Help and legal,
@@ -75,16 +51,20 @@ async function EmployeeMoreCorp({ firstName, lastName, workspaceName }: { firstN
   ]);
   const locations = profile?.state === "ready" && profile.kind === "profile" ? profile.profile.locations : [];
   const name = `${firstName} ${lastName}`;
+  const count = <NotificationCount authority={employeeViewAuthority(proof, "notifications")} />;
   return <CorpPage className="c-more c-more--employee" labelledBy="more-title">
+    {/* Direction B on a phone (mock e-more): the same rows, links, values and Sign out. */}
+    <EmployeeMoreB name={name} place={[...locations, workspaceName].join(" · ")} availability={availability}
+      has={{ availability: has.has("/app/availability"), notifications: has.has("/app/notifications"), updates: has.has("/app/updates") }} count={count} />
     <CorpNav back={{ href: "/app", label: "Home" }} title="More" titleId="more-title" />
     <CorpCard as="div" ariaLabel="Profile">
-      <CorpRows><li><CorpRow avatar={<CorpAvatar initials={initialsOf(name)} />} title={name} detail={[...locations, workspaceName].join(" · ")} bold /></li>
+      <CorpRows><li><CorpRow avatar={<CorpAvatar name={name} initials={initialsOf(name)} />} title={name} detail={[...locations, workspaceName].join(" · ")} bold /></li>
         <li><CorpRow href="/app/profile" title={<span className="c-link c-link--l">Profile and settings</span>} one label={`Profile and settings, ${name}`} /></li></CorpRows>
     </CorpCard>
     <CorpCard as="div" label="Your work">
       <CorpRows>
         {has.has("/app/availability") ? <li><CorpRow href="/app/availability" title="Availability" one value={availability ?? undefined} valueTone="soft" chevron /></li> : null}
-        {has.has("/app/notifications") ? <li><CorpRow href="/app/notifications" title="Notifications" one value={<NotificationCount authority={employeeViewAuthority(proof, "notifications")} />} /></li> : null}
+        {has.has("/app/notifications") ? <li><CorpRow href="/app/notifications" title="Notifications" one value={count} /></li> : null}
         {has.has("/app/updates") ? <li><CorpRow href="/app/updates" title="Updates" one /></li> : null}
         <li><CorpRow href="/app/profile/calendar" title="Add shifts to your calendar" one /></li>
       </CorpRows>
@@ -95,19 +75,21 @@ async function EmployeeMoreCorp({ firstName, lastName, workspaceName }: { firstN
         <li><CorpRow href="/privacy" title="Privacy and terms" one /></li>
       </CorpRows>
     </CorpCard>
-    <PortalSignout className="c-more__signout"><button type="submit" className="c-btn c-btn--danger c-btn--full">Sign out</button></PortalSignout>
+    <PortalSignout className="c-more__signout"><button type="submit" className="c-btn c-btn--secondary c-btn--full">Sign out</button></PortalSignout>
   </CorpPage>;
 }
 
 /** Insights' grey value on More: the hours recorded this week so far (Monday to today, as Insights opens), from the same
- * read Insights uses. It streams in after the page; a failed or empty read shows nothing, never a zero it doesn't know. */
+ * read Insights uses. It streams in after the page; a failed or empty read shows nothing, never a zero it doesn't know.
+ * Review Nov 14 (BR-1): the figure is the read's whole minutes written by the shared duration formatter, so More,
+ * Timecards and Insights round one way. */
 async function weekHours(proof: SessionMutationProof, timeZone: string): Promise<string | null> {
   try {
     const today = Temporal.Now.zonedDateTimeISO(timeZone).toPlainDate();
     const monday = today.subtract({ days: today.dayOfWeek - 1 });
     const result = await readReports(proof, { startDate: monday.toString(), endDate: today.toString() });
     if (result.state !== "ready" || !/^\d+$/.test(result.report.summary.recordedNanoseconds)) return null;
-    return `${Math.round(Number(BigInt(result.report.summary.recordedNanoseconds) / BigInt(60_000_000_000)) / 60)} h this week`;
+    return `${durationTotal(Number(BigInt(result.report.summary.recordedNanoseconds) / BigInt(60_000_000_000)))} this week`;
   } catch { return null; }
 }
 async function WeekHours({ proof, timeZone }: { proof: SessionMutationProof; timeZone: string }) {
@@ -116,8 +98,8 @@ async function WeekHours({ proof, timeZone }: { proof: SessionMutationProof; tim
 
 export default async function MorePage() {
   const session = await requireSession();
-  if (session.role === "EMPLOYEE") return <EmployeeMoreCorp firstName={session.firstName} lastName={session.lastName} workspaceName={(await getWorkspace()).name} />;
-  if (session.role === "LEAD") return <EmployeeMore firstName={session.firstName} lastName={session.lastName} role={session.role} />;
+  // A Lead has the Employee's More (Direction B, Nov 8, 2026).
+  if (session.role === "EMPLOYEE" || session.role === "LEAD") return <EmployeeMoreCorp firstName={session.firstName} lastName={session.lastName} workspaceName={(await getWorkspace()).name} />;
   if (!isManagerRole(session.role)) redirect("/app");
   const proof = await requireSessionMutationProof();
   const [operational, payroll, brand, workspace] = await Promise.all([
@@ -131,40 +113,53 @@ export default async function MorePage() {
   const has = (href: string) => navigation.some(entry => entry.href === href);
   const label = (href: string, fallback: string) => navigation.find(entry => entry.href === href)?.label ?? fallback;
   const owner = session.role === "OWNER";
-  // Nov 1 upscale (board O-More): no row icons; a row may end in a grey value before its chevron ("24 h this week").
+  // Review B1 (NV-099): every navigation row leads with its Phosphor bold icon (a tinted circle, as Team and Timecards rows
+  // do) and ends with its chevron; a row may end in a grey value before the chevron ("24 h this week").
+  const rowIcons: Record<string, ReactNode> = { "/app/reports": <ChartBarIcon weight="bold" />, "/app/updates": <MegaphoneSimpleIcon weight="bold" />,
+    "/app/my-pay": <WalletIcon weight="bold" />, "/app/ai-manager": <SparkleIcon weight="bold" />, "/app/settings": <GearSixIcon weight="bold" />,
+    "/app/schedule/settings": <SlidersHorizontalIcon weight="bold" />, "/app/help": <QuestionIcon weight="bold" />, "/app/billing": <CreditCardIcon weight="bold" /> };
   const row = (href: string, title: string, value?: ReactNode) =>
-    <li key={href}><CorpRow href={href} title={title} value={value} valueTone="soft" one chevron /></li>;
+    <li key={href}><CorpRow href={href} title={title} value={value} valueTone="soft" icon={rowIcons[href]} one chevron /></li>;
   const settings = owner && pathEnabled("/app/settings", brand.modules);
+  // Review Nov 14 (AR-13, JR-4): an Owner reaches the subscription from More (and Settings) wherever this deployment has
+  // billing on; the page itself is closed everywhere else, so the row is left out there.
+  const billing = owner && commerceEnabled();
   const name = `${session.firstName} ${session.lastName}`;
   const company = workspace.name;
+  // Review F2 (NV-105): "you" is drawn as in the header (white circle, teal initials, more-corp.css), as on Profile.
   // Owner premium A9 (structure-experience 2.5): one clean list, opened from the header avatar. You, then Insights and
   // Updates, then Settings (every business setting lives there, once) and Help, then Sign out as a quiet red row. More is
   // an ordinary pushed page: "‹ Home" on a phone, no Done. Only destinations the role has. Notifications is the bell.
   return <CorpPage className="c-more c-page--narrow" labelledBy="more-title">
     <CorpNav back={{ href: "/app", label: "Home" }} title="More" titleId="more-nav-title" phoneOnly />
     <CorpTitle id="more-title" title="More" wide />
+    {/* Review Nov 11 (OW-032, TB-016): on tablets and desktop the groups read as one card, 560px at most, with Sign out as a
+      quiet pill under it (owner-b-settings.css, by the Sign out section's id); phones keep their separate cards. */}
     <CorpSection ariaLabel="You"><CorpCard as="div">
       <CorpRows label="You"><li><CorpRow href="/app/profile" bold title={name} detail={`${owner ? "Owner" : "Manager"} · ${company}`}
         label={`Your profile, ${name}`} avatar={<CorpAvatar initials={initialsOf(name)} />} chevron /></li></CorpRows>
     </CorpCard></CorpSection>
     {/* Owner premium R5: each group is a section, 32px from the next (12px inside one); More's groups need no visible label. */}
-    {has("/app/reports") || has("/app/updates") || has("/app/ai-manager") ? <CorpSection ariaLabel="Work"><CorpCard as="div">
+    {has("/app/reports") || has("/app/updates") || has("/app/my-pay") || has("/app/ai-manager") ? <CorpSection ariaLabel="Work"><CorpCard as="div">
       <CorpRows label="Work">
         {has("/app/reports") ? row("/app/reports", label("/app/reports", "Insights"), <Suspense fallback={null}><WeekHours proof={proof} timeZone={workspace.timeZone} /></Suspense>) : null}
         {has("/app/updates") ? row("/app/updates", label("/app/updates", "Updates")) : null}
+        {/* Your own pay: on a phone More is the only way to it (desktop has it in the account menu too). */}
+        {has("/app/my-pay") ? row("/app/my-pay", "My pay") : null}
         {has("/app/ai-manager") ? row("/app/ai-manager", label("/app/ai-manager", "AI manager")) : null}
       </CorpRows>
     </CorpCard></CorpSection> : null}
     <CorpSection ariaLabel="Settings and help"><CorpCard as="div">
       <CorpRows label="Settings and help">
         {settings ? row("/app/settings", "Settings") : null}
+        {billing ? row("/app/billing", "Plan and billing") : null}
         {/* A Manager has no Settings; Scheduling rules is theirs to open (it also opens from Schedule). */}
         {!settings && has("/app/schedule/settings") ? row("/app/schedule/settings", "Scheduling rules") : null}
         {row("/app/help", "Help")}
       </CorpRows>
     </CorpCard></CorpSection>
-    <CorpSection ariaLabel="Sign out"><CorpCard as="div">
-      <PortalSignout className="c-more__signout"><button type="submit" className="c-row c-row--one c-row--danger c-more__signout-row"><span className="c-row__main"><span className="c-row__title">Sign out</span></span></button></PortalSignout>
+    <CorpSection id="more-signout" ariaLabel="Sign out"><CorpCard as="div">
+      <PortalSignout className="c-more__signout"><button type="submit" className="c-row c-row--one c-more__signout-row"><span className="c-row__main"><span className="c-row__title">Sign out</span></span></button></PortalSignout>
     </CorpCard></CorpSection>
   </CorpPage>;
 }

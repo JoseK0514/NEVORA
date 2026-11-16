@@ -42,7 +42,7 @@ it('loads actual history and renders own changes behind authenticated access',as
 });
 it('filters revoked location history on both sides and hides unchanged shifts',async()=>{
  f.after=[...f.before];expect(await html()).not.toContain('What changed');
- f.after=[{...f.before[0],locationId:'110'}];const result=await html();expect(result).toMatch(/Removed\s·/);expect(result).not.toContain('Location 110');
+ f.after=[{...f.before[0],locationId:'110'}];const result=await html();expect(result).toMatch(/>Removed<\/span>/);/* Review B2 (NV-226): the change is a chip */expect(result).not.toContain('Location 110');
 });
 it('push feature off retains canonical review while protected access loss discloses no history',async()=>{
  f.enabled=false;expect(await html()).toContain('What changed');
@@ -210,7 +210,8 @@ it('Corporate: the week card names the week and its state, open shifts offer Fin
  expect(output).toContain('id="schedule-options-settings">Settings</p>');
  expect(output).not.toContain('Go to this week</strong>');
  expect(output).not.toContain('What changed and when');
- expect(output).toContain('1 this week');
+ // Phase 3 (TB-003): the count is its own element beside "Open shifts" (a pill on a narrow grid).
+ expect(output).toContain('<b class="c-num">1</b><span> this week</span>');
  // The planning panel (through Build and publish), copy week, templates and add shift stay reachable.
  expect(output).toContain('plan=1#schedule-planning');expect(output).toContain('Copy previous week');
  expect(output).toContain('/app/schedule/templates?week=2026-10-05');expect(output).toMatch(/href="\/app\/schedule\/new\?week=2026-10-05&amp;date=2026-10-\d\d"/);

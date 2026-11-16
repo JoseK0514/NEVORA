@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {needsYou, needsYouDetail, needsYouSentence} from './needs-you';
+import {isOwnReview, needsYou, needsYouDetail, needsYouSentence} from './needs-you';
 import type {ActionItem} from './project';
 import type {TodayShift} from '../today/project';
 
@@ -72,5 +72,24 @@ describe('needs you (F1)', () => {
     expect(current.now.map(row => row.id)).toEqual(['running']);
     expect(current.past.map(row => row.id)).toEqual(['ended']);
     expect(needsYou([ended, running], '2026-11-07').count).toBe(2);
+  });
+});
+
+describe('needs you counts what can be decided today (Phase 3, MG-005, MG-004)', () => {
+  const review = (id: string, type: ActionItem['type'], title: string): ActionItem => ({id, type, category: 'timekeeping', priority: 'REVIEW', title, detail: '', href: '/app'} as ActionItem);
+  const list = [
+    review('TIME_CORRECTION:a', 'TIME_CORRECTION', 'Time correction waiting for review'),
+    review('TIME_CORRECTION:mine', 'TIME_CORRECTION', 'Your correction needs another reviewer'),
+    review('TIMECARD:a', 'TIMECARD', 'Period timecard needs review'),
+    review('TIMECARD:mine', 'TIMECARD', 'Your timecard needs another reviewer'),
+  ];
+  it('counts a correction that waits on this person, never their own and never a timecard', () => {
+    const value = needsYou(list, '2026-10-18');
+    expect(value.corrections.map(entry => entry.id)).toEqual(['TIME_CORRECTION:a']);
+    expect(value.count).toBe(1);
+    expect(value.planning.map(entry => entry.id)).toEqual(['TIME_CORRECTION:mine', 'TIMECARD:a', 'TIMECARD:mine']);
+  });
+  it('knows the signed-in person’s own timecard and correction by the read’s title', () => {
+    expect(list.filter(isOwnReview).map(entry => entry.id)).toEqual(['TIME_CORRECTION:mine', 'TIMECARD:mine']);
   });
 });

@@ -4,7 +4,8 @@ import type {TodayShift} from '../today/project';
 
 /** F1: one "needs you" count for Home, the Inbox and every summary line.
  * It counts what a manager must act on today: shifts with no clock-in, the
- * action center's urgent items and people's requests. Planning and setup work
+ * action center's urgent items, people's requests and (Phase 3, MG-005) the
+ * time corrections this person can decide today. Planning and setup work
  * (hour targets, deadlines, earlier coverage gaps) are listed, never counted. */
 export type NeedsYou = {
   /** Published shifts today with no clock-in (started, or finished with no punches). */
@@ -13,6 +14,8 @@ export type NeedsYou = {
   now: ActionItem[];
   /** Requests that are not already urgent. */
   requests: ActionItem[];
+  /** Phase 3 (MG-005): time corrections that wait on this person and can be decided today. Counted. */
+  corrections: ActionItem[];
   /** Current planning and setup items: listed, not counted. */
   planning: ActionItem[];
   /** Earlier this week: kept for the record, not counted. */
@@ -23,12 +26,21 @@ export type NeedsYou = {
 export function needsYou(items: readonly ActionItem[], today: string | undefined, noClockIn: readonly TodayShift[] = [], localNow?: string): NeedsYou {
   const sections = inboxSections([...items], today, localNow);
   const pick = (id: string) => sections.find(section => section.id === id)?.items ?? [];
-  const now = pick('urgent'), requests = pick('requests');
+  const now = pick('urgent'), requests = pick('requests'), rest = pick('exceptions');
+  const corrections = rest.filter(isOpenCorrection);
   return {
-    noClockIn: [...noClockIn], now, requests, planning: pick('exceptions'), past: pick('past'),
-    count: noClockIn.length + now.length + requests.length,
+    noClockIn: [...noClockIn], now, requests, corrections, planning: rest.filter(item => !isOpenCorrection(item)), past: pick('past'),
+    count: noClockIn.length + now.length + requests.length + corrections.length,
   };
 }
+
+/** The read marks the signed-in person's own timecard and correction in the item's title ("Your timecard needs another
+ * reviewer", "Your correction needs another reviewer"): another person decides those, so they are never this person's
+ * to approve (MG-004). */
+export const isOwnReview = (item: Pick<ActionItem, 'type' | 'title'>) => (item.type === 'TIMECARD' || item.type === 'TIME_CORRECTION') && /^Your (timecard|correction) needs another reviewer/.test(item.title);
+
+/** A correction that waits on this person: it can be approved or declined today, whatever its pay period. */
+const isOpenCorrection = (item: ActionItem) => item.type === 'TIME_CORRECTION' && !isOwnReview(item);
 
 /** The band's one summary line. Never blames: "no clock-in", not "missed". */
 export function needsYouSentence(count: number) {

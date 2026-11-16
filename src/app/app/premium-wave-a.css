@@ -112,7 +112,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
     & .wa-actions__buttons > .nv-btn { width: auto; min-width: 10rem; }
   }
 }
-@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 761px) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
     /* AL-WA-8: 720px of card, plus the content's 16px padding on each side. */
     & .wa-narrow { max-width: 752px; margin-inline: auto; }
@@ -380,12 +380,6 @@ html body .app-shell.nevora-portal .route-skeleton:is([data-route="wa-new"], [da
   html body .app-shell.nevora-portal .route-skeleton:is([data-route="wa-edit"], [data-route="wa-coverage"]) { --route-band: 312px; }
   html body .app-shell.nevora-portal .route-skeleton[data-route="wa-copy"] { --route-band: 288px; }
   html body .app-shell.nevora-portal .route-skeleton[data-route="wa-new"] { --route-band: 268px; }
-}
-@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
-  html body .app-shell.nevora-portal .route-skeleton:is([data-route="wa-add"], [data-route="wa-edit"], [data-route="wa-coverage"], [data-route="wa-pin"], [data-route="wa-swap"]) { --route-band: 228px; }
-  html body .app-shell.nevora-portal .route-skeleton[data-route="wa-copy"] { --route-band: 140px; }
-  html body .app-shell.nevora-portal .route-skeleton[data-route="wa-member"] { --route-band: 196px; }
-  html body .app-shell.nevora-portal .route-skeleton:is([data-route="wa-new"], [data-route="wa-callout"]) { --route-band: 184px; }
 }
 
 /* The swap form's body is one column of cards, like the form itself. */

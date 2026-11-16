@@ -19,7 +19,7 @@ const FaceIcon = () => (
 /** "Sign in with Face ID" (phones) / "Sign in with a passkey" (computers), under Sign in. Shown only when
  * NEXT_PUBLIC_NEVORA_PASSKEYS=on and the browser has WebAuthn; the server render never includes it. Cancelling the
  * system sheet goes quietly back to the form. */
-export function PasskeySlot({ t, lead = false, quiet = false }: { t: AuthCopy; /** Signature (phase 4): Face ID leads the sheet as a card, then "or use your ID". */ lead?: boolean; /** Quiet (v4): a grey button under Sign in, words only. */ quiet?: boolean }) {
+export function PasskeySlot({ t, quiet = false }: { t: AuthCopy; /** Quiet (v4): a grey button under Sign in, words only. (Review F2, NV-233: the unused "lead" card variant is gone.) */ quiet?: boolean }) {
   const device = useSyncExternalStore(subscribe, detect, () => "none" as Device);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<PasskeyError | null>(null);
@@ -48,19 +48,6 @@ export function PasskeySlot({ t, lead = false, quiet = false }: { t: AuthCopy; /
       {error ? <p className="q-error" id="passkey-error" role="alert">{message(error)}</p> : null}
     </div>
   );
-  if (lead) return (
-    <div className="ap-passkey ap-passkey--lead">
-      <button type="button" className="ap-fid" onClick={start} aria-disabled={busy || undefined} aria-busy={busy} aria-describedby={error ? "passkey-error" : undefined}>
-        <span className="ap-fid__ring" aria-hidden="true"><FaceIcon /></span>
-        <b>{busy ? (phone ? t.passkeyBusyPhone : t.passkeyBusyDesktop) : (phone ? t.passkeyPhone : t.passkeyDesktop)}</b>
-        <small>{phone ? t.passkeyHintPhone : t.passkeyHintDesktop}</small>
-      </button>
-      <span className="ap-sr" role="status" aria-live="polite">{busy ? (phone ? t.passkeyBusyPhone : t.passkeyBusyDesktop) : ""}</span>
-      {error ? <p className="ap-alert" data-tone="error" id="passkey-error" role="alert">{message(error)}</p> : null}
-      <div className="ap-or ap-or--lead">{t.orUseId}</div>
-    </div>
-  );
-
   return (
     <div className="ap-passkey">
       <div className="ap-or ap-wide">{t.or}</div>

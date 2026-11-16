@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowsClockwiseIcon, CalendarCheckIcon, ClockIcon, HourglassMediumIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { createPrivateSnapshotController } from "@/lib/private-snapshot-client";
 import { parseToday, STATUS_TEXT, START_GRACE_MINUTES, type Today, type TodayShift } from "@/lib/today/project";
+import { offlineListener } from "@/lib/offline-hold";
 
 /** Today on the floor (B4): Home tiles and the Inbox's missed punches share one
  * read-only snapshot of published shifts against recorded punches. */
@@ -22,8 +23,10 @@ export function useToday() {
     controller.current = c;
     const sync = () => { if (document.visibilityState === "visible" && navigator.onLine) c.start(); else c.pause(); };
     sync();
-    document.addEventListener("visibilitychange", sync); window.addEventListener("online", sync); window.addEventListener("offline", sync);
-    return () => { c.stop(); controller.current = null; document.removeEventListener("visibilitychange", sync); window.removeEventListener("online", sync); window.removeEventListener("offline", sync); };
+    // Review B2 (NV-001): offline keeps today's loaded list on screen (read-only) unless the person stepped away.
+    const offline = offlineListener({ pause: () => c.pause(), hold: () => c.hold() });
+    document.addEventListener("visibilitychange", sync); window.addEventListener("online", sync); window.addEventListener("offline", offline);
+    return () => { c.stop(); controller.current = null; document.removeEventListener("visibilitychange", sync); window.removeEventListener("online", sync); window.removeEventListener("offline", offline); };
   }, []);
   return { snapshot, refreshing, refresh: () => controller.current?.refresh() };
 }
@@ -43,7 +46,7 @@ export function TodayTilesSurface({ snapshot, refreshing = false, onRetry }: { s
   </section>;
   if (snapshot.state !== "ready") return <section className="today-tiles today-tiles-unavailable" aria-label="Today">
     <p role="status">Today&rsquo;s numbers aren&rsquo;t available right now.</p>
-    <button type="button" className="button secondary" onClick={onRetry} disabled={refreshing}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button>
+    <button type="button" className="button secondary" onClick={onRetry} disabled={refreshing}><ArrowsClockwiseIcon size={18} weight="bold" aria-hidden="true" />Try again</button>
   </section>;
   const { counts, timeZone, observedAt } = snapshot;
   const tiles = [
@@ -55,7 +58,7 @@ export function TodayTilesSurface({ snapshot, refreshing = false, onRetry }: { s
   return <section className="today-tiles" aria-labelledby="today-tiles-title">
     <h2 id="today-tiles-title" className="sr-only">Today</h2>
     {tiles.map(({ id, label, value, Icon, href, urgent }) => <Link key={id} href={href} className="today-tile" data-tile={id} data-urgent={urgent || undefined} data-zero={value === 0 || undefined}>
-      <span className="today-tile-label"><Icon size={18} aria-hidden="true" />{label}</span>
+      <span className="today-tile-label"><Icon size={18} weight="bold" aria-hidden="true" />{label}</span>
       <strong>{value}</strong>
     </Link>)}
     <p className="today-tiles-note">Published shifts only · Updated <time dateTime={observedAt}>{time(observedAt, timeZone)}</time></p>

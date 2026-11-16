@@ -2,6 +2,7 @@
 
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import styles from './correction-time-ticket.module.css';
+import { durationRow } from '@/lib/duration-format';
 
 /* The correction form's Start and End, set like a ticket (phase 4 upscale, approved Oct 20, 2026): each half shows the
  * time large and the day under it, with the native date-and-time field over the half. Between them, the length.
@@ -31,10 +32,10 @@ export function CorrectionTimeTicket({ start, end, disabled = false, onStart, on
   const length = valid(start) && valid(end) ? minutes(end) - minutes(start) : null;
   return <div className={`employee-time-correction-grid ${styles.ctTicket}`}>
     <Half label="Start" value={start} disabled={disabled} onChange={onStart} />
-    <i className={styles.ctMid} aria-hidden="true"><ArrowRightIcon size={18} /></i>
+    <i className={styles.ctMid} aria-hidden="true"><ArrowRightIcon size={18} weight="bold" /></i>
     <Half label="End" value={end} disabled={disabled} min={start || undefined} onChange={onEnd} />
     <p className={styles.ctLength} data-invalid={length !== null && length <= 0 ? '' : undefined} aria-live="polite">
-      {length === null ? 'Tap a time to change it' : length <= 0 ? 'End must be after start' : `${Math.floor(length / 60)}h ${String(length % 60).padStart(2, '0')}m`}
+      {length === null ? 'Select a time to change it' : length <= 0 ? 'End must be after start' : durationRow(length)}
     </p>
   </div>;
 }

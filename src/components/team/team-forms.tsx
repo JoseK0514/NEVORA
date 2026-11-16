@@ -10,10 +10,12 @@ import { phoneTyping } from "./phone";
  * control keeps the field name and constraints its form's command reads. */
 
 /** A sheet's header: Cancel (or ‹ Back) left, the title with an optional step under it, Save / Next / Add right. */
-export function FormHead({ left, title, step, right, titleId }: { left: ReactNode; title: ReactNode; step?: ReactNode; right?: ReactNode; titleId?: string }) {
+export function FormHead({ left, title, step, right, titleId, back }: { left: ReactNode; title: ReactNode; step?: ReactNode; right?: ReactNode; titleId?: string;
+  /** Closing F1 (NV-257): on tablets and desktop (where the bar's own links leave the band) a "‹ Team" back link over the title. */
+  back?: { href: string; label: string } }) {
   return <div className="c-nav c-formhead">
     <span className="c-formhead__l">{left}</span>
-    <span className="c-formhead__t"><h1 className="c-nav__title" id={titleId} tabIndex={-1}>{title}</h1>{step ? <span className="c-formhead__step">{step}</span> : null}</span>
+    <span className="c-formhead__t">{back ? <Link className="c-formhead__up" href={back.href}><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true" />{back.label}</Link> : null}<h1 className="c-nav__title" id={titleId} tabIndex={-1}>{title}</h1>{step ? <span className="c-formhead__step">{step}</span> : null}</span>
     <span className="c-nav__right">{right ?? null}</span>
   </div>;
 }
@@ -27,10 +29,12 @@ export function FormHeadBack({ onClick, children }: { onClick: () => void; child
 }
 
 /** The mobile phone field: "(787) 555-0142" while typed; the form's command saves it as 787-555-0142. */
-export function PhoneField({ id, name, defaultValue = "", required, autoComplete, enterKeyHint }: { id: string; name: string; defaultValue?: string; required?: boolean; autoComplete?: string; enterKeyHint?: "next" | "done" }) {
+export function PhoneField({ id, name, defaultValue = "", required, autoComplete, enterKeyHint, missing }: { id: string; name: string; defaultValue?: string; required?: boolean; autoComplete?: string; enterKeyHint?: "next" | "done";
+  /** The sentence shown when it is left empty (form-validation.tsx reads data-missing). */
+  missing?: string }) {
   const [value, setValue] = useState(() => phoneTyping(defaultValue));
   return <input id={id} className="c-in" name={name} type="tel" inputMode="tel" autoComplete={autoComplete} enterKeyHint={enterKeyHint} value={value} required={required}
-    placeholder="(787) 555-0123" maxLength={14} pattern="\(\d{3}\) \d{3}-\d{4}" title="A ten-digit phone number"
+    placeholder="(787) 555-0123" maxLength={14} pattern="\(\d{3}\) \d{3}-\d{4}" title="Enter all 10 digits of the phone number" data-missing={missing}
     onChange={event => {
       const next = event.target.value;
       const digits = (text: string) => text.replace(/\D/g, "");

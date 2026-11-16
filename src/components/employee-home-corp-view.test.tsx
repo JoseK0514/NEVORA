@@ -4,6 +4,7 @@ import {projectEmployeeHome, HOME_SOURCES} from '../lib/employee-home/project';
 import type {AttentionItem, HomeSnapshot, PublishedAssignment} from '../lib/employee-home/types';
 import {EmployeeHomeCorpView, homeTodoRows} from './employee-home-corp';
 import type {HomeWeek} from './employee-home-quiet';
+import {onlyB, withoutB} from './owner-b/test-support';
 
 /* Nov 1 upscale (S3, S4, M7) on fictional data: Sunday, Nov 1, 2026 at 10:00 AM in Puerto Rico. */
 const at = '2026-11-01T14:00:00.000Z', zone = 'America/Puerto_Rico';
@@ -55,7 +56,8 @@ it('S4: the shift card is one left-aligned stack whose body is the link, with th
 });
 
 it('M7: Coming up lists the next three shifts across the week boundary in place of the Quick guide, and confirm reads next week', () => {
-  const html = render([confirm('2026-11-02'), confirm('2026-10-26')]), plain = text(html);
+  // The corporate layout (tablets and desktop); the phone screen (Direction B) is checked at the end.
+  const full = render([confirm('2026-11-02'), confirm('2026-10-26')]), html = withoutB(full), plain = text(html);
   expect(plain).toContain('Coming up');expect(plain).toContain('See all');
   const up = text(html.slice(html.indexOf('id="home-upcoming"'), html.indexOf('</section>', html.indexOf('id="home-upcoming"'))));
   // Monday is on the card, so Coming up starts Tuesday and stops at three.
@@ -67,4 +69,9 @@ it('M7: Coming up lists the next three shifts across the week boundary in place 
   // One confirm row: the week that ends today has dropped off.
   expect(plain).toContain('Confirm next week’s schedule');expect(plain).toContain('Nov 2 – 8 · 5 shifts');expect(plain).not.toContain('Oct 26');
   expect(html.match(/Confirm next week/g)).toHaveLength(1);
+  // Direction B: the same one confirm row (with its Review button), the same three shifts and the same links.
+  const phone = onlyB(full), phoneText = text(phone);
+  expect(phoneText.match(/Confirm next week’s schedule/g)).toHaveLength(1);expect(phoneText).toContain('Nov 2 – 8 · 5 shifts');expect(phoneText).not.toContain('Oct 26');
+  expect(phone).toContain('href="/app/schedule?week=2026-11-02&amp;day=2026-11-03&amp;shift=s-3"');expect(phoneText).toContain('Welcome back, Alexandra');
+  expect(phone).not.toContain('ma-onboarding');expect(phone).not.toMatch(/id="(home-shift|home-upcoming|employee-home-todo)"/);
 });

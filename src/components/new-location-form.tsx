@@ -30,9 +30,10 @@ export function NewLocationForm({
   const nameInput = useRef<HTMLInputElement & HTMLSelectElement & HTMLTextAreaElement>(null);
   const success = Boolean(result.success && !result.error);
   const { errors, handlers, clear } = useFieldErrors({
-    name: { missing: `Enter a ${place} name.` },
-    shortName: { missing: "Enter a short name." },
-    clockerKey: { pattern: "Use lowercase letters, numbers and single hyphens, like downtown-office." },
+    // Review F3 (NV-112): a name of only spaces is flagged like an empty one, so both name fields are marked together.
+    name: { missing: `Enter a ${place} name`, pattern: `Enter a ${place} name` },
+    shortName: { missing: "Enter a short name", pattern: "Enter a short name" },
+    clockerKey: { pattern: "Use lowercase letters, numbers and single hyphens, like downtown-office" },
   });
 
   useEffect(() => {
@@ -80,12 +81,15 @@ export function NewLocationForm({
     <form ref={form} id="new-location-form" noValidate onSubmit={submit} aria-busy={pending} className="wc-form" aria-label={`Add ${place}`} {...handlers}>
       {/* P9: Return moves to the next field and never submits; the page's Add submits. */}
       <ReturnToNext />
+      {/* Review F4 (NV-102): on tablets and desktop the fields are one card with Cancel and Add in its footer, as Add employee
+        * (phones keep them in the top bar). */}
+      <div className="wc-savecard">
       <fieldset disabled={pending || success} className="q-fieldset">
         <FieldErrors errors={errors}>
           {/* Quiet (v4, approved Oct 23): three fields and one line under them. The page's Add (top right) submits. */}
-          <Field label="Name" fieldClassName="q-first" inputRef={nameInput} id="new-location-name" name="name" required maxLength={160} value={name} onChange={(event) => setName(event.target.value)}
+          <Field label="Name" fieldClassName="q-first" inputRef={nameInput} id="new-location-name" name="name" required pattern=".*\S.*" maxLength={160} value={name} onChange={(event) => setName(event.target.value)}
             placeholder="e.g. Harbor Point" autoComplete="off" autoCapitalize="words" enterKeyHint="next" />
-          <Field label="Short name" id="new-location-short-name" name="shortName" required maxLength={48} value={shortName} onChange={(event) => setShortName(event.target.value)}
+          <Field label="Short name" id="new-location-short-name" name="shortName" required pattern=".*\S.*" maxLength={48} value={shortName} onChange={(event) => setShortName(event.target.value)}
             placeholder="e.g. Harbor" autoComplete="off" autoCapitalize="words" enterKeyHint="next" />
           <Field label="Clocker key" helpId="location-clocker-help"
             help={`The Clocker key can’t be changed later.`}
@@ -93,6 +97,11 @@ export function NewLocationForm({
             placeholder="Created for you" autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done" />
         </FieldErrors>
       </fieldset>
+      {success ? null : <div className="wc-savefoot wc-savefoot--wide">
+        <Link className="q-btn q-btn--sec" href="/app/settings/locations">Cancel</Link>
+        <button type="submit" className="q-btn" disabled={pending}>Add</button>
+      </div>}
+      </div>
       <p className="nv-sr" role="status">{pending ? `Saving your ${place}.` : ""}</p>
       {result.error ? (
         <div ref={feedback} className="wc-feedback" role="alert" tabIndex={-1}>

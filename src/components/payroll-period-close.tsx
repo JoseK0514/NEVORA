@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ComponentProps } from "react";
 import type { Period } from "@/lib/timecards/project";
 import {stableExportJson} from '@/lib/payroll-export/json';
 import { formatRecordedHours } from "@/lib/timecards/project";
@@ -9,13 +9,24 @@ import { payrollReviewIssues, payrollReviewState } from "./payroll-review-copy";
 import { PeriodCloseHistory } from "./period-close-history";
 type Review = Awaited<ReturnType<typeof readPeriodClose>>;
 type PendingCommand = { action: string; command: unknown };
-type Props={period:Period;actorId:string};
+/** `startOpen` (AR-4, Nov 14 inspection): the page was opened from Payroll's blocker, so a phone shows the list at once
+ * instead of behind its "Choose who’s included" disclosure. */
+type Props={period:Period;actorId:string;startOpen?:boolean};
+/** AR-4: plain words for this tool's labels and notices. Commands, payloads and what the server checks are unchanged. */
+const LOADING='Loading the list of people…',OUT_OF_DATE='This list is out of date. Refresh it to see current data.';
+const EVENT_LABELS:Record<string,string>={ARTIFACT_SERVED:'Download requested',REPORTED_SUBMITTED:'Marked as sent',REPORTED_IMPORTED:'Marked as imported'};
+/** A stored timestamp ("2026-11-14 23:35:01+00") as "Nov 14, 2026, 7:35 PM"; the stored text if it can't be read. */
+const whenText=(value:string)=>{const date=new Date(value.replace(' ','T').replace(/([+-]\d{2})$/,'$1:00'));return Number.isNaN(date.getTime())?value:new Intl.DateTimeFormat('en-US',{dateStyle:'medium',timeStyle:'short'}).format(date);};
+/** The list sits behind a phone disclosure, except when the page was opened for it (AR-4). */
+function ListDisclosure({open,children,...rest}:ComponentProps<typeof MobileHomeDisclosure>&{open:boolean}){
+  return open?<>{children}</>:<MobileHomeDisclosure {...rest}>{children}</MobileHomeDisclosure>;
+}
 export function PayrollPeriodClose(props:Props){
   return <PeriodCloseView key={JSON.stringify([props.actorId,props.period.startDate,props.period.endDate])} {...props}/>;
 }
-function PeriodCloseView({period,actorId}:Props) {
+function PeriodCloseView({period,actorId,startOpen=false}:Props) {
   const [review, setReview] = useState<Review | null>(null),
-    [notice, setNotice] = useState("Loading complete population"),
+    [notice, setNotice] = useState(LOADING),
     [busy, setBusy] = useState(false),
     [selected, setSelected] = useState<string[]>([]),
     [retry, setRetry] = useState<PendingCommand | null>(null),
@@ -49,12 +60,12 @@ function PeriodCloseView({period,actorId}:Props) {
     if(!active.current||document.visibilityState==='hidden'||!navigator.onLine)return false;
     if(background&&(reading.current||mutating.current))return false;
     const preserve=background&&sourceKey.current!==null&&performance.now()<deadline.current;
-    if(!preserve)retire('Loading complete population');
+    if(!preserve)retire(LOADING);
     const own=generation.current.value,n=++sequence.current,started=performance.now(),abort=new AbortController();request.current=abort;reading.current=true;
     const current=()=>active.current&&own===generation.current.value&&n===sequence.current;
     // This Company-only legacy DTO has no lease metadata. The request-start
     // maximum includes server work, transit, parsing and comparison time.
-    readTimeout.current=setTimeout(()=>{if(current())retire('Population expired. Reload to review current data.');},15000);
+    readTimeout.current=setTimeout(()=>{if(current())retire(OUT_OF_DATE);},15000);
     try{
       const response=await post('READ',period,abort.signal),body=await response.json();
       if(!current())return false;
@@ -64,11 +75,11 @@ function PeriodCloseView({period,actorId}:Props) {
       if(!preserve||key!==sourceKey.current){setSelected([]);setViewKey(key);}
       if(expiry.current)clearTimeout(expiry.current);if(early.current)clearTimeout(early.current);
       sourceKey.current=key;deadline.current=started+15000;
-      expiry.current=setTimeout(()=>retire('Population expired. Reload to review current data.'),remaining);
+      expiry.current=setTimeout(()=>retire(OUT_OF_DATE),remaining);
       early.current=setTimeout(()=>void loadProjection(true),remaining*.65);
-      setReview(body.result);setNotice('Review the complete roster, including inactive and zero-time employees.');
+      setReview(body.result);setNotice('Check everyone on the list, including inactive accounts and people with no hours.');
       return true;
-    }catch{if(current())retire('Population unavailable. Reload to try again.');return false;}
+    }catch{if(current())retire('We couldn’t load the list. Refresh it to try again.');return false;}
     finally{if(current()){if(readTimeout.current)clearTimeout(readTimeout.current);readTimeout.current=null;reading.current=false;}}
   },[post,period,retire]);
   useEffect(()=>{
@@ -77,8 +88,8 @@ function PeriodCloseView({period,actorId}:Props) {
     const recover=()=>{try{const saved=localStorage.getItem(recoveryKey),original:PendingCommand|null=saved?JSON.parse(saved):null;
       if(original&&(!['POPULATION','MANIFEST','HANDOFF'].includes(original.action)||!original.command||typeof original.command!=='object'))throw Error('Recovery unavailable');
       setRetry(original);setRecoveryReady(true);return true;
-    }catch{setRecoveryReady(false);setNotice('Recovery storage unavailable. Enable browser storage before saving payroll period changes.');return false;}};
-    const paused=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;active.current=false;retire('Population paused. Reload to review current data.');};
+    }catch{setRecoveryReady(false);setNotice('Browser storage is off. Turn it on before saving changes here.');return false;}};
+    const paused=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;active.current=false;retire('Paused while you were away. Refresh the list to continue.');};
     const sync=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||active.current))return;
       active.current=document.visibilityState!=='hidden'&&navigator.onLine;
       if(!active.current){paused();return;}if(recover())void load();};
@@ -95,7 +106,7 @@ function PeriodCloseView({period,actorId}:Props) {
   },[load,recoveryKey,retire,cancelRead]);
   const send = async (action: string, command: unknown) => {
     if (busy || mutating.current || !recoveryReady) return;
-    if(!active.current||!sourceKey.current||performance.now()>=deadline.current){retire('Population expired. Reload before sending a period command.');return;}
+    if(!active.current||!sourceKey.current||performance.now()>=deadline.current){retire('This list is out of date. Refresh it before saving.');return;}
     cancelRead();const own=generation.current.value;
     let pending: PendingCommand;
     try {
@@ -103,7 +114,7 @@ function PeriodCloseView({period,actorId}:Props) {
       pending = saved ? JSON.parse(saved) : retry ?? { action, command };
       localStorage.setItem(recoveryKey, JSON.stringify(pending));
     } catch {
-      setNotice("Could not retain the original command. No payroll period change was sent.");
+      setNotice("We couldn’t keep a copy of this change, so nothing was sent. Try again.");
       return;
     }
     setRetry(pending);
@@ -115,7 +126,8 @@ function PeriodCloseView({period,actorId}:Props) {
       if (response.status === 400 || response.status === 409) {
         localStorage.removeItem(recoveryKey);
         setRetry(null);
-        setNotice(body.message);
+        // AR-4: the server's conflict line speaks of "population" and "export coverage"; its other messages show as sent.
+        setNotice(body.state === "conflict" ? "Something changed while you were working. Refresh the list and check it again." : body.message);
         return;
       }
       if (!response.ok || body.state !== "ready") throw Error();
@@ -125,13 +137,13 @@ function PeriodCloseView({period,actorId}:Props) {
       if(!loaded)return;
       setNotice(
         pending.action === "HANDOFF"
-          ? "Handoff report saved. Provider import and payroll processing remain unverified."
-          : "Saved with an immutable operation receipt.",
+          ? "Saved. NEVORA can’t confirm your provider imported it."
+          : "Saved.",
       );
     } catch {
       if(!active.current||own!==generation.current.value)return;
       setNotice(
-        "Outcome unconfirmed. Retry the original command before starting another.",
+        "We couldn’t confirm that was saved. Try again before changing anything else.",
       );
     } finally {
       if(active.current&&own===generation.current.value){mutating.current=false;setBusy(false);}
@@ -139,11 +151,11 @@ function PeriodCloseView({period,actorId}:Props) {
   };
   return (
     <section className="panel">
-      <h2>Complete payroll population and handoff</h2>
+      <h2>Who’s in this payroll</h2>
       <p>
-        Account creation and active status are not employment start or end
-        dates. Review period employment facts for every member. Preparing a
-        manifest does not mean payroll is processed.
+        Choose what to do with each person for this period. An active account
+        doesn’t say when someone started or left, so note that here. Nothing
+        you save here runs payroll.
       </p>
       <p role="status">{notice}</p>
       <button
@@ -152,7 +164,7 @@ function PeriodCloseView({period,actorId}:Props) {
         disabled={busy}
         onClick={() => void load()}
       >
-        Reload population
+        Refresh the list
       </button>
       {retry && (
         <button
@@ -161,10 +173,10 @@ function PeriodCloseView({period,actorId}:Props) {
           disabled={busy || review===null}
           onClick={() => void send(retry.action, retry.command)}
         >
-          Retry original period command
+          Try again
         </button>
       )}
-      <MobileHomeDisclosure id="mobile-payroll-population" label="Review payroll population" expandedLabel="Close population details"
+      <ListDisclosure open={startOpen} id="mobile-payroll-population" label="Choose who’s included" expandedLabel="Hide the list"
         available={Boolean(review) && !busy && !retry}
         summary={review && !busy && !retry ? <p>{review.members.length} people in this period.</p> : undefined}>
       {review && (
@@ -208,47 +220,43 @@ function PeriodCloseView({period,actorId}:Props) {
                     {member.active ? "Active account" : "Inactive account"}
                   </legend>
                   <p>
-                    <span className="desktop-payroll-review-copy">{member.cardState}</span>
-                    <span className="mobile-payroll-review-copy">{payrollReviewState(member.cardState)}</span> ·{" "}
+                    {payrollReviewState(member.cardState)} ·{" "}
                     {formatRecordedHours(member.recordedNanoseconds)} recorded ·{" "}
                     {member.hasPeriodEvidence
-                      ? "Historical period evidence retained"
-                      : "No recorded period evidence"}
-                    {member.issues.length ? <>
-                      <span className="desktop-payroll-review-copy">{` · Needs review: ${member.issues.join(", ")}`}</span>
-                      <span className="mobile-payroll-review-copy">{` · Needs review: ${payrollReviewIssues(member.issues)}`}</span>
-                    </> : null}
+                      ? "Has time or timecard history this period"
+                      : "No time or timecard history this period"}
+                    {member.issues.length ? ` · Needs review: ${payrollReviewIssues(member.issues)}` : null}
                   </p>
                   {!member.active && (
                     <p>
-                      ADP RUN export is unavailable for inactive accounts.
-                      Review a compatible neutral or custom export; do not drop
-                      this member silently.
+                      ADP RUN files can’t include inactive accounts. Use the
+                      CSV file or a custom layout for this person, so they
+                      aren’t left out by accident.
                     </p>
                   )}
                   <label>
-                    Period disposition{" "}
+                    What to do with this period{" "}
                     <select
                       required
                       name={`${member.employeeId}.disposition`}
                       defaultValue={saved?.disposition ?? ""}
                     >
                       <option value="" disabled>
-                        Review this member
+                        Choose one
                       </option>
                       <option value="INCLUDE">
-                        Include finalized time in exports
+                        Include their finalized hours
                       </option>
                       <option value="ZERO_TIME">
-                        Reviewed zero-time member
+                        No hours this period
                       </option>
                       <option value="EXCLUDE">
-                        Exclude with audited reason
+                        Leave out, with a reason
                       </option>
                     </select>
                   </label>
                   <label>
-                    Disposition reason{" "}
+                    Reason{" "}
                     <input
                       required
                       maxLength={600}
@@ -257,8 +265,8 @@ function PeriodCloseView({period,actorId}:Props) {
                     />
                   </label>
                   <label>
-                    Reviewed period employment facts (manager-attested; include
-                    entrants/leavers){" "}
+                    Employment this period, as you know it (say if they
+                    started or left){" "}
                     <textarea
                       required
                       maxLength={600}
@@ -274,14 +282,14 @@ function PeriodCloseView({period,actorId}:Props) {
               disabled={!recoveryReady || busy || retry !== null}
               type="submit"
             >
-              Save reviewed population revision
+              Save this list
             </button>
           </form>
-          <h3>Reconcile export batches</h3>
+          <h3>Match your export files</h3>
           <p>
-            Population revision {review.population?.revision ?? 0}. Select all
-            original export batches covering included members exactly once.
-            Zero-time members and audited exclusions remain in the manifest.
+            List version {review.population?.revision ?? 0}. Select the export
+            files that cover each included person exactly once. People with no
+            hours and people you left out stay on the period record.
           </p>
           {review.exports.map((e) => (
             <label key={e.actorId + e.operationId}>
@@ -331,51 +339,50 @@ function PeriodCloseView({period,actorId}:Props) {
               })
             }
           >
-            Prepare verified manifest
+            Save period record
           </button>
           {review.manifests.some(
             (m) => m.populationRevision === review.population?.revision,
           ) && (
             <p>
-              This population revision already has a manifest below. If data
-              changed, review and save a new population revision before
-              preparing another.
+              This version of the list already has a period record below. If
+              something changed, save the list again before making another.
             </p>
           )}
-          <h3>Prepared manifests</h3>
+          <h3>Period records</h3>
           {review.manifests.map((m) => (
             <article className="panel" key={m.id}>
               <h4>
                 {m.current
-                  ? "Manifest matches current reviewed population"
-                  : "Historical manifest — current data requires review"}
+                  ? "Matches the current list"
+                  : "Older record, made before the list changed"}
               </h4>
               <p>
-                Population revision {m.populationRevision} ·{" "}
+                List version {m.populationRevision} ·{" "}
                 {formatRecordedHours(m.totals.recordedNanoseconds)} recorded
               </p>
               <details>
-                <summary>Manifest fingerprint</summary>
+                <summary>Record fingerprint</summary>
                 <code style={{ overflowWrap: "anywhere" }}>{m.hash}</code>
               </details>
               <a
                 className="button secondary"
                 href={`/api/period-close/artifact?id=${m.id}&format=manifest`}
               >
-                Retrieve saved manifest
+                Download period record
               </a>
               {m.exports.map((e) => (
                 <div key={e.index}>
                   <a
                     href={`/api/period-close/artifact?id=${m.id}&format=csv&index=${e.index}`}
                   >
-                    Retrieve saved CSV batch {e.index + 1}
+                    Download CSV file {e.index + 1}
                   </a>{" "}
                   ·{" "}
                   <a
                     href={`/api/period-close/artifact?id=${m.id}&format=canonical&index=${e.index}`}
                   >
-                    Retrieve canonical JSON batch {e.index + 1}
+                    Download time record {e.index + 1} (JSON)
                   </a>
                   <details>
                     <summary>CSV fingerprint</summary>
@@ -386,8 +393,8 @@ function PeriodCloseView({period,actorId}:Props) {
                 </div>
               ))}
               <p>
-                Server artifact responses are recorded. Browser file completion
-                is unverified.
+                NEVORA records each download request. It can’t confirm the file
+                finished downloading.
               </p>
               <form
                 onSubmit={(event) => {
@@ -403,52 +410,52 @@ function PeriodCloseView({period,actorId}:Props) {
                 }}
               >
                 <fieldset disabled={!recoveryReady || busy || retry !== null || !m.current}>
-                  <legend>Record manual downstream handoff</legend>
+                  <legend>Note where you sent the files</legend>
                   <label>
-                    Destination{" "}
+                    Sent to{" "}
                     <input required name="destination" maxLength={600} />
                   </label>
                   <label>
-                    External reference{" "}
+                    Their reference or confirmation number{" "}
                     <input required name="reference" maxLength={600} />
                   </label>
                   <label>
-                    Reported state{" "}
+                    Status{" "}
                     <select name="kind">
                       <option value="REPORTED_SUBMITTED">
-                        Reported submitted
+                        I sent the files
                       </option>
                       <option value="REPORTED_IMPORTED">
-                        Reported imported (unverified)
+                        They imported the files (not checked by NEVORA)
                       </option>
                     </select>
                   </label>
                   <button className="button secondary" type="submit">
-                    Save handoff report
+                    Save note
                   </button>
                 </fieldset>
                 <p>
-                  No connected provider verifies import or payroll processing.
+                  NEVORA isn’t connected to your provider, so it can’t confirm
+                  the import or that payroll ran.
                 </p>
               </form>
-              <h4>Latest artifact and handoff events</h4>
+              <h4>Latest downloads and notes</h4>
               <p>{m.eventCoverage.returnedEvents} of {m.eventCoverage.totalEvents} events in this summary. {m.eventCoverage.complete ? 'All events for this manifest are shown.' : 'Latest event of each kind only. Load full period history below for older events.'}</p>
               <ul>
                 {m.events.map((event) => (
                   <li key={event.id}>
-                    {event.kind.replaceAll("_", " ")} · {event.createdAt} ·
-                    actor {event.actorId}
+                    {EVENT_LABELS[event.kind] ?? "Recorded"} · {whenText(event.createdAt)} ·
+                    by {review.members.find((member) => member.employeeId === event.actorId)?.name ?? "someone on your team"}
                     {event.payload.destination && (
                       <p>
                         {event.payload.destination} · reference{" "}
-                        {event.payload.reference} · Manager reported, provider
-                        verification unavailable.
+                        {event.payload.reference} · Reported by a manager. Not
+                        confirmed by the provider.
                       </p>
                     )}
                     {event.payload.filename && (
                       <p>
-                        {event.payload.filename} · Browser file completion
-                        unverified.
+                        {event.payload.filename} · Download not confirmed.
                       </p>
                     )}
                   </li>
@@ -459,7 +466,7 @@ function PeriodCloseView({period,actorId}:Props) {
           {review.manifests.length > 0 && <PeriodCloseHistory period={period} actorId={actorId} />}
         </div>
       )}
-      </MobileHomeDisclosure>
+      </ListDisclosure>
     </section>
   );
 }

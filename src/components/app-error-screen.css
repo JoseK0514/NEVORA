@@ -2,6 +2,8 @@
 .app-error-screen { min-height: 100vh; min-height: 100dvh; }
 .app-error-screen .nv-content { max-width: 560px; margin-inline: auto; }
 .app-error-screen__text { margin: 0; font: var(--nv-t-body); color: var(--nv-muted); }
+/* RA-15 (Nov 14, 2026): the reference support can quote, under the next step; one tap or click selects all of it. */
+.app-error-screen__ref { margin: 8px 0 0; font-size: 13px; line-height: 18px; color: var(--nv-muted, #5F6D68); overflow-wrap: anywhere; user-select: all; }
 .app-error-screen__actions { display: flex; flex-wrap: wrap; gap: var(--nv-s-3); margin-top: var(--nv-s-5); }
 @media (max-width: 359px) { .app-error-screen__actions .nv-btn { flex: 1 1 100%; } }
 .app-error-screen .nv-card__body { padding-top: var(--nv-s-5); }

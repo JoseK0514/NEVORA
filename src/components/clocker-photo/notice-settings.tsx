@@ -34,7 +34,7 @@ export function ClockerPhotoNoticeSettings({initialSettings,saveAction,readActio
  // in the photo settings form, so neither reads the other's fields. The notice preview shows only once a notice exists.
  return <details className="c-photos__help" open={mustReload||undefined}>
   <summary className="c-row"><span className="c-row__main"><span className="c-row__title">Help for your team</span>
-   <span className="c-row__detail"><span>{settings.profile.assistanceContact??'Not set yet'}</span></span></span><CaretDownIcon className="c-chev c-photos__caret" aria-hidden="true"/></summary>
+   <span className="c-row__detail"><span>{settings.profile.assistanceContact??'Not set yet'}</span></span></span><CaretDownIcon weight="bold" className="c-chev c-photos__caret" aria-hidden="true"/></summary>
   <form className="c-photos__helpform" onSubmit={save} aria-busy={pending} aria-labelledby="photo-assistance-title">
    <h3 className="c-sr" id="photo-assistance-title">Help for your team</h3>
    <fieldset disabled={pending} className="c-photos__fields"><legend className="c-sr">Help for your team</legend>

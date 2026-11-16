@@ -1,7 +1,9 @@
 'use client';
 
 import { keepWhole } from "@/lib/keep-whole";
+import { durationSentence } from "@/lib/duration-format";
 import Link from 'next/link';
+import { offlineListener } from "@/lib/offline-hold";
 import {ConfiguredAttendancePolicies} from './configured-attendance-policies';
 import {usePrivateFragmentFocus} from './private-fragment-focus';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
@@ -51,10 +53,7 @@ function differenceLabel(value?: string) {
     const ns = BigInt(value);
     const minutes = Number(ns / BigInt(60_000_000_000));
     if (!Number.isSafeInteger(minutes) || minutes < 1) return '<1 min';
-    if (minutes < 60) return `${minutes} min`;
-    const hours = Math.floor(minutes / 60);
-    const remainder = minutes % 60;
-    return remainder ? `${hours}h ${remainder}m` : `${hours}h`;
+    return durationSentence(minutes);
   } catch {
     return null;
   }
@@ -63,9 +62,9 @@ function differenceLabel(value?: string) {
 function observationDetail(item: Observation) {
   const delta = differenceLabel(item.evidence.differenceNanoseconds);
   if (delta) return delta;
-  if (item.kind === 'SCHEDULE_UNMATCHED') return 'Recorded punch has no saved schedule match.';
-  if (item.kind === 'SCHEDULE_AMBIGUOUS') return 'Saved schedule context could not resolve one shift.';
-  if (item.kind === 'TIME_HISTORY_INCONSISTENT') return 'Recorded time history is internally inconsistent.';
+  if (item.kind === 'SCHEDULE_UNMATCHED') return 'This clock-in doesn’t match a scheduled shift.';
+  if (item.kind === 'SCHEDULE_AMBIGUOUS') return 'We couldn’t tell which shift this clock-in belongs to.';
+  if (item.kind === 'TIME_HISTORY_INCONSISTENT') return 'These clock times don’t add up. Check the timecard.';
   return item.message;
 }
 
@@ -215,7 +214,7 @@ export function AttendanceReviewSurface({
                   : unavailable ? 'Couldn’t update.'
                     : 'Checking…'}
             {/* TC-50: offline, paused and no access say what to do in the main block; the footer keeps just the state word. */}
-            {ready || !(unavailable || denied || paused) ? <span>Updates every 30s.</span> : unavailable ? <span>Try Refresh.</span> : null}
+            {ready && !online ? <span>Offline.</span> : ready || !(unavailable || denied || paused) ? <span>Updates every 30s.</span> : unavailable ? <span>Try Refresh.</span> : null}
           </small>
         </div>
         {denied ? (
@@ -227,7 +226,7 @@ export function AttendanceReviewSurface({
             // IS-58: busy is aria-disabled, so keyboard focus stays on Refresh while it works.
             onClick={() => { if (!refreshing) onRefresh(); }}
             aria-disabled={refreshing || undefined}
-            disabled={paused}
+            disabled={paused || !online}
             aria-label={refreshing ? "Refreshing attendance review" : "Refresh attendance review"}
           >
             {refreshing ? 'Refreshing…' : 'Refresh'}
@@ -249,18 +248,24 @@ export function ManagerAttendanceReview() {
   useEffect(() => {
     const current = createAttendanceReviewController(setState, fetchAttendanceReview);
     controller.current = current;
-    let mounted = true,active = false;
+    let mounted = true,active = false,holding = false;
     const sync = (event?:Event) => {
       if(event?.type==='focus'&&(event.target!==window||active))return;
+      // Holding the loaded review offline (NV-001): nothing re-reads until 'online' runs a fresh check.
+      if(holding&&!navigator.onLine)return;
+      holding=false;
       current.pause();
       active=document.visibilityState!=='hidden'&&navigator.onLine;
       if (document.visibilityState !== 'hidden' && navigator.onLine) current.start();
     };
-    const pause = (event?:Event) => {if(event?.type==='blur'&&event.target!==window)return;active=false;current.pause();};
+    const pause = (event?:Event) => {if(event?.type==='blur'&&event.target!==window)return;active=false;holding=false;current.pause();};
+    // Review B2 / closing F1 (NV-001): offline with the person still here, the loaded review stays on screen read-only
+    // (no reads, no expiry; the shell says when it was updated). Stepping away still clears.
+    const offline = offlineListener({ pause: () => pause(), hold: () => { active=false; holding=true; current.hold(); } });
 
     document.addEventListener('visibilitychange', sync);
     window.addEventListener('online', sync);
-    window.addEventListener('offline', pause);
+    window.addEventListener('offline', offline);
     window.addEventListener('pagehide', pause);window.addEventListener('blur', pause);
     window.addEventListener('pageshow', sync);
     window.addEventListener('focus', sync);
@@ -276,7 +281,7 @@ export function ManagerAttendanceReview() {
       controller.current = null;
       document.removeEventListener('visibilitychange', sync);
       window.removeEventListener('online', sync);
-      window.removeEventListener('offline', pause);
+      window.removeEventListener('offline', offline);
       window.removeEventListener('pagehide', pause);window.removeEventListener('blur', pause);
       window.removeEventListener('pageshow', sync);
       window.removeEventListener('focus', sync);

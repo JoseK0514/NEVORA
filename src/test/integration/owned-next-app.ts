@@ -161,7 +161,7 @@ export function ownedDeviceEnvironment(origin:string,enabled=false):Record<strin
  * generated dev type-reference paths. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { centralBillingApiOrigin?:string; isolatedWorkspaces?:OwnedIsolatedRuntime;commerceRecoveryEnabled?:boolean; mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; nativePayrollEnabled?:boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { centralBillingApiOrigin?:string; isolatedWorkspaces?:OwnedIsolatedRuntime;commerceRecoveryEnabled?:boolean; mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;nativeAlertsEnabled?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; nativePayrollEnabled?:boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
   const isolatedEnvironment=ownedIsolatedEnvironment(options.isolatedWorkspaces);
   if(options.centralBillingApiOrigin){const api=new URL(options.centralBillingApiOrigin);if(api.origin!==options.centralBillingApiOrigin||api.protocol!=='http:'||!['127.0.0.1','localhost'].includes(api.hostname)||!api.port||api.username||api.password)throw Error('Owned billing UI requires an explicit loopback API');}
   if(options.isolatedWorkspaces){if(options.emptyDatabase!==true||options.commerceRecoveryEnabled)throw Error('Owned isolated admission requires empty unused fallback and explicit commerce transport');await verifyOwnedIsolatedRuntime(options.isolatedWorkspaces);}
@@ -308,10 +308,14 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
       ...advisorEnvironment,
       NEVORA_CLOCKER_PUNCH_ENABLED: options.clockerPunchEnabled === true ? 'true' : 'false',
       NEVORA_CLOCKER_ORIGIN: url,
-      NEVORA_CLOCKER_UI_V2: options.clockerUiV2===true?'true':'false',
       ...ownedMailEnvironment(url,options),
       NEXT_TELEMETRY_DISABLED: '1', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
       ...ownedDeviceEnvironment(url,options.deviceAlertsEnabled),
+      // UI scans of the phone app's Alerts page: the fictional test registration settings (no provider credentials, no
+      // delivery); the page's own status reads are answered by the scan, never by a provider.
+      ...(options.nativeAlertsEnabled?{NATIVE_PUSH_REGISTRATION_ENABLED:'true',NATIVE_PUSH_ENVIRONMENT:'test',NATIVE_PUSH_ORIGIN:'https://nevora.example',
+        NATIVE_PUSH_IOS_APP_ID:'com.velani.nevora.development',NATIVE_PUSH_IOS_PROVIDER:'apns-sandbox',NATIVE_PUSH_ANDROID_APP_ID:'com.velani.nevora.development',
+        NATIVE_PUSH_TOKEN_ENCRYPTION_KEY:Buffer.alloc(32,5).toString('base64url')}:{}),
       NEVORA_OWNED_APP_DATABASE: database.connectionString,
       NEVORA_OWNED_APP_IDENTITY: JSON.stringify(identity), NEVORA_OWNED_APP_BARRIERS: barriers,
       ...((options.loginDiagnostics||options.calendarDiagnostics||options.creationDiagnostics)?{NODE_OPTIONS:[

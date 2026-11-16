@@ -62,16 +62,16 @@ function EmployeeCoreProfileEditor({employee,locations,actorRole,ownerScope=null
       <input type="hidden" name="active" value={active} />
       <ReturnToNext />
       <div className="c-field__row">
-        <CorpField label="First name" htmlFor="edit-first"><input id="edit-first" className="c-in" name="firstName" defaultValue={employee.firstName} autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} /></CorpField>
-        <CorpField label="Last name" htmlFor="edit-last"><input id="edit-last" className="c-in" name="lastName" defaultValue={employee.lastName} autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} /></CorpField>
+        <CorpField label="First name" htmlFor="edit-first"><input id="edit-first" className="c-in" name="firstName" defaultValue={employee.firstName} autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} data-missing="Enter a first name" /></CorpField>
+        <CorpField label="Last name" htmlFor="edit-last"><input id="edit-last" className="c-in" name="lastName" defaultValue={employee.lastName} autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} data-missing="Enter a last name" /></CorpField>
       </div>
-      <CorpField label="Mobile phone" htmlFor="edit-phone"><PhoneField id="edit-phone" name="phone" defaultValue={employee.phone} autoComplete="off" enterKeyHint="next" required /></CorpField>
+      <CorpField label="Mobile phone" htmlFor="edit-phone"><PhoneField id="edit-phone" name="phone" defaultValue={employee.phone} autoComplete="off" enterKeyHint="next" required missing="Enter a mobile phone number" /></CorpField>
       <CorpField label="Email (optional)" htmlFor="edit-email"><input id="edit-email" className="c-in" name="email" type="email" inputMode="email" defaultValue={employee.email ?? ""} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done" maxLength={254} placeholder="name@example.com" /></CorpField>
       <div className="c-field__row">
         <CorpField label="Role" htmlFor="edit-role"><select id="edit-role" className="c-in" name="role" value={role} required onChange={event=>setRole(event.target.value as UserRole)}>
           {roleOptions.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}
         </select></CorpField>
-        <CorpField label="Location" htmlFor="edit-location"><select id="edit-location" className="c-in" name="primaryLocationId" defaultValue={employee.primaryLocationId} required>
+        <CorpField label="Location" htmlFor="edit-location"><select id="edit-location" className="c-in" name="primaryLocationId" defaultValue={employee.primaryLocationId} required data-missing="Choose a location">
           {locationOptions.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}
         </select></CorpField>
       </div>

@@ -32,3 +32,13 @@
 :is(#c-root, html) .c-tcx :is(.manager-correction-actions button, .manager-corrections-retry):focus-visible { outline: 2px solid var(--c-teal); outline-offset: 2px; }
 @media (max-width: 767px) { :is(#c-root, html) .c-tcx .manager-correction-actions button { flex: 1; min-width: 0; } }
 :is(#c-root, html) .c-tcx > .c-phone-sub { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+
+/* Review B6 (NV-080): the decision's two tiles; the changed time is bold and a chip says how much it moves; the reason is a
+ * labelled quote. */
+:is(#c-root, html) .c-tcx .correction-comparison--compact { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+:is(#c-root, html) .c-tcx .correction-comparison--compact strong b { font-weight: 800; color: var(--c-ink); }
+:is(#c-root, html) .c-tcx .correction-comparison--compact .correction-comparison__ask { background: #E8F3F1; }
+:is(#c-root, html) .c-tcx .correction-comparison__chg { display: inline-grid; place-items: center; height: 20px; margin-left: 8px; padding: 0 8px; border-radius: 999px; background: #FFFFFF; color: #0B6E69; font-size: 12px; line-height: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .c-tcx .manager-correction-reason { display: grid; gap: 2px; }
+:is(#c-root, html) .c-tcx .manager-correction-reason__k { font-size: 13px; line-height: 18px; font-weight: 600; color: var(--c-grey); }
+:is(#c-root, html) .c-tcx .manager-correction-reason q { quotes: "“" "”"; }

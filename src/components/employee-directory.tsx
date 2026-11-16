@@ -8,18 +8,22 @@ import { hasDirectoryFilters, type DirectoryFilters } from "@/lib/employee-direc
 import { CorpAvatar, CorpBody, CorpButtonLink, CorpCard, CorpLink, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "./corp/corp";
 import { EmployeeDirectoryFilters, EmployeeSearchInput } from "./employee-directory-filters";
 import { TeamLivePill, TeamLiveProvider, TeamWorkingNow } from "./team-live";
+import { TeamDeskPeople } from "./team-desk-people";
 import "./employee-directory-corp.css";
+import { TeamB, type TeamBPerson } from "./owner-b/team-b";
 
 /** How many people the People card shows before "See all" (Jose: don't overwhelm). */
 export const TEAM_SHOWN = 8;
 
-export function EmployeeDirectory({ employees, visibleEmployees, locations, filters, positions = [], recovery = true, clockerRecovery = false, words = DEFAULT_WORDS.en, showAll = false }: {
+export function EmployeeDirectory({ employees, visibleEmployees, locations, filters, positions = [], recovery = true, clockerRecovery = false, canImport = false, words = DEFAULT_WORDS.en, showAll = false }: {
   /** Position names for each person's detail line. */
   positions?: readonly Pick<Position, "id" | "name">[];
   /** The recovery tools, for roles that have them. */
   recovery?: boolean;
   /** The Owner also resets Clocker PINs (Employee PINs is Owner-only). */
   clockerRecovery?: boolean;
+  /** Owners see "Import a staff list" (the roster import is Owner-only). */
+  canImport?: boolean;
   /** Company vocabulary (B2). */
   words?: WordSlots;
   employees: readonly Employee[]; visibleEmployees: readonly Employee[];
@@ -37,7 +41,6 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
   const inactive = visibleEmployees.filter(employee => !employee.active).sort(byName);
   const activeCount = employees.filter(employee => employee.active).length;
   const all = showAll || filtered;
-  const shown = all ? active : active.slice(0, TEAM_SHOWN);
   const where = (employee: Employee) => { const location = locationsById.get(employee.primaryLocationId); return location ? `${location.shortName}${location.active ? "" : " (Inactive)"}` : "Location not assigned"; };
   // The position first; a Manager or Owner also shows their role (Owner premium R7: the screen matches what it announces).
   // Lead is on hold, so it is never added.
@@ -48,31 +51,55 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
   const row = (employee: Employee) => {
     const name = `${employee.firstName} ${employee.lastName}`;
     return <li key={employee.id}><CorpRow href={`/app/employees/${encodeURIComponent(employee.id)}`} bold title={name} detail={`${role(employee)} · ${where(employee)}`}
-      avatar={<CorpAvatar initials={employeeInitials(employee.firstName, employee.lastName)} grey={!employee.active} />}
-      trail={employee.active ? <TeamLivePill employeeId={employee.id} /> : undefined} chevron={false}
+      avatar={<CorpAvatar name={`${employee.firstName} ${employee.lastName}`} initials={employeeInitials(employee.firstName, employee.lastName)} grey={!employee.active} />}
+      trail={employee.active ? <TeamLivePill employeeId={employee.id} /> : undefined} chevron
       label={`${name}, ${employeeRoleLabel(employee.role)}, ${where(employee)}${employee.phone ? `, ${formatPhoneNumber(employee.phone)}` : ""}${employee.active ? "" : ", inactive"}`} /></li>;
   };
+  // Direction B (Jose approved Nov 5, 2026; mock "Owner · Team"): the phone screen, from the same list, links and search.
+  const bPerson = (employee: Employee): TeamBPerson => {
+    const name = `${employee.firstName} ${employee.lastName}`;
+    return { id: employee.id, name, detail: `${role(employee)} · ${where(employee)}`, href: `/app/employees/${encodeURIComponent(employee.id)}`, active: employee.active,
+      label: `${name}, ${employeeRoleLabel(employee.role)}, ${where(employee)}${employee.phone ? `, ${formatPhoneNumber(employee.phone)}` : ""}${employee.active ? "" : ", inactive"}` };
+  };
+  const inactiveCount = employees.filter(employee => !employee.active).length;
+  // Nov 14, 2026 inspection: Availability is one tap from Team (AR-9), and an Owner can import a staff list.
+  const bTools = [
+    { href: "/app?view=team", title: "Hours this week", detail: "Scheduled hours for each person", icon: "hours" as const },
+    { href: "/app/availability", title: "Availability", detail: "Who can work, and when", icon: "availability" as const },
+    ...(canImport ? [{ href: "/app/employees/import", title: "Import a staff list", detail: "Add many people at once", icon: "import" as const }] : []),
+    ...(recovery ? [{ href: "/app/account-recovery", title: "Help someone sign in", detail: clockerRecovery ? "Reset a password or Clocker PIN" : "Reset a password or sign-in", icon: "key" as const }] : []),
+    ...(!all && inactiveCount ? [{ href: "/app/employees?all=1#team-inactive", title: "Inactive people", detail: `${inactiveCount} no longer active`, icon: "inactive" as const }] : []),
+  ];
   return (
     <TeamLiveProvider>
     <CorpPage className="c-team c-page--narrow" labelledBy="team-title">
+      <TeamB people={active.map(bPerson)} limit={all ? undefined : TEAM_SHOWN} inactive={inactive.length && (all || !active.length) ? inactive.map(bPerson) : []} total={activeCount} query={filters.query} filtered={filtered}
+        people_word={words.people} person_word={person} tools={bTools} status={filters.status}
+        seeAll={!all && active.length > TEAM_SHOWN ? { href: "/app/employees?all=1", label: `See all ${active.length} ${people}` } : undefined}
+        searchHidden={<>{filters.role ? <input type="hidden" name="role" value={filters.role} /> : null}{filters.location ? <input type="hidden" name="location" value={filters.location} /> : null}</>} />
       <CorpTitle id="team-title" title="Team" sub={<>{`${activeCount} ${activeCount === 1 ? person : people}`}<TeamWorkingNow /></>}
         actions={<CorpButtonLink href="/app/employees/new" size="md"><Plus className="c-ic c-ic--s" weight="bold" aria-hidden="true" />{`Add ${person}`}</CorpButtonLink>} />
       <EmployeeDirectoryFilters className="c-team-search">
         {/* Without scripts, Enter and this button apply the search; with scripts it applies as you type (IS-35). */}
-        <button type="submit" name="status" value={filters.status} className="c-sr" data-apply="">Apply search</button>
+        <button type="submit" name="status" value={filters.status} className="c-sr" data-apply="" tabIndex={-1}>Apply search</button>
         {filters.role ? <input type="hidden" name="role" value={filters.role} /> : null}
         {filters.location ? <input type="hidden" name="location" value={filters.location} /> : null}
         <label className="c-in c-team-search__field">
           <span className="c-sr">Search {people}</span>
-          <MagnifyingGlass className="c-ic" aria-hidden="true" />
+          <MagnifyingGlass weight="bold" className="c-ic" aria-hidden="true" />
           <EmployeeSearchInput query={filters.query} placeholder="Search by name or position" />
         </label>
       </EmployeeDirectoryFilters>
       <p className="c-sr" role="status" aria-live="polite" aria-atomic="true">{filtered ? `${visibleEmployees.length} of ${employees.length} ${employees.length === 1 ? person : people}` : ""}</p>
       {/* Owner premium R5: list pages put the group's label above its card (CorpSection), "See all" on its line. */}
       {active.length ? <CorpSection id="team-people" label={filtered ? `${active.length} ${active.length === 1 ? "match" : "matches"}` : "People"}
-        aside={!all && active.length > TEAM_SHOWN ? <CorpLink href="/app/employees?all=1" label={`See all ${active.length} ${people}`}>See all</CorpLink> : undefined}>
-        <CorpCard as="div"><CorpRows label={people}>{shown.map(row)}</CorpRows></CorpCard>
+        aside={!all && active.length > TEAM_SHOWN ? <CorpLink href="/app/employees?all=1" label={`See all ${active.length} ${people}`}>{`See all ${active.length}`}</CorpLink> : undefined}>
+        {/* Closing F1 (NV-091): the phone's filters and live chips, with a chevron on each row (team-desk-people.tsx). */}
+        <TeamDeskPeople peopleLabel={people} limit={all ? undefined : TEAM_SHOWN} rows={active.map(employee => {
+          const name = `${employee.firstName} ${employee.lastName}`;
+          return { id: employee.id, name, initials: employeeInitials(employee.firstName, employee.lastName), detail: `${role(employee)} · ${where(employee)}`,
+            href: `/app/employees/${encodeURIComponent(employee.id)}`, label: `${name}, ${employeeRoleLabel(employee.role)}, ${where(employee)}${employee.phone ? `, ${formatPhoneNumber(employee.phone)}` : ""}` };
+        })} />
       </CorpSection> : inactive.length ? null : <CorpCard as="div" ariaLabel={people}><CorpBody>
         <p className="c-team__empty">{employees.length ? `No ${people} match “${filters.query}”.` : `No ${people} yet.`}</p>
         <CorpButtonLink href={employees.length ? "/app/employees" : "/app/employees/new"} kind={employees.length ? "secondary" : "primary"} size="md">{employees.length ? "Clear search" : `Add ${person}`}</CorpButtonLink>
@@ -81,8 +108,10 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
       <CorpCard as="div" ariaLabel="Team tools">
         <CorpRows label="Team tools">
           <li><CorpRow href="/app?view=team" bold title="Hours this week" detail="Scheduled hours for each person" chevron /></li>
+          <li><CorpRow href="/app/availability" bold title="Availability" detail="Who can work, and when" chevron /></li>
+          {canImport ? <li><CorpRow href="/app/employees/import" bold title="Import a staff list" detail="Add many people at once" chevron /></li> : null}
           {/* Board G-O-Team: one row for both ways back in. Its page resets a password and, for an Owner, links to Employee PINs. */}
-          {recovery ? <li><CorpRow href="/app/account-recovery" bold title="Help someone sign in" detail={clockerRecovery ? "Reset a password or Clocker PIN" : "Reset a password or recover an account"} chevron /></li> : null}
+          {recovery ? <li><CorpRow href="/app/account-recovery" bold title="Help someone sign in" detail={clockerRecovery ? "Reset a password or Clocker PIN" : "Reset a password or sign-in"} chevron /></li> : null}
           {!all && employees.some(employee => !employee.active) ? <li><CorpRow href="/app/employees?all=1#team-inactive" bold title="Inactive people" detail={`${employees.filter(employee => !employee.active).length} no longer active`} chevron /></li> : null}
         </CorpRows>
       </CorpCard>

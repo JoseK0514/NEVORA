@@ -11,5 +11,5 @@ it('keeps original-operation recovery reachable after its fresh edit source disa
  const operation=new HoursCorrectionOperation();
  await operation.submit({basis:'a'.repeat(32),command:{operationId:'c3849d11-f86e-4f08-8b90-84a8e2053290',kind:'ENTRY_BOUNDARY',timeEntryId:'no-longer-editable',proposedStartAt:'2026-10-27T13:00:00Z',proposedEndAt:'2026-10-27T17:00:00Z',reason:'Original proposal'}},async()=>({status:'unknown'}),()=>true);
  const html=renderToStaticMarkup(<HoursCorrectionForm snapshot={{state:'ready',authority:'a'.repeat(64),observedAt:'2026-10-27T18:00:00Z',timeZone:'America/Puerto_Rico',totalRequests:0,locations:[],targets:[],requests:[]}} basis={'b'.repeat(32)} edit="entry:no-longer-editable" draft={undefined} onDraft={noop} operation={operation} isActive otherPending={false} onSubmit={noop} onRetry={noop} onReset={noop} onRefresh={noop} onEdit={noop}/>);
- expect(html).toContain('Check submission status');expect(html).not.toContain('Send correction request');
+ /* B7 wording (NV-035): the correction flow says "request", not "submission". */expect(html).toContain('Check request status');expect(html).not.toContain('Send correction request');
 });

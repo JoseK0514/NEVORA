@@ -16,7 +16,7 @@ describe('saved native evidence presentation', () => {
     r.provenance.federalEmployeeTax.operations = [{ code: 'ADDITIONAL_MEDICARE', taxableMinor: '500', basisPoints: 90, exactAmount: { numerator: '9', denominator: '2' }, collectedMinor: '5', roundingDifference: { numerator: '1', denominator: '2' }, ruleId: '26_CFR_31_3102_1_D' }];
     const html = renderToStaticMarkup(<NativeReview result={r} />);
     expect(html).toContain('Puerto Rico withholding');
-    expect(html).toContain('Federal employee tax collection');
+    expect(html).toContain('Calculated Social Security and Medicare withholding'); expect(html).toContain('Rounded minus exact'); expect(html).not.toContain('Collected');
     expect(html).toContain('9 / 2'); expect(html).toContain('1 / 2'); expect(html).toContain('$0.05');
     expect(html).toContain('OWNER_AUTHORIZED_SHIFT_START_DAY'); expect(html).toContain('counts on the day it starts');
     expect(html).not.toContain('Daily precision remains unresolved');
@@ -50,7 +50,7 @@ describe('saved native evidence presentation', () => {
   it('does not invent a federal trace for historical results', () => {
     const r = result(); Reflect.deleteProperty(r.provenance, 'federalEmployeeTax'); Reflect.deleteProperty(r.provenance, 'boundaryEvidence');
     const html = renderToStaticMarkup(<NativeReview result={r} />);
-    expect(html).not.toContain('Federal employee tax collection');
+    expect(html).not.toContain('Calculated Social Security and Medicare withholding');
     expect(html).not.toContain('Workweek evidence');
   });
   it('rejects a malformed present federal or boundary trace before private rendering', () => {

@@ -43,7 +43,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 }
 
 /* ============================ Phones ============================ */
-@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 760px) {
   /* The page has its own navigation bar (‹ More, Export), as in the mockup; the shell's bar steps aside here. */
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-insights__nav {
     position: sticky; top: 0; z-index: 20; display: flex; align-items: center; min-height: 44px; margin: 0; padding: 0 4px 0 8px;
@@ -116,7 +116,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 }
 
 /* ============================ Desktop ============================ */
-@media (min-width: 761px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 761px) {
   /* Title on the left, the period picker and Export on the right; the content runs across below. */
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page.cm-insights { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; row-gap: 0; align-items: start; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) > .nv-pageband { grid-column: 1; grid-row: 1; min-width: 0; }
@@ -187,7 +187,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-chart__empty p { margin: 0; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-chart__empty-title { color: var(--cm-label); font-weight: 500; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-chart__empty :is(a, button) { display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; border: 0; background: none; color: var(--cm-tint); font: inherit; cursor: pointer; }
-@media (min-width: 761px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 761px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-chart__empty { min-height: 200px; font-size: .84375rem; line-height: 1.125rem; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-chart__empty :is(a, button) { min-height: 32px; }
 }
@@ -220,7 +220,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 }
 
 /* With the shell's phone header kept (bell and search stay reachable), the page's own bar sits right under it, above the title. */
-@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 760px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) { position: relative; padding-top: 44px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-insights__nav { position: absolute; top: 0; left: 16px; right: 16px; margin: 0; }
 }
@@ -231,7 +231,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header .cm-insights__button::after { content: ""; position: absolute; inset: -8px 0; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header .cm-insights__export-text { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }
 /* QA r3: below 1000px the chart and Hours by person stack. */
-@media (min-width: 761px) and (max-width: 999px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 761px) and (max-width: 999px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-insights__main { grid-template-columns: minmax(0, 1fr); }
 }
 
@@ -249,23 +249,23 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 }
 
 /* r4 P3: from 761 to 1299px the tools aren't in the top bar; they sit under the summary, so the summary keeps the full width. */
-@media (min-width: 761px) and (max-width: 1299px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 761px) and (max-width: 1299px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page.cm-insights { grid-template-columns: minmax(0, 1fr); }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) > .cm-insights__nav { grid-column: 1; grid-row: 2; justify-self: start; margin: 12px 0 16px; padding-top: 0; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) > .nv-content { grid-row: 3; }
 }
 
 /* Final pass P3: below 1300px the tools sit at the content's left edge, so their menus open to the right (not over the sidebar). */
-@media (min-width: 761px) and (max-width: 1299px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 761px) and (max-width: 1299px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-insights__menu { position-area: bottom span-right; }
 }
 /* Final pass P2-4: the period button grows with its text instead of spilling out of a fixed 30px box. */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-insights__button { height: auto; min-height: 30px; white-space: nowrap; }
 
 /* Review 13/50: an empty period says so, at the plot's height, instead of drawing a scaled empty grid. */
-@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 760px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-chart__empty { display: flex; align-items: center; justify-content: center; margin: 16px 0 0; min-height: 150px; color: #6B6B68; font: 400 .84375rem/1.125rem var(--cm-sys); }
 }
-@media (min-width: 761px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 761px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-chart__empty { display: flex; align-items: center; justify-content: center; margin: 0; min-height: 200px; color: #6B6B68; font: 400 .84375rem/1.125rem var(--cm-sys); }
 }

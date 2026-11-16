@@ -5,12 +5,16 @@ import { lower, wordPreset } from "@/lib/workspace-presentation/words";
 import { createLocationAction } from "../../actions";
 import { SettingsFrame } from "../../wave-c-kit";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "New location" };
+
 export default async function NewLocationPage() {
   await requireRoles(["OWNER"]);
   const words = wordPreset((await currentPresentation()).words).en;
   const place = lower(words.location);
   return (
-    <SettingsFrame title={`New ${place}`} modal={{ cancelHref: "/app/settings/locations", form: "new-location-form", submitLabel: "Add" }}>
+    // Review F4 (NV-102): on tablets and desktop Cancel and Add are in the card's footer; phones keep them in the top bar.
+    <SettingsFrame title={`New ${place}`} modal={{ cancelHref: "/app/settings/locations", form: "new-location-form", submitLabel: "Add", card: true }}>
       <NewLocationForm action={createLocationAction} words={{ location: words.location, locations: words.locations }} />
     </SettingsFrame>
   );

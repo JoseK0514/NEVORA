@@ -7,6 +7,9 @@ import { readSettings } from "@/lib/workspace-presentation/model";
 import { FeaturesEditor } from "@/components/features-editor";
 import { SettingsFrame } from "../wave-c-kit";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Features" };
+
 export const dynamic = "force-dynamic";
 
 export default async function FeaturesPage() {

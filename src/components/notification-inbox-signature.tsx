@@ -20,17 +20,17 @@ const filters:{value:NotificationFilter;label:string}[]=[{value:'all',label:'All
 const words=['No','One','Two','Three','Four','Five','Six','Seven','Eight','Nine'];
 /** "Three", or "12" from ten on. */
 const countWord=(n:number)=>n<words.length?words[n]:String(n);
-const kinds:Record<string,[string,string]>={schedule:['schedule review','schedule reviews'],update:['team update','team updates'],timeOff:['time-off update','time-off updates'],exchange:['shift request','shift requests'],availability:['availability update','availability updates'],callout:['Unable to work update','Unable to work updates'],statement:['pay statement','pay statements']};
+const kinds:Record<string,[string,string]>={schedule:['schedule review','schedule reviews'],update:['team update','team updates'],timeOff:['time-off update','time-off updates'],exchange:['shift request','shift requests'],availability:['availability update','availability updates'],callout:['can’t-work update','can’t-work updates'],statement:['pay statement','pay statements']};
 
 /** "2 schedule reviews · 1 team update", from the items waiting on the person. */
 export function waitingSummary(items:readonly EmployeeNotificationItem[]){
  const counts=new Map<string,number>();
- for(const item of items){const icon=notificationPresentation(item.label).icon;const key=kinds[icon]?icon:'other';counts.set(key,(counts.get(key)??0)+1);}
+ for(const item of items){const icon=notificationPresentation(item.label,item.eventType).icon;const key=kinds[icon]?icon:'other';counts.set(key,(counts.get(key)??0)+1);}
  return [...counts.entries()].map(([key,n])=>{const [one,many]=kinds[key]??['other update','other updates'];return `${n} ${n===1?one:many}`;}).join(' · ');
 }
 
 /** A short title for the row: what to do, in a few words. */
-const titles:Record<string,string>={schedule:'Review your schedule',update:'Read the team update',timeOff:'Your time-off request',exchange:'Your shift request',availability:'Your availability',callout:'Your Unable to work request',statement:'Your pay statement'};
+const titles:Record<string,string>={schedule:'Review your schedule',update:'Read the team update',timeOff:'Your time-off request',exchange:'Your shift request',availability:'Your availability',callout:'Your can’t-work request',statement:'Your pay statement'};
 
 function when(at:string){
  const date=new Date(at),today=new Date();
@@ -39,7 +39,7 @@ function when(at:string){
 }
 
 function Row({item}:{item:EmployeeNotificationItem}){
- const presentation=notificationPresentation(item.label);
+ const presentation=notificationPresentation(item.label,item.eventType);
  const unread=item.reviewState==='unread';
  return <li data-inbox-row><Link className={styles.ntRow} data-unread={unread||undefined} href={item.href} prefetch={false}>
   <span className={styles.ntDot} aria-hidden="true"/>

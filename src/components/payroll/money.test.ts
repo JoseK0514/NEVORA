@@ -19,3 +19,11 @@ describe('exact payroll display', () => {
     expect(() => formatPayrollMoney(value)).toThrow();
   });
 });
+
+it('formats a signed statement difference and refuses malformed or negative zero', async () => {
+  const { formatSignedPayrollMoney } = await import('./money');
+  expect(formatSignedPayrollMoney('1250')).toBe('+$12.50');
+  expect(formatSignedPayrollMoney('-1500')).toBe('−$15.00');
+  expect(formatSignedPayrollMoney('0')).toBe('$0.00');
+  for (const bad of ['-0', '01', '1.5', '', '+5']) expect(() => formatSignedPayrollMoney(bad)).toThrow();
+});

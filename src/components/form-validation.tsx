@@ -38,6 +38,9 @@ function labelText(field: Field) {
 function message(field: Field) {
   const v = field.validity, label = labelText(field);
   if (v.valueMissing) {
+    // Review Nov 11 (OW-023): a field may say its own sentence ("Enter a first name"): the label alone cannot give the
+    // article. Fields without one keep the sentence built from their label.
+    if (field.dataset.missing) return field.dataset.missing;
     if (field instanceof HTMLSelectElement) return label ? `Choose ${label}` : "Choose an option";
     if (field instanceof HTMLInputElement && (field.type === "checkbox" || field.type === "radio")) return "Select this to continue";
     return label ? `Enter ${label}` : "Fill in this field";
@@ -55,17 +58,47 @@ function errorId(field: Field) {
   return field.dataset.errorId;
 }
 
-function show(field: Field) {
+/** The field's aria-describedby with the message's id in it exactly once, whatever the attribute holds now. */
+export function describedByWith(current: string | null, id: string) {
+  const tokens = (current ?? "").split(/\s+/).filter(Boolean);
+  return (tokens.includes(id) ? tokens : [...tokens, id]).join(" ");
+}
+
+/** `announce` is false on submit: focus then moves to the first problem and its description (this message) is read, so an
+ * alert as well would say it twice. */
+function show(field: Field, announce = true) {
   const id = errorId(field);
   let node = document.getElementById(id);
   if (!node) {
     node = document.createElement("p");
     node.id = id; node.className = "field-error";
     field.insertAdjacentElement("afterend", node);
-    field.setAttribute("aria-describedby", [field.getAttribute("aria-describedby"), id].filter(Boolean).join(" "));
   }
-  node.textContent = message(field);
+  // Nov 14 inspection (RA-9): the link from the field to its message is re-asserted every time the message shows (it was
+  // set only when the message was first created, so a re-render that reset aria-describedby left the field unlinked).
+  const describedBy = describedByWith(field.getAttribute("aria-describedby"), id);
+  if (field.getAttribute("aria-describedby") !== describedBy) field.setAttribute("aria-describedby", describedBy);
+  // …and a message that appears when the person leaves the field, or changes while they type, is announced (role="alert").
+  if (announce) node.setAttribute("role", "alert"); else node.removeAttribute("role");
+  // Review F2 (NV-112): every message leads with the 16px bold warning glyph (Phosphor WarningCircle), so an error never
+  // relies on its red colour alone.
+  const text = message(field);
+  if (node.textContent !== text || !node.querySelector("svg")) {
+    node.replaceChildren(warningGlyph(), document.createTextNode(text));
+  }
   field.setAttribute("aria-invalid", "true");
+}
+
+const SVG = "http://www.w3.org/2000/svg";
+function warningGlyph() {
+  const svg = document.createElementNS(SVG, "svg");
+  svg.setAttribute("viewBox", "0 0 256 256"); svg.setAttribute("width", "16"); svg.setAttribute("height", "16");
+  svg.setAttribute("fill", "currentColor"); svg.setAttribute("aria-hidden", "true"); svg.setAttribute("focusable", "false");
+  svg.setAttribute("style", "display:inline-block;flex:none;vertical-align:-3px;margin-right:6px");
+  const path = document.createElementNS(SVG, "path");
+  path.setAttribute("d", "M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20Zm0,192a84,84,0,1,1,84-84A84.09,84.09,0,0,1,128,212Zm-12-80V80a12,12,0,0,1,24,0v52a12,12,0,0,1-24,0Zm28,40a16,16,0,1,1-16-16A16,16,0,0,1,144,172Z");
+  svg.append(path);
+  return svg;
 }
 
 function clear(field: Field) {
@@ -99,7 +132,7 @@ export function FormValidation() {
       const field = event.target;
       if (!isField(field)) return;
       event.preventDefault(); // replace the floating bubble with the inline message
-      show(field);
+      show(field, false);
       if (!firstInvalid) {
         firstInvalid = field;
         // After every invalid event of this submission has fired (microtasks

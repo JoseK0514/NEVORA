@@ -5,8 +5,8 @@ export function validateWorkspaceTimeZone(timeZone:unknown):string {
   return timeZone;
 }
 export function validateWorkspaceProfile(input: { name: unknown; timeZone: unknown }): { name: string; timeZone: string } {
-  if (typeof input.name !== 'string' || /[\p{Cc}\p{Cf}]/u.test(input.name)) throw new Error('Enter a valid workspace name.');
+  if (typeof input.name !== 'string' || /[\p{Cc}\p{Cf}]/u.test(input.name)) throw new Error('Enter your business name (1–160 characters).');
   const name = input.name.trim();
-  if (!name || [...name].length > 160) throw new Error('Workspace name must contain 1–160 characters.');
+  if (!name || [...name].length > 160) throw new Error('Enter your business name (1–160 characters).');
   return {name,timeZone:validateWorkspaceTimeZone(input.timeZone)};
 }

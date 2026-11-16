@@ -69,6 +69,10 @@ grants Manager powers.
 2. Build or fill the draft. Use the available manual shifts, **Copy previous
    week**, **Week templates** or draft-building controls. Review each assignment,
    position, designated lead, availability conflict and coverage warning.
+   If an edit or deletion says the shift changed since you opened it, keep your
+   draft. **Unsaved changes to copy** retains the submitted fields; copy what
+   you need before choosing **Reload current shift**, which replaces that draft.
+   Review the current assignment before submitting again.
 3. Open **Publish** or **Publish changes**. Review the listed draft locations,
    pending changes and blockers. Draft assignments and unpublished edits are not
    the employee's current published schedule.
@@ -87,6 +91,14 @@ requests** and **Availability** hold the corresponding records when enabled.
 Review the exact dates, people, request status and current rules before deciding.
 Another person's acceptance may still leave a request awaiting management.
 Refresh a changed review instead of approving from an old screen.
+
+In **Time exports**, **Who’s included and sent files** opens the period's people
+and saved records. **Latest downloads and notes** is a counted summary of the
+latest event of each kind, not the full history. **Load history** and **Load older
+events** show the full period history in pages, newest first, with loaded/total
+counts. All events in a snapshot are loaded only when the page says so.
+**Refresh history** includes newer events. A recorded download does not confirm
+that a file finished downloading or that a provider imported it.
 
 Live **Updates** communications remain under the D04 hold. A visible destination
 does not activate them; use your existing employer communication channel while

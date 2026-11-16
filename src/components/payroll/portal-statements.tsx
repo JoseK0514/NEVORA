@@ -56,7 +56,7 @@ export function PortalStatements({ runs, names = {} }: { runs: PayrollRun[]; nam
             </span>
             <span className="c-pay__stmt-actions">
               {statement.viewUrl ? <a className="c-link c-link--l c-pay__stmt-view" href={`${path}/view`} aria-label={`View ${who} pay statement, ${period}`}>View</a> : null}
-              <a className="c-pay__icon-btn" href={path} title={file} aria-label={`Download ${who} pay statement, ${period} (${file})`}><DownloadSimpleIcon className="c-ic" aria-hidden="true" /></a>
+              <a className="c-pay__icon-btn" href={path} title={file} aria-label={`Download ${who} pay statement, ${period} (${file})`}><DownloadSimpleIcon weight="bold" className="c-ic" aria-hidden="true" /></a>
             </span>
           </div>
         </li>;

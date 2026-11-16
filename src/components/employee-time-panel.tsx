@@ -40,9 +40,9 @@ function EntryDetails({entry,zone}:{entry:EmployeeTimeEntry;zone:string}){
  return <details className="employee-time-entry">
   <summary>
    <span className="employee-time-entry-date" aria-hidden="true"><span>{new Intl.DateTimeFormat('en-US',{timeZone:zone,weekday:'short'}).format(new Date(entry.clockInAt))}</span><b>{new Intl.DateTimeFormat('en-US',{timeZone:zone,day:'numeric'}).format(new Date(entry.clockInAt))}</b></span>
-   <span className="employee-time-entry-label"><strong><time dateTime={entry.clockInAt}>{keepWhole(entryDate(entry.clockInAt,zone))}</time></strong><small className="employee-time-entry-range">{entryRange(entry,zone)}</small><small className="employee-time-entry-location"><MapPinIcon size={14} aria-hidden="true" />{entry.locationName}</small></span>
+   <span className="employee-time-entry-label"><strong><time dateTime={entry.clockInAt}>{keepWhole(entryDate(entry.clockInAt,zone))}</time></strong><small className="employee-time-entry-range">{entryRange(entry,zone)}</small><small className="employee-time-entry-location"><MapPinIcon size={14} weight="bold" aria-hidden="true" />{entry.locationName}</small></span>
    <span className="employee-time-entry-total">{duration(entry.elapsedSeconds)}<small>{entry.clockOutAt?'Completed':'In progress'}</small></span>
-   <span className="employee-time-disclosure" aria-hidden="true"><PlusIcon className="entry-expand" size={18}/><MinusIcon className="entry-collapse" size={18}/></span>
+   <span className="employee-time-disclosure" aria-hidden="true"><PlusIcon className="entry-expand" size={18} weight="bold"/><MinusIcon className="entry-collapse" size={18} weight="bold"/></span>
   </summary>
   <div className="employee-time-punches">
    <dl><div><dt>Clock in</dt><dd><time dateTime={entry.clockInAt}>{stamp(entry.clockInAt,zone)}</time></dd></div>
@@ -80,8 +80,8 @@ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}
    {corporate&&ready&&!compact?<div className="employee-corporate-freshness">
     <p>Updated <time dateTime={ready.observedAt}>{checked(ready.observedAt,ready.timeZone)}</time></p>
    </div>:null}{controls}
-   {corporate&&!ready&&!compact&&!paused&&!denied&&time?.state!=='unavailable'?<details className="employee-corporate-record-details" aria-hidden="true"><summary tabIndex={-1}>Record details <CaretDownIcon size={16} aria-hidden="true"/></summary></details>:null}
-   {corporate&&ready&&!compact?<details className="employee-corporate-record-details"><summary>Record details <CaretDownIcon size={16} aria-hidden="true"/></summary><div><p>Updated <time dateTime={ready.observedAt}>{stamp(ready.observedAt,ready.timeZone)}</time></p><p>{timeZoneLabel(ready.timeZone)} · Updates every 30s while active.</p></div></details>:null}</footer>
+   {corporate&&!ready&&!compact&&!paused&&!denied&&time?.state!=='unavailable'?<details className="employee-corporate-record-details" aria-hidden="true"><summary tabIndex={-1}>Record details <CaretDownIcon size={16} weight="bold" aria-hidden="true"/></summary></details>:null}
+   {corporate&&ready&&!compact?<details className="employee-corporate-record-details"><summary>Record details <CaretDownIcon size={16} weight="bold" aria-hidden="true"/></summary><div><p>Updated <time dateTime={ready.observedAt}>{stamp(ready.observedAt,ready.timeZone)}</time></p><p>{timeZoneLabel(ready.timeZone)} · Updates every 30s while active.</p></div></details>:null}</footer>
  </>;
  if(compact)return <div className="employee-clock-compact">{content}</div>;
  const overview=<>
@@ -89,7 +89,7 @@ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}
   {ready?
    <section className="employee-view-surface employee-time-today" aria-labelledby="employee-time-today-title">
     <header className="employee-time-section-heading"><h2 id="employee-time-today-title">Today</h2><time dateTime={ready.date}>{new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'long',day:'numeric',year:'numeric'}).format(new Date(ready.date+'T12:00:00Z'))}</time></header>
-    <dl className="employee-time-metrics"><div><dt><ClockIcon size={16} aria-hidden="true"/>Recorded time</dt><dd>{duration(ready.today.recordedSeconds)}</dd></div><div><dt><CoffeeIcon size={16} aria-hidden="true"/>Break time</dt><dd>{duration(ready.today.breakSeconds)}</dd></div></dl>
+    <dl className="employee-time-metrics"><div><dt><ClockIcon size={16} weight="bold" aria-hidden="true"/>Recorded time</dt><dd>{duration(ready.today.recordedSeconds)}</dd></div><div><dt><CoffeeIcon size={16} weight="bold" aria-hidden="true"/>Break time</dt><dd>{duration(ready.today.breakSeconds)}</dd></div></dl>
     <p className="employee-time-note">Today’s totals. Hours include breaks and aren’t payroll hours.</p>
     {ready.today.entries.length?<div className="employee-time-entries">{ready.today.entries.map(e=><EntryDetails key={e.id} entry={e} zone={ready.timeZone}/>)}</div>:<p className="employee-time-empty">No recorded punches today.</p>}
    </section>:null}
@@ -136,14 +136,14 @@ export function EmployeeTimeSignatureView({state,onRefresh,context}:{state:Emplo
  const word=ready?status(current):paused?'Updates paused':denied?'Your session ended':unavailable?'Couldn’t load your time':'Loading recorded time';
  const where=current&&ready?<> · {current.locationName} since <time dateTime={current.clockInAt}>{clockedInAt(current.clockInAt,ready.timeZone,ready.date)}</time></>:null;
  return <div className="q-page q-mytime" data-nv-page="">
-  <div className="q-nav"><Link className="q-nav__l" href="/app/my-pay"><CaretLeftIcon className="q-ic q-ic--s" aria-hidden="true"/>Pay</Link><span/><span/></div>
+  <div className="q-nav"><Link className="q-nav__l" href="/app/my-pay"><CaretLeftIcon weight="bold" className="q-ic q-ic--s" aria-hidden="true"/>Pay</Link><span/><span/></div>
   <div className="q-hd"><h1>My time</h1><p role="status"><span data-state={ready?current?.state??'OFF_CLOCK':undefined} className="q-mytime__state">{todayLabel} · <span>{word}</span></span>{where}</p></div>
   <HoldHeight holding={!ready} memory="my-time-quiet">
    {ready?<>
     <ul className="q-list" style={{marginTop:16}}>
      <li><div className="q-row q-row--one"><span className="q-rt"><b>Worked today</b></span><span className="q-rv q-rv--l">{duration(ready.today.recordedSeconds)}</span></div></li>
      <li><div className="q-row q-row--one"><span className="q-rt"><b>On break</b></span><span className="q-rv q-rv--l">{current?.state==='ON_BREAK'?<>{duration(current.breaks.at(-1)!.elapsedSeconds)} now · </>:null}{duration(ready.today.breakSeconds)}</span></div></li>
-     <li><Link className="q-row q-row--one" href="/app/timecards"><span className="q-rt"><b>This week</b></span><span className="q-rv q-rv--l">Timecards</span><CaretRightIcon className="q-chev" aria-hidden="true"/></Link></li>
+     <li><Link className="q-row q-row--one" href="/app/timecards"><span className="q-rt"><b>This week</b></span><span className="q-rv q-rv--l">Timecards</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></Link></li>
     </ul>
     <div className="q-grp"><h2 id="employee-time-today-title">Today</h2></div>
     {ready.today.entries.length?<ul className="q-list" aria-labelledby="employee-time-today-title">{ready.today.entries.map(e=><EntrySheetRow key={e.id} entry={e} zone={ready.timeZone}/>)}</ul>:<p className="q-empty">No recorded punches today.</p>}

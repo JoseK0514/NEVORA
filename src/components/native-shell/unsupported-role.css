@@ -1,0 +1,8 @@
+/* "Use NEVORA in your web browser" (the phone app, Manager and Lead), Direction B: the 404's band and reading card
+   (src/app/not-found.css); Sign out is the card's teal pill, full width on a phone. */
+.nu-page .not-found-text + .not-found-text { margin-top: 10px; }
+.nu-page form { margin: 0; }
+.nu-page .nu-signout { width: 100%; margin-top: 20px; border: 0; font-family: inherit; line-height: 1; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 120ms ease, background-color 140ms ease; }
+.nu-page .nu-signout:active { transform: scale(.96); }
+@media (min-width: 768px) { .nu-page .nu-signout { width: fit-content; } }
+@media (prefers-reduced-motion: reduce) { .nu-page .nu-signout { transition: none; } .nu-page .nu-signout:active { transform: none; } }

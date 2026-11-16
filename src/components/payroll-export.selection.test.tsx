@@ -41,7 +41,8 @@ it('guides recorded approval and reviewed zero-time finalization separately whil
  const approved=card('APPROVED');
  await mount([card('FINALIZED'),card('DRAFT',false,true),{...approved,state:'APPROVED',history:approved.history.map(h=>({...h,action:'APPROVE'}))},card('BLANK',false)]);
  const rendered=html();
- expect(rendered).toContain('Approve 1 timecard and finalize 1 first');
+ // BR-2 (Nov 14): the step export is missing, finalizing, is named for every timecard that isn't finalized.
+ expect(rendered).toContain('Approve 1 timecard, then finalize 2 first');
  expect(rendered).toContain('start=2026-09-21&amp;end=2026-09-27');
  click('Select visible finalized timecards');expect(html()).toContain('1 selected');
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Export PRIVATE APPROVED').disabled).toBe(true);

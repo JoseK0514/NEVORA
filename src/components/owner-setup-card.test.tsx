@@ -109,3 +109,29 @@ it('corporate Home: one row naming the next step in short words (round 2, copy r
   expect(row({coverageOpen: true, missingTargets: 2}, 0)).toContain('>0 of 2 done · Next: add a location<');
   expect(row({coverageOpen: false, missingTargets: 0})).toBe('');
 });
+
+it('with the server’s setup facts the row counts every step and opens the next one (backend, Nov 15, 2026)', () => {
+  const progress = {teamSize: 1, publishedSchedule: false, registeredClocks: 0, peopleWithPins: 0, paySchedule: false};
+  const row = (over: Partial<typeof progress>, payroll = true, steps = {coverageOpen: false, missingTargets: 0}) =>
+    renderToStaticMarkup(<OwnerSetupCorp steps={steps} locationCount={1} progress={{...progress, ...over}} payroll={payroll}/>);
+  // A new Owner: alone, nothing published, no tablet, no PINs, no pay schedule.
+  expect(row({})).toContain('>2 of 7 done · Next: add your team<');
+  expect(row({})).toContain('href="/app/employees"');
+  expect(row({teamSize: 4})).toContain('>3 of 7 done · Next: publish a schedule<');
+  expect(row({teamSize: 4, publishedSchedule: true})).toContain('>4 of 7 done · Next: register a time clock tablet<');
+  expect(row({teamSize: 4, publishedSchedule: true})).toContain('href="/app/settings/clocker"');
+  expect(row({teamSize: 4, publishedSchedule: true, registeredClocks: 1})).toContain('>5 of 7 done · Next: set clock-in PINs<');
+  expect(row({teamSize: 4, publishedSchedule: true, registeredClocks: 1, peopleWithPins: 3})).toContain('>6 of 7 done · Next: set your pay schedule<');
+  // Without payroll the pay schedule isn't a step; everything done hides the row.
+  expect(row({teamSize: 4, publishedSchedule: true, registeredClocks: 1, peopleWithPins: 3}, false)).toBe('');
+  expect(row({teamSize: 4, publishedSchedule: true, registeredClocks: 1, peopleWithPins: 3, paySchedule: true})).toBe('');
+  // The two configuration checks still come first after the team.
+  expect(row({teamSize: 4}, true, {coverageOpen: true, missingTargets: 0})).toContain('Next: coverage periods<');
+});
+
+it('without the setup facts the row is the two checks, never more setup shown as done', () => {
+  const html = renderToStaticMarkup(<OwnerSetupCorp steps={{coverageOpen: false, missingTargets: 2}} locationCount={1} progress={null} payroll/>);
+  expect(html).toContain('>1 of 2 done · Next: weekly hour targets<');
+  // No action center read: no row at all, even with the facts.
+  expect(renderToStaticMarkup(<OwnerSetupCorp steps={null} locationCount={1} progress={{teamSize: 9, publishedSchedule: true, registeredClocks: 1, peopleWithPins: 9, paySchedule: true}} payroll/>)).toBe('');
+});

@@ -11,8 +11,11 @@ vi.mock('@/lib/payroll/service',()=>({payrollFeatureEnabled:()=>false}));
 vi.mock('@/lib/workspace-presentation/current.server',()=>({currentBrand:async()=>({modules:{}})}));
 vi.mock('@/lib/navigation',()=>({mobileTabsForRole:()=>[]}));
 import MyTimePage from './page';
+// Direction B: Employees and Leads read the B Time screen, so the older panel (and its payday line) is checked as a Manager.
+// Direction B: Employees and Leads read the B Time screen, so the older panel (with its payday line) is not rendered,
+// and nothing on this page claims a payday was paid.
 it('describes a calendar payday as scheduled rather than proof of payment',async()=>{
- const view=await MyTimePage(),panel=view.props.children;
- expect(panel.props.signature.payLine).toBe('Scheduled payday: Friday, Nov 20 for Nov 9–15');
- f.pay=null;expect((await MyTimePage()).props.children.props.signature.payLine).toBeUndefined();
+ const view=await MyTimePage();
+ expect(view.props.children).toBeNull();
+ expect(JSON.stringify(view.props)).not.toMatch(/\bPaid\b/);
 });

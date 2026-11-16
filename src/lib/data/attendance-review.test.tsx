@@ -69,7 +69,7 @@ it('derives both manager role and fresh reader proof from the portal cookie boun
 
 it.each(['EMPLOYEE','LEAD'] as const)('rejects %s before database setup or proof derivation',async role=>{
   vi.mocked(requireSession).mockResolvedValue({...employee,role});
-  await expect(getAttendanceReview()).rejects.toThrow('redirect:/app');
+  await expect(getAttendanceReview()).rejects.toThrow('redirect:/app/restricted');
   expect(getDb).not.toHaveBeenCalled();
   expect(requireSessionMutationProof).not.toHaveBeenCalled();
   expect(readAttendanceReview).not.toHaveBeenCalled();

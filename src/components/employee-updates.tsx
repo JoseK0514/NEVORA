@@ -14,6 +14,7 @@ import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {CorpEmpty} from '@/components/corp/corp';
 import {useCommunicationResource, type CommunicationMode} from '../lib/communications/client';
 import type {CommunicationListRead, CommunicationRead} from '../lib/communications/types';
+import {BChip} from './owner-b/b-kit';
 import './updates-review.css';
 
 type ReadyUpdate = Extract<CommunicationRead, {state: 'ready'}>;
@@ -79,9 +80,9 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
    <QuietNav back={{href: '/app/more', label: 'More'}} title="Updates" right={<Link className="q-nav__r updates-new" href="/app/updates/compose">New update</Link>} />
    <QuietHeader title="Updates" />
    <section className="updates-inbox" aria-label="Workplace updates" aria-busy={refreshing}>
-    <div className="q-seg" role="group" aria-label="Filter updates">
+    {/* Review B5 (NV-258): segment counts read "Needs reply 1", like "Waiting 7" and "All 16". */}<div className="q-seg" role="group" aria-label="Filter updates">
      <button type="button" aria-pressed={!needsReply} disabled={!current} onClick={() => setFilter('all')}>All</button>
-     <button type="button" aria-pressed={needsReply} disabled={!current} onClick={() => setFilter('to-review')} aria-label={current ? `Needs reply, ${toReview}` : 'Needs reply'}>{current && toReview ? `Needs reply · ${toReview}` : 'Needs reply'}</button>
+     <button type="button" aria-pressed={needsReply} disabled={!current} onClick={() => setFilter('to-review')} aria-label={current ? `Needs reply, ${toReview}` : 'Needs reply'}>{/* Review F5 (NV-103): the count is the segmented control's count pill. */}Needs reply{current && toReview ? <span className="c-count c-num">{toReview}</span> : null}</button>
     </div>
     <HoldHeight holding={!current} memory="updates-manager" className="cm-updates-hold">
     {current?.state === 'partial' ? <p className="q-help" role="status">Some updates couldn’t load. Try again to check for the rest.</p> : null}
@@ -89,7 +90,10 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
       {signedOut ? <Link className="q-btn q-btn--sec" href="/login">Sign in</Link> : unavailableReason ? <button type="button" className="q-btn q-btn--sec" disabled={paused} aria-disabled={busy || undefined} onClick={() => { if (!busy) onRefresh(); }}>Try again</button> : null}</div>
      : visible.length ? <ul className="q-list updates-list" style={{ marginTop: 16 }}>{visible.map(item => <li key={item.id}><Link className="q-row" href={'/app/updates/' + item.id} prefetch={false}>
        <span className="q-rt"><b>{item.title}</b><i><time dateTime={item.publishedAt}>{day(item)}</time>{` · ${readLine(item)}`}</i></span>
-       <CaretRightIcon className="q-chev" aria-hidden="true" />
+       {/* Review B1 (NV-097): the update that needs a reply says so in amber, as the segment's count does. */}
+       {/* Phase 3 (OW-034): the kit's amber chip; the older pill was repainted as bold plain text. */}
+       {inReviewGroup(item) ? <BChip tone="amber">Needs reply</BChip> : null}
+       <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
       </Link></li>)}</ul>
      : <div className="c-page c-embed updates-empty" role="status"><CorpEmpty title={filter === 'all' ? 'No updates yet' : 'Nothing needs a reply'}
       body={filter === 'all' ? 'Tell your team about hours, menus or events.' : 'Updates that must be read show up here.'}
@@ -111,19 +115,19 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
  const sub = !current ? '\u00a0' : required ? `${required} to confirm` : toReview ? `${toReview} to review` : 'All caught up';
  const kind = (item: ReadyUpdate) => updateKinds[item.type];
  return <div className="q-page q-updates-e" data-nv-page="">
-  <QuietNav back={{href: '/app/more', label: 'More'}} right={<Link className="q-nav__r q-nav__r--ink" href="/app/updates/compose" aria-label="Message today’s team"><PlusIcon className="q-ic" aria-hidden="true" /></Link>} />
+  <QuietNav back={{href: '/app/more', label: 'More'}} right={<Link className="q-nav__r q-nav__r--ink" href="/app/updates/compose" aria-label="Message today’s team"><PlusIcon weight="bold" className="q-ic" aria-hidden="true" /></Link>} />
   <QuietHeader title="Updates" sub={sub} />
   <section aria-label="Workplace updates" aria-busy={refreshing}>
-   <div className="q-seg" role="group" aria-label="Filter updates">{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} disabled={!current} onClick={() => setFilter(option.id)}>{option.id !== 'all' && current && option.count ? `${option.label} · ${option.count}` : option.label}</button>)}</div>
+   <div className="q-seg" role="group" aria-label="Filter updates">{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} disabled={!current} onClick={() => setFilter(option.id)}>{option.id !== 'all' && current && option.count ? `${option.label} ${option.count}` : option.label}</button>)}</div>
    {current?.state === 'partial' ? <p className="q-help" role="status">Some updates couldn’t load. Try again to check for the rest.</p> : null}
    {!current ? <div role="status" style={{marginTop: 24}}><p className="q-empty">{stateText}</p>
      {signedOut ? <Link className="q-btn q-btn--sec" href="/login">Sign in</Link> : unavailableReason ? <button type="button" className="q-btn q-btn--sec" disabled={paused || refreshing} onClick={onRefresh}>{refreshing ? 'Checking…' : 'Try again'}</button> : null}</div>
     : visible.length ? <ul className="q-list updates-list" style={{marginTop: 16}}>{visible.map(item => {
      const {Icon, label} = kind(item);
      return <li key={item.id}><Link className="q-row q-row--av" href={'/app/updates/' + item.id} prefetch={false} aria-label={`${item.title}, ${label}, ${status(item)}, ${longDate(item)}`}>
-      <span className={`q-av${!isReviewed(item) ? ' q-av--tint' : ''}`} aria-hidden="true"><Icon className="q-ic" /></span>
+      <span className={`q-av${!isReviewed(item) ? ' q-av--tint' : ''}`} aria-hidden="true"><Icon weight="bold" className="q-ic" /></span>
       <span className="q-rt"><b>{item.title}</b><i>{[item.authorContext, `${status(item)} ${shortDate(item)}`].filter(Boolean).join(' · ')}</i></span>
-      <CaretRightIcon className="q-chev" aria-hidden="true" />
+      <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
      </Link></li>;
     })}</ul>
     : <div role="status" style={{marginTop: 24}}><p className="q-empty">{emptyTitle}. {emptyDescription}</p>{filter !== 'all' ? <button type="button" className="q-btn q-btn--quiet" onClick={() => setFilter('all')}>View all updates</button> : null}</div>}

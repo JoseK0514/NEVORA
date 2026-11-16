@@ -14,7 +14,7 @@ export function BlockedOpenShifts({ shifts, availabilityHref = '/app/availabilit
   const availability = availabilityHref && shifts.some(shift => shift.reasons?.includes(REASON_TEXT.availability));
   return <details className="blocked-open-shifts">
     <summary>
-      <span>Shifts you can’t pick up <span className="blocked-open-count">{shifts.length}</span></span>
+      <span>Why other shifts aren’t available <span className="blocked-open-count">{shifts.length}</span></span>
       <CaretDownIcon size={16} weight="bold" aria-hidden="true" />
     </summary>
     <ul className="blocked-open-list">
@@ -24,7 +24,7 @@ export function BlockedOpenShifts({ shifts, availabilityHref = '/app/availabilit
           <time className="blocked-open-date" dateTime={shift.date}><span>{label.weekday}</span><strong>{Number(shift.date.slice(8))}</strong></time>
           <div className="blocked-open-copy">
             <strong>{formatTime(shift.startTime)} <span aria-hidden="true">–</span> {formatTime(shift.endTime)}</strong>
-            <span className="blocked-open-place"><MapPinIcon size={16} aria-hidden="true" />{shift.location}{shift.position ? ` · ${shift.position}` : ''}</span>
+            <span className="blocked-open-place"><MapPinIcon size={16} weight="bold" aria-hidden="true" />{shift.location}{shift.position ? ` · ${shift.position}` : ''}</span>
             <ul className="blocked-open-reasons" aria-label="Why you can’t pick this up">{(shift.reasons ?? []).map(reason => <li key={reason}>{reason}</li>)}</ul>
           </div>
         </li>;

@@ -16,10 +16,10 @@ vi.mock('@/lib/business-improvements/company-policies/service',()=>({
 }));
 beforeEach(()=>{source.fail=false;source.rows=policyUIRows();});
 it('renders the native Owner page with valid current and malformed historical policy',async()=>{
- const html=renderToStaticMarkup(await Page());expect(html).toContain('Company policies');expect(html).toContain('q-rv--l">Revision 3<');expect(html).toContain('Revision unavailable');expect(html).not.toContain('NEVER_RENDER_INVALID_PRIVATE_PAYLOAD');
+ const html=renderToStaticMarkup(await Page());expect(html).toContain('Company policies');expect(html).toContain('q-rv--l">Revision 3<');/* B7 wording (NV-122) */expect(html).toContain('This version can’t be used');expect(html).not.toContain('NEVER_RENDER_INVALID_PRIVATE_PAYLOAD');
 });
 it('renders selected-invalid recovery without activating an older policy',async()=>{
- source.rows=policyUIRows(false);const html=renderToStaticMarkup(await Page());expect(html).toContain('Current revision 2 unavailable');expect(html).not.toContain('name="lateness.threshold"');
+ source.rows=policyUIRows(false);const html=renderToStaticMarkup(await Page());/* B7 wording (NV-122) */expect(html).toContain('Version 2 can’t be used');expect(html).not.toContain('name="lateness.threshold"');
 });
 it('renders private retryable unavailable state rather than an actionable empty editor',async()=>{
  source.fail=true;const html=renderToStaticMarkup(await Page());expect(html).toContain('Policies unavailable');expect(html).toContain('Retry read');expect(html).not.toContain('PRIVATE_SQL_DIAGNOSTIC');expect(html).not.toContain('Save policies');

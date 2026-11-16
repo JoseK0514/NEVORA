@@ -53,7 +53,7 @@ it('keeps explicit selection and a safe coverage path when there are no targets'
 
 vi.mock('@/lib/data/shift-changes',()=>({readShiftChangeAvailability:async()=>state.refuse?{allowed:false,notice:state.refuse}:{allowed:true,notice:null}}));
 it('opened without choosing a shift returns to Shift requests with no false error (inspection Oct 24)',async()=>{
- await expect(SwapPage({searchParams:Promise.resolve({})})).rejects.toThrow(/^redirect:\/app\/exchange$/);
+ await expect(SwapPage({searchParams:Promise.resolve({})})).rejects.toThrow(/^redirect:\/app\/schedule\?intent=swap$/);
 });
 it('desktop swap client payload omits peer sign-in identity and internal source fields while retaining reviewed commands',async()=>{
  const props=findElementProps<ComponentProps<typeof SwapPageContent>>(await SwapPage({searchParams:Promise.resolve({sourceShiftId:'source'})}),SwapPageContent);

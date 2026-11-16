@@ -38,7 +38,7 @@ it('shows useful unavailable states without exposing the message or review actio
 it('unknown results leave acknowledgement and withdrawal disabled while lookup remains available',async()=>{
  const html=await render({notice:'unknown',read:{...read,canWithdraw:true}});
  expect(html).toMatch(/<input[^>]*disabled=""/);expect(html).toMatch(/<button[^>]*disabled=""[^>]*>[\s\S]*?Acknowledge update/);
- expect(html).toContain('Check status');expect(html).toMatch(/<button[^>]*disabled=""[^>]*>Withdraw update/);
+ expect(html).toContain('Check status');expect(html).toMatch(/<button(?=[^>]*disabled="")(?=[^>]*b-upd-withdraw)[^>]*>/);expect(html).toContain('Withdraw update');
 });
 
 it('announces a pending review and offers sign-in after a signed-out action',async()=>{

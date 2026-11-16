@@ -24,3 +24,10 @@ export function formatPayrollRate(value: string) {
   const [whole, sub = ''] = value.split('.');
   return formatPayrollMoney(whole) + sub;
 }
+
+/** A signed USD minor-unit difference ("+$12.50", "−$3.00", "$0.00"), for statement comparisons only. */
+export function formatSignedPayrollMoney(minor: string, language: 'en' | 'es' = 'en') {
+  if (!/^-?(0|[1-9]\d*)$/.test(minor) || minor === '-0') throw new Error('Invalid payroll amount');
+  const negative = minor.startsWith('-'), size = negative ? minor.slice(1) : minor;
+  return `${size === '0' ? '' : negative ? '\u2212' : '+'}${formatPayrollMoney(size, language)}`;
+}

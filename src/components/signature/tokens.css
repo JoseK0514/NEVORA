@@ -205,10 +205,10 @@
 /* ---------- Dark ("Midnight") ----------
  * Approved October 20, 2026 (docs/product/specs/employee-style/signature/dark-mode/v2). The root layout's theme script
  * sets data-theme on <html> from the person's choice in Profile (System, Light or Dark) and the phone's setting.
- * Scoped to the Signature surfaces: the employee app, sign-in and activation, and the Clocker. Manager and Owner
+ * Scoped to the Signature surfaces: the employee app, sign-in and activation (the Clocker is light only since Nov 8, 2026). Manager and Owner
  * screens stay light until their own pass. Display weights go up one step in dark (thin light type looks thinner on
  * dark), and every text colour keeps at least 7:1 on cards. */
-:root[data-theme="dark"] :is([data-nv-e5], .ap, [data-mobile-clocker]) {
+:root[data-theme="dark"] :is([data-nv-e5], .ap) {
   color-scheme: dark;
   --sig-page: #0C1817;            --sig-card: #172725;           --sig-card-hover: #1C2C2A;
   --sig-ink-1: #F5F2EB;           --sig-ink-2: #D3D0C8;          --sig-ink-3: #B8B7B0;          --sig-ink: var(--sig-ink-1);

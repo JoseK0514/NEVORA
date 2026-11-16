@@ -1,7 +1,8 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-const state = vi.hoisted(() => ({ replacement: vi.fn(), envelope: vi.fn(), allowed: vi.fn(async () => true), create: vi.fn(), destroy: vi.fn(), prepare: vi.fn(), credential: vi.fn(), activation: vi.fn(), verify: vi.fn(), activate: vi.fn(), deletion: vi.fn(), admit: vi.fn(), release: vi.fn(), forwarded: null as string | null }));
+const state = vi.hoisted(() => ({ replacement: vi.fn(), envelope: vi.fn(), allowed: vi.fn(async () => true), create: vi.fn(), destroy: vi.fn(), prepare: vi.fn(), credential: vi.fn(), activation: vi.fn(), verify: vi.fn(), activate: vi.fn(), deletion: vi.fn(), admit: vi.fn(), release: vi.fn(), forwarded: null as string | null, jar: new Map<string, { value: string; options: Record<string, unknown> }>() }));
 vi.mock('@/lib/auth/login-limits', () => ({ passwordLoginAllowed: state.allowed }));
-vi.mock('next/headers', () => ({ headers: async () => new Headers(state.forwarded ? { 'x-forwarded-for': state.forwarded } : {}) }));
+vi.mock('next/headers', () => ({ headers: async () => new Headers(state.forwarded ? { 'x-forwarded-for': state.forwarded } : {}),
+  cookies: async () => ({ get: (name: string) => state.jar.get(name), set: (name: string, value: string, options: Record<string, unknown>) => { if (options.maxAge === 0) state.jar.delete(name); else state.jar.set(name, { value, options }); } }) }));
 vi.mock('@/lib/auth/login-limits.server', async () => ({ ...(await import('../../lib/auth/login-limits.server')), admitLogin: async (id: string, address: string | null) => ({ admitted: await state.admit(id, address), addressBucket: 1977 }), releaseLoginAddress: state.release }));
 vi.mock('next/navigation', () => ({ redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));
 vi.mock('@/lib/auth/session', () => ({ createSession: state.create, destroySession: state.destroy }));
@@ -17,7 +18,7 @@ import { login, logout } from './actions';
 import { activateAccountAction } from '../activate/actions';
 function form(returnTo?: string) { const f = new FormData(); f.set('employeeId', ' employee '); f.set('password', 'test-password'); f.set('confirmPassword', 'test-password'); f.set('phone', '7875550123'); if (returnTo)
     f.set('returnTo', returnTo); return f; }
-beforeEach(() => { vi.clearAllMocks(); state.allowed.mockResolvedValue(true); state.deletion.mockResolvedValue(null); state.admit.mockResolvedValue(true); state.forwarded = null; state.activation.mockResolvedValue(null); state.credential.mockResolvedValue({ id: 'EMPLOYEE', active: true, password_hash: 'fictional', updated_at:'2030-01-01 00:00:00.123456+00', password_updated_at:'2030-01-01 00:00:00.234567+00' }); state.verify.mockResolvedValue(true); state.activate.mockResolvedValue(true); state.prepare.mockResolvedValue({ state: 'complete' }); });
+beforeEach(() => { vi.clearAllMocks(); state.jar.clear(); state.allowed.mockResolvedValue(true); state.deletion.mockResolvedValue(null); state.admit.mockResolvedValue(true); state.forwarded = null; state.activation.mockResolvedValue(null); state.credential.mockResolvedValue({ id: 'EMPLOYEE', active: true, password_hash: 'fictional', updated_at:'2030-01-01 00:00:00.123456+00', password_updated_at:'2030-01-01 00:00:00.234567+00' }); state.verify.mockResolvedValue(true); state.activate.mockResolvedValue(true); state.prepare.mockResolvedValue({ state: 'complete' }); });
 it('login_defaults_and_permissions_remain_unchanged', async () => { await expect(login(form())).rejects.toThrow('redirect:/app'); expect(state.create).toHaveBeenCalledWith('EMPLOYEE',await state.credential()); state.credential.mockResolvedValue(null); await expect(login(form('/app/requests?tab=my'))).rejects.toThrow('redirect:/login?error=invalid'); });
 it('a shared login rate denial cannot create a password session', async () => {
   state.allowed.mockResolvedValueOnce(false);
@@ -38,6 +39,22 @@ it('an_account_with_an_open_deletion_request_stays_signed_out_after_the_right_pa
   expect(state.create).not.toHaveBeenCalled();
   state.verify.mockResolvedValue(false);
   await expect(login(form())).rejects.toThrow('redirect:/login?error=invalid');
+});
+it('a failed attempt keeps the Employee ID as typed for the form, never the password, the same way for every reason (PB-006)', async () => {
+  const kept = () => state.jar.get('nv-login-id');
+  // Unknown account, wrong password, too many attempts and an account being deleted all keep exactly what was typed.
+  for (const arrange of [() => state.credential.mockResolvedValue(null), () => state.verify.mockResolvedValue(false), () => state.admit.mockResolvedValue(false), () => state.deletion.mockResolvedValue({ reference: 'DEL-7KQ2M9XA', status: 'received', confirmedAt: '2030-01-01' })]) {
+    state.jar.clear(); arrange();
+    await expect(login(form())).rejects.toThrow('redirect:/login?error=');
+    expect(kept()).toEqual({ value: 'employee', options: { httpOnly: true, secure: false, sameSite: 'lax', path: '/login', maxAge: 300 } });
+    expect(JSON.stringify([...state.jar])).not.toContain('test-password');
+    state.credential.mockResolvedValue({ id: 'EMPLOYEE', active: true, password_hash: 'fictional' }); state.verify.mockResolvedValue(true); state.admit.mockResolvedValue(true); state.deletion.mockResolvedValue(null);
+  }
+  // A successful sign-in clears it.
+  await expect(login(form())).rejects.toThrow('redirect:/app'); expect(kept()).toBeUndefined();
+  // Nothing unreasonable is kept.
+  const long = new FormData(); long.set('employeeId', 'x'.repeat(129)); long.set('password', 'test-password'); state.verify.mockResolvedValue(false);
+  await expect(login(long)).rejects.toThrow('redirect:/login?error=invalid'); expect(kept()).toBeUndefined();
 });
 it('javascript_disabled_native_signout_exits_after_cleanup_rejection', async () => { state.destroy.mockRejectedValue(new Error('storage failure')); await expect(logout()).rejects.toThrow('redirect:/login'); });
 vi.mock('@/components/brand-mark', () => ({ BrandMark: () => null, BrandWordmark: () => null }));
@@ -132,11 +149,17 @@ it('a proven password hands its slot back to the shared network address; a wrong
 it('a verified operator password issues only a replacement proof, never an operational session',async()=>{
  const employee={...(await state.credential()),must_change_password:true};state.credential.mockResolvedValue(employee);
  state.replacement.mockResolvedValue({state:'issued',proof:'owned-proof',expiresAt:'2030-01-01T00:15:00Z'});state.envelope.mockResolvedValue('owned-envelope');
+ state.jar.set('nv-login-id',{value:'employee',options:{httpOnly:true}}); // kept from an earlier failed attempt
  await expect(login(form('/app/requests'))).rejects.toThrow('redirect:/reset-access#proof=owned-envelope');
  expect(state.replacement).toHaveBeenCalledWith('EMPLOYEE',employee);expect(state.envelope).toHaveBeenCalledWith('RECOVERY','owned-proof',Date.parse('2030-01-01T00:15:00Z'));expect(state.create).not.toHaveBeenCalled();expect(state.prepare).not.toHaveBeenCalled();
+ // The kept Employee ID is cleared on the transfer to replacement, as after a sign-in (Codex, Nov 15).
+ expect(state.jar.get('nv-login-id')).toBeUndefined();
 });
 it('replacement issuance failure and a wrong operator password stay signed out',async()=>{
  state.credential.mockResolvedValue({...(await state.credential()),must_change_password:true});state.replacement.mockResolvedValue({state:'unavailable'});
- await expect(login(form())).rejects.toThrow('redirect:/login?error=invalid');expect(state.create).not.toHaveBeenCalled();
+ // The password was right, so the page says the replacement couldn't start, never "incorrect".
+ await expect(login(form())).rejects.toThrow('redirect:/login?error=replace');expect(state.create).not.toHaveBeenCalled();
+ // An expected failure keeps the Employee ID as typed for the form (HttpOnly, short-lived).
+ expect(state.jar.get('nv-login-id')?.value).toBeTruthy();expect(state.jar.get('nv-login-id')?.options.httpOnly).toBe(true);
  state.replacement.mockClear();state.verify.mockResolvedValue(false);await expect(login(form())).rejects.toThrow('redirect:/login?error=invalid');expect(state.replacement).not.toHaveBeenCalled();
 });

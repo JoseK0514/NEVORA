@@ -12,7 +12,8 @@ export function useTopBarSlot(enabled: boolean, className: string, phone = false
     // A test document without querySelector (or no matchMedia) keeps the tools in the page.
     if (!enabled || typeof window.matchMedia !== "function" || typeof document.querySelector !== "function") return;
     const query = window.matchMedia("(min-width: 1300px)");
-    const phoneQuery = window.matchMedia("(max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse)");
+    // Review B8 (NV-274): a phone turned sideways has the tablet layout.
+    const phoneQuery = window.matchMedia("(max-width: 760px)");
     let element: HTMLElement | null = null, live = true;
     // Final pass P1-3: the bar has room only when the width scales with the text (1300px at 100%, 2600px at 200%).
     // Final pass: 1300px, not 1180 — at 1180 the stepper and Export squeezed the page crumb to nothing.

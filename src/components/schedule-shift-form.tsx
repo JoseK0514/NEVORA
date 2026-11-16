@@ -9,6 +9,8 @@ import type { Position } from "../lib/domain";
 import type {ShiftFormEmployee} from '../lib/scheduling/shift-form-employee';
 import { CorpFormFooter } from "./corp/corp";
 import "./schedule-shift-form.css";
+import { UserIcon } from "@phosphor-icons/react/dist/ssr/User";
+import { LockSimpleIcon } from "@phosphor-icons/react/dist/ssr/LockSimple";
 
 /* Add shift and Edit shift (Release 1, boards O-AddShift and O-EditShift): one sheet. Cancel · title · Save over a
  * hairline, then Person, Location and Position side by side, Date, Start and End, the Shift lead switch, Note, and the
@@ -28,7 +30,15 @@ const QUARTERS = Array.from({ length: 96 }, (_, index) => `${String(Math.floor(i
 /** Quarter hours, plus a saved time that isn't on a quarter so it stays as it was. */
 function timeChoices(current: string) {
   const list = current && !QUARTERS.includes(current) ? [...QUARTERS, current].sort() : QUARTERS;
-  return list.map(value => ({ value, label: formatTime(value) }));
+  // Review B2 (NV-227): the list starts at 6:00 AM (the working day), so 9:00 AM is 12 steps away, not 36; it wraps to the
+  // night hours at the end. Typeahead still works.
+  const first = list.findIndex(value => value >= "06:00");
+  return [...list.slice(first), ...list.slice(0, first)].map(value => ({ value, label: formatTime(value) }));
+}
+/** Start plus eight hours, on the 24-hour clock ("09:00" → "17:00", "20:00" → "04:00"). */
+function eightHoursAfter(start: string) {
+  const [hours, minutes] = start.split(":").map(Number);
+  return `${String((hours + 8) % 24).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
 }
 
 export type ScheduleShiftFormProps = {
@@ -74,7 +84,8 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
   const [location, setLocation] = useState(props.locationId ?? "");
   const [day, setDay] = useState(props.date);
   const [start, setStart] = useState(props.startTime ?? "");
-  const [end, setEnd] = useState(props.endTime === "24:00" ? "00:00" : props.endTime ?? "");
+  // Closing F1 (NV-227): a start passed in without an end (Schedule's "+ Add" offers the person's usual start) ends 8 h later.
+  const [end, setEnd] = useState(props.endTime === "24:00" ? "00:00" : props.endTime ?? (props.mode === "add" && props.startTime && /^\d{2}:\d{2}$/.test(props.startTime) ? eightHoursAfter(props.startTime) : ""));
   const [lead, setLead] = useState(!!props.isDesignatedLead);
   const employee = employees.find(item => item.id === person);
   const name = employee ? `${employee.firstName} ${employee.lastName}` : "";
@@ -111,7 +122,8 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
       <div className="c-field">
         <label className="c-field__label" htmlFor={id("person")}>Person</label>
         <span className="c-shift__control c-shift__person">
-          <span className={name ? "c-av" : "c-av c-av--grey"} aria-hidden="true">{name ? initialsOf(name) : ""}</span>
+          {/* Review B2 (NV-325): before a person is chosen, a person glyph (an empty grey disc read as a broken image). */}
+          <span className={name ? "c-av" : "c-av c-av--grey"} aria-hidden="true">{name ? initialsOf(name) : <UserIcon size={16} weight="bold" />}</span>
           <select id={id("person")} className="c-in" name="employeeId" value={person} required autoComplete="off" onChange={event => { changePerson(event.target.value); }}>
             <option value="" disabled>Choose someone</option>
             {active.map(item => <option key={item.id} value={item.id}>{`${item.firstName} ${item.lastName}`}</option>)}
@@ -126,8 +138,9 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
           <label className="c-field__label" htmlFor={id("location")}>Location</label>
           {props.fixedLocation !== undefined
             ? <>
-              <input id={id("location")} className="c-in c-shift__fixed" value={props.fixedLocation} readOnly tabIndex={-1} aria-describedby={id("location-help")} />
-              <span className="c-sr" id={id("location-help")}>A shift keeps its location. To move it, delete it and add a new one.</span>
+              {/* Review B5 (NV-085): one read-only look (the Company profile pattern): a grey value with a lock and the reason. */}
+              <span className="c-readonly"><input id={id("location")} className="c-in c-shift__fixed" value={props.fixedLocation} readOnly tabIndex={-1} aria-describedby={id("location-help")} /><LockSimpleIcon className="c-readonly__lock" size={16} weight="bold" aria-hidden="true" /></span>
+              <span className="c-field__help" id={id("location-help")}>A shift keeps its location. To move it, delete it and add a new one.</span>
             </>
             : <><select id={id("location")} className={location ? "c-in" : "c-in c-shift__empty"} name="locationId" value={location} required onChange={event => { setLocation(event.target.value); }}>
               <option value="" disabled>Choose</option>
@@ -158,7 +171,7 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
       <div className="c-shift__pair">
         <div className="c-field">
           <label className="c-field__label" htmlFor={id("start")}>Start</label>
-          <select id={id("start")} className={start ? "c-in c-shift__time" : "c-in c-shift__time c-shift__empty"} name="startTime" value={start} required onChange={event => { setStart(event.target.value); }}>
+          <select id={id("start")} className={start ? "c-in c-shift__time" : "c-in c-shift__time c-shift__empty"} name="startTime" value={start} required onChange={event => { const next = event.target.value; setStart(next); if (!end && next) setEnd(eightHoursAfter(next)); }}>
             <option value="" disabled>Choose</option>
             {timeChoices(start).map(item => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
@@ -174,7 +187,7 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
       {nextDay ? <p className="c-field__help c-shift__next" id={id("next-day")} aria-live="polite">{`Ends ${nextDay}`}</p> : null}
 
       <label className="c-shift__lead">
-        <span className="c-shift__lead-text"><b>Shift lead</b><span>Owners and Managers can lead a shift</span></span>
+        <span className="c-shift__lead-text"><b>Shift lead</b><span>Must be an Owner, Manager or Lead.</span></span>
         <input type="checkbox" role="switch" className="c-switch" name="isDesignatedLead" checked={lead} onChange={event => setLead(event.target.checked)} />
       </label>
 

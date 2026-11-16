@@ -22,4 +22,5 @@ it.each([null,{...notice,policyVersion:5},{...notice,retentionDays:30},{...notic
  expect(html).toContain('company photo notice is unavailable');expect(html).not.toContain('Fictional &amp; Co');expect(html).not.toContain('Fictional Owner desk');
 });
 
-it('uses the same complete Spanish language as the shared PIN screen',()=>{const html=renderToStaticMarkup(<ClockerPresentation v2 initialLocale="es"><ClockerPhotoNotice policy={policy} notice={notice}/></ClockerPresentation>);expect(html).toContain('Ver aviso de fotos');expect(html).toContain('12 días');expect(html).not.toContain('View photo notice');expect(html).toContain(notice.assistanceInstructions);});
+// Direction B (Nov 8, 2026): the presentation no longer takes a v2 switch; Spanish is the kiosk's one complete language.
+it('uses the same complete Spanish language as the shared PIN screen',()=>{const html=renderToStaticMarkup(<ClockerPresentation initialLocale="es"><ClockerPhotoNotice policy={policy} notice={notice}/></ClockerPresentation>);expect(html).toContain('Ver aviso de fotos');expect(html).toContain('12 días');expect(html).not.toContain('View photo notice');expect(html).toContain(notice.assistanceInstructions);});

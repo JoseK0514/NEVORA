@@ -2,7 +2,7 @@ import type { UserRole } from "@/lib/domain";
 import type { NavIconName } from "@/components/nav-icon";
 import type { PayrollCapabilities } from './payroll/contracts';
 import { ALL_MODULES_ON, pathEnabled, type EnabledModules } from './workspace-presentation/modules';
-import { DEFAULT_WORDS, type WordSlots } from './workspace-presentation/words';
+import { type WordSlots } from './workspace-presentation/words';
 
 /** Company choices that shape navigation (B2): modules that are off disappear
  * everywhere, and the vocabulary names the people page. Defaults change nothing. */
@@ -26,7 +26,7 @@ const managementNavigation: NavigationItem[] = [
   { href: "/app/requests", label: "Time off", icon: "timeOff" },
   { href: "/app/exchange", label: "Shift requests", icon: "exchange" },
   { href: "/app/updates", label: "Updates", icon: "updates" },
-  { href: "/app/employees", label: "Employees", icon: "employees" },
+  { href: "/app/employees", label: "Team", icon: "employees" },
   { href: "/app/timecards", label: "Timecards", icon: "clock" },
   { href: "/app/reports", label: "Insights", icon: "reports" },
   { href: "/app/payroll-export", label: "Time exports", icon: "export" },
@@ -67,14 +67,21 @@ const EMPLOYEE_SIDEBAR_HOLDERS: Record<string, string> = {
 /** Entries reached from the desktop account menu instead; their pages light no sidebar entry. */
 const ACCOUNT_MENU_ENTRIES = new Set(["/app/my-pay", "/app/profile"]);
 const EMPLOYEE_ACCOUNT_MENU_ENTRIES = new Set(["/app/profile"]);
-const LEAD_ACCOUNT_MENU_ENTRIES = new Set(["/app/profile"]);
+/** Jose (Nov 15, 2026, item 12): one bell, in the top bar, for every role. An Employee's or Lead's Notifications entry
+ * leaves the sidebar and the tablet rail, as an Owner's and a Manager's never had one; the phone header's bell is the same. */
+const EMPLOYEE_TOP_BAR_ENTRIES = new Set(["/app/notifications"]);
+/** Phase 3 (MG-007): a Manager has no Settings page and no Payroll entry, so the two pages that were only on the avatar's
+ * More page have their own sidebar entries: Scheduling rules (the one setting a Manager has) and My pay. Both are entries
+ * the Manager's navigation already holds; a Manager without one of them gets no entry for it. Owners keep the shorter list. */
+const MANAGER_SIDEBAR_KEEPS = new Set(["/app/schedule/settings", "/app/my-pay"]);
 /** Release 1 (board C-Employee): an Employee's desktop sidebar uses the phone tabs' names and order. */
 const EMPLOYEE_SIDEBAR_LABELS: Record<string, string> = { "/app/schedule": "Schedule", "/app/my-time": "Time", "/app/my-pay": "Pay" };
 const EMPLOYEE_SIDEBAR_ORDER = ["/app", "/app/schedule", "/app/my-time", "/app/my-pay", "/app/requests/hub"];
 
 // An Employee's Schedule holds Availability (its title action). A Lead's Schedule and Requests pages have no Availability
 // link, so a Lead keeps the sidebar entry.
-function sidebarHolders(role: UserRole) { return role === "EMPLOYEE" ? EMPLOYEE_SIDEBAR_HOLDERS : role === "LEAD" ? {} as Record<string, string> : SIDEBAR_HOLDERS; }
+// Direction B for Leads (Jose, Nov 8, 2026): a Lead has the Employee's sidebar, tabs and current-page rules.
+function sidebarHolders(role: UserRole) { return role === "EMPLOYEE" || role === "LEAD" ? EMPLOYEE_SIDEBAR_HOLDERS : SIDEBAR_HOLDERS; }
 
 /** The holder that is present: Time exports falls back to Time when there is no Payroll entry. */
 function holderFor(role: UserRole, href: string, present: Set<string>): string | undefined {
@@ -86,12 +93,12 @@ function holderFor(role: UserRole, href: string, present: Set<string>): string |
 export function sidebarNavigation(role: UserRole, items: NavigationItem[]): NavigationItem[] {
   const present = new Set(items.map(item => item.href)), management = role !== "EMPLOYEE" && role !== "LEAD";
   const rank = (href: string) => { const index = EMPLOYEE_SIDEBAR_ORDER.indexOf(href); return index < 0 ? EMPLOYEE_SIDEBAR_ORDER.length : index; };
-  // A Lead (on hold) keeps the earlier sidebar.
-  const employee = role === "EMPLOYEE";
+  // A Lead has the Employee's sidebar (Direction B, Nov 8, 2026).
+  const employee = role === "EMPLOYEE" || role === "LEAD";
   const ordered = employee ? [...items].sort((a, b) => rank(a.href) - rank(b.href)) : items;
-  const accountMenu = management ? ACCOUNT_MENU_ENTRIES : employee ? EMPLOYEE_ACCOUNT_MENU_ENTRIES : LEAD_ACCOUNT_MENU_ENTRIES;
+  const accountMenu = management ? ACCOUNT_MENU_ENTRIES : EMPLOYEE_ACCOUNT_MENU_ENTRIES;
   return ordered
-    .filter(item => !holderFor(role, item.href, present) && !accountMenu.has(item.href))
+    .filter(item => role === "MANAGER" && MANAGER_SIDEBAR_KEEPS.has(item.href) || !holderFor(role, item.href, present) && !accountMenu.has(item.href) && !(employee && EMPLOYEE_TOP_BAR_ENTRIES.has(item.href)))
     .map(item => !employee || !EMPLOYEE_SIDEBAR_LABELS[item.href] ? item : { ...item, label: EMPLOYEE_SIDEBAR_LABELS[item.href] })
     // D-4: the people page is "Team" in the sidebar, as on the phone tab.
     // Corporate (Release 1): the desktop sidebar uses the phone's names for Timecards (Time) and Inbox (Things to do).
@@ -122,7 +129,8 @@ const TEAM_TOOL_HOLDERS: Record<string, string> = {
   "/app?view=attendance": "/app",
   "/app?view=team": "/app/employees",
   "/app?view=activity": "/app/schedule",
-  "/app/clocker-recovery": "/app/employees",
+  // Review F2 (NV-070): Clocker recovery opens from Settings (its back link says "‹ Settings"), so Settings lights.
+  "/app/clocker-recovery": "/app/settings",
   "/app/account-recovery": "/app/employees",
 };
 export function teamToolHolder(href: string): string | undefined { return TEAM_TOOL_HOLDERS[href]; }
@@ -140,11 +148,14 @@ export function teamToolsForRole(role: UserRole, context: NavContext = {}): Navi
 }
 
 /** Presentation groups consume only already-authorized navigation entries. Corporate (Release 1): the desktop sidebar mirrors
- * the phone, so the five tabs and Things to do come first with no heading, then Team tools, then More. */
-export function managementNavigationGroups(items: NavigationItem[], tools: NavigationItem[] = []) {
+ * the phone, so the five tabs and Things to do come first with no heading, then Team tools, then More.
+ * Phase 3 (MG-006, MG-007): approving is a Manager's main job, so a Manager's list reads Home, Things to do, Schedule,
+ * Time, Team; and a Manager's second group has no heading ("More" is the avatar's page, one name for one place). */
+export function managementNavigationGroups(items: NavigationItem[], tools: NavigationItem[] = [], role?: UserRole) {
+  const manager = role === "MANAGER";
   const definitions = [
-    {label:'', hrefs:['/app','/app/schedule','/app/timecards','/app/payroll','/app/employees','/app/inbox']},
-    {label:'More', hrefs:['/app/ai-manager','/app/reports','/app/updates','/app/schedule/settings','/app/schedule/templates','/app/availability','/app/exchange','/app/requests','/app/payroll-export','/app/my-pay','/app/settings']},
+    {label:'', hrefs:manager?['/app','/app/inbox','/app/schedule','/app/timecards','/app/payroll','/app/employees']:['/app','/app/schedule','/app/timecards','/app/payroll','/app/employees','/app/inbox']},
+    {label:manager?'':'More', hrefs:['/app/ai-manager','/app/reports','/app/updates','/app/schedule/settings','/app/schedule/templates','/app/availability','/app/exchange','/app/requests','/app/payroll-export','/app/my-pay','/app/settings']},
   ];
   const groups = definitions.map(group=>({label:group.label,items:group.hrefs.flatMap(href=>items.filter(item=>item.href===href))}));
   if (tools.length) groups.splice(1, 0, {label:'Team tools', items:tools});
@@ -172,12 +183,14 @@ export function activeNavigationHref(role: UserRole, path: string, payroll?: Pay
   const pathname = path.split(/[?#]/, 1)[0];
   const matches = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
   // Release 1 (boards E-Availability, E-SwapSheet, E-CoverSheet, E-CantWorkSheet, E-OpenShifts): an Employee opens these
-  // from Schedule, so Schedule stays current on them. A Lead keeps Requests (Lead is on hold).
+  // from Schedule, so Schedule stays current on them. A Lead too (Direction B, Nov 8, 2026).
   const query = new URLSearchParams(path.split("?")[1]?.split("#")[0] ?? "");
-  if (role === "EMPLOYEE" && (matches("/app/availability") || matches("/app/exchange/swap") || matches("/app/exchange/callout") ||
-      (pathname === "/app/exchange" && query.get("tab") === "available"))) return "/app/schedule";
-  if ((role === "EMPLOYEE" || role === "LEAD") &&
-      (matches("/app/requests") || matches("/app/exchange"))) return "/app/requests/hub";
+  // Review F2 (NV-070): every shift request page (Pick up and swap and each of its tabs) goes back to Schedule, so the
+  // sidebar and rail light Schedule, as the phone's tab bar does: one parent for the back label and the lit entry.
+  if ((role === "EMPLOYEE" || role === "LEAD") && (matches("/app/availability") || matches("/app/exchange"))) return "/app/schedule";
+  if ((role === "EMPLOYEE" || role === "LEAD") && matches("/app/requests")) return "/app/requests/hub";
+  // Phase 3 (MG-007, TB-009): More opens from the avatar and is no sidebar entry, so the sidebar and rail light nothing on
+  // it (they lit Home, NV-294); the avatar is marked instead, as the phone's tab bar already lights no tab (BR-4).
   // Release 1 (board O-Activity): Schedule activity is a view of Home's data opened from Schedule.
   if (role !== "EMPLOYEE" && role !== "LEAD" && pathname === "/app" && query.get("view") === "activity" &&
       navigationForRole(role, payroll, context).some(item => item.href === "/app/schedule")) return "/app/schedule";
@@ -199,10 +212,11 @@ export function activeNavigationHref(role: UserRole, path: string, payroll?: Pay
  */
 export function navigationForRole(role: UserRole, payroll?: PayrollCapabilities, input: NavContext | OperationalAuthorityView = {}): NavigationItem[] {
   const context:NavContext = 'state' in input ? {operational:input} : input;
-  const modules = context.modules ?? ALL_MODULES_ON, words = context.words ?? DEFAULT_WORDS.en;
+  const modules = context.modules ?? ALL_MODULES_ON;
+  // B7 wording (NV-119): the people page is "Team" everywhere (its H1 and tab); the vocabulary preset stays in sentences.
+  // Development (Nov 15): an Owner with billing enabled also gets Plan and billing.
   return [...baseNavigation(role, payroll, context.operational, context.ownerAdvisorEnabled),...(role==='OWNER'&&context.billingEnabled?[{href:'/app/billing',label:'Plan and billing',icon:'settings' as NavIconName}]:[])]
-    .filter(item => pathEnabled(item.href, modules))
-    .map(item => item.href === "/app/employees" ? { ...item, label: words.people } : item);
+    .filter(item => pathEnabled(item.href, modules));
 }
 
 function baseNavigation(role: UserRole, payroll?: PayrollCapabilities, operational?:OperationalAuthorityView, ownerAdvisorEnabled=false): NavigationItem[] {
@@ -244,36 +258,37 @@ export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities,
   const home: MobileTab = { href: "/app", label: "Home", icon: "dashboard", owns: ["/app"] };
   const schedule: MobileTab = { href: "/app/schedule", label: "Schedule", icon: "schedule", owns: ["/app/schedule", "/app/schedule/templates", "/app/schedule/settings"] };
   const requests: MobileTab = { href: "/app/requests/hub", label: "Requests", icon: "requests", owns: ["/app/requests/hub", "/app/requests", "/app/exchange", "/app/exchange/swap", "/app/exchange/callout", "/app/availability"] };
-  if (role === "EMPLOYEE") {
+  if (role === "EMPLOYEE" || role === "LEAD") {
     // Corporate (Release 1, approved Oct 26): Home, Schedule, Time, Pay and Requests; More opens from the header avatar.
+    // A Lead has the same tabs (Direction B, Nov 8, 2026).
     // Upscale (Nov 1): pages opened from the avatar or the bell (More, Updates, Profile, Notifications), Help and unknown
     // addresses light no tab; Home owns Home only.
-    const tabs: MobileTab[] = [home, schedule, { href: "/app/my-time", label: "Time", icon: "clock", owns: ["/app/my-time", "/app/timecards"] }];
+    // Direction B (Nov 6, 2026): shift swaps, open shifts and Availability go back to Schedule, so they light Schedule.
+    const shiftPages = ["/app/exchange", "/app/exchange/swap", "/app/exchange/callout", "/app/availability"];
+    const tabs: MobileTab[] = [home, { ...schedule, owns: [...schedule.owns, ...shiftPages] }, { href: "/app/my-time", label: "Time", icon: "clock", owns: ["/app/my-time", "/app/timecards"] }];
     if (payroll?.enabled && (context.modules ?? ALL_MODULES_ON).payStatements) tabs.push({ href: "/app/my-pay", label: "Pay", icon: "receipt", owns: ["/app/my-pay"] });
-    return [...tabs, requests];
-  }
-  if (role === "LEAD") {
-    const pay: MobileTab = payroll?.enabled && (context.modules ?? ALL_MODULES_ON).payStatements
-      ? { href: "/app/my-pay", label: "Pay", icon: "receipt", owns: ["/app/my-pay", "/app/my-time", "/app/timecards"] }
-      : { href: "/app/my-time", label: "Hours", icon: "clock", owns: ["/app/my-time", "/app/timecards"] };
-    // v5 One look (approved Oct 24): Notifications opens from Home's bell, and every request page sits under Requests.
-    return [{ ...home, owns: ["/app", "/app/notifications"] }, schedule, requests, pay];
+    return [...tabs, { ...requests, owns: requests.owns.filter(href => !shiftPages.includes(href)) }];
   }
   const authorized = new Set(navigationForRole(role, payroll, context).map(item=>item.href));
   // Corporate (Release 1, approved Oct 26): Home, Schedule, Time, Payroll and Team; More opens from the header avatar.
-  // Things to do (Inbox) and Notifications open from Home, so Home stays lit there. Without payroll review Inbox keeps a tab.
+  // Things to do (Inbox) opens from Home, so Home stays lit there. Without payroll review Inbox keeps a tab.
+  // Review Nov 14 (BR-4): Notifications opens from the bell and is not one of the tabs, so it lights none.
   const payrollTab = authorized.has("/app/payroll");
   const inboxPages = ["/app/inbox", "/app/requests", "/app/exchange", "/app/availability"];
   const tabs:MobileTab[] = [
-    { ...home, owns: ["/app", "/app/notifications", ...(payrollTab ? inboxPages : [])] },
+    { ...home, owns: ["/app", ...(payrollTab ? inboxPages : [])] },
     schedule,
     { href: "/app/timecards", label: "Time", icon: "clock", owns: ["/app/timecards", ...(payrollTab ? [] : ["/app/payroll-export"])] },
     payrollTab
       ? { href: "/app/payroll", label: "Payroll", icon: "payroll", owns: ["/app/payroll", "/app/payroll-export", "/app/settings/payroll"] }
-      : { href: "/app/inbox", label: "Inbox", icon: "inbox", owns: inboxPages },
-    { href: "/app/employees", label: "Team", icon: "employees", owns: ["/app/employees", "/app/account-recovery", "/app/clocker-recovery"] },
+      : { href: "/app/inbox", label: "To do", icon: "inbox", owns: inboxPages },
+    // Review F2 (NV-070): Clocker recovery belongs to Settings (its back link), which lights no tab on a phone.
+    { href: "/app/employees", label: "Team", icon: "employees", owns: ["/app/employees", "/app/account-recovery"] },
   ];
-  return tabs.filter(tab=>authorized.has(tab.href));
+  // Phase 3 (MG-006): a Manager's To do tab is second, as in the Manager's sidebar (Home, To do, Schedule, Time, Team).
+  // The Owner's bar keeps its order.
+  const ordered = role === "MANAGER" && !payrollTab ? [tabs[0], tabs[3], tabs[1], tabs[2], tabs[4]] : tabs;
+  return ordered.filter(tab=>authorized.has(tab.href));
 }
 
 /** Authorized destinations without a tab of their own, in sidebar order. */
@@ -282,12 +297,24 @@ export function mobileMoreForRole(role: UserRole, payroll?: PayrollCapabilities,
   return navigationForRole(role, payroll, context).filter(item => !owned.has(item.href));
 }
 
-/** The tab that owns the current page: a tab href, "more", or none. */
+/** The tab that owns the current page: a tab href, "more", or none. Review Nov 14 (BR-4): a page that is not one of the
+ * tabs and belongs to none of them (More, Insights, Settings and its pages, Profile, Notifications, Help, Updates) lights
+ * no tab; the bar never says Home while another page is open. "more" matches no tab either (phones have no More tab). */
 export function activeMobileTab(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext = {}): string | undefined {
+  const bare = path.split(/[?#]/)[0];
+  const tabs = mobileTabsForRole(role, payroll, context);
+  // Direction B (Employee phones, Nov 6, 2026): a page a tab owns lights that tab (shift swaps and Availability light
+  // Schedule, where their back link goes), whatever the sidebar entry it belongs to.
+  if (role === "EMPLOYEE" || role === "LEAD") {
+    const own = tabs.find(tab => tab.owns.some(owned => owned !== "/app" && (bare === owned || bare.startsWith(`${owned}/`))));
+    if (own) return own.href;
+  }
+  // More opens from the avatar: no tab is lit, and no sidebar entry either (activeNavigationHref).
+  if (bare === "/app/more") return undefined;
   const active = activeNavigationHref(role, path, payroll, context);
-  // Quiet (v4): a tool page with no menu entry of its own (Account and Clocker recovery) lights the tab that owns it.
-  if (!active) return mobileTabsForRole(role, payroll, context).find(tab => tab.owns.some(owned => owned !== "/app" && (path === owned || path.startsWith(`${owned}/`))))?.href;
-  return mobileTabsForRole(role, payroll, context).find(tab => tab.owns.includes(active))?.href ?? "more";
+  // Quiet (v4): a tool page with no menu entry of its own (Account recovery) lights the tab that owns it.
+  return !active ? tabs.find(tab => tab.owns.some(owned => owned !== "/app" && (bare === owned || bare.startsWith(`${owned}/`))))?.href
+    : tabs.find(tab => tab.owns.includes(active))?.href ?? "more";
 }
 
 export type SectionTabGroup = { label: string; items: { href: string; label: string }[] };

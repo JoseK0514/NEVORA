@@ -35,7 +35,8 @@ it("names the week, each location's state and shift count, and publishes every d
   const out = await html();
   expect(out).toContain("<small>Next week</small><b>Nov 2 – 8</b>");
   expect(out).toContain(">1 draft</span>");
-  expect(out).toMatch(/Condado<\/span><span class="c-row__detail"><span>2 shifts<\/span><\/span><\/span><span class="c-row__trail"><span class="c-pill c-pill--neutral">Published/);
+  // Review B1 (NV-071): Published is done, so it reads green.
+  expect(out).toMatch(/Condado<\/span><span class="c-row__detail"><span>2 shifts<\/span><\/span><\/span><span class="c-row__trail"><span class="c-pill c-pill--green">Published/);
   expect(out).toMatch(/Dorado<\/span><span class="c-row__detail"><span>1 shift<\/span>.*c-pill--amber">Draft/);
   expect(out).toMatch(/Hato Rey.*Nothing scheduled.*Not started/);
   expect(out).toContain('name="locationId" value="loc-2"');

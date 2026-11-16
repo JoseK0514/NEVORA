@@ -38,8 +38,8 @@ export function EditLocationForm({ location, action, words = { location: "Locati
   const dirty = draft.name !== saved.name || draft.shortName !== saved.shortName || draft.active !== saved.active;
   const clockerHref = `/clocker/${location.clockerKey}`;
   const { errors, handlers, clear } = useFieldErrors({
-    name: { missing: `Enter a ${place} name.` },
-    shortName: { missing: "Enter a short name." },
+    name: { missing: `Enter a ${place} name` },
+    shortName: { missing: "Enter a short name" },
   });
 
   useEffect(() => {
@@ -93,9 +93,11 @@ export function EditLocationForm({ location, action, words = { location: "Locati
   }
 
   // Quiet (v4, approved Oct 23): Name and Short name, then Active, the Clocker link, staffing and who can work here as rows.
-  // The page's Save (top right) submits this form; it stays off until something changes.
+  // The page's Save (top right) submits this form; it stays off until something changes. Review F4 (NV-102): on tablets
+  // and desktop the fields and rows are one card and its footer holds the same Save (phones keep the top bar's).
   return (
     <form noValidate id="edit-location-form" onSubmit={submit} aria-busy={pending} className="wc-form" aria-label={`Edit ${place}`} data-dirty={dirty || undefined} {...handlers}>
+      <div className="wc-savecard">
       <fieldset disabled={pending} className="q-fieldset">
         <input type="hidden" name="id" value={location.id} />
         <input type="hidden" name="expectedUpdatedAt" value={location.updatedAt ?? ""} />
@@ -110,12 +112,14 @@ export function EditLocationForm({ location, action, words = { location: "Locati
             <li>{location.active ? <div className="q-row q-row--one"><span className="q-rt"><b><Link href={clockerHref}>Clocker link</Link></b></span>
               <button type="button" className="q-bs q-bs--hit" onClick={copyLink} aria-label="Copy Clocker link">Copy</button></div>
               : <div className="q-row q-row--one"><span className="q-rt"><b>Clocker link</b></span><span className="q-rv q-rv--l">Unavailable while inactive</span></div>}</li>
-            <li><Link className="q-row q-row--one" href="/app/schedule/settings#coverage-staffing"><span className="q-rt"><b>Staffing</b></span><span className="q-rv q-rv--l">{staffing ?? "Not set"}</span><CaretRightIcon className="q-chev" aria-hidden="true" /></Link></li>
-            <li><Link className="q-row q-row--one" href="/app/employees"><span className="q-rt"><b>Who can work here</b></span>{eligible === undefined ? null : <span className="q-rv q-rv--l">{eligible}</span>}<CaretRightIcon className="q-chev" aria-hidden="true" /></Link></li>
+            <li><Link className="q-row q-row--one" href="/app/schedule/settings#coverage-staffing"><span className="q-rt"><b>Staffing</b></span><span className="q-rv q-rv--l">{staffing ?? "Not set"}</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link></li>
+            <li><Link className="q-row q-row--one" href="/app/employees"><span className="q-rt"><b>Who can work here</b></span>{eligible === undefined ? null : <span className="q-rv q-rv--l">{eligible}</span>}<CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link></li>
           </ul>
           <p className="q-sr" id="edit-location-active-help">{draft.active ? "Turning this off keeps history. The Clocker stops working here." : "Inactive: new assignments and the Clocker are unavailable."}</p>
         </FieldErrors>
       </fieldset>
+      <div className="wc-savefoot wc-savefoot--wide"><button type="submit" className="q-btn" disabled={pending}>{pending ? "Saving…" : "Save"}</button></div>
+      </div>
       {result.error || result.success ? (
         <div ref={feedback} tabIndex={-1} role={result.error ? "alert" : "status"} className="wc-feedback">
           <Notice tone={result.error ? "urgent" : "done"} title={result.error ? (unconfirmed ? "Not saved yet" : "Changes not saved") : `${words.location} updated`}

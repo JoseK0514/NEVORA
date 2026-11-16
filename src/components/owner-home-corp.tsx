@@ -2,6 +2,7 @@
 import { parsePeriod } from '@/lib/timecards/project';
 import type { HomePayrollStatus } from '@/lib/payroll/backlog-read';
 import "./owner-home-corp.css";
+import { isStaffingRepair } from "@/lib/time-off-staffing/present";
 import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
 import { CORP_NO_VALUE, CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpLink, CorpLoadFailed, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
@@ -9,10 +10,12 @@ import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 import { periodLabel, type NextPay } from "@/components/payroll/my-pay";
 import type { ActionCenterConnection } from "./manager-action-center";
 import type { NeedsYou } from "@/lib/action-center/needs-you";
+import { ATTENDANCE_WORDS } from "@/lib/action-center/present";
 import type { ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor } from "@/lib/time-clock";
 import { gapRow } from "./manager-inbox-corp";
+import { HomeB, type HomeBWeek } from "./owner-b/home-b";
 export { toDoSentence } from "./manager-inbox-corp";
 
 /* Owner and Manager Home in the corporate look (Release 1; approved board C-Owner, Oct 26). Presentation only: every number
@@ -52,12 +55,19 @@ export type OwnerHomeCorpProps = {
   nextPay?: NextPay;
   payrollStatus?: HomePayrollStatus | null;
   setup?: ReactNode;
+  billing?: ReactNode;
   liveReaders?: string;
+  /** Direction B (phones): the week behind This week, and where Payday's button goes. */
+  week?: HomeBWeek;
 };
 
 export function OwnerHomeCorp(props: OwnerHomeCorpProps) {
   return <CorpPage className="c-home" label="Home">
     <div data-live-readers={props.liveReaders} hidden />
+    {/* Direction B: the phone screen (shown on phones under data-nv-b; tablets and desktop keep the cards below). */}
+    <HomeB today={props.today} monitor={props.monitor} monitorPending={props.monitorPending} offline={props.offline} value={props.value} connection={props.connection}
+      timecards={props.timecards} timecardsReady={props.timecardsReady ?? props.value !== null} businessDay={props.businessDay} nextPay={props.nextPay} setup={props.setup} billing={props.billing}
+      dateLabel={props.dateLabel} summary={props.summary} week={props.week} greeting={props.greeting} onRetry={props.onRetryActions} />
     <CorpTitle title={props.greeting} sub={<>{props.dateLabel}<span role="status" className="c-sr">{props.summary}</span></>} />
     <TodayCard {...props} />
     <PaydayCard nextPay={props.nextPay} payrollStatus={props.payrollStatus} timecards={props.timecards} ready={props.timecardsReady ?? props.value !== null} connection={props.connection} businessDay={props.businessDay} />
@@ -139,7 +149,7 @@ function TodayCard({ today, monitor, monitorPending, todayRefreshing, onRetryTod
 }
 /* Nov 1 upscale: one short word or two per figure, so all three labels sit on one line on a phone. "Clocked in" is the word
  * Who's working uses for the same people. */
-const LABELS = { on: "Clocked in", missed: "Missed", open: "Open shifts" } as const;
+const LABELS = { on: "Clocked in", missed: ATTENDANCE_WORDS.missed, open: "Open shifts" } as const;
 /** Home's Today card already says Today, so an open shift's detail starts at its place ("Condado · Needs 1 person"). */
 const homeGap = <T extends { detail?: string }>(row: T): T => row.detail ? { ...row, detail: row.detail.replace(/^Today · /, "") } : row;
 
@@ -228,13 +238,16 @@ function ThingsToDo({ value, connection, offline, onRetryActions, setup }: Owner
   const known = ["TIME_OFF", "EXCHANGE", "CALLOUT"];
   const urgent = value.now.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests");
   const corrections = urgent.filter(item => item.type === "TIME_CORRECTION").length;
+  // Nov 9, 2026: approved leave over a published shift is a shift to fill (Things to do's #todo-repair), not "other".
+  const repairs = urgent.filter(isStaffingRepair).length;
   const rows = [
+    { title: "Shifts to fill", n: repairs, href: "/app/inbox#todo-repair" },
     { title: "Time off requests", n: of("TIME_OFF"), href: "/app/requests" },
     { title: "Time corrections", n: corrections, href: "/app/inbox#todo-corrections" },
     { title: "Shift swaps", n: of("EXCHANGE"), href: "/app/exchange" },
-    { title: "Can’t-work reports", n: of("CALLOUT"), href: "/app/inbox#todo-cant-work" },
+    { title: "Can’t-work requests", n: of("CALLOUT"), href: "/app/inbox#todo-cant-work" },
     { title: "Other requests", n: requests.filter(item => !known.includes(item.type)).length, href: "/app/inbox#todo-requests" },
-    { title: "Other items to review", n: urgent.length - corrections, href: "/app/inbox#todo-review" },
+    { title: "Other items to review", n: urgent.length - corrections - repairs, href: "/app/inbox#todo-review" },
   ].filter(row => row.n > 0);
   const shiftsOnly = value.count > 0;
   return <CorpCard id="home-needs-you" label="Things to do" aside={<CorpLink href="/app/inbox" label="See all things to do">See all</CorpLink>}>

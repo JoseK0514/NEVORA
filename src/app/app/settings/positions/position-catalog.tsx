@@ -20,7 +20,7 @@ type PositionAction = (data: FormData) => Promise<ConfigurationResult>;
 const subscribe = () => () => {};
 const clientSnapshot = () => true;
 const serverSnapshot = () => false;
-const nameMessages = { name: { missing: "Enter a position name." } };
+const nameMessages = { name: { missing: "Enter a position name" } };
 
 function PositionRow({ position, hidden, ready, action, people }: {
   position: Position; hidden: boolean; ready: boolean; action: PositionAction; people?: number;
@@ -39,7 +39,7 @@ function PositionRow({ position, hidden, ready, action, people }: {
         <summary className="q-row q-row--one" aria-label={`Edit ${position.name}, ${position.active ? "active" : "archived"}`}>
           <span className="q-rt"><b>{position.name}</b></span>
           {people === undefined ? null : <span className="wc-meta">{`${people} ${people === 1 ? "person" : "people"}`}</span>}
-          <CaretRightIcon className="q-chev" aria-hidden="true" />
+          <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
         </summary>
         <div className="wc-editable__body">
           <SettingsForm key={position.updatedAt} action={action} label={`Edit ${position.name}`} disabled={!ready}
@@ -105,7 +105,7 @@ export function PositionCatalog({ positions, available, createAction, updateActi
           Shifts can still be added without a position.</EmptyState> : null}
         <dialog ref={addDialog} className="wc-dialog" aria-labelledby="new-position-title" onClose={() => setAdding(false)} onCancel={() => setAdding(false)}>
           <div className="wc-dialog__head"><div><h2 className="wc-dialog__title" id="new-position-title">New position</h2></div>
-            <button type="button" className="wc-dialog__close" aria-label="Close" onClick={() => setAdding(false)}><XIcon aria-hidden="true" /></button></div>
+            <button type="button" className="wc-dialog__close" aria-label="Close" onClick={() => setAdding(false)}><XIcon weight="bold" aria-hidden="true" /></button></div>
           <section id="new-position" ref={addCard}>
             <SettingsForm key={addKey} action={async data => { const result = await create(data); if (result.success && !result.error) setAdding(false); return result; }} label="Add a position" disabled={!ready} messages={nameMessages}
               submitLabel="Add position" pendingLabel="Adding…" successTitle="Position added" showServerSuccess={false}>

@@ -17,13 +17,29 @@ export type AvailabilityDayRow = {
   /** Full words for assistive tech ("Monday, 7:00 AM – 4:00 PM"). */
   label: string;
   onOpen: () => void;
+  /** The day's hours ("07:00"–"21:00"), drawn as bars on a 6 AM – 12 AM line on an Employee's desktop only. */
+  periods?: {startTime: string; endTime: string}[];
 };
 
+/* Employee desktop, Direction B (Nov 8, 2026): each day's hours as bars on a 6 AM – 12 AM line. Hidden unless
+ * employee-b-desktop.css shows it (1024px and wider), so phones, tablets and other roles are unchanged. */
+const LINE_START = 6 * 60, LINE_SPAN = 18 * 60;
+const minutes = (time: string) => { const [h, m] = time.split(':').map(Number); return h * 60 + m; };
+function bar(period: {startTime: string; endTime: string}) {
+  const start = minutes(period.startTime), end = period.endTime <= period.startTime ? 24 * 60 : minutes(period.endTime);
+  const from = Math.min(Math.max(start - LINE_START, 0), LINE_SPAN), to = Math.min(Math.max(end - LINE_START, 0), LINE_SPAN);
+  return to > from ? {left: `${(from / LINE_SPAN * 100).toFixed(2)}%`, width: `${((to - from) / LINE_SPAN * 100).toFixed(2)}%`} : null;
+}
+
 export function AvailabilityDayRows({days}: {days: AvailabilityDayRow[]}) {
+  const bars = days.some(day => day.periods);
   return <ul className="c-avail__days" aria-label="Availability by day">
+    {bars ? <li className="c-avail__axis" aria-hidden="true"><span>6 AM</span><span>12 PM</span><span>6 PM</span><span>12 AM</span></li> : null}
     {days.map(day => <li key={day.key}>
       <button type="button" className="c-avail__day" aria-haspopup="dialog" aria-label={day.label} onClick={day.onOpen}>
         <span className="c-avail__name">{day.name}</span>
+        {bars ? <span className="c-avail__line" aria-hidden="true">{(day.hours ? day.periods ?? [] : []).map((period, index) => {
+          const at = bar(period); return at ? <i key={index} style={at}/> : null; })}</span> : null}
         <span className={day.hours ? 'c-avail__hours' : 'c-avail__hours c-avail__hours--off'}>{day.hours ?? 'Not available'}</span>
         <CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/>
       </button>

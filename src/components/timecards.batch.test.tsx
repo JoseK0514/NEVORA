@@ -16,8 +16,8 @@ import {QuietSheet} from './quiet/quiet-sheet';
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
 function card(id:string){const source={...period,employeeId:id,employeeName:`PRIVATE ${id}`,timeZone:'America/Puerto_Rico',pendingCorrections:0,entries:[],corrections:[]};return {source,state:'DRAFT',revision:0,sourceHash:'a'.repeat(32),history:[]};}
 const ready=(validForMs=45000)=>({state:'ready',observedAt:'2026-09-29T12:00:00Z',validForMs,cards:[card('E1'),card('E2'),card('OWNER')]});
-let cleanup:void|(()=>void);let commands:TimecardCommand[]=[],actorId='OWNER',manager=true,employeeCorporate=false;
-function render(){host.cursor=0;return Timecards({initialPeriod:period,manager,actorId,employeeCorporate});}
+let cleanup:void|(()=>void);let commands:TimecardCommand[]=[],actorId='OWNER',manager=true,employeeCorporate=false,payrollStep:'prepare'|'owner'|undefined;
+function render(){host.cursor=0;return Timecards({initialPeriod:period,manager,actorId,employeeCorporate,payrollStep});}
 const html=()=>renderToStaticMarkup(render());
 function nodes(v:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(v))return v.flatMap(nodes);if(!v||typeof v!=='object'||!('props'in v))return [];const n=v as ReactElement<Record<string,unknown>>;return [n,...nodes(n.props.children as ReactNode),...nodes(n.props.right as ReactNode),...nodes(n.props.actions as ReactNode),...nodes(n.props.action as ReactNode)];}
 // Release 1 (board G-O-Time): Select sits in the corporate title's actions slot, so the walk also visits `actions`; the
@@ -31,7 +31,7 @@ const check=(label:string,value=true)=>{if(label.startsWith('Select ')&&!has(n=>
 const flush=()=>vi.advanceTimersByTimeAsync(0);
 async function mount(){render();host.mounted=true;cleanup=host.effects[0]();await flush();}
 function transport(outcome:'success'|'unknown'='success',validForMs=45000){vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json(ready(validForMs));const c=JSON.parse(String(init?.body)) as TimecardCommand;commands.push(c);if(outcome==='unknown')throw Error('Interrupted');return Response.json({status:'approved',operationId:c.operationId,revision:1});});}
-beforeEach(()=>{actorId='OWNER';manager=true;employeeCorporate=false;host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];commands=[];vi.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});vi.stubGlobal('window',new EventTarget());vi.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));vi.stubGlobal('navigator',{onLine:true});});
+beforeEach(()=>{actorId='OWNER';manager=true;employeeCorporate=false;payrollStep=undefined;host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];commands=[];vi.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});vi.stubGlobal('window',new EventTarget());vi.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));vi.stubGlobal('navigator',{onLine:true});});
 afterEach(()=>{cleanup?.();cleanup=undefined;vi.unstubAllGlobals();vi.useRealTimers();});
 it('shows employee period information and keeps approval controls out of the employee view',async()=>{
  manager=false;employeeCorporate=true;actorId='E1';
@@ -42,7 +42,7 @@ it('shows employee period information and keeps approval controls out of the emp
  expect(html()).toContain('data-tone="neutral"');
  expect(html()).toContain('Totals can change until the period closes.');
  expect(html()).not.toContain('Needs attention');
- expect(html()).not.toMatch(/Approve timecard|Finalize period|Reopen period|Selected timecard review|Select PRIVATE/);
+ expect(html()).not.toMatch(/Approve timecard|Approve with no hours|Finalize period|Reopen period|Selected timecard review|Select PRIVATE/);
  window.dispatchEvent(new Event('blur'));
  expect(html()).not.toContain('Period is still open');
  expect(html()).not.toContain('Your timecard');
@@ -72,7 +72,7 @@ it('renders all mixed employee issue reasons without changing their order or exp
  const positions=reasons.map(reason=>rendered.indexOf(reason));
  expect(positions.every(position=>position>=0)).toBe(true);
  expect(positions).toEqual([...positions].sort((a,b)=>a-b));
- expect(rendered).not.toMatch(/Approve timecard|Finalize period|Reopen period|Selected timecard review/);
+ expect(rendered).not.toMatch(/Approve timecard|Approve with no hours|Finalize period|Reopen period|Selected timecard review/);
 });
 it('requires explicit selection, a rendered reviewed set and fresh confirmation before approval',async()=>{
  transport();await mount();enterSelect();expect(control(n=>n.type==='button'&&n.props.children==='Review selected timecards').disabled).toBe(true);
@@ -140,8 +140,13 @@ it('counts initial transit and JSON parsing against the supplied finite budget',
 it.each([403,503,'malformed'] as const)('retires private selection and review on a replacement %s',async result=>{
  let reads=0;vi.stubGlobal('fetch',async()=>++reads===1?Response.json(ready(15000)):result==='malformed'?Response.json({state:'ready',cards:[]}):new Response(null,{status:result}));await mount();check('Select PRIVATE E1');click('Review selected timecards');await vi.advanceTimersByTimeAsync(10000);expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Reviewed approval set');expect(commands).toHaveLength(0);
 });
-it.each(['blur','offline','pagehide'])('fences an early replacement after %s and does not poll a paused view',async event=>{
+it.each(['blur','pagehide'])('fences an early replacement after %s and does not poll a paused view',async event=>{
  let reads=0,resolve!:(r:Response)=>void;vi.stubGlobal('fetch',async()=>++reads===1?Response.json(ready(15000)):new Promise<Response>(r=>{resolve=r;}));await mount();await vi.advanceTimersByTimeAsync(10000);window.dispatchEvent(new Event(event));resolve(Response.json(ready(15000)));await flush();await vi.advanceTimersByTimeAsync(31000);expect(reads).toBe(2);expect(html()).not.toContain('PRIVATE');
+});
+// Review B2 (NV-001; Jose, Nov 10, 2026): offline with the person still here, the loaded timecards stay read-only; the late
+// replacement is still fenced out and nothing polls.
+it('keeps the loaded timecards offline, fences an early replacement and does not poll',async()=>{ const event='offline';
+ let reads=0,resolve!:(r:Response)=>void;vi.stubGlobal('fetch',async()=>++reads===1?Response.json(ready(15000)):new Promise<Response>(r=>{resolve=r;}));await mount();await vi.advanceTimersByTimeAsync(10000);window.dispatchEvent(new Event(event));expect(html()).toContain('PRIVATE');resolve(Response.json(ready(15000)));await flush();await vi.advanceTimersByTimeAsync(31000);expect(reads).toBe(2);expect(html()).not.toContain('PRIVATE');
 });
 it('clears a frozen review and selection when a fresh projection changes source facts',async()=>{
  let reads=0;vi.stubGlobal('fetch',async()=>{const result=ready(15000);if(++reads>1)result.cards[0].sourceHash='b'.repeat(32);return Response.json(result);});await mount();check('Select PRIVATE E1');click('Review selected timecards');check('Confirm reviewed timecards');await vi.advanceTimersByTimeAsync(10000);expect(html()).toContain('PRIVATE E1');expect(html()).not.toContain('Reviewed approval set');expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').checked).toBe(false);expect(commands).toHaveLength(0);
@@ -154,17 +159,18 @@ it('does not start the deferred first read after unmount',async()=>{
 });
 // Clean Manager v3: one table with a four-figure overview. "Need review" uses the Inbox's rule (not finalized, with
 // recorded time or history), each row says why in a few words, and the batch wording stays for the confirm step only.
-it('counts Ready to approve as the Inbox does, names the reason on the row and keeps the legal wording for the confirm step',async()=>{
+// Review B2 (NV-006): the filter is "Need review" (it counts cards with issues too), so it can't read as "Approve N ready".
+it('counts Need review as the Inbox does, names the reason on the row and keeps the legal wording for the confirm step',async()=>{
  const entry={id:'punch-1',locationId:'fixture-office',locationName:'Fixture office',positionId:'p1',positionName:'Front desk',sourceKind:'RECORDED',adjustmentId:null,recordedVersion:1,startAt:'2026-09-22T08:00:00Z',endAt:null,rawStartAt:'2026-09-22T08:00:00Z',rawEndAt:null,breaks:[]};
  const timed=card('E1');
  vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json({...ready(),cards:[{...timed,source:{...timed.source,entries:[entry]}},card('E2'),card('OWNER')]});commands.push(JSON.parse(String(init?.body)));return Response.json({status:'approved'});});
  await mount();const rendered=html();
  expect(rendered).toContain('aria-label="Period overview"');
- expect(rendered).toContain('aria-label="Ready to approve, 1"');
+ expect(rendered).toContain('aria-label="Needs review, 1"');
  expect(rendered).toContain('aria-label="Approved, 0"');
  expect(rendered).toContain('Missing clock-out');
  expect(rendered).toContain('Front desk');
- expect(rendered).not.toMatch(/Approve timecard|Finalize period/);
+ expect(rendered).not.toMatch(/Approve timecard|Approve with no hours|Finalize period/);
  expect(rendered).not.toContain('Each card commits separately');
  enterSelect();expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').disabled).toBe(true);
  // UI-9: the two people with no time yet share one row, the Role column shows because a punch names one, and the row opens in place.
@@ -180,21 +186,21 @@ it('counts Ready to approve as the Inbox does, names the reason on the row and k
 });
 it('approves from the clean detail sheet with the exact current revision and clears its private content on blur',async()=>{
  transport('unknown');await mount();
- expect(html()).not.toContain('Approve timecard');
+ expect(html()).not.toContain('Approve with no hours');
  // UI-9: no punch names a role, so the Role column goes; no one has time yet, so nothing folds.
  expect(html()).not.toContain('>Role</th>');
  expect(html()).not.toContain('people with no time yet');
  const person=control(n=>n.type==='button'&&n.props.className==='c-tc-person');
  (person.onClick as ()=>void)();
- expect(html()).toContain('Approve timecard');
- expect(control(n=>n.type==='button'&&n.props.children==='Approve timecard').disabled).toBe(false);
- click('Approve timecard');await flush();
+ expect(html()).toContain('Approve with no hours');
+ expect(control(n=>n.type==='button'&&n.props.children==='Approve with no hours').disabled).toBe(false);
+ click('Approve with no hours');await flush();
  expect(commands).toHaveLength(1);
  expect(commands[0]).toMatchObject({...period,employeeId:'E1',action:'APPROVE',expectedRevision:0,expectedSourceHash:'a'.repeat(32)});
  expect(html()).toContain('Retry pending action');
  window.dispatchEvent(new Event('blur'));
  expect(html()).not.toContain('PRIVATE');
- expect(html()).not.toContain('Approve timecard');
+ expect(html()).not.toContain('Approve with no hours');
  expect(html()).not.toContain('Retry pending action');
 });
 it('retires failed background data and offers Try again to obtain a fresh protected snapshot',async()=>{
@@ -248,7 +254,7 @@ function openFirstSheet(){
 it.each(['escape','done'] as const)('returns focus to the replacement current row on %s after a refresh replaces the original trigger',async kind=>{
  transport();await mount();openFirstSheet();
  const focus=sheetFocusFixture();
- click('Approve timecard');await flush();
+ click('Approve with no hours');await flush();
  expect(commands).toHaveLength(1);
  expect(html()).toContain('PRIVATE E1');
  closeSheet(kind);
@@ -257,7 +263,9 @@ it.each(['escape','done'] as const)('returns focus to the replacement current ro
  expect(focus.original.focus).not.toHaveBeenCalled();
  expect(focus.chooser.focus).not.toHaveBeenCalled();
 });
-it('returns focus to the period chooser when Escape closes a sheet during the post-approval replacement read',async()=>{
+// Review B2 (NV-029): after an approval the table stays while the fresh read runs in the background (no blank page), so
+// Escape returns focus to the row the sheet came from; the fresh rows then replace it.
+it('keeps the table during the post-approval replacement read and returns focus to the row on Escape',async()=>{
  let reads=0,resolve!:(response:Response)=>void;
  vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{
   if(path==='/api/timecards')return ++reads===1?Response.json(ready()):new Promise<Response>(r=>{resolve=r;});
@@ -265,17 +273,16 @@ it('returns focus to the period chooser when Escape closes a sheet during the po
   return Response.json({status:'approved',operationId:command.operationId,revision:1});
  });
  await mount();openFirstSheet();const focus=sheetFocusFixture();
- click('Approve timecard');await flush();
- expect(html()).toContain('Checking period timecards');
- expect(html()).not.toContain('PRIVATE E1');
+ click('Approve with no hours');await flush();
+ expect(html()).not.toContain('Checking period timecards');
+ expect(html()).toContain('PRIVATE E1');
  closeSheet();
- expect(focus.chooser.focus).toHaveBeenCalledOnce();
- expect(focus.replacement.focus).not.toHaveBeenCalled();
- expect(focus.original.focus).not.toHaveBeenCalled();
+ expect(focus.replacement.focus).toHaveBeenCalledOnce();
+ expect(focus.chooser.focus).not.toHaveBeenCalled();
  resolve(Response.json(ready()));await flush();
- expect(html()).not.toContain('Approve timecard');
+ expect(html()).not.toContain('Approve with no hours');
  expect(commands).toHaveLength(1);
- expect(focus.chooser.focus).toHaveBeenCalledOnce();
+ expect(focus.replacement.focus).toHaveBeenCalledOnce();
 });
 it.each(['detached','hidden'])('uses the visible period chooser instead of a %s current row',async state=>{
  transport();await mount();openFirstSheet();const focus=sheetFocusFixture();
@@ -396,7 +403,87 @@ it('separates recorded-time approval and finalization counts without treating ap
  const history={operationId:'22222222-2222-4222-8222-222222222222',revision:1,action:'APPROVE',occurredAt:'2026-09-28T12:00:00Z',actorName:'Fictional Reviewer',note:null,sourceHash:'a'.repeat(32),snapshot:approved.source};
  vi.stubGlobal('fetch',async()=>Response.json({...ready(),cards:[recorded('DRAFT'),{...approved,state:'APPROVED',revision:1,history:[history]},card('BLANK')]}));
  await mount();const rendered=html();
- expect(rendered).toContain('1 awaiting approval');expect(rendered).toContain('1 awaiting finalization');
+ expect(rendered).toContain('1 to approve · 1 to finalize');
  expect(control(n=>n.type==='button'&&n.props['aria-label']==='Needs review, 2')).toBeDefined();
- expect(rendered).toContain('PRIVATE BLANK');expect(commands).toHaveLength(0);
+ // Closing F1 (NV-252): one person with no time folds into a row of its own.
+ expect(rendered).toContain('1 person with no time yet');expect(commands).toHaveLength(0);
+});
+
+// Nov 14 inspection (BR-1, BR-2, AR-11 and the timecard sheet).
+const worked=(id:string,minutes:number)=>{const item=card(id),endAt=new Date(Date.parse('2026-09-22T08:00:00Z')+minutes*60000).toISOString();return {...item,source:{...item.source,entries:[{id:'entry-'+id,locationId:'fixture-office',locationName:'Fixture office',positionId:null,positionName:null,sourceKind:'RECORDED',adjustmentId:null,recordedVersion:1,startAt:'2026-09-22T08:00:00Z',endAt,rawStartAt:'2026-09-22T08:00:00Z',rawEndAt:endAt,breaks:[]}]}};};
+const finalized=(id:string,minutes:number)=>{const item=worked(id,minutes),step=(revision:number,action:string)=>({operationId:`2222222${revision}-2222-4222-8222-222222222222`,revision,action,occurredAt:'2026-09-28T12:00:00Z',actorName:'Fictional Reviewer',note:null,sourceHash:'a'.repeat(32),snapshot:item.source});return {...item,state:'FINALIZED',revision:2,history:[step(2,'FINALIZE'),step(1,'APPROVE')]};};
+it('BR-1: a person’s time is a row figure and the week’s total a sentence, from the same minutes',async()=>{
+ vi.stubGlobal('fetch',async()=>Response.json({...ready(),cards:[worked('E1',8*60+6),worked('E2',120),card('OWNER')]}));
+ await mount();const rendered=html();
+ // The kit's CorpDuration wraps each unit, so the cell's text is read without its markup.
+ const text=rendered.replace(/<[^>]+>/g,'').replace(/\s+/g,' ');
+ expect(text).toContain('PRIVATE E18 h 06');expect(text).toContain('PRIVATE E22 h—');expect(text).not.toContain('2 h 00');
+ expect(text).toContain('Total10 h 6 min');expect(text).toContain('10 h 6 min recorded');
+});
+it('BR-2: says the two steps where they are taken, and names the button for a card with hours',async()=>{
+ vi.stubGlobal('fetch',async()=>Response.json({...ready(),cards:[worked('E1',240),card('E2'),card('OWNER')]}));
+ await mount();
+ const steps='Approve each timecard, then finalize the week to lock it for payroll.';
+ expect(html()).toContain(steps);expect(html()).toContain('1 to approve · 0 to finalize');
+ openFirstSheet();
+ const sheet=html();
+ expect(sheet).toContain('Approve timecard');expect(sheet).not.toContain('Approve with no hours');
+ expect(sheet).toContain('Request time correction');
+ expect(sheet.split(steps).length).toBeGreaterThan(2);
+});
+it.each([['prepare','Prepare payroll','href="/app/payroll/prepare"'],['owner','All done. Your Owner runs payroll.',null],[undefined,'Download hours for payroll','href="/app/payroll-export?start=2026-09-21&amp;end=2026-09-27"']] as const)('AR-11: a finalized period leads on (%s)',async(step,title,link)=>{
+ payrollStep=step;
+ vi.stubGlobal('fetch',async()=>Response.json({...ready(),cards:[finalized('E1',240),finalized('E2',60)]}));
+ await mount();const rendered=html();
+ expect(rendered).toContain('aria-label="Next step"');expect(rendered).toContain(`c-row__title--b">${title}<`);expect(rendered).toContain('Every timecard for Sep 21 – 27 is finalized.');expect(rendered).toContain('All 2 finalized');
+ if(link)expect(rendered).toContain(link);else expect(rendered).not.toContain('/app/payroll/prepare');
+ expect(rendered).not.toContain('Approve each timecard');
+});
+it('AR-11: no next step while a timecard is still to finalize',async()=>{
+ payrollStep='prepare';
+ vi.stubGlobal('fetch',async()=>Response.json({...ready(),cards:[finalized('E1',240),worked('E2',60)]}));
+ await mount();
+ expect(html()).not.toContain('Next step');expect(html()).not.toContain('Prepare payroll');
+});
+it('phone: the tile names the step under way, the steps are said once and a finalized week leads on',async()=>{
+ payrollStep='prepare';let cards:unknown[]=[worked('E1',8*60+6),card('E2'),card('OWNER')];
+ phoneWindow();vi.stubGlobal('fetch',async()=>Response.json({...ready(),cards}));await mountAll();
+ const text=(markup:string)=>markup.replace(/<[^>]+>/g,'|').replace(/\s+/g,' ');
+ const before=text(html());
+ expect(before).toContain('|Approved|');expect(before).not.toContain('|Finalized|');expect(before).toContain('|Recorded|');expect(before).toContain('|8 h|');
+ expect(before).toContain('|Approve each timecard, then finalize the week to lock it for payroll.|');expect(before).not.toContain('Next step');
+ cards=[finalized('E1',8*60+6),finalized('E2',60)];click('This week');await flush();
+ const after=html();
+ expect(text(after)).toContain('|Finalized|');expect(text(after)).toContain('|Prepare payroll|');expect(after).toContain('href="/app/payroll/prepare"');
+ expect(after).toContain('Every timecard for Sep 21 – 27 is finalized.');expect(after).not.toContain('Approve each timecard');
+});
+
+it('after an approval the reviewer moves on when they choose: Next timecard, never on a timer (Jose, Nov 15, 2026)',async()=>{
+ transport();await mount();openFirstSheet();
+ const focus=vi.fn();
+ vi.stubGlobal('requestAnimationFrame',(callback:()=>void)=>{callback();return 0;});
+ Object.assign(document,{getElementById:(id:string)=>id==='cm-tc-sheet-title'?{focus}:null});
+ click('Approve with no hours');await flush();
+ const saved=html();
+ expect(saved).toContain('PRIVATE E1’s timecard is approved.');
+ // The next card that still needs approval, skipping the viewer's own.
+ expect(saved).toContain('aria-label="Next timecard: PRIVATE E2"');
+ // Nothing moves by itself.
+ await vi.advanceTimersByTimeAsync(2000);
+ expect(html()).toContain('PRIVATE E1’s timecard is approved.');
+ expect(focus).not.toHaveBeenCalled();
+ click('Next timecard: PRIVATE E2');
+ expect(html()).toContain('id="cm-tc-sheet-title" class="c-row__title c-row__title--b" tabindex="-1">PRIVATE E2<');
+ expect(html()).not.toContain('Next timecard');
+ expect(focus).toHaveBeenCalledOnce();
+});
+it('Next timecard prefers a card that can be approved now over one waiting on a correction',async()=>{
+ const waiting={...card('E2'),source:{...card('E2').source,pendingCorrections:1}};
+ vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json({...ready(),cards:[card('E1'),waiting,card('E3'),card('OWNER')]});const c=JSON.parse(String(init?.body)) as TimecardCommand;commands.push(c);return Response.json({status:'approved',operationId:c.operationId,revision:1});});
+ await mount();
+ // The list puts the card that needs attention first: E2, E1, E3. After E3 the order wraps to E2 (waiting), then E1.
+ const person=nodes(render()).find(n=>n.type==='button'&&n.props.className==='c-tc-person'&&renderToStaticMarkup(n).includes('PRIVATE E3'))!;
+ (person.props.onClick as ()=>void)();
+ click('Approve with no hours');await flush();
+ expect(html()).toContain('aria-label="Next timecard: PRIVATE E1"');
 });

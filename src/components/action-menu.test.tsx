@@ -48,3 +48,12 @@ it('keeps the same native labelled popover when its trigger uses an icon',async(
  expect(html).toContain('href="/app/updates"');
  expect(html).not.toContain('nevora-action-menu-chevron');
 });
+
+// Phase 3 (TB-009): the account pill is marked while a page it opens is on screen; other menus never carry the mark.
+it("marks the trigger as current only when asked", async () => {
+  const { ActionMenu } = await import("./action-menu");
+  const plain = renderToStaticMarkup(<ActionMenu id="plain-menu" label="More"><a href="/a" className="nevora-action-menu-item">A</a></ActionMenu>);
+  const current = renderToStaticMarkup(<ActionMenu id="current-menu" label="Account" triggerCurrent><a href="/a" className="nevora-action-menu-item">A</a></ActionMenu>);
+  expect(plain).not.toContain("aria-current");
+  expect(current.split("</button>")[0]).toContain('aria-current="true"');
+});

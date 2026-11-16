@@ -27,6 +27,11 @@ export function positionTint(position?: string | null) {
   return hash % 6;
 }
 
+/** The same assignments in whole minutes, for the shared duration formatters ("32 h 30", never "32.5 h"). */
+export function assignedMinutes(shifts: RosterShift[]) {
+  return shifts.reduce((sum, shift) => sum + durationMinutes(shift.startTime, shift.endTime), 0);
+}
+
 export function assignedHours(shifts: RosterShift[]) {
   return Number((shifts.reduce((sum, shift) => sum + durationMinutes(shift.startTime, shift.endTime), 0) / 60).toFixed(1));
 }

@@ -5,12 +5,16 @@ vi.mock('@/app/app/exchange/actions',()=>({shiftChangeAction:vi.fn(),reconcileSh
 import {CreationView} from './creation-view';
 import {EmployeeCreationOperation} from './creation-operation';
 import {creationKey,type EmployeeCreationSnapshot,type CreationDraft} from '@/lib/employee-creation';
+import {onlyB} from '../owner-b/test-support';
 const fields={sourceShiftId:'own',sourceEpisodeId:'11111111-1111-4111-8111-111111111111',sourceTermsFingerprint:'v1:'+'a'.repeat(64)};
 const read:Extract<EmployeeCreationSnapshot,{state:'ready'}>={state:'ready',kind:'creation',authority:'a'.repeat(64),observedAt:'2026-10-27T12:00:00Z',validForMs:45000,timeZone:'America/Puerto_Rico',enabled:true,mode:'callout',selection:'own',source:{id:'own',date:'2026-11-03',weekStart:'2026-11-02',startTime:'22:00',endTime:'06:00',location:'Main',position:'Support',lead:false,fields},targets:[],partial:false,check:{allowed:true,notice:null},coverage:{allowed:false,notice:null}};
 const draft:CreationDraft={sourceKey:creationKey(fields),targetKey:null,reason:'OTHER',note:'Unsaved private note'};
 const render=(snapshot:EmployeeCreationSnapshot|null=read,paused=false,d=draft)=>renderToStaticMarkup(<CreationView state={{snapshot,paused,refreshing:false}} authority={read.authority} mode="callout" sourceId="own" draft={d} operation={new EmployeeCreationOperation()} onDraft={()=>{}} onReview={()=>{}} onRefresh={()=>{}} onSubmit={()=>{}} onRetry={()=>{}}/>);
 it('renders native own-report choices, required Other details and original overnight shift without management actions',()=>{
  const html=render();expect(html).toContain('Ends Wed, Nov 4');expect(html).toContain('type="radio"');expect(html).toContain('needed for Other');expect(html).toContain('Send to manager');expect(html).not.toContain('Approve');
+ // Direction B (phones): Cancel and the title on the hero; the one form stays in the page as the screen's card.
+ const b=onlyB(html);expect(b).toContain('>Can’t work this shift</h1>');expect(b).toContain('>Cancel</a>');expect(b).not.toContain('<form');
+ expect(html.match(/<form/g)).toHaveLength(1);expect(html).toContain('class="c-sheet-body b-keep"');
 });
 it('releases private draft and shift UI on pause, denial, changed binding or module-off',()=>{
  for(const [snapshot,paused]of [[read,true],[{state:'unavailable',reason:'access_denied'},false],[{...read,authority:'b'.repeat(64)},false],[{...read,enabled:false,source:null},false]] as const){const html=render(snapshot as EmployeeCreationSnapshot,paused);expect(html).not.toContain('Unsaved private note');expect(html).not.toContain('Main');expect(html).not.toContain('Send to manager');}

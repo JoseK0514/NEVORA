@@ -29,5 +29,6 @@ it('explains what happens to an account after leaving a job',async()=>{
 it('constrains the Help return destination to a known public route',async()=>{
  vi.stubEnv('NEVORA_MOBILE_ACCESS_ENABLED','true');vi.stubEnv('NEVORA_MOBILE_ACCESS_SUPPORT_ENABLED','false');
  const html=renderToStaticMarkup(await page([],'https://untrusted.example.invalid'));
- expect(html).toContain('href="/login"');expect(html).toContain('/access-help?from=login');
+ // Review B4 (NV-315): Help pages no longer link "Need help?" to themselves; the topics carry the sanitised origin.
+ expect(html).toContain('href="/login"');expect(html).toContain('/access-help/id?from=login');expect(html).not.toContain('untrusted');
 });

@@ -18,6 +18,9 @@ import {
   listSwapTargets,
 } from "@/lib/data/exchanges";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Swap or offer a shift" };
+
 
 export default async function SwapPage({
   searchParams,
@@ -31,10 +34,10 @@ export default async function SwapPage({
   const workspace = await getWorkspace();
   const params = await searchParams;
 
-  // Opened without choosing a shift (a bare link): back to Shift requests quietly. Only a chosen shift that is
-  // missing, someone else's or past is an error.
+  // Opened without choosing a shift (a bare link): Schedule asks for the shift to swap (review B6, NV-282, NV-290: never a
+  // silent list). Only a chosen shift that is missing, someone else's or past is an error.
   if (!params.sourceShiftId) {
-    redirect("/app/exchange");
+    redirect("/app/schedule?intent=swap");
   }
 
   const source = await getPublishedShift(params.sourceShiftId);

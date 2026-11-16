@@ -15,7 +15,7 @@ export function MobileOnboardingGuide({employeeId,lang,timeOffEnabled}:{employee
  const intro=journey.confirmedId===employeeId;
  const tasks=[['/app/schedule',t.guideSchedule,t.guideScheduleSub],['/app/my-time',t.guideTime,t.guideTimeSub],...(timeOffEnabled?[['/app/requests?tab=my',t.guideTimeOff,t.guideTimeOffSub]]:[])];
  return <section lang={lang} className="ma-onboarding" aria-label={t.guideOpen}>
-  {intro?<div className="ma-onboarding-intro"><div><h2>{t.guideTitle}</h2><p>{t.guideSub}</p></div><button type="button" className="ma-guide-close" aria-label={t.guideClose} onClick={()=>journey.dismiss()}><XIcon size={20} aria-hidden="true"/></button></div>:null}
-  <details open={open} onToggle={e=>setOpen(e.currentTarget.open)}><summary><span>{t.guideOpen}</span><CaretDownIcon size={20} aria-hidden="true"/></summary><div className="ma-guide-list">{tasks.map(([href,title,sub])=><Link href={href} key={href}><span><b>{title}</b><small>{sub}</small></span><CaretRightIcon size={20} aria-hidden="true"/></Link>)}<div><b>{t.guideHelp}</b><p>{t.guideHelpSub}</p></div></div></details>
+  {intro?<div className="ma-onboarding-intro"><div><h2>{t.guideTitle}</h2><p>{t.guideSub}</p></div><button type="button" className="ma-guide-close" aria-label={t.guideClose} onClick={()=>journey.dismiss()}><XIcon size={20} weight="bold" aria-hidden="true"/></button></div>:null}
+  <details open={open} onToggle={e=>setOpen(e.currentTarget.open)}><summary><span>{t.guideOpen}</span><CaretDownIcon size={20} weight="bold" aria-hidden="true"/></summary><div className="ma-guide-list">{tasks.map(([href,title,sub])=><Link href={href} key={href}><span><b>{title}</b><small>{sub}</small></span><CaretRightIcon size={20} weight="bold" aria-hidden="true"/></Link>)}<div><b>{t.guideHelp}</b><p>{t.guideHelpSub}</p></div></div></details>
  </section>;
 }

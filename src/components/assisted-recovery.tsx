@@ -62,17 +62,17 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
     <label className="q-fl__label" htmlFor="assisted-proof">Recovery code</label>
     <div className="q-in__wrap" style={{ marginTop: 8 }}><input ref={proof} id="assisted-proof" className="q-in" readOnly value={issued.proof} autoComplete="off" spellCheck={false} aria-describedby="assisted-proof-hint" style={{ paddingRight: 92 }}/>
      <button type="button" className="q-bs" style={{ position: "absolute", right: 9, top: 9 }} onClick={()=>{proof.current?.focus();proof.current?.select();}}>Select</button></div>
-    <p className="q-fl__help" id="assisted-proof-hint">Share it privately. They open <Link href="/reset-access" style={{ color: "#0B6E69" }}>Reset access</Link>, enter the code and choose a new password.</p>
+    <p className="q-fl__help" id="assisted-proof-hint">Share it privately. On the sign-in page they choose <Link href="/forgot-access" style={{ color: "#0B6E69" }}>Forgot password?</Link>, then I have a recovery code, enter it and choose a new password.</p>
    </div>
    <button className="q-btn q-btn--sec" type="button" onClick={onStartAgain}>Prepare another code</button>
    <p className="q-help">Issuing another code retires any unused earlier code. The code hides when you leave this page.</p>
-  </section>:<form noValidate onSubmit={event=>{if(!event.currentTarget.checkValidity()){event.preventDefault();return;}onSubmit(event);}} aria-busy={busy} className="wc-form" aria-label="Verify the employee" data-guard={hydrated?undefined:''} {...handlers}>
+  </section>:<form noValidate onSubmit={event=>{if(!event.currentTarget.checkValidity()){event.preventDefault();return;}onSubmit(event);}} aria-busy={busy} className="wc-form wc-savecard" aria-label="Verify the employee" data-guard={hydrated?undefined:''} {...handlers}>
    <noscript><Notice tone="info">Enable JavaScript to issue a recovery code. You can still go back with the link above.</Notice></noscript>
    <ReturnToNext/>
    <fieldset disabled={!hydrated||busy} className="wc-fieldset">
     <FieldErrors errors={errors}>
      <h2 className="q-sr" id="assisted-verify-title">Verify the employee</h2>
-     <Field label="Employee ID" inputRef={employee} placeholder="e.g. 10482"
+     <Field label="Employee ID" inputRef={employee} placeholder="As shown on their Team page"
       id="assisted-employee" required maxLength={200} name="employeeId" defaultValue={employeeId} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done"/>
      <ul className="q-list" style={{ marginTop: 24 }}>
       <li><label className="q-row q-row--one q-select-row">
@@ -80,11 +80,11 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
        <select className="q-select-row__control" name={method === "other" ? undefined : "attestation"} value={method} onChange={event => setMethod(event.target.value)} aria-label="How you checked who they are">
         {METHODS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
        </select>
-       <CaretRightIcon className="q-chev" aria-hidden="true"/>
+       <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/>
       </label></li>
       <li><label className="q-row q-row--one" data-invalid={errors.confirm?'true':undefined}>
        <span className="q-rt"><b>I confirmed who they are</b></span>
-       <input type="checkbox" role="switch" className="q-tog" required name="confirm" checked={confirmed} onChange={event=>setConfirmed(event.target.checked)} aria-describedby={errors.confirm?'assisted-confirm-error':'assisted-confirm-hint'}/>
+       <input type="checkbox" role="switch" className="q-tog" required name="confirm" checked={confirmed} onChange={event=>setConfirmed(event.target.checked)} aria-invalid={errors.confirm?true:undefined} aria-describedby={errors.confirm?'assisted-confirm-error':'assisted-confirm-hint'}/>
       </label></li>
      </ul>
      <p className="q-sr" id="assisted-confirm-hint">I independently confirmed this employee’s identity and can transfer this code securely.</p>
@@ -98,12 +98,14 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
    <p className="nv-sr" role="status">{busy?'Issuing recovery code. Checking your access and preparing a single-use code.':''}</p>
    {message?<div className="wc-feedback" ref={feedback} tabIndex={-1} role="alert"><Notice tone="urgent" title={message.includes('session ended')?'Your session ended':message.includes('expired')?'Recovery code expired':'Code not confirmed'}
     action={message.includes('session ended')?<Link className="q-btn q-btn--quiet" href="/login">Sign in</Link>:undefined}>{message}</Notice></div>:null}
-   <button className="q-btn" type="submit" disabled={!hydrated||busy||!confirmed} aria-describedby={confirmed?undefined:'assisted-confirm-needed'}><ButtonLabel pending={busy} idle="Issue recovery code" busy="Issuing code…"/></button>
-   {confirmed?null:<p className="q-sr" id="assisted-confirm-needed">Turn on “I confirmed who they are” first.</p>}
+   {/* Review F2 (NV-249): the button stays enabled and the form checks on submit, as Add employee does. The confirmation
+     * is still required: without it nothing is sent, the switch is marked and focused, and its error shows under it.
+     * Review F4 (NV-102): on tablets and desktop the form is one card and this is its footer action (phones unchanged). */}
+   <div className="wc-savefoot"><button className="q-btn" type="submit" disabled={!hydrated||busy}><ButtonLabel pending={busy} idle="Issue recovery code" busy="Issuing code…"/></button></div>
   </form>}
   {pins&&!issued?<section className="wc-recovery__pins" aria-labelledby="assisted-pins-title">
    <h2 className="q-sr" id="assisted-pins-title">Clocker PIN</h2>
-   <ul className="q-list"><li><Link className="q-row" href="/app/settings/clocker/pins"><span className="q-rt"><b>Reset a Clocker PIN</b><i>Set a new PIN for someone who forgot theirs</i></span><CaretRightIcon className="q-chev" aria-hidden="true"/></Link></li></ul>
+   <ul className="q-list"><li><Link className="q-row" href="/app/settings/clocker/pins"><span className="q-rt"><b>Reset a Clocker PIN</b><i>Set a new PIN for someone who forgot theirs</i></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></Link></li></ul>
   </section>:null}
  </SettingsFrame>;
 }

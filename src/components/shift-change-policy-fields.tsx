@@ -13,7 +13,7 @@ export function ShiftChangePolicyFields({
 }) {
   return (
     <details className="wb-disclosure wb-disclosure--ruled wb-policy">
-      <summary><span>How trades and coverage work</span><CaretDownIcon size={20} aria-hidden="true" /></summary>
+      <summary><span>How trades and coverage work</span><CaretDownIcon size={20} weight="bold" aria-hidden="true" /></summary>
       <p className="wb-note wb-card-lead">
         {canEdit ? "Owners can edit these settings; managers can view them." : "Owners edit these settings; you can view them."} Until a rule is set, trades and coverage requests
         wait for a manager. Trades and coverage save separately.

@@ -11,6 +11,7 @@ import Link from 'next/link';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {useAccessJourney} from './mobile-access/journey';
 import type {AttentionItem} from '../lib/employee-home/types';
+import {EmployeeHomeB, type HomeBExtras} from './employee-b/home-b';
 import {businessDate, clock, confirmsWeek, dayWord, fmt, isComplete, sourceDestinations, sourceNames, todoTitle, weekRange, type EmployeeHomeQuietViewProps, type HomeWeek} from './employee-home-quiet';
 
 /* Employee Home on the corporate kit (Release 1, board C-Employee; Nov 1 upscale S3, S4, M7). Look only: the Home read, its states, links, authority
@@ -132,7 +133,7 @@ function weekTodo(item: AttentionItem, week?: HomeWeek | null) {
   return {title: own ? `Confirm ${own.when} schedule` : 'Confirm your schedule', detail: <><time dateTime={item.ref.id}>{weekRange(item.ref.id)}</time>{count}</>};
 }
 
-export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, displayName, timeZone, workspaceName, week}: EmployeeHomeQuietViewProps) {
+export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, displayName, timeZone, workspaceName, week, b, teamMessage = false}: EmployeeHomeQuietViewProps & {b?: HomeBExtras}) {
   const online = typeof navigator === 'undefined' || navigator.onLine !== false;
   const paused = status === 'paused';
   const denied = !paused && (status === 'unauthorized' || home?.state === 'unauthorized');
@@ -152,11 +153,16 @@ export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, 
     ? <time dateTime={snapshot.observedAt}>{keepWhole(fmt(snapshot.timeZone, {weekday: 'long', month: 'long', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time>
     // Before Home is read, the workspace's public date, so the line is there from the first frame.
     : <time suppressHydrationWarning>{keepWhole(fmt(timeZone ?? 'UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(new Date()))}</time>;
+  // Direction B writes the month short ("Saturday, Nov 7"), read or not.
+  const dateB = <time suppressHydrationWarning>{keepWhole(fmt(timeZone ?? 'UTC', {weekday: 'long', month: 'short', day: 'numeric'}).format(new Date()))}</time>;
   const weekShown = snapshot && week && week.dates.length === 7 ? week : null;
   const waiting: ReactNode = paused ? (online ? 'Paused while you’re away. Your shift updates when you come back.' : 'You’re offline. Your shift updates when you reconnect.')
     : denied ? 'Your session ended. Sign in again to see your shift.' : loading ? 'Loading your shift…' : 'Couldn’t load Home.';
 
   return <CorpPage className="c-ehome c-page--narrow">
+    {/* Direction B: the phone screen (phones only; tablets and desktop keep the cards below). */}
+    <EmployeeHomeB snapshot={snapshot ?? null} partial={partial} todos={todos} week={week} name={name} date={dateB} place={(snapshot?.currentShift ?? snapshot?.nextShift)?.locationLabel || workspaceName}
+      waiting={waiting} loading={loading} paused={paused} denied={denied} refreshing={refreshing} onRetry={onRetry} weekTodo={item => weekTodo(item, week)} team={teamMessage} {...b}/>
     <div data-home-state={viewState} aria-busy={refreshing || loading} className="c-ehome__body">
       <CorpTitle title={name ? `Welcome back, ${name}` : 'Home'} sub={<>{date}{workspaceName ? <> · {workspaceName}</> : null}</>}/>
       {snapshot ? <>

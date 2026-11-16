@@ -14,7 +14,7 @@
 .ma-text{display:inline-flex;align-items:center;gap:8px;min-height:44px}
 
 @media(max-width:767px), (max-height:500px) and (orientation:landscape) and (pointer:coarse){
- #mobile-access-page.q-auth{--ma-ink:#172622;--ma-muted:#5f6d68;--ma-teal:#0b6e69;--ma-press:#07534f;--ma-wash:#eaf4f1;--ma-line:#e3e9e6;--ma-border:#7a8882;--ma-focus:#087fca;--ma-inset:24px;display:flex;flex-direction:column;min-height:100svh;max-width:430px;margin:0 auto;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);background:#fff;color:var(--ma-ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:1rem;line-height:1.45;color-scheme:light}
+ #mobile-access-page.q-auth{--ma-ink:#172622;--ma-muted:#5f6d68;--ma-teal:#0b6e69;--ma-press:#07534f;--ma-wash:#eaf4f1;--ma-line:#e3e9e6;--ma-border:#7a8882;--ma-focus:#0b6e69;--ma-inset:24px;display:flex;flex-direction:column;min-height:100svh;max-width:430px;margin:0 auto;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);background:#fff;color:var(--ma-ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:1rem;line-height:1.45;color-scheme:light}
  #mobile-access-page.q-auth .ma-only{display:block}
  #mobile-access-page.q-auth .ma-desktop{display:none}
  #mobile-access-page.q-auth .q-auth__col{width:100%;max-width:none;padding:0 var(--ma-inset);flex:1;min-width:0}
@@ -35,8 +35,9 @@
  #mobile-access-page.q-auth .q-in::placeholder{color:var(--ma-muted);opacity:1}
  #mobile-access-page.q-auth .q-in__wrap>.q-in{padding-right:58px}
  #mobile-access-page.q-auth .q-in__eye{width:44px;height:44px;border-radius:8px;color:var(--ma-muted)}
- #mobile-access-page.q-auth :is(input,textarea,button,a,summary):focus-visible{outline:3px solid var(--ma-focus);outline-offset:3px}
- #mobile-access-page.q-auth :is(input,textarea):focus{outline:3px solid var(--ma-focus);outline-offset:2px;border-color:var(--ma-teal);box-shadow:none}
+ /* Review B4 (Nov 10, 2026, NV-170): one teal focus ring, 2px and 2px apart, as on every Direction B page. */
+ #mobile-access-page.q-auth :is(input,textarea,button,a,summary):focus-visible{outline:2px solid var(--ma-focus);outline-offset:2px}
+ #mobile-access-page.q-auth :is(input,textarea):focus{outline:2px solid var(--ma-focus);outline-offset:2px;border-color:var(--ma-teal);box-shadow:none}
  #mobile-access-page.q-auth .q-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:auto;min-height:48px;margin:24px 0 0;padding:12px 18px;border:1px solid transparent;border-radius:12px;background:var(--ma-teal);color:#fff;font:inherit;font-weight:620;font-size:1rem;line-height:1.4;text-align:center;white-space:normal;letter-spacing:-.01em;text-decoration:none;overflow-wrap:anywhere}
  #mobile-access-page.q-auth :is(.q-auth__form,.q-passkey) .q-btn{width:100%;margin-left:0;margin-right:0}
  #mobile-access-page.q-auth .q-btn:hover{background:var(--ma-press)}
@@ -53,7 +54,7 @@
  #mobile-access-page.q-auth .ma-rules [data-met=true]{color:var(--ma-teal)}
  #mobile-access-page.q-auth .q-help,#mobile-access-page.q-auth .ma-copy{font-size:.875rem;color:var(--ma-muted);line-height:1.6}
  #mobile-access-page.q-auth .ma-copy p{margin:0 0 16px}
- #mobile-access-page.q-auth .q-auth__alert{margin:0 0 24px;padding:16px;border-radius:12px;background:#fdf0ed;color:#b53327;line-height:1.5;font-size:.875rem}
+ #mobile-access-page.q-auth .q-auth__alert{margin:0 0 24px;padding:16px;border-radius:12px;background:#fdecea;color:#8f1c13;line-height:1.5;font-size:.875rem}
  #mobile-access-page.q-auth .ma-receipt{margin:0 0 24px;color:var(--ma-muted);line-height:1.55;outline:none}
  #mobile-access-page.q-auth .ma-receipt p+p{margin-top:16px}
  #mobile-access-page.q-auth .ma-receipt-mark{display:grid;place-items:center;width:56px;height:56px;margin:16px 0 24px;border-radius:16px;background:var(--ma-wash);color:var(--ma-teal)}
@@ -61,7 +62,7 @@
  #mobile-access-page.q-auth .ma-details summary{display:flex;align-items:center;gap:8px;min-height:44px;padding:10px 0;cursor:pointer;list-style:none;color:var(--ma-teal);font-size:.875rem;line-height:1.5;font-weight:620}
  #mobile-access-page.q-auth .ma-details summary::-webkit-details-marker{display:none}
  #mobile-access-page.q-auth .ma-details summary>svg{flex-shrink:0}
- #mobile-access-page.q-auth .ma-details[open] summary>svg{transform:rotate(90deg)}
+ #mobile-access-page.q-auth .ma-details[open] summary>svg{transform:rotate(180deg)}
  #mobile-access-page.q-auth .ma-details p{margin:4px 0 12px;color:var(--ma-muted);font-size:.875rem;line-height:1.6}
  #mobile-access-page.q-auth .ma-actions{display:flex;flex-direction:column;gap:12px;margin-top:24px}
  #mobile-access-page.q-auth .ma-actions>.q-btn{margin:0}
@@ -69,7 +70,7 @@
  #mobile-access-page.q-auth .ma-footer-help{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;color:var(--ma-muted);font-size:.875rem;text-decoration:none}
  #mobile-access-page.q-auth .q-legal{font-size:.75rem;line-height:1.6;color:var(--ma-muted);white-space:normal}
  #mobile-access-page.q-auth .ma-welcome-art{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:contain;margin:16px 0 24px}
- #mobile-access-page.q-auth .ma-welcome .q-hd h1{font-size:2rem;max-width:13ch}
+ #mobile-access-page.q-auth .ma-welcome .q-hd h1{font-size:2rem;text-wrap:balance}
  #mobile-access-page.q-auth .ma-choices{border:1px solid var(--ma-line);border-radius:16px;padding:0 16px}
  #mobile-access-page.q-auth .ma-choice{display:flex;align-items:center;gap:12px;min-height:44px;padding:20px 0;color:var(--ma-ink);text-decoration:none}
  #mobile-access-page.q-auth .ma-choice+.ma-choice{border-top:1px solid var(--ma-line)}
@@ -103,8 +104,8 @@
 /* Access v1 refinements (Jose approved October 27, 2026; mockups in docs/handoffs/2026-10-27-access-refinements.md). */
 #mobile-access-page.q-auth .q-btn.q-btn--sec:hover{background:var(--ma-wash,#eaf4f1)!important;border-color:var(--ma-teal,#0b6e69)!important}
 #mobile-access-page.q-auth .ma-text + .ma-text{margin-left:24px}
-#mobile-access-page.q-auth .q-in[aria-invalid="true"]{border-color:#b53327!important;box-shadow:inset 0 0 0 1px #b53327}
-#mobile-access-page.q-auth .q-auth__alert h2{font-size:15px!important;line-height:20px!important;font-weight:620!important;margin:0 0 4px!important;color:#b53327;letter-spacing:0}
+#mobile-access-page.q-auth .q-in[aria-invalid="true"]{border-color:#b42318!important;box-shadow:inset 0 0 0 1px #b42318}
+#mobile-access-page.q-auth .q-auth__alert h2{font-size:15px!important;line-height:20px!important;font-weight:620!important;margin:0 0 4px!important;color:#8f1c13;letter-spacing:0}
 #mobile-access-page.q-auth .q-auth__alert p{margin:0;color:var(--ma-ink,#172622)}
 #mobile-access-page.q-auth .q-auth__links{gap:4px 16px;margin-top:16px}
 #mobile-access-page.q-auth .q-auth__links a{height:auto!important;text-align:left}
@@ -143,10 +144,11 @@
  :is(#q-root, html):has(#mobile-access-page .ma-card), :is(#q-root, html) body:has(#mobile-access-page .ma-card),
  :is(#q-root, html)[data-theme][data-theme-choice]:has(#mobile-access-page .ma-card), :is(#q-root, html)[data-theme][data-theme-choice] body:has(#mobile-access-page .ma-card){background:#F7F6F3!important}
  #mobile-access-page.q-page.q-auth:has(.ma-card), html[data-theme] #mobile-access-page.q-page.q-auth:has(.ma-card){background:#F7F6F3!important}
- #mobile-access-page.q-auth:has(.ma-card) .ma-header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
- #mobile-access-page.q-auth:has(.ma-card) .ma-brand{grid-column:2}
- #mobile-access-page.q-auth:has(.ma-card) .ma-brand .brand-wordmark{width:104px}
- #mobile-access-page.q-auth:has(.ma-card) .ma-language{grid-column:3;justify-self:end}
+ /* Review B4 (NV-313): every Access page centres the wordmark, so it doesn't jump between Welcome and Sign in. */
+ #mobile-access-page.q-auth .ma-header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+ #mobile-access-page.q-auth .ma-brand{grid-column:2}
+ #mobile-access-page.q-auth .ma-brand .brand-wordmark{width:104px}
+ #mobile-access-page.q-auth .ma-language{grid-column:3;justify-self:end}
  #mobile-access-page.q-auth .ma-card{margin:12px 0 0;padding:24px 20px 20px;background:#fff;border:1px solid rgba(23,38,34,.06);border-radius:16px;box-shadow:0 1px 2px rgba(16,24,22,.05),0 10px 30px rgba(16,24,22,.08)}
  #mobile-access-page.q-auth .ma-card .q-hd{margin:0 0 20px;text-align:center}
  #mobile-access-page.q-auth .ma-card .q-hd h1{font-size:1.5rem!important;line-height:1.25!important;letter-spacing:-.025em!important;max-width:none!important}
@@ -154,7 +156,7 @@
  #mobile-access-page.q-auth .ma-card .q-fl{position:relative}
  #mobile-access-page.q-auth .ma-card .q-fl > label{position:absolute;top:.5625rem;left:15px;right:15px;z-index:1;margin:0;overflow:hidden;font-size:.75rem;line-height:1rem;font-weight:560;letter-spacing:0;white-space:nowrap;text-overflow:ellipsis;color:var(--ma-muted);pointer-events:none}
  #mobile-access-page.q-auth .ma-card .q-fl:focus-within > label{color:var(--ma-teal)}
- #mobile-access-page.q-auth .ma-card .q-fl:has(.q-in[aria-invalid="true"]) > label{color:#b53327}
+ #mobile-access-page.q-auth .ma-card .q-fl:has(.q-in[aria-invalid="true"]) > label{color:#b42318}
  #mobile-access-page.q-auth .ma-card .q-in{height:3.5rem!important;padding:1.5rem 14px .5rem!important}
  #mobile-access-page.q-auth .ma-card .q-in::placeholder{color:transparent}
  #mobile-access-page.q-auth .ma-card .q-in:focus::placeholder{color:#8a958f}

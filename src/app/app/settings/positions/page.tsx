@@ -5,6 +5,9 @@ import type { Position } from "@/lib/domain";
 import { createPositionAction, updatePositionAction } from "../actions";
 import { PositionCatalog } from "./position-catalog";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Positions" };
+
 export default async function PositionsPage() {
   await requireRoles(["OWNER"]);
   let positions: Position[] = [];

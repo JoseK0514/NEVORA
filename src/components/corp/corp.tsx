@@ -1,3 +1,5 @@
+import { faceTint } from "@/lib/face-tint";
+import { BState } from "../owner-b/b-kit";
 import "./corp.css";
 import Link from "next/link";
 import type { ReactNode, ButtonHTMLAttributes, AnchorHTMLAttributes, CSSProperties } from "react";
@@ -16,7 +18,7 @@ export { RANGE_DASH, periodRange, payDay, daysBetween, hoursText, minutesText } 
  * authorized, formatted data and keep their own actions. Each piece reproduces one element of the approved boards. */
 
 /** `blue` is retired (Nov 1 upscale: blue is not in the NEVORA palette); a pill passed it reads as grey text. */
-type Tone = "teal" | "amber" | "blue" | "red" | "neutral";
+type Tone = "teal" | "amber" | "blue" | "red" | "neutral" | "green";
 
 /* Nov 1 upscale (kit consistency 1): one count style, "Label N" with N at 13/600 #6B7075 and never in parentheses. A label
  * written the old way ("Team (9)", "Waiting (2)") is split here, so every caller of CorpCard, CorpSection and
@@ -82,8 +84,11 @@ export function CorpBadge({ count, label }: { count: number; label?: string }) {
   return <span className="c-badge" aria-label={label}>{count > 99 ? "99+" : count}</span>;
 }
 
-export function CorpAvatar({ initials, grey, large, open }: { initials?: string; grey?: boolean; large?: boolean; open?: boolean }) {
-  return <span className={`c-av${grey ? " c-av--grey" : ""}${large ? " c-av--l" : ""}${open ? " c-av--open" : ""}`} aria-hidden="true">{initials}</span>;
+/** `name` gives the face its own tint (the same as Direction B's BAvatar), drawn where the Owner/Manager Direction B shell is on. */
+export function CorpAvatar({ initials, grey, large, open, name }: { initials?: string; grey?: boolean; large?: boolean; open?: boolean; name?: string }) {
+  const tint = name && !grey && !open ? faceTint(name) : null;
+  return <span className={`c-av${grey ? " c-av--grey" : ""}${large ? " c-av--l" : ""}${open ? " c-av--open" : ""}${tint ? " c-av--tint" : ""}`}
+    style={tint ? { "--av-bg": tint[0], "--av-fg": tint[1] } as CSSProperties : undefined} aria-hidden="true">{initials}</span>;
 }
 
 export type CorpRowProps = {
@@ -205,16 +210,17 @@ export function CorpSegments({ label, items }: { label: string; items: { key?: s
 }
 
 /** Label above a control, optional help under it. */
-export function CorpField({ label, htmlFor, help, error, children }: { label: ReactNode; htmlFor?: string; help?: ReactNode; error?: ReactNode; children: ReactNode }) {
+export function CorpField({ label, htmlFor, help, error, errorId, children }: { label: ReactNode; htmlFor?: string; help?: ReactNode; error?: ReactNode; errorId?: string; children: ReactNode }) {
   return <div className="c-field">
     {htmlFor ? <label className="c-field__label" htmlFor={htmlFor}>{label}</label> : <span className="c-field__label">{label}</span>}
     {children}
-    {error ? <span className="c-error" role="alert">{error}</span> : help ? <span className="c-field__help">{help}</span> : null}
+    {error ? <span className="c-error" id={errorId} role="alert">{error}</span> : help ? <span className="c-field__help">{help}</span> : null}
   </div>;
 }
 
-export function CorpNote({ children, center, icon }: { children: ReactNode; center?: boolean; icon?: ReactNode }) {
-  return <p className={center ? "c-note c-note--center" : "c-note"}>{icon ?? null}<span>{children}</span></p>;
+/** `announce`: the note reports what just happened ("Shift deleted."), so screen readers hear it (review B1, NV-023). */
+export function CorpNote({ children, center, icon, announce }: { children: ReactNode; center?: boolean; icon?: ReactNode; announce?: boolean }) {
+  return <p className={center ? "c-note c-note--center" : "c-note"} role={announce ? "status" : undefined}>{icon ?? null}<span>{children}</span></p>;
 }
 
 /** A pushed page's white header: "‹ Back" left, the title centred, an optional action right. */
@@ -259,10 +265,10 @@ export function CorpEmptyRow({ children, as = "div" }: { children: ReactNode; as
 /** Owner premium P3 (phone-native L3): the one failure style. Title ("Couldn't load timecards"), one 13px line and an
  * action (usually <CorpRetryButton />, which refreshes the page's data). */
 export function CorpErrorCard({ title, body = "Check your connection, then try again.", action, live = true }: { title: ReactNode; body?: ReactNode; action?: ReactNode; live?: boolean }) {
+  // Phase 2 (package D): the kit's one state card inside this card (the red circle, the title, the line), with the same
+  // words, the same action and the same alert on the section. It was three plain lines and a grey button.
   return <section className="c-card c-error-card" role={live ? "alert" : undefined}>
-    <span className="c-error-card__title">{title}</span>
-    {body ? <span className="c-error-card__body">{body}</span> : null}
-    {action ? <span className="c-error-card__action">{action}</span> : null}
+    <BState silent kind="failed" title={title} line={body || undefined}>{action ? <span className="c-error-card__action">{action}</span> : null}</BState>
   </section>;
 }
 
@@ -365,5 +371,5 @@ export function CorpCardSub({ children, id }: { children: ReactNode; id?: string
 export function CorpMenuButton({ id, label, title, ariaLabel, align, children }: { id: string; label: string; title?: string; ariaLabel?: string; align?: "start" | "end"; children: ReactNode }) {
   return <ActionMenu id={id} label={label} ariaLabel={ariaLabel} title={title ?? label} align={align}
     triggerClassName="c-btn c-btn--secondary c-btn--menu"
-    triggerContent={<>{label}<CaretDownIcon className="c-btn__caret" size={16} aria-hidden="true" /></>}>{children}</ActionMenu>;
+    triggerContent={<>{label}<CaretDownIcon className="c-btn__caret" size={16} weight="bold" aria-hidden="true" /></>}>{children}</ActionMenu>;
 }

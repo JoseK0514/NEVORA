@@ -49,7 +49,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-notifications :is(.cm-page-foot .cm-refresh, .cm-notifications-state__action, .cm-notifications-links a, button.cm-notifications-mark):focus-visible:not(#cm-focus) { outline: 2px solid var(--cm-tint); outline-offset: -2px; }
 
 /* ============================ Phones ============================ */
-@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 760px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-notifications [class*="notification-inbox-module"][class*="__controls"] { flex-direction: column; align-items: stretch; gap: 10px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-notifications [class*="notification-inbox-module"][class*="__filters"] { width: 100%; }
   /* The search field: the iOS grey field, 36pt tall, with a 44pt hit area. */
@@ -68,7 +68,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 }
 
 /* ============================ Desktop ============================ */
-@media (min-width: 761px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 761px) {
   /* Underline tabs on the left, the search on the right of the same line. */
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-notifications [class*="notification-inbox-module"][class*="__controls"] { flex-direction: row; align-items: center; justify-content: space-between; gap: 16px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-notifications [class*="notification-inbox-module"][class*="__filters"] { flex: 1 1 auto; width: auto; min-width: 0; }

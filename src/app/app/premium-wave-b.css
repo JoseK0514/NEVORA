@@ -78,7 +78,7 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-actions { display: flex; flex-wrap: wrap; gap: var(--nv-s-3); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-actions > :is(.nv-btn, form, div) { flex: 1 1 100%; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-actions > :is(form, div) > .nv-btn { width: 100%; }
-@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 761px) {
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-actions > :is(.nv-btn, form, div) { flex: 0 1 auto; min-width: min(100%, 12rem); }
 }
 
@@ -107,7 +107,7 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-text > span:not(:first-child) { font: var(--nv-t-callout); color: var(--nv-muted); }
 
 /* Single-column pages stay readable on wide screens. */
-@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 761px) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .wb-page.wb-page.wb-page.wb-page.wb-narrow[data-nv-page][data-nv-page] { max-width: 840px; }
 }
 
@@ -220,7 +220,7 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-foot-action > span { flex: 1 1 14rem; padding-block: var(--nv-s-2); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-disclosure--ruled > summary { border-top: 1px solid var(--nv-hairline); font: var(--nv-t-label); color: var(--nv-accent); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.nv-card.wb-disclosure > summary { min-height: 64px; padding: var(--nv-s-4) var(--nv-s-5); font: var(--nv-t-headline); }
-@media (min-width: 1024px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 1024px) {
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-top { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-grid:not(.wb-insights-grid--two) > :first-child { grid-column: 1 / -1; }
@@ -267,7 +267,7 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-empty { align-items: flex-start; padding-top: var(--nv-s-2); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-empty > .wb-actions { align-self: stretch; }
 @media (max-width: 359px) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions { grid-template-columns: minmax(0, 1fr); } }
-@media (min-width: 1024px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 1024px) {
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-templates-layout { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li { flex-direction: row; align-items: center; justify-content: space-between; }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions { flex: none; grid-template-columns: auto auto; }
@@ -334,7 +334,7 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar { bottom: var(--nv-s-4); align-items: center; margin: 0; padding: var(--nv-s-3) var(--nv-s-4); border-radius: var(--nv-r-card); background: var(--nv-canvas); box-shadow: var(--nv-e2); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar > p { flex: 1 1 12rem; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar > .nv-btn { flex: 1 1 12rem; }
-@media (max-width: 760px), (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 760px) {
   /* ST-B09: the tab bar grows with text size (68px at 100%, 83px at 200%), so the bar's offset does too. */
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar { bottom: calc(53px + .9375rem + var(--nv-s-2) + env(safe-area-inset-bottom, 0px)); padding: var(--nv-s-2); }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar > p.wb-note { display: none; }
@@ -373,7 +373,7 @@
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: center; gap: var(--nv-s-4); }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting__fields:not(.wb-setting__fields--pair) { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); align-items: end; }
 }
-@media (min-width: 1024px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 1024px) {
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-layout { grid-template-columns: min(13rem, 26%) minmax(0, 1fr); gap: var(--nv-s-6); }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-nav { position: sticky; top: 88px; padding-top: var(--nv-s-5); }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-nav .wb-jump { flex-direction: column; align-items: stretch; }
@@ -402,7 +402,7 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-history p { font: var(--nv-t-body); color: var(--nv-ink-2); overflow-wrap: break-word; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-history small { font: var(--nv-t-callout); color: var(--nv-muted); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-payroll-settings .wb-form > .nv-btn, .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-payroll-settings .wb-body > .nv-btn { width: 100%; }
-@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 761px) {
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-payroll-settings .wb-form > .nv-btn, .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-payroll-settings .wb-body > .nv-btn { width: auto; align-self: flex-start; min-width: 12rem; }
 }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto :is(p, h2, h3, ul, small, legend) { margin-block: 0; }
@@ -443,16 +443,13 @@
 @media (max-width: 760px) {
   html body .app-shell.nevora-portal.nevora-portal:has(.wb-rules .wb-savebar) .page-frame .form-success[role="status"] { bottom: calc(68px + 76px + var(--nv-s-2) + env(safe-area-inset-bottom, 0px)); }
 }
-@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 761px) {
   html body .app-shell.nevora-portal.nevora-portal:has(.wb-rules .wb-savebar) .page-frame .form-success[role="status"] { bottom: calc(var(--nv-s-4) + 76px + var(--nv-s-2)); }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-section-head { padding-inline: var(--nv-s-5); }
 }
 /* AL-B11: the period card's two actions share a row when they fit, like Export's stack. */
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-actions--fill > .nv-btn { flex: 1 1 10rem; min-width: 0; }
 /* AL-B21: on a landscape phone the save bar ends the form instead of sticking over a 390px screen. */
-@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
-  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar { position: static; box-shadow: var(--nv-e1); }
-}
 
 /* ---------- Round 1 fixes (type, colour and copy) ---------- */
 /* TC-B-01: a condition pill wraps inside its card instead of losing its word; long single words break rather than clip. */
@@ -470,7 +467,7 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-saved { display: flex; align-items: flex-start; gap: 6px; font: var(--nv-t-callout); color: var(--nv-done-ink); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-saved > svg { flex: none; margin-top: 2px; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar > :is(.wb-saved, .wb-error) { flex: 1 1 12rem; }
-@media (max-width: 760px), (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 760px) {
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar > :is(.wb-saved, .wb-error) { flex-basis: 100%; padding: var(--nv-s-1) var(--nv-s-2) 0; }
 }
 /* Coverage period remove: the confirm takes its own row under the period. */
@@ -503,7 +500,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wb-payroll-feedbac
   position: fixed; z-index: 118; left: var(--nv-gutter); right: var(--nv-gutter); bottom: calc(76px + var(--nv-s-2) + env(safe-area-inset-bottom, 0px));
   display: flex; flex-direction: column; gap: var(--nv-s-2); max-height: 50vh; overflow: auto; padding: var(--nv-s-4); border-radius: var(--nv-r-card); background: var(--nv-canvas); box-shadow: var(--nv-e2);
 }
-@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 761px) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wb-payroll-feedback > .pw-feedback:has(> *) { left: auto; right: var(--nv-s-6); bottom: var(--nv-s-6); width: min(420px, calc(100vw - 48px)); }
 }
 
@@ -513,7 +510,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wb-payroll-feedbac
 @media (max-width: 760px) {
   html:has(.wb-rules .wb-savebar) { scroll-padding-bottom: calc(101px + 3.6875rem + env(safe-area-inset-bottom, 0px)); }
 }
-@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 761px) {
   html:has(.wb-rules .wb-savebar) { scroll-padding-bottom: calc(56px + 3.25rem); }
 }
 
@@ -523,7 +520,6 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wb-payroll-feedbac
 @media (min-width: 340px) and (max-width: 374px) { .route-skeleton[data-route="wb-insights"] { --route-band: calc(20px + 11.25rem); } .route-skeleton[data-route="wb-templates"] { --route-band: calc(64px + 12.75rem); } .route-skeleton[data-route="wb-rules"] { --route-band: calc(-80px + 18.75rem); } .route-skeleton[data-route="wb-compose"] { --route-band: calc(36px + 17.25rem); } .route-skeleton[data-route="wb-update"], .wb-update { --route-band: calc(18px + 19.125rem); } .route-skeleton[data-route="wb-payroll-settings"] { --route-band: calc(-172px + 20.25rem); } }
 @media (min-width: 375px) and (max-width: 409px) { .route-skeleton[data-route="wb-insights"] { --route-band: max(calc(116px + 5.25rem), min(calc(-64px + 14.25rem), calc(-28px + 12.75rem))); } .route-skeleton[data-route="wb-templates"] { --route-band: max(min(calc(40px + 12.75rem), calc(160px + 6.75rem)), calc(16px + 12.75rem)); } .route-skeleton[data-route="wb-rules"] { --route-band: max(min(calc(-32px + 14.25rem), calc(88px + 8.25rem)), calc(-416px + 29.25rem)); } .route-skeleton[data-route="wb-compose"] { --route-band: max(calc(204px + 6.75rem), calc(-156px + 21.75rem)); } .route-skeleton[data-route="wb-update"], .wb-update { --route-band: max(calc(24px + 16.5rem), calc(-156px + 24rem)); } .route-skeleton[data-route="wb-payroll-settings"] { --route-band: max(calc(-76px + 12.75rem), calc(-316px + 23.25rem)); } }
 @media (min-width: 410px) and (max-width: 760px) { .route-skeleton[data-route="wb-insights"] { --route-band: calc(20px + 11.25rem); } .route-skeleton[data-route="wb-templates"] { --route-band: calc(112px + 9.75rem); } .route-skeleton[data-route="wb-rules"] { --route-band: calc(-80px + 18.75rem); } .route-skeleton[data-route="wb-compose"] { --route-band: calc(156px + 9.75rem); } .route-skeleton[data-route="wb-update"], .wb-update { --route-band: calc(36px + 15.75rem); } .route-skeleton[data-route="wb-payroll-settings"] { --route-band: calc(-148px + 17.25rem); } }
-@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) { .route-skeleton[data-route="wb-insights"] { --route-band: calc(72px + 4rem); } .route-skeleton[data-route="wb-templates"] { --route-band: calc(116px + 4rem); } .route-skeleton[data-route="wb-rules"] { --route-band: calc(108px + 4rem); } .route-skeleton[data-route="wb-compose"] { --route-band: calc(160px + 4rem); } .route-skeleton[data-route="wb-update"], .wb-update { --route-band: calc(160px + 4rem); } .route-skeleton[data-route="wb-payroll-settings"] { --route-band: calc(40px + 4rem); } }
 
 /* ---------- Round 1 fixes (widths and roles) ---------- */
 /* WR-B-05: number fields drop their spin buttons; "hrs" needs less room than "people". */
@@ -548,7 +544,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .
 
 /* ---------- Round 2 fixes ---------- */
 /* AL-B24: the side navigation's label and note line up with the link text only where the side layout applies. */
-@media (min-width: 1024px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 1024px) {
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-nav :is(.wb-jump__label, .wb-rules-nav__note) { padding-inline: var(--nv-s-5); }
 }
 /* AL-B16: policy facts divide like kit rows: inset at the start, to the card's edge at the end. */
@@ -574,7 +570,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li:has([data-confirming]) .wb-template-actions { grid-template-columns: minmax(0, 1fr); }
 /* WR-B-06: Apply and Archive share one width. */
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions > :is(div, form) > .nv-btn { width: 100%; }
-@media (min-width: 1024px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 1024px) {
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li:not(:has([data-confirming])) .wb-template-actions { grid-template-columns: repeat(2, minmax(0, 12rem)); }
 }
 /* WR-B-09: Period summary rows let the value drop under its label rather than clip at large text. */

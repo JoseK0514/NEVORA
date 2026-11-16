@@ -1,0 +1,167 @@
+/* Direction B shell (Jose approved Nov 5, 2026; Owner and Manager phones, under data-nv-b). Loaded last. On a page that draws
+ * a Direction B screen, the header floats over the page's teal hero: the white wordmark, then the bell and the avatar on
+ * frosted glass (40px circles inside 44px targets). A pushed screen ("‹ Home") draws its own back link in the wordmark's
+ * place. The tab bar is frosted white with a soft teal pill behind the current tab and a visible count. Tablets and desktop
+ * keep the corporate shell. !important follows corp-shell.css, whose phone rules use it for the same properties. */
+/* Review B8 (NV-066): the !important declarations are in the nv-b cascade layer. A layered !important beats the older
+ * eras' unlayered !important rules whatever their specificity, so no fake-id ladder is needed; inside nv-b only Direction B
+ * rules compete (specificity, then load order). See DESIGN.MD "CSS layering (review batch B8)". */
+@layer nv-b {
+  @media (max-width: 767px) {
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .app-main { position: relative !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header {
+      position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 30 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; gap: var(--b-space-12) !important;
+      width: auto !important; height: auto !important; min-height: 0 !important; margin: 0 !important; padding: calc(var(--q-safe-top, env(safe-area-inset-top, 0px)) + 4px) var(--b-space-12) 0 var(--b-space-20) !important;
+      border: 0 !important; border-radius: 0 !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+    }
+    /* Offline (Round 4): one dark pill floating over the page above the tab bar, so it never splits the hero under the header. */
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .c-offline {
+      position: fixed !important; top: auto !important; bottom: calc(var(--q-safe-bottom, env(safe-area-inset-bottom, 0px)) + 76px) !important; left: 50% !important; z-index: 40 !important; padding: var(--b-space-8) var(--b-space-16) !important; background: rgb(16 24 32 / 0.88) !important;
+      box-shadow: 0 10px 24px -10px rgb(16 24 32 / 0.5) !important; color: #FFFFFF !important; font: 500 var(--b-fs-meta)/var(--b-lh-meta) Inter, "Inter Fallback", -apple-system, sans-serif !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header > :is(.portal-workspace-name, .portal-location-nav, .company-logo-chip) { display: none !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .brand.compact {
+      display: inline-flex !important; align-items: center !important; order: 0 !important; height: 44px !important; min-height: 44px !important; width: auto !important; margin: 0 !important; padding: 0 !important;
+      background: none !important; box-shadow: none !important; border: 0 !important;
+    }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:not([data-corp-root]):has(.c-page > .b-screen--back) .mobile-header .brand.compact { visibility: hidden !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .login-brand-lockup { display: inline-flex !important; margin: 0 !important; color: var(--b-on-band) !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .login-brand-lockup .brand-wordmark { display: block !important; width: auto !important; height: 13px !important; max-width: none !important; filter: brightness(0) invert(1) !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .login-brand-module { display: none !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .mobile-header-actions { display: flex !important; align-items: center !important; gap: var(--b-space-4) !important; margin: 0 !important; padding: 0 !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .mobile-header-actions > :is(.cm-add-shift, .command-finder-trigger, .e5-new, .portal-account-menu) { display: none !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header :is(.portal-notification-bell, .c-top-avatar) {
+      position: relative !important; display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; min-width: 44px !important; margin: 0 !important; padding: 0 !important;
+      border: 0 !important; border-radius: var(--b-radius-pill) !important; color: var(--b-on-band) !important; text-decoration: none !important;
+      background: radial-gradient(circle closest-side, rgb(255 255 255 / 0.12) 19px, rgb(255 255 255 / 0.24) 19.5px 20px, transparent 20.5px) !important; box-shadow: none !important;
+    }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell svg { position: static !important; width: 21px !important; height: 21px !important; color: var(--b-on-band) !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell::before, html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell::after { content: none !important; display: none !important; }
+    /* Unread: a coral dot ringed in white (the count stays in the bell's label). Nov 14 inspection (SY-008, RA-14): the
+     * ring was teal; coral alone is 2.1:1 on the band, the white ring 5.8:1. One band (EM-011), so no ink ring either. */
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-count {
+      position: absolute !important; margin: 0 !important;
+    }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-unavailable { display: none !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .c-top-avatar > span { display: contents !important; background: none !important; color: var(--b-on-band) !important; font: 700 var(--b-fs-meta)/1 Inter, "Inter Fallback", -apple-system, sans-serif !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header :is(.portal-notification-bell, .c-top-avatar):focus-visible { outline: 2px solid var(--b-focus-on-band) !important; outline-offset: -2px !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header :is(.brand, .login-brand-lockup):focus-visible { outline: 2px solid var(--b-focus-on-band) !important; outline-offset: 2px !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .c-progress { z-index: 32 !important; }
+
+    /* Tab bar: frosted white, a 56×30 teal pill behind the current tab's icon, 10.5px labels, a visible count (teal: a
+     * count is not an alarm; Phase 3, OW-028 and MG-006). */
+    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav { background: rgb(255 255 255 / 0.9) !important; backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; box-shadow: 0 -1px 0 rgb(0 0 0 / 0.06) !important; }
+    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link { position: relative !important; gap: 3px !important; padding-top: var(--b-space-8) !important; color: var(--b-grey) !important; font: 500 10.5px/13px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; }
+    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link::before { content: "" !important; display: block !important; position: absolute !important; top: 5px !important; left: 50% !important; width: 56px !important; height: 30px !important; margin-left: -28px !important; border-radius: var(--b-radius-pill) !important; background: transparent !important; z-index: 0 !important; }
+    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link.active::before { background: var(--b-teal-50) !important; }
+    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link > :not(.b-tab-badge) { position: relative !important; z-index: 1 !important; }
+    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link.active, html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link.active span:not(.b-tab-badge) { color: var(--b-teal) !important; font-weight: 600 !important; }
+    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .b-tab-badge {
+      position: absolute !important; top: 1px !important; left: calc(50% + 7px) !important; z-index: 2 !important; display: grid !important; place-items: center !important; box-sizing: border-box !important; min-width: 20px !important; height: 20px !important; padding: 0 6px !important;
+      border-radius: var(--b-radius-pill) !important; background: var(--b-teal) !important; color: #FFFFFF !important; font: 700 var(--b-fs-count)/1 Inter, "Inter Fallback", sans-serif !important; box-shadow: 0 0 0 2px #FFFFFF !important;
+    }
+  }
+  /* The badge is a phone piece; the sidebar keeps its own count. */
+  @media (max-width: 767px) { .app-shell:not([data-nv-b]) .b-tab-badge { display: none !important; } }
+
+  /* The bell: the outline glyph everywhere; on a Direction B phone screen the bold one (the mock's Phosphor Bell). */
+  .portal-notification-bell .nb-bold { display: none !important; }
+  @media (max-width: 767px) {
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell .nb-simple { display: none !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell .nb-bold { display: block !important; }
+  }
+
+  /* ================= Phase 3, package F (Nov 15, 2026): the Owner and Manager shell =================
+   * This sheet loads before the other Direction B sheets, so these rules win inside nv-b by specificity (the :not(#p3f)
+   * pair), not by order. Everything here is under :not([data-employee-mobile]): an Employee's or Lead's shell is unchanged.
+   *
+   * OW-028, MG-006, TB-007: one count badge. A 20px pill, 12/700 white on teal, in the sidebar, on the rail and on the
+   * phone's tab (above). Teal because a count is not an alarm. Red stays for something past its deadline, which the shell
+   * cannot know today: /api/manager/inbox-count gives one number. On the rail the badge sits at the top right of the
+   * icon's pill and covers only the glyph's corner. */
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .nav-link .nav-count {
+      box-sizing: border-box !important; min-width: 20px !important; height: 20px !important; padding: 0 6px !important; border-radius: var(--b-radius-pill) !important;
+      background: var(--b-teal) !important; font: 700 var(--b-fs-count)/20px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; font-variant-numeric: tabular-nums !important;
+    }
+    /* TB-009: the account pill is the "where am I" mark on More, Profile and My pay (no sidebar or rail entry is lit). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]):not(#p3f):not(#p3f2) header.mobile-header .portal-account-menu .nevora-action-menu > button[aria-current] { box-shadow: inset 0 0 0 2px var(--b-on-band) !important; }
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-tablet="rail"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar #desktop-primary-navigation .nav-link .nav-count { top: 2px !important; right: auto !important; left: calc(50% + 6px) !important; }
+    /* TB-017: the labelled rail needs no "Expand sidebar" control, and an expanded sidebar would squeeze a tablet page, so
+     * under 1024px the rail is the only state (app-shell.tsx keeps it a rail there) and its first item is the workspace. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .sidebar-toggle { display: none !important; }
+  }
+  /* TB-007 on the icon rail from 1024px (the collapsed sidebar): the same pill above the entry's top right corner, so it
+   * covers only the top 4px of the glyph's corner and the glyph under it stays readable. */
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-tablet="rail"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar #desktop-primary-navigation .nav-link .nav-count { top: -6px !important; right: -4px !important; left: auto !important; }
+  }
+  @media (min-width: 1280px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-desktop="rail"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar #desktop-primary-navigation .nav-link .nav-count { top: -6px !important; right: -4px !important; left: auto !important; }
+  }
+  /* OW-028: in the full sidebar the workspace name wraps to a second line (13.5/17 600, a 56px card) instead of ending in
+   * "…"; a longer name still ends at two lines and the card's title gives all of it. MG-007: a Manager's second group has
+   * no heading, so a hairline and the heading's space set it apart. The full sidebar is data-sidebar-tablet="full" up to
+   * 1279px and data-sidebar-desktop="full" from 1280px, so each rule is written once per range. */
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-tablet="full"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .cm-org { height: auto !important; min-height: 56px !important; align-items: center !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-tablet="full"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .cm-org__name {
+      display: -webkit-box !important; -webkit-box-orient: vertical !important; -webkit-line-clamp: 2 !important; overflow: hidden !important; white-space: normal !important; text-overflow: clip !important; overflow-wrap: anywhere !important;
+      font: 600 var(--b-fs-meta)/17px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important;
+    }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-tablet="full"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .sidebar-nav-group + .sidebar-nav-group:not([data-group]) {
+      margin-top: var(--b-space-12) !important; padding-top: var(--b-space-12) !important; background: linear-gradient(var(--b-line), var(--b-line)) top center / calc(100% - 24px) 1px no-repeat !important;
+    }
+  }
+  @media (min-width: 1280px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-desktop="full"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .cm-org { height: auto !important; min-height: 56px !important; align-items: center !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-desktop="full"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .cm-org__name {
+      display: -webkit-box !important; -webkit-box-orient: vertical !important; -webkit-line-clamp: 2 !important; overflow: hidden !important; white-space: normal !important; text-overflow: clip !important; overflow-wrap: anywhere !important;
+      font: 600 var(--b-fs-meta)/17px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important;
+    }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-desktop="full"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .sidebar-nav-group + .sidebar-nav-group:not([data-group]) {
+      margin-top: var(--b-space-12) !important; padding-top: var(--b-space-12) !important; background: linear-gradient(var(--b-line), var(--b-line)) top center / calc(100% - 24px) 1px no-repeat !important;
+    }
+  }
+  /* TB-010: the shared touch rule for Owner and Manager pages on a touch tablet or touch desktop. Each of these controls
+   * keeps its drawn size and gets a hit area at least 44px tall and wide, centred on it: the band's back link (32px), the
+   * band's right-hand action (42px: New update, Edit, Add employee), Payroll's tabs (36px in a 44px track), Schedule's
+   * week arrows (32px) and its Add shift pill (42px), a form's back link (32px) and the Decline and Approve pair in the
+   * request lists (40px). Underline tabs (.c-tabs, .c-tc-tabs), card-header links (.b-card__a) and a card's lone
+   * link already measure 44px here (b-foundation.css, owner-b.css), and the segments have their own 44px hit area. */
+  @media (min-width: 768px) and (pointer: coarse) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]):not(#p3f):not(#p3f2) main.page-frame :is(.c-nav__back, .q-nav > .q-nav__l, .q-nav > :is(a, button).q-nav__r, nav.c-pay-tabs > a, .c-sched-week__arrow, .c-sched-actions > .c-btn, .c-title__actions > :is(a, button).c-btn, .c-formhead__up, .q-acts > .q-bs) { position: relative !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]):not(#p3f):not(#p3f2) main.page-frame :is(.c-nav__back, .q-nav > .q-nav__l, .q-nav > :is(a, button).q-nav__r, nav.c-pay-tabs > a, .c-sched-week__arrow, .c-sched-actions > .c-btn, .c-title__actions > :is(a, button).c-btn, .c-formhead__up, .q-acts > .q-bs)::after {
+      content: "" !important; display: block !important; position: absolute !important; inset: auto !important; top: 50% !important; left: 50% !important; width: max(100%, 44px) !important; height: max(100%, 44px) !important;
+      translate: -50% -50% !important; transform: none !important; border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important;
+    }
+  }
+  /* ================= end of Phase 3, package F ================= */
+
+  /* Jose (Nov 15, 2026, item 9; finding OW-008): offline is a glass pill inside the band, under the title, on every width:
+   * a warm dot, then "Offline · updated 9:24 PM" in 13.5/600 white. While one is drawn (`data-shown`, set by BOffline)
+   * the shell's own pill (the foot of the window, or above the tab bar) steps aside, so the line is said once. Pages
+   * without a drawn band (a phone screen kept in the page on desktop draws none) keep the shell's pill. */
+  html:is(:root, [data-theme]) body .app-shell[data-nv-b] .b-hero .b-offline {
+    display: inline-flex !important; align-items: center !important; gap: var(--b-space-8) !important; width: fit-content !important; max-width: 100% !important;
+    min-height: 28px !important; margin: var(--b-space-8) 0 0 !important; padding: 4px var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important;
+    font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 600 !important; color: var(--b-on-band) !important; text-wrap: balance !important;
+  }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-b][data-nv-b][data-nv-b]:has(.b-hero .b-offline[data-shown]) .c-offline { display: none !important; }
+}
+
+/* Unlayered: normal declarations (they keep the cascade they had) and the !important declarations that must stay outside
+ * nv-b. See DESIGN.MD "CSS layering (review batch B8)". */
+@media (max-width: 767px) {
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header { background: transparent !important; pointer-events: none;
+  }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header > * { pointer-events: auto; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .c-offline { translate: -50% 0;
+    width: max-content; max-width: calc(100% - 28px); min-height: 36px; border-radius: 18px; text-wrap: balance; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-count { top: 11px !important; right: 12px !important; left: auto !important; display: block !important; width: 8px !important; height: 8px !important; min-width: 0 !important; padding: 0 !important;
+    border-radius: 4px !important; background: var(--b-coral) !important; box-shadow: 0 0 0 2px var(--b-on-band) !important; font-size: 0 !important; line-height: 0 !important; color: transparent !important; overflow: hidden !important;
+  }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header :is(.brand, .login-brand-lockup):focus-visible { border-radius: 6px; }
+}
+.b-tab-badge { display: none; }

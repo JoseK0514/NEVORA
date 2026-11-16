@@ -14,6 +14,7 @@ import { getWorkspace } from "@/lib/data/workspaces";
 import { CorpButtonLink, CorpNav, CorpNote, CorpPage, CorpRows, CorpSegments, CorpTitle } from "@/components/corp/corp";
 import { TimeOffListRow, TimeOffRequestCard, canWithdrawTimeOff, timeOffDates, type TimeOffView } from "@/components/employee-mobile/timeoff-parts";
 import "@/components/employee-mobile/timeoff-corp.css";
+import { TimeOffWaitB } from "@/components/employee-b/timeoff-b";
 import "./owner-lists.css";
 
 /* Employee Time off on the corporate kit (Release 1, boards E-TimeOffDetail and E-TimeOffSheet), in the desktop column.
@@ -50,17 +51,21 @@ export default async function RequestsPage({
   const zone = await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
 
   const notice = params.error ? <p className="c-error" role="alert">Your request wasn’t sent. Check that the end date is on or after the start date. A partial day needs one date and an end time after the start time.</p> : null;
-  const status = params.submitted ? "Your request was sent for manager review." : params.reviewed ? "The request was reviewed." : null;
+  const status = params.submitted ? "Your request was sent for manager review." : params.reviewed ? "Decision saved." : null;
 
   type Request = (typeof mine)[number];
   const shape = (request: Request): TimeOffView => ({ id: request.id, status: request.status, startDate: request.startDate, endDate: request.endDate, startTime: request.startTime ?? null, endTime: request.endTime ?? null,
     note: request.reason ?? null, createdAt: request.createdAt ?? null, reviewedAt: request.reviewedAt ?? null, reviewer: request.reviewerName ?? null });
-  const shown = mine.filter(request => view === "decided" ? request.status !== "PENDING" : request.status === "PENDING");
+  // Review B2 (NV-140): waiting soonest first; decided most recently decided first.
+  const shown = mine.filter(request => view === "decided" ? request.status !== "PENDING" : request.status === "PENDING")
+    .sort(view === "decided" ? (a, b) => String(b.reviewedAt ?? "").localeCompare(String(a.reviewedAt ?? "")) : (a, b) => a.startDate.localeCompare(b.startDate));
   const detail = !sheetOpen && params.requestId ? mine.find(request => request.id === params.requestId) ?? null : undefined;
   const listHref = view === "decided" ? "/app/requests?filter=decided" : "/app/requests";
 
   const proof = await requireSessionMutationProof();
   return <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="timeoff" selection={sheetOpen?'new':params.requestId??'list'} filter={view}><CorpPage className="tof-desk c-page--narrow">
+    {/* Direction B: before the phone's private read starts, its first frame is this page's hero, checking (phones only). */}
+    <TimeOffWaitB selection={sheetOpen ? "new" : params.requestId ?? "list"} filter={view} />
     <CorpNav back={{ href: "/app/requests/hub", label: "Requests" }} title="Time off" phoneOnly />
     <CorpTitle title="Time off" wide />
     {status ? <CorpNote><span role="status">{status}</span></CorpNote> : null}
@@ -80,7 +85,7 @@ export default async function RequestsPage({
           href={`/app/requests?requestId=${encodeURIComponent(request.id)}${view === "decided" ? "&filter=decided" : ""}`} />)}</CorpRows>
           : <p className="c-empty"><b>{view === "decided" ? "No decisions yet" : "Nothing waiting"}</b>{view === "decided" ? "Approved, declined and withdrawn requests will appear here." : mine.length ? "When you send a request, you can follow its status here." : "No time-off requests yet."}</p>}
       </section>
-      <CorpButtonLink href="/app/requests?tab=new" full>Request time off</CorpButtonLink>
+      <CorpButtonLink href="/app/requests?tab=new" full className="tof-new">Request time off</CorpButtonLink>
     </>}
     <TimeOffSheet open={sheetOpen} closeHref={listHref} requestId={randomUUID()} draftOwner={session.id} notice={notice} />
   </CorpPage></ResponsiveEmployeePlanning>;

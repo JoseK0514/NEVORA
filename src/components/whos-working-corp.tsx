@@ -7,6 +7,7 @@ import { useClockMonitor } from "./clean/use-clock-monitor";
 import { useToday } from "./manager-today";
 import type { ClockMonitor } from "@/lib/time-clock";
 import type { Today } from "@/lib/today/project";
+import { ATTENDANCE_WORDS } from "@/lib/action-center/present";
 
 /* Who's working (Release 1, board O-OnShift): Home's "Who's working" link. Who is clocked in now (the clock monitor), who
  * hasn't clocked in for a shift that started, and published shifts that ended with no clock-in (Today). The attendance
@@ -14,14 +15,17 @@ import type { Today } from "@/lib/today/project";
 
 const initials = (name: string) => name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
 const clock = (iso: string, timeZone: string) => new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso));
+/** How long ago the shift started ("24 min", "1 h 5 min"). The card's heading says "Not clocked in"; "late" is kept for
+ * someone who clocked in after their start (Jose's attendance words, Nov 11, 2026). */
 const lateBy = (start: string, observedAt: string) => {
   const minutes = Math.floor((Date.parse(observedAt) - Date.parse(start)) / 60_000);
-  return minutes >= 60 ? `${Math.floor(minutes / 60)} h ${minutes % 60 ? `${minutes % 60} min ` : ""}late` : `${Math.max(minutes, 1)} min late`;
+  return minutes >= 60 ? `${Math.floor(minutes / 60)} h${minutes % 60 ? ` ${minutes % 60} min` : ""}` : `${Math.max(minutes, 1)} min`;
 };
 const SHOWN = 5;
 /** R3: one count voice. The label, then the figure in grey, no brackets ("Clocked in 2"). */
 const headed = (title: string, n: number) => <>{title}<span className="c-count c-num">{n}</span></>;
-const REVIEW_FRAGMENT = /^#(?:review$|attendance-.|correction-.)/;
+const REVIEW_FRAGMENT = /^#(?:review$|attendance-.)/;
+const CORRECTION_FRAGMENT = /^#correction-./;
 
 export function WhosWorkingCorp({ children, homeHref = "/app" }: { children?: ReactNode; homeHref?: string }) {
   const { monitor, refreshing } = useClockMonitor();
@@ -33,12 +37,16 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
   monitor: ClockMonitor | null; today: Today | null; refreshing?: boolean; onRetry?: () => void; homeHref?: string; children?: ReactNode;
 }) {
   const [all, setAll] = useState(false);
-  // The attendance review and time corrections sit behind one row, open when a link points at them: #review, or an
-  // Inbox link to one flagged clock-in (#attendance-…) or one correction request (#correction-…), which the review
-  // then focuses. Read after mount: the server render has no fragment, and a client navigation sets it at commit.
+  // Closing F1 (NV-240): time corrections live under Time (Time corrections), so the row here is only the flagged clock-ins
+  // (the attendance review), open when a link points at them: #review or one flagged clock-in (#attendance-…), which the
+  // review then focuses. A link to one correction request (#correction-…, from Things to do) goes on to Time corrections,
+  // which focuses it there. Read after mount: the server render has no fragment, and a client navigation sets it at commit.
   const [reviewOpen, setReviewOpen] = useState(false);
   useEffect(() => {
-    const sync = () => { if (REVIEW_FRAGMENT.test(window.location.hash)) setReviewOpen(true); };
+    const sync = () => {
+      if (CORRECTION_FRAGMENT.test(window.location.hash)) window.location.replace(`/app/timecards/corrections${window.location.hash}`);
+      else if (REVIEW_FRAGMENT.test(window.location.hash)) setReviewOpen(true);
+    };
     sync();
     window.addEventListener("hashchange", sync);
     return () => window.removeEventListener("hashchange", sync);
@@ -64,7 +72,7 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
     <CorpCard id="who-in" label={ready ? headed("Clocked in", people.length) : "Clocked in"} aside={ready ? <span className="c-meta c-num">{`Updated ${clock(ready.observedAt, timeZone)}`}</span> : undefined}>
       {!ready ? <CorpBody><p className="c-who__state" aria-busy={refreshing || undefined}>{monitor?.state === "unavailable" ? "Clock-ins aren’t available right now." : "Checking who’s clocked in…"}</p></CorpBody>
         : people.length ? <ul className="c-rows" aria-label="Clocked in now">{shown.map(person => <li key={person.timeEntryId}>
-          <CorpRow href={`/app/employees/${encodeURIComponent(person.employeeId)}`} bold title={person.employeeName} avatar={<CorpAvatar initials={initials(person.employeeName)} grey />}
+          <CorpRow href={`/app/employees/${encodeURIComponent(person.employeeId)}`} bold title={person.employeeName} avatar={<CorpAvatar name={person.employeeName} initials={initials(person.employeeName)} />}
             detail={`${person.state === "ON_BREAK" && person.breakStartAt ? `On break since ${clock(person.breakStartAt, timeZone)}` : `In since ${clock(person.clockInAt, timeZone)}`}${where(person.locationName)}`}
             chevron />
         </li>)}</ul> : <div className="c-empty c-empty--card"><b className="c-empty__title">No one is clocked in right now</b><span className="c-empty__body">They show up here when they clock in.</span></div>}
@@ -74,17 +82,17 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
       <p className="c-who__state">Today’s shifts aren’t available right now.</p>
       {onRetry ? <CorpButton kind="secondary" size="md" onClick={onRetry}>Try again</CorpButton> : null}
     </CorpBody></CorpCard> : null}
-    {late.length ? <CorpCard id="who-late" label={headed("Not in yet", late.length)}><ul className="c-rows" aria-label="Not in yet">{late.map(shift => <li key={shift.id}>
-      <CorpRow href={`/app/employees/${encodeURIComponent(shift.employeeId)}`} bold title={shift.employeeName} avatar={<CorpAvatar initials={initials(shift.employeeName)} grey />}
-        detail={`Due ${clock(shift.startAt, timeZone)}${where(shift.locationName)}`} value={day ? lateBy(shift.startAt, day.observedAt) : undefined} valueTone="red" chevron />
+    {late.length ? <CorpCard id="who-late" label={headed(ATTENDANCE_WORDS.notClockedIn, late.length)}><ul className="c-rows" aria-label={ATTENDANCE_WORDS.notClockedIn}>{late.map(shift => <li key={shift.id}>
+      <CorpRow href={`/app/employees/${encodeURIComponent(shift.employeeId)}`} bold title={shift.employeeName} avatar={<CorpAvatar name={shift.employeeName} initials={initials(shift.employeeName)} />}
+        detail={`Due ${clock(shift.startAt, timeZone)}${where(shift.locationName)}`} value={day ? lateBy(shift.startAt, day.observedAt) : undefined} valueTone="amber" chevron />
     </li>)}</ul></CorpCard> : null}
     {none.length ? <CorpCard id="who-none" label={headed("Missed clock-ins", none.length)}><ul className="c-rows" aria-label="Shifts that ended with no clock-in">{none.map(shift => <li key={shift.id}>
-      <CorpRow href={`/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`} bold title={shift.employeeName} avatar={<CorpAvatar initials={initials(shift.employeeName)} grey />}
+      <CorpRow href={`/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`} bold title={shift.employeeName} avatar={<CorpAvatar name={shift.employeeName} initials={initials(shift.employeeName)} />}
         detail={`${clock(shift.startAt, timeZone)} – ${clock(shift.endAt, timeZone)}${where(shift.locationName)}`} chevron />
     </li>)}</ul></CorpCard> : null}
     {children ? <CorpCard as="div" ariaLabel="Review">
-      <CorpRow onClick={() => setReviewOpen(open => !open)} bold title="Time corrections" chevron={false}
-        trail={<CaretDownIcon className={reviewOpen ? "c-chev c-who__caret c-who__caret--open" : "c-chev c-who__caret"} weight="bold" aria-hidden="true" />} label={`Time corrections and flagged clock-ins, ${reviewOpen ? "expanded" : "collapsed"}`} />
+      <CorpRow onClick={() => setReviewOpen(open => !open)} bold title="Clock-ins to check" detail="Times that don’t match the schedule or breaks" chevron={false}
+        trail={<CaretDownIcon className={reviewOpen ? "c-chev c-who__caret c-who__caret--open" : "c-chev c-who__caret"} weight="bold" aria-hidden="true" />} label={`Clock-ins to check, ${reviewOpen ? "expanded" : "collapsed"}`} />
     </CorpCard> : null}
     {children && reviewOpen ? <div className="c-who__review" id="review">{children}</div> : null}
   </CorpPage>;

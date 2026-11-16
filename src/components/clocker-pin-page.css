@@ -19,3 +19,14 @@
   :is(#q-root, html) .app-shell[data-nv-corp] .q-page.wa-pin .wa-pin__actions > .q-btn { width: auto; min-width: 96px; height: 44px; margin: 0; padding: 0 16px; }
   :is(#q-root, html) .app-shell[data-nv-corp] .q-page.wa-pin :is(#clocker-pin-form, .wa-target) { margin-left: 16px; margin-right: 16px; max-width: 720px; }
 }
+
+/* Closing F1 (NV-256): the bar's link reads Cancel in the phone sheet and "‹ Maria Rivera" on tablets and desktop, where the
+   bar is the band's back link; there the title is "Clocker PIN" and the name moves into the back link. */
+:is(#q-root, html) .app-shell .q-page.wa-pin .q-nav__l .wa-pin__back { display: none; }
+:is(#q-root, html) .app-shell .q-page.wa-pin .wa-pin__h-wide { display: none; }
+@media (min-width: 768px) {
+  :is(#q-root, html) .app-shell .q-page.wa-pin .q-nav__l .wa-pin__cancel { display: none; }
+  :is(#q-root, html) .app-shell .q-page.wa-pin .q-nav__l .wa-pin__back { display: inline-flex; align-items: center; gap: 4px; }
+  :is(#q-root, html) .app-shell .q-page.wa-pin .wa-pin__h-phone { display: none; }
+  :is(#q-root, html) .app-shell .q-page.wa-pin .wa-pin__h-wide { display: inline; }
+}

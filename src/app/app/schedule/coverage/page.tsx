@@ -19,6 +19,9 @@ import {
 import { rankCoverageCandidates } from "@/lib/scheduling/coverage-ranking";
 import { businessDateStart, shiftPeriod } from "@/lib/scheduling/periods";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Coverage" };
+
 /** What a coverage gap still needs, in words. Codex C2 adds a numeric `count` (and `positionName` on POSITION targets);
  * until that read reaches this branch, the server's sentence ("2 employees missing", "Cashier: 1 missing") is reworded,
  * and any other label is shown as it is. */
@@ -107,6 +110,8 @@ export default async function CoverageSuggestionsPage({
   const startTime = params.start ?? "";
   const endTime = params.end ?? "";
 
+  // Review B5 (NV-090): opened with no shift chosen (a bare link), it goes to the week's open shifts, not to an error.
+  if (!params.week && !params.date && !params.start && !params.end && !params.locationId) redirect("/app/schedule?view=open");
   try { businessDateStart(weekStart); shiftPeriod({ date, startTime, endTime }); } catch { redirect("/app/schedule?error=INVALID_SHIFT"); }
   if (
     !isValidWeekStart(weekStart) ||

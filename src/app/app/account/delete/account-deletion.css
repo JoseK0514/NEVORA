@@ -18,3 +18,15 @@
 :is(#q-root, html) .ad-reference { font-family: ui-monospace, "SF Mono", monospace; letter-spacing: .04em; color: var(--q-ink); }
 :is(#q-root, html) .q-delete .legal-unresolved { padding: 0 4px; border-radius: 4px; background: #FDF0C4; color: #6B4E00; font-family: ui-monospace, monospace; font-size: .875em; overflow-wrap: anywhere; }
 :is(#q-root, html) .q-deletion a.q-link { color: var(--q-teal); }
+
+/* Review B6 (NV-143): one Delete account flow for every role. Consent is a checkbox (a switch reads as an instant setting),
+ * drawn like the Employee's (1.5px grey ring, 7px corners, teal when checked) in a 48px row; "Your access ends now" is
+ * red-tinted; the confirm button is a red pill when it can be pressed and the disabled pair when it can't. */
+:is(#q-root, html) .q-deletion__check { min-height: 48px; align-items: center; }
+:is(#q-root, html) .q-deletion__box { flex: none; display: grid; place-items: center; width: 24px; height: 24px; margin: 0; border: 1.5px solid #9AA3A8; border-radius: 7px; background: #FFFFFF; -webkit-appearance: none; appearance: none; cursor: pointer; }
+:is(#q-root, html) .q-deletion__box:checked { border-color: #0B6E69; background: #0B6E69 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23FFFFFF' d='M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") center / 14px no-repeat; }
+:is(#q-root, html) .q-deletion__box:focus-visible { outline: 2px solid #0B6E69; outline-offset: 2px; }
+:is(#q-root, html) .q-deletion__box:disabled { opacity: 1; border-color: #C9CED1; cursor: default; }
+:is(#q-root, html) .q-av.q-av--red { background: #FDECEA; color: #B42318; }
+:is(#q-root, html) .q-deletion .q-btn.q-deletion__confirm { border-radius: 999px; }
+:is(#q-root, html) .q-deletion .q-btn.q-deletion__confirm:disabled { background: #F0F2F3; color: #8C9397; opacity: 1; }

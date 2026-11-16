@@ -1,5 +1,10 @@
 # NEVORA mobile design context
 
+> **Superseded (November 8, 2026).** Every surface now uses **Direction B** (teal band, white 22px cards on #F2F5F4,
+> Inter, Phosphor bold icons, pills, light only). The current rules are in `DESIGN.MD` ("Current direction" table and
+> the Direction B sections) and the approved mocks in `docs/product/direction-b/`. The notes below are history from
+> October 2026 (deep-blue masthead, mobile-workforce tokens) and must not be used for new work.
+
 Authoritative tokens: src/app/mobile-workforce.css and src/components/manager-home-mobile.css. Authoritative decisions: DESIGN.MD and .21st/design.json.
 
 ## Remaining mobile workforce pages (2026-10-13)
@@ -60,7 +65,7 @@ Verified on an owned, disposable local PostgreSQL runtime with fictional account
 #### Phase 2: language, dates and empty states (2026-10-15)
 
 The portal follows `docs/design/voice.md`.
-- **Labels:** about 80 Title Case labels moved to sentence case. Exceptions are proper nouns and acronyms (NEVORA, Clocker, PIN, ID, Apple/Google Calendar), "Sign In", and the status words shared with the public Clocker kiosk ("Clock In", "Clock Out", "On Break", "Clocked In", "Off Clock", "Try Again"). The kiosk itself is unchanged. QA scripts and tests follow the new labels.
+- **Labels:** about 80 Title Case labels moved to sentence case. Exceptions are proper nouns and acronyms (NEVORA, Clocker, PIN, ID, Apple/Google Calendar), "Sign In", and the status words shared with the public Clocker kiosk ("Clock In", "Clock Out", "On Break", "Clocked In", "Off Clock", "Try Again"). The kiosk's buttons and headings are sentence case too (NV-173, Jose, Nov 10, 2026: "Check action status", "Retry same action", "Refresh clock state", "Verify your PIN again", "Clock In recorded"); only these exempt words keep their Title Case there. QA scripts and tests follow the new labels.
 - **Links:** in-app links use a caret; the external arrow only marks links that leave NEVORA or open the Clocker URL.
 - **Dates:** people see `formatDisplayDate` ("Tue, Oct 6") and `formatDateRange` ("Sep 28 – Oct 4, 2026") from `src/lib/date-utils.ts`. Payroll runs, backlog, settings and My pay no longer show ISO dates. Freshness lines read "Updated 7:31 PM"; the employee record-details disclosure keeps exact seconds.
 - **Empty states:** `src/components/empty-state.tsx` (structure adapted from the 21st "Empty" block) is the empty-state pattern. Older full-panel variants share its look through `portal-gusto.css`.

@@ -34,12 +34,18 @@ const inZone=(at:string,zone:string,options:Intl.DateTimeFormatOptions)=>{try{re
 export const sentDay=(at:string,zone:string)=>inZone(at,zone,{weekday:'short',month:'short',day:'numeric'});
 const initials=(name:string)=>name.split(/\s+/).filter(Boolean).slice(0,2).map(part=>part[0]!.toUpperCase()).join('');
 
-/** Who the request waits on, or who decided it and when (the one place the detail page says the state). A pending request has no named approver in the read. */
-function Decision({request,zone}:{request:TimeOffView;zone:string}){
+/** Who the request waits on, or who decided it and when: the words the request's page says once. */
+export function timeOffDecision(request:TimeOffView,zone:string){
  const when=request.reviewedAt?keepWhole(inZone(request.reviewedAt,zone,{month:'short',day:'numeric'})+' at '+inZone(request.reviewedAt,zone,{hour:'numeric',minute:'2-digit'})):null;
  const by=request.reviewer&&request.status!=='CANCELLED'?request.reviewer:null;
  const title=request.status==='PENDING'?'Waiting for your manager':request.status==='CANCELLED'?'You withdrew it':(request.status==='APPROVED'?'Approved':request.status==='DENIED'?'Declined':'Decided')+(by?' by '+by:'');
  const detail=request.status==='PENDING'?'Your manager decides on this request':when;
+ return {by,title,detail};
+}
+
+/** Who the request waits on, or who decided it and when (the one place the detail page says the state). A pending request has no named approver in the read. */
+function Decision({request,zone}:{request:TimeOffView;zone:string}){
+ const {by,title,detail}=timeOffDecision(request,zone);
  // Upscale S10: initials when a name is known; otherwise the text row alone (no icon tile).
  return <div className={'c-row tof-who'+(detail?'':' c-row--one')}>
   {by?<span className="c-av c-av--l" aria-hidden="true">{initials(by)}</span>:null}

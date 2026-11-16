@@ -84,3 +84,9 @@
    * centring (its translate) would lift that panel half off the screen. */
   :is(#c-root, html) .app-shell:not([data-nv-corp]) dialog.q-sheet:has(.c-sheet.c-avail-sheet) { top: 50%; bottom: auto; height: auto; max-height: min(86dvh, 820px); margin: 0 auto; translate: 0 -50%; }
 }
+
+/* Employee desktop (Nov 8, 2026): the hour bars and their line show only there (employee-b-desktop.css). */
+.c-avail__axis, .c-avail__line { display: none; }
+/* The hidden line row is not a day: the first day keeps no divider above it. */
+:is(#c-root, html) .c-avail .c-avail__days > .c-avail__axis + li > .c-avail__day { box-shadow: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__days > .c-avail__axis + li > .c-avail__day { box-shadow: none; }

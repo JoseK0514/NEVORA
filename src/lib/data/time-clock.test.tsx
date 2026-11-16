@@ -43,6 +43,6 @@ it.each([
 it('fails closed for mismatched break and punch state',async()=>{monitorRows=[{...row,status:'ON_BREAK'}];expect(await getClockMonitor()).toEqual({state:'unavailable',reason:'read_failed'});});
 it.each(['EMPLOYEE','LEAD'] as const)('denies %s at the clock repository boundary',async role=>{
  vi.mocked(requireSession).mockResolvedValue({id:'employee-1',firstName:'Sam',lastName:'Cruz',role,primaryLocationId:'loc-1'});
- await expect(getClockMonitor()).rejects.toThrow('redirect:/app');expect(getDb).not.toHaveBeenCalled();expect(requireSessionMutationProof).not.toHaveBeenCalled();
+ await expect(getClockMonitor()).rejects.toThrow('redirect:/app/restricted');expect(getDb).not.toHaveBeenCalled();expect(requireSessionMutationProof).not.toHaveBeenCalled();
 });
 it('a session lost while deriving the fresh proof never becomes zero activity',async()=>{vi.mocked(requireSessionMutationProof).mockRejectedValue(Error('redirect:/login'));expect(await getClockMonitor()).toEqual({state:'unavailable',reason:'read_failed'});});

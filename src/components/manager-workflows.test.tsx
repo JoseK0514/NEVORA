@@ -51,7 +51,7 @@ beforeEach(() => { access.denied=false;vi.clearAllMocks(); vi.mocked(requireSess
 
 it.each(["EMPLOYEE","LEAD"] as const)("denies %s direct management review before reading team data", async role => {
   vi.mocked(requireSession).mockResolvedValue({id:"viewer",firstName:"Sam",lastName:"Cruz",role,primaryLocationId:"loc"});
-  for (const page of [() => ManagerTimeOff({}), () => ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28"}), () => ManagerShiftRequests({ timeZone:"America/Puerto_Rico",}), () => CoverageSuggestionsPage({searchParams:Promise.resolve({})})]) await expect(page()).rejects.toThrow("redirect:/app");
+  for (const page of [() => ManagerTimeOff({}), () => ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28"}), () => ManagerShiftRequests({ timeZone:"America/Puerto_Rico",}), () => CoverageSuggestionsPage({searchParams:Promise.resolve({})})]) await expect(page()).rejects.toThrow("redirect:/app/restricted");
   expect(listPendingTimeOffRequests).not.toHaveBeenCalled(); expect(listAvailabilitySubmissionStatuses).not.toHaveBeenCalled(); expect(listManagerPendingExchanges).not.toHaveBeenCalled();
 });
 it.each(["OWNER","MANAGER"] as const)("gives %s operational Time Off views and read-only history", async role => {
@@ -149,14 +149,19 @@ vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({
 describe("management sees every shift in full before deciding (Codex review, Oct 23)", () => {
   const shift = (over: Record<string, unknown>) => ({ id: "s", scheduleId: "sched", employeeId: "e1", employeeName: "Fictional Ana", locationId: "north", locationName: "North Office", weekStart: "2026-10-05", date: "2026-10-05", startTime: "08:00", endTime: "12:00", ...over });
   const plain = (html: string) => html.replace(/ /g, " ");
+  /** The words on the page, without tags. */
+  const text = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
   it("a swap shows both employees, full dates, start and end times and locations ahead of Approve", async () => {
     vi.mocked(listPendingCallouts).mockResolvedValue([]);
     vi.mocked(listManagerPendingExchanges).mockResolvedValue([{ id: "swap", requestRevision: 3, actionable: true, kind: "SWAP", status: "MANAGER_PENDING", requestedByEmployeeId: "e1", requestedByName: "Fictional Ana", requestedByRole: "EMPLOYEE", targetEmployeeId: "e2", targetEmployeeName: "Fictional Ben", createdAt: "2026-10-03T00:00:00Z",
       sourceShift: shift({}) as never, targetShift: shift({ id: "t", employeeId: "e2", employeeName: "Fictional Ben", locationId: "south", locationName: "South Office", date: "2026-10-08", startTime: "14:00", endTime: "18:00" }) as never }]);
     vi.mocked(readShiftChangeAvailability).mockResolvedValueOnce({ allowed: true } as never);
     const html = plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" })));
-    const facts = html.slice(html.indexOf('class="q-facts"'), html.indexOf('class="q-acts"'));
-    for (const text of ["Fictional Ana’s shift", "Mon, Oct 5, 2026", "8:00 AM – 12:00 PM", "North Office", "Fictional Ben’s shift", "Thu, Oct 8, 2026", "2:00 PM – 6:00 PM", "South Office"]) expect(facts).toContain(text);
+    // Phase 3 (OW-029, OW-003): the shifts are a two-column list, one line each; the year shows only when it is not this one.
+    const facts = text(html.slice(html.indexOf('class="b-req-facts"'), html.indexOf('class="q-acts"')));
+    expect(facts).toContain("Fictional Ana’s shift Mon, Oct 5 · 8:00 AM – 12:00 PM · North Office");
+    expect(facts).toContain("Fictional Ben’s shift Thu, Oct 8 · 2:00 PM – 6:00 PM · South Office");
+    expect(facts).not.toContain("2026");
     expect(html).toContain(">Approve<");
     expect(html.indexOf("South Office")).toBeLessThan(html.indexOf(">Approve<"));
     // Still a revision-bound decision on the same request.
@@ -167,16 +172,32 @@ describe("management sees every shift in full before deciding (Codex review, Oct
     const cover = { id: "cover", requestRevision: 2, actionable: true, kind: "COVERAGE" as const, status: "MANAGER_PENDING" as const, requestedByEmployeeId: "e1", requestedByName: "Fictional Ana", requestedByRole: "EMPLOYEE" as const, createdAt: "2026-10-03T00:00:00Z", sourceShift: shift({ endTime: "02:00", startTime: "18:00" }) as never };
     vi.mocked(listManagerPendingExchanges).mockResolvedValue([{ ...cover, targetEmployeeId: "e2", targetEmployeeName: "Fictional Ben" }]);
     const named = plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" })));
-    expect(named).toContain("Mon, Oct 5, 2026"); expect(named).toContain("6:00 PM – 2:00 AM, ends Tue, Oct 6, 2026"); expect(named).toContain("North Office"); expect(named).toContain("Picked up by Fictional Ben");
+    const namedFacts = text(named.slice(named.indexOf('class="b-req-facts"'), named.indexOf('class="q-acts"')));
+    expect(namedFacts).toContain("Fictional Ana’s shift Mon, Oct 5 · 6:00 PM – 2:00 AM, ends Tue, Oct 6 · North Office");
+    expect(namedFacts).toContain("Picked up by Fictional Ben");
+    // OW-011: a request over a day old carries its age under the dates (phones and tablets show that line).
+    expect(named).toContain('<span class="q-rt__line b-req-age">11 d ago</span>');
     vi.mocked(listManagerPendingExchanges).mockResolvedValue([cover]);
-    expect(plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" })))).toContain("No one has picked it up yet");
+    expect(text(plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" }))))).toContain("Picked up by No one yet");
   });
   it("an “Unable to work” report shows the affected shift with its reason and note", async () => {
     vi.mocked(listManagerPendingExchanges).mockResolvedValue([]);
     vi.mocked(listPendingCallouts).mockResolvedValue([{ id: "callout", requestRevision: 4, shiftId: "s", employeeId: "e1", employeeName: "Fictional Ana", locationId: "north", locationName: "North Office", weekStart: "2026-10-05", date: "2026-10-05", startTime: "08:00", endTime: "12:00", reasonCode: "TRANSPORTATION", reasonNote: "Fictional bus strike", status: "PENDING", createdAt: "2026-10-03T00:00:00Z" }]);
     const html = plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" })));
-    const facts = html.slice(html.indexOf('class="q-facts"'));
-    for (const text of ["Fictional Ana’s shift", "Mon, Oct 5, 2026", "8:00 AM – 12:00 PM", "North Office", "Transportation issue", "Fictional bus strike"]) expect(facts).toContain(text);
+    const facts = text(html.slice(html.indexOf('class="b-req-facts"'), html.indexOf('class="q-acts"')));
+    expect(facts).toContain("Fictional Ana’s shift Mon, Oct 5 · 8:00 AM – 12:00 PM · North Office");
+    expect(facts).toContain("Reason Transportation issue"); expect(facts).toContain("Note Fictional bus strike");
+    // The collapsed line is the shift only (OW-011); the reason shows once the row opens.
+    const summary = html.slice(html.indexOf("<summary"), html.indexOf("</summary>"));
+    expect(text(summary)).toContain("Can’t work · Mon, Oct 5 · 8:00 AM – 12:00 PM");
+    expect(summary.slice(summary.indexOf(">"))).not.toContain("Fictional bus strike");
+  });
+  it("a shift in another year carries its year, in the row and in the opened list", async () => {
+    vi.mocked(listManagerPendingExchanges).mockResolvedValue([]);
+    vi.mocked(listPendingCallouts).mockResolvedValue([{ id: "callout", requestRevision: 4, shiftId: "s", employeeId: "e1", employeeName: "Fictional Ana", locationId: "north", locationName: "North Office", weekStart: "2027-01-04", date: "2027-01-04", startTime: "22:00", endTime: "24:00", reasonCode: "OTHER", status: "PENDING", createdAt: "2026-10-03T00:00:00Z" }]);
+    const words = text(plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" }))));
+    expect(words).toContain("Can’t work · Mon, Jan 4, 2027 · 10:00 PM – midnight");
+    expect(words).toContain("Fictional Ana’s shift Mon, Jan 4, 2027 · 10:00 PM – midnight · North Office");
   });
   it("a deep-linked request opens with its shifts showing", async () => {
     vi.mocked(listPendingCallouts).mockResolvedValue([]);

@@ -1,23 +1,39 @@
 /* Sign-in and recovery words (E4 redesign, docs/product/specs/auth-premium/SPEC.md). English is today's wording; the
- * Spanish is the spec's draft for Jose's review. Only these four pages switch; the rest of the app stays English. */
+ * Spanish is the spec's draft for Jose's review. Only the signed-out pages switch (sign-in, recovery, activation, the 404
+ * and, since the Nov 14, 2026 inspection, the public error screen; Support and Account deletion keep their words beside
+ * their pages); the rest of the app stays English. */
 
 export type AuthLang = "en" | "es";
 export const AUTH_LANG_COOKIE = "nv-lang";
 
 export const isAuthLang = (value: unknown): value is AuthLang => value === "en" || value === "es";
 
+/** First visit, no saved choice (inspection Nov 14, PB-020): the language the browser prefers, from an Accept-Language
+ * header or the browser's own list joined with commas. Spanish only when it ranks ahead of English; English otherwise. */
+export function preferredAuthLang(accepted: string | null | undefined): AuthLang {
+  if (!accepted) return "en";
+  const ranked = accepted.split(",").map((part, index) => {
+    const [tag, ...params] = part.trim().toLowerCase().split(";");
+    const weight = params.map(param => param.trim()).find(param => param.startsWith("q="));
+    const q = weight ? Number(weight.slice(2)) : 1;
+    return { lang: tag.split("-")[0], q: Number.isFinite(q) ? q : 0, index };
+  }).filter(item => item.q > 0 && isAuthLang(item.lang)).sort((a, b) => b.q - a.q || a.index - b.index);
+  return ranked[0]?.lang === "es" ? "es" : "en";
+}
+
 const en = {
   langLabel: "Language",
   english: "English",
   spanish: "Español",
-  greeting: { welcome: "Welcome back", morning: "Good morning", afternoon: "Good afternoon", evening: "Good evening" },
-  signInSubtitle: "Sign in to see your schedule, time and pay.",
+  /** `eveningFrom` is the hour the evening greeting starts: 5 PM in English, 7 PM in Spanish (Puerto Rico usage, PB-019). */
+  greeting: { welcome: "Welcome back", morning: "Good morning", afternoon: "Good afternoon", evening: "Good evening", eveningFrom: 17 },
+  signInSubtitle: "Sign in to see your schedule, time and pay statements.",
   bandLine: "Your week, in one place.",
   panelEyebrow: "NEVORA Workforce",
-  panelSupport: "Shifts, hours, time off and pay, ready the moment you sign in.",
+  panelSupport: "Shifts, hours, time off and pay statements, ready the moment you sign in.",
   /** The decorative device screen (aria-hidden, fictional). */
   device: { date: "Tuesday, October 20", greeting: "Good morning, Alex", nextShift: "Next shift", inMinutes: "In 22 min", time: "8:00 AM – 4:00 PM",
-    place: "Front desk · Main Office", clockIn: "Clock in", thisWeek: "This week", scheduled: "Scheduled", worked: "Worked", nextPayday: "Next payday",
+    place: "Front desk · Main Office", clockIn: "Clock in", thisWeek: "This week", scheduled: "Scheduled", worked: "Worked", nextPayday: "Scheduled payday",
     payday: "Fri, Oct 23", timeOff: "Time off · Oct 26", approvedBy: "Approved by Morgan", approved: "Approved", tabs: ["Home", "Schedule", "Requests", "Pay"] },
   workspaceUnavailable: "Workspace unavailable",
   employeeId: "Employee ID",
@@ -30,6 +46,7 @@ const en = {
   hidePasswords: "Hide passwords",
   forgotAccess: "Forgot password?",
   signIn: "Sign in",
+  accountHelp: "Account help",
   signingIn: "Signing in…",
   newEmployee: "New employee?",
   activateYourAccount: "Activate your account",
@@ -49,17 +66,23 @@ const en = {
   passkeyHintDesktop: "Use this computer’s passkey",
   loginError: "Employee ID or password is incorrect.",
   loginBusy: "Too many sign-in attempts. Wait 15 minutes, then try again.",
+  loginReplace: "We couldn’t start setting your new password. Try again in a minute.",
   loginDeleting: "This account is being deleted, so it can’t be used to sign in. Email support@thevelani.com with your deletion reference if you have questions.",
   activated: "Account activated. You can sign in now.",
+  sessionEnded: "Your session ended. Sign in to continue.",
   backToSignIn: "Back to sign in",
   signInPill: "Sign in",
-  forgotTitle: "Forgot access",
+  forgotTitle: "Forgot password",
   recoveryEmail: "Recovery email",
   recoveryEmailHint: "Use the email registered with your account.",
   requestRecovery: "Request recovery",
   requestingRecovery: "Requesting recovery…",
-  requestingRecoveryStatus: "Requesting recovery. Please wait.",
-  requestReceived: "Request received",
+  requestingRecoveryStatus: "Requesting recovery…",
+  /** After a recovery request (inspection Nov 14, PB-004). Never says the ID or the email matched: the hedged sentence
+   * from the request itself is shown with these. */
+  checkEmail: { title: "Check your email", sub: "Look in your inbox and your spam folder.",
+    expires: "The recovery link works once and expires in 15 minutes.",
+    nothing: "Nothing after a few minutes? Check your Employee ID and email, then try again.", review: "Check your details" },
   haveRecoveryCode: "I already have a recovery code",
   cantUseEmail: "Can’t use your recovery email?",
   cantUseEmailBody: "Contact your manager or Owner for assisted recovery. They must verify your identity before issuing a recovery code.",
@@ -78,7 +101,7 @@ const en = {
   enterItAgain: "Enter it again",
   resetPassword: "Reset password",
   resettingPassword: "Resetting password…",
-  resettingStatus: "Resetting password. Please wait.",
+  resettingStatus: "Resetting your password…",
   checkPasswords: "Check your passwords",
   useNewCode: "Use a new recovery code",
   checkSignInFirst: "Check your sign-in first",
@@ -112,6 +135,44 @@ const en = {
     haveCode: "I have a code", cantUseEmail: "Can’t use your email?",
     resetTitle: "New password", newPasswordPlaceholder: "At least 8 characters", confirmPassword: "Confirm password", typeAgain: "Type it again",
     activateSub: "Open the invitation link in your email.", noInvitation: "No invitation? Ask your Owner.",
+    resetSub: "Use the recovery code you received.", haveRecoveryCode: "I have a recovery code",
+  },
+  /** Review B4 (Nov 10, 2026): the desktop activation words, so a Spanish page never shows English mid-flow. */
+  activation: {
+    activatedTitle: "Account activated", activatedSub: "Sign in with your Employee ID and the password you just created.",
+    idForSignIn: "Employee ID for sign-in", copyId: "Copy Employee ID", copied: "Copied", idCopied: "Employee ID copied",
+    continueSignIn: "Continue to sign in", opening: "Opening your invitation…",
+    choose: "Choose a password to join {workspace}.", chooseNoWorkspace: "Choose a password to finish setting up your account.",
+    saveId: "Save this ID. You sign in with it.",
+    notConfirmed: "Activation could not be confirmed.", intro: "Open your email invitation, then choose a password.",
+    invalid: "This link has expired or was already used.", invalidNext: "Ask your Owner or manager to send a new invitation.",
+    unknown: "Ask your Owner to confirm your account status and Employee ID. If you know your ID, try signing in before requesting a new invitation. Your account may already be activated.",
+    missing: "Open the invitation link from your email to activate your account.",
+    unavailable: "Activation is temporarily unavailable. Your invitation was not confirmed. Try again later.",
+    noScript: "JavaScript is required to open your secure email invitation. Use an enabled browser or contact your Owner.",
+    passwordsMatch: "Passwords match", sameInBoth: "Enter the same password in both fields.", inviteHelp: "Get invitation help",
+  },
+  /** Review B4: the forms' own messages replace the browser's bubble (the server still checks everything). */
+  invalid: {
+    employeeId: "Enter your Employee ID.", password: "Enter your password.", email: "Enter your recovery email.",
+    emailFormat: "Enter an email address like name@example.com.", code: "Paste your recovery code.",
+    codeShort: "Paste the complete recovery code.", newPassword: "Create a password of at least 8 characters.",
+    confirm: "Type the password again.",
+  },
+  notFound: {
+    title: "Page not found", eyebrow: "Error 404",
+    body: "This link doesn’t go anywhere in NEVORA. Check the address, or sign in to find what you need.", cta: "Go to sign in",
+    /** Review F2 (NV-316): the time clock hint, in the page's language. */
+    hintTitle: "Is this a time clock tablet?",
+    hintBody: "Set up this tablet again. A manager or Owner can get the current link in Settings, under Clocker tablets.",
+    clockerHintBody: "Ask a manager to set up this tablet again. They can get the current link in Settings, under Clocker tablets.",
+    notClocker: "Not a time clock?",
+  },
+  /** The public error screen (inspection Nov 14, PB-025 and RA-15): a server fault and a lost connection read differently. */
+  errorScreen: {
+    title: "This page didn’t load", eyebrow: "Something went wrong",
+    server: "Something went wrong on our side. Try again.", offline: "Nothing was changed. Check your connection, then try again.",
+    reference: "Reference: {reference}", retry: "Try again", signIn: "Go to sign in",
   },
 };
 
@@ -121,15 +182,15 @@ const es: AuthCopy = {
   langLabel: "Idioma",
   english: "English",
   spanish: "Español",
-  greeting: { welcome: "Te damos la bienvenida", morning: "Buenos días", afternoon: "Buenas tardes", evening: "Buenas noches" },
-  signInSubtitle: "Inicia sesión para ver tu horario, tus horas y tu pago.",
+  greeting: { welcome: "Te damos la bienvenida", morning: "Buenos días", afternoon: "Buenas tardes", evening: "Buenas noches", eveningFrom: 19 },
+  signInSubtitle: "Inicia sesión para ver tu horario, tus horas y tus comprobantes de pago.",
   bandLine: "Tu semana, en un solo lugar.",
   panelEyebrow: "NEVORA Workforce",
-  panelSupport: "Turnos, horas, tiempo libre y pago, listos al iniciar sesión.",
+  panelSupport: "Turnos, horas, días libres y tus comprobantes de pago, listos al iniciar sesión.",
   device: { date: "Martes, 20 de octubre", greeting: "Buenos días, Alex", nextShift: "Próximo turno", inMinutes: "En 22 min", time: "8:00 AM – 4:00 PM",
-    place: "Recepción · Oficina principal", clockIn: "Marcar entrada", thisWeek: "Esta semana", scheduled: "Programadas", worked: "Trabajadas", nextPayday: "Próximo pago",
+    place: "Recepción · Oficina principal", clockIn: "Marcar entrada", thisWeek: "Esta semana", scheduled: "Programadas", worked: "Trabajadas", nextPayday: "Día de pago programado",
     payday: "vie, 23 oct", timeOff: "Tiempo libre · 26 oct", approvedBy: "Aprobado por Morgan", approved: "Aprobado", tabs: ["Inicio", "Horario", "Solicitudes", "Pago"] },
-  workspaceUnavailable: "Espacio de trabajo no disponible",
+  workspaceUnavailable: "No pudimos cargar tu lugar de trabajo",
   employeeId: "ID de empleado",
   employeeIdPlaceholder: "Escribe tu ID de empleado",
   password: "Contraseña",
@@ -140,6 +201,7 @@ const es: AuthCopy = {
   hidePasswords: "Ocultar contraseñas",
   forgotAccess: "¿Olvidaste tu contraseña?",
   signIn: "Iniciar sesión",
+  accountHelp: "Ayuda con la cuenta",
   signingIn: "Iniciando sesión…",
   newEmployee: "¿Primera vez aquí?",
   activateYourAccount: "Activa tu cuenta",
@@ -150,7 +212,7 @@ const es: AuthCopy = {
   passkeyNotFoundPhone: "Face ID no está configurado para NEVORA en este dispositivo. Inicia sesión con tu contraseña y luego configúralo en tu perfil.",
   passkeyNotFoundDesktop: "No hay una llave de acceso de NEVORA guardada en este dispositivo. Inicia sesión con tu contraseña y luego agrega una en tu perfil.",
   passkeyRateLimited: "Demasiados intentos. Espera un minuto e inténtalo de nuevo.",
-  passkeyAccountDisabled: "Esta cuenta no puede iniciar sesión. Comunícate con tu gerente o con el Owner.",
+  passkeyAccountDisabled: "Esta cuenta no puede iniciar sesión. Comunícate con tu gerente o con el dueño.",
   passkeyUnavailablePhone: "El inicio de sesión con Face ID no está disponible ahora. Inicia sesión con tu contraseña.",
   passkeyUnavailableDesktop: "El inicio de sesión con llave de acceso no está disponible ahora. Inicia sesión con tu contraseña.",
   or: "o",
@@ -159,21 +221,25 @@ const es: AuthCopy = {
   passkeyHintDesktop: "Usa la llave de acceso de esta computadora",
   loginError: "El ID de empleado o la contraseña no son correctos.",
   loginBusy: "Demasiados intentos de inicio de sesión. Espera 15 minutos e inténtalo de nuevo.",
+  loginReplace: "No pudimos empezar a crear tu nueva contraseña. Inténtalo de nuevo en un minuto.",
   loginDeleting: "Esta cuenta se está eliminando, así que no se puede usar para iniciar sesión. Si tienes preguntas, escribe a support@thevelani.com con tu referencia de eliminación.",
   activated: "Cuenta activada. Ya puedes iniciar sesión.",
+  sessionEnded: "Tu sesión terminó. Inicia sesión para continuar.",
   backToSignIn: "Volver a iniciar sesión",
   signInPill: "Iniciar sesión",
-  forgotTitle: "Recuperar acceso",
+  forgotTitle: "¿Olvidaste tu contraseña?",
   recoveryEmail: "Correo de recuperación",
   recoveryEmailHint: "Usa el correo registrado en tu cuenta.",
   requestRecovery: "Solicitar recuperación",
   requestingRecovery: "Solicitando recuperación…",
-  requestingRecoveryStatus: "Solicitando recuperación. Espera un momento.",
-  requestReceived: "Solicitud recibida",
+  requestingRecoveryStatus: "Solicitando recuperación…",
+  checkEmail: { title: "Revisa tu correo", sub: "Busca en tu bandeja de entrada y en el correo no deseado.",
+    expires: "El enlace de recuperación funciona una sola vez y vence en 15 minutos.",
+    nothing: "¿No llega nada en unos minutos? Revisa tu ID de empleado y tu correo, e inténtalo de nuevo.", review: "Revisar tus datos" },
   haveRecoveryCode: "Ya tengo un código de recuperación",
   cantUseEmail: "¿No puedes usar tu correo de recuperación?",
-  cantUseEmailBody: "Comunícate con tu gerente o con el Owner para una recuperación asistida. Deben verificar tu identidad antes de darte un código de recuperación.",
-  requestNoScript: "Activa JavaScript para solicitar la recuperación, o comunícate con tu gerente o con el Owner para una recuperación asistida.",
+  cantUseEmailBody: "Comunícate con tu gerente o con el dueño para una recuperación asistida. Deben verificar tu identidad antes de darte un código de recuperación.",
+  requestNoScript: "Activa JavaScript para solicitar la recuperación, o comunícate con tu gerente o con el dueño para una recuperación asistida.",
   resetTitle: "Crea una contraseña nueva",
   resetDoneTitle: "Contraseña actualizada",
   nextStep: "Tu próximo paso",
@@ -188,7 +254,7 @@ const es: AuthCopy = {
   enterItAgain: "Escríbela otra vez",
   resetPassword: "Restablecer contraseña",
   resettingPassword: "Restableciendo contraseña…",
-  resettingStatus: "Restableciendo contraseña. Espera un momento.",
+  resettingStatus: "Restableciendo tu contraseña…",
   checkPasswords: "Revisa tus contraseñas",
   useNewCode: "Usa un código de recuperación nuevo",
   checkSignInFirst: "Primero intenta iniciar sesión",
@@ -196,8 +262,8 @@ const es: AuthCopy = {
   requestNewCode: "Solicitar un código de recuperación nuevo",
   trySigningIn: "Intentar iniciar sesión",
   needRecoveryCode: "¿Necesitas un código de recuperación?",
-  needRecoveryCodeBody: "Solicita la recuperación con tu correo registrado. Si no puedes usar ese correo, comunícate con tu gerente o con el Owner. Deben verificar tu identidad antes de darte un código.",
-  resetNoScript: "Activa JavaScript para restablecer tu contraseña, o pide ayuda a tu gerente o al Owner.",
+  needRecoveryCodeBody: "Solicita la recuperación con tu correo registrado. Si no puedes usar ese correo, comunícate con tu gerente o con el dueño. Deben verificar tu identidad antes de darte un código.",
+  resetNoScript: "Activa JavaScript para restablecer tu contraseña, o pide ayuda a tu gerente o al dueño.",
   activateTitle: "Activar cuenta",
   phoneNumber: "Número de teléfono",
   phoneHint: "Usa el número que tiene tu lugar de trabajo.",
@@ -208,7 +274,7 @@ const es: AuthCopy = {
   activateAccount: "Activar cuenta",
   activatingAccount: "Activando cuenta…",
   needEmployeeDetails: "¿Necesitas tus datos de empleado?",
-  needEmployeeDetailsBody: "Tu lugar de trabajo crea primero tu registro de empleado. Pide a tu gerente o al Owner tu ID de empleado y que confirmen el número de teléfono que tienen.",
+  needEmployeeDetailsBody: "Tu lugar de trabajo crea primero tu registro de empleado. Pide a tu gerente o al dueño tu ID de empleado y que confirmen el número de teléfono que tienen.",
   alreadyActivated: "¿Ya activaste tu cuenta? Inicia sesión",
   activationNotFound: "No pudimos activar esa cuenta. Revisa el ID de empleado y el número de teléfono, o puede que la cuenta ya esté activada.",
   activationInvalid: "Escribe tu ID de empleado y tu número de teléfono, y elige una contraseña de al menos 8 caracteres que coincida en los dos campos.",
@@ -220,7 +286,41 @@ const es: AuthCopy = {
     forgotSub: "Te enviaremos un enlace de recuperación.", emailPlaceholder: "Correo de tu cuenta",
     haveCode: "Tengo un código", cantUseEmail: "¿No puedes usar tu correo?",
     resetTitle: "Contraseña nueva", newPasswordPlaceholder: "Al menos 8 caracteres", confirmPassword: "Confirma la contraseña", typeAgain: "Escríbela otra vez",
-    activateSub: "Abre el enlace de invitación en tu correo.", noInvitation: "¿Sin invitación? Pídesela al Owner.",
+    activateSub: "Abre el enlace de invitación en tu correo.", noInvitation: "¿Sin invitación? Pídesela al dueño.",
+    resetSub: "Usa el código de recuperación que recibiste.", haveRecoveryCode: "Tengo un código de recuperación",
+  },
+  activation: {
+    activatedTitle: "Cuenta activada", activatedSub: "Inicia sesión con tu ID de empleado y la contraseña que acabas de crear.",
+    idForSignIn: "ID de empleado para iniciar sesión", copyId: "Copiar ID de empleado", copied: "Copiado", idCopied: "ID de empleado copiado",
+    continueSignIn: "Continuar al inicio de sesión", opening: "Abriendo tu invitación…",
+    choose: "Elige una contraseña para unirte a {workspace}.", chooseNoWorkspace: "Elige una contraseña para terminar de configurar tu cuenta.",
+    saveId: "Guarda este ID. Lo usas para iniciar sesión.",
+    notConfirmed: "No pudimos confirmar la activación.", intro: "Abre la invitación de tu correo y elige una contraseña.",
+    invalid: "Este enlace venció o ya se usó.", invalidNext: "Pide al dueño o a tu gerente que te envíe una invitación nueva.",
+    unknown: "Pide al dueño que confirme el estado de tu cuenta y tu ID de empleado. Si sabes tu ID, intenta iniciar sesión antes de pedir una invitación nueva. Puede que tu cuenta ya esté activada.",
+    missing: "Abre el enlace de invitación de tu correo para activar tu cuenta.",
+    unavailable: "La activación no está disponible por ahora. Tu invitación no se confirmó. Inténtalo más tarde.",
+    noScript: "Necesitas JavaScript para abrir la invitación segura de tu correo. Usa un navegador que lo tenga activado o comunícate con el dueño.",
+    passwordsMatch: "Las contraseñas coinciden", sameInBoth: "Escribe la misma contraseña en ambos campos.", inviteHelp: "Ayuda con la invitación",
+  },
+  invalid: {
+    employeeId: "Escribe tu ID de empleado.", password: "Escribe tu contraseña.", email: "Escribe tu correo de recuperación.",
+    emailFormat: "Escribe un correo como nombre@ejemplo.com.", code: "Pega tu código de recuperación.",
+    codeShort: "Pega el código de recuperación completo.", newPassword: "Crea una contraseña de al menos 8 caracteres.",
+    confirm: "Vuelve a escribir la contraseña.",
+  },
+  notFound: {
+    title: "Página no encontrada", eyebrow: "Error 404",
+    body: "Este enlace no lleva a ninguna parte de NEVORA. Revisa la dirección o inicia sesión para encontrar lo que necesitas.", cta: "Ir a iniciar sesión",
+    hintTitle: "¿Es una tableta de reloj de asistencia?",
+    hintBody: "Vuelve a configurar esta tableta. Un gerente o el dueño puede obtener el enlace actual en Settings, en Clocker tablets.",
+    clockerHintBody: "Pide a un gerente que vuelva a configurar esta tableta. Puede obtener el enlace actual en Settings, en Clocker tablets.",
+    notClocker: "¿No es un reloj de asistencia?",
+  },
+  errorScreen: {
+    title: "Esta página no cargó", eyebrow: "Algo salió mal",
+    server: "Algo salió mal de nuestro lado. Inténtalo de nuevo.", offline: "No se cambió nada. Revisa tu conexión e inténtalo de nuevo.",
+    reference: "Referencia: {reference}", retry: "Intentar de nuevo", signIn: "Ir a iniciar sesión",
   },
 };
 
@@ -232,12 +332,12 @@ const MESSAGES_ES: Record<string, string> = {
   "If the details match an active account, we’ll email recovery steps. Can’t use that email? Ask your manager or Owner for help.":
     "Si los datos coinciden con una cuenta activa, te enviaremos por correo los pasos para recuperarla. ¿No puedes usar ese correo? Pide ayuda a tu gerente o al dueño.",
   "If these details match an active account and its registered recovery channel is available, recovery instructions will be sent. If you cannot use that channel, contact your manager or Owner for assisted recovery.":
-    "Si estos datos coinciden con una cuenta activa y su canal de recuperación registrado está disponible, enviaremos instrucciones de recuperación. Si no puedes usar ese canal, comunícate con tu gerente o con el Owner para una recuperación asistida.",
+    "Si estos datos coinciden con una cuenta activa y su canal de recuperación registrado está disponible, enviaremos instrucciones de recuperación. Si no puedes usar ese canal, comunícate con tu gerente o con el dueño para una recuperación asistida.",
   "Recovery could not be confirmed. Keep your current access and try again.": "No pudimos confirmar la recuperación. Conserva tu acceso actual e inténtalo de nuevo.",
   "Recovery is unavailable. Try again or contact your manager for assisted recovery.": "La recuperación no está disponible. Inténtalo de nuevo o comunícate con tu gerente para una recuperación asistida.",
   "Your access ended. Sign in again.": "Tu sesión terminó. Inicia sesión de nuevo.",
   "Passwords do not match.": "Las contraseñas no coinciden.",
-  "Password reset. All portal sessions have ended. Sign in with your new password.": "Contraseña restablecida. Se cerraron todas las sesiones del portal. Inicia sesión con tu contraseña nueva.",
+  "Password reset. You’re signed out on every device. Sign in with your new password.": "Contraseña restablecida. Se cerró tu sesión en todos los dispositivos. Inicia sesión con tu contraseña nueva.",
   "This recovery code has expired, was already used, or cannot be verified. Request a new code or contact your manager.": "Este código de recuperación venció, ya se usó o no se puede verificar. Solicita un código nuevo o comunícate con tu gerente.",
   "The reset outcome could not be confirmed. Try signing in with your new password before requesting another code.": "No pudimos confirmar el restablecimiento. Intenta iniciar sesión con tu contraseña nueva antes de solicitar otro código.",
 };

@@ -15,6 +15,7 @@ import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
 import { EmployeeDeletionView, type DeletionView } from "./employee-mobile/deletion";
+import { shown as onScreen } from "./employee-b/account-host";
 
 type Account = { name: string; role: string; employeeId: string; roleKey?: "OWNER" | "MANAGER" | "LEAD" | "EMPLOYEE" };
 type Done = Extract<DeletionFormState, { reference: string }>;
@@ -55,18 +56,20 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
   // Board E-DeleteAccount: Employees and Leads get the corporate page on every width; other roles keep Quiet.
   const phone = account.roleKey === "EMPLOYEE" || account.roleKey === "LEAD";
   const outcome = useRef<HTMLDivElement>(null);
+  // An Employee's phone screen (Direction B) draws the receipt and the ended outcomes itself; focus the one on screen.
+  const outcomeB = useRef<HTMLDivElement>(null);
   const { errors, handlers } = useFieldErrors({ password: { missing: "Enter your password to confirm it’s you." } });
   const receipt = RECEIPT.has(state.kind);
 
   useEffect(() => {
     // One response, one announcement: focus the outcome, or the password it rejected.
-    const frame = requestAnimationFrame(() => (state.kind === "wrong_password" ? passwordRef : ANNOUNCED.has(state.kind) ? outcome : null)?.current?.focus());
+    const frame = requestAnimationFrame(() => (state.kind === "wrong_password" ? passwordRef.current : ANNOUNCED.has(state.kind) ? onScreen(outcome.current, outcomeB.current) : null)?.focus());
     return () => cancelAnimationFrame(frame);
   }, [state]);
 
   if (phone) {
     const view: DeletionView = { state, pending, retry, confirmed, shown, period, retention };
-    return <EmployeeDeletionView account={account} view={view} action={action} outcomeRef={outcome} passwordRef={bindPassword}
+    return <EmployeeDeletionView account={account} view={view} action={action} outcomeRef={outcome} outcomeRefB={outcomeB} passwordRef={bindPassword}
       onPassword={value => { typed.current = value; }} onShown={() => setShown(value => !value)} onConfirmed={setConfirmed} workplace={workplaceName} />;
   }
 
@@ -122,11 +125,12 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
       {/* v5 (Jose approved the regrouping, Oct 24): the same sentences as rows; the retention schedule opens from "What may be kept". */}
       <QuietGroup id="deletion-effects" label="What happens">
         <QuietList>
-          <li><div className="q-row q-row--av q-deletion__fact"><span className="q-av" aria-hidden="true"><SignOutIcon className="q-ic" /></span>
+          {/* Review B6 (NV-143): the same flow for every role: "access ends" is red-tinted, consent is a checkbox. */}
+          <li><div className="q-row q-row--av q-deletion__fact"><span className="q-av q-av--red" aria-hidden="true"><SignOutIcon weight="bold" className="q-ic" /></span>
             <span className="q-rt"><b>Your access ends now.</b><i>You’re signed out on every device and can’t sign in again. Calendar feed links stop working.</i></span></div></li>
-          <li><div className="q-row q-row--av q-deletion__fact"><span className="q-av" aria-hidden="true"><TrashIcon className="q-ic" /></span>
+          <li><div className="q-row q-row--av q-deletion__fact"><span className="q-av" aria-hidden="true"><TrashIcon weight="bold" className="q-ic" /></span>
             <span className="q-rt"><b>What is removed</b><i>Your profile, sign-in details, notification subscriptions, calendar links and the content you contributed, within {period ?? unresolved("DELETION_COMPLETION_PERIOD")}.</i></span></div></li>
-          <SheetRow sheetTitle="What may be kept" avatar={<ShieldCheckIcon className="q-ic" />} title="What may be kept"
+          <SheetRow sheetTitle="What may be kept" avatar={<ShieldCheckIcon weight="bold" className="q-ic" />} title="What may be kept"
             detail="Some attendance, payroll, security or dispute records your employer or we must keep. They’re restricted and never used to restore your account.">
             <div className="q-hd"><h1>What may be kept</h1></div>
             <div className="q-body q-deletion__effects">
@@ -143,14 +147,14 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
             <input ref={bindPassword} className="q-in" id="deletion-password" name="password" type={shown ? "text" : "password"} required autoComplete="current-password" disabled={pending} placeholder="Password"
               onChange={event => { typed.current = event.target.value; }}
               aria-describedby={passwordError ? "deletion-password-help deletion-password-error" : "deletion-password-help"} aria-invalid={passwordError ? true : undefined} />
-            <button type="button" className="q-in__eye" onClick={() => setShown(value => !value)} aria-pressed={shown} aria-label={shown ? "Hide password" : "Show password"}>{shown ? <EyeSlashIcon className="q-ic" aria-hidden="true" /> : <EyeIcon className="q-ic" aria-hidden="true" />}</button>
+            <button type="button" className="q-in__eye" onClick={() => setShown(value => !value)} aria-pressed={shown} aria-label={shown ? "Hide password" : "Show password"}>{shown ? <EyeSlashIcon weight="bold" className="q-ic" aria-hidden="true" /> : <EyeIcon weight="bold" className="q-ic" aria-hidden="true" />}</button>
           </div>
           <p className="q-fl__help" id="deletion-password-help">Enter the password you use to sign in.</p>
           {passwordError ? <p className="q-fl__error" id="deletion-password-error">{passwordError}</p> : null}
         </div>
         <QuietList>
           <li><label className="q-row q-deletion__check"><span className="q-rt"><b>I understand my NEVORA account will be deleted and I won’t be able to sign in again.</b></span>
-            <input type="checkbox" className="q-tog" checked={confirmed} onChange={event => setConfirmed(event.target.checked)} disabled={pending} /></label></li>
+            <input type="checkbox" className="q-deletion__box" checked={confirmed} onChange={event => setConfirmed(event.target.checked)} disabled={pending} /></label></li>
         </QuietList>
       </QuietGroup>
       {state.kind === "failed" || state.kind === "unavailable" || state.kind === "uncertain" || state.kind === "busy" || (checking && state.kind === "wrong_password") ? <div className="q-deletion__alert" ref={outcome} tabIndex={-1} role="alert">

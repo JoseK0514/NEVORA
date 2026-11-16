@@ -205,7 +205,7 @@ it('server actions use real session SQL, planner, writes and read-only review; c
   expect(await q('SELECT count(*)::integer n FROM notifications')).toEqual([{n:0}]);
   expect(await q('SELECT count(*)::integer n FROM schedule_publication_revisions')).toEqual([{n:0}]);
   await q("UPDATE employees SET role='EMPLOYEE' WHERE id='owner'");
-  await expect(generateWeekAction(idle,form)).rejects.toThrow('redirect:/app');
+  await expect(generateWeekAction(idle,form)).rejects.toThrow('redirect:/app/restricted');
 });
 
 it.each(['INACTIVE','NEEDS_SETUP'].flatMap(state=>['PUBLISHED','ARCHIVED'].map(status=>({state,status}))))('real All action and initial review preserve excluded $state/$status and public setup reasons',async({state,status})=>{

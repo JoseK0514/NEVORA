@@ -30,7 +30,7 @@ it('opens on Archived when every break type is archived', async () => {
   const html = renderToStaticMarkup(await BreakTypesPage());
   expect(html).toContain('data-break-type="rest"');
   expect(html).toContain('aria-label="Edit Rest"');
-  expect(html).toContain('Archived (1)');
+  expect(html).toContain('Archived<span class="wc-count c-num">1</span>');
   expect(html).toContain('No active break types');
 });
 

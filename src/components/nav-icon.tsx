@@ -85,13 +85,13 @@ export function NavIcon({
   name,
   size = 18,
   className,
-  weight = "regular",
+  weight = "bold",
 }: {
   name: NavIconName;
   size?: number;
   employee?: boolean;
   className?: string;
-  /** Defaults to regular everywhere; the clean Manager tab bar passes "fill". */
+  /** Review B1 (NV-118): bold by default (the one Phosphor weight); the active tab passes "fill". */
   weight?: "regular" | "fill" | "bold";
 }) {
   const Icon = icons[name];
