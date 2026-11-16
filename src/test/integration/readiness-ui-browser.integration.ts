@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { createOwnedNextApp } from './owned-next-app';
 import { seedOwnedApp, assignOwnedManagerCompanyAccess, TEST_PASSWORD } from './owned-app-fixture';
@@ -25,7 +25,6 @@ it('connects original shift reviews and explicit period history in owned Chromiu
   let complete = false, failureShot: (() => Promise<void>) | undefined;
   try {
     await seedOwnedApp(app.database.executor);
-    await q(await readFile('db/migrations/0031_native_payroll.sql', 'utf8'));
     await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('UI-COMPANY','Fictional','Company Manager','NONE','MANAGER','loc-1'),('UI-LOCAL','Fictional','Location Manager','NONE','MANAGER','loc-1'),('UI-WORKER','Fictional','Worker','NONE','EMPLOYEE','loc-1')");
     await q("INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('UI-COMPANY',$1,false),('UI-LOCAL',$1,false)", [await hashPassword(TEST_PASSWORD)]);
     await q("INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('UI-WORKER','loc-1')");
