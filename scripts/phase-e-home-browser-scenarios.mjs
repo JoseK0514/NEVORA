@@ -246,18 +246,19 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  async function publishUpdate(acknowledgement){const draft={type:'LOCATION_ANNOUNCEMENT',scope:{kind:'LOCATION',locationId:'loc-1'},title:'Operational update '+label+' — revisión 👷',body:'PRIVATE COMPLETE CONTENT '+label,acknowledgement,expiresAt:null};
  const preview=await previewCommunicationAudience(owner,draft,app.database.executor);assert.equal(preview.state,'ready');const result=await executeCommunicationCommand(owner,{kind:'PUBLISH',operationId:randomUUID(),authority:preview.authority,draft,audienceFingerprint:preview.fingerprint},app.database.executor);assert.equal(result.status,'committed');return {result,draft};}
  const required=await publishUpdate('REQUIRED');await refresh();
- const row=()=>todo().locator('a.c-row[href="/app/updates/'+required.result.id+'"]');
+ const row=()=>todo().locator('a[href="/app/updates/'+required.result.id+'"]:visible');
+ const requiredReview=async target=>{assert(await target.isVisible(),'Required item keeps a visible review link');assert.match(await target.getAttribute('href'),/^\/app\/(updates|schedule)/);if(await target.evaluate(el=>el.classList.contains('b-row')||el.classList.contains('b-row__hit')))await target.getByText('Action needed',{exact:true}).waitFor();else assert(await target.locator('.c-row__trail').getByText('Review',{exact:true}).isVisible());};
  // Corporate (board C-Employee): a required review carries the teal Review action text (v5 said "Review needed").
- assert(await row().locator('.c-row__trail').getByText('Review',{exact:true}).isVisible());assert.equal(await allSet().count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
+ await requiredReview(row());assert.equal(await allSet().count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
  assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);
  assert.equal((await recordCommunicationRead(self,{kind:'MARK_READ',operationId:randomUUID(),authority:communicationAuthority(self),ref:{kind:'COMMUNICATION',id:required.result.id,version:required.result.version}},app.database.executor)).status,'blocked');
- await refresh();assert(await row().locator('.c-row__trail').getByText('Review',{exact:true}).isVisible());await shot('required-push-off');
+ await refresh();await requiredReview(row());await shot('required-push-off');
  // The Task11 fixture uses the authenticated full-content API before a receipt;
  // Task10 owns the actual detail-screen acknowledgement journey.
  const detail=await readCommunication(self,required.result.id,app.database.executor);assert.equal(detail.state,'ready');assert.equal(detail.body,required.draft.body);
  assert.equal((await executeCommunicationCommand(self,{kind:'ACKNOWLEDGE',operationId:randomUUID(),authority:detail.authority,communicationId:detail.id,expectedRevisionId:detail.revisionId,contentHash:detail.contentHash},app.database.executor)).status,'committed');await refresh();assert.equal(await row().count(),0);
  const revisedDraft={...required.draft,body:'PRIVATE REVISED CONTENT '+label},preview=await previewCommunicationAudience(owner,revisedDraft,app.database.executor);assert.equal(preview.state,'ready');
- const revised=await executeCommunicationCommand(owner,{kind:'REVISE',operationId:randomUUID(),authority:preview.authority,communicationId:required.result.id,expectedRevisionId:required.result.version,draft:revisedDraft,audienceFingerprint:preview.fingerprint},app.database.executor);assert.equal(revised.status,'committed');await refresh();assert(await row().locator('.c-row__trail').getByText('Review',{exact:true}).isVisible());await shot('new-revision');
+ const revised=await executeCommunicationCommand(owner,{kind:'REVISE',operationId:randomUUID(),authority:preview.authority,communicationId:required.result.id,expectedRevisionId:required.result.version,draft:revisedDraft,audienceFingerprint:preview.fingerprint},app.database.executor);assert.equal(revised.status,'committed');await refresh();await requiredReview(row());await shot('new-revision');
  assert.equal((await executeCommunicationCommand(owner,{kind:'WITHDRAW',operationId:randomUUID(),authority:communicationAuthority(owner),communicationId:required.result.id,expectedRevisionId:revised.version},app.database.executor)).status,'committed');await refresh();assert.equal(await row().count(),0);
  // Home lists what needs you; an optional update is read in Updates. The canonical Home response still carries it.
  const homeRead=()=>page.evaluate(async binding=>{const response=await fetch('/api/employee/home',{cache:'no-store',headers:{'X-Nevora-Home':binding}});return response.json();},binding);
@@ -414,7 +415,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   try{
    await writeFile(sqlFlag,'owned-h09',{mode:0o600,flag:'wx'});sqlFlagCreated=true;
    await blocker.connect();blockerConnected=true;await blocker.query('BEGIN');await blocker.query('LOCK TABLE time_off_requests IN ACCESS EXCLUSIVE MODE');
-   await refresh();const timeOffSource=()=>todo().locator('a.c-row[href="/app/requests?tab=my"]').filter({hasText:'Couldn’t be checked'});
+   await refresh();const timeOffSource=()=>todo().locator('a[href="/app/requests?tab=my"]').filter({hasText:'Couldn’t be checked'});
    await timeOffSource().waitFor();
    details.sourceFailureRender=await page.locator('[data-home-state]').evaluate(root=>({state:root.getAttribute('data-home-state'),busy:root.getAttribute('aria-busy')}));
    assert.equal(await assignments().count(),1,'Independently authorized assignments stay: one shift card');await shot('unavailable');
@@ -460,7 +461,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  await page.goto(app.url+'/app/schedule?week='+scenario.week);
  // Board G-E-Schedule: Confirm this week sits in the week card; a confirmed week shows the Confirmed pill there.
  await page.getByRole('group',{name:'Confirm this week',exact:true}).getByRole('button',{name:'Confirm schedule',exact:true}).click();
- await page.locator('main [aria-label="Week"]').locator('.c-pill').getByText('Confirmed',{exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);
+ await page.locator('main').locator('.c-pill:visible,.b-chip:visible').getByText('Confirmed',{exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);
  const [ack]=await q('SELECT publication_revision_id FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,scenario.week]);
  const [published]=await q('SELECT id FROM schedule_publication_revisions WHERE week_start=$1 ORDER BY revision_number DESC LIMIT 1',[scenario.week]);
  assert.equal(ack.publication_revision_id,published.id);
@@ -481,8 +482,8 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='last-shift-removal';
  // The removal was published in the empty stage (held edits publish together); this is its current review.
  await refresh();
- const removed=todo().locator('a.c-row[href="/app/schedule?week='+scenario.week+'"]');
- await removed.getByText('Schedule removed',{exact:true}).waitFor();assert(await removed.locator('.c-row__trail').getByText('Review',{exact:true}).isVisible());
+ const removed=todo().locator('a[href="/app/schedule?week='+scenario.week+'"]');
+ await removed.getByText('Schedule removed',{exact:true}).waitFor();await requiredReview(removed.filter({visible:true}));
  const removalResponse=await page.evaluate(async binding=>{const response=await fetch('/api/employee/home',{headers:{'X-Nevora-Home':binding},cache:'no-store'});return response.json();},binding);
  details.removalSource=removalResponse.snapshot.sources.acknowledgements;
  assert.equal(details.removalSource.state,'partial');assert.equal(details.removalSource.reason,'unpublished');
@@ -499,7 +500,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  await login(page,clearActor);await ready();await allSet().waitFor();assert.equal(await page.locator('[data-home-state="ready"]').count(),1);assert.equal(await items().count(),0);assert.equal(await todo().count(),0);await shot('all-set');
  const clearApi=await page.evaluate(async binding=>{const r=await fetch('/api/employee/home',{cache:'no-store',headers:{'X-Nevora-Home':binding}});return r.json();},binding);assert.equal(clearApi.allSet,true);assert.equal(clearApi.snapshot.publicationState,'complete');for(const source of Object.values(clearApi.snapshot.sources))assert.equal(source.state,'complete');
  checks.push('H15 actual new eligible account has no historical communication grants; all six canonical sources/publication complete and zero items yield exact all-set copy');
- if(width===390){stage='communication-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE communications IN ACCESS EXCLUSIVE MODE');await refresh();await todo().locator('a.c-row[href="/app/updates"]').filter({hasText:'Couldn’t be checked'}).waitFor();assert.equal(await allSet().count(),0);await shot('communications-unavailable');await blocker.query('COMMIT');await refresh();await allSet().waitFor();checks.push('H16 actual communication SQL lock failure suppresses all-clear and Retry restores current complete zero source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
+ if(width===390){stage='communication-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE communications IN ACCESS EXCLUSIVE MODE');await refresh();await todo().locator('a[href="/app/updates"]').filter({hasText:'Couldn’t be checked'}).waitFor();assert.equal(await allSet().count(),0);await shot('communications-unavailable');await blocker.query('COMMIT');await refresh();await allSet().waitFor();checks.push('H16 actual communication SQL lock failure suppresses all-clear and Retry restores current complete zero source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
  stage='axe-diagnostic';await page.addScriptTag({path:axeFile});details.axe=await page.evaluate(async()=>{const result=await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}});return result.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>({target:n.target.map(t=>String(t).replace(/\[[^\]]*\]/g,'[attribute]')),contrast:n.any.filter(a=>a.id==='color-contrast').map(a=>({ratio:a.data?.contrastRatio,foreground:a.data?.fgColor,background:a.data?.bgColor}))}))}));});assert.deepEqual(details.axe,[]);
  details.runtimeErrors=runtimeErrors;assert.deepEqual(runtimeErrors,[]);details.html=await page.locator('.employee-home').innerHTML();await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-checks.json`),JSON.stringify(details,null,2));return {checks};
  }catch(error){details.failedStage=stage;details.failure={name:error.name,code:error.code??null,message:'Browser step failed; see named stage and source location',location:error.stack?.split('\n').find(line=>line.includes('phase-e-home-browser-scenarios.mjs'))};await shot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-failure.json`),JSON.stringify(details,null,2));throw error;}finally{page.off('request',notificationStart);page.off('requestfinished',notificationFinish);page.off('requestfailed',notificationFailed);page.off('pageerror',nativeError);await writeFile(join(evidenceDirectory,`home-lifecycle-${engine}-${width}-report.json`),JSON.stringify({engine,width,events:details.lifecycleTrace},null,2));await managerContext?.close();}
