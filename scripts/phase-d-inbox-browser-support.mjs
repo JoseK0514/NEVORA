@@ -31,7 +31,7 @@ export async function readVisibleInboxCards(locator, sourceItems, firstNames) {
       assert(new RegExp('\\b' + quantity + '\\b').test(row.detail.replace(/\s+/gu, ' ')), 'The visible detail states the exact eligible and total membership: ' + JSON.stringify({quantity, detail:row.detail}));
       for (const item of members) {
         assert.equal(typeof firstNames[item.employeeId], 'string');
-        assert(row.label.includes(firstNames[item.employeeId]), 'The actual period row names every eligible fixture subject');
+        assert(row.label.includes(firstNames[item.employeeId]), 'The actual period row names every eligible fixture subject: ' + JSON.stringify({employeeId:item.employeeId, expected:firstNames[item.employeeId], label:row.label}));
       }
       for (const item of allTimecards.filter(item => samePeriod(item) && item.review?.independentReviewRequired === true)) {
         if (!members.some(member => firstNames[member.employeeId] === firstNames[item.employeeId])) assert(!row.label.includes(firstNames[item.employeeId]), 'Independent review subjects are absent from this reviewer’s row');
