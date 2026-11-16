@@ -60,6 +60,8 @@ try{
   await assignOwnedManagerCompanyAccess(app.database.executor,'D3-M');
   await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES('D3-UI','D3-E','loc-1','d3-device','2026-09-22T12:00:00Z','2026-09-22T20:00:00Z','CLOCKED_OUT',1)");
   await q("INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at) VALUES('D3-UI-B','D3-UI','2026-09-22T16:00:00Z','2026-09-22T16:30:00Z')");
+  // Current Weeks rows link only when a week actually has recorded time. Seed the later-week navigation fixture.
+  await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES('D3-LATER','D3-E','loc-1','d3-device','2026-09-29T12:00:00Z','2026-09-29T20:00:00Z','CLOCKED_OUT',1)");
   const engineName=id=>'Portal '+id;
   async function context(browser,id){
     const context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block'});
@@ -111,7 +113,7 @@ try{
     // Time's pushed "Past timecards" page (/app/my-time?view=cards) on every screen. The period card carries the recorded
     // total and its breaks; each day row opens that day's punches, where "Request a correction" lives.
     const cardsUrl='/app/my-time?view=cards&start=2026-09-21&end=2026-09-27',periodCard=ep.locator(':is(#hours-timecard,#b-hours-timecard):visible');
-    const pastCards=async()=>{await ep.waitForURL(u=>u.pathname+u.search===cardsUrl);await ep.locator('.c-hours[data-hours-view="cards"][data-hours-state="ready"]').waitFor();await ep.getByRole('heading',{name:'Past timecards',exact:true,level:1}).waitFor();await periodCard.waitFor();};
+    const pastCards=async()=>{await ep.waitForURL(u=>u.pathname+u.search===cardsUrl);await ep.locator('.c-hours[data-hours-view="cards"][data-hours-state="ready"]').waitFor();await ep.getByRole('heading',{name:'Past timecards',exact:true,level:1}).waitFor();await periodCard.waitFor();const laterLink=ep.locator('.c-hours').getByRole('link',{name:/\b1 shift, 8 h$/});await laterLink.waitFor();assert.equal(await laterLink.getAttribute('href'),'/app/my-time?view=cards&start=2026-09-28&end=2026-10-04','The adjacent week must have its actual seeded shift and eight-hour total, not an unavailable read');};
     await pastCards();assert.equal(await periodCard.count(),1);
     assert.match(await periodCard.locator('.c-big,.eb-sum__big').locator('[aria-hidden="true"]:visible').innerText(),/^8\s*h$/);assert(await periodCard.getByText('Hours · includes 30 min of breaks',{exact:true}).isVisible());checked(engine+': employee self period and break totals');
     await periodCard.locator('a[href*="entry=D3-UI"]').click();await ep.waitForURL(u=>u.pathname==='/app/my-time'&&u.searchParams.get('entry')==='D3-UI');
