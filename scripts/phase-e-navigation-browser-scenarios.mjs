@@ -46,7 +46,13 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    await page.screenshot({path:join(evidenceDirectory,`${prefix}-login-failure.png`),timeout:5000}).catch(()=>{});throw error;
   }
  }
- async function settle(){await page.waitForLoadState('networkidle');}
+ // Retain only bounded owned request metadata, never query strings, bodies or headers.
+ const pendingRequests=new Map();let droppedPendingRequests=0;
+ page.on('request',request=>{const url=new URL(request.url());if(url.origin!==app.url)return;if(pendingRequests.size>=64){droppedPendingRequests++;return;}pendingRequests.set(request,{path:url.pathname.replace(/[A-Za-z0-9_-]{40,}/g,'[long-value]'),method:request.method(),resource:request.resourceType(),status:null,started:performance.now()});});
+ page.on('response',response=>{const entry=pendingRequests.get(response.request());if(entry)entry.status=response.status();});
+ for(const event of ['requestfinished','requestfailed'])page.on(event,request=>pendingRequests.delete(request));
+ let settleFailure=null;
+ async function settle(){try{await page.waitForLoadState('networkidle');}catch(error){settleFailure={stage,path:new URL(page.url()).pathname,pending:[...pendingRequests.values()].map(({started,...entry})=>({...entry,ageMs:Math.round(performance.now()-started)})),dropped:droppedPendingRequests};throw error;}}
  // A server action resolves its result (and the page shows its receipt) before its response stream ends. A hard
  // navigation in that gap cuts the stream, which WebKit reports as TypeError: Load failed into the router error
  // boundary. settle() cannot cover this: networkidle is a per-document lifecycle event already reached at load.
@@ -468,7 +474,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   }
   checks.push('long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance');
   await screenshot('final');
-  await writeFile(join(evidenceDirectory,prefix+'-report.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,loginAttempts,navigationAttempts,badgeBounds,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
+  await writeFile(join(evidenceDirectory,prefix+'-report.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,loginAttempts,navigationAttempts,badgeBounds,settleFailure,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
   return {checks};
- }catch(error){await screenshot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,prefix+'-report.json'),JSON.stringify({engine,width,status:'failed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,loginAttempts,navigationAttempts,badgeBounds,error:String(error)},null,2));throw error;}
+ }catch(error){await screenshot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,prefix+'-report.json'),JSON.stringify({engine,width,status:'failed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,loginAttempts,navigationAttempts,badgeBounds,settleFailure,error:String(error)},null,2));throw error;}
 }
