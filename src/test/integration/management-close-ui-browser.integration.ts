@@ -52,7 +52,7 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     const signedInReads=Promise.all(['/api/notifications','/api/manager/inbox-count'].map(path=>page.waitForResponse((response:{url():string;status():number})=>new URL(response.url()).pathname===path&&response.status()===200).then((response:{finished():Promise<unknown>})=>response.finished())));
     await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await signedInReads;
     surfacePhase='timecards';await mark('timecards:start');await page.locator('a[href="/app/timecards"]:visible').first().click();await page.waitForURL(app.url+'/app/timecards');
-    await page.locator('[id="timecard-'+target.id+'"] button').first().click();
+    await page.locator('[id="timecard-'+target.id+'"] button:visible').first().click();
     // Preserve the ordinary supported person deep link across protected-tree remounts.
     await page.evaluate((id:string)=>{history.replaceState(history.state,'',location.pathname+location.search+'#timecard-'+id);},target.id);
     await page.locator('dialog[open]').waitFor();
@@ -94,7 +94,7 @@ it('offers an audited management close in real desktop/mobile timecards with rec
      // Retire the whole protected tree and remount it, then close/reopen its inspector.
      await page.evaluate(()=>window.dispatchEvent(new Event('blur')));releaseResponse();expect(await page.getByRole('button',{name:'Record close',exact:true}).count()).toBe(0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
      await page.getByRole('button',{name:'Retry same close',exact:true}).waitFor();
-     await page.locator('.cm-tc-done').click();await page.locator('[id="timecard-'+target.id+'"] button').first().click();await page.getByRole('button',{name:'Retry same close',exact:true}).waitFor();
+     await page.locator('.cm-tc-done').click();await page.locator('[id="timecard-'+target.id+'"] button:visible').first().click();await page.getByRole('button',{name:'Retry same close',exact:true}).waitFor();
      // Replace the cookie from another tab: the original tab must not offer the
      // Owner's private recovery to a different actor. Returning as the Owner
      // re-establishes fresh authority without replacing the business operation.
