@@ -246,7 +246,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  async function publishUpdate(acknowledgement){const draft={type:'LOCATION_ANNOUNCEMENT',scope:{kind:'LOCATION',locationId:'loc-1'},title:'Operational update '+label+' — revisión 👷',body:'PRIVATE COMPLETE CONTENT '+label,acknowledgement,expiresAt:null};
  const preview=await previewCommunicationAudience(owner,draft,app.database.executor);assert.equal(preview.state,'ready');const result=await executeCommunicationCommand(owner,{kind:'PUBLISH',operationId:randomUUID(),authority:preview.authority,draft,audienceFingerprint:preview.fingerprint},app.database.executor);assert.equal(result.status,'committed');return {result,draft};}
  const required=await publishUpdate('REQUIRED');await refresh();
- const row=()=>todo().locator('a[href="/app/updates/'+required.result.id+'"]:visible');
+ const row=()=>todo().locator('a:is(.c-row,.b-row,.b-row__hit)[href="/app/updates/'+required.result.id+'"]:visible');
  const requiredReview=async target=>{assert(await target.isVisible(),'Required item keeps a visible review link');assert.match(await target.getAttribute('href'),/^\/app\/(updates|schedule)/);if(await target.evaluate(el=>el.classList.contains('b-row')||el.classList.contains('b-row__hit')))await target.getByText('Action needed',{exact:true}).waitFor();else assert(await target.locator('.c-row__trail').getByText('Review',{exact:true}).isVisible());};
  // Corporate (board C-Employee): a required review carries the teal Review action text (v5 said "Review needed").
  await requiredReview(row());assert.equal(await allSet().count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
