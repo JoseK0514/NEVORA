@@ -383,6 +383,7 @@ export async function executeScheduleCopy(
               .map((s) => ({ ...s, positionId: s.positionId || undefined })),
           ],
           availability: employee.availability,
+          managementRestrictions: employee.managementRestrictions,
           weeklyAvailability: employee.weeklyAvailability,
           availabilityExceptions: employee.availabilityExceptions,
           approvedTimeOff: employee.approvedTimeOff,

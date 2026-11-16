@@ -6,6 +6,8 @@ export type FairnessContext = {
   ledger: GenerationAssignment[];
   confirmedEmployeeIds: ReadonlySet<string>;
   employeeIds: string[];
+  /** Callers may rank soft preferences before the final stable rotating tie. */
+  deferStableTie?: boolean;
 };
 
 /** Nominal scheduled minutes, including cross-location carry-in; never actual payroll time. */
@@ -49,6 +51,7 @@ export function compareEmployeeFairness(
   const remaining = Math.max(0, bt - bm) - Math.max(0, at - am);
   if (remaining) return remaining;
   if (am !== bm) return am - bm;
+  if (context.deferStableTie) return 0;
   const ids = [...new Set(context.employeeIds)].sort();
   const week = Math.floor(businessDateStart(context.weekStart) / (7 * 1440));
   const offset = ((week % ids.length) + ids.length) % ids.length;

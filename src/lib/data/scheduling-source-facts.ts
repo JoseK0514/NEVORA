@@ -7,6 +7,8 @@ import { resolveOperationalRuleProfile } from '../shift-changes/policy';
 import { calloutReleasesShift } from '../shift-changes/terms';
 import { businessDateStart } from '../scheduling/periods';
 import { mapAvailabilityInputs } from './availability-inputs';
+import {restrictionRules} from '../scheduling/restrictions';
+import {mapWeekendHistory} from './scheduling-weekend-history';
 import type { GenerationSource } from './generation-guards';
 export type SchedulingFactScope = {
     workspaceId: string;
@@ -14,7 +16,7 @@ export type SchedulingFactScope = {
     endDate: string;
     retainAdjacentCommitments: true;
 };
-export type SchedulingSourceFacts = Pick<GenerationInput, 'workspace' | 'locations' | 'positions' | 'schedules' | 'staffing' | 'coverageWindows' | 'employees' | 'ledger' | 'policy'>;
+export type SchedulingSourceFacts = Pick<GenerationInput, 'workspace' | 'locations' | 'positions' | 'schedules' | 'staffing' | 'coverageWindows' | 'employees' | 'ledger' | 'policy' | 'weekendHistory'>;
 const time = (v: unknown) => String(v).slice(0, 5);
 const optionalTime = (v: unknown) => v == null ? undefined : time(v);
 const optionalNumber = (v: unknown) => v == null ? undefined : Number(v);
@@ -55,6 +57,7 @@ export function mapSchedulingSourceFacts(source: GenerationSource, scope: Schedu
         updatedAt: String(p.updated_at)
     }));
     return {
+        ...(source.employee_scheduling_settings.some(s=>s.management_restrictions!=null)?{weekendHistory:mapWeekendHistory(source,String(w.id),String(w.time_zone),firstWeek)}:{}),
         workspace: {
             id: String(w.id),
             name: String(w.name),
@@ -105,6 +108,7 @@ export function mapSchedulingSourceFacts(source: GenerationSource, scope: Schedu
                 ...(setting?.operational_rule_profile != null ? { operationalProfile: resolveOperationalRuleProfile(setting.operational_rule_profile) } : {}),
                 maximumWeeklyHours: Number(setting?.maximum_weekly_hours ?? 40),
                 availability: availability.normal,
+                ...(setting?.management_restrictions==null?{}:{managementRestrictions:restrictionRules(setting.management_restrictions)}),
                 weeklyAvailability: availability.weeks,
                 availabilityExceptions: availability.exceptions,
                 approvedTimeOff: employeeRows('time_off_requests').filter(r => r.status === 'APPROVED').map(r => ({

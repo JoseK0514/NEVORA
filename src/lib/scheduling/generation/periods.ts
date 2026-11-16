@@ -1,5 +1,5 @@
 import { addDays } from "../../date-utils";
-import { resolveAvailabilityDay } from "../availability";
+import { resolveSchedulingDay } from "../scheduling-day";
 import {
   affectedWorkweeks,
   businessDateStart,
@@ -82,13 +82,14 @@ export function enumerateGenerationPeriods(
         put(start);
         put(start + 1440);
         for (const employee of input.employees) {
-          const resolved = resolveAvailabilityDay({
+          const resolved = resolveSchedulingDay({
             date: day.date,
             normal: employee.availability,
             weeks: employee.weeklyAvailability,
             exceptions: employee.availabilityExceptions,
+            managementRestrictions: employee.managementRestrictions,
           });
-          for (const window of resolved.windows) {
+          for (const window of [...resolved.windows,...resolved.preferredWindows]) {
             put(start + window.start);
             put(start + window.end);
           }

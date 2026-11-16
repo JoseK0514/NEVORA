@@ -18,6 +18,8 @@ import {
 } from "./reservations";
 import { aggregateGenerationRejections } from "./explanations";
 import { compareEmployeeFairness } from "./fairness";
+import {prepareWeekendRotation} from './weekend-rotation';
+import {resolveRestrictionDay} from '../restrictions';
 import { boundedSearchSteps } from "./search";
 import { generationDates, type GenerationReviewScope } from "./scope";
 import type {
@@ -53,6 +55,7 @@ type Option = {
   candidate: Candidate;
   gain: number;
   confirmed: boolean;
+  preferenceMissed: boolean;
   gaps: string[];
 };
 const civil = (minute: number) =>
@@ -184,6 +187,7 @@ export type PlannerControls = {
  * The synchronous management facade supplies no review controls. */
 export function* planWeekSteps(source: GenerationInput, controls: PlannerControls = {}): Generator<undefined, GenerationPlan, undefined> {
   const input = canonicalInput(source);
+  const weekendRotation=prepareWeekendRotation({weekStart:input.weekStart,history:input.weekendHistory,employees:input.employees,ledger:input.ledger});
   const dates = generationDates(input, controls.review);
   if (controls.maxAdditions !== undefined && (!Number.isSafeInteger(controls.maxAdditions) || controls.maxAdditions < 1))
     throw new Error("Invalid addition budget.");
@@ -282,6 +286,7 @@ export function* planWeekSteps(source: GenerationInput, controls: PlannerControl
       employee: e,
       existingShifts: relevant,
       availability: e.availability,
+      managementRestrictions: e.managementRestrictions,
       weeklyAvailability: e.weeklyAvailability,
       availabilityExceptions: e.availabilityExceptions,
       approvedTimeOff: e.approvedTimeOff,
@@ -379,6 +384,7 @@ export function* planWeekSteps(source: GenerationInput, controls: PlannerControl
             if (!result.eligible) continue;
             options.push({
               candidate,
+              preferenceMissed: result.warnings.some(w=>w.code==='PREFERENCE_NOT_MET'),
               gain: served.reduce(
                 (sum, g) =>
                   sum +
@@ -387,6 +393,7 @@ export function* planWeekSteps(source: GenerationInput, controls: PlannerControl
                 0,
               ),
               confirmed: affectedWorkweeks(candidate).every((week) =>
+                Boolean(resolveRestrictionDay(week,e.managementRestrictions??[])) ||
                 e.weeklyAvailability.some(
                   (w) => w.weekStart === week && w.submitted,
                 ),
@@ -490,11 +497,14 @@ export function* planWeekSteps(source: GenerationInput, controls: PlannerControl
               be.end - be.start - (ae.end - ae.start) ||
               flexibility.get(ae.employeeId)! -
                 flexibility.get(be.employeeId)! ||
+              weekendRotation.compare(ae,be,fairnessContext.ledger) ||
               compareEmployeeFairness(
                 employees.get(ae.employeeId)!,
                 employees.get(be.employeeId)!,
-                { ...fairnessContext, confirmedEmployeeIds: confirmed },
+                { ...fairnessContext, confirmedEmployeeIds: confirmed, deferStableTie:true },
               ) ||
+              Number(a.preferenceMissed)-Number(b.preferenceMissed) ||
+              compareEmployeeFairness(employees.get(ae.employeeId)!,employees.get(be.employeeId)!,{...fairnessContext,confirmedEmployeeIds:confirmed}) ||
               ae.id.localeCompare(be.id)
             );
           });

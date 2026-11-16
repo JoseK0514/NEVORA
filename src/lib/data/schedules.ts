@@ -244,6 +244,7 @@ export async function getShiftValidationContext({
     ...(employee.operational_rule_profile != null ? {operationalProfile:resolveOperationalRuleProfile(employee.operational_rule_profile)} : {}),
     existingShifts,
     availability: inputs.normal,
+    ...('managementRestrictions' in inputs?{managementRestrictions:inputs.managementRestrictions}:{}),
     weeklyAvailability: inputs.weeks,
     availabilityExceptions: inputs.exceptions,
     approvedTimeOff: queryRows(leaveRaw).map((row) => {
