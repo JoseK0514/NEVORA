@@ -183,8 +183,8 @@ try{
     await ep.route(cardsRead,route=>route.fulfill({status:503,contentType:'application/json',body:'{"state":"unavailable","reason":"read_failed"}'}));
     assert.equal(await periodCard.count(),1,'The totals are on screen before the failed renewal');await ep.waitForResponse(response=>cardsRead(response.url())&&response.status()===503,{timeout:35000});await ep.getByRole('status').filter({hasText:'Your records couldn’t be checked.'}).waitFor();assert.equal(await periodCard.count(),0);checked(engine+': read error clears stale totals');
     await ep.unroute(cardsRead);
-    const {context:lead,page:lp}=await context(browser,'D3-L');await lp.goto(app.url+url);await lp.getByRole('heading',{name:'Your timecard',exact:true}).waitFor();
-    assert.equal(await lp.getByRole('button',{name:'Approve timecard',exact:true}).count(),0);checked(engine+': Lead self-service without management controls');
+    const {context:lead,page:lp}=await context(browser,'D3-L');await lp.goto(app.url+url);await lp.waitForURL(u=>u.pathname+u.search===cardsUrl);await lp.locator('.c-hours[data-hours-view="cards"][data-hours-state="ready"]').waitFor();await lp.getByRole('heading',{name:'Past timecards',exact:true,level:1}).waitFor();
+    assert.equal(await lp.locator(':is(#hours-timecard,#b-hours-timecard):visible').getByText('No hours this week',{exact:true}).count(),1,'Lead sees its own empty period');assert.equal(await lp.locator('a[href*="entry=D3-UI"]').count(),0,'Lead must not receive the Employee fixture entry');assert.equal(await lp.getByRole('button',{name:'Approve timecard',exact:true}).count(),0);checked(engine+': Lead self-service without management controls');
     currentPage=mp;
     // Exercise the real protected return even where headless windows keep focus.
     // This is an explicit lifecycle regression, not physical OS certification.
