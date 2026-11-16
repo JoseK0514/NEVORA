@@ -801,3 +801,20 @@ it.each(['foreign-week', 'missing-parent'])('Build preserves a generated dated c
   expect(plan.replacedShiftIds).not.toContain('foreign-generated');
   expect(plan.fixedAssignments).toContainEqual(row);
 });
+it.each(['BUILD_WEEK','FILL_GAPS_ONLY'] as const)('requires repair of a retained draft violating a new agreement in %s',mode=>{
+ const input=automaticWeek();input.mode=mode;input.staffing[0].minimumStaffPerShift=1;
+ input.employees[0].managementRestrictions=[{id:'confirmed',effectiveWeek:input.weekStart,unavailable:[{dayOfWeek:1,startTime:'00:00',endTime:'24:00'}]}];
+ input.ledger=[shift('retained','e1'),shift('generated','e2',{assignmentOrigin:'GENERATED'})];
+ const plan=planWeek(input);
+ expect(plan.status).toBe('INVALID');expect(plan.additions).toEqual([]);
+ expect(plan.replacedShiftIds).toEqual([]);
+ expect(plan.fixedAssignments).toContainEqual(input.ledger[0]);
+ expect(plan.fixedAssignments).toContainEqual(input.ledger[1]);
+ expect(plan.explanations).toContainEqual(expect.objectContaining({code:'AGREED_RESTRICTION',employeeIds:['e1'],locationId:'loc-1'}));
+});
+it.each(['published','outside-week','outside-location','released','unconfirmed','replaceable-generated'] as const)('does not reject unrelated or replaceable work: %s',kind=>{
+ const input=automaticWeek(2);input.scope={kind:'SELECTED',locationIds:['loc-1']};input.mode='BUILD_WEEK';input.staffing[0].minimumStaffPerShift=1;
+ input.employees[0].managementRestrictions=kind==='unconfirmed'?[]:[{id:'confirmed',effectiveWeek:input.weekStart,unavailable:[{dayOfWeek:1,startTime:'00:00',endTime:'24:00'}]}];
+ input.ledger=[shift('retained','e1',kind==='published'?{scheduleStatus:'PUBLISHED'}:kind==='outside-week'?{date:'2026-10-12'}:kind==='outside-location'?{locationId:'loc-2',scheduleId:'s-loc-2'}:kind==='released'?{isCalloutApproved:true}:kind==='replaceable-generated'?{assignmentOrigin:'GENERATED'}:{})];
+ expect(planWeek(input).status).not.toBe('INVALID');
+});

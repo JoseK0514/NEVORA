@@ -8,6 +8,7 @@ import { createCoverageRepairShift } from './schedules';
 import { readCoverageRepair, readCoverageRepairSelection } from './coverage-repair.server';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import { generationSourceSql } from './generation-guards';
+import {applyRestrictionCommand,emptyRestrictionDocument} from '../scheduling/restrictions';
 vi.mock('@/lib/db', () => import('../db'));
 
 function fixture() {
@@ -24,6 +25,15 @@ function fixture() {
   const locator: CoverageRepairLocator = { version: 1, weekStart: '2030-10-07', gapKey: 'loc-1|2030-10-07|08:00|12:00', locationId: 'loc-1', date: '2030-10-07', startTime: '08:00', endTime: '12:00', target: 'POSITION', positionId: 'barista', reported: reportedCoverageState({ gap: 2, requiresLead: true, positionCoverage: [{ positionId: 'barista', missing: 1 }] }) };
   return { state, source, locator, proof: managementProof('M') };
 }
+it.each([true,false])('coverage repair and Rondo review tokens respect firm restrictions versus soft preferences: restricted=%s',restricted=>{
+ const r=fixture();
+ const document=applyRestrictionCommand(emptyRestrictionDocument(),{kind:'SET',operationId:'11111111-1111-4111-8111-111111111111',expectedRevision:0,effectiveWeek:'2030-10-07',unavailable:restricted?[{dayOfWeek:1,startTime:'00:00',endTime:'24:00'}]:[],reason:'Agreed restriction'},{actorId:'M',actorRole:'MANAGER',now:'2030-10-01T00:00:00.000Z',earliestWeek:'2030-10-07'}).document;
+ const setting=r.source.employee_scheduling_settings.find(s=>s.employee_id==='E');if(setting)setting.management_restrictions=document;else r.source.employee_scheduling_settings.push({employee_id:'E',management_restrictions:document});
+ if(!restricted)r.source.availability_windows=r.source.availability_windows.filter(w=>w.employee_id!=='E');
+ expect(deriveCoverageRepair(r.source,r.locator).candidates.map(c=>c.employeeId)).toEqual(restricted?[]:['E']);
+ if(restricted)expect(()=>createCoverageRepairReview(r.source,r.locator,'E',r.proof)).toThrow();
+ else expect(createCoverageRepairReview(r.source,r.locator,'E',r.proof)).toBeTruthy();
+});
 
 it('uses current exact health and AUTOMATIC hard qualification for a position plus Lead repair', () => {
   const r = fixture(); const result = deriveCoverageRepair(r.source, r.locator);

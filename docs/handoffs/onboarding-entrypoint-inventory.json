@@ -971,6 +971,15 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/app/api/employee/scheduling-restrictions/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Protected same-origin JSON agreement read/command uses current company/incarnation-bound session cookies and shared host-bound application SQL/notification executor. Employee/Lead is own-target request-only;Owner/Manager decisions recheck complete target Company Access footprint, live session, revision and closed-week custody after locks. Actor/view binding and private no-store responses remain enforced. No request selector can choose workspace/database, and this boundary calls no external notification provider.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
       "path": "src/app/api/employee/time-corrections/route.ts",
       "tags": [
         "request-entrypoint"
@@ -1157,6 +1166,15 @@
       ],
       "status": "CONVERTED",
       "reason": "Bounded same-origin reminder command uses current Owner/Manager Company authority and the shared host-bound notification SQL executor. Current source/recipient checks, workspace/session fences, atomic audit/operation/queue writes, idempotency and daily budgets remain enforced. Existing development activation hold is retained; no direct provider send or caller-selected database.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/manager/scheduling-restrictions/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Protected same-origin JSON agreement read/command uses current company/incarnation-bound session cookies and shared host-bound application SQL/notification executor. Employee/Lead is own-target request-only;Owner/Manager decisions recheck complete target Company Access footprint, live session, revision and closed-week custody after locks. Actor/view binding and private no-store responses remain enforced. No request selector can choose workspace/database, and this boundary calls no external notification provider.",
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {

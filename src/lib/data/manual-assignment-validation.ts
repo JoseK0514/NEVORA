@@ -29,6 +29,7 @@ export function validateManualAssignments(source: GenerationSource | undefined, 
       position: facts.positions.find(position => position.id === candidate.positionId), employee,
       existingShifts: [...retained, ...assignments.filter(shift => shift.sourceShiftId !== candidate.sourceShiftId).map(shift => ({ ...shift, positionId: shift.positionId || undefined }))],
       availability: employee.availability, weeklyAvailability: employee.weeklyAvailability,
+      managementRestrictions: employee.managementRestrictions,
       availabilityExceptions: employee.availabilityExceptions, approvedTimeOff: employee.approvedTimeOff,
       operationalProfile: employee.operationalProfile, mode: 'MANAGER_SCHEDULE', policy: facts.policy,
     });

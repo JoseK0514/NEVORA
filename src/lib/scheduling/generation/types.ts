@@ -30,6 +30,7 @@ export type GenerationEmployee = Employee &
   > & {
     operationalProfile?: ValidateShiftInput["operationalProfile"];
     availability: ValidateShiftInput["availability"];
+    managementRestrictions?: ValidateShiftInput['managementRestrictions'];
     weeklyAvailability: NonNullable<ValidateShiftInput["weeklyAvailability"]>;
     availabilityExceptions: NonNullable<
       ValidateShiftInput["availabilityExceptions"]
@@ -50,6 +51,7 @@ export type PlannerLimits = {
   maxPeriods: number;
 };
 export type GenerationInput = {
+  weekendHistory?: import('./weekend-rotation').WeekendHistory;
   workspace: Workspace;
   weekStart: string;
   scope: { kind: "ALL" } | { kind: "SELECTED"; locationIds: string[] };

@@ -39,6 +39,7 @@ export function reviewCoverageDraft(input: GenerationInput, date: string, terms:
     const valid = validateShift({ candidate: a, workspace: input.workspace, location, employee,
       position: input.positions.find(p => p.id === a.positionId), existingShifts: [...input.ledger, ...additions.filter(b => b !== a)],
       availability: employee.availability, weeklyAvailability: employee.weeklyAvailability, availabilityExceptions: employee.availabilityExceptions,
+      managementRestrictions: employee.managementRestrictions,
       approvedTimeOff: employee.approvedTimeOff, operationalProfile: employee.operationalProfile, mode: "AUTOMATIC", policy: input.policy });
     if (!valid.eligible) throw new ReviewedDraftConflict();
     return { ...terms[index], employeeName: `${employee.firstName} ${employee.lastName}`.slice(0, 120), locationName: location.shortName.slice(0, 120),
