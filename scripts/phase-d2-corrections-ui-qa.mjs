@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {waitForPortalReady} from './browser-render-readiness.mjs';
 import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { homedir } from 'node:os';
@@ -73,7 +74,7 @@ async function login(c,id,{reuseSession=false}={}){
   page.waitForURL((url)=>url.pathname==='/app',{waitUntil:'commit'}),
   page.getByRole('button',{name:'Sign in',exact:true}).click(),
  ]);
- await page.locator('.app-shell.nevora-portal').waitFor();await page.waitForLoadState('networkidle');
+ await waitForPortalReady(page);
  cookiesByActor.set(id,await c.cookies(app.url));
  await page.close();
 }
