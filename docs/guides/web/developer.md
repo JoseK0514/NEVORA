@@ -194,3 +194,8 @@ after those consumers change; source-qualified PDFs alone do not pass an unwired
 journey. Rondo knowledge/provider/tool work and actual-model quality evidence
 remain with its existing owner. Hosted/provider activation and physical-device
 acceptance remain separate from local backend checks.
+
+
+## Phase5 source and contract handoff
+
+Use the [consolidated backend contract index](../../handoffs/2026-11-16-backend-phase5-claude-contract-index.json) and [Development publication record](../../handoffs/2026-11-16-backend-phase5-development-publication.json) for current source and check bindings. [Remaining UI, hosted and Rondo dependencies](../../handoffs/2026-11-16-backend-phase5-remaining-dependencies.json) are separate acceptance work; this source-qualified guide does not certify provider activation or an operating release.

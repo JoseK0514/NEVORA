@@ -2,6 +2,9 @@
 
 November 16, 2026 · America/Puerto_Rico. Jose reassigned bounded final integration to this chat. This supersedes the earlier preparation-only/source-missing restriction; its original receipts remain preserved.
 
+
+**Development publication follow-up:** [source/ref and gate record](2026-11-16-backend-phase5-development-publication.json) and [consolidated follow-up](2026-11-16-backend-phase5-development-publication.md) supersede publication status and guide distribution here. The A40 execution tables below remain historical, source-qualified evidence. Backend runtime/locked inputs are unchanged; exactly two bounded UI exceptions were explicitly authorized.
+
 ## Three conclusions
 
 1. **Included local backend contracts: READY FOR CLAUDE for the supplied scope.** The reviewed Phase 2–4 implementation and documentation are assembled, P4-AUTH-01 is corrected and reviewed, and the exact-source local results are below. This is a backend contract handoff to Claude, not full backend/operating completion. The intended separate Rondo delivery and external operating evidence remain open.
@@ -10,7 +13,7 @@ November 16, 2026 · America/Puerto_Rico. Jose reassigned bounded final integrat
 
 ## Exact source and integration custody
 
-**Frozen combined qualification SHA: `a40aaf669fb7731f00dd73b8d54909d82eb77174`.** [Machine-readable source](2026-11-16-backend-phase5-final-source.json) binds its root/src trees, application digest, lockfile, bootstrap, environment and inclusion. Later delivery commits contain only documentation, inventory classification and evidence; they are not a different runtime candidate.
+**Frozen combined qualification SHA: `a40aaf669fb7731f00dd73b8d54909d82eb77174`.** [Machine-readable source](2026-11-16-backend-phase5-final-source.json) binds its root/src trees, application digest, lockfile, bootstrap, environment and inclusion. Delivery commits through52d9f54638095d76685bcf0446600df8761ab049 contained only documentation, inventory classification and evidence. The later authorized Development-publication follow-up is separately bound below.
 
 | Reviewed input | Integrated commit |
 | --- | --- |

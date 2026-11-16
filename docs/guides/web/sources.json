@@ -35,7 +35,10 @@
         "src/components/company-access/scoped-manual-shift-form.tsx",
         "src/components/shift-review-recovery.tsx",
         "src/components/payroll-period-close.tsx",
-        "src/components/period-close-history.tsx"
+        "src/components/period-close-history.tsx",
+        "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+        "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json"
       ]
     },
     {
@@ -62,7 +65,10 @@
         "src/components/company-access/scoped-manual-shift-form.tsx",
         "src/components/shift-review-recovery.tsx",
         "src/components/payroll-period-close.tsx",
-        "src/components/period-close-history.tsx"
+        "src/components/period-close-history.tsx",
+        "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+        "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json"
       ]
     },
     {
@@ -86,7 +92,10 @@
         "src/lib/payroll/access.ts",
         "src/components/employee-mobile/profile.tsx",
         "src/app/app/account/delete/page.tsx",
-        "src/app/app/help/page.tsx"
+        "src/app/app/help/page.tsx",
+        "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+        "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json"
       ]
     },
     {
@@ -107,7 +116,10 @@
         "src/components/owner-advisor/coverage-actions.tsx",
         "src/components/owner-advisor/coverage-plans.tsx",
         "src/components/owner-advisor/workflows.tsx",
-        "docs/product/rondo-operating-contract.md"
+        "docs/product/rondo-operating-contract.md",
+        "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+        "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json"
       ]
     },
     {
@@ -153,7 +165,10 @@
         "src/lib/manager-reminders/types.ts",
         "src/lib/auth/session.ts",
         "src/lib/auth/request-destination.ts",
-        "src/proxy.ts"
+        "src/proxy.ts",
+        "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+        "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json"
       ]
     },
     {
@@ -188,7 +203,10 @@
         "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
         "services/commerce/lifecycle-mail.ts",
         "services/commerce/worker.ts",
-        "src/lib/commerce/installation-facts.server.ts"
+        "src/lib/commerce/installation-facts.server.ts",
+        "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+        "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json"
       ]
     }
   ]

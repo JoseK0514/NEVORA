@@ -86,5 +86,8 @@
     "sameApplicationHash": "60300d79857baeca91d8cc0e5624fef3ebab029bbfac91bac8be76b5f9bb5151",
     "receipt": "2026-11-16-backend-phase5-evidence/final-manual-distribution.json",
     "applicationQualificationSha": "a40aaf669fb7731f00dd73b8d54909d82eb77174"
-  }
+  },
+  "recordRole": "Historical A40 local backend qualification; current Development publication is bound by the forward record/ref below.",
+  "developmentPublication": "2026-11-16-backend-phase5-development-publication.json",
+  "currentManualDistribution": "docs/guides/web/publication/manifest.json"
 }
