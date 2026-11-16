@@ -190,6 +190,11 @@ production remain unchanged by this work until the release gates permit them.
 
 ## Final bounded handoff status
 
+Follow-up: `2026-11-16-readiness-webkit-navigation.md` records the independently
+reproduced scheduling browser-navigation race and its 40-check Chromium/WebKit
+repair. The old candidate-03 runtime failure remains failed evidence; use the
+new handoff's exact source and subsequent candidate qualification.
+
 Candidate 03 is `1e7a9257808372bc4cf6922ad21aab66a93820c7`:
 [CI 43885969955](https://github.com/JoseK0514/NEVORA/actions/runs/43885969955),
 [Mobile Access 43885969907](https://github.com/JoseK0514/NEVORA/actions/runs/43885969907).
