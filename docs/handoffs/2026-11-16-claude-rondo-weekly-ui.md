@@ -182,3 +182,20 @@ included. No backend file or shared flag was changed; Codex's worktree was only 
   before settling to exactly 1; the script now waits for that. It isn't visible in the product.
 
 Kept local and unpushed.
+
+## Unavailable comparison and copy pass (Nov 16, 2026, final for combined QA)
+
+- An unavailable comparison is now one state card and nothing else: no "The schedule now" card, no weekend-history or
+  search rows, no location list. Its fairness counts are placeholders, not observed people, so they are never shown.
+- `INPUT_LIMIT`: "Too large to compare · No options this time. Contact support if it keeps happening." (no narrowing
+  advice, since the full cross-location source is required). `RESULT_LIMIT`: "Too many changes to compare · No options
+  this time. Try fewer locations."
+- Regression: `src/components/owner-advisor/weekly/weekly-page.test.tsx` renders both limits with zero placeholders and
+  checks that no fairness, measurement, location or narrowing text appears for an input limit. The browser mock now
+  returns zero placeholders and no locations for an input limit (`w8-unavailable-options-390`).
+- Same-ID recovery keeps the original observation and failure; a new deliberate "Compare options" is a new request ID,
+  as before.
+- The copy pass (`docs/handoffs/2026-11-16-ui-craft-pass/README.md`, "Copy pass") is part of this source.
+
+Checks: `tsc` and `eslint` clean; 43 files, 411 tests pass; weekly browser pass (mocked API) on this code: all flows,
+31 measured screens, no overflow or clipping, no page errors. Local and unpushed.

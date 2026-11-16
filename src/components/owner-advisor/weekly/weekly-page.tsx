@@ -397,14 +397,20 @@ function statusTone(option: WeeklyAlternativeSummary): "green" | "amber" | "neut
   if (!option.applyEligible) return "neutral";
   return option.status === "COMPLETE" ? "green" : option.status === "INVALID" ? "red" : "amber";
 }
-function Comparison({ data, locations }: { data: WeeklyComparison; locations: WeeklyLocation[] }) {
+/** The comparison's options. An unavailable comparison is one state card and nothing else: it has no measurements, and its
+ * fairness counts are placeholders, not observed people (Codex, Nov 16, 2026). An input limit is hit before any source is
+ * admitted, so narrowing the scope may not help; it says so plainly instead of advising fewer locations. */
+export function Comparison({ data, locations }: { data: WeeklyComparison; locations: WeeklyLocation[] }) {
   const included = data.locations.filter(l => l.state === "INCLUDED"), excluded = data.locations.filter(l => l.state !== "INCLUDED");
   const settings = <span className="wk-meta">{settingsText(data.weekStart, data.mode, data.locationScope, locations)}</span>;
+  if (data.state === "unavailable") return <section id="wk-results" className="wk-results" aria-label={`Options for ${weekText(data.weekStart)}`}>
+    <CorpCard as="div">{data.reason === "INPUT_LIMIT"
+      ? <BState kind="failed" title="Too large to compare" line="No options this time. Contact support if it keeps happening." />
+      : <BState kind="failed" title="Too many changes to compare" line="No options this time. Try fewer locations." />}</CorpCard>
+  </section>;
   // Separate cards (a labelled kit section would draw as one card on desktop); two options sit side by side from 1024px.
   return <section id="wk-results" className="wk-results" aria-label={`Options for ${weekText(data.weekStart)}`}>
-    {data.state === "unavailable" ? <CorpCard as="div"><BState kind="failed" title="Rondo couldn’t compare this week"
-      line={data.reason === "INPUT_LIMIT" ? "Too much to compare. Try fewer locations." : "Too many changes. Try fewer locations."} /></CorpCard>
-      : <>
+    <>
         {data.baseline ? <CorpCard as="div" label="The schedule now" aside={settings}>
           <CorpRows label="The schedule now">
             <li><CorpRow one title="Coverage" value={coverageText(data.baseline)} valueTone="soft" /></li>
@@ -416,14 +422,14 @@ function Comparison({ data, locations }: { data: WeeklyComparison; locations: We
         {data.alternatives.length ? <div className={data.alternatives.length > 1 ? "wk-grid wk-grid--two" : "wk-grid"}>
           {data.alternatives.map((option, index) => <OptionCard key={option.id} option={option} index={index} baseline={data.baseline} />)}</div>
           : <CorpCard as="div"><BState kind="empty" icon={<CalendarCheckIcon weight="bold" />} title="No options to show" line="Nothing to change this week." /></CorpCard>}
-      </>}
-    <CorpCard as="div" label="Locations" count={included.length}>
+      </>
+    {data.locations.length ? <CorpCard as="div" label="Locations" count={included.length}>
       <CorpRows label="Locations">
         {[...included, ...excluded].map(location => <li key={location.id}><CorpRow title={location.name}
           detail={location.issues.length ? location.issues.join(" · ") : undefined}
           value={LOCATION_STATE_TEXT[location.state]} valueTone="soft" /></li>)}
       </CorpRows>
-    </CorpCard>
+    </CorpCard> : null}
   </section>;
 }
 function OptionCard({ option, index, baseline }: { option: WeeklyAlternativeSummary; index: number; baseline: WeeklyComparison["baseline"] }) {
