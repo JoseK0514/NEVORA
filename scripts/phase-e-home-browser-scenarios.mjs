@@ -301,7 +301,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   await shot('actions-overflow');
   overflowEvidence.phase='native-keyboard';
   // Native Tab reaches See all with visible focus at a 44px target; Enter opens Notifications (a link has no Space activation).
-  await page.locator('h1').click();let seeAllReached=false;
+  await page.locator('h1:visible').click();let seeAllReached=false;
   for(let i=0;i<60;i++){await page.keyboard.press(nativeTab);if(await seeAll().evaluate(e=>e===document.activeElement)){seeAllReached=true;break;}}
   assert(seeAllReached,'Native keyboard reaches See all');
   const focus=await seeAll().evaluate(e=>{const r=e.getBoundingClientRect();return {active:e===document.activeElement,visible:e.matches(':focus-visible'),outlineStyle:getComputedStyle(e).outlineStyle,outlineWidth:getComputedStyle(e).outlineWidth,boxShadow:getComputedStyle(e).boxShadow,width:r.width,height:r.height};});
@@ -337,13 +337,13 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  assert.deepEqual(await shownHrefs(),overflowRows(restored).slice(0,rowLimit));assert.equal(await seeAll().count(),overflowRows(restored).length>3?1:0);
  overflowEvidence.phase='complete';
  // ACTIONS_OVERFLOW_BROWSER_EXTENSION_END
- stage='keyboard';await page.locator('h1').click();const link=assignments().first(),tab=nativeTab;let reached=false;
+ stage='keyboard';await page.locator('h1:visible').click();const link=assignments().first(),tab=nativeTab;let reached=false;
  for(let i=0;i<55;i++){await page.keyboard.press(tab);if(await link.evaluate(e=>e===document.activeElement)){reached=true;break;}}
  assert(reached);assert(await link.evaluate(e=>e.matches(':focus-visible')));const rect=await link.boundingBox();assert(rect&&rect.height>=44&&rect.width>=44);
  const measureContrast=()=>link.evaluate(measureRenderedContrast);details.linkContrast={focus:await measureContrast()};await link.evaluate(e=>e.blur());await page.mouse.move(0,0);details.linkContrast.normal=await measureContrast();await link.hover();details.linkContrast.hover=await measureContrast();await page.mouse.down();details.linkContrast.pressed=await measureContrast();await page.mouse.move(0,0);await page.mouse.up();for(const value of Object.values(details.linkContrast))assert(value.ratio>=4.5);await link.focus();
  // Re-anchored clock recovery: Home has no clock panel, so its keyboard route to recorded time is the Time tab.
  // Phones: the tab bar follows main (forward Tab). Wider layouts: the sidebar precedes main (reverse Tab).
- const myTime=navLink('/app/my-time');const timeKey=await page.locator('.mobile-nav').isVisible()?tab:nativeBackTab;await page.locator('h1').click();let clockFocus=false;
+ const myTime=navLink('/app/my-time');const timeKey=await page.locator('.mobile-nav').isVisible()?tab:nativeBackTab;await page.locator('h1:visible').click();let clockFocus=false;
  for(let i=0;i<55;i++){await page.keyboard.press(timeKey);if(await myTime.evaluate(e=>e===document.activeElement)){clockFocus=true;break;}}
  assert(clockFocus);assert(await myTime.evaluate(e=>e.matches(':focus-visible')));details.clockRecoveryFocus=await myTime.evaluate(e=>{const r=e.getBoundingClientRect();return {outlineStyle:getComputedStyle(e).outlineStyle,outlineWidth:getComputedStyle(e).outlineWidth,width:r.width,height:r.height};});assert.notEqual(details.clockRecoveryFocus.outlineStyle,'none');assert(parseFloat(details.clockRecoveryFocus.outlineWidth)>=2);if(timeKey===tab)assert(details.clockRecoveryFocus.height>=44&&details.clockRecoveryFocus.width>=44,'Phone Time tab is a 44px target');await link.focus();
  await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.evaluate(()=>{document.documentElement.style.fontSize='';});await shot('focus');
