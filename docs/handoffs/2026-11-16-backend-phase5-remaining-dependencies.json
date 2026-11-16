@@ -33,7 +33,7 @@
     {
       "id": "existing-browser-gates",
       "owner": "Claude and independent QA/UI",
-      "remaining": "Original and R2 failed CI outcomes remain preserved. Four bounded UI exceptions were explicitly authorized: CtrlK contrast, task-link44px minimum, existing Owner AI manager link relocation and account-menu focus contrast. Corrected local checks retain their actual execution SHAs in the publication ledger. Final exact-source mandatory CI must succeed at the immutable publication ref. Independent UI disposition, future-consumer journey acceptance and physical-device gates remain with their owners; no independent finding is self-closed."
+      "remaining": "Original, R2 and R3 failed CI outcomes remain preserved. The R4 attention-readiness repair adds no UI change or runtime-error exemption; its local replay retains the actual execution SHA in the qualification amendment. Four bounded UI exceptions were explicitly authorized: CtrlK contrast, task-link44px minimum, existing Owner AI manager link relocation and account-menu focus contrast. Corrected local checks retain their actual execution SHAs in the publication ledger. Final exact-source mandatory CI must succeed at the immutable publication ref. Independent UI disposition, future-consumer journey acceptance and physical-device gates remain with their owners; no independent finding is self-closed."
     },
     {
       "id": "physical-devices",
