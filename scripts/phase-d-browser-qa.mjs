@@ -114,7 +114,7 @@ try{
     const pastCards=async()=>{await ep.waitForURL(u=>u.pathname+u.search===cardsUrl);await ep.locator('.c-hours[data-hours-view="cards"][data-hours-state="ready"]').waitFor();await ep.getByRole('heading',{name:'Past timecards',exact:true,level:1}).waitFor();await periodCard.waitFor();};
     await pastCards();assert.equal(await periodCard.count(),1);
     assert.match(await periodCard.locator('.c-big,.eb-sum__big').locator('[aria-hidden="true"]:visible').innerText(),/^8\s*h$/);assert(await periodCard.getByText('Hours · includes 30 min of breaks',{exact:true}).isVisible());checked(engine+': employee self period and break totals');
-    await periodCard.getByRole('link',{name:/^Tue,? (?:Sep )?22\b/}).click();await ep.waitForURL(u=>u.pathname==='/app/my-time'&&u.searchParams.get('entry')==='D3-UI');
+    await periodCard.locator('a[href*="entry=D3-UI"]').click();await ep.waitForURL(u=>u.pathname==='/app/my-time'&&u.searchParams.get('entry')==='D3-UI');
     await ep.getByRole('heading',{name:'Punches',exact:true}).waitFor();await ep.getByRole('link',{name:'Request a correction',exact:true}).waitFor();
     // Every width measures the same Past timecards page: its Back link, the day row, and the period controls that replaced
     // the old date form (Nov 1 upscale M4: Later week first, earlier weeks as cards with Show earlier weeks, then Your

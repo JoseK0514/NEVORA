@@ -7,6 +7,7 @@ import {waitForOwnedLoginWindow} from './browser-login-window.mjs';
 import {LOGIN_LIMITS} from '../src/lib/auth/login-limits.server.ts';
 import {observeHomeFailure,finishHomeFailure} from './home-source-failure-diagnostic.mjs';
 import assert from 'node:assert/strict';
+import {measurePointerTarget} from './browser-pointer-target.mjs';
 import {join} from 'node:path';
 import {readFile,writeFile,rm} from 'node:fs/promises';
 import {Client} from 'pg';
@@ -339,7 +340,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  // ACTIONS_OVERFLOW_BROWSER_EXTENSION_END
  stage='keyboard';await page.locator('h1:visible').click();const link=assignments().first(),tab=nativeTab;let reached=false;
  for(let i=0;i<55;i++){await page.keyboard.press(tab);if(await link.evaluate(e=>e===document.activeElement)){reached=true;break;}}
- assert(reached);assert(await link.evaluate(e=>e.matches(':focus-visible')));const rect=await link.boundingBox();assert(rect&&rect.height>=44&&rect.width>=44);
+ assert(reached);assert(await link.evaluate(e=>e.matches(':focus-visible')));details.linkTarget=await link.evaluate(measurePointerTarget,44);assert(details.linkTarget.meetsMinimum,'Shift details must retain a real44px pointer target: '+JSON.stringify(details.linkTarget));
  const measureContrast=()=>link.evaluate(measureRenderedContrast);details.linkContrast={focus:await measureContrast()};await link.evaluate(e=>e.blur());await page.mouse.move(0,0);details.linkContrast.normal=await measureContrast();await link.hover();details.linkContrast.hover=await measureContrast();await page.mouse.down();details.linkContrast.pressed=await measureContrast();await page.mouse.move(0,0);await page.mouse.up();for(const value of Object.values(details.linkContrast))assert(value.ratio>=4.5);await link.focus();
  // Re-anchored clock recovery: Home has no clock panel, so its keyboard route to recorded time is the Time tab.
  // Phones: the tab bar follows main (forward Tab). Wider layouts: the sidebar precedes main (reverse Tab).
