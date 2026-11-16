@@ -133,3 +133,11 @@ combined candidate has its required evidence. There is no requested risk
 exception or new Jose approval needed to continue authorized backend/test work.
 SCRUM-204–207 remain **In Progress / implemented / acceptance pending**;
 integration and deployment are separate, unclaimed states.
+
+Jira follow-up comments were written and echoed back after this handoff:
+[SCRUM-204 / 10435](https://thevelani-team.atlassian.net/browse/SCRUM-204?focusedCommentId=10435),
+[SCRUM-205 / 10436](https://thevelani-team.atlassian.net/browse/SCRUM-205?focusedCommentId=10436),
+[SCRUM-206 / 10437](https://thevelani-team.atlassian.net/browse/SCRUM-206?focusedCommentId=10437),
+[SCRUM-207 / 10438](https://thevelani-team.atlassian.net/browse/SCRUM-207?focusedCommentId=10438).
+Current issue reads confirmed In Progress with implemented/acceptance-pending
+labels; no workflow completion or integration/deployment claim was added.
