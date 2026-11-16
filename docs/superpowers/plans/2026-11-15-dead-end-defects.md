@@ -31,27 +31,27 @@
 **Files:** `src/lib/account-deletion/requests.server.ts`, `src/lib/data/employees.ts`, adjacent unit tests and `src/test/integration/employee-mobile-deletion-sql.integration.ts`.
 **Interface:** Existing deletion outcomes remain renderable. An unavailable refusal may carry additive reason `LAST_OWNER`; Claude receives the reason contract. Use the same ordered lifecycle locks as profile changes; exclude open deletion requests when counting remaining Owners.
 
-- [ ] Reproduce final-Owner lockout in owned SQL; record red test.
-- [ ] Add transactional guard, align profile demotion guard, preserve duplicate/unknown-outcome semantics and rollback.
-- [ ] Run unit/owned SQL for final Owner, two Owners, concurrent deletion/demotion, normal employees and duplicate requests; commit bounded files.
+- [x] Reproduce final-Owner lockout in owned SQL; record red test.
+- [x] Add transactional guard, align profile demotion guard, preserve duplicate/unknown-outcome semantics and rollback.
+- [x] Run unit/owned SQL for final Owner, two Owners, concurrent deletion/demotion, normal employees and duplicate requests; commit bounded files.
 
 ### Task 2: Paid hours and daily export contracts
 
 **Files:** `src/lib/payroll-export/*`, export API tests and `src/test/integration/clocker-payroll-export.integration.ts` as necessary.
 **Interface:** Add explicit per-recorded-break paid/unpaid classification to new export commands; bind it to operation/source identity. Add paid/unpaid duration and business-day projection for the provider-neutral file. RUN Pay Hours cannot silently use break-inclusive recorded hours. Preserve raw time and historical receipt replay, provider shape, explicit precision and complete mapping checks.
 
-- [ ] Reproduce 8.5 elapsed / 0.5 unpaid => 8.0 paid, paid rests retained, unclassified refused.
-- [ ] Implement minimal pure projection and service integration without schema or UI changes. Require explicit review of legacy RUN recorded-hours mappings rather than silently reinterpreting saved profiles.
-- [ ] Verify exact integer durations, overnight/DST clipping, invalid classification, finalized-source changes, replay and authority; commit bounded files.
+- [x] Reproduce 8.5 elapsed / 0.5 unpaid => 8.0 paid, paid rests retained, unclassified refused.
+- [x] Implement minimal pure projection and service integration without schema or UI changes. Require explicit review of legacy RUN recorded-hours mappings rather than silently reinterpreting saved profiles.
+- [x] Verify exact integer durations, overnight/DST clipping, invalid classification, finalized-source changes, replay and authority; commit bounded files.
 
 ### Task 3: External payroll CSV totals
 
 **Files:** `src/lib/payroll` input model/contracts plus new pure CSV adapter/tests; existing configurable-payroll integration test as necessary.
 **Interface:** Add a versioned CSV wrapper or command adapter with explicit source/period/payday metadata and decimal dollar totals. Normalize into canonical NEVORA_PAYROLL_IMPORT_V1 and run its existing reconciliations. Preserve exact source audit evidence and do not claim provider-specific compatibility. Claude gets a documented example for upload/typed totals UI.
 
-- [ ] Reproduce inability to submit a normal CSV; test failure first.
-- [ ] Implement bounded strict CSV input, exact cents, total-deduction/contribution labels and existing validation; JSON stays accepted.
-- [ ] Test malformed quoting, header/row/size/amount limits, duplicate/missing employees, balance, zero amounts, period conflict, import/approve/publication and retry; commit bounded files.
+- [x] Reproduce inability to submit a normal CSV; test failure first.
+- [x] Implement bounded strict CSV input, exact cents, total-deduction/contribution labels and existing validation; JSON stays accepted.
+- [x] Test malformed quoting, header/row/size/amount limits, duplicate/missing employees, balance, zero amounts, period conflict, import/approve/publication and retry; commit bounded files.
 
 ### Task 4: Qualification and remaining-decision handoff
 
