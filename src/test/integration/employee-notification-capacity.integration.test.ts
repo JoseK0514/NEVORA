@@ -1,5 +1,5 @@
 import {randomUUID} from 'node:crypto';
-import {afterAll,beforeAll,beforeEach,describe,expect,it,vi} from 'vitest';
+import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 vi.mock('server-only',()=>({}));
 import {createDisposableFoundationDatabase} from './local-postgres';
 import {readEmployeeNotificationList} from '../../lib/data/employee-notification-list.server';
@@ -40,10 +40,9 @@ async function inbox(beforeFinal?:()=>Promise<unknown>){
 function items(result:Awaited<ReturnType<typeof inbox>>['result']){if(result.state!=='ready'||result.kind!=='notifications')throw Error('Expected current inbox');return result.items;}
 
 describe.skipIf(!enabled)('bounded native own Time Off inbox capacity',()=>{
- beforeAll(async()=>{db=await createDisposableFoundationDatabase({mode:'current-runtime'});},30000);
- afterAll(async()=>{await db?.dispose();});
+ afterEach(async()=>{await db?.dispose();});
  beforeEach(async()=>{
-  await q('TRUNCATE employees,notifications RESTART IDENTITY CASCADE');
+  db=await createDisposableFoundationDatabase({mode:'current-runtime'});
   await q('UPDATE workspaces SET active=true');
   await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('QA-CAPACITY-A','Fictional','Inbox','QA-NO-PHONE','EMPLOYEE','loc-1'),('QA-CAPACITY-B','Fictional','Other','QA-NO-PHONE','EMPLOYEE','loc-1')");
   await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,now()+interval '1 day')",[proof.sessionTokenHash,proof.employee.id]);

@@ -35,3 +35,7 @@ The existing integrator retains the single assembly, migrations and publication;
 Development is the operating/acceptance line at production standards. No main/production promotion, provider activation, paid run, real message, customer-data use or independent finding closure is authorized. Heavy build/browser suites require the existing execution handoff; none will start while the frozen-source gate is unmet. Only resources created by this run may be closed.
 
 Engineering/security/assurance: preserve the delivered protections and require source/environment custody. Delivery/governance: preparation may proceed, final qualification is blocked until the integrator supplies the joined source and mandatory included dependencies are resolved. No policy exception or additional approval is requested.
+
+## Supplemental skipped-case reconciliation
+
+After complete default-unit accounting, Phase 5 also owns bounded fixture repairs in `src/test/integration/employee-notification-capacity.integration.test.ts` and `src/test/integration/coverage-repair.integration.test.ts`. Reproductions on 76f08e510 show forbidden immutable-ledger truncation in setup and missing observed lock barriers. Preserve all application guards, test assertions, original failures and owned resource receipts; diagnose and repair test setup/orchestration only. The earlier qualification checkpoint is retained as executed evidence; freeze the final single source after these fixture corrections. No production application or Claude UI changes are included.

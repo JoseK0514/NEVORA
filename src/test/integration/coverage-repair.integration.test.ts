@@ -61,6 +61,8 @@ async function blocked(pid: number, blocker: number) {
   for (let i = 0; i < 100; i++) if ((await q('SELECT $2::integer=ANY(pg_blocking_pids($1)) blocked', [pid, blocker]))[0].blocked) {
     console.info(JSON.stringify({ barrier: 'actual-postgres-lock-wait', pid, blocker })); return;
   }
+  const diagnostic = await q("SELECT state,wait_event_type,wait_event,pg_blocking_pids(pid) AS blockers,position('management_authorization' in query)>0 AS authority_statement,position('INSERT INTO shifts' in query)>0 AS shift_statement FROM pg_stat_activity WHERE pid=$1", [pid]);
+  console.info(JSON.stringify({barrier:'unobserved-postgres-lock-wait',pid,blocker,diagnostic}));
   throw new Error('Actual owned PostgreSQL wait was not observed');
 }
 async function expireAfterDatabaseClock() {
