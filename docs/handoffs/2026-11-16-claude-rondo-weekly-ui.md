@@ -230,3 +230,8 @@ design; Codex's failure evidence is untouched.
   shell decision, not part of this slice. The top bar's `⌘K` hint (3.55:1) is also shared shell, not Rondo.
 
 UI source for QA remains `ddcc2194`; this entry is documentation only.
+
+**Follow-up (same day, at Codex's request):** the shared band fix is implemented in `src/app/app/b-foundation.css`. From
+768px, the back-link row above a band title is painted `--b-band-solid`. Evidence is in
+`docs/handoffs/2026-11-16-band-back-link-solid/`. The back-link axe failure is gone on all six pages at 768, 1024 and 1440.
+Painted contrast is the same 4.71:1, and the screenshots are unchanged. Raw failures from before and after are kept.

@@ -1787,7 +1787,7 @@ change no flow, read, handler or contract.
   the app layout) holds the shared rules below.
 - **Band:** one gradient, `--b-band` = 160deg #0C726C 0% / #0B6E69 40% / #08504C 100% (no lighter start, no highlight under
   text); `--b-band-solid` #0C726C is painted beneath wherever the band is a border-image, so contrast tools read the real
-  pair. Text on the band: `--b-on-band` #FFFFFF for titles, figures, labels and anything on glass; `--b-on-band-2`
+  pair (from 768px this includes the back-link row above a band title, `b-foundation.css`, Nov 16, 2026). Text on the band: `--b-on-band` #FFFFFF for titles, figures, labels and anything on glass; `--b-on-band-2`
   rgb(255 255 255 / .86) for sub-lines on the solid band only (4.7:1 at the lightest stop). No other white alphas.
 - **Greys:** `--b-grey` #6A7176 on white (inactive tab labels too, 10.5px stays); `--b-grey-on-fill` #5E666B on grey and
   tinted fills; `--b-field-edge` #8C9397 for field and switch edges (3:1). Counts are 12px/700; nothing else below 12px

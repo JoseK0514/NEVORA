@@ -20,6 +20,18 @@
     :is(#c-root, html) body .app-shell[data-nv-b][data-nv-b] .b-when-f { display: inline !important; }
   }
 
+  /* ---------- The band's back-link row is painted solid (DESIGN.MD Direction B foundation: "--b-band-solid is painted
+   * beneath wherever the band is a border-image"; axe 768px finding, Nov 16, 2026) ----------
+   * From 768px the title paints the band as a border-image outset up under the top bar, and the back link row above it
+   * declared no background, so contrast tools read the canvas behind white text (1.08:1). The row now carries the solid
+   * band colour it already sits on (the band's first 236px are that colour), so nothing changes on screen and tools read
+   * the real pair (4.7:1). Only rows above a title that paints the band; layout, the link, hover and focus are unchanged. */
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b] .c-page:has(> header.c-title) > .c-nav--phone:has(> .c-nav__back),
+    html body .app-shell[data-nv-b] .q-page:has(> .q-hd) > .q-nav,
+    html body .app-shell[data-nv-b] .q-page:has(> article > .q-hd) > .q-nav { background-color: var(--b-band-solid) !important; }
+  }
+
   /* ---------- Touch targets (NV-008, NV-127, NV-265): 44px hit areas without changing the drawn size ---------- */
   /* Filter chips that scroll sideways: room at the end and a fade, so a cut chip reads as "more". */
   /* Decision pairs (Decline / Approve) in the request lists: 44px, at least 96px wide, right-aligned on wide screens (NV-014). */
