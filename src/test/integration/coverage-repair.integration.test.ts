@@ -58,9 +58,15 @@ async function controlled(defer: (cleanup: () => void | Promise<unknown>) => voi
   return { client, pid, executor, ready, release };
 }
 async function blocked(pid: number, blocker: number) {
-  for (let i = 0; i < 100; i++) if ((await q('SELECT $2::integer=ANY(pg_blocking_pids($1)) blocked', [pid, blocker]))[0].blocked) {
-    console.info(JSON.stringify({ barrier: 'actual-postgres-lock-wait', pid, blocker })); return;
-  }
+  // A query-count loop can finish before the preceding source statement. Poll
+  // the actual wait within the unchanged 1500ms application lock deadline.
+  const deadline=performance.now()+1000;
+  do {
+    if ((await q('SELECT $2::integer=ANY(pg_blocking_pids($1)) blocked', [pid, blocker]))[0].blocked) {
+      console.info(JSON.stringify({ barrier: 'actual-postgres-lock-wait', pid, blocker })); return;
+    }
+    await new Promise(resolve=>setTimeout(resolve,5));
+  } while(performance.now()<deadline);
   const diagnostic = await q("SELECT state,wait_event_type,wait_event,pg_blocking_pids(pid) AS blockers,position('management_authorization' in query)>0 AS authority_statement,position('INSERT INTO shifts' in query)>0 AS shift_statement FROM pg_stat_activity WHERE pid=$1", [pid]);
   console.info(JSON.stringify({barrier:'unobserved-postgres-lock-wait',pid,blocker,diagnostic}));
   throw new Error('Actual owned PostgreSQL wait was not observed');

@@ -27,15 +27,15 @@ async function receipt(id:string,actor=proof.employee.id,version?:string){
  await q("INSERT INTO employee_attention_receipts(id,workspace_id,employee_id,source_kind,source_id,source_version) SELECT $1,id,$2,'TIME_OFF',$3,$4 FROM workspaces WHERE singleton",[randomUUID(),actor,id,current]);
 }
 async function inbox(beforeFinal?:()=>Promise<unknown>){
- let observations=0,finals=0;const batches:SqlStatement[]=[];
+ let observations=0,finals=0,presentationObservations=0;const batches:SqlStatement[]=[];
  const executor:SqlExecutor={query:db.executor.query,transaction:async(statements,signal)=>{
   const statement=statements.at(-1)!;
-  if(statement.text.startsWith('SELECT (SELECT COALESCE(jsonb_agg')){observations++;if(statement.text.includes('AS detail FROM time_off_requests')||statement.text.includes('FROM employee_attention_receipts'))batches.push(statement);}
+  if(statement.text.startsWith('SELECT (SELECT COALESCE(jsonb_agg')){observations++;if(statement.text.includes('nevora_workspace_presentation_revisions'))presentationObservations++;if(statement.text.includes('AS detail FROM time_off_requests')||statement.text.includes('FROM employee_attention_receipts'))batches.push(statement);}
   if(statement.text.startsWith('WITH facts AS MATERIALIZED')){finals++;await beforeFinal?.();}
   return db.executor.transaction(statements,signal);
  }};
  const result=await readEmployeeNotificationList(proof,'test',executor);
- return {result,observations,finals,batches};
+ return {result,observations,finals,batches,presentationObservations};
 }
 function items(result:Awaited<ReturnType<typeof inbox>>['result']){if(result.state!=='ready'||result.kind!=='notifications')throw Error('Expected current inbox');return result.items;}
 
@@ -46,16 +46,18 @@ describe.skipIf(!enabled)('bounded native own Time Off inbox capacity',()=>{
   await q('UPDATE workspaces SET active=true');
   await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('QA-CAPACITY-A','Fictional','Inbox','QA-NO-PHONE','EMPLOYEE','loc-1'),('QA-CAPACITY-B','Fictional','Other','QA-NO-PHONE','EMPLOYEE','loc-1')");
   await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,now()+interval '1 day')",[proof.sessionTokenHash,proof.employee.id]);
- });
+ },30000);
  it.each([16,25])('returns all %s own current sources with native final observations',async count=>{
   await seed(count);await receipt('request-0');const actual=await inbox();
   expect(actual.result).toMatchObject({state:'ready',coverage:'complete'});expect(items(actual.result)).toHaveLength(count);
   expect(items(actual.result).filter(i=>i.reviewState==='read')).toHaveLength(1);expect(items(actual.result).every(i=>i.actionState==='none')).toBe(true);
-  expect(actual.observations).toBe(2*count+4);expect(actual.observations).toBeLessThanOrEqual(64);expect(actual.finals).toBe(1);
+  // Current module disclosure adds exactly the installed-schema and active
+  // presentation observations; the original hard read budget is unchanged.
+  expect(actual.presentationObservations).toBe(2);expect(actual.observations).toBe(2*count+6);expect(actual.observations).toBeLessThanOrEqual(64);expect(actual.finals).toBe(1);
   expect(actual.batches).toHaveLength(2);for(const batch of actual.batches){expect(batch.values[1]).toBe(proof.employee.id);expect(batch.values[2]).toHaveLength(count);}
   expect(JSON.stringify(actual.result)).not.toMatch(/PRIVATE|QA-CAPACITY-B|sessionTokenHash/);
  });
- it('keeps mixed approved and denied current sources at the 25 item limit',async()=>{await seed(25,true);const actual=await inbox();expect(actual.result).toMatchObject({state:'ready',coverage:'complete'});expect(items(actual.result)).toHaveLength(25);expect(actual.observations).toBe(54);});
+ it('keeps mixed approved and denied current sources at the 25 item limit',async()=>{await seed(25,true);const actual=await inbox();expect(actual.result).toMatchObject({state:'ready',coverage:'complete'});expect(items(actual.result)).toHaveLength(25);expect(actual.presentationObservations).toBe(2);expect(actual.observations).toBe(56);expect(actual.observations).toBeLessThanOrEqual(64);});
  it('does not batch foreign requests or use foreign and historical receipts',async()=>{
   await seed(16);await receipt('request-0','QA-CAPACITY-B');await receipt('request-1',proof.employee.id,'old-version');
   await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status) VALUES('foreign-request','QA-CAPACITY-B','2030-10-07','2030-10-07','APPROVED')");
