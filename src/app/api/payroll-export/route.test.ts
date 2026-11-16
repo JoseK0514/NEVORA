@@ -12,6 +12,16 @@ describe('D6 export transport',()=>{
  it('refuses a switched identity rather than replaying for a different actor',async()=>{f.session={id:'OTHER',role:'OWNER'};expect((await POST(request())).status).toBe(403);expect(f.create).not.toHaveBeenCalled();});
  it('requires login and same-origin anti-forgery',async()=>{expect((await POST(request(command,{origin:'https://evil.test'}))).status).toBe(403);f.session=null;expect((await POST(request())).status).toBe(401);});
  it('refuses caller-provided totals and unreviewed fields',async()=>{expect((await POST(request({...command,totalHours:100}))).status).toBe(400);});
+ it('accepts explicit per-recorded-break paid treatment on the bounded export command',async()=>{
+  const paidTime={version:1,breakTreatments:[{employeeId:'E',entryId:'T',breakId:'B',treatment:'UNPAID_RELIEVED_MEAL'}]};
+  expect((await POST(request({...command,paidTime}))).status).toBe(200);
+  expect(f.create.mock.calls[0]?.[1]).toEqual({...command,paidTime});
+ });
+ it.each([
+  {version:1,breakTreatments:[{employeeId:'E',entryId:'T',breakId:'B',treatment:'UNPAID'}]},
+  {version:1,breakTreatments:[{employeeId:'E',entryId:'T',breakId:'B',treatment:'PAID_REST',hours:1}]},
+  {version:1,breakTreatments:[{employeeId:'E',entryId:'T',breakId:'B',treatment:'PAID_REST'},{employeeId:'E',entryId:'T',breakId:'B',treatment:'PAID_REST'}]},
+ ])('rejects malformed explicit paid treatment %j',async paidTime=>{expect((await POST(request({...command,paidTime}))).status).toBe(400);expect(f.create).not.toHaveBeenCalled();});
  it('reports source revision conflicts without generating a new receipt',async()=>{f.create.mockRejectedValue(new Error('nevora_export_CONFLICT'));expect((await POST(request())).status).toBe(409);});
  it('reports a business duplicate as a private non-retryable artifact conflict',async()=>{f.create.mockRejectedValue(new Error('nevora_export_ALREADY_GENERATED'));const response=await POST(request());expect(response.status).toBe(409);expect(await response.json()).toEqual({state:'already_generated'});expect(response.headers.get('cache-control')).toContain('no-store');});
 });

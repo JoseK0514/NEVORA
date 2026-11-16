@@ -4,7 +4,8 @@ import {afterEach,beforeEach,describe,expect,it} from 'vitest';
 import {createPunchFixture} from './clocker-punch-fixture';
 import {readTimecards,mutateTimecard} from '../../lib/timecards/service';
 import {createPayrollExport,readExportProfiles,saveExportProfile,type ExportCommand} from '../../lib/payroll-export/service';
-import {mappedPayrollCsv,neutralProfile} from '../../lib/payroll-export/model';
+import {adpRunPaidColumns,canonicalPayrollExport,mappedPayrollCsv,neutralPaidProfile,neutralProfile} from '../../lib/payroll-export/model';
+import {stableExportJson} from '../../lib/payroll-export/json';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 let f:Awaited<ReturnType<typeof createPunchFixture>>;
 const proof:SessionMutationProof={employee:{id:'c34-owner',role:'OWNER',firstName:'QA',lastName:'Owner',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
@@ -15,6 +16,55 @@ async function card(){const r=await readTimecards(proof,period,f.db.executor);if
 async function finalize(){const c=await card();await mutateTimecard(proof,{operationId:randomUUID(),employeeId:'c34-a',...period,expectedRevision:c.revision,expectedSourceHash:c.sourceHash,action:'APPROVE'},f.db.executor);await mutateTimecard(proof,{operationId:randomUUID(),employeeId:'c34-a',...period,expectedRevision:c.revision+1,expectedSourceHash:c.sourceHash,action:'FINALIZE'},f.db.executor);}
 async function command():Promise<ExportCommand>{const c=await card();return {...period,operationId:randomUUID(),profileId:null,profileRevision:0,cards:[{employeeId:'c34-a',revision:c.revision,sourceHash:c.sourceHash,finalizationOperationId:c.history[0].operationId}]};}
 describe('D6 mapping and immutable export protocol',()=>{
+ it('exports daily paid time with explicit meal/rest classification and binds replay to that source decision',async()=>{
+  await f.q("UPDATE time_entries SET clock_out_at='2026-09-22T20:30:00Z' WHERE id='D6-T'; INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at) VALUES('meal','D6-T','2026-09-22T16:00:00Z','2026-09-22T16:30:00Z'),('rest','D6-T','2026-09-22T14:00:00Z','2026-09-22T14:15:00Z')");
+  await finalize();const base=await command(),paidTime={version:1 as const,breakTreatments:[{employeeId:'c34-a',entryId:'D6-T',breakId:'meal',treatment:'UNPAID_RELIEVED_MEAL' as const},{employeeId:'c34-a',entryId:'D6-T',breakId:'rest',treatment:'PAID_REST' as const}]};
+  const input={...base,paidTime};
+  await expect(createPayrollExport(proof,{...input,cards:[{...input.cards[0],sourceHash:'b'.repeat(32)}]},f.db.executor)).rejects.toThrow('CONFLICT');
+  const result=await createPayrollExport(proof,input,f.db.executor);
+  expect(result.model.rows[0]).toMatchObject({recordedNanoseconds:'30600000000000',breakNanoseconds:'2700000000000',paidNanoseconds:'28800000000000',unpaidBreakNanoseconds:'1800000000000',paidRestNanoseconds:'900000000000'});
+  expect(result.csv).toContain('Business date');expect(result.csv).toContain('2026-09-22');expect(result.csv).toContain('28800000000000');
+  expect(await createPayrollExport(proof,input,f.db.executor)).toEqual(result);
+  await expect(createPayrollExport(proof,{...input,paidTime:{...paidTime,breakTreatments:paidTime.breakTreatments.map(b=>({...b,treatment:'PAID_REST'}))}},f.db.executor)).rejects.toThrow('CONFLICT');
+  expect(await f.q('SELECT count(*)::integer n FROM payroll_export_receipts')).toEqual([{n:1}]);
+ });
+ it('refuses inexact default daily paid hours and accepts a reviewed saved HALF_UP custom mapping',async()=>{
+  await f.q("UPDATE time_entries SET clock_out_at='2026-09-22T12:01:00Z' WHERE id='D6-T'");
+  await finalize();const input={...await command(),paidTime:{version:1,breakTreatments:[]}};
+  await expect(createPayrollExport(proof,input,f.db.executor)).rejects.toThrow('exactly');
+  expect(await f.q('SELECT count(*)::integer n FROM payroll_export_receipts')).toEqual([{n:0}]);
+  const saved=await saveExportProfile(proof,{operationId:randomUUID(),id:randomUUID(),expectedRevision:0,profile:{...neutralPaidProfile(),hourDecimals:2,precision:'HALF_UP'}},f.db.executor);
+  const result=await createPayrollExport(proof,{...input,profileId:saved.id,profileRevision:saved.revision},f.db.executor);
+  expect(result.csv).toContain('"0.02","0.00","0.00"');expect(result.model.rows[0].paidNanoseconds).toBe('60000000000');
+ });
+ it('refuses incomplete or foreign paid-break decisions without a receipt',async()=>{
+  await f.q("INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at) VALUES('meal','D6-T','2026-09-22T16:00:00Z','2026-09-22T16:30:00Z')");
+  await finalize();const base=await command();
+  for(const breakTreatments of [[],[{employeeId:'c34-a',entryId:'D6-T',breakId:'other',treatment:'PAID_REST'}]]){
+   await expect(createPayrollExport(proof,{...base,paidTime:{version:1,breakTreatments}},f.db.executor)).rejects.toThrow(/break/i);
+  }
+  expect(await f.q('SELECT count(*)::integer n FROM payroll_export_receipts')).toEqual([{n:0}]);
+ });
+ it('uses paid hours for reviewed RUN mappings and requires review of saved legacy recorded-hours mappings',async()=>{
+  await f.q("UPDATE time_entries SET clock_out_at='2026-09-22T20:30:00Z' WHERE id='D6-T'; INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at) VALUES('meal','D6-T','2026-09-22T16:00:00Z','2026-09-22T16:30:00Z')");
+  await finalize();const base=await command(),profile={...neutralProfile(),format:'ADP_RUN_GENERIC_V1' as const,dateFormat:'US' as const,hourDecimals:2,columns:adpRunPaidColumns('FICTIONAL','W','TEST','TEST'),employeeMappings:[{employeeId:'c34-a',providerEmployeeId:'001'}]};
+  const saved=await saveExportProfile(proof,{operationId:randomUUID(),id:randomUUID(),expectedRevision:0,profile},f.db.executor);
+  const input={...base,profileId:saved.id,profileRevision:saved.revision};
+  await expect(createPayrollExport(proof,input,f.db.executor)).rejects.toThrow(/paid|break/i);
+  const result=await createPayrollExport(proof,{...input,paidTime:{version:1,breakTreatments:[{employeeId:'c34-a',entryId:'D6-T',breakId:'meal',treatment:'UNPAID_RELIEVED_MEAL'}]}},f.db.executor);
+  expect(result.csv).toContain('"TEST","8.00"');expect(result.csv).not.toContain('8.50');
+  const legacy={...profile,columns:profile.columns.map(c=>c.header==='Pay Hours'?{...c,source:'recordedHours' as const}:c)},legacyId=randomUUID();
+  await f.q('INSERT INTO payroll_export_profile_revisions(workspace_id,profile_id,revision,operation_id,actor_employee_id,command_hash,profile) SELECT id,$1,1,$2,$3,repeat(\'a\',64),$4::jsonb FROM workspaces',[legacyId,randomUUID(),proof.employee.id,JSON.stringify(legacy)]);
+  expect((await readExportProfiles(proof,f.db.executor)).find(p=>p.id===legacyId)).toEqual({id:legacyId,revision:1,profile:legacy,requiresTimeBasisReview:true});
+  await expect(createPayrollExport(proof,{...base,operationId:randomUUID(),profileId:legacyId,profileRevision:1},f.db.executor)).rejects.toThrow(/review/i);
+  await expect(saveExportProfile(proof,{operationId:randomUUID(),id:legacyId,expectedRevision:1,profile:legacy},f.db.executor)).rejects.toThrow(/review/i);
+  const historicalCommand={...base,operationId:randomUUID(),profileId:legacyId,profileRevision:1},cards=await readTimecards(proof,period,f.db.executor);if(cards.state!=='ready')throw Error('Unavailable fictional source');
+  const model=canonicalPayrollExport(result.model.workspaceId,cards.observedAt,period,cards.cards,['c34-a'],cards.paging);
+  const csv='##GENERIC## V1.0\r\n"IID","Pay Frequency","Pay Period Start Date","Pay Period End Date","Employee ID","Earnings Code","Pay Hours","Dollars","Separate Check","Worked In Dept","Rate Code"\r\n"FICTIONAL","W","09/21/2026","09/27/2026","001","TEST","8.50","","0","","TEST"\r\n';
+  const sha=(s:string)=>createHash('sha256').update(s).digest('hex'),historical={...result,operationId:historicalCommand.operationId,profileId:legacyId,profileRevision:1,profile:legacy,model,csv,csvSha256:sha(csv),canonicalSha256:sha(stableExportJson(model))};
+  await f.q('INSERT INTO payroll_export_receipts(workspace_id,actor_employee_id,operation_id,command_hash,payload) VALUES($1,$2,$3,$4,$5::jsonb)',[model.workspaceId,proof.employee.id,historicalCommand.operationId,sha(stableExportJson(historicalCommand)),JSON.stringify(historical)]);
+  expect(await createPayrollExport(proof,historicalCommand,f.db.executor)).toEqual(historical);
+ });
  it('stores versioned mapping profiles with idempotent save and rejects stale updates',async()=>{const cmd={operationId:randomUUID(),id:randomUUID(),expectedRevision:0,profile:neutralProfile()};const first=await saveExportProfile(proof,cmd,f.db.executor);expect(first.revision).toBe(1);expect(await saveExportProfile(proof,cmd,f.db.executor)).toEqual(first);expect(await readExportProfiles(proof,f.db.executor)).toEqual([first]);await expect(saveExportProfile(proof,{...cmd,operationId:randomUUID()},f.db.executor)).rejects.toThrow('CONFLICT');await expect(f.q('DELETE FROM payroll_export_profile_revisions')).rejects.toThrow('append_only');});
  it('exports only reviewed finalized snapshots and preserves exact canonical values',async()=>{await finalize();const input=await command(),result=await createPayrollExport(proof,input,f.db.executor);expect(result.model.rows[0].recordedNanoseconds).toBe('28800000000000');expect(result.model.period).toEqual(period);expect(result.csv).toContain('28800000000000');expect(await createPayrollExport(proof,input,f.db.executor)).toEqual(result);await expect(f.q('DELETE FROM payroll_export_receipts')).rejects.toThrow('append_only');});
  it('replays the original export after explicit reopen without exporting a new unfinalized revision',async()=>{await finalize();const input=await command(),result=await createPayrollExport(proof,input,f.db.executor),c=await card();await mutateTimecard(proof,{operationId:randomUUID(),employeeId:'c34-a',...period,expectedRevision:c.revision,expectedSourceHash:c.sourceHash,action:'REOPEN',note:'Fictional review'},f.db.executor);expect(await createPayrollExport(proof,input,f.db.executor)).toEqual(result);await expect(createPayrollExport(proof,{...input,operationId:randomUUID()},f.db.executor)).rejects.toThrow('finalized');});
