@@ -11,6 +11,8 @@ import { readOwnerOperationalScope, assignOperationalScope } from '../../lib/com
 import { generationNeedKey } from '../../lib/scheduling/generation-claims';
 import { getWorkspace } from '../../lib/data/workspaces';
 
+type TracedRequest = { url(): string; method(): string; headers(): Record<string, string>; isNavigationRequest(): boolean; failure(): { errorText?: string } | null };
+
 it('preserves reviewed intent across two real Manager sessions, generation and lost responses', async () => {
   const evidence = process.env.NEVORA_READINESS_MATRIX_EVIDENCE;
   if (!evidence) throw Error('Choose an external readiness matrix evidence directory');
@@ -22,7 +24,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
   const app = await createOwnedNextApp(evidence);
   const q = <T = Record<string, unknown>>(text: string, values: unknown[] = []) => app.database.executor.query<T>({ text, values });
   const browsers: { close(): Promise<void> }[] = [], checks: string[] = [], errors: unknown[] = [], runtimeExecutions: unknown[] = [], runtimeControls: unknown[] = [];
-  const runtimeTrace: Record<string, unknown>[] = [], runtimeFailureTraces: unknown[] = [];
+  const runtimeTrace: Record<string, unknown>[] = [], runtimeFailureTraces: unknown[] = [], routerReadControls: unknown[] = [];
   let stage = 'seed', traceOmitted = 0, failureTracesOmitted = 0;
   const trace = (value: Record<string, unknown>) => { if (runtimeTrace.length === 240) { runtimeTrace.shift(); traceOmitted++; } runtimeTrace.push({ at: Math.round(performance.now()), stage, completedChecks: checks.length, ...value }); };
   let complete = false, failureShot: (() => Promise<void>) | undefined, serial = 0;
@@ -73,7 +75,6 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       const documentRequests = [0, 0, 0], drainReceipts: { page: number; pending: number }[] = [];
       for (const n of [0, 1, 2]) {
         const p = page(n); p.setDefaultTimeout(20000);
-        type TracedRequest = { url(): string; method(): string; headers(): Record<string, string>; isNavigationRequest(): boolean; failure(): { errorText?: string } | null };
         const requestIds = new WeakMap<object, number>(); let requestSerial = 0;
         const kind = (address: string) => { const url = new URL(address); if (url.origin !== app.url) return null; const paths: Record<string, string> = { '/login': 'login', '/app': 'manager-home', '/app/schedule': 'schedule', '/app/schedule/edit': 'schedule-edit', '/api/manager/today': 'manager-today', '/api/company-access/operational-authority': 'authority', '/api/notifications': 'notifications', '/__nextjs_original-stack-frames': 'framework-frames' }; return paths[url.pathname] ?? null; };
         const requestMetadata = (request: TracedRequest) => { const resource = kind(request.url()); if (!resource) return null; if (!requestIds.has(request)) requestIds.set(request, ++requestSerial); return { resource, requestId: requestIds.get(request), method: request.method(), document: request.isNavigationRequest(), rsc: request.headers().rsc === '1', serverAction: typeof request.headers()['next-action'] === 'string' }; };
@@ -106,12 +107,13 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       const probeGate = new Promise<void>(resolve => { releaseProbe = resolve; }), probeSeen = new Promise<void>(resolve => { probeArrived = resolve; });
       const probePattern = '**/app/schedule/edit?*';
       await p0.route(probePattern, async (route: { request(): TracedRequest; continue(): Promise<void> }) => { if (holdProbe && route.request().headers().rsc === '1') { probeArrived(); await probeGate; } await route.continue(); });
-      let nextProbe: Promise<void> | undefined;
+      let nextProbe: Promise<void> | undefined, probeTimer: ReturnType<typeof setTimeout> | undefined;
       try {
         await p0.evaluate(() => { void fetch(location.pathname + location.search, { cache: 'no-store', headers: { RSC: '1' } }).then(response => response.text()).catch(() => {}); });
-        await Promise.race([probeSeen, new Promise<never>((_, reject) => setTimeout(() => reject(Error('Owned RSC control was not requested')), 10000))]);
+        await Promise.race([probeSeen, new Promise<never>((_, reject) => { probeTimer = setTimeout(() => reject(Error('Owned RSC control was not requested')), 10000); })]);
         await p0.waitForLoadState('networkidle');
         expect(pendingRouterReads[0].size).toBeGreaterThan(0);
+        const pendingAfterOldIdle = pendingRouterReads[0].size;
         trace({ engine, index: 0, event: 'old-idle-barrier-returned-with-pending-router-read' });
         const before = documentRequests[0], receiptCount = drainReceipts.length;
         nextProbe = open(0, probeDestination);
@@ -120,8 +122,9 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         expect(documentRequests[0]).toBe(before);
         holdProbe = false; releaseProbe(); await nextProbe;
         expect(documentRequests[0]).toBeGreaterThan(before);
+        routerReadControls.push({ engine, pendingAfterOldIdle, documentRequestsWhileHeld: before, documentRequestsAfterRelease: documentRequests[0], events: runtimeTrace.filter(value => value.engine === engine && value.index === 0).slice(-30) });
         checks.push(`${engine}: held real RSC read blocks next hard navigation until response completion`);
-      } finally { holdProbe = false; releaseProbe(); await nextProbe?.catch(() => {}); await p0.unroute(probePattern); await q('DELETE FROM shifts WHERE id=ANY($1::text[])', [[probeSource, probeDestination]]); }
+      } finally { if (probeTimer) clearTimeout(probeTimer); holdProbe = false; releaseProbe(); await nextProbe?.catch(() => {}); await p0.unroute(probePattern); await q('DELETE FROM shifts WHERE id=ANY($1::text[])', [[probeSource, probeDestination]]); }
       const edit = async (n: number, note: string, reassign = false) => { if (reassign) await form(n).locator('select[name="employeeId"]').selectOption('MATRIX-OTHER'); await form(n).locator('[name="notes"]').fill(note); await form(n).evaluate((element: HTMLFormElement) => element.requestSubmit()); };
       const remove = async (n: number) => { const p = page(n); await p.getByRole('button', { name: n ? 'Review deletion' : 'Delete shift', exact: true }).click(); await p.getByRole('button', { name: n ? 'Delete this draft shift' : 'Delete this shift', exact: true }).click(); };
       const refused = async (n: number, version: string, unavailable = false) => { await page(n).getByRole('alert').filter({ hasText: unavailable ? 'Operational access is unavailable' : 'changed since you opened' }).first().waitFor(); expect(await form(n).locator('[name="expectedReviewVersion"]').inputValue()).toBe(version); await page(n).getByRole('button', { name: 'Reload current shift', exact: true }).first().waitFor(); };
@@ -240,5 +243,5 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
     expect(await q('SELECT id FROM notifications')).toEqual([]);
     expect(errors).toEqual([]); complete = true;
   } catch (error) { await failureShot?.().catch(() => {}); throw error; }
-  finally { await Promise.all(browsers.map(b => b.close())); await app.close(); await writeFile(resolve(evidence, 'report.json'), JSON.stringify({ complete, checks, errors, runtimeControls, runtimeExecutions, runtimeTrace, runtimeFailureTraces, traceOmitted, failureTracesOmitted, fictionalOnly: true, source: app.sourceHashes }, null, 2)); }
+  finally { await Promise.all(browsers.map(b => b.close())); await app.close(); await writeFile(resolve(evidence, 'report.json'), JSON.stringify({ complete, checks, errors, runtimeControls, runtimeExecutions, routerReadControls, runtimeTrace, runtimeFailureTraces, traceOmitted, failureTracesOmitted, fictionalOnly: true, source: app.sourceHashes }, null, 2)); }
 }, 480000);
