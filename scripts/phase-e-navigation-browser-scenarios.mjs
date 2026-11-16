@@ -381,7 +381,12 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    let release,reached;const gate=new Promise(r=>release=r),seen=new Promise(r=>reached=r);let held=false;
    await context.route('**/api/employee/profile',async route=>{if(held)return route.continue();held=true;const response=await route.fetch();assert.equal(response.status(),200);reached();await gate;await route.fulfill({response});});
    await refreshProfile();await seen;await page.evaluate(()=>window.dispatchEvent(new Event('blur')));release();await page.waitForTimeout(100);
-   assert.equal(await page.locator('[data-private-view="profile"]').getAttribute('data-profile-state'),'paused');assert.deepEqual(await page.locator('[data-private-view="profile"] .c-row__value').allTextContents(),['–','–','–'],'Paused profile retains only static placeholders');await context.unroute('**/api/employee/profile');await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('profile');
+   await page.locator('[data-private-view="profile"][data-profile-state="paused"]').waitFor({state:'attached'});
+   const privateLabels=['Name','Employee ID','Locations','Time zone'],placeholders=privateLabels.map(label=>({label,value:'–'}));
+   const legacyRows=await page.locator('[data-private-view="profile"] #profile-personal .c-row').evaluateAll(rows=>rows.map(row=>({label:row.querySelector('.c-row__title')?.textContent,value:row.querySelector('.c-row__value')?.textContent})));
+   assert.deepEqual(legacyRows,placeholders,'Paused profile clears all four fields, including the sign-in Employee ID');
+   const visibleRows=await page.locator('.b-screen:has(#b-profile-title):visible #b-profile-personal .eb-field').evaluateAll(rows=>rows.map(row=>({label:row.querySelector('.b-row__s')?.textContent,value:row.querySelector('.b-row__t')?.textContent})));
+   assert.deepEqual(visibleRows,placeholders,'The visible profile also retains only the four labeled static placeholders');await context.unroute('**/api/employee/profile');await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('profile');
    checks.push('Delayed real authenticated GET cannot repaint after blur (transport held; no fixture response content)');
    // Actual session replacement through login binds the old mounted view out.
    stage='replacement';await login(scenario.actors[1]);assert.equal((await get(endpoint,binding)).status(),403);await login(actor);await nav('/app/profile');await ready('profile');checks.push('Actual account/session replacement rejects former mounted-view binding');
@@ -445,8 +450,8 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    await page.goto(app.url+'/app/profile');await ready('profile');
   }
   stage='keyboard';if(width<768){
-   // The Request time off sheet's Reason is one line of at most 250 characters.
-   await page.goto(app.url+'/app/requests?tab=new');await settle();const field=page.locator('form.tof-form input[name="note"]').first();await field.fill('Fictional long keyboard text '.repeat(8));await field.focus();assert(await field.evaluate(e=>e===document.activeElement));await page.keyboard.press(tabKey);assert(await page.evaluate(()=>document.activeElement instanceof HTMLElement&&getComputedStyle(document.activeElement).visibility!=='hidden'));await page.keyboard.press(backTabKey);await page.goto(app.url+'/app/profile');await ready('profile');
+   // The current Request time off Reason is a textarea of at most 250 characters.
+   await page.goto(app.url+'/app/requests?tab=new');await settle();const field=page.locator('form.tof-form textarea[name="note"]').first();assert.equal(await field.getAttribute('maxlength'),'250');await field.fill('Fictional long keyboard text '.repeat(8));await field.focus();assert(await field.evaluate(e=>e===document.activeElement));await page.keyboard.press(tabKey);assert(await page.evaluate(()=>document.activeElement instanceof HTMLElement&&getComputedStyle(document.activeElement).visibility!=='hidden'));await page.keyboard.press(backTabKey);await page.goto(app.url+'/app/profile');await ready('profile');
    checks.push(`Native focus, text entry and ${tabKey}/${backTabKey} on existing request form; no submission; physical keyboard occlusion remains unverified`);
   }
   assert(await page.evaluate(()=>[...Object.values(localStorage),...Object.values(sessionStorage)].every(v=>!v.includes('STORED PRIVATE')&&!v.includes('QA E'))));
