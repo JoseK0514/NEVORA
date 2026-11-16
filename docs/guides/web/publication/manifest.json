@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "date": "2026-11-15",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "12cf9fb6924990749ca6dab968e3721a29ba7e3d",
+  "sourceSha": "5c10e6cc513f73241ced363aa680b9f1e3d76997",
   "applicationHash": "f9da87f0115db53988f70dd1f5bbf4afff676c3000e6f1fd1ac9736d8d8b9bac",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
@@ -120,7 +120,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "d9564a4e5c73fdd34e82ded559fb3c54442236f67988385f9b63ca4a5be13763",
+        "sha256": "a271157c5863906f08c47aed97c61556548166525a48613077db6d62491f8b60",
         "pageCount": 4
       }
     },
@@ -195,7 +195,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "a279283480d6d734ea3b321a9ed90f886a7906c74eaa0fcf0d74e420bc599a52",
+        "sha256": "28a5f50aa3e79509249bdfdb6096ca45a5cc7a31f7aa2ab73c1a4e525f390320",
         "pageCount": 3
       }
     },
@@ -278,7 +278,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "9a9a73793c4708fa55ed27756d7ed160e9ab3732e0f23eae8b93d08b9dd2abdb",
+        "sha256": "79dad7006b082b11785033fdcfb9e810b83e760e22c08beb6b01d8054fb62452",
         "pageCount": 3
       }
     },
@@ -349,7 +349,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "bb1285ab3817efdbc70837f0dd7d0a1a2852afad7e0e6ce59880a3779a29ba55",
+        "sha256": "24eda5e247c1713786e3a743a6c92a8f14dd3c9be7ed5e235e90d89c58078414",
         "pageCount": 2
       }
     },
@@ -379,7 +379,7 @@
         },
         {
           "path": "docs/handoffs/2026-10-21-development-assembly-sources.json",
-          "sha256": "9f8b1bfb34784dc3a8c1a1071fd9fca0fb83bcdd916b2e6e0395d8285f945b9e"
+          "sha256": "d8d0972b341ba4e38b69091e88fb6cc9e405d7ab88f973e3722f7e343a7533ed"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",
@@ -492,7 +492,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "d0d1c95786f92390f068bfc1fc55edc828a942ce057c1c451b2ae20f7be38c24",
+        "sha256": "d8257e770846ab154a3260971993e3d4dd745e453859864ee57a48d2cb11cc77",
         "pageCount": 4
       }
     },
@@ -619,7 +619,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "cfef915ab8e16b61609a55b6aab43d03a1c3393572415ffd5f308eaf57aeb2c6",
+        "sha256": "99f13e50a52ec44c682aceed4a527b4b22f6b1a4d40074b7f23a54c93ca631f4",
         "pageCount": 5
       }
     }
