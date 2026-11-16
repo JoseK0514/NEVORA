@@ -164,6 +164,8 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   const closeMenu=async()=>{await page.keyboard.press('Escape');if(await accountMenu.waitFor({state:'hidden',timeout:2000}).then(()=>false,()=>true))await accountTrigger().click();await accountMenu.waitFor({state:'hidden'});};
   if(phone){await page.goto(app.url+'/app/more');await settle();target=page.locator('main').getByRole('button',{name:'Sign out',exact:true});}
   else{const sidebar=page.locator('aside.sidebar').getByRole('button',{name:'Sign out',exact:true});if(await sidebar.isVisible())target=sidebar;else{menu=true;await accountTrigger().click();await page.locator('#portal-account-menu').waitFor();target=page.locator('#portal-account-menu').getByRole('button',{name:'Sign out',exact:true});}}
+  const menuReady=async()=>{if(menu)await page.waitForFunction(()=>{const root=document.getElementById('portal-account-menu');if(!root)return false;const style=getComputedStyle(root);return root.matches(':popover-open')&&style.opacity==='1'&&style.visibility==='visible'&&root.getAnimations({subtree:true}).every(animation=>!Number.isFinite(animation.effect?.getComputedTiming().endTime)||!animation.pending&&animation.playState==='finished');});};
+  await menuReady();
   focusTrace.push({stage:'Sign out location',location:phone?'More':menu?'account menu':'sidebar'});
   const sample=()=>target.evaluate(element=>{
    const rgba=value=>{const parts=value.match(/[\d.]+/g).map(Number);return [parts[0],parts[1],parts[2],parts[3]??1];};
@@ -173,7 +175,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    const luminance=color=>color.map(v=>v/255).map(v=>v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[0.2126,0.7152,0.0722][i],0);
    const ratio=(a,b)=>(Math.max(luminance(a),luminance(b))+0.05)/(Math.min(luminance(a),luminance(b))+0.05);
    const page=getComputedStyle(document.body).backgroundColor;
-   return {active:element===document.activeElement,focusVisible:element.matches(':focus-visible'),disabled:element.disabled,foreground,background,textRatio:ratio(foreground,background),outline:style.outlineStyle,outlineWidth:style.outlineWidth,outlineRatio:ratio(blend(rgba(style.outlineColor),rgba(page)),rgba(page).slice(0,3))};
+   return {active:element===document.activeElement,focusVisible:element.matches(':focus-visible'),disabled:element.disabled,foreground,background,textRatio:ratio(foreground,background),outline:style.outlineStyle,outlineWidth:style.outlineWidth,outlineColor:style.outlineColor,outlineOffset:style.outlineOffset,outlineRatio:ratio(blend(rgba(style.outlineColor),rgba(page)),rgba(page).slice(0,3)),outlineAdjacentRatio:ratio(blend(rgba(style.outlineColor),background),background),popupOpacity:element.closest('#portal-account-menu')?getComputedStyle(element.closest('#portal-account-menu')).opacity:null};
   });
   for(const state of ['normal','hover','pressed','focus']){
    if(state==='normal'){await target.scrollIntoViewIfNeeded();await page.mouse.move(0,0);}
@@ -183,9 +185,9 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
     // The account menu's items are reached from its trigger: Enter opens it with focus on its first item.
     if(menu){if(await accountMenu.isVisible())await closeMenu();await page.bringToFront();await accountTrigger().focus();await page.keyboard.press('Enter');await page.locator('#portal-account-menu').waitFor();await page.waitForFunction(()=>document.querySelector('#portal-account-menu')?.contains(document.activeElement));}
     else await page.evaluate(()=>window.scrollTo(0,0));let reached=false;for(let n=0;n<40;n++){await page.keyboard.press(tabKey);const now=await target.evaluate(e=>({stage:'native Tab',active:e===document.activeElement,disabled:e.disabled,focusVisible:e.matches(':focus-visible')}));if(now.active){focusTrace.push(now);reached=true;break;}}assert(reached,'Native keyboard reaches Sign out');}
-   const measured=await sample();contrast.push({state,...measured});
+   await menuReady();const measured=await sample();contrast.push({state,...measured});
    assert(measured.textRatio>=4.5,state+' actual composited button text contrast');
-   if(state==='focus'){assert(measured.active&&measured.focusVisible&&!measured.disabled,'Actual native keyboard focus is visible');assert.notEqual(measured.outline,'none');assert(measured.outlineRatio>=3,'focus outline contrast');}
+   if(state==='focus'){assert(measured.active&&measured.focusVisible&&!measured.disabled,'Actual native keyboard focus is visible');assert.notEqual(measured.outline,'none');assert(measured.outlineRatio>=3,'focus outline contrast against body');if(menu){assert.equal(measured.popupOpacity,'1');assert(measured.outlineAdjacentRatio>=3,'Settled popup focus contrast against its actual adjacent background');}}
   }
   const clear=async(control,name)=>{const sample=await control.evaluate(e=>{const r=e.getBoundingClientRect(),nav=document.querySelector('.mobile-nav')?.getBoundingClientRect(),header=document.querySelector('.mobile-header')?.getBoundingClientRect();return {top:r.top,bottom:r.bottom,minimum:header?.height?header.bottom:0,maximum:nav?.height?nav.top:innerHeight,active:e===document.activeElement,focusVisible:e.matches(':focus-visible')};});focusTrace.push({stage:name,...sample});assert(sample.active&&sample.focusVisible,name+' has native visible focus');assert(sample.top>=sample.minimum&&sample.bottom<=sample.maximum,name+' is unobscured above fixed navigation');};
   // The account menu holds two rows above Sign out (Your profile, Add shifts to your calendar); More and the sidebar hold more.

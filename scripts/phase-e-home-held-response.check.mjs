@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {writeFile} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
-import {waitForFreshHome,waitForRecordedTimeReady} from './phase-e-home-browser-scenarios.mjs';
+import {waitForFreshHome,waitForRecordedTimeReady,installHomeHeldObserver} from './phase-e-home-browser-scenarios.mjs';
 import {captureSource,assertSourceUnchanged,externalEvidence} from './phase-e-owned.mjs';
 
 // A scheduling fixture for the actual H06 helper, not product/SQL evidence.
@@ -35,6 +35,12 @@ for(const engine of ['chromium','webkit']){
   assert.equal(result.observations[0].settled,false,'Prior ready snapshot must not release the fresh-generation wait');
   assert.equal(result.observations[1].settled,false,'Loading must not release the fresh-generation wait');
   assert.deepEqual(result.resolved,{state:'ready',busy:'false',fresh:true,old:false});
+  // A B-only stale commit must be observed even when hidden legacy text stays fresh.
+  await page.setContent('<main class="employee-home" data-home-state="ready" aria-busy="false"><section aria-labelledby="home-shift-label" style="display:none"><h2 id="home-shift-label">Next shift</h2><p>Fresh fixture Main Office</p></section><section id="b-home-shift" style="display:contents"><p>Fresh fixture Main Office</p></section></main>');
+  await page.evaluate(installHomeHeldObserver,'Fresh fixture Main Office');await page.evaluate(()=>window.__homeHeldEvidence.observe('fresh-generation-rendered'));
+  await page.evaluate(()=>{document.querySelector('#b-home-shift p').textContent='Main Office Operations and Customer Support';});await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  const stale=await page.evaluate(()=>{const evidence=window.__homeHeldEvidence;const observations=evidence.observations;evidence.stop();delete window.__homeHeldEvidence;return {observations,hiddenLegacyFresh:document.querySelector('[aria-labelledby="home-shift-label"]').textContent.includes('Fresh fixture Main Office')};});
+  assert(stale.hiddenLegacyFresh);assert(stale.observations.some(item=>item.event==='mutation'&&item.visible&&item.old&&!item.fresh),'The actual B-only stale mutation must be recorded');assert.equal(stale.observations.every(item=>item.visible&&item.fresh&&!item.old),false,'A hidden fresh legacy card cannot conceal a visible stale B commit');result.visibleHeldObserverNegative=stale;
   // Corporate Employee: recorded time is on the Time tab, the same kit page at every width (no Refresh, aria-busy while a
   // read is in flight). Clocked in, the "Current shift" card carries an "Clocked in" pill; off the clock (Nov 1 upscale
   // S9) the "Right now" card says "Not clocked in" once, with no pill.

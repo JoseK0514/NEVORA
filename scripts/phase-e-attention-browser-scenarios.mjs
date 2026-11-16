@@ -144,8 +144,10 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
     throw error;
    }
    assert.equal((await q('SELECT * FROM employee_attention_operations WHERE employee_id=$1 AND operation_id=$2',[actor,unavailableOperation])).length,1);
+   await schedule('&day='+scenario.sourceDate);const agenda=page.locator('#b-my-agenda:visible');await agenda.waitFor();
+   const assigned=await agenda.locator('a[href]:visible').evaluateAll((links,id)=>links.filter(link=>new URL(link.href).searchParams.get('shift')===id).map(link=>({path:new URL(link.href).pathname,shift:new URL(link.href).searchParams.get('shift')})),scenario.sourceId);assert.deepEqual(assigned,[{path:'/app/schedule',shift:scenario.sourceId}],'The actual private assignment is visible before the source lock');
    await blocker.query('BEGIN');await blocker.query('LOCK TABLE schedule_publication_revisions IN ACCESS EXCLUSIVE MODE');
-   await schedule();assert.equal(await confirm().count(),0);assert.equal(await page.locator('.employee-schedule-shift').count(),0);assert(await page.getByRole('status').filter({hasText:'Schedule unavailable'}).count());await screenshot('source-unavailable');
+   await schedule('&day='+scenario.sourceDate);assert.equal(await confirm().count(),0);assert.equal(await page.locator('#b-my-agenda').count(),0,'Unavailable source removes the actual private agenda');assert.equal(await page.locator('main a[href*="shift="]:visible').count(),0,'No current private shift row survives');assert(await page.getByRole('status').filter({hasText:'Schedule unavailable'}).isVisible());await screenshot('source-unavailable');
    await blocker.query('COMMIT');checks.push('Actual lock timeout renders unavailable and original-operation retry commits once; blocked weekly source displays no private assignments');
   }finally{await blocker.query('ROLLBACK');await blocker.end();}
  }

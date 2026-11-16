@@ -34,6 +34,14 @@ export async function waitForFreshHome(page, freshLocation){
  },freshLocation,{timeout:15000});
 }
 
+export function installHomeHeldObserver(fresh){
+  const observations=[],observe=event=>{const root=document.querySelector('[data-home-state]'),next=[...document.querySelectorAll('[aria-labelledby="home-shift-label"],#b-home-shift')].find(card=>[card,...card.querySelectorAll('*')].some(node=>node.getClientRects().length>0&&getComputedStyle(node).visibility==='visible')),text=next?.textContent??'';observations.push({event,at:Date.now(),state:root?.getAttribute('data-home-state'),busy:root?.getAttribute('aria-busy'),fresh:text.includes(fresh),old:text.includes('Main Office Operations and Customer Support'),visible:!!next,visibility:document.visibilityState,focused:document.hasFocus()});};
+  const observer=new MutationObserver(()=>observe('mutation'));observer.observe(document.querySelector('.employee-home'),{subtree:true,childList:true,attributes:true,characterData:true});
+  const events=['storage','focus','blur','pageshow','pagehide','online','offline'],handlers=events.map(event=>{const handler=()=>observe(event);window.addEventListener(event,handler);return [event,handler];});
+  window.__homeHeldEvidence={observations,observe,stop:()=>{observer.disconnect();for(const [event,handler] of handlers)window.removeEventListener(event,handler);}};observe('initial');
+
+}
+
 // Corporate Employee: clock status lives on the Time tab, not on Home. Release 1 draws the same kit Time page at every
 // width (board G-E-Time). Clocked in or on break, the "Current shift" card's pill carries the recorded status; off the
 // clock (Nov 1 upscale S9) the "Right now" card says it once, "Not clocked in", with no pill. The page has no Refresh;
@@ -369,12 +377,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const requestEvent=(event,request)=>{if(new URL(request.url()).pathname!=='/api/employee/home')return;if(!requestIds.has(request))requestIds.set(request,requestIds.size+1);lateEvidence.requests.push({event,id:requestIds.get(request),at:Date.now()});};
  const onRequest=request=>requestEvent('request',request),onFinished=request=>requestEvent('finished',request),onFailed=request=>requestEvent('failed',request);
  page.on('request',onRequest);page.on('requestfinished',onFinished);page.on('requestfailed',onFailed);
- await page.evaluate(fresh=>{
-  const observations=[],observe=event=>{const root=document.querySelector('[data-home-state]'),next=document.querySelector('[aria-labelledby="home-shift-label"]'),text=next?.textContent??'';observations.push({event,at:Date.now(),state:root?.getAttribute('data-home-state'),busy:root?.getAttribute('aria-busy'),fresh:text.includes(fresh),old:text.includes('Main Office Operations and Customer Support'),visible:!!next?.getClientRects().length,visibility:document.visibilityState,focused:document.hasFocus()});};
-  const observer=new MutationObserver(()=>observe('mutation'));observer.observe(document.querySelector('.employee-home'),{subtree:true,childList:true,attributes:true,characterData:true});
-  const events=['storage','focus','blur','pageshow','pagehide','online','offline'],handlers=events.map(event=>{const handler=()=>observe(event);window.addEventListener(event,handler);return [event,handler];});
-  window.__homeHeldEvidence={observations,observe,stop:()=>{observer.disconnect();for(const [event,handler] of handlers)window.removeEventListener(event,handler);}};observe('initial');
- },'Fresh '+label);
+ await page.evaluate(installHomeHeldObserver,'Fresh '+label);
  const markLate=event=>page.evaluate(event=>window.__homeHeldEvidence.observe(event),event);
  const late=gate('**/api/employee/home');await page.route(late.path,late.handler);
  try{
@@ -390,7 +393,8 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   // Waiting for fresh again here could conceal an overwrite followed by recovery.
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));await markLate('after-held-handler-settled');
   const afterFresh=await page.evaluate(()=>{const observations=window.__homeHeldEvidence.observations;return observations.slice(observations.findIndex(item=>item.event==='fresh-generation-rendered'));});
-  assert(afterFresh.every(item=>item.fresh&&!item.old),'No observed commit may restore old private rows after fresh Home is displayed');
+  assert(afterFresh.length>=2&&afterFresh[0].event==='fresh-generation-rendered','Fresh-generation observations must be present before the held reply settles');
+  assert(afterFresh.every(item=>item.visible&&item.fresh&&!item.old),'No observed commit may restore old private rows after fresh Home is displayed');
   assert((await next().innerText()).includes('Fresh '+label));assert(!(await next().innerText()).includes('Main Office Operations and Customer Support'));checks.push('H06 actual old Home response held while source and generation change cannot repopulate prior private rows');
  }finally{late.release();await late.done;await page.unroute(late.path,late.handler);lateEvidence.observations=await page.evaluate(()=>{const evidence=window.__homeHeldEvidence;evidence.observe('final');evidence.stop();delete window.__homeHeldEvidence;return evidence.observations;});page.off('request',onRequest);page.off('requestfinished',onFinished);page.off('requestfailed',onFailed);await writeFile(join(evidenceDirectory,`home-held-${engine}-${width}.json`),JSON.stringify(lateEvidence,null,2));}
 
@@ -491,8 +495,9 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='last-shift-removal';
  // The removal was published in the empty stage (held edits publish together); this is its current review.
  await refresh();
- const removed=todo().locator('a[href="/app/schedule?week='+scenario.week+'"]');
- await removed.getByText('Schedule removed',{exact:true}).waitFor();await requiredReview(removed.filter({visible:true}));
+ const removedHref='/app/schedule?week='+scenario.week;
+ const removed=todo().locator('li > :is(a.c-row,a.b-row)[href="'+removedHref+'"]:visible, li > .b-row > a.b-row__hit[href="'+removedHref+'"]:visible');
+ assert.equal(await removed.count(),1,'Exactly one current primary removal row is shown');await removed.getByText('Schedule removed',{exact:true}).waitFor();assert.equal(await removed.getAttribute('href'),removedHref);await requiredReview(removed);
  const removalResponse=await page.evaluate(async binding=>{const response=await fetch('/api/employee/home',{headers:{'X-Nevora-Home':binding},cache:'no-store'});return response.json();},binding);
  details.removalSource=removalResponse.snapshot.sources.acknowledgements;
  assert.equal(details.removalSource.state,'partial');assert.equal(details.removalSource.reason,'unpublished');
