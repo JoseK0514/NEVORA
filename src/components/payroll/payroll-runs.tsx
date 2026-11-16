@@ -28,6 +28,8 @@ import { UploadSimpleIcon } from '@phosphor-icons/react/dist/ssr/UploadSimple';
 import { WarningIcon } from '@phosphor-icons/react/dist/ssr/Warning';
 import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown';
 import { ListChecksIcon } from '@phosphor-icons/react/dist/ssr/ListChecks';
+import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
+import { keepWhole } from '@/lib/keep-whole';
 
 export type PayrollView = 'home' | 'review' | 'fix' | 'people' | 'prepare' | 'history';
 type Operation = ReturnType<typeof usePayrollOperation>;
@@ -273,10 +275,10 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
   const isTab = (href: string) => !!tabs?.some(item => item.href === href);
   const exportsHref = current ? `/app/payroll-export?start=${current.period.startDate}&end=${current.period.endDate}` : '/app/payroll-export';
   const exportsRow = <li className={isTab('/app/payroll-export') ? 'c-only-phone' : undefined}><CorpRow href={exportsHref} one title="Time exports" chevron /></li>;
-  // Backend (Nov 15, 2026): this period's timecards, with the day approval opens once the period ends (the words Time
-  // exports and Things to do use). It opens Timecards on that period.
+  // Backend (Nov 15, 2026): this period's timecards, with the day approval opens while the period runs and "Pay period
+  // ended" after (the words Things to do uses; it doesn't claim what's left to approve). It opens Timecards on that period.
   const timecards = current ? { href: `/app/timecards?start=${current.period.startDate}&end=${current.period.endDate}`,
-    line: today > current.period.endDate ? 'Approve this period’s timecards' : `Can be approved from ${quietDay(new Date(Date.parse(`${current.period.endDate}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10))}` } : null;
+    line: today > current.period.endDate ? 'Pay period ended' : `Can be approved from ${quietDay(new Date(Date.parse(`${current.period.endDate}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10))}` } : null;
   const settings = canEditSettings ? <Link className={isTab('/app/settings/payroll') ? 'c-link c-link--l c-only-phone' : 'c-link c-link--l'} href="/app/settings/payroll" aria-label="Payroll settings">Settings</Link> : undefined;
   const frequency = `${current?.frequency ? FREQUENCY[current.frequency] : ''} payroll`.trim().replace(/^payroll$/, 'Payroll');
   // Up next is one row (Nov 1 upscale): the payroll, its period and payday; it opens the next step (Prepare, Review issues,
@@ -327,12 +329,18 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
         {current ? <BCard title={open?.status === 'APPROVED' ? 'Payroll approved' : 'Prepare payroll'} id="b-payroll-steps">
           <div className="b-steps">
             {steps}
+            {/* The period's timecards read as one more line of the steps (same circle, text column and divider), above the
+              * card's action, so it doesn't trail after the button. */}
+            {timecards ? <Link className="b-step b-step--link" href={timecards.href} aria-label={`Timecards, ${timecards.line}`}>
+              <span className="b-step__n" aria-hidden="true"><ListChecksIcon weight="bold" /></span>
+              <span className="b-step__tx"><span className="b-step__t">Timecards</span><span className="b-step__s">{keepWhole(timecards.line)}</span></span>
+              <CaretRightIcon className="b-step__chev" size={18} weight="bold" aria-hidden="true" />
+            </Link> : null}
             {/* OW-005: while an overdue period leads, its Prepare is the screen's one button and this period's step is a
               * quiet teal link (as on Prepare payroll), not a second button in another style. */}
             {data && oldest ? <Link className="b-link c-pay__steplink" href={step.href} aria-label={`${step.label}, ${quietRange(current.period.startDate, current.period.endDate)}`}>{step.label}</Link>
               : <BButtonLink href={step.href} kind={step.quiet ? 'ghost' : 'teal'} full big label={`${step.label}, ${quietRange(current.period.startDate, current.period.endDate)}`}>{step.label}</BButtonLink>}
           </div>
-          {timecards ? <BList label="Timecards for this period"><BRow href={timecards.href} lead={<BIcon tone="grey"><ListChecksIcon weight="bold" /></BIcon>} title="Timecards" sub={timecards.line} /></BList> : null}
           {missing && !oldest ? <BList label="Periods with no payroll"><BRow href="/app/payroll/prepare" title="Periods with no payroll" sub="Prepare payroll for each one" end={<b className="c-num">{missing.missingCount === null ? 'Check' : String(missing.missingCount)}</b>} /></BList> : null}
         </BCard> : <BCard label="Pay schedule"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">No pay schedule yet</span><span className="b-notice__s">Set your pay schedule to see the current period.</span></span>
           {canEditSettings ? <BButtonLink href="/app/settings/payroll" kind="ghost">Settings</BButtonLink> : null}</div></BCard>}
@@ -393,7 +401,7 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
 function CorrectionDelta({ delta, names }: { delta: NonNullable<PayrollRun['correctionDelta']>; names: Record<string, string> }) {
   const changed = delta.employees.filter(row => row.deltaNetMinor !== '0');
   return <div className="c-pay__delta">
-    <p className="c-pay__detail"><b>{`Net pay on statements: ${formatSignedPayrollMoney(delta.totalNetMinor)}`}</b>{changed.length ? ` across ${plural(changed.length, 'person', 'people')}` : ' (no one’s net pay changes)'}</p>
+    <p className="c-pay__detail"><b>{`Net pay on statements: ${formatSignedPayrollMoney(delta.totalNetMinor)}`}</b>{changed.length ? ` across ${plural(changed.length, 'person', 'people')}` : delta.totalNetMinor === '0' ? ' (no one’s net pay changes)' : ''}</p>
     {changed.length ? <ul className="c-pay__deltalist" aria-label="Net pay changes by person">{changed.map(row => <li key={row.employeeId}>
       <span>{names[row.employeeId] ?? 'A team member'}</span>
       <span className="c-num">{`was ${formatPayrollMoney(row.previousNetMinor)} · now ${formatPayrollMoney(row.netMinor)}`}</span>

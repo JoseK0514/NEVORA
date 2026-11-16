@@ -13,11 +13,11 @@
   /* A card's first and last rows: the inside ring follows the card's corners. */
 
   /* ---------- Time ranges (Jose, Nov 15, 2026, item 5): BWhen renders both forms; a phone shows the short one ---------- */
-  @media (max-width: 767px) {
-    :is(#c-root, html) body .app-shell[data-nv-b] .b-when-f { display: none !important; }
-  }
+  /* The full form is hidden by default and swapped in from 768px, so no width (a zoomed 767.5px included) shows both. */
+  :is(#c-root, html) body .app-shell[data-nv-b] .b-when-f { display: none !important; }
   @media (min-width: 768px) {
     :is(#c-root, html) body .app-shell[data-nv-b] .b-when-s { display: none !important; }
+    :is(#c-root, html) body .app-shell[data-nv-b][data-nv-b] .b-when-f { display: inline !important; }
   }
 
   /* ---------- Touch targets (NV-008, NV-127, NV-265): 44px hit areas without changing the drawn size ---------- */

@@ -305,10 +305,11 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 @media (hover: hover) { :is(#c-root, html) .c-pay .c-pay__icon-btn:hover { background: #F7F8F8; color: var(--c-ink); } }
 @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-pay .c-pay__icon-btn { transition: none; } }
 @media (max-width: 599px) {
-  :is(#c-root, html) .c-pay .c-pay__stmt { grid-template-areas: "name act" "detail detail"; }
+  /* Phones: the name and its line take the full width, and View and Download sit on their own line under them. (They
+   * shared the first line with negative margins, so the filled Download pill covered "Shared with employee".) */
+  :is(#c-root, html) .c-pay .c-pay__stmt { grid-template-columns: minmax(0, 1fr); grid-template-areas: "name" "detail" "act"; }
   :is(#c-root, html) .c-pay .c-pay__stmt .c-row__title { align-self: center; }
-  /* The 44px View and Download keep their hit area but take only the first line's 20px. */
-  :is(#c-root, html) .c-pay .c-pay__stmt-actions { margin-top: -12px; margin-bottom: -12px; }
+  :is(#c-root, html) .c-pay .c-pay__stmt-actions { justify-content: flex-start; margin: var(--c-space-8, 8px) 0 0 -4px; }
 }
 
 /* Time exports: the one file type is a plain row, not a choice. */

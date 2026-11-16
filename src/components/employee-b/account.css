@@ -179,6 +179,11 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__acts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--b-space-8); padding: 0 var(--b-inset) var(--b-space-16) 66px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__acts > .b-btn { width: 100%; min-height: 40px; border-radius: var(--b-radius-pill); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__acts > .b-btn svg { flex: none; }
+/* On the narrowest phones (320px) two equal halves left "✓ Acknowledge" wider than its pill. Open takes only its own
+ * width there and Acknowledge the rest, so each label stays inside its button. */
+@media (max-width: 359px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__acts { grid-template-columns: auto minmax(0, 1fr); }
+}
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update { padding: var(--b-space-16) var(--b-inset) 18px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-space-4) var(--b-space-8); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update__head h2 { font-size: var(--b-fs-title); line-height: var(--b-lh-title); font-weight: 700; letter-spacing: -0.015em; text-wrap: balance; overflow-wrap: break-word; }

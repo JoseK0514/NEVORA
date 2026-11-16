@@ -108,6 +108,9 @@ const needsReview=(item:TimecardItem)=>{const review=classifyTimecardReview(item
 const isApproved=(item:TimecardItem)=>item.state==='APPROVED'||item.state==='FINALIZED';
 // A row says why it needs review in a few words; the detail keeps every reason in full.
 // OW-014: "Waiting" is the one word for something that needs a decision, so the chip reads "Correction waiting".
+/** On the narrowest phones (under 360px) a long status in a row with a wide hours figure would be cut off ("Missing
+ * clock-…"), so it uses a shorter word there; every other width keeps the full one (the full one is what is read aloud). */
+const NARROW_STATUS:Readonly<Record<string,string>>={'Missing clock-out':'No clock-out'};
 const reasonNames:Partial<Record<TimecardIssue,string>>={open_entry:'Missing clock-out',open_break:'Check breaks',pending_correction:'Correction waiting',overlapping_time:'Overlapping recorded time'};
 type RowTone='review'|'done'|'neutral';
 // Owner premium R7/R10 (copy table 36–38): Approve is step 1 and Finalize step 2 on every surface (lead decision, Oct 31:
@@ -361,13 +364,14 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   // The panel's confirmation belongs to the card it was said for; another card or another week drops it.
   useEffect(()=>{setDone(current=>current&&current.employeeId!==openId?null:current);},[openId,period]);
   // Jose (Nov 15, 2026): the pressed Approve (or Finalize) button leaves with the save, so keyboard focus would fall to the
-  // top of the page. It moves to "Next timecard" when there is one, otherwise to the confirmation itself.
+  // top of the page. It moves to "Next timecard" when there is one, otherwise to the person's name at the top of the sheet
+  // (the confirmation announces itself as a status, so focusing it would have it read twice).
   const doneKey=done?`${done.employeeId}:${done.revision}:${done.action}`:null;
   useEffect(()=>{
    if(!doneKey)return;
    const frame=requestAnimationFrame(()=>{
     const sheet=document.querySelector<HTMLElement>('.c-tc-sheet');
-    const target=sheet?.querySelector<HTMLElement>('.c-tc-sheet__next')??sheet?.querySelector<HTMLElement>('.c-tc-sheet__done');
+    const target=sheet?.querySelector<HTMLElement>('.c-tc-sheet__next')??sheet?.querySelector<HTMLElement>('#cm-tc-sheet-title');
     const lost=!document.activeElement||document.activeElement===document.body||!document.activeElement.isConnected;
     if(target&&lost)target.focus();
    });
@@ -515,7 +519,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           {/* Closing F1 (NV-029): the decision is confirmed in the panel at once, in words, while the fresh read runs. */}
           {/* OW-037: the success is a block, not a line: a green circle with a check, the word, and how far the period is. The
             * sentence that names the person stays for screen readers. */}
-          {done?.employeeId===openItem.card.employeeId?<div className="c-tc-sheet__done" role="status" tabIndex={-1}><BIcon tone="green"><CheckIcon weight="bold"/></BIcon>
+          {done?.employeeId===openItem.card.employeeId?<div className="c-tc-sheet__done" role="status"><BIcon tone="green"><CheckIcon weight="bold"/></BIcon>
             <span className="c-tc-sheet__donetx"><b aria-hidden="true">{done.action==='finalized'?'Finalized':'Approved'}</b>
               <span className="c-sr">{`${done.name==='This'?'This':`${done.name}’s`} timecard is ${done.action==='finalized'?'finalized':'approved'}.`}</span>
               <span className="c-num">{`${doneCount(done.action)} of ${cards.length} done`}</span></span>
@@ -711,7 +715,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               const parts=[tone?null:row.text,breaks].filter(Boolean) as string[];
               return <BRow key={id} onClick={()=>setOpenId(id)} label={[name,isOwn(item)?'You':null,row.text,hours].filter(Boolean).join(', ')} lead={<BAvatar name={name}/>}
                 title={name} chip={isOwn(item)?youChip:undefined}
-                sub={tone||parts.length?<span className="c-tc-sub">{tone?<BChip tone={tone}>{row.text}</BChip>:null}{parts.map((part,index)=><span key={part}>{index||tone?' · ':''}{part}</span>)}</span>:undefined}
+                sub={tone||parts.length?<span className="c-tc-sub">{tone?<BChip tone={tone}>{NARROW_STATUS[row.text]?<><span className="c-tc-chip-full">{row.text}</span><span className="c-tc-chip-short" aria-hidden="true">{NARROW_STATUS[row.text]}</span></>:row.text}</BChip>:null}{parts.map((part,index)=><span key={part}>{index||tone?' · ':''}{part}</span>)}</span>:undefined}
                 end={hours?<b className="c-num c-tc-hours">{hours}</b>:undefined} chevron/>;
             })}</BList>
           </BCard>:null}

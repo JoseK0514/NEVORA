@@ -18,6 +18,11 @@ describe("Owner Home: plan and billing notice", () => {
     expect(out).toContain("5 days left. Choose a plan to keep using NEVORA.");
     expect(out).toContain('href="/app/billing"');
   });
+  it("the trial's last day says so (never \"1 day left\" on day 0)", () => {
+    const out = html(snap(status({ trialEndsAt: "2026-11-15T20:00:00Z" }), { id: "trial:x:1", kind: "TRIAL_ENDING", dueAt: "2026-11-15T20:00:00Z", daysRemaining: 0, href: "/app/billing" }), "UTC");
+    expect(out).toContain("Last day. Choose a plan to keep using NEVORA.");
+    expect(html(snap(status({ trialEndsAt: "2026-11-16T20:00:00Z" }), { id: "trial:x:1", kind: "TRIAL_ENDING", dueAt: "2026-11-16T20:00:00Z", daysRemaining: 1, href: "/app/billing" }), "UTC")).toContain("1 day left.");
+  });
   it("a failed renewal says what to do and until when access continues, never that anything was paid", () => {
     const out = html(snap(status({ state: "grace", reason: "payment_failed", graceEndsAt: "2026-11-22T12:00:00Z" }), { id: "payment:x", kind: "PAYMENT_FAILED", dueAt: "2026-11-22T12:00:00Z", daysRemaining: 7, href: "/app/billing" }), "UTC");
     expect(out).toContain("We couldn’t charge your card");

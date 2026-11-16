@@ -22,12 +22,14 @@ export function BScreen({ children, ink, back }: { children: ReactNode; ink?: bo
 }
 
 /** The brand hero: the shell's header floats over its top; the title, one white action and live figures sit on it. */
-export function BHero({ title, titleId, eyebrow, sub, right, back, children, big }: {
+export function BHero({ title, titleId, eyebrow, sub, right, back, children, big, offlineInTitle }: {
   title: ReactNode; titleId?: string; eyebrow?: ReactNode; sub?: ReactNode; right?: ReactNode; children?: ReactNode;
   /** A pushed page's way back; `close` (a form's Cancel) draws an X instead of the back chevron. */
   back?: { href: string; label: string; close?: boolean };
   /** Home's 34px sentence instead of a 30px page title. */
   big?: boolean;
+  /** The title itself says the page is offline, so the offline pill isn't drawn under it. */
+  offlineInTitle?: boolean;
 }) {
   return <header className="b-hero">
     {back ? <Link className="b-back" href={back.href}><span className="b-back__ic b-glass" aria-hidden="true">{back.close ? <XIcon size={20} weight="bold" /> : <CaretLeftIcon size={20} weight="bold" />}</span>{back.label}</Link> : null}
@@ -36,7 +38,7 @@ export function BHero({ title, titleId, eyebrow, sub, right, back, children, big
         {eyebrow ? <p className="b-eyebrow">{eyebrow}</p> : null}
         <h1 id={titleId} tabIndex={titleId ? -1 : undefined}>{title}</h1>
         {sub ? <p className="b-sub">{sub}</p> : null}
-        <BOffline />
+        <BOffline said={offlineInTitle} />
       </div>
       {right ? <div className="b-title__right">{right}</div> : null}
     </div>
@@ -266,9 +268,9 @@ export function BLoadingScreen({ title, back, sub, strip, action, band, frame = 
  * card, at every width. The band ends at the short height and the card is a state card's width on tablets and desktop
  * (b-tokens.css). The older screens (the access check's paused and failed views, "… unavailable", the error pages) draw
  * through it, so a state looks the same wherever it comes from. `children` is the card's content, a BState. */
-export function BStateScreen({ title, titleId, sub, back, children, after }: { title: ReactNode; titleId?: string; sub?: ReactNode; back?: { href: string; label: string }; children: ReactNode; after?: ReactNode }) {
+export function BStateScreen({ title, titleId, sub, back, children, after, offlineInTitle }: { offlineInTitle?: boolean; title: ReactNode; titleId?: string; sub?: ReactNode; back?: { href: string; label: string }; children: ReactNode; after?: ReactNode }) {
   return <div className={back ? "b-screen b-screen--back" : "b-screen"} data-b-state="" data-b-band="short" data-b-frame="state">
-    <BHero title={title} titleId={titleId} sub={sub} back={back} />
+    <BHero title={title} titleId={titleId} sub={sub} back={back} offlineInTitle={offlineInTitle} />
     <BStack><BCard>{children}</BCard>{after ?? null}</BStack>
   </div>;
 }

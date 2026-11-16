@@ -38,7 +38,8 @@ export default async function LoginPage({
   const errorId = params.error ? "login-error" : undefined;
   // Review B4 (Nov 10, 2026, NV-189): a wrong ID or password marks both fields red (it never says which one). Too many
   // attempts is a wait (amber) and a deleting account is not a field problem, so neither marks the fields.
-  const fieldsInvalid = params.error && params.error !== "busy" && params.error !== "deleting" ? true : undefined;
+  // A temporary password that was right but couldn't start its replacement ("replace") isn't a field problem either.
+  const fieldsInvalid = params.error && params.error !== "busy" && params.error !== "deleting" && params.error !== "replace" ? true : undefined;
   const wait = params.error === "busy";
   // Inspection Nov 14, 2026. PB-006: after an error the Employee ID comes back as typed and only the password is retyped.
   // RA-5: a session that ended says so, calmly (teal, not red), and sign-in returns to the page the person was on.
@@ -61,7 +62,7 @@ export default async function LoginPage({
           {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
           {/* Direction B (Nov 8, 2026): the error and the activated notice read at the top of the form card. Red stops you,
             * amber means wait, green is done; each note leads with its icon. */}
-          {params.error ? <p className={`q-error q-auth__alert${wait ? " q-auth__alert--wait" : ""}`} id="login-error" role="alert">{wait ? <HourglassMediumIcon size={20} weight="bold" aria-hidden="true" /> : <WarningCircleIcon size={20} weight="bold" aria-hidden="true" />}<span>{params.error === "deleting" ? t.loginDeleting : wait ? t.loginBusy : t.loginError}</span></p> : null}
+          {params.error ? <p className={`q-error q-auth__alert${wait ? " q-auth__alert--wait" : ""}`} id="login-error" role="alert">{wait ? <HourglassMediumIcon size={20} weight="bold" aria-hidden="true" /> : <WarningCircleIcon size={20} weight="bold" aria-hidden="true" />}<span>{params.error === "deleting" ? t.loginDeleting : params.error === "replace" ? t.loginReplace : wait ? t.loginBusy : t.loginError}</span></p> : null}
           {params.activated ? <p className="q-help q-auth__alert" role="status"><CheckCircleIcon size={20} weight="bold" aria-hidden="true" /><span>{t.activated}</span></p> : null}
           {ended ? <p className="q-auth__alert q-auth__alert--info" role="status"><InfoIcon size={20} weight="bold" aria-hidden="true" /><span>{t.sessionEnded}</span></p> : null}
           <PasswordSignInMarker />

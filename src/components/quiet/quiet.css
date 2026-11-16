@@ -865,7 +865,9 @@ html[data-q-sheet] { overflow: hidden; }
 :is(#q-root, html) .q-notif-list .q-row:not([data-unread]) .q-rt b { font-weight: 500; }
 :is(#q-root, html) .q-notif-list .q-row > .q-chev { flex: none; margin-left: 6px; color: #B5BBBF; }
 /* Jose (Nov 15, 2026, item 8): a folded row opens in place. Its chevron turns down, and its notifications sit under it,
- * indented to the row's text, each one its own link (opened one at a time, read one at a time). */
+ * their text under the group's text, each one its own link (opened one at a time, read one at a time). */
 :is(#q-root, html) .q-notif-list .q-row > .q-chev[data-open] { transform: rotate(90deg); }
 @media (prefers-reduced-motion: no-preference) { :is(#q-root, html) .q-notif-list .q-row > .q-chev { transition: transform 150ms ease-out; } }
-:is(#q-root, html) .q-notif-list .q-notif-held { margin: 0; padding: 0 0 0 52px; list-style: none; }
+:is(#q-root, html) .q-notif-list .q-notif-held { margin: 0; padding: 0; list-style: none; }
+/* Rows inside an opened group keep an empty icon slot (same size as the kit's icon), so their text sits under the group's. */
+:is(#q-root, html) .q-notif-list .q-notif-heldrow > .q-notif-spacer { visibility: hidden; }

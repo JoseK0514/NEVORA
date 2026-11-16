@@ -64,7 +64,8 @@ export async function login(formData: FormData) {
     const replacement=await issueInitialPasswordReplacement(employee.id,employee);
     // Codex (Nov 15 handoff): the kept Employee ID stays on every expected failure and is cleared on the transfer to
     // the replacement screen, as after a successful sign-in.
-    if(replacement.state!=='issued'){await keepLoginId(typedId);redirect(`/login?error=invalid${returnQuery}`);}
+    // The password was right: say so honestly (not "incorrect") and keep the Employee ID for the retry.
+    if(replacement.state!=='issued'){await keepLoginId(typedId);redirect(`/login?error=replace${returnQuery}`);}
     const proof=await publicWorkspaceToken('RECOVERY',replacement.proof,Date.parse(replacement.expiresAt));
     await clearLoginId();
     redirect(`/reset-access#proof=${encodeURIComponent(proof)}`);

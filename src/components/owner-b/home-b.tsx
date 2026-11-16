@@ -98,7 +98,7 @@ export function HomeB(props: HomeBProps) {
   const openHref = gaps?.length === 1 && gapRows[0] ? gapRows[0].href : "/app/schedule";
 
   return <BScreen>
-    <BHero big eyebrow={eyebrow} title={title} sub={<><span role="status" className="b-sr">{props.summary}</span></>}>
+    <BHero big eyebrow={eyebrow} title={title} offlineInTitle={!value && offline} sub={<><span role="status" className="b-sr">{props.summary}</span></>}>
       {/* Review B1 (NV-117): the date is a fact on the band, not a glass button. */}
       <div className="b-hrow"><span className="b-date" aria-hidden="true"><CalendarBlankIcon size={15} weight="bold" />{props.dateLabel}</span></div>
       <BLive label="Right now" items={[

@@ -65,7 +65,10 @@ export function correctionLine(correction: NonNullable<ActionItem['correction']>
   const day = new Intl.DateTimeFormat('en-US', {weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC'}).format(new Date(`${correction.workDate}T12:00:00Z`)).replace(/ (\d+)$/, `${NBSP}$1`);
   const asked = `${time(askedStart)} – ${time(askedEnd)}`;
   if (wasStart === null && wasEnd === null) return `${day} · Add ${asked}`;
-  if (wasStart === null || wasEnd === null || wasEnd <= wasStart) return wasStart === null ? `${day} · ${asked}` : `${day} · ${asked}, was ${time(wasStart)} with no clock-out`;
+  // Only a start recorded: an open entry. A recorded end with no start, or an end not after the start, can't be described
+  // truthfully, so the line gives the requested time alone.
+  if (wasStart !== null && wasEnd === null) return `${day} · ${asked}, was ${time(wasStart)} with no clock-out`;
+  if (wasStart === null || wasEnd === null || wasEnd <= wasStart) return `${day} · ${asked}`;
   const change = Math.round(((askedEnd - askedStart) - (wasEnd - wasStart)) / 60_000);
   return `${day} · ${asked}, was ${time(wasStart)} – ${time(wasEnd)} · ${change === 0 ? 'same length' : `${change > 0 ? '+' : '−'}${lengthText(Math.abs(change))}`}`;
 }

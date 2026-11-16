@@ -101,3 +101,9 @@ it('keeps each time in a correction line whole with a narrow no-break space', ()
   const line = correctionLine({workDate: '2026-11-02', timeZone: 'America/Puerto_Rico', recordedStartAt: '2026-11-02T14:55:00Z', recordedEndAt: '2026-11-02T22:01:00Z', requestedStartAt: '2026-11-02T14:55:00Z', requestedEndAt: '2026-11-02T21:21:00Z'})!;
   expect(line).toContain('10:55 AM – 5:21 PM, was 10:55 AM – 6:01 PM');
 });
+
+it('a recorded end that is not after its start is not described; the line gives the requested time alone', () => {
+  const line = correctionLine({workDate: '2026-11-11', timeZone: 'UTC', recordedStartAt: '2026-11-11T17:00:00Z', recordedEndAt: '2026-11-11T09:00:00Z', requestedStartAt: '2026-11-11T09:00:00Z', requestedEndAt: '2026-11-11T17:00:00Z'})!;
+  expect(line.replace(/[\u00a0\u202f]/g, ' ')).toBe('Wed, Nov 11 · 9:00 AM – 5:00 PM');
+  expect(correctionLine({workDate: '2026-11-11', timeZone: 'UTC', recordedStartAt: null, recordedEndAt: '2026-11-11T17:00:00Z', requestedStartAt: '2026-11-11T09:00:00Z', requestedEndAt: '2026-11-11T17:00:00Z'})!.replace(/[\u00a0\u202f]/g, ' ')).toBe('Wed, Nov 11 · 9:00 AM – 5:00 PM');
+});

@@ -157,7 +157,8 @@ it('a verified operator password issues only a replacement proof, never an opera
 });
 it('replacement issuance failure and a wrong operator password stay signed out',async()=>{
  state.credential.mockResolvedValue({...(await state.credential()),must_change_password:true});state.replacement.mockResolvedValue({state:'unavailable'});
- await expect(login(form())).rejects.toThrow('redirect:/login?error=invalid');expect(state.create).not.toHaveBeenCalled();
+ // The password was right, so the page says the replacement couldn't start, never "incorrect".
+ await expect(login(form())).rejects.toThrow('redirect:/login?error=replace');expect(state.create).not.toHaveBeenCalled();
  // An expected failure keeps the Employee ID as typed for the form (HttpOnly, short-lived).
  expect(state.jar.get('nv-login-id')?.value).toBeTruthy();expect(state.jar.get('nv-login-id')?.options.httpOnly).toBe(true);
  state.replacement.mockClear();state.verify.mockResolvedValue(false);await expect(login(form())).rejects.toThrow('redirect:/login?error=invalid');expect(state.replacement).not.toHaveBeenCalled();

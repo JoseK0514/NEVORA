@@ -284,9 +284,10 @@ describe('Payroll reads the current period and correction differences from the s
     expect(html).not.toContain('Oct 5 – 11');
     expect(html).toContain('href="/app/timecards?start=2026-11-09&amp;end=2026-11-15"');
     expect(html).toContain('Can be approved from Mon, Nov 16');
-    // The day after the period ends, the line asks for the approval itself.
+    // The day after the period ends, the line says so, without claiming what is still left to approve.
     boundary.data = { ...boundary.data!, currentPeriod: { ...boundary.data!.currentPeriod!, asOfDate: '2026-11-16' } };
-    expect(home()).toContain('Approve this period’s timecards');
+    expect(home()).toContain('>Pay period ended<');
+    expect(home()).not.toContain('Approve this period');
   });
   it('null means no pay schedule; an older read without the field keeps the route’s period', () => {
     boundary.data = { ...boundary.data!, currentPeriod: null };
@@ -313,4 +314,18 @@ describe('Payroll reads the current period and correction differences from the s
     boundary.data = { ...boundary.data!, runs: [original, { ...correction, correctionDelta: null }] };
     expect(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="review" runId="run-correction" />)).not.toContain('Net pay on statements');
   });
+});
+
+it('the phone steps card lists Timecards as a step line before its action, and a non-zero total with no per-person change says no more', () => {
+  boundary.data = { version: 'PAYROLL_API_V1', capabilities: nativeCapabilities, runs: [], jobs: [], currentPeriod: { period: { startDate: '2026-11-09', endDate: '2026-11-15' }, payday: '2026-11-20', asOfDate: '2026-11-15', timeZone: 'America/Puerto_Rico', settingsRevision: 2 } };
+  const phone = onlyB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="home" current={current} canEditSettings />));
+  const card = phone.slice(phone.indexOf('id="b-payroll-steps"'));
+  expect(card).toMatch(/<a class="b-step b-step--link"[^>]*href="\/app\/timecards\?start=2026-11-09&amp;end=2026-11-15"/);
+  expect(card.replace(/[\u00a0\u2009\u202f]/g, ' ')).toContain('aria-label="Timecards, Can be approved from Mon, Nov 16"');
+  expect(card.indexOf('b-step--link')).toBeLessThan(card.indexOf('Prepare payroll</a>'));
+  const original = nativeRun({ id: 'run-original', status: 'APPROVED' });
+  boundary.data = { ...boundary.data, runs: [original, nativeRun({ id: 'run-c', correctionOf: 'run-original', correctionDelta: { totalNetMinor: '500', employees: [{ employeeId: 'E1', previousNetMinor: '100', netMinor: '100', deltaNetMinor: '0' }] } })] };
+  const html = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="review" runId="run-c" />).replace(/\u00a0/g, ' ');
+  expect(html).toContain('Net pay on statements: +$5.00</b></p>');
+  expect(html).not.toContain('no one’s net pay changes');
 });

@@ -221,6 +221,6 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  const title=kind==='offline'?'You’re offline':kind==='paused'?'View paused':'Couldn’t check your access';
  const line=kind==='offline'?'Reconnect to see this page.':kind==='paused'?'Come back to this window to see current information.':'Try again to load this page.';
  return <div className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
-  <BStateScreen title={title} back={{href:'/app',label:'Home'}}><BState kind={kind} line={line} action={{label:'Try again',onClick:refreshCurrent}}/></BStateScreen>
+  <BStateScreen title={title} back={{href:'/app',label:'Home'}} offlineInTitle={kind==='offline'}><BState kind={kind} line={line} action={{label:'Try again',onClick:refreshCurrent}}/></BStateScreen>
  </div>;
 }

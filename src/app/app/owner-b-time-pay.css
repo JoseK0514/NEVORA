@@ -34,14 +34,23 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__donetx { display: flex !important; flex-direction: column !important; min-width: 0 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__donetx > b { font-size: var(--b-fs-body) !important; line-height: 20px !important; font-weight: 600 !important; color: var(--b-ink) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__donetx > .c-num { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 400 !important; color: var(--b-grey-on-fill) !important; }
-  /* Jose (Nov 15, 2026, item 4): "Next timecard" is the block's tinted pill at its right edge; it drops under the words
-   * when the sheet is too narrow for both. */
+  /* Jose (Nov 15, 2026, item 4): "Next timecard" is the block's tinted pill at its right edge (44px, the kit's target);
+   * it drops under the words when the sheet is too narrow for both. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__done { flex-wrap: wrap !important; row-gap: var(--b-space-8) !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__done > .c-tc-sheet__next { flex: none !important; width: auto !important; margin: 0 0 0 auto !important; min-height: 40px !important; padding: 0 var(--b-space-16) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-body-sm) !important; font-weight: 600 !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet :is(#cm-tc-sheet-title, .c-tc-sheet__done):focus:not(:focus-visible) { outline: none !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__done:focus-visible { outline: 2px solid var(--b-teal) !important; outline-offset: 2px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__done > .c-tc-sheet__next { flex: none !important; width: auto !important; margin: 0 0 0 auto !important; min-height: var(--b-target) !important; padding: 0 var(--b-space-16) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-body-sm) !important; font-weight: 600 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet #cm-tc-sheet-title:focus:not(:focus-visible) { outline: none !important; }
+  /* Payroll's steps card: the period's Timecards is one more step line (a link), with a chevron at its end. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-steps > .b-step--link { align-items: center !important; color: var(--b-ink) !important; text-decoration: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-steps > .b-step--link .b-step__n > svg { width: 16px !important; height: 16px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-steps > .b-step--link .b-step__chev { flex: none !important; color: var(--b-field-edge) !important; }
   /* Backend (Nov 15, 2026): a correction's net pay changes by person: name, then was/now, then the signed difference. */
+  /* On phones card text that isn't a row sits 2px in (owner-b-pages.css, "the last 2px to the row text"); the correction
+   * card's heading and its list of changes take the same 2px, so every line of the card starts at one edge. */
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay [aria-label="Correction"] :is(b.c-pay__strong, .c-pay__deltalist) { padding-left: var(--b-space-2) !important; padding-right: var(--b-space-2) !important; }
+  }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-pay__deltalist { display: grid !important; gap: var(--b-space-8) !important; margin: var(--b-space-8) 0 !important; padding: 0 !important; list-style: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-pay__deltalist > li > span { min-width: 0 !important; overflow-wrap: anywhere !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-pay__deltalist > li { display: grid !important; grid-template-columns: minmax(0, 1fr) auto !important; column-gap: var(--b-space-12) !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; color: var(--b-ink) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-pay__deltalist > li > span:nth-child(2) { grid-column: 1 !important; grid-row: 2 !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-pay__deltalist > li > b { grid-column: 2 !important; grid-row: 1 / span 2 !important; align-self: center !important; font-weight: 600 !important; }
@@ -81,10 +90,20 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .c-tc-sub > span:first-child { flex: 0 1 auto !important; min-width: 0 !important; max-width: 100% !important; overflow: hidden !important; text-overflow: ellipsis !important; }
   }
   @media (max-width: 359px) {
-    /* 320px: the hours column is as wide as its figure, so names and statuses keep the room. */
+    /* 320px: the hours column is as wide as its figure, so names and statuses keep the room. A status chip ("Correction
+     * waiting", "Missing clock-out") showed cut off ("Correction wai…"): the row's gaps, the chip's side padding and the
+     * hours figure (to the kit's body-small size) each give a little, which frees the room it needs. The row's outer inset
+     * (aligned with the card heading) is unchanged. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .b-row__end { min-width: 0 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .b-row { gap: var(--b-space-8) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .b-row { gap: 6px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .b-row__end b { font-size: var(--b-fs-body-sm) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .c-tc-sub > .b-chip { padding-left: 6px !important; padding-right: 6px !important; }
+    /* The full word stays for screen readers (hidden only visually); the short one is aria-hidden. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .c-tc-chip-full { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-tc-team .c-tc-chip-short { display: inline !important; }
   }
+  /* The short status word is only for the narrowest phones (above). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-chip-short { display: none !important; }
 
   /* ---------- Time corrections ---------- */
   /* OW-015 and the Phase 2 leftover: the count and the note about times are the band's sub-line, so the heading leaves

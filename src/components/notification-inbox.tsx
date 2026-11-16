@@ -23,6 +23,7 @@ import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import type {PrivatePanelState} from '../lib/private-snapshot-client';
 import type {EmployeeNotificationItem,EmployeeViewSnapshot,NotificationReviewState,NotificationActionState} from '../lib/employee-view';
 import {collapseNotifications,filterNotifications,groupNotifications,notificationPresentation,notificationTitle,type NotificationFilter} from '../lib/notification-inbox-view';
+import {notificationCountNote,notificationName,notificationOutcomeNote} from '../lib/notification-facts';
 import {relativeTimeText} from '../lib/duration-format';
 import styles from './notification-inbox.module.css';
 import './notification-inbox-corp.css';
@@ -75,12 +76,28 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
   const rows=onMarkRead?collapseNotifications(sorted):sorted.map(item=>({item,count:1,unreadIds:item.reviewState==='unread'?[item.id]:[],items:[item]}));
   // One notification's row: what it is, then when. Opening it marks that one read (never the others in a fold).
   const chev=(open?:boolean)=><svg className="q-chev" data-open={open||undefined} viewBox="0 0 256 256" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/></svg>;
+  // A relative time never breaks inside itself on a narrow phone ("5 h ago", not "5 / h ago").
+  const ago=(at:string)=>relativeTimeText(at,undefined,zone).replace(/(\d+) (h|min|d|days?|hours?|minutes?)\b/g,'$1\u00a0$2');
+  // A notification inside an opened group: the group's row already names the kind, so each row leads with its own facts
+  // ("16 waiting", a name, a later status) and its time; with none, the time alone. An invisible spacer the width of
+  // the icon keeps its text under the group's text at every width (the kit sets the row's padding and icon size).
+  const heldRow=(item:EmployeeNotificationItem)=>{
+   const review=item.reviewState??'unavailable',text=notificationTitle(item);
+   const facts=[notificationName(item),notificationOutcomeNote(item),notificationCountNote(item)].filter((fact):fact is string=>!!fact).join(' · ');
+   return <Link className="q-row q-row--av q-notif-heldrow" data-unread={review==='unread'||undefined} href={item.href} prefetch={false} aria-label={`${[text.title,facts||null].filter(Boolean).join(', ')}, ${reviewLabels[review]}, ${whenLong(item.at,zone)}`}
+    onClick={()=>{if(review==='unread')void markRead(item.id);}}>
+    <span className="q-av q-notif-spacer" aria-hidden="true"/>
+    <span className="q-rt">{facts?<><b>{facts}</b><i><time dateTime={item.at}>{ago(item.at)}</time></i></>:<b><time dateTime={item.at}>{ago(item.at)}</time></b>}</span>
+    {review==='unread'?<span className="q-notif-dot" aria-hidden="true"/>:null}
+    {chev()}
+   </Link>;
+  };
   const oneRow=(item:EmployeeNotificationItem)=>{
    const Icon=icons[notificationPresentation(item.label,item.eventType).icon],review=item.reviewState??'unavailable',text=notificationTitle(item);
    return <Link className="q-row q-row--av" data-unread={review==='unread'||undefined} href={item.href} prefetch={false} aria-label={`${[text.title,text.detail].filter(Boolean).join(', ')}, ${reviewLabels[review]}, ${whenLong(item.at,zone)}`}
     onClick={()=>{if(review==='unread')void markRead(item.id);}}>
     <span className="q-av" aria-hidden="true"><Icon weight="bold" className="q-ic" aria-hidden="true"/></span>
-    <span className="q-rt"><b>{text.title}</b><i>{text.detail?<>{text.detail} · </>:null}<time dateTime={item.at}>{relativeTimeText(item.at,undefined,zone)}</time></i></span>
+    <span className="q-rt"><b>{text.title}</b><i>{text.detail?<>{text.detail} · </>:null}<time dateTime={item.at}>{ago(item.at)}</time></i></span>
     {/* Round 5: unread shows, not only in the label (a teal dot), and the row reads as a link (chevron). */}
     {review==='unread'?<span className="q-notif-dot" aria-hidden="true"/>:null}
     {chev()}
@@ -115,11 +132,11 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
         aria-label={`${text.title}, ${count} notifications${unreadIds.length?`, ${unreadIds.length} unread`:''}, latest ${whenLong(item.at,zone)}`}
         onClick={()=>setExpanded(ids=>ids.includes(item.id)?ids.filter(id=>id!==item.id):[...ids,item.id])}>
         <span className="q-av" aria-hidden="true"><Icon weight="bold" className="q-ic" aria-hidden="true"/></span>
-        <span className="q-rt"><b>{text.title}</b><i><span className="b-notif-nw">{count} notifications ·</span> <span className="b-notif-nw">latest <time dateTime={item.at}>{relativeTimeText(item.at,undefined,zone)}</time></span></i></span>
+        <span className="q-rt"><b>{text.title}</b><i><span className="b-notif-nw">{count} notifications ·</span> <span className="b-notif-nw">latest <time dateTime={item.at}>{ago(item.at)}</time></span></i></span>
         {unreadIds.length?<span className="q-notif-dot" aria-hidden="true"/>:null}
         {chev(open)}
        </button>
-       {open?<ul className="q-list q-notif-held" id={listId} aria-label={`${text.title}, ${count} notifications`}>{held.map(one=><li key={one.id}>{oneRow(one)}</li>)}</ul>:null}
+       {open?<ul className="q-list q-notif-held" id={listId} aria-label={`${text.title}, ${count} notifications`}>{held.map(one=><li key={one.id}>{heldRow(one)}</li>)}</ul>:null}
       </li>;
      })}</ul>
      // MG-008: an empty list doesn't mean nothing is waiting. Requests are decided in Things to do, so the card says so

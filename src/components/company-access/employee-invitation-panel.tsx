@@ -82,7 +82,7 @@ function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;i
    {/* Backend (Nov 15, 2026): deliveryAvailable says whether invitation email is configured for this workplace (not that
      * any email arrived). When it isn't, the reason shows before anyone tries to send; a Manager's read is read-only
      * (allowedCommands is empty), so it says who sends invitations. */}
-   {status.eligibility==='INVITABLE'&&!status.deliveryAvailable&&!deliveryOff&&<p role="status">Email invitations aren’t turned on for this workplace yet, so an invitation can’t be sent. Contact <a className="c-link" href="mailto:support@thevelani.com">support@thevelani.com</a>.</p>}
+   {status.eligibility==='INVITABLE'&&!status.deliveryAvailable&&!deliveryOff&&<p>Email invitations aren’t turned on for this workplace yet, so an invitation can’t be sent. Contact <a className="c-link" href="mailto:support@thevelani.com">support@thevelani.com</a>.</p>}
    {status.eligibility==='INVITABLE'&&status.deliveryAvailable&&!status.allowedCommands.length&&<p>An Owner sends invitations.</p>}
    {status.invitation&&<p>{deliveryText[status.delivery]}</p>}
   </div>:<p role="status">{deniedAccess?'Your access changed, so you can’t manage invitations.':'The invitation didn’t load. Refresh to try again.'}</p>}

@@ -75,6 +75,30 @@ one, otherwise to the confirmation block (it was lost to the top of the page). `
 | Browser, owned app on fictional local PostgreSQL (Owner, Manager, Employee; 320, 390, 900, 1440) | Things to do correction lines and request kinds; Owner Home setup row ("5 of 7 done") and tiles; Payroll Up next with the Timecards link and a real correction's difference (+$39.53, Ana Colon); notifications (Owner summaries, Employee event titles and shift counts); keyboard approval puts focus on "Next timecard" with a visible ring; no horizontal overflow on the pages checked |
 | Not seen in a browser | The "Time clock · Not set up" tile (the fixture has a registered tablet; unit-tested); the invitation panel (every fixture person is activated; unit-tested); the billing notice (commerce is off locally, so the read is 404 and nothing shows; unit-tested); the central billing page's post-await pending read (needs the central billing API) |
 
+## Quality pass after review (Jose, Nov 15, 2026)
+
+A visual sweep (Owner, Manager and Employee at 320, 390, 900 and 1440, with folds, offline, approval and a payroll
+correction) and an independent code review found these; all are fixed in the follow-up commit:
+
+- Opened notification groups: rows line up under the group's text (an empty icon slot), lead with their own facts
+  ("16 waiting") and keep "5 h ago" whole. Before, titles broke onto 4 lines at 320.
+- Payroll phone steps card: Timecards is a step line above the action, aligned with the steps; after the period it says
+  "Pay period ended" (it no longer claims "Approve this period's timecards").
+- Correction card: the person list and heading take the card text's 2px inset; a non-zero total with no per-person change
+  no longer says "no one's net pay changes"; a recorded end not after its start gives the requested time alone.
+- Older layouts: Timecards chips at 320 show whole (tighter gaps, and "No clock-out" for "Missing clock-out" under 360px,
+  with the full words kept for screen readers); Employee Updates "Acknowledge" fits its pill at 320; payroll document
+  rows put View and Download on their own line under 600px (Download covered "Shared with employee").
+- "Next timecard" is 44px; with no next card, focus goes to the person's name (not the status block, read twice).
+- Offline is said once when the band's title already says "You're offline"; the band pill marks itself before paint.
+- Trial notice: "Last day." on day 0. Billing-off (404) stops asking on tab focus. BWhen can't show both forms at a
+  fractional width. Invitation reason line has no live-region role.
+- Sign-in: a correct temporary password whose replacement couldn't start now reads "We couldn't start setting your new
+  password. Try again in a minute." (`error=replace`, English and Spanish) instead of "incorrect".
+
+New or changed labels for the manuals and QA scripts: "No clock-out" (under 360px), "Pay period ended" (Payroll steps),
+the sign-in `replace` message, opened-group rows without a repeated title.
+
 ## Owed to Codex's combined integration
 
 1. **User manuals**: `src/test/manual-publication.test.ts` fails on any source change and stays failing until the

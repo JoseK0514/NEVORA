@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { HourglassMediumIcon } from "@phosphor-icons/react/dist/ssr/HourglassMedium";
 import type { BillingNotice } from "@/lib/commerce/billing-notice";
@@ -26,7 +26,7 @@ export function billingNoticeWords(notice: BillingNotice, status: CommerceStatus
   switch (notice.kind) {
     case "TRIAL_ENDING":
       return { tone: "amber", title: due ? `Your free trial ends ${due}` : "Your free trial ends soon",
-        line: `${left === null ? "" : left <= 1 ? "1 day left. " : `${left} days left. `}Choose a plan to keep using NEVORA.` };
+        line: `${left === null ? "" : left <= 0 ? "Last day. " : left === 1 ? "1 day left. " : `${left} days left. `}Choose a plan to keep using NEVORA.` };
     case "PAYMENT_FAILED":
       return { tone: status.state === "restricted" ? "red" : "amber", title: "We couldn’t charge your card",
         line: `Update your payment method.${due && status.state !== "restricted" ? ` Access continues until ${due}.` : ""}` };
@@ -51,16 +51,18 @@ export function BillingNoticeView({ snapshot, timeZone }: { snapshot: BillingSna
 /** The Owner's live read. Billing off (404), a failed read or another role shows nothing: the notice is optional on Home. */
 export function OwnerBillingNotice({ timeZone }: { timeZone?: string }) {
   const [snapshot, setSnapshot] = useState<BillingSnapshot | null>(null);
+  // Billing off (404) or no Owner access: remembered, so coming back to the tab doesn't ask again.
+  const closed = useRef(false);
   useEffect(() => {
     const controller = createPrivateSnapshotController<BillingSnapshot>(view => setSnapshot(view.paused ? null : view.snapshot), async signal => {
       const response = await fetch("/api/commerce/status", { cache: "no-store", credentials: "same-origin", redirect: "error", signal });
       // Billing off (404) or no Owner access: nothing to show, and no point asking again.
-      if (response.status === 401 || response.status === 403 || response.status === 404) return { state: "unavailable", reason: "access_denied" };
+      if (response.status === 401 || response.status === 403 || response.status === 404) { closed.current = true; return { state: "unavailable", reason: "access_denied" }; }
       if (!response.ok) throw Error("Billing status unavailable");
       return response.json();
     }, value => value && typeof value === "object" && "state" in value && value.state === "unavailable" ? { state: "unavailable", reason: "access_denied" } : parseBillingSnapshot(value),
     reason => ({ state: "unavailable", reason }), () => "read_failed");
-    const sync = () => { if (document.visibilityState === "visible" && navigator.onLine) controller.start(); else controller.pause(); };
+    const sync = () => { if (closed.current) return; if (document.visibilityState === "visible" && navigator.onLine) controller.start(); else controller.pause(); };
     sync();
     document.addEventListener("visibilitychange", sync); window.addEventListener("online", sync); window.addEventListener("offline", sync);
     return () => { controller.stop(); document.removeEventListener("visibilitychange", sync); window.removeEventListener("online", sync); window.removeEventListener("offline", sync); };

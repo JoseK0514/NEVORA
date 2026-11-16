@@ -32,7 +32,11 @@ it('opens a fold in place to list every notification, and marks none read by ope
  expect(fold().props['aria-expanded']).toBe(true);
  // Each notification is its own link to its own open route, which marks only that one.
  for(const id of ['a','b','c'])expect(open).toContain(`href="/app/notifications/open?notificationId=${id}"`);
- expect(open.match(/q-notif-held/g)).toHaveLength(1);
+ expect(open.match(/class="q-list q-notif-held"/g)).toHaveLength(1);
+ // Rows inside the group keep an empty icon slot (text under the group's) and don't repeat its title.
+ const held=open.slice(open.indexOf('q-notif-held'));
+ expect(held.match(/q-notif-spacer/g)).toHaveLength(3);
+ expect(held).not.toContain('<b>Things to do are waiting for you</b>');
  // Opening one held notification marks that one read, not the others.
  const link=nodes(render()).find(n=>n.props.href==='/app/notifications/open?notificationId=c')!;
  (link.props.onClick as ()=>void)();
