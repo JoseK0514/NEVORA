@@ -17,18 +17,23 @@ export function mapWeekendHistory(source:GenerationSource,workspaceId:string,tim
   const week=String(revision.week_start),old=latest.get(week);
   if(!old||Number(revision.revision_number)>Number(old.revision_number))latest.set(week,revision);
  }
- const knownWeeks=[...new Set(schedules.map(s=>String(s.week_start)))].sort().map(weekStart=>({weekStart,locationIds:[...new Set(schedules.filter(s=>s.week_start===weekStart).map(s=>String(s.location_id)))].sort()}));
+ // Archived parents do not prove absence in a location: later whole-week
+ // publications may omit them. Positive attributable rows are retained below.
+ const knownWeeks=[...new Set([...schedules.map(s=>String(s.week_start)),...latest.keys()])].sort().map(weekStart=>({weekStart,locationIds:[...new Set(schedules.filter(s=>s.week_start===weekStart&&s.status==='PUBLISHED').map(s=>String(s.location_id)))].sort()}));
  const assignments:GenerationAssignment[]=[];
  const revisionMap=new Map([...latest.values()].map(r=>[r.id,r]));
  for(const row of source.schedule_publication_revision_shifts){
   const revision=revisionMap.get(row.revision_id);
   if(!revision||latest.get(String(revision.week_start))?.id!==row.revision_id||!locations.has(String(row.location_id)))continue;
+  if(scheduleMap.get(row.schedule_id)?.status==='ARCHIVED')continue;
   assignments.push({id:String(row.source_shift_id??`${row.revision_id}:${row.id}`),employeeId:String(row.employee_id),scheduleId:String(row.schedule_id),locationId:String(row.location_id),date:String(row.date),startTime:String(row.start_time).slice(0,5),endTime:String(row.end_time).slice(0,5),scheduleStatus:'PUBLISHED',isCalloutApproved:row.is_callout_approved===true,hasExchangeHistory:false,hasCalloutHistory:false,hasPublicationHistory:true});
  }
  for(const row of source.shifts){
-  const parent=scheduleMap.get(row.schedule_id);if(!parent||latest.has(String(parent.week_start)))continue;
+  const parent=scheduleMap.get(row.schedule_id);if(!parent||parent.status==='PUBLISHED'&&latest.has(String(parent.week_start)))continue;
   const schedule={id:String(parent.id),locationId:String(parent.location_id),weekStart:String(parent.week_start),status:parent.status as 'PUBLISHED'|'ARCHIVED'};
-  assignments.push({id:String(row.id),employeeId:String(row.employee_id),scheduleId:String(row.schedule_id),locationId:String(parent.location_id),date:String(row.date),startTime:String(row.start_time).slice(0,5),endTime:String(row.end_time).slice(0,5),scheduleStatus:parent.status as 'PUBLISHED'|'ARCHIVED',isCalloutApproved:source.shift_callouts.some(c=>calloutReleasesShift(c,row,schedule,workspaceId,timeZone)),hasExchangeHistory:false,hasCalloutHistory:false,hasPublicationHistory:false});
+  const published=parent.status==='ARCHIVED'&&latest.has(String(parent.week_start))?source.schedule_publication_revision_shifts.filter(p=>p.source_shift_id===row.id&&p.location_id===parent.location_id&&p.employee_id===row.employee_id&&p.date===row.date&&String(p.start_time).slice(0,5)===String(row.start_time).slice(0,5)&&String(p.end_time).slice(0,5)===String(row.end_time).slice(0,5)).sort((a,b)=>Number(source.schedule_publication_revisions.find(r=>r.id===b.revision_id)?.revision_number??0)-Number(source.schedule_publication_revisions.find(r=>r.id===a.revision_id)?.revision_number??0))[0]:undefined;
+  if(parent.status==='ARCHIVED'&&latest.has(String(parent.week_start))&&!published)continue;
+  assignments.push({id:String(row.id),employeeId:String(row.employee_id),scheduleId:String(row.schedule_id),locationId:String(parent.location_id),date:String(row.date),startTime:String(row.start_time).slice(0,5),endTime:String(row.end_time).slice(0,5),scheduleStatus:parent.status as 'PUBLISHED'|'ARCHIVED',isCalloutApproved:published?.is_callout_approved===true||source.shift_callouts.some(c=>calloutReleasesShift(c,row,schedule,workspaceId,timeZone)),hasExchangeHistory:false,hasCalloutHistory:false,hasPublicationHistory:!!published});
  }
  const employeeSince:Record<string,string>={};
  const formatter=new Intl.DateTimeFormat('en-CA',{timeZone,year:'numeric',month:'2-digit',day:'2-digit'});

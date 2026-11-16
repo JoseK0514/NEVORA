@@ -4,6 +4,8 @@ import { mapSchedulingSourceFacts } from './scheduling-source-facts';
 import type { GenerationSource } from './generation-guards';
 import {mapWeekendHistory} from './scheduling-weekend-history';
 import {applyRestrictionCommand,emptyRestrictionDocument} from '../scheduling/restrictions';
+import {mapGenerationSource} from './schedule-generation-snapshot';
+import {planWeek} from '../scheduling/generation/planner';
 const source = (): GenerationSource => Object.assign(Object.fromEntries(['locations', 'positions', 'employees', 'employee_location_eligibility', 'employee_positions', 'employee_scheduling_settings', 'location_staffing_settings', 'location_coverage_windows', 'coverage_window_position_requirements', 'availability_windows', 'weekly_availability_windows', 'weekly_availability_submissions', 'availability_exceptions', 'time_off_requests', 'schedule_week_settings', 'schedules', 'shifts', 'shift_callouts', 'shift_exchanges', 'schedule_publication_revisions', 'schedule_publication_revision_shifts', 'schedule_generation_exclusions'].map(k => [k, []])), { workspaces: [{ id: 'work', active: true, time_zone: 'America/Puerto_Rico' }] }) as unknown as GenerationSource;
 const scope = { workspaceId: 'work', startDate: '2026-10-05', endDate: '2026-10-12', retainAdjacentCommitments: true as const };
 it('A032/A090 keeps distant preceding/following cross-location commitments independent of owning week', () => { const s = source(); s.locations = [{ id: 'loc', workspace_id: 'work', active: true }]; s.schedules = [{ id: 's', location_id: 'loc', week_start: '2020-01-06', status: 'PUBLISHED' }]; s.shifts = ['2026-09-01', '2026-11-01'].map((date, i) => ({ id: `shift${i}`, schedule_id: 's', employee_id: 'e', date, start_time: '08:00', end_time: '16:00' })); expect(mapSchedulingSourceFacts(s, scope).ledger.map(x => x.date)).toEqual(['2026-09-01', '2026-11-01']); });
@@ -18,7 +20,7 @@ it('weekend history uses the latest published snapshot over staged rows and reta
  const history=mapWeekendHistory(s,'work','America/Puerto_Rico','2026-10-05');
  expect(history.assignments.map(r=>r.id).sort()).toEqual(['current','legacy']);
  expect(history.employeeSince).toEqual({e:'2026-09-01'});
- expect(history.knownWeeks).toEqual([{weekStart:'2026-09-21',locationIds:['loc']},{weekStart:'2026-09-28',locationIds:['loc']}]);
+ expect(history.knownWeeks).toEqual([{weekStart:'2026-09-21',locationIds:[]},{weekStart:'2026-09-28',locationIds:['loc']}]);
 });
 it('projects dated firm rules without disclosing private agreement reasons or request receipts',()=>{
  const s=source();s.locations=[{id:'loc',workspace_id:'work',active:true}];s.employees=[{id:'e',primary_location_id:'loc',active:true}];
@@ -27,4 +29,25 @@ it('projects dated firm rules without disclosing private agreement reasons or re
  const employee=mapSchedulingSourceFacts(s,scope).employees[0];
  expect(employee.managementRestrictions).toEqual([{id:'11111111-1111-4111-8111-111111111111',effectiveWeek:'2026-10-05',unavailable:[]}]);
  expect(JSON.stringify(employee)).not.toContain('PRIVATE AGREEMENT DETAIL');
+});
+it('canonical generation includes the immediately preceding weekend despite its wider availability horizon',()=>{
+ const s=source();s.locations=[{id:'loc',workspace_id:'work',active:true,short_name:'Fictional'}];
+ s.employees=['owner','e1','e2'].map(id=>({id,primary_location_id:'loc',active:true,role:id==='owner'?'OWNER':'EMPLOYEE',created_at:'2026-09-01T00:00:00Z'}));
+ s.employee_location_eligibility=['e1','e2'].map(employee_id=>({employee_id,location_id:'loc'}));
+ const document=applyRestrictionCommand(emptyRestrictionDocument(),{kind:'SET',operationId:'11111111-1111-4111-8111-111111111111',expectedRevision:0,effectiveWeek:'2026-08-31',unavailable:[],reason:'Confirmed'},{actorId:'owner',actorRole:'OWNER',now:'2026-08-25T00:00:00.000Z',earliestWeek:'2026-08-31'}).document;
+ s.employee_scheduling_settings=['e1','e2'].map(employee_id=>({employee_id,management_restrictions:document,...(employee_id==='e1'?{target_weekly_hours:40}:{})}));
+ s.location_staffing_settings=[{location_id:'loc',minimum_staff_per_shift:1,requires_designated_lead:false}];s.location_coverage_windows=[{id:'window',location_id:'loc',day_of_week:6,start_time:'08:00',end_time:'16:00'}];
+ s.schedules=[{id:'prior',location_id:'loc',week_start:'2026-09-28',status:'PUBLISHED'},{id:'draft',location_id:'loc',week_start:'2026-10-05',status:'DRAFT'}];
+ s.shifts=[{id:'last-weekend','schedule_id':'prior',employee_id:'e1',date:'2026-10-03',start_time:'08:00',end_time:'16:00'}];
+ const snapshot=mapGenerationSource({workspaceId:'work',actorEmployeeId:'owner',weekStart:'2026-10-05',mode:'FILL_GAPS_ONLY',locationScope:{kind:'ALL'}},s,'2026-10-01T12:00:00Z');
+ expect(snapshot.input.weekendHistory?.knownWeeks).toContainEqual({weekStart:'2026-09-28',locationIds:['loc']});
+ expect(planWeek(snapshot.input).additions[0].employeeId).toBe('e2');
+});
+it('retains archived published work omitted by a later publication for another location',()=>{
+ const s=source();s.locations=[{id:'archived-loc',workspace_id:'work',active:true},{id:'current-loc',workspace_id:'work',active:true}];
+ s.schedules=[{id:'archived',location_id:'archived-loc',week_start:'2026-09-28',status:'ARCHIVED'},{id:'published',location_id:'current-loc',week_start:'2026-09-28',status:'PUBLISHED'}];
+ s.shifts=[{id:'retained',schedule_id:'archived',employee_id:'e',date:'2026-10-03',start_time:'08:00',end_time:'16:00'}];
+ s.schedule_publication_revisions=[{id:'first',week_start:'2026-09-28',revision_number:1},{id:'later',week_start:'2026-09-28',revision_number:2}];
+ s.schedule_publication_revision_shifts=[{id:'retained-revision',revision_id:'first',source_shift_id:'retained',schedule_id:'archived',location_id:'archived-loc',employee_id:'e',date:'2026-10-03',start_time:'08:00',end_time:'16:00'},{id:'other',revision_id:'later',source_shift_id:'other-shift',schedule_id:'published',location_id:'current-loc',employee_id:'other',date:'2026-10-03',start_time:'08:00',end_time:'16:00'}];
+ expect(mapWeekendHistory(s,'work','America/Puerto_Rico','2026-10-05').assignments.map(a=>a.id)).toContain('retained');
 });

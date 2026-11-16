@@ -9,6 +9,9 @@ import {assignOperationalScope,readOwnerOperationalScope} from '../../lib/compan
 import {generateWeekDraft} from '../../lib/data/schedule-generation';
 import {getShiftValidationContext} from '../../lib/data/schedules';
 import {validateShift} from '../../lib/scheduling/validate-shift';
+import {publishScheduleWithRevision} from '../../lib/data/publication-revisions';
+import {addDays} from '../../lib/date-utils';
+import {applyRestrictionCommand,emptyRestrictionDocument,RestrictionError} from '../../lib/scheduling/restrictions';
 vi.mock('server-only',()=>({}));
 let database:Awaited<ReturnType<typeof createDisposableGenerationDatabase>>;
 const q=(text:string,values:readonly unknown[]=[])=>database.executor.query<Record<string,unknown>>({text,values});
@@ -89,6 +92,38 @@ it('revoked Manager scope cannot be reused after the approval read',async()=>{
  }};
  await expect(mutateSchedulingRestrictions(manager,'worker',command,racing)).rejects.toThrow('denied');
  expect(await q("SELECT * FROM employee_scheduling_settings WHERE employee_id='worker'")).toEqual([]);
+});
+it('refuses first publication of an unchanged draft assignment made ineligible by a new restriction',async()=>{
+ await q("INSERT INTO schedules(id,location_id,week_start,created_by) VALUES('draft','loc-1','2030-10-07','owner'); INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('retained','draft','worker','2030-10-13','08:00','16:00'); INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) VALUES('old-preference','worker',0,'00:00','24:00')");
+ await mutateSchedulingRestrictions(owner,'worker',command,database.executor);
+ await expect(publishScheduleWithRevision({locationId:'loc-1',weekStart:'2030-10-07',managerId:'owner',proof:owner},database.executor)).rejects.toThrow();
+ expect(await q("SELECT status FROM schedules WHERE id='draft'")).toEqual([{status:'DRAFT'}]);
+ expect(await q('SELECT * FROM schedule_publication_revisions')).toEqual([]);
+});
+it('reserved approval capacity fits PostgreSQL canonical JSONB bytes at worst admitted Unicode lengths',async()=>{
+ const context={actorId:'worker',actorRole:'EMPLOYEE' as const,now:'2026-11-15T12:00:00.000Z',earliestWeek:'2030-10-07'};
+ const unavailable=Array.from({length:128},(_,i)=>({dayOfWeek:0,startTime:`${String(Math.floor(i*10/60)).padStart(2,'0')}:${String(i*10%60).padStart(2,'0')}`,endTime:`${String(Math.floor((i*10+5)/60)).padStart(2,'0')}:${String((i*10+5)%60).padStart(2,'0')}`}));
+ let document=emptyRestrictionDocument();
+ for(let i=0;i<128;i++){
+  try{document=applyRestrictionCommand(document,{kind:'REQUEST',operationId:`bbbbbbbb-bbbb-4bbb-8bbb-${i.toString(16).padStart(12,'0')}`,expectedRevision:document.revision,effectiveWeek:'2030-10-07',unavailable,reason:'Requested change'},context).document;}
+  catch(error){if(!(error instanceof RestrictionError)||error.code!=='capacity')throw error;break;}
+ }
+ const requests=[...document.requests];
+ for(const [i,request] of requests.entries())document=applyRestrictionCommand(document,{kind:'DECIDE',operationId:`dddddddd-dddd-4ddd-8ddd-${i.toString(16).padStart(12,'0')}`,expectedRevision:document.revision,requestId:request.id,decision:'APPROVE',effectiveWeek:addDays('2030-10-07',i*7),reason:'\u0800'.repeat(500)},{...context,actorId:'\u0800'.repeat(200),actorRole:'OWNER'}).document;
+ const [size]=await q('SELECT octet_length($1::jsonb::text) AS bytes',[JSON.stringify(document)]);
+ expect(Number(size.bytes)).toBeLessThanOrEqual(1048576);
+ await q('INSERT INTO employee_scheduling_settings(employee_id,management_restrictions) VALUES($1,$2::jsonb)',['worker',JSON.stringify(document)]);
+});
+it('rechecks a restriction approved between publication read and transaction',async()=>{
+ await q("INSERT INTO schedules(id,location_id,week_start,created_by) VALUES('draft','loc-1','2030-10-07','owner'); INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('retained','draft','worker','2030-10-13','08:00','16:00')");
+ let intercepted=false;
+ const racing:SqlExecutor={query:database.executor.query,transaction:async statements=>{
+  if(!intercepted&&statements.some(s=>s.text.includes("UPDATE schedules SET status='PUBLISHED'"))){intercepted=true;await mutateSchedulingRestrictions(owner,'worker',command,database.executor);}
+  return database.executor.transaction(statements);
+ }};
+ await expect(publishScheduleWithRevision({locationId:'loc-1',weekStart:'2030-10-07',managerId:'owner',proof:owner},racing)).rejects.toThrow();
+ expect(intercepted).toBe(true);expect(await q("SELECT status FROM schedules WHERE id='draft'")).toEqual([{status:'DRAFT'}]);
+ expect(await q('SELECT * FROM schedule_publication_revisions')).toEqual([]);
 });
 it.each(['deadline','publication'])('refuses a newly closed %s week inserted between read and write',async kind=>{
  let intercepted=false;

@@ -26,6 +26,7 @@ import type { SessionMutationProof } from '../shift-changes/types';
 import { assertManagementProof, managementSessionStatements } from './management-session';
 import { generationSourceSql, generationMutationGuards, type GenerationSource } from './generation-guards';
 import { ManualAssignmentConflictError, validateManualAssignments } from './manual-assignment-validation';
+import {validatePublicationRestrictions} from './publication-restrictions';
 import { assertCoverageRepairReview } from './coverage-repair.server';
 import { CoverageRepairConflictError } from '../scheduling/coverage-repair';
 import type { EmployeePublicationProjection, RecipientAccess, ScheduleSourceSnapshot } from '../notifications/types';
@@ -49,6 +50,7 @@ export type GuardedShift = PublishedShiftSnapshot & {
     approvedCalloutEmployeeId?: string | null;
 };
 export type AssignmentFacts = {
+    schedulingRestrictionDocuments?:{employeeId:string;document:unknown}[];
     workspace: Pick<Workspace,'id'|'active'|'timeZone'>;
     locations: Pick<Location,'id'|'workspaceId'|'active'>[];
     positions: Position[];
@@ -218,7 +220,8 @@ export const notificationStateExpression = (weeks="$1") => `jsonb_build_object(
     'workspace',(SELECT jsonb_build_object('id',id,'active',active,'timeZone',time_zone) FROM workspaces WHERE singleton=true),
     'locations',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'workspaceId',workspace_id,'active',active) ORDER BY id) FROM locations),'[]'::jsonb),
     'positions',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'workspaceId',workspace_id,'name',name,'active',active,'createdAt',created_at::text,'updatedAt',updated_at::text) ORDER BY id) FROM positions),'[]'::jsonb),
-    'memberships',COALESCE((SELECT jsonb_agg(jsonb_build_object('employeeId',employee_id,'positionId',position_id) ORDER BY employee_id,position_id) FROM employee_positions),'[]'::jsonb)),
+    'memberships',COALESCE((SELECT jsonb_agg(jsonb_build_object('employeeId',employee_id,'positionId',position_id) ORDER BY employee_id,position_id) FROM employee_positions),'[]'::jsonb),
+    'schedulingRestrictionDocuments',COALESCE((SELECT jsonb_agg(jsonb_build_object('employeeId',ss.employee_id,'document',to_jsonb(ss)->'management_restrictions') ORDER BY ss.employee_id) FROM employee_scheduling_settings ss WHERE to_jsonb(ss)->'management_restrictions' IS NOT NULL AND to_jsonb(ss)->'management_restrictions'<>'null'::jsonb),'[]'::jsonb)),
   'schedules', COALESCE((SELECT jsonb_agg(t ORDER BY t.id) FROM (
     SELECT id, location_id AS "locationId", week_start::text AS "weekStart", status, updated_at::text AS "updatedAt"
     FROM schedules WHERE week_start=ANY(${weeks}::date[])) t),'[]'::jsonb),
@@ -391,6 +394,7 @@ export type PreparedPublishedChange = { guards: SqlStatement[]; statements: SqlS
 export function preparePublishedWeekChange(input: PublishedChangePlanInput): PreparedPublishedChange {
  const {state,batch,config}=input;
  const weeks=[...new Set(input.weekStarts)].sort();
+ validatePublicationRestrictions(state,batch);
  const operational=operationalWriteFootprint(state,batch,input.sourceType==='PUBLISH'||input.coverageRepairReview!==undefined);
         // Only a changed assignment requires current eligibility. Retained historical
         // inactive facts and request-status-only writes must remain readable/writable.

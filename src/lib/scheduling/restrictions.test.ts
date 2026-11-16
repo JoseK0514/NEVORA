@@ -1,5 +1,6 @@
 import {describe,expect,it} from 'vitest';
 import {applyRestrictionCommand,emptyRestrictionDocument,parseRestrictionCommand,parseRestrictionDocument,resolveRestrictionDay,RestrictionError} from './restrictions';
+import {addDays} from '../date-utils';
 
 const op='11111111-1111-4111-8111-111111111111', requestId='22222222-2222-4222-8222-222222222222', decisionId='33333333-3333-4333-8333-333333333333';
 const sunday=[{dayOfWeek:0,startTime:'00:00',endTime:'24:00'}];
@@ -79,13 +80,36 @@ describe('management scheduling restrictions',()=>{
   expect(()=>parseRestrictionDocument({schemaVersion:1,revision:1,versions:[{}],requests:[]})).toThrow(RestrictionError);
   expect(parseRestrictionDocument(null)).toEqual(emptyRestrictionDocument());
  });
- it('allows management to decide pending requests when the request-history admission limit is reached',()=>{
-  const pending=applyRestrictionCommand(emptyRestrictionDocument(),{...set(),kind:'REQUEST',operationId:requestId},{...context,actorId:'worker',actorRole:'EMPLOYEE'}).document.requests[0];
-  const document={schemaVersion:1 as const,revision:1024,versions:[],requests:Array.from({length:1024},(_,i)=>{
-   const id=`aaaaaaaa-aaaa-4aaa-8aaa-${i.toString(16).padStart(12,'0')}`;
-   return {...structuredClone(pending),id,operation:{...pending.operation,receipt:{...pending.operation.receipt,operationId:id,id,revision:i+1}}};
-  })};
-  const result=applyRestrictionCommand(document,{kind:'DECIDE',operationId:decisionId,expectedRevision:1024,requestId:document.requests[0].id,decision:'DENY',reason:'Request reviewed'},context);
-  expect(result.document.requests[0].status).toBe('DENIED');expect(result.document.revision).toBe(1025);
+ it('allows management to deny pending requests when approved-version admission is full',()=>{
+  let document=emptyRestrictionDocument();
+  for(let i=0;i<256;i++)document=applyRestrictionCommand(document,{...set(),operationId:`aaaaaaaa-aaaa-4aaa-8aaa-${i.toString(16).padStart(12,'0')}`,expectedRevision:i,effectiveWeek:addDays('2030-10-07',i*7)},context).document;
+  document=applyRestrictionCommand(document,{...set(),kind:'REQUEST',operationId:requestId,expectedRevision:256},{...context,actorId:'worker',actorRole:'EMPLOYEE'}).document;
+  const result=applyRestrictionCommand(document,{kind:'DECIDE',operationId:decisionId,expectedRevision:257,requestId,decision:'DENY',reason:'Request reviewed'},context);
+  expect(result.document.requests[0].status).toBe('DENIED');expect(result.document.revision).toBe(258);
+ });
+ it('rejects a request receipt masquerading as direct management approval',()=>{
+  const document=applyRestrictionCommand(emptyRestrictionDocument(),{...set(),unavailable:[]},context).document;
+  document.versions[0].operation.receipt.kind='REQUEST';
+  expect(()=>parseRestrictionDocument(document)).toThrow(RestrictionError);
+ });
+ it.each(['orphan','different-hours','different-reason','request-decision'])('rejects mismatched approved request provenance: %s',mutation=>{
+  let document=applyRestrictionCommand(emptyRestrictionDocument(),{...set(),kind:'REQUEST',operationId:requestId},{...context,actorId:'worker',actorRole:'EMPLOYEE'}).document;
+  document=applyRestrictionCommand(document,{kind:'DECIDE',operationId:decisionId,expectedRevision:1,requestId,decision:'APPROVE',effectiveWeek:'2030-10-07',reason:'Approved'},context).document;
+  if(mutation==='orphan')document.versions[0].requestId='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+  if(mutation==='different-hours')document.versions[0].unavailable=[];
+  if(mutation==='different-reason')document.versions[0].reason='Other reason';
+  if(mutation==='request-decision'){document.versions[0].operation.receipt.kind='REQUEST';document.requests[0].decision!.operation.receipt.kind='REQUEST';}
+  expect(()=>parseRestrictionDocument(document)).toThrow(RestrictionError);
+ });
+ it('reserves byte capacity for worst-case decisions before accepting large requests',()=>{
+  let document=emptyRestrictionDocument(),capacity=false;
+  const unavailable=Array.from({length:128},(_,i)=>({dayOfWeek:0,startTime:`${String(Math.floor(i*10/60)).padStart(2,'0')}:${String(i*10%60).padStart(2,'0')}`,endTime:`${String(Math.floor((i*10+5)/60)).padStart(2,'0')}:${String((i*10+5)%60).padStart(2,'0')}`}));
+  for(let i=0;i<128;i++){
+   try{document=applyRestrictionCommand(document,{...set(),kind:'REQUEST',operationId:`bbbbbbbb-bbbb-4bbb-8bbb-${i.toString(16).padStart(12,'0')}`,expectedRevision:document.revision,unavailable},{...context,actorId:'worker',actorRole:'EMPLOYEE'}).document;}
+   catch(error){expect(error).toBeInstanceOf(RestrictionError);expect((error as RestrictionError).code).toBe('capacity');capacity=true;break;}
+  }
+  expect(capacity).toBe(true);expect(document.requests.length).toBeGreaterThan(0);
+  for(const [i,request] of document.requests.entries())document=applyRestrictionCommand(document,{kind:'DECIDE',operationId:`dddddddd-dddd-4ddd-8ddd-${i.toString(16).padStart(12,'0')}`,expectedRevision:document.revision,requestId:request.id,decision:'DENY',reason:'\u0800'.repeat(500)},{...context,actorId:'\u0800'.repeat(200)}).document;
+  expect(document.requests.every(r=>r.status==='DENIED')).toBe(true);expect(Buffer.byteLength(JSON.stringify(document))).toBeLessThanOrEqual(1048576);
  });
 });

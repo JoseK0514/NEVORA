@@ -51,3 +51,16 @@ it('does not give a new employee credit for weekends before the record existed',
  const {input,history}=fixture();history.employeeSince.e2='2026-10-02';
  expect(weekendBurden(input.employees[1],input.weekStart,history).eligibleWeekends).toBe(0);
 });
+it('does not invent weekends off before the first effective agreement',()=>{
+ const {input,history}=fixture();Object.assign(input.employees[1],{managementRestrictions:[{...rules()[0],effectiveWeek:'2026-10-05'}]});
+ expect(weekendBurden(input.employees[1],input.weekStart,history)).toMatchObject({eligibleWeekends:0,lastWeekendWorked:null});
+});
+it('requires complete location publication evidence before inferring a weekend off',()=>{
+ const {input,history}=fixture();input.employees[1].eligibleLocationIds=['loc-1','loc-2'];
+ expect(weekendBurden(input.employees[1],input.weekStart,history)).toMatchObject({eligibleWeekends:0,lastWeekendWorked:null});
+});
+it('retains positive Sunday work when Saturday was released or approved leave/restriction also exists',()=>{
+ const {input,history}=fixture();history.assignments=[automaticAssignment('released','e1',{date:'2026-10-03',scheduleStatus:'PUBLISHED',isCalloutApproved:true}),automaticAssignment('worked','e1',{date:'2026-10-04',scheduleStatus:'PUBLISHED'})];
+ input.employees[0].approvedTimeOff=[{startDate:'2026-10-03',endDate:'2026-10-03',status:'APPROVED'}];
+ expect(weekendBurden(input.employees[0],input.weekStart,history)).toMatchObject({eligibleWeekends:2,workedWeekends:1,lastWeekendWorked:true});
+});

@@ -15,6 +15,7 @@ export type SchedulingFactScope = {
     startDate: string;
     endDate: string;
     retainAdjacentCommitments: true;
+    historyWeekStart?:string;
 };
 export type SchedulingSourceFacts = Pick<GenerationInput, 'workspace' | 'locations' | 'positions' | 'schedules' | 'staffing' | 'coverageWindows' | 'employees' | 'ledger' | 'policy' | 'weekendHistory'>;
 const time = (v: unknown) => String(v).slice(0, 5);
@@ -57,7 +58,7 @@ export function mapSchedulingSourceFacts(source: GenerationSource, scope: Schedu
         updatedAt: String(p.updated_at)
     }));
     return {
-        ...(source.employee_scheduling_settings.some(s=>s.management_restrictions!=null)?{weekendHistory:mapWeekendHistory(source,String(w.id),String(w.time_zone),firstWeek)}:{}),
+        ...(source.employee_scheduling_settings.some(s=>s.management_restrictions!=null)?{weekendHistory:mapWeekendHistory(source,String(w.id),String(w.time_zone),scope.historyWeekStart??firstWeek)}:{}),
         workspace: {
             id: String(w.id),
             name: String(w.name),

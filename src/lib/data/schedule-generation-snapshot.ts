@@ -51,7 +51,7 @@ export function mapGenerationSource(request: GenerationRequest, source: Generati
   const w = source.workspaces.find(w => w.id === request.workspaceId && w.active === true);
   const actor = source.employees.find(e => e.id === request.actorEmployeeId && e.active === true && ['OWNER', 'MANAGER'].includes(String(e.role)));
   if (!w || !actor || !source.locations.some(l => l.id === actor.primary_location_id && l.workspace_id === w.id)) throw new GenerationPermissionError();
-  const facts = mapSchedulingSourceFacts(source,{workspaceId:request.workspaceId,startDate:addDays(request.weekStart,-7),endDate:addDays(request.weekStart,7),retainAdjacentCommitments:true});
+  const facts = mapSchedulingSourceFacts(source,{workspaceId:request.workspaceId,startDate:addDays(request.weekStart,-7),endDate:addDays(request.weekStart,7),retainAdjacentCommitments:true,historyWeekStart:request.weekStart});
   const scope=structuredClone(request.locationScope);
   if(scope.kind==='SELECTED' && scope.locationIds.some(id=>!facts.locations.some(l=>l.id===id))) throw new GenerationScopeError();
   const input:GenerationInput={...facts,weekStart:request.weekStart,mode:request.mode,scope,

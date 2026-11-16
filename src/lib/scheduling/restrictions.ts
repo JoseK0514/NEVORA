@@ -5,7 +5,7 @@ import {businessDateStart,timeMinutes} from './periods';
 import type {AvailabilityHours} from './availability';
 
 export class RestrictionError extends Error {
- constructor(readonly code:'invalid'|'denied'|'conflict'|'locked',readonly earliestWeek?:string){super(`scheduling_restrictions_${code}`);}
+ constructor(readonly code:'invalid'|'denied'|'conflict'|'locked'|'capacity',readonly earliestWeek?:string){super(`scheduling_restrictions_${code}`);}
 }
 export type RestrictionReceipt={operationId:string;revision:number;kind:'SET'|'REQUEST'|'DECIDE';status:'APPROVED'|'PENDING'|'DENIED';id:string;effectiveWeek?:string};
 type Operation={actorId:string;fingerprint:string;receipt:RestrictionReceipt};
@@ -22,10 +22,13 @@ export type RestrictionCommand=CommandBase&(
 export const emptyRestrictionDocument=():RestrictionDocument=>({schemaVersion:1,revision:0,versions:[],requests:[]});
 function invalid():never{throw new RestrictionError('invalid');}
 const record=(v:unknown):Record<string,unknown>=>v!==null&&typeof v==='object'&&!Array.isArray(v)?v as Record<string,unknown>:invalid();
-const text=(v:unknown,max=500):v is string=>typeof v==='string'&&v.length>0&&v.length<=max&&v===v.trim()&&!/[\p{Cc}\p{Cf}]/u.test(v);
+const text=(v:unknown,max=500):v is string=>typeof v==='string'&&v.length>0&&v.length<=max&&v===v.trim()&&!/[\p{Cc}\p{Cf}\p{Cs}]/u.test(v);
 const uuid=(v:unknown):v is string=>typeof v==='string'&&/^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$/i.test(v);
 const revision=(v:unknown):v is number=>typeof v==='number'&&Number.isSafeInteger(v)&&v>=0;
-const instant=(v:unknown):v is string=>typeof v==='string'&&/^\d{4}-\d\d-\d\dT.*Z$/.test(v)&&Number.isFinite(Date.parse(v));
+// JSONB's canonical text inserts separator spaces. Counting every comma/colon
+// (including any inside strings) is a conservative UTF-8 storage upper bound.
+function storageBytes(value:unknown){const json=JSON.stringify(value);return Buffer.byteLength(json,'utf8')+(json.match(/[,:]/g)?.length??0);}
+const instant=(v:unknown):v is string=>typeof v==='string'&&v.length<=40&&/^\d{4}-\d\d-\d\dT.*Z$/.test(v)&&Number.isFinite(Date.parse(v));
 function week(v:unknown):v is string {
  if(typeof v!=='string'||!/^\d{4}-\d\d-\d\d$/.test(v))return false;
  try{return businessDateStart(v)>=0&&weekStartFor(v)===v;}catch{return false;}
@@ -62,24 +65,50 @@ export function parseRestrictionDocument(value:unknown):RestrictionDocument {
  if(value===null||value===undefined)return emptyRestrictionDocument();
  const r=record(value);
  if(Object.keys(r).some(k=>!['schemaVersion','revision','versions','requests'].includes(k))||r.schemaVersion!==1||!revision(r.revision)||!Array.isArray(r.versions)||r.versions.length>256||!Array.isArray(r.requests)||r.requests.length>1024)invalid();
- const ids=new Set<string>(),receipts=new Map<string,string>();let previous='';
- const operation=(op:unknown)=>{assertOperation(op,r.revision as number);const id=op.receipt.operationId,serialized=JSON.stringify(op);if(receipts.has(id)&&receipts.get(id)!==serialized)invalid();receipts.set(id,serialized);};
+ const ids=new Set<string>(),receipts=new Map<string,string>(),revisions=new Map<number,string>();let previous='';
+ const operation=(op:unknown)=>{assertOperation(op,r.revision as number);const id=op.receipt.operationId,serialized=JSON.stringify(op);if(receipts.has(id)&&receipts.get(id)!==serialized||revisions.has(op.receipt.revision)&&revisions.get(op.receipt.revision)!==id)invalid();receipts.set(id,serialized);revisions.set(op.receipt.revision,id);};
  for(const item of r.versions){
   const v=record(item);operation(v.operation);
   if(!uuid(v.id)||ids.has(v.id)||!week(v.effectiveWeek)||v.effectiveWeek<=previous||!text(v.reason)||!text(v.approvedBy,200)||!instant(v.approvedAt)||(v.requestId!==undefined&&!uuid(v.requestId)))invalid();
   normalizeRestrictionHours(v.unavailable);ids.add(v.id);previous=v.effectiveWeek;
   const op=v.operation as Operation;if(op.actorId!==v.approvedBy||op.receipt.operationId!==v.id||op.receipt.status!=='APPROVED'||op.receipt.effectiveWeek!==v.effectiveWeek)invalid();
+  if(v.requestId===undefined?(op.receipt.kind!=='SET'||op.receipt.id!==v.id):op.receipt.kind!=='DECIDE')invalid();
  }
  for(const item of r.requests){
   const q=record(item);operation(q.operation);
   if(!uuid(q.id)||ids.has(q.id)||!week(q.effectiveWeek)||!text(q.reason)||!text(q.requestedBy,200)||!instant(q.requestedAt)||!['PENDING','APPROVED','DENIED'].includes(String(q.status)))invalid();
   normalizeRestrictionHours(q.unavailable);ids.add(q.id);
-  const op=q.operation as Operation;if(op.actorId!==q.requestedBy||op.receipt.operationId!==q.id||op.receipt.kind!=='REQUEST'||op.receipt.status!=='PENDING')invalid();
+  const op=q.operation as Operation;if(op.actorId!==q.requestedBy||op.receipt.operationId!==q.id||op.receipt.id!==q.id||op.receipt.kind!=='REQUEST'||op.receipt.status!=='PENDING')invalid();
   if(q.status==='PENDING'){if(q.decision!==undefined)invalid();}
-  else{const d=record(q.decision);operation(d.operation);if(!text(d.actorId,200)||!instant(d.at)||!text(d.reason)||(d.operation as Operation).actorId!==d.actorId||(d.operation as Operation).receipt.status!==q.status||(d.operation as Operation).receipt.id!==q.id)invalid();}
+  else{const d=record(q.decision);operation(d.operation);if(!text(d.actorId,200)||!instant(d.at)||!text(d.reason)||(d.operation as Operation).actorId!==d.actorId||(d.operation as Operation).receipt.kind!=='DECIDE'||(d.operation as Operation).receipt.status!==q.status||(d.operation as Operation).receipt.id!==q.id)invalid();}
+ }
+ for(const item of r.versions){
+  const v=item as RestrictionVersion;if(!v.requestId)continue;
+  const q=(r.requests as RestrictionRequest[]).find(q=>q.id===v.requestId),d=q?.decision;
+  if(!q||q.status!=='APPROVED'||!d||d.actorId!==v.approvedBy||d.at!==v.approvedAt||d.reason!==v.reason||JSON.stringify(d.operation)!==JSON.stringify(v.operation)||JSON.stringify(normalizeRestrictionHours(q.unavailable))!==JSON.stringify(normalizeRestrictionHours(v.unavailable)))invalid();
+ }
+ for(const q of r.requests as RestrictionRequest[]){
+  const linked=(r.versions as RestrictionVersion[]).filter(v=>v.requestId===q.id);
+  if(q.status==='APPROVED'?linked.length!==1:linked.length!==0)invalid();
+  if(q.status==='DENIED'&&q.decision!.operation.receipt.effectiveWeek!==undefined)invalid();
  }
  if(receipts.size!==r.revision)invalid();
+ if(storageBytes(r)>1048576)invalid();
  return structuredClone(r) as RestrictionDocument;
+}
+/** Reserve space for APPROVE's two immutable records using the maximum admitted
+ * valid Unicode actor/reason/timestamp/revision lengths. DENY always needs less.
+ * All admissions preserve this reserve, so accepted requests remain decidable. */
+function assertDecisionCapacity(document:RestrictionDocument){
+ const actor='\u0800'.repeat(200),reason='\u0800'.repeat(500),at='9'.repeat(40),id='ffffffff-ffff-4fff-8fff-ffffffffffff';
+ let reserved=0;
+ for(const q of document.requests.filter(q=>q.status==='PENDING')){
+  const receipt:RestrictionReceipt={operationId:id,revision:Number.MAX_SAFE_INTEGER,kind:'DECIDE',status:'APPROVED',id:q.id,effectiveWeek:'9999-12-27'};
+  const operation:Operation={actorId:actor,fingerprint:'f'.repeat(64),receipt};
+  const version={id,effectiveWeek:'9999-12-27',unavailable:q.unavailable,reason,approvedBy:actor,approvedAt:at,requestId:q.id,operation};
+  reserved+=storageBytes(version)+storageBytes({actorId:actor,at,reason,operation})+128;
+ }
+ if(storageBytes(document)+reserved>1048576)throw new RestrictionError('capacity');
 }
 export function applyRestrictionCommand(value:RestrictionDocument,input:RestrictionCommand,context:{actorId:string;actorRole:UserRole;now:string;earliestWeek:string}):{document:RestrictionDocument;receipt:RestrictionReceipt;changed:boolean}{
  const document=parseRestrictionDocument(value),command=parseRestrictionCommand(input);
@@ -114,7 +143,7 @@ export function applyRestrictionCommand(value:RestrictionDocument,input:Restrict
   if(command.decision==='APPROVE')document.versions.push({...approve(command.effectiveWeek!,request.unavailable,request.id),operation:operation(receipt)});
   request.status=status;request.decision={actorId:context.actorId,at:context.now,reason:command.reason,operation:operation(receipt)};
  }
- document.revision=next;parseRestrictionDocument(document);return {document,receipt,changed:true};
+ document.revision=next;assertDecisionCapacity(document);parseRestrictionDocument(document);return {document,receipt,changed:true};
 }
 /** Null retains the pre-confirmation legacy rule; [] is an explicit full-day restriction. */
 export function resolveRestrictionDay(date:string,versions:readonly RestrictionRule[]):{windows:{start:number;end:number}[];versionId:string}|null {

@@ -10,9 +10,9 @@ const weekend=(week:string)=>({start:businessDateStart(addDays(week,5)),end:busi
 export function weekendBurden(employee:GenerationEmployee,weekStart:string,history?:WeekendHistory):WeekendBurden{
  const result:WeekendBurden={employeeId:employee.id,eligibleWeekends:0,workedWeekends:0,lastWeekendWorked:null};
  businessDateStart(weekStart);
- if(!history||!history.employeeSince[employee.id]||!resolveRestrictionDay(weekStart,employee.managementRestrictions??[]))return result;
+ if(!history||!resolveRestrictionDay(weekStart,employee.managementRestrictions??[]))return result;
  const since=history.employeeSince[employee.id],earliest=addDays(weekStart,-56),known=new Map<string,Set<string>>();
- businessDateStart(since);
+ if(since)businessDateStart(since);
  for(const row of history.knownWeeks){
   if(weekStartFor(row.weekStart)!==row.weekStart)throw Error('Invalid weekend history week');
   if(row.weekStart<earliest||row.weekStart>=weekStart)continue;
@@ -23,15 +23,18 @@ export function weekendBurden(employee:GenerationEmployee,weekStart:string,histo
   const old=rows.get(row.id);if(old&&JSON.stringify(old)!==JSON.stringify(row))throw Error('Conflicting weekend history identity');rows.set(row.id,row);
  }
  for(const [week,locations] of [...known].sort(([a],[b])=>a.localeCompare(b))){
-  if(since>week||!employee.eligibleLocationIds.some(id=>locations.has(id)))continue;
   const period=weekend(week),saturday=addDays(week,5),sunday=addDays(week,6);
-  const restricted=[saturday,sunday].some(date=>{const day=resolveRestrictionDay(date,employee.managementRestrictions??[]);return day!==null&&(day.windows.length!==1||day.windows[0].start!==0||day.windows[0].end!==1440);});
-  const leave=employee.approvedTimeOff.some(r=>(!r.status||r.status==='APPROVED')&&(!r.employeeId||r.employeeId===employee.id)&&r.startDate<=sunday&&r.endDate>=saturday);
   const weekendRows=[...rows.values()].filter(row=>periodsOverlap(shiftPeriod(row),period));
+  // Positive retained work wins over a release/leave on the other day. Unknown
+  // eligibility or an absence cannot erase an actual published assignment.
+  const worked=weekendRows.some(row=>!row.isCalloutApproved);
+  if(worked){result.eligibleWeekends++;result.workedWeekends++;if(week===addDays(weekStart,-7))result.lastWeekendWorked=true;continue;}
+  if(!since||since>week||employee.eligibleLocationIds.length===0||!employee.eligibleLocationIds.every(id=>locations.has(id)))continue;
+  const restricted=[saturday,sunday].some(date=>{const day=resolveRestrictionDay(date,employee.managementRestrictions??[]);return day===null||day.windows.length!==1||day.windows[0].start!==0||day.windows[0].end!==1440;});
+  const leave=employee.approvedTimeOff.some(r=>(!r.status||r.status==='APPROVED')&&(!r.employeeId||r.employeeId===employee.id)&&r.startDate<=sunday&&r.endDate>=saturday);
   if(restricted||leave||weekendRows.some(row=>row.isCalloutApproved))continue;
-  const worked=weekendRows.length>0;
-  result.eligibleWeekends++;if(worked)result.workedWeekends++;
-  if(week===addDays(weekStart,-7))result.lastWeekendWorked=worked;
+  result.eligibleWeekends++;
+  if(week===addDays(weekStart,-7))result.lastWeekendWorked=false;
  }
  return result;
 }
