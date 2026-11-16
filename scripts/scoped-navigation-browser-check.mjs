@@ -94,7 +94,7 @@ async function verifyExplicitRecovery(page,origin,engine,report){
    assert.equal(new URL(page.url()).pathname+new URL(page.url()).search,source,'No parallel flight may escape the controlled stall');
    mark('explicit-source-refresh');
    await page.evaluate(()=>window.dispatchEvent(new Event('storage')));
-   await page.locator('main').getByRole('button',{name:'Refresh current view',exact:true}).click({noWaitAfter:true});
+   await page.locator('main .c-route-state [data-b-state]').getByRole('button',{name:'Try again',exact:true}).click({noWaitAfter:true});
    mark('source-refresh-clicked');
    await exportSendTo(page).waitFor();
    assert.equal(await page.evaluate(()=>performance.timeOrigin),sourceDocument,'Recovery must preserve the document and avoid aborting its pending RSC');
