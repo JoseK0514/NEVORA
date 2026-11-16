@@ -1,0 +1,59 @@
+A empty 320 h-overflow: false clipped: [] under44: ["Add 36"]
+A empty 390 h-overflow: false clipped: [] under44: ["Add 36"]
+A empty 430 h-overflow: false clipped: [] under44: ["Add 36"]
+A empty 1440 h-overflow: false clipped: [] under44: ["AI manager 32","Add document 42"]
+B loading busy: true
+C error: Couldn’t load company knowledge | Nothing was changed. Check your connection, then try again. | Try again
+C retry loaded library
+D library 320 h-overflow: false clipped: [] under44: ["Add 36"]
+D library 390 h-overflow: false clipped: [] under44: ["Add 36"]
+D library 430 h-overflow: false clipped: [] under44: ["Add 36"]
+D library 768 h-overflow: false clipped: [] under44: ["AI manager 32","Add document 42"]
+D library 1440 h-overflow: false clipped: [] under44: ["AI manager 32","Add document 42"]
+D rows: ["Business profile | English · updated Nov 16 | In use","Opening procedure | Operations · English | Review due","Holiday hours | Policy · English | Starts Nov 20","Política de devoluciones | Customer service · Spanish | Draft waiting","Catering menu notes | Products and services · English | Draft","A very long fictional document title that keeps going to test wrapping on the narrowest phone screens | Other · English | In use","Old uniform policy | Policy · English | Archived"]
+O tab order from the title: ["A Skip to content","A Workforce","BUTTON ","A Home","A Schedule","A Time","A Team","A Things to do4","A AI manager","A Insights","A Updates","A Settings"]
+O after Enter, focus: H1 Opening procedure
+O entry 1440 h-overflow: false clipped: [] under44: ["Knowledge 32","Edit 42"]
+O entry 390 h-overflow: false clipped: [] under44: ["Edit 36"]
+O back returns to library: (no query)
+E empty save focus: kn-profile-businessDescription error: Describe what the business does
+E error 390 h-overflow: false clipped: [] under44: ["Save 36"]
+E filled 390 h-overflow: false clipped: [] under44: ["Save 36"]
+E filled 1440 h-overflow: false clipped: [] under44: ["Knowledge 32"]
+E toast: Draft saved. Review it, then publish when it’s right. | focus: H1 Review the saved text
+E review 1440 h-overflow: false clipped: [] under44: ["Profile 32"]
+E review 390 h-overflow: false clipped: [] under44: []
+E text: "businessDescription:\nPanadería ficticia para pruebas.\n\nescalationRoles:\nEl Owner decide excepciones." digest chars: 64
+E publish toast: Published. Rondo uses this version for every Owner. | status: Status | In use by Rondo | Version 1, published Mon, Nov 16, 2026, 1:45 PM | Review by Mon, Feb 1, 2027, 9:00 AM | Rondo keeps using it after this date
+N pdf: Only .txt and .md files can be loaded. For a PDF or Word file, copy its text and paste it here
+N latin1: This file isn’t UTF-8 text. Save it as UTF-8, or paste its text here
+N md: title= Closing checklist body= "# Cierre\n\n- Contar la caja.\n" help= From closing-checklist.md · Forget file name
+F editor 390 h-overflow: false clipped: [] under44: ["Save 36"]
+F editor 320 h-overflow: false clipped: [] under44: ["Save 36"]
+F editor 1440 h-overflow: false clipped: [] under44: ["Knowledge 32"]
+F injected: ["none",0]
+F review 1440 h-overflow: false clipped: [] under44: ["Document 32"]
+F review 320 h-overflow: false clipped: [] under44: []
+P new tab: /api/owner/advisor/knowledge/entries/ID/versions/ID "MOCK private view — current\n"
+G resolved: Tue, Dec 1, 2026, 9:00 AM AST · Clear | toggle: Starts Dec 1
+G dates 390 h-overflow: false clipped: [] under44: ["Save 36"]
+G gap: There will be a gap. The current version stops as soon as you publish, and this one starts Tue, Dec 1, 2026, 9:00 AM AST. Until then Rondo has no version of this document. Publish closer to the start to avoid it.
+G gap 390 h-overflow: false clipped: [] under44: []
+H card in view & focused: [true,true]
+H uncertain 390 h-overflow: false clipped: [] under44: []
+H same requestId: true second: replay toast: Published. Rondo uses this version for every Owner.
+I card: Someone else changed company knowledge | We loaded the latest. Your edits are still here: check them, then try again. | kept: My unsaved edit.
+I conflict 390 h-overflow: false clipped: [] under44: ["Save 36"]
+I retry new requestId: true codes: 409,200
+J card: Company knowledge is full | It holds 20 documents, 100 saved versions and 10 MB of text. Delete a document you no longer need; archived ones still count.
+M confirm focus: H2 Archive “Closing checklist”?
+M confirm 390 h-overflow: false clipped: [] under44: ["Edit 36"]
+M toast: Archived. Rondo no longer uses it. | status: Status | Archived | Rondo doesn’t use it. Edit and publish to use it again | Draft waiting for review | Version 3, saved Mon, Nov 16, 2026, 1:45 PM | Review
+L delete disabled before check: true
+L delete 390 h-overflow: false clipped: [] under44: ["Edit 36"]
+L delete 1440 h-overflow: false clipped: [] under44: ["Knowledge 32","Edit 42"]
+L after delete: (library) toast: Deleted for every Owner. | logged: [["delete",200]]
+L deleted doc shows: This isn’t in company knowledge anymore
+K revoked: Your session ended | Sign in again as an Owner to see company knowledge. It was cleared from this screen. | Sign in | knowledge left in page: 0 | elsewhere: []
+AI manager link: 1
+page errors: []
