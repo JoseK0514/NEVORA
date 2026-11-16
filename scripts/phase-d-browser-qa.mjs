@@ -236,8 +236,8 @@ try{
     assert.deepEqual(firstExport.command.cards.map(item=>item.employeeId),['D3-E']);
     await exportFiles.getByRole('button',{name:'Download mapped CSV',exact:true}).waitFor();assert.match(await exportFiles.innerText(),/Time file/);
     const firstDownloads=[];
-    for(const [name,extension] of [['Download mapped CSV','csv'],['Download canonical time record','json']]){
-      const waiting=mp.waitForEvent('download');await mp.getByRole('button',{name,exact:true}).click();const file=await waiting,path=join(evidence,`${engine}-payroll-neutral.${extension}`);await file.saveAs(path);
+    for(const [name,extension] of [['Download mapped CSV','csv'],['Download time record (JSON)','json']]){
+      const [file]=await Promise.all([mp.waitForEvent('download'),mp.getByRole('button',{name,exact:true}).click()]);const path=join(evidence,`${engine}-payroll-neutral.${extension}`);await file.saveAs(path);
       const bytes=await readFile(path);firstDownloads.push({extension,filename:file.suggestedFilename(),bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});
     }
     exportEvidence.firstCreate.downloads=firstDownloads;
@@ -296,7 +296,7 @@ try{
     const reportScreen=join(evidence,`${engine}-reports-390.png`);await mp.setViewportSize({width:390,height:1000});await mp.screenshot({path:reportScreen,fullPage:true});report.screenshots.push(reportScreen);
     // Corporate phone Insights (board O-Insights): the period's recorded total is the Labor hours figure.
     const phoneFigures=mp.locator('#ins-labor');assert(await phoneFigures.isVisible());assert.match(await phoneFigures.locator('.c-ins__labor b').innerText(),/^8\s*h$/);checked(engine+': corporate phone Insights figures retain canonical recorded hours');
-    await mp.setViewportSize({width:1440,height:1000});await mp.getByRole('button',{name:'Export',exact:true}).click();const downloaded=mp.waitForEvent('download');await mp.getByRole('button',{name:'Download CSV',exact:true}).click();const download=await downloaded;const csvPath=join(evidence,`${engine}-report.csv`);await download.saveAs(csvPath);checked(engine+': protected CSV download');
+    await mp.setViewportSize({width:1440,height:1000});await mp.getByRole('button',{name:'Export',exact:true}).click();const [download]=await Promise.all([mp.waitForEvent('download'),mp.getByRole('button',{name:'Download CSV',exact:true}).click()]);const csvPath=join(evidence,`${engine}-report.csv`);await download.saveAs(csvPath);checked(engine+': protected CSV download');
     await mp.emulateMedia({media:'print'});assert.equal(await mp.locator('.mobile-nav:visible').count(),0);assert.equal(await mp.getByRole('button',{name:'Download CSV',exact:true}).isVisible(),false);assert(await mp.getByRole('heading',{name:'Hours by person',exact:true}).isVisible());assert.equal(await mp.locator('#ins-labor').isVisible(),false,'Print shows the full report instead of the screen cards');await mp.getByRole('heading',{name:'Scheduled vs recorded',exact:true}).waitFor();assert(await printReport.getByRole('status').filter({hasText:'Scheduled totals and differences are unavailable'}).isVisible(),'Printed report shows the unpublished-plan distinction');checked(engine+': printable report without navigation or controls');
     await mp.locator('.c-ins-print .wb-definitions').getByText('Actual time uses D2 canonical effective entries and breaks; finalized cards use their immutable snapshots.',{exact:true}).waitFor();await mp.locator('.c-ins-print .wb-definitions ~ .wb-note').getByText(/^As of /).waitFor();checked(engine+': D5 print expands definitions and source observation');
     if(engine==='chromium'){const pdf=await mp.pdf({path:join(evidence,'period-report.pdf'),preferCSSPageSize:true,printBackground:true});assert.equal(pdf.subarray(0,5).toString(),'%PDF-');checked(engine+': generated useful PDF artifact');}
