@@ -403,12 +403,13 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  try{
   await refreshTime(timeView);await time.seen;
   await q("UPDATE time_entries SET clock_out_at=clock_timestamp(),status='CLOCKED_OUT' WHERE id=$1",[label+'-time']);
+  timeEvidence.beforeDispatch={requestCount:timeEvidence.requests.filter(item=>item.event==='request').length};assert(timeEvidence.beforeDispatch.requestCount>0,'The refresh issued its held read before pagehide');
   timeEvidence.afterDispatch=await page.evaluate(()=>{window.dispatchEvent(new Event('pagehide'));return {at:Date.now(),time:document.querySelector('.c-hours')?.getAttribute('data-hours-state')??null};});
   // Synthetic lifecycle dispatch returns before React necessarily commits its
   // invalidated state. Keep the old response held until that commit is visible.
   await timePaused().waitFor({timeout:15000});assert.equal(await clockedIn().count(),0);
   timeEvidence.pausedCommit={at:Date.now(),clockedInCount:await clockedIn().count(),requestCount:timeEvidence.requests.filter(item=>item.event==='request').length};
-  assert.equal(timeEvidence.pausedCommit.requestCount,1,'Pagehide clearing must not require a new Home or Time request');
+  assert.equal(timeEvidence.pausedCommit.requestCount,timeEvidence.beforeDispatch.requestCount,'Pagehide clearing must not require a new Home or Time request');
   time.release();await time.done;assert.equal(time.failure,undefined);timeEvidence.heldOutcome=time.outcome;
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));
   assert.equal(await timePaused().count(),1);assert.equal(await clockedIn().count(),0);
