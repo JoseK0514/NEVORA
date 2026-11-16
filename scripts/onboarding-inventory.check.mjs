@@ -83,3 +83,14 @@ test('both scheduling agreement routes have company-bound dispositions and canno
  }
  assert.doesNotThrow(()=>validateOnboardingInventory(files,inventory,read));
 });
+
+test('reminder eligibility has a company-bound disposition and cannot evade runtime classification',()=>{
+ const path='src/app/api/manager/reminders/eligibility/route.ts';
+ const files=execFileSync('git',['ls-files','-z'],{encoding:'utf8',maxBuffer:32*1024*1024}).split('\0').filter(Boolean);
+ const inventory=JSON.parse(readFileSync('docs/handoffs/onboarding-entrypoint-inventory.json','utf8'));
+ const read=path=>/\.[cm]?[jt]sx?$/.test(path)?readFileSync(path,'utf8'):'';
+ const entry=inventory.entries.find(entry=>entry.path===path);
+ assert(entry,path);assert.equal(entry.status,'CONVERTED');assert.equal(entry.isolatedBehavior,'BOUND_APPLICATION');
+ assert.doesNotThrow(()=>validateOnboardingInventory(files,inventory,read));
+ assert.throws(()=>validateOnboardingInventory(files,{...inventory,entries:inventory.entries.filter(entry=>entry.path!==path)},read),/Unclassified runtime entrypoint/,path);
+});

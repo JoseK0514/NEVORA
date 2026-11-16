@@ -2,6 +2,7 @@ import {createElement, type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {expect, it, vi} from 'vitest';
 import type {ActionCenter, ActionItem} from '../lib/action-center/project';
+import {reviewFacts} from '../lib/action-center/review-facts';
 import type {Today, TodayShift} from '../lib/today/project';
 import {onlyB} from './owner-b/test-support';
 
@@ -25,7 +26,7 @@ const items = [
   item('TIME_OFF:r1', 'TIME_OFF', 'requests', 'REVIEW', {request: {startDate: '2026-11-12', endDate: '2026-11-12'}} as Partial<ActionItem>),
   item('EXCHANGE:e1', 'EXCHANGE', 'requests'),
   item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT', {title: 'Position not covered at Condado', detail: '2026-10-16 · 1:00 PM–3:00 PM · Barista: 1 open', dateTime: '2026-10-16T13:00', href: '/app/schedule?shift=gap'}),
-  item('fix1', 'TIME_CORRECTION', 'timekeeping', 'REVIEW', {href: '/app/timecards?correction=fix1'}),
+  item('fix1', 'TIME_CORRECTION', 'timekeeping', 'REVIEW', {href: '/app/timecards?correction=fix1', review:reviewFacts(false,false,'TIME_CORRECTION')}),
   item('card1', 'TIMECARD', 'timekeeping', 'REVIEW', {title: 'Period timecard needs review', detail: 'Marco Silva · Oct 12 – 18 · Fix recorded-time issues before finalizing.', href: '/app/timecards#timecard-e1'}),
   item('card2', 'TIMECARD', 'timekeeping', 'REVIEW', {title: 'Period timecard needs review', detail: 'Priya Lal · Oct 12 – 18 · Fix recorded-time issues before finalizing.', href: '/app/timecards#timecard-e2'}),
   item('target1', 'TARGET_MISSING', 'scheduling', 'MISSING_INPUT', {href: '/app/schedule/settings#target-hours'}),
@@ -222,10 +223,10 @@ it('Direction B (phones): glass filters with counts, Find cover on each open shi
 it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count is what can be decided today, and what is not open is one closed card', () => {
   const swap = item('EXCHANGE:e2', 'EXCHANGE', 'requests', 'REVIEW', {title: 'Shift Request', detail: 'Ana Colon is waiting for review.', request: {startDate: '2026-11-21', endDate: '2026-11-21',
     partialDay: {start: '12:00', end: '20:00'}, lengthText: '8 h', locationName: 'Condado', counterpartName: 'James Ortiz', reviewHref: '/app/exchange?tab=requests&requestId=e2'}} as Partial<ActionItem>);
-  const fix = item('TIME_CORRECTION:f1', 'TIME_CORRECTION', 'timekeeping', 'REVIEW', {title: 'Time correction waiting for review', detail: 'James Ortiz · Recorded time correction.', dateTime: '2026-10-10T15:00:00Z', href: '/app?view=attendance#correction-f1'});
-  const card = (id: string, name: string, start: string, end: string, label: string) => item(id, 'TIMECARD', 'timekeeping', 'REVIEW', {title: 'Period timecard needs review', detail: `${name} · ${label}`, href: `/app/timecards?start=${start}&end=${end}#timecard-${id}`});
+  const fix = item('TIME_CORRECTION:f1', 'TIME_CORRECTION', 'timekeeping', 'REVIEW', {title: 'Time correction waiting for review', detail: 'James Ortiz · Recorded time correction.', dateTime: '2026-10-10T15:00:00Z', href: '/app?view=attendance#correction-f1',review:reviewFacts(false,false,'TIME_CORRECTION')});
+  const card = (id: string, name: string, start: string, end: string, label: string, own=false) => item(id, 'TIMECARD', 'timekeeping', 'REVIEW', {title: 'Period timecard needs review', detail: `${name} · ${label}`, href: `/app/timecards?start=${start}&end=${end}#timecard-${id}`,review:reviewFacts(own,own,'TIMECARD',{startDate:start,endDate:end})});
   const html = onlyB(page({snapshot: ready([swap, fix, card('c1', 'Avery Lee', '2026-10-05', '2026-10-11', 'Oct 5 – 11'), card('c2', 'Blair Ruiz', '2026-10-12', '2026-10-18', 'Oct 12 – 18'), card('c3', 'Casey Diaz', '2026-10-12', '2026-10-18', 'Oct 12 – 18'),
-    {...card('c4', 'Elena Ruiz', '2026-10-05', '2026-10-11', 'Oct 5 – 11'), title: 'Your timecard needs another reviewer'},
+    {...card('c4', 'Elena Ruiz', '2026-10-05', '2026-10-11', 'Oct 5 – 11',true), title: 'Your timecard needs another reviewer'},
     item('CALLOUT:k1', 'CALLOUT', 'requests', 'REVIEW', {title: 'Callout', detail: 'Luis Torres is waiting for review.', request: {startDate: '2026-10-20', endDate: '2026-10-20', partialDay: {start: '09:00', end: '17:00'}, lengthText: '8 h', locationName: 'Condado', reviewHref: '/app/exchange?tab=requests&requestId=k1'}} as Partial<ActionItem>)])})).replace(/\u00a0/g, ' ');
   // The correction's title is the person; the line under it says what they asked for and the day it was sent.
   expect(html).toMatch(/<span class="b-row__tt">James Ortiz<\/span><\/span><span class="b-row__s">Time correction · sent Oct 10</);

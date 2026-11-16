@@ -1160,6 +1160,15 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/app/api/manager/reminders/eligibility/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Read-only reminder eligibility uses current session/mutation proof, current Owner/Manager Company authority, exact source/target checks and the shared host-bound notification SQL executor. Final session/source/receipt disclosure fences remain enforced; no writes or provider call, caller-selected company/database or delivery activation.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
       "path": "src/app/api/manager/reminders/route.ts",
       "tags": [
         "request-entrypoint"
@@ -4588,5 +4597,11 @@
     "routes": 6,
     "behavior": "BOUND_APPLICATION",
     "activation": "D04 owned-loopback guard remains mandatory on every read/write; no hosted activation"
+  },
+  "phase5ReminderEligibilityReconciliation": {
+    "date": "2026-11-16",
+    "reviewedSource": "74421d91b99f0f554ba60863c8b9cdda8f849d4a",
+    "entrypoint": "src/app/api/manager/reminders/eligibility/route.ts",
+    "evidence": "Phase 4 service/HTTP/owned SQL plus runtime-inventory removal regression; activation holds unchanged"
   }
 }

@@ -5,6 +5,7 @@ import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor } from "@/lib/time-clock";
 import type { ActionItem } from "@/lib/action-center/project";
 import { needsYou } from "@/lib/action-center/needs-you";
+import {reviewFacts} from '@/lib/action-center/review-facts';
 import { onlyB, withoutB } from "./owner-b/test-support";
 
 vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
@@ -221,8 +222,8 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(phone({ nextPay: undefined })).not.toContain('class="b-ink"');
   });
   it("frames the ink tile around timecards for someone who can't open Payroll (Phase 3, MG-003, MG-004)", () => {
-    const card = (id: string, start: string, end: string, extra: Partial<ActionItem> = {}) => item(id, "TIMECARD", "REVIEW", "timekeeping", { href: `/app/timecards?start=${start}&end=${end}`, ...extra });
-    const ended = [card("c1", "2026-10-19", "2026-10-25"), card("c2", "2026-10-19", "2026-10-25"), card("mine", "2026-10-19", "2026-10-25", { title: "Your timecard needs another reviewer" })];
+    const card = (id: string, start: string, end: string, extra: Partial<ActionItem> = {}) => item(id, "TIMECARD", "REVIEW", "timekeeping", { href: `/app/timecards?start=${start}&end=${end}`, review:reviewFacts(false,false,'TIMECARD',{startDate:start,endDate:end}), ...extra });
+    const ended = [card("c1", "2026-10-19", "2026-10-25"), card("c2", "2026-10-19", "2026-10-25"), card("mine", "2026-10-19", "2026-10-25", { title: "Your timecard needs another reviewer",review:reviewFacts(true,true,'TIMECARD',{startDate:'2026-10-19',endDate:'2026-10-25'}) })];
     // Something to approve today: the count leads (the reviewer's own card is left out and the line says so), payday is
     // the detail, and the one white button reviews timecards.
     const open = phone({ timecards: ended, timecardsReady: true, businessDay: "2026-10-30" });
@@ -256,8 +257,8 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     // Nobody on: the card says so and names the next start; it never lists a shift that hasn't begun.
     expect(phone({ today: today([shift("b", "upcoming")]) })).toContain("Nobody is working right now. Next shift starts 9:00 AM.");
     // A correction that waits on this person is counted and has its row; their own is not.
-    const fix = (id: string, title: string, name: string) => item(id, "TIME_CORRECTION", "REVIEW", "timekeeping", { title, detail: `${name} · Recorded time correction.` });
-    const counted = phone({ value: needsYou([fix("f1", "Time correction waiting for review", "James Ortiz"), fix("f2", "Your correction needs another reviewer", "Carmen Ruiz")], "2026-10-30", []) });
+    const fix = (id: string, title: string, name: string, own=false) => item(id, "TIME_CORRECTION", "REVIEW", "timekeeping", { title, detail: `${name} · Recorded time correction.`, review:reviewFacts(own,own,'TIME_CORRECTION') });
+    const counted = phone({ value: needsYou([fix("f1", "Time correction waiting for review", "James Ortiz"), fix("f2", "Your correction needs another reviewer", "Carmen Ruiz",true)], "2026-10-30", []) });
     expect(counted).toMatch(/<h1>1\sthing needs you<\/h1>/);
     expect(counted).toMatch(/>1\stime correction</);
     expect(counted).toContain('href="/app/inbox#todo-corrections"');

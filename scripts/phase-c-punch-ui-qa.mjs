@@ -41,8 +41,12 @@ async function editBreak(owner,name,category,minutes){
  await d.getByLabel('Break name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Classification',exact:true}).selectOption(category);await d.getByLabel(/^Reference time/).fill(String(minutes));
  await d.getByRole('button',{name:'Save changes',exact:true}).click();await d.waitFor({state:'hidden'});
 }
-async function idle(p){await p.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await p.waitForFunction(()=>{const i=document.querySelector('input[name=pin]');return i&&!i.matches(':disabled');});}
-async function verify(p,pin='2468',diagnostic){
+async function idle(p){await p.getByRole('heading',{name:'Enter your Employee ID',exact:true}).waitFor();await p.waitForFunction(()=>{const i=document.querySelector('input[name=employeeId]');return i&&!i.matches(':disabled');});assert.equal(await p.getByLabel('Employee ID',{exact:true}).inputValue(),'','Retired identity must clear before the next person');}
+async function pinEntry(p,employeeId='PUNCH-A'){
+ await idle(p);await p.getByLabel('Employee ID',{exact:true}).fill(employeeId);await p.getByRole('button',{name:'Continue',exact:true}).click();
+ await p.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await p.waitForFunction(()=>{const i=document.querySelector('input[name=pin]');return i&&!i.matches(':disabled');});
+}
+async function verify(p,pin='2468',diagnostic,employeeId='PUNCH-A'){
  if(!diagnostic){
   // Each page keeps a bounded window through the action after its PIN attempt.
   // Node-only listeners leave the final native-submit observer's binding available.
@@ -52,7 +56,7 @@ async function verify(p,pin='2468',diagnostic){
   pinWindows.set(p,diagnostic);pinDiagnostics.push(diagnostic);currentPinDiagnostic=diagnostic;
  }
  currentPage=p;
- diagnostic?.phase('readiness','before');await idle(p);diagnostic?.phase('readiness','after');
+ diagnostic?.phase('readiness','before');await pinEntry(p,employeeId);diagnostic?.phase('readiness','after');
  diagnostic?.phase('keypad','before');for(const n of pin)await p.getByRole('button',{name:'Number '+n,exact:true}).click();diagnostic?.phase('keypad','after');
  diagnostic?.phase('continue','before');await p.getByRole('button',{name:'Continue',exact:true}).click();diagnostic?.phase('continue','after');
 }
@@ -88,12 +92,15 @@ try{
   await enroll(ownerPage,t,engine+' Clocking Tablet');
   for(const width of [320,375,390,430,768,1024,1440]){
    await t.setViewportSize({width,height:width<500?844:width===768?1024:width===1024?768:900});await t.evaluate(()=>document.fonts.ready);
+   await idle(t);await geometry(t,engine+': Employee ID entry '+width);await pinEntry(t);
    await geometry(t,engine+': redesigned PIN screen '+width);
    const layout=await t.evaluate(()=>{const h=document.querySelector('main h1'),main=document.querySelector('main');return {lines:h.getBoundingClientRect().height/parseFloat(getComputedStyle(h).lineHeight),font:getComputedStyle(main).fontFamily,loaded:document.fonts.check('16px "Nevora Clocker"'),password:document.querySelector('input[name=pin]').type};});
    assert(layout.lines<=2.1);assert(layout.font.includes('Nevora Clocker'));assert(layout.loaded);assert.equal(layout.password,'password');
    if(width===390||width===1024)assert(await t.getByRole('button',{name:'Continue',exact:true}).evaluate(element=>element.getBoundingClientRect().bottom<=innerHeight),'Continue fits the common mobile/tablet viewport');
    if([390,768,1024,1440].includes(width))await shot(t,engine+'-pin-'+width);
+   await t.keyboard.press('Escape');await idle(t);
   }
+  await pinEntry(t);
   await t.getByRole('button',{name:'Number 2',exact:true}).click();await t.getByRole('button',{name:'Number 4',exact:true}).click();
   assert.equal(await t.locator('[data-filled=true]').count(),2);await t.getByRole('button',{name:'Delete digit',exact:true}).click();assert.equal(await t.locator('[data-filled=true]').count(),1);
   await t.getByRole('button',{name:'Clear PIN',exact:true}).click();assert.equal(await t.getByLabel('Employee PIN',{exact:true}).inputValue(),'');assert(await t.getByRole('button',{name:'Continue',exact:true}).isDisabled());
@@ -126,7 +133,7 @@ try{
   await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('button',{name:'Check action status',exact:true}).waitFor();assert(dropped);
   assert.equal(await t.getByRole('button',{name:'Clock in',exact:true}).count(),0);
   const stored=await journalPending(t);assert(stored);assertPrivateClockInRecovery(stored,lostCommand);
-  await t.unroute('**/api/clocker/2/punch');await t.reload();await idle(t);await verify(t,'3579');
+  await t.unroute('**/api/clocker/2/punch');await t.reload();await idle(t);await verify(t,'3579',undefined,'PUNCH-B');
   await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Check action status',exact:true}).count(),0);assert.equal(await journalPending(t),stored);
   checked(engine+': another employee has their own clock path while the prior intent remains intact');
   await t.getByRole('button',{name:'Done',exact:true}).click();await verify(t);
@@ -184,7 +191,7 @@ try{
   await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await idle(t);checked(engine+': blocked browser recovery storage prevents the request entirely');
   // A second tab changes the shared HttpOnly cookie. The old screen must not act as that employee.
   await verify(t);await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();
-  const tab=await tablet.newPage();await goto(tab,'/clocker/2');await verify(tab,'3579');await tab.getByRole('button',{name:'Clock in',exact:true}).waitFor();
+  const tab=await tablet.newPage();await goto(tab,'/clocker/2');await verify(tab,'3579',undefined,'PUNCH-B');await tab.getByRole('button',{name:'Clock in',exact:true}).waitFor();
   await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('heading',{name:'Verify your PIN again',exact:true}).waitFor();assert.equal(await count(),guardStart);
   await done(tab);await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await verify(t);
   await t.getByRole('button',{name:'Check action status',exact:true}).click();await reviewObsolete(t,guardStart);await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Retry same action',exact:true}).count(),0);await t.getByRole('button',{name:'Clock in',exact:true}).click();await success(t,'Clock in');await done(t);
