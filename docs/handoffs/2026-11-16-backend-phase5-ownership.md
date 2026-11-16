@@ -6,6 +6,8 @@ Jose subsequently assigned this chat the final backend integration and Phase 5 q
 
 Additional ownership before editing: bounded cherry-pick integration of the supplied six deliveries; `src/lib/auth/session.ts` and `src/lib/auth/session.test.ts` for P4-AUTH-01; legitimate backend fixture/driver corrections under `scripts/` or `src/test/` only when reproduced; existing source-qualified six-guide build outputs; and the Phase 5 source, contract, qualification, execution and final handoff records. Preserve authorization, finite privacy, original review/recovery, completeness and immutable history assertions. Claude UI and Rondo implementation remain with their owners.
 
+P4-AUTH-01 boundary refinement before edits: `src/proxy.ts`, new `src/proxy.auth-return.test.ts` and `src/lib/auth/request-destination.ts` are included to bind the vetted return path to the actual server request and replace/strip caller markers. This removes Referer/Host inference entirely rather than introducing another configurable-origin fallback. No UI consumer or credential policy changes.
+
 Use one installed dependency/browser toolchain and serialize heavy builds/browser cohorts. The user has assigned execution custody here; record owned runtime/evidence/cleanup. No deployment, main/production promotion, new spending, provider activation, real messages or UI redesign is authorized. Review the auth repair through the existing code-review skill; this is implementation review, not independent QA/UI certification.
 
 The original preparation boundary below is retained as historical evidence and is superseded by this assignment.

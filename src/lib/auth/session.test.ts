@@ -46,20 +46,59 @@ it('mutation proof binds actual HttpOnly cookie hash and rejects a missing/revok
 });
 it('an ended session lands on sign-in with the reason and a vetted way back; a first visit gets no claim (RA-5)',async()=>{
  const {requireSession,requireSessionMutationProof}=await import('./session');state.query.mockResolvedValue([]);
- const from=(referer?:string)=>{state.headers=new Headers({host:'fuel.example',...(referer?{referer}:{})});};
+ const from=(destination?:string)=>{state.headers=new Headers(destination?{'x-nevora-auth-return-to':destination}:{});};
  // The browser still presents a session cookie that no longer opens a session.
  from();await expect(requireSession()).rejects.toThrow(/^redirect:\/login\?ended=1$/);
- // Mid-task, from a portal page on this origin: sign-in returns there, in the form sign-in already accepts.
- from('https://fuel.example/app/requests?tab=my');
+ // The current request supplies a vetted path through proxy, not a Referer.
+ from('/app/requests?tab=my');
  await expect(requireSession()).rejects.toThrow(/^redirect:\/login\?ended=1&returnTo=%2Fapp%2Frequests%3Ftab%3Dmy$/);
  await expect(requireSessionMutationProof()).rejects.toThrow(/^redirect:\/login\?ended=1&returnTo=%2Fapp%2Frequests%3Ftab%3Dmy$/);
  // Home and routes sign-in does not accept carry the reason only; another origin never supplies a way back.
- for(const referer of ['https://fuel.example/app','https://fuel.example/app/timecards','https://fuel.example/app/requests?tab=my&next=//evil.example','https://evil.example/app/requests?tab=my','not a url']){from(referer);await expect(requireSession()).rejects.toThrow(/^redirect:\/login\?ended=1$/);}
- // The cookie has expired in the browser too: a portal page on this origin still shows a session was open.
- state.values.clear();from('https://fuel.example/app/schedule?week=2030-01-07');
+ for(const destination of ['/app','/app/timecards','/app/requests?tab=my&next=//evil.example','https://evil.example/app/requests?tab=my','not a url']){from(destination);await expect(requireSession()).rejects.toThrow(/^redirect:\/login\?ended=1$/);}
+ from('/app/schedule?week=2030-01-07');
  await expect(requireSession()).rejects.toThrow(/^redirect:\/login\?ended=1&returnTo=%2Fapp%2Fschedule%3Fweek%3D2030-01-07$/);
  await expect(requireSessionMutationProof()).rejects.toThrow(/^redirect:\/login\?ended=1&returnTo=%2Fapp%2Fschedule%3Fweek%3D2030-01-07$/);
- // A first visit (no cookie, not from the portal) keeps the bare sign-in page.
- for(const referer of [undefined,'https://fuel.example/login','https://fuel.example/','https://evil.example/app/requests?tab=my']){from(referer);await expect(requireSession()).rejects.toThrow(/^redirect:\/login$/);await expect(requireSessionMutationProof()).rejects.toThrow(/^redirect:\/login$/);}
+ // Without a presented session, even a valid current route claims no ended session.
+ state.values.clear();
+ for(const destination of [undefined,'/app/schedule?week=2030-01-07','https://fuel.example/login','https://fuel.example/','https://evil.example/app/requests?tab=my']){from(destination);await expect(requireSession()).rejects.toThrow(/^redirect:\/login$/);await expect(requireSessionMutationProof()).rejects.toThrow(/^redirect:\/login$/);}
  expect(state.query).not.toHaveBeenCalledWith(expect.stringMatching(/INSERT|UPDATE|DELETE/i),expect.anything());
+});
+
+it('P4-AUTH-01 does not claim an ended session from Referer or host headers without a presented session',async()=>{
+ const {requireSession,requireSessionMutationProof}=await import('./session');
+ state.values.clear();
+ const attempts:Record<string,string>[]=[
+  {host:'actual.example',referer:'https://actual.example/app/requests?tab=my'},
+  {host:'actual.example','x-forwarded-host':'spoof.example',referer:'https://spoof.example/app/requests?tab=my'},
+  {host:'spoof.example',referer:'https://spoof.example/app/schedule?week=2030-01-07'},
+  {'x-nevora-auth-return-to':'/app/requests?tab=my',referer:'https://actual.example/app/requests?tab=my'},
+ ];
+ for(const headers of attempts){
+  state.headers=new Headers(headers);
+  await expect(requireSession()).rejects.toThrow(/^redirect:\/login$/);
+  await expect(requireSessionMutationProof()).rejects.toThrow(/^redirect:\/login$/);
+ }
+ expect(state.query).not.toHaveBeenCalled();
+});
+
+it('P4-AUTH-01 takes the vetted current request destination and ignores a different Referer',async()=>{
+ const {requireSession,requireSessionMutationProof}=await import('./session');
+ state.query.mockResolvedValue([]);
+ state.headers=new Headers({'x-nevora-auth-return-to':'/app/schedule?week=2030-01-07',host:'actual.example','x-forwarded-host':'spoof.example',referer:'https://spoof.example/app/requests?tab=my'});
+ const expected=/^redirect:\/login\?ended=1&returnTo=%2Fapp%2Fschedule%3Fweek%3D2030-01-07$/;
+ await expect(requireSession()).rejects.toThrow(expected);
+ await expect(requireSessionMutationProof()).rejects.toThrow(expected);
+});
+
+it('P4-AUTH-01 retains the return allowlist and never derives language from a Referer',async()=>{
+ const {requireSession}=await import('./session');const {readAuthLang}=await import('../auth-lang.server');
+ state.query.mockResolvedValue([]);state.values.set('nv-lang','invalid-language');
+ for(const candidate of ['//spoof.example/app','https://spoof.example/app','/app/requests?tab=my&next=//spoof.example','/app/requests?tab=my&tab=team','/app/requests#proof=fictional']){
+  state.headers=new Headers({'x-nevora-auth-return-to':candidate,referer:'https://actual.example/app/requests?tab=my&lang=invalid-language','accept-language':'es-PR, en;q=0.5'});
+  await expect(requireSession()).rejects.toThrow(/^redirect:\/login\?ended=1$/);
+  expect(await readAuthLang()).toBe('es');
+ }
+ state.headers=new Headers({'accept-language':'invalid-language',referer:'https://actual.example/app?lang=es'});
+ expect(await readAuthLang()).toBe('en');
+ state.values.set('nv-lang','es');expect(await readAuthLang()).toBe('es');
 });

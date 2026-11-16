@@ -7,6 +7,7 @@ import {workspaceCookies as cookies} from "@/lib/workspace-routing/cookies.serve
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { safeReturnTo } from "@/lib/notifications/destinations";
+import { AUTH_RETURN_TO_HEADER } from "./request-destination";
 import {queryRows} from "@/lib/db";
 import {applicationSql} from "@/lib/data/app-sql";
 import type { UserRole } from "@/lib/domain";
@@ -121,24 +122,16 @@ const readSessionForToken = cache(async (token: string): Promise<SessionEmployee
   };
 });
 
-/** Where a missing or ended session lands (inspection Nov 14, 2026, RA-5). Destination only: when a session ends and
- * how it is validated are unchanged.
- * - The reason (`ended=1`) is added only when this browser plainly had a session: it still presents a session cookie, or
- *   the request comes from a portal page on this origin. A first visit keeps the bare /login, with no claim.
- * - The way back (`returnTo`) is that portal page, and only in the form sign-in already accepts (safeReturnTo). */
+/** A presented session cookie, never Referer/Host, justifies the ended-session
+ * explanation. The allowlisted return path belongs to this request: proxy
+ * replaces caller markers on /app and strips them elsewhere. Neither hint
+ * grants authorization or changes how sessions are validated. */
 async function endedSessionLogin(): Promise<string> {
   let ended = false, returnTo: string | null = null;
   try { ended = Boolean((await cookies()).get(SESSION_COOKIE)?.value); } catch { /* No cookie store: no claim. */ }
-  try {
-    const request = await headers();
-    const referer = request.get("referer");
-    const from = referer ? new URL(referer) : null;
-    if (from && [request.get("host"), request.get("x-forwarded-host")].includes(from.host) && (from.pathname === "/app" || from.pathname.startsWith("/app/"))) {
-      ended = true;
-      returnTo = safeReturnTo(`${from.pathname}${from.search}`);
-    }
-  } catch { /* No request headers, or an unreadable Referer: sign-in opens Home afterwards, as before. */ }
   if (!ended) return "/login";
+  try { returnTo = safeReturnTo((await headers()).get(AUTH_RETURN_TO_HEADER) ?? undefined); }
+  catch { /* No request-owned path: sign-in opens Home afterwards. */ }
   return `/login?ended=1${returnTo && returnTo !== "/app" ? `&returnTo=${encodeURIComponent(returnTo)}` : ""}`;
 }
 
