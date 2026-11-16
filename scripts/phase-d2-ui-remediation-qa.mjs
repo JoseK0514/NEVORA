@@ -57,8 +57,8 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   }});
   page.on('pageerror',error=>{if(phase!=='normal'||!cell.isNavigationDiagnostic(error))observations.runtime.push({role,phase,stage,atMs:Math.round(performance.now()-startedAt),...safeD2Error(error)});});
   page.on('request',request=>{
-   const url=new URL(request.url());if(url.origin!==app.url||!(url.pathname==='/app'||url.pathname.startsWith('/api/')||url.pathname==='/__nextjs_original-stack-frames'))return;
-   if(role==='manager'&&url.pathname==='/app'&&request.headers().rsc==='1'){managerRscRequests.add(request);managerRscVersion++;}
+   const url=new URL(request.url());if(url.origin!==app.url||!(['/app','/app/timecards/corrections'].includes(url.pathname)||url.pathname.startsWith('/api/')||url.pathname==='/__nextjs_original-stack-frames'))return;
+   if(role==='manager'&&url.pathname==='/app/timecards/corrections'&&request.headers().rsc==='1'){managerRscRequests.add(request);managerRscVersion++;}
    const id=++requestSequence;requests.set(request,id);record({role,id,event:'request',path:clean(url.pathname),method:request.method(),rsc:request.headers().rsc==='1',serverAction:!!request.headers()['next-action'],document:request.isNavigationRequest()});
   });
   page.on('response',response=>{const id=requests.get(response.request());if(id)record({role,id,event:'response',status:response.status()});});
@@ -184,7 +184,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   assert.equal(focus.outlineStyle,'solid');assert(parseFloat(focus.outlineWidth)>=2);
   observations.keyboard.push({stage:'manager-before-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus()),managerFocused:await mp.evaluate(()=>document.hasFocus())});
   stage='manager-return';const priorRequest=requestSequence,refreshDeadline=performance.now()+15000;
-  const freshRsc=mp.waitForResponse(response=>{const request=response.request(),url=new URL(request.url());return url.origin===app.url&&url.pathname==='/app'&&request.headers().rsc==='1'&&(requests.get(request)??0)>priorRequest;});
+  const freshRsc=mp.waitForResponse(response=>{const request=response.request(),url=new URL(request.url());return url.origin===app.url&&url.pathname==='/app/timecards/corrections'&&request.headers().rsc==='1'&&(requests.get(request)??0)>priorRequest;});
   const freshCorrections=mp.waitForResponse(response=>{const request=response.request(),url=new URL(request.url());return url.origin===app.url&&url.pathname==='/api/manager/time-corrections'&&request.method()==='GET'&&(requests.get(request)??0)>priorRequest;});
   const [,foregroundResponse,correctionResponse]=await Promise.all([mp.bringToFront(),freshRsc,freshCorrections]);await finishD2ForegroundRecovery(foregroundResponse,correctionResponse,[pendingEntry,pendingBreak],refreshDeadline);
   assert(await mp.evaluate(()=>document.hasFocus()),'Manager native keyboard page must be foreground');

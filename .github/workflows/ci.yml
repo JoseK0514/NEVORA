@@ -758,6 +758,7 @@ jobs:
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/home-held-*.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/attention-intent-readiness-custody.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/calendar-readiness-custody.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/axe-*.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/*-report.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/updates-*-failure.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/updates-*-checks.json

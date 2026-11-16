@@ -75,8 +75,8 @@ it("compares real joint day plans with discoverable keyboard review and private 
         const advisorEntry=page.locator("main").getByRole("link",{name:"AI manager",exact:true});
         await advisorEntry.evaluate((el:HTMLElement)=>el.scrollIntoView({block:"center",inline:"nearest"}));
         const entryTarget=await advisorEntry.evaluate((el:HTMLElement)=>{const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2,hit=document.elementFromPoint(x,y);return {width:innerWidth,height:innerHeight,rect:r.toJSON(),owned:hit===el||(hit!==null&&el.contains(hit))};});
-        expect(entryTarget.owned,"Ordinary scrolling must expose the real AI manager link to pointer input").toBe(true);
         await writeFile(resolve(evidence,engine+"-entry-pointer.json"),JSON.stringify(entryTarget,null,2));
+        expect(entryTarget.owned,"Ordinary scrolling must expose the real AI manager link to pointer input").toBe(true);
         await advisorEntry.click();
         await page.waitForURL(origin + "/app/ai-manager");
         const compare = page.getByRole("button", { name: "Compare day plans", exact: true });
