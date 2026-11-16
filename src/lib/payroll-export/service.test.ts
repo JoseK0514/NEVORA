@@ -124,7 +124,8 @@ describe('NVA-001 real export-service validation boundaries',()=>{
   f.executor.transaction=async statements=>{
    const rows=await base(statements);
    if(statements.some(s=>s.text.includes('SELECT nevora_payroll_export_command'))){
-    const result=rows.flat().find(r=>r.result)?.result as {model:Record<string,unknown>;canonicalSha256:string};
+    const results=rows.flat() as {result?:{model:Record<string,unknown>;canonicalSha256:string}}[];
+    const result=results.find(r=>r.result)?.result;if(!result)throw new Error('Missing fictional export write receipt');
     const model=structuredClone(result.model) as {rows:{breakNanoseconds:string;entries:{breaks:unknown[]}[]}[]};
     model.rows[0].breakNanoseconds='1800000000000';model.rows[0].entries[0].breaks=[{id:'unexpected',startAt:'2026-09-22T12:30:00Z',endAt:'2026-09-22T13:00:00Z',rawStartAt:'2026-09-22T12:30:00Z',rawEndAt:'2026-09-22T13:00:00Z',name:'Fictional break',adjustmentId:null}];
     result.model=model;result.canonicalSha256=digest(model);
