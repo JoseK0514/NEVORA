@@ -138,7 +138,9 @@ are the authority for candidate identity. Main/production remain held.
 Tracked compact browser receipts and full-report hashes are in
 `readiness-development-evidence-20261116/`. Typecheck passed on the final
 application source; lint passed with the existing hosted-worker export warning.
-The manuals and next Actions candidate still require their own exact receipts.
+Candidate 03's six manuals were rebuilt and verified from source
+`3cdc1cac1b97a1b1409407df27a2ec638bb58adb`, application hash
+`aafa37ad7ce717e72c421187028b02555788bf0ecada73fb49c275c02687c431`.
 
 ## Candidate 03 bounded follow-up
 
@@ -185,3 +187,67 @@ Jira descriptions/labels and workflow status were updated and read back for
 SCRUM-204–207: **In Progress**, implemented, acceptance pending. The obsolete
 needs-reproduction label was removed. No issue was marked Done; development and
 production remain unchanged by this work until the release gates permit them.
+
+## Final bounded handoff status
+
+Candidate 03 is `1e7a9257808372bc4cf6922ad21aab66a93820c7`:
+[CI 43885969955](https://github.com/JoseK0514/NEVORA/actions/runs/43885969955),
+[Mobile Access 43885969907](https://github.com/JoseK0514/NEVORA/actions/runs/43885969907).
+It is **not accepted for development**. Several required browser jobs failed;
+no check was waived and no development/main branch was pushed. Its source-bound
+local optimized build passed, exit 0, clean and unchanged (`build3-source.json`).
+All 21 focused unit tests passed at the normal timeout
+(`candidate3-qualified-unit-final.log`). Two preceding manual-test runs timed
+out locally; a diagnostic and then the unchanged normal-timeout run passed.
+Those failures remain recorded; no test timeout or assertion was edited.
+
+Post-candidate test-driver follow-ups end at
+`9b20eb5769d5e246ee0968d955441387fb603fd5`. They are not covered by candidate
+03's Actions receipts. They reset the separate keyboard path after the trusted
+pointer probe, use the current Confirmed chip, count the rendered unpublished
+notice, target the visible notification IDs, and replace the correction login's
+network-idle wait with protected shell readiness. They make no additional
+application or policy change. The manuals are rebuilt again after this written
+handoff; use the final Git commit and application hash in their manifest.
+
+The local attention rerun (`attention6`) passed its trusted native 44px pointer
+probe, native keyboard traversal, republish conflict/refusal, current revision
+confirmation, exact lost-response retry, privacy retirement and access-revocation
+assertions in the first Chromium/320 cell. The suite then failed at the
+unpublished-week coverage status assertion (script line 153 at that source).
+It is **not** a passed 14-cell suite. Claude must review the current visible
+coverage warning/semantics against that preserved assertion; do not remove the
+completeness requirement to clear CI.
+
+Other observed candidate-03 browser blockers for combined UI acceptance:
+
+- Home: the notification-membership check reached a hidden legacy row; the
+  visible-ID driver follow-up above is committed but needs the full matrix.
+- Corrections: login waited for network idle while Manager polling continued;
+  the readiness follow-up above needs the complete correction regression.
+- Clocker: the real punch journey waited for the earlier `Enter your PIN`
+  heading. Lifecycle/IndexedDB and break-filter probes passed, but the full
+  journey did not.
+- Attendance: the earlier collapsed `Time corrections and flagged clock-ins`
+  control is no longer found; the whole Phase D/remediation gate also remains
+  unqualified. Preserve the recorded-time, private-lifetime and correction
+  assertions while aligning the actual visible workflow.
+- Communications and calendar: required first-cell scenarios failed; inspect
+  their `browser-failure-report.json` in candidate-03 Actions artifacts. Do not
+  infer passing suites from the separately passing readiness probes.
+- Mobile Access: the main local 18-check activation/recovery/account-switch
+  journey passed in all three engines. The exact candidate's workflow failed a
+  WebKit landscape assertion; the local landscape run had passed. Retain the
+  discrepancy and qualify the exact CI artifact; hosted acceptance is pending.
+- Rondo remains a separate owner's dependency, as recorded above.
+
+These are bounded integration dependencies, not reopened backend findings or
+authorization to redesign other owners' screens. Codex's four backend fixes and
+the required stale-action/history wiring remain implemented. Claude retains UI
+ownership; the integration owner must qualify one combined final source after
+these blockers. No other chat was messaged, interrupted or modified.
+
+Jira comments 10421–10424 record candidate 03, exact sources, passing local
+checks and pending integration. The issues remain In Progress. Later Actions
+and follow-up-source results must be added before development acceptance; no
+independent finding was self-closed and nothing was deployed to production.
