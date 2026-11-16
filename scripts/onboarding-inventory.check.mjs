@@ -73,3 +73,13 @@ test('durable billing and the source-bound Step4 verifier have explicit reviewed
   assert.throws(()=>validateOnboardingInventory(files,{...inventory,entries:inventory.entries.filter(entry=>entry.path!==path)},read),/Unclassified runtime entrypoint/,path);
  }
 });
+
+test('both scheduling agreement routes have company-bound dispositions and cannot evade classification',()=>{
+ const files=execFileSync('git',['ls-files','-z'],{encoding:'utf8',maxBuffer:32*1024*1024}).split('\0').filter(Boolean),inventory=JSON.parse(readFileSync('docs/handoffs/onboarding-entrypoint-inventory.json','utf8'));
+ const read=path=>/\.[cm]?[jt]sx?$/.test(path)?readFileSync(path,'utf8'):'';
+ for(const path of ['src/app/api/employee/scheduling-restrictions/route.ts','src/app/api/manager/scheduling-restrictions/route.ts']){
+  const entry=inventory.entries.find(entry=>entry.path===path);assert(entry,path);assert.equal(entry.status,'CONVERTED');assert.equal(entry.isolatedBehavior,'BOUND_APPLICATION');
+  assert.throws(()=>validateOnboardingInventory(files,{...inventory,entries:inventory.entries.filter(entry=>entry.path!==path)},read),/Unclassified runtime entrypoint/,path);
+ }
+ assert.doesNotThrow(()=>validateOnboardingInventory(files,inventory,read));
+});
