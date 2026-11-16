@@ -200,7 +200,9 @@ try{
   await mp.goto(app.url+'/app/timecards/corrections',{waitUntil:'networkidle'});
   await mp.getByRole('heading',{name:'Correction requests',exact:true}).waitFor();
   await mp.getByText('Avery Correction QA',{exact:true}).waitFor();
-  /* B7 wording (NV-020) */await mp.getByText('Approving changes the timecard. The original clock times stay in the history.',{exact:true}).waitFor();
+  // Corporate review keeps this provenance in its visible title subtitle;
+  // the retired per-row sentence is intentionally absent in band mode.
+  await mp.locator('.c-title__sub:visible, .c-phone-sub:visible').filter({hasText:/Fixes your team asked for\. Original times are always kept\./}).waitFor();
   assert.equal(await mp.getByRole('button',{name:'Approve correction for Avery Correction QA'}).isEnabled(),true);
   checked(engine+': populated manager correction review state');
 
