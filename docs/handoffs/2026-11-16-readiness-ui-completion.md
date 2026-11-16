@@ -113,3 +113,12 @@ record this follow-up; the issues remain
 open pending integration/acceptance. Development remains the operating and
 acceptance release, held to production standards. No main merge, real messages,
 customer-data testing, paid activation or production deployment occurred.
+
+## Combined acceptance follow-up
+
+The original pending two-session matrix above is now superseded by
+`2026-11-16-readiness-development-integration.md` and its tracked receipt: 38
+checks passed in Chromium/WebKit on `9f23c2f37c376d7974c71f1536eb73666a4fce9e`.
+A committed deletion with a lost reply now retains the Company draft and locks
+further deletion submissions until explicit review; see the updated UI contract.
+Combined Actions/development acceptance remains pending.

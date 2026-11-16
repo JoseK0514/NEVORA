@@ -68,6 +68,9 @@ not grant company access to a Manager assigned only to locations.
    refuses the old submission and keeps the entered fields. Copy needed values
    from **Unsaved changes to copy** before choosing **Reload current shift**;
    reloading replaces the draft and requires a fresh review.
+   An unconfirmed change may already have completed. Keep the draft, copy any
+   needed values and use the offered current-schedule review before starting
+   another change; do not replace the original review with a new retry.
 3. Follow a read-only message when a protected or published shift requires
    company-wide access. Escalate publishing, company rules and protected changes
    to the Owner or a company-scoped Manager.

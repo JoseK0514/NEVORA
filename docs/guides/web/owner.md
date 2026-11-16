@@ -73,6 +73,9 @@ grants Manager powers.
    draft. **Unsaved changes to copy** retains the submitted fields; copy what
    you need before choosing **Reload current shift**, which replaces that draft.
    Review the current assignment before submitting again.
+   If a deletion's outcome is unknown, it may already have completed. Further
+   deletion submissions stop. Copy any needed draft values, then explicitly
+   reload and review the current schedule before starting another change.
 3. Open **Publish** or **Publish changes**. Review the listed draft locations,
    pending changes and blockers. Draft assignments and unpublished edits are not
    the employee's current published schedule.
