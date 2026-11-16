@@ -17,6 +17,8 @@ export type PeriodReports={
   summary:{employeeCount:number;entryCount:number;recordedNanoseconds:string;breakNanoseconds:string};
   hoursByEmployee:ReportHours[];hoursByLocation:ReportHours[];hoursByPosition:ReportHours[];
   scheduleVsActual:{employeeId:string;employeeName:string;scheduledNanoseconds:string|null;recordedNanoseconds:string;differenceNanoseconds:string|null;unresolvedScheduleCount:number}[];
+  /** Sparse authorized published-assignment days; absence is not an observed zero. */
+  scheduledByDay?:{state:'complete'|'unpublished';basis:'latest_published_elapsed_v1';rows:{employeeId:string;date:string;scheduledNanoseconds:string|null;unresolvedScheduleCount:number}[]};
   attendance:{state:'ready'|'limited';groups:AttendanceGroup[];limitations:ComparisonLimitation[];unavailableEmployeeIds:string[]};
   overtime:{state:'unavailable';reason:string};
   callouts:ReportRequest[];shiftChanges:ReportChange[];timeOff:ReportRequest[];
@@ -104,10 +106,25 @@ export function projectReports(value:unknown):PeriodReports{
     }
   }
   const plan=new Map<string,{nanoseconds:bigint;unresolved:number}>();
+  const dailyPlan=new Map<string,{employeeId:string;date:string;nanoseconds:bigint;unresolvedScheduleCount:number}>();
   for(const s of schedules){
     if(s.isCalloutApproved)continue;
     const total=plan.get(s.employeeId)??{nanoseconds:BigInt(0),unresolved:0};
     const elapsed=scheduledTime(s,value.timeZone,first,after);if(elapsed===null)total.unresolved++;else total.nanoseconds+=elapsed;plan.set(s.employeeId,total);
+    // Scheduled periods occupy at most two local calendar dates. Split using
+    // actual workplace midnight instants so a DST day keeps its elapsed length.
+    const dates=[s.date];
+    if(s.endTime<s.startTime&&!/^00:00(?::00(?:\.0+)?)?$/.test(s.endTime))dates.push(Temporal.PlainDate.from(s.date).add({days:1}).toString());
+    for(const date of dates){
+      if(date<period.startDate||date>period.endDate)continue;
+      const dayBounds=periodInstants({startDate:date,endDate:date},value.timeZone);
+      const dailyElapsed=scheduledTime(s,value.timeZone,ns(dayBounds.startAt),ns(dayBounds.endAt));
+      if(dailyElapsed===BigInt(0))continue;
+      const key=JSON.stringify([s.employeeId,date]);
+      const day=dailyPlan.get(key)??{employeeId:s.employeeId,date,nanoseconds:BigInt(0),unresolvedScheduleCount:0};
+      if(dailyElapsed===null)day.unresolvedScheduleCount++;else day.nanoseconds+=dailyElapsed;
+      dailyPlan.set(key,day);
+    }
   }
   const scheduleVsActual=[...new Set([...byEmployee.keys(),...plan.keys()])].sort().map(employeeId=>{
     const actual=byEmployee.get(employeeId),scheduled=plan.get(employeeId);const unresolved=scheduled?.unresolved??0;
@@ -128,6 +145,7 @@ export function projectReports(value:unknown):PeriodReports{
   return {state:'ready',version:1,workspaceId:value.workspaceId,timeZone:value.timeZone,observedAt:value.observedAt,period,
     summary:{employeeCount:cards.length,entryCount,recordedNanoseconds:recorded.toString(),breakNanoseconds:breakTime.toString()},
     hoursByEmployee:[...byEmployee.values()],hoursByLocation:[...byLocation.values()],hoursByPosition:[...byPosition.values()],scheduleVsActual,
+    scheduledByDay:{state:planComplete?'complete':'unpublished',basis:'latest_published_elapsed_v1',rows:[...dailyPlan.values()].sort((a,b)=>a.employeeId.localeCompare(b.employeeId)||a.date.localeCompare(b.date)).map(({nanoseconds,...day})=>({...day,scheduledNanoseconds:!planComplete||day.unresolvedScheduleCount?null:nanoseconds.toString()}))},
     attendance:{state:limitations.length||unavailableEmployeeIds.length?'limited':'ready',groups,limitations,unavailableEmployeeIds},
     overtime:{state:'unavailable',reason:'Overtime needs your pay rules and employee classifications. Hours here aren’t payroll hours.'},
     callouts:requests.filter(r=>r.kind==='CALLOUT'),timeOff:requests.filter(r=>r.kind==='TIME_OFF'),shiftChanges:changes,

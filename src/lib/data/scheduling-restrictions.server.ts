@@ -8,6 +8,7 @@ import {assertOperationalAccess,operationalScopeStatements,isOperationalAuthoriz
 import {readTransaction,mutationTransaction} from './transaction-composition';
 import {sourceTableLock} from './source-table-lock';
 import {applyRestrictionCommand,parseRestrictionCommand,parseRestrictionDocument,RestrictionError,type RestrictionDocument} from '../scheduling/restrictions';
+import {addDays} from '../date-utils';
 
 const safeId=(v:unknown):v is string=>typeof v==='string'&&v.length>0&&v.length<=200&&v===v.trim()&&!/[\p{Cc}\p{Cf}]/u.test(v);
 const footprintSql=`ARRAY(SELECT id FROM (
@@ -60,6 +61,7 @@ async function context(proof:SessionMutationProof,employeeId:string,executor:Sql
  return {workspace,target,guards,authority};
 }
 function translate(error:unknown):never{
+ if(error instanceof RestrictionError)throw error;
  if(isManagementAuthorizationError(error)||isOperationalAuthorizationError(error))throw new RestrictionError('denied');
  const message=error instanceof Error?error.message:'';
  if(message.includes('scheduling_restrictions_conflict'))throw new RestrictionError('conflict');
@@ -71,7 +73,8 @@ export async function readSchedulingRestrictions(proof:SessionMutationProof,empl
   const prepared=await context(proof,employeeId,executor);
   const document=parseRestrictionDocument(prepared.target.document);
   await readTransaction(executor,[...prepared.guards,...prepared.authority()]);
-  return {document,legacyUnconfirmed:document.versions.length===0,earliestWeek:prepared.target.earliestWeek};
+  const last=document.versions.at(-1),employeeBoundary=last?addDays(last.effectiveWeek,7):prepared.target.earliestWeek;
+  return {document,legacyUnconfirmed:document.versions.length===0,earliestWeek:employeeBoundary>prepared.target.earliestWeek?employeeBoundary:prepared.target.earliestWeek};
  }catch(error){return translate(error);}
 }
 export async function mutateSchedulingRestrictions(proof:SessionMutationProof,employeeId:string,input:unknown,executor:SqlExecutor=neonNotificationExecutor()){

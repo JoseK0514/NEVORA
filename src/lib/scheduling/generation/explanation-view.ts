@@ -149,6 +149,7 @@ function message(code: unknown): string {
 }
 function coverage(v: unknown): asserts v is GenerationPlan['demand']['coverage'] {
   if (!object(v) || !integer(v.requiredMinutes) || !integer(v.coveredMinutes) || v.coveredMinutes > v.requiredMinutes
+    || v.basis !== undefined && v.basis !== 'fully_covered_period_minutes_v1' || v.unit !== undefined && v.unit !== 'nominal_location_minutes'
     || typeof v.unavailable !== 'boolean' || (v.requiredMinutes === 0
       ? !v.unavailable || v.percentage !== null
       : v.unavailable || typeof v.percentage !== 'number' || v.percentage !== 100 * v.coveredMinutes / v.requiredMinutes)) throw Error('Invalid coverage');
@@ -349,7 +350,8 @@ function build(value: unknown): GenerationExplanationView {
   return { state: 'ready', generationId: b.generationId, status: p.status, weekStart: i.weekStart, mode: i.mode,
     inputVersion: b.inputVersion, sourceVersion: c.sourceVersion, configurationVersion: b.configurationVersion, strategyVersion: b.strategyVersion,
     observedAt: instant(c.observedAt), attemptedLocationIds: [...p.demand.locationIds].sort(order), coverage: { requiredMinutes: p.demand.coverage.requiredMinutes,
-      coveredMinutes: p.demand.coverage.coveredMinutes, percentage: p.demand.coverage.percentage, unavailable: p.demand.coverage.unavailable },
+      coveredMinutes: p.demand.coverage.coveredMinutes, percentage: p.demand.coverage.percentage, unavailable: p.demand.coverage.unavailable,
+      basis:'fully_covered_period_minutes_v1',unit:'nominal_location_minutes' },
     configuredDemand: unique(configuredDemand), accepted: unique(p.additions.map(row => assignment(row, false, i))), preserved: unique(retained.map(row => assignment(row, true, i))),
     replacedAssignmentIds: [...p.replacedShiftIds].sort(order), setup: unique(setup), gaps: unique(gaps), reasons, warnings,
     budget: { limits: { ...p.limits }, exhausted: p.explanations.some(reason => reason.code === 'BUDGET_EXHAUSTED') }, save: saveView,

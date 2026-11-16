@@ -4,7 +4,7 @@ import type {CalloutRecord} from './data/callouts';
 import {marketplaceDisplayName} from './exchange-marketplace';
 export const RESPONSE_KINDS=['ACCEPT','DECLINE','CANCEL','WITHDRAW','CANCEL_CALLOUT'] as const;
 export type EmployeeResponseKind=typeof RESPONSE_KINDS[number];
-export type RequestSummary={id:string;kind:'swap'|'coverage'|'callout';viewer:'requester'|'recipient'|'reporter';status:string;date:string;createdAt:string;counterparty:string|null;revision:number|null;releaseApplies:boolean|null};
+export type RequestSummary={coverage?:CalloutRecord['coverage'];id:string;kind:'swap'|'coverage'|'callout';viewer:'requester'|'recipient'|'reporter';status:string;date:string;createdAt:string;counterparty:string|null;revision:number|null;releaseApplies:boolean|null};
 export type RequestSlot={date:string;startTime:string;endTime:string;location:string;position:string|null;lead:boolean|null};
 export type HistorySlot=Pick<RequestSlot,'date'|'startTime'|'endTime'>;
 export type RequestEvent={revision:number;label:string;at:string;offered:HistorySlot|null;requested:HistorySlot|null};
@@ -27,7 +27,7 @@ export function exchangeSummary(row:ExchangeRecord,own:string):RequestSummary|nu
  return {id:row.id,kind:row.kind==='SWAP'?'swap':'coverage',viewer:requester?'requester':'recipient',status:row.status,date:row.sourceShift.date,createdAt:row.createdAt,counterparty:peer?marketplaceDisplayName(peer):null,revision:revision(row.requestRevision)?row.requestRevision:null,releaseApplies:null};
 }
 export function calloutSummary(row:CalloutRecord,own:string):RequestSummary|null {
- return row.employeeId===own?{id:row.id,kind:'callout',viewer:'reporter',status:row.status,date:row.date,createdAt:row.createdAt,counterparty:null,revision:revision(row.requestRevision)?row.requestRevision:null,releaseApplies:row.releaseApplies===true}:null;
+ return row.employeeId===own?{...(row.coverage?{coverage:row.coverage}:{}),id:row.id,kind:'callout',viewer:'reporter',status:row.status,date:row.date,createdAt:row.createdAt,counterparty:null,revision:revision(row.requestRevision)?row.requestRevision:null,releaseApplies:row.releaseApplies===true}:null;
 }
 export function exchangeSlot(row:ExchangeShift):RequestSlot|null {
  if(!date(row.date)||!time(row.startTime)||!time(row.endTime))return null;
@@ -44,7 +44,8 @@ export function employeeHistory(rows:unknown[]):RequestEvent[]{
  return rows.flatMap(row=>object(row)&&revision(Number(row.request_revision))&&instant(String(row.created_at))?[{revision:Number(row.request_revision),label:eventLabels[String(row.event_kind)]??'Request updated',at:new Date(String(row.created_at)).toISOString(),offered:historySlot(row.source_terms),requested:historySlot(row.target_terms)}]:[]);
 }
 function summary(value:unknown):value is RequestSummary {
- return object(value)&&keys(value,['id','kind','viewer','status','date','createdAt','counterparty','revision','releaseApplies'])&&employeeRequestId(value.id)&&['swap','coverage','callout'].includes(String(value.kind))&&['requester','recipient','reporter'].includes(String(value.viewer))&&statuses.includes(String(value.status))&&date(value.date)&&instant(value.createdAt)&&(value.counterparty===null||text(value.counterparty,200))&&(value.revision===null||revision(value.revision))&&(value.releaseApplies===null||typeof value.releaseApplies==='boolean')
+ return object(value)&&keys(value,['id','kind','viewer','status','date','createdAt','counterparty','revision','releaseApplies',...(Object.hasOwn(value,'coverage')?['coverage']:[])])&&employeeRequestId(value.id)&&['swap','coverage','callout'].includes(String(value.kind))&&['requester','recipient','reporter'].includes(String(value.viewer))&&statuses.includes(String(value.status))&&date(value.date)&&instant(value.createdAt)&&(value.counterparty===null||text(value.counterparty,200))&&(value.revision===null||revision(value.revision))&&(value.releaseApplies===null||typeof value.releaseApplies==='boolean')
+  &&(value.coverage===undefined||value.kind==='callout'&&object(value.coverage)&&keys(value.coverage,['state','basis'])&&value.coverage.basis==='linked_request_history_v1'&&['not_requested','pending','completed','closed','unavailable'].includes(String(value.coverage.state)))
   &&(value.kind==='callout'?value.viewer==='reporter'&&value.counterparty===null:value.viewer!=='reporter'&&value.releaseApplies===null);
 }
 function slot(value:unknown):value is RequestSlot {

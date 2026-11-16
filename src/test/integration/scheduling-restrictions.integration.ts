@@ -33,6 +33,11 @@ it('stores approved versions separately, replays once and rejects changed ID reu
  expect((await q("SELECT management_restrictions->'versions' AS versions FROM employee_scheduling_settings WHERE employee_id='worker'"))[0].versions).toHaveLength(1);
  await expect(mutateSchedulingRestrictions(owner,'worker',{...command,unavailable:[]},database.executor)).rejects.toThrow('conflict');
 });
+it('the read lower bound includes the employee future-version boundary',async()=>{
+ await mutateSchedulingRestrictions(owner,'worker',command,database.executor);
+ expect((await readSchedulingRestrictions(owner,'worker',database.executor)).earliestWeek).toBe('2030-10-14');
+ await expect(mutateSchedulingRestrictions(owner,'worker',{...command,operationId:'77777777-7777-4777-8777-777777777777',expectedRevision:1},database.executor)).rejects.toMatchObject({code:'locked',earliestWeek:'2030-10-14'});
+});
 it('an employee can request a restriction but cannot approve it or read another employee',async()=>{
  await expect(mutateSchedulingRestrictions(worker,'worker',command,database.executor)).rejects.toThrow('denied');
  const result=await mutateSchedulingRestrictions(worker,'worker',{...command,kind:'REQUEST'},database.executor);

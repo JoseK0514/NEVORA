@@ -281,7 +281,7 @@ const managerSqlFor = (includeInternalCapture = false) => `WITH observed AS MATE
   ORDER BY r.created_at,r.id
 ), rows AS MATERIALIZED (
   SELECT (${publicRequestJson('r')} ||
-    jsonb_build_object('employeeName',r.employee_name,'isSelf',r.employee_id=$2 OR r.requested_by_employee_id=$2)) AS value,
+    jsonb_build_object('employeeName',r.employee_name,'concernsActor',r.employee_id=$2,'isSelf',r.employee_id=$2 OR r.requested_by_employee_id=$2)) AS value,
     ${includeInternalCapture ? 'internal_source.capture,' : ''}r.created_at,r.id,r.page_index
   FROM pending r
   JOIN locations loc ON loc.id=r.location_id

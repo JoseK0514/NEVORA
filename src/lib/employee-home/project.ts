@@ -1,5 +1,6 @@
 import type {AttentionItem,EmployeeHomeRead,HomeSnapshot,HomeSource,PublishedAssignment,SourceObservation} from './types';
 import {isValidIsoDate,isValidWeekStart} from '../date-utils';
+import {summarizeHomeTasks} from './task-summary';
 export const HOME_SOURCES:HomeSource[]=['schedule','acknowledgements','exchanges','timeOff','ownTime','communications'];
 const reasons=new Set(['read_failed','source_cap','source_changed','unpublished','integration_pending','expired','unknown_source','review_unavailable']);
 const instant=(value:unknown):value is string=>typeof value==='string'&&Number.isFinite(Date.parse(value));
@@ -67,6 +68,6 @@ export function projectEmployeeHome(input:HomeSnapshot):EmployeeHomeRead{
   const boundaries=[nextShift?.startAt,currentShift?.endAt,...Object.values(sources).map(s=>s.validUntil),...[...merged.values()].filter(i=>i.actionable).map(i=>i.deadlineAt)].filter((v):v is string=>!!v).map(v=>Date.parse(v)-at).filter(v=>v>0);
   const snapshot:HomeSnapshot={observedAt:input.observedAt,authority:input.authority,timeZone:input.timeZone,validForMs:Math.min(input.validForMs,...boundaries),sources,publicationState:available?input.publicationState:'unavailable',...(available&&input.publicationState==='partial'?{unpublishedLocations:Array.isArray(input.unpublishedLocations)?input.unpublishedLocations.filter(l=>typeof l==='string'&&l.length>0).slice(0,10):[]}:{}),nextShift,currentShift,attention:[...merged.values()].sort(compare)};
   const complete=HOME_SOURCES.every(key=>sources[key].state==='complete')&&snapshot.publicationState==='complete';
-  return {state:complete?'ready':'partial',snapshot,allSet:complete&&snapshot.attention.length===0};
+  return {state:complete?'ready':'partial',snapshot,tasks:summarizeHomeTasks(snapshot.attention,complete),allSet:complete&&snapshot.attention.length===0};
  }catch{return {state:'unavailable',reason:'read_failed'};}
 }

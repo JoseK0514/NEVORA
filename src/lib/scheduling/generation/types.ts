@@ -73,6 +73,9 @@ export type ConfiguredNeed = GenerationNeed & {
   needKey: string;
 };
 export type CoverageMeasure = {
+  /** Optional for persisted pre-contract plans; new reads always supply these. */
+  basis?: 'fully_covered_period_minutes_v1';
+  unit?: 'nominal_location_minutes';
   requiredMinutes: number;
   coveredMinutes: number;
   percentage: number | null;

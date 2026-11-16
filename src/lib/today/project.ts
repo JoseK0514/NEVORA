@@ -9,6 +9,8 @@ export type TodayShiftStatus = "upcoming" | "starting" | "not_clocked_in" | "no_
 export type TodayShift = {
   id: string; employeeId: string; employeeName: string; locationId: string; locationName: string; positionName: string | null;
   startAt: string; endAt: string; status: TodayShiftStatus; firstClockInAt: string | null; late: boolean;
+  /** Elapsed whole minutes after scheduled start; null means no recorded punch. */
+  lateMinutes?:number|null;
 };
 export type TodayCounts = { scheduled: number; clockedIn: number; late: number; notClockedIn: number };
 export type SetupProgress={teamSize:number;publishedSchedule:boolean;registeredClocks:number;peopleWithPins:number;paySchedule:boolean};
@@ -30,17 +32,18 @@ const MINUTE = 60_000;
  * Open entries take precedence; lateness uses the first recorded clock-in, while
  * missing punches use a separate five-minute starting grace period.
  */
-export function shiftStatus(shift: { startAt: string; endAt: string }, entries: RawEntry[], now: number): { status: TodayShiftStatus; firstClockInAt: string | null; late: boolean } {
+export function shiftStatus(shift: { startAt: string; endAt: string }, entries: RawEntry[], now: number): { status: TodayShiftStatus; firstClockInAt: string | null; late: boolean;lateMinutes:number|null } {
   const start = ms(shift.startAt), end = ms(shift.endAt);
   const first = entries.map(e => e.clockInAt).sort((a, b) => ms(a) - ms(b))[0] ?? null;
   const late = first !== null && ms(first) - start >= MINUTE;
+  const lateMinutes=first===null?null:Math.max(0,Math.floor((ms(first)-start)/MINUTE));
   const open = entries.find(e => e.clockOutAt === null);
-  if (open) return { status: open.onBreak ? "on_break" : "clocked_in", firstClockInAt: first, late };
-  if (entries.length) return { status: "done", firstClockInAt: first, late };
-  if (now < start) return { status: "upcoming", firstClockInAt: null, late: false };
-  if (now >= end) return { status: "no_punches", firstClockInAt: null, late: false };
-  if (now < start + START_GRACE_MINUTES * MINUTE) return { status: "starting", firstClockInAt: null, late: false };
-  return { status: "not_clocked_in", firstClockInAt: null, late: false };
+  if (open) return { status: open.onBreak ? "on_break" : "clocked_in", firstClockInAt: first, late, lateMinutes };
+  if (entries.length) return { status: "done", firstClockInAt: first, late, lateMinutes };
+  if (now < start) return { status: "upcoming", firstClockInAt: null, late: false, lateMinutes:null };
+  if (now >= end) return { status: "no_punches", firstClockInAt: null, late: false, lateMinutes:null };
+  if (now < start + START_GRACE_MINUTES * MINUTE) return { status: "starting", firstClockInAt: null, late: false, lateMinutes:null };
+  return { status: "not_clocked_in", firstClockInAt: null, late: false, lateMinutes:null };
 }
 
 /** A punch belongs to a shift when it is the same person at the same place and
@@ -106,7 +109,8 @@ const count = (v: unknown): v is number => Number.isSafeInteger(v) && (v as numb
 function shiftOk(v: unknown): v is TodayShift {
   return object(v) && text(v.id) && text(v.employeeId) && text(v.employeeName) && text(v.locationId) && text(v.locationName) &&
     (v.positionName === null || text(v.positionName)) && Number.isFinite(ms(v.startAt)) && Number.isFinite(ms(v.endAt)) &&
-    STATUSES.includes(v.status as TodayShiftStatus) && (v.firstClockInAt === null || Number.isFinite(ms(v.firstClockInAt))) && typeof v.late === "boolean";
+    STATUSES.includes(v.status as TodayShiftStatus) && (v.firstClockInAt === null || Number.isFinite(ms(v.firstClockInAt))) && typeof v.late === "boolean" && (v.lateMinutes===undefined ||
+      v.lateMinutes===(v.firstClockInAt===null?null:Math.max(0,Math.floor((ms(v.firstClockInAt)-ms(v.startAt))/MINUTE)))) ;
 }
 
 /** Browser-side check of the API response; anything unexpected is unavailable. */
