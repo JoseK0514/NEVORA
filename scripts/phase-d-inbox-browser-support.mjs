@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 export async function readVisibleInboxCards(locator, sourceItems, firstNames) {
   const cards = await locator.evaluateAll(elements => elements.map(card => {
     const pill = card.querySelector(':scope > .b-card__h > h2 > .b-pill');
-    const rows = [...card.querySelectorAll('ul.b-list > li.b-li > a.b-row--link,ul.b-list > li.b-li > .b-row > a.b-row__hit')].map(row => ({href: row.getAttribute('href'), label: row.getAttribute('aria-label') ?? row.textContent, text: row.textContent}));
+    const rows = [...card.querySelectorAll('ul.b-list > li.b-li > a.b-row--link,ul.b-list > li.b-li > .b-row > a.b-row__hit')].map(row => ({href: row.getAttribute('href'), label: row.getAttribute('aria-label') ?? row.textContent, text: row.textContent, detail: row.querySelector('.b-row__s')?.textContent ?? ''}));
     return {id: card.id.slice(2), label: card.querySelector(':scope > .b-card__h > h2')?.textContent ?? '', count: pill ? Number(pill.textContent) : null, hrefs: rows.map(row => row.href), rows};
   }));
   const allTimecards = sourceItems.filter(item => item.type === 'TIMECARD');
@@ -28,7 +28,7 @@ export async function readVisibleInboxCards(locator, sourceItems, firstNames) {
       assert(members.length > 0, 'A visible period represents actual eligible subjects');
       const total = allTimecards.filter(samePeriod).length;
       const quantity = (members.length === total ? String(members.length) : `${members.length} of ${total}`) + (total === 1 ? ' timecard' : ' timecards');
-      assert(new RegExp('\\b' + quantity + '\\b').test(row.text.replace(/\s+/gu, ' ')), 'The visible row states the exact eligible and total membership');
+      assert(new RegExp('\\b' + quantity + '\\b').test(row.detail.replace(/\s+/gu, ' ')), 'The visible detail states the exact eligible and total membership: ' + JSON.stringify({quantity, detail:row.detail}));
       for (const item of members) {
         assert.equal(typeof firstNames[item.employeeId], 'string');
         assert(row.label.includes(firstNames[item.employeeId]), 'The actual period row names every eligible fixture subject');
