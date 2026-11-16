@@ -238,8 +238,12 @@ async function main() {
             if (!result || !Array.isArray(result.checks) || !result.checks.length || result.checks.some(check => typeof check !== 'string' || !check.trim())) throw Error('Missing executed browser cases: ' + item);
             if (new URL(page.url()).origin !== app.url) throw Error('Browser scenario did not exercise the owned application: ' + item);
             runtimeErrors.setPhase('axe');
+            // Audit the resting view after finite entry transitions. Each scenario still proves its own data readiness.
+            await page.waitForFunction(() => !document.getAnimations().some(animation => (animation.playState === 'running' || animation.pending) && Number.isFinite(animation.effect?.getComputedTiming().endTime)), null, {timeout: 15_000});
             await page.addScriptTag({ path: axeFile });
-            const violations = await page.evaluate(async () => (await window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } })).violations.map(item => item.id));
+            const accessibility = await page.evaluate(async () => (await window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } })).violations.map(item => ({id: item.id, targets: item.nodes.flatMap(node => node.target.map(target => String(target).replace(/\[[^\]]*\]/g, '[attribute]').replace(/[A-Za-z0-9_-]{32,}/g, '[OPAQUE]')))})));
+            writeFileSync(join(evidence, `axe-${item}-${engine}-${width}.json`), JSON.stringify({checkpoint: custody.checkpoint, suite: item, engine, width, violations: accessibility}, null, 2));
+            const violations = accessibility.map(item => item.id);
             record.accessibilityViolations = violations;
             assert.deepEqual(violations, [], `${item} ${engine} ${width}: accessibility violations`);
             record.checks = [...result.checks, 'axe WCAG A/AA check'];
