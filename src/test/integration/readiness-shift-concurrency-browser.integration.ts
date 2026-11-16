@@ -17,10 +17,14 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
   await mkdir(evidence, { recursive: true });
   const { observeBrowserCell } = await import(new URL('../../../scripts/phase-e-browser-qa.mjs', import.meta.url).href);
   const { verifyNavigationFetchDiagnostic, observeWindowExceptions } = await import(new URL('../../../scripts/browser-navigation-diagnostic.mjs', import.meta.url).href);
+  const { observeRscCaughtErrors, requestFailureCategory } = await import(new URL('../../../scripts/rsc-caught-error-observer.mjs', import.meta.url).href);
   const runtime = createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE ?? resolve('tools/ci-browser-runtime/package.json'))('playwright');
   const app = await createOwnedNextApp(evidence);
   const q = <T = Record<string, unknown>>(text: string, values: unknown[] = []) => app.database.executor.query<T>({ text, values });
   const browsers: { close(): Promise<void> }[] = [], checks: string[] = [], errors: unknown[] = [], runtimeExecutions: unknown[] = [], runtimeControls: unknown[] = [];
+  const runtimeTrace: Record<string, unknown>[] = [], runtimeFailureTraces: unknown[] = [];
+  let stage = 'seed', traceOmitted = 0, failureTracesOmitted = 0;
+  const trace = (value: Record<string, unknown>) => { if (runtimeTrace.length === 240) { runtimeTrace.shift(); traceOmitted++; } runtimeTrace.push({ at: Math.round(performance.now()), stage, completedChecks: checks.length, ...value }); };
   let complete = false, failureShot: (() => Promise<void>) | undefined, serial = 0;
   try {
     await seedOwnedApp(app.database.executor);
@@ -58,13 +62,26 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       for (const [index, context] of [c0, c1, c2].entries()) {
         const execution = { engine, width: index === 0 ? 390 : 1440, kind: 'readiness-schedule' };
         const observer = observeBrowserCell(execution, errors, { navigationDiagnosticVerified: control.verified, navigationReadKinds: ['manager-today-read'] });
+        observer.setStageReader(() => stage);
         await observer.observeContext(context, index === 1 ? 'manager' : 'primary');
+        await observeRscCaughtErrors(context, (_page: unknown, metadata: Record<string, unknown>) => trace({ engine, index, event: 'caught-rsc-error', metadata }));
         if (engine !== 'webkit') await observeWindowExceptions(context, (_page: unknown, kind: string) => errors.push({ engine, index, kind, type: 'window-javascript-error' }));
         runtimeExecutions.push(execution);
       }
       const p0 = await c0.newPage(), p1 = await c1.newPage(), p2 = await c2.newPage(), page = (n: number) => n === 2 ? p2 : n ? p1 : p0;
       for (const n of [0, 1, 2]) {
         const p = page(n); p.setDefaultTimeout(20000);
+        type TracedRequest = { url(): string; method(): string; headers(): Record<string, string>; isNavigationRequest(): boolean; failure(): { errorText?: string } | null };
+        const requestIds = new WeakMap<object, number>(); let requestSerial = 0;
+        const kind = (address: string) => { const url = new URL(address); if (url.origin !== app.url) return null; const paths: Record<string, string> = { '/login': 'login', '/app': 'manager-home', '/app/schedule': 'schedule', '/app/schedule/edit': 'schedule-edit', '/api/manager/today': 'manager-today', '/api/company-access/operational-authority': 'authority', '/api/notifications': 'notifications', '/__nextjs_original-stack-frames': 'framework-frames' }; return paths[url.pathname] ?? null; };
+        const requestMetadata = (request: TracedRequest) => { const resource = kind(request.url()); if (!resource) return null; if (!requestIds.has(request)) requestIds.set(request, ++requestSerial); return { resource, requestId: requestIds.get(request), method: request.method(), document: request.isNavigationRequest(), rsc: request.headers().rsc === '1', serverAction: typeof request.headers()['next-action'] === 'string' }; };
+        p.on('request', (request: TracedRequest) => { const metadata = requestMetadata(request); if (metadata) trace({ engine, index: n, event: 'request', ...metadata }); });
+        p.on('response', (response: { request(): TracedRequest; status(): number }) => { const metadata = requestMetadata(response.request()); if (metadata) trace({ engine, index: n, event: 'response', status: response.status(), ...metadata }); });
+        p.on('requestfinished', (request: TracedRequest) => { const metadata = requestMetadata(request); if (metadata) trace({ engine, index: n, event: 'finished', ...metadata }); });
+        p.on('requestfailed', (request: TracedRequest) => { const metadata = requestMetadata(request); if (metadata) trace({ engine, index: n, event: 'failed', category: requestFailureCategory(request.failure()?.errorText), ...metadata }); });
+        p.on('framenavigated', (frame: { url(): string }) => { if (frame === p.mainFrame()) trace({ engine, index: n, event: 'document', resource: kind(frame.url()) }); });
+        p.on('pageerror', () => { trace({ engine, index: n, event: 'pageerror' }); if (runtimeFailureTraces.length < 8) runtimeFailureTraces.push({ engine, index: n, events: [...runtimeTrace] }); else failureTracesOmitted++; });
+        stage = 'login';
         await p.route('**/*', async (route: { request(): { url(): string }; abort(): Promise<void>; continue(): Promise<void> }) => { const url = new URL(route.request().url()); if (['http:', 'https:'].includes(url.protocol) && url.origin !== app.url) await route.abort(); else await route.continue(); });
         await p.goto(app.url + '/login'); await p.getByLabel('Employee ID', { exact: true }).fill(n === 2 ? 'MATRIX-SECOND' : n ? 'MATRIX-LOCAL' : 'MATRIX-COMPANY'); await p.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD); await p.getByRole('button', { name: 'Sign in', exact: true }).click(); await p.waitForURL(app.url + '/app');
       }
@@ -99,6 +116,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         } };
       };
       for (const stale of [0, 1]) {
+        stage = 'revision-conflict';
         const winner = 1 - stale;
         for (const [first, second] of [['edit', 'edit'], ['reassign', 'edit'], ['edit', 'reassign'], ['edit', 'delete'], ['delete', 'edit']]) {
           const id = await seed(); failureShot = () => page(stale).screenshot({ path: resolve(evidence, `${engine}-failure.png`), fullPage: true });
@@ -136,6 +154,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       // A committed edit whose response is lost must never acquire a fresh token
       // from the server behind the manager's retained draft.
       for (const n of [0, 1]) {
+        stage = 'response-loss';
         const id = await seed(); await open(n, id); failureShot = () => page(n).screenshot({ path: resolve(evidence, `${engine}-failure.png`), fullPage: true });
         const version = await form(n).locator('[name="expectedReviewVersion"]').inputValue();
         const lost = await loseNextResponse(n, id);
@@ -151,6 +170,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         checks.push(`${engine}: ${n ? 'location unknown-outcome lock' : 'Company original-review retry'} after committed lost response; row unchanged`);
       }
       for (const n of [0, 1]) {
+        stage = 'response-loss';
         const id = await seed(); await open(n, id); failureShot = () => page(n).screenshot({ path: resolve(evidence, `${engine}-failure.png`), fullPage: true });
         const version = await form(n).locator('[name="expectedReviewVersion"]').inputValue();
         await form(n).locator('[name="notes"]').fill('Retained before lost deletion');
@@ -171,6 +191,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         expect(await q('SELECT id FROM shifts WHERE id=$1', [id])).toEqual([]); await page(n).unroute(lost.pattern);
         checks.push(`${engine}: ${n ? 'location unknown-outcome lock' : 'Company unknown-outcome lock and copy-before-review'} after lost successful deletion; draft retained and no replay effects`);
       }
+      stage = 'offline';
       const offlineId = await seed(); await open(0, offlineId); await p0.waitForLoadState('networkidle');
       await c0.setOffline(true);
       await p0.waitForFunction(() => !document.querySelector('form [name="expectedReviewVersion"]'), undefined, { timeout: 17000 });
@@ -184,5 +205,5 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
     expect(await q('SELECT id FROM notifications')).toEqual([]);
     expect(errors).toEqual([]); complete = true;
   } catch (error) { await failureShot?.().catch(() => {}); throw error; }
-  finally { await Promise.all(browsers.map(b => b.close())); await app.close(); await writeFile(resolve(evidence, 'report.json'), JSON.stringify({ complete, checks, errors, runtimeControls, runtimeExecutions, fictionalOnly: true, source: app.sourceHashes }, null, 2)); }
+  finally { await Promise.all(browsers.map(b => b.close())); await app.close(); await writeFile(resolve(evidence, 'report.json'), JSON.stringify({ complete, checks, errors, runtimeControls, runtimeExecutions, runtimeTrace, runtimeFailureTraces, traceOmitted, failureTracesOmitted, fictionalOnly: true, source: app.sourceHashes }, null, 2)); }
 }, 480000);
