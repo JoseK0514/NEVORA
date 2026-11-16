@@ -36,10 +36,21 @@ The first Actions tag, `candidate/backend-completion/20261116-readiness-combined
 points to `a182687e1a75c76d32a72f0986f5f98424002f3f`.
 [CI run 43870717602](https://github.com/JoseK0514/NEVORA/actions/runs/43870717602)
 passed validate and all Clocker SQL shards, but failed other required gates.
-It was not promoted. The next candidate is
-`candidate/backend-completion/20261116-readiness-combined-02`; its required checks
-must all pass on its exact SHA before a normal fast-forward to development.
-Never infer acceptance or deployment merely from either tag.
+It was not promoted. Candidate 02,
+`candidate/backend-completion/20261116-readiness-combined-02`, points to
+`7b57d149de2acb7e385c4d2392960b1cc70c3013`.
+[CI run 43879626641](https://github.com/JoseK0514/NEVORA/actions/runs/43879626641)
+passed validate, release-postgres, onboarding-backend, phase-e-postgres and all
+Clocker SQL shards/aggregate. Its two readiness browser suites both passed
+(14 + 38 checks, zero unexpected errors). Other combined browser gates and
+[Mobile Access 43879626726](https://github.com/JoseK0514/NEVORA/actions/runs/43879626726)
+failed. Candidate 02 was not promoted.
+
+Candidate 03 is `candidate/backend-completion/20261116-readiness-combined-03`.
+The immutable tag identifies its final manuals-qualified SHA. All mandatory
+checks on that exact SHA, fresh remote-source reconciliation and combined
+acceptance remain required before a normal fast-forward to development.
+Never infer acceptance or deployment merely from a tag.
 
 ## Changes and decisions
 
@@ -128,3 +139,49 @@ Tracked compact browser receipts and full-report hashes are in
 `readiness-development-evidence-20261116/`. Typecheck passed on the final
 application source; lint passed with the existing hosted-worker export warning.
 The manuals and next Actions candidate still require their own exact receipts.
+
+## Candidate 03 bounded follow-up
+
+The additional application changes are in
+`ada927badd2fea3ef6de5e1d2e0b7bc42f9fc824`: restore the existing first-activation
+guide to the visible Employee Home, preserve its absence for returning users,
+and retain the approved compact Back/confirmation paint with native 44px hit
+bands. No screen redesign or Rondo behavior changed.
+
+Browser drivers now use visible current cards, labels and person buttons;
+confirmation geometry also proves a trusted outer-edge click reaches the
+control without recording an acknowledgement. Management close deliberately
+reopens and reviews a blank form after responsive inspector remounts; the
+original operation/retry/privacy assertions remain. Manager login waits for
+protected shell readiness instead of an idle network containing polling.
+Home required-item checks preserve visible review links and action-needed
+indicators in the current presentation.
+
+| Local execution | Actual result |
+| --- | --- |
+| Management-close browser (`management5`) | Passed; six checks, Chromium/WebKit, real inactive worker/location/tablet close, privacy retirement, lost-response/account replacement and one canonical operation. Source `bc7aebc7005f3586b81176f042b358a1a0d663a4`. |
+| Delegated-correction browser (`delegated3`) | Passed; three checks, Chromium/WebKit, separate reviewer and exact-operation private recovery. Source `5776872ea887e03b210921fa14d371257c64a987`. |
+| Mobile Access main journey (`mobile5`) | Passed in Chromium/WebKit/Firefox, zero runtime/window exceptions. Activation, visible first guide, recovery, identity correction, logout/account switching and permission refusals. Source `ba53aa6375231a49fc2b8dfc7d095d192ebcc13b`. |
+| Other Mobile Access files (`mobile3`) | Four passed: landscape/rotation, onboarding, recovery routes and recovery effects. The main journey failed there on old Spanish punctuation; its later complete result is `mobile5`. |
+| Clocker journal lifecycle (`clocker3`) | Both engines passed, four fictional state reads each, zero writes, closed resources and unchanged source `c8956400c05a139934f8235c29cee66ebfa72175`. |
+| Focused unit checks | Three files, 20 tests passed (`candidate3-focused-unit.log`). |
+| Release engineering | 368 Node tests passed (`candidate3-engineering.log`). |
+| Type/lint | Typecheck passed; lint had zero errors and the existing hosted-worker export warning. |
+
+Failed intermediate runs are retained and are not passing evidence. Home's
+complete seven-width suite has not passed locally: the latest recorded failure
+was a duplicate hidden legacy H1 in a native keyboard path (`home6`); the driver
+now targets the visible title. Earlier failures exposed old review-row selectors
+and manager network-idle waits. The final exact-SHA Actions matrix remains the
+gate; do not call the whole browser release accepted from the local successes.
+
+The Rondo owner must resolve its separate gate: candidate 02's coverage-actions
+and coverage-plan journeys hit a legacy Home AI-manager link under the mobile
+header, and its main advisor journey retained a WebKit framework diagnostic.
+Those Rondo files were not changed or waived here. No message or interruption
+was sent to that owner or another chat. This is a written integration dependency.
+
+Jira descriptions/labels and workflow status were updated and read back for
+SCRUM-204–207: **In Progress**, implemented, acceptance pending. The obsolete
+needs-reproduction label was removed. No issue was marked Done; development and
+production remain unchanged by this work until the release gates permit them.
