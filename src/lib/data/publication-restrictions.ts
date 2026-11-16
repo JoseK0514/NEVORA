@@ -1,6 +1,5 @@
 import type {GuardedWeekState,WeekMutationBatch} from './notification-transactions';
-import {restrictionRules,resolveRestrictionDay} from '../scheduling/restrictions';
-import {shiftPeriod,splitBusinessDays} from '../scheduling/periods';
+import {restrictionRules,firstRestrictionConflict} from '../scheduling/restrictions';
 import {ManualAssignmentConflictError} from './manual-assignment-validation';
 /** First publication changes retained Draft rows into employee assignments.
  * Check the new firm-rule facts captured in the existing publication snapshot;
@@ -12,9 +11,6 @@ export function validatePublicationRestrictions(state:GuardedWeekState,batch:Wee
  for(const assignment of batch.afterShifts){
   if(!published.has(assignment.scheduleId)||assignment.isCalloutApproved)continue;
   const rules=restrictionRules(documents.get(assignment.employeeId));
-  for(const day of splitBusinessDays(shiftPeriod(assignment))){
-   const restriction=resolveRestrictionDay(day.date,rules);
-   if(restriction&&!restriction.windows.some(w=>w.start<=day.startMinute&&w.end>=day.endMinute))throw new ManualAssignmentConflictError('AGREED_RESTRICTION','This draft contains an assignment that conflicts with an effective management-approved restriction. Repair it before publishing.');
-  }
+  if(firstRestrictionConflict(assignment,rules))throw new ManualAssignmentConflictError('AGREED_RESTRICTION','This draft contains an assignment that conflicts with an effective management-approved restriction. Repair it before publishing.');
  }
 }

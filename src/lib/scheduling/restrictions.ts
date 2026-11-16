@@ -1,7 +1,7 @@
 import {createHash} from 'node:crypto';
 import {addDays,weekStartFor} from '../date-utils';
 import type {UserRole} from '../domain';
-import {businessDateStart,timeMinutes} from './periods';
+import {businessDateStart,timeMinutes,shiftPeriod,splitBusinessDays,type ShiftPeriodInput} from './periods';
 import type {AvailabilityHours} from './availability';
 
 export class RestrictionError extends Error {
@@ -11,6 +11,14 @@ export type RestrictionReceipt={operationId:string;revision:number;kind:'SET'|'R
 type Operation={actorId:string;fingerprint:string;receipt:RestrictionReceipt};
 export type RestrictionVersion={id:string;effectiveWeek:string;unavailable:AvailabilityHours[];reason:string;approvedBy:string;approvedAt:string;requestId?:string;operation:Operation};
 export type RestrictionRule=Pick<RestrictionVersion,'id'|'effectiveWeek'|'unavailable'>;
+/** One firm-rule check for preserved drafts and first publication, including
+ * each occupied date's effective version. Missing policy remains legacy. */
+export function firstRestrictionConflict(shift:ShiftPeriodInput,rules:readonly RestrictionRule[]=[]){
+ return splitBusinessDays(shiftPeriod(shift)).find(day=>{
+  const restriction=resolveRestrictionDay(day.date,rules);
+  return restriction!==null&&!restriction.windows.some(w=>w.start<=day.startMinute&&w.end>=day.endMinute);
+ });
+}
 export type RestrictionRequest={id:string;effectiveWeek:string;unavailable:AvailabilityHours[];reason:string;requestedBy:string;requestedAt:string;status:'PENDING'|'APPROVED'|'DENIED';operation:Operation;decision?:{actorId:string;at:string;reason:string;operation:Operation}};
 export type RestrictionDocument={schemaVersion:1;revision:number;versions:RestrictionVersion[];requests:RestrictionRequest[]};
 type CommandBase={operationId:string;expectedRevision:number;reason:string};

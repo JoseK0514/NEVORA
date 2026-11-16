@@ -46,6 +46,20 @@ it('protects a later published week even when the proposed earlier week is open'
  await expect(mutateSchedulingRestrictions(owner,'worker',command,database.executor)).rejects.toThrow('locked');
  expect((await readSchedulingRestrictions(owner,'worker',database.executor)).earliestWeek).toBe('2030-11-11');
 });
+it.each(['published','deadline','snapshot'])('protects Monday occupancy from a closed Sunday overnight %s shift',async kind=>{
+ await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('prior','loc-1','2030-09-30',$1,'owner')",[kind==='published'?'PUBLISHED':'DRAFT']);
+ await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('overnight','prior','worker','2030-10-06','22:00','06:00')");
+ if(kind==='deadline')await q("INSERT INTO schedule_week_settings(week_start,availability_deadline,updated_by) VALUES('2030-09-30',clock_timestamp()-interval '1 second','owner')");
+ if(kind==='snapshot')await q("INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) VALUES('prior-revision','2030-09-30',1,'PUBLISH','owner'); INSERT INTO schedule_publication_revision_shifts(id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time) SELECT 'prior-capture','prior-revision',id,schedule_id,'loc-1',employee_id,date,start_time,end_time FROM shifts; DELETE FROM shifts");
+ expect((await readSchedulingRestrictions(owner,'worker',database.executor)).earliestWeek).toBe('2030-10-14');
+ await expect(mutateSchedulingRestrictions(owner,'worker',command,database.executor)).rejects.toThrow('locked');
+});
+it.each(['00:00','24:00'])('does not fabricate Monday occupancy for a Sunday shift ending at %s',async end=>{
+ await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('prior','loc-1','2030-09-30','PUBLISHED','owner')");
+ await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('overnight','prior','worker','2030-10-06','22:00',$1)",[end]);
+ expect((await readSchedulingRestrictions(owner,'worker',database.executor)).earliestWeek).toBe('2030-10-07');
+ expect((await mutateSchedulingRestrictions(owner,'worker',command,database.executor)).changed).toBe(true);
+});
 it('rechecks deadline crossing, session revocation and version changes after admission',async()=>{
  let intercepted=false;
  const revoked:SqlExecutor={query:database.executor.query,transaction:async statements=>{
@@ -95,7 +109,14 @@ it('revoked Manager scope cannot be reused after the approval read',async()=>{
 });
 it('refuses first publication of an unchanged draft assignment made ineligible by a new restriction',async()=>{
  await q("INSERT INTO schedules(id,location_id,week_start,created_by) VALUES('draft','loc-1','2030-10-07','owner'); INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('retained','draft','worker','2030-10-13','08:00','16:00'); INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) VALUES('old-preference','worker',0,'00:00','24:00')");
+ await q("UPDATE location_staffing_settings SET minimum_staff_per_shift=1,requires_designated_lead=false WHERE location_id='loc-1'; INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES('demand','loc-1',0,'08:00','16:00')");
  await mutateSchedulingRestrictions(owner,'worker',command,database.executor);
+ const [workspace]=await q('SELECT id FROM workspaces');
+ const before=await q('SELECT * FROM shifts ORDER BY id');
+ const generated=await generateWeekDraft({workspaceId:String(workspace.id),actorEmployeeId:'owner',proof:owner,weekStart:'2030-10-07',mode:'BUILD_WEEK',locationScope:{kind:'SELECTED',locationIds:['loc-1']}},database.executor);
+ expect(generated).toMatchObject({status:'INVALID',changed:false});
+ expect(generated.explanations).toContainEqual(expect.objectContaining({code:'AGREED_RESTRICTION'}));
+ expect(await q('SELECT * FROM shifts ORDER BY id')).toEqual(before);
  await expect(publishScheduleWithRevision({locationId:'loc-1',weekStart:'2030-10-07',managerId:'owner',proof:owner},database.executor)).rejects.toThrow();
  expect(await q("SELECT status FROM schedules WHERE id='draft'")).toEqual([{status:'DRAFT'}]);
  expect(await q('SELECT * FROM schedule_publication_revisions')).toEqual([]);

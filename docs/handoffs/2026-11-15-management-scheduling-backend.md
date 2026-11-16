@@ -61,6 +61,10 @@ Weekend default: Saturday/Sunday, eight completed scheduling weeks relative to t
 
 First publication checks retained Draft assignments against effective restrictions from the coherent publication snapshot. The existing fresh source guard and workspace lock also catch an agreement approved between publication read and transaction. Retained draft rows are not grandfathered around a newly effective firm restriction.
 
+Generation returns INVALID with AGREED_RESTRICTION when a retained, unreleased Draft assignment in the attempted scope violates a newly effective agreement. It preserves all rows and performs no generation/removal until management repairs that draft. Published history, unrelated dates/locations, approved callouts and replaceable generated rows do not trigger this repair gate. Coverage arithmetic alone never overrides the INVALID result.
+
+Cutover custody includes actual occupied dates of closed Sunday overnight shifts, including retained publication captures after live rows are staged or removed. A Sunday shift ending Monday06:00 closes the Monday week; ending exactly midnight does not occupy Monday. Historical captured occupancy is conservatively retained, even if superseded. This may delay an effective version by another week; it cannot silently rewrite published overnight terms.
+
 ## Claude work / activation gate
 
 Provide the per-employee management restrictions section and own read-only agreement/change-request view. Label employee controls as preferred hours/days, with no guarantee of shifts or leave. Add request/decision, effective-date, pending/error/conflict/retry states. Surface legacy-unconfirmed and future-effective modes. Do not enable per-employee conversion through the old availability wording. Validate the combined Owner, authorized/scoped Manager, Employee and Lead journeys on development before calling the feature accepted.

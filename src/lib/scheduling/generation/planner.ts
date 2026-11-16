@@ -4,7 +4,7 @@ import {
   calculateScheduleHealth,
   type CoverageBlock,
 } from "../schedule-health";
-import { affectedWorkweeks, shiftPeriod } from "../periods";
+import { affectedWorkweeks, shiftPeriod, splitBusinessDays } from "../periods";
 import {
   schedulingIssueMessage,
   validateShift,
@@ -19,7 +19,7 @@ import {
 import { aggregateGenerationRejections } from "./explanations";
 import { compareEmployeeFairness } from "./fairness";
 import {prepareWeekendRotation} from './weekend-rotation';
-import {resolveRestrictionDay} from '../restrictions';
+import {resolveRestrictionDay,firstRestrictionConflict} from '../restrictions';
 import { boundedSearchSteps } from "./search";
 import { generationDates, type GenerationReviewScope } from "./scope";
 import type {
@@ -218,7 +218,15 @@ export function* planWeekSteps(source: GenerationInput, controls: PlannerControl
       )
       .map((s) => s.id),
   );
-  const fixed = input.ledger.filter((s) => !replaceable.has(s.id));
+  let fixed = input.ledger.filter((s) => !replaceable.has(s.id));
+  const invalidFixed=fixed.flatMap(s=>{
+    if(s.scheduleStatus!=='DRAFT'||s.isCalloutApproved||!initialDemand.locationIds.includes(s.locationId)||!splitBusinessDays(shiftPeriod(s)).some(day=>dates.includes(day.date)))return [];
+    const conflict=firstRestrictionConflict(s,input.employees.find(e=>e.id===s.employeeId)?.managementRestrictions);
+    return conflict?[{code:'AGREED_RESTRICTION' as const,employeeIds:[s.employeeId],locationId:s.locationId,start:civil(conflict.start),end:civil(conflict.end),message:'A retained draft assignment conflicts with an effective management-approved restriction. Repair it before generating.'}]:[];
+  });
+  // Invalid retained work is actionable, not complete coverage. Preserve the
+  // entire source, including replaceable generated rows, until it is repaired.
+  if(invalidFixed.length){replaceable.clear();fixed=input.ledger;}
   const baseDemand = deriveGenerationDemand(input, fixed, controls.review);
   yield;
   const employees = new Map(input.employees.map((e) => [e.id, e]));
@@ -405,7 +413,7 @@ export function* planWeekSteps(source: GenerationInput, controls: PlannerControl
     return options;
   }
   const initial: State = { additions: [], demand: baseDemand, skipped: [] };
-  const search = baseDemand.ready
+  const search = baseDemand.ready && invalidFixed.length===0
     ? yield* boundedSearchSteps({
         initial,
         maxNodes: input.limits.maxNodes,
@@ -571,6 +579,7 @@ export function* planWeekSteps(source: GenerationInput, controls: PlannerControl
   const demand = deriveGenerationDemand(input, finalLedger, controls.review);
   const gaps = gapsFor(demand);
   const explanations: GenerationExplanation[] = [
+    ...invalidFixed,
     ...demand.issues,
     // A skipped long alternative is relevant only where real configured demand
     // remains uncovered. Fully covered periods need no storage-shape warning.
@@ -662,7 +671,7 @@ export function* planWeekSteps(source: GenerationInput, controls: PlannerControl
     weekDates: dates,
   });
   return {
-    status: !demand.ready
+    status: !demand.ready || invalidFixed.length>0
       ? "INVALID"
       : gaps.length === 0 && !demand.coverage.unavailable
         ? "COMPLETE"
