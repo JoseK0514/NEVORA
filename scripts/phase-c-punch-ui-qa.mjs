@@ -105,7 +105,7 @@ try{
   assert.equal(await t.locator('[data-filled=true]').count(),2);await t.getByRole('button',{name:'Delete digit',exact:true}).click();assert.equal(await t.locator('[data-filled=true]').count(),1);
   await t.getByRole('button',{name:'Clear PIN',exact:true}).click();assert.equal(await t.getByLabel('Employee PIN',{exact:true}).inputValue(),'');assert(await t.getByRole('button',{name:'Continue',exact:true}).isDisabled());
   checked(engine+': masked PIN progress, delete and clear preserve native input behavior');
-  await t.getByLabel('Employee PIN',{exact:true}).fill('9999');await t.getByRole('button',{name:'Continue',exact:true}).click();await t.getByRole('alert').waitFor();assert.equal(await t.getByLabel('Employee PIN',{exact:true}).inputValue(),'');assert.equal(await t.getByRole('button',{name:'Clock in',exact:true}).count(),0);
+  await t.getByLabel('Employee PIN',{exact:true}).fill('9999');await t.getByRole('button',{name:'Continue',exact:true}).click();await t.locator('#clocker-pin-error').filter({hasText:'Employee ID or PIN not recognized.'}).waitFor();assert.equal(await t.getByLabel('Employee PIN',{exact:true}).inputValue(),'');assert.equal(await t.getByRole('button',{name:'Clock in',exact:true}).count(),0);
   checked(engine+': invalid PIN remains private and clears the input');
   await t.emulateMedia({reducedMotion:'reduce'});await t.getByLabel('Employee PIN',{exact:true}).fill('2468');await t.getByLabel('Employee PIN',{exact:true}).press('Enter');await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();
   assert(await t.locator('[data-clocker-state=ready]').evaluate(element=>getComputedStyle(element).opacity==='1'&&getComputedStyle(element).transform==='none'));
