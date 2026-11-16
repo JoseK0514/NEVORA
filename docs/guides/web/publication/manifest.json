@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "date": "2026-11-16",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "4c2d8bba4676b6a74aa03b0650981bfaf55b37e2",
-  "applicationHash": "60300d79857baeca91d8cc0e5624fef3ebab029bbfac91bac8be76b5f9bb5151",
+  "sourceSha": "bab56e819b8fcc879a0ea6d36e2cad1b059c6972",
+  "applicationHash": "74c06efb44e0b17acc64c630e33b0b05fe99bdba7618b4961ef2560c157e469c",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
-    "sha256": "0abae197205d5bd69f7279b21eb49a195930a8aab1b45d9bb125ff6358ad940a"
+    "sha256": "50c7a4486883ed73d5a6245b035da87dd7aeebdbe73a1b8d7f9134f312ab034f"
   },
   "guides": [
     {
@@ -136,11 +136,23 @@
         {
           "path": "src/components/period-close-history.tsx",
           "sha256": "424f3db59b14695ba441de9646bebafe5dc65f0813bd6dc4cc09011dd542ceb4"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+          "sha256": "5747bcf9cefd458b2565de3a12b71667a73ba065b7b25b797b1e385804c09d08"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+          "sha256": "d69b5ad6fb637a639a0c5fe0fdbff4fb76c20784839dc7e004fe06bf3909314e"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
+          "sha256": "bc152c5e515d99857f9805637242a54372e52a61f443be63ded1a7627e1ffdae"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "d7da55ed2dfda920906f7daf0045a6f849bcd1c87bfb0aad5b88de2d17d4bb1c",
+        "sha256": "d3f24f2a94ec086ba7c0d148133da840cc24a95d05335f8a4127e647c67c4039",
         "pageCount": 4
       }
     },
@@ -231,11 +243,23 @@
         {
           "path": "src/components/period-close-history.tsx",
           "sha256": "424f3db59b14695ba441de9646bebafe5dc65f0813bd6dc4cc09011dd542ceb4"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+          "sha256": "5747bcf9cefd458b2565de3a12b71667a73ba065b7b25b797b1e385804c09d08"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+          "sha256": "d69b5ad6fb637a639a0c5fe0fdbff4fb76c20784839dc7e004fe06bf3909314e"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
+          "sha256": "bc152c5e515d99857f9805637242a54372e52a61f443be63ded1a7627e1ffdae"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "f34e2b830d9f54ccaaad4397a5384b6557722cacc2aec234674b031af32ffdec",
+        "sha256": "51e77bd0dba0683e218260fad9848b08a09d023f659099e1ad3fdfcba3c261e8",
         "pageCount": 3
       }
     },
@@ -314,11 +338,23 @@
         {
           "path": "src/app/app/help/page.tsx",
           "sha256": "8592c356cb9919e559db04a6926d147263be0065ee381188178b40cf6fdd215b"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+          "sha256": "5747bcf9cefd458b2565de3a12b71667a73ba065b7b25b797b1e385804c09d08"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+          "sha256": "d69b5ad6fb637a639a0c5fe0fdbff4fb76c20784839dc7e004fe06bf3909314e"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
+          "sha256": "bc152c5e515d99857f9805637242a54372e52a61f443be63ded1a7627e1ffdae"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "60de5a3ff8bac63ce39b55028aa648bb6bbd63537c5c0038ae31d6f86bdd157d",
+        "sha256": "948438995139f6387b674d65d278eaaf2b6f2533f074c8b573ca2865605997dc",
         "pageCount": 3
       }
     },
@@ -385,11 +421,23 @@
         {
           "path": "docs/product/rondo-operating-contract.md",
           "sha256": "773c86d00212ac0ddbf97f58c49014db71c026d87c112f9089d8f0e29ee649f9"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+          "sha256": "5747bcf9cefd458b2565de3a12b71667a73ba065b7b25b797b1e385804c09d08"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+          "sha256": "d69b5ad6fb637a639a0c5fe0fdbff4fb76c20784839dc7e004fe06bf3909314e"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
+          "sha256": "bc152c5e515d99857f9805637242a54372e52a61f443be63ded1a7627e1ffdae"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "4f2d4e54e5d93ba82592c28a7e2d3607add501d0370cfb75b52b0e8f96eac61e",
+        "sha256": "89fd2ce40b1ada6e12e409346a4d7464341a0fc40b26d9717b0cf054a11abc59",
         "pageCount": 2
       }
     },
@@ -398,7 +446,7 @@
       "title": "NEVORA web developer guide",
       "markdown": {
         "path": "docs/guides/web/developer.md",
-        "sha256": "8c02840ba7accad304524e91409f0544f14bbedff10f01b780c639ed9e96ff03"
+        "sha256": "d4a107f19e2ad0df3d1c89d9cea96a3864f7962ac3f45d2396ecd564edccf624"
       },
       "evidence": [
         {
@@ -411,7 +459,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "f0a321e946cbf38f860265e0ff7d83c7d5f1b788771551f49f907f85869e0dd8"
+          "sha256": "791292a4cd7c96d6d050076fea2cb9f6565446f7bb6a22e48cda6e7267b9f9be"
         },
         {
           "path": "docs/development/developer-guide.md",
@@ -556,11 +604,23 @@
         {
           "path": "src/proxy.ts",
           "sha256": "921e5e5c278dd3f824fb33e0fa965fe25b255647b3db11cbe042c3c8f7051cb9"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+          "sha256": "5747bcf9cefd458b2565de3a12b71667a73ba065b7b25b797b1e385804c09d08"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+          "sha256": "d69b5ad6fb637a639a0c5fe0fdbff4fb76c20784839dc7e004fe06bf3909314e"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
+          "sha256": "bc152c5e515d99857f9805637242a54372e52a61f443be63ded1a7627e1ffdae"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "522ec515db4b5ee3cfd97b6e867ce00b29f427cb3b13ae34e17b5d2075fd5080",
+        "sha256": "dd807537479c3d0a69ea212b4537518cf9229515ea7f59691d40fd0c5be4223e",
         "pageCount": 5
       }
     },
@@ -569,7 +629,7 @@
       "title": "NEVORA web operations guide",
       "markdown": {
         "path": "docs/guides/web/operations.md",
-        "sha256": "c687ca9f42551f0160c8b6ab96af9abe74972c5baeee1deabfb3954c1bc1bf99"
+        "sha256": "11e42a214225406d12276fc357dadb896ae8e83a4a29a7dce37be2b47d00c288"
       },
       "evidence": [
         {
@@ -683,11 +743,23 @@
         {
           "path": "src/lib/commerce/installation-facts.server.ts",
           "sha256": "c95123c853fffa313ee299303db73d3cf8305601c99a7b2707b59a0040df0896"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+          "sha256": "5747bcf9cefd458b2565de3a12b71667a73ba065b7b25b797b1e385804c09d08"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+          "sha256": "d69b5ad6fb637a639a0c5fe0fdbff4fb76c20784839dc7e004fe06bf3909314e"
+        },
+        {
+          "path": "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
+          "sha256": "bc152c5e515d99857f9805637242a54372e52a61f443be63ded1a7627e1ffdae"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "d146d6dd51a901d68aa304caf357b058d0137bcc2b76b3b339a8c3033d14a530",
+        "sha256": "cd51e02d28dacd43db9c0c0ffdd9a0239b245724df08752db8a2b9e5713b8cec",
         "pageCount": 5
       }
     }
