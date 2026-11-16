@@ -23,3 +23,23 @@ only: no request, parser, recovery rule or contract changed. The knowledge and w
 `tsc` and `eslint` clean; 41 test files, 377 tests pass. Browser passes (mocked APIs) on the finished code: knowledge 28
 measured screens, weekly 25, no overflow or clipping, no page errors; all flows in both runs completed. Before and after
 captures are in this folder (`before-*`, `after-*`; `after-ref-settings-1440` is the approved reference).
+
+## Copy pass (Nov 16, 2026, second review)
+
+Jose found the screens still wordy ("dirty letters everywhere"). Every string was rewritten to the voice of Fable's
+approved Direction B screens: titles of a few words, one short sub-line, one short sentence in a state card, no
+disclaimers. Presentation and wording only; no request, parser rule or recovery behavior changed.
+
+- Removed every footnote paragraph (privacy, plain-text, hours and fairness basis, "this records…", library limits) and
+  the form help paragraphs (dates, settings source, plain-text note). Privacy moved to the library's band sub-line
+  ("Only Owners can see this"); the weekend-history basis is a row ("Weekend history · 6 of 7 known"); a partial search is
+  a "Stopped early" chip.
+- State cards and toasts cut to one short sentence: "Approval not confirmed · It may have saved. Sending again can't save
+  it twice", "Draft saved", "Published", "Plan declined", "Check your connection, then try again".
+- Rows: the weekly review puts the day in the schedule's day column ("Mon 16") and uses the short time range
+  ("8 AM – 12 PM"); dates read "Nov 16"; delete consequences are two short bullets; saved coverage is one line
+  ("2 reviewed · locations changed").
+- Labels and errors shortened in the shared word lists (mode lines, inspection reasons, profile field hints, editor errors).
+
+Checks: `tsc` and `eslint` clean; 42 files, 408 tests pass; knowledge (28) and weekly (31) browser passes with mocked APIs,
+no overflow or clipping, no page errors.

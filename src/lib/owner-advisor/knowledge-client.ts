@@ -11,12 +11,12 @@ export const PROFILE_FIELDS = ["businessDescription", "productsServices", "custo
 export type ProfileField = typeof PROFILE_FIELDS[number];
 export type ProfileFields = Partial<Record<ProfileField, string>>;
 export const PROFILE_LABELS: Record<ProfileField, { label: string; help: string }> = {
-  businessDescription: { label: "What the business does", help: "A few sentences Rondo reads before every answer" },
-  productsServices: { label: "Products and services", help: "What you sell, and anything that needs special care" },
-  customerCommitments: { label: "Promises to customers", help: "Response times, guarantees and standards you keep" },
-  operatingProcedures: { label: "How you run things", help: "Opening, closing and daily routines" },
-  objectives: { label: "Current goals", help: "What matters most right now" },
-  escalationRoles: { label: "Who decides what", help: "Who handles exceptions, complaints and approvals" },
+  businessDescription: { label: "What the business does", help: "Rondo reads this first" },
+  productsServices: { label: "Products and services", help: "What you sell" },
+  customerCommitments: { label: "Promises to customers", help: "Standards you keep" },
+  operatingProcedures: { label: "How you run things", help: "Daily routines" },
+  objectives: { label: "Current goals", help: "What matters now" },
+  escalationRoles: { label: "Who decides what", help: "Exceptions and approvals" },
 };
 
 export const CATEGORIES = [
@@ -120,9 +120,9 @@ export const sizeText = (bytes: number) => bytes < 1024 ? `${bytes} bytes` : `${
 
 export type DateField = "effectiveFrom" | "effectiveUntil" | "reviewDue";
 export type DraftErrors = Partial<Record<"title" | "body" | "sourceName" | ProfileField | DateField, string>>;
-function characterError(value: string) { const refused = refusedCharacter(value); return refused ? `Line ${refused.line} has a character that can’t be saved (a hidden control character). Remove it and try again` : null; }
+function characterError(value: string) { const refused = refusedCharacter(value); return refused ? `Line ${refused.line} has a hidden character. Remove it` : null; }
 function dateErrors(validity: KnowledgeValidity): DraftErrors {
-  if (validity.effectiveFrom && validity.effectiveUntil && Date.parse(validity.effectiveFrom) >= Date.parse(validity.effectiveUntil)) return { effectiveUntil: "The end has to come after the start" };
+  if (validity.effectiveFrom && validity.effectiveUntil && Date.parse(validity.effectiveFrom) >= Date.parse(validity.effectiveUntil)) return { effectiveUntil: "End after the start" };
   return {};
 }
 export type DocumentDraft = { title: string; category: string; locale: KnowledgeLocale; body: string; sourceName: string | null } & KnowledgeValidity;
@@ -131,16 +131,16 @@ export function documentErrors(draft: DocumentDraft): DraftErrors {
   const title = normalizeText(draft.title);
   if (!title) errors.title = "Enter a title";
   else if (/[\r\n\t]/.test(title)) errors.title = "Keep the title on one line";
-  else if (utf8Bytes(title) > KNOWLEDGE_LIMITS.titleBytes) errors.title = `Shorten the title (${utf8Bytes(title)} of ${KNOWLEDGE_LIMITS.titleBytes} bytes)`;
+  else if (utf8Bytes(title) > KNOWLEDGE_LIMITS.titleBytes) errors.title = `Title too long (${utf8Bytes(title)} of ${KNOWLEDGE_LIMITS.titleBytes} bytes)`;
   else { const refused = characterError(title); if (refused) errors.title = refused; }
   const body = normalizeText(draft.body);
-  if (!body) errors.body = "Paste or load the text Rondo should read";
-  else if (utf8Bytes(body) > KNOWLEDGE_LIMITS.documentBytes) errors.body = `This text is ${sizeText(utf8Bytes(body))}, over the ${sizeText(KNOWLEDGE_LIMITS.documentBytes)} limit. Split it into more than one document`;
+  if (!body) errors.body = "Add the text";
+  else if (utf8Bytes(body) > KNOWLEDGE_LIMITS.documentBytes) errors.body = `Over the ${sizeText(KNOWLEDGE_LIMITS.documentBytes)} limit. Split it up`;
   else { const refused = characterError(body); if (refused) errors.body = refused; }
   if (draft.sourceName !== null) {
     const name = normalizeText(draft.sourceName);
     if (!/\.(txt|md)$/i.test(name) || /[\\/\r\n\t]/.test(name)) errors.sourceName = "Only .txt and .md files can be loaded";
-    else if (utf8Bytes(name) > KNOWLEDGE_LIMITS.fileNameBytes) errors.sourceName = "Rename the file to something shorter, then load it again";
+    else if (utf8Bytes(name) > KNOWLEDGE_LIMITS.fileNameBytes) errors.sourceName = "File name too long";
   }
   return errors;
 }
@@ -153,7 +153,7 @@ export function profileErrors(fields: ProfileFields, validity: KnowledgeValidity
   if (!normalizeText(fields.businessDescription ?? "")) errors.businessDescription = "Describe what the business does";
   for (const key of PROFILE_FIELDS) { const value = fields[key] ?? ""; const refused = value ? characterError(value) : null; if (refused) errors[key] = refused; }
   const total = utf8Bytes(profileBody(fields));
-  if (!errors.businessDescription && total > KNOWLEDGE_LIMITS.profileBytes) errors.businessDescription = `The profile is ${sizeText(total)}, over the ${sizeText(KNOWLEDGE_LIMITS.profileBytes)} limit. Shorten it or move details into a document`;
+  if (!errors.businessDescription && total > KNOWLEDGE_LIMITS.profileBytes) errors.businessDescription = `Over the ${sizeText(KNOWLEDGE_LIMITS.profileBytes)} limit. Shorten it`;
   return errors;
 }
 

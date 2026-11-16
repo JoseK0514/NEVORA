@@ -251,16 +251,16 @@ export function weekText(monday: string) {
   return a.getUTCMonth() === b.getUTCMonth() ? `${month(a)} ${a.getUTCDate()} – ${b.getUTCDate()}` : `${month(a)} ${a.getUTCDate()} – ${month(b)} ${b.getUTCDate()}`;
 }
 export const MODE_TEXT: Record<WeeklyMode, { label: string; line: string }> = {
-  FILL_GAPS_ONLY: { label: "Fill open gaps", line: "Adds people where the week is short. Every shift already on the schedule stays." },
-  BUILD_WEEK: { label: "Rebuild generated drafts", line: "May replace draft shifts that were generated earlier. Manual shifts, published weeks and anything with history are kept." },
+  FILL_GAPS_ONLY: { label: "Fill open gaps", line: "Keeps every current shift" },
+  BUILD_WEEK: { label: "Rebuild generated drafts", line: "Can replace earlier generated drafts" },
 };
 export const REASON_TEXT: Record<WeeklyInspectionReason, string> = {
-  NO_CHANGE: "It changes nothing",
-  NO_CONFIGURED_DEMAND: "No staffing needs are set up for this scope",
-  INVALID_PLAN: "It doesn't pass the schedule rules",
-  REMOVAL_ONLY: "It only removes shifts",
-  COVERAGE_REGRESSION: "It would leave the week less covered than now",
-  VALIDATION_BLOCKER: "A schedule rule blocks it",
+  NO_CHANGE: "Changes nothing",
+  NO_CONFIGURED_DEMAND: "No staffing needs set up",
+  INVALID_PLAN: "Breaks a schedule rule",
+  REMOVAL_ONLY: "Only removes shifts",
+  COVERAGE_REGRESSION: "Less coverage than now",
+  VALIDATION_BLOCKER: "Blocked by a schedule rule",
 };
 export const STATUS_TEXT: Record<WeeklyAlternativeSummary["status"], string> = {
   COMPLETE: "Covers every need", PARTIAL: "Covers some needs", INVALID: "Breaks a rule", BUDGET_EXHAUSTED: "Search stopped early",

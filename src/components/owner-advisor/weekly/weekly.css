@@ -41,9 +41,8 @@
 @media (hover: hover) { :is(#c-root, html) .wk .wk-step:not(:disabled):hover { background: var(--b-hover); } }
 :is(#c-root, html) .wk .wk-step:disabled { color: #A7ACB1; cursor: default; }
 :is(#c-root, html) .wk .wk-step:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: 0; }
-:is(#c-root, html) .wk .wk-submit { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--b-space-12); }
+:is(#c-root, html) .wk .wk-submit { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--b-space-12); }
 :is(#c-root, html) .wk .wk-submit .c-field__help { flex: 1 1 260px; margin: 0; }
-@media (max-width: 767px) { :is(#c-root, html) .wk .wk-submit > .c-btn { flex: 1 1 100%; } }
 :is(#c-root, html) .wk .wk-error__ic { width: 16px; height: 16px; margin-right: 6px; vertical-align: -3px; }
 
 /* Options: a quiet heading on the canvas, then separate cards; two options sit side by side from 1024px. */

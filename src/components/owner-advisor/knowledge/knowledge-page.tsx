@@ -21,7 +21,6 @@ import {
 import { BState } from "@/components/owner-b/b-kit";
 import { FormHead, FormHeadLink } from "@/components/team/team-forms";
 import { toast } from "@/components/toaster";
-import { timeZoneLabel } from "@/lib/time-zone-label";
 import {
   CATEGORIES, KNOWLEDGE_LIMITS, LOCALE_LABELS, PROFILE_FIELDS, PROFILE_LABELS, categoryLabel, companyTime, createKnowledgeClient, documentErrors, entryState,
   entrySummary, newRequestId, normalizeText, profileBody, profileErrors, sizeText, utf8Bytes, versionHref, zonedInput, zonedInstant,
@@ -115,16 +114,16 @@ export function KnowledgePage({ timeZone, view, client: given }: { timeZone: str
     setIssue(null);
     await reload();
     if (receipt.state === "draft_saved" && receipt.versionId) {
-      toast("Draft saved. Review it, then publish when it’s right.");
+      toast("Draft saved");
       go({ name: "version", documentId: receipt.documentId, versionId: receipt.versionId });
     } else if (receipt.state === "published") {
-      toast("Published. Rondo uses this version for every Owner.");
+      toast("Published");
       go({ name: "entry", documentId: receipt.documentId });
     } else if (receipt.state === "archived") {
-      toast("Archived. Rondo no longer uses it.");
+      toast("Archived");
       go({ name: "entry", documentId: receipt.documentId });
     } else {
-      toast("Deleted for every Owner.");
+      toast("Deleted");
       go({ name: "library" });
     }
     return true;
@@ -145,7 +144,7 @@ export function KnowledgePage({ timeZone, view, client: given }: { timeZone: str
   const abandon = useCallback(async () => {
     setCustody(null);
     await reload();
-    toast("Reloaded. Check whether your change is there before trying again.", "info");
+    toast("Reloaded. Check your change before retrying.", "info");
   }, [reload]);
 
   const entries = load.state === "ready" ? load.snapshot.entries : [];
@@ -155,7 +154,7 @@ export function KnowledgePage({ timeZone, view, client: given }: { timeZone: str
   if (load.state === "revoked") return <CorpPage className="c-page--narrow kn" labelledBy="kn-title">
     <CorpNav phoneOnly back={{ href: "/app/ai-manager", label: "AI manager" }} title="Company knowledge" />
     <CorpTitle wide id="kn-title" title="Company knowledge" />
-    <CorpCard as="div"><BState kind="locked" alert title="Your session ended" line="Sign in again as an Owner to see company knowledge. It was cleared from this screen."
+    <CorpCard as="div"><BState kind="locked" alert title="Your session ended" line="Sign in again to see company knowledge."
       action={{ label: "Sign in", href: "/login" }} /></CorpCard>
   </CorpPage>;
 
@@ -166,7 +165,7 @@ export function KnowledgePage({ timeZone, view, client: given }: { timeZone: str
   if (load.state !== "ready") return <CorpPage className={frame} labelledBy="kn-title">
     {head.node}
     {load.state === "loading" ? <Skeleton label="Loading company knowledge" />
-      : <CorpCard as="div"><BState kind="failed" alert title="Couldn’t load company knowledge" line="Nothing was changed. Check your connection, then try again."
+      : <CorpCard as="div"><BState kind="failed" alert title="Couldn’t load company knowledge" line="Check your connection, then try again."
         action={{ label: "Try again", onClick: () => { setLoad({ state: "loading" }); void reload(); } }} /></CorpCard>}
   </CorpPage>;
 
@@ -194,7 +193,7 @@ function heading(view: KnowledgeView, entry: KnowledgeEntry | null, ready: boole
   switch (view.name) {
     case "library": return { node: <>
       <CorpNav phoneOnly back={{ href: "/app/ai-manager", label: "AI manager" }} title="Company knowledge" titleId="kn-nav-title" right={<Link href={addHref}>Add</Link>} />
-      <CorpTitle wide id="kn-title" title="Company knowledge" sub="What Rondo knows about your business"
+      <CorpTitle wide id="kn-title" title="Company knowledge" sub="Only Owners can see this"
         actions={<CorpButtonLink href={addHref} kind="primary" size="md">Add document</CorpButtonLink>} />
     </> };
     case "entry": {
@@ -242,10 +241,10 @@ function Gone() {
 function IssueCard({ kind, op, onRetry, onAbandon }: { kind: Issue["kind"]; op: KnowledgeCommand["op"]; onRetry?: () => void; onAbandon?: () => void }) {
   const done = op === "publish" ? "published" : op === "archive" ? "archived" : op === "delete" ? "deleted" : "saved";
   const copy = {
-    uncertain: { title: `We couldn’t confirm your ${verb(op)}`, line: "The connection dropped before NEVORA answered. Check again sends the very same request, so nothing happens twice." },
-    conflict: { title: "Someone else changed company knowledge", line: "We loaded the latest. Your edits are still here: check them, then try again." },
-    limit: { title: "Company knowledge is full", line: `It holds ${KNOWLEDGE_LIMITS.documents} documents, ${KNOWLEDGE_LIMITS.versions} saved versions and 10 MB of text. Delete a document you no longer need; archived ones still count.` },
-    invalid: { title: `That couldn’t be ${done}`, line: "Something in it isn’t accepted. Check the text, file name and dates. Nothing was changed." },
+    uncertain: { title: `We couldn’t confirm your ${verb(op)}`, line: "Check again can’t apply it twice." },
+    conflict: { title: "Changed by someone else", line: "Your edits are kept. Check them, then save again." },
+    limit: { title: "Company knowledge is full", line: "Delete a document to make room." },
+    invalid: { title: `That couldn’t be ${done}`, line: "Check the text, file name and dates." },
   }[kind];
   const failed = kind === "limit" || kind === "invalid";
   return <section className="c-card kn-issue" tabIndex={-1} aria-label={copy.title}>
@@ -276,7 +275,7 @@ function Library({ ctx, problem }: { ctx: Ctx; problem: ReactNode }) {
   return <>
     {problem}
     <CorpCard as="div" id="kn-profile"><CorpRows label="Business profile">
-      {profile ? row(profile) : <li><CorpRow href={viewHref({ name: "profile" })} icon={<StorefrontIcon weight="bold" />} title="Write your business profile" detail="What you do, what you promise and who decides" /></li>}
+      {profile ? row(profile) : <li><CorpRow href={viewHref({ name: "profile" })} icon={<StorefrontIcon weight="bold" />} title="Write your business profile" detail="What Rondo reads first" /></li>}
     </CorpRows></CorpCard>
     <CorpSection id="kn-docs" label="Documents" aside={<span className="kn-meta">{count} of {KNOWLEDGE_LIMITS.documents}</span>}>
       <CorpCard as="div"><CorpRows label="Documents">
@@ -287,8 +286,7 @@ function Library({ ctx, problem }: { ctx: Ctx; problem: ReactNode }) {
     {archived.length ? <CorpSection id="kn-archived" label="Archived" count={archived.length}>
       <CorpCard as="div"><CorpRows label="Archived">{archived.map(row)}</CorpRows></CorpCard>
     </CorpSection> : null}
-    <p className="kn-foot">{full ? `The library holds ${KNOWLEDGE_LIMITS.documents} documents. Delete one to add another; archived documents still count. ` : ""}
-      Only this company’s Owners can see company knowledge. Rondo reads it as guidance: it can’t change schedule rules or act for you.</p>
+    {full ? <p className="kn-foot">Library full. Delete a document to add another.</p> : null}
   </>;
 }
 
@@ -327,7 +325,6 @@ function DateFields({ dates, onChange, errors, timeZone, idPrefix }: { dates: Lo
           </CorpField>;
         })}
       </div>
-      <p className="c-field__help">Times are {timeZoneLabel(timeZone)}. A review date only marks it for review; Rondo keeps using it</p>
     </div>
   </div>;
 }
@@ -358,7 +355,7 @@ function useLatest(ctx: Ctx, entry: KnowledgeEntry | null) {
 }
 function EditorState({ state, back }: { state: { kind: string }; back: string }) {
   if (state.kind === "loading") return <Skeleton label="Loading the saved text" />;
-  return <CorpCard as="div"><BState kind="failed" alert title="Couldn’t load the saved text" line="Editing now would start from blank. Go back and try again." action={{ label: "Back", href: back }} /></CorpCard>;
+  return <CorpCard as="div"><BState kind="failed" alert title="Couldn’t load the saved text" line="Go back and try again." action={{ label: "Back", href: back }} /></CorpCard>;
 }
 function SaveFooter({ ctx, cancel }: { ctx: Ctx; cancel: string }) {
   return <CorpFormFooter>
@@ -417,7 +414,6 @@ function ProfileForm({ ctx, cancel, version, problem }: { ctx: Ctx; cancel: stri
     <p className={bytes > KNOWLEDGE_LIMITS.profileBytes ? "kn-size kn-size--over" : "kn-size"}>{sizeText(bytes)} of {sizeText(KNOWLEDGE_LIMITS.profileBytes)}</p>
     <LocaleField value={locale} onChange={setLocale} id="kn-profile-locale" />
     <DateFields dates={dates} onChange={setDates} errors={shown} timeZone={ctx.timeZone} idPrefix="kn-profile" />
-    <p className="c-field__help kn-formnote">Your business name, time zone and locations come from Company profile in Settings</p>
     <SaveFooter ctx={ctx} cancel={cancel} />
   </form>;
 }
@@ -425,14 +421,14 @@ function ProfileForm({ ctx, cancel, version, problem }: { ctx: Ctx; cancel: stri
 /* ---------- Documents ---------- */
 export async function readTextFile(file: File): Promise<{ text: string; name: string } | { error: string }> {
   const name = file.name;
-  if (!/\.(txt|md)$/i.test(name)) return { error: "Only .txt and .md files can be loaded. For a PDF or Word file, copy its text and paste it here" };
+  if (!/\.(txt|md)$/i.test(name)) return { error: "Only .txt and .md files. Paste other text instead" };
   // A rough first gate before reading: UTF-8 text over the limit is over it as bytes too.
-  if (file.size > KNOWLEDGE_LIMITS.documentBytes * 2) return { error: `This file is ${sizeText(file.size)}, over the ${sizeText(KNOWLEDGE_LIMITS.documentBytes)} limit. Split it into more than one document` };
+  if (file.size > KNOWLEDGE_LIMITS.documentBytes * 2) return { error: `Over the ${sizeText(KNOWLEDGE_LIMITS.documentBytes)} limit. Split it up` };
   try {
     const text = new TextDecoder("utf-8", { fatal: true }).decode(await file.arrayBuffer());
     return { text, name };
   } catch {
-    return { error: "This file isn’t UTF-8 text. Save it as UTF-8, or paste its text here" };
+    return { error: "Not UTF-8 text. Paste it instead" };
   }
 }
 
@@ -483,7 +479,7 @@ function DocumentForm({ ctx, entry, cancel, version, problem }: { ctx: Ctx; entr
   const fileProblem = fileError ?? shown.sourceName ?? null;
   return <form ref={form} id="kn-form" className="c-teamform kn-form" onSubmit={submit} noValidate aria-labelledby="kn-title">
     {problem}
-    {entry?.archived ? <p className="c-field__help">This document is archived. Saving brings it back as a draft; Rondo uses it again once you publish</p> : null}
+    {entry?.archived ? <p className="c-field__help">Archived. Saving makes it a draft again</p> : null}
     <CorpField label="Title" htmlFor="kn-doc-title" error={shown.title ? <ErrorText>{shown.title}</ErrorText> : undefined} errorId="kn-doc-title-error">
       <input className="c-in" id="kn-doc-title" value={title} required maxLength={240} autoComplete="off" enterKeyHint="next"
         aria-invalid={shown.title ? true : undefined} aria-describedby={shown.title ? "kn-doc-title-error" : undefined} onChange={event => setTitle(event.target.value)} />
@@ -495,7 +491,7 @@ function DocumentForm({ ctx, entry, cancel, version, problem }: { ctx: Ctx; entr
       <LocaleField value={locale} onChange={setLocale} id="kn-doc-locale" />
     </div>
     <CorpField label="Text" htmlFor="kn-doc-body" error={shown.body ? <ErrorText>{shown.body}</ErrorText> : undefined} errorId="kn-doc-body-error"
-      help={<span className="kn-bodyhelp" id="kn-doc-body-help"><span>Saved as plain text, exactly as written</span><span className={over ? "kn-size kn-size--over" : "kn-size"}>{sizeText(bytes)} of {sizeText(KNOWLEDGE_LIMITS.documentBytes)}</span></span>}>
+      help={<span className="kn-bodyhelp" id="kn-doc-body-help"><span>Plain text</span><span className={over ? "kn-size kn-size--over" : "kn-size"}>{sizeText(bytes)} of {sizeText(KNOWLEDGE_LIMITS.documentBytes)}</span></span>}>
       <textarea className="c-in kn-area kn-area--doc" id="kn-doc-body" value={body} rows={12} required
         aria-invalid={shown.body ? true : undefined} aria-describedby={shown.body ? "kn-doc-body-error" : "kn-doc-body-help"} onChange={event => setBody(event.target.value)} />
     </CorpField>
@@ -504,7 +500,7 @@ function DocumentForm({ ctx, entry, cancel, version, problem }: { ctx: Ctx; entr
       <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--go" onClick={() => fileInput.current?.click()} aria-describedby="kn-doc-file-help">{sourceName ? "Load another file" : "Load a .txt or .md file"}</CorpButton>
       <span className="c-field__help" id="kn-doc-file-help">{sourceName
         ? <>From {sourceName} · <button type="button" className="kn-textbtn" onClick={() => setSourceName(null)}>Forget file name</button></>
-        : "PDF, Word and scanned files can’t be loaded. Paste their text instead"}</span>
+        : "UTF-8 .txt or .md"}</span>
       {fileProblem ? <span className="c-error" role="alert"><ErrorText>{fileProblem}</ErrorText></span> : null}
     </div>
     <DateFields dates={dates} onChange={setDates} errors={shown} timeZone={ctx.timeZone} idPrefix="kn-doc" />
@@ -540,12 +536,12 @@ function EntryDetail({ ctx, entry, problem }: { ctx: Ctx; entry: KnowledgeEntry;
       <CorpCard as="div"><CorpRows label="Status">
         <li><CorpRow icon={entry.archived ? <ArchiveIcon weight="bold" /> : <CheckCircleIcon weight="bold" />}
           title={entry.archived ? "Archived" : !published ? "Not in use yet" : startsLater ? `Starts ${companyTime(published.effectiveFrom, ctx.timeZone)}` : ended ? "Ended" : "In use by Rondo"}
-          detail={entry.archived ? "Rondo doesn’t use it. Edit and publish to use it again" : !published ? "Publish a draft so Rondo can use it"
-            : `Version ${number(published.versionId)}, published ${companyTime(published.publishedAt, ctx.timeZone)}${published.effectiveUntil && !ended ? ` · until ${companyTime(published.effectiveUntil, ctx.timeZone)}` : ""}`} /></li>
+          detail={entry.archived ? "Edit and publish to use it again" : !published ? "Publish a draft to use it"
+            : `Version ${number(published.versionId)} · published ${shortDay(published.publishedAt!, ctx.timeZone)}${published.effectiveUntil && !ended ? ` · until ${shortDay(published.effectiveUntil, ctx.timeZone)}` : ""}`} /></li>
         {state.draft ? <li><CorpRow href={viewHref({ name: "version", documentId: entry.documentId, versionId: state.draft.versionId })} icon={<PencilSimpleIcon weight="bold" />}
-          title="Draft waiting for review" detail={`Version ${number(state.draft.versionId)}, saved ${companyTime(state.draft.createdAt, ctx.timeZone)}`} /></li> : null}
-        {published?.reviewDue && !entry.archived ? <li><CorpRow icon={<ClockIcon weight="bold" />} title={`Review by ${companyTime(published.reviewDue, ctx.timeZone)}`}
-          detail={overdue ? "Past due. Rondo still uses it" : "Rondo keeps using it after this date"} value={overdue ? <CorpPill tone="amber">Past due</CorpPill> : undefined} /></li> : null}
+          title="Draft waiting for review" detail={`Version ${number(state.draft.versionId)} · saved ${shortDay(state.draft.createdAt, ctx.timeZone)}`} /></li> : null}
+        {published?.reviewDue && !entry.archived ? <li><CorpRow icon={<ClockIcon weight="bold" />} title={`Review by ${shortDay(published.reviewDue, ctx.timeZone)}`}
+          detail={overdue ? undefined : "Still used after this date"} value={overdue ? <CorpPill tone="amber">Past due</CorpPill> : undefined} /></li> : null}
       </CorpRows></CorpCard>
     </CorpSection>
 
@@ -554,7 +550,7 @@ function EntryDetail({ ctx, entry, problem }: { ctx: Ctx; entry: KnowledgeEntry;
         const current = version.versionId === entry.publishedVersionId;
         return <li key={version.versionId}><CorpRow href={viewHref({ name: "version", documentId: entry.documentId, versionId: version.versionId })}
           title={`Version ${number(version.versionId)}`}
-          detail={`Saved ${companyTime(version.createdAt, ctx.timeZone)}${version.sourceName ? ` · ${version.sourceName}` : ""}`}
+          detail={`Saved ${shortDay(version.createdAt, ctx.timeZone)}${version.sourceName ? ` · ${version.sourceName}` : ""}`}
           value={!version.publishedAt ? <CorpPill tone="amber">Draft</CorpPill> : current ? "In use" : "Earlier"} valueTone="soft" /></li>;
       })}</CorpRows></CorpCard>
     </CorpSection>
@@ -563,11 +559,10 @@ function EntryDetail({ ctx, entry, problem }: { ctx: Ctx; entry: KnowledgeEntry;
       {confirm ? <CorpCard as="div"><div ref={confirmRef} className="kn-confirm">
         <h2 tabIndex={-1} className="kn-confirm__t">{confirm === "archive" ? `Archive ${name}?` : `Delete ${name}?`}</h2>
         {confirm === "archive"
-          ? <p className="kn-confirm__b">Rondo stops using it right away, for every Owner. Its versions stay readable here and it keeps its place in the library.</p>
+          ? <p className="kn-confirm__b">Rondo stops using it for every Owner. Versions stay readable.</p>
           : <ul className="kn-confirm__list">
-              <li>The text, title and file name of {entry.versions.length === 1 ? "its version are" : `all ${entry.versions.length} versions are`} erased for every Owner. This can’t be undone.</li>
-              <li>Rondo chats aren’t erased. Earlier answers may still quote it until those chats expire.</li>
-              <li>Text already sent to Rondo’s AI provider to answer a question can’t be called back.</li>
+              <li>Erases {entry.versions.length === 1 ? "its only version" : `all ${entry.versions.length} versions`} for every Owner</li>
+              <li>Rondo chats and text already sent to the AI provider stay</li>
             </ul>}
         {confirm === "delete" ? <label className="kn-check"><input type="checkbox" checked={acknowledged} onChange={event => setAcknowledged(event.target.checked)} /><span>I understand this can’t be undone</span></label> : null}
         <div className="kn-actions">
@@ -577,8 +572,8 @@ function EntryDetail({ ctx, entry, problem }: { ctx: Ctx; entry: KnowledgeEntry;
         </div>
       </div></CorpCard>
       : <CorpCard as="div"><CorpRows label="Archive or delete">
-          {entry.archived ? null : <li><CorpRow onClick={() => setConfirm("archive")} icon={<ArchiveIcon weight="bold" />} title="Archive" detail="Rondo stops using it. Its versions stay readable" /></li>}
-          <li><CorpRow onClick={() => setConfirm("delete")} danger icon={<TrashIcon weight="bold" />} title="Delete" detail="Erases every version and frees its space" /></li>
+          {entry.archived ? null : <li><CorpRow onClick={() => setConfirm("archive")} icon={<ArchiveIcon weight="bold" />} title="Archive" detail="Rondo stops using it" /></li>}
+          <li><CorpRow onClick={() => setConfirm("delete")} danger icon={<TrashIcon weight="bold" />} title="Delete" detail="Erases every version" /></li>
         </CorpRows></CorpCard>}
     </CorpSection>
   </>;
@@ -618,25 +613,24 @@ function VersionReview({ ctx, entry, versionId, problem }: { ctx: Ctx; entry: Kn
     if (!ok) requestId.current = null;
   };
   const status = version.current ? "In use" : version.publishedAt ? "Earlier version" : "Draft";
+  const short = (iso: string | null) => iso ? new Intl.DateTimeFormat("en-US", { timeZone: ctx.timeZone, month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(iso)) : null;
   const fact = (label: string, value: ReactNode) => <li key={label}><CorpRow one title={label} value={value} valueTone="soft" /></li>;
-  const effect = current
-    ? `This replaces version ${number(current.versionId)} for every Owner’s Rondo${futureStart ? " as soon as you publish" : ""}.`
-    : futureStart ? `Every Owner’s Rondo starts using it ${companyTime(version.effectiveFrom, ctx.timeZone, true)}.` : "Every Owner’s Rondo starts using it right away.";
+  const effect = current ? `Replaces version ${number(current.versionId)} for every Owner.`
+    : futureStart ? `Starts ${companyTime(version.effectiveFrom, ctx.timeZone, true)}.` : "Rondo uses it right away.";
   return <>
     {problem}
-    <CorpSection id="kn-text" label={`Version ${number(version.versionId)}`} aside={<span className="kn-meta">{status} · {sizeText(utf8Bytes(version.body))}</span>}>
+    <CorpSection id="kn-text" label={`Version ${number(version.versionId)}`} aside={<span className="kn-meta">{status} · plain text</span>}>
       <CorpCard as="div">
         <pre className="kn-source" tabIndex={0} aria-label={`Saved text of version ${number(version.versionId)}`}>{version.body}</pre>
       </CorpCard>
-      <p className="kn-foot">Exactly what Rondo reads, shown as plain text. Formatting marks, links and code aren’t applied or run.</p>
     </CorpSection>
 
     {publishable ? <CorpSection id="kn-publish" label="Publish for Rondo">
       <CorpCard as="div"><CorpBody>
         <div className="kn-publish">
-          {current && futureStart ? <p className="kn-callout"><WarningIcon weight="bold" aria-hidden="true" /><span><strong>There will be a gap.</strong> The current version stops as soon as you publish, and this one starts {companyTime(version.effectiveFrom, ctx.timeZone, true)}. Until then Rondo has no {entry.kind === "profile" ? "profile" : "version of this document"}. Publish closer to the start to avoid it.</span></p> : null}
-          <p className="kn-para">{effect} Answers Rondo gave from earlier text are retired.</p>
-          {mismatch ? <p className="c-error" role="alert"><ErrorText>This screen is out of date. Go back and open the newest draft</ErrorText></p> : null}
+          {current && futureStart ? <p className="kn-callout"><WarningIcon weight="bold" aria-hidden="true" /><span><strong>Gap until {shortDay(version.effectiveFrom!, ctx.timeZone)}.</strong> Version {number(current.versionId)} stops when you publish.</span></p> : null}
+          <p className="kn-para">{effect}</p>
+          {mismatch ? <p className="c-error" role="alert"><ErrorText>Out of date. Open the newest draft</ErrorText></p> : null}
           <div className="kn-actions">
             <CorpButtonLink href={edit} kind="secondary" size="md" className="b-rowact b-rowact--quiet">Edit</CorpButtonLink>
             <CorpButton kind="primary" size="md" disabled={ctx.busy || mismatch} onClick={() => void publish()}>{ctx.busy ? "Publishing…" : "Publish for Rondo"}</CorpButton>
@@ -651,17 +645,17 @@ function VersionReview({ ctx, entry, versionId, problem }: { ctx: Ctx; entry: Kn
         {fact("Written in", LOCALE_LABELS[version.locale])}
         {version.kind === "document" ? fact("Topic", categoryLabel(version.category)) : null}
         {version.sourceName ? fact("From file", version.sourceName) : null}
-        {fact("Starts", companyTime(version.effectiveFrom, ctx.timeZone, true) ?? "When published")}
-        {version.effectiveUntil ? fact("Ends", companyTime(version.effectiveUntil, ctx.timeZone, true)) : null}
-        {version.reviewDue ? fact("Review by", companyTime(version.reviewDue, ctx.timeZone, true)) : null}
-        {fact("Saved", companyTime(version.createdAt, ctx.timeZone, true))}
+        {fact("Starts", short(version.effectiveFrom) ?? "When published")}
+        {version.effectiveUntil ? fact("Ends", short(version.effectiveUntil)) : null}
+        {version.reviewDue ? fact("Review by", short(version.reviewDue)) : null}
+        {fact("Saved", short(version.createdAt))}
         <li><CorpRow title="Text fingerprint" detail={<span className="kn-digest">{version.textDigest}</span>} /></li>
         <li><a className="c-row kn-extrow" href={versionHref(entry.documentId, version.versionId)} target="_blank" rel="noreferrer">
           <span className="c-row__icon" aria-hidden="true"><ArrowSquareOutIcon weight="bold" /></span>
-          <span className="c-row__main"><span className="c-row__title">Open as plain text</span><span className="c-row__detail"><span>A private page for signed-in Owners. Opens in a new tab</span></span></span>
+          <span className="c-row__main"><span className="c-row__title">Open as plain text</span><span className="c-row__detail"><span>Private · opens in a new tab</span></span></span>
         </a></li>
       </CorpRows></CorpCard>
     </CorpSection>
-    {!publishable && !version.publishedAt ? <CorpNote>A newer draft was saved after this one. Open the newest draft to publish.</CorpNote> : null}
+    {!publishable && !version.publishedAt ? <CorpNote>A newer draft exists. Publish that one.</CorpNote> : null}
   </>;
 }

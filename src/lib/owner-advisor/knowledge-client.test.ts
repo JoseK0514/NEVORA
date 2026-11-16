@@ -57,7 +57,7 @@ describe("checking text before saving, the way the server does", () => {
     const base = { title: "Opening", category: "operations", locale: "en" as const, body: "Check the roster.", sourceName: null, effectiveFrom: null, effectiveUntil: null, reviewDue: null };
     expect(documentErrors(base)).toEqual({});
     expect(documentErrors({ ...base, title: "x".repeat(241) }).title).toContain("241 of 240 bytes");
-    expect(documentErrors({ ...base, body: "x".repeat(KNOWLEDGE_LIMITS.documentBytes + 1) }).body).toContain("over the 256 KB limit");
+    expect(documentErrors({ ...base, body: "x".repeat(KNOWLEDGE_LIMITS.documentBytes + 1) }).body).toContain("Over the 256 KB limit");
     expect(documentErrors({ ...base, body: "   " }).body).toBeTruthy();
     expect(documentErrors({ ...base, sourceName: "manual.pdf" }).sourceName).toBeTruthy();
     expect(documentErrors({ ...base, sourceName: "a/b.md" }).sourceName).toBeTruthy();
