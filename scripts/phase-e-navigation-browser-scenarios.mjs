@@ -11,7 +11,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  let stage='seed';cellRuntimeErrors.setStageReader(()=>stage);
  const tabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',backTabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
  const checks=[],contrast=[],focusTrace=[],expiryRecovery=[],runtimeErrors=[],loginAttempts=[],navigationAttempts=[],prefix=`navigation-${engine}-${width}`,headers={};
- let badgeBounds=null,retainedOverflowFailure=false,corporate=false;
+ let badgeBounds=null,retainedOverflowFailure=false,expectedRoleLabel;
  // Phones (< 768px, useEmployeeMobile) render the employee mobile pages: Notifications (messages view) and Time off.
  // Release 1 (Phase 8 boards) draws Requests, Profile, Notifications, Time off and Availability on the corporate kit at
  // every width; Notifications keeps its two reads (phones: the messages view; wider: the account panel), which now draw
@@ -80,38 +80,39 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  async function navigate(href,keyboard=false){
   const mobile=await page.locator('.mobile-nav').isVisible();
   const primary=['/app','/app/schedule','/app/requests/hub','/app/my-time'].includes(href);
-  // Corporate Employee (board G-E-Schedule): Availability is Schedule's title action on both layouts, and Schedule stays
-  // the current section. A Lead reaches it from More on a phone (Requests lights) and from the sidebar on a computer.
+  // Availability is Schedule's title action for Employee and Lead; Schedule stays current.
   // Desktop Profile is an account action.
-  const sectionOwner=corporate?{'/app/availability':'/app/schedule'}[href]:undefined;
+  const sectionOwner={'/app/availability':'/app/schedule'}[href];
   if(sectionOwner){
-   await nav(sectionOwner);const row=page.locator('main a[href="'+href+'"]').first();if(mobile)await row.tap();else await row.click();await page.waitForURL(u=>u.pathname===href);await settle();
+   await nav(sectionOwner);const row=page.locator('main a[href="'+href+'"]:visible').first();if(mobile)await row.tap();else await row.click();await page.waitForURL(u=>u.pathname===href);await settle();
    await page.waitForFunction(({mobile,sectionOwner})=>!document.querySelector('.section-tabs')&&(mobile?document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===sectionOwner:document.querySelector('nav[aria-label="Primary navigation"] a[aria-current]')?.getAttribute('href')===sectionOwner),{mobile,sectionOwner});return;
+  }
+  if(!mobile&&href==='/app/notifications'){
+   const bell=page.locator('.portal-notification-bell[href="/app/notifications"]:visible').first();
+   if(keyboard){await bell.focus();await page.keyboard.press('Enter');}else await bell.click();
+   await page.waitForURL(u=>u.pathname===href);await settle();assert.equal(await bell.getAttribute('aria-current'),'page');assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[aria-current]').count(),0,'The account notification page selects no unrelated section');return;
   }
   if(!mobile&&href==='/app/profile'){
    const trigger=page.getByRole('button',{name:/, account menu$/}),menu=page.locator('#portal-account-menu');
    if(keyboard){await page.bringToFront();await trigger.focus();await page.keyboard.press('Enter');}else await trigger.click();await menu.waitFor();
    // Upscale S7: the menu opens on who is signed in, the name and then "Role · Workspace", above a divider.
-   assert.equal((await menu.locator('.portal-account-head__name').innerText()).trim(),(await trigger.getAttribute('aria-label')).replace(/, account menu$/,''));assert.match((await menu.locator('.portal-account-head__detail').innerText()).trim(),new RegExp('^'+(corporate?'Employee':'Lead')+' · \\S'));
+   assert.equal((await menu.locator('.portal-account-head__name').innerText()).trim(),(await trigger.getAttribute('aria-label')).replace(/, account menu$/,''));assert.match((await menu.locator('.portal-account-head__detail').innerText()).trim(),new RegExp('^'+expectedRoleLabel+' · \\S'));
    const profile=menu.getByRole('link',{name:'Your profile',exact:true});
    if(keyboard){await page.waitForFunction(()=>document.querySelector('#portal-account-menu a[href="/app/profile"]')===document.activeElement);await page.keyboard.press('Enter');}else await profile.click();
    await page.waitForURL(u=>u.pathname===href);await settle();await menu.waitFor({state:'hidden'});
    assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[href="/app/profile"]').count(),0,'Profile is reached from the account menu');
    assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[aria-current]').count(),0,'Account pages do not select an unrelated sidebar section');return;
   }
-  // v5 (Lead): More is a tab-bar page. Corporate Employee (approved Oct 26): More opens from the header avatar.
-  // Either way its rows reach Updates, Notifications and Profile.
+  // Employee and Lead both open More from the header avatar; its rows reach account pages.
   if(mobile&&!primary){
    // Corporate: a pushed page (Profile, Notifications…) shows Back instead of the avatar, so start from the Home tab.
-   if(corporate&&!await page.locator('.mobile-header a.c-top-avatar[href="/app/more"]').isVisible()){await page.locator('.mobile-nav a[href="/app"]').tap();await page.waitForURL(u=>u.pathname==='/app');await settle();}
-   const more=corporate?page.locator('.mobile-header a.c-top-avatar[href="/app/more"]'):page.locator('.mobile-nav a[href="/app/more"]');await more.tap();await page.waitForURL(u=>u.pathname==='/app/more');await settle();}
+   if(!await page.locator('.mobile-header a.c-top-avatar[href="/app/more"]').isVisible()){await page.locator('.mobile-nav a[href="/app"]').tap();await page.waitForURL(u=>u.pathname==='/app');await settle();}
+   const more=page.locator('.mobile-header a.c-top-avatar[href="/app/more"]');await more.tap();await page.waitForURL(u=>u.pathname==='/app/more');await settle();}
   const root=mobile?(primary?page.locator('.mobile-nav'):page.locator('main')):page.locator('nav[aria-label="Primary navigation"]');
-  const destination=root.locator('a[href="'+href+'"]').first();if(mobile){const rect=await destination.boundingBox();assert(rect);await destination.evaluate(e=>e.addEventListener('touchstart',()=>{window.__employeeNavigationTouch=true;},{once:true}));await page.evaluate(()=>{window.__employeeNavigationTouch=false;});await destination.tap({position:{x:rect.width-8,y:rect.height/2}});assert(await page.evaluate(()=>window.__employeeNavigationTouch),'Native mobile navigation dispatched touchstart');}else await destination.click();await page.waitForURL(u=>u.pathname===href);await settle();
-  // Corporate Employee (Nov 1 upscale): More, Updates, Profile and Notifications (opened from the avatar or the bell) light
-  // no tab; Home owns Home only, and there is no More tab. A Lead's Availability belongs to the Requests tab; its other
-  // More pages light More, and its Notifications light Home.
-  const lit=corporate?null:href==='/app/notifications'?'/app':href==='/app/availability'?'/app/requests/hub':'/app/more';
-  await page.waitForFunction(({mobile,primary,href,lit})=>mobile?(primary?document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===href:lit===null?!!document.querySelector('.mobile-nav a')&&!document.querySelector('.mobile-nav a.active,.mobile-nav a[aria-current]'):document.querySelector('.mobile-nav a[href="'+lit+'"]')?.classList.contains('active')):document.querySelector('nav[aria-label="Primary navigation"] a[aria-current="page"]')?.getAttribute('href')===href,{mobile,primary,href,lit});
+  const destination=root.locator('a[href="'+href+'"]:visible').first();if(mobile){const rect=await destination.boundingBox();assert(rect);await destination.evaluate(e=>e.addEventListener('touchstart',()=>{window.__employeeNavigationTouch=true;},{once:true}));await page.evaluate(()=>{window.__employeeNavigationTouch=false;});await destination.tap({position:{x:rect.width-8,y:rect.height/2}});assert(await page.evaluate(()=>window.__employeeNavigationTouch),'Native mobile navigation dispatched touchstart');}else await destination.click();await page.waitForURL(u=>u.pathname===href);await settle();
+  // Both roles keep account pages outside primary section selection. Availability returned above to Schedule.
+  const lit=null;
+  await page.waitForFunction(({mobile,primary,href,lit})=>mobile?(primary?document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===href:lit===null?!!document.querySelector('.mobile-nav a')&&!document.querySelector('.mobile-nav a.active,.mobile-nav a[aria-current]'):document.querySelector('.mobile-nav a[href="'+lit+'"]')?.classList.contains('active')):primary?document.querySelector('nav[aria-label="Primary navigation"] a[aria-current="page"]')?.getAttribute('href')===href:!document.querySelector('nav[aria-label="Primary navigation"] a[aria-current]'),{mobile,primary,href,lit});
   assert.equal(await page.locator('#employee-more-navigation').count(),0,'v5 has no More pop-up');
  }
  // Profile keeps aria-hidden placeholder rows; inbox controls exist even in a ready empty view.
@@ -185,9 +186,9 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   await q('DELETE FROM notifications WHERE employee_id=$1',[actor]);
   await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) VALUES($1,$2,current_date+7,current_date+7,'APPROVED','Fictional private reason')",[requestId,actor]);
   await q("INSERT INTO notifications(id,employee_id,type,title,body,event_key,environment,source_kind,source_id,source_version,effective_version,purpose,due_at,expires_at,urgency,push_state) VALUES($1,$2,'TIME_OFF_DECIDED','STORED PRIVATE TITLE','STORED PRIVATE BODY',$1,'test','TIME_OFF',$3,'APPROVED','APPROVED','EVENT',now()-interval '1 hour',now()+interval '1 day','high','pending')",[noticeId,actor,requestId]);
-  // Release 1 ships the corporate Employee app; Leads (on hold) keep the v5 look. The deep 390 checks run as an Employee.
-  const actualRole=[320,390,1440].includes(width)?'EMPLOYEE':'LEAD';await q('UPDATE employees SET role=$1 WHERE id=$2',[actualRole,actor]);corporate=actualRole==='EMPLOYEE';
-  stage='login';await login(actor);await settle();
+  // Both roles use DirectionB. Keep the actual fixture role independent from presentation checks.
+  const actualRole=[320,390,1440].includes(width)?'EMPLOYEE':'LEAD';await q('UPDATE employees SET role=$1 WHERE id=$2',[actualRole,actor]);expectedRoleLabel=actualRole==='EMPLOYEE'?'Employee':'Lead';
+  stage='login';await login(actor);await settle();assert.equal(await page.locator('.app-shell[data-nv-b][data-employee-mobile]').count(),1,'Both actual Employee and Lead fixtures render the current DirectionB presentation');
   // next.config.ts sets devIndicators:false (93a950dd): the development badge is not drawn at all, so it can cover
   // neither the bottom tab bar nor the header's Back/avatar. Observe every rendered badge after hydration settles.
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
@@ -207,43 +208,40 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   // the decided time-off list; wider layouts add a Shift requests row. Phones have no fixed shift-requests link (each
   // request row opens its own page), so that canonical page is opened directly to verify its ownership and Back.
   const newRequest=page.locator('main').getByRole('link',{name:'Request time off',exact:true});assert.equal(await newRequest.getAttribute('href'),'/app/requests?tab=new');assert.equal(await page.locator('main').getByRole('link',{name:'New request',exact:true}).count(),0,'The primary names what it opens');
-  // Upscale B2 retired the Employee header's "+" (New request lives on Requests). A Lead (v5 look, on hold) keeps its
-  // header's round "+" by design, so for a Lead the only New request link allowed is that header "+" to /app/requests.
+  // Both roles keep the new-request action in Requests, without a duplicate header action.
   const headerNew=await page.getByRole('link',{name:'New request',exact:true}).evaluateAll(links=>links.map(link=>link.matches('header .e5-new')?link.getAttribute('href'):'outside header: '+link.getAttribute('href')));
-  if(corporate)assert.deepEqual(headerNew,[],'The Employee header has no "+" New request');else for(const href of headerNew)assert.equal(href,'/app/requests','A Lead keeps only the header "+" New request');
+  assert.deepEqual(headerNew,[],'Employee and Lead headers keep New request in the Requests workflow');
   const decided=page.locator('main').getByRole('link',{name:'See all decided requests',exact:true});assert.equal(await decided.getAttribute('href'),'/app/requests?filter=decided');
-  const shifts=phone?null:page.locator('main').getByRole('link',{name:/^Swaps, cover and can’t work\b/});if(shifts)assert.equal(await shifts.getAttribute('href'),'/app/exchange');
-  // Phones go Back to Requests from each page; a computer keeps Requests current in the sidebar (its hub one click away).
-  const backToRequests='main a:is(.b-back,.c-nav__back,.q-nav__l,.em-request-back)[href="/app/requests/hub"]:visible';
-  for(const [link,path] of [[decided,'/app/requests'],[shifts??'/app/exchange?tab=requests','/app/exchange']]){
-   if(typeof link==='string')await page.goto(app.url+link);else await link.click();await page.waitForURL(u=>u.pathname===path);await settle();
+  const shifts=page.locator('main').getByRole('link',{name:/^Pick up and swap\b/});assert.equal(await shifts.count(),1);assert.equal(await shifts.getAttribute('href'),'/app/exchange');
+  // Requests owns time-off history; Schedule owns Exchange, on phone and in the sidebar.
+  const backToSection=href=>'main a:is(.b-back,.c-nav__back,.q-nav__l,.em-request-back)[href="'+href+'"]:visible';
+  for(const [link,path,section] of [[decided,'/app/requests','/app/requests/hub'],[phone?'/app/exchange?tab=requests':shifts,'/app/exchange','/app/schedule']]){
+   if(typeof link==='string')await page.goto(app.url+link);else await link.click();await page.waitForURL(u=>u.pathname===path);await settle();if(path==='/app/requests')assert.equal(new URL(page.url()).searchParams.get('filter'),'decided');if(phone&&path==='/app/exchange'){assert.equal(new URL(page.url()).searchParams.get('tab'),'requests');assert.equal(await page.locator('main a[href="/app/exchange?tab=requests"]:visible').getAttribute('aria-current'),'page');}
    assert.equal(await page.locator('.section-tabs').count(),0);
    if(await page.locator('.mobile-nav').isVisible()){
-    await page.locator(backToRequests).waitFor();assert.equal(await page.locator(backToRequests).count(),1,'Back to Requests');
-    assert.equal(await page.locator('.mobile-nav a[aria-current="page"]').getAttribute('href'),'/app/requests/hub');
-    // Lead: the More tab stays unselected. Corporate Employee: no More tab, and the header avatar (More) is not current.
-    if(corporate){assert.equal(await page.locator('.mobile-nav a[href="/app/more"]').count(),0,'Corporate Employee has no More tab');assert.equal(await page.locator('.mobile-header a.c-top-avatar[href="/app/more"]').getAttribute('aria-current'),null);}
-    else assert.equal(await page.locator('.mobile-nav a[href="/app/more"]').evaluate(e=>e.classList.contains('active')),false);
-   }else assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[aria-current]').getAttribute('href'),'/app/requests/hub','Requests stays the current section');
+    await page.locator(backToSection(section)).waitFor();assert.equal(await page.locator(backToSection(section)).count(),1,'Exactly one Back link to the canonical workflow section');
+    assert.equal(await page.locator('.mobile-nav a[aria-current="page"]').getAttribute('href'),section);
+    // The avatar owns More; neither role has an extra More tab.
+    assert.equal(await page.locator('.mobile-nav a[href="/app/more"]').count(),0,'Employee and Lead open More from the avatar');assert.equal(await page.locator('.mobile-header a.c-top-avatar[href="/app/more"]').getAttribute('aria-current'),null);
+   }else assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[aria-current]').getAttribute('href'),section,'The actual parent workflow stays selected');
    await page.goBack();await settle();
   }
   checks.push('Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs and selected ownership');
   await nav('/app/availability');assert.equal(new URL(page.url()).pathname,'/app/availability');
   if(await page.locator('.mobile-nav').isVisible()){
-   // v5 (Lead): More is a page opened from the tab bar. Corporate Employee (board E-More): the header avatar opens it.
+   // The header avatar opens More for both roles.
    // The keyboard opens it; its rows keep the approved fixed order; Back returns.
    // Corporate: the avatar sits in the header of a tab's own page (a pushed page such as Availability shows Back
    // instead), so the keyboard opens More from the Requests tab page and Back returns there.
-   const moreFrom=corporate?'/app/requests/hub':'/app/availability';if(corporate){await nav('/app/requests/hub');assert(await page.locator('.mobile-header a.c-top-avatar[href="/app/more"]').isVisible(),'The avatar opens More from a tab page');}
-   const trigger=corporate?page.locator('.mobile-header a.c-top-avatar[href="/app/more"]'):page.locator('.mobile-nav a[href="/app/more"]');await trigger.focus();assert(await trigger.evaluate(e=>e===document.activeElement));await page.keyboard.press('Enter');await page.waitForURL(u=>u.pathname==='/app/more');await settle();
-   const moreRows=corporate?'main .c-rows a.c-row':'main .q-list a.q-row';
+   const moreFrom='/app/requests/hub';await nav(moreFrom);assert(await page.locator('.mobile-header a.c-top-avatar[href="/app/more"]').isVisible(),'The avatar opens More from a tab page');
+   const trigger=page.locator('.mobile-header a.c-top-avatar[href="/app/more"]');await trigger.focus();assert(await trigger.evaluate(e=>e===document.activeElement));await page.keyboard.press('Enter');await page.waitForURL(u=>u.pathname==='/app/more');await settle();
+   const moreRows='main .c-more > .b-screen:visible a[href]:visible';
    await page.locator(moreRows+'[href="/app/profile"]').waitFor();
    const order=await page.locator(moreRows).evaluateAll(es=>es.map(e=>e.getAttribute('href')));
    assert(order.includes('/app/profile')&&order.includes('/app/notifications'),'More lists Profile and Notifications');
-   const known=corporate?['/app/profile','/app/notifications','/app/updates']:['/app/profile','/app/updates','/app/notifications'];assert.deepEqual(order.filter(href=>known.includes(href)),known.filter(href=>order.includes(href)),'More keeps its row order');
+   const known=['/app/profile','/app/notifications','/app/updates'];assert.deepEqual(order.filter(href=>known.includes(href)),known.filter(href=>order.includes(href)),'More keeps its row order');
    assert(order.includes('/app/help')&&!order.includes('/support'),'More’s Help opens Help inside the app');
-   if(corporate){assert.equal(await trigger.getAttribute('aria-current'),'page');assert.equal(await page.locator('.mobile-nav a[aria-current="page"]').count(),0,'More lights no tab');assert.equal(await page.locator('.mobile-nav a.active').count(),0,'More lights no tab');}
-   else assert(await trigger.evaluate(e=>e.classList.contains('active')));
+   assert.equal(await trigger.getAttribute('aria-current'),'page');assert.equal(await page.locator('.mobile-nav a[aria-current="page"]').count(),0,'More lights no tab');assert.equal(await page.locator('.mobile-nav a.active').count(),0,'More lights no tab');
    await page.goBack();await page.waitForURL(u=>u.pathname===moreFrom);await settle();
    checks.push('More page reached by native Enter with explicit row order; Back returns');
   }else{await nav('/app/profile',true);checks.push('Native keyboard desktop account-menu Profile navigation and focus handoff');}

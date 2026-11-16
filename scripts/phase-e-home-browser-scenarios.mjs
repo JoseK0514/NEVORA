@@ -8,6 +8,7 @@ import {LOGIN_LIMITS} from '../src/lib/auth/login-limits.server.ts';
 import {observeHomeFailure,finishHomeFailure} from './home-source-failure-diagnostic.mjs';
 import assert from 'node:assert/strict';
 import {measurePointerTarget} from './browser-pointer-target.mjs';
+import {measureKeyboardFocusIndicator} from './browser-focus-indicator.mjs';
 import {join} from 'node:path';
 import {readFile,writeFile,rm} from 'node:fs/promises';
 import {Client} from 'pg';
@@ -346,7 +347,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  // Phones: the tab bar follows main (forward Tab). Wider layouts: the sidebar precedes main (reverse Tab).
  const myTime=navLink('/app/my-time');const timeKey=await page.locator('.mobile-nav').isVisible()?tab:nativeBackTab;await page.locator('h1:visible').click();let clockFocus=false;
  for(let i=0;i<55;i++){await page.keyboard.press(timeKey);if(await myTime.evaluate(e=>e===document.activeElement)){clockFocus=true;break;}}
- assert(clockFocus);assert(await myTime.evaluate(e=>e.matches(':focus-visible')));details.clockRecoveryFocus=await myTime.evaluate(e=>{const r=e.getBoundingClientRect();return {outlineStyle:getComputedStyle(e).outlineStyle,outlineWidth:getComputedStyle(e).outlineWidth,width:r.width,height:r.height};});assert.notEqual(details.clockRecoveryFocus.outlineStyle,'none');assert(parseFloat(details.clockRecoveryFocus.outlineWidth)>=2);if(timeKey===tab)assert(details.clockRecoveryFocus.height>=44&&details.clockRecoveryFocus.width>=44,'Phone Time tab is a 44px target');await link.focus();
+ assert(clockFocus);assert(await myTime.evaluate(e=>e.matches(':focus-visible')));details.clockRecoveryFocus=await myTime.evaluate(measureKeyboardFocusIndicator,2);assert(details.clockRecoveryFocus.meetsMinimum,'Native Time navigation must have a visible opaque2px focus indicator: '+JSON.stringify(details.clockRecoveryFocus));if(timeKey===tab)assert(details.clockRecoveryFocus.height>=44&&details.clockRecoveryFocus.width>=44,'Phone Time tab is a 44px target');await link.focus();
  await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.evaluate(()=>{document.documentElement.style.fontSize='';});await shot('focus');
  checks.push('H03 native keyboard reaches visible focus; actual 44px Shift details link (the card body link stays out of the tab order), measured normal/hover/pressed/focus contrast, visible keyboard route to the Time tab (clock status; 44px tab on phones), 200% text/reflow and reduced-motion state');
  stage='api';const api=await page.evaluate(async binding=>{const response=await fetch('/api/employee/home',{cache:'no-store',headers:{'X-Nevora-Home':binding}});return {status:response.status,cache:response.headers.get('cache-control'),vary:response.headers.get('vary'),body:await response.json()};},binding);

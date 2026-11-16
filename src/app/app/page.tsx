@@ -112,7 +112,6 @@ export default async function DashboardPage({
   const nextPay=view==='overview'&&modules.payStatements?await readNextPay(workspace.timeZone):null;
   const payrollStatus=session.role==='OWNER'&&view==='overview'&&modules.payStatements&&readFeatureFlags(process.env).payroll?await readHomePayrollStatus(proof):null;
   return (<ManagerCorrectionRecoveryBoundary key={recoveryKey}><ScopedReadFrame observation={scopedObservation(source.state==='ready'?source:null)}>
-    {session.role === "OWNER" && readFeatureFlags(process.env).ownerAdvisor ? <Link className="nv-btn" data-kind="secondary" href="/app/ai-manager">AI manager</Link> : null}
     <ManagerDashboard
       role={session.role === "OWNER" ? "OWNER" : "MANAGER"}
       actorId={session.id}
@@ -151,5 +150,6 @@ export default async function DashboardPage({
           : null
       }
     />
+    {session.role === "OWNER" && readFeatureFlags(process.env).ownerAdvisor ? <Link className="nv-btn" data-kind="secondary" href="/app/ai-manager">AI manager</Link> : null}
   </ScopedReadFrame></ManagerCorrectionRecoveryBoundary>);
 }
