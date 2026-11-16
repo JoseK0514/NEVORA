@@ -8,6 +8,7 @@ import {verifyRscCaughtErrorDiagnostic} from './rsc-caught-error-diagnostic.mjs'
 import {finalizeRoleRedirectDiagnostics,projectFrameworkNativeDiagnostic} from './role-redirect-diagnostic.mjs';
 import {openPeriodReports,reportNavigationStage,reportNavigationObservation} from './phase-d-report-navigation.mjs';
 import {verifyReportRecoveryNavigation} from './scoped-navigation-browser-check.mjs';
+import {waitForPortalReady} from './browser-render-readiness.mjs';
 import {measurePointerTarget} from './browser-pointer-target.mjs';
 import {readVisibleInboxCards} from './phase-d-inbox-browser-support.mjs';
 import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
@@ -95,8 +96,10 @@ try{
       }
     });
     await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
-    await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click()]);
-    await page.waitForLoadState('networkidle');
+    const landingSources=['D3-M','QAOWNER'].includes(id)?[{path:'/api/manager/today',method:'GET'},{path:'/api/manager/action-center',method:'POST'},{path:'/api/manager/clock-monitor',method:'GET'}]:[];
+    const landingReads=landingSources.map(async({path,method})=>{const response=await page.waitForResponse(response=>response.url()===app.url+path&&response.request().method()===method);assert.equal(response.status(),200,'The actual protected landing read succeeds');assert.equal(await response.finished(),null,'The actual protected landing body finishes');(report.landingReads??=[]).push({portal:id,path,method,status:response.status()});});
+    await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click(),...landingReads]);
+    await waitForPortalReady(page);
     return {context,page};
   }
   // WebKit can deliver window lifecycle events after a download; the access frame then re-checks and remounts its page.

@@ -422,15 +422,34 @@ try {
     checked(engine + ': access denial clears protected people');
 
     fixture = { status: 200, payload: fixtureReady() };
+    await page.bringToFront();
     await page.reload({ waitUntil: 'networkidle' });
     await page.getByRole('heading', { name: 'Today’s clock-ins', exact: true }).waitFor();
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
-    await owner.setOffline(true);
-    await page.getByRole('heading', { name: 'You’re offline', exact: true }).waitFor();
-    assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
-    await owner.setOffline(false);
+    await page.waitForFunction(() => document.hasFocus() && document.visibilityState === 'visible');
+    let offlineReads = 0;
+    const observeOfflineRead = request => { if (new URL(request.url()).pathname === endpoint) offlineReads++; };
+    page.on('request', observeOfflineRead);
+    try {
+      await owner.setOffline(true);
+      await page.waitForFunction(() => navigator.onLine === false);
+      await page.locator('.app-shell[data-offline]').waitFor();
+      assert(await page.getByText('Alexandria Attendance Review Employee With A Long Name').isVisible(), 'A still-current foreground observation stays readable offline');
+      assert(await page.getByRole('button', { name: 'Refresh attendance review', exact: true }).isDisabled());
+      await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+      await page.getByRole('heading', { name: 'You’re offline', exact: true }).waitFor();
+      assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
+      assert.equal(await page.getByText('Clock-in after scheduled start', { exact: true }).count(), 0);
+      assert.equal(offlineReads, 0, 'Offline hold and retirement never start a protected read');
+    } finally { page.off('request', observeOfflineRead); }
+    const [freshAttendance] = await Promise.all([
+      page.waitForResponse(response => response.url() === app.url + endpoint && response.request().method() === 'GET'),
+      owner.setOffline(false),
+    ]);
+    assert.equal(freshAttendance.status(), 200);
+    assert.equal((await freshAttendance.json()).state, 'ready');
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
-    checked(engine + ': offline pause removes stale protected attendance data');
+    checked(engine + ': current attendance holds read-only offline, blur clears private data, and reconnect requires a fresh protected read');
 
     await owner.close();
     await browser.close();
