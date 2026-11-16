@@ -1682,5 +1682,27 @@
     "limits": "Bounded scan/context triage; no security certification"
   },
   "published": false,
-  "deployed": false
+  "deployed": false,
+  "additionalPostCloseoutEvidence": [
+    {
+      "file": "final-manual-distribution.json",
+      "sha256": "6b6b3b43b8322df9f597b7c000ee87a4abd8de834e8b81e152b737cc0846de36"
+    },
+    {
+      "file": "final-index-manual-red.log",
+      "sha256": "c5abee80fc57c23aeab11182611fba1ae2a9dc0489a857002d6ec05d1a5bce3c"
+    },
+    {
+      "file": "final-index-manual-red-command.json",
+      "sha256": "fb3847e80e1e28317323fff3b509cdba6ff94f697376d35d0829506df95e1c8c"
+    },
+    {
+      "file": "final-index-manual-regeneration.log",
+      "sha256": "08059bcba1c8a0332203775208bf5607891f08d383bc2293e57306301aeacaf9"
+    },
+    {
+      "file": "final-index-manual-green.log",
+      "sha256": "8c3ab71e090b7da1f113a1c3d864cd071827cc3961c27ea874c32f2bc2c0cb7d"
+    }
+  ]
 }

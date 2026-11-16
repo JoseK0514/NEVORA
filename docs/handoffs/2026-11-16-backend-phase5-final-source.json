@@ -80,5 +80,11 @@
   "previousExecutedQualificationSha": "76f08e5101a1f34fd9dc30cf68b9246fa92ee198",
   "sourceClean": true,
   "sqlOriginalExecutionSha": "a2f402fd4aa9ef00db39019dc21e1152d6cdc39f",
-  "oneCandidate": "Same sole detached worktree; earlier qualification checkpoints are preserved execution evidence, superseded by this final SHA"
+  "oneCandidate": "Same sole detached worktree; earlier qualification checkpoints are preserved execution evidence, superseded by this final SHA",
+  "finalDocumentationDistribution": {
+    "guideSource": "4c2d8bba4676b6a74aa03b0650981bfaf55b37e2",
+    "sameApplicationHash": "60300d79857baeca91d8cc0e5624fef3ebab029bbfac91bac8be76b5f9bb5151",
+    "receipt": "2026-11-16-backend-phase5-evidence/final-manual-distribution.json",
+    "applicationQualificationSha": "a40aaf669fb7731f00dd73b8d54909d82eb77174"
+  }
 }
