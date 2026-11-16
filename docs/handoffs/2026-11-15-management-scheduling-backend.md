@@ -9,7 +9,8 @@ Jose authorized this backend after the restrictions/preferences/scheduler discus
 - Qualified application/manual candidate: `8366493c1345d7d896e16dff51f79754426bc258`, tree `da9ed5bfa52f43a220e5f9aee7e46bab288bc9f6`. Subsequent closeout documentation does not change application/test inputs. Application hash: `f9da87f0115db53988f70dd1f5bbf4afff676c3000e6f1fd1ac9736d8d8b9bac`.
 - New migration: `0065_scheduling_restrictions.sql`, prepared for owned disposable PostgreSQL only. `0064_owner_company_knowledge.sql` belongs to the other active chat and must be combined by the single development integrator with both migration registry/fixture changes preserved.
 - No remote branch, hosted database, live email, provider, main or production changes.
-- Shared-development integration lease has not transferred to this chat. Earlier local finisher confirms no reservation on isolated implementation; its last integration handoff names Cloud Chat1. Do not infer integration permission from this source-local candidate.
+- Jose subsequently approved this chat's takeover of **only this feature's development integration and required CI** after reviewing the qualified2dcaaa5f3 candidate. The earlier recorded Cloud Chat1 host is unavailable. This bounded approval does not transfer other NEVORA/Rondo/UI/provider work. Exact candidate/CI/development custody is recorded in `qualification-final.json.integration` in the evidence directory below; a local candidate alone is not delivery.
+- Fresh source reconciliation preserves developmentb5085edb, Claude40ccc4e4e (HELD/unimported), main46d6dc76 and the separate Rondo0064 reservation. The inventory gate passes73 classified sources/3 active branches, with14 inventory regressions passed. No application/test input changed during this documentation-only integration preparation.
 
 ## Product contract
 
