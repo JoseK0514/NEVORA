@@ -351,6 +351,10 @@ export async function prepareEmployeeProfileMutation(input: EmployeeCoreMutation
         OR EXISTS (
           SELECT 1 FROM employees replacement
           WHERE replacement.id<>$1 AND replacement.active=true AND replacement.role='OWNER'
+            AND EXISTS (
+              SELECT 1 FROM employee_credentials credential
+              WHERE credential.employee_id=replacement.id AND NOT credential.must_change_password
+            )
             AND NOT EXISTS (
               SELECT 1 FROM account_deletion_requests deletion
               WHERE deletion.employee_id=replacement.id AND deletion.status IN ('received','processing')

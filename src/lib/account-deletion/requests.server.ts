@@ -92,6 +92,7 @@ export async function submitDeletionRequest(input: {
           OR EXISTS (SELECT 1 FROM account_deletion_requests WHERE employee_id=$1 AND status IN ('received','processing'))
           OR EXISTS (
             SELECT 1 FROM employees e WHERE e.id<>$1 AND e.active AND e.role='OWNER'
+              AND EXISTS (SELECT 1 FROM employee_credentials c WHERE c.employee_id=e.id AND NOT c.must_change_password)
               AND NOT EXISTS (SELECT 1 FROM account_deletion_requests r WHERE r.employee_id=e.id AND r.status IN ('received','processing'))
           )
         THEN '1' ELSE 'deletion_last_owner' END)::integer`, values: [input.employeeId] },

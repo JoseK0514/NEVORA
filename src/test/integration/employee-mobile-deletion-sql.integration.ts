@@ -281,3 +281,16 @@ it('serializes a deletion against a concurrent remaining-Owner demotion',async()
  expect(deleted&&demoted).toBe(false);
  expect(await q("SELECT count(*)::integer n FROM employees e WHERE active AND role='OWNER' AND NOT EXISTS(SELECT 1 FROM account_deletion_requests r WHERE r.employee_id=e.id AND r.status IN ('received','processing'))")).toEqual([{n:1}]);
 });
+
+it.each(['missing','replacement_required'] as const)('does not count an Owner with %s credentials as an operational replacement',async credentials=>{
+ await q("UPDATE employees SET role='OWNER' WHERE id='DEL-OWN'");
+ if(credentials==='missing')await q("DELETE FROM employee_credentials WHERE employee_id='DEL-OWN'");
+ else await q("UPDATE employee_credentials SET must_change_password=true WHERE employee_id='DEL-OWN'");
+ const token=await session('QAOWNER','activated-owner-'+credentials);
+ expect(await submitDeletionRequest({employeeId:'QAOWNER',sessionTokenHash:hash(token),password:TEST_PASSWORD,channel:'web',policyVersion:POLICY_VERSION})).toEqual({outcome:'unavailable',reason:'LAST_OWNER'});
+ const proof=await fixtureProof(db.executor,'QAOWNER');
+ const [owner]=await q<{updated_at:string}>("SELECT updated_at::text FROM employees WHERE id='QAOWNER'");
+ await expect(updateEmployeeProfile({employeeId:'QAOWNER',expectedUpdatedAt:owner.updated_at,firstName:'Fictional',lastName:'Owner',phone:'7875550100',role:'EMPLOYEE',primaryLocationId:'loc-1',active:true,actorEmployeeId:'QAOWNER',proof},db.executor)).rejects.toThrow('employee_profile_last_owner');
+ expect(await q("SELECT id FROM account_deletion_requests WHERE employee_id='QAOWNER'")).toEqual([]);
+ expect(await q("SELECT employee_id FROM employee_sessions WHERE token_hash=$1",[hash(token)])).toEqual([{employee_id:'QAOWNER'}]);
+});
