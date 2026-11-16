@@ -1,5 +1,11 @@
 # November 16 readiness backend delivery — SCRUM-204–207
 
+**Follow-up:** the two previously pending UI connections are implemented in this
+checkout at Jose's explicit request. See
+[November 16 UI completion](2026-11-16-readiness-ui-completion.md) for commits,
+browser evidence and the remaining combined-release gates. The original backend
+test results below remain historical receipts.
+
 Backend implementation: `c9de85ecef4f8eb2fb9f109e494bfde892022f65`.
 Base: freshly fetched `origin/development` at
 `22a9d598eb470cd380ee739d7396f06ecf335ed5`.
@@ -89,8 +95,8 @@ must qualify the manuals once the final combined source is fixed.
   authorization was requested or inferred.
 
 Remaining owners:
-1. Claude: original-token hidden fields in both edit/delete flows, readable
-   conflict/draft recovery and explicitly paginated history controls/labels.
+1. Bounded UI wiring: completed in this checkout at Jose's explicit request;
+   see the UI completion handoff. Claude has no remaining contract wiring here.
 2. Integration owner: preserve development protections and collaboration's reviewed
    parser/UI fixes; qualify one combined development SHA, refresh manual source
    qualification, and run its required CI/hosted checks.
@@ -98,5 +104,5 @@ Remaining owners:
    reassignment/edit and edit/delete in both orders, Company/location scopes,
    generated/manual transitions, recovery, mobile and keyboard behavior.
 4. Independent reviewers: dispose the four audit findings against that candidate.
-   These local implementation results do not mark pending UI, integration or
+   These local implementation results do not mark combined UI acceptance, integration or
    independent acceptance complete; Jira findings remain open.

@@ -5,6 +5,13 @@ the existing integration owner assembles/accepts development. No other checkout
 was edited or contacted. Apply this contract with the backend commits; backend
 alone deliberately refuses legacy shift submissions without an original review.
 
+**November 16 follow-up:** Jose explicitly asked this chat to finish the two
+bounded UI flows. The hidden fields, conflict recovery and history controls are
+now implemented and browser-tested here. See
+[UI completion and evidence](2026-11-16-readiness-ui-completion.md).
+The contract below remains the integration reference; its wiring is no longer
+pending Claude. No other checkout was changed.
+
 ## SCRUM-205: original shift review
 
 - `getShiftForManagement(...).reviewVersion` and the scoped
@@ -85,9 +92,9 @@ mutation recovery; the diagnostic reference is not a replay/receipt key.
 
 ## Acceptance handoff
 
-Claude connects the hidden fields, inline conflict/draft recovery and explicit
-history controls. The integration owner then qualifies two actual browser sessions
+This checkout connects the hidden fields, inline conflict/draft recovery and
+explicit history controls. The integration owner then qualifies two actual browser sessions
 (company and location-scoped Managers), mobile/keyboard behavior and the exact
 combined development SHA. Local SQL/action tests are not those browser receipts.
-These tasks and independent finding closure remain pending; no production approval
+Combined acceptance and independent finding closure remain pending; no production approval
 is implied.
