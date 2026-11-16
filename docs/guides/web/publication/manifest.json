@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-16",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "014be43cec41f15a11aa6f657b8065f075d4e740",
-  "applicationHash": "6f6aba098d848dab3252c917436759542cc80637788c6c9493931d0e0f161f3b",
+  "sourceSha": "ea5ddf077327c688ed5ea39074c3f07ccdc738c8",
+  "applicationHash": "ddee0be81dfda78eef336f1088232788e255f9b20778445a0ea0f92fa08d3597",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "0abae197205d5bd69f7279b21eb49a195930a8aab1b45d9bb125ff6358ad940a"
@@ -140,7 +140,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "686886d6b92697462252ad556d46ab72fc3355c420347446b7689b6728359ef9",
+        "sha256": "01b4a61b6b08c705eedff86c4b3c99235b09ae64a2096ffb4eed7122d9d891dd",
         "pageCount": 4
       }
     },
@@ -235,7 +235,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "88685e7027f0281d6537acb930a7dab88c915b3ea404fe1d7574f9356e58ae0a",
+        "sha256": "43a1b2631a2cebc007a8cb72c5d0ae68f8000657e4373b6ad4c460debbc27512",
         "pageCount": 3
       }
     },
@@ -318,7 +318,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "4a06a2677136afc011096c91cb68a12c24ba40c10a2a75c18d69eb78091a23a2",
+        "sha256": "8e5f694f176b560910b91ac20cda48597aff990e758cef100f463047ac8446a3",
         "pageCount": 3
       }
     },
@@ -389,7 +389,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "8e0635ec3b058d7ff5c1e421025eccf0b383ef715ab33b599cd7c19c2b98d57b",
+        "sha256": "4ee29fbe3b5e7733c7d922bb55a928f9b93f137675814aa48d97840ade652b0f",
         "pageCount": 2
       }
     },
@@ -560,7 +560,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "c20b6f9484fe21375d40749a65e1c40312b571af98ec996fff62735c8b85dbab",
+        "sha256": "3207955ab082226131c14ca3b06d66b086b8b357426350882bdaf8ef15357299",
         "pageCount": 5
       }
     },
@@ -687,7 +687,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "675d0d7df5caa583b747bfe0f78a5e622309703afbd70ef0831a83a9a8be1fe3",
+        "sha256": "7a21a825ec66d7aeb313934226efedc40fd350c4856a0fdfa36ba17ce97a5093",
         "pageCount": 5
       }
     }
