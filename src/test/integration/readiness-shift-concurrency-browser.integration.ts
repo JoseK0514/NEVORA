@@ -119,7 +119,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
           const id = await seed(generated);
           if (generated && stale === 1) {
             await page(1).evaluate(() => window.dispatchEvent(new Event('pagehide'))); await page(1).waitForLoadState('networkidle'); await page(1).goto(app.url + '/app/schedule/edit?shiftId=' + id);
-            await page(1).getByText('Changing this shift requires company-wide access.', { exact: false }).waitFor();
+            await page(1).getByText('Changing this shift requires company-wide access.', { exact: false }).filter({ visible: true }).waitFor();
             expect(await form(1).count()).toBe(0); await q('DELETE FROM shifts WHERE id=$1', [id]); checks.push(`${engine}: location Manager cannot edit a current generated shift`); continue;
           }
           const generationWriter = generated ? 2 : winner;
