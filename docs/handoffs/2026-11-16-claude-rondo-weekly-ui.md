@@ -1,0 +1,126 @@
+# Rondo weekly plan: Claude's UI for Codex's weekly API
+
+Date: November 16, 2026. Author: Claude (UI). Receiver: Codex (backend, model tools, hosting, combined real-API QA).
+
+## Release sequence and where this sits
+
+Jose's policy (Nov 12, 2026): Development is the primary acceptance release, held to production standards; main and
+production only after Jose approves the exact verified release. This is a **local, unpushed UI commit** on
+`claude-codex-collab-nevora`, on top of the already-pushed company-knowledge UI `4e0783ab` (preserved, unchanged except
+that the AI manager band now carries two links). Codex assembles it with the backend in an isolated acceptance candidate
+and runs the real-API QA. Nothing here deploys, pushes, merges, enables a flag, calls a model, sends a notification or
+touches real data.
+
+## Route (for model citations)
+
+`/app/ai-manager/weekly` and `/app/ai-manager/weekly?review=<UUIDv4>`, in `src/app/app/ai-manager/weekly/page.tsx`. The
+commit that adds it is the one this handoff ships in (reported with the hand-back). Opening a `?review=` link only
+observes: weekly on, it sends `read_week_plan` (a new request ID); weekly off, it sends `check_week_plan`. A link never
+compares, approves, declines or publishes. An entry point "Weekly plan" sits in the AI manager band beside "Company
+knowledge".
+
+## Source evidence
+
+| Item | Value |
+|---|---|
+| UI branch, base | `claude-codex-collab-nevora`, base `4e0783ab` (company-knowledge UI, pushed) |
+| Backend API read (read only) | Codex worktree `nevora-rondo-anthropic-20261115`, commit `4d3603607615b20a306365fbd63820a756ec3b4c`: the UI contract, `weekly-contracts.ts`, `weekly-http.server.ts`, `weekly-service.server.ts`, `weekly-http.integration.ts` |
+| DTO file | `src/lib/owner-advisor/weekly-contracts.ts` copied byte-for-byte from `4d360360` (its two imports, `coverage-actions.ts` and `coverage-plan-contracts.ts`, are identical on both sides). Codex's uncommitted tree adds `WeeklyModelComparison`/`WeeklyInspectionReference`; the UI uses neither, so assembly can take Codex's newer file |
+| Backend files changed by me | None. No schema, registry, migration order or service file was edited; nothing was cherry-picked |
+
+## What was built
+
+- **Page and gate.** Company-wide Owner and `NEVORA_OWNER_ADVISOR_ENABLED` (parent off: 404, no recovery). The weekly
+  switch is read as `process.env.NEVORA_OWNER_ADVISOR_WEEKLY_ENABLED === 'true'` (the registry lacks the property on
+  this base); at assembly replace it with `readFeatureFlags(process.env).ownerAdvisorWeekly`. Bootstrap reads only the
+  workspace time zone and active locations through `withOperationalCompany` (`getWorkspace`, `listLocations`).
+- **Plan a week.** Week stepper (Monday weeks, one week back to eight ahead; a UI choice), "Fill open gaps" or "Rebuild
+  generated drafts" (explained before it is chosen: may replace earlier generated drafts; manual, published and
+  history-protected work is kept), All locations or chosen ones (max 20, sorted, at least one). One new request ID per
+  deliberate comparison.
+- **Options.** The schedule now (baseline), up to two option cards side by side from 1024px: status, adds, replaces,
+  keeps, coverage with change, still open, inspection reasons ("Can't be saved: …" when not apply-eligible, "Worth a
+  look: …" otherwise), the first three issues with their provenance and "N more in the full plan". Every location with
+  its state (published, archived, needs setup, not selected, inactive are shown and named as left out). The basis line
+  says hours are scheduled business hours, not worked time or pay; costs are unavailable; fairness basis with known and
+  unknown counts; a partial search may have missed a better option. `INPUT_LIMIT`/`RESULT_LIMIT`, no options and stale
+  options each have their own card.
+- **Review.** The full option: summary, every added shift (person, day, time, location, position, Lead), every replaced
+  draft shift, every open block, every listed issue, and the counts of anything the server didn't list. The parser
+  refuses a review whose lists disagree with its counts, that isn't one of its comparison's options, or that carries a
+  read handle while not apply-eligible, so a shortened set can't be approved. Approval needs the read handle, the
+  acknowledgement "I reviewed all proposed changes and remaining gaps", weekly on and an unexpired plan. "Save as draft"
+  sends the whole set once; the copy says nothing is published and nobody is notified. Decline is always offered while
+  weekly is on (a stale plan too). Look-only plans show why and offer Decline and Back to options.
+- **Outcomes.** Saved: the receipt (saved at, added, replaced, kept) and progress (still as saved, published, coverage
+  now; draft, published, partly published, changed, can't check), with the line that a receipt isn't attendance or
+  coverage proof. Declined, not saved and unavailable each have their card. Opening a plan that was already decided
+  gets 409 from `read_week_plan`; the UI then sends `check_week_plan` and shows its outcome.
+- **Leases and privacy.** Each private answer (ready, saved) is held for its `validForMs`, measured from when the
+  request was sent. Like the app's other private readers it renews at 70% of the lease while the Owner is here, only by
+  observations: the same comparison command (its original ID), a new `read_week_plan`, or a new `check_week_plan`. If
+  renewal fails, the details are cleared at expiry ("Details hidden · Show again"). Stepping away (hidden or blurred)
+  clears them; coming back observes again. A changed `authority` clears everything seen under the old one. 401/403
+  clears the screen and the stored pending approval ("Your session ended · Sign in").
+- **Uncertain approval.** Before sending, the approval's metadata only (`reviewId`, `requestId`, `termsDigest`,
+  `readReceiptId`, `acknowledged`, `authority`) goes to sessionStorage under `nevora.rondo.weekly.pendingApply.v1`. On
+  a dropped connection, a 503 other than `disabled`, or an unreadable 200, the UI keeps it and checks the review. Saved
+  with `receipt.operationId === requestId` is "Saved as a draft schedule"; saved under another operation is "This plan
+  was already saved". `not_saved` (only from a successful check) offers "Send the same approval again", which resends
+  the exact original command and ID. `unavailable` keeps it uncertain with Check again and the same resend. After a
+  reload the pending approval comes back as "We couldn't confirm your approval" and is checked, never resent on its own.
+  If the check answers under a different authority, the pending approval is dropped as foreign. 400 and 429 end the
+  approval; 409 checks once, then ends it and re-reads the plan ("Something changed first"). A `disabled` answer is
+  checked like an uncertain one. Decline custody is kept in memory and resent with its own ID if unconfirmed (the
+  contract persists only apply).
+
+## Files
+
+- `src/app/app/ai-manager/weekly/page.tsx` (new): gate, weekly switch, bootstrap.
+- `src/components/owner-advisor/weekly/weekly-page.tsx`, `weekly.css` (new; scoped to `.wk`, B tokens, adds no rule to a
+  shared sheet; reuses the kit's cards, rows, pills, state cards, toasts and Add employee's checklist rows).
+- `src/lib/owner-advisor/weekly-client.ts` (new): strict parsers, transport, pending-approval storage, words.
+- `src/lib/owner-advisor/weekly-client.test.ts` (new, 18 tests). `src/lib/owner-advisor/weekly-contracts.ts` (copied).
+- `src/components/owner-advisor/advisor.tsx`, `advisor.css`: the "Weekly plan" link beside "Company knowledge".
+- `docs/handoffs/2026-11-16-rondo-weekly-ui/`: screenshots and both browser run logs.
+
+## Checks run
+
+- `npx tsc --noEmit -p .`: clean. `npx eslint` on the changed files: clean.
+- `npx vitest run src/lib/owner-advisor src/components/owner-advisor src/test/phosphor-icon-weight.test.ts`: 41 files,
+  377 tests pass. The client tests include resending a pending approval through the backend's own `parseWeeklyCommand`.
+  The full suite was not re-run.
+- Browser (Playwright on the repo's ui-scan harness: the real local app on an owned embedded Postgres with the fictional
+  "Northside QA Workforce", Owner QAOWNER). **The weekly API was MOCKED** by route interception with a stateful mock
+  written from the actual DTOs (`weekly-mock.mjs`, fictional people and places). The weekly switch was set for the run
+  in a scratch copy of the harness only. Logs: `browser-run-weekly-on.txt`, `browser-run-weekly-off.txt`.
+  - Widths 320, 390, 430, 768, 1440 on the planner; 320/390/1440 on options and review; 390/1440 on saved. 25 measured
+    screens with weekly on and 3 with weekly off: no horizontal overflow, nothing clipped.
+  - Covered: loading, every option state (complete, partial with issues, look-only no change, rule-blocked,
+    search stopped early, input limit, stale options), both modes, both scopes, replaced draft shifts, full review,
+    acknowledgement by keyboard, approve, decline, stale plan and its decline, saved progress in all five states, opening
+    a decided plan, 409/429/400 on approval, lost answer after a committed save (failed first check, reload, recovered by
+    check with no second apply), not saved then the same-ID resend, foreign custody after reload, revoked session (no
+    names left in the page, pending cleared), lease renewal, lease expiry with renewal failing (details hidden, no names
+    left), Show again, stepping away, weekly off (planner off; an approved plan's link shows its receipt only).
+  - Not covered: screen-reader output, real Safari/iOS, real network timing, EN/ES model semantics (not claimed).
+
+## For Codex: contract notes and questions
+
+1. **Lease renewal load.** `validForMs` is at most 15 s, so a review on screen renews about every 10 s with a new
+   `read_week_plan` (and the options with the same `compare_week` replay, which re-captures the source). That follows
+   the existing private-reader behaviour; say if you want a cheaper renewal path or a longer cap.
+2. **Reading a decided plan returns 409** (service: `applied_operation || declined_operation` → conflict). The UI
+   recovers with `check_week_plan`. A terminal `read_week_plan` answer would save a round trip.
+3. **`receipt.operationId` equals the apply `requestId`** (from the service). The UI relies on that to tell "your
+   approval saved it" from "already saved".
+4. **Week range.** The UI offers one week back to eight ahead. Tell me if the server allows a different range.
+5. **Assembly.** Switch the weekly prop to the registry property; keep or replace `weekly-contracts.ts` with Codex's
+   newer file (additive types only). The model projection's `reviewHref` should be `/app/ai-manager/weekly?review=<id>`.
+6. **Owner Spanish UI** still doesn't exist; this page is English like the rest of the Owner chrome.
+7. **Combined QA still owed:** the real route with the real session, the lost-answer and same-ID retry against the real
+   receipt custody, weekly-off recovery, and authority/session changes.
+
+## Next
+
+Waiting for Codex's assembly and real-API QA. No other weekly or import endpoint was invented.

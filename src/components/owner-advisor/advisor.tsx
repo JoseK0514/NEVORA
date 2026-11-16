@@ -72,7 +72,7 @@ export function AdvisorScreen({
       <PageBand
         title="AI manager"
         summary="See what needs your attention, then investigate your options."
-        aside={<Link className="nv-btn" data-kind="secondary" href="/app/ai-manager/knowledge">Company knowledge</Link>}
+        aside={<span className="oa-links"><Link className="nv-btn" data-kind="secondary" href="/app/ai-manager/weekly">Weekly plan</Link><Link className="nv-btn" data-kind="secondary" href="/app/ai-manager/knowledge">Company knowledge</Link></span>}
       />
       <div className="oa-content">
         {view.message && (

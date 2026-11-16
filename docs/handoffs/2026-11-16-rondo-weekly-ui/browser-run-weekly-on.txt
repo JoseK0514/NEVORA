@@ -1,0 +1,63 @@
+W1 planner 320 h-overflow: false clipped: [] under44: []
+W1 planner 390 h-overflow: false clipped: [] under44: []
+W1 planner 430 h-overflow: false clipped: [] under44: []
+W1 planner 768 h-overflow: false clipped: [] under44: ["AI manager 32"]
+W1 planner 1440 h-overflow: false clipped: [] under44: ["AI manager 32"]
+W1 fixture locations: [["loc-1","Northside Main Office"],["loc-2","Northside West Office"]]
+W2 error: Choose at least one location | requests sent: 0
+W2 choices 390 h-overflow: false clipped: [] under44: []
+W3 options 390 h-overflow: false clipped: [] under44: []
+W3 options 1440 h-overflow: false clipped: [] under44: ["AI manager 32"]
+W3 options 320 h-overflow: false clipped: [] under44: []
+W3 compares sent: 2 distinct ids: 2
+W4 focus after open: H1 Review the plan
+W4 review 1440 h-overflow: false clipped: [] under44: ["Weekly plan 32"]
+W4 review 390 h-overflow: false clipped: [] under44: []
+W4 review 320 h-overflow: false clipped: [] under44: []
+W4 save disabled before ack: true
+W4 save enabled after ack (keyboard): true
+W4 applies: [[200,"saved"]] | pending left: null
+W4 saved 390 h-overflow: false clipped: [] under44: []
+W4 saved 1440 h-overflow: false clipped: [] under44: ["Weekly plan 32"]
+W5 published: Now | Published | Still as saved | 4 of 4 | Published | 4 of 4 | Coverage | 40 h of 40 h covered
+W5 mixed: Now | Partly published | Still as saved | 4 of 4 | Published | 1 of 4 | Coverage | 40 h of 40 h covered
+W5 changed: Now | Changed since saving | Still as saved | 3 of 4 | Published | 0 of 3 | Coverage | 40 h of 40 h covered
+W5 unavailable: Now | Can't check right now | NEVORA couldn’t look at the schedule just now.
+W5 opening a saved plan used: [["read_week_plan",409,"error"],["check_week_plan",200,"saved"]]
+W6 option B 390 h-overflow: false clipped: [] under44: []
+W6 declined: Plan declined | Nothing on the schedule changed. You can review another option. | Back to options | writes: [["decline_week_plan","declined"]]
+W7 replaced section: Draft shifts replaced2 | Pablo Medina | Mon, Nov 16 · 8:00 AM–12:00 PM · Northside Main Office | Replaced | Elisa Torres | Thu, Nov 19 · 12:00 PM–4:00 PM · Northside Main Office · Counter | Replaced | Only draft shifts generated earlier can be replaced. Manual shifts, published weeks and shifts with history stay.
+W7 build 1440 h-overflow: false clipped: [] under44: ["Weekly plan 32"]
+W7 build 390 h-overflow: false clipped: [] under44: []
+W8 noChange options h-overflow: false clipped: [] under44: []
+W8 noChange: Options | Nov 16 – 22 · Fill open gaps · All locations | The schedule now | Coverage | 24 h of 40 h covered | Still open | 4 blocks | Option A | Look only | Adds | 0 shifts · 0 h | Keeps | 9 shifts | Coverage | 24 h of 40 h covered · no change | Still open | 0 blocks | Can’t be saved: It changes nothing. | Review option A | Locations2 | Northside Main Office | Included | Northside West Office | Included | Fictional Warehouse | Left out: week already published | Fictional Pop-up | No staffing needs are set | Left out: needs setup | Hours are scheduled business hours, not time worked or pay; costs aren’t included. Fairness uses each person’s targets and preferences and 8 weeks of weekend history (6 known, 1 unknown). Compared in 0.8 s.
+W8 noChange decide: Decide | This plan can be looked at but not saved: it changes nothing. | Decline | Back to options | Hours are scheduled business hours, not time worked or pay; costs aren’t included. Fairness uses targets, preferences and 8 weeks of weekend history (6 known, 1 unknown). | ack present: 0
+W8 noChange review h-overflow: false clipped: [] under44: []
+W8 blocked options h-overflow: false clipped: [] under44: []
+W8 blocked: Options | Nov 16 – 22 · Fill open gaps · All locations | The schedule now | Coverage | 24 h of 40 h covered | Still open | 4 blocks | Option A | Look only | Adds | 2 shifts · 8 h | Keeps | 9 shifts | Coverage | 32 h of 40 h covered · +8 h | Still open | 2 blocks | Can’t be saved: A schedule rule blocks it. | An existing shift for a minor ends after the allowed time. | A shift already scheduled | Review option A | Locations2 | Northside Main Office | Included | Northside West Office | Included | Fictional Warehouse | Left out: week already published | Fictional Pop-up | No staffing needs are set | Left out: needs setup | Hours are scheduled business hours, not time worked or pay; costs aren’t included. Fairness uses each person’s targets and preferences and 8 weeks of weekend history (6 known, 1 unknown). Compared in 0.8 s.
+W8 blocked decide: Decide | This plan can be looked at but not saved: a schedule rule blocks it. | Decline | Back to options | Hours are scheduled business hours, not time worked or pay; costs aren’t included. Fairness uses targets, preferences and 8 weeks of weekend history (6 known, 1 unknown). | ack present: 0
+W8 blocked review h-overflow: false clipped: [] under44: []
+W8 exhausted options h-overflow: false clipped: [] under44: []
+W8 exhausted: Options | Nov 16 – 22 · Fill open gaps · All locations | The schedule now | Coverage | 24 h of 40 h covered | Still open | 4 blocks | Option A | Search stopped early | Adds | 2 shifts · 8 h | Keeps | 9 shifts | Coverage | 32 h of 40 h covered · +8 h | Still open | 2 blocks | Review option A | Locations2 | Northside Main Office | Included | Northside West Office | Included | Fictional Warehouse | Left out: week already published | Fictional Pop-up | No staffing needs are set | Left out: needs setup | The search stopped before checking every possibility, so a better option may exist. Hours are scheduled business hours, not time worked or pay; costs aren’t included. Fairness uses each person’s targets and preferences and 8 weeks of weekend history (6 known, 1 unknown). Compared in 0.8 s.
+W8 unavailable options h-overflow: false clipped: [] under44: []
+W8 unavailable: Options | Nov 16 – 22 · Fill open gaps · All locations | Rondo couldn’t compare this week | The week has more to plan than one comparison can hold. Try fewer locations. | Locations2 | Northside Main Office | Included | Northside West Office | Included | Fictional Warehouse | Left out: week already published | Fictional Pop-up | No staffing needs are set | Left out: needs setup | Hours are scheduled business hours, not time worked or pay; costs aren’t included. Fairness uses each person’s targets and preferences and 8 weeks of weekend history (6 known, 1 unknown). Compared in 0.8 s.
+W9 stale: This plan is out of date | The schedule or your setup changed, or the plan expired. Compare again for current options. You can still decline it. | Compare again | Decline it
+W9 declined a stale plan
+W10 stored keys: acknowledged,authority,readReceiptId,requestId,reviewId,termsDigest | has names: false
+W10 card focused: true
+W10 uncertain 390 h-overflow: false clipped: [] under44: []
+W10 after reload: [["apply_week_plan","saved"],["check_week_plan","injected"],["check_week_plan","saved"]] | applies: 1 | pending left: null
+W11 not saved 390 h-overflow: false clipped: [] under44: []
+W11 apply ids equal: true [503,200]
+W12 foreign: An earlier approval was cleared | It belonged to a different sign-in, so it can’t be checked from here. Nothing was sent again. | OK | pending left: null | applies: 1
+W13 revoked: Your session ended | Sign in again as an Owner to plan a week. Plans were cleared from this screen. | Sign in | names left: 0 | pending: null
+W14 shown: 1
+W14 after renewals still shown: 1 | reads: 3
+W14 renewal failing -> hidden: 1 | names left: 0
+W14 shown again
+W14 blur clears: true
+W15 conflict: Something changed first | The schedule, your access or this plan changed. Look again before deciding. | pending: null
+W15 limit: Too many saved plans | This company has reached the limit for saved plans. Nothing changed. | pending: null
+W15 invalid: That request wasn’t accepted | Something in it doesn’t match this company. Check the week and locations, then try again. Nothing changed. | pending: null
+W16 AI manager links: 1 1
+page errors: []

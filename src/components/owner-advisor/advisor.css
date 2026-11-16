@@ -222,3 +222,6 @@
 .oa-draft-progress p:last-child { margin-bottom:0; }
 .oa-draft-panel .oa-actions { justify-content:flex-start; margin-top:24px; }
 @media(max-width:600px) { .oa-draft-panel .oa-actions { align-items:stretch; } .oa-draft-panel .oa-actions>* { width:100%; } }
+
+/* The AI manager band's two entry points: Weekly plan and Company knowledge (Nov 16, 2026). */
+.oa-links { display: inline-flex; flex-wrap: wrap; gap: 8px; }
