@@ -31,7 +31,7 @@ describe('explicit recorded-break paid time projection',()=>{
   [classification('meal','UNPAID_RELIEVED_MEAL'),{...classification('rest','PAID_REST'),entryId:'other'}],
   [classification('meal','UNPAID_RELIEVED_MEAL'),{...classification('rest','PAID_REST'),employeeId:'other'}],
   [classification('meal','UNPAID_RELIEVED_MEAL'),{...classification('rest','PAID_REST'),treatment:'UNPAID'}],
- ])('refuses incomplete, duplicate, unknown or inferred classifications %j',breakTreatments=>{
+ ].map(breakTreatments=>({breakTreatments})))('refuses incomplete, duplicate, unknown or inferred classifications %j',({breakTreatments})=>{
   expect(()=>projection([shift()],breakTreatments)).toThrow(/break/i);
  });
  it('splits overnight time and a midnight-crossing meal into business days',()=>{
