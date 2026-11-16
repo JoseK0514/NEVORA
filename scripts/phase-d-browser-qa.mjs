@@ -142,7 +142,8 @@ try{
      const showEarlier=ep.getByRole('button',{name:'Show earlier weeks',exact:true});await showEarlier.focus();assert(await showEarlier.evaluate(e=>document.activeElement===e));await ep.keyboard.press(nativeTab);assert(await ep.getByRole('link',{name:/^Your correction requests/}).evaluate(e=>document.activeElement===e),'Tab moves from Show earlier weeks to Your corrections');assert.equal(await ep.getByRole('link',{name:/^Your correction requests/}).getAttribute('href'),'/app/my-time?view=corrections','The focused correction link retains its canonical destination');}checked(engine+': period keyboard focus');
     const {context:management,page:mp}=await context(browser,'D3-M');await mp.goto(app.url+url);
     const card=mp.getByRole('dialog');
-    const openCard=async()=>{await mp.locator('#timecard-D3-E').getByRole('button').click();await card.getByRole('heading',{name:/^(Avery|Renamed) Period QA$/}).waitFor();};
+    const timecardOpener=()=>mp.getByRole('button',{name:/^(Avery|Renamed) Period QA(?:,|$)/});
+    const openCard=async()=>{await timecardOpener().click();await card.getByRole('heading',{name:/^(Avery|Renamed) Period QA$/}).waitFor();};
     // Owner premium: Timecards has no standing Refresh button (it reads fresh on load), so the re-read is a page reload.
     const refreshCards=async()=>{await card.getByRole('button',{name:'Done',exact:true}).click();await mp.reload();await openCard();};
     // Corporate timecard detail (board O-TimecardDetail): the state is the pill beside the name (Approved reads "Ready to
@@ -188,11 +189,11 @@ try{
     currentPage=mp;
     // Exercise the real protected return even where headless windows keep focus.
     // This is an explicit lifecycle regression, not physical OS certification.
-    const returnDeadline=performance.now()+15000;
+    const returnDeadline=performance.now()+15000,returnReceipt={engine,lifecycle:'explicit blur/focus',stage:'starting',responseStatus:null,bodyFinished:false};(report.managerReturn??=[]).push(returnReceipt);
     await runBeforeRecoveryDeadline(async()=>{
       await mp.evaluate(()=>window.dispatchEvent(new Event('blur')));
       await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();
-      assert.equal(await mp.locator('#timecard-D3-E').count(),0,'Retired manager cards stay hidden before a fresh authority/page read');
+      assert.equal(await mp.locator('#timecard-D3-E').count(),0,'Retired manager cards stay hidden before a fresh authority/page read');assert.equal(await timecardOpener().count(),0,'The actual phone or desktop employee control is absent while the manager view is retired');returnReceipt.stage='fresh-read';
       const [response]=await Promise.all([
         mp.waitForResponse(response=>{
           const request=response.request(),target=new URL(response.url());
@@ -205,12 +206,12 @@ try{
           // The existing RSC recovery owns this return to the selected period.
         })(),
       ]);
-      assert.equal(response.status(),200);await finishResponseByDeadline(response,returnDeadline);
+      returnReceipt.responseStatus=response.status();returnReceipt.stage='response-body';assert.equal(response.status(),200);await finishResponseByDeadline(response,returnDeadline);returnReceipt.bodyFinished=true;
       const current=parseCurrentTimecards(await response.json(),{startDate:'2026-09-21',endDate:'2026-09-27'});
       assert(current.cards.some(item=>item.card.employeeId==='D3-E'),'Fresh protected response contains the reviewed employee');
       assert.equal(new URL(mp.url()).pathname+new URL(mp.url()).search,url,'Foreground return preserves the exact selected period');
-      await openCard();
-      (report.managerReturn??=[]).push({engine,lifecycle:'explicit blur/focus',responseStatus:response.status(),bodyFinished:true,observedAt:current.observedAt,validForMs:current.validForMs,period:current.period,elapsedMs:15000-(returnDeadline-performance.now())});
+      returnReceipt.stage='open-current-row';await openCard();
+      Object.assign(returnReceipt,{stage:'complete',observedAt:current.observedAt,validForMs:current.validForMs,period:current.period,elapsedMs:15000-(returnDeadline-performance.now())});
     },returnDeadline);
     checked(engine+': controlled Manager return hides retired cards and completes a fresh exact-period read within the original deadline');
     await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await cardState('Approved');await card.getByRole('button',{name:'Finalize period',exact:true}).click();await cardState('Finalized');
