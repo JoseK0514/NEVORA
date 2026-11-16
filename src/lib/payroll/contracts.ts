@@ -132,6 +132,22 @@ export type PayrollImport = {
     period: PayrollPeriod;
     payday: string;
     rows: PayrollImportRow[];
+    /** Exact accepted CSV retained in immutable import evidence and command identity. */
+    sourceDocument?: { schema: "NEVORA_PAYROLL_CSV_TOTALS_V1"; csv: string };
+};
+/** POST /api/payroll/runs IMPORT/CORRECT amounts alternative. Decimal dollar
+ * strings, never floating point. Exact CSV header order:
+ * employeeId,gross,employeeDeductions,employerContributions,net
+ * At most 300 people and 256 KiB UTF-8. Includes zero/excluded roster members.
+ * Totals remain external amounts, without inferred tax/provider classification. */
+export type PayrollCsvTotalsImport = {
+    schema: "NEVORA_PAYROLL_CSV_TOTALS_V1";
+    currency: "USD";
+    sourceName: string;
+    sourceReference: string;
+    period: PayrollPeriod;
+    payday: string;
+    csv: string;
 };
 export type PayrollTotals = {
     grossMinor: string;
@@ -242,7 +258,7 @@ export type PayrollRunCommand = {
     action: "IMPORT";
     runId: string;
     expectedRevision: number;
-    amounts: PayrollImport;
+    amounts: PayrollImport | PayrollCsvTotalsImport;
 } | {
     action: "APPROVE";
     runId: string;
@@ -253,7 +269,7 @@ export type PayrollRunCommand = {
     runId: string;
     expectedRevision: number;
     reason: string;
-    amounts: PayrollImport;
+    amounts: PayrollImport | PayrollCsvTotalsImport;
 } | {
     action: "PUBLISH" | "PAYMENT_EXPORT";
     runId: string;
