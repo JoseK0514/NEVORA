@@ -426,7 +426,7 @@ try {
     await page.getByRole('heading', { name: 'Today’s clock-ins', exact: true }).waitFor();
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     await owner.setOffline(true);
-    await page.getByRole('heading', { name: 'View paused', exact: true }).waitFor();
+    await page.getByRole('heading', { name: 'You’re offline', exact: true }).waitFor();
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
     await owner.setOffline(false);
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
