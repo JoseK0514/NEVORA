@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { CURRENT_MIGRATIONS, createDisposableFoundationDatabase } from './local-postgres';
+import { hashPassword } from '../../lib/auth/password';
 
 describe('foundation SQL', () => {
   it('schema and legacy preservation', async () => {
@@ -1226,6 +1227,9 @@ describe('employee profile lifecycle', () => {
     const db = await workspaceFixture();
     try {
       await db.executor.query({text:"INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner2','Second','Owner','557','OWNER','loc-1')",values:[]});
+      // Either Owner must be an activated successor before the concurrent demotions.
+      const passwordHash = await hashPassword('Fictional-owner-lifecycle-QA-2026!');
+      await db.executor.query({text:"INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('owner',$1,false),('owner2',$1,false)",values:[passwordHash]});
       const first = (await getEmployeeManagementProfile('owner', db.executor))!;
       const second = (await getEmployeeManagementProfile('owner2', db.executor))!;
       const results = await Promise.allSettled([
@@ -1236,6 +1240,7 @@ describe('employee profile lifecycle', () => {
       expect(results.filter(result => result.status === 'rejected')).toHaveLength(1);
       expect(String((results.find(result => result.status === 'rejected') as PromiseRejectedResult).reason)).toContain('employee_profile_last_owner');
       expect(await db.executor.query({text:"SELECT id FROM employees WHERE active AND role='OWNER' ORDER BY id",values:[]})).toHaveLength(1);
+      expect(await db.executor.query({text:"SELECT e.id FROM employees e JOIN employee_credentials c ON c.employee_id=e.id WHERE e.active AND e.role='OWNER' AND NOT c.must_change_password ORDER BY e.id",values:[]})).toHaveLength(1);
     } finally { await db.dispose(); }
   });
 });

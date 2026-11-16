@@ -314,6 +314,75 @@ it("stale worker lease cannot commit after another claim; crashed lease recovers
 });
 import { seedPayrollFixture } from "./payroll-fixture";
 import { schedulePayroll } from "../../lib/payroll/schedule";
+const csvTotalsHeader = "employeeId,gross,employeeDeductions,employerContributions,net";
+function csvTotalsInput(seeded: Awaited<ReturnType<typeof seedPayrollFixture>>) {
+  return {
+    schema: "NEVORA_PAYROLL_CSV_TOTALS_V1",
+    currency: "USD",
+    sourceName: "Fictional CSV accountant",
+    sourceReference: "Fictional-CSV-2026-09",
+    period: seeded.period,
+    payday: seeded.amounts.payday,
+    csv: csvTotalsHeader + "\r\n" + seeded.amounts.rows.map(row =>
+      row.employeeId === seeded.ids.a
+        ? `${row.employeeId},1000.01,123.40,70.00,876.61`
+        : `${row.employeeId},0,0,0,0`,
+    ).join("\r\n") + "\r\n",
+  };
+}
+it("CSV totals retain period, complete population, revision and Manager authority guards without writing receipts on refusal", async () => {
+  const seeded = await seedPayrollFixture(f.db.executor);
+  const r = (await runs(seeded.proof, f.db.executor)).runs.find(x => x.id === seeded.runId)!;
+  const amounts = csvTotalsInput(seeded);
+  for (const changed of [
+    { period: { startDate: "2026-09-22", endDate: "2026-09-27" } },
+    { payday: "2026-09-30" },
+  ]) await expect(command(seeded.proof, { action: "IMPORT", operationId: randomUUID(), runId: r.id, expectedRevision: r.revision, amounts: { ...amounts, ...changed } }, f.db.executor)).rejects.toThrow("IMPORT_PERIOD_CONFLICT");
+  await expect(command(seeded.proof, { action: "IMPORT", operationId: randomUUID(), runId: r.id, expectedRevision: r.revision, amounts: { ...amounts, csv: `${csvTotalsHeader}\n${seeded.ids.a},1000,123.40,70,876.60` } }, f.db.executor)).rejects.toThrow("INVALID_PAYROLL_INPUT");
+  await expect(command(seeded.proof, { action: "IMPORT", operationId: randomUUID(), runId: r.id, expectedRevision: r.revision - 1, amounts }, f.db.executor)).rejects.toThrow("REVISION_CONFLICT");
+  await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('7',64),$1,now()+interval '1 day')", [seeded.ids.manager]);
+  const manager = { employee: { ...seeded.proof.employee, id: seeded.ids.manager, role: "MANAGER" as const }, sessionTokenHash: "7".repeat(64) };
+  await expect(command(manager, { action: "IMPORT", operationId: randomUUID(), runId: r.id, expectedRevision: r.revision, amounts }, f.db.executor)).rejects.toThrow("payroll_authorization");
+  expect((await runs(seeded.proof, f.db.executor)).runs.find(x => x.id === r.id)!.revision).toBe(r.revision);
+  expect(await f.q("SELECT count(*)::int AS n FROM payroll_command_receipts WHERE payload->>'action'='IMPORT'")).toEqual([{ n: 1 }]);
+});
+it("imports fictional CSV totals, binds exact source to review and idempotency, approves and publishes private statements", async () => {
+  const seeded = await seedPayrollFixture(f.db.executor);
+  const before = (await runs(seeded.proof, f.db.executor)).runs.find(x => x.id === seeded.runId)!;
+  const amounts = csvTotalsInput(seeded);
+  const input = { action: "IMPORT", operationId: randomUUID(), runId: before.id, expectedRevision: before.revision, amounts };
+  const imported = await command(seeded.proof, input, f.db.executor);
+  expect(await command(seeded.proof, input, f.db.executor)).toEqual(imported);
+  expect(await receipt(seeded.proof, input.operationId, f.db.executor)).toEqual(imported);
+  for (const changed of [
+    { sourceName: "Different source" }, { sourceReference: "Different reference" },
+    { period: { startDate: "2026-09-22", endDate: "2026-09-27" } },
+    { payday: "2026-09-30" }, { csv: amounts.csv.replaceAll("\r\n", "\n") },
+  ]) await expect(command(seeded.proof, { ...input, amounts: { ...amounts, ...changed } }, f.db.executor)).rejects.toThrow("OPERATION_CONFLICT");
+  const reviewed = (await runs(seeded.proof, f.db.executor)).runs.find(x => x.id === before.id)!;
+  expect(reviewed.status).toBe("REVIEW_REQUIRED");
+  expect(reviewed.exceptions).toEqual([]);
+  expect(reviewed.totals).toEqual({ grossMinor: "100001", deductionsMinor: "12340", employerContributionsMinor: "7000", netMinor: "87661", employeeCount: 8 });
+  expect(reviewed.rows!.find(x => x.employeeId === seeded.ids.a)!.employeeDeductions).toEqual([{ code: "EXTERNAL_DEDUCTIONS_TOTAL", label: "External employee deductions total", amountMinor: "12340" }]);
+  expect(reviewed.sourceName).toBe(amounts.sourceName);
+  expect(reviewed.sourceReference).toBe(amounts.sourceReference);
+  const [snapshot] = await f.q<{ evidence: unknown }>("SELECT snapshot->'amounts'->'sourceDocument' AS evidence FROM payroll_run_revisions WHERE run_id=$1 AND revision=$2", [before.id, imported.revision]);
+  expect(snapshot.evidence).toEqual({ schema: "NEVORA_PAYROLL_CSV_TOTALS_V1", csv: amounts.csv });
+  await expect(command(seeded.proof, { action: "APPROVE", operationId: randomUUID(), runId: before.id, expectedRevision: reviewed.revision, reviewToken: before.reviewToken }, f.db.executor)).rejects.toThrow("REVIEW_CONFLICT");
+  await command(seeded.proof, { action: "APPROVE", operationId: randomUUID(), runId: reviewed.id, expectedRevision: reviewed.revision, reviewToken: reviewed.reviewToken }, f.db.executor);
+  await workerOnce(f.db.executor);
+  await workerOnce(f.db.executor);
+  await workerOnce(f.db.executor);
+  await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('8',64),$1,now()+interval '1 day'),(repeat('9',64),$2,now()+interval '1 day')", [seeded.ids.a, seeded.ids.b]);
+  const a = { employee: { ...seeded.proof.employee, id: seeded.ids.a, role: "EMPLOYEE" as const }, sessionTokenHash: "8".repeat(64) };
+  const b = { employee: { ...seeded.proof.employee, id: seeded.ids.b, role: "EMPLOYEE" as const }, sessionTokenHash: "9".repeat(64) };
+  const own = (await statements(a, f.db.executor)).statements;
+  expect(own).toHaveLength(1);
+  expect((await document(a, own[0].id, f.db.executor)).bytes.subarray(0, 5).toString()).toBe("%PDF-");
+  await expect(document(b, own[0].id, f.db.executor)).rejects.toThrow("DOCUMENT_UNAVAILABLE");
+  expect(await command(seeded.proof, input, f.db.executor)).toEqual(imported);
+  expect(await f.q("SELECT count(*)::int AS n FROM payroll_run_revisions WHERE run_id=$1", [before.id])).toEqual([{ n: 4 }]);
+});
 it("nonzero finalized time imports exact authoritative values, corrections link and defaults preserve overrides", async () => {
   const seeded = await seedPayrollFixture(f.db.executor, { published: true });
   const owner = seeded.proof;

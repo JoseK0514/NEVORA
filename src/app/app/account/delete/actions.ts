@@ -10,7 +10,8 @@ import { POLICY_VERSION, policiesVisible } from "@/lib/legal/policies";
 /** `uncertain`: the request may or may not be saved; only a later check can say. `signed_out`: no session and no
  * open request for the account the page was showing. `changed`: this browser is now signed in as someone else. */
 export type DeletionFormState =
-  | { kind: "idle" | "wrong_password" | "failed" | "unavailable" | "uncertain" | "busy" | "signed_out" | "changed" }
+  | { kind: "idle" | "wrong_password" | "failed" | "uncertain" | "busy" | "signed_out" | "changed" }
+  | { kind: "unavailable"; reason?: "LAST_OWNER" }
   | { kind: "received" | "duplicate"; reference: string; confirmedAt: string };
 
 const done = (kind: "received" | "duplicate", request: DeletionRequest): DeletionFormState => ({ kind, reference: request.reference, confirmedAt: request.confirmedAt });
@@ -58,6 +59,7 @@ export async function requestAccountDeletion(previous: DeletionFormState, formDa
     const result = await submitDeletionRequest({ employeeId: proof.employee.id, sessionTokenHash: proof.sessionTokenHash, password, channel: "web", policyVersion: POLICY_VERSION });
     if (result.outcome === "received" || result.outcome === "duplicate") return done(retried && result.outcome === "duplicate" ? "received" : result.outcome, result.request);
     if (result.outcome === "failed") return retried ? { kind: "uncertain" } : { kind: "failed" };
+    if (result.outcome === "unavailable") return { kind: "unavailable", ...(result.reason ? { reason: result.reason } : {}) };
     return { kind: result.outcome };
   } catch {
     // The reply may have been lost after COMMIT. Ask again before saying anything.
