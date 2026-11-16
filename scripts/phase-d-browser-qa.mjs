@@ -97,7 +97,8 @@ try{
     });
     await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
     const landingSources=['D3-M','QAOWNER'].includes(id)?[{path:'/api/manager/today',method:'GET'},{path:'/api/manager/action-center',method:'POST'},{path:'/api/manager/clock-monitor',method:'GET'}]:[];
-    const landingReads=landingSources.map(async({path,method})=>{const response=await page.waitForResponse(response=>response.url()===app.url+path&&response.request().method()===method);assert.equal(response.status(),200,'The actual protected landing read succeeds');assert.equal(await response.finished(),null,'The actual protected landing body finishes');(report.landingReads??=[]).push({portal:id,path,method,status:response.status()});});
+    const landingDeadline=performance.now()+15000;
+    const landingReads=landingSources.map(async({path,method})=>{const response=await page.waitForResponse(response=>response.url()===app.url+path&&response.request().method()===method,{timeout:Math.max(1,landingDeadline-performance.now())});assert.equal(response.status(),200,'The actual protected landing read succeeds');await finishResponseByDeadline(response,landingDeadline);(report.landingReads??=[]).push({portal:id,path,method,status:response.status()});});
     await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click(),...landingReads]);
     await waitForPortalReady(page);
     return {context,page};
