@@ -16,7 +16,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
   if (!evidence) throw Error('Choose an external readiness matrix evidence directory');
   await mkdir(evidence, { recursive: true });
   const { observeBrowserCell } = await import(new URL('../../../scripts/phase-e-browser-qa.mjs', import.meta.url).href);
-  const { verifyNavigationFetchDiagnostic } = await import(new URL('../../../scripts/browser-navigation-diagnostic.mjs', import.meta.url).href);
+  const { verifyNavigationFetchDiagnostic, observeWindowExceptions } = await import(new URL('../../../scripts/browser-navigation-diagnostic.mjs', import.meta.url).href);
   const runtime = createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE ?? resolve('tools/ci-browser-runtime/package.json'))('playwright');
   const app = await createOwnedNextApp(evidence);
   const q = <T = Record<string, unknown>>(text: string, values: unknown[] = []) => app.database.executor.query<T>({ text, values });
@@ -52,11 +52,15 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       const c2 = await b2.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block' });
       // Reuse the release suite's witnessed native-navigation diagnostic. Its
       // negative controls prove real window exceptions/rejections remain fatal.
-      const control = await verifyNavigationFetchDiagnostic(b0); runtimeControls.push({ engine, ...control });
+      const control = engine === 'webkit' ? await verifyNavigationFetchDiagnostic(b0) : { verified: false, windowObserverVerified: false, status: 'not-applicable' };
+      if (engine === 'webkit') expect(control.verified).toBe(true);
+      runtimeControls.push({ engine, ...control });
       for (const [index, context] of [c0, c1, c2].entries()) {
         const execution = { engine, width: index === 0 ? 390 : 1440, kind: 'readiness-schedule' };
-        const observer = observeBrowserCell(execution, errors, { navigationDiagnosticVerified: control.windowObserverVerified, navigationReadKinds: ['manager-today-read'] });
-        await observer.observeContext(context, index === 1 ? 'manager' : 'primary'); runtimeExecutions.push(execution);
+        const observer = observeBrowserCell(execution, errors, { navigationDiagnosticVerified: control.verified, navigationReadKinds: ['manager-today-read'] });
+        await observer.observeContext(context, index === 1 ? 'manager' : 'primary');
+        if (engine !== 'webkit') await observeWindowExceptions(context, (_page: unknown, kind: string) => errors.push({ engine, index, kind, type: 'window-javascript-error' }));
+        runtimeExecutions.push(execution);
       }
       const p0 = await c0.newPage(), p1 = await c1.newPage(), p2 = await c2.newPage(), page = (n: number) => n === 2 ? p2 : n ? p1 : p0;
       for (const n of [0, 1, 2]) {
