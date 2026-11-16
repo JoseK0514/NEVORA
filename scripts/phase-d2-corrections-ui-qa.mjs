@@ -144,7 +144,7 @@ try{
   await ep.bringToFront();
   // Corporate Time (Release 1): "This week" lists each day; a day opens its punches, where "Request a correction" opens the
   // Fix my time sheet for that entry (Day, Start, End and a required Note; Send in the sheet's header).
-  const entryRow=hoursPage(ep,entryView.view).locator('a.c-row#hours-'+(entryView.view==='cards'?'card-entry-':'entry-')+'d2-browser-entry');
+  const entryRow=hoursPage(ep,entryView.view).locator('a[href*="entry=d2-browser-entry"]:visible');
   await entryRow.waitFor();
   await entryRow.click();
   await ep.waitForURL(url=>url.searchParams.get('entry')==='d2-browser-entry');

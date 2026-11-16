@@ -180,7 +180,7 @@ it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned 
               .getByRole("button", { name: "Sign in", exact: true })
               .click();
             await page.waitForURL(origin + "/app");
-            await page.waitForLoadState("networkidle");
+            await page.locator(".app-shell.nevora-portal").waitFor();await page.waitForFunction(() => document.querySelector(".portal-notification-bell")?.getAttribute("data-state") === "ready");
             phase =
               actor !== "QAOWNER"
                 ? actor + " denial"
@@ -633,7 +633,7 @@ it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned 
             await page.evaluate(() =>
               window.dispatchEvent(new Event("pagehide")),
             );
-            await page.waitForLoadState("networkidle");
+            await page.locator(".app-shell.nevora-portal").waitFor();await page.waitForFunction(() => document.querySelector(".portal-notification-bell")?.getAttribute("data-state") === "ready");
             await context.tracing.stop({
               path: resolve(evidence, engine + "-" + actor + "-trace.zip"),
             });

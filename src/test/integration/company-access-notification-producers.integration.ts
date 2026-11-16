@@ -57,9 +57,11 @@ async function scenario(kind:Producer){
   const employee:SessionMutationProof={employee:{...f.manager.employee,id:'target',role:'EMPLOYEE'},sessionTokenHash:'d'.repeat(64)};
   if(kind==='own-request'){const id=randomUUID();return {...f,run:async(ex:SqlExecutor)=>{await createTimeOffRequest({requestId:id,employeeId:'target',proof:employee,startDate:'2035-11-02',endDate:'2035-11-03'},ex);},verify:async()=>expect(await f.q('SELECT employee_id,status FROM time_off_requests WHERE id=$1',[id])).toEqual([{employee_id:'target',status:'PENDING'}])};}
   if(kind==='publication'||kind==='schedule-copy'){
-   // A retained historical assignment belongs to the current Manager. These
-   // publication/repair operations retain it; copy creates only target's own row.
+   // This assignment has not yet been captured in a published revision. Its
+   // Manager must be currently eligible when publication first commits it.
+   await f.q("INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('manager','loc-1') ON CONFLICT DO NOTHING");
    await f.q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('producer-destination','loc-1','2035-10-08',$1,'owner')",[kind==='publication'?'DRAFT':'PUBLISHED']);await f.q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('producer-destination-shift','producer-destination','manager','2035-10-09','08:00','16:00')");
+   await f.q("INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('manager','loc-1') ON CONFLICT DO NOTHING");
    const operationId=randomUUID();
    return {...f,run:async(ex:SqlExecutor)=>{if(kind==='publication')expect((await publishScheduleWithRevision({locationId:'loc-1',weekStart:'2035-10-08',managerId:'owner',proof:f.owner},ex)).published).toBe(true);else{expect((await executeScheduleCopy(f.owner,{operationId,kind:'PREVIOUS_WEEK',weekStart:'2035-10-08'},ex)).rows.filter(r=>r.status==='COMMITTED')).toHaveLength(1);
     // Publish changes (Jose, 2026-10-29): a copy into a published week is held and notifies nobody;

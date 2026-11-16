@@ -1,8 +1,15 @@
 // Accessibility measures the settled sheet, after its real CSS entrance motion.
 // Poll the rendered style and animation state; never change page motion or sleep.
+// Login is complete when the authenticated shell and its protected notification
+// read are ready. Unrelated dashboard polling cannot define page readiness.
+export async function waitForPortalReady(page) {
+  await page.locator('.app-shell.nevora-portal').waitFor();
+  await page.waitForFunction(() => document.querySelector('.portal-notification-bell')?.getAttribute('data-state') === 'ready');
+}
+
 export async function waitForCalendarCopyReady(page, noticeText) {
   const ready = await page.waitForFunction(text => {
-    const root = document.querySelector('[data-calendar-setting]');
+    const root = [...document.querySelectorAll('.b-screen:has(#b-calendar-title), [data-calendar-setting]')].find(element => element.getClientRects().length > 0);
     const notice = [...(root?.querySelectorAll('[role="status"]') ?? [])].find(element => element.textContent === text);
     const copy = [...(root?.querySelectorAll('button') ?? [])].find(element => element.textContent === 'Copy calendar link');
     return notice?.parentElement === document.activeElement && copy && !copy.disabled &&

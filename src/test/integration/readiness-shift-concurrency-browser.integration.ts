@@ -60,6 +60,31 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       const edit = async (n: number, note: string, reassign = false) => { if (reassign) await form(n).locator('select[name="employeeId"]').selectOption('MATRIX-OTHER'); await form(n).locator('[name="notes"]').fill(note); await form(n).evaluate((element: HTMLFormElement) => element.requestSubmit()); };
       const remove = async (n: number) => { const p = page(n); await p.getByRole('button', { name: n ? 'Review deletion' : 'Delete shift', exact: true }).click(); await p.getByRole('button', { name: n ? 'Delete this draft shift' : 'Delete this shift', exact: true }).click(); };
       const refused = async (n: number, version: string, unavailable = false) => { await page(n).getByRole('alert').filter({ hasText: unavailable ? 'Operational access is unavailable' : 'changed since you opened' }).first().waitFor(); expect(await form(n).locator('[name="expectedReviewVersion"]').inputValue()).toBe(version); await page(n).getByRole('button', { name: 'Reload current shift', exact: true }).first().waitFor(); };
+      const loseNextResponse = async (n: number, id: string) => {
+        const pattern = '**/app/schedule/edit?shiftId=' + id;
+        const loss = { intercepted: false, completed: false, failed: false, upstreamStatus: 0 };
+        await page(n).route(pattern, async (route: { request(): { method(): string }; fetch(options: { maxRedirects: number }): Promise<{ status(): number }>; abort(reason: string): Promise<void>; continue(): Promise<void> }) => {
+          if (loss.intercepted || route.request().method() !== 'POST') return route.continue();
+          loss.intercepted = true;
+          try {
+            // Await the real action response (and therefore its transaction)
+            // before losing it. An unrelated existing alert is not a barrier.
+            const response = await route.fetch({ maxRedirects: 0 });
+            loss.upstreamStatus = response.status();
+            await route.abort('failed');
+          } catch {
+            // Playwright errors can include request cookies. Retain only the
+            // safe interception outcome, including on early fixture teardown.
+            loss.failed = true;
+            await route.abort('failed').catch(() => {});
+          } finally { loss.completed = true; }
+        });
+        return { pattern, loss, wait: async () => {
+          await expect.poll(() => loss.completed, { timeout: 20000 }).toBe(true);
+          expect(loss).toMatchObject({ intercepted: true, failed: false, upstreamStatus: 200 });
+          await page(n).getByRole('alert').filter({ hasText: n ? 'This change could not be confirmed' : 'could not be' }).first().waitFor();
+        } };
+      };
       for (const stale of [0, 1]) {
         const winner = 1 - stale;
         for (const [first, second] of [['edit', 'edit'], ['reassign', 'edit'], ['edit', 'reassign'], ['edit', 'delete'], ['delete', 'edit']]) {
@@ -99,42 +124,35 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       // from the server behind the manager's retained draft.
       for (const n of [0, 1]) {
         const id = await seed(); await open(n, id);
-        const version = await form(n).locator('[name="expectedReviewVersion"]').inputValue(); let dropped = false;
-        const pattern = '**/app/schedule/edit?shiftId=' + id;
-        await page(n).route(pattern, async (route: { request(): { method(): string }; fetch(): Promise<unknown>; abort(reason: string): Promise<void>; continue(): Promise<void> }) => {
-          if (!dropped && route.request().method() === 'POST') { dropped = true; await route.fetch(); await route.abort('failed'); } else await route.continue();
-        });
+        const version = await form(n).locator('[name="expectedReviewVersion"]').inputValue();
+        const lost = await loseNextResponse(n, id);
         await edit(n, 'Lost response saved once');
-        await page(n).getByRole('alert').first().waitFor();
-        expect(dropped).toBe(true);
+        await lost.wait();
         const committed = await q('SELECT notes,updated_at::text FROM shifts WHERE id=$1', [id]); expect(committed[0]?.notes).toBe('Lost response saved once');
         expect(await form(n).locator('[name="expectedReviewVersion"]').inputValue()).toBe(version);
         expect(await form(n).locator('[name="notes"]').inputValue()).toBe('Lost response saved once');
         if (n === 0) { await edit(n, 'Lost response saved once'); await refused(n, version); }
         else { expect(await form(n).locator('fieldset[disabled]').count()).toBeGreaterThan(0); await page(n).getByRole('link', { name: 'Review current schedule', exact: true }).waitFor(); }
         expect(await q('SELECT notes,updated_at::text FROM shifts WHERE id=$1', [id])).toEqual(committed);
-        await page(n).unroute(pattern); await q('DELETE FROM shifts WHERE id=$1', [id]);
+        await page(n).unroute(lost.pattern); await q('DELETE FROM shifts WHERE id=$1', [id]);
         checks.push(`${engine}: ${n ? 'location unknown-outcome lock' : 'Company original-review retry'} after committed lost response; row unchanged`);
       }
       for (const n of [0, 1]) {
         const id = await seed(); await open(n, id);
-        const version = await form(n).locator('[name="expectedReviewVersion"]').inputValue(); let dropped = false;
+        const version = await form(n).locator('[name="expectedReviewVersion"]').inputValue();
         await form(n).locator('[name="notes"]').fill('Retained before lost deletion');
-        const pattern = '**/app/schedule/edit?shiftId=' + id;
-        await page(n).route(pattern, async (route: { request(): { method(): string }; fetch(): Promise<unknown>; abort(reason: string): Promise<void>; continue(): Promise<void> }) => {
-          if (!dropped && route.request().method() === 'POST') { dropped = true; await route.fetch(); await route.abort('failed'); } else await route.continue();
-        });
-        await remove(n); await page(n).getByRole('alert').first().waitFor();
-        expect(dropped).toBe(true); expect(await q('SELECT id FROM shifts WHERE id=$1', [id])).toEqual([]);
+        const lost = await loseNextResponse(n, id);
+        await remove(n); await lost.wait();
+        expect(await q('SELECT id FROM shifts WHERE id=$1', [id])).toEqual([]);
         expect(await form(n).locator('[name="notes"]').inputValue()).toBe('Retained before lost deletion');
         if (n === 0) { await page(n).getByRole('button', { name: 'Delete this shift', exact: true }).click(); await refused(n, version, true); }
         else { expect(await form(n).locator('fieldset[disabled]').count()).toBeGreaterThan(0); await page(n).getByRole('link', { name: 'Review current schedule', exact: true }).waitFor(); }
-        expect(await q('SELECT id FROM shifts WHERE id=$1', [id])).toEqual([]); await page(n).unroute(pattern);
+        expect(await q('SELECT id FROM shifts WHERE id=$1', [id])).toEqual([]); await page(n).unroute(lost.pattern);
         checks.push(`${engine}: ${n ? 'location unknown-outcome lock' : 'Company private inline refusal'} after lost successful deletion; draft retained and no replay effects`);
       }
       const offlineId = await seed(); await open(0, offlineId); await p0.waitForLoadState('networkidle');
       await c0.setOffline(true);
-      await p0.waitForFunction(() => !document.querySelector('form [name="expectedReviewVersion"]'), { timeout: 17000 });
+      await p0.waitForFunction(() => !document.querySelector('form [name="expectedReviewVersion"]'), undefined, { timeout: 17000 });
       expect(await form(0).count()).toBe(0); await c0.setOffline(false);
       checks.push(`${engine}: real offline event cannot extend a scoped frame beyond its original 15-second authority`);
       await q('DELETE FROM shifts WHERE id=$1', [offlineId]);

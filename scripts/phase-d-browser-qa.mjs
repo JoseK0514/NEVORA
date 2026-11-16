@@ -110,11 +110,11 @@ try{
     // Corporate Time (Release 1 board E-PastTimecards, Oct 30): an Employee's /app/timecards hands the chosen period over to
     // Time's pushed "Past timecards" page (/app/my-time?view=cards) on every screen. The period card carries the recorded
     // total and its breaks; each day row opens that day's punches, where "Request a correction" lives.
-    const cardsUrl='/app/my-time?view=cards&start=2026-09-21&end=2026-09-27',periodCard=ep.locator('#hours-timecard');
+    const cardsUrl='/app/my-time?view=cards&start=2026-09-21&end=2026-09-27',periodCard=ep.locator(':is(#hours-timecard,#b-hours-timecard):visible');
     const pastCards=async()=>{await ep.waitForURL(u=>u.pathname+u.search===cardsUrl);await ep.locator('.c-hours[data-hours-view="cards"][data-hours-state="ready"]').waitFor();await ep.getByRole('heading',{name:'Past timecards',exact:true,level:1}).waitFor();await periodCard.waitFor();};
     await pastCards();assert.equal(await periodCard.count(),1);
-    assert.match(await periodCard.locator('.c-big').innerText(),/^8\s*h$/);assert(await periodCard.getByText('Hours · includes 30 min of breaks',{exact:true}).isVisible());checked(engine+': employee self period and break totals');
-    await periodCard.getByRole('link',{name:/^Tue 22\b/}).click();await ep.waitForURL(u=>u.pathname==='/app/my-time'&&u.searchParams.get('entry')==='D3-UI');
+    assert.match(await periodCard.locator('.c-big,.eb-sum__big').innerText(),/^8\s*h$/);assert(await periodCard.getByText('Hours · includes 30 min of breaks',{exact:true}).isVisible());checked(engine+': employee self period and break totals');
+    await periodCard.getByRole('link',{name:/^Tue,? (?:Sep )?22\b/}).click();await ep.waitForURL(u=>u.pathname==='/app/my-time'&&u.searchParams.get('entry')==='D3-UI');
     await ep.getByRole('heading',{name:'Punches',exact:true}).waitFor();await ep.getByRole('link',{name:'Request a correction',exact:true}).waitFor();
     // Every width measures the same Past timecards page: its Back link, the day row, and the period controls that replaced
     // the old date form (Nov 1 upscale M4: Later week first, earlier weeks as cards with Show earlier weeks, then Your
@@ -125,18 +125,18 @@ try{
       await ep.goto('about:blank');
       await ep.setViewportSize({width,height:1000});
       await ep.goto(app.url+url,{waitUntil:'commit'});await pastCards();
-      assert.match(await periodCard.locator('.c-big').innerText(),/^8\s*h$/,'Every width keeps the recorded total');
+      assert.match(await periodCard.locator('.c-big,.eb-sum__big').innerText(),/^8\s*h$/,'Every width keeps the recorded total');
       const geometry=await ep.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,
-        controls:[...document.querySelectorAll('.c-hours[data-hours-view="cards"] a,.c-hours[data-hours-view="cards"] button,.c-hours[data-hours-view="cards"] input')].map(e=>{const box=e.getBoundingClientRect(),style=getComputedStyle(e);return {tag:e.tagName,type:e.getAttribute('type'),label:e.getAttribute('aria-label')??e.textContent?.trim(),className:typeof e.className==='string'?e.className:'',height:box.height,width:box.width,display:style.display,visibility:style.visibility,minimum:style.minHeight,rendered:e.getClientRects().length>0&&style.visibility!=='hidden'&&style.visibility!=='collapse'};})}));
+        controls:[...document.querySelectorAll('.c-hours[data-hours-view="cards"] a,.c-hours[data-hours-view="cards"] button,.c-hours[data-hours-view="cards"] input')].map(e=>{const box=e.getBoundingClientRect(),style=getComputedStyle(e);return {tag:e.tagName,type:e.getAttribute('type'),href:e.getAttribute('href'),label:e.getAttribute('aria-label')??e.textContent?.trim(),className:typeof e.className==='string'?e.className:'',height:box.height,width:box.width,display:style.display,visibility:style.visibility,minimum:style.minHeight,rendered:e.getClientRects().length>0&&style.visibility!=='hidden'&&style.visibility!=='collapse'};})}));
       // A phone-only disclosure stays in the shared tree but is display:none on desktop.
       // Preserve every raw node; the same target threshold applies to actual rendered controls.
       (report.employeeControlGeometry??=[]).push({engine,viewport:width,surface:'past-timecards',...geometry});
       await writeFile(join(evidence,'employee-control-geometry-report.json'),JSON.stringify({checkpoint:report.checkpoint,tree:report.tree,measurements:report.employeeControlGeometry},null,2));
       const rendered=geometry.controls.filter(control=>control.rendered);
-      assert(geometry.scroll<=geometry.width+2,`${engine} ${width} page overflow`);for(const name of ['Show earlier weeks','Later week','Your correction requests'])assert(rendered.some(control=>control.label?.startsWith(name)),name+' period control is rendered');assert(!rendered.some(control=>control.label?.startsWith('Earlier week')),'The Earlier week row is replaced by earlier week cards');assert(rendered.some(control=>control.label?.startsWith('Tue 22')),'The period day row is rendered');assert(rendered.every(control=>control.height>=43.5),`${engine} ${width} rendered period controls keep the existing target floor`);checked(`${engine}: employee geometry ${width}`);
+      assert(geometry.scroll<=geometry.width+2,`${engine} ${width} page overflow`);for(const name of ['Show earlier weeks','Your correction requests'])assert(rendered.some(control=>control.label?.startsWith(name)),name+' period control is rendered');assert(rendered.some(control=>control.href?.includes('start=2026-09-28')),'The later week period control is rendered');assert(!rendered.some(control=>control.label?.startsWith('Earlier week')),'The Earlier week row is replaced by earlier week cards');assert(rendered.some(control=>/^Tue,? (?:Sep )?22\b/.test(control.label??'')),'The period day row is rendered');assert(rendered.every(control=>control.height>=43.5),`${engine} ${width} rendered period controls keep the existing target floor`);checked(`${engine}: employee geometry ${width}`);
     }
     {const nativeTab=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab';
-     const later=ep.getByRole('link',{name:/^Later week/});await later.focus();assert(await later.evaluate(e=>document.activeElement===e));await ep.keyboard.press(nativeTab);assert(await periodCard.getByRole('link',{name:/^Tue 22\b/}).evaluate(e=>document.activeElement===e),'Tab moves from Later week (the first card) into the chosen week');
+     const back=ep.locator('.b-screen .b-back:visible');await back.focus();assert(await back.evaluate(e=>document.activeElement===e));await ep.keyboard.press(nativeTab);assert(await periodCard.getByRole('link',{name:/^Tue,? (?:Sep )?22\b/}).evaluate(e=>document.activeElement===e),'Tab moves from Time into the chosen week’s first day');
      const showEarlier=ep.getByRole('button',{name:'Show earlier weeks',exact:true});await showEarlier.focus();assert(await showEarlier.evaluate(e=>document.activeElement===e));await ep.keyboard.press(nativeTab);assert(await ep.getByRole('link',{name:'Your correction requests',exact:true}).evaluate(e=>document.activeElement===e),'Tab moves from Show earlier weeks to Your corrections');}checked(engine+': period keyboard focus');
     const {context:management,page:mp}=await context(browser,'D3-M');await mp.goto(app.url+url);
     const card=mp.getByRole('dialog');

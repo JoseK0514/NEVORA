@@ -1,3 +1,4 @@
+import {accessTargetHeights} from "./access-target-geometry";
 import {it,expect} from 'vitest';
 import {createRequire} from 'node:module';
 import {resolve} from 'node:path';
@@ -67,7 +68,7 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    step=engine+': keyboard and control geometry';await page.goto(origin+'/login');if(engine==='webkit')await page.locator('.ma-skip').focus();else await page.keyboard.press('Tab');await page.keyboard.press('Enter');expect(await page.locator('#access-content').evaluate((e:HTMLElement)=>e===document.activeElement)).toBe(true);
    const field=await page.locator('#login-employee-id').boundingBox(),button=await page.locator('.q-auth__form .q-btn').boundingBox();if(!field||!button)throw Error('Control geometry unavailable');expect(Math.abs(field.width-button.width),'Sign-in action matches field width').toBeLessThanOrEqual(1);
    const eye=await page.locator('.q-in__eye').boundingBox(),password=await page.locator('#login-password').boundingBox();if(!eye||!password)throw Error('Password geometry unavailable');expect(Math.abs((eye.y+eye.height/2)-(password.y+password.height/2)),'Password visibility control is vertically centered with reduced motion').toBeLessThanOrEqual(1);
-   for(const selector of ['.q-auth__form .q-btn','#login-employee-id','#login-password','.ma-language'])expect(await page.locator(selector).evaluate((e:HTMLElement)=>e.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+   for(const selector of ['.q-auth__form .q-btn','#login-employee-id','#login-password','.ma-language'])expect((await page.locator(selector).evaluateAll(accessTargetHeights))[0]).toBeGreaterThanOrEqual(44);
    step=engine+': locale and assistance';await page.goto(origin+'/forgot-access');await page.locator('#recovery-employee-id').fill('MA-'+engine);await page.locator('#recovery-email').fill(engine+'@example.invalid');
    await page.locator('.ma-language').click();await expect.poll(()=>page.locator('#mobile-access-page').getAttribute('lang')).toBe('es');
    expect(await page.locator('#recovery-employee-id').inputValue()).toBe('MA-'+engine);expect(await page.locator('#recovery-email').inputValue()).toBe(engine+'@example.invalid');

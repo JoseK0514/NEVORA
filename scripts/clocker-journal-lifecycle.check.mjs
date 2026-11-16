@@ -17,7 +17,8 @@ const bundle=await project('esbuild').build({
  function Fixture(){const[resume,setResume]=useState(null);window.fixtureResume=step=>setResume({subject:'c'.repeat(64),mode:'select-break',binding:'outdated-fixture-binding-'+step});return <ClockerPunchPanel locationKey="2" timeZone="UTC" onDone={()=>{}} resume={resume}/>;}
  createRoot(document.getElementById('root')).render(<Fixture/>);`,resolveDir:source,loader:'tsx'},
  bundle:true,write:false,outdir:join(source,'.journal-lifecycle-fixture'),platform:'browser',format:'iife',jsx:'automatic',
- loader:{'.css':'empty','.module.css':'local-css'},define:{'process.env.NODE_ENV':'"development"','process.env':'{}'},
+ loader:{'.css':'empty','.module.css':'local-css','.ttf':'dataurl'},define:{'process.env.NODE_ENV':'"development"','process.env':'{}'},
+ plugins:[{name:'local-clocker-font',setup(builder){builder.onResolve({filter:/^\/fonts\/clocker\/inter-variable\.ttf$/},()=>({path:join(source,'public/fonts/clocker/inter-variable.ttf')}));}}],
 });
 const javascript=bundle.outputFiles.find(file=>file.path.endsWith('.js')).text;
 let reads=0,writes=0;

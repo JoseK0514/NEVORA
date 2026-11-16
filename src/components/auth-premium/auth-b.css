@@ -448,3 +448,9 @@
  * every width; a receipt's lines keep a gap. */
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__mark { display: grid; place-items: center; width: 56px; height: 56px; margin: 0; border-radius: 50%; background: #E3F1EF; color: var(--b-teal); }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__receipt p + p { margin-top: var(--b-space-8); }
+
+/* Short touch landscape keeps the sign-in action in view. The welcome art is
+ * decorative; the shared mobile Access rule already omits it in this posture. */
+@media (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
+  #mobile-access-page.q-auth .ma-hero { display: none !important; }
+}

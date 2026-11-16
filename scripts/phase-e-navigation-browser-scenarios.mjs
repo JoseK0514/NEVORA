@@ -127,7 +127,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  const refreshProfile=()=>page.evaluate(()=>window.dispatchEvent(new Event('storage')));
  async function screenshot(name){await page.screenshot({path:join(evidenceDirectory,`${prefix}-${name}.png`),fullPage:true});}
  async function accessibility(name){
-  const expectedTitle={'Requests hub':'NEVORA',Profile:'Profile · NEVORA',Notifications:'Notifications · NEVORA'}[name];assert(expectedTitle,'Known page title contract');await page.waitForFunction(title=>document.title===title,expectedTitle);if(name==='Requests hub'&&phone)await page.locator('.em-requests-corp [data-requests-state="ready"]').waitFor();const entrance=name==='Requests hub'?await waitForSheetEntrance(page):undefined;
+  const expectedTitle={'Requests hub':'Requests · NEVORA',Profile:'Profile · NEVORA',Notifications:'Notifications · NEVORA'}[name];assert(expectedTitle,'Known page title contract');await page.waitForFunction(title=>document.title===title,expectedTitle);if(name==='Requests hub'&&phone)await page.locator('[data-requests-state="ready"]').waitFor();const entrance=name==='Requests hub'?await waitForSheetEntrance(page):undefined;
   // Audit the settled tab bar: a tab's pressed/pending opacity transition is a frame of motion, not its colour.
   // A tapped tab also keeps the browser's :active state for a few hundred milliseconds after the tap (Chromium holds it
   // past a quick second tap elsewhere), and while it is pressed the tab dims to .64 by design (Signature press feedback,

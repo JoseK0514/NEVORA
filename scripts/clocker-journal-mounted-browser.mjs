@@ -9,9 +9,10 @@ export async function mountedJournalBundle(){
  const bundle=await build({
   stdin:{contents:`import React from 'react';import{createRoot}from'react-dom/client';import{ClockerPinGate}from'./src/components/clocker-pin-gate';import{ClockerPresentation}from'./src/components/clocker-language';
    createRoot(document.getElementById('root')).render(<ClockerPresentation v2><ClockerPinGate locationKey="mounted-identity" timeZone="UTC" punchEnabled/></ClockerPresentation>);`,resolveDir:process.cwd(),loader:'tsx'},
-  bundle:true,write:false,outdir:resolve('.journal-mounted-fixture'),platform:'browser',format:'iife',jsx:'automatic',loader:{'.module.css':'local-css'},
+  bundle:true,write:false,outdir:resolve('.journal-mounted-fixture'),platform:'browser',format:'iife',jsx:'automatic',loader:{'.module.css':'local-css','.ttf':'dataurl'},
   define:{'process.env.NODE_ENV':'"development"','process.env':'{}'},
   plugins:[{name:'fictional-next-image-boundary',setup(builder){
+   builder.onResolve({filter:/^\/fonts\/clocker\/inter-variable\.ttf$/},()=>({path:resolve('public/fonts/clocker/inter-variable.ttf')}));
    builder.onResolve({filter:/^next\/image$/},()=>({path:'image',namespace:'fixture'}));
    builder.onLoad({filter:/.*/,namespace:'fixture'},()=>({contents:'import React from "react";export default function Image(props){return React.createElement("img",props);}',loader:'js',resolveDir:process.cwd()}));
    if(negative)builder.onLoad({filter:/\/clocker-punch-panel\.tsx$/},async args=>{

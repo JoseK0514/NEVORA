@@ -4,6 +4,7 @@ import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import {companyAccessFixture} from './company-access-fixture';
 import {readOwnerOperationalScope,assignOperationalScope,readOperationalAuthority} from '../../lib/company-access/operational-scope.server';
+import {readOperationalShiftEditor} from '../../lib/company-access/operational-read.server';
 const ctx=vi.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
 vi.mock('server-only',()=>({}));
 vi.mock('@/lib/db',()=>{
@@ -47,6 +48,13 @@ async function setup(){
  }catch(e){await f.db.dispose();throw e;}
 }
 function form(fields:Record<string,string>={}){const data=new FormData();for(const [k,v]of Object.entries({weekStart:'2026-10-12',locationId:'loc-1',employeeId:'TARGET',date:'2026-10-12',startTime:'10:00',endTime:'11:00',...fields}))data.set(k,v);return data;}
+// Capture the manager's review before installing an observer that mutates access
+// or source facts. The submitted expectation is never refreshed by the action.
+async function reviewedForm(f:Awaited<ReturnType<typeof setup>>,shiftId:string,fields:Record<string,string>={}){
+ const review=await readOperationalShiftEditor(f.manager,{shiftId},f.db.executor);
+ if(review.state!=='ready'||!review.data.shift)throw Error('Owned reviewed shift unavailable');
+ return form({shiftId,expectedReviewVersion:review.data.shift.reviewVersion,...fields});
+}
 async function close(f:Awaited<ReturnType<typeof setup>>){ctx.proof=null;ctx.ex=null;await f.db.dispose();}
 it('normal create action rolls its new parent back when assignment creation fails',async()=>{
  const f=await setup();try{
@@ -73,8 +81,8 @@ it('normal scoped create/update/delete A succeeds and preserves every B schedule
   const before=await f.q("SELECT to_jsonb(s) AS row FROM schedules s WHERE id='action-b'");
   await expect(createShiftAction(form())).rejects.toMatchObject({destination:'/app/schedule?week=2026-10-12&location=loc-1&day=2026-10-12#schedule-employee-TARGET'});
   const [shift]=await f.q<{id:string}>("SELECT id FROM shifts WHERE employee_id='TARGET'");expect(shift).toBeDefined();
-  await expect(updateShiftAction(form({shiftId:shift.id,endTime:'11:30'}))).rejects.toMatchObject({destination:'/app/schedule?week=2026-10-12&location=loc-1&day=2026-10-12&updated=1#schedule-employee-TARGET'});
-  await expect(deleteShiftAction(form({shiftId:shift.id}))).rejects.toMatchObject({destination:'/app/schedule?week=2026-10-12&location=loc-1&day=2026-10-12&deleted=1#schedule-employee-TARGET'});
+  await expect(updateShiftAction(await reviewedForm(f,shift.id,{endTime:'11:30'}))).rejects.toMatchObject({destination:'/app/schedule?week=2026-10-12&location=loc-1&day=2026-10-12&updated=1#schedule-employee-TARGET'});
+  await expect(deleteShiftAction(await reviewedForm(f,shift.id))).rejects.toMatchObject({destination:'/app/schedule?week=2026-10-12&location=loc-1&day=2026-10-12&deleted=1#schedule-employee-TARGET'});
   expect(await f.q("SELECT to_jsonb(s) AS row FROM schedules s WHERE id='action-b'")).toEqual(before);
  }finally{await close(f);}
 });
@@ -109,7 +117,7 @@ async function privateFixture(method:'create'|'update',issue:'APPROVED_TIME_OFF'
  if(issue==='APPROVED_TIME_OFF')await f.q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) VALUES('private-approved','TARGET','2026-10-12','2026-10-12','APPROVED','Private fictional leave')");else await f.q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,notes) VALUES('private-overlap','action-a','TARGET','2026-10-12','10:00','12:00','Private fictional overlap')");return f;}catch(error){await close(f);throw error;}
 }
 for(const method of ['create','update'] as const)for(const issue of ['APPROVED_TIME_OFF','SHIFT_OVERLAP'] as const){
- it(`${method} stable Company preserves real ${issue} feedback without writes`,async()=>{const f=await privateFixture(method,issue);try{const before=await business(f);expect(await (method==='create'?createShiftAction(form()):updateShiftAction(form({shiftId:'editing'})))).toMatchObject({issueCode:issue});expect(await business(f)).toEqual(before);}finally{await close(f);}});
+ it(`${method} stable Company preserves real ${issue} feedback without writes`,async()=>{const f=await privateFixture(method,issue);try{const before=await business(f);expect(await (method==='create'?createShiftAction(form()):updateShiftAction(await reviewedForm(f,'editing')))).toMatchObject({issueCode:issue});expect(await business(f)).toEqual(before);}finally{await close(f);}});
  for(const loss of ['LOCATIONS','REVOKE','REGRANT','REVISION'] as const)it(`${method} ${issue} observed during ${loss} cannot return private feedback under the earlier Company admission`,async()=>{
   const f=await privateFixture(method,issue);try{const before=await business(f),base=f.db.executor;let hit=false;
   ctx.ex=observeReads(base,async(statement,rows,contract)=>{
@@ -121,7 +129,7 @@ for(const method of ['create','update'] as const)for(const issue of ['APPROVED_T
     await observedTransition(f,loss);hit=true;
    }
   });
-  const result=await(method==='create'?createShiftAction(form()):updateShiftAction(form({shiftId:'editing'})));expect(hit).toBe(true);expect(result).toEqual(generic);expect(await business(f)).toEqual(before);
+  const result=await(method==='create'?createShiftAction(form()):updateShiftAction(await reviewedForm(f,'editing')));expect(hit).toBe(true);expect(result).toEqual(generic);expect(await business(f)).toEqual(before);
   }finally{await close(f);}
  });
 }
@@ -133,9 +141,9 @@ it.each(['LOCATIONS','REVOKE','REGRANT','REVISION'] as const)('update canonical 
    await observedTransition(f,loss);hit=true;
   }
  },s=>{if(hit&&s.text.includes('FROM time_off_requests')&&s.values[0]==='TARGET')privateValidationAfterLoss=true;});
- expect(await updateShiftAction(form({shiftId:'editing'}))).toEqual(generic);expect(hit).toBe(true);expect(privateValidationAfterLoss).toBe(false);expect(await business(f)).toEqual(before);
+ expect(await updateShiftAction(await reviewedForm(f,'editing'))).toEqual(generic);expect(hit).toBe(true);expect(privateValidationAfterLoss).toBe(false);expect(await business(f)).toEqual(before);
  }finally{await close(f);}});
-it.each(['LOCATIONS','REVOKE'] as const)('existing minimal editor still denies %s while its real source is awaited',async loss=>{const f=await privateFixture('update','APPROVED_TIME_OFF');try{const before=await business(f),base=f.db.executor;let hit=false;ctx.ex={...base,query:async<T>(s:SqlStatement,signal?:AbortSignal)=>{const rows=await base.query<T>(s,signal);if(!hit&&s.text.includes('AS "positionIds"')&&Array.isArray(s.values[0])&&(s.values[0] as unknown[]).includes('TARGET')){hit=true;await transition(f,loss);}return rows;}};expect(await updateShiftAction(form({shiftId:'editing'}))).toEqual(generic);expect(hit).toBe(true);expect(await business(f)).toEqual(before);}finally{await close(f);}});
+it.each(['LOCATIONS','REVOKE'] as const)('existing minimal editor still denies %s while its real source is awaited',async loss=>{const f=await privateFixture('update','APPROVED_TIME_OFF');try{const before=await business(f),base=f.db.executor;let hit=false;ctx.ex={...base,query:async<T>(s:SqlStatement,signal?:AbortSignal)=>{const rows=await base.query<T>(s,signal);if(!hit&&s.text.includes('AS "positionIds"')&&Array.isArray(s.values[0])&&(s.values[0] as unknown[]).includes('TARGET')){hit=true;await transition(f,loss);}return rows;}};expect(await updateShiftAction(await reviewedForm(f,'editing'))).toEqual(generic);expect(hit).toBe(true);expect(await business(f)).toEqual(before);}finally{await close(f);}});
 function generationForm(){const data=new FormData();for(const [key,value]of Object.entries({weekStart:'2026-10-12',mode:'BUILD_WEEK',scope:'SELECTED',locationId:'loc-1'}))data.set(key,value);return data;}
 async function generationFixture(){const f=await setup();try{await choose(f,'COMPANY');await f.q("UPDATE locations SET short_name='H1 Private Published Location' WHERE id='loc-1';UPDATE location_staffing_settings SET minimum_staff_per_shift=1,requires_designated_lead=false WHERE location_id='loc-1';INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES('h1-window','loc-1',1,'08:00','12:00');INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('h1-published','loc-1','2026-10-12','PUBLISHED','owner')");return f;}catch(error){await close(f);throw error;}}
 for(const path of ['action','service'] as const){
@@ -151,12 +159,12 @@ async function neutralFixture(method:'create'|'update'){
 for(const method of ['create','update'] as const)for(const issue of ['APPROVED_TIME_OFF','SHIFT_OVERLAP'] as const)for(const loss of ['STABLE','LOCATIONS','REVISION'] as const)it(`${method} actual writer ${issue} catch retains only ${loss} original Company feedback`,async()=>{
  const f=await neutralFixture(method);try{const base=f.db.executor;let hit=false;let expected=await business(f);ctx.ex={...base,query:async<T>(s:SqlStatement,signal?:AbortSignal)=>{
  const phase=!hit&&s.text.includes(' AS state, clock_timestamp()::text AS read_at,')&&s.text.endsWith(' AS source');if(phase){hit=true;if(issue==='APPROVED_TIME_OFF')await f.q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status) VALUES('late-private','TARGET','2026-10-12','2026-10-12','APPROVED')");else await f.q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('late-private','action-a','TARGET','2026-10-12','10:00','12:00')");expected=await business(f);}const rows=await base.query<T>(s,signal);if(phase&&loss!=='STABLE')await transition(f,loss);return rows;}};
- const result=await(method==='create'?createShiftAction(form()):updateShiftAction(form({shiftId:'editing'})));expect(hit).toBe(true);expect(result).toMatchObject(loss==='STABLE'?{issueCode:issue}:generic);expect(await business(f)).toEqual(expected);
+ const result=await(method==='create'?createShiftAction(form()):updateShiftAction(await reviewedForm(f,'editing')));expect(hit).toBe(true);expect(result).toMatchObject(loss==='STABLE'?{issueCode:issue}:generic);expect(await business(f)).toEqual(expected);
  }finally{await close(f);}
 });
 for(const method of ['create','update'] as const)for(const loss of ['STABLE','LOCATIONS','REVISION'] as const)it(`${method} committed warning response requires the ${loss} original Company admission`,async()=>{
  const f=await neutralFixture(method);try{await f.q("INSERT INTO employee_scheduling_settings(employee_id,target_weekly_hours,maximum_weekly_hours) VALUES('TARGET',0.5,40);INSERT INTO weekly_availability_submissions(week_start,employee_id,uses_normal_availability) VALUES('2026-10-12','TARGET',true)");const base=f.db.executor;let hit=false;ctx.ex={...base,transaction:async(s:readonly SqlStatement[],signal?:AbortSignal)=>{const rows=await base.transaction(s,signal);if(!hit&&s.some(q=>q.text.includes(method==='create'?'INSERT INTO shifts':'UPDATE shifts SET'))){hit=true;if(loss!=='STABLE')await transition(f,loss);}return rows;}};
- const run=method==='create'?createShiftAction(form()):updateShiftAction(form({shiftId:'editing'}));if(loss==='STABLE')await expect(run).rejects.toMatchObject({destination:expect.stringContaining('warning=TARGET_HOURS_EXCEEDED')});else await expect(run).resolves.toEqual(generic);expect(hit).toBe(true);expect(await f.q("SELECT count(*)::int n FROM shifts WHERE employee_id='TARGET' AND start_time='10:00' AND end_time='11:00'")).toEqual([{n:1}]);
+ const run=method==='create'?createShiftAction(form()):updateShiftAction(await reviewedForm(f,'editing'));if(loss==='STABLE')await expect(run).rejects.toMatchObject({destination:expect.stringContaining('warning=TARGET_HOURS_EXCEEDED')});else await expect(run).resolves.toEqual(generic);expect(hit).toBe(true);expect(await f.q("SELECT count(*)::int n FROM shifts WHERE employee_id='TARGET' AND start_time='10:00' AND end_time='11:00'")).toEqual([{n:1}]);
  }finally{await close(f);}
 });
 for(const loss of ['STABLE','LOCATIONS','REVOKE','REGRANT','REVISION'] as const)it(`publish readiness ${loss} cannot release a stale private warning flag`,async()=>{

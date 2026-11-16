@@ -12,7 +12,7 @@ function pageFixture(state='paused'){
  const page=new EventEmitter(),frame={page:()=>page},listeners=new Map();let mutation,disconnected=false;
  const flags={state,online:true,visibility:'visible',focused:true,context:'cards|'+selection+'|||'};
  const target={addEventListener(name,fn){listeners.set(name,fn);},removeEventListener(name,fn){if(listeners.get(name)===fn)listeners.delete(name);}};
- const window={...target},document={...target,hasFocus:()=>flags.focused,get visibilityState(){return flags.visibility;},querySelector(selector){if(selector==='.c-hours')return {getAttribute:name=>({'data-hours-state':flags.state,'data-hours-view':'cards','data-hours-context':flags.context}[name])};if(selector==='#hours-timecard')return flags.state==='ready'?{}:null;return null;}};
+ const window={...target},document={...target,hasFocus:()=>flags.focused,get visibilityState(){return flags.visibility;},querySelector(selector){if(selector==='.c-hours')return {getAttribute:name=>({'data-hours-state':flags.state,'data-hours-view':'cards','data-hours-context':flags.context}[name])};if(selector==='#hours-timecard, #b-hours-timecard')return flags.state==='ready'?{}:null;return null;}};
  window.top=window;
  const env={window,document,navigator:{get onLine(){return flags.online;}},location:{pathname:'/app/my-time',search:'?view=cards&start=2026-09-21&end=2026-09-27'},URLSearchParams,Date,performance,MutationObserver:class{constructor(fn){mutation=fn;}observe(){}disconnect(){disconnected=true;}}};
  page.mainFrame=()=>frame;page.isClosed=()=>false;

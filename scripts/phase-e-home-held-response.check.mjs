@@ -50,7 +50,13 @@ for(const engine of ['chromium','webkit']){
   await page.evaluate(()=>{document.querySelector('.c-card__aside').remove();document.querySelector('.c-hours').setAttribute('aria-busy','true');});
   await render();result.recordedReadiness.push({phase:'Recorded state arrived, a read still in flight',settled:recordedSettled});assert.equal(recordedSettled,false);
   await page.evaluate(()=>{document.querySelector('.c-hours').setAttribute('aria-busy','false');});
-  await recordedWaiting;assert.deepEqual(result.recordedResolved,{state:'OFF_CLOCK',view:'time',settled:true});result.status='passed';
+  await recordedWaiting;assert.deepEqual(result.recordedResolved,{state:'OFF_CLOCK',view:'time',settled:true});
+  // The released B view must be read, even when hidden legacy markup disagrees.
+  await page.setContent('<main class="c-hours" data-hours-view="records" data-hours-state="ready" aria-busy="true"><section id="hours-now" style="display:none"><h2 class="c-card__label">Right now</h2><p class="c-big">Not clocked in</p></section><section id="b-hours-now"><div class="b-card__h"><h2>Right now</h2><span class="b-chip">Clocked in</span></div></section></main>');
+  let bSettled=false;const bWaiting=waitForRecordedTimeReady(page,'OFF_CLOCK').then(()=>{bSettled=true;});await render();assert.equal(bSettled,false);
+  await page.evaluate(()=>document.querySelector('.c-hours').setAttribute('aria-busy','false'));await render();assert.equal(bSettled,false,'A hidden legacy off-clock card cannot authorize the visible Clocked in view');
+  await page.evaluate(()=>document.querySelector('#b-hours-now .b-chip').textContent='Not clocked in');await bWaiting;assert.equal(bSettled,true);
+  result.recordedReadiness.push({phase:'Visible B status matches the fresh released read; hidden legacy status cannot pass',settled:bSettled});result.status='passed';
  }catch(error){result.failure={name:error.name,message:error instanceof assert.AssertionError?error.message:'Controlled readiness fixture failed'};process.exitCode=1;}
  finally{await context?.close();await browser.close();result.browserClosed=!browser.isConnected();await writeFile(join(evidence,'readiness-report.json'),JSON.stringify(results,null,2));}
 }

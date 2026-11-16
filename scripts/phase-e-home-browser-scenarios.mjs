@@ -16,11 +16,11 @@ import {ensureSchedule,publishScheduleWithRevision} from '../src/test/integratio
 import {ownedBusinessWeek} from './owned-browser-calendar.mjs';
 
 // Corporate Employee Home (approved Oct 26): the shift card is the CorpCard #home-shift, labelled by its own header.
-export const HOME_SHIFT_CARD='[aria-labelledby="home-shift-label"]';
+export const HOME_SHIFT_CARD=':is([aria-labelledby="home-shift-label"],#b-home-shift):visible';
 // Shared by H06 and its controlled browser scheduling regression.
 export async function waitForFreshHome(page, freshLocation){
  await page.waitForFunction(fresh=>{
-  const root=document.querySelector('[data-home-state]'),next=document.querySelector('[aria-labelledby="home-shift-label"]');
+  const root=document.querySelector('[data-home-state]'),next=[...document.querySelectorAll('[aria-labelledby="home-shift-label"],#b-home-shift')].find(card=>[card,...card.querySelectorAll('*')].some(node=>node.getClientRects().length>0&&getComputedStyle(node).visibility==='visible'));
   if(!root||!next)return false;
   const text=next.textContent??'';
   const visibleFresh=[next,...next.querySelectorAll('*')].some(node=>{
@@ -41,6 +41,8 @@ export async function waitForRecordedTimeReady(page, expectedState){
  const ready=await page.waitForFunction(({expected,status})=>{
   const time=document.querySelector('.c-hours[data-hours-view="records"]');
   if(!time||time.getAttribute('data-hours-state')!=='ready'||time.getAttribute('aria-busy')!=='false')return false;
+  const b=time.querySelector('#b-hours-now');
+  if(b?.getClientRects().length){const pill=b.querySelector('.b-card__h .b-chip')?.textContent;return b.querySelector('h2')?.textContent==='Right now'&&pill===(expected==='OFF_CLOCK'?'Not clocked in':status.pill)?{state:expected,view:'time',settled:true}:false;}
   const card=time.querySelector('#hours-now');if(!card)return false;
   const label=card.querySelector('.c-card__label')?.textContent??null,pill=card.querySelector('.c-card__aside .c-pill')?.textContent??null;
   if(label!==status.label||pill!==status.pill)return false;
@@ -75,19 +77,22 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const next=()=>page.locator(HOME_SHIFT_CARD);
  // Nov 1 upscale S4: the card body links to the shift out of the tab order; the footer's "Shift details" is the one
  // keyboard way to the same shift, beside the tablet line.
- const assignments=()=>next().locator('.c-card__foot').getByRole('link',{name:'Shift details',exact:true});
+ const assignments=()=>next().getByRole('link',{name:/^Shift details(?:,|$)/});
  // Corporate (board C-Employee): Things to do lists up to three rows; a "See all N" row opens Notifications.
- const todo=()=>page.locator('#employee-home-todo');
+ const todo=()=>page.locator(':is(#employee-home-todo,#b-home-todo):visible');
  // Board C-Employee: the card is named Things to do (its header, or aria-label when one row stands alone); the count
  // is carried by the rows and the See all N row, not by the header.
- const todoName=()=>todo().evaluate(card=>card.getAttribute('aria-label')??document.getElementById(card.getAttribute('aria-labelledby')??'')?.textContent??null);
- const seeAll=()=>todo().getByRole('link',{name:/^See all \d+$/});
- const items=()=>todo().locator('li > a.c-row').filter({hasNotText:/^See all \d+$/});
- const allSet=()=>page.getByText('You’re all set. Nothing needs you right now.',{exact:true});
+ const todoName=()=>todo().evaluate(card=>{const title=document.getElementById(card.getAttribute('aria-labelledby')??'')?.cloneNode(true);title?.querySelector('.b-pill')?.remove();return card.getAttribute('aria-label')??title?.textContent??null;});
+ const todoTitle=()=>todo().locator(':is(#employee-home-todo-label,#b-home-todo-h)');
+ const rowLimit=width>=1024?5:3;
+ const overflowCount=async expected=>{const badge=todo().locator('#b-home-todo-h .b-pill');if(await badge.count())assert.equal(await badge.textContent(),String(expected));else assert.equal((await seeAll().textContent()).trim(),`See all ${expected}`);};
+ const seeAll=()=>todo().getByRole('link',{name:/^(See all \d+|See all notifications)$/});
+ const items=()=>todo().locator('li > :is(a.c-row,a.b-row):visible, li > .b-row > a.b-row__hit:visible').filter({hasNotText:/^See all \d+$/});
+ const allSet=()=>page.getByText('You’re all set. Nothing needs you right now.',{exact:true}).filter({visible:true});
  const shownHrefs=async()=>items().evaluateAll(es=>es.map(e=>e.getAttribute('href')));
  // Clock status (Time tab). Phones show the Right now pill; wider layouts the My time status word.
- const clockedIn=()=>page.locator('main').getByText(/^Clocked in$/);
- const offClock=()=>page.locator('main #hours-now').getByText('Not clocked in',{exact:true});
+ const clockedIn=()=>page.locator('main').getByText(/^Clocked in$/).filter({visible:true});
+ const offClock=()=>page.locator('main :is(#hours-now,#b-hours-now):visible').getByText('Not clocked in',{exact:true});
  const timePaused=()=>page.locator('.c-hours[data-hours-view="records"][data-hours-state="paused"]');
  const navLink=href=>page.locator(`.mobile-nav a[href="${href}"]:visible, nav[aria-label="Primary navigation"] a[href="${href}"]:visible`).first();
  const openTime=async expected=>{await navLink('/app/my-time').click();await page.waitForURL(u=>u.pathname==='/app/my-time');const time=await waitForRecordedTimeReady(page,expected);assert.equal(await next().count(),0,'Leaving Home unmounts its private shift card');return time;};
@@ -192,34 +197,34 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES($1,$2,'loc-1',$3,clock_timestamp()-interval '20 minutes','CLOCKED_IN')",[label+'-time',actor,label+'-device']);
  stage='loading';const loading=gate('**/api/employee/home');await page.route(loading.path,loading.handler);await login(page,actor,{waitForIdle:false});await loading.seen;
  // Corporate Home never mounts a clock panel: clock status lives on the Time tab (checked below and in H05/H07/H11).
- assert(await page.getByText('Loading your shift…',{exact:true}).isVisible());assert.equal(await assignments().count(),0);assert.equal(await items().count(),0);assert.equal(await todo().count(),0);assert.equal(await recorded().count(),0,'Corporate Home has no clock panel');assert.equal(await page.getByText('On shift now',{exact:true}).count(),0);assert.equal(await page.getByRole('heading',{level:1,name:/^Welcome back/}).count(),0,'The name is private and waits for released Home data');await shot('loading');loading.release();await ready();await page.unroute(loading.path,loading.handler);
- await next().getByText('On shift now',{exact:true}).waitFor();
+ assert(await page.getByText('Loading your shift…',{exact:true}).filter({visible:true}).isVisible());assert.equal(await assignments().count(),0);assert.equal(await items().count(),0);assert.equal(await todo().count(),0);assert.equal(await recorded().count(),0,'Corporate Home has no clock panel');assert.equal(await page.getByText('On shift now',{exact:true}).filter({visible:true}).count(),0);assert.equal(await page.getByRole('heading',{level:1,name:/^Welcome back/}).count(),0,'The name is private and waits for released Home data');await shot('loading');loading.release();await ready();await page.unroute(loading.path,loading.handler);
+ await next().getByText('On shift now',{exact:true}).filter({visible:true}).waitFor();
  assert.equal(homeResponse.state,'partial');assert.equal(homeResponse.allSet,false);assert.equal(homeResponse.snapshot.sources.communications.state,'complete');assert.equal(homeResponse.snapshot.nextShift.shiftId,scenario.sourceId);assert.equal(homeResponse.snapshot.currentShift.shiftId,label+'-ongoing');
  assert.equal(await page.getByRole('heading',{level:1}).count(),1);assert.equal(await page.getByRole('heading',{level:1,name:'Welcome back, QA '+label,exact:true}).count(),1);assert.equal(homeResponse.snapshot.publicationState,'partial');assert.equal(await page.locator('[data-home-state="ready"]').count(),1,'complete source reads are ready while the publication note explains unpublished locations');
- const publicationNote=page.locator('.c-ehome__body > .c-note').filter({hasText:/published this week yet\. Shifts shown are published\.$/});assert(await publicationNote.isVisible());assert(await next().evaluate((card,note)=>!!(card.compareDocumentPosition(note)&Node.DOCUMENT_POSITION_FOLLOWING),await publicationNote.elementHandle()),'The publication note follows the shift card');assert.equal(await allSet().count(),0);
+ const publicationNote=page.locator('.employee-home :is(.c-note,.b-note,.eb-cardnote):visible').filter({hasText:/published this week yet\. Shifts shown are published\.$/});assert(await publicationNote.isVisible());assert(await next().evaluate((card,note)=>!!(card.compareDocumentPosition(note)&Node.DOCUMENT_POSITION_FOLLOWING),await publicationNote.elementHandle()),'The publication note follows the shift card');assert.equal(await allSet().count(),0);
  assert.equal(await page.getByText('Some Home sections could not be fully checked. Counts show known items. Refresh Home below to check again.',{exact:true}).count(),0,'an unpublished location is explained by publication state, not a failed read');
- assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE HOME SENTINEL'));assert(await next().getByText('On shift now',{exact:true}).isVisible());assert.equal(await assignments().count(),1);
- const hierarchy=await page.locator(HOME_SHIFT_CARD+',#employee-home-todo').evaluateAll(es=>({tops:es.map(e=>e.getBoundingClientRect().top),nextBeforeActions:es.length===2&&!!(es[0].compareDocumentPosition(es[1])&Node.DOCUMENT_POSITION_FOLLOWING)}));assert.equal(hierarchy.tops.length,2);assert(hierarchy.nextBeforeActions);assert(hierarchy.tops[0]<=hierarchy.tops[1]);details.homeHierarchy=hierarchy;
+ assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE HOME SENTINEL'));assert(await next().getByText('On shift now',{exact:true}).filter({visible:true}).isVisible());assert.equal(await assignments().count(),1);
+ const hierarchy=await page.locator(HOME_SHIFT_CARD+',:is(#employee-home-todo,#b-home-todo):visible').evaluateAll(es=>({tops:es.map(e=>e.getBoundingClientRect().top),nextBeforeActions:es.length===2&&!!(es[0].compareDocumentPosition(es[1])&Node.DOCUMENT_POSITION_FOLLOWING)}));assert.equal(hierarchy.tops.length,2);assert(hierarchy.nextBeforeActions);assert(hierarchy.tops[0]<=hierarchy.tops[1]);details.homeHierarchy=hierarchy;
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await shot('ready');
  // Corporate (board C-Employee): Things to do shows the first three rows (one row per week to confirm) in the
  // canonical order, then "See all N", which opens Notifications. Informational updates are read in Notifications.
  details.homeDisclosures=[];
  {
   const expected=actionHrefs(homeResponse);
-  assert(await todo().isVisible());assert.equal(await todoName(),'Things to do');assert.equal(await todo().locator('#employee-home-todo-label').count(),expected.length===1&&await page.locator('[data-home-state="partial"]').count()===0?0:1,'One thing to do is its own card; several share the Things to do header');
-  assert.deepEqual(await shownHrefs(),expected.slice(0,3));assert.equal(await seeAll().count(),expected.length>3?1:0);
-  if(expected.length>3){assert.equal(await seeAll().getAttribute('href'),'/app/notifications');assert.equal((await seeAll().textContent()).trim(),`See all ${expected.length}`);}
+  assert(await todo().isVisible());assert.equal(await todoName(),'Things to do');assert.equal(await todoTitle().count(),1,'One thing to do is its own card; several share the Things to do header');
+  assert.deepEqual(await shownHrefs(),expected.slice(0,rowLimit));assert.equal(await seeAll().count(),expected.length>3?1:0);
+  if(expected.length>3){assert.equal(await seeAll().getAttribute('href'),'/app/notifications');await overflowCount(expected.length);}
   details.homeDisclosures.push({kind:'actions',rows:expected.length,hasOverflow:expected.length>3,seeAll:expected.length>3});
  }
  for(const item of homeResponse.snapshot.attention.filter(item=>!item.required&&!item.actionable))assert.equal(await page.locator('.employee-home').getByText(item.label,{exact:true}).count(),0,'Informational updates are read in Notifications');
  assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);
- {const shown=actionItems(homeResponse).slice(0,3),monday=(date=>{const day=new Date(date+'T12:00:00Z');return new Date(day.getTime()-((day.getUTCDay()+6)%7)*86400000).toISOString().slice(0,10);})(homeToday(homeResponse));
-  for(const item of homeResponse.snapshot.attention.filter(item=>confirmsWeek(item)&&(item.required||item.actionable))){const row=todo().locator('li > a.c-row').filter({has:page.locator(`time[datetime="${item.ref.id}"]`)});assert.equal(await row.count(),shown.includes(item)?1:0,'Each shown week to confirm is its own row with its own dates');
-   if(shown.includes(item)){const title=item.ref.id===monday?'Confirm this week’s schedule':item.ref.id===new Date(Date.parse(monday+'T12:00:00Z')+7*86400000).toISOString().slice(0,10)?'Confirm next week’s schedule':'Confirm your schedule';assert.equal((await row.locator('.c-row__title').textContent()).trim(),title);}}}
+ {const shown=actionItems(homeResponse).slice(0,rowLimit),monday=(date=>{const day=new Date(date+'T12:00:00Z');return new Date(day.getTime()-((day.getUTCDay()+6)%7)*86400000).toISOString().slice(0,10);})(homeToday(homeResponse));
+  for(const item of homeResponse.snapshot.attention.filter(item=>confirmsWeek(item)&&(item.required||item.actionable))){const row=todo().locator('li > :is(a.c-row,a.b-row):visible, li > .b-row > a.b-row__hit:visible').filter({has:page.locator(`time[datetime="${item.ref.id}"]`)});assert.equal(await row.count(),shown.includes(item)?1:0,'Each shown week to confirm is its own row with its own dates');
+   if(shown.includes(item)){const title=item.ref.id===monday?'Confirm this week’s schedule':item.ref.id===new Date(Date.parse(monday+'T12:00:00Z')+7*86400000).toISOString().slice(0,10)?'Confirm next week’s schedule':'Confirm your schedule';assert.equal((await row.locator(':is(.c-row__title,.b-row__tt)').textContent()).trim(),title);}}}
  const leave=homeResponse.snapshot.attention.filter(item=>item.ref.kind==='TIME_OFF');assert.equal(new Set(leave.map(item=>item.label)).size,7);for(const item of leave)assert.equal(await page.locator('.employee-home').getByText(item.label,{exact:true}).count(),0);await shot('show-all');
  checks.push('H02 actual Things to do membership and order follow the canonical response (one row per week, nearest first; ended weeks drop off): the first three rows, then See all N to Notifications when more; each weekly review row carries its own week dates and title; informational updates stay in Notifications; no compact consent or Mark read');
  // Re-anchored clock status: Home shows the shift under way; the actual recorded Clocked in is on the Time tab.
- details.timeClockedIn=await openTime('CLOCKED_IN');assert(await clockedIn().first().isVisible());await shot('time-clocked-in');await openHome();await next().getByText('On shift now',{exact:true}).waitFor();
+ details.timeClockedIn=await openTime('CLOCKED_IN');assert(await clockedIn().first().isVisible());await shot('time-clocked-in');await openHome();await next().getByText('On shift now',{exact:true}).filter({visible:true}).waitFor();
  checks.push('H01 actual loading contains no private row/name/success; the shift under way leads (On shift now) with the persisted next shift in the canonical read; the actual recorded Clocked in shows on the Time tab while Home keeps no clock; six-source canonical communications complete and private notes absent');
  stage='canonical-communications';
  const ownerId=await seedOwnedScenarioOwner(app.database.executor,label);
@@ -257,7 +262,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const homeRead=()=>page.evaluate(async binding=>{const response=await fetch('/api/employee/home',{cache:'no-store',headers:{'X-Nevora-Home':binding}});return response.json();},binding);
  const optional=await publishUpdate('OPTIONAL');await refresh();
  const optionalItem=(await homeRead()).snapshot.attention.find(item=>item.ref.kind==='COMMUNICATION'&&item.ref.id===optional.result.id);assert(optionalItem,'The canonical Home response carries the optional update');assert.equal(optionalItem.required,false);
- {const current=await homeRead();assert.equal(await todo().locator('a[href="/app/updates/'+optional.result.id+'"]').count(),optionalItem.actionable&&actionHrefs(current).slice(0,3).includes('/app/updates/'+optional.result.id)?1:0);}
+ {const current=await homeRead();assert.equal(await todo().locator('a[href="/app/updates/'+optional.result.id+'"]').count(),optionalItem.actionable&&actionHrefs(current).slice(0,rowLimit).includes('/app/updates/'+optional.result.id)?1:0);}
  const optionalDetail=await readCommunication(self,optional.result.id,app.database.executor);assert.equal(optionalDetail.state,'ready');assert.equal((await recordCommunicationRead(self,{kind:'MARK_READ',operationId:randomUUID(),authority:optionalDetail.authority,ref:{kind:'COMMUNICATION',id:optional.result.id,version:optional.result.version}},app.database.executor)).status,'committed');await refresh();assert.equal(await page.locator('a[href="/app/updates/'+optional.result.id+'"]').count(),0);assert.equal((await homeRead()).snapshot.attention.some(item=>item.ref.kind==='COMMUNICATION'&&item.ref.id===optional.result.id),false,'A read optional update leaves the canonical response');
  checks.push('H14 authenticated Home follows actual canonical required receipt, push-off/Mark read denial, revision reset, withdrawal and optional version read; private body is absent and full review stays on Updates');
  // ACTIONS_OVERFLOW_BROWSER_EXTENSION_BEGIN
@@ -288,9 +293,9 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   assert.equal(actionRows.length,overflowEvidence.baseline.hrefs.actions.length+4);
   assert.deepEqual(actionRows.filter(href=>!overflowPublished.some(published=>href==='/app/updates/'+published.result.id)),overflowEvidence.baseline.hrefs.actions);
   for(const published of overflowPublished){const canonical=actual.snapshot.attention.filter(item=>item.ref.kind==='COMMUNICATION'&&item.ref.id===published.result.id);assert.equal(canonical.length,1);assert.equal(canonical[0].required,true);assert.equal(canonical[0].ref.version,published.result.version);assert.equal(canonical[0].href,'/app/updates/'+published.result.id);}
-  assert.deepEqual(await shownHrefs(),actionRows.slice(0,3));assert.equal(await todoName(),'Things to do');assert.equal(await todo().locator('#employee-home-todo-label').textContent(),'Things to do');
-  assert.equal(await seeAll().count(),1);assert.equal(await seeAll().getAttribute('href'),'/app/notifications');assert.equal((await seeAll().textContent()).trim(),`See all ${actionRows.length}`);
-  assert.equal(await items().count(),3);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);assert.equal(await allSet().count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
+  assert.deepEqual(await shownHrefs(),actionRows.slice(0,rowLimit));assert.equal(await todoName(),'Things to do');assert.equal(await todoName(),'Things to do');
+  assert.equal(await seeAll().count(),1);assert.equal(await seeAll().getAttribute('href'),'/app/notifications');await overflowCount(actionRows.length);
+  assert.equal(await items().count(),rowLimit);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);assert.equal(await allSet().count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
   await shot('actions-overflow');
   overflowEvidence.phase='native-keyboard';
   // Native Tab reaches See all with visible focus at a 44px target; Enter opens Notifications (a link has no Space activation).
@@ -327,7 +332,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  overflowEvidence.restored={state:restored.state,allSet:restored.allSet,hrefs:{actions:overflowRows(restored)}};
  assert.deepEqual(overflowEvidence.restored.hrefs,overflowEvidence.baseline.hrefs);assert.equal(restored.state,overflowBaseline.state);assert.equal(restored.allSet,overflowBaseline.allSet);
  for(const published of overflowPublished)assert.equal(await page.locator('a[href="/app/updates/'+published.result.id+'"]').count(),0);
- assert.deepEqual(await shownHrefs(),overflowRows(restored).slice(0,3));assert.equal(await seeAll().count(),overflowRows(restored).length>3?1:0);
+ assert.deepEqual(await shownHrefs(),overflowRows(restored).slice(0,rowLimit));assert.equal(await seeAll().count(),overflowRows(restored).length>3?1:0);
  overflowEvidence.phase='complete';
  // ACTIONS_OVERFLOW_BROWSER_EXTENSION_END
  stage='keyboard';await page.locator('h1').click();const link=assignments().first(),tab=nativeTab;let reached=false;
@@ -344,7 +349,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='api';const api=await page.evaluate(async binding=>{const response=await fetch('/api/employee/home',{cache:'no-store',headers:{'X-Nevora-Home':binding}});return {status:response.status,cache:response.headers.get('cache-control'),vary:response.headers.get('vary'),body:await response.json()};},binding);
  assert.equal(api.status,200);assert.equal(api.cache,'no-store, private');assert(api.vary.split(',').map(value=>value.trim().toLowerCase()).includes('cookie'));assert(!JSON.stringify(api.body).match(/PRIVATE HOME SENTINEL|sessionTokenHash|managerNotes/));
  const rejected=await page.evaluate(async()=>{const r=await fetch('/api/employee/home?employeeId=other',{headers:{'X-Nevora-Home':'invalid'}});return r.status;});assert.equal(rejected,400);checks.push('H04 actual authenticated Home API is private/no-store; client identity selectors refused; no source-note/raw-proof disclosure');
- stage='offline';await context.setOffline(true);await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await page.locator('[data-home-state="paused"]').waitFor();assert.equal(await assignments().count(),0);assert.equal(await page.getByText('On shift now',{exact:true}).count(),0);assert.equal(await items().count(),0);assert.equal(await todo().count(),0);assert.equal(await page.getByRole('heading',{level:1,name:/^Welcome back/}).count(),0,'Paused Home clears the private name');assert.equal(await recorded().count(),0);await shot('offline');await context.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));await ready();await next().getByText('On shift now',{exact:true}).waitFor();
+ stage='offline';await context.setOffline(true);await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await page.locator('[data-home-state="paused"]').waitFor();assert.equal(await assignments().count(),0);assert.equal(await page.getByText('On shift now',{exact:true}).filter({visible:true}).count(),0);assert.equal(await items().count(),0);assert.equal(await todo().count(),0);assert.equal(await page.getByRole('heading',{level:1,name:/^Welcome back/}).count(),0,'Paused Home clears the private name');assert.equal(await recorded().count(),0);await shot('offline');await context.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));await ready();await next().getByText('On shift now',{exact:true}).filter({visible:true}).waitFor();
  // Re-anchored clock rows: the Time tab clears its recorded status offline and re-reads on reconnect.
  await openTime('CLOCKED_IN');await context.setOffline(true);await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await timePaused().waitFor();assert.equal(await clockedIn().count(),0,'Offline Time clears the recorded clock status');await shot('time-offline');
  await context.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));details.timeReconnected=await waitForRecordedTimeReady(page,'CLOCKED_IN');assert(await clockedIn().first().isVisible());await openHome();
@@ -471,7 +476,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   const publication=await publishScheduleWithRevision({locationId:'loc-1',weekStart,managerId:'QAOWNER'},app.database.executor);
   assert.equal(publication.published,true,'Complete-source Home fixture requires an actual published schedule');
  }
- await refresh();await next().getByText('No upcoming shift. New shifts show here once they’re published.',{exact:true}).waitFor();assert.equal(await assignments().count(),0);assert.equal(await page.getByText('On shift now',{exact:true}).count(),0);assert.equal(await allSet().count(),0);await shot('empty');checks.push('H12 actual held edit stays invisible until published; then the no-future-assignment state uses precise empty copy and incomplete publication/other attention prevents all-clear');
+ await refresh();await next().getByText('No upcoming shift. New shifts show here once they’re published.',{exact:true}).waitFor();assert.equal(await assignments().count(),0);assert.equal(await page.getByText('On shift now',{exact:true}).filter({visible:true}).count(),0);assert.equal(await allSet().count(),0);await shot('empty');checks.push('H12 actual held edit stays invisible until published; then the no-future-assignment state uses precise empty copy and incomplete publication/other attention prevents all-clear');
  stage='last-shift-removal';
  // The removal was published in the empty stage (held edits publish together); this is its current review.
  await refresh();
