@@ -82,7 +82,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         return { pattern, loss, wait: async () => {
           await expect.poll(() => loss.completed, { timeout: 20000 }).toBe(true);
           expect(loss).toMatchObject({ intercepted: true, failed: false, upstreamStatus: 200 });
-          await page(n).getByRole('alert').filter({ hasText: n ? 'This change could not be confirmed' : deletion ? 'Check your connection and try again.' : 'Changes could not be saved.' }).first().waitFor();
+          await page(n).getByRole('alert').filter({ hasText: n || deletion ? 'This change could not be confirmed' : 'Changes could not be saved.' }).first().waitFor();
         } };
       };
       for (const stale of [0, 1]) {
@@ -145,10 +145,18 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         await remove(n); await lost.wait();
         expect(await q('SELECT id FROM shifts WHERE id=$1', [id])).toEqual([]);
         expect(await form(n).locator('[name="notes"]').inputValue()).toBe('Retained before lost deletion');
-        if (n === 0) { await page(n).getByRole('button', { name: 'Delete this shift', exact: true }).click(); await refused(n, version, true); }
-        else { expect(await form(n).locator('fieldset[disabled]').count()).toBeGreaterThan(0); await page(n).getByRole('link', { name: 'Review current schedule', exact: true }).waitFor(); }
+        if (n === 0) {
+          const deletion = page(n).locator('form').filter({ has: page(n).getByRole('button', { name: 'Delete this shift', exact: true }) });
+          expect(await deletion.locator('fieldset[disabled]').count()).toBe(1);
+          expect(await deletion.locator('[name="expectedReviewVersion"]').inputValue()).toBe(version);
+          await deletion.getByRole('button', { name: 'Reload current shift', exact: true }).waitFor();
+          // Even a synthetic programmatic submit cannot bypass the uncertainty
+          // fence; only explicit current-view review can create a new intent.
+          await deletion.evaluate((element: HTMLFormElement) => element.requestSubmit());
+          await deletion.getByRole('alert').filter({ hasText: 'Deletion outcome unknown' }).waitFor();
+        } else { expect(await form(n).locator('fieldset[disabled]').count()).toBeGreaterThan(0); await page(n).getByRole('link', { name: 'Review current schedule', exact: true }).waitFor(); }
         expect(await q('SELECT id FROM shifts WHERE id=$1', [id])).toEqual([]); await page(n).unroute(lost.pattern);
-        checks.push(`${engine}: ${n ? 'location unknown-outcome lock' : 'Company private inline refusal'} after lost successful deletion; draft retained and no replay effects`);
+        checks.push(`${engine}: ${n ? 'location unknown-outcome lock' : 'Company unknown-outcome lock and copy-before-review'} after lost successful deletion; draft retained and no replay effects`);
       }
       const offlineId = await seed(); await open(0, offlineId); await p0.waitForLoadState('networkidle');
       await c0.setOffline(true);

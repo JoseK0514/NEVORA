@@ -2,8 +2,10 @@ import assert from 'node:assert/strict';
 
 /** Observe only: private reads may retire while finite animations settle. One
  * deadline covers every observation; ready layout defects never earn a retry. */
-export async function measureCommunicationActions({page,phone,expectedPath,expectedBody,expectedRevision,record=()=>{},timeout=15_000}){
- const deadline=performance.now()+timeout,rootSelector=phone?'.em-messages':'.wb-update',bodySelector=phone?'.em-message-detail .em-message-copy':'.wb-update-body';
+export async function measureCommunicationActions({page,phone,expectedPath,expectedBody,expectedRevision,presentation='legacy',record=()=>{},timeout=15_000}){
+ const deadline=performance.now()+timeout,rootSelector=presentation==='b'?'.b-screen:has(#b-update-title)':phone?'.em-messages':'.wb-update',bodySelector=presentation==='b'?'.eb-update__body':phone?'.em-message-detail .em-message-copy':'.wb-update-body';
+ assert(['legacy','b'].includes(presentation),'Known update presentation');
+ if(presentation==='b')phone=false; // B, at every width, proves the exact rendered revision.
  const remaining=()=>{const ms=deadline-performance.now();assert(ms>0,'Current update actions did not settle before the original deadline');return ms;};
  const within=async task=>{
   const ms=remaining();let timer;

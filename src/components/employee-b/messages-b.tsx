@@ -220,7 +220,7 @@ export function EmployeeUpdateB({back, item, busy, onAction, withdraw, onWithdra
       {recovery}
       {returnHref ? <BReturnCard href={returnHref} /> : null}
       {status ? <BStatusCard status={status} /> : notice ? <BStatusCard status={notice} /> : item ? <>
-        <article className="b-card eb-update" aria-label="Update content">
+        <article className="b-card eb-update" aria-label="Update content" data-update-revision={item.revisionId}>
           <div className="eb-update__head"><h2>{item.title}</h2>{required ? <BChip tone="amber">Must read</BChip> : null}</div>
           <p className="eb-update__meta">{item.authorContext} · {messageTime(item.publishedAt, item.timeZone)}{item.editedAt ? ' · Edited ' + messageTime(item.editedAt, item.timeZone) : ''}</p>
           {item.sentCount !== undefined ? <p className="eb-update__meta">Original audience: {item.sentCount} {item.sentCount === 1 ? 'recipient' : 'recipients'}</p> : null}

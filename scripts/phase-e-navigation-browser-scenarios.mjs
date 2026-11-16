@@ -18,16 +18,17 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  // the same list (All / Unread, rows grouped by day). Each check targets what that width shows; the reads, bindings and
  // private-row rules they verify are the same own reads.
  const phone=width<768;
- const inboxRoot=phone?'.em-messages[data-messages-view="notifications"]':'[data-private-view="notifications"]';
- const inboxRows=inboxRoot+' ul.c-rows > li';
- const inboxLinks=inboxRoot+' a.em-notif-row';
- const inboxGlob=phone?'**/api/employee/messages/notifications/**':'**/api/notifications';
- const isInboxRead=path=>phone?path.startsWith('/api/employee/messages/notifications/'):path==='/api/notifications';
- const inboxItems=view=>phone?view.data?.value?.items:view.items;
+ const inboxStateRoot='.em-messages[data-messages-view="notifications"]';
+ const inboxRoot='.b-screen:has(#b-notifications-title)';
+ const inboxRows=inboxRoot+' .b-card[id^="b-notifications-"] ul.b-list > li';
+ const inboxLinks=inboxRoot+' a.eb-notif';
+ const inboxGlob='**/api/employee/messages/notifications/**';
+ const isInboxRead=path=>path.startsWith('/api/employee/messages/notifications/');
+ const inboxItems=view=>view.data?.value?.items;
  const inboxEmpty=()=>page.locator(inboxRoot).getByText('No current notifications',{exact:true});
  const inboxUnavailable=()=>page.locator(inboxRoot).getByText(/^(Your notifications couldn’t be checked\.|Your current notices couldn’t be checked\. Refresh before continuing\.)$/);
  const inboxDenied=()=>page.locator(inboxRoot).getByText('Your access changed. Sign in again to continue.',{exact:true});
- const inboxPaused=()=>phone?page.locator(inboxRoot+'[data-messages-state="paused"]'):page.locator(inboxRoot).getByText('Your notifications are paused. Return to this page or reconnect to refresh.',{exact:true});
+ const inboxPaused=()=>page.locator(inboxRoot).getByText('Your notifications are paused. Return to this page or reconnect to refresh.',{exact:true});
  const inboxPartial=()=>page.locator(inboxRoot).getByText('Some current notices couldn’t be checked. Refresh before relying on this list.',{exact:true});
  const inboxTryAgain=()=>page.locator(inboxRoot).getByRole('button',{name:'Try again',exact:true});
  const inboxOptions={glob:inboxGlob,items:inboxItems,rows:inboxRows};
@@ -118,8 +119,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   // Phones: the mobile profile view and messages view publish their own released state.
   // Profile (board E-Profile) publishes its released state at every width.
   if(k==='profile')return document.querySelector('[data-private-view="profile"]')?.getAttribute('data-profile-state')==='ready';
-  if(phone)return document.querySelector('.em-messages[data-messages-view="notifications"]')?.getAttribute('data-messages-state')==='ready';
-  return !!document.querySelector('[data-private-view="notifications"] [aria-label="Show notifications"]');},{k:kind,phone});}
+  return document.querySelector('.em-messages[data-messages-view="notifications"]')?.getAttribute('data-messages-state')==='ready'&&!!document.querySelector('.b-screen #b-notifications-title');},{k:kind,phone});}
  const notifications=()=>page.locator('[data-private-view="notifications"]');
  // v5 has no manual Refresh: the inbox re-reads when the app returns to the front. A storage event reaches only the
  // inbox panel (the bell ignores it), so each refresh is exactly one inbox read, as the old Refresh button was.
@@ -255,7 +255,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   await nav('/app/notifications');await ready('notifications');assert.equal(await page.locator(inboxLinks).count(),1);
   assert.equal(await page.locator('main').getByRole('link',{name:'Settings',exact:true}).count(),0,'No alert Settings while the workplace has no device alerts');
   // Desktop opens through the guarded open route; the phone messages view opens through its own guarded open read.
-  assert.equal(await page.locator(inboxLinks).getAttribute('id'),'message-'+noticeId);if(!phone)assert.equal(await page.locator(inboxLinks).getAttribute('href'),'/app/notifications/open?notificationId='+noticeId);
+  assert.equal(await page.locator(inboxLinks).getAttribute('id'),'b-message-'+noticeId);assert.equal(new URL(await page.locator(inboxLinks).getAttribute('href'),app.url).pathname,'/app/requests');
   assert(!await page.locator(inboxRoot).innerText().then(t=>t.includes('STORED PRIVATE')));await bounds();await screenshot('inbox');await accessibility('Notifications');
   const before=await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]);await page.locator(inboxLinks).click();await page.waitForURL(u=>u.pathname==='/app/requests');
   // The guarded open loads a new document. Wait for its current bell read before Back;
@@ -268,14 +268,14 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   // Observe the real abort boundary and React commit separately. Keep an actual
   // authorized old response held: clearing cannot depend on another successful read.
   const visibilityEvidence={engine,width,requests:[],observations:[]};
-  await page.evaluate(({phone,inboxRoot,inboxRows})=>{
+  await page.evaluate(({inboxStateRoot,inboxRoot,inboxRows})=>{
    const observations=[],signals=[],originalFetch=window.fetch;
-   const isRead=path=>phone?path.startsWith('/api/employee/messages/notifications/'):path==='/api/notifications';
-   const observe=event=>{const root=document.querySelector(inboxRoot);const entry={event,at:performance.now(),hidden:document.visibilityState==='hidden',paused:(phone?root?.getAttribute('data-messages-state')==='paused':root?.textContent.includes('Your notifications are paused.'))??false,rows:document.querySelectorAll(inboxRows).length,requests:signals.length,aborted:signals.filter(signal=>signal.aborted).length};observations.push(entry);return entry;};
+   const isRead=path=>path.startsWith('/api/employee/messages/notifications/');
+   const observe=event=>{const root=document.querySelector(inboxRoot);const entry={event,at:performance.now(),hidden:document.visibilityState==='hidden',paused:document.querySelector(inboxStateRoot)?.getAttribute('data-messages-state')==='paused',rows:document.querySelectorAll(inboxRows).length,requests:signals.length,aborted:signals.filter(signal=>signal.aborted).length};observations.push(entry);return entry;};
    window.fetch=function(input,options){if(isRead(new URL(typeof input==='string'?input:input.url??String(input),location.href).pathname)&&options?.signal){signals.push(options.signal);options.signal.addEventListener('abort',()=>observe('abort'),{once:true});observe('request');}return originalFetch.apply(this,arguments);};
    const observer=new MutationObserver(()=>observe('commit'));observer.observe(document.querySelector(inboxRoot),{childList:true,subtree:true,attributes:true,characterData:true});
    window.__navigationVisibility={observe,observations,stop:()=>{observer.disconnect();window.fetch=originalFetch;}};observe('initial');
-  },{phone,inboxRoot,inboxRows});
+  },{inboxStateRoot,inboxRoot,inboxRows});
   let release,started,finished,used=false,heldFailure,heldOutcome,operation='fetch';
   const gate=new Promise(resolve=>{release=resolve;}),seen=new Promise(resolve=>{started=resolve;}),done=new Promise(resolve=>{finished=resolve;});
   const heldHandler=async route=>{

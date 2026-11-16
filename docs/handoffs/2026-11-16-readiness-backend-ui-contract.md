@@ -98,3 +98,7 @@ explicit history controls. The integration owner then qualifies two actual brows
 combined development SHA. Local SQL/action tests are not those browser receipts.
 Combined acceptance and independent finding closure remain pending; no production approval
 is implied.
+
+### Combined acceptance follow-up: lost deletion response
+
+The Company delete ActionForm must treat a transport failure as an unknown outcome, matching the existing location-scoped recovery rule. It keeps the original review token and allowlisted draft in memory, disables further deletion submissions (including programmatic submits), and offers copy-before-explicit-reload recovery. It must not retry a deletion by reading a fresh shift version. The server still returns the same private ACCESS_DENIED response for deleted and out-of-scope targets. Existing finite authority retirement and session/scope revocation continue to clear private content. This is functional wiring only; Claude retains final visual ownership.

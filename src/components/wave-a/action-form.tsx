@@ -24,11 +24,14 @@ export function ActionForm({ action, children, className, label, failure, review
   const [failed, setFailed] = useState(0);
   const failures = useRef(0);
   const [busy, setBusy] = useState(false);
+  const [uncertain, setUncertain] = useState(false);
+  const unknownOutcome = useRef(false);
   const notice = useRef<HTMLDivElement>(null);
   const form = useRef<HTMLFormElement>(null);
   useEffect(() => { if (form.current) guardSingleSubmit(form.current); }, []);
   useEffect(() => { if (failed && notice.current) revealFeedback(notice.current); }, [failed]);
   async function run(data: FormData) {
+    if (unknownOutcome.current) return;
     setFailed(0);
     setRefusal(null);
     setBusy(true);
@@ -45,12 +48,20 @@ export function ActionForm({ action, children, className, label, failure, review
     } catch (error) {
       setBusy(false);
       unstable_rethrow(error);
+      if (shiftVersion !== undefined) {
+        // A lost successful delete and a failed delete are indistinguishable.
+        // Retain the reviewed draft instead of replaying into a missing-row RSC
+        // render that could discard it. Re-entry is an explicit review.
+        unknownOutcome.current = true;
+        setUncertain(true);
+        setRefusal({ error: 'This change could not be confirmed. Review the current schedule before making another change; it may already have completed.', conflict: true, draft });
+      }
       setFailed(++failures.current);
     }
   }
   return <form ref={form} action={run} className={className} aria-label={label} aria-busy={busy}>
-    {children}
+    {shiftVersion !== undefined ? <fieldset disabled={busy || uncertain} className="configuration-fields">{children}</fieldset> : children}
     {shiftVersion !== undefined ? <input type="hidden" name="expectedReviewVersion" value={shiftVersion} /> : null}
-    {failed ? <div ref={notice} tabIndex={-1} className="wa-target"><Notice tone="urgent" title={failure.title}>{refusal?.error ?? failure.body}</Notice>{refusal?.conflict ? <ShiftReviewRecovery draft={refusal.draft} /> : null}</div> : null}
+    {failed ? <div ref={notice} tabIndex={-1} className="wa-target"><Notice tone="urgent" title={uncertain ? 'Deletion outcome unknown' : failure.title}>{refusal?.error ?? failure.body}</Notice>{refusal?.conflict ? <ShiftReviewRecovery draft={refusal.draft} /> : null}</div> : null}
   </form>;
 }
