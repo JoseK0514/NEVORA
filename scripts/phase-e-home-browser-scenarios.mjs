@@ -312,13 +312,13 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   overflowEvidence.phase='notifications-list';
   // Phones draw the messages view; wider layouts the account panel. Both list the same rows once their own read is ready.
   await page.waitForFunction(phone=>phone?document.querySelector('.em-messages[data-messages-view="notifications"]')?.getAttribute('data-messages-state')==='ready':!!document.querySelector('[data-private-view="notifications"] [aria-label="Show notifications"]'),width<768);
-  overflowEvidence.notificationRows=await page.locator('main a.em-notif-row').evaluateAll(rows=>rows.map(row=>row.id));page.off('response',notificationRead);
+  overflowEvidence.notificationRows=await page.locator('main :is(a.em-notif-row,a.eb-notif):visible').evaluateAll(rows=>rows.map(row=>row.id));page.off('response',notificationRead);
   overflowEvidence.notificationRowsSql=await q("SELECT id,source_kind,due_at<=clock_timestamp() AS due,expires_at>clock_timestamp() AS current,environment,cancelled_at IS NULL AS active FROM notifications WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 30",[actor]);
   const notices=[];
   for(const published of overflowPublished){
    const rows=await q("SELECT id FROM notifications WHERE employee_id=$1 AND source_kind='COMMUNICATION' AND source_id=$2 ORDER BY id",[actor,published.result.id]);assert.equal(rows.length,1,'One notification per overflowed update');
    // Board E-Notifications: phone and desktop draw the same rows (All / Unread, grouped by day).
-   const shown=page.locator(`main a.em-notif-row[id="message-${rows[0].id}"]`);assert.equal(await shown.count(),1,'Notifications lists every overflowed update');assert(await shown.isVisible());notices.push(rows[0].id);
+   const shown=page.locator(`main :is(a.em-notif-row[id="message-${rows[0].id}"],a.eb-notif[id="b-message-${rows[0].id}"]):visible`);assert.equal(await shown.count(),1,'Notifications lists every overflowed update');assert(await shown.isVisible());notices.push(rows[0].id);
   }
   overflowEvidence.notifications={listed:notices.length};assert(!(await page.locator('main').innerText()).includes('PRIVATE COMPLETE CONTENT'));await shot('actions-overflow-notifications');
   await openHome();
