@@ -348,7 +348,14 @@ export async function prepareEmployeeProfileMutation(input: EmployeeCoreMutation
             AND target.role='OWNER'
             AND ($2<>'OWNER' OR NOT $3::boolean)
         )
-        OR (SELECT count(*) FROM employees WHERE active=true AND role='OWNER') > 1
+        OR EXISTS (
+          SELECT 1 FROM employees replacement
+          WHERE replacement.id<>$1 AND replacement.active=true AND replacement.role='OWNER'
+            AND NOT EXISTS (
+              SELECT 1 FROM account_deletion_requests deletion
+              WHERE deletion.employee_id=replacement.id AND deletion.status IN ('received','processing')
+            )
+        )
       THEN '1' ELSE 'employee_profile_last_owner' END)::integer`,
       values: [input.employeeId, input.role, input.active],
     },

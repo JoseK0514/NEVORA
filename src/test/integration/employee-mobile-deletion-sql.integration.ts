@@ -36,6 +36,8 @@ import {LOGIN_LIMITS} from '../../lib/auth/login-limits.server';
 import {prepareSession} from '../../lib/auth/session-issuance';
 import {submitDeletionRequest} from '../../lib/account-deletion/requests.server';
 import {POLICY_VERSION} from '../../lib/legal/policies';
+import {fixtureProof} from './shift-change-api';
+import {updateEmployeeProfile} from '../../lib/data/employees';
 
 let db:Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
 const q=<T=Record<string,unknown>>(text:string,values:readonly unknown[]=[])=>db.executor.query<T>({text,values});
@@ -220,4 +222,62 @@ it('continues a deletion accepted under the prior legal version after the displa
  expect(await q("SELECT id::text,reference,policy_version,verified_at::text,confirmed_at::text FROM account_deletion_requests WHERE reference=$1",[reference])).toEqual(before);
  expect(await q("SELECT count(*)::int n FROM account_deletion_requests WHERE employee_id='DEL-OWN'")).toEqual([{n:1}]);
  expect(await q("SELECT token_hash FROM employee_sessions WHERE employee_id='DEL-OWN'")).toEqual([]);
+});
+
+it('refuses the final Owner deletion without saving a request or revoking access',async()=>{
+ const token=await session('QAOWNER','last-owner');as(token);
+ const before=await q("SELECT updated_at::text FROM employees WHERE id='QAOWNER'");
+ const result=await submitDeletionRequest({employeeId:'QAOWNER',sessionTokenHash:hash(token),password:TEST_PASSWORD,channel:'web',policyVersion:POLICY_VERSION});
+ expect(result).toEqual({outcome:'unavailable',reason:'LAST_OWNER'});
+ expect(await q("SELECT employee_id FROM employee_sessions WHERE token_hash=$1",[hash(token)])).toEqual([{employee_id:'QAOWNER'}]);
+ expect(await q("SELECT id FROM account_deletion_requests WHERE employee_id='QAOWNER'")).toEqual([]);
+ expect(await q("SELECT updated_at::text FROM employees WHERE id='QAOWNER'")).toEqual(before);
+ expect(await requestAccountDeletion(idle,form({account:'QAOWNER'}))).toEqual({kind:'unavailable',reason:'LAST_OWNER'});
+});
+
+it('allows one of two Owners to delete, but does not count that pending account as a remaining Owner',async()=>{
+ await q("UPDATE employees SET role='OWNER' WHERE id='DEL-OWN'");
+ const tokens=[await session('DEL-OWN','first-owner'),await session('QAOWNER','remaining-owner')];
+ const deletion=(employeeId:string,token:string)=>submitDeletionRequest({employeeId,sessionTokenHash:hash(token),password:TEST_PASSWORD,channel:'web',policyVersion:POLICY_VERSION});
+ expect((await deletion('DEL-OWN',tokens[0])).outcome).toBe('received');
+ expect(await deletion('QAOWNER',tokens[1])).toEqual({outcome:'unavailable',reason:'LAST_OWNER'});
+ expect((await deletion('DEL-OWN',tokens[0])).outcome).toBe('duplicate');
+ expect(await q("SELECT employee_id FROM employee_sessions WHERE token_hash=$1",[hash(tokens[1])])).toEqual([{employee_id:'QAOWNER'}]);
+});
+
+it('serializes concurrent Owner deletions so exactly one account remains accessible',async()=>{
+ await q("UPDATE employees SET role='OWNER' WHERE id='DEL-OWN'");
+ const ids=['DEL-OWN','QAOWNER'];
+ const tokens=await Promise.all(ids.map(id=>session(id,'concurrent-owner-'+id)));
+ const results=await Promise.all(ids.map((employeeId,i)=>submitDeletionRequest({employeeId,sessionTokenHash:hash(tokens[i]),password:TEST_PASSWORD,channel:'web',policyVersion:POLICY_VERSION})));
+ expect(results.map(r=>r.outcome).sort()).toEqual(['received','unavailable']);
+ expect(await q("SELECT count(*)::integer n FROM employees e WHERE active AND role='OWNER' AND NOT EXISTS(SELECT 1 FROM account_deletion_requests r WHERE r.employee_id=e.id AND r.status IN ('received','processing'))")).toEqual([{n:1}]);
+ expect(await q("SELECT count(*)::integer n FROM employee_sessions WHERE employee_id=ANY($1)",[ids])).toEqual([{n:1}]);
+});
+
+it('prevents demotion from treating an Owner with an open deletion as a replacement',async()=>{
+ await q("UPDATE employees SET role='OWNER' WHERE id='DEL-OWN'");
+ const token=await session('DEL-OWN','departing-owner');
+ expect((await submitDeletionRequest({employeeId:'DEL-OWN',sessionTokenHash:hash(token),password:TEST_PASSWORD,channel:'web',policyVersion:POLICY_VERSION})).outcome).toBe('received');
+ const proof=await fixtureProof(db.executor,'QAOWNER');
+ const [owner]=await q<{updated_at:string}>("SELECT updated_at::text FROM employees WHERE id='QAOWNER'");
+ await expect(updateEmployeeProfile({employeeId:'QAOWNER',expectedUpdatedAt:owner.updated_at,firstName:'Fictional',lastName:'Owner',phone:'7875550100',role:'EMPLOYEE',primaryLocationId:'loc-1',active:true,actorEmployeeId:'QAOWNER',proof},db.executor)).rejects.toThrow('employee_profile_last_owner');
+ expect(await q("SELECT role FROM employees WHERE id='QAOWNER'")).toEqual([{role:'OWNER'}]);
+});
+
+it('serializes a deletion against a concurrent remaining-Owner demotion',async()=>{
+ await q("UPDATE employees SET role='OWNER' WHERE id='DEL-OWN'");
+ const token=await session('DEL-OWN','racing-departure');
+ const proof=await fixtureProof(db.executor,'QAOWNER');
+ const [owner]=await q<{updated_at:string}>("SELECT updated_at::text FROM employees WHERE id='QAOWNER'");
+ const results=await Promise.allSettled([
+  submitDeletionRequest({employeeId:'DEL-OWN',sessionTokenHash:hash(token),password:TEST_PASSWORD,channel:'web',policyVersion:POLICY_VERSION}),
+  updateEmployeeProfile({employeeId:'QAOWNER',expectedUpdatedAt:owner.updated_at,firstName:'Fictional',lastName:'Owner',phone:'7875550100',role:'EMPLOYEE',primaryLocationId:'loc-1',active:true,actorEmployeeId:'QAOWNER',proof},db.executor),
+ ]);
+ // Either operation may win. Both becoming unavailable is also safe; both
+ // succeeding would leave no Owner able to operate the company.
+ const deleted=results[0].status==='fulfilled'&&results[0].value.outcome==='received';
+ const demoted=results[1].status==='fulfilled';
+ expect(deleted&&demoted).toBe(false);
+ expect(await q("SELECT count(*)::integer n FROM employees e WHERE active AND role='OWNER' AND NOT EXISTS(SELECT 1 FROM account_deletion_requests r WHERE r.employee_id=e.id AND r.status IN ('received','processing'))")).toEqual([{n:1}]);
 });

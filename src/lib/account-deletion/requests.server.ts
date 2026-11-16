@@ -13,7 +13,7 @@ export type DeletionChannel = "web" | "ios" | "android";
 export type SubmitResult =
   | { outcome: "received" | "duplicate"; request: DeletionRequest }
   | { outcome: "wrong_password" }
-  | { outcome: "unavailable" }
+  | { outcome: "unavailable"; reason?: "LAST_OWNER" }
   | { outcome: "failed" };
 export type CheckResult = { outcome: "found"; request: DeletionRequest } | { outcome: "none" | "wrong_password" | "unavailable" };
 
@@ -69,12 +69,13 @@ export async function submitDeletionRequest(input: {
   // everywhere" stays true for a duplicate as well.
   const id = randomUUID(), reference = newDeletionReference();
   try {
-    // The employee lock serializes acceptance; the partial unique conflict target
+    // Ordered Owner lifecycle locks also serialize deletion against another
+    // Owner's deletion or demotion. The partial unique conflict target
     // selects the existing open request on concurrent inserts. Revocations and
     // the winning request are committed together. This records a support workflow;
     // it does not perform the later account/data erasure from the runbook.
     const results = await neonNotificationExecutor().transaction([
-      { text: "SELECT id FROM employees WHERE id = $1 FOR UPDATE", values: [input.employeeId] },
+      { text: "SELECT id FROM employees WHERE id = $1 OR (active AND role='OWNER') ORDER BY id FOR UPDATE", values: [input.employeeId] },
       // Match the lifecycle → credential → session lock order used by sign-in/recovery.
       // Recheck in a separate statement after locks: a pre-lock snapshot is not authority.
       { text: "SELECT employee_id FROM employee_credentials WHERE employee_id = $1 FOR SHARE", values: [input.employeeId] },
@@ -86,6 +87,14 @@ export async function submitDeletionRequest(input: {
               OR EXISTS (SELECT 1 FROM account_deletion_requests r WHERE r.employee_id = e.id AND r.status IN ('received', 'processing')))
         ) THEN '1' ELSE 'deletion_authority_changed' END)::integer`,
         values: [input.employeeId, input.sessionTokenHash, credential.password_hash, credential.password_updated_at] },
+      { text: `SELECT (CASE WHEN
+          NOT EXISTS (SELECT 1 FROM employees WHERE id=$1 AND active AND role='OWNER')
+          OR EXISTS (SELECT 1 FROM account_deletion_requests WHERE employee_id=$1 AND status IN ('received','processing'))
+          OR EXISTS (
+            SELECT 1 FROM employees e WHERE e.id<>$1 AND e.active AND e.role='OWNER'
+              AND NOT EXISTS (SELECT 1 FROM account_deletion_requests r WHERE r.employee_id=e.id AND r.status IN ('received','processing'))
+          )
+        THEN '1' ELSE 'deletion_last_owner' END)::integer`, values: [input.employeeId] },
       { text: `INSERT INTO account_deletion_requests
           (id, reference, employee_id, workspace_id, channel, policy_version, status, verified_at, confirmed_at)
         SELECT $1, $2, e.id, l.workspace_id, $4, $5, 'received', clock_timestamp(), clock_timestamp()
@@ -105,6 +114,10 @@ export async function submitDeletionRequest(input: {
     if (!row) return { outcome: "unavailable" };
     return { outcome: row.created ? "received" : "duplicate", request: toRequest(row) };
   } catch (error) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === '22P02'
+      && 'message' in error && error.message === 'invalid input syntax for type integer: "deletion_last_owner"') {
+      return { outcome: "unavailable", reason: "LAST_OWNER" };
+    }
     if (schemaMissing(error)) return { outcome: "unavailable" };
     if (rejectedByDatabase(error)) return { outcome: "failed" };
     throw error;

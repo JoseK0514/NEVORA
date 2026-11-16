@@ -19,6 +19,10 @@ beforeEach(() => {
 });
 
 describe("account deletion requests", () => {
+  it("reports a last-Owner database refusal without claiming acceptance or an unknown outcome", async () => {
+    state.transaction.mockRejectedValue(Object.assign(new Error('invalid input syntax for type integer: "deletion_last_owner"'), { code: "22P02" }));
+    await expect(submitDeletionRequest(input)).resolves.toEqual({ outcome: "unavailable", reason: "LAST_OWNER" });
+  });
   it("makes readable references without 0, O, 1 or I", () => {
     for (let i = 0; i < 50; i++) expect(newDeletionReference()).toMatch(DELETION_REFERENCE);
     expect(newDeletionReference(new Uint8Array([0, 1, 2, 3, 4, 5, 6, 31]))).toBe("DEL-ABCDEFG9");
@@ -36,11 +40,11 @@ describe("account deletion requests", () => {
     expect(result).toMatchObject({ outcome: "received", request: { status: "received" } });
     const statements = state.transaction.mock.calls[0][0] as { text: string; values: unknown[] }[];
     expect(statements[0].text).toMatch(/FOR UPDATE/);
-    expect(statements[4].text).toMatch(/INSERT INTO account_deletion_requests[\s\S]*ON CONFLICT \(employee_id\) WHERE status IN \('received', 'processing'\) DO NOTHING/);
-    expect(statements[4].values).toEqual([expect.any(String), expect.stringMatching(DELETION_REFERENCE), "FICTIONAL-E1", "web", "2026-10-20-draft"]);
-    expect(statements[5].text).toMatch(/DELETE FROM employee_sessions WHERE employee_id = \$1/);
-    expect(statements[6].text).toBe("UPDATE employees SET updated_at = GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE id = $1");
-    expect(statements[7].text).toMatch(/UPDATE calendar_subscriptions[\s\S]*'account_loss'/);
+    expect(statements[5].text).toMatch(/INSERT INTO account_deletion_requests[\s\S]*ON CONFLICT \(employee_id\) WHERE status IN \('received', 'processing'\) DO NOTHING/);
+    expect(statements[5].values).toEqual([expect.any(String), expect.stringMatching(DELETION_REFERENCE), "FICTIONAL-E1", "web", "2026-10-20-draft"]);
+    expect(statements[6].text).toMatch(/DELETE FROM employee_sessions WHERE employee_id = \$1/);
+    expect(statements[7].text).toBe("UPDATE employees SET updated_at = GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE id = $1");
+    expect(statements[8].text).toMatch(/UPDATE calendar_subscriptions[\s\S]*'account_loss'/);
     expect(statements.every(statement => statement.values.includes("FICTIONAL-E1"))).toBe(true);
   });
 
