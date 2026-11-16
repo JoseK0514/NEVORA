@@ -129,3 +129,30 @@ Waiting for Codex's assembly and real-API QA. No other weekly or import endpoint
 
 The screens were revised to the app's own button pairs, rows, type sizes and spacing after Jose's review. Details, measurements
 and before/after captures: `docs/handoffs/2026-11-16-ui-craft-pass/`. No contract, request or recovery rule changed.
+
+## Codex integration follow-up (Nov 16, 2026, against Codex `dfaa5447`)
+
+Client-only; no backend file was edited (Codex's worktree was only read).
+
+1. **Citation allowlist** (`src/components/owner-advisor/public-response.ts`). Answer and briefing sources now also accept
+   exactly `/app/ai-manager/weekly?review=<UUIDv4>` (the backend's `reviewHref`) and
+   `/api/owner/advisor/knowledge/entries/<UUIDv4>/versions/<UUIDv4>` (the backend's `knowledgeSourceHref`), lowercase.
+   Extra query fields, other field names, fragments, trailing slashes, uppercase IDs, protocol-relative and external URLs
+   are rejected (regressions in `public-response.rondo.test.ts`).
+2. **Weekly model projection.** `weekly-contracts.ts` re-copied byte-for-byte from `dfaa5447` (adds
+   `WeeklyModelComparison` and `WeeklyInspectionReference`). `parseAnswer` validates an optional `answer.weeklyPlans`
+   with `parseWeeklyModelComparison` (`weekly-client.ts`): the full comparison checks, plus `comparisonId` UUIDv4,
+   `occurrence` 0 to `ADVISOR_MAX_TOOL_CALLS - 1`, `expiresAt`, `sourceFence` (64 lowercase hex), mode
+   `FILL_GAPS_ONLY`, each option's `reviewHref` equal to its own review link, and no `readReceiptId`, `changes`,
+   `receipt`, `command` or `acknowledged` anywhere in it. An answer that carries `weeklyInspectionRefs` is rejected.
+   Legacy answers and the `{notebookRevision, taskId}` context shape are unchanged. `contracts.ts` and
+   `workflow-contracts.ts` were not copied (backend-owned); the parsed answer type adds `weeklyPlans` locally.
+3. **24:00 end boundary** (`weekly-client.ts`). Gap and shift end times accept `24:00`; start times never do;
+   overnight ends (22:00 to 02:00) stay valid; `24:30`/`25:00` are refused. `24:00` reads "12:00 AM". Regressions in
+   `weekly-client.test.ts`; seen in the browser as "Sat, Nov 21 · 8:00 PM–12:00 AM" (mocked API).
+4. **Weekly switch.** `weekly/page.tsx` still reads `process.env.NEVORA_OWNER_ADVISOR_WEEKLY_ENABLED === "true"` on this
+   older base; switch to `readFeatureFlags(process.env).ownerAdvisorWeekly` at assembly.
+
+Checks: `tsc` and `eslint` clean; `vitest run src/lib/owner-advisor src/components/owner-advisor
+src/test/phosphor-icon-weight.test.ts`: 42 files, 404 tests pass; weekly browser pass (mocked API): all flows, 25
+measured screens, no overflow or clipping, no page errors. Kept local and unpushed.

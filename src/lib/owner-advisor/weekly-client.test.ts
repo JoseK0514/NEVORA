@@ -65,6 +65,25 @@ describe("reading weekly answers", () => {
   });
 });
 
+describe("day-end boundaries", () => {
+  const gap = (startTime: string, endTime: string) => ({ date: "2026-11-16", locationId: "loc-1", locationName: "Fictional Bakery", startTime, endTime, missingStaff: 1, requiresLead: null, positions: [], positionsOmitted: 0 });
+  const withGap = (g: unknown) => result({ comparison: comparison([summary({ coverage: measure(720), remaining: { total: 1, items: [g] } })]) });
+  it("accepts 24:00 as the end of a day-end gap and of a planned shift, and keeps overnight ends", () => {
+    expect(parseWeeklyResult(withGap(gap("20:00", "24:00"))).comparison?.alternatives[0].remaining.items[0].endTime).toBe("24:00");
+    expect(parseWeeklyResult(withGap(gap("22:00", "02:00"))).comparison?.alternatives[0].remaining.items[0].endTime).toBe("02:00");
+    const lateShift = { ...shift("Ana"), startTime: "20:00", endTime: "24:00" };
+    expect(parseWeeklyResult(result({ review: review({ changes: { additions: [lateShift, shift("Luis", "2026-11-17")], removals: [] } }), readReceiptId: HANDLE })).review?.changes.additions[0].endTime).toBe("24:00");
+  });
+  it("never accepts 24:00 as a start, or other out-of-day times", () => {
+    expect(() => parseWeeklyResult(withGap(gap("24:00", "24:00")))).toThrow();
+    expect(() => parseWeeklyResult(withGap(gap("20:00", "24:30")))).toThrow();
+    expect(() => parseWeeklyResult(withGap(gap("20:00", "25:00")))).toThrow();
+    const bad = { ...shift("Ana"), startTime: "24:00", endTime: "24:00" };
+    expect(() => parseWeeklyResult(result({ review: review({ changes: { additions: [bad, shift("Luis", "2026-11-17")], removals: [] } }), readReceiptId: HANDLE }))).toThrow();
+  });
+  it("says the day's end as midnight", () => expect(clockText("24:00")).toBe("12:00\u202FAM"));
+});
+
 describe("a pending approval across a reload", () => {
   const pending: PendingApply = { reviewId: REVIEW, requestId: OP, termsDigest: DIGEST, readReceiptId: HANDLE, acknowledged: true, authority: "owner-authority-1" };
   const memory = () => { const map = new Map<string, string>(); return { getItem: (k: string) => map.get(k) ?? null, setItem: (k: string, v: string) => { map.set(k, v); }, removeItem: (k: string) => { map.delete(k); }, map }; };

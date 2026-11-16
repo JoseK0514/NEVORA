@@ -44,6 +44,11 @@ export type WeeklyComparison = {
     limits: { maxNodes: number; maxEvaluations: number; maxPeriods: number; maxAdditions: number; maxRemovals: number; totalMs: number; alternativeMs: number };
     searches: { evaluations: number; periods: number; nodes: number }[] };
 };
+/** Bounded read-only model projection. Private full sets and approval handles
+ * stay in the separate Owner API. occurrence is assigned by the server loop. */
+export type WeeklyModelComparison = Omit<WeeklyComparison, 'alternatives'> & { comparisonId: string; occurrence: number;
+  expiresAt: string; sourceFence: string; alternatives: (WeeklyAlternativeSummary & { reviewHref: string })[] };
+export type WeeklyInspectionReference = { comparisonId: string; occurrence: number };
 
 /** Content-free historical custody. Exact row/episode custody is retained on the
  * server with this receipt, rather than exposing raw source rows to clients. */

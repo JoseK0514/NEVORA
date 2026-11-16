@@ -7,6 +7,9 @@ import {
 } from "@/lib/owner-advisor/contracts";
 import { notebookId, notebookRevision, parseNotebook } from "@/lib/owner-advisor/notebook";
 import { parseCoveragePlans } from "./public-coverage-plans";
+import { ADVISOR_MAX_TOOL_CALLS } from "@/lib/owner-advisor/contracts";
+import { parseWeeklyModelComparison } from "@/lib/owner-advisor/weekly-client";
+import type { WeeklyModelComparison } from "@/lib/owner-advisor/weekly-contracts";
 function requireValue(value: unknown): asserts value {
   if (!value) throw Error("Invalid advisor response");
 }
@@ -15,6 +18,9 @@ const text = (v: unknown, max = 12000) =>
 const date = (v: unknown) =>
   typeof v === "string" && Number.isFinite(Date.parse(v));
 const count = (v: unknown) => Number.isSafeInteger(v) && Number(v) >= 0;
+const UUID = "[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}";
+const WEEKLY_REVIEW = new RegExp(`^/app/ai-manager/weekly\\?review=${UUID}$`);
+const KNOWLEDGE_VERSION = new RegExp(`^/api/owner/advisor/knowledge/entries/${UUID}/versions/${UUID}$`);
 function stamp(v: Record<string, unknown>) {
   requireValue(
     text(v.authority, 512) &&
@@ -39,7 +45,10 @@ function sources(v: unknown, maximum = 8) {
         (/^\/app$/.test(s.href) ||
           /^\/app\/payroll$/.test(s.href) || /^\/app\/timecards\?start=20\d\d-\d\d-\d\d&end=20\d\d-\d\d-\d\d$/.test(s.href) ||
           (/^\/app\/schedule\?week=20\d\d-\d\d-\d\d$/.test(s.href) &&
-            date(s.href.slice(-10)))),
+            date(s.href.slice(-10))) ||
+          // Rondo's own private destinations (Nov 16, 2026): one weekly plan's review, and one company-guidance version.
+          // Exact shapes only: no other query field, no fragment, nothing external.
+          WEEKLY_REVIEW.test(s.href) || KNOWLEDGE_VERSION.test(s.href)),
     );
   }
 }
@@ -119,7 +128,7 @@ export function parseSnapshot(value: unknown): AdvisorSnapshot {
 }
 export type AnswerResponse = {
   state: "answered";
-  answer: AdvisorAnswer;
+  answer: AdvisorAnswer & { weeklyPlans?: WeeklyModelComparison };
   authority: string;
   observedAt: string;
   validForMs: number;
@@ -135,6 +144,11 @@ export function parseAnswer(value: unknown): AnswerResponse {
   sources(value.answer.sources, ADVISOR_MAX_ANSWER_SOURCES);
   const a = value.answer;
   if (a.coveragePlans !== undefined) parseCoveragePlans(a.coveragePlans);
+  // Weekly inspection custody is the server's alone: an answer that carries it is not a public answer.
+  requireValue(!("weeklyInspectionRefs" in a));
+  if (a.weeklyPlans !== undefined) {
+    try { parseWeeklyModelComparison(a.weeklyPlans, ADVISOR_MAX_TOOL_CALLS); } catch { requireValue(false); }
+  }
   if (a.context !== undefined) {
     const c = a.context;
     requireValue(record(c) && Object.keys(c).sort().join(",") === "notebookRevision,taskId" &&

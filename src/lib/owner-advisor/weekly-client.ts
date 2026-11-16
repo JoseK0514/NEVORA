@@ -6,7 +6,7 @@ import { coverageId, coverageUuid } from "./coverage-actions";
 import type { CoverageMeasure } from "./coverage-plan-contracts";
 import {
   weeklyMonday, type WeeklyAlternativeSummary, type WeeklyAssignmentView, type WeeklyCommand, type WeeklyComparison, type WeeklyFairness, type WeeklyGap,
-  type WeeklyInspectionReason, type WeeklyMode, type WeeklyPlanReview, type WeeklyProgress, type WeeklyReceipt, type WeeklyRemoval, type WeeklyResult, type WeeklyScope,
+  type WeeklyInspectionReason, type WeeklyMode, type WeeklyModelComparison, type WeeklyPlanReview, type WeeklyProgress, type WeeklyReceipt, type WeeklyRemoval, type WeeklyResult, type WeeklyScope,
 } from "./weekly-contracts";
 
 export const WEEKLY_ENDPOINT = "/api/owner/advisor/weekly";
@@ -22,6 +22,9 @@ const digest = (value: unknown) => typeof value === "string" && /^[a-f0-9]{64}$/
 const instant = (value: unknown) => typeof value === "string" && value.length <= 64 && Number.isFinite(Date.parse(value)) ? new Date(value).toISOString() : fail();
 const day = (value: unknown) => typeof value === "string" && /^20\d\d-\d\d-\d\d$/.test(value) && new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value ? value : fail();
 const clock = (value: unknown) => typeof value === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(value) ? value : fail();
+/** An end boundary may also be the canonical day end, 24:00 (generation emits it for day-end gaps). A start never may. An
+ * end before its start is an overnight period and stays valid. */
+const endClock = (value: unknown) => value === "24:00" ? value : clock(value);
 const oneOf = <T extends string>(value: unknown, allowed: readonly T[]) => allowed.includes(value as T) ? value as T : fail();
 const list = (value: unknown, max = 5000) => Array.isArray(value) && value.length <= max ? value : fail();
 
@@ -51,7 +54,7 @@ function fairness(value: unknown): WeeklyFairness {
 }
 function gap(value: unknown): WeeklyGap {
   if (!object(value)) return fail();
-  return { date: day(value.date), locationId: id(value.locationId), locationName: text(value.locationName, 200), startTime: clock(value.startTime), endTime: clock(value.endTime),
+  return { date: day(value.date), locationId: id(value.locationId), locationName: text(value.locationName, 200), startTime: clock(value.startTime), endTime: endClock(value.endTime),
     missingStaff: value.missingStaff === null ? null : count(value.missingStaff), requiresLead: value.requiresLead === null ? null : typeof value.requiresLead === "boolean" ? value.requiresLead : fail(),
     positions: list(value.positions, 50).map(p => object(p) ? { name: text(p.name, 200), missing: count(p.missing) } : fail()), positionsOmitted: count(value.positionsOmitted) };
 }
@@ -94,7 +97,7 @@ function comparison(value: unknown): WeeklyComparison {
 }
 function assignment(value: unknown): WeeklyAssignmentView {
   if (!object(value) || typeof value.isDesignatedLead !== "boolean") return fail();
-  return { employeeId: id(value.employeeId), locationId: id(value.locationId), date: day(value.date), startTime: clock(value.startTime), endTime: clock(value.endTime),
+  return { employeeId: id(value.employeeId), locationId: id(value.locationId), date: day(value.date), startTime: clock(value.startTime), endTime: endClock(value.endTime),
     positionId: value.positionId === null ? null : id(value.positionId), isDesignatedLead: value.isDesignatedLead as boolean,
     employeeName: text(value.employeeName, 300), locationName: text(value.locationName, 200), positionName: value.positionName === null ? null : text(value.positionName, 200) };
 }
@@ -151,6 +154,29 @@ export function parseWeeklyResult(value: unknown): WeeklyResult {
   return result;
 }
 
+export const weeklyReviewHref = (reviewId: string) => `/app/ai-manager/weekly?review=${reviewId}`;
+/** The read-only projection a Rondo answer may carry (Codex dfaa5447): a comparison's summaries plus server identity,
+ * occurrence, expiry and source fence, and each option's review link. Never full terms, a read handle or an apply path. */
+export function parseWeeklyModelComparison(value: unknown, maxOccurrence = 8): WeeklyModelComparison {
+  if (!object(value)) return fail();
+  // Summary metadata only: a read handle, a change set or an approval command never belongs in an answer.
+  const forbidden = ["readReceiptId", "changes", "receipt", "command", "acknowledged"];
+  if (forbidden.some(key => key in value) || (Array.isArray(value.alternatives) && value.alternatives.some(o => object(o) && forbidden.some(key => key in o)))) fail();
+  const { comparisonId, occurrence, expiresAt, sourceFence, alternatives, ...rest } = value;
+  if (!Number.isSafeInteger(occurrence) || Number(occurrence) < 0 || Number(occurrence) >= maxOccurrence) fail();
+  if (typeof sourceFence !== "string" || !/^[a-f0-9]{64}$/.test(sourceFence)) fail();
+  const options = list(alternatives, 2).map(option => {
+    if (!object(option)) return fail();
+    const { reviewHref, ...summary } = option;
+    const parsed = alternative(summary);
+    if (reviewHref !== weeklyReviewHref(parsed.id)) fail();
+    return { ...parsed, reviewHref: reviewHref as string };
+  });
+  const base = comparison({ ...rest, alternatives: options.map(({ reviewHref: _href, ...summary }) => summary) });
+  if (base.mode !== "FILL_GAPS_ONLY") fail();
+  return { ...base, comparisonId: uuid(comparisonId), occurrence: Number(occurrence), expiresAt: instant(expiresAt), sourceFence: sourceFence as string, alternatives: options };
+}
+
 /* ---------- Transport ---------- */
 export type WeeklyFailure = "invalid" | "forbidden" | "conflict" | "limit" | "disabled";
 /** `uncertain`: the request may or may not have taken effect (dropped connection, 503 other than disabled, unreadable). */
@@ -202,7 +228,8 @@ export const applyCommand = (pending: PendingApply): WeeklyCommand => ({ op: "ap
 /* ---------- Words ---------- */
 export const hours = (minutes: number) => { const value = Math.round((minutes / 60) * 10) / 10; return `${Number.isInteger(value) ? value : value.toFixed(1)} h`; };
 export function clockText(value: string) {
-  const [h, m] = value.split(":").map(Number);
+  // 24:00 is the day's end: midnight, 12:00 AM.
+  const [hour, m] = value.split(":").map(Number), h = hour % 24;
   return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
 }
 const utc = (date: string) => new Date(`${date}T12:00:00Z`);
