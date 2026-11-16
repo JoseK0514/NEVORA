@@ -60,19 +60,21 @@ it('connects original shift reviews and explicit period history in owned Chromiu
       for (const actor of ['UI-COMPANY', 'UI-LOCAL']) {
         const context = await browser.newContext({ viewport: { width: 390, height: 1000 }, serviceWorkers: 'block', reducedMotion: 'reduce' });
         const page = await context.newPage(); page.setDefaultTimeout(20000);
+        const pause = async () => { await page.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await page.waitForLoadState('networkidle'); };
+        const visit = async (path: string) => { if (page.url() !== 'about:blank') await pause(); return page.goto(app.url + path); };
         failureShot = () => page.screenshot({ path: resolve(evidence, `${engine}-${actor}-failure.png`), fullPage: true });
         page.on('pageerror', (error: Error) => errors.push(`${engine} ${actor}: ${error.message}`));
         await context.route('**/*', async (route: { request(): { url(): string }; abort(): Promise<void>; continue(): Promise<void> }) => {
           const url = new URL(route.request().url());
           if (['http:', 'https:'].includes(url.protocol) && url.origin !== app.url) await route.abort(); else await route.continue();
         });
-        await page.goto(app.url + '/login');
+        await visit('/login');
         await page.getByLabel('Employee ID', { exact: true }).fill(actor);
         await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
         await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(app.url + '/app');
         const id = `${engine}-${actor}`;
         await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES($1,'ui-review','UI-WORKER','2026-10-12','08:00','16:00')", [id]);
-        await page.goto(app.url + '/app/schedule/edit?shiftId=' + id);
+        await visit('/app/schedule/edit?shiftId=' + id);
         const form = page.locator('form').filter({ has: page.locator('[name="employeeId"]') });
         await form.locator('[name="expectedReviewVersion"]').waitFor({ state: 'attached' });
         const version = await form.locator('[name="expectedReviewVersion"]').inputValue(); expect(version).toMatch(/^[a-f0-9]{64}$/);
@@ -96,6 +98,7 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         }
         await page.screenshot({ path: resolve(evidence, `${engine}-${actor}-conflict.png`), fullPage: true });
         checks.push(`${engine} ${actor}: edit/delete reject original stale review, keep draft, keyboard confirmation, 320/390/768/1440`);
+        await page.waitForLoadState('networkidle');
         await page.getByRole('button', { name: 'Reload current shift', exact: true }).first().click();
         await form.locator('[name="notes"]').waitFor();
         expect(await form.locator('[name="notes"]').inputValue()).toBe('Concurrent edit');
@@ -104,7 +107,7 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         await page.waitForURL(/\/app\/schedule\?/);
         expect(await q('SELECT notes FROM shifts WHERE id=$1', [id])).toEqual([{ notes: 'Fresh reviewed edit' }]);
         checks.push(`${engine} ${actor}: explicit reload and valid review save`);
-        await page.goto(app.url + '/app/schedule/edit?shiftId=' + id);
+        await visit('/app/schedule/edit?shiftId=' + id);
         await page.getByRole('button', { name: actor === 'UI-LOCAL' ? 'Review deletion' : 'Delete shift', exact: true }).click();
         await page.getByRole('button', { name: actor === 'UI-LOCAL' ? 'Delete this draft shift' : 'Delete this shift', exact: true }).click();
         await page.waitForURL(/\/app\/schedule\?/);
@@ -112,7 +115,7 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         checks.push(`${engine} ${actor}: fresh original-review delete`);
 
         if (actor === 'UI-COMPANY') {
-          await page.goto(app.url + '/app/payroll-export?start=' + period.startDate + '&end=' + period.endDate);
+          await visit('/app/payroll-export?start=' + period.startDate + '&end=' + period.endDate);
           await page.getByText('Who’s included and sent files', { exact: true }).click();
           const mobile = page.getByRole('button', { name: 'Review payroll population', exact: true });
           if (await mobile.isVisible()) await mobile.click();
@@ -127,6 +130,8 @@ it('connects original shift reviews and explicit period history in owned Chromiu
           expect(await history.locator('li').count()).toBe(1001);
           expect(await history.getByRole('button', { name: 'Load older events', exact: true }).count()).toBe(0);
           await page.setViewportSize({ width: 390, height: 1000 });
+          if (await mobile.isVisible()) await mobile.click();
+          await history.getByRole('heading', { name: 'Full period history', exact: true }).scrollIntoViewIfNeeded();
           expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
           await page.screenshot({ path: resolve(evidence, `${engine}-history.png`), fullPage: false });
           await page.evaluate(() => window.dispatchEvent(new Event('blur')));
@@ -134,7 +139,7 @@ it('connects original shift reviews and explicit period history in owned Chromiu
           expect(await q('SELECT manifest_hash FROM payroll_period_manifests WHERE id=$1', [manifest.id])).toEqual(originalArtifact);
           checks.push(`${engine}: 1001 real events, explicit 50-row pages, complete traversal, unchanged artifact hash, blur retirement`);
         }
-        await context.close();
+        await pause(); await context.close();
       }
     }
     expect(errors).toEqual([]); complete = true;
