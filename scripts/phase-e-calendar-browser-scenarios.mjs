@@ -96,7 +96,7 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
   await page.goto(app.url+'/app/schedule');await currentPageReady();
   if(phone){await page.getByRole('link',{name:/^More, /}).click();await page.waitForURL(url=>url.pathname==='/app/more');}
   else await page.getByRole('button',{name:/, account menu$/}).click();
-  const calendarEntry=(phone?page.locator('main'):page.locator('#portal-account-menu')).getByRole('link',{name:'Add shifts to your calendar',exact:true});assert.equal(await calendarEntry.getAttribute('href'),'/app/profile/calendar');
+  const calendarEntry=(phone?page.locator('main'):page.locator('#portal-account-menu')).getByRole('link',{name:/^Add shifts to your calendar(?:,| |$)/});assert.equal(await calendarEntry.getAttribute('href'),'/app/profile/calendar');
   await calendarEntry.click();await page.waitForURL(url=>url.pathname==='/app/profile/calendar');await page.getByRole('heading',{level:1,name:'Add to calendar',exact:true}).waitFor();
   await state('none');await currentPageReady();
  });

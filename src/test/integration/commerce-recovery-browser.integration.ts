@@ -97,7 +97,7 @@ it('renders actual recovery routes with current sessions, bounded status reads a
    await page.getByLabel('Enter your password to confirm',{exact:true}).fill(TEST_PASSWORD);
    await page.getByRole('checkbox').check();await page.getByRole('button',{name:'Delete my account',exact:true}).click();
    await page.locator('[data-deletion-state="received"]').waitFor();
-   const reference=await page.locator('.ad-reference').innerText();expect(reference).toMatch(/^DEL-[A-HJ-NP-Z2-9]{8}$/);
+   const reference=await page.locator('.ad-reference:visible').innerText();expect(reference).toMatch(/^DEL-[A-HJ-NP-Z2-9]{8}$/);
    expect(await app.database.executor.query({text:'SELECT reference FROM account_deletion_requests WHERE employee_id=$1',values:[deletionEmployee]})).toEqual([{reference}]);
    expect(await app.database.executor.query({text:'SELECT token_hash FROM employee_sessions WHERE employee_id=$1',values:[deletionEmployee]})).toEqual([]);
    await page.goto(origin+'/app/account/delete');await page.waitForURL(/\/login(?:\?|$)/);

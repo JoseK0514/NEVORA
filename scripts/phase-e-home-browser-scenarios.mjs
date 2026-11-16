@@ -111,7 +111,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const actionHrefs=result=>actionItems(result).map(item=>item.href);
  const recorded=()=>page.locator('aside[aria-label="Own recorded time"]');
  const nativeTab=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',nativeBackTab=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
- const ready=async()=>{await page.locator('[data-home-state="partial"],[data-home-state="ready"]').waitFor();await page.waitForLoadState('networkidle');};
+ const ready=async()=>{await page.locator('[data-home-state="partial"],[data-home-state="ready"]').waitFor({state:'attached'});await next().waitFor();assert.equal(await page.getByText('Loading your shift…',{exact:true}).filter({visible:true}).count(),0);await page.waitForLoadState('networkidle');};
  const refresh=async()=>{
   await page.bringToFront();await ready();
   try {

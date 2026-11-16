@@ -66,17 +66,19 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     surfacePhase='privacy-retirement';await mark('privacy-retirement:start');await reason.fill('PRIVATE-RETIRED-DRAFT');await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
     expect(await page.locator('textarea').count()).toBe(0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
     await page.locator('dialog[open]').waitFor();await page.getByRole('button',{name:'Close open punch',exact:true}).click();await end.waitFor();expect(await reason.inputValue()).toBe('');
+    // Crossing the phone layout remounts the inspector and deliberately retires its draft.
+    for(const [width,scale] of [[320,100],[390,100],[1440,100],[390,200]]){
+     await page.setViewportSize({width,height:1000});await page.evaluate((scale:number)=>{document.documentElement.style.fontSize=scale+'%';},scale);
+     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),engine+' '+width+' '+scale).toBe(true);
+    }
+    await page.evaluate(()=>{document.documentElement.style.fontSize='100%';});await page.setViewportSize({width:index?390:1440,height:1000});
+    if(!await end.isVisible())await page.getByRole('button',{name:'Close open punch',exact:true}).click();await end.waitFor();
     surfacePhase='confirmation';await mark('confirmation:start');const chosen=formatBusinessDateTimeInput(new Date(Date.now()-30*60000).toISOString(),'America/Puerto_Rico');await end.fill(chosen);await reason.fill('Verified last worked time; worker and tablet are unavailable.');
     expect(await page.locator('textarea').evaluate((el:HTMLTextAreaElement)=>el.labels![0].textContent?.trim())).toBe('Reason for closing');
     const confirmation=page.getByLabel('I verified this end time and reason.',{exact:true});
     expect(await confirmation.evaluate((el:HTMLInputElement)=>el.labels![0].getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
     if(engine==='chromium'){await reason.focus();await page.keyboard.press('Tab');expect(await confirmation.evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);await page.keyboard.press('Space');}
     else await confirmation.check();
-    for(const [width,scale] of [[320,100],[390,100],[1440,100],[390,200]]){
-     await page.setViewportSize({width,height:1000});await page.evaluate((scale:number)=>{document.documentElement.style.fontSize=scale+'%';},scale);
-     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),engine+' '+width+' '+scale).toBe(true);
-    }
-    await page.evaluate(()=>{document.documentElement.style.fontSize='100%';});await page.setViewportSize({width:index?390:1440,height:1000});
     const shot=resolve(evidence,engine+'-'+actor+'-confirmation.png');await page.screenshot({path:shot,fullPage:false});captures.push(shot);
     const bodies:string[]=[];let interrupted=false,foreignContext=false,committed:()=>void=()=>{},releaseResponse:()=>void=()=>{};
     const committedResponse=new Promise<void>(resolve=>{committed=resolve;}),responseGate=new Promise<void>(resolve=>{releaseResponse=resolve;});releasePending.push(releaseResponse);

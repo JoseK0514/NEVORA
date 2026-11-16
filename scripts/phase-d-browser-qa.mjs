@@ -113,7 +113,7 @@ try{
     const cardsUrl='/app/my-time?view=cards&start=2026-09-21&end=2026-09-27',periodCard=ep.locator(':is(#hours-timecard,#b-hours-timecard):visible');
     const pastCards=async()=>{await ep.waitForURL(u=>u.pathname+u.search===cardsUrl);await ep.locator('.c-hours[data-hours-view="cards"][data-hours-state="ready"]').waitFor();await ep.getByRole('heading',{name:'Past timecards',exact:true,level:1}).waitFor();await periodCard.waitFor();};
     await pastCards();assert.equal(await periodCard.count(),1);
-    assert.match(await periodCard.locator('.c-big,.eb-sum__big').innerText(),/^8\s*h$/);assert(await periodCard.getByText('Hours · includes 30 min of breaks',{exact:true}).isVisible());checked(engine+': employee self period and break totals');
+    assert.match(await periodCard.locator('.c-big,.eb-sum__big').locator('[aria-hidden="true"]:visible').innerText(),/^8\s*h$/);assert(await periodCard.getByText('Hours · includes 30 min of breaks',{exact:true}).isVisible());checked(engine+': employee self period and break totals');
     await periodCard.getByRole('link',{name:/^Tue,? (?:Sep )?22\b/}).click();await ep.waitForURL(u=>u.pathname==='/app/my-time'&&u.searchParams.get('entry')==='D3-UI');
     await ep.getByRole('heading',{name:'Punches',exact:true}).waitFor();await ep.getByRole('link',{name:'Request a correction',exact:true}).waitFor();
     // Every width measures the same Past timecards page: its Back link, the day row, and the period controls that replaced
@@ -125,9 +125,9 @@ try{
       await ep.goto('about:blank');
       await ep.setViewportSize({width,height:1000});
       await ep.goto(app.url+url,{waitUntil:'commit'});await pastCards();
-      assert.match(await periodCard.locator('.c-big,.eb-sum__big').innerText(),/^8\s*h$/,'Every width keeps the recorded total');
+      assert.match(await periodCard.locator('.c-big,.eb-sum__big').locator('[aria-hidden="true"]:visible').innerText(),/^8\s*h$/,'Every width keeps the recorded total');
       const geometry=await ep.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,
-        controls:[...document.querySelectorAll('.c-hours[data-hours-view="cards"] a,.c-hours[data-hours-view="cards"] button,.c-hours[data-hours-view="cards"] input')].map(e=>{const box=e.getBoundingClientRect(),style=getComputedStyle(e);return {tag:e.tagName,type:e.getAttribute('type'),href:e.getAttribute('href'),label:e.getAttribute('aria-label')??e.textContent?.trim(),className:typeof e.className==='string'?e.className:'',height:box.height,width:box.width,display:style.display,visibility:style.visibility,minimum:style.minHeight,rendered:e.getClientRects().length>0&&style.visibility!=='hidden'&&style.visibility!=='collapse'};})}));
+        controls:[...document.querySelectorAll('.c-hours[data-hours-view="cards"] a,.c-hours[data-hours-view="cards"] button,.c-hours[data-hours-view="cards"] input')].map(e=>{const box=e.getBoundingClientRect(),style=getComputedStyle(e),after=getComputedStyle(e,'::after'),top=parseFloat(after.top),bottom=parseFloat(after.bottom),height=after.content!=='none'&&after.content!=='normal'&&after.position==='absolute'&&style.position!=='static'&&Number.isFinite(top)&&Number.isFinite(bottom)?Math.max(box.height,box.height-top-bottom):box.height;return {tag:e.tagName,type:e.getAttribute('type'),href:e.getAttribute('href'),label:e.getAttribute('aria-label')??e.textContent?.trim(),className:typeof e.className==='string'?e.className:'',height,visualHeight:box.height,width:box.width,display:style.display,visibility:style.visibility,minimum:style.minHeight,rendered:e.getClientRects().length>0&&style.visibility!=='hidden'&&style.visibility!=='collapse'};})}));
       // A phone-only disclosure stays in the shared tree but is display:none on desktop.
       // Preserve every raw node; the same target threshold applies to actual rendered controls.
       (report.employeeControlGeometry??=[]).push({engine,viewport:width,surface:'past-timecards',...geometry});

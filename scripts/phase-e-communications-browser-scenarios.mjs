@@ -54,11 +54,11 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   try{
    await login(manager,await seedOwnedScenarioOwner(app.database.executor,label));
    await Promise.all(managerReads.map(async path=>{
-    try{const response=firstReads.get(path)??await manager.waitForResponse(response=>new URL(response.url()).pathname===path);bootstrapReceipt.authenticated.push({path,status:response.status()});await saveBootstrap();assert.equal(response.status(),200,'Current Owner dashboard read succeeds');}
+    try{const response=firstReads.get(path)??await manager.waitForResponse(response=>new URL(response.url()).pathname===path);bootstrapReceipt.authenticated.push({path,status:response.status()});await saveBootstrap();assert.equal(response.status(),200,'Current Owner dashboard read succeeds');assert.equal(await response.finished(),null,'Current Owner dashboard response completes');}
     catch(error){bootstrapReceipt.authenticated.push({path,failure:safeBrowserFailure(error).summary});await saveBootstrap();throw error;}
    }));
   }finally{manager.off('response',captureRead);}
-  await manager.waitForLoadState('networkidle');
+  await waitForPortalReady(manager);
   stage='compose';await manager.goto(app.url+'/app/updates/compose');await manager.getByLabel('Title',{exact:true}).waitFor();
   await manager.getByLabel('Title',{exact:true}).fill('A'.repeat(121));await manager.getByRole('textbox',{name:'Message',exact:true}).fill('Fictional content');await manager.getByRole('button',{name:'Next',exact:true}).click();await manager.locator('#communication-title-error').getByText('Title must contain 1–120 characters.',{exact:true}).waitFor();assert.equal(await manager.getByLabel('Title',{exact:true}).getAttribute('aria-invalid'),'true');
   const title=`${label} Accents á and emoji 👩🏽‍💻 `+'T'.repeat(60),body='First line <script>plain text</script>\n'+'á'.repeat(1300)+'\nLast line before acknowledgement';

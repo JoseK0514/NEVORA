@@ -43,7 +43,7 @@ it('keeps one mobile Access presentation in short touch landscape and preserves 
      const fields=path==='/login'?[['login-employee-id','FICTIONAL-ROTATION'],['login-password','Unsent fixture only 123!']]:[['recovery-employee-id','FICTIONAL-ROTATION'],['recovery-email','rotation@example.invalid']];
      for(const [id,value]of fields)await page.locator('#'+id).fill(value);
      for(const viewport of [{width:844,height:390},{width:1440,height:900},{width:320,height:844},{width:390,height:844}]){
-      await page.setViewportSize(viewport);await expect.poll(()=>page.evaluate(()=>{const card=document.querySelector<HTMLElement>('.ma-card');return Boolean(card&&parseFloat(getComputedStyle(card).borderTopWidth)>=1);}),{timeout:2000}).toBe(viewport.width<=767||viewport.height<=500).catch(()=>{failures.push({engine,path,viewport,reason:'Form presentation did not follow rotation'});});
+      await page.setViewportSize(viewport);await expect.poll(()=>page.evaluate(()=>{const card=document.querySelector<HTMLElement>('.ma-card');if(!card)return false;const style=getComputedStyle(card);return parseFloat(style.borderTopWidth)>=1||style.boxShadow!=='none';}),{timeout:2000}).toBe(viewport.width<=767||viewport.height<=500).catch(()=>{failures.push({engine,path,viewport,reason:'Form presentation did not follow rotation'});});
       for(const [id,value]of fields){expect(await page.locator('#'+id).count()).toBe(1);expect(await page.locator('#'+id).inputValue()).toBe(value);}
       expect(await page.locator('form:visible').count()).toBe(1);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);rotations.push({engine,path,viewport,fieldsPreserved:true});
      }

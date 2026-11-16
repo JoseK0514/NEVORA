@@ -105,3 +105,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p[role="alert"]) .employee-weekly-confirmation { align-items: flex-start; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p[role="alert"]) p { text-align: left; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .es-blocked summary { min-height: 36px; }
+
+/* Keep the approved 36px confirmation pill while giving it a native 44px hit band. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action) { position: relative; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action)::after { content: ""; position: absolute; inset: -4px 0; }

@@ -43,7 +43,7 @@ try{for(const engine of ['chromium','webkit']){
   const context=await browser.newContext();let externalRequests=0;
   await context.route('**/*',route=>{if(new URL(route.request().url()).origin!==origin){externalRequests++;return route.abort();}return route.continue();});
   const page=await context.newPage();page.setDefaultTimeout(5000);const errors=[];page.on('pageerror',error=>errors.push(error.message));
-  await page.goto(origin);await page.getByRole('button',{name:'Clock In',exact:true}).waitFor();
+  await page.goto(origin);await page.getByRole('button',{name:'Clock in',exact:true}).waitFor();
   for(const step of [1,2,3]){
    await page.evaluate(step=>window.fixtureResume(step),step);
    // A stale Ready frame cannot pass: await the new response's distinct heading or a failure state.
@@ -51,7 +51,7 @@ try{for(const engine of ['chromium','webkit']){
    const state=await page.locator('[data-clocker-state]').getAttribute('data-clocker-state');
    result.observations.push({step,state});assert.equal(state,'ready','Restarted state reading must open a usable journal rather than reuse the cleanup-closed connection');
    await page.getByRole('heading',{name:'Hi, Avery '+(step+1)+'.',exact:true}).waitFor();
-   await page.getByRole('button',{name:'Clock In',exact:true}).waitFor();
+   await page.getByRole('button',{name:'Clock in',exact:true}).waitFor();
   }
   assert.equal(reads,4);assert.equal(writes,0);assert.equal(externalRequests,0);assert.deepEqual(errors,[]);
   result.status='passed';result.reads=reads;result.writes=writes;await context.close();

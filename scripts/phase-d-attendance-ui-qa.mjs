@@ -1,3 +1,4 @@
+import {waitForPortalReady} from './browser-render-readiness.mjs';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
@@ -149,7 +150,7 @@ async function login(context, employeeId) {
     page.waitForURL((url) => url.pathname === '/app'),
     page.getByRole('button', { name: 'Sign in', exact: true }).click(),
   ]);
-  await page.waitForLoadState('networkidle');
+  await waitForPortalReady(page);
   await page.close();
 }
 
