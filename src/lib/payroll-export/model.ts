@@ -28,7 +28,7 @@ export function canonicalPayrollExport(workspaceId:string,observedAt:string,peri
  const normalizedPeriod=parsePeriod(period.startDate,period.endDate);
  const parsed=parseTimecardsResponse({observedAt,cards,...(paging?{paging}:{})},normalizedPeriod);
  const selected=employeeIds.map(id=>{const c=parsed.cards.find(c=>c.card.employeeId===id);if(!c)throw new Error('Employee unavailable in this workspace');return c;});
- if(selected.some(c=>c.state!=='FINALIZED'||c.card.issues.length||c.history[0]?.action!=='FINALIZE'||c.history[0].sourceHash!==c.sourceHash))throw new Error('Every selected timecard must have a current finalized revision');
+ if(selected.some(c=>c.state!=='FINALIZED'||c.card.issues.length||c.history[0]?.action!=='FINALIZE'||c.history[0].sourceHash!==c.sourceHash))throw new PayrollExportReviewError('FINALIZED_TIMECARDS_REQUIRED');
  const zones=new Set(selected.map(c=>c.card.timeZone));if(zones.size!==1)throw new Error('Inconsistent export timezone');
  const model:CanonicalPayrollExport={version:1,workspaceId,timeZone:selected[0].card.timeZone,period:normalizedPeriod,timeBasis:'RECORDED_ELAPSED_INCLUDING_BREAKS',rows:selected.sort((a,b)=>a.card.employeeId.localeCompare(b.card.employeeId)).map(c=>({employeeId:c.card.employeeId,employeeName:c.card.employeeName,revision:c.revision,sourceHash:c.sourceHash,finalizationOperationId:c.history[0].operationId,recordedNanoseconds:c.card.recordedNanoseconds,breakNanoseconds:c.card.breakNanoseconds,entries:c.card.entries.map(e=>{const single=projectTimecard({...c.source,entries:[e],pendingCorrections:0,corrections:[]},observedAt);return {...e,recordedNanoseconds:single.recordedNanoseconds,breakNanoseconds:single.breakNanoseconds};})}))};
  return paidTime===undefined?model:projectPaidPayrollExport(model,paidTime);
@@ -79,7 +79,7 @@ export function mappedPayrollCsv(model:CanonicalPayrollExport,input:ExportProfil
  const rows=projected.map(row=>profile.columns.map(column=>{
   switch(column.source){
    case 'constant':return column.constant??'';
-   case 'providerEmployeeId':{const id=profile.employeeMappings.find(m=>m.employeeId===row.employeeId)?.providerEmployeeId;if(!id)throw new Error(`Provider identifier required for ${row.employeeName}`);return id;}
+   case 'providerEmployeeId':{const id=profile.employeeMappings.find(m=>m.employeeId===row.employeeId)?.providerEmployeeId;if(!id)throw new PayrollExportReviewError('PROVIDER_EMPLOYEE_MAPPING_REQUIRED');return id;}
    case 'periodStart':return date(model.period.startDate);case 'periodEnd':return date(model.period.endDate);
    case 'businessDate':return row.businessDate?date(row.businessDate):'';
    case 'paidHours':case 'unpaidBreakHours':case 'paidRestHours':case 'recordedHours':{const field={paidHours:'paidNanoseconds',unpaidBreakHours:'unpaidBreakNanoseconds',paidRestHours:'paidRestNanoseconds',recordedHours:'recordedNanoseconds'} as const;const hours=decimalHours(row[field[column.source]]!,profile.hourDecimals,profile.precision);if(profile.format==='ADP_RUN_GENERIC_V1'&&hours.length>11)throw new Error('RUN hours exceed documented field width');return hours;}

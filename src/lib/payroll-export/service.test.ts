@@ -61,6 +61,16 @@ const invalidProfiles=[
  ...['REJECT_INEXACT','HALF_UP'].map(precision=>({label:'array '+precision,profile:{...neutralProfile(),hourDecimals:0,precision:[precision],columns:[{header:'Hours',source:'recordedHours'}]}})),
 ];
 describe('NVA-001 real export-service validation boundaries',()=>{
+ it('classifies a confirmed pre-write missing provider mapping as reviewable input',async()=>{
+  const f=fixture({...neutralProfile(),columns:[{header:'Employee',source:'providerEmployeeId'}]});
+  await expect(createPayrollExport(proof,command,f.executor)).rejects.toMatchObject({reason:'PROVIDER_EMPLOYEE_MAPPING_REQUIRED'});
+  expect(f.writes).toEqual([]);
+ });
+ it('classifies a confirmed pre-write unfinalized card separately from an unknown result',async()=>{
+  const f=fixture();f.state.unfinalized=true;
+  await expect(createPayrollExport(proof,command,f.executor)).rejects.toMatchObject({reason:'FINALIZED_TIMECARDS_REQUIRED'});
+  expect(f.writes).toEqual([]);
+ });
  it.each(invalidProfiles)('rejects $label before saving any profile',async({profile})=>{
   const f=fixture();
   await expect(saveExportProfile(proof,{operationId,id:profileId,expectedRevision:0,profile},f.executor)).rejects.toThrow();

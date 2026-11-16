@@ -8,6 +8,8 @@ import {createPayrollExport,readExportProfiles,saveExportProfile,type ExportComm
 import {adpRunPaidColumns,canonicalPayrollExport,mappedPayrollCsv,neutralPaidProfile,neutralProfile} from '../../lib/payroll-export/model';
 import {stableExportJson} from '../../lib/payroll-export/json';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
+import {planPaidExportBatches,paidExportBatchProgress} from '../../lib/payroll-export/batches';
+import {readPeriodClose,savePeriodPopulation,preparePeriodManifest} from '../../lib/period-close/service';
 let f:Awaited<ReturnType<typeof createPunchFixture>>;
 const proof:SessionMutationProof={employee:{id:'c34-owner',role:'OWNER',firstName:'QA',lastName:'Owner',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
@@ -17,6 +19,73 @@ async function card(){const r=await readTimecards(proof,period,f.db.executor);if
 async function finalize(){const c=await card();await mutateTimecard(proof,{operationId:randomUUID(),employeeId:'c34-a',...period,expectedRevision:c.revision,expectedSourceHash:c.sourceHash,action:'APPROVE'},f.db.executor);await mutateTimecard(proof,{operationId:randomUUID(),employeeId:'c34-a',...period,expectedRevision:c.revision+1,expectedSourceHash:c.sourceHash,action:'FINALIZE'},f.db.executor);}
 async function command():Promise<ExportCommand>{const c=await card();return {...period,operationId:randomUUID(),profileId:null,profileRevision:0,cards:[{employeeId:'c34-a',revision:c.revision,sourceHash:c.sourceHash,finalizationOperationId:c.history[0].operationId}]};}
 describe('D6 mapping and immutable export protocol',()=>{
+ it('recovers a concurrently committed identical operation before returning a deterministic finalization refusal',async()=>{
+  await finalize();const input=await command(),original=f.db.executor;let interleaved=false,saved:Awaited<ReturnType<typeof createPayrollExport>>|undefined;
+  const delayed={...original,transaction:async(statements:Parameters<typeof original.transaction>[0])=>{
+   const result=await original.transaction(statements);
+   if(!interleaved&&statements.some(s=>s.text.includes('FROM payroll_export_receipts'))){
+    interleaved=true;saved=await createPayrollExport(proof,input,original);
+    const c=await card();await mutateTimecard(proof,{...period,operationId:randomUUID(),employeeId:'c34-a',expectedRevision:c.revision,expectedSourceHash:c.sourceHash,action:'REOPEN',note:'Fictional concurrent reopen'},original);
+   }
+   return result;
+  }};
+  expect(await createPayrollExport(proof,input,delayed)).toEqual(saved);
+  expect(interleaved).toBe(true);expect(await f.q('SELECT count(*)::integer n FROM payroll_export_receipts')).toEqual([{n:1}]);
+ });
+ it('closes a fictional 30-person paid period in byte-bounded batches, reconciling lost replies without omissions or duplicates',async()=>{
+  // Remove only this test's fictional one-person starter; no existing DB is used.
+  await f.q("DELETE FROM time_entries WHERE id='D6-T'");
+  const payPeriod={startDate:'2026-09-21',endDate:'2026-10-04'},ids=Array.from({length:30},(_,i)=>`phase2-fictional-${String(i).padStart(2,'0')}`);
+  await f.q(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id)
+   SELECT id,'Fictional','Payroll person',id,'EMPLOYEE','loc-1' FROM jsonb_array_elements_text($1::jsonb) id`,[JSON.stringify(ids)]);
+  const entries=ids.flatMap(employeeId=>Array.from({length:10},(_,day)=>({employeeId,id:`entry-${employeeId}-${day}-${'x'.repeat(48)}`,date:`2026-09-${21+day}`})));
+  await f.q(`INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version)
+   SELECT e.id,e."employeeId",'loc-1',$2,(e.date||'T12:00:00Z')::timestamptz,(e.date||'T20:30:00Z')::timestamptz,'CLOCKED_OUT',1
+   FROM jsonb_to_recordset($1::jsonb) e(id text,"employeeId" text,date text)`,[JSON.stringify(entries),f.devices[0].device.id]);
+  const breaks=entries.flatMap(e=>[{id:'meal-'+e.id,entryId:e.id,employeeId:e.employeeId,date:e.date,start:'16:00',end:'16:30',treatment:'UNPAID_RELIEVED_MEAL' as const},{id:'rest-'+e.id,entryId:e.id,employeeId:e.employeeId,date:e.date,start:'14:00',end:'14:15',treatment:'PAID_REST' as const}]);
+  await f.q(`INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at)
+   SELECT b.id,b."entryId",(b.date||'T'||b.start||':00Z')::timestamptz,(b.date||'T'||b."end"||':00Z')::timestamptz
+   FROM jsonb_to_recordset($1::jsonb) b(id text,"entryId" text,date text,start text,"end" text)`,[JSON.stringify(breaks)]);
+  const initial=await readTimecards(proof,payPeriod,f.db.executor);if(initial.state!=='ready')throw Error('Fictional cards unavailable');
+  for(const employeeId of ids){const c=initial.cards.find(c=>c.card.employeeId===employeeId)!;
+   const base={...payPeriod,employeeId,expectedSourceHash:c.sourceHash};
+   expect((await mutateTimecard(proof,{...base,operationId:randomUUID(),expectedRevision:c.revision,action:'APPROVE'},f.db.executor)).status).toBe('approved');
+   expect((await mutateTimecard(proof,{...base,operationId:randomUUID(),expectedRevision:c.revision+1,action:'FINALIZE'},f.db.executor)).status).toBe('finalized');
+  }
+  const cards=await readTimecards(proof,payPeriod,f.db.executor);if(cards.state!=='ready')throw Error('Fictional finalized cards unavailable');
+  const close=await readPeriodClose(proof,payPeriod,f.db.executor);
+  const population=await savePeriodPopulation(proof,{...payPeriod,operationId:randomUUID(),expectedRevision:0,sourceHash:close.sourceHash,members:close.members.map(m=>({employeeId:m.employeeId,disposition:ids.includes(m.employeeId)?'INCLUDE':'ZERO_TIME',reason:'Fictional reviewed roster',employmentFacts:'Fictional employment facts',employmentBasis:'MANAGER_ATTESTED'}))},f.db.executor);
+  expect(population.members).toHaveLength(33); // 30 paid people plus the 3 zero-time fixture members.
+  const [workspace]=await f.q<{id:string}>('SELECT id FROM workspaces WHERE singleton');
+  const plan=await planPaidExportBatches({planId:randomUUID(),actorId:proof.employee.id,workspaceId:workspace.id,period:payPeriod,sourceHash:close.sourceHash,population,profileId:null,profileRevision:0,cards:cards.cards.filter(c=>ids.includes(c.card.employeeId)).map(c=>({employeeId:c.card.employeeId,revision:c.revision,sourceHash:c.sourceHash,finalizationOperationId:c.history[0].operationId})),paidTime:{version:1,breakTreatments:breaks.map(b=>({employeeId:b.employeeId,entryId:b.entryId,breakId:b.id,treatment:b.treatment}))}});
+  expect(plan.batches.length).toBeGreaterThan(1);expect(plan.batches.every(b=>b.encodedBytes<=65536)).toBe(true);
+  let lost=false;const original=f.db.executor;
+  const losing={...original,transaction:async(statements:Parameters<typeof original.transaction>[0])=>{const result=await original.transaction(statements);if(!lost&&statements.some(s=>s.text.includes('SELECT nevora_payroll_export_command'))){lost=true;throw Error('Fictional successful response lost after commit');}return result;}};
+  await expect(createPayrollExport(proof,JSON.parse(plan.batches[0].body),losing)).rejects.toThrow('response lost after commit');
+  expect(await paidExportBatchProgress(plan,[])).toMatchObject({state:'INCOMPLETE',periodComplete:false});
+  const first=await createPayrollExport(proof,JSON.parse(plan.batches[0].body),original);
+  const before=JSON.stringify(first);
+  const partial=[{state:'generated',export:first}];
+  expect(await paidExportBatchProgress(plan,partial)).toMatchObject({state:'INCOMPLETE',periodComplete:false});
+  await expect(preparePeriodManifest(proof,{...plan.manifestRequest.command,receipts:[plan.manifestRequest.command.receipts[0]]},original)).rejects.toThrow('OMISSION_DUPLICATE_OR_EXTRA');
+  await expect(createPayrollExport(proof,{...JSON.parse(plan.batches[0].body),paidTime:{version:1,breakTreatments:[]}},original)).rejects.toThrow('CONFLICT');
+  const concurrent=await Promise.all([createPayrollExport(proof,JSON.parse(plan.batches[0].body),original),createPayrollExport(proof,JSON.parse(plan.batches[0].body),original)]);
+  expect(concurrent).toEqual([first,first]);
+  const rest=[];for(const b of plan.batches.slice(1))rest.push({state:'generated',export:await createPayrollExport(proof,JSON.parse(b.body),original)});
+  const replies=[...partial,...rest];
+  const progress=await paidExportBatchProgress(plan,replies);expect(progress).toMatchObject({state:'READY_FOR_MANIFEST',periodComplete:false,pendingEmployeeIds:[]});expect(progress.completedEmployeeIds).toHaveLength(30);
+  await expect(paidExportBatchProgress(plan,[...partial,...partial])).rejects.toThrow();
+  const manifest=await preparePeriodManifest(proof,plan.manifestRequest.command,original);
+  expect(manifest.population.members).toHaveLength(33);expect(manifest.exports.flatMap(e=>e.payload.model.rows)).toHaveLength(30);
+  expect(manifest.totals).toEqual({recordedNanoseconds:'9180000000000000',breakNanoseconds:'810000000000000'});
+  expect(manifest.exports.flatMap(e=>e.payload.model.rows).reduce((sum,r)=>sum+BigInt(r.paidNanoseconds!),BigInt(0))).toBe(BigInt('8640000000000000'));
+  console.info('PHASE2_FINANCE_BATCH_METRICS',JSON.stringify({roster:population.members.length,paidEmployees:ids.length,recordedBreaks:breaks.length,batchBytes:plan.batches.map(b=>b.encodedBytes),batchEmployees:plan.batches.map(b=>b.command.cards.length)}));
+  expect(await f.q('SELECT count(*)::integer n FROM payroll_export_receipts')).toEqual([{n:plan.batches.length}]);
+  await f.q('UPDATE employees SET last_name=$1 WHERE id=$2',['Fictional changed source',ids[0]]);
+  expect((await readPeriodClose(proof,payPeriod,original)).manifests.find(m=>m.id===manifest.id)?.current).toBe(false);
+  await expect(preparePeriodManifest(proof,{...plan.manifestRequest.command,operationId:randomUUID()},original)).rejects.toThrow('POPULATION_CONFLICT');
+  expect(JSON.stringify(await createPayrollExport(proof,JSON.parse(plan.batches[0].body),original))).toBe(before);
+ },60000);
  it('exports daily paid time with explicit meal/rest classification and binds replay to that source decision',async()=>{
   await f.q("UPDATE time_entries SET clock_out_at='2026-09-22T20:30:00Z' WHERE id='D6-T'; INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at) VALUES('meal','D6-T','2026-09-22T16:00:00Z','2026-09-22T16:30:00Z'),('rest','D6-T','2026-09-22T14:00:00Z','2026-09-22T14:15:00Z')");
   await finalize();const base=await command(),paidTime={version:1 as const,breakTreatments:[{employeeId:'c34-a',entryId:'D6-T',breakId:'meal',treatment:'UNPAID_RELIEVED_MEAL' as const},{employeeId:'c34-a',entryId:'D6-T',breakId:'rest',treatment:'PAID_REST' as const}]};

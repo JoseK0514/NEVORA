@@ -14,6 +14,15 @@ describe('D6 export transport',()=>{
  it('refuses a switched identity rather than replaying for a different actor',async()=>{f.session={id:'OTHER',role:'OWNER'};expect((await POST(request())).status).toBe(403);expect(f.create).not.toHaveBeenCalled();});
  it('requires login and same-origin anti-forgery',async()=>{expect((await POST(request(command,{origin:'https://evil.test'}))).status).toBe(403);f.session=null;expect((await POST(request())).status).toBe(401);});
  it('refuses caller-provided totals and unreviewed fields',async()=>{expect((await POST(request({...command,totalHours:100}))).status).toBe(400);});
+ it.each([65535,65536,65537])('enforces actual UTF-8 body size at %i bytes despite a false Content-Length',async size=>{
+  const source={...command,cards:[{...command.cards[0],employeeId:'Fictional-é'}]},json=JSON.stringify(source);
+  const body=json+' '.repeat(size-new TextEncoder().encode(json).length);
+  const base=request(source),headers=new Headers(base.headers);headers.set('content-length','1');
+  expect(new TextEncoder().encode(body).length).toBe(size);
+  const response=await POST(new Request(base.url,{method:'POST',headers,body}));
+  expect(response.status).toBe(size<=65536?200:400);
+  expect(f.create).toHaveBeenCalledTimes(size<=65536?1:0);
+ });
  it('accepts explicit per-recorded-break paid treatment on the bounded export command',async()=>{
   const paidTime={version:1,breakTreatments:[{employeeId:'E',entryId:'T',breakId:'B',treatment:'UNPAID_RELIEVED_MEAL'}]};
   expect((await POST(request({...command,paidTime}))).status).toBe(200);
@@ -35,7 +44,7 @@ describe('D6 export transport',()=>{
   f.create.mockRejectedValue(Object.assign(new Error('Time cannot be represented exactly: internal/private diagnostic'),{reason:'INEXACT_HOURS'}));
   const response=await POST(request());expect(response.status).toBe(503);expect(await response.json()).toEqual({state:'unavailable'});
  });
- it.each(['LEGACY_MAPPING_REVIEW_REQUIRED','BREAK_CLASSIFICATION_REVIEW_REQUIRED','PAID_TIME_REVIEW_REQUIRED'] as const)('returns deterministic %s as a bounded invalid command',async reason=>{
+ it.each(['LEGACY_MAPPING_REVIEW_REQUIRED','BREAK_CLASSIFICATION_REVIEW_REQUIRED','PAID_TIME_REVIEW_REQUIRED','PROVIDER_EMPLOYEE_MAPPING_REQUIRED','FINALIZED_TIMECARDS_REQUIRED'] as const)('returns deterministic %s as a bounded invalid command',async reason=>{
   f.create.mockRejectedValue(new PayrollExportReviewError(reason));const response=await POST(request());
   expect(response.status).toBe(400);expect(await response.json()).toEqual({state:'invalid',reason});
  });

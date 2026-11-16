@@ -6,12 +6,12 @@ import {assertManagementProof} from '../data/management-session';
 import {workspaceReadGuard} from '../data/workspaces';
 import {neonNotificationExecutor} from '../data/notification-transactions';
 import {readTimecards} from '../timecards/service';
-import {parsePeriod,type Period} from '../timecards/project';
 import {assertReviewedPaidProfile,canonicalPayrollExport,mappedPayrollCsv,neutralPaidProfile,neutralProfile,parseExportProfile,requiresPaidTimeReview,type ExportProfile,type CanonicalPayrollExport} from './model';
-import {parsePaidTimeReview,projectPaidPayrollExport,type PaidTimeReview} from './paid-time';
+import {projectPaidPayrollExport} from './paid-time';
+import {parseExportCommand,type ExportCommand} from './command';
+export {parseExportCommand,type ExportCommand} from './command';
 const object=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 const uuid=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(v);
-const hash=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{32}$/.test(v);
 import {stableExportJson} from './json';
 const digest=(v:unknown)=>createHash('sha256').update(stableExportJson(v)).digest('hex');
 function management(proof:SessionMutationProof){assertManagementProof(proof,proof?.employee?.id);if(!['OWNER','MANAGER'].includes(proof.employee.role))throw new Error('Export access denied');}
@@ -43,14 +43,6 @@ export async function saveExportProfile(proof:SessionMutationProof,input:unknown
  const result=await executor.transaction([...guards,{text:'SELECT nevora_payroll_profile_command($1,$2,$3::uuid,$4::uuid,$5::integer,$6,$7::jsonb) AS result',values:[workspace.id,proof.employee.id,input.operationId,input.id,input.expectedRevision,commandHash,JSON.stringify(profile)]},...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)]);
  const row=result[guards.length]?.[0] as {result:unknown};const projected=saved(row?.result);await currentCompany(proof,access,executor);return projected;
 }
-export type ExportCommand=Period&{operationId:string;profileId:string|null;profileRevision:number;cards:{employeeId:string;revision:number;sourceHash:string;finalizationOperationId:string}[];paidTime?:PaidTimeReview};
-export function parseExportCommand(v:unknown):ExportCommand{
- if(!object(v)||!uuid(v.operationId)||!(v.profileId===null||uuid(v.profileId))||!Number.isSafeInteger(v.profileRevision)||Number(v.profileRevision)<0||!Array.isArray(v.cards)||v.cards.length<1||v.cards.length>100||Object.keys(v).some(k=>!['operationId','profileId','profileRevision','startDate','endDate','cards','paidTime'].includes(k)))throw new Error('Invalid export command');
- if(v.profileId===null&&v.profileRevision!==0)throw new Error('Invalid neutral profile');
- const cards=v.cards.map(c=>{if(!object(c)||typeof c.employeeId!=='string'||!c.employeeId||c.employeeId.length>200||!Number.isSafeInteger(c.revision)||Number(c.revision)<1||!hash(c.sourceHash)||!uuid(c.finalizationOperationId)||Object.keys(c).length!==4)throw new Error('Review finalized employee revisions');return {employeeId:c.employeeId,revision:Number(c.revision),sourceHash:c.sourceHash,finalizationOperationId:c.finalizationOperationId};});
- if(new Set(cards.map(c=>c.employeeId)).size!==cards.length)throw new Error('Duplicate export employees');
- return {...parsePeriod(String(v.startDate),String(v.endDate)),operationId:v.operationId,profileId:v.profileId,profileRevision:Number(v.profileRevision),cards:cards.sort((a,b)=>a.employeeId.localeCompare(b.employeeId)),...(v.paidTime!==undefined?{paidTime:parsePaidTimeReview(v.paidTime)}:{})};
-}
 export type PayrollExportPayload={operationId:string;model:CanonicalPayrollExport;profile:ExportProfile;profileId:string|null;profileRevision:number;csv:string;csvSha256:string;canonicalSha256:string};
 function payload(value:unknown,command:ExportCommand):PayrollExportPayload{
  if(!object(value)||value.operationId!==command.operationId||typeof value.csv!=='string'||typeof value.csvSha256!=='string'||typeof value.canonicalSha256!=='string'||!object(value.model)||value.model.version!==1||!Array.isArray(value.model.rows)||value.profileId!==command.profileId||value.profileRevision!==command.profileRevision||createHash('sha256').update(value.csv).digest('hex')!==value.csvSha256||digest(value.model)!==value.canonicalSha256)throw new Error('Export receipt could not be verified');
@@ -66,13 +58,27 @@ function payload(value:unknown,command:ExportCommand):PayrollExportPayload{
 export async function createPayrollExport(proof:SessionMutationProof,input:unknown,executor:SqlExecutor=neonNotificationExecutor()):Promise<PayrollExportPayload>{
  management(proof);const command=parseExportCommand(input),commandHash=digest(command),access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor),{workspace,authority}=access,ids=[...new Set([proof.employee.id,...command.cards.map(c=>c.employeeId)])].sort();
  const guards=[...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE',values:[ids]},...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)];
- const existing=await executor.transaction([...guards,{text:'SELECT command_hash AS hash,payload FROM payroll_export_receipts WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3::uuid',values:[workspace.id,proof.employee.id,command.operationId]},...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)]);
- const receipt=existing[guards.length]?.[0] as {hash:string;payload:unknown}|undefined;if(receipt){if(receipt.hash!==commandHash)throw new Error('nevora_export_CONFLICT');const verified=payload(receipt.payload,command);await currentCompany(proof,access,executor);return verified;}
+ const recover=async()=>{
+  const existing=await executor.transaction([...guards,{text:'SELECT command_hash AS hash,payload FROM payroll_export_receipts WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3::uuid',values:[workspace.id,proof.employee.id,command.operationId]},...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)]);
+  const receipt=existing[guards.length]?.[0] as {hash:string;payload:unknown}|undefined;
+  if(!receipt)return undefined;
+  if(receipt.hash!==commandHash)throw new Error('nevora_export_CONFLICT');
+  const verified=payload(receipt.payload,command);await currentCompany(proof,access,executor);return verified;
+ };
+ const receipt=await recover();if(receipt)return receipt;
+ let generated:PayrollExportPayload;
+ try{
  const cards=await readTimecards(proof,command,executor);if(cards.state!=='ready')throw new Error('Timecards unavailable');
  const model=canonicalPayrollExport(workspace.id,cards.observedAt,command,cards.cards,command.cards.map(c=>c.employeeId),cards.paging,command.paidTime);
  if(model.rows.some(r=>{const expected=command.cards.find(c=>c.employeeId===r.employeeId)!;return r.revision!==expected.revision||r.sourceHash!==expected.sourceHash||r.finalizationOperationId!==expected.finalizationOperationId;}))throw new Error('nevora_export_CONFLICT');
  let profile=command.paidTime?neutralPaidProfile():neutralProfile();if(command.profileId){const available=await readExportProfiles(proof,executor),selected=available.find(p=>p.id===command.profileId);if(!selected||selected.revision!==command.profileRevision)throw new Error('nevora_export_CONFLICT');profile=selected.profile;}
- const csv=mappedPayrollCsv(model,profile),generated:PayrollExportPayload={operationId:command.operationId,model,profile,profileId:command.profileId,profileRevision:command.profileRevision,csv,csvSha256:createHash('sha256').update(csv).digest('hex'),canonicalSha256:digest(model)};
+ const csv=mappedPayrollCsv(model,profile);generated={operationId:command.operationId,model,profile,profileId:command.profileId,profileRevision:command.profileRevision,csv,csvSha256:createHash('sha256').update(csv).digest('hex'),canonicalSha256:digest(model)};
+ }catch(error){
+  // An overlapping identical call can have committed since the initial lookup.
+  // Reacquire current authority/employee guards and recover that original before
+  // describing a later source/profile refusal as having no operation outcome.
+  const concurrent=await recover();if(concurrent)return concurrent;throw error;
+ }
  const results=await executor.transaction([...guards,{text:'SELECT nevora_payroll_export_command($1,$2,$3::uuid,$4,$5::uuid,$6::integer,$7::jsonb) AS result',values:[workspace.id,proof.employee.id,command.operationId,commandHash,command.profileId,command.profileRevision,JSON.stringify(generated)]},...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)]);
  const result=results[guards.length]?.[0] as {result:unknown}|undefined;const verified=payload(result?.result,command);await currentCompany(proof,access,executor);return verified;
 }
