@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "date": "2026-11-16",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "749beb1993b4f1f4b3ebe258e54f7b3e1bd7e010",
-  "applicationHash": "5d8f4fc92a74f20dd7dd84e3765ff7673d93953a2a802dadeddf0c3c4027d5bc",
+  "sourceSha": "014be43cec41f15a11aa6f657b8065f075d4e740",
+  "applicationHash": "6f6aba098d848dab3252c917436759542cc80637788c6c9493931d0e0f161f3b",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
-    "sha256": "551c8daa3d17e14d3cc52d2d975e4dcf6e4c334bbb07baccc04007a76dccec86"
+    "sha256": "0abae197205d5bd69f7279b21eb49a195930a8aab1b45d9bb125ff6358ad940a"
   },
   "guides": [
     {
@@ -95,7 +95,7 @@
         },
         {
           "path": "src/lib/payroll-export/service.ts",
-          "sha256": "74c5d212afcb41f7c3c245fb24f90488071e09fca8bcb661c7f3dec7e91b998b"
+          "sha256": "688bb4f27c7319370bf73a01c5ad8a98fdbc3fa2aab907b1840aba4c469acdf4"
         },
         {
           "path": "src/lib/payroll/documents.ts",
@@ -140,7 +140,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "4fc0dfbd4d75b7151df5b2bbf0582f068bcf4838388b9201cd6d87dab866627d",
+        "sha256": "686886d6b92697462252ad556d46ab72fc3355c420347446b7689b6728359ef9",
         "pageCount": 4
       }
     },
@@ -235,7 +235,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "4dc99705df16d1d757a1d65d4bbaae2201eaacbbe00ef52ebf0bfa3a053327e3",
+        "sha256": "88685e7027f0281d6537acb930a7dab88c915b3ea404fe1d7574f9356e58ae0a",
         "pageCount": 3
       }
     },
@@ -318,7 +318,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "bea8bd9705d9df3680e185723964b93545d246756556164720394f0ec723a2d7",
+        "sha256": "4a06a2677136afc011096c91cb68a12c24ba40c10a2a75c18d69eb78091a23a2",
         "pageCount": 3
       }
     },
@@ -389,7 +389,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "833c0acbd116eecdc2cc915eafe2ed1034afc9f73983931bd66a27784cc811f1",
+        "sha256": "8e0635ec3b058d7ff5c1e421025eccf0b383ef715ab33b599cd7c19c2b98d57b",
         "pageCount": 2
       }
     },
@@ -398,7 +398,7 @@
       "title": "NEVORA web developer guide",
       "markdown": {
         "path": "docs/guides/web/developer.md",
-        "sha256": "598a714c8caf303e8df67f6f4e67f80ff7bfa9fd3a7660452e5080cbb2f95b94"
+        "sha256": "8c02840ba7accad304524e91409f0544f14bbedff10f01b780c639ed9e96ff03"
       },
       "evidence": [
         {
@@ -528,12 +528,40 @@
         {
           "path": "services/commerce/billing-operations.ts",
           "sha256": "58031f2325d61f424a7b108311d2c5356ec52c9fa3eccadd8f5aabdbb595012b"
+        },
+        {
+          "path": "src/lib/payroll-export/batches.ts",
+          "sha256": "bdc7824f4122c2027cf3b2bb791f8b2c9682c87d83e24932a980fc893d4ab375"
+        },
+        {
+          "path": "src/lib/action-center/review-facts.ts",
+          "sha256": "928807c3af78bf42ae361d320503a48d0c7df4cce7e4b1ccc8e25131249f7764"
+        },
+        {
+          "path": "src/lib/employee-home/task-summary.ts",
+          "sha256": "00e2451c59a55ddd817a833ed8177831af6564c292ace3db5f78e8abae67554c"
+        },
+        {
+          "path": "src/lib/manager-reminders/types.ts",
+          "sha256": "11c14347e452d05763062b36833dc399dcd02f2972877ec8f6f65eff6c896049"
+        },
+        {
+          "path": "src/lib/auth/session.ts",
+          "sha256": "071958c449a77aa9184a927369a2f9ae0e2618e117360482cab5227c8a6c27d5"
+        },
+        {
+          "path": "src/lib/auth/request-destination.ts",
+          "sha256": "e6b43b20d74ce88fcabd247d1ca670780e7e878d3489d0c2c3d7fc41d147715c"
+        },
+        {
+          "path": "src/proxy.ts",
+          "sha256": "921e5e5c278dd3f824fb33e0fa965fe25b255647b3db11cbe042c3c8f7051cb9"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "8ef97fcc247b591e8f172482133a7ba35608183044303d34dd16cd7733642e5d",
-        "pageCount": 4
+        "sha256": "c20b6f9484fe21375d40749a65e1c40312b571af98ec996fff62735c8b85dbab",
+        "pageCount": 5
       }
     },
     {
@@ -659,7 +687,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "7faf7f70dd921bd16f1fb91f0539cf92aa893b471db217adcbc2943c89828407",
+        "sha256": "675d0d7df5caa583b747bfe0f78a5e622309703afbd70ef0831a83a9a8be1fe3",
         "pageCount": 5
       }
     }
