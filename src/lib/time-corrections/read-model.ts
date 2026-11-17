@@ -53,6 +53,8 @@ export type PublicCorrectionItem = {
 export type ManagerCorrectionItem = PublicCorrectionItem & {
   employeeName: string;
   isSelf: boolean;
+  /** Subject identity only; isSelf also includes the delegated requester. */
+  concernsActor?:boolean;
 };
 
 export type EmployeeTimeCorrections =
@@ -233,7 +235,8 @@ export function parseManagerTimeCorrections(value: unknown): ManagerTimeCorrecti
     if (!object(entry) || !text(entry.employeeName,300) || typeof entry.isSelf !== 'boolean') {
       throw new Error('Invalid correction response');
     }
-    return {...item(entry),employeeName:entry.employeeName,isSelf:entry.isSelf};
+    if(entry.concernsActor!==undefined&&(typeof entry.concernsActor!=='boolean'||entry.concernsActor&&!entry.isSelf))throw new Error('Invalid correction response');
+    return {...item(entry),employeeName:entry.employeeName,isSelf:entry.isSelf,...(entry.concernsActor===undefined?{}:{concernsActor:entry.concernsActor as boolean})};
   });
   if(new Set(requests.map(request=>request.id)).size!==requests.length)throw Error('Duplicate corrections');
   return {state:'ready',...(typeof value.authority==='string'&&/^[a-f0-9]{64}$/.test(value.authority)?{authority:value.authority}:{}),validForMs:value.validForMs,observedAt:value.observedAt,timeZone:value.timeZone,requests,...(paging?{paging}:{})};

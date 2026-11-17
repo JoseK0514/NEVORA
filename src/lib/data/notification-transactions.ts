@@ -26,6 +26,7 @@ import type { SessionMutationProof } from '../shift-changes/types';
 import { assertManagementProof, managementSessionStatements } from './management-session';
 import { generationSourceSql, generationMutationGuards, type GenerationSource } from './generation-guards';
 import { ManualAssignmentConflictError, validateManualAssignments } from './manual-assignment-validation';
+import {validatePublicationRestrictions} from './publication-restrictions';
 import { assertCoverageRepairReview } from './coverage-repair.server';
 import { CoverageRepairConflictError } from '../scheduling/coverage-repair';
 import type { EmployeePublicationProjection, RecipientAccess, ScheduleSourceSnapshot } from '../notifications/types';
@@ -49,6 +50,7 @@ export type GuardedShift = PublishedShiftSnapshot & {
     approvedCalloutEmployeeId?: string | null;
 };
 export type AssignmentFacts = {
+    schedulingRestrictionDocuments?:{employeeId:string;document:unknown}[];
     workspace: Pick<Workspace,'id'|'active'|'timeZone'>;
     locations: Pick<Location,'id'|'workspaceId'|'active'>[];
     positions: Position[];
@@ -102,6 +104,8 @@ function weekProjection(state: GuardedWeekState, batch: WeekMutationBatch, week:
 }
 const identity = (s: PublishedShiftSnapshot) => s.sourceShiftId ?? null;
 const canonicalKey = (s: PublishedShiftSnapshot | undefined) => s ? JSON.stringify(canonicalShifts([s])[0]) : null;
+const assignmentDiffers = (before: PublishedShiftSnapshot | undefined, next: PublishedShiftSnapshot) =>
+    !before || (['employeeId','locationId','date','startTime','endTime','isDesignatedLead'] as const).some(key => before[key] !== next[key]) || (before.positionId || null) !== (next.positionId || null);
 /** Latest revision rows, with each shift this batch changed (live before vs
  * live after) replaced by its new published value or removed. Unchanged rows
  * keep their captured values, including a captured position name. */
@@ -218,7 +222,8 @@ export const notificationStateExpression = (weeks="$1") => `jsonb_build_object(
     'workspace',(SELECT jsonb_build_object('id',id,'active',active,'timeZone',time_zone) FROM workspaces WHERE singleton=true),
     'locations',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'workspaceId',workspace_id,'active',active) ORDER BY id) FROM locations),'[]'::jsonb),
     'positions',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'workspaceId',workspace_id,'name',name,'active',active,'createdAt',created_at::text,'updatedAt',updated_at::text) ORDER BY id) FROM positions),'[]'::jsonb),
-    'memberships',COALESCE((SELECT jsonb_agg(jsonb_build_object('employeeId',employee_id,'positionId',position_id) ORDER BY employee_id,position_id) FROM employee_positions),'[]'::jsonb)),
+    'memberships',COALESCE((SELECT jsonb_agg(jsonb_build_object('employeeId',employee_id,'positionId',position_id) ORDER BY employee_id,position_id) FROM employee_positions),'[]'::jsonb),
+    'schedulingRestrictionDocuments',COALESCE((SELECT jsonb_agg(jsonb_build_object('employeeId',ss.employee_id,'document',to_jsonb(ss)->'management_restrictions') ORDER BY ss.employee_id) FROM employee_scheduling_settings ss WHERE to_jsonb(ss)->'management_restrictions' IS NOT NULL AND to_jsonb(ss)->'management_restrictions'<>'null'::jsonb),'[]'::jsonb)),
   'schedules', COALESCE((SELECT jsonb_agg(t ORDER BY t.id) FROM (
     SELECT id, location_id AS "locationId", week_start::text AS "weekStart", status, updated_at::text AS "updatedAt"
     FROM schedules WHERE week_start=ANY(${weeks}::date[])) t),'[]'::jsonb),
@@ -392,11 +397,20 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
  const {state,batch,config}=input;
  const weeks=[...new Set(input.weekStarts)].sort();
  const operational=operationalWriteFootprint(state,batch,input.sourceType==='PUBLISH'||input.coverageRepairReview!==undefined);
-        // Only a changed assignment requires current eligibility. Retained historical
-        // inactive facts and request-status-only writes must remain readable/writable.
+        // Draft -> published and held edits become NEW commitments even when the
+        // live row is unchanged by this batch. Compare the actual next projection
+        // with its last immutable publication, as well as live before/after edits.
+        // Unchanged captured history and request-status-only writes stay intact.
+        const newlyPublished = new Set<string>();
+        if (!batch.deferPublication) for (const week of weeks) {
+            if (input.revisionWeekStarts && !input.revisionWeekStarts.includes(week)) continue;
+            const {previous,current} = weekProjection(state,batch,week);
+            for (const next of current) if (next.sourceShiftId && assignmentDiffers(previous.find(s=>s.sourceShiftId===next.sourceShiftId),next)) newlyPublished.add(next.sourceShiftId);
+        }
+        validatePublicationRestrictions(state,batch,newlyPublished);
         const assignments = batch.afterShifts.filter(next => {
             const before = state.shifts.find(s => s.sourceShiftId === next.sourceShiftId);
-            return !before || ['employeeId','locationId','date','startTime','endTime','isDesignatedLead'].some(key => before[key as keyof GuardedShift] !== next[key as keyof GuardedShift]) || (before.positionId || null) !== (next.positionId || null);
+            return newlyPublished.has(next.sourceShiftId) || assignmentDiffers(before,next);
         });
         for (const shift of assignments) {
             const facts=state.assignmentFacts;
@@ -405,7 +419,7 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
             const issues=assignmentCapabilityIssues({candidate:shift,workspace:facts.workspace,location:facts.locations.find(l=>l.id===shift.locationId),position:facts.positions.find(p=>p.id===shift.positionId),employee:{active:employee?.active ?? false,role:employee?.role ?? 'EMPLOYEE',eligibleLocationIds:employee?.allowedLocationIds ?? [],positionIds:facts.memberships.filter(m=>m.employeeId===shift.employeeId).map(m=>m.positionId)}});
             if(issues.length) {
                 const message = schedulingIssueMessage(issues[0]);
-                if (input.sourceType === 'MANAGER_MUTATION') throw new ManualAssignmentConflictError(issues[0], message);
+                if (input.sourceType === 'MANAGER_MUTATION' || input.sourceType === 'PUBLISH') throw new ManualAssignmentConflictError(issues[0], message);
                 throw new Error(message);
             }
             shiftBoundaryInstants(shift,facts.workspace.timeZone);
@@ -441,6 +455,7 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
             {text:'SELECT id FROM locations WHERE id=ANY($1::text[]) ORDER BY id FOR SHARE',values:[locationIds]},
             {text:'SELECT id FROM positions WHERE id=ANY($1::text[]) ORDER BY id FOR SHARE',values:[positionIds]},
             {text:'LOCK TABLE employee_positions IN SHARE MODE',values:[]},
+            {text:'LOCK TABLE employee_scheduling_settings IN SHARE MODE',values:[]},
             {
                 text: 'LOCK TABLE employee_location_eligibility IN SHARE MODE', values: []
             },

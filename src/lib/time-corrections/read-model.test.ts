@@ -9,6 +9,10 @@ const manager={state:'ready',validForMs:45000,observedAt:'2030-10-07T16:10:00Z',
 const target={kind:'ENTRY_BOUNDARY',timeEntryId:'entry-1',breakEntryId:null,recordedStartAt:request.originalStartAt,recordedEndAt:request.originalEndAt,context};
 const employee={...manager,totalRequests:1,locations:[],targets:[target]};
 describe('D2 protected effective context parsing',()=>{
+  it('keeps subject and requester independence separate and rejects contradictory identity facts',()=>{
+    expect(parseManagerTimeCorrections({...manager,requests:[{...request,isSelf:true,concernsActor:false}]})).toMatchObject({requests:[{isSelf:true,concernsActor:false}]});
+    for(const concernsActor of [true,'true',null])expect(()=>parseManagerTimeCorrections({...manager,requests:[{...request,isSelf:false,concernsActor}]})).toThrow();
+  });
   it('retains authoritative effective context without deriving it from raw or proposed time',()=>{
     expect(parseManagerTimeCorrections(manager)).toMatchObject({requests:[{context,baseChanged:false}]});
     expect(parseEmployeeTimeCorrections(employee)).toMatchObject({targets:[target]});

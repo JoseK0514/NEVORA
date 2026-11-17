@@ -1,6 +1,7 @@
 import {it,expect,vi} from 'vitest';
 import {randomUUID} from 'node:crypto';
 import {companyAccessFixture} from './company-access-fixture';
+import {hashPassword} from '../../lib/auth/password';
 import type {CoreProfileInput,EmployeeCoreAccessCommand,ScopeSelection,CreateEmployeeWithAccessCommand} from '../../lib/company-access/model';
 vi.mock('server-only',()=>({}));
 import {readOwnerOperationalScope,readOperationalAuthority} from '../../lib/company-access/operational-scope.server';
@@ -73,12 +74,14 @@ it('new Manager creation is one role/scope transaction, requires Owner choice, a
   expect(await f.q("SELECT employee_id FROM employee_credentials WHERE employee_id='FRESH-MANAGER'")).toEqual([]);
  }finally{await f.db.dispose();}
 });
-it('last active Owner is protected and an intentional self-demotion with another Owner commits its selected Manager scope',async()=>{
+it('last activated Owner is protected and an intentional self-demotion with another activated Owner commits its selected Manager scope',async()=>{
  const f=await companyAccessFixture();try{
   const last=await command(f,'owner',{role:'EMPLOYEE'});
   expect((await saveEmployeeCoreAccessProfile(f.owner,last,f.db.executor)).state).toBe('invalid');
   expect(await f.q("SELECT role FROM employees WHERE id='owner'")).toEqual([{role:'OWNER'}]);
   await f.q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('other-owner','Other','QA','555009','OWNER','loc-1')");
+  expect((await saveEmployeeCoreAccessProfile(f.owner,await command(f,'owner',{role:'EMPLOYEE'}),f.db.executor)).state).toBe('invalid');
+  await f.q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',['other-owner',await hashPassword('Fictional-activated-owner')]);
   const c=await command(f,'owner',{role:'MANAGER'},{mode:'LOCATIONS',locationIds:['loc-1']});
   const saved=await saveEmployeeCoreAccessProfile(f.owner,c,f.db.executor);expect(saved.state).toBe('saved');if(saved.state!=='saved')throw Error('self edit');
   expect(saved.receipt.role).toBe('MANAGER');expect(saved.receipt.roleGeneration).toBe('2');expect(saved.receipt.scope).toEqual({mode:'LOCATIONS',locationIds:['loc-1']});
@@ -101,9 +104,12 @@ it('exact concurrent profile replay reconciles after another copy commits instea
   expect(await f.q("SELECT count(*)::integer AS count FROM operational_scope_revisions WHERE employee_id='target'")).toEqual([{count:1}]);
  }finally{await f.db.dispose();}
 });
-it('intentional self-deactivation with another Owner uses the pinned pre-edit authority and removes its session',async()=>{
+it('intentional self-deactivation with another activated Owner uses the pinned pre-edit authority and removes its session',async()=>{
  const f=await companyAccessFixture();try{
   await f.q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('other-owner','Other','QA','555009','OWNER','loc-1')");
+  expect((await saveEmployeeCoreAccessProfile(f.owner,await command(f,'owner',{active:false}),f.db.executor)).state).toBe('invalid');
+  expect(await f.q("SELECT employee_id FROM employee_sessions WHERE employee_id='owner'")).toEqual([{employee_id:'owner'}]);
+  await f.q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',['other-owner',await hashPassword('Fictional-activated-owner')]);
   const c=await command(f,'owner',{active:false});
   const saved=await saveEmployeeCoreAccessProfile(f.owner,c,f.db.executor);expect(saved.state).toBe('saved');if(saved.state!=='saved')throw Error('self deactivation');
   expect(saved.receipt.active).toBe(false);expect(saved.receipt.roleGeneration).toBe('2');

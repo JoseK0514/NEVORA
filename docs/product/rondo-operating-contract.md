@@ -2,11 +2,30 @@
 
 Product direction recorded from Jose on November 9, 2026. This document preserves the intended destination and the gap to today's implementation; it is not a declaration that the destination has shipped.
 
+November15 update: [native management qualification](../handoffs/2026-11-15-rondo-management-qualification.md)
+records seven actual Claude turns, a reproduced false eligibility explanation,
+its source fix and two successful bilingual regression turns, plus exact Owner
+draft approval and local browser evidence. Earlier checkpoint statuses below are
+historical; they do not describe the later native run or a hosted release.
+Jose approved an [Owner-managed profile/text-library backend](../superpowers/specs/2026-11-15-rondo-company-knowledge-design.md).
+Its [local implementation and qualification](../handoffs/2026-11-15-rondo-company-knowledge-backend.md)
+now includes explicit publication, private citations and revision/time-fenced
+retrieval. The knowledge flag ships off. Claude's screens, live-model document
+judgment and combined hosted development acceptance remain separate.
+
+Jose subsequently set [all 50 Owner challenges at 10/10 each](../qa/2026-11-15-rondo-owner-50-standard.md)
+as Rondo's target. The question catalog and scoring standard are recorded; the
+dedicated fixtures, actual-model campaign and independent scores are not run.
+This broader target is distinct from the earlier component qualification.
+The proposed [manager program roadmap](2026-11-15-rondo-manager-roadmap.md)
+sequences company knowledge, weekly workforce planning, business-source
+connections, decision/action reliability and full qualification in development.
+
 ## Identity and product goal
 
 The assistant inside the NEVORA Owner profile is **Rondo**. The name stays Rondo in English and Spanish. Rondo is accessed through chat within the profile. The website adviser also uses this name, with different data and capabilities.
 
-This change names Rondo in the model-side system instruction. It does not rename Claude's displayed UI or grant new tools; the Owner-only server guard remains in place.
+The original identity change named Rondo in the model-side instruction without changing Claude's UI. The later optional knowledge tool is separately qualified below; the Owner-only server guard remains in place.
 
 Jose wants a company-aware assistant capable of taking over substantial Owner/Manager operational work: understand the business, remember explicit objectives, investigate problems, compare options, recommend decisions, prepare work and verify outcomes with much less manual supervision. Aim for measurable expert-level performance on supported work rather than assuming every human decision is correct or declaring the model universally superior.
 
@@ -20,7 +39,9 @@ The target is comprehensive understanding of the company's authorized, connected
 
 ## Current capability inventory
 
-Inspected development snapshot: `3446982085c32b238b4d329c98639f3978c6e8b2`.
+Historical development snapshot: `3446982085c32b238b4d329c98639f3978c6e8b2`.
+The November15 local knowledge candidate is `c21f81d0a5dfde2cf25f869ddb0e1ccb896d70b0`;
+its handoff distinguishes local evidence from hosted release state.
 
 | Company domain | Current implementation evidence | Gap before broad operational delegation |
 | --- | --- | --- |
@@ -29,7 +50,8 @@ Inspected development snapshot: `3446982085c32b238b4d329c98639f3978c6e8b2`.
 | Coverage, availability, roles and scheduling constraints | `coverage_investigation`, `coverage_proposals`, `coverage_plan` | Date/scope/input limits remain; bounded search is not a universal impossibility or optimality proof |
 | Recorded history and timecards | `operational_insights`, `attendance_payroll_review` | Financial readiness remains unverified; absent records cannot establish zero work or misconduct |
 | Objectives, goals, tasks and prior decisions | Explicit private memory, notebook and priorities | Saved intent is not new evidence, permission or an inferred preference; private context remains per Owner |
-| Rules and legal sources | Fixed-source `legal_research`; scheduling enforcement reads | No general company handbook retrieval or independently qualified applicability clearance is established |
+| Rules and legal sources | Fixed-source `legal_research`; scheduling enforcement reads | Company prose cannot change enforced rules or establish independently qualified applicability clearance |
+| Company profile and text library | Optional published profile and `company_knowledge` read, exact-version private citations, revision/effective/review fences | Local text/TXT/Markdown backend only; flag off, UI/hosted acceptance and actual-model document judgment pending; no PDF/Word/OCR support |
 | Acting on plans | Separate canonical coverage prepare/apply/check commands with server rechecks | Model read tools do not independently publish, notify, transfer money or execute arbitrary business operations |
 | Sales, banking, cash flow, inventory, customers, contracts and external tools | No such tools in the current model allowlist | Each needs an explicit source/integration, permissions, freshness contract and acceptance evidence |
 | Background management | Chat-triggered investigations and explicit workflows | Continuous monitoring, dispatch, communications and unattended business management are not established |

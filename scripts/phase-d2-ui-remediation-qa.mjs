@@ -57,8 +57,8 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   }});
   page.on('pageerror',error=>{if(phase!=='normal'||!cell.isNavigationDiagnostic(error))observations.runtime.push({role,phase,stage,atMs:Math.round(performance.now()-startedAt),...safeD2Error(error)});});
   page.on('request',request=>{
-   const url=new URL(request.url());if(url.origin!==app.url||!(url.pathname==='/app'||url.pathname.startsWith('/api/')||url.pathname==='/__nextjs_original-stack-frames'))return;
-   if(role==='manager'&&url.pathname==='/app'&&request.headers().rsc==='1'){managerRscRequests.add(request);managerRscVersion++;}
+   const url=new URL(request.url());if(url.origin!==app.url||!(['/app','/app/timecards/corrections'].includes(url.pathname)||url.pathname.startsWith('/api/')||url.pathname==='/__nextjs_original-stack-frames'))return;
+   if(role==='manager'&&url.pathname==='/app/timecards/corrections'&&request.headers().rsc==='1'){managerRscRequests.add(request);managerRscVersion++;}
    const id=++requestSequence;requests.set(request,id);record({role,id,event:'request',path:clean(url.pathname),method:request.method(),rsc:request.headers().rsc==='1',serverAction:!!request.headers()['next-action'],document:request.isNavigationRequest()});
   });
   page.on('response',response=>{const id=requests.get(response.request());if(id)record({role,id,event:'response',status:response.status()});});
@@ -119,7 +119,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
    assert(item.context.decisions.every(d=>d.status==='APPROVED'));
   }
   observations.comparison={raw,rawBreak,canonical,canonicalBreak,requests:snapshot.requests.filter(r=>[pendingEntry,pendingBreak].includes(r.id))};
-  stage='manager-initial';await mp.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});
+  stage='manager-initial';await mp.goto(app.url+'/app/timecards/corrections',{waitUntil:'networkidle'});
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   assert.equal(await mp.locator('.manager-correction-row').filter({hasText:name}).getByText('Current effective',{exact:true}).count(),2);
   await shots(mp,'.manager-corrections','multiple-supersessions');
@@ -159,12 +159,12 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   const entryWeek=weekStartFor(entryDate),fromCards=entryWeek<thisWeek;
   observations.entryPath={entryDate,thisWeek,view:fromCards?'cards':'records'};
   await ep.goto(app.url+(fromCards?`/app/my-time?view=cards&start=${entryWeek}&end=${addDays(entryWeek,6)}`:'/app/my-time'),{waitUntil:'networkidle'});
-  const entryRow=fromCards?hoursPage(ep,'cards').locator('a.c-row#hours-card-entry-'+entryId):hoursPage(ep,'records').locator('a.c-row#hours-entry-'+entryId);
+  const entryRow=hoursPage(ep,fromCards?'cards':'records').locator('a[href*="entry='+entryId+'"]:visible');
   const nativeRouteDeadline=performance.now()+15000;
   await entryRow.focus();await entryRow.press('Enter');
   await ep.waitForURL(url=>url.searchParams.get('entry')===entryId);
   const trigger=ep.getByRole('link',{name:'Request a correction',exact:true});await trigger.waitFor();
-  observations.keyboard.push({stage:'entry-route-heading-focus',state:await waitForD2HoursRouteFocus(ep.locator('.c-hours #hours-title'),entryId,nativeRouteDeadline)});
+  observations.keyboard.push({stage:'entry-route-heading-focus',state:await waitForD2HoursRouteFocus(ep.locator('.c-hours :is(#hours-title,#b-hours-title):visible'),entryId,nativeRouteDeadline)});
   await trigger.focus();observations.keyboard.push({stage:'trigger-focus',state:await trigger.evaluate(e=>({documentFocused:document.hasFocus(),linkFocused:document.activeElement===e,activeTag:document.activeElement?.tagName}))});assert(await trigger.evaluate(e=>document.hasFocus()&&document.activeElement===e),'Correction trigger must have native foreground focus');await trigger.press('Enter');
   await ep.waitForURL(url=>url.searchParams.get('edit')==='entry:'+entryId);
   const form=fixForm(ep);await form.waitFor();
@@ -184,7 +184,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   assert.equal(focus.outlineStyle,'solid');assert(parseFloat(focus.outlineWidth)>=2);
   observations.keyboard.push({stage:'manager-before-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus()),managerFocused:await mp.evaluate(()=>document.hasFocus())});
   stage='manager-return';const priorRequest=requestSequence,refreshDeadline=performance.now()+15000;
-  const freshRsc=mp.waitForResponse(response=>{const request=response.request(),url=new URL(request.url());return url.origin===app.url&&url.pathname==='/app'&&request.headers().rsc==='1'&&(requests.get(request)??0)>priorRequest;});
+  const freshRsc=mp.waitForResponse(response=>{const request=response.request(),url=new URL(request.url());return url.origin===app.url&&url.pathname==='/app/timecards/corrections'&&request.headers().rsc==='1'&&(requests.get(request)??0)>priorRequest;});
   const freshCorrections=mp.waitForResponse(response=>{const request=response.request(),url=new URL(request.url());return url.origin===app.url&&url.pathname==='/api/manager/time-corrections'&&request.method()==='GET'&&(requests.get(request)??0)>priorRequest;});
   const [,foregroundResponse,correctionResponse]=await Promise.all([mp.bringToFront(),freshRsc,freshCorrections]);await finishD2ForegroundRecovery(foregroundResponse,correctionResponse,[pendingEntry,pendingBreak],refreshDeadline);
   assert(await mp.evaluate(()=>document.hasFocus()),'Manager native keyboard page must be foreground');
@@ -201,18 +201,18 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   assert.equal(managerRscRequests.size,0,'Foreground RSC must remain drained after console extraction');
   assert.equal(managerRscVersion,quiescent.version,'A new foreground recovery cannot cross the reload boundary');
   record({role:'manager',event:'foreground-recovery-ready',pendingRscRequests:managerRscRequests.size,rscVersion:quiescent.version,quietMs:500,freshRscRequestId:requests.get(foregroundResponse.request()),freshCorrectionRequestId:requests.get(correctionResponse.request())});
-  await mp.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});
+  await mp.goto(app.url+'/app/timecards/corrections',{waitUntil:'networkidle'});
   const approve=mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first();await approve.waitFor();await approve.focus();
   const managerFocus=await approve.evaluate(el=>({active:document.activeElement===el,outlineStyle:getComputedStyle(el).outlineStyle,outlineWidth:getComputedStyle(el).outlineWidth}));
   assert(managerFocus.active);assert.equal(managerFocus.outlineStyle,'solid');assert(parseFloat(managerFocus.outlineWidth)>=2);observations.keyboard.push({role:'manager',focus:managerFocus});
 
   // Cleared states use real lifecycle events and preserve the authoritative count.
-  stage='offline';phase='offline';await owner.setOffline(true);await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('offline','.portal-route-state');await shots(mp,'.portal-route-state','offline');
+  stage='offline';phase='offline';await owner.setOffline(true);await mp.evaluate(()=>{window.dispatchEvent(new Event('offline'));window.dispatchEvent(new Event('blur'));});await mp.getByRole('heading',{name:'You’re offline',exact:true}).waitFor();await safePause('offline','.c-route-state [data-b-state]');await shots(mp,'.c-route-state [data-b-state]','offline');
   await owner.setOffline(false);await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();phase='normal';checked(`${engine}: offline → online protected refresh`);
-  stage='pagehide-pageshow';await mp.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('pagehide','.portal-route-state');
+  stage='pagehide-pageshow';await mp.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('pagehide','.c-route-state [data-b-state]');
   await mp.evaluate(()=>window.dispatchEvent(new Event('pageshow')));await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   stage='hidden-visible';await mp.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'));});
-  await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('hidden','.portal-route-state');
+  await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('hidden','.c-route-state [data-b-state]');
   await mp.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'visible'});document.dispatchEvent(new Event('visibilitychange'));});
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
 

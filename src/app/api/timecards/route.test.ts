@@ -22,3 +22,13 @@ describe('private timecard read transport',()=>{
     expect((await POST(req())).status).toBe(503);
   });
 });
+it('unexpected timecard failure returns the same private contract with a matching safe diagnostic reference',async()=>{
+ const sink=vi.spyOn(console,'error').mockImplementation(()=>{});
+ try{
+  state.read.mockRejectedValue(Object.assign(new Error('private workforce record'),{code:'08006'}));
+  const response=await POST(req());expect(response.status).toBe(503);expect(await response.json()).toEqual({state:'unavailable'});
+  const id=response.headers.get('X-Nevora-Request-Id');expect(id).toMatch(/^[a-f0-9-]{36}$/);
+  expect(JSON.parse(sink.mock.calls[0][0])).toMatchObject({route:'/api/timecards',requestId:id,sqlState:'08006'});
+  expect(JSON.stringify(sink.mock.calls)).not.toContain('private workforce');
+ }finally{sink.mockRestore();}
+});

@@ -30,7 +30,7 @@ const transport = (responses: unknown[]) =>
   );
 const deps = () => ({
   check: vi.fn(async () => {}),
-  tool: vi.fn(async () => ({
+  tool: vi.fn(async (): Promise<import("./contracts").ToolResult> => ({
     observedAt: "2026-10-22",
     sources: [],
     partial: false,
@@ -309,4 +309,10 @@ it("refuses provider redirects so private bodies cannot leave the approved host"
   const fetch = transport([answer]);
   await investigate(config, [], "", "Ask", { ...deps(), fetch });
   expect(fetch.mock.calls[0][1].redirect).toBe("error");
+});
+it.each(['calls','sources','serialization'])('keeps the existing %s budget with business retrieval enabled',async mode=>{
+ const d=deps();const business={type:'function_call',call_id:'business-bound',name:'business_sales',arguments:JSON.stringify({window:{fromAt:'2026-01-01T00:00:00.000Z',toAt:'2026-02-01T00:00:00.000Z'},selection:{kind:'PRIMARY_PERIMETER'},locationScope:{kind:'ALL'},temporalUse:'HISTORICAL'})};
+ if(mode!=='calls')d.tool.mockResolvedValueOnce({observedAt:'2026-11-16T00:00:00Z',partial:false,sources:[],data:{}}).mockResolvedValueOnce({observedAt:'2026-11-16T00:00:00Z',partial:false,sources:mode==='sources'?Array.from({length:16},(_,i)=>({href:'/source/'+i,label:'Source '+i,observedAt:'2026-11-16T00:00:00Z'})):[],data:mode==='serialization'?{huge:'x'.repeat(48001)}:{}});
+ await expect(investigate(config,[],'','Inspect',{...d,businessRetrieval:true,fetch:transport([{output:mode==='calls'?Array.from({length:8},(_,i)=>({...business,call_id:'business-'+i})):[business]}])})).rejects.toThrow('limit');
+ expect(d.tool).toHaveBeenCalledTimes(mode==='calls'?1:2);
 });

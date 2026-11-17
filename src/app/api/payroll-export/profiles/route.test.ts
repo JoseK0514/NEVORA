@@ -7,7 +7,7 @@ vi.mock('@/lib/data/notification-transactions',async()=>{
  const actual=await vi.importActual<typeof import('@/lib/data/notification-transactions')>('@/lib/data/notification-transactions');
  return {...actual,neonNotificationExecutor:()=>f.executor};
 });
-import {neutralProfile} from '@/lib/payroll-export/model';
+import {adpRunColumns,neutralProfile} from '@/lib/payroll-export/model';
 import {GET,POST} from './route';
 const id='11111111-1111-4111-8111-111111111111',operationId='22222222-2222-4222-8222-222222222222';
 const command={id,operationId,expectedRevision:0,profile:neutralProfile()};
@@ -48,6 +48,10 @@ describe('NVA-001 profile API with real parser/service and fictional SQL transpo
   const r=await POST(request());expect(r.status).toBe(200);
   expect(await r.json()).toEqual({state:'saved',profile:{id,revision:1,profile:neutralProfile()}});
   expect(writes).toHaveLength(1);expect(r.headers.get('cache-control')).toContain('no-store');expect(r.headers.get('vary')).toBe('Cookie');
+ });
+ it('returns a bounded review reason instead of an unknown write outcome for a new legacy RUN save',async()=>{
+  const profile={...neutralProfile(),format:'ADP_RUN_GENERIC_V1',dateFormat:'US',hourDecimals:2,columns:adpRunColumns('FICTIONAL','W','TEST','TEST'),employeeMappings:[{employeeId:'E',providerEmployeeId:'001'}]};
+  const response=await POST(request({...command,profile}));expect(response.status).toBe(400);expect(await response.json()).toEqual({state:'invalid',reason:'LEGACY_MAPPING_REVIEW_REQUIRED'});expect(writes).toEqual([]);
  });
  it('fails closed on malformed saved revisions without replacing them',async()=>{
   savedProfile={...neutralProfile(),precision:['HALF_UP']};const before=JSON.stringify(savedProfile);

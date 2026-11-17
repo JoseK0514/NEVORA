@@ -191,11 +191,11 @@ export type HomeBProps = HomeBExtras & {
   /** A Lead's Today's team: message everyone on today's team (the Updates compose), when Updates is on. */
   team?: boolean;
   snapshot: HomeSnapshot | null; partial: boolean; todos: HomeTodo[]; week?: HomeWeek | null; name?: string; date: ReactNode; place?: string;
-  waiting: ReactNode; loading: boolean; paused: boolean; denied: boolean; refreshing: boolean; onRetry: () => void;
+  intro?: ReactNode; waiting: ReactNode; loading: boolean; paused: boolean; denied: boolean; refreshing: boolean; onRetry: () => void;
   weekTodo: (item: AttentionItem) => {title: string; detail: ReactNode};
 };
 
-export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place, waiting, loading, paused, denied, refreshing, onRetry, weekTodo, hoursAuthority, payday, team, lead}: HomeBProps) {
+export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place, intro, waiting, loading, paused, denied, refreshing, onRetry, weekTodo, hoursAuthority, payday, team, lead}: HomeBProps) {
   const weekShown = snapshot && week && week.dates.length === 7 ? week : null;
   // A Lead's hero adds the shift they're on now (Direction B, Nov 8, 2026); Employees' figures are unchanged.
   const now = lead && snapshot ? snapshot.currentShift : null;
@@ -224,6 +224,7 @@ export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place
     <BStack>
       {snapshot ? <>
         <ShiftCard snapshot={snapshot} lead={lead} heroShows={!!onShift}/>
+        {intro ?? null}
         {/* Review B6 (NV-162, NV-288): Things to do (with its deadlines) comes before a Lead's optional Today's team, so on
           * a phone the to-dos are higher and on desktop the focus order follows the columns (left, then right). */}
         {todos.length || partial ? <BCard title="Things to do" id="b-home-todo" count={todos.length || undefined}

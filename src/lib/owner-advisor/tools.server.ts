@@ -18,6 +18,9 @@ import { reportedCoverageState } from "@/lib/scheduling/coverage-repair";
 import { addDays, weekStartFor, durationMinutes } from "@/lib/date-utils";
 import { AdvisorStore } from "./store.server";
 import { checkOwner } from "./authority.server";
+import type { CompanyKnowledgeReader } from './company-knowledge-reader.server';
+import { readWeeklyTool, type WeeklyToolRuntime } from './weekly-tool.server';
+import { readBusinessTool, type BusinessToolRuntime } from './business/tools.server';
 import {
   AdvisorError,
   type ToolCall,
@@ -30,7 +33,7 @@ const short = (v: string) => v.slice(0, 200);
  * alternatives with exact review payloads, requiring Scheduling to recheck/save;
  * these tools do not mutate schedules, timecards, payroll or send communications. */
 export class AdvisorTools {
-  constructor(readonly store: AdvisorStore, readonly signal: AbortSignal = new AbortController().signal) {}
+  constructor(readonly store: AdvisorStore, readonly signal: AbortSignal = new AbortController().signal, readonly knowledge?: CompanyKnowledgeReader, readonly weekly?: WeeklyToolRuntime, readonly business?: BusinessToolRuntime) {}
   async briefing(captured?: Today): Promise<BriefingResult> {
     const { proof, original, ex } = this.store;
     await checkOwner(proof, original, ex);
@@ -73,15 +76,34 @@ export class AdvisorTools {
       },
     };
   }
-  async run(call: ToolCall): Promise<ToolResult> {
+  async run(call: ToolCall, budget: { sourceSlots: number; occurrence?: number } = { sourceSlots: 8 }): Promise<ToolResult> {
     const { proof, original, ex } = this.store;
     await checkOwner(proof, original, ex);
+    if (call.name === 'business_finance' || call.name === 'business_sales') {
+      if (!this.business) throw new AdvisorError('disabled');
+      if (budget.occurrence === undefined) throw new AdvisorError('invalid');
+      return readBusinessTool(this.store, call, this.business, { sourceSlots: budget.sourceSlots, occurrence: budget.occurrence }, this.signal);
+    }
+    if (call.name === 'weekly_plan') {
+      if (!this.weekly) throw new AdvisorError('disabled');
+      if (budget.occurrence === undefined) throw new AdvisorError('invalid');
+      return readWeeklyTool(this.store, call.args, this.signal, this.weekly, { sourceSlots: budget.sourceSlots, occurrence: budget.occurrence });
+    }
+    if (call.name === 'company_knowledge') {
+      if (!this.knowledge) throw new AdvisorError('unavailable');
+      return this.knowledge.search(call.args.query, budget.sourceSlots);
+    }
     if (call.name === "operational_insights") {
       const data = await readOperationalInsights(this.store, call.args, this.signal);
       return { data: { ...data, limitations: INSIGHT_LIMITATIONS, retainedRecordLimitPerSource: INSIGHT_SOURCE_LIMIT }, observedAt: data.observedAt, partial: data.partial, sources: [{ label: "Recorded operational history", href: `/app/timecards?start=${data.startDate}&end=${data.endDate}`, observedAt: data.observedAt }] };
     }
     if (call.name === "legal_research") return readLegalResearch(this.store, call.args, this.signal);
-    if (call.name === "company_briefing") return this.briefing();
+    if (call.name === "company_briefing") {
+      const briefing = await this.briefing();
+      if (!this.knowledge) return briefing;
+      const knowledge = await this.knowledge.profile(Math.max(0, budget.sourceSlots - briefing.sources.length));
+      return { ...briefing, partial: briefing.partial || knowledge.partial, sources: [...briefing.sources, ...knowledge.sources], data: { ...(briefing.data ?? { operationalState: 'unavailable' }), companyKnowledge: knowledge.data } };
+    }
     if (call.name === "coverage_plan") return readCoveragePlans(this.store, call.args.date, this.signal);
     if (call.name === "attendance_payroll_review") return readPeriodReview(this.store, call.args);
     const date = call.args.date,

@@ -86,9 +86,9 @@ describe('protected snapshot refresh budgets',()=>{
  });
 });
 
-// Review B2 (NV-001; Jose, Nov 10, 2026): offline keeps the person's loaded snapshot read-only, with no more reads or expiry.
+// Review B2 (NV-001; Jose, Nov 10, 2026): offline keeps loaded snapshots read-only only within their original authority lifetime.
 describe('offline hold',()=>{
- it('keeps the ready snapshot past its validity, stops reading, and announces when it was observed',async()=>{
+ it('holds read-only only within the original validity, stops reading, and announces the observation',async()=>{
   const request=vi.fn(async()=>ready(15000));const {controller,states}=await mount(request);
   const held:string[]=[];const listener=(event:Event)=>held.push((event as CustomEvent<string>).detail);
   const target=new EventTarget();vi.stubGlobal('window',target);target.addEventListener('nevora:offline-held',listener);
@@ -96,7 +96,7 @@ describe('offline hold',()=>{
   expect(states.at(-1)).toMatchObject({paused:false,refreshing:false,snapshot:{state:'ready'}});
   expect(held).toHaveLength(1);
   await vi.advanceTimersByTimeAsync(60000);
-  expect(request.mock.calls.length).toBe(calls);expect(states.at(-1)?.snapshot?.state).toBe('ready');
+  expect(request.mock.calls.length).toBe(calls);expect(states.at(-1)?.snapshot).toEqual({state:'unavailable',reason:'access_denied'});
   vi.unstubAllGlobals();
  });
  it('clears like pause when nothing ready is loaded',async()=>{

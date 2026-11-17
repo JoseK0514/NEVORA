@@ -10,7 +10,7 @@ export const hoursPage=(page,view)=>page.locator(`.c-hours[data-hours-view="${vi
 /** The "Fix my time" form. */
 export const fixForm=page=>page.locator('.c-hours form.c-form');
 /** Send, in the sheet's header (it submits the form above). */
-export const sendFix=page=>page.locator('.c-hours-sheet').getByRole('button',{name:/^(Send|Sending…)$/});
+export const sendFix=page=>page.locator('.c-hours').getByRole('button',{name:/^(Send|Sending…)$/}).filter({visible:true});
 /** The one retry the sheet offers while an original submission is unconfirmed. */
 export const checkSubmission=page=>page.getByRole('button',{name:'Check request status',exact:true});
 /** The sheet's receipt after a recorded correction. */

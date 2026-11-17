@@ -106,7 +106,7 @@ it('recomputes a raced manual edit without deleting the manager assignment or re
    if(first){first=false;await q("UPDATE shifts SET assignment_origin='MANAGER',generated_claims=NULL,notes='Manager keeps this'");}
    return database.executor.transaction(statements);
  }};
- expect((await a.deleteGeneratedDraftShift(input,racing)).status).toBe('protected');
+ await expect(a.deleteGeneratedDraftShift(input,racing)).rejects.toMatchObject({code:'SHIFT_REVIEW_CONFLICT'});
  expect((await q('SELECT notes FROM shifts'))[0].notes).toBe('Manager keeps this');
  expect(await count('schedule_generation_exclusions')).toBe(0);
 });

@@ -149,6 +149,8 @@ export function deriveGenerationDemand(
     blocks,
     needs: deriveConfiguredNeeds(input, configured),
     coverage: {
+      basis: 'fully_covered_period_minutes_v1',
+      unit: 'nominal_location_minutes',
       requiredMinutes,
       coveredMinutes,
       percentage: requiredMinutes

@@ -17,7 +17,8 @@ const bundle=await project('esbuild').build({
  function Fixture(){const[resume,setResume]=useState(null);window.fixtureResume=step=>setResume({subject:'c'.repeat(64),mode:'select-break',binding:'outdated-fixture-binding-'+step});return <ClockerPunchPanel locationKey="2" timeZone="UTC" onDone={()=>{}} resume={resume}/>;}
  createRoot(document.getElementById('root')).render(<Fixture/>);`,resolveDir:source,loader:'tsx'},
  bundle:true,write:false,outdir:join(source,'.journal-lifecycle-fixture'),platform:'browser',format:'iife',jsx:'automatic',
- loader:{'.css':'empty','.module.css':'local-css'},define:{'process.env.NODE_ENV':'"development"','process.env':'{}'},
+ loader:{'.css':'empty','.module.css':'local-css','.ttf':'dataurl'},define:{'process.env.NODE_ENV':'"development"','process.env':'{}'},
+ plugins:[{name:'local-clocker-font',setup(builder){builder.onResolve({filter:/^\/fonts\/clocker\/inter-variable\.ttf$/},()=>({path:join(source,'public/fonts/clocker/inter-variable.ttf')}));}}],
 });
 const javascript=bundle.outputFiles.find(file=>file.path.endsWith('.js')).text;
 let reads=0,writes=0;
@@ -42,7 +43,7 @@ try{for(const engine of ['chromium','webkit']){
   const context=await browser.newContext();let externalRequests=0;
   await context.route('**/*',route=>{if(new URL(route.request().url()).origin!==origin){externalRequests++;return route.abort();}return route.continue();});
   const page=await context.newPage();page.setDefaultTimeout(5000);const errors=[];page.on('pageerror',error=>errors.push(error.message));
-  await page.goto(origin);await page.getByRole('button',{name:'Clock In',exact:true}).waitFor();
+  await page.goto(origin);await page.getByRole('button',{name:'Clock in',exact:true}).waitFor();
   for(const step of [1,2,3]){
    await page.evaluate(step=>window.fixtureResume(step),step);
    // A stale Ready frame cannot pass: await the new response's distinct heading or a failure state.
@@ -50,7 +51,7 @@ try{for(const engine of ['chromium','webkit']){
    const state=await page.locator('[data-clocker-state]').getAttribute('data-clocker-state');
    result.observations.push({step,state});assert.equal(state,'ready','Restarted state reading must open a usable journal rather than reuse the cleanup-closed connection');
    await page.getByRole('heading',{name:'Hi, Avery '+(step+1)+'.',exact:true}).waitFor();
-   await page.getByRole('button',{name:'Clock In',exact:true}).waitFor();
+   await page.getByRole('button',{name:'Clock in',exact:true}).waitFor();
   }
   assert.equal(reads,4);assert.equal(writes,0);assert.equal(externalRequests,0);assert.deepEqual(errors,[]);
   result.status='passed';result.reads=reads;result.writes=writes;await context.close();

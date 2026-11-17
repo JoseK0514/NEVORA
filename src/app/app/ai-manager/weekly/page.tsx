@@ -23,8 +23,8 @@ export default async function WeeklyPlanPage({ searchParams }: { searchParams: P
   const proof = await requireSessionMutationProof();
   const authority = await readOperationalAuthority(proof);
   if (authority.state !== "ready" || authority.role !== "OWNER" || authority.scope?.mode !== "COMPANY") notFound();
-  // The registry gains `ownerAdvisorWeekly` at assembly; until then the exact server name is read here, never enabled.
-  const weeklyEnabled = process.env.NEVORA_OWNER_ADVISOR_WEEKLY_ENABLED === "true";
+  // Use the canonical server feature registry in the combined backend/UI candidate.
+  const weeklyEnabled = readFeatureFlags(process.env).ownerAdvisorWeekly;
   const params = await searchParams;
   const review = typeof params.review === "string" && coverageUuid(params.review) ? params.review.toLowerCase() : null;
   const read = await withOperationalCompany(proof, async () => Promise.all([getWorkspace(), listLocations()]));

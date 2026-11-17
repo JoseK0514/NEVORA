@@ -97,12 +97,12 @@ export default async function EditShiftPage({
   // shift (its own form, never nested) under the save.
   return (<ScopedReadFrame observation={scopedObservation(source)}>
     <CorpPage className="c-shift-page" label="Edit shift">
-      <ScheduleShiftForm mode="edit" formId="edit-shift-form" action={updateShiftAction} employees={shiftFormEmployees(employees,shift.employeeId)} positions={positions}
+      <ScheduleShiftForm key={shift.id} mode="edit" formId="edit-shift-form" action={updateShiftAction} reviewedShiftVersion={shift.reviewVersion} employees={shiftFormEmployees(employees,shift.employeeId)} positions={positions}
         fixedLocation={location?.shortName ?? shift.locationId} weekStart={shift.weekStart} date={shift.date}
         employeeId={shift.employeeId} positionId={shift.positionId ?? ""} startTime={shift.startTime} endTime={shift.endTime}
         isDesignatedLead={shift.isDesignatedLead} notes={shift.notes ?? ""} hidden={{ shiftId: shift.id }} cancelHref={returnUrl}
         status={status} subtitle={subtitle} error={errorBody ? { title: "The shift wasn’t saved", body: errorBody } : undefined}
-        footer={<ActionForm action={deleteShiftAction} className="c-shift__delete" failure={{ title: "The shift wasn’t deleted", body: "Check your connection and try again." }}>
+        footer={<ActionForm action={deleteShiftAction} reviewedShiftVersion={shift.reviewVersion} shiftDraftFormId="edit-shift-form" className="c-shift__delete" failure={{ title: "The shift wasn’t deleted", body: "Check your connection and try again." }}>
           <input type="hidden" name="shiftId" value={shift.id} />
           <DeleteShiftConfirm warning={keepWhole(`${shift.employeeName} won’t be scheduled on ${day.weekday},\u00a0${day.day}. This can’t be undone.`)} />
         </ActionForm>} />

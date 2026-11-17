@@ -2,6 +2,7 @@ import type { SqlExecutor } from "../notifications/types";
 import {queryRows} from "@/lib/db";
 import {applicationSql} from "@/lib/data/app-sql";
 import { addDays } from "../date-utils";
+import {restrictionRules} from '../scheduling/restrictions';
 import type {
   AvailabilityException,
   AvailabilityHours,
@@ -15,7 +16,7 @@ export async function readAvailabilityInputs(
   executor?: SqlExecutor,
 ) {
   const sql = executor ? {query: (text: string, values: unknown[]) => executor.query({text,values})} : applicationSql();
-  const [normalRaw, weeklyRaw, submissionsRaw, exceptionsRaw] =
+  const [normalRaw, weeklyRaw, submissionsRaw, exceptionsRaw, restrictionsRaw] =
     await Promise.all([
       sql.query(
         `SELECT day_of_week, start_time, end_time FROM availability_windows WHERE employee_id = $1 ORDER BY day_of_week, start_time`,
@@ -33,6 +34,7 @@ export async function readAvailabilityInputs(
         `SELECT date, kind, start_time, end_time FROM availability_exceptions WHERE employee_id = $1 AND date >= $2 AND date < $3 ORDER BY date, start_time`,
         [employeeId, firstWeek, addDays(lastWeek, 7)],
       ),
+      sql.query(`SELECT to_jsonb(ss)->'management_restrictions' AS management_restrictions FROM employee_scheduling_settings ss WHERE employee_id=$1`,[employeeId]),
     ]);
   return mapAvailabilityInputs(
     normalRaw,
@@ -41,6 +43,7 @@ export async function readAvailabilityInputs(
     exceptionsRaw,
     firstWeek,
     lastWeek,
+    queryRows<Record<string,unknown>>(restrictionsRaw)[0]?.management_restrictions,
   );
 }
 
@@ -56,6 +59,7 @@ export function mapAvailabilityInputs(
   exceptionsRaw: unknown,
   firstWeek: string,
   lastWeek: string,
+  restrictions?:unknown,
 ) {
   const rows = (raw: unknown) => queryRows(raw) as Record<string, unknown>[];
   const dateValue = (value: unknown) =>
@@ -91,6 +95,7 @@ export function mapAvailabilityInputs(
     });
   }
   return {
+    ...(restrictions==null?{}:{managementRestrictions:restrictionRules(restrictions)}),
     normal: rows(normalRaw).map(hours),
     weeks,
     exceptions: rows(exceptionsRaw).map(

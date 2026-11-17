@@ -1,5 +1,14 @@
 import {expect,it} from 'vitest';
-import {exchangeSummary,exchangeSlot,employeeHistory,parseEmployeeExchange} from './employee-exchange';
+import {exchangeSummary,exchangeSlot,employeeHistory,parseEmployeeExchange,calloutSummary} from './employee-exchange';
+import type {CalloutRecord} from './data/callouts';
+it('carries only typed coverage history through an own callout public summary',()=>{
+ const callout={id:'c1',employeeId:'self',status:'APPROVED',date:'2030-10-07',createdAt:'2030-10-06T12:00:00Z',coverage:{state:'completed',basis:'linked_request_history_v1'}} as CalloutRecord;
+ const summary=calloutSummary(callout,'self');
+ expect(summary).toMatchObject({coverage:{state:'completed',basis:'linked_request_history_v1'}});
+ const value={state:'ready',kind:'exchange',authority:'a'.repeat(64),observedAt:'2030-10-07T12:00:00Z',validForMs:45000,timeZone:'America/Puerto_Rico',enabled:true,selection:null,incoming:[],activity:[summary],detail:null};
+ expect(parseEmployeeExchange(value)).toMatchObject({state:'ready',activity:[{coverage:callout.coverage}]});
+ for(const coverage of [{state:'filled'},{state:'completed',basis:'linked_request_history_v1',employeeId:'PRIVATE'}])expect(parseEmployeeExchange({...value,activity:[{...summary,coverage}]}).state).toBe('unavailable');
+});
 import type {ExchangeRecord} from './data/exchanges';
 const row={id:'request-1',kind:'SWAP',status:'EMPLOYEE_PENDING',requestRevision:1,requestedByEmployeeId:'peer',requestedByName:'Blair Casey',targetEmployeeId:'self',targetEmployeeName:'Alex Rivera',createdAt:'2026-10-27T12:00:00Z',sourceShift:{id:'shift-1',employeeId:'peer',employeeName:'Blair Casey',scheduleId:'schedule-1',weekStart:'2026-11-02',date:'2026-11-03',startTime:'22:00',endTime:'06:00',locationId:'private-location',locationName:'Location private-location',positionId:'private-position'}} as ExchangeRecord;
 it('projects only a participant and never serializes raw identities or internal location placeholders',()=>{

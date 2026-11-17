@@ -4,6 +4,26 @@ import {
   automaticAssignment as shift,
 } from "../../../test/fixtures/automatic-week";
 import { deriveGenerationDemand } from "./demand";
+it('names the full-period metric and distinguishes it from staffing hours',()=>{
+ const i=automaticWeek();i.staffing[0].minimumStaffPerShift=3;
+ i.ledger=[shift('a','e1'),shift('b','e2')];
+ const d=deriveGenerationDemand(i);
+ expect(d.coverage).toMatchObject({basis:'fully_covered_period_minutes_v1',unit:'nominal_location_minutes',requiredMinutes:480,coveredMinutes:0,percentage:0});
+ expect(d.score.fulfilledObligationMinutes/d.score.requiredObligationMinutes).toBeCloseTo(2/3);
+});
+it('caps overcoverage, coalesces overlapping demand and preserves nominal overnight minutes in any workplace zone',()=>{
+ const i=automaticWeek();i.staffing[0].minimumStaffPerShift=1;
+ i.ledger=[shift('a','e1'),shift('b','e2'),shift('c','e3')];
+ expect(deriveGenerationDemand(i).coverage).toMatchObject({requiredMinutes:480,coveredMinutes:480,percentage:100});
+ i.coverageWindows.push({...i.coverageWindows[0],id:'overlap',startTime:'10:00',endTime:'14:00'});
+ expect(deriveGenerationDemand(i).coverage).toMatchObject({requiredMinutes:480,coveredMinutes:480,percentage:100});
+ i.coverageWindows=[{...i.coverageWindows[0],startTime:'22:00',endTime:'24:00'},
+  {...i.coverageWindows[0],id:'after-midnight',dayOfWeek:2,startTime:'00:00',endTime:'06:00'}];
+ i.ledger=[];const original=deriveGenerationDemand(i).coverage;
+ i.workspace.timeZone='Pacific/Auckland';expect(deriveGenerationDemand(i).coverage).toEqual(original);
+ expect(original).toMatchObject({requiredMinutes:480,coveredMinutes:0,percentage:0});
+ i.coverageWindows=[];expect(deriveGenerationDemand(i).coverage).toMatchObject({requiredMinutes:0,coveredMinutes:0,percentage:null,unavailable:true});
+});
 describe("configured generation demand", () => {
   it("requires three distinct position people despite a staffing minimum of two; Lead is independent", () => {
     const input = automaticWeek();

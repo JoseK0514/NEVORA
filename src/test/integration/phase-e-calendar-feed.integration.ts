@@ -38,6 +38,8 @@ async function seed(requestedDate?:string,includeSecondLocation=true){
  await q("UPDATE locations SET name='Fictional main office',short_name='Main Office' WHERE id='loc-1'");
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('calendar-owner','Fictional','Owner','555-0100','OWNER','loc-1'),('calendar-self','Fictional','Self','555-0101','EMPLOYEE','loc-1'),('calendar-other','Fictional','Other','555-0102','EMPLOYEE','loc-1')");
  await q("INSERT INTO employee_location_eligibility VALUES('calendar-self','loc-1')");if(includeSecondLocation)await q("INSERT INTO employee_location_eligibility VALUES('calendar-self','loc-2')");
+ // Every newly published commitment must be eligible, including the private coworker.
+ await q("INSERT INTO employee_location_eligibility VALUES('calendar-other','loc-1')");
  await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('a',64),'calendar-owner',now()+interval '1 day'),(repeat('b',64),'calendar-self',now()+interval '1 day')");
  await installFixtureCompanyAccess(db.executor);
  const date=requestedDate??addDays(businessDate(new Date(),'America/Puerto_Rico'),1),week=weekStartFor(date);

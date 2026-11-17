@@ -1,3 +1,4 @@
+import {reportHandledServerError} from '../server-error';
 import { getSession, requireSessionMutationProof } from "../auth/session";
 import {
   correctionBoundary,
@@ -72,7 +73,7 @@ export async function handle(
     return failure(error);
   }
 }
-export function failure(error: unknown) {
+export function failure(error: unknown, route = "/api/payroll") {
   if (error instanceof PayrollError)
     return json(
       {
@@ -82,12 +83,13 @@ export function failure(error: unknown) {
       },
       error.status,
     );
-  const value = String(error);
+  let value='';
+  try{const message=error instanceof Error?Object.getOwnPropertyDescriptor(error,'message')?.value:undefined;if(typeof message==='string')value=message;}catch{/* Unknown thrown values remain unexpected. */}
   const denied = /authorization/.test(value),
     conflict = /CONFLICT|immutable|duplicate key/.test(value) ||
-      (error instanceof Error && error.message === "OVERLAPPING_NATIVE_PAYROLL"),
+      value === "OVERLAPPING_NATIVE_PAYROLL",
     invalid = /invalid_body|JSON/.test(value);
-  return json(
+  const response=json(
     {
       error: denied
         ? "ACCESS_DENIED"
@@ -104,4 +106,6 @@ export function failure(error: unknown) {
     },
     denied ? 403 : conflict ? 409 : invalid ? 400 : 503,
   );
+  if(!denied&&!conflict&&!invalid)response.headers.set("X-Nevora-Request-Id",reportHandledServerError(error,route));
+  return response;
 }

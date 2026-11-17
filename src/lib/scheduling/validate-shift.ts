@@ -3,8 +3,9 @@ import type { OperationalRuleProfile, OperationalRuleResult, ScheduledBreakFacts
 import { shiftBoundaryInstants } from "../business-time";
 import { assignmentCapabilityIssues } from "./capabilities";
 import type { Workspace, Location, Position, UserRole } from "../domain";
+import {resolveSchedulingDay} from './scheduling-day';
+import type {RestrictionRule} from './restrictions';
 import {
-  resolveAvailabilityDay,
   type AvailabilityHours,
   type AvailabilityException,
   type WeeklyAvailability,
@@ -21,6 +22,8 @@ import {
 
 export type ValidationSeverity = "error" | "warning";
 export type ValidationIssueCode = OperationalIssueCode
+  | "AGREED_RESTRICTION"
+  | "PREFERENCE_NOT_MET"
   | "INVALID_TIME_RANGE"
   | "INVALID_SCHEDULING_INPUT"
   | "EMPLOYEE_INACTIVE"
@@ -78,6 +81,7 @@ export type ValidateShiftInput = {
     isCalloutApproved?: boolean;
   })[];
   availability: readonly AvailabilityHours[];
+  managementRestrictions?: readonly RestrictionRule[];
   weeklyAvailability?: readonly WeeklyAvailability[];
   availabilityExceptions?: readonly AvailabilityException[];
   approvedTimeOff: readonly {
@@ -108,6 +112,8 @@ export type ProjectedScheduledHours = {
   source: "SCHEDULED";
 };
 const messages: Record<ValidationIssueCode, string> = {
+  AGREED_RESTRICTION: "This shift conflicts with a management-approved scheduling restriction.",
+  PREFERENCE_NOT_MET: "This shift is outside the employee's preferred hours; the preference does not block assignment.",
  MIN_REST: "Insufficient rest under the configured rule.",
  MAX_SHIFT_HOURS: "Exceeds configured per-shift maximum.",
  MAX_DAILY_HOURS: "Exceeds configured daily maximum.",
@@ -264,11 +270,12 @@ export function validateShift(input: ValidateShiftInput) {
             ? "error"
             : "warning",
         );
-      const resolved = resolveAvailabilityDay({
+      const resolved = resolveSchedulingDay({
         date: day.date,
         normal: input.availability,
         weeks: input.weeklyAvailability,
         exceptions: input.availabilityExceptions,
+        managementRestrictions: input.managementRestrictions,
       });
       if (
         !resolved.windows.some(
@@ -277,12 +284,15 @@ export function validateShift(input: ValidateShiftInput) {
         )
       )
         add(
-          resolved.source === "NORMAL"
+          resolved.managementConfirmed ? "AGREED_RESTRICTION" : resolved.source === "NORMAL"
             ? "OUTSIDE_AVAILABILITY"
             : "WEEKLY_AVAILABILITY_CONFLICT",
           { date: day.date },
         );
+      if(resolved.managementConfirmed&&!resolved.preferredWindows.some(window=>window.start<=day.startMinute&&window.end>=day.endMinute))
+        add('PREFERENCE_NOT_MET',{date:day.date},'warning');
       if (
+        !resolved.managementConfirmed &&
         resolved.submitted === false &&
         !warnedWeeks.has(resolved.weekStart)
       ) {

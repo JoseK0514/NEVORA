@@ -69,6 +69,13 @@ grants Manager powers.
 2. Build or fill the draft. Use the available manual shifts, **Copy previous
    week**, **Week templates** or draft-building controls. Review each assignment,
    position, designated lead, availability conflict and coverage warning.
+   If an edit or deletion says the shift changed since you opened it, keep your
+   draft. **Unsaved changes to copy** retains the submitted fields; copy what
+   you need before choosing **Reload current shift**, which replaces that draft.
+   Review the current assignment before submitting again.
+   If a deletion's outcome is unknown, it may already have completed. Further
+   deletion submissions stop. Copy any needed draft values, then explicitly
+   reload and review the current schedule before starting another change.
 3. Open **Publish** or **Publish changes**. Review the listed draft locations,
    pending changes and blockers. Draft assignments and unpublished edits are not
    the employee's current published schedule.
@@ -87,6 +94,14 @@ requests** and **Availability** hold the corresponding records when enabled.
 Review the exact dates, people, request status and current rules before deciding.
 Another person's acceptance may still leave a request awaiting management.
 Refresh a changed review instead of approving from an old screen.
+
+In **Time exports**, **Who’s included and sent files** opens the period's people
+and saved records. **Latest downloads and notes** is a counted summary of the
+latest event of each kind, not the full history. **Load history** and **Load older
+events** show the full period history in pages, newest first, with loaded/total
+counts. All events in a snapshot are loaded only when the page says so.
+**Refresh history** includes newer events. A recorded download does not confirm
+that a file finished downloading or that a provider imported it.
 
 Live **Updates** communications remain under the D04 hold. A visible destination
 does not activate them; use your existing employer communication channel while
@@ -150,3 +165,10 @@ control and inspect current status before repeating it. **Help someone sign in**
 provides the supported recovery workflow; never collect another person's secret.
 For Rondo, use the separate [Rondo guide](rondo.md). For technical operations or
 privacy fulfillment, use the [operations guide](operations.md).
+
+
+## Local business evidence backend
+
+The local default-off finance/sales backend supports Owner-reviewed JSON/explicit CSV versions and account/location coverage maps, exact finance/sales reads and original-operation recovery. Claude owns its separate B2 interface; no new screen or real provider connection is claimed. Full review and explicit publication are required before Rondo may use a source. An Owner-declared perimeter cannot prove omitted accounts do not exist, and shared cash cannot be allocated to locations. See the technical handoff for the current bounded scope.
+
+See [business backend contract](../../handoffs/2026-11-16-rondo-business-evidence-ui-contract.md).

@@ -30,7 +30,21 @@
         "src/lib/payroll/calculation-mode.ts",
         "src/lib/auth/recovery.server.ts",
         "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
-        "src/lib/payroll/source-coverage.ts"
+        "src/lib/payroll/source-coverage.ts",
+        "src/app/app/schedule/edit/page.tsx",
+        "src/components/company-access/scoped-manual-shift-form.tsx",
+        "src/components/shift-review-recovery.tsx",
+        "src/components/payroll-period-close.tsx",
+        "src/components/period-close-history.tsx",
+        "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+        "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
+        "src/lib/owner-advisor/business/contracts.ts",
+        "src/lib/owner-advisor/business/service.server.ts",
+        "src/lib/owner-advisor/business/fence.server.ts",
+        "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
+        "docs/handoffs/2026-11-16-rondo-development-integration.md",
+        "docs/qa/rondo-development-integration-20261116/index.json"
       ]
     },
     {
@@ -52,7 +66,15 @@
         "src/app/app/ai-manager/page.tsx",
         "src/components/management-close-form.tsx",
         "src/components/delegated-time-correction-form.tsx",
-        "src/lib/payroll/source-coverage.ts"
+        "src/lib/payroll/source-coverage.ts",
+        "src/app/app/schedule/edit/page.tsx",
+        "src/components/company-access/scoped-manual-shift-form.tsx",
+        "src/components/shift-review-recovery.tsx",
+        "src/components/payroll-period-close.tsx",
+        "src/components/period-close-history.tsx",
+        "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+        "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json"
       ]
     },
     {
@@ -76,7 +98,10 @@
         "src/lib/payroll/access.ts",
         "src/components/employee-mobile/profile.tsx",
         "src/app/app/account/delete/page.tsx",
-        "src/app/app/help/page.tsx"
+        "src/app/app/help/page.tsx",
+        "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+        "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json"
       ]
     },
     {
@@ -97,7 +122,25 @@
         "src/components/owner-advisor/coverage-actions.tsx",
         "src/components/owner-advisor/coverage-plans.tsx",
         "src/components/owner-advisor/workflows.tsx",
-        "docs/product/rondo-operating-contract.md"
+        "docs/product/rondo-operating-contract.md",
+        "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+        "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
+        "src/app/app/ai-manager/knowledge/page.tsx",
+        "src/components/owner-advisor/knowledge/knowledge-page.tsx",
+        "src/lib/owner-advisor/company-knowledge.server.ts",
+        "src/lib/owner-advisor/company-knowledge-reader.server.ts",
+        "src/app/app/ai-manager/weekly/page.tsx",
+        "src/components/owner-advisor/weekly/weekly-page.tsx",
+        "src/lib/owner-advisor/weekly-contracts.ts",
+        "src/lib/owner-advisor/weekly-service.server.ts",
+        "src/lib/data/reviewed-weekly-draft.server.ts",
+        "src/lib/owner-advisor/business/contracts.ts",
+        "src/lib/owner-advisor/business/service.server.ts",
+        "src/lib/owner-advisor/business/fence.server.ts",
+        "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
+        "docs/handoffs/2026-11-16-rondo-development-integration.md",
+        "docs/qa/rondo-development-integration-20261116/index.json"
       ]
     },
     {
@@ -136,7 +179,23 @@
         "src/lib/payroll/source-coverage.ts",
         "src/lib/commerce/installation-facts.server.ts",
         "services/commerce/lifecycle-mail.ts",
-        "services/commerce/billing-operations.ts"
+        "services/commerce/billing-operations.ts",
+        "src/lib/payroll-export/batches.ts",
+        "src/lib/action-center/review-facts.ts",
+        "src/lib/employee-home/task-summary.ts",
+        "src/lib/manager-reminders/types.ts",
+        "src/lib/auth/session.ts",
+        "src/lib/auth/request-destination.ts",
+        "src/proxy.ts",
+        "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+        "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
+        "src/lib/owner-advisor/business/contracts.ts",
+        "src/lib/owner-advisor/business/service.server.ts",
+        "src/lib/owner-advisor/business/fence.server.ts",
+        "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
+        "docs/handoffs/2026-11-16-rondo-development-integration.md",
+        "docs/qa/rondo-development-integration-20261116/index.json"
       ]
     },
     {
@@ -171,7 +230,16 @@
         "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
         "services/commerce/lifecycle-mail.ts",
         "services/commerce/worker.ts",
-        "src/lib/commerce/installation-facts.server.ts"
+        "src/lib/commerce/installation-facts.server.ts",
+        "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
+        "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
+        "src/lib/owner-advisor/business/contracts.ts",
+        "src/lib/owner-advisor/business/service.server.ts",
+        "src/lib/owner-advisor/business/fence.server.ts",
+        "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
+        "docs/handoffs/2026-11-16-rondo-development-integration.md",
+        "docs/qa/rondo-development-integration-20261116/index.json"
       ]
     }
   ]

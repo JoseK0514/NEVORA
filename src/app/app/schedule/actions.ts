@@ -23,6 +23,7 @@ import {
 import { executeScheduleCopy } from "@/lib/data/schedule-copy";
 import { prepareExchangeContext } from "@/lib/scheduling/exchange-validation";
 import { validateShift } from "@/lib/scheduling/validate-shift";
+import {ShiftReviewConflictError,requireShiftReview} from '@/lib/data/shift-review';
 import { ManualAssignmentConflictError } from "@/lib/data/manual-assignment-validation";
 import {assertOperationalAccess,assertOriginalOperationalAccess,isOperationalAuthorizationError} from '@/lib/company-access/operational-scope.server';
 import {isManagementAuthorizationError} from '@/lib/data/management-session';
@@ -39,6 +40,7 @@ function shiftReturnUrl(shift: { weekStart: string; locationId: string; date: st
 }
 
 const accessError=()=>({error:'Operational access is unavailable. Reload and try again.',issueCode:'ACCESS_DENIED'});
+const shiftConflict=()=>({error:new ShiftReviewConflictError().message,issueCode:'SHIFT_REVIEW_CONFLICT'});
 const denied=(error:unknown)=>isOperationalAuthorizationError(error)||isManagementAuthorizationError(error);
 /** Re-check the original scope after awaited work; a role alone cannot prove unchanged access. */
 async function currentAdmission(proof:Awaited<ReturnType<typeof requireSessionMutationProof>>,original:Awaited<ReturnType<typeof assertOperationalAccess>>){
@@ -173,7 +175,7 @@ export async function publishScheduleAction(formData: FormData) {
 
   let published:boolean;
   try{({published}=await publishScheduleWithRevision({locationId,weekStart,managerId:session.id,proof}));}
-  catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
+  catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');if(error instanceof ManualAssignmentConflictError){if(!await currentAdmission(proof,admission))redirect('/app/schedule?error=ACCESS_DENIED');redirect(scheduleUrl(weekStart,`&error=${encodeURIComponent(error.code)}`));}throw error;}
   if(!await currentAdmission(proof,admission))redirect('/app/schedule?error=ACCESS_DENIED');
 
   revalidatePath("/app/schedule");
@@ -214,7 +216,7 @@ export async function publishScheduleChangesAction(formData: FormData) {
 
   let published:boolean;
   try{({published}=await publishScheduleChanges({weekStart,managerId:session.id,proof}));}
-  catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
+  catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');if(error instanceof ManualAssignmentConflictError){if(!await currentAdmission(proof,admission))redirect('/app/schedule?error=ACCESS_DENIED');redirect(scheduleUrl(weekStart,`&error=${encodeURIComponent(error.code)}`));}throw error;}
   if(!await currentAdmission(proof,admission))redirect('/app/schedule?error=ACCESS_DENIED');
 
   revalidatePath("/app/schedule");
@@ -232,6 +234,7 @@ export async function updateShiftAction(formData: FormData) {
   const proof = await requireSessionMutationProof();
 
   const shiftId = String(formData.get("shiftId") ?? "");
+  const expectedReviewVersion=String(formData.get("expectedReviewVersion")??"");
   const employeeId = String(formData.get("employeeId") ?? "").trim().toUpperCase();
   const date = String(formData.get("date") ?? "");
   const startTime = String(formData.get("startTime") ?? "");
@@ -247,6 +250,8 @@ export async function updateShiftAction(formData: FormData) {
   const editor=await readOperationalShiftEditor(proof,{shiftId});
   if(company&&!await currentAdmission(proof,admission))return accessError();
   if(editor.state!=='ready'||editor.data.saveAvailability!=='available')return accessError();
+  try{requireShiftReview(expectedReviewVersion);}catch{return shiftConflict();}
+  if(editor.data.shift?.reviewVersion!==expectedReviewVersion)return shiftConflict();
   const existing=company?await getShiftForManagement(shiftId):editor.data.shift;
   if(company&&!await currentAdmission(proof,admission))return accessError();
   if(!existing||!employeeId||!date||!startTime||!endTime||!isDateInWeek(date,existing.weekStart))redirect('/app/schedule?error=INVALID_SHIFT');
@@ -271,6 +276,7 @@ export async function updateShiftAction(formData: FormData) {
       actorEmployeeId: session.id,
       proof,
       shiftId,
+      expectedReviewVersion,
       employeeId,
       date,
       startTime,
@@ -281,6 +287,7 @@ export async function updateShiftAction(formData: FormData) {
     });
   } catch (error) {
     if(denied(error))return accessError();
+    if(error instanceof ShiftReviewConflictError){if(!await currentAdmission(proof,admission))return accessError();return shiftConflict();}
     if(error instanceof ManualAssignmentConflictError){if(company&&!await currentAdmission(proof,admission))return accessError();return company?{error:error.message,issueCode:error.code}:{error:'Assignment is unavailable. Reload and try again.',issueCode:'SOURCE_CHANGED'};}
     throw error;
   }
@@ -306,15 +313,21 @@ export async function deleteShiftAction(formData: FormData) {
   await requireRoles(MANAGER_ROLES);
   const proof = await requireSessionMutationProof();
   const shiftId = String(formData.get("shiftId") ?? "");
+  const expectedReviewVersion=String(formData.get("expectedReviewVersion")??"");
   let admission:Awaited<ReturnType<typeof assertOperationalAccess>>;
   try{admission=await assertOperationalAccess(proof,undefined);}catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
   const editor=await readOperationalShiftEditor(proof,{shiftId});
   if(!await currentAdmission(proof,admission))redirect('/app/schedule?error=ACCESS_DENIED');
-  if(editor.state!=='ready'||editor.data.saveAvailability!=='available'||!editor.data.shift)redirect('/app/schedule?error=ACCESS_DENIED');
+  // Missing and out-of-scope shifts deliberately share the same private refusal.
+  // Keep the reviewed draft mounted; a redirect would discard recovery after a
+  // concurrent deletion or a lost successful delete response.
+  if(editor.state!=='ready'||editor.data.saveAvailability!=='available'||!editor.data.shift)return accessError();
   const existing=editor.data.shift;
+  try{requireShiftReview(expectedReviewVersion);}catch{return shiftConflict();}
+  if(existing.reviewVersion!==expectedReviewVersion)return shiftConflict();
   let deleted:boolean;
-  try{deleted=await deleteShift(shiftId,proof);}
-  catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
+  try{deleted=await deleteShift(shiftId,proof,undefined,expectedReviewVersion);}
+  catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');if(error instanceof ShiftReviewConflictError){if(!await currentAdmission(proof,admission))return accessError();return shiftConflict();}throw error;}
 
   if(!await currentAdmission(proof,admission))redirect('/app/schedule?error=ACCESS_DENIED');
   if (!deleted) {

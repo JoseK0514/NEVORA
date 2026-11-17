@@ -10,6 +10,7 @@ import {keepWhole} from '../lib/keep-whole';
 import Link from 'next/link';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {useAccessJourney} from './mobile-access/journey';
+import {useEmployeeBScreen} from './employee-mobile/use-mobile';
 import type {AttentionItem} from '../lib/employee-home/types';
 import {EmployeeHomeB, type HomeBExtras} from './employee-b/home-b';
 import {businessDate, clock, confirmsWeek, dayWord, fmt, isComplete, sourceDestinations, sourceNames, todoTitle, weekRange, type EmployeeHomeQuietViewProps, type HomeWeek} from './employee-home-quiet';
@@ -149,6 +150,7 @@ export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, 
   // Upscale M7: the Quick guide repeats the tabs, so a returning employee's Home shows "Coming up" instead. The guide shows
   // only for the session in which the person has just activated their account (Employee Access on).
   const firstVisit = useAccessJourney().confirmedId !== null;
+  const bScreen = useEmployeeBScreen();
   const date = snapshot
     ? <time dateTime={snapshot.observedAt}>{keepWhole(fmt(snapshot.timeZone, {weekday: 'long', month: 'long', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time>
     // Before Home is read, the workspace's public date, so the line is there from the first frame.
@@ -162,7 +164,7 @@ export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, 
   return <CorpPage className="c-ehome c-page--narrow">
     {/* Direction B: the phone screen (phones only; tablets and desktop keep the cards below). */}
     <EmployeeHomeB snapshot={snapshot ?? null} partial={partial} todos={todos} week={week} name={name} date={dateB} place={(snapshot?.currentShift ?? snapshot?.nextShift)?.locationLabel || workspaceName}
-      waiting={waiting} loading={loading} paused={paused} denied={denied} refreshing={refreshing} onRetry={onRetry} weekTodo={item => weekTodo(item, week)} team={teamMessage} {...b}/>
+      intro={bScreen && firstVisit ? intro : undefined} waiting={waiting} loading={loading} paused={paused} denied={denied} refreshing={refreshing} onRetry={onRetry} weekTodo={item => weekTodo(item, week)} team={teamMessage} {...b}/>
     <div data-home-state={viewState} aria-busy={refreshing || loading} className="c-ehome__body">
       <CorpTitle title={name ? `Welcome back, ${name}` : 'Home'} sub={<>{date}{workspaceName ? <> · {workspaceName}</> : null}</>}/>
       {snapshot ? <>
@@ -177,7 +179,7 @@ export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, 
       </CorpCard>}
       {/* The first-week Quick guide sits below the shift card, as anchored on the v5 Home (a048a86b). It keeps one place in
         * the tree whether or not Home is read, so a refresh never remounts it (or closes it). */}
-      {firstVisit ? intro : null}
+      {!bScreen && firstVisit ? intro : null}
       {snapshot ? <>
         {weekShown ? <ComingUp week={weekShown} snapshot={snapshot}/> : null}
         {/* Board C-Employee: one thing to do is its own card ("Confirm next week's schedule … Review"); several share a

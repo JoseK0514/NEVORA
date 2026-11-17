@@ -73,3 +73,39 @@ test('durable billing and the source-bound Step4 verifier have explicit reviewed
   assert.throws(()=>validateOnboardingInventory(files,{...inventory,entries:inventory.entries.filter(entry=>entry.path!==path)},read),/Unclassified runtime entrypoint/,path);
  }
 });
+
+test('both scheduling agreement routes have company-bound dispositions and cannot evade classification',()=>{
+ const files=execFileSync('git',['ls-files','-z'],{encoding:'utf8',maxBuffer:32*1024*1024}).split('\0').filter(Boolean),inventory=JSON.parse(readFileSync('docs/handoffs/onboarding-entrypoint-inventory.json','utf8'));
+ const read=path=>/\.[cm]?[jt]sx?$/.test(path)?readFileSync(path,'utf8'):'';
+ for(const path of ['src/app/api/employee/scheduling-restrictions/route.ts','src/app/api/manager/scheduling-restrictions/route.ts']){
+  const entry=inventory.entries.find(entry=>entry.path===path);assert(entry,path);assert.equal(entry.status,'CONVERTED');assert.equal(entry.isolatedBehavior,'BOUND_APPLICATION');
+  assert.throws(()=>validateOnboardingInventory(files,{...inventory,entries:inventory.entries.filter(entry=>entry.path!==path)},read),/Unclassified runtime entrypoint/,path);
+ }
+ assert.doesNotThrow(()=>validateOnboardingInventory(files,inventory,read));
+});
+
+test('reminder eligibility has a company-bound disposition and cannot evade runtime classification',()=>{
+ const path='src/app/api/manager/reminders/eligibility/route.ts';
+ const files=execFileSync('git',['ls-files','-z'],{encoding:'utf8',maxBuffer:32*1024*1024}).split('\0').filter(Boolean);
+ const inventory=JSON.parse(readFileSync('docs/handoffs/onboarding-entrypoint-inventory.json','utf8'));
+ const read=path=>/\.[cm]?[jt]sx?$/.test(path)?readFileSync(path,'utf8'):'';
+ const entry=inventory.entries.find(entry=>entry.path===path);
+ assert(entry,path);assert.equal(entry.status,'CONVERTED');assert.equal(entry.isolatedBehavior,'BOUND_APPLICATION');
+ assert.doesNotThrow(()=>validateOnboardingInventory(files,inventory,read));
+ assert.throws(()=>validateOnboardingInventory(files,{...inventory,entries:inventory.entries.filter(entry=>entry.path!==path)},read),/Unclassified runtime entrypoint/,path);
+});
+
+test('Rondo knowledge, weekly and business boundaries stay company-bound; direct-pg fixtures stay test-only',()=>{
+ const files=execFileSync('git',['ls-files','-z'],{encoding:'utf8',maxBuffer:32*1024*1024}).split('\0').filter(Boolean);
+ const inventory=JSON.parse(readFileSync('docs/handoffs/onboarding-entrypoint-inventory.json','utf8'));
+ const read=path=>/\.[cm]?[jt]sx?$/.test(path)?readFileSync(path,'utf8'):'';
+ const routes=['src/app/api/owner/advisor/route.ts','src/app/api/owner/advisor/knowledge/route.ts','src/app/api/owner/advisor/knowledge/entries/[documentId]/versions/[versionId]/route.ts','src/app/api/owner/advisor/weekly/route.ts','src/app/api/owner/advisor/business/route.ts','src/app/api/owner/advisor/business/sources/[sourceId]/versions/[versionId]/route.ts'];
+ assert.deepEqual(files.filter(path=>path.startsWith('src/app/api/owner/advisor/')&&path.endsWith('/route.ts')).sort(),[...routes].sort());
+ for(const path of [...routes,'src/lib/owner-advisor/company-knowledge.integration.ts','src/lib/owner-advisor/business/store.integration.ts','src/lib/owner-advisor/business/service.integration.ts']){
+  const entry=inventory.entries.find(entry=>entry.path===path);assert(entry,path);
+  assert.equal(entry.status,routes.includes(path)?'CONVERTED':'PROVEN_NON_RUNTIME');
+  assert.equal(entry.isolatedBehavior,routes.includes(path)?'BOUND_APPLICATION':'TEST_ONLY');
+  assert.throws(()=>validateOnboardingInventory(files,{...inventory,entries:inventory.entries.filter(entry=>entry.path!==path)},read),/Unclassified runtime entrypoint/,path);
+ }
+ assert.doesNotThrow(()=>validateOnboardingInventory(files,inventory,read));
+});

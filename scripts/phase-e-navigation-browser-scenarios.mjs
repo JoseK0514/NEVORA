@@ -4,48 +4,63 @@ import {join} from 'node:path';
 import {Client} from 'pg';
 import {seedOwnedScenario,seedOwnedScenarioOwner,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {interceptedInboxResponse,refreshInboxAndWaitForRows,withActorRole} from './phase-e-navigation-request.mjs';
-import {waitForSheetEntrance,restoreSheetMotion} from './browser-render-readiness.mjs';
+import {waitForSheetEntrance,restoreSheetMotion,waitForPortalReady} from './browser-render-readiness.mjs';
+import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
 import {waitForMobileAvailabilityForm} from './availability-form-readiness.mjs';
 
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,axeFile,runtimeErrors:cellRuntimeErrors}){
  let stage='seed';cellRuntimeErrors.setStageReader(()=>stage);
  const tabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',backTabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
  const checks=[],contrast=[],focusTrace=[],expiryRecovery=[],runtimeErrors=[],loginAttempts=[],navigationAttempts=[],prefix=`navigation-${engine}-${width}`,headers={};
- let badgeBounds=null,retainedOverflowFailure=false,corporate=false;
+ let badgeBounds=null,retainedOverflowFailure=false,expectedRoleLabel;
  // Phones (< 768px, useEmployeeMobile) render the employee mobile pages: Notifications (messages view) and Time off.
  // Release 1 (Phase 8 boards) draws Requests, Profile, Notifications, Time off and Availability on the corporate kit at
  // every width; Notifications keeps its two reads (phones: the messages view; wider: the account panel), which now draw
  // the same list (All / Unread, rows grouped by day). Each check targets what that width shows; the reads, bindings and
  // private-row rules they verify are the same own reads.
  const phone=width<768;
- const inboxRoot=phone?'.em-messages[data-messages-view="notifications"]':'[data-private-view="notifications"]';
- const inboxRows=inboxRoot+' ul.c-rows > li';
- const inboxLinks=inboxRoot+' a.em-notif-row';
- const inboxGlob=phone?'**/api/employee/messages/notifications/**':'**/api/notifications';
- const isInboxRead=path=>phone?path.startsWith('/api/employee/messages/notifications/'):path==='/api/notifications';
- const inboxItems=view=>phone?view.data?.value?.items:view.items;
+ const inboxStateRoot='.em-messages[data-messages-view="notifications"]';
+ const inboxRoot='.b-screen:has(#b-notifications-title)';
+ const inboxRows=inboxRoot+' .b-card[id^="b-notifications-"] ul.b-list > li';
+ const inboxLinks=inboxRoot+' a.eb-notif';
+ const inboxGlob='**/api/employee/messages/notifications/**';
+ const isInboxRead=path=>path.startsWith('/api/employee/messages/notifications/');
+ const inboxItems=view=>view.data?.value?.items;
  const inboxEmpty=()=>page.locator(inboxRoot).getByText('No current notifications',{exact:true});
  const inboxUnavailable=()=>page.locator(inboxRoot).getByText(/^(Your notifications couldn’t be checked\.|Your current notices couldn’t be checked\. Refresh before continuing\.)$/);
  const inboxDenied=()=>page.locator(inboxRoot).getByText('Your access changed. Sign in again to continue.',{exact:true});
- const inboxPaused=()=>phone?page.locator(inboxRoot+'[data-messages-state="paused"]'):page.locator(inboxRoot).getByText('Your notifications are paused. Return to this page or reconnect to refresh.',{exact:true});
+ const inboxPaused=()=>page.locator(inboxRoot).getByText('Your notifications are paused. Return to this page or reconnect to refresh.',{exact:true});
  const inboxPartial=()=>page.locator(inboxRoot).getByText('Some current notices couldn’t be checked. Refresh before relying on this list.',{exact:true});
  const inboxTryAgain=()=>page.locator(inboxRoot).getByRole('button',{name:'Try again',exact:true});
  const inboxOptions={glob:inboxGlob,items:inboxItems,rows:inboxRows};
  const q=(text,values=[])=>app.database.executor.query({text,values});
  page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]').replace(/[A-Za-z0-9_-]{40,}/g,'[long value]'),path:new URL(page.url()).pathname.replace(/\/api\/calendar\/[^/]+/g,'/api/calendar/[redacted]'),lastCompleted:checks.at(-1),stack:error.stack?.replace(/https?:[^\s)]+/g,'[URL]').replace(/[A-Za-z0-9_-]{40,}/g,'[long value]')});});
  page.on('request',request=>{const path=new URL(request.url()).pathname;if(path.startsWith('/api/employee/')||path==='/api/notifications')headers[path]=request.headers()['x-nevora-employee-view'];});
- async function login(id){
+ async function login(id,returnTo=null){
+  assert(returnTo===null||returnTo==='/app/requests?tab=pending','Only the explicit Owner review handoff changes the default login destination');
   const attempt={outcome:'started'};loginAttempts.push(attempt);
   try{
-   await page.bringToFront();await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
-   await Promise.all([page.waitForURL(u=>u.pathname==='/app',{waitUntil:'commit'}),page.getByRole('button',{name:'Sign in',exact:true}).click()]);
-   await page.locator('.app-shell.nevora-portal').waitFor();await page.waitForLoadState('networkidle');attempt.outcome='ready';
+   await page.bringToFront();await page.goto(app.url+'/login'+(returnTo?'?returnTo='+encodeURIComponent(returnTo):''));await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
+   const deadline=performance.now()+15000;
+   const reads=returnTo?['/api/company-access/operational-authority','/api/manager/inbox-count','/api/notifications'].map(async path=>{const response=await page.waitForResponse(response=>{const url=new URL(response.url());return url.origin===app.url&&url.pathname===path&&response.request().method()==='GET';},{timeout:15000});assert.equal(response.status(),200);await finishResponseByDeadline(response,deadline);const value=await runBeforeRecoveryDeadline(()=>response.json(),deadline);assert.equal(value.state,'ready');return {path,status:200,state:value.state,bodyFinished:true};}):[];
+   const admission=()=>Promise.all([page.waitForURL(u=>returnTo?u.origin===app.url&&u.pathname==='/app/requests'&&u.search==='?tab=pending':u.pathname==='/app',{waitUntil:'commit'}),page.getByRole('button',{name:'Sign in',exact:true}).click(),...reads]);
+   const result=returnTo?await runBeforeRecoveryDeadline(admission,deadline):await admission();
+   const ready=async()=>{await page.locator('.app-shell.nevora-portal').waitFor();await page.waitForLoadState('networkidle');if(returnTo){await waitForPortalReady(page);await page.getByRole('list',{name:'Waiting time off',exact:true}).waitFor();}};
+   if(returnTo){await runBeforeRecoveryDeadline(ready,deadline);attempt.destination='Owner pending review';attempt.reads=result.slice(2);}else await ready();attempt.outcome='ready';
   }catch(error){
+   captureSettleFailure('login');
    const url=new URL(page.url()),code=url.searchParams.get('error');attempt.outcome='failed';attempt.route=['/login','/app'].includes(url.pathname)?url.pathname:'other';attempt.error=['busy','invalid','missing','locked'].includes(code)?code:code?'other':null;
    await page.screenshot({path:join(evidenceDirectory,`${prefix}-login-failure.png`),timeout:5000}).catch(()=>{});throw error;
   }
  }
- async function settle(){await page.waitForLoadState('networkidle');}
+ // Retain only bounded owned request metadata, never query strings, bodies or headers.
+ const pendingRequests=new Map();let droppedPendingRequests=0;
+ page.on('request',request=>{const url=new URL(request.url());if(url.origin!==app.url)return;if(pendingRequests.size>=64){droppedPendingRequests++;return;}pendingRequests.set(request,{path:url.pathname.replace(/[A-Za-z0-9_-]{40,}/g,'[long-value]'),method:request.method(),resource:request.resourceType(),status:null,started:performance.now()});});
+ page.on('response',response=>{const entry=pendingRequests.get(response.request());if(entry)entry.status=response.status();});
+ for(const event of ['requestfinished','requestfailed'])page.on(event,request=>pendingRequests.delete(request));
+ let settleFailure=null;
+ function captureSettleFailure(wait){settleFailure={wait,stage,path:new URL(page.url()).pathname,pending:[...pendingRequests.values()].map(({started,...entry})=>({...entry,ageMs:Math.round(performance.now()-started)})),dropped:droppedPendingRequests};}
+ async function settle(){try{await page.waitForLoadState('networkidle');}catch(error){captureSettleFailure('settle');throw error;}}
  // A server action resolves its result (and the page shows its receipt) before its response stream ends. A hard
  // navigation in that gap cuts the stream, which WebKit reports as TypeError: Load failed into the router error
  // boundary. settle() cannot cover this: networkidle is a per-document lifecycle event already reached at load.
@@ -79,38 +94,39 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  async function navigate(href,keyboard=false){
   const mobile=await page.locator('.mobile-nav').isVisible();
   const primary=['/app','/app/schedule','/app/requests/hub','/app/my-time'].includes(href);
-  // Corporate Employee (board G-E-Schedule): Availability is Schedule's title action on both layouts, and Schedule stays
-  // the current section. A Lead reaches it from More on a phone (Requests lights) and from the sidebar on a computer.
+  // Availability is Schedule's title action for Employee and Lead; Schedule stays current.
   // Desktop Profile is an account action.
-  const sectionOwner=corporate?{'/app/availability':'/app/schedule'}[href]:undefined;
+  const sectionOwner={'/app/availability':'/app/schedule'}[href];
   if(sectionOwner){
-   await nav(sectionOwner);const row=page.locator('main a[href="'+href+'"]').first();if(mobile)await row.tap();else await row.click();await page.waitForURL(u=>u.pathname===href);await settle();
+   await nav(sectionOwner);const row=page.locator('main a[href="'+href+'"]:visible').first();if(mobile)await row.tap();else await row.click();await page.waitForURL(u=>u.pathname===href);await settle();
    await page.waitForFunction(({mobile,sectionOwner})=>!document.querySelector('.section-tabs')&&(mobile?document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===sectionOwner:document.querySelector('nav[aria-label="Primary navigation"] a[aria-current]')?.getAttribute('href')===sectionOwner),{mobile,sectionOwner});return;
+  }
+  if(!mobile&&href==='/app/notifications'){
+   const bell=page.locator('.portal-notification-bell[href="/app/notifications"]:visible').first();
+   if(keyboard){await bell.focus();await page.keyboard.press('Enter');}else await bell.click();
+   await page.waitForURL(u=>u.pathname===href);await settle();assert.equal(await bell.getAttribute('aria-current'),'page');assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[aria-current]').count(),0,'The account notification page selects no unrelated section');return;
   }
   if(!mobile&&href==='/app/profile'){
    const trigger=page.getByRole('button',{name:/, account menu$/}),menu=page.locator('#portal-account-menu');
    if(keyboard){await page.bringToFront();await trigger.focus();await page.keyboard.press('Enter');}else await trigger.click();await menu.waitFor();
    // Upscale S7: the menu opens on who is signed in, the name and then "Role · Workspace", above a divider.
-   assert.equal((await menu.locator('.portal-account-head__name').innerText()).trim(),(await trigger.getAttribute('aria-label')).replace(/, account menu$/,''));assert.match((await menu.locator('.portal-account-head__detail').innerText()).trim(),new RegExp('^'+(corporate?'Employee':'Lead')+' · \\S'));
+   assert.equal((await menu.locator('.portal-account-head__name').innerText()).trim(),(await trigger.getAttribute('aria-label')).replace(/, account menu$/,''));assert.match((await menu.locator('.portal-account-head__detail').innerText()).trim(),new RegExp('^'+expectedRoleLabel+' · \\S'));
    const profile=menu.getByRole('link',{name:'Your profile',exact:true});
    if(keyboard){await page.waitForFunction(()=>document.querySelector('#portal-account-menu a[href="/app/profile"]')===document.activeElement);await page.keyboard.press('Enter');}else await profile.click();
    await page.waitForURL(u=>u.pathname===href);await settle();await menu.waitFor({state:'hidden'});
    assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[href="/app/profile"]').count(),0,'Profile is reached from the account menu');
    assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[aria-current]').count(),0,'Account pages do not select an unrelated sidebar section');return;
   }
-  // v5 (Lead): More is a tab-bar page. Corporate Employee (approved Oct 26): More opens from the header avatar.
-  // Either way its rows reach Updates, Notifications and Profile.
+  // Employee and Lead both open More from the header avatar; its rows reach account pages.
   if(mobile&&!primary){
    // Corporate: a pushed page (Profile, Notifications…) shows Back instead of the avatar, so start from the Home tab.
-   if(corporate&&!await page.locator('.mobile-header a.c-top-avatar[href="/app/more"]').isVisible()){await page.locator('.mobile-nav a[href="/app"]').tap();await page.waitForURL(u=>u.pathname==='/app');await settle();}
-   const more=corporate?page.locator('.mobile-header a.c-top-avatar[href="/app/more"]'):page.locator('.mobile-nav a[href="/app/more"]');await more.tap();await page.waitForURL(u=>u.pathname==='/app/more');await settle();}
+   if(!await page.locator('.mobile-header a.c-top-avatar[href="/app/more"]').isVisible()){await page.locator('.mobile-nav a[href="/app"]').tap();await page.waitForURL(u=>u.pathname==='/app');await settle();}
+   const more=page.locator('.mobile-header a.c-top-avatar[href="/app/more"]');await more.tap();await page.waitForURL(u=>u.pathname==='/app/more');await settle();}
   const root=mobile?(primary?page.locator('.mobile-nav'):page.locator('main')):page.locator('nav[aria-label="Primary navigation"]');
-  const destination=root.locator('a[href="'+href+'"]').first();if(mobile){const rect=await destination.boundingBox();assert(rect);await destination.evaluate(e=>e.addEventListener('touchstart',()=>{window.__employeeNavigationTouch=true;},{once:true}));await page.evaluate(()=>{window.__employeeNavigationTouch=false;});await destination.tap({position:{x:rect.width-8,y:rect.height/2}});assert(await page.evaluate(()=>window.__employeeNavigationTouch),'Native mobile navigation dispatched touchstart');}else await destination.click();await page.waitForURL(u=>u.pathname===href);await settle();
-  // Corporate Employee (Nov 1 upscale): More, Updates, Profile and Notifications (opened from the avatar or the bell) light
-  // no tab; Home owns Home only, and there is no More tab. A Lead's Availability belongs to the Requests tab; its other
-  // More pages light More, and its Notifications light Home.
-  const lit=corporate?null:href==='/app/notifications'?'/app':href==='/app/availability'?'/app/requests/hub':'/app/more';
-  await page.waitForFunction(({mobile,primary,href,lit})=>mobile?(primary?document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===href:lit===null?!!document.querySelector('.mobile-nav a')&&!document.querySelector('.mobile-nav a.active,.mobile-nav a[aria-current]'):document.querySelector('.mobile-nav a[href="'+lit+'"]')?.classList.contains('active')):document.querySelector('nav[aria-label="Primary navigation"] a[aria-current="page"]')?.getAttribute('href')===href,{mobile,primary,href,lit});
+  const destination=root.locator('a[href="'+href+'"]:visible').first();if(mobile){const rect=await destination.boundingBox();assert(rect);await destination.evaluate(e=>e.addEventListener('touchstart',()=>{window.__employeeNavigationTouch=true;},{once:true}));await page.evaluate(()=>{window.__employeeNavigationTouch=false;});await destination.tap({position:{x:rect.width-8,y:rect.height/2}});assert(await page.evaluate(()=>window.__employeeNavigationTouch),'Native mobile navigation dispatched touchstart');}else await destination.click();await page.waitForURL(u=>u.pathname===href);await settle();
+  // Both roles keep account pages outside primary section selection. Availability returned above to Schedule.
+  const lit=null;
+  await page.waitForFunction(({mobile,primary,href,lit})=>mobile?(primary?document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===href:lit===null?!!document.querySelector('.mobile-nav a')&&!document.querySelector('.mobile-nav a.active,.mobile-nav a[aria-current]'):document.querySelector('.mobile-nav a[href="'+lit+'"]')?.classList.contains('active')):primary?document.querySelector('nav[aria-label="Primary navigation"] a[aria-current="page"]')?.getAttribute('href')===href:!document.querySelector('nav[aria-label="Primary navigation"] a[aria-current]'),{mobile,primary,href,lit});
   assert.equal(await page.locator('#employee-more-navigation').count(),0,'v5 has no More pop-up');
  }
  // Profile keeps aria-hidden placeholder rows; inbox controls exist even in a ready empty view.
@@ -118,8 +134,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   // Phones: the mobile profile view and messages view publish their own released state.
   // Profile (board E-Profile) publishes its released state at every width.
   if(k==='profile')return document.querySelector('[data-private-view="profile"]')?.getAttribute('data-profile-state')==='ready';
-  if(phone)return document.querySelector('.em-messages[data-messages-view="notifications"]')?.getAttribute('data-messages-state')==='ready';
-  return !!document.querySelector('[data-private-view="notifications"] [aria-label="Show notifications"]');},{k:kind,phone});}
+  return document.querySelector('.em-messages[data-messages-view="notifications"]')?.getAttribute('data-messages-state')==='ready'&&!!document.querySelector('.b-screen #b-notifications-title');},{k:kind,phone});}
  const notifications=()=>page.locator('[data-private-view="notifications"]');
  // v5 has no manual Refresh: the inbox re-reads when the app returns to the front. A storage event reaches only the
  // inbox panel (the bell ignores it), so each refresh is exactly one inbox read, as the old Refresh button was.
@@ -127,7 +142,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  const refreshProfile=()=>page.evaluate(()=>window.dispatchEvent(new Event('storage')));
  async function screenshot(name){await page.screenshot({path:join(evidenceDirectory,`${prefix}-${name}.png`),fullPage:true});}
  async function accessibility(name){
-  const expectedTitle={'Requests hub':'NEVORA',Profile:'Profile · NEVORA',Notifications:'Notifications · NEVORA'}[name];assert(expectedTitle,'Known page title contract');await page.waitForFunction(title=>document.title===title,expectedTitle);if(name==='Requests hub'&&phone)await page.locator('.em-requests-corp [data-requests-state="ready"]').waitFor();const entrance=name==='Requests hub'?await waitForSheetEntrance(page):undefined;
+  const expectedTitle={'Requests hub':'Requests · NEVORA',Profile:'Profile · NEVORA',Notifications:'Notifications · NEVORA'}[name];assert(expectedTitle,'Known page title contract');await page.waitForFunction(title=>document.title===title,expectedTitle);if(name==='Requests hub'&&phone){await page.locator('[data-requests-state="ready"]').waitFor({state:'attached'});await page.locator('#b-requests-title').waitFor();}const entrance=name==='Requests hub'?await waitForSheetEntrance(page):undefined;
   // Audit the settled tab bar: a tab's pressed/pending opacity transition is a frame of motion, not its colour.
   // A tapped tab also keeps the browser's :active state for a few hundred milliseconds after the tap (Chromium holds it
   // past a quick second tap elsewhere), and while it is pressed the tab dims to .64 by design (Signature press feedback,
@@ -149,16 +164,18 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   const closeMenu=async()=>{await page.keyboard.press('Escape');if(await accountMenu.waitFor({state:'hidden',timeout:2000}).then(()=>false,()=>true))await accountTrigger().click();await accountMenu.waitFor({state:'hidden'});};
   if(phone){await page.goto(app.url+'/app/more');await settle();target=page.locator('main').getByRole('button',{name:'Sign out',exact:true});}
   else{const sidebar=page.locator('aside.sidebar').getByRole('button',{name:'Sign out',exact:true});if(await sidebar.isVisible())target=sidebar;else{menu=true;await accountTrigger().click();await page.locator('#portal-account-menu').waitFor();target=page.locator('#portal-account-menu').getByRole('button',{name:'Sign out',exact:true});}}
+  const menuReady=async()=>{if(menu)await page.waitForFunction(()=>{const root=document.getElementById('portal-account-menu');if(!root)return false;const style=getComputedStyle(root);return root.matches(':popover-open')&&style.opacity==='1'&&style.visibility==='visible'&&root.getAnimations({subtree:true}).every(animation=>!Number.isFinite(animation.effect?.getComputedTiming().endTime)||!animation.pending&&animation.playState==='finished');});};
+  await menuReady();
   focusTrace.push({stage:'Sign out location',location:phone?'More':menu?'account menu':'sidebar'});
   const sample=()=>target.evaluate(element=>{
    const rgba=value=>{const parts=value.match(/[\d.]+/g).map(Number);return [parts[0],parts[1],parts[2],parts[3]??1];};
    const blend=(front,back)=>front.slice(0,3).map((v,i)=>v*front[3]+back[i]*(1-front[3]));
-   const layers=[];for(let node=element;node;node=node.parentElement)layers.unshift(rgba(getComputedStyle(node).backgroundColor));
+   const layers=[];let opaqueAncestors=true;for(let node=element;node;node=node.parentElement){const computed=getComputedStyle(node);layers.unshift(rgba(computed.backgroundColor));opaqueAncestors&&=computed.opacity==='1'&&computed.visibility==='visible';}
    const background=layers.reduce((back,front)=>blend(front,back),[255,255,255]),style=getComputedStyle(element),foreground=blend(rgba(style.color),background);
    const luminance=color=>color.map(v=>v/255).map(v=>v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[0.2126,0.7152,0.0722][i],0);
    const ratio=(a,b)=>(Math.max(luminance(a),luminance(b))+0.05)/(Math.min(luminance(a),luminance(b))+0.05);
    const page=getComputedStyle(document.body).backgroundColor;
-   return {active:element===document.activeElement,focusVisible:element.matches(':focus-visible'),disabled:element.disabled,foreground,background,textRatio:ratio(foreground,background),outline:style.outlineStyle,outlineWidth:style.outlineWidth,outlineRatio:ratio(blend(rgba(style.outlineColor),rgba(page)),rgba(page).slice(0,3))};
+   return {active:element===document.activeElement,focusVisible:element.matches(':focus-visible'),disabled:element.disabled,foreground,background,textRatio:ratio(foreground,background),outline:style.outlineStyle,outlineWidth:style.outlineWidth,outlineColor:style.outlineColor,outlineAlpha:rgba(style.outlineColor)[3],opaqueAncestors,outlineOffset:style.outlineOffset,outlineRatio:ratio(blend(rgba(style.outlineColor),rgba(page)),rgba(page).slice(0,3)),outlineAdjacentRatio:ratio(blend(rgba(style.outlineColor),background),background),popupOpacity:element.closest('#portal-account-menu')?getComputedStyle(element.closest('#portal-account-menu')).opacity:null};
   });
   for(const state of ['normal','hover','pressed','focus']){
    if(state==='normal'){await target.scrollIntoViewIfNeeded();await page.mouse.move(0,0);}
@@ -168,9 +185,9 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
     // The account menu's items are reached from its trigger: Enter opens it with focus on its first item.
     if(menu){if(await accountMenu.isVisible())await closeMenu();await page.bringToFront();await accountTrigger().focus();await page.keyboard.press('Enter');await page.locator('#portal-account-menu').waitFor();await page.waitForFunction(()=>document.querySelector('#portal-account-menu')?.contains(document.activeElement));}
     else await page.evaluate(()=>window.scrollTo(0,0));let reached=false;for(let n=0;n<40;n++){await page.keyboard.press(tabKey);const now=await target.evaluate(e=>({stage:'native Tab',active:e===document.activeElement,disabled:e.disabled,focusVisible:e.matches(':focus-visible')}));if(now.active){focusTrace.push(now);reached=true;break;}}assert(reached,'Native keyboard reaches Sign out');}
-   const measured=await sample();contrast.push({state,...measured});
+   await menuReady();const measured=await sample();contrast.push({state,...measured});
    assert(measured.textRatio>=4.5,state+' actual composited button text contrast');
-   if(state==='focus'){assert(measured.active&&measured.focusVisible&&!measured.disabled,'Actual native keyboard focus is visible');assert.notEqual(measured.outline,'none');assert(measured.outlineRatio>=3,'focus outline contrast');}
+   if(state==='focus'){assert(measured.active&&measured.focusVisible&&!measured.disabled,'Actual native keyboard focus is visible');assert.notEqual(measured.outline,'none');assert(measured.outlineRatio>=3,'focus outline contrast against body');if(menu){assert.equal(measured.popupOpacity,'1');assert(measured.opaqueAncestors,'The focus footprint and its ancestors are fully opaque');assert.equal(measured.outline,'solid');assert.equal(measured.outlineWidth,'2px');assert.equal(measured.outlineOffset,'-2px');assert.equal(measured.outlineAlpha,1);assert(measured.outlineAdjacentRatio>=3,'Settled popup focus contrast against its actual adjacent background');}}
   }
   const clear=async(control,name)=>{const sample=await control.evaluate(e=>{const r=e.getBoundingClientRect(),nav=document.querySelector('.mobile-nav')?.getBoundingClientRect(),header=document.querySelector('.mobile-header')?.getBoundingClientRect();return {top:r.top,bottom:r.bottom,minimum:header?.height?header.bottom:0,maximum:nav?.height?nav.top:innerHeight,active:e===document.activeElement,focusVisible:e.matches(':focus-visible')};});focusTrace.push({stage:name,...sample});assert(sample.active&&sample.focusVisible,name+' has native visible focus');assert(sample.top>=sample.minimum&&sample.bottom<=sample.maximum,name+' is unobscured above fixed navigation');};
   // The account menu holds two rows above Sign out (Your profile, Add shifts to your calendar); More and the sidebar hold more.
@@ -185,9 +202,9 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   await q('DELETE FROM notifications WHERE employee_id=$1',[actor]);
   await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) VALUES($1,$2,current_date+7,current_date+7,'APPROVED','Fictional private reason')",[requestId,actor]);
   await q("INSERT INTO notifications(id,employee_id,type,title,body,event_key,environment,source_kind,source_id,source_version,effective_version,purpose,due_at,expires_at,urgency,push_state) VALUES($1,$2,'TIME_OFF_DECIDED','STORED PRIVATE TITLE','STORED PRIVATE BODY',$1,'test','TIME_OFF',$3,'APPROVED','APPROVED','EVENT',now()-interval '1 hour',now()+interval '1 day','high','pending')",[noticeId,actor,requestId]);
-  // Release 1 ships the corporate Employee app; Leads (on hold) keep the v5 look. The deep 390 checks run as an Employee.
-  const actualRole=[320,390,1440].includes(width)?'EMPLOYEE':'LEAD';await q('UPDATE employees SET role=$1 WHERE id=$2',[actualRole,actor]);corporate=actualRole==='EMPLOYEE';
-  stage='login';await login(actor);await settle();
+  // Both roles use DirectionB. Keep the actual fixture role independent from presentation checks.
+  const actualRole=[320,390,1440].includes(width)?'EMPLOYEE':'LEAD';await q('UPDATE employees SET role=$1 WHERE id=$2',[actualRole,actor]);expectedRoleLabel=actualRole==='EMPLOYEE'?'Employee':'Lead';
+  stage='login';await login(actor);await settle();assert.equal(await page.locator('.app-shell[data-nv-b][data-employee-mobile]').count(),1,'Both actual Employee and Lead fixtures render the current DirectionB presentation');
   // next.config.ts sets devIndicators:false (93a950dd): the development badge is not drawn at all, so it can cover
   // neither the bottom tab bar nor the header's Back/avatar. Observe every rendered badge after hydration settles.
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
@@ -207,55 +224,61 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   // the decided time-off list; wider layouts add a Shift requests row. Phones have no fixed shift-requests link (each
   // request row opens its own page), so that canonical page is opened directly to verify its ownership and Back.
   const newRequest=page.locator('main').getByRole('link',{name:'Request time off',exact:true});assert.equal(await newRequest.getAttribute('href'),'/app/requests?tab=new');assert.equal(await page.locator('main').getByRole('link',{name:'New request',exact:true}).count(),0,'The primary names what it opens');
-  // Upscale B2 retired the Employee header's "+" (New request lives on Requests). A Lead (v5 look, on hold) keeps its
-  // header's round "+" by design, so for a Lead the only New request link allowed is that header "+" to /app/requests.
+  // Both roles keep the new-request action in Requests, without a duplicate header action.
   const headerNew=await page.getByRole('link',{name:'New request',exact:true}).evaluateAll(links=>links.map(link=>link.matches('header .e5-new')?link.getAttribute('href'):'outside header: '+link.getAttribute('href')));
-  if(corporate)assert.deepEqual(headerNew,[],'The Employee header has no "+" New request');else for(const href of headerNew)assert.equal(href,'/app/requests','A Lead keeps only the header "+" New request');
+  assert.deepEqual(headerNew,[],'Employee and Lead headers keep New request in the Requests workflow');
   const decided=page.locator('main').getByRole('link',{name:'See all decided requests',exact:true});assert.equal(await decided.getAttribute('href'),'/app/requests?filter=decided');
-  const shifts=phone?null:page.locator('main').getByRole('link',{name:/^Swaps, cover and can’t work\b/});if(shifts)assert.equal(await shifts.getAttribute('href'),'/app/exchange');
-  // Phones go Back to Requests from each page; a computer keeps Requests current in the sidebar (its hub one click away).
-  const backToRequests='main a:is(.c-nav__back,.q-nav__l,.em-request-back)[href="/app/requests/hub"]:visible';
-  for(const [link,path] of [[decided,'/app/requests'],[shifts??'/app/exchange?tab=requests','/app/exchange']]){
-   if(typeof link==='string')await page.goto(app.url+link);else await link.click();await page.waitForURL(u=>u.pathname===path);await settle();
+  const shifts=page.locator('main').getByRole('link',{name:/^Pick up and swap\b/});assert.equal(await shifts.count(),1);assert.equal(await shifts.getAttribute('href'),'/app/exchange');
+  // Requests owns time-off history; Schedule owns Exchange, on phone and in the sidebar.
+  const backToSection=href=>'main a:is(.b-back,.c-nav__back,.q-nav__l,.em-request-back)[href="'+href+'"]:visible';
+  for(const [link,path,section] of [[decided,'/app/requests','/app/requests/hub'],[phone?'/app/exchange?tab=requests':shifts,'/app/exchange','/app/schedule']]){
+   if(typeof link==='string')await page.goto(app.url+link);else await link.click();await page.waitForURL(u=>u.pathname===path);await settle();if(path==='/app/requests')assert.equal(new URL(page.url()).searchParams.get('filter'),'decided');if(phone&&path==='/app/exchange'){assert.equal(new URL(page.url()).searchParams.get('tab'),'requests');assert.equal(await page.locator('main a[href="/app/exchange?tab=requests"]:visible').getAttribute('aria-current'),'page');}
    assert.equal(await page.locator('.section-tabs').count(),0);
    if(await page.locator('.mobile-nav').isVisible()){
-    await page.locator(backToRequests).waitFor();assert.equal(await page.locator(backToRequests).count(),1,'Back to Requests');
-    assert.equal(await page.locator('.mobile-nav a[aria-current="page"]').getAttribute('href'),'/app/requests/hub');
-    // Lead: the More tab stays unselected. Corporate Employee: no More tab, and the header avatar (More) is not current.
-    if(corporate){assert.equal(await page.locator('.mobile-nav a[href="/app/more"]').count(),0,'Corporate Employee has no More tab');assert.equal(await page.locator('.mobile-header a.c-top-avatar[href="/app/more"]').getAttribute('aria-current'),null);}
-    else assert.equal(await page.locator('.mobile-nav a[href="/app/more"]').evaluate(e=>e.classList.contains('active')),false);
-   }else assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[aria-current]').getAttribute('href'),'/app/requests/hub','Requests stays the current section');
+    await page.locator(backToSection(section)).waitFor();assert.equal(await page.locator(backToSection(section)).count(),1,'Exactly one Back link to the canonical workflow section');
+    assert.equal(await page.locator('.mobile-nav a[aria-current="page"]').getAttribute('href'),section);
+    // The avatar owns More; neither role has an extra More tab.
+    assert.equal(await page.locator('.mobile-nav a[href="/app/more"]').count(),0,'Employee and Lead open More from the avatar');assert.equal(await page.locator('.mobile-header a.c-top-avatar[href="/app/more"]').getAttribute('aria-current'),null);
+   }else assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[aria-current]').getAttribute('href'),section,'The actual parent workflow stays selected');
    await page.goBack();await settle();
   }
   checks.push('Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs and selected ownership');
   await nav('/app/availability');assert.equal(new URL(page.url()).pathname,'/app/availability');
   if(await page.locator('.mobile-nav').isVisible()){
-   // v5 (Lead): More is a page opened from the tab bar. Corporate Employee (board E-More): the header avatar opens it.
+   // The header avatar opens More for both roles.
    // The keyboard opens it; its rows keep the approved fixed order; Back returns.
    // Corporate: the avatar sits in the header of a tab's own page (a pushed page such as Availability shows Back
    // instead), so the keyboard opens More from the Requests tab page and Back returns there.
-   const moreFrom=corporate?'/app/requests/hub':'/app/availability';if(corporate){await nav('/app/requests/hub');assert(await page.locator('.mobile-header a.c-top-avatar[href="/app/more"]').isVisible(),'The avatar opens More from a tab page');}
-   const trigger=corporate?page.locator('.mobile-header a.c-top-avatar[href="/app/more"]'):page.locator('.mobile-nav a[href="/app/more"]');await trigger.focus();assert(await trigger.evaluate(e=>e===document.activeElement));await page.keyboard.press('Enter');await page.waitForURL(u=>u.pathname==='/app/more');await settle();
-   const moreRows=corporate?'main .c-rows a.c-row':'main .q-list a.q-row';
+   const moreFrom='/app/requests/hub';await nav(moreFrom);assert(await page.locator('.mobile-header a.c-top-avatar[href="/app/more"]').isVisible(),'The avatar opens More from a tab page');
+   const trigger=page.locator('.mobile-header a.c-top-avatar[href="/app/more"]');await trigger.focus();assert(await trigger.evaluate(e=>e===document.activeElement));await page.keyboard.press('Enter');await page.waitForURL(u=>u.pathname==='/app/more');await settle();
+   const moreRows='main .c-more > .b-screen:visible a[href]:visible';
    await page.locator(moreRows+'[href="/app/profile"]').waitFor();
    const order=await page.locator(moreRows).evaluateAll(es=>es.map(e=>e.getAttribute('href')));
    assert(order.includes('/app/profile')&&order.includes('/app/notifications'),'More lists Profile and Notifications');
-   const known=corporate?['/app/profile','/app/notifications','/app/updates']:['/app/profile','/app/updates','/app/notifications'];assert.deepEqual(order.filter(href=>known.includes(href)),known.filter(href=>order.includes(href)),'More keeps its row order');
+   const known=['/app/profile','/app/notifications','/app/updates'];assert.deepEqual(order.filter(href=>known.includes(href)),known.filter(href=>order.includes(href)),'More keeps its row order');
    assert(order.includes('/app/help')&&!order.includes('/support'),'More’s Help opens Help inside the app');
-   if(corporate){assert.equal(await trigger.getAttribute('aria-current'),'page');assert.equal(await page.locator('.mobile-nav a[aria-current="page"]').count(),0,'More lights no tab');assert.equal(await page.locator('.mobile-nav a.active').count(),0,'More lights no tab');}
-   else assert(await trigger.evaluate(e=>e.classList.contains('active')));
+   assert.equal(await trigger.getAttribute('aria-current'),'page');assert.equal(await page.locator('.mobile-nav a[aria-current="page"]').count(),0,'More lights no tab');assert.equal(await page.locator('.mobile-nav a.active').count(),0,'More lights no tab');
    await page.goBack();await page.waitForURL(u=>u.pathname===moreFrom);await settle();
    checks.push('More page reached by native Enter with explicit row order; Back returns');
   }else{await nav('/app/profile',true);checks.push('Native keyboard desktop account-menu Profile navigation and focus handoff');}
-  stage='layout';await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);assert.equal(await page.locator('main a[href="/app/profile/device-alerts"]').count(),0,'Profile offers no device alerts while the workplace has none');await bounds();await screenshot('profile');await accessibility('Profile');
+  stage='layout';await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);const profileAlerts=page.locator('main a[href="/app/profile/device-alerts"]');assert.equal(await profileAlerts.count(),actualRole==='LEAD'?1:0,'Only the current Lead profile supplies the Calendar and alerts entry');assert.equal(await profileAlerts.filter({visible:true}).count(),actualRole==='LEAD'&&width>=768?1:0,'The Lead entry is visible only in the desktop/tablet card; its destination still reports disabled workplace alerts');await bounds();await screenshot('profile');await accessibility('Profile');
   // Board E-Profile: device alerts are their own page (opened from Notifications' Settings when the workplace has alerts).
   // With push off it says so and keeps notifications in NEVORA.
-  await page.goto(app.url+'/app/profile/device-alerts');await settle();await page.locator('[data-device-state="disabled"]').getByText('Workplace alerts are unavailable',{exact:true}).waitFor();assert(await page.getByText('Your workplace has not made device alerts available. Your notifications remain in NEVORA.',{exact:true}).isVisible());
+  await page.goto(app.url+'/app/profile/device-alerts');await settle();
+  // DirectionB supplies the visible phone screen; the original device card is
+  // retained for the layout that shows it. Never measure its hidden duplicate.
+  const alerts=page.locator('main .b-screen:has(#b-alerts-title):visible, main .em-device[data-device-state]:visible');await alerts.waitFor();assert.equal(await alerts.count(),1,'Exactly one disabled-alert presentation is visible');
+  if(await alerts.evaluate(node=>node.classList.contains('b-screen'))){
+   await alerts.getByText('Your workplace hasn’t turned on device alerts',{exact:true}).waitFor();assert(await alerts.getByText('Unavailable',{exact:true}).isVisible());assert(await alerts.getByText('Your notifications always stay in NEVORA, and your phone’s settings can turn off every alert.',{exact:true}).isVisible());
+  }else{assert.equal(await alerts.getAttribute('data-device-state'),'disabled');await alerts.getByText('Workplace alerts are unavailable',{exact:true}).waitFor();assert(await alerts.getByText('Your workplace has not made device alerts available. Your notifications remain in NEVORA.',{exact:true}).isVisible());}
+  assert.equal(await alerts.getByRole('button').filter({visible:true}).count(),0,'Disabled workplace alerts offer no enrollment, send or removal action');
+  checks.push('Actual visible disabled-device alert state preserves in-app notifications and offers no activation or send action');
   await nav('/app/profile');await ready('profile');await contrastStates();
   await nav('/app/notifications');await ready('notifications');assert.equal(await page.locator(inboxLinks).count(),1);
   assert.equal(await page.locator('main').getByRole('link',{name:'Settings',exact:true}).count(),0,'No alert Settings while the workplace has no device alerts');
-  // Desktop opens through the guarded open route; the phone messages view opens through its own guarded open read.
-  assert.equal(await page.locator(inboxLinks).getAttribute('id'),'message-'+noticeId);if(!phone)assert.equal(await page.locator(inboxLinks).getAttribute('href'),'/app/notifications/open?notificationId='+noticeId);
+  // Both current list renderers expose the guarded notification-open URL. The
+  // phone handler also verifies its own protected open read before navigation.
+  assert.equal(await page.locator(inboxLinks).getAttribute('id'),'b-message-'+noticeId);assert.equal(await page.locator(inboxLinks).getAttribute('href'),'/app/notifications/open?notificationId='+encodeURIComponent(noticeId));
   assert(!await page.locator(inboxRoot).innerText().then(t=>t.includes('STORED PRIVATE')));await bounds();await screenshot('inbox');await accessibility('Notifications');
   const before=await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]);await page.locator(inboxLinks).click();await page.waitForURL(u=>u.pathname==='/app/requests');
   // The guarded open loads a new document. Wait for its current bell read before Back;
@@ -268,14 +291,14 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   // Observe the real abort boundary and React commit separately. Keep an actual
   // authorized old response held: clearing cannot depend on another successful read.
   const visibilityEvidence={engine,width,requests:[],observations:[]};
-  await page.evaluate(({phone,inboxRoot,inboxRows})=>{
+  await page.evaluate(({inboxStateRoot,inboxRoot,inboxRows})=>{
    const observations=[],signals=[],originalFetch=window.fetch;
-   const isRead=path=>phone?path.startsWith('/api/employee/messages/notifications/'):path==='/api/notifications';
-   const observe=event=>{const root=document.querySelector(inboxRoot);const entry={event,at:performance.now(),hidden:document.visibilityState==='hidden',paused:(phone?root?.getAttribute('data-messages-state')==='paused':root?.textContent.includes('Your notifications are paused.'))??false,rows:document.querySelectorAll(inboxRows).length,requests:signals.length,aborted:signals.filter(signal=>signal.aborted).length};observations.push(entry);return entry;};
+   const isRead=path=>path.startsWith('/api/employee/messages/notifications/');
+   const observe=event=>{const root=document.querySelector(inboxRoot);const entry={event,at:performance.now(),hidden:document.visibilityState==='hidden',paused:document.querySelector(inboxStateRoot)?.getAttribute('data-messages-state')==='paused',rows:document.querySelectorAll(inboxRows).length,requests:signals.length,aborted:signals.filter(signal=>signal.aborted).length};observations.push(entry);return entry;};
    window.fetch=function(input,options){if(isRead(new URL(typeof input==='string'?input:input.url??String(input),location.href).pathname)&&options?.signal){signals.push(options.signal);options.signal.addEventListener('abort',()=>observe('abort'),{once:true});observe('request');}return originalFetch.apply(this,arguments);};
    const observer=new MutationObserver(()=>observe('commit'));observer.observe(document.querySelector(inboxRoot),{childList:true,subtree:true,attributes:true,characterData:true});
    window.__navigationVisibility={observe,observations,stop:()=>{observer.disconnect();window.fetch=originalFetch;}};observe('initial');
-  },{phone,inboxRoot,inboxRows});
+  },{inboxStateRoot,inboxRoot,inboxRows});
   let release,started,finished,used=false,heldFailure,heldOutcome,operation='fetch';
   const gate=new Promise(resolve=>{release=resolve;}),seen=new Promise(resolve=>{started=resolve;}),done=new Promise(resolve=>{finished=resolve;});
   const heldHandler=async route=>{
@@ -374,7 +397,12 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    let release,reached;const gate=new Promise(r=>release=r),seen=new Promise(r=>reached=r);let held=false;
    await context.route('**/api/employee/profile',async route=>{if(held)return route.continue();held=true;const response=await route.fetch();assert.equal(response.status(),200);reached();await gate;await route.fulfill({response});});
    await refreshProfile();await seen;await page.evaluate(()=>window.dispatchEvent(new Event('blur')));release();await page.waitForTimeout(100);
-   assert.equal(await page.locator('[data-private-view="profile"]').getAttribute('data-profile-state'),'paused');assert.deepEqual(await page.locator('[data-private-view="profile"] .c-row__value').allTextContents(),['–','–','–'],'Paused profile retains only static placeholders');await context.unroute('**/api/employee/profile');await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('profile');
+   await page.locator('[data-private-view="profile"][data-profile-state="paused"]').waitFor({state:'attached'});
+   const privateLabels=['Name','Employee ID','Locations','Time zone'],placeholders=privateLabels.map(label=>({label,value:'–'}));
+   const legacyRows=await page.locator('[data-private-view="profile"] #profile-personal .c-row').evaluateAll(rows=>rows.map(row=>({label:row.querySelector('.c-row__title')?.textContent,value:row.querySelector('.c-row__value')?.textContent})));
+   assert.deepEqual(legacyRows,placeholders,'Paused profile clears all four fields, including the sign-in Employee ID');
+   const visibleRows=await page.locator('.b-screen:has(#b-profile-title):visible #b-profile-personal .eb-field').evaluateAll(rows=>rows.map(row=>({label:row.querySelector('.b-row__s')?.textContent,value:row.querySelector('.b-row__t')?.textContent})));
+   assert.deepEqual(visibleRows,placeholders,'The visible profile also retains only the four labeled static placeholders');await context.unroute('**/api/employee/profile');await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('profile');
    checks.push('Delayed real authenticated GET cannot repaint after blur (transport held; no fixture response content)');
    // Actual session replacement through login binds the old mounted view out.
    stage='replacement';await login(scenario.actors[1]);assert.equal((await get(endpoint,binding)).status(),403);await login(actor);await nav('/app/profile');await ready('profile');checks.push('Actual account/session replacement rejects former mounted-view binding');
@@ -399,8 +427,8 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
     created=await submitTimeOff(scenario.sourceDate);const pending=await q('SELECT id,employee_id,status FROM time_off_requests WHERE id=$1',[created]);assert.deepEqual(pending,[{id:created,employee_id:actor,status:'PENDING'}]);const intents=await q("SELECT id FROM notifications WHERE source_kind='TIME_OFF' AND source_id=$1 ORDER BY id",[created]);assert(intents.length>0,'Actual canonical notifications outbox exists');
     // Stable-ID replay: the first send commits on the server but its response is lost; the page keeps the original
     // submission, and Check submission status replays that same request ID.
-    let sends=0;const lose=async route=>{if(!isAction(route.request()))return route.continue();if(++sends>1)return route.continue();await route.fetch();await route.abort('connectionreset');};
-    await openTimeOffForm();await page.route(url=>url.pathname==='/app/requests',lose);
+    let sends=0;const timeOffActionUrl=url=>url.pathname==='/app/requests';const lose=async route=>{if(!isAction(route.request()))return route.continue();if(++sends>1)return route.continue();await route.fetch();await route.abort('connectionreset');};
+    await openTimeOffForm();await page.route(timeOffActionUrl,lose);
     try{
      await form().locator('[name="startDate"]').fill(scenario.targetDate);await form().locator('[name="endDate"]').fill(scenario.targetDate);await form().getByRole('button',{name:'Send request',exact:true}).click();
      const check=page.getByRole('button',{name:'Check submission status',exact:true});await check.waitFor();
@@ -410,7 +438,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
      assert.equal(new URL(await page.getByRole('link',{name:'View my request',exact:true}).getAttribute('href'),app.url).searchParams.get('requestId'),replayed[0].id,'Replay resolves to the original request ID');
      assert.deepEqual(await q("SELECT id,status FROM time_off_requests WHERE employee_id=$1 AND start_date=$2",[actor,scenario.targetDate]),[{id:replayed[0].id,status:'PENDING'}]);
      assert.deepEqual(await q("SELECT id FROM notifications WHERE source_kind='TIME_OFF' AND source_id=$1 ORDER BY id",[replayed[0].id]),replayIntents);
-    }finally{await page.unroute(url=>url.pathname==='/app/requests',lose);}
+    }finally{await page.unroute(timeOffActionUrl,lose);}
    }else{
    const timeOffForm=()=>page.locator('dialog[open] form.nto-form');
    const openTimeOffForm=async()=>{await page.goto(app.url+'/app/requests?tab=new');await settle();await timeOffForm().waitFor();await timeOffForm().getByRole('button',{name:'Part of a day',exact:true}).click();await timeOffForm().getByLabel('Start time',{exact:true}).waitFor();await timeOffForm().getByRole('button',{name:'Full days',exact:true}).click();await timeOffForm().getByLabel('Until',{exact:true}).waitFor();assert.equal(await timeOffForm().getByRole('button',{name:'Full days',exact:true}).getAttribute('aria-pressed'),'true');};
@@ -418,7 +446,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    const submitTimeOff=async(replay)=>{await openTimeOffForm();await timeOffForm().locator('[name="startDate"]').fill(scenario.sourceDate);await timeOffForm().locator('[name="endDate"]').fill(scenario.sourceDate);await timeOffForm().locator('p[aria-live="polite"]').filter({hasText:/^1 full day$/}).waitFor();if(replay)await timeOffForm().locator('[name="requestId"]').evaluate((field,id)=>{field.value=id;},replay);const id=await timeOffForm().locator('[name="requestId"]').inputValue();await timeOffForm().getByRole('button',{name:'Send',exact:true}).click();await page.waitForURL(u=>u.searchParams.get('submitted')==='1');await settle();return id;};
    created=await submitTimeOff();const pending=await q('SELECT id,employee_id,status FROM time_off_requests WHERE id=$1',[created]);assert.deepEqual(pending,[{id:created,employee_id:actor,status:'PENDING'}]);const intents=await q("SELECT id FROM notifications WHERE source_kind='TIME_OFF' AND source_id=$1 ORDER BY id",[created]);assert(intents.length>0,'Actual canonical notifications outbox exists before replay');assert.equal(await submitTimeOff(created),created);assert.deepEqual(await q('SELECT id,employee_id,status FROM time_off_requests WHERE id=$1',[created]),pending);assert.deepEqual(await q("SELECT id FROM notifications WHERE source_kind='TIME_OFF' AND source_id=$1 ORDER BY id",[created]),intents);
    }
-   stage='owner-login';await login(await seedOwnedScenarioOwner(app.database.executor,label));stage='owner-timeoff-review';await page.goto(app.url+'/app/requests?tab=pending');await settle();/* f66c6f67: the Waiting list has no Approve; its row opens the focused review where the Owner decides, and the decision returns to Things to do with a one-time confirmation. */const reviewRow=page.locator('[id="request-'+created+'"]');assert.equal(await reviewRow.getByRole('button').count(),0,'Waiting time-off rows carry no decision buttons');await reviewRow.getByRole('link').click();await page.waitForURL(u=>u.pathname==='/app/requests'&&u.searchParams.get('requestId')===created);await settle();const reviewForm=page.locator('form[aria-label^="Review time off for "]');assert.equal(await reviewForm.locator('input[name="requestId"]').inputValue(),created);await reviewForm.getByRole('button',{name:/^Approve time off for /}).click();await page.waitForURL(u=>u.pathname==='/app/inbox');await page.locator('.nevora-toast').filter({hasText:/* B7 wording (NV-121) */'Time off approved. The employee can see it in Time off.'}).waitFor({state:'visible'});await settle();await page.goto(app.url+'/app/requests?tab=pending');await settle();await page.locator('.q-timeoff').waitFor();assert.equal(await page.locator('[id="request-'+created+'"]').count(),0);assert.deepEqual(await q('SELECT status FROM time_off_requests WHERE id=$1',[created]),[{status:'APPROVED'}]);stage='employee-decision';await login(actor);await page.goto(app.url+'/app/requests?filter=decided');await settle();assert(await page.locator('[id="request-'+created+'"], [id="timeoff-'+created+'"]').innerText().then(t=>t.includes('Approved')));checks.push(phone?'Phone time-off form: native end-date minimum plus announced validation blocks invalid submissions without a server call or persistence; submit and a lost-response stable-ID replay preserve one request/outbox; actual Owner approval and employee decision readback':'Native time-off date constraint blocks invalid submissions without persistence; native submit and explicit stable-ID replay preserve one request/outbox; actual Owner approval and employee decision readback');
+   stage='owner-login';await login(await seedOwnedScenarioOwner(app.database.executor,label),'/app/requests?tab=pending');stage='owner-timeoff-review';/* The seeded full-day request overlaps its published shift: the waiting row offers Decline and a guarded Review, then the focused form owns this decision. */const reviewRow=page.locator('[id="request-'+created+'"]');await reviewRow.locator('.b-leave-note[data-tone="amber"]').waitFor();assert.equal(await reviewRow.getByRole('button',{name:/^Decline time off for /}).count(),1);assert.equal(await reviewRow.getByRole('button',{name:/^Approve time off for /}).count(),0,'A published conflict requires focused review');const reviewHref='/app/requests?tab=pending&requestId='+encodeURIComponent(created);assert.equal(await reviewRow.getByRole('link',{name:/^Review time off for /}).getAttribute('href'),reviewHref);const primaryReview=reviewRow.locator('a.q-row[href="'+reviewHref+'"]:visible');assert.equal(await primaryReview.count(),1);await primaryReview.click();await page.waitForURL(u=>u.pathname==='/app/requests'&&u.searchParams.get('requestId')===created);await settle();const reviewForm=page.locator('form[aria-label^="Review time off for "]');assert.equal(await reviewForm.locator('input[name="requestId"]').inputValue(),created);await reviewForm.getByRole('button',{name:/^Approve time off for /}).click();await page.waitForURL(u=>u.pathname==='/app/inbox');await page.locator('.nevora-toast').filter({hasText:/* B7 wording (NV-121) */'Time off approved. The employee can see it in Time off.'}).waitFor({state:'visible'});await settle();await page.goto(app.url+'/app/requests?tab=pending');await settle();await page.locator('.q-timeoff').waitFor();assert.equal(await page.locator('[id="request-'+created+'"]').count(),0);assert.deepEqual(await q('SELECT status FROM time_off_requests WHERE id=$1',[created]),[{status:'APPROVED'}]);stage='employee-decision';await login(actor);await page.goto(app.url+'/app/requests?filter=decided');await settle();const approvedRow=page.locator('.b-screen:has(#b-timeoff-title):visible a.b-row[href="/app/requests?requestId='+encodeURIComponent(created)+'&filter=decided"]');await approvedRow.waitFor();assert.equal(await approvedRow.count(),1);assert(await approvedRow.locator('.b-chip').getByText('Approved',{exact:true}).isVisible());checks.push(phone?'Phone time-off form: native end-date minimum plus announced validation blocks invalid submissions without a server call or persistence; submit and a lost-response stable-ID replay preserve one request/outbox; actual Owner approval and employee decision readback':'Native time-off date constraint blocks invalid submissions without persistence; native submit and explicit stable-ID replay preserve one request/outbox; actual Owner approval and employee decision readback');
    if(phone){
     // Phones (board E-Availability): one "Your usual week" card; each day opens a sheet (Available switch, From, Until,
     // Done); Save, or Submit this week for one week; a passed deadline closes the week read only.
@@ -438,8 +466,8 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    await page.goto(app.url+'/app/profile');await ready('profile');
   }
   stage='keyboard';if(width<768){
-   // The Request time off sheet's Reason is one line of at most 250 characters.
-   await page.goto(app.url+'/app/requests?tab=new');await settle();const field=page.locator('form.tof-form input[name="note"]').first();await field.fill('Fictional long keyboard text '.repeat(8));await field.focus();assert(await field.evaluate(e=>e===document.activeElement));await page.keyboard.press(tabKey);assert(await page.evaluate(()=>document.activeElement instanceof HTMLElement&&getComputedStyle(document.activeElement).visibility!=='hidden'));await page.keyboard.press(backTabKey);await page.goto(app.url+'/app/profile');await ready('profile');
+   // The current Request time off Reason is a textarea of at most 250 characters.
+   await page.goto(app.url+'/app/requests?tab=new');await settle();const field=page.locator('form.tof-form textarea[name="note"]').first();assert.equal(await field.getAttribute('maxlength'),'250');await field.fill('Fictional long keyboard text '.repeat(8));await field.focus();assert(await field.evaluate(e=>e===document.activeElement));await page.keyboard.press(tabKey);assert(await page.evaluate(()=>document.activeElement instanceof HTMLElement&&getComputedStyle(document.activeElement).visibility!=='hidden'));await page.keyboard.press(backTabKey);await page.goto(app.url+'/app/profile');await ready('profile');
    checks.push(`Native focus, text entry and ${tabKey}/${backTabKey} on existing request form; no submission; physical keyboard occlusion remains unverified`);
   }
   assert(await page.evaluate(()=>[...Object.values(localStorage),...Object.values(sessionStorage)].every(v=>!v.includes('STORED PRIVATE')&&!v.includes('QA E'))));
@@ -456,7 +484,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   }
   checks.push('long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance');
   await screenshot('final');
-  await writeFile(join(evidenceDirectory,prefix+'-report.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,loginAttempts,navigationAttempts,badgeBounds,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
+  await writeFile(join(evidenceDirectory,prefix+'-report.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,loginAttempts,navigationAttempts,badgeBounds,settleFailure,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
   return {checks};
- }catch(error){await screenshot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,prefix+'-report.json'),JSON.stringify({engine,width,status:'failed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,loginAttempts,navigationAttempts,badgeBounds,error:String(error)},null,2));throw error;}
+ }catch(error){await screenshot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,prefix+'-report.json'),JSON.stringify({engine,width,status:'failed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,loginAttempts,navigationAttempts,badgeBounds,settleFailure,error:String(error)},null,2));throw error;}
 }

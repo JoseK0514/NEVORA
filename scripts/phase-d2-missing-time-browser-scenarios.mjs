@@ -94,7 +94,7 @@ export async function missingTimeBrowserScenarios({app,browser,engine,employee,p
 
     const managerPage=await manager.newPage();managerPage.setDefaultTimeout(15000);
     managerPage.on('pageerror',error=>errors.push(String(error)));
-    await managerPage.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});
+    await managerPage.goto(app.url+'/app/timecards/corrections',{waitUntil:'networkidle'});
     await managerPage.getByText('Approved missing time',{exact:true}).waitFor();
     const approvalRequest=managerPage.waitForRequest(request=>request.url().endsWith(managerPath)&&request.method()==='POST');
     await managerPage.getByRole('button',{name:'Approve correction for Avery Correction QA'}).click();
@@ -112,7 +112,7 @@ export async function missingTimeBrowserScenarios({app,browser,engine,employee,p
     assert.equal(history.requests.find(item=>item.id===aRequest.requestId).currentAdjustmentId,null);
     assert.equal(history.requests.find(item=>item.id===b.requestId).currentAdjustmentId,accepted.adjustmentId);
     // One current action: the replaced A no longer offers it; B, now the current approved time, does.
-    await page.goto(requestPage(aRequest.requestId),{waitUntil:'networkidle'});await hoursPage(page,'corrections').locator('#hours-correction').waitFor();
+    await page.goto(requestPage(aRequest.requestId),{waitUntil:'networkidle'});await hoursPage(page,'corrections').locator(':is(#hours-correction,#b-hours-correction):visible').waitFor();
     assert.equal(await correct.count(),0);
     await page.goto(requestPage(b.requestId),{waitUntil:'networkidle'});await correct.waitFor();
     assert.equal(await correct.count(),1);

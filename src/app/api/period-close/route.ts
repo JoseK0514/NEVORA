@@ -1,6 +1,7 @@
 import { getSession, requireSessionMutationProof } from "@/lib/auth/session";
 import {
   readPeriodClose,
+  readPeriodCloseHistory,
   savePeriodPopulation,
   preparePeriodManifest,
   recordPeriodHandoff,
@@ -34,7 +35,9 @@ export async function POST(request: Request) {
       },
       proof = await requireSessionMutationProof();
     const result =
-      body.action === "READ"
+      body.action === "HISTORY"
+        ? await readPeriodCloseHistory(proof,body.command)
+        : body.action === "READ"
         ? await readPeriodClose(
             proof,
             body.command as { startDate: string; endDate: string },

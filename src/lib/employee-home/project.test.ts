@@ -32,3 +32,10 @@ it('a future actionable deadline bounds the lifetime to its remaining interval',
  const s=snapshot();s.attention=[item('soon',{ref:{kind:'EXCHANGE',id:'soon',version:'r:1'},href:'/app/exchange?tab=available&requestId=soon',actionable:true,deadlineAt:'2030-10-07T12:00:00.250Z'})];
  expect(await project(s)).toMatchObject({state:'partial',snapshot:{validForMs:250,attention:[{actionable:true}]}});
 });
+it('reports all required work beyond a three-row preview without changing canonical ranking',async()=>{
+ const s=snapshot();s.sources.communications={state:'complete',observedAt:at,version:'v1',reason:null};
+ s.attention=[...['a','b','c'].map(id=>item(id,{actionable:true,deadlineAt:'2030-10-07T13:00:00Z'})),item('required',{required:true}),item('info')];
+ expect(await project(s)).toMatchObject({state:'ready',tasks:{state:'complete',counts:{total:5,required:1,actionable:3,requiredHeld:1,informational:1},preview:{limit:3,requiredOutsidePreview:1}}});
+ const partial=await project({...s,sources:{...s.sources,communications:{state:'unavailable',observedAt:at,version:null,reason:'read_failed'}}} as HomeSnapshot);
+ expect(partial).toMatchObject({state:'partial',tasks:{state:'partial',counts:null,observedCounts:{total:5,required:1}}});
+});

@@ -38,10 +38,12 @@ export async function insertShift(input: Input<typeof schedules.insertShift>, ex
   return schedules.insertShift({ ...input, proof: await fixtureProof(executor, input.actorEmployeeId) }, executor);
 }
 export async function updateShift(input: Input<typeof schedules.updateShift>, executor: SqlExecutor = neonNotificationExecutor()) {
-  return schedules.updateShift({ ...input, proof: await fixtureProof(executor, input.actorEmployeeId) }, executor);
+  const reviewed=await schedules.getShiftForManagement(input.shiftId,executor);
+  return schedules.updateShift({ ...input,expectedReviewVersion:input.expectedReviewVersion??reviewed?.reviewVersion, proof: await fixtureProof(executor, input.actorEmployeeId) }, executor);
 }
 export async function deleteShift(shiftId: string, actorEmployeeId: string, executor: SqlExecutor = neonNotificationExecutor()) {
-  return schedules.deleteShift(shiftId, await fixtureProof(executor, actorEmployeeId), executor);
+  const reviewed=await schedules.getShiftForManagement(shiftId,executor);
+  return schedules.deleteShift(shiftId, await fixtureProof(executor, actorEmployeeId), executor,reviewed?.reviewVersion);
 }
 export async function publishScheduleWithRevision(input: Input<typeof publications.publishScheduleWithRevision>, executor: SqlExecutor = neonNotificationExecutor()) {
   return publications.publishScheduleWithRevision({ ...input, proof: await fixtureProof(executor, input.managerId) }, executor);
@@ -73,7 +75,8 @@ export async function saveWorkspaceProfile(input: Input<typeof workspaces.saveWo
   return workspaces.saveWorkspaceProfile({ ...input, proof: await fixtureProof(executor, input.actorEmployeeId) }, executor);
 }
 export async function deleteGeneratedDraftShift(input: Input<typeof exclusions.deleteGeneratedDraftShift>, executor: SqlExecutor = neonNotificationExecutor()) {
-  return exclusions.deleteGeneratedDraftShift({ ...input, proof: await fixtureProof(executor, input.actorEmployeeId) }, executor);
+  const reviewed=await schedules.getShiftForManagement(input.shiftId,executor);
+  return exclusions.deleteGeneratedDraftShift({ ...input,expectedReviewVersion:input.expectedReviewVersion??reviewed?.reviewVersion, proof: await fixtureProof(executor, input.actorEmployeeId) }, executor);
 }
 export async function clearGenerationExclusion(input: Input<typeof exclusions.clearGenerationExclusion>, executor: SqlExecutor = neonNotificationExecutor()) {
   return exclusions.clearGenerationExclusion({ ...input, proof: await fixtureProof(executor, input.actorEmployeeId) }, executor);

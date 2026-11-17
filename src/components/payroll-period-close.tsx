@@ -6,6 +6,7 @@ import { formatRecordedHours } from "@/lib/timecards/project";
 import type { readPeriodClose, MemberReview } from "@/lib/period-close/service";
 import { MobileHomeDisclosure } from "./mobile-home-disclosure";
 import { payrollReviewIssues, payrollReviewState } from "./payroll-review-copy";
+import { PeriodCloseHistory } from "./period-close-history";
 type Review = Awaited<ReturnType<typeof readPeriodClose>>;
 type PendingCommand = { action: string; command: unknown };
 /** `startOpen` (AR-4, Nov 14 inspection): the page was opened from Payroll's blocker, so a phone shows the list at once
@@ -438,10 +439,11 @@ function PeriodCloseView({period,actorId,startOpen=false}:Props) {
                   the import or that payroll ran.
                 </p>
               </form>
-              <h4>Downloads and notes</h4>
+              <h4>Latest downloads and notes</h4>
+              <p>{m.eventCoverage.returnedEvents} of {m.eventCoverage.totalEvents} events in this summary. {m.eventCoverage.complete ? 'All events for this manifest are shown.' : 'Latest event of each kind only. Load full period history below for older events.'}</p>
               <ul>
-                {m.events.map((event, i) => (
-                  <li key={i}>
+                {m.events.map((event) => (
+                  <li key={event.id}>
                     {EVENT_LABELS[event.kind] ?? "Recorded"} · {whenText(event.createdAt)} ·
                     by {review.members.find((member) => member.employeeId === event.actorId)?.name ?? "someone on your team"}
                     {event.payload.destination && (
@@ -461,6 +463,7 @@ function PeriodCloseView({period,actorId,startOpen=false}:Props) {
               </ul>
             </article>
           ))}
+          {review.manifests.length > 0 && <PeriodCloseHistory period={period} actorId={actorId} />}
         </div>
       )}
       </ListDisclosure>

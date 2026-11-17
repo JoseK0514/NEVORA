@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import {
-  PENDING_KEY, WEEKLY_HEADER, applyCommand, clearPending, clockText, createWeeklyClient, hours, loadPending, parseWeeklyResult, savePending, weekText, type PendingApply,
+  PENDING_STORAGE_NAME, WEEKLY_HEADER, applyCommand, clearPending, clockText, createWeeklyClient, hours, loadPending, parseWeeklyResult, savePending, weekText, type PendingApply,
 } from "./weekly-client";
 import { parseWeeklyCommand } from "./weekly-contracts";
 
@@ -112,7 +112,7 @@ describe("a pending approval across a reload", () => {
   it("keeps only the command metadata, and resends exactly the original approval", () => {
     const store = memory();
     savePending(store, pending);
-    expect(Object.keys(JSON.parse(store.map.get(PENDING_KEY)!)).sort()).toEqual(["acknowledged", "authority", "readReceiptId", "requestId", "reviewId", "termsDigest"]);
+    expect(Object.keys(JSON.parse(store.map.get(PENDING_STORAGE_NAME)!)).sort()).toEqual(["acknowledged", "authority", "readReceiptId", "requestId", "reviewId", "termsDigest"]);
     expect(loadPending(store)).toEqual(pending);
     // The resent command is the original one, accepted by the backend's own parser.
     expect(parseWeeklyCommand(applyCommand(pending))).toEqual({ op: "apply_week_plan", requestId: OP, reviewId: REVIEW, termsDigest: DIGEST, readReceiptId: HANDLE, acknowledged: true });
@@ -120,9 +120,9 @@ describe("a pending approval across a reload", () => {
   });
   it("throws away anything else stored under the key (names, edits, a broken value)", () => {
     const store = memory();
-    store.setItem(PENDING_KEY, JSON.stringify({ ...pending, employeeNames: ["Ana"] })); expect(loadPending(store)).toBeNull(); expect(store.map.has(PENDING_KEY)).toBe(false);
-    store.setItem(PENDING_KEY, "{not json"); expect(loadPending(store)).toBeNull();
-    store.setItem(PENDING_KEY, JSON.stringify({ ...pending, acknowledged: false })); expect(loadPending(store)).toBeNull();
+    store.setItem(PENDING_STORAGE_NAME, JSON.stringify({ ...pending, employeeNames: ["Ana"] })); expect(loadPending(store)).toBeNull(); expect(store.map.has(PENDING_STORAGE_NAME)).toBe(false);
+    store.setItem(PENDING_STORAGE_NAME, "{not json"); expect(loadPending(store)).toBeNull();
+    store.setItem(PENDING_STORAGE_NAME, JSON.stringify({ ...pending, acknowledged: false })); expect(loadPending(store)).toBeNull();
   });
   it("survives a browser that refuses storage", () => {
     const broken = { getItem: () => { throw Error("blocked"); }, setItem: () => { throw Error("blocked"); }, removeItem: () => { throw Error("blocked"); } };

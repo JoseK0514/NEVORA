@@ -30,6 +30,7 @@ export type GenerationEmployee = Employee &
   > & {
     operationalProfile?: ValidateShiftInput["operationalProfile"];
     availability: ValidateShiftInput["availability"];
+    managementRestrictions?: ValidateShiftInput['managementRestrictions'];
     weeklyAvailability: NonNullable<ValidateShiftInput["weeklyAvailability"]>;
     availabilityExceptions: NonNullable<
       ValidateShiftInput["availabilityExceptions"]
@@ -50,6 +51,7 @@ export type PlannerLimits = {
   maxPeriods: number;
 };
 export type GenerationInput = {
+  weekendHistory?: import('./weekend-rotation').WeekendHistory;
   workspace: Workspace;
   weekStart: string;
   scope: { kind: "ALL" } | { kind: "SELECTED"; locationIds: string[] };
@@ -71,6 +73,9 @@ export type ConfiguredNeed = GenerationNeed & {
   needKey: string;
 };
 export type CoverageMeasure = {
+  /** Optional for persisted pre-contract plans; new reads always supply these. */
+  basis?: 'fully_covered_period_minutes_v1';
+  unit?: 'nominal_location_minutes';
   requiredMinutes: number;
   coveredMinutes: number;
   percentage: number | null;

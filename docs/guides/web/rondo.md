@@ -80,6 +80,66 @@ If the save is uncertain, choose **Check original request**. Preserve that
 request; starting another save can duplicate intended work. A cancellation or
 lost response does not prove that server work or provider use never occurred.
 
+## Maintain company knowledge
+
+Open **Company knowledge** from AI manager. This library belongs to the company
+and is shared with its authorized Owners; it is separate from private Owner
+priorities and goals.
+
+1. Write the **Business profile**, or choose **Add document**. Paste text or load
+   a TXT/Markdown file. PDF and Word ingestion are not included in this workflow.
+2. Choose **Save** (or **Save draft** on desktop), then review the exact saved version and its text.
+   A saved draft is not current guidance. Choose **Publish for Rondo** deliberately
+   after checking the content, effective dates and review date.
+3. Open a version to inspect its private citation. Old versions remain historical;
+   a draft, future, ended, overdue or withdrawn source must not be treated as
+   freshly confirmed business truth.
+4. **Archive** withdraws the entry from current guidance while keeping versions
+   readable. **Delete** requires the acknowledgement and removes retained source
+   text for every Owner. Existing chat text and text previously sent to a model
+   provider have separate retention.
+
+Editing the library needs no model key. Using it in answers requires the separate
+knowledge-retrieval configuration and an available model investigation service.
+Publication makes text eligible guidance; it is not a new scheduling rule or
+permission for Rondo to act. Treat documents as evidence and verify conflicts.
+If a save is not confirmed, use **Check again** for that original operation.
+
+## Compare and approve a full week
+
+When available, open **Weekly plan** from AI manager. Select the week and location
+scope, then **Compare options**. **Fill open gaps** keeps current shifts.
+**Rebuild generated drafts** may replace earlier generated drafts; protected,
+manual and published work stays protected by the scheduling rules.
+
+1. Compare each option's coverage, additions, replacements, remaining gaps,
+   excluded locations and available history. Partial information and a search
+   that stopped early are different limits. Scheduled hours are business planning
+   minutes, not worked time or a priced labor budget.
+2. Choose **Review option A** or **Review option B**. Review every proposed added
+   and removed shift, person, date, time, location, position and lead assignment,
+   plus remaining gaps and issues. Each option is a separate complete proposal;
+   selecting pieces of different options is not supported.
+3. Select **I reviewed all proposed changes and remaining gaps**, then **Save as
+   draft**, to approve that exact set. The server checks current source, rules,
+   authority and review expiry again. If something changed, compare and review
+   again. It does not silently choose another plan for your approval.
+4. Choose **Decline** to reject an option without changing the schedule. A save
+   writes the complete approved set atomically as drafts. It does not publish
+   the schedule or notify staff. Publish later through Schedule after review.
+5. If an approval is not confirmed, use **Check again**. Reload recovery checks
+   the original approval; **Send again** retains its identity and cannot save it
+   twice. Keep the original operation rather than starting a new approval to
+   recover a lost reply.
+
+**What was saved** is the original receipt. **The schedule now** is a separate
+current observation: later changes, removal or publication can alter it. Coverage
+continues to count the locations included in the reviewed plan, with changed or
+unmeasurable scope identified. While weekly planning is off, authorized links to
+previously saved plans can still show a minimal receipt, without a new comparison
+or schedule mutation. Review details hide when the Owner steps away or the short
+read lease ends, and must be read again with current authority.
+
 ## Understand the action boundary
 
 Rondo investigates company evidence. Your reviewed coverage commands can save
@@ -88,3 +148,12 @@ file taxes or run unattended management. Review the normal workflow’s result.
 See the [operating contract](../../product/rondo-operating-contract.md).
 Report unavailable or contradictory results through **Help** with minimal private
 context. Past evaluations do not certify current answers or provider access.
+
+
+## Local business evidence backend
+
+Owner-reviewed finance and sales evidence is implemented as a local default-off backend/API and read-only model capability. Its B2 screens are a separate Claude deliverable; this guide does not claim they are available. Explicit JSON/CSV imports need complete review and exact acknowledged publication, then a reviewed account/location perimeter. Results retain currency, half-open window, source version, freshness and missing-scope limits. Receivables are not cash; net receipts are not profit. No real accounting/POS/bank connector is active. Source deletion erases local structured source content; chat/provider prose has separate retention. Actual-model 50-case qualification remains unrun.
+
+See [business backend contract](../../handoffs/2026-11-16-rondo-business-evidence-ui-contract.md).
+
+Posted cash is assigned by posting time, including cross-month occurrences. Cash inflows/outflows and sale/refund amounts/counts are separate from net totals. Reconciliation must hold within every admitted cash window and across shared boundaries; offsetting discrepancies cannot establish clearance. CURRENT freshness is capped at the requested window end. Source deletion conservatively clears all workspace business answer-receipt payloads as well as structured inspection content, retaining content-free operation/request identities and unrelated ordinary history.

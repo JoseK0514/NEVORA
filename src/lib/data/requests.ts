@@ -1,4 +1,5 @@
 import { databaseDate as dateValue } from './database-date';
+import {Temporal} from '@js-temporal/polyfill';
 import {assertOperationalAccess} from '../company-access/operational-scope.server';
 import { randomUUID } from "node:crypto";
 import {queryRows} from "@/lib/db";
@@ -45,10 +46,7 @@ function mapRequest(row: unknown): TimeOffListItem {
     endTime: timeValue(item.end_time),
     reason: item.reason ? String(item.reason) : undefined,
     status: item.status as RequestStatus,
-    createdAt:
-      item.created_at instanceof Date
-        ? item.created_at.toISOString()
-        : String(item.created_at),
+    createdAt:Temporal.Instant.from(item.created_at instanceof Date?item.created_at.toISOString():String(item.created_at)).toString(),
     ...(item.reviewed_at ? { reviewedAt: item.reviewed_at instanceof Date ? item.reviewed_at.toISOString() : String(item.reviewed_at) } : {}),
     ...(item.reviewer_name ? { reviewerName: String(item.reviewer_name) } : {}),
   };

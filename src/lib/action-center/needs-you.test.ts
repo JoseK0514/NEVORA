@@ -2,6 +2,7 @@ import {describe, expect, it} from 'vitest';
 import {isOwnReview, needsYou, needsYouDetail, needsYouSentence} from './needs-you';
 import type {ActionItem} from './project';
 import type {TodayShift} from '../today/project';
+import {reviewFacts} from './review-facts';
 
 const item = (id: string, type: ActionItem['type'], category: ActionItem['category'], priority: ActionItem['priority'] = 'REVIEW', dateTime?: string): ActionItem =>
   ({id, type, category, priority, title: id, detail: '', href: '/app', dateTime} as ActionItem);
@@ -76,7 +77,7 @@ describe('needs you (F1)', () => {
 });
 
 describe('needs you counts what can be decided today (Phase 3, MG-005, MG-004)', () => {
-  const review = (id: string, type: ActionItem['type'], title: string): ActionItem => ({id, type, category: 'timekeeping', priority: 'REVIEW', title, detail: '', href: '/app'} as ActionItem);
+  const review = (id: string, type: ActionItem['type'], title: string): ActionItem => ({id, type, category: 'timekeeping', priority: 'REVIEW', title, detail: '', href: '/app',review:reviewFacts(id.endsWith(':mine'),id.endsWith(':mine'),type as 'TIMECARD'|'TIME_CORRECTION',type==='TIMECARD'?{startDate:'2026-10-12',endDate:'2026-10-18'}:null)} as ActionItem);
   const list = [
     review('TIME_CORRECTION:a', 'TIME_CORRECTION', 'Time correction waiting for review'),
     review('TIME_CORRECTION:mine', 'TIME_CORRECTION', 'Your correction needs another reviewer'),
@@ -89,7 +90,11 @@ describe('needs you counts what can be decided today (Phase 3, MG-005, MG-004)',
     expect(value.count).toBe(1);
     expect(value.planning.map(entry => entry.id)).toEqual(['TIME_CORRECTION:mine', 'TIMECARD:a', 'TIMECARD:mine']);
   });
-  it('knows the signed-in person’s own timecard and correction by the read’s title', () => {
+  it('knows own review from typed facts even after language or wording changes', () => {
     expect(list.filter(isOwnReview).map(entry => entry.id)).toEqual(['TIME_CORRECTION:mine', 'TIMECARD:mine']);
+    const translated=list.map(item=>({...item,title:'Revisar ahora'}));
+    expect(translated.filter(isOwnReview).map(entry=>entry.id)).toEqual(['TIME_CORRECTION:mine','TIMECARD:mine']);
+    expect(needsYou(translated,'2026-10-18').count).toBe(1);
+    expect(needsYou([{...list[0],review:undefined}],'2026-10-18').count).toBe(0);
   });
 });

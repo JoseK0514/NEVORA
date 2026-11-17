@@ -11,6 +11,7 @@ import {seedOwnedApp,TEST_PASSWORD} from '../src//test/integration/owned-app-fix
 import {hashPassword} from '../src//lib/auth/password.ts';
 import {EMPLOYEE_DESKTOP_VIEWPORT} from './phase-d2-phone-hours-geometry.mjs';
 import {hoursPage} from './employee-fix-time-browser.mjs';
+import {waitForPortalReady} from './browser-render-readiness.mjs';
 const pw=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'))('playwright');
 const checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim(),sourceClean=execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim()==='';
 if(process.env.PHASE_D_EXPECTED_SHA){assert.equal(checkpoint,process.env.PHASE_D_EXPECTED_SHA);assert(sourceClean);}
@@ -25,7 +26,7 @@ async function context(id,viewport=id==='QAOWNER'?{width:390,height:844}:EMPLOYE
  const reads=id==='QAOWNER'?[{path:'/api/manager/today',method:'GET'},{path:'/api/manager/action-center',method:'POST'},{path:'/api/manager/clock-monitor',method:'GET'}]:[];
  const pending=reads.map(async({path,method})=>{const response=await p.waitForResponse(response=>new URL(response.url()).pathname===path&&response.request().method()===method);assert.equal(response.status(),200,'Current Manager landing read succeeds before navigation');assert.equal(await response.finished(),null,'Current Manager landing body completes');landingReads.push({path,method,status:response.status()});});
  await Promise.all([p.waitForURL(u=>u.pathname==='/app',{waitUntil:'commit'}),p.getByRole('button',{name:'Sign in',exact:true}).click(),...pending]);
- await p.locator('.app-shell.nevora-portal').waitFor();await p.waitForLoadState('networkidle');return {c,p};
+ await waitForPortalReady(p);return {c,p};
 }
 try{
  app=await createOwnedNextApp(dir);await seedOwnedApp(app.database.executor);const ph=await hashPassword(TEST_PASSWORD);
@@ -42,10 +43,11 @@ try{
    const accepted=await review(c.requestId);assert.equal(accepted.status,200);
    const [canonical]=await q('SELECT adjustment_id::text,start_at::text,end_at::text FROM nevora_effective_time_entries WHERE employee_id=$1',[eid]);assert.equal(canonical.adjustment_id,accepted.body.adjustmentId);
    const manager=await (await m.c.request.get(app.url+'/api/manager/time-corrections',{headers:h()})).json();assert.equal(manager.state,'ready');const pending=manager.requests.find(x=>x.id===b.requestId);assert(pending);
-   await m.p.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});await m.p.getByRole('button',{name:'Approve correction for '+eid+' Fictional',exact:true}).waitFor();const row=m.p.locator('.manager-correction-row').filter({hasText:eid+' Fictional'});const text=await row.innerText();await m.p.screenshot({path:dir+'/'+engine+'-stale-missing-manager.png',fullPage:true});
+   await m.p.goto(app.url+'/app/timecards/corrections',{waitUntil:'networkidle'});await m.p.getByRole('button',{name:'Approve correction for '+eid+' Fictional',exact:true}).waitFor();const row=m.p.locator('.manager-correction-row').filter({hasText:eid+' Fictional'});const text=await row.innerText();await m.p.screenshot({path:dir+'/'+engine+'-stale-missing-manager.png',fullPage:true});
    await record(engine+' pending missing replacement shows current canonical successor and stale baseline',async o=>{o({a:a.body,b,c,canonical,pending,renderedText:text});assert.equal(pending.context.state,'confirmed','Current effective missing time exists and must not be reported as none');assert.equal(pending.baseChanged,true,'A superseded captured base must be flagged stale');assert(!text.includes('No approved missing-time adjustment'));});
    const employee=await (await e.c.request.get(app.url+'/api/employee/time-corrections',{headers:h()})).json();const listText={};
-   for(const [key,path] of [['waiting','/app/my-time?view=corrections'],['decided','/app/my-time?view=corrections&filter=decided']]){await e.p.goto(app.url+path,{waitUntil:'networkidle'});await hoursPage(e.p,'corrections').waitFor();await e.p.getByRole('heading',{name:'Your corrections',exact:true,level:1}).waitFor();listText[key]=await e.p.locator('.c-hours').innerText();await e.p.screenshot({path:dir+'/'+engine+'-missing-history-employee-'+key+'.png',fullPage:true});}
+   await e.p.bringToFront();
+   for(const [key,path] of [['waiting','/app/my-time?view=corrections'],['decided','/app/my-time?view=corrections&filter=decided']]){await e.p.goto(app.url+path,{waitUntil:'networkidle'});await hoursPage(e.p,'corrections').waitFor();await e.p.getByRole('heading',{name:'Your correction requests',exact:true,level:1}).waitFor();listText[key]=await e.p.locator('.c-hours').innerText();await e.p.screenshot({path:dir+'/'+engine+'-missing-history-employee-'+key+'.png',fullPage:true});}
    await record(engine+' missing supersession history distinguishes replaced approval from absent effective time',async o=>{const prior=employee.requests.find(x=>x.id===aRequest.requestId);const stale=employee.requests.find(x=>x.id===b.requestId);o({canonical,prior,stale,current:employee.requests.find(x=>x.id===c.requestId),renderedText:listText});
     assert.match(listText.waiting,/Missed shift/);assert.match(listText.waiting,/Waiting/);assert.match(listText.decided,/Approved/);
     for(const text of Object.values(listText))assert(!text.includes('No approved missing-time adjustment'),'Earlier approved/superseded missing history must not falsely imply no effective approval exists');
@@ -54,7 +56,7 @@ try{
     // request also says the timecard changed after it. Desktop and phone show the same page.
     const detailText={};
     for(const width of [EMPLOYEE_DESKTOP_VIEWPORT.width,390]){await e.p.setViewportSize({width,height:844});
-     for(const [key,item,decided] of [['prior',prior,true],['stale',stale,false]]){await e.p.goto(app.url+'/app/my-time?view=corrections'+(decided?'&filter=decided':'')+'&requestId='+item.id,{waitUntil:'networkidle'});const body=hoursPage(e.p,'corrections');await body.locator('#hours-correction').waitFor();const text=await body.innerText();detailText[key+'-'+width]=text;await e.p.screenshot({path:dir+'/'+engine+'-missing-history-'+width+'-'+key+'.png',fullPage:true});
+     for(const [key,item,decided] of [['prior',prior,true],['stale',stale,false]]){await e.p.goto(app.url+'/app/my-time?view=corrections'+(decided?'&filter=decided':'')+'&requestId='+item.id,{waitUntil:'networkidle'});const body=hoursPage(e.p,'corrections');await body.locator(':is(#hours-correction,#b-hours-correction):visible').waitFor();const text=await body.innerText();detailText[key+'-'+width]=text;await e.p.screenshot({path:dir+'/'+engine+'-missing-history-'+width+'-'+key+'.png',fullPage:true});
       assert(!text.includes('No approved missing-time adjustment'),'Time history must not falsely imply no effective approval exists');
       if(item.context.state==='confirmed'&&item.context.sourceKind==='ADJUSTMENT')assert.match(text,/On your timecard/,'An effective approved adjustment is shown as the current time');
       if(item.baseChanged)assert.match(text,/Your timecard changed after this request\./);}}

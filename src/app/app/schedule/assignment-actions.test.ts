@@ -32,7 +32,7 @@ vi.mock('@/lib/scheduling/exchange-validation', () => import('../../../lib/sched
 import { createShiftAction, updateShiftAction } from './actions';
 function form(employee: string, position: string) {
   const data = new FormData();
-  Object.entries({ shiftId: 'shift', weekStart: '2030-10-07', date: '2030-10-07', employeeId: employee, positionId: position, locationId: 'main', startTime: '08:00', endTime: '12:00' }).forEach(([key,value]) => data.set(key,value));
+  Object.entries({ expectedReviewVersion:'a'.repeat(64), shiftId: 'shift', weekStart: '2030-10-07', date: '2030-10-07', employeeId: employee, positionId: position, locationId: 'main', startTime: '08:00', endTime: '12:00' }).forEach(([key,value]) => data.set(key,value));
   return data;
 }
 beforeEach(() => vi.clearAllMocks());
@@ -52,4 +52,4 @@ it.each([createShiftAction, updateShiftAction])('an explicit No position selecti
 // These business/unit fixtures do not execute SQL. Current scope admission and
 // rollback are exercised by company-access-schedule-*.integration.ts.
 vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOriginalOperationalAccess:async(_proof:unknown,original:{authority:string})=>{expect(original.authority).toBe('f'.repeat(64));},assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},authority:'f'.repeat(64),workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));
-vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',data:{saveAvailability:'available',shift:{id:'test-shift'},employeeOptions:[],positionOptions:[]}})}));
+vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',data:{saveAvailability:'available',shift:{reviewVersion:'a'.repeat(64),id:'test-shift'},employeeOptions:[],positionOptions:[]}})}));

@@ -6,7 +6,8 @@ import {homedir} from 'node:os';
 import {join,resolve} from 'node:path';
 import {createOwnedNextApp} from '../src/test/integration/owned-next-app.ts';
 import {seedOwnedApp,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
-import {waitForDisclosureReady} from './browser-render-readiness.mjs';
+import {waitForDisclosureReady,waitForPortalReady} from './browser-render-readiness.mjs';
+import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
 const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'));
 const pw=runtime('playwright');
 const evidence=resolve(process.env.PHASE_D_REMEDIATION_EVIDENCE_DIR);
@@ -39,24 +40,32 @@ try{
    addEventListener('error',event=>witness('error',{message:event.message,stack:event.error?.stack}));
   });
   page.on('pageerror',e=>{diagnostic('pageerror',{message:e.message,stack:e.stack});report.errors.push({name:engine+' runtime',error:String(e)});});
-  // The login return-path allowlist intentionally excludes Reports. Finish Home's
-  // real client reads before a hard navigation; a URL change alone does not mean
-  // its lazy modules have loaded. The negative control retains the old precondition.
+  // Reports is not an allowed login return path. Land on the allowed Schedule
+  // route, whose data is server-rendered, and finish the real shared-shell reads.
+  // Home is unrelated to this report fixture and mounts a billing notice even
+  // when its optional commerce transport is disabled. Keep the old premature
+  // Home setup only as an explicit diagnostic negative control.
   const prematureHome=process.env.PHASE_D_REPORT_PREMATURE_HOME_NEGATIVE_CONTROL==='1';
-  const homeReads=['/api/company-access/operational-authority','/api/manager/inbox-count','/api/notifications','/api/manager/today','/api/manager/clock-monitor','/api/manager/action-center'];
-  await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
-  const readyReads=prematureHome?[]:homeReads.map(async path=>{
-   const response=await page.waitForResponse(response=>new URL(response.url()).pathname===path&&response.ok());
-   assert.equal(await response.finished(),null,'The Home client read must finish before navigation: '+path);
-   const body=await response.json();assert.equal(body.state,'ready','The Home client read must verify its state: '+path);
-   return {path,status:response.status(),state:body.state};
+  const destination=prematureHome?'/app':'/app/schedule';
+  const shellReads=['/api/company-access/operational-authority','/api/manager/inbox-count','/api/notifications'];
+  await page.goto(app.url+(prematureHome?'/login':'/login?returnTo=%2Fapp%2Fschedule'));await page.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
+  const admissionDeadline=performance.now()+15000;
+  const readyReads=prematureHome?[]:shellReads.map(async path=>{
+   const response=await page.waitForResponse(response=>{const url=new URL(response.url());return url.origin===app.url&&url.pathname===path&&response.request().method()==='GET';},{timeout:15000});
+   assert.equal(response.status(),200,'The shared-shell read must succeed before report navigation: '+path);
+   await finishResponseByDeadline(response,admissionDeadline);
+   const body=await runBeforeRecoveryDeadline(()=>response.json(),admissionDeadline);assert.equal(body.state,'ready','The shared-shell client read must verify its state: '+path);
+   return {path,status:response.status(),state:body.state,bodyFinished:true};
   });
-  const authentication=await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click(),...readyReads]);
+  const authentication=await runBeforeRecoveryDeadline(()=>Promise.all([page.waitForURL(u=>u.pathname===destination),page.getByRole('button',{name:'Sign in',exact:true}).click(),...readyReads]),admissionDeadline);
   if(!prematureHome){
-   await page.locator('.c-page.c-home').waitFor();
-   await page.waitForFunction(()=>{const home=document.querySelector('.c-page.c-home');return home&&!home.querySelector('[aria-busy="true"],.c-error-card');});
+   await runBeforeRecoveryDeadline(async()=>{
+    await waitForPortalReady(page);
+    await page.locator('main').getByRole('heading',{name:'Schedule',exact:true,level:1}).waitFor();
+    for(const name of ['Previous week','Next week']){const link=page.locator('main').getByRole('link',{name,exact:true}).filter({visible:true});assert.equal(await link.count(),1,'The actual Schedule week control must be visible: '+name);assert((await link.getAttribute('href')).startsWith('/app/schedule?'),'Schedule week controls retain their real destinations');}
+   },admissionDeadline);
   }
-  report.authentication??=[];report.authentication.push({engine,destination:'/app',precondition:prematureHome?'premature URL-only negative control':'actual Home rendered and client reads ready',reads:authentication.slice(2)});
+  report.authentication??=[];report.authentication.push({engine,destination,precondition:prematureHome?'premature Home URL-only negative control':'actual Schedule rendered and shared-shell reads ready',reads:authentication.slice(2)});
   if(process.env.PHASE_D_REPORT_RUNTIME_NEGATIVE_CONTROL==='1'&&engine==='webkit'){
    const observed=page.waitForEvent('pageerror',error=>error.message.includes('Owned report runtime negative control'));
    await page.evaluate(()=>{setTimeout(()=>{throw new Error('Owned report runtime negative control');},0);});await observed;

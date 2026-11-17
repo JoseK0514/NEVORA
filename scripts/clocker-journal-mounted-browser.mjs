@@ -9,9 +9,10 @@ export async function mountedJournalBundle(){
  const bundle=await build({
   stdin:{contents:`import React from 'react';import{createRoot}from'react-dom/client';import{ClockerPinGate}from'./src/components/clocker-pin-gate';import{ClockerPresentation}from'./src/components/clocker-language';
    createRoot(document.getElementById('root')).render(<ClockerPresentation v2><ClockerPinGate locationKey="mounted-identity" timeZone="UTC" punchEnabled/></ClockerPresentation>);`,resolveDir:process.cwd(),loader:'tsx'},
-  bundle:true,write:false,outdir:resolve('.journal-mounted-fixture'),platform:'browser',format:'iife',jsx:'automatic',loader:{'.module.css':'local-css'},
+  bundle:true,write:false,outdir:resolve('.journal-mounted-fixture'),platform:'browser',format:'iife',jsx:'automatic',loader:{'.module.css':'local-css','.ttf':'dataurl'},
   define:{'process.env.NODE_ENV':'"development"','process.env':'{}'},
   plugins:[{name:'fictional-next-image-boundary',setup(builder){
+   builder.onResolve({filter:/^\/fonts\/clocker\/inter-variable\.ttf$/},()=>({path:resolve('public/fonts/clocker/inter-variable.ttf')}));
    builder.onResolve({filter:/^next\/image$/},()=>({path:'image',namespace:'fixture'}));
    builder.onLoad({filter:/.*/,namespace:'fixture'},()=>({contents:'import React from "react";export default function Image(props){return React.createElement("img",props);}',loader:'js',resolveDir:process.cwd()}));
    if(negative)builder.onLoad({filter:/\/clocker-punch-panel\.tsx$/},async args=>{
@@ -59,8 +60,8 @@ export async function runMountedJournalTransition(context,origin,engine,evidence
   await page.getByRole('button',{name:'Return to PIN',exact:true}).click();await page.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();
   const unverified=await state();assert.equal(unverified.pin,'entry');assert.equal(unverified.panel,undefined);assert.deepEqual(unverified.codes,[]);assert.deepEqual(unverified.actions,[]);noA(unverified);
   result.observations.push({phase:'A → unverified: private panel unmounts and identifiers/actions clear',...unverified});
-  await pin('2222');await page.getByRole('button',{name:'Clock In',exact:true}).waitFor();await page.getByRole('button',{name:'Help with a saved action',exact:true}).click();
-  const bView=await state();noA(bView);assert.deepEqual(bView.codes,[bHistory.command.commandId]);assert.deepEqual(bView.actions,['Clock In']);assert.equal(await page.getByRole('button',{name:'Check Action Status',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Retry Same Action',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Review current status',exact:true}).count(),0);
+  await pin('2222');await page.getByRole('button',{name:'Clock in',exact:true}).waitFor();await page.getByRole('button',{name:'Help with a saved action',exact:true}).click();
+  const bView=await state();noA(bView);assert.deepEqual(bView.codes,[bHistory.command.commandId]);assert.deepEqual(bView.actions,['Clock in']);assert.equal(await page.getByRole('button',{name:'Check Action Status',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Retry Same Action',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Review current status',exact:true}).count(),0);
   result.observations.push({phase:'B verified: only B history and B current actions render',...bView});
   await page.getByRole('button',{name:'Done',exact:true}).click();await pin('1111');await page.getByRole('button',{name:'Check Action Status',exact:true}).waitFor();await page.getByRole('button',{name:'Help with a saved action',exact:true}).click();
   const returned=await state();assert.deepEqual(returned.codes.sort(),aView.codes);assert.deepEqual(returned.actions,[]);

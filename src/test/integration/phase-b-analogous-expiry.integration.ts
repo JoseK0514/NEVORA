@@ -8,6 +8,7 @@ import { saveWorkspaceProfile } from '../../lib/data/workspaces';
 import { insertEmployee, updateEmployeeProfile, saveEmployeeSchedulingProfile } from '../../lib/data/employees';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 import type { SessionMutationProof } from '../../lib/shift-changes/types';
+import { hashPassword } from '../../lib/auth/password';
 
 const proof: SessionMutationProof = {
   employee: { id: 'fr-owner', firstName: 'Fictional', lastName: 'Owner', role: 'OWNER', primaryLocationId: 'loc-1' },
@@ -29,6 +30,8 @@ for (const scenario of scenarios) for (const expires of [false, true]) {
         ('fr-worker','Worker','QA','5550000003','EMPLOYEE','loc-1');
         INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('fr-owner','loc-1'),('fr-worker','loc-1');
         INSERT INTO positions(id,workspace_id,name) VALUES('fr-position','workspace-fuel','Original position');`);
+      // The successor is activated so self-edits reach the intended later DML barrier.
+      await q("INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('fr-owner-2',$1,false)", [await hashPassword('Fictional-expiry-successor-QA-2026!')]);
       await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'fr-owner',clock_timestamp()+interval '1 day')", [proof.sessionTokenHash]);
       await installFixtureCompanyAccess(db.executor);
       const self = scenario.startsWith('self-'), target = self ? 'fr-owner' : 'fr-worker';

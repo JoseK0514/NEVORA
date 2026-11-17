@@ -3,7 +3,7 @@ import {join} from 'node:path';
 import {readFile,writeFile} from 'node:fs/promises';
 import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {safeBrowserFailure,safeEvaluationFailure} from './release-browser-diagnostics.mjs';
-import {waitForCalendarCopyReady} from './browser-render-readiness.mjs';
+import {waitForCalendarCopyReady,waitForPortalReady} from './browser-render-readiness.mjs';
 import {observeDocumentNavigation} from './browser-navigation-diagnostic.mjs';
 import {runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
 export async function runScenario({app,page,context,engine,width,evidenceDirectory,runtimeErrors:cellRuntimeErrors}){
@@ -53,18 +53,18 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
   if(diagnosticActor)try{diagnostics.failure.canonicalOperations=await operationCount();}catch(error){diagnostics.failure.canonicalReadFailure=safeEvaluationFailure(error);}
   await writeFile(receipt,JSON.stringify({stage:name,status:'failed',checks,runtimeErrors,diagnostics,failure:safeBrowserFailure(error,{suite:'calendar',engine,width,status:'failed'})}));throw Error('Calendar case failed: '+name);
  }};
- const currentPageReady=async()=>{await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');await page.waitForLoadState('networkidle');};
- const panel=page.locator('[data-calendar-setting]');
+ const currentPageReady=()=>waitForPortalReady(page);
+ const panel=page.locator('.b-screen:has(#b-calendar-title):visible, [data-calendar-setting]:visible');
  // The outcome-unknown replay and the failed read are named separately.
  const retry=()=>panel.getByRole('button',{name:'Retry original request',exact:true});
  const retryRead=()=>panel.getByRole('button',{name:'Try again',exact:true});
  // Reset (rotate) and Revoke sit under the link card while it is active; each opens a consequence confirmation first.
- const management=()=>panel.locator('.em-calendar-manage');
+ const management=()=>panel.locator('.em-calendar-manage,.eb-manage');
  // B7 wording: kind 'Reset' presses "Get a new link"; kind 'Revoke' presses "Turn off link".
  const confirmChange=async kind=>{const before=await operationCount();const group=panel.getByRole('group',{name:kind==='Reset'?'Get a new calendar link?':'Turn off your calendar link?',exact:true});await group.waitFor();assert.equal(await operationCount(),before,'Confirmation precedes the calendar mutation');await group.getByRole('button',{name:kind==='Reset'?'Get a new link':'Turn off link',exact:true}).click();};
  // The status pill names the link's state (Off, Active, Revoked) once the current status is read.
  const pills={none:'Off',active:'Active',revoked:'Turned off'};
- const state=async kind=>{await page.locator(`[data-calendar-setting][data-calendar-state="${kind}"]`).waitFor({state:'attached'});await panel.locator('.c-card__aside .c-pill').first().getByText(pills[kind],{exact:true}).waitFor();};
+ const state=async kind=>{await page.locator(`[data-calendar-setting][data-calendar-state="${kind}"]`).waitFor({state:'attached'});await panel.locator('.c-card__aside .c-pill,.b-card__h .b-chip').first().getByText(pills[kind],{exact:true}).waitFor();};
  const noUrl=async()=>assert.equal(await panel.locator('textarea').count(),0);
  let firstUrl,secondUrl,firstBody;
  // This non-secret probe MUST run before any real test capability is issued.
@@ -81,22 +81,24 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
  await app.database.executor.query({text:"UPDATE employees SET role='EMPLOYEE' WHERE id=$1",values:[fixture.actors[0]]});
  const q=(text,values=[])=>app.database.executor.query({text,values});
  await step('Real fictional login and secondary calendar entry from the Employee shell',async()=>{
-  await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(fixture.actors[0]);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
+  const landingPage=await context.newPage();
+  await landingPage.goto(app.url+'/login');await landingPage.getByLabel('Employee ID',{exact:true}).fill(fixture.actors[0]);await landingPage.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
   try{
-   await Promise.all([page.waitForURL(url=>url.pathname==='/app',{waitUntil:'commit'}),page.getByRole('button',{name:'Sign in',exact:true}).click()]);await page.locator('.app-shell.nevora-portal').waitFor();await currentPageReady();
+   await Promise.all([landingPage.waitForURL(url=>url.pathname==='/app',{waitUntil:'commit'}),landingPage.getByRole('button',{name:'Sign in',exact:true}).click()]);await waitForPortalReady(landingPage);
   }catch(error){
-   const url=new URL(page.url()),reason=url.searchParams.get('error');
+   const url=new URL(landingPage.url()),reason=url.searchParams.get('error');
    await writeFile(join(evidenceDirectory,`calendar-login-${engine}-${width}-report.json`),JSON.stringify({engine,width,route:['/login','/app'].includes(url.pathname)?url.pathname:'other',reason:['busy','invalid','deleting'].includes(reason)?reason:null,failure:safeBrowserFailure(error,{suite:'calendar',engine,width,status:'failed'})},null,2));
-   await page.screenshot({path:join(evidenceDirectory,`calendar-login-${engine}-${width}-failure.png`),fullPage:true});throw error;
+   await landingPage.screenshot({path:join(evidenceDirectory,`calendar-login-${engine}-${width}-failure.png`),fullPage:true});throw error;
   }
   // Board E-Calendar: the link is its own page. The older Profile deep link (#employee-calendar-title) still lands there.
-  await page.goto(app.url+'/app/profile#employee-calendar-title');await page.waitForURL(url=>url.pathname==='/app/profile/calendar');await panel.waitFor();
+  // Preserve the login landing document and its pending reads; exercise the direct legacy URL in this same-session tab.
+  await page.bringToFront();await page.goto(app.url+'/app/profile#employee-calendar-title');await page.waitForURL(url=>url.pathname==='/app/profile/calendar');await panel.waitFor();await state('none');
   // The approved Schedule board (G-E-Schedule) has no calendar control. Phones reach it from the header avatar's More page
   // (board E-More, "Add shifts to your calendar"); wider viewports, which have no More page, from the account menu.
   await page.goto(app.url+'/app/schedule');await currentPageReady();
   if(phone){await page.getByRole('link',{name:/^More, /}).click();await page.waitForURL(url=>url.pathname==='/app/more');}
   else await page.getByRole('button',{name:/, account menu$/}).click();
-  const calendarEntry=(phone?page.locator('main'):page.locator('#portal-account-menu')).getByRole('link',{name:'Add shifts to your calendar',exact:true});assert.equal(await calendarEntry.getAttribute('href'),'/app/profile/calendar');
+  const calendarEntry=(phone?page.locator('main'):page.locator('#portal-account-menu')).getByRole('link',{name:/^Add shifts to your calendar(?:,| |$)/});assert.equal(await calendarEntry.getAttribute('href'),'/app/profile/calendar');
   await calendarEntry.click();await page.waitForURL(url=>url.pathname==='/app/profile/calendar');await page.getByRole('heading',{level:1,name:'Add to calendar',exact:true}).waitFor();
   await state('none');await currentPageReady();
  });
@@ -115,9 +117,9 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
   await waitForCalendarCopyReady(page,'Link copied.');
   await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw Error('Fictional clipboard unavailable');}}}));await panel.getByRole('button',{name:copy.copyLink,exact:true}).click();await panel.getByText(copy.copyFailed,{exact:true}).waitFor();assert.equal(await panel.getByText('Link copied.',{exact:true}).count(),0);
   // The link field sits just above Copy calendar link and selects its whole value when it takes focus (no Select link button).
-  await panel.getByRole('button',{name:copy.copyLink,exact:true}).focus();await page.keyboard.press(process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab');assert.equal(await page.evaluate(()=>document.activeElement?.id),'employee-calendar-link','Native reverse Tab reaches the link field');
+  await panel.getByRole('button',{name:copy.copyLink,exact:true}).focus();await page.keyboard.press(process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab');assert.equal(await panel.getByLabel('Your private calendar link',{exact:true}).evaluate(element=>element===document.activeElement),true,'Native reverse Tab reaches the link field');
   // The field selects its whole value once focus has settled (WebKit places the caret first).
-  await page.waitForFunction(()=>{const field=document.activeElement;return field instanceof HTMLTextAreaElement&&field.id==='employee-calendar-link'&&field.value.length>0&&field.selectionStart===0&&field.selectionEnd===field.value.length;});
+  const linkId=await panel.getByLabel('Your private calendar link',{exact:true}).getAttribute('id');assert(linkId,'The rendered calendar link field has its own label target');await page.waitForFunction(id=>{const field=document.getElementById(id);return field===document.activeElement&&field instanceof HTMLTextAreaElement&&field.value.length>0&&field.selectionStart===0&&field.selectionEnd===field.value.length;},linkId);
  });
  await step('Blur and offline clear the one-time URL and refocus returns only safe active status',async()=>{
   await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await noUrl();await panel.getByText(copy.paused,{exact:true}).waitFor();await context.setOffline(true);await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await noUrl();await context.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));await state('active');await noUrl();
@@ -146,11 +148,11 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
   await page.route('**/api/employee/calendar-subscriptions',route=>route.request().method()==='GET'?route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({state:'unavailable',reason:'fictional_failure'})}):route.continue());await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await panel.getByText(copy.unavailable,{exact:false}).waitFor();await noUrl();assert.equal(await panel.getByRole('button',{name:/^(Get a new link|Turn off link|Create calendar link|Copy calendar link)$/}).count(),0);await page.unroute('**/api/employee/calendar-subscriptions');await retryRead().click();await state('active');
  });
  await step('Revocation status, client caveats, responsive keyboard controls and token-free capture',async()=>{
-  assert(await panel.getByText(copy.privacy,{exact:true}).isVisible(),'The link card says who can see the shifts');
+  assert(await panel.getByText('Your calendar app picks up schedule changes the next time it refreshes, which can take a while.',{exact:true}).isVisible());assert(await panel.getByText('Anyone with it can see your shift times and locations.',{exact:true}).isVisible(),'The link card says who can see the shifts');
   await page.bringToFront();const revoke=management().getByRole('button',{name:'Turn off link',exact:true});await revoke.scrollIntoViewIfNeeded();await revoke.focus();assert(await revoke.evaluate(e=>e===document.activeElement),'Revoke has native keyboard focus before Enter');await page.keyboard.press('Enter');
   // Enter opens the consequence confirmation, which takes focus and states the client caveat. Native Tab reaches Keep current
   // link first (the safe choice), then the red Revoke link, and Enter presses it.
-  const before=await operationCount(),group=panel.getByRole('group',{name:'Turn off your calendar link?',exact:true});await group.waitFor();await page.waitForFunction(()=>document.activeElement?.id==='calendar-link-confirmation');assert.equal(await operationCount(),before,'Confirmation precedes revocation');
+  const before=await operationCount(),group=panel.getByRole('group',{name:'Turn off your calendar link?',exact:true});await group.waitFor();await page.waitForFunction(()=>['calendar-link-confirmation','b-calendar-link-confirmation'].includes(document.activeElement?.id));assert.equal(await operationCount(),before,'Confirmation precedes revocation');
   assert(await group.getByText(copy.revokeCaveat,{exact:true}).isVisible(),'Revocation cannot remove events a calendar app already copied');
   const tab=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',keep=group.getByRole('button',{name:'Keep current link',exact:true}),confirm=group.getByRole('button',{name:'Turn off link',exact:true});
   await page.keyboard.press(tab);assert(await keep.evaluate(e=>e===document.activeElement),'Keep current link comes first');await page.keyboard.press(tab);assert(await confirm.evaluate(e=>e===document.activeElement),'Confirm revoke has native keyboard focus before Enter');await page.keyboard.press('Enter');

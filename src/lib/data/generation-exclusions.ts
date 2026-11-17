@@ -1,3 +1,4 @@
+import {shiftReviewGuards,requireShiftReview,withShiftReviewConflict} from './shift-review';
 import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import { randomUUID } from 'node:crypto';
 import { weekStartFor } from '../date-utils';
@@ -36,17 +37,19 @@ function authorize(source:GenerationSource,input:ScopeInput) {
  * validated demand claims as manager exclusions. History/manual provenance is
  * protected; merely deleting the row would let the planner recreate that work.
  */
-export async function deleteGeneratedDraftShift(input:ScopeInput & {shiftId:string;proof:SessionMutationProof},executor:SqlExecutor=neonNotificationExecutor()):Promise<{status:'deleted'|'absent'|'protected';exclusionId?:string}> {
+export async function deleteGeneratedDraftShift(input:ScopeInput & {shiftId:string;expectedReviewVersion?:string;proof:SessionMutationProof},executor:SqlExecutor=neonNotificationExecutor()):Promise<{status:'deleted'|'absent'|'protected';exclusionId?:string}> {
   assertManagementProof(input.proof,input.actorEmployeeId);
   validateInput(input);
   if(!input.shiftId?.trim()) throw new GenerationScopeError();
   const {workspace:scopeWorkspace}=await assertOperationalAccess(input.proof,{kind:'COMPANY'},executor);
-  return withGenerationRetry(async()=>{
+  return withShiftReviewConflict(()=>withGenerationRetry(async()=>{
     const {source,changedAt}=await readGenerationSource(executor);
     const {workspace,schedule}=authorize(source,input);
     const shift=source.shifts.find(s=>s.id===input.shiftId);
     const guards=[...generationMutationGuards(source,[input.weekStart]),...operationalScopeStatements(input.proof,scopeWorkspace,{kind:'COMPANY'})];
-    if(!shift) {await executor.transaction(guards);return {status:'absent'};}
+    if(!shift){await executor.transaction(guards);return {status:'absent'};}
+    const version=requireShiftReview(input.expectedReviewVersion);
+    guards.push(...shiftReviewGuards(input.shiftId,version));
     if(shift.schedule_id!==schedule.id) throw new GenerationScopeError();
     const protectedAssignment=isProtectedAssignment({assignmentOrigin:normalizeAssignmentOrigin(shift.assignment_origin),
       hasExchangeHistory:source.shift_exchanges.some(x=>x.source_shift_id===shift.id || x.target_shift_id===shift.id),
@@ -66,6 +69,7 @@ export async function deleteGeneratedDraftShift(input:ScopeInput & {shiftId:stri
     after.schedule_generation_exclusions.sort((a,b)=>String(a.id)<String(b.id)?-1:1);
     await executor.transaction([
       ...generationMutationGuards(source,[input.weekStart,...affectedWorkweeks(period)]),
+      ...shiftReviewGuards(input.shiftId,version),
       ...operationalScopeStatements(input.proof,scopeWorkspace,{kind:'COMPANY'}),
       {text:`INSERT INTO schedule_generation_exclusions(id,workspace_id,week_start,location_id,assignment_start,assignment_end,position_id,claims,deleted_source_shift_id,created_by,created_at)
         VALUES($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$10,$11)`,values:[id,input.workspaceId,input.weekStart,input.locationId,assignmentStart,assignmentEnd,shift.position_id ?? null,JSON.stringify(shift.generated_claims),shift.id,input.actorEmployeeId,changedAt]},
@@ -74,7 +78,7 @@ export async function deleteGeneratedDraftShift(input:ScopeInput & {shiftId:stri
       ...operationalScopeStatements(input.proof,scopeWorkspace,{kind:'COMPANY'}),
     ]);
     return {status:'deleted',exclusionId:id};
-  });
+  }));
 }
 /** Clear the retained reservation event under the complete-source guard; this permits future planning without assigning anyone. */
 export async function clearGenerationExclusion(input:ScopeInput & {exclusionId:string;proof:SessionMutationProof},executor:SqlExecutor=neonNotificationExecutor()):Promise<{status:'cleared'|'already-cleared'}> {

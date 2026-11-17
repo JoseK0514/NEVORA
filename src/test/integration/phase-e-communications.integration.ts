@@ -1,4 +1,4 @@
-import {executeManagerReminder,findManagerReminderOperation} from '../../lib/manager-reminders/service.server';
+import {executeManagerReminder,findManagerReminderOperation,readManagerReminderEligibility} from '../../lib/manager-reminders/service.server';
 import {readOwnerOperationalScope,assignOperationalScope} from '../../lib/company-access/operational-scope.server';
 import {readFile} from 'node:fs/promises';
 import {afterEach,beforeEach,expect,it} from 'vitest';
@@ -164,6 +164,97 @@ async function managerReminderFixture(kind:'AVAILABILITY'|'COMMUNICATION'){
  await q('INSERT INTO schedule_week_settings(week_start,availability_deadline) VALUES($1::date,$2::timestamptz)',[date.week,date.deadline]);
  return {kind,weekStart:date.week,expectedDeadline:date.deadline,employeeId:'employee',operationId:randomUUID(),authority:communicationAuthority(owner)};
 }
+it.each(['AVAILABILITY','COMMUNICATION'] as const)('Phase 4 %s eligibility is advisory, read-only, and recovers the original operation',async kind=>{
+ const c=await managerReminderFixture(kind);
+ expect(await readManagerReminderEligibility(owner,c,db.executor)).toMatchObject({status:'ready',canQueue:true,scope:'COMPANY',targetEmployeeId:'employee',observedAt:expect.any(String),dueAt:expect.any(String),expiresAt:expect.any(String)});
+ expect(await q("SELECT count(*)::int AS n FROM notifications WHERE purpose='REMINDER'")).toEqual([{n:0}]);
+ expect(await q('SELECT count(*)::int AS n FROM employee_attention_operations')).toEqual([{n:0}]);
+ const result=await executeManagerReminder(owner,c,db.executor);
+ expect(result.status).toBe('committed');
+ expect(await readManagerReminderEligibility(owner,c,db.executor)).toEqual(result);
+ const cooldown=await readManagerReminderEligibility(owner,{...c,operationId:randomUUID()},db.executor);
+ expect(cooldown).toMatchObject({status:'cooldown',canQueue:false,reason:'daily_budget_used',nextEligibleAt:expect.any(String)});
+ if(cooldown.status!=='cooldown'||!cooldown.nextEligibleAt)throw Error('Missing cooldown');
+ expect(new Intl.DateTimeFormat('en-GB',{timeZone:'America/Puerto_Rico',hour:'2-digit',hourCycle:'h23'}).format(new Date(cooldown.nextEligibleAt))).toBe('21');
+ expect(await readManagerReminderEligibility(owner,{...c,employeeId:'foreign-person'},db.executor)).toMatchObject({status:'conflict'});
+ expect(await q("SELECT count(*)::int AS n FROM notifications WHERE purpose='REMINDER'")).toEqual([{n:1}]);
+});
+it.each(['AVAILABILITY','COMMUNICATION'] as const)('Phase 4 %s eligibility prefers a concurrently committed original operation',async kind=>{
+ for(const resolved of [false,true]){
+  const c=await managerReminderFixture(kind);let saved:Awaited<ReturnType<typeof executeManagerReminder>>|undefined,raced=false;
+  const executor:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
+   if(!raced&&statements.some(statement=>statement.text.startsWith('SELECT to_jsonb(clock_timestamp())'))){
+    raced=true;saved=await executeManagerReminder(owner,c,db.executor);expect(saved.status).toBe('committed');
+    if(resolved){
+     if(c.kind==='AVAILABILITY')await q("INSERT INTO weekly_availability_submissions(employee_id,week_start,submitted_at) VALUES('employee',$1::date,clock_timestamp())",[c.weekStart]);
+     else await q("UPDATE communications SET state='WITHDRAWN' WHERE id=$1::uuid",[c.communicationId]);
+    }
+   }
+   return db.executor.transaction(statements,signal);
+  }};
+  expect(await readManagerReminderEligibility(owner,c,executor)).toEqual(saved);expect(raced).toBe(true);
+  if(c.kind==='AVAILABILITY')await q('DELETE FROM weekly_availability_submissions; DELETE FROM schedule_week_settings');
+ }
+});
+it('Phase 4 eligibility denies a real foreign-company target with a fresh operation',async()=>{
+ const c=await managerReminderFixture('AVAILABILITY'),original=process.env.FUEL_TEST_DATABASE_URL!;
+ const target=new URL(original);target.pathname+='_foreign';
+ let foreign:Awaited<ReturnType<typeof createDisposableFoundationDatabase>>;
+ process.env.FUEL_TEST_DATABASE_URL=target.href;
+ try{foreign=await createDisposableFoundationDatabase({mode:'current-runtime'});}finally{process.env.FUEL_TEST_DATABASE_URL=original;}
+ try{
+  await foreign.executor.query({text:"INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('foreign-person','Foreign','Fictional','QA-NO-PHONE','EMPLOYEE','loc-1')",values:[]});
+  expect(await readManagerReminderEligibility(owner,{...c,employeeId:'foreign-person',operationId:randomUUID()},db.executor)).toEqual({status:'conflict',reason:'source_or_operation_changed'});
+  expect(await q("SELECT count(*)::int AS n FROM notifications WHERE purpose='REMINDER'")).toEqual([{n:0}]);
+  expect(await foreign.executor.query({text:'SELECT count(*)::int AS n FROM notifications',values:[]})).toEqual([{n:0}]);
+ }finally{await foreign.dispose();}
+});
+it('Phase 4 eligibility requires current Company scope, including for a Manager at the target location',async()=>{
+ const c=await managerReminderFixture('AVAILABILITY');
+ await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('phase4-manager','Fictional','Manager','QA-NO-PHONE','MANAGER','loc-1')");
+ const manager={...owner,employee:{...owner.employee,id:'phase4-manager',role:'MANAGER' as const},sessionTokenHash:'f'.repeat(64)};
+ await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,clock_timestamp()+interval '1 day')",[manager.sessionTokenHash,manager.employee.id]);
+ const mc={...c,authority:communicationAuthority(manager)};
+ expect(await readManagerReminderEligibility(manager,mc,db.executor)).toEqual({status:'blocked',reason:'access_denied'});
+ for(const mode of ['COMPANY','LOCATIONS'] as const){
+  const context=await readOwnerOperationalScope(owner,manager.employee.id,db.executor);if(context.state!=='ready')throw Error('Missing scope context');const cur=context.data.current;
+  expect(await assignOperationalScope(owner,manager.employee.id,{operationId:randomUUID(),action:'ASSIGN',expectedEmployeeVersion:cur.employeeUpdatedAt,expectedRoleGeneration:cur.roleGeneration,expectedScopeRevision:cur.scopeRevision,scope:mode==='COMPANY'?{mode:'COMPANY',locationIds:[]}:{mode:'LOCATIONS',locationIds:['loc-1']}},db.executor)).toMatchObject({state:'saved'});
+  expect(await readManagerReminderEligibility(manager,mc,db.executor)).toMatchObject(mode==='COMPANY'?{status:'ready',scope:'COMPANY'}:{status:'blocked',reason:'access_denied'});
+ }
+ expect(await q('SELECT count(*)::int AS n FROM employee_attention_operations')).toEqual([{n:0}]);
+});
+it('Phase 4 receipt disclosure is denied after session revocation following its transaction',async()=>{
+ const c=await managerReminderFixture('AVAILABILITY');expect((await executeManagerReminder(owner,c,db.executor)).status).toBe('committed');
+ let revoked=false;
+ const executor:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
+  const rows=await db.executor.transaction(statements,signal);
+  if(!revoked&&statements.some(statement=>statement.text.startsWith('SELECT to_jsonb(clock_timestamp())'))){revoked=true;await q('DELETE FROM employee_sessions WHERE token_hash=$1',[owner.sessionTokenHash]);}
+  return rows;
+ }};
+ expect(await readManagerReminderEligibility(owner,c,executor)).toEqual({status:'blocked',reason:'access_denied'});expect(revoked).toBe(true);
+ expect(await q("SELECT count(*)::int AS n FROM employee_attention_operations WHERE result->>'kind'='MANAGER_REMINDER'")).toEqual([{n:1}]);
+});
+it.each(['AVAILABILITY','COMMUNICATION'] as const)('Phase 4 %s eligibility denies changed sources and expired/revoked sessions',async kind=>{
+ const c=await managerReminderFixture(kind);
+ if(c.kind==='AVAILABILITY')await q("UPDATE schedule_week_settings SET availability_deadline=clock_timestamp()-interval '1 minute'");
+ else await q("UPDATE communications SET state='WITHDRAWN'");
+ expect(await readManagerReminderEligibility(owner,c,db.executor)).toMatchObject({status:'conflict'});
+ await q("UPDATE employee_sessions SET expires_at=clock_timestamp()-interval '1 minute' WHERE employee_id='owner'");
+ expect(await readManagerReminderEligibility(owner,c,db.executor)).toEqual({status:'blocked',reason:'access_denied'});
+ await q("DELETE FROM employee_sessions WHERE employee_id='owner'");
+ expect(await readManagerReminderEligibility(owner,c,db.executor)).toEqual({status:'blocked',reason:'access_denied'});
+ expect(await q("SELECT count(*)::int AS n FROM notifications WHERE purpose='REMINDER'")).toEqual([{n:0}]);
+});
+it('Phase 4 eligibility preserves activation hold without a queue or operation effect',async()=>{
+ const c=await managerReminderFixture('AVAILABILITY');
+ const [restore]=await q("SELECT format('COMMENT ON DATABASE %I IS %L',datname,shobj_description(oid,'pg_database')) AS sql FROM pg_database WHERE datname=current_database()") as {sql:string}[];
+ try{
+  await q("DO $$ BEGIN EXECUTE format('COMMENT ON DATABASE %I IS %L',current_database(),'phase4-held'); END $$");
+  expect(await readManagerReminderEligibility(owner,c,db.executor)).toEqual({status:'held',reason:'activation_held'});
+  expect(await q("SELECT count(*)::int AS n FROM notifications WHERE purpose='REMINDER'")).toEqual([{n:0}]);
+  expect(await q('SELECT count(*)::int AS n FROM employee_attention_operations')).toEqual([{n:0}]);
+ }finally{await q(restore.sql);}
+});
 it.each(['AVAILABILITY','COMMUNICATION'] as const)('manager %s reminder: concurrent same and different operations share one daily queue entry',async kind=>{
  const c=await managerReminderFixture(kind);
  const results=await Promise.all([executeManagerReminder(owner,c,db.executor),executeManagerReminder(owner,c,db.executor),executeManagerReminder(owner,{...c,operationId:randomUUID()},db.executor)]);

@@ -64,6 +64,12 @@ function saved(v: GenerationExplanationSnapshot, changed = true) {
 }
 
 describe('F3 actual canonical plan projection', () => {
+  it('labels compatible legacy coverage explicitly and refuses a different metric basis',()=>{
+    const v=snapshot();delete v.record.plan.demand.coverage.basis;delete v.record.plan.demand.coverage.unit;bind(v);
+    expect(ready(v).coverage).toMatchObject({basis:'fully_covered_period_minutes_v1',unit:'nominal_location_minutes'});
+    Object.assign(v.record.plan.demand.coverage,{basis:'staff_hours'});bind(v);
+    expect(view(v)?.state).not.toBe('ready');
+  });
   it('implements one pure explanation entry point', () => {
     expect(implementation?.buildGenerationExplanationView).toBeTypeOf('function');
   });

@@ -238,7 +238,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     if(previousActor.current!==actorId){commandRef.current=null;setPending(null);}previousActor.current=actorId;
     const clear=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;activeView.current=false;invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setPaused(true);setMessage(navigator.onLine?'Timecards paused. Return to this window to check the current period.':'You’re offline. Reconnect to see timecards.');};
     // Review B2 (NV-001): offline with the person still here, the loaded timecards stay on screen read-only (no more reads,
-    // no expiry; the shell disables actions and says when they were updated). Stepping away still clears.
+    // within the original expiry; the shell disables actions. Stepping away still clears.
     let holding=false;
     const hold=()=>{
       // Already holding (the browser can send 'offline' more than once): nothing changes.
@@ -246,7 +246,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       if(steppedAway()||!source.current){clear();return;}
       holding=true;
       const at=(source.current.cards[0] as {card?:{observedAt?:string}}|undefined)?.card?.observedAt;
-      activeView.current=false;invalidate();if(at)announceOfflineHeld(at);
+      activeView.current=false;generation.current++;cancelRead();if(early.current)clearTimeout(early.current);early.current=null;setBusy(false);if(at)announceOfflineHeld(at);
     };
     const sync=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||activeView.current))return;holding=false;clear();activeView.current=document.visibilityState!=='hidden'&&navigator.onLine;if(activeView.current)void refresh(period);};
     const account=()=>{commandRef.current=null;setPending(null);sync();};
@@ -256,7 +256,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     void Promise.resolve().then(()=>{if(mounted)sync();});
     return ()=>{mounted=false;activeView.current=false;clearInterval(poll);window.removeEventListener('blur',clear);invalidate();document.removeEventListener('visibilitychange',sync);window.removeEventListener('pagehide',clear);
       window.removeEventListener('pageshow',sync);window.removeEventListener('offline',hold);window.removeEventListener('online',sync);window.removeEventListener('focus',sync);window.removeEventListener('storage',account);};
-  },[period,refresh,invalidate,clearBatch,actorId]);
+  },[period,refresh,invalidate,cancelRead,clearBatch,actorId]);
   function choose(event:FormEvent){event.preventDefault();if(paused)return;try{const next=parsePeriod(draft.startDate,draft.endDate);setPeriod(next);if(next.startDate===period.startDate&&next.endDate===period.endDate)void refresh(next);}catch(error){setMessage(error instanceof Error?error.message:'Choose a valid period');}}
   async function act(item?:TimecardItem,action?:TimecardCommand['action']){
     if(!source.current||source.current.actorId!==actorId)return;

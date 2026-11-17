@@ -42,7 +42,7 @@ function conflict() {
 }
 function form() {
   const data = new FormData();
-  Object.entries({ operationId:'11111111-1111-4111-8111-111111111111', shiftId: 'old', employeeId: 'E', locationId: 'loc-1', weekStart: '2030-10-07', date: '2030-10-07', startTime: '10:00', endTime: '12:00', positionId: '', notes: 'Private retained draft', templateId: 't' }).forEach(([key, value]) => data.set(key, value));
+  Object.entries({ expectedReviewVersion:'a'.repeat(64), operationId:'11111111-1111-4111-8111-111111111111', shiftId: 'old', employeeId: 'E', locationId: 'loc-1', weekStart: '2030-10-07', date: '2030-10-07', startTime: '10:00', endTime: '12:00', positionId: '', notes: 'Private retained draft', templateId: 't' }).forEach(([key, value]) => data.set(key, value));
   return data;
 }
 beforeEach(() => { vi.resetAllMocks(); writes.copy.mockResolvedValue({operationId:'11111111-1111-4111-8111-111111111111',rows:[]}); writes.insert.mockResolvedValue('new'); writes.update.mockResolvedValue(true); writes.ensure.mockResolvedValue('a'); });
@@ -84,4 +84,4 @@ it.each([
 // These business/unit fixtures do not execute SQL. Current scope admission and
 // rollback are exercised by company-access-schedule-*.integration.ts.
 vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOriginalOperationalAccess:async(_proof:unknown,original:{authority:string})=>{expect(original.authority).toBe('f'.repeat(64));},assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},authority:'f'.repeat(64),workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));
-vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',data:{saveAvailability:'available',shift:{id:'test-shift'},employeeOptions:[],positionOptions:[]}})}));
+vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',data:{saveAvailability:'available',shift:{reviewVersion:'a'.repeat(64),id:'test-shift'},employeeOptions:[],positionOptions:[]}})}));

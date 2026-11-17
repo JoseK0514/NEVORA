@@ -433,9 +433,9 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
   };
   const focus=(event:FocusEvent)=>{if(event.target!==window||printing||focused)return;focused=document.hasFocus();if(focused)void load();};
   const refresh=()=>{focused=document.hasFocus();void load();},reconnect=()=>{focused=document.hasFocus();holding=false;void load(true);},offline=offlineListener({pause:()=>{focused=false;clear('paused');},hold:()=>{
-   // Review B2 (NV-001): keep the verified report on screen, read-only: no more reads and no expiry while offline.
+   // Keep the verified report read-only only until its original expiry.
    if(holding)return;if(!loadedAt){clear('offline');return;}
-   holding=true;generation++;controller?.abort();exportController?.abort();if(timer)clearTimeout(timer);timer=null;if(refresher)clearTimeout(refresher);refresher=null;
+   holding=true;generation++;controller?.abort();exportController?.abort();if(refresher)clearTimeout(refresher);refresher=null;
    if(active){setExporting(false);setHeld(true);}announceOfflineHeld(loadedAt);
   }}),hide=()=>{focused=false;clear('paused');},visibility=()=>{if(document.visibilityState==='hidden')hide();else refresh();};
   const accountChanged=()=>{clear('unavailable');focused=document.hasFocus();void load();};

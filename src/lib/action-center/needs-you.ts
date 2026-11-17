@@ -34,13 +34,11 @@ export function needsYou(items: readonly ActionItem[], today: string | undefined
   };
 }
 
-/** The read marks the signed-in person's own timecard and correction in the item's title ("Your timecard needs another
- * reviewer", "Your correction needs another reviewer"): another person decides those, so they are never this person's
- * to approve (MG-004). */
-export const isOwnReview = (item: Pick<ActionItem, 'type' | 'title'>) => (item.type === 'TIMECARD' || item.type === 'TIME_CORRECTION') && /^Your (timecard|correction) needs another reviewer/.test(item.title);
+/** Independent-review identity is server data, never localized presentation. */
+export const isOwnReview = (item: Pick<ActionItem, 'type' | 'review'>) => (item.type === 'TIMECARD' || item.type === 'TIME_CORRECTION') && item.review?.independentReviewRequired===true;
 
 /** A correction that waits on this person: it can be approved or declined today, whatever its pay period. */
-const isOpenCorrection = (item: ActionItem) => item.type === 'TIME_CORRECTION' && !isOwnReview(item);
+const isOpenCorrection = (item: ActionItem) => item.type === 'TIME_CORRECTION' && item.review?.actorMayReview===true;
 
 /** The band's one summary line. Never blames: "no clock-in", not "missed". */
 export function needsYouSentence(count: number) {

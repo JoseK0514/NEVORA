@@ -57,6 +57,7 @@ export function resetScopedReadTab(){tab.retiredAt=-Infinity;tab.cutoff=null;tab
 export function ScopedReadFrame({observation,children,unavailable}:{observation?:ScopedObservation|null;children?:ReactNode;unavailable?:ReactNode}){
  const router=useRouter();
  const navigation=useAppNavigation(),deferredRefresh=useRef(false);
+ const viewDeadline=useRef(0),offlineExpiry=useRef<ReturnType<typeof setTimeout>|null>(null);
  const [body,setBody]=useState<Body>({authority:null,phase:'expired',content:null});
  // A replacement view cannot know whether an earlier instance retired while an
  // RSC response was in flight. Mounts therefore use the same fresh barrier.
@@ -105,16 +106,17 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    if(Date.parse(result.observedAt)<latest.current)throw Error('Authority observation moved backwards');
    return {...result,requestStartedAt};
   },reason=>({state:'unavailable',reason}),()=> 'read_failed');
-  function pause(){held.current=false;foreground=false;retire('paused');controller.pause();}
-  function recover(tabWide=true){if(keepOffline(held))return;held.current=false;foreground=online();retire('expired',tabWide);lastRefresh='';controller.pause();if(foreground)controller.start();}
+  function pause(){if(offlineExpiry.current)clearTimeout(offlineExpiry.current);offlineExpiry.current=null;held.current=false;foreground=false;retire('paused');controller.pause();}
+  function recover(tabWide=true){if(keepOffline(held))return;if(offlineExpiry.current)clearTimeout(offlineExpiry.current);offlineExpiry.current=null;held.current=false;foreground=online();retire('expired',tabWide);lastRefresh='';controller.pause();if(foreground)controller.start();}
   // Offline: stop checking (the controller's own pause publishes nothing here while the page is current), record the
   // retirement for the tab, and require a fresh check when the person reconnects. Nothing on screen changes.
   function hold(){
    // Already holding (the browser can send 'offline' more than once): nothing changes.
    if(held.current&&!navigator.onLine)return;
-   if(steppedAway()||required.current){pause();return;}
+   if(steppedAway()||required.current||performance.now()>=viewDeadline.current){pause();return;}
    held.current=true;foreground=false;controller.pause();retireTab();required.current=true;retiredThrough.current=Math.max(retiredThrough.current,latest.current);
    const page=observationRef.current;if(page)announceOfflineHeld(page.observedAt);
+   offlineExpiry.current=setTimeout(pause,Math.max(0,viewDeadline.current-performance.now()));
   }
   const recoverTab=()=>recover();
   const focus=(event:Event)=>{if(event.target!==window||(foreground&&online()))return;recover();};
@@ -141,7 +143,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    foreground=true;complete(fence);return true;
   }
   queueMicrotask(()=>{if(active&&!adoptTabFence())recover(false);});
-  return()=>{active=false;resume?.();controller.stop();controls.current=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('focus',focus);for(const event of ['blur','pagehide'])window.removeEventListener(event,pause);window.removeEventListener('offline',hold);for(const event of ['pageshow','online','storage'])window.removeEventListener(event,recoverTab);};
+  return()=>{active=false;if(offlineExpiry.current)clearTimeout(offlineExpiry.current);resume?.();controller.stop();controls.current=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('focus',focus);for(const event of ['blur','pagehide'])window.removeEventListener(event,pause);window.removeEventListener('offline',hold);for(const event of ['pageshow','online','storage'])window.removeEventListener(event,recoverTab);};
  },[router,navigation]);
 
  useEffect(()=>{
@@ -168,7 +170,8 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    latest.current=observed;
    if(required.current&&recovery.view)controls.current?.complete(recovery.view);
    setBody({authority:observation!.authority,phase:'ready',content:children});
-   early=setTimeout(()=>{if(proactiveVersion.current!==version){proactiveVersion.current=version;if(navigation?.pending())deferredRefresh.current=true;else refreshPage(router,versionRef);}},remaining*.65);
+   viewDeadline.current=performance.now()+remaining;
+   early=setTimeout(()=>{if(!online())return;if(proactiveVersion.current!==version){proactiveVersion.current=version;if(navigation?.pending())deferredRefresh.current=true;else refreshPage(router,versionRef);}},remaining*.65);
    expiry=setTimeout(()=>controls.current?.recover(false),remaining);
   });
   return()=>{active=false;if(early)clearTimeout(early);if(expiry)clearTimeout(expiry);};

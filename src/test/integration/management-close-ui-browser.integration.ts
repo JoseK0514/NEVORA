@@ -52,7 +52,7 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     const signedInReads=Promise.all(['/api/notifications','/api/manager/inbox-count'].map(path=>page.waitForResponse((response:{url():string;status():number})=>new URL(response.url()).pathname===path&&response.status()===200).then((response:{finished():Promise<unknown>})=>response.finished())));
     await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await signedInReads;
     surfacePhase='timecards';await mark('timecards:start');await page.locator('a[href="/app/timecards"]:visible').first().click();await page.waitForURL(app.url+'/app/timecards');
-    await page.locator('[id="timecard-'+target.id+'"] button').first().click();
+    await page.locator('[id="timecard-'+target.id+'"] button:visible, button[aria-label^="Unavailable '+target.id+',"]:visible').first().click();
     // Preserve the ordinary supported person deep link across protected-tree remounts.
     await page.evaluate((id:string)=>{history.replaceState(history.state,'',location.pathname+location.search+'#timecard-'+id);},target.id);
     await page.locator('dialog[open]').waitFor();
@@ -66,17 +66,19 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     surfacePhase='privacy-retirement';await mark('privacy-retirement:start');await reason.fill('PRIVATE-RETIRED-DRAFT');await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
     expect(await page.locator('textarea').count()).toBe(0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
     await page.locator('dialog[open]').waitFor();await page.getByRole('button',{name:'Close open punch',exact:true}).click();await end.waitFor();expect(await reason.inputValue()).toBe('');
+    // Crossing the phone layout remounts the inspector and deliberately retires its draft.
+    for(const [width,scale] of [[320,100],[390,100],[1440,100],[390,200]]){
+     await page.setViewportSize({width,height:1000});await page.evaluate((scale:number)=>{document.documentElement.style.fontSize=scale+'%';},scale);
+     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),engine+' '+width+' '+scale).toBe(true);
+    }
+    await page.evaluate(()=>{document.documentElement.style.fontSize='100%';});await page.setViewportSize({width:index?390:1440,height:1000});
+    if(!await end.isVisible())await page.getByRole('button',{name:'Close open punch',exact:true}).click();await end.waitFor();
     surfacePhase='confirmation';await mark('confirmation:start');const chosen=formatBusinessDateTimeInput(new Date(Date.now()-30*60000).toISOString(),'America/Puerto_Rico');await end.fill(chosen);await reason.fill('Verified last worked time; worker and tablet are unavailable.');
     expect(await page.locator('textarea').evaluate((el:HTMLTextAreaElement)=>el.labels![0].textContent?.trim())).toBe('Reason for closing');
     const confirmation=page.getByLabel('I verified this end time and reason.',{exact:true});
     expect(await confirmation.evaluate((el:HTMLInputElement)=>el.labels![0].getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
     if(engine==='chromium'){await reason.focus();await page.keyboard.press('Tab');expect(await confirmation.evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);await page.keyboard.press('Space');}
     else await confirmation.check();
-    for(const [width,scale] of [[320,100],[390,100],[1440,100],[390,200]]){
-     await page.setViewportSize({width,height:1000});await page.evaluate((scale:number)=>{document.documentElement.style.fontSize=scale+'%';},scale);
-     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),engine+' '+width+' '+scale).toBe(true);
-    }
-    await page.evaluate(()=>{document.documentElement.style.fontSize='100%';});await page.setViewportSize({width:index?390:1440,height:1000});
     const shot=resolve(evidence,engine+'-'+actor+'-confirmation.png');await page.screenshot({path:shot,fullPage:false});captures.push(shot);
     const bodies:string[]=[];let interrupted=false,foreignContext=false,committed:()=>void=()=>{},releaseResponse:()=>void=()=>{};
     const committedResponse=new Promise<void>(resolve=>{committed=resolve;}),responseGate=new Promise<void>(resolve=>{releaseResponse=resolve;});releasePending.push(releaseResponse);
@@ -92,7 +94,7 @@ it('offers an audited management close in real desktop/mobile timecards with rec
      // Retire the whole protected tree and remount it, then close/reopen its inspector.
      await page.evaluate(()=>window.dispatchEvent(new Event('blur')));releaseResponse();expect(await page.getByRole('button',{name:'Record close',exact:true}).count()).toBe(0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
      await page.getByRole('button',{name:'Retry same close',exact:true}).waitFor();
-     await page.locator('.cm-tc-done').click();await page.locator('[id="timecard-'+target.id+'"] button').first().click();await page.getByRole('button',{name:'Retry same close',exact:true}).waitFor();
+     await page.locator('.cm-tc-done').click();await page.locator('[id="timecard-'+target.id+'"] button:visible, button[aria-label^="Unavailable '+target.id+',"]:visible').first().click();await page.getByRole('button',{name:'Retry same close',exact:true}).waitFor();
      // Replace the cookie from another tab: the original tab must not offer the
      // Owner's private recovery to a different actor. Returning as the Owner
      // re-establishes fresh authority without replacing the business operation.

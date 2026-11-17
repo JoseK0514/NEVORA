@@ -54,7 +54,7 @@ it('renders actual recovery routes with current sessions, bounded status reads a
     await page.addStyleTag({content:'html{font-size:200%}'});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);await page.addStyleTag({content:'html{font-size:100%}'});
    }
    await page.getByRole('link',{name:'Try Clocker again'}).focus();expect(await page.getByRole('link',{name:'Try Clocker again'}).evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);
-   await page.keyboard.press(engine==='webkit'&&process.platform==='darwin'?'Alt+Tab':'Tab');expect(await page.getByRole('link',{name:'Owner sign in'}).evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);
+   expect(await page.getByRole('link',{name:'Owner sign in'}).count()).toBe(0);expect(await page.getByText('Open billing on your own device.',{exact:false}).isVisible()).toBe(true); // Shared tablet never invites an Owner sign-in.
    await page.goto(origin+'/clocker/access/paused?from=https%3A%2F%2Fevil.invalid');expect(await page.getByRole('link',{name:'Try Clocker again'}).count()).toBe(0);
    checks.push(engine+': public tablet has bounded return, no private data, four widths and keyboard focus');
    for(const [id,owner] of [['QAOWNER',true],['QA-RECOVERY-EMP',false]] as const){
@@ -97,7 +97,7 @@ it('renders actual recovery routes with current sessions, bounded status reads a
    await page.getByLabel('Enter your password to confirm',{exact:true}).fill(TEST_PASSWORD);
    await page.getByRole('checkbox').check();await page.getByRole('button',{name:'Delete my account',exact:true}).click();
    await page.locator('[data-deletion-state="received"]').waitFor();
-   const reference=await page.locator('.ad-reference').innerText();expect(reference).toMatch(/^DEL-[A-HJ-NP-Z2-9]{8}$/);
+   const reference=await page.locator('.ad-reference:visible').innerText();expect(reference).toMatch(/^DEL-[A-HJ-NP-Z2-9]{8}$/);
    expect(await app.database.executor.query({text:'SELECT reference FROM account_deletion_requests WHERE employee_id=$1',values:[deletionEmployee]})).toEqual([{reference}]);
    expect(await app.database.executor.query({text:'SELECT token_hash FROM employee_sessions WHERE employee_id=$1',values:[deletionEmployee]})).toEqual([]);
    await page.goto(origin+'/app/account/delete');await page.waitForURL(/\/login(?:\?|$)/);

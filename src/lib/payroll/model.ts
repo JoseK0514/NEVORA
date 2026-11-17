@@ -5,6 +5,7 @@
  */
 const enumValue = (value: unknown, allowed: string[]) =>
   typeof value === "string" && allowed.includes(value);
+import { PayrollCsvInputError, payrollCsvRows } from "./csv-import";
 import type {
   PayrollImport,
   PayrollPreferences,
@@ -209,6 +210,24 @@ export function parsePreferences(v: unknown): PayrollPreferences {
  * earnings must sum to gross, and a supplied population requires exactly one row
  * per employee, including zero/excluded dispositions handled by the service. */
 export function parseImport(v: unknown, population?: string[]): PayrollImport {
+  if (
+    v && typeof v === "object" && !Array.isArray(v) &&
+    (v as Record<string, unknown>).schema === "NEVORA_PAYROLL_CSV_TOTALS_V1"
+  ) {
+    const csv = record(v, [
+      "schema", "currency", "sourceName", "sourceReference", "period", "payday", "csv",
+    ]);
+    return parseImport({
+      schema: "NEVORA_PAYROLL_IMPORT_V1",
+      currency: csv.currency,
+      sourceName: csv.sourceName,
+      sourceReference: csv.sourceReference,
+      period: csv.period,
+      payday: csv.payday,
+      rows: parseCsvRows(csv.csv),
+      sourceDocument: { schema: csv.schema, csv: csv.csv },
+    }, population);
+  }
   const p = record(v, [
     "schema",
     "currency",
@@ -217,6 +236,7 @@ export function parseImport(v: unknown, population?: string[]): PayrollImport {
     "period",
     "payday",
     "rows",
+    "sourceDocument",
   ]);
   insist(
     p.schema === "NEVORA_PAYROLL_IMPORT_V1" &&
@@ -292,7 +312,38 @@ export function parseImport(v: unknown, population?: string[]): PayrollImport {
       ids.size === population.length && population.every((id) => ids.has(id)),
       "rows.population",
     );
+  if (p.sourceDocument !== undefined) {
+    const evidence = record(p.sourceDocument, ["schema", "csv"], "sourceDocument");
+    insist(
+      evidence.schema === "NEVORA_PAYROLL_CSV_TOTALS_V1",
+      "sourceDocument.schema",
+    );
+    const evidenceRows = parseCsvRows(evidence.csv);
+    // Evidence cannot be attached to changed canonical rows or invented detail.
+    insist(
+      evidenceRows.length === p.rows.length && evidenceRows.every((expected, i) => {
+        const row = (p.rows as PayrollImport["rows"])[i];
+        return row.employeeId === expected.employeeId &&
+          row.grossMinor === expected.grossMinor &&
+          row.netMinor === expected.netMinor && row.earnings === undefined &&
+          (["employeeDeductions", "employerContributions"] as const).every(key =>
+            row[key].length === 1 &&
+            row[key][0].code === expected[key][0].code &&
+            row[key][0].label === expected[key][0].label &&
+            row[key][0].amountMinor === expected[key][0].amountMinor);
+      }),
+      "sourceDocument.rows",
+    );
+  }
   return structuredClone(p) as PayrollImport;
+}
+function parseCsvRows(csv: unknown) {
+  try {
+    return payrollCsvRows(csv);
+  } catch (error) {
+    if (error instanceof PayrollCsvInputError) insist(false, error.path);
+    throw error;
+  }
 }
 export function totals(p: PayrollImport): PayrollTotals {
   const sum = (values: string[]) =>
@@ -382,8 +433,9 @@ export function parseRunCommand(v: unknown): PayrollRunCommand {
       insist(Object.keys(c).every(k=>["action","operationId","runId","expectedRevision",...(c.action==="CORRECT_NATIVE"?["reason"]:[])].includes(k)),"nativeCommand");
       if(c.action==="CORRECT_NATIVE")insist(text(c.reason),"reason");
     }else if (c.action === "IMPORT" || c.action === "CORRECT") {
-      parseImport(c.amounts);
+      const amounts = parseImport(c.amounts);
       if (c.action === "CORRECT") insist(text(c.reason), "reason");
+      return structuredClone({ ...c, amounts }) as PayrollRunCommand;
     } else if (c.action === "APPROVE")
       insist(
         typeof c.reviewToken === "string" &&

@@ -214,3 +214,17 @@ notice and rechecks current credential readiness before sending. Pending activat
 retries without sending that notice. Trial and renewal reminders use the existing
 encrypted outbox and current verified contact. SMTP acknowledgement can be uncertain;
 the stable message identifier supports deduplication but delivery is at-least-once.
+
+
+## Phase5 source and contract handoff
+
+Use the [consolidated backend contract index](../../handoffs/2026-11-16-backend-phase5-claude-contract-index.json) and [Development publication record](../../handoffs/2026-11-16-backend-phase5-development-publication.json) for current source and check bindings. [Remaining UI, hosted and Rondo dependencies](../../handoffs/2026-11-16-backend-phase5-remaining-dependencies.json) are separate acceptance work; this source-qualified guide does not certify provider activation or an operating release.
+
+
+## Local business evidence backend
+
+Business evidence maintenance and model retrieval use separate default-off Owner-advisor flags under the parent gate. Imports enables maintenance; retrieval enables model tools; either permits Owner queries/current published citations. With both off, only minimal original-operation recovery is admitted. No real connector credentials or refresh are configured by this work. Source withdrawal removes eligibility; explicit deletion erases local source/inspection payloads and retires dependent map eligibility while content-free recovery identities survive. Chat/provider prose retention is separate. The new schema is local-only; no hosted migration or release is claimed.
+
+See [business backend contract](../../handoffs/2026-11-16-rondo-business-evidence-ui-contract.md).
+
+Posted cash is assigned by posting time, including cross-month occurrences. Cash inflows/outflows and sale/refund amounts/counts are separate from net totals. Reconciliation must hold within every admitted cash window and across shared boundaries; offsetting discrepancies cannot establish clearance. CURRENT freshness is capped at the requested window end. Source deletion conservatively clears all workspace business answer-receipt payloads as well as structured inspection content, retaining content-free operation/request identities and unrelated ordinary history.

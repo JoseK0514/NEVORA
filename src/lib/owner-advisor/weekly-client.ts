@@ -216,22 +216,22 @@ export type WeeklySend = ReturnType<typeof createWeeklyClient>;
 export const newRequestId = () => crypto.randomUUID().toLowerCase();
 
 /* ---------- The one thing kept across a reload: a pending approval's command metadata ---------- */
-export const PENDING_KEY = "nevora.rondo.weekly.pendingApply.v1";
+export const PENDING_STORAGE_NAME = "nevora.rondo.weekly.pendingApply.v1";
 export type PendingApply = { reviewId: string; requestId: string; termsDigest: string; readReceiptId: string; acknowledged: true; authority: string };
 /** No names, assignments, source text or credentials: only what resending the exact same approval needs. */
 export function savePending(storage: Pick<Storage, "setItem"> | null, pending: PendingApply) {
-  try { storage?.setItem(PENDING_KEY, JSON.stringify(pending)); } catch { /* the in-memory copy still holds it */ }
+  try { storage?.setItem(PENDING_STORAGE_NAME, JSON.stringify(pending)); } catch { /* the in-memory copy still holds it */ }
 }
 export function loadPending(storage: Pick<Storage, "getItem" | "removeItem"> | null): PendingApply | null {
   try {
-    const raw = storage?.getItem(PENDING_KEY);
+    const raw = storage?.getItem(PENDING_STORAGE_NAME);
     if (!raw) return null;
     const value = JSON.parse(raw) as unknown;
     if (!object(value) || Object.keys(value).sort().join() !== "acknowledged,authority,readReceiptId,requestId,reviewId,termsDigest" || value.acknowledged !== true) throw Error();
     return { reviewId: uuid(value.reviewId), requestId: uuid(value.requestId), termsDigest: digest(value.termsDigest), readReceiptId: uuid(value.readReceiptId), acknowledged: true, authority: text(value.authority, 500) };
-  } catch { try { storage?.removeItem(PENDING_KEY); } catch { /* nothing to clear */ } return null; }
+  } catch { try { storage?.removeItem(PENDING_STORAGE_NAME); } catch { /* nothing to clear */ } return null; }
 }
-export function clearPending(storage: Pick<Storage, "removeItem"> | null) { try { storage?.removeItem(PENDING_KEY); } catch { /* nothing to clear */ } }
+export function clearPending(storage: Pick<Storage, "removeItem"> | null) { try { storage?.removeItem(PENDING_STORAGE_NAME); } catch { /* nothing to clear */ } }
 export const applyCommand = (pending: PendingApply): WeeklyCommand => ({ op: "apply_week_plan", requestId: pending.requestId, reviewId: pending.reviewId,
   termsDigest: pending.termsDigest, readReceiptId: pending.readReceiptId, acknowledged: true });
 

@@ -91,13 +91,14 @@ it.each(['leave','availability','profile','policy','material','unpublish','delet
  await q("UPDATE schedules SET status='PUBLISHED' WHERE id='schedule'");const {fictionalProfile}=await import('../fixtures/shift-changes');await q("UPDATE employee_scheduling_settings SET operational_rule_profile=$1 WHERE employee_id='e2'",[JSON.stringify(fictionalProfile())]);await q("UPDATE workspaces SET shift_change_policy=jsonb_set(shift_change_policy,'{coverage,mode}','\"AUTOMATIC_WHEN_VALID\"')");
 });
 it.each(['acceptance-first','manual-first'] as const)('A051 actual manual material writer and acceptance share compatible lock order: %s',async order=>{
- const {updateShift}=await import('./management-api');const f=await offered();
+ const {updateShift,getShiftForManagement}=await import('./management-api');const f=await offered();
+ const reviewed=await getShiftForManagement(f.id,db.executor);expect(reviewed).toBeTruthy();
  const [before]=await q('SELECT date::text FROM shifts WHERE id=$1',[f.id]);
- const edit=(executor:SqlExecutor)=>updateShift({shiftId:f.id,employeeId:'e1',date:String(before.date),startTime:'09:00',endTime:'16:00',actorEmployeeId:'owner'},executor);
+ const edit=(executor:SqlExecutor)=>updateShift({expectedReviewVersion:reviewed!.reviewVersion,shiftId:f.id,employeeId:'e1',date:String(before.date),startTime:'09:00',endTime:'16:00',actorEmployeeId:'owner'},executor);
  const held=await controlled();
  if(order==='acceptance-first'){
   const accepting=executeShiftChange(proof('e2'),f.command,held.executor);let editing:Promise<unknown>|undefined;
-  try{await held.reached;editing=edit(db.executor);await waitBlocked(held.client,'FROM workspaces');held.release();expect(await accepting).toMatchObject({status:'completed'});expect(await editing).toBe(true);}finally{held.release();await accepting;await editing;await held.close();}
+  try{await held.reached;editing=edit(db.executor);const refused=expect(editing).rejects.toMatchObject({code:'SHIFT_REVIEW_CONFLICT'});await waitBlocked(held.client,'FROM workspaces');held.release();expect(await accepting).toMatchObject({status:'completed'});await refused;expect((await q('SELECT employee_id,start_time::text FROM shifts WHERE id=$1',[f.id]))[0]).toEqual({employee_id:'e2',start_time:'08:00:00'});}finally{held.release();await Promise.allSettled([accepting,...(editing?[editing]:[])]);await held.close();}
   expect((await q('SELECT assignment_episode_id FROM shifts WHERE id=$1',[f.id]))[0].assignment_episode_id).not.toBe(f.terms.sourceEpisodeId);
  }else{
   // Complete current Company admission before pausing the actual publication

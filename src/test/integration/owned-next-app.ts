@@ -1,3 +1,4 @@
+import {OWNED_REPLAY_KEY,OWNED_REPLAY_MODEL} from './owner-advisor-replay-fetch';
 import { assertPilotLedger, validatePilot, PILOT, type OwnerAdvisorPilot } from './owner-advisor-pilot.mjs';
 import { createECDH,createHash, randomUUID } from 'node:crypto';
 import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
@@ -113,8 +114,11 @@ export function ownedPayrollEnvironment(options: {payrollEnabled?:boolean;native
 }
 
 /** No ambient provider settings enter ordinary owned test runtimes. */
-export function ownedAdvisorEnvironment(options: {ownerAdvisorEnabled?: boolean; ownerAdvisorPilot?: OwnerAdvisorPilot} = {}): Record<string,string> {
-  const base = {NEVORA_OWNER_ADVISOR_ENABLED: options.ownerAdvisorEnabled === true ? 'true' : 'false'};
+export function ownedAdvisorEnvironment(options: {ownerAdvisorEnabled?: boolean; ownerAdvisorReplayFixture?:boolean; ownerAdvisorWeeklyEnabled?: boolean; ownerAdvisorKnowledgeEnabled?: boolean; ownerAdvisorBusinessImportsEnabled?: boolean; ownerAdvisorBusinessRetrievalEnabled?: boolean; ownerAdvisorPilot?: OwnerAdvisorPilot} = {}): Record<string,string> {
+  const base: Record<string,string> = {NEVORA_OWNER_ADVISOR_ENABLED: options.ownerAdvisorEnabled === true ? 'true' : 'false', NEVORA_OWNER_ADVISOR_BUSINESS_IMPORTS_ENABLED:options.ownerAdvisorBusinessImportsEnabled===true?'true':'false',NEVORA_OWNER_ADVISOR_BUSINESS_RETRIEVAL_ENABLED:options.ownerAdvisorBusinessRetrievalEnabled===true?'true':'false'};
+  if (options.ownerAdvisorWeeklyEnabled !== undefined) base.NEVORA_OWNER_ADVISOR_WEEKLY_ENABLED = options.ownerAdvisorWeeklyEnabled === true ? 'true' : 'false';
+  if (options.ownerAdvisorKnowledgeEnabled !== undefined) base.NEVORA_OWNER_ADVISOR_KNOWLEDGE_ENABLED = options.ownerAdvisorKnowledgeEnabled === true ? 'true' : 'false';
+  if(options.ownerAdvisorReplayFixture){if(options.ownerAdvisorEnabled!==true||options.ownerAdvisorPilot)throw Error('Owned replay cannot use a paid pilot or inactive advisor');return {...base,NEVORA_OWNER_ADVISOR_REPLAY_FIXTURE:'owned-unmetered-replay',NEVORA_OWNER_ADVISOR_PROVIDER:'openai',NEVORA_OWNER_ADVISOR_DATA_APPROVED:'true',NEVORA_OWNER_ADVISOR_MODEL:OWNED_REPLAY_MODEL,NEVORA_OWNER_ADVISOR_DAILY_LIMIT:'20',OPENAI_API_KEY:OWNED_REPLAY_KEY};}
   const pilot = options.ownerAdvisorPilot;
   if (!pilot) return base;
   if (options.ownerAdvisorEnabled !== true) throw Error('Pilot requires explicit owner advisor activation');
@@ -161,7 +165,7 @@ export function ownedDeviceEnvironment(origin:string,enabled=false):Record<strin
  * generated dev type-reference paths. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { centralBillingApiOrigin?:string; isolatedWorkspaces?:OwnedIsolatedRuntime;commerceRecoveryEnabled?:boolean; mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;nativeAlertsEnabled?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; nativePayrollEnabled?:boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { centralBillingApiOrigin?:string; isolatedWorkspaces?:OwnedIsolatedRuntime;commerceRecoveryEnabled?:boolean; mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;nativeAlertsEnabled?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; ownerAdvisorReplayFixture?:boolean; ownerAdvisorWeeklyEnabled?:boolean; ownerAdvisorKnowledgeEnabled?:boolean; ownerAdvisorBusinessImportsEnabled?:boolean; ownerAdvisorBusinessRetrievalEnabled?:boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; nativePayrollEnabled?:boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
   const isolatedEnvironment=ownedIsolatedEnvironment(options.isolatedWorkspaces);
   if(options.centralBillingApiOrigin){const api=new URL(options.centralBillingApiOrigin);if(api.origin!==options.centralBillingApiOrigin||api.protocol!=='http:'||!['127.0.0.1','localhost'].includes(api.hostname)||!api.port||api.username||api.password)throw Error('Owned billing UI requires an explicit loopback API');}
   if(options.isolatedWorkspaces){if(options.emptyDatabase!==true||options.commerceRecoveryEnabled)throw Error('Owned isolated admission requires empty unused fallback and explicit commerce transport');await verifyOwnedIsolatedRuntime(options.isolatedWorkspaces);}
@@ -306,6 +310,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
       NEVORA_MOBILE_ACCESS_SUPPORT_ENABLED:options.mobileSupportEnabled===true?'true':'false',
       ...ownedPayrollEnvironment(options),
       ...advisorEnvironment,
+      ...(options.ownerAdvisorReplayFixture?{NEVORA_OWNER_ADVISOR_REPLAY_ORIGIN:url}:{}),
       NEVORA_CLOCKER_PUNCH_ENABLED: options.clockerPunchEnabled === true ? 'true' : 'false',
       NEVORA_CLOCKER_ORIGIN: url,
       ...ownedMailEnvironment(url,options),
@@ -334,6 +339,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
       metadata.ownerAdvisorPilot = { ...JSON.parse(advisorEnvironment.NEVORA_OWNER_ADVISOR_PILOT), ...PILOT, endpoint: PILOT.baseUrl + '/openai/v1/responses', preloadHash:mirrorHashes[preload], guardHash:mirrorHashes[guard] };
       pilotArgs.push('--import', join(mirror,preload));
     }
+    if(options.ownerAdvisorReplayFixture){const preload='src/test/integration/owner-advisor-replay-preload.mts';metadata.ownerAdvisorReplayFixture={configuration:'fictional-provider-key, original completed request replay only',network:'owned loopback port only; redirects rejected; all external fetches denied',preloadHash:mirrorHashes[preload]};pilotArgs.push('--import',join(mirror,preload));}
     const serverArgs=options.isolatedWorkspaces?['--import','tsx',join(mirror,'src/test/integration/owned-isolated-next.mts'),String(port)]:[join(mirror,'node_modules/next/dist/bin/next'),'dev','--hostname','127.0.0.1','--port',String(port)];
     if(options.isolatedWorkspaces)metadata.isolatedIngress={publicOrigin:options.isolatedWorkspaces.origins[0],entryHash:hashes['src/test/integration/owned-isolated-next.mts'],publicPort:443,socket:'owned-ephemeral-loopback-http',productionIngressVerified:false};
     child = spawn(process.execPath, [...pilotArgs,...serverArgs], {

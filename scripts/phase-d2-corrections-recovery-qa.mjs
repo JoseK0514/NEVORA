@@ -72,8 +72,13 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
     await page.getByRole('heading',{name:'Check your earlier request',exact:true}).waitFor();
     assert.equal(await checkSubmission(page).count(),1);
     assert.equal(await sendFix(page).count(),0,'No new send while the original outcome is unconfirmed');
-    // The inherited private reader really clears/unmounts its children on pause.
-    await c.setOffline(true);await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await hoursPaused(page).waitFor();
+    // Jose's Nov 10 offline contract holds the current read without enabling writes.
+    // Stepping away still clears/unmounts the private reader and its retry control.
+    await c.setOffline(true);await page.evaluate(()=>window.dispatchEvent(new Event('offline')));
+    await page.locator('.app-shell[data-offline]').waitFor();
+    const offlineCommands=commands.length;await checkSubmission(page).click();
+    assert.equal(commands.length,offlineCommands,'The held offline view must not resend the uncertain command');
+    await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await hoursPaused(page).waitFor();
     assert.equal(await checkSubmission(page).count(),0);
     await c.setOffline(false);await page.evaluate(()=>{window.dispatchEvent(new Event('online'));window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
     const retry=checkSubmission(page);await retry.waitFor();
@@ -113,7 +118,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    try{
     const page=await c.newPage();page.setDefaultTimeout(15000);watch(page);
     await page.addInitScript(installD2NativeRetryTrace);stopObserving=observeD2ManagerPostOutcomes(page,nativeReceipt,app.url);
-    const attendanceNavigation=await page.goto(app.url+'/app?view=attendance#review',{waitUntil:'domcontentloaded'});assert(attendanceNavigation?.ok());await page.bringToFront();
+    const attendanceNavigation=await page.goto(app.url+'/app/timecards/corrections',{waitUntil:'domcontentloaded'});assert(attendanceNavigation?.ok());await page.bringToFront();
     const commands=[];
     await page.route('**/api/manager/time-corrections',async route=>{
      if(route.request().method()!=='POST')return route.continue();
@@ -128,7 +133,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
     // B7 wording (NV-020): the unknown-outcome notice is plain language now.
     await page.getByText('We couldn’t confirm your decision. Try again; it won’t be applied twice.',{exact:true}).waitFor();
     await c.setOffline(true);
-    await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await page.getByRole('heading',{name:'View paused',exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);assert.equal(await page.locator('.manager-correction-row').count(),0);
+    await page.evaluate(()=>{window.dispatchEvent(new Event('offline'));window.dispatchEvent(new Event('blur'));});await page.getByRole('heading',{name:'You’re offline',exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);assert.equal(await page.locator('.manager-correction-row').count(),0);
     await c.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));
     const ready=await c.request.get(app.url+'/api/manager/time-corrections',{headers});
     assert.equal((await ready.json()).requests.some(item=>item.id===pending.requestId),loss==='before');
@@ -166,7 +171,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
   const manager=await context(browser);await login(manager,'QAOWNER');
   try{
    const page=await manager.newPage();page.setDefaultTimeout(15000);watch(page);
-   await page.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});await page.bringToFront();
+   await page.goto(app.url+'/app/timecards/corrections',{waitUntil:'networkidle'});await page.bringToFront();
    await page.route('**/api/manager/time-corrections',route=>route.request().method()==='POST'?route.abort('failed'):route.continue());
    await page.getByRole('button',{name:'Approve correction for Avery Correction QA',exact:true}).click();
    await page.getByRole('button',{name:'Retry same decision',exact:true}).waitFor();
@@ -193,7 +198,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    // An Employee signs out from More (Release 1).
    await page.goto(app.url+'/app/more',{waitUntil:'networkidle'});
    await Promise.all([page.waitForURL(url=>url.pathname==='/login',{waitUntil:'commit'}),page.locator('main').getByRole('button',{name:'Sign out',exact:true}).click()]);
-   await login(c,'QAOWNER');await page.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});
+   await login(c,'QAOWNER');await page.goto(app.url+'/app/timecards/corrections',{waitUntil:'networkidle'});
    assert.equal(await checkSubmission(page).count(),0);
    await login(c,'D2-E');await page.goto(app.url+ENTRY_FIX,{waitUntil:'networkidle'});
    await fixForm(page).waitFor();

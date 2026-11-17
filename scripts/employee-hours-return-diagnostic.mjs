@@ -33,7 +33,7 @@ export function employeeHoursReturnPage({action,selection,deadline}){
   const hours=document.querySelector('.c-hours'),state=hours?.getAttribute('data-hours-state'),view=hours?.getAttribute('data-hours-view'),params=new URLSearchParams(location.search);
   return {route:location.pathname==='/app/my-time'?'my-time':'other',view:!hours?'missing':view==='cards'?'cards':'other',state:!hours?'missing':['ready','loading','paused','unavailable','denied'].includes(state)?state:'other',
    periodMatch:location.pathname==='/app/my-time'&&params.get('view')==='cards'&&params.get('start')+'_'+params.get('end')===selection&&hours?.getAttribute('data-hours-context')?.startsWith('cards|'+selection+'|')===true,
-   cardPresent:!!document.querySelector('#hours-timecard'),focused:document.hasFocus(),online:navigator.onLine,visibility:['visible','hidden'].includes(document.visibilityState)?document.visibilityState:'other'};
+   cardPresent:!!document.querySelector('#hours-timecard, #b-hours-timecard'),focused:document.hasFocus(),online:navigator.onLine,visibility:['visible','hidden'].includes(document.visibilityState)?document.visibilityState:'other'};
  };
  const note=kind=>{if(!active)return;const state=read(),signature=JSON.stringify(state);if(kind==='state'&&signature===last)return;last=signature;if(events.length===64){omitted++;return;}events.push({kind,elapsedMs:Math.max(0,Math.round(performance.now()-started)),...state});};
  const on=(target,name)=>{const listener=event=>{if(target===window&&event.target!==window)return;note(name);};target.addEventListener(name,listener,true);listeners.push(()=>target.removeEventListener(name,listener,true));};

@@ -1,3 +1,4 @@
+import {shiftReviewSql,shiftReviewGuards,requireShiftReview,ShiftReviewConflictError,withShiftReviewConflict} from './shift-review';
 import { databaseDate as dateValue } from './database-date';
 import {assertOperationalAccess} from '../company-access/operational-scope.server';
 import { currentCalloutReleaseSql } from './shift-change-release';
@@ -244,6 +245,7 @@ export async function getShiftValidationContext({
     ...(employee.operational_rule_profile != null ? {operationalProfile:resolveOperationalRuleProfile(employee.operational_rule_profile)} : {}),
     existingShifts,
     availability: inputs.normal,
+    ...('managementRestrictions' in inputs?{managementRestrictions:inputs.managementRestrictions}:{}),
     weeklyAvailability: inputs.weeks,
     availabilityExceptions: inputs.exceptions,
     approvedTimeOff: queryRows(leaveRaw).map((row) => {
@@ -372,6 +374,7 @@ export async function createCoverageRepairShift(input: {
 }
 
 export type ManagementShift = ScheduleShiftRow & {
+  reviewVersion: string;
   weekStart: string;
 };
 
@@ -384,6 +387,7 @@ export async function getShiftForManagement(
     await sql.query(
       `SELECT
          sh.id,
+         ${shiftReviewSql} AS review_version,
          sh.schedule_id,
          sh.employee_id,
          e.first_name || ' ' || e.last_name AS employee_name,
@@ -416,6 +420,7 @@ export async function getShiftForManagement(
   if (!item) return null;
 
   return {
+    reviewVersion: String(item.review_version),
     id: String(item.id),
     scheduleId: String(item.schedule_id),
     employeeId: String(item.employee_id),
@@ -443,22 +448,23 @@ export async function getShiftForManagement(
  * changes; nobody is notified by the edit itself.
  */
 export async function updateShift(input: {
-  shiftId: string; employeeId: string; date: string; startTime: string;
+  shiftId: string; expectedReviewVersion?: string; employeeId: string; date: string; startTime: string;
   endTime: string; notes?: string; positionId?: string | null; isDesignatedLead?: boolean; actorEmployeeId: string; proof: SessionMutationProof;
 }, executor: SqlExecutor = neonNotificationExecutor()) {
   await assertOperationalAccess(input.proof,undefined,executor);
   const target=await mutationWeek(input.shiftId,'shift',executor);
   if(target)await assertOperationalAccess(input.proof,target.status!=='DRAFT'||target.assignment_origin==='GENERATED'?{kind:'COMPANY'}:{kind:'LOCATIONS',locationIds:[target.location_id]},executor);
+  const version=requireShiftReview(input.expectedReviewVersion);
   const week=target?.week_start;
-  if(!week) return false;
-  const result=await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId:input.actorEmployeeId,proof:input.proof,sourceType:'MANAGER_MUTATION',sourceId:input.shiftId,build: state => {
+  if(!week) throw new ShiftReviewConflictError();
+  const result=await withShiftReviewConflict(()=>commitPublishedWeekChange({weekStarts:[week],actorEmployeeId:input.actorEmployeeId,proof:input.proof,sourceType:'MANAGER_MUTATION',sourceId:input.shiftId,build: state => {
     const existing=state.shifts.find(s=>s.sourceShiftId===input.shiftId);
-    if(!existing) return unchanged(state);
+    if(!existing) throw new ShiftReviewConflictError();
     const positionId=input.positionId === undefined ? existing.positionId : input.positionId || undefined;
-    return {statements:[{text:`UPDATE shifts SET assignment_origin='MANAGER',generated_claims=NULL,employee_id=$2,date=$3,start_time=$4,end_time=$5,notes=$6,is_designated_lead=$7,position_id=$8,updated_at=clock_timestamp() WHERE id=$1`,
+    return {statements:[...shiftReviewGuards(input.shiftId,version),{text:`UPDATE shifts SET assignment_origin='MANAGER',generated_claims=NULL,employee_id=$2,date=$3,start_time=$4,end_time=$5,notes=$6,is_designated_lead=$7,position_id=$8,updated_at=clock_timestamp() WHERE id=$1`,
       values:[input.shiftId,input.employeeId,input.date,input.startTime,input.endTime,input.notes ?? null,input.isDesignatedLead ?? false,positionId || null]}],afterSchedules:state.schedules,
       afterShifts:state.shifts.map(s=>s.sourceShiftId===input.shiftId?{...s,assignmentOrigin:'MANAGER',generatedClaims:null,positionId,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,isDesignatedLead:input.isDesignatedLead ?? false,isCalloutApproved:s.isCalloutApproved && s.employeeId===input.employeeId && s.date===input.date && s.startTime===input.startTime && s.endTime===input.endTime && (s.positionId||null)===(positionId||null) && s.isDesignatedLead===(input.isDesignatedLead??false)}:s),deferPublication:true};
-  }},executor);
+  }},executor));
   return result.committed;
 }
 
@@ -467,24 +473,26 @@ export async function updateShift(input: {
  * respects manager intent. Ordinary removal preserves exchange-linked history;
  * a missing/protected target returns false rather than claiming a deletion.
  */
-export async function deleteShift(shiftId: string, proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()) {
+export async function deleteShift(shiftId: string, proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor(), expectedReviewVersion?: string) {
   const actorEmployeeId = proof?.employee?.id;
   assertManagementProof(proof, actorEmployeeId);
   await assertOperationalAccess(proof,undefined,executor);
   const [target]=await executor.query<{week_start:string;assignment_origin?:AssignmentOrigin;status?:ScheduleStatus;workspace_id:string;location_id:string}>({
     text:`SELECT s.week_start::text,sh.assignment_origin,s.status,l.workspace_id,s.location_id FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id JOIN locations l ON l.id=s.location_id WHERE sh.id=$1`,values:[shiftId]});
   if(target)await assertOperationalAccess(proof,target.status!=='DRAFT'||target.assignment_origin==='GENERATED'?{kind:'COMPANY'}:{kind:'LOCATIONS',locationIds:[target.location_id]},executor);
+  const version=requireShiftReview(expectedReviewVersion);
   if(target?.assignment_origin==='GENERATED' && target.status==='DRAFT') {
-    return (await deleteGeneratedDraftShift({shiftId,actorEmployeeId,proof,workspaceId:target.workspace_id,locationId:target.location_id,weekStart:target.week_start},executor)).status==='deleted';
+    return (await deleteGeneratedDraftShift({expectedReviewVersion:version,shiftId,actorEmployeeId,proof,workspaceId:target.workspace_id,locationId:target.location_id,weekStart:target.week_start},executor)).status==='deleted';
   }
   const week=target?.week_start;
-  if(!week) return false;
-  const result=await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId,proof,sourceType:'MANAGER_MUTATION',sourceId:shiftId,build: state => {
+  if(!week) throw new ShiftReviewConflictError();
+  const result=await withShiftReviewConflict(()=>commitPublishedWeekChange({weekStarts:[week],actorEmployeeId,proof,sourceType:'MANAGER_MUTATION',sourceId:shiftId,build: state => {
     const shift=state.shifts.find(s=>s.sourceShiftId===shiftId);
-    if(!shift || shift.hasExchangeHistory) return unchanged(state);
-    if(shift.assignmentOrigin==='GENERATED' && state.schedules.some(s=>s.id===shift.scheduleId && s.status==='DRAFT')) throw new Error('Generated assignment changed; reload and try again.');
-    return {statements:[{text:`DELETE FROM shifts sh WHERE sh.id=$1 AND NOT EXISTS (SELECT 1 FROM shift_exchanges x WHERE x.source_shift_id=sh.id OR x.target_shift_id=sh.id)`,values:[shiftId]}],
+    if(!shift) throw new ShiftReviewConflictError();
+    if(shift.hasExchangeHistory) return unchanged(state);
+    if(shift.assignmentOrigin==='GENERATED' && state.schedules.some(s=>s.id===shift.scheduleId && s.status==='DRAFT')) throw new ShiftReviewConflictError();
+    return {statements:[...shiftReviewGuards(shiftId,version),{text:`DELETE FROM shifts sh WHERE sh.id=$1 AND NOT EXISTS (SELECT 1 FROM shift_exchanges x WHERE x.source_shift_id=sh.id OR x.target_shift_id=sh.id)`,values:[shiftId]}],
       afterSchedules:state.schedules,afterShifts:state.shifts.filter(s=>s.sourceShiftId!==shiftId),deferPublication:true};
-  }},executor);
+  }},executor));
   return result.committed;
 }

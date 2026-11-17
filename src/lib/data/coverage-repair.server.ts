@@ -62,6 +62,7 @@ export function deriveCoverageRepair(source: GenerationSource, supplied: Coverag
       rules: { candidate: { employeeId: employee.id, locationId: locator.locationId, date: locator.date, startTime: locator.startTime, endTime: locator.endTime, positionId: locator.positionId, isDesignatedLead: designatedLead },
         workspace: facts.workspace, location, position: facts.positions.find(p => p.id === locator.positionId), employee,
         existingShifts: facts.ledger, availability: employee.availability, weeklyAvailability: employee.weeklyAvailability,
+        managementRestrictions: employee.managementRestrictions,
         availabilityExceptions: employee.availabilityExceptions, approvedTimeOff: employee.approvedTimeOff, operationalProfile: employee.operationalProfile, policy: facts.policy } };
   }) : [];
   return { status, locator: currentLocator, block, targets, location, position: facts.positions.find(p => p.id === currentLocator.positionId), designatedLead, candidates: rankCoverageCandidates(inputs), sourceVersion: sourceVersion(source), workspaceId };

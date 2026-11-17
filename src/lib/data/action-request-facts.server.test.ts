@@ -5,6 +5,13 @@ import type {ActionItem} from '../action-center/project';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {SqlExecutor} from '../notifications/types';
 import {parseActionCenter} from '../action-center/project';
+it('projects both authorized swap shifts and an explicit sanitized unavailable counterpart',()=>{
+ const row={kind:'EXCHANGE' as const,exchange_kind:'SWAP' as const,id:'swap',start_date:'2030-10-07',end_date:'2030-10-07',start_time:'22:00',end_time:'06:00',location_name:'Office',note:null,time_zone:'America/Puerto_Rico',status:'MANAGER_PENDING',created_at:'2030-10-06T12:00:00Z',counterpart_shift:{date:'2030-10-08',startTime:'08:00',endTime:'16:00',locationName:'Annex'}};
+ expect(projectActionRequestFact(row)).toMatchObject({status:'MANAGER_PENDING',createdAt:row.created_at,shift:{date:'2030-10-07',endDate:'2030-10-08',timeZone:row.time_zone},counterpartShift:{state:'ready',date:'2030-10-08',startTime:'08:00',endTime:'16:00',locationName:'Annex',timeZone:row.time_zone}});
+ const hidden=projectActionRequestFact({...row,counterpart_shift:null});
+ expect(hidden).toMatchObject({counterpartShift:{state:'unavailable',reason:'details_unavailable'}});
+ expect(JSON.stringify(hidden)).not.toContain('Annex');
+});
 it('projects whole/partial request dates, duration, note and a fixed encoded review destination',()=>{
   const row={kind:'TIME_OFF' as const,id:'a/b',start_date:'2026-10-19',end_date:'2026-10-20',start_time:null,end_time:null,location_name:'Fictional Office',note:'Fictional reason'};
   expect(projectActionRequestFact(row)).toMatchObject({lengthText:'2 days',note:'Fictional reason',reviewHref:'/app/requests?tab=pending&requestId=a%2Fb&from=inbox'});

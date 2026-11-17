@@ -11,6 +11,21 @@ const data={workspaceId:'W1',timeZone:'America/Puerto_Rico',observedAt:'2026-10-
   schedules:[{id:'S1',employeeId:'E1',locationId:'L1',locationName:'Office',positionId:'P1',positionName:'Support',date:'2026-09-22',startTime:'08:00',endTime:'16:00',revisionId:'R1',revisionNumber:1,isCalloutApproved:false}],
   requests:[],changes:[],publications:[],attendanceSources:[],publishedWeeks:['2026-09-14','2026-09-21']};
 describe('D4 report definitions and provenance',()=>{
+  it.each(['03:00','00:00','24:00','00:00:00','24:00:00'])('does not propagate an ambiguous shift ending %s into an unoccupied valid business day',endTime=>{
+    const schedules=[{...data.schedules[0],date:'2026-11-01',startTime:'01:30',endTime},
+      {...data.schedules[0],id:'S2',date:'2026-11-02',startTime:'08:00',endTime:'16:00'}];
+    const report=projectReports({...data,timeZone:'America/New_York',cards:[],period:{startDate:'2026-11-01',endDate:'2026-11-02'},publishedWeeks:['2026-10-26','2026-11-02'],schedules});
+    expect(report.scheduledByDay?.rows).toEqual([
+      {employeeId:'E1',date:'2026-11-01',scheduledNanoseconds:null,unresolvedScheduleCount:1},
+      {employeeId:'E1',date:'2026-11-02',scheduledNanoseconds:'28800000000000',unresolvedScheduleCount:0}]);
+  });
+  it('splits published overnight planned time by workplace day and keeps incomplete plans unknown',()=>{
+    const schedules=[{...data.schedules[0],startTime:'22:00',endTime:'06:00'}];
+    expect(projectReports({...data,schedules})).toMatchObject({scheduledByDay:{state:'complete',basis:'latest_published_elapsed_v1',rows:[
+      {employeeId:'E1',date:'2026-09-22',scheduledNanoseconds:'7200000000000',unresolvedScheduleCount:0},
+      {employeeId:'E1',date:'2026-09-23',scheduledNanoseconds:'21600000000000',unresolvedScheduleCount:0}]}});
+    expect(projectReports({...data,schedules,publishedWeeks:[]})).toMatchObject({scheduledByDay:{state:'unpublished',rows:[{scheduledNanoseconds:null},{scheduledNanoseconds:null}]}});
+  });
   it('aggregates canonical elapsed time by employee, location and captured historical position',()=>{
     const report=projectReports(data);
     expect(report.hoursByEmployee[0].recordedNanoseconds).toBe('28800000000000');

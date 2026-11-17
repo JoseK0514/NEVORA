@@ -14,6 +14,12 @@ const source = (shifts: unknown[], entries: unknown[] = []) => ({ observedAt: at
 const ready = (value: ReturnType<typeof projectToday>) => { if (value.state !== "ready") throw Error("not ready"); return value; };
 
 describe("shiftStatus", () => {
+  it('reports elapsed whole late minutes and leaves missing punches unknown',()=>{
+    const s={startAt:at(-60),endAt:at(420)};
+    expect(shiftStatus(s,[entry('E',-41.5,null)],now)).toMatchObject({late:true,lateMinutes:18});
+    expect(shiftStatus(s,[entry('E',-61,null)],now)).toMatchObject({late:false,lateMinutes:0});
+    expect(shiftStatus(s,[],now)).toMatchObject({late:false,lateMinutes:null});
+  });
   it("names each state factually", () => {
     const s = { startAt: at(0), endAt: at(480) };
     expect(shiftStatus({ startAt: at(30), endAt: at(510) }, [], now).status).toBe("upcoming");

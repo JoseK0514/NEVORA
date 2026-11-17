@@ -1,4 +1,5 @@
-import { it, expect, afterEach } from "vitest";
+import {PayrollError} from './model';
+import { it, expect, afterEach,vi } from "vitest";
 import { boundary, handle, failure } from "./http";
 const op = "11111111-1111-4111-8111-111111111111";
 afterEach(() => {
@@ -109,4 +110,22 @@ it("preserves authorization precedence over a mentioned overlap", async () => {
   const response = failure(new Error("payroll_authorization OVERLAPPING_NATIVE_PAYROLL"));
   expect(response.status).toBe(403);
   expect(await response.json()).toEqual({ error: "ACCESS_DENIED", message: "Payroll access is unavailable." });
+});
+it('correlates an unexpected payroll refusal with one sanitized diagnostic and no private fields',async()=>{
+ const sink=vi.spyOn(console,'error').mockImplementation(()=>{});
+ try{
+  const response=failure(Object.assign(new TypeError('private employee and provider secret'),{code:'08006'}));
+  const reference=response.headers.get('X-Nevora-Request-Id');
+  expect(reference).toMatch(/^[a-f0-9-]{36}$/);
+  expect(await response.json()).toEqual({error:'PAYROLL_UNAVAILABLE',message:'Request could not be completed.'});
+  const event=JSON.parse(sink.mock.calls[0][0]);
+  expect(event).toMatchObject({route:'/api/payroll',requestId:reference,errorClass:'TypeError',sqlState:'08006'});
+  expect(JSON.stringify(sink.mock.calls)).not.toMatch(/private employee|provider secret/);
+ }finally{sink.mockRestore();}
+});
+it('does not log expected payroll validation authorization or conflict refusals',()=>{
+ const sink=vi.spyOn(console,'error').mockImplementation(()=>{});
+ try{for(const error of [new PayrollError('INVALID_INPUT',400),new Error('payroll_authorization'),new Error('OVERLAPPING_NATIVE_PAYROLL')]){
+  expect(failure(error).headers.get('X-Nevora-Request-Id')).toBeNull();
+ }expect(sink).not.toHaveBeenCalled();}finally{sink.mockRestore();}
 });

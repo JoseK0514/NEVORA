@@ -231,6 +231,12 @@ jobs:
         env:
           NEVORA_DELEGATED_UI_EVIDENCE: ${{ runner.temp }}/delegated-corrections-ui
         run: node scripts/payroll-postgres.mjs vitest.delegated-corrections-browser.config.mts
+      - name: Readiness shift concurrency and period history browser gates
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          NEVORA_READINESS_UI_EVIDENCE: ${{ runner.temp }}/readiness-ui
+          NEVORA_READINESS_MATRIX_EVIDENCE: ${{ runner.temp }}/readiness-matrix
+        run: node scripts/payroll-postgres.mjs vitest.all-ui-browser.config.mts src/test/integration/readiness-ui-browser.integration.ts src/test/integration/readiness-shift-concurrency-browser.integration.ts
       - name: Verify management browser source and closure
         if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
         env:
@@ -250,6 +256,14 @@ jobs:
             ${{ runner.temp }}/delegated-corrections-ui/*.png
             ${{ runner.temp }}/delegated-corrections-ui/**/source-manifest.json
             ${{ runner.temp }}/delegated-corrections-ui/**/ownership.json
+            ${{ runner.temp }}/readiness-ui/*.json
+            ${{ runner.temp }}/readiness-ui/*.png
+            ${{ runner.temp }}/readiness-ui/**/source-manifest.json
+            ${{ runner.temp }}/readiness-ui/**/ownership.json
+            ${{ runner.temp }}/readiness-matrix/*.json
+            ${{ runner.temp }}/readiness-matrix/*.png
+            ${{ runner.temp }}/readiness-matrix/**/source-manifest.json
+            ${{ runner.temp }}/readiness-matrix/**/ownership.json
           if-no-files-found: error
           retention-days: 14
 
@@ -703,6 +717,9 @@ jobs:
       - name: Install Chromium and WebKit
         timeout-minutes: 8
         run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+      - name: Actual pointer target and clipping regressions
+        if: ${{ matrix.suite == 'home' }}
+        run: node --test scripts/browser-pointer-target.check.mjs
       - name: Home fresh-generation scheduling regression
         if: ${{ matrix.suite == 'home' }}
         env:
@@ -744,6 +761,7 @@ jobs:
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/home-held-*.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/attention-intent-readiness-custody.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/calendar-readiness-custody.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/axe-*.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/*-report.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/updates-*-failure.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/updates-*-checks.json

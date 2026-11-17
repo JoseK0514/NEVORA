@@ -6,6 +6,7 @@ import {addDays,formatDayLabel,formatTime,formatWeekRange,isDateInWeek} from '@/
 import {ConfigurationForm,type ConfigurationResult} from '@/components/configuration-form';
 import {SelectField} from '@/components/select-field';
 import {NavIcon} from '@/components/nav-icon';
+import {ShiftReviewRecovery,shiftDraftText} from '@/components/shift-review-recovery';
 import styles from './company-access.module.css';
 
 type Prefill={date?:string;employeeId?:string;positionId?:string;startTime?:string;endTime?:string;lead?:boolean};
@@ -19,6 +20,9 @@ export function ScopedManualShiftForm(props:Props){
 }
 function ScopedManualShiftEditor({data,action,deleteAction,locationName,prefill={},feedback}:Props){
  const shift=data.shift;
+ const [reviewVersion]=useState(shift?.reviewVersion);
+ const [deleteConflict,setDeleteConflict]=useState(false),[deleteDraft,setDeleteDraft]=useState('');
+ const editForm=useRef<HTMLDivElement>(null);
  const initialPerson=shift?.employeeId??(data.employeeOptions.some(p=>p.id===prefill.employeeId)?prefill.employeeId:'')??'';
  const initialPosition=shift?.positionId??(data.employeeOptions.find(p=>p.id===initialPerson)?.positionIds.includes(prefill.positionId??'')&&data.positionOptions.some(p=>p.id===prefill.positionId)?prefill.positionId:'')??'';
  const [person,setPerson]=useState(initialPerson),[position,setPosition]=useState(initialPosition);
@@ -38,20 +42,21 @@ function ScopedManualShiftEditor({data,action,deleteAction,locationName,prefill=
  async function perform(fields:FormData,submit:(fields:FormData)=>Promise<unknown>=action):Promise<ConfigurationResult>{
   if(busy.current||uncertain)return {error:'Review the original save before making another change.'};
   busy.current=true;setWorking(true);let timer:ReturnType<typeof setTimeout>|undefined;
+  if(reviewVersion!==undefined)fields.set('expectedReviewVersion',reviewVersion);
   try{
    const result=await Promise.race([submit(fields),new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Change not confirmed')),20000);})]);
    if(!result||typeof result!=='object')throw Error('Save not confirmed');
    const feedback=result as Record<string,unknown>;
    if(typeof feedback.error!=='string'&&typeof feedback.success!=='string')throw Error('Change not confirmed');
-   return {error:typeof feedback.error==='string'?feedback.error:undefined,success:typeof feedback.success==='string'?feedback.success:undefined};
+   return {error:typeof feedback.error==='string'?feedback.error:undefined,success:typeof feedback.success==='string'?feedback.success:undefined,issueCode:typeof feedback.issueCode==='string'?feedback.issueCode:undefined};
   }catch{
    setUncertain(true);
    return {error:'This change could not be confirmed. Review the current schedule before making another change; the action may already have completed.'};
   }finally{clearTimeout(timer);busy.current=false;setWorking(false);}
  }
- async function remove(){if(!shift||!deleteAction||busy.current||uncertain)return;setRemoving(true);try{const fields=new FormData();fields.set('shiftId',shift.id);const feedback=await perform(fields,deleteAction);setDeleteFeedback(feedback.error??feedback.success??'Review the current schedule before continuing.');}finally{setRemoving(false);}}
+ async function remove(){if(!shift||!deleteAction||busy.current||uncertain)return;setRemoving(true);setDeleteConflict(false);const form=editForm.current?.querySelector('form');setDeleteDraft(form?shiftDraftText(new FormData(form)):'');try{const fields=new FormData();fields.set('shiftId',shift.id);const feedback=await perform(fields,deleteAction);setDeleteConflict(feedback.issueCode==='SHIFT_REVIEW_CONFLICT'||feedback.issueCode==='ACCESS_DENIED');setDeleteFeedback(feedback.error??feedback.success??'Review the current schedule before continuing.');}finally{setRemoving(false);}}
  return <div className={styles.scopedPage}><header><h1>{shift?'Edit draft shift':'Create shift'}</h1><p>{locationName??'Your selected location'} · {formatWeekRange(data.weekStart)}</p></header>
-  {feedback}<ConfigurationForm action={fields=>perform(fields)} className={styles.scopedForm}>
+  {feedback}<div ref={editForm}><ConfigurationForm action={fields=>perform(fields)} reviewedShiftVersion={reviewVersion} className={styles.scopedForm}>
    <fieldset disabled={uncertain||working} className={styles.stack}>
     <input type="hidden" name="weekStart" value={data.weekStart}/><input type="hidden" name="locationId" value={data.locationId}/>{shift&&<input type="hidden" name="shiftId" value={shift.id}/>}
     <section className={'panel '+styles.stack}><h2>Assignment</h2>{!data.employeeOptions.length&&<p role="status">No eligible employees are available at this location. Ask your Owner to review employee assignments.</p>}
@@ -69,8 +74,9 @@ function ScopedManualShiftEditor({data,action,deleteAction,locationName,prefill=
     <p className="muted">NEVORA checks current access, qualifications, availability and schedule conflicts when you save.</p>
     <div className={styles.actions}><Link className="button secondary" href={back}>Cancel</Link><button className="button primary" type="submit" disabled={!data.employeeOptions.length}><NavIcon name="shift"/>Save shift</button></div>
    </fieldset>
-  </ConfigurationForm>
+  </ConfigurationForm></div>
   {shift&&deleteAction&&<section className={'panel '+styles.stack} aria-busy={removing}><h2>Delete draft shift</h2>{confirmDelete?<><p>Delete the draft for {shift.employeeName} on {recordedPeriod}? This removes the recorded shift from the schedule.</p><div className={styles.actions}><button type="button" className="button danger-button" disabled={working||uncertain} onClick={()=>void remove()}>{removing?'Deleting…':'Delete this draft shift'}</button><button type="button" className="button secondary" disabled={working||uncertain} onClick={()=>setConfirmDelete(false)}>Keep shift</button></div></>:<button type="button" className="button secondary" disabled={working||uncertain} onClick={()=>setConfirmDelete(true)}>Review deletion</button>}{removing&&<p role="status">Deleting shift…</p>}{deleteFeedback&&<p role="alert">{deleteFeedback}</p>}</section>}
+  {deleteConflict&&<ShiftReviewRecovery draft={deleteDraft}/>}
   {uncertain&&<Link className="button secondary" href={back}>Review current schedule</Link>}
  </div>;
 }

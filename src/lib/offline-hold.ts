@@ -1,6 +1,6 @@
 /** Offline (review B2, NV-001; Jose, Nov 10, 2026): when the connection drops, a page keeps the person's own loaded
  * information on screen, read-only, and the shell's line says "Offline · updated 9:24 PM". The information is cleared
- * only when the person steps away (the window is hidden or loses focus), as before. Readers announce what they hold;
+ * when its original authority expires or the person steps away (hidden or blurred). Readers announce what they hold;
  * the shell shows the oldest held time, and actions are disabled while offline (app-shell.tsx). */
 export const OFFLINE_HELD_EVENT='nevora:offline-held';
 

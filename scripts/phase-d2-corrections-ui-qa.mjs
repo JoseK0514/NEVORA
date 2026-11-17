@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {waitForPortalReady} from './browser-render-readiness.mjs';
 import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { homedir } from 'node:os';
@@ -13,6 +14,7 @@ import {verifyD2UiRemediation} from './phase-d2-ui-remediation-qa.mjs';
 import { missingTimeBrowserScenarios } from './phase-d2-missing-time-browser-scenarios.mjs';
 import {clockText,fixForm,fixValues,hoursPage,recordedReceipt,sendFix} from './employee-fix-time-browser.mjs';
 import {verifyD2SessionAuthority} from './d2-session-authority.mjs';
+import {ownedCorrectionEntryView} from './owned-browser-calendar.mjs';
 
 const WIDTHS=[320,375,390,430,768,1024,1440];
 const ENGINES=['chromium','webkit'];
@@ -72,7 +74,7 @@ async function login(c,id,{reuseSession=false}={}){
   page.waitForURL((url)=>url.pathname==='/app',{waitUntil:'commit'}),
   page.getByRole('button',{name:'Sign in',exact:true}).click(),
  ]);
- await page.locator('.app-shell.nevora-portal').waitFor();await page.waitForLoadState('networkidle');
+ await waitForPortalReady(page);
  cookiesByActor.set(id,await c.cookies(app.url));
  await page.close();
 }
@@ -123,7 +125,7 @@ try{
     date_trunc('minute',clock_timestamp()-interval '4 hours'),
     date_trunc('minute',clock_timestamp()-interval '2 hours'),
     'CLOCKED_OUT',4)
-  RETURNING clock_in_at::text AS "startAt",clock_out_at::text AS "endAt"`);
+  RETURNING clock_in_at::text AS "startAt",clock_out_at::text AS "endAt",clock_timestamp()::text AS "observedAt"`);
  const proposedStart=localValue(entry.startAt);
  const proposedEnd=localValue(Temporal.Instant.from(entry.endAt).subtract({minutes:5}).toString());
  await q(`INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at,version)
@@ -138,11 +140,12 @@ try{
   checked(engine+': employee correction authority boundaries');
 
   const ep=await employee.newPage();ep.setDefaultTimeout(15000);
-  await ep.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
+  const entryView=ownedCorrectionEntryView(entry.startAt,entry.observedAt);
+  await ep.goto(app.url+entryView.href,{waitUntil:'networkidle'});
   await ep.bringToFront();
   // Corporate Time (Release 1): "This week" lists each day; a day opens its punches, where "Request a correction" opens the
   // Fix my time sheet for that entry (Day, Start, End and a required Note; Send in the sheet's header).
-  const entryRow=hoursPage(ep,'records').locator('a.c-row#hours-entry-d2-browser-entry');
+  const entryRow=hoursPage(ep,entryView.view).locator('a[href*="entry=d2-browser-entry"]:visible');
   await entryRow.waitFor();
   await entryRow.click();
   await ep.waitForURL(url=>url.searchParams.get('entry')==='d2-browser-entry');
@@ -177,7 +180,7 @@ try{
   await sendFix(ep).click();
   await recordedReceipt(ep).waitFor();
   await ep.getByRole('link',{name:'View my request',exact:true}).click();
-  await hoursPage(ep,'corrections').locator('#hours-correction').getByText('Waiting',{exact:true}).waitFor();
+  await hoursPage(ep,'corrections').locator(':is(#hours-correction,#b-hours-correction):visible').getByText('Waiting',{exact:true}).waitFor();
   checked(engine+': employee submits correction through real D2 API');
 
   const employeeState=await employee.request.get(app.url+'/api/employee/time-corrections',{headers:{'X-Nevora-Time-Correction':'1'}});
@@ -194,10 +197,12 @@ try{
 
   const mp=await owner.newPage();mp.setDefaultTimeout(15000);
   // Corporate Who's working (board O-OnShift): the correction review opens behind "Time corrections"; #review opens it.
-  await mp.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});
+  await mp.goto(app.url+'/app/timecards/corrections',{waitUntil:'networkidle'});
   await mp.getByRole('heading',{name:'Correction requests',exact:true}).waitFor();
   await mp.getByText('Avery Correction QA',{exact:true}).waitFor();
-  /* B7 wording (NV-020) */await mp.getByText('Approving changes the timecard. The original clock times stay in the history.',{exact:true}).waitFor();
+  // Corporate review keeps this provenance in its visible title subtitle;
+  // the retired per-row sentence is intentionally absent in band mode.
+  await mp.locator('.c-title__sub:visible, .c-phone-sub:visible').filter({hasText:/Fixes your team asked for\. Original times are always kept\./}).waitFor();
   assert.equal(await mp.getByRole('button',{name:'Approve correction for Avery Correction QA'}).isEnabled(),true);
   checked(engine+': populated manager correction review state');
 

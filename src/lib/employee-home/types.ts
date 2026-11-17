@@ -19,4 +19,4 @@ export type HomeSnapshot={observedAt:string;authority:string;timeZone:string;val
  nextShift:PublishedAssignment|null;currentShift:PublishedAssignment|null;attention:AttentionItem[];
  /** Names of the person's own locations that have not published this week, when partial. */
  unpublishedLocations?:string[]};
-export type EmployeeHomeRead={state:'ready'|'partial';snapshot:HomeSnapshot;allSet:boolean}|{state:'unauthorized'|'unavailable';reason:string};
+export type EmployeeHomeRead={state:'ready'|'partial';snapshot:HomeSnapshot;allSet:boolean;tasks?:import('./task-summary').HomeTaskSummary}|{state:'unauthorized'|'unavailable';reason:string};

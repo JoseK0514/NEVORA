@@ -18,6 +18,8 @@ export type CalloutReasonCode =
 export type CalloutStatus = "PENDING" | "APPROVED" | "DENIED" | "CANCELLED";
 
 export type CalloutRecord = {
+  /** Historical outcome of linked coverage requests; not current staffing proof. */
+  coverage?:{state:'not_requested'|'pending'|'completed'|'closed'|'unavailable';basis:'linked_request_history_v1'};
   requestRevision?:number;
   releaseApplies?:boolean;
   id: string;
@@ -60,6 +62,7 @@ function mapCallout(row: unknown): CalloutRecord {
 
 function mapCalloutColumns(item: Record<string, unknown>): CalloutRecord {
   return {
+    coverage:{state:['not_requested','pending','completed','closed'].includes(String(item.coverage_state))?item.coverage_state as 'not_requested'|'pending'|'completed'|'closed':'unavailable',basis:'linked_request_history_v1'},
     releaseApplies:item.release_applies===true,
     id: String(item.id),
     requestRevision:Number(item.request_revision),
@@ -82,8 +85,14 @@ function mapCalloutColumns(item: Record<string, unknown>): CalloutRecord {
   };
 }
 
+const coverageHistorySql=`CASE
+ WHEN EXISTS(SELECT 1 FROM shift_exchanges cx JOIN shift_change_events ce ON ce.workspace_id=(SELECT workspace_id FROM locations WHERE id=s.location_id) AND ce.request_id=cx.id AND ce.request_kind='EXCHANGE' AND ce.event_kind='COMPLETED' WHERE cx.linked_callout_id=c.id) THEN 'completed'
+ WHEN EXISTS(SELECT 1 FROM shift_exchanges cx WHERE cx.linked_callout_id=c.id AND NOT cx.legacy_manual AND cx.status IN ('OPEN','EMPLOYEE_PENDING','MANAGER_PENDING')) THEN 'pending'
+ WHEN EXISTS(SELECT 1 FROM shift_exchanges cx WHERE cx.linked_callout_id=c.id AND cx.legacy_manual) THEN 'unavailable'
+ WHEN EXISTS(SELECT 1 FROM shift_exchanges cx WHERE cx.linked_callout_id=c.id) THEN 'closed' ELSE 'not_requested' END`;
 const CALLOUT_SELECT = `
   SELECT
+    (${coverageHistorySql}) AS coverage_state,
     c.id,
     (${currentCalloutReleaseSql()}) AS release_applies,
     c.request_revision,
@@ -116,6 +125,7 @@ const CALLOUT_SELECT = `
  */
 const EMPLOYEE_CALLOUT_SELECT = `
   SELECT
+    (${coverageHistorySql}) AS coverage_state,
     c.id,
     (${currentCalloutReleaseSql()}) AS release_applies,
     c.request_revision,
