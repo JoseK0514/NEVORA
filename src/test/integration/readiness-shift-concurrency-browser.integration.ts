@@ -10,9 +10,7 @@ import { hashPassword } from '../../lib/auth/password';
 import { readOwnerOperationalScope, assignOperationalScope } from '../../lib/company-access/operational-scope.server';
 import { generationNeedKey } from '../../lib/scheduling/generation-claims';
 import { getWorkspace } from '../../lib/data/workspaces';
-import { createElement } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
-import { SigPendingLabel } from '../../components/signature/sig-button';
+import { pendingDeletionLabelMarkup } from './shift-deletion-label-fixture';
 
 type TracedRequest = { url(): string; method(): string; headers(): Record<string, string>; isNavigationRequest(): boolean; failure(): { errorText?: string } | null };
 
@@ -93,7 +91,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       try {
         const controlPage = await controlContext.newPage(); controlPage.setDefaultTimeout(20000);
         for (const pending of [true, false]) {
-          const label = renderToStaticMarkup(createElement(SigPendingLabel, { pending, pendingText: 'Deleting…', children: 'Delete this shift' }));
+          const label = pendingDeletionLabelMarkup(pending);
           await controlPage.setContent('<form id="edit-shift-form"><fieldset><input name="notes" value="Fictional retained draft"></fieldset></form><form class="c-shift__delete"><fieldset disabled><button type="submit">' + label + '</button></fieldset><input type="hidden" name="expectedReviewVersion" value="fictional-version"><div role="alert"><p>Deletion outcome unknown</p></div></form>');
           const legacyMatches = await controlPage.locator('form').filter({ has: controlPage.getByRole('button', { name: 'Delete this shift', exact: true }) }).count();
           expect(legacyMatches).toBe(pending ? 0 : 1);
