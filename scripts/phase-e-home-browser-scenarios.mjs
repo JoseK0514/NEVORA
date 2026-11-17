@@ -96,7 +96,13 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const todoName=()=>todo().evaluate(card=>{const title=document.getElementById(card.getAttribute('aria-labelledby')??'')?.cloneNode(true);title?.querySelector('.b-pill')?.remove();return card.getAttribute('aria-label')??title?.textContent??null;});
  const todoTitle=()=>todo().locator(':is(#employee-home-todo-label,#b-home-todo-h)');
  const rowLimit=width>=1024?5:3;
- const overflowCount=async expected=>{const badge=todo().locator('#b-home-todo-h .b-pill');if(await badge.count())assert.equal(await badge.textContent(),String(expected));else assert.equal((await seeAll().textContent()).trim(),`See all ${expected}`);};
+ const overflowCount=async (expected,read)=>{const badge=todo().locator('#b-home-todo-h .b-pill');if(await badge.count()){
+  // Task completeness belongs to the canonical read, including publication coverage. A known row count is a lower
+  // bound when those facts are partial or absent; require the qualification instead of accepting either label.
+  const exact=read.tasks?.state==='complete'&&read.tasks.counts!==null;
+  if(read.tasks?.state==='partial')assert.equal(read.tasks.counts,null,'Partial task facts cannot claim an exact total');
+  assert.equal((await badge.textContent()).replace(/\s+/g,' ').trim(),exact?String(expected):`At least ${expected}`);
+ }else assert.equal((await seeAll().textContent()).trim(),`See all ${expected}`);};
  const seeAll=()=>todo().getByRole('link',{name:/^(See all \d+|See all notifications)$/});
  const items=()=>todo().locator('li > :is(a.c-row,a.b-row):visible, li > .b-row > a.b-row__hit:visible').filter({hasNotText:/^See all \d+$/});
  const allSet=()=>page.getByText('You’re all set. Nothing needs you right now.',{exact:true}).filter({visible:true});
@@ -224,7 +230,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   const expected=actionHrefs(homeResponse);
   assert(await todo().isVisible());assert.equal(await todoName(),'Things to do');assert.equal(await todoTitle().count(),1,'One thing to do is its own card; several share the Things to do header');
   assert.deepEqual(await shownHrefs(),expected.slice(0,rowLimit));assert.equal(await seeAll().count(),expected.length>3?1:0);
-  if(expected.length>3){assert.equal(await seeAll().getAttribute('href'),'/app/notifications');await overflowCount(expected.length);}
+  if(expected.length>3){assert.equal(await seeAll().getAttribute('href'),'/app/notifications');await overflowCount(expected.length,homeResponse);}
   details.homeDisclosures.push({kind:'actions',rows:expected.length,hasOverflow:expected.length>3,seeAll:expected.length>3});
  }
  for(const item of homeResponse.snapshot.attention.filter(item=>!item.required&&!item.actionable))assert.equal(await page.locator('.employee-home').getByText(item.label,{exact:true}).count(),0,'Informational updates are read in Notifications');
@@ -306,7 +312,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   assert.deepEqual(actionRows.filter(href=>!overflowPublished.some(published=>href==='/app/updates/'+published.result.id)),overflowEvidence.baseline.hrefs.actions);
   for(const published of overflowPublished){const canonical=actual.snapshot.attention.filter(item=>item.ref.kind==='COMMUNICATION'&&item.ref.id===published.result.id);assert.equal(canonical.length,1);assert.equal(canonical[0].required,true);assert.equal(canonical[0].ref.version,published.result.version);assert.equal(canonical[0].href,'/app/updates/'+published.result.id);}
   assert.deepEqual(await shownHrefs(),actionRows.slice(0,rowLimit));assert.equal(await todoName(),'Things to do');assert.equal(await todoName(),'Things to do');
-  assert.equal(await seeAll().count(),1);assert.equal(await seeAll().getAttribute('href'),'/app/notifications');await overflowCount(actionRows.length);
+  assert.equal(await seeAll().count(),1);assert.equal(await seeAll().getAttribute('href'),'/app/notifications');await overflowCount(actionRows.length,actual);
   assert.equal(await items().count(),rowLimit);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);assert.equal(await allSet().count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
   await shot('actions-overflow');
   overflowEvidence.phase='native-keyboard';
