@@ -12,11 +12,15 @@ import { requestAccountDeletion, type DeletionFormState } from "./actions";
 const request = { reference: "DEL-7KQ2M9XA", status: "received", confirmedAt: "2030-01-01 10:00:00+00" };
 const receipt = (kind: "received" | "duplicate") => ({ kind, reference: "DEL-7KQ2M9XA", confirmedAt: "2030-01-01 10:00:00+00" });
 const idle: DeletionFormState = { kind: "idle" };
+// An unexpected failure carries its own Support reference (a fresh UUID per failure); refusals carry none.
+const UUID = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/;
+const withReference = (kind: "failed" | "uncertain") => ({ kind, supportReference: expect.stringMatching(UUID) });
 const form = (fields: Record<string, string> = {}) => { const data = new FormData(); for (const [key, value] of Object.entries({ account: "FICTIONAL-E1", password: "fictional-password", ...fields })) data.set(key, value); return data; };
 const proof = { sessionTokenHash: "a".repeat(64), employee: { id: "FICTIONAL-E1", firstName: "Own", lastName: "Person", role: "EMPLOYEE", primaryLocationId: "loc-1" } };
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.spyOn(console, "error").mockImplementation(() => undefined);
   state.order = [];
   state.visible.mockReturnValue(true);
   state.proof.mockResolvedValue(proof);
@@ -72,9 +76,9 @@ describe("requesting account deletion", () => {
     state.active.mockResolvedValue(request);
     await expect(requestAccountDeletion(idle, form())).resolves.toEqual(receipt("received"));
     state.active.mockResolvedValue(null);
-    await expect(requestAccountDeletion(idle, form())).resolves.toEqual({ kind: "uncertain" });
+    await expect(requestAccountDeletion(idle, form())).resolves.toEqual(withReference("uncertain"));
     state.active.mockRejectedValue(new Error("fetch failed"));
-    await expect(requestAccountDeletion(idle, form())).resolves.toEqual({ kind: "uncertain" });
+    await expect(requestAccountDeletion(idle, form())).resolves.toEqual(withReference("uncertain"));
   });
 
   it("calls the earlier request received when retrying finds it already open", async () => {
@@ -86,12 +90,33 @@ describe("requesting account deletion", () => {
 
   it("treats a limiter or session read failure as nothing sent, unless an earlier attempt is unknown", async () => {
     state.admit.mockRejectedValue(new Error("fetch failed"));
-    await expect(requestAccountDeletion(idle, form())).resolves.toEqual({ kind: "failed" });
-    await expect(requestAccountDeletion(idle, form({ retry: "1" }))).resolves.toEqual({ kind: "uncertain" });
+    await expect(requestAccountDeletion(idle, form())).resolves.toEqual(withReference("failed"));
+    await expect(requestAccountDeletion(idle, form({ retry: "1" }))).resolves.toEqual(withReference("uncertain"));
     state.proof.mockRejectedValue(new Error("fetch failed"));
-    await expect(requestAccountDeletion(idle, form())).resolves.toEqual({ kind: "failed" });
-    await expect(requestAccountDeletion({ kind: "uncertain" }, form())).resolves.toEqual({ kind: "uncertain" });
+    await expect(requestAccountDeletion(idle, form())).resolves.toEqual(withReference("failed"));
+    await expect(requestAccountDeletion({ kind: "uncertain" }, form())).resolves.toEqual(withReference("uncertain"));
     expect(state.submit).not.toHaveBeenCalled();
+  });
+});
+
+describe("Support reference", () => {
+  it("logs each unexpected failure once, sanitized, under the reference the page shows", async () => {
+    state.admit.mockRejectedValue(new Error("fictional private detail FICTIONAL-E1 fictional-password"));
+    const first = await requestAccountDeletion(idle, form()), second = await requestAccountDeletion(idle, form());
+    const references = [first, second].map(result => (result as { supportReference?: string }).supportReference);
+    expect(references[0]).toMatch(UUID); expect(references[1]).toMatch(UUID); expect(references[0]).not.toBe(references[1]);
+    const logged = vi.mocked(console.error).mock.calls.map(([line]) => JSON.parse(String(line)));
+    expect(logged).toEqual(references.map(requestId => ({ event: "server_request_error", route: "/app/account/delete", requestId, errorClass: "Error" })));
+    expect(JSON.stringify(logged)).not.toMatch(/FICTIONAL|password|private/);
+  });
+  it("gives refusals and saved outcomes no reference", async () => {
+    state.submit.mockResolvedValueOnce({ outcome: "unavailable", reason: "LAST_OWNER" });
+    await expect(requestAccountDeletion(idle, form())).resolves.toEqual({ kind: "unavailable", reason: "LAST_OWNER" });
+    state.submit.mockResolvedValueOnce({ outcome: "failed" });
+    await expect(requestAccountDeletion(idle, form())).resolves.toEqual({ kind: "failed" });
+    state.admit.mockResolvedValueOnce(false);
+    await expect(requestAccountDeletion(idle, form())).resolves.toEqual({ kind: "busy" });
+    expect(console.error).not.toHaveBeenCalled();
   });
 });
 
@@ -111,7 +136,7 @@ describe("after acceptance ended the session", () => {
     state.check.mockResolvedValue({ outcome: "wrong_password" });
     await expect(requestAccountDeletion({ kind: "uncertain" }, form())).resolves.toEqual({ kind: "wrong_password" });
     state.check.mockRejectedValue(new Error("fetch failed"));
-    await expect(requestAccountDeletion({ kind: "uncertain" }, form())).resolves.toEqual({ kind: "uncertain" });
+    await expect(requestAccountDeletion({ kind: "uncertain" }, form())).resolves.toEqual(withReference("uncertain"));
   });
 
   it("does not check anything without the account the page showed", async () => {
