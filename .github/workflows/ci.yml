@@ -236,7 +236,7 @@ jobs:
         env:
           NEVORA_READINESS_UI_EVIDENCE: ${{ runner.temp }}/readiness-ui
           NEVORA_READINESS_MATRIX_EVIDENCE: ${{ runner.temp }}/readiness-matrix
-        run: node scripts/payroll-postgres.mjs vitest.all-ui-browser.config.mts src/test/integration/readiness-ui-browser.integration.ts src/test/integration/readiness-shift-concurrency-browser.integration.ts
+        run: node scripts/payroll-postgres.mjs vitest.all-ui-browser.config.mts src/test/integration/readiness-ui-browser.integration.ts src/test/integration/readiness-shift-concurrency-browser.integration.ts src/test/integration/claude-ui-joined-browser.integration.ts
       - name: Verify management browser source and closure
         if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
         env:
