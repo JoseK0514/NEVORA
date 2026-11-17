@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "date": "2026-11-16",
+  "date": "2026-11-17",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "0b22b7b936e6f1c2517eea034213f0aab529c5e5",
-  "applicationHash": "819377bd10a30d418e9a10ee81fe52eee774db66a9b3c66b0834370e41140d67",
+  "sourceSha": "3d34c864b0039125249d601c5f4136ac2975715f",
+  "applicationHash": "2051bf120cf6c9d58a8355302c27ee914da19b0ff2239b9f1d6925689140393b",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "1f6a3c14d7ae322345b3c7d2975ae8423265cda5e2cf86da3cdaa662adb31693"
@@ -151,11 +151,11 @@
         },
         {
           "path": "src/lib/owner-advisor/business/contracts.ts",
-          "sha256": "5c2efeefe6f08014c2a869fe20f574dcca783f9e2bacd99b902b9a3cb2f5ad87"
+          "sha256": "28d77542f390c11447d4bc8b0b4c4b089c295e8056960794fb2ab395e860345f"
         },
         {
           "path": "src/lib/owner-advisor/business/service.server.ts",
-          "sha256": "edf4034885fd661ae6fcc28dc8b4a6931330df20d8eae7a7b566110e2d5dcca4"
+          "sha256": "fac479453318942f259adc4c9affc3e965414efc180265d9aa04553169c40155"
         },
         {
           "path": "src/lib/owner-advisor/business/fence.server.ts",
@@ -163,7 +163,7 @@
         },
         {
           "path": "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
-          "sha256": "9dd5908d535063f1e59aabe8ea6c636f02c6978d413f721e3df61607861915cd"
+          "sha256": "01216ead9c25a538d0827f9d9865db612212a05048a2c7e2bb386474ad460725"
         },
         {
           "path": "docs/handoffs/2026-11-16-rondo-development-integration.md",
@@ -176,7 +176,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "0b3cae8fb625a6cfcc874eca2b534d23dc4ba94b1e0aa2ca50d4f43c2479a512",
+        "sha256": "c1f51313b67d505a40d04b8407b222d15130195bc57e3604b1a94242b4dc47c1",
         "pageCount": 4
       }
     },
@@ -283,7 +283,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "b625580d832fecfeec842bf03df0691878117fd08e6a054c62ba9a1bebcada23",
+        "sha256": "21fc709d945180acbaf5a8242deac8334b6e2bf738f99c151c5f78811123cdbc",
         "pageCount": 3
       }
     },
@@ -378,7 +378,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "7562fb5dde17d2c5a064ae493669a03fde5395d1f60031f5a5c681459b3fe713",
+        "sha256": "bc1e059eb78285e100ebb438292d89ef5d5935a610709678e0048ec6866d3e31",
         "pageCount": 3
       }
     },
@@ -496,11 +496,11 @@
         },
         {
           "path": "src/lib/owner-advisor/business/contracts.ts",
-          "sha256": "5c2efeefe6f08014c2a869fe20f574dcca783f9e2bacd99b902b9a3cb2f5ad87"
+          "sha256": "28d77542f390c11447d4bc8b0b4c4b089c295e8056960794fb2ab395e860345f"
         },
         {
           "path": "src/lib/owner-advisor/business/service.server.ts",
-          "sha256": "edf4034885fd661ae6fcc28dc8b4a6931330df20d8eae7a7b566110e2d5dcca4"
+          "sha256": "fac479453318942f259adc4c9affc3e965414efc180265d9aa04553169c40155"
         },
         {
           "path": "src/lib/owner-advisor/business/fence.server.ts",
@@ -508,7 +508,7 @@
         },
         {
           "path": "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
-          "sha256": "9dd5908d535063f1e59aabe8ea6c636f02c6978d413f721e3df61607861915cd"
+          "sha256": "01216ead9c25a538d0827f9d9865db612212a05048a2c7e2bb386474ad460725"
         },
         {
           "path": "docs/handoffs/2026-11-16-rondo-development-integration.md",
@@ -521,7 +521,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "323e58aa4c88fceb542553c5f682af0d93328b1c46d27da48d12f3b8ff03e683",
+        "sha256": "461e28e7a2d9134533b78ee95a547051fd5108d6ca2bccbefb188d3c09423fa2",
         "pageCount": 4
       }
     },
@@ -703,11 +703,11 @@
         },
         {
           "path": "src/lib/owner-advisor/business/contracts.ts",
-          "sha256": "5c2efeefe6f08014c2a869fe20f574dcca783f9e2bacd99b902b9a3cb2f5ad87"
+          "sha256": "28d77542f390c11447d4bc8b0b4c4b089c295e8056960794fb2ab395e860345f"
         },
         {
           "path": "src/lib/owner-advisor/business/service.server.ts",
-          "sha256": "edf4034885fd661ae6fcc28dc8b4a6931330df20d8eae7a7b566110e2d5dcca4"
+          "sha256": "fac479453318942f259adc4c9affc3e965414efc180265d9aa04553169c40155"
         },
         {
           "path": "src/lib/owner-advisor/business/fence.server.ts",
@@ -715,7 +715,7 @@
         },
         {
           "path": "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
-          "sha256": "9dd5908d535063f1e59aabe8ea6c636f02c6978d413f721e3df61607861915cd"
+          "sha256": "01216ead9c25a538d0827f9d9865db612212a05048a2c7e2bb386474ad460725"
         },
         {
           "path": "docs/handoffs/2026-11-16-rondo-development-integration.md",
@@ -728,7 +728,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "08b69e080d15cf9129232e1283b9518aae30e57a75d2d3a8d4d5def257639d9f",
+        "sha256": "753d39ef3648cd71cc902c36d13021f9ace19ffd29af8da50c4f2d1a262b1071",
         "pageCount": 5
       }
     },
@@ -866,11 +866,11 @@
         },
         {
           "path": "src/lib/owner-advisor/business/contracts.ts",
-          "sha256": "5c2efeefe6f08014c2a869fe20f574dcca783f9e2bacd99b902b9a3cb2f5ad87"
+          "sha256": "28d77542f390c11447d4bc8b0b4c4b089c295e8056960794fb2ab395e860345f"
         },
         {
           "path": "src/lib/owner-advisor/business/service.server.ts",
-          "sha256": "edf4034885fd661ae6fcc28dc8b4a6931330df20d8eae7a7b566110e2d5dcca4"
+          "sha256": "fac479453318942f259adc4c9affc3e965414efc180265d9aa04553169c40155"
         },
         {
           "path": "src/lib/owner-advisor/business/fence.server.ts",
@@ -878,7 +878,7 @@
         },
         {
           "path": "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
-          "sha256": "9dd5908d535063f1e59aabe8ea6c636f02c6978d413f721e3df61607861915cd"
+          "sha256": "01216ead9c25a538d0827f9d9865db612212a05048a2c7e2bb386474ad460725"
         },
         {
           "path": "docs/handoffs/2026-11-16-rondo-development-integration.md",
@@ -891,7 +891,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "f0628dc4f4a0494ff7a44c5f7c16b7cecdb24ce4e88297d483449e813f9ca953",
+        "sha256": "6747fef00e1361832f24d3d109e5d81f82e63b889154765c410ea07bc527a95b",
         "pageCount": 5
       }
     }
