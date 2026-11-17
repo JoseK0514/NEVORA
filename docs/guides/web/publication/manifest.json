@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-16",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "52920cf15dad66d1752f00301347f4d8ff68bc48",
-  "applicationHash": "5d70bff5f5248b81145e40b4a3da0e21bd6f2fe4b0f8fc256c90aca2260536ef",
+  "sourceSha": "df43a6c174151655ead49fb41846a123065a7635",
+  "applicationHash": "478c66687d831b1304ea73077f38a3c1119b6c1a8b89a99fcec29d8a5c3a5516",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "50c7a4486883ed73d5a6245b035da87dd7aeebdbe73a1b8d7f9134f312ab034f"
@@ -139,20 +139,20 @@
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
-          "sha256": "48580ade98937af7593f13bbfc94b7c49f8e7555c74607c4cb29b4e75b90bcb4"
+          "sha256": "42ff0e7ff419a1e122ccfa25232f029d008f9a2ad15ac5633062adc2baf11f61"
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
-          "sha256": "22995e78fc6d97b4ac82d33953d2f256205af29ec3dbb84edff652bd099599e5"
+          "sha256": "12fca3a1c9121008b1772140fb3f5751be177f1cb6cabc2ad68e1f501c7d1959"
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
-          "sha256": "5b6771e7daef2eef6c26bab0794b0566c57d0bac06959ec233e8a683d18b730a"
+          "sha256": "ddb6ef150d173721c2821ad33ce9e90b14a5e775cf50bf9eda62b90c46d04414"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "a8076e796528e07295cf8f9c32ab14237079c57832ab1f90e6b986aea8049250",
+        "sha256": "1dc0ab6a1c9399e80dff3cc9c334773c2b557418af078fd601d7cd07f8234293",
         "pageCount": 4
       }
     },
@@ -246,20 +246,20 @@
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
-          "sha256": "48580ade98937af7593f13bbfc94b7c49f8e7555c74607c4cb29b4e75b90bcb4"
+          "sha256": "42ff0e7ff419a1e122ccfa25232f029d008f9a2ad15ac5633062adc2baf11f61"
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
-          "sha256": "22995e78fc6d97b4ac82d33953d2f256205af29ec3dbb84edff652bd099599e5"
+          "sha256": "12fca3a1c9121008b1772140fb3f5751be177f1cb6cabc2ad68e1f501c7d1959"
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
-          "sha256": "5b6771e7daef2eef6c26bab0794b0566c57d0bac06959ec233e8a683d18b730a"
+          "sha256": "ddb6ef150d173721c2821ad33ce9e90b14a5e775cf50bf9eda62b90c46d04414"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "126539f7f1e1d4d5ba4b2aef23034b8800d4f9cf6434efe3863e59bb8150f52d",
+        "sha256": "2cc458084bc168e1de591dbfb53e791b1a147554dace6f3374233e2147290fcd",
         "pageCount": 3
       }
     },
@@ -341,20 +341,20 @@
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
-          "sha256": "48580ade98937af7593f13bbfc94b7c49f8e7555c74607c4cb29b4e75b90bcb4"
+          "sha256": "42ff0e7ff419a1e122ccfa25232f029d008f9a2ad15ac5633062adc2baf11f61"
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
-          "sha256": "22995e78fc6d97b4ac82d33953d2f256205af29ec3dbb84edff652bd099599e5"
+          "sha256": "12fca3a1c9121008b1772140fb3f5751be177f1cb6cabc2ad68e1f501c7d1959"
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
-          "sha256": "5b6771e7daef2eef6c26bab0794b0566c57d0bac06959ec233e8a683d18b730a"
+          "sha256": "ddb6ef150d173721c2821ad33ce9e90b14a5e775cf50bf9eda62b90c46d04414"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "907157e7461152bb8e08b44e03a9ef898fdc432fc4ab35e29ec9468293d4310a",
+        "sha256": "911ac63f543afb33e8ecb815f1aff3da5fac04d962bf4c2e065a9db857431195",
         "pageCount": 3
       }
     },
@@ -424,20 +424,20 @@
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
-          "sha256": "48580ade98937af7593f13bbfc94b7c49f8e7555c74607c4cb29b4e75b90bcb4"
+          "sha256": "42ff0e7ff419a1e122ccfa25232f029d008f9a2ad15ac5633062adc2baf11f61"
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
-          "sha256": "22995e78fc6d97b4ac82d33953d2f256205af29ec3dbb84edff652bd099599e5"
+          "sha256": "12fca3a1c9121008b1772140fb3f5751be177f1cb6cabc2ad68e1f501c7d1959"
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
-          "sha256": "5b6771e7daef2eef6c26bab0794b0566c57d0bac06959ec233e8a683d18b730a"
+          "sha256": "ddb6ef150d173721c2821ad33ce9e90b14a5e775cf50bf9eda62b90c46d04414"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "0edc52786383406ac85d91d50d66407d875221caec7a8649e30d03b3114c28ef",
+        "sha256": "39e06c4024cd59cf2b312f9526329ffb703eca95264fbbb785b950ee2368f433",
         "pageCount": 2
       }
     },
@@ -607,20 +607,20 @@
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
-          "sha256": "48580ade98937af7593f13bbfc94b7c49f8e7555c74607c4cb29b4e75b90bcb4"
+          "sha256": "42ff0e7ff419a1e122ccfa25232f029d008f9a2ad15ac5633062adc2baf11f61"
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
-          "sha256": "22995e78fc6d97b4ac82d33953d2f256205af29ec3dbb84edff652bd099599e5"
+          "sha256": "12fca3a1c9121008b1772140fb3f5751be177f1cb6cabc2ad68e1f501c7d1959"
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
-          "sha256": "5b6771e7daef2eef6c26bab0794b0566c57d0bac06959ec233e8a683d18b730a"
+          "sha256": "ddb6ef150d173721c2821ad33ce9e90b14a5e775cf50bf9eda62b90c46d04414"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "8146aec90716c25f9cf618316eea33388a2a46fbc714f5aa0901f5b8a309f392",
+        "sha256": "b6783bb553045b7623efb4e8322b865bca40f6e614de33f7593b027a072b7f73",
         "pageCount": 5
       }
     },
@@ -746,20 +746,20 @@
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
-          "sha256": "48580ade98937af7593f13bbfc94b7c49f8e7555c74607c4cb29b4e75b90bcb4"
+          "sha256": "42ff0e7ff419a1e122ccfa25232f029d008f9a2ad15ac5633062adc2baf11f61"
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
-          "sha256": "22995e78fc6d97b4ac82d33953d2f256205af29ec3dbb84edff652bd099599e5"
+          "sha256": "12fca3a1c9121008b1772140fb3f5751be177f1cb6cabc2ad68e1f501c7d1959"
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
-          "sha256": "5b6771e7daef2eef6c26bab0794b0566c57d0bac06959ec233e8a683d18b730a"
+          "sha256": "ddb6ef150d173721c2821ad33ce9e90b14a5e775cf50bf9eda62b90c46d04414"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "9151a611ad34ac5db1126c47c65623e41f520aaa0301f134e328e790e26a35f1",
+        "sha256": "41bafccde1ede67c1c9d44470edb5370f5e207f6fa75b5f08c4c267bc8f77367",
         "pageCount": 5
       }
     }
