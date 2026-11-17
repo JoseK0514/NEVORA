@@ -3,7 +3,7 @@ export type ManagerReminderCommand={operationId:string;authority:string;employee
  {kind:'COMMUNICATION';communicationId:string;expectedRevisionId:string});
 export type ManagerReminderResult=
  | {status:'committed';operationId:string;notificationId:string;disposition:'queued'|'already_queued'}
- | {status:'blocked'|'conflict'|'unavailable';reason:string}
+ | {status:'held'|'blocked'|'conflict'|'unavailable';reason:string}
  | {status:'outcome_unknown';operationId:string};
 
 /** Advisory read, never permission to skip the command's transactional checks.
