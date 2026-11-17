@@ -43,11 +43,14 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
         const page = await context.newPage();
         page.setDefaultTimeout(15000);
         page.on('pageerror', (error: Error) => errors.push(engine + ': ' + error.message.slice(0, 400)));
+        // A history update can precede completion of the real RSC response. Drain those reads,
+        // then perform the actual navigation; do not manufacture a pagehide on a live document.
+        const pendingRouterReads=new Set<object>();
+        page.on('request',(request:any)=>{if(request.method()==='GET'&&request.headers().rsc==='1')pendingRouterReads.add(request);});
+        page.on('requestfinished',(request:object)=>pendingRouterReads.delete(request));
+        page.on('requestfailed',(request:object)=>pendingRouterReads.delete(request));
         const visit = async (path: string) => {
-          if (page.url() !== 'about:blank') {
-            await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
-            await page.waitForLoadState('networkidle');
-          }
+          await expect.poll(()=>pendingRouterReads.size,{timeout:15000}).toBe(0);
           return page.goto(origin + path);
         };
         try {

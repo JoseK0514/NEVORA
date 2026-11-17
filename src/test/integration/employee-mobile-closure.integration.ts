@@ -89,7 +89,7 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, light und
     if(['home','incoming-response','own-request','notifications','profile','calendar','alerts'].includes(name)){await page.locator(ready).first().waitFor({state:'attached'});await page.locator('main .b-screen:visible').first().waitFor();}
     else await page.locator(ready).filter({visible:true}).first().waitFor();}catch(error){failures.push({engine,name,path,stage:'ready',error:String(error)});continue;}
     for(const size of [{width:667,height:375},{width:844,height:390},{width:932,height:430}])for(const theme of ['light','dark'])for(const scale of [100,200]){
-     let clearance:unknown;try{
+     let clearance:unknown,targets:unknown;try{
      // Release 1 is light only (Jose): a dark request (stored choice and device preference) must still render the light corporate look.
      await page.setViewportSize(size);await page.emulateMedia({colorScheme:theme as 'light'|'dark'});await page.evaluate(({theme,scale}:any)=>{localStorage.setItem('nv-theme',theme);document.documentElement.dataset.theme=theme;document.documentElement.style.fontSize=scale+'%';document.documentElement.dataset.textStep=String(scale);}, {theme,scale});
      // Current approved Direction B: 667px is phone; 844/932px are the tablet rail even with coarse input.
@@ -101,8 +101,8 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, light und
      const small=await actions.evaluateAll((elements:HTMLElement[])=>elements.flatMap(el=>{
       if(el.closest('nextjs-portal')||(el.matches('a')&&getComputedStyle(el).display==='inline'&&el.closest('p,li')))return [];
       const target=el.matches('input[type="checkbox"],input[type="radio"]')?el.closest('label')??el:el;
-      const r=target.getBoundingClientRect();return r.height<43.5||r.width<43.5?[{text:el.textContent?.slice(0,60),tag:el.tagName,height:r.height,width:r.width}]:[];
-     }));expect(small,name+engine+theme+scale).toEqual([]);
+      const r=target.getBoundingClientRect();return r.height<43.5||r.width<43.5?[{text:el.textContent?.slice(0,60),className:el.className,tag:el.tagName,height:r.height,width:r.width}]:[];
+     }));targets=small;expect(small,name+engine+theme+scale).toEqual([]);
      const samples: number[]=[];
      for(const label of (await page.locator('main :is(h1,h2,label,.em-request-primary,.em-request-secondary,.em-creation-help,.em-planning-help,.em-hours-help):visible').all()).slice(0,6)){
       if(!await label.isEnabled()||!(await label.innerText()).trim())continue;
@@ -121,7 +121,7 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, light und
      }
      results.push({engine,name,path,size,theme,scale,contrastSamples:samples,...metrics});
      if(size.width===844&&scale===200)await page.screenshot({path:evidence+'/'+engine+'-'+name+'-'+theme+'-text200.png',fullPage:false,style:'nextjs-portal{visibility:hidden;}'});
-     }catch(error){failures.push({engine,name,path,size,theme,scale,error:String(error),clearance});if(size.width===844&&scale===200)await page.screenshot({path:evidence+'/'+engine+'-'+name+'-'+theme+'-failure.png',fullPage:false});}
+     }catch(error){failures.push({engine,name,path,size,theme,scale,error:String(error),clearance,targets});if(size.width===844&&scale===200)await page.screenshot({path:evidence+'/'+engine+'-'+name+'-'+theme+'-failure.png',fullPage:false});}
     }
     console.log('Landscape checked '+engine+' '+name);
     await page.evaluate(()=>{document.documentElement.style.fontSize='100%';document.documentElement.dataset.textStep='100';});

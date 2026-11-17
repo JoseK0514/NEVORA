@@ -209,9 +209,10 @@
     /* EM-018: the notes under the cards speak for the whole page; they start on the cards' text edge. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-stack > .b-note { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
   }
-  /* A coarse tablet keeps the approved rail, with the existing touch target size for Schedule actions. */
+  /* Coarse input keeps the approved rail and layout, with touch-sized controls across Employee tasks.
+   * Native inline prose links retain their inline layout; checkbox/radio labels supply their hit region. */
   @media (pointer: coarse) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-esched > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) :is(.b-week__arrow, .es-today, .q-bs) { min-width: var(--b-target-touch) !important; min-height: var(--b-target-touch) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] main:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#e-none7) :is(a[href], button, input:not([type="checkbox"], [type="radio"]), select, textarea, summary, label:has(> input:is([type="checkbox"], [type="radio"]))) { min-width: var(--b-target-touch) !important; min-height: var(--b-target-touch) !important; }
   }
 
 }
