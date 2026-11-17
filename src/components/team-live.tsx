@@ -4,6 +4,8 @@ import { CorpPill } from "./corp/corp";
 import { useToday } from "./manager-today";
 import { useClockMonitor } from "./clean/use-clock-monitor";
 import { ATTENDANCE_WORDS } from "@/lib/action-center/present";
+import { lateText } from "@/lib/action-center/request-details";
+import { reviewCopy } from "@/components/review-details/copy";
 
 /* Team (Release 1, board G-O-Team): who is working now. Two existing reads, the ones Home uses: Today (published shifts
  * and their clock-ins) and the clock monitor (every open clock-in, so someone clocked in without a scheduled shift reads
@@ -12,8 +14,8 @@ import { ATTENDANCE_WORDS } from "@/lib/action-center/present";
 /** Direction B adds, from the same Today read: who has not clocked in (`late`: minutes past a started shift with no
  * clock-in), who clocked in after their start (`clockedInLate`) and who has a shift today, so Team can say "Not clocked in ·
  * 42 min", "Clocked in late" and "Off today" (Jose's attendance words, Nov 11, 2026). */
-type Live = { ready: boolean; working: Set<string>; onBreak: Set<string>; late: Map<string, number>; clockedInLate: Set<string>; scheduled: Set<string> };
-const TeamLiveContext = createContext<Live>({ ready: false, working: new Set(), onBreak: new Set(), late: new Map(), clockedInLate: new Set(), scheduled: new Set() });
+type Live = { ready: boolean; working: Set<string>; onBreak: Set<string>; late: Map<string, number>; clockedInLate: Map<string, number | null>; scheduled: Set<string> };
+const TeamLiveContext = createContext<Live>({ ready: false, working: new Set(), onBreak: new Set(), late: new Map(), clockedInLate: new Map(), scheduled: new Set() });
 export const useTeamLive = () => useContext(TeamLiveContext);
 
 export function TeamLiveProvider({ children }: { children: ReactNode }) {
@@ -34,7 +36,10 @@ export function TeamLiveProvider({ children }: { children: ReactNode }) {
   }
   const scheduled = new Set(shifts.map(shift => shift.employeeId));
   // Today marks a shift late when its first clock-in came after the start; only people on the clock now are shown so.
-  const clockedInLate = new Set(shifts.filter(shift => shift.late && (shift.status === "clocked_in" || shift.status === "on_break")).map(shift => shift.employeeId));
+  // Phase 4 (U09): with the server's whole late minutes when it sent them (null or absent: the words alone).
+  const clockedInLate = new Map<string, number | null>();
+  for (const shift of shifts) if (shift.late && (shift.status === "clocked_in" || shift.status === "on_break"))
+    clockedInLate.set(shift.employeeId, typeof shift.lateMinutes === "number" ? Math.max(shift.lateMinutes, clockedInLate.get(shift.employeeId) ?? 0) : clockedInLate.get(shift.employeeId) ?? null);
   return <TeamLiveContext.Provider value={{ ready, working, onBreak, late, clockedInLate, scheduled }}>{children}</TeamLiveContext.Provider>;
 }
 
@@ -48,7 +53,7 @@ export function teamStateOf(live: Live, id: string): TeamState | null {
  * someone who clocked in after their start) and never "Missed" (the shift hasn't ended). */
 export const notClockedInText = (minutes: number) => minutes > 0 ? `${ATTENDANCE_WORDS.notClockedIn} · ${minutes >= 60 ? `${Math.floor(minutes / 60)} h${minutes % 60 ? ` ${minutes % 60} min` : ""}` : `${minutes} min`}` : ATTENDANCE_WORDS.notClockedIn;
 /** "Clocked in late" for someone on the clock who arrived after their start; otherwise "Clocked in". */
-export const clockedInText = (live: Live, id: string) => live.clockedInLate.has(id) ? ATTENDANCE_WORDS.late : "Clocked in";
+export const clockedInText = (live: Live, id: string) => live.clockedInLate.has(id) ? lateText({ late: true, lateMinutes: live.clockedInLate.get(id) }, ATTENDANCE_WORDS.late, reviewCopy()) : "Clocked in";
 
 /** One person's live chip, the phone Team's words on every width (closing F1, NV-071/NV-091): a green "Clocked in" (or
  * "Clocked in late") with the live dot, teal "On break", amber "Not clocked in · 12 min", grey "Off today"; nothing until

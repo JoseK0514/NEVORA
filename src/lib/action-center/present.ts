@@ -1,5 +1,7 @@
 import type {ActionItem} from './project';
 import {isStaffingRepair,repairPerson,repairTitle,repairWhen} from '../time-off-staffing/present';
+import {concernsActor} from './review-routing';
+import {reviewCopy} from '@/components/review-details/copy';
 
 /* Phase 7: how an action center item reads on Home and in the Inbox.
  * Display only. The server's item (and the notifications built from it) is unchanged;
@@ -8,7 +10,6 @@ import {isStaffingRepair,repairPerson,repairTitle,repairWhen} from '../time-off-
 
 const NBSP = ' ', NBHY = '‑';
 const WAITING = / is waiting for review\.?$/;
-const isOwnCorrection = (title: string) => /^Your correction/.test(title);
 
 /** "8:00 AM–4:00 PM" → "8:00 AM – 4:00 PM", with the times kept whole. */
 export function spacedRanges(text: string) {
@@ -115,7 +116,10 @@ export function presentItem(item: ActionItem, actionLabel: string, timeZone = 'U
     case 'TIME_CORRECTION': {
       // Phase 3 (OW-002): the title is the person, the line under it what they asked for.
       const who = detail.split(' · ')[0]?.trim(), sent = sentDate(item.dateTime, timeZone);
-      if (who && !isOwnCorrection(title)) title = who;
+      // Phase 4 (U03): "yours" is the server's typed concernsActor, never the title's wording. A correction someone
+      // sent for another person (a delegated requester) keeps that person's name.
+      if (concernsActor(item)) title = reviewCopy().yourCorrection;
+      else if (who) title = who;
       // Backend (Nov 15): with the correction's facts the line says what changes; without them, the kind and the day sent.
       detail = (item.correction ? correctionLine(item.correction) : null)
         ?? [/Recorded entry not sent yet/.test(detail) ? 'Add unrecorded time' : 'Time correction', sent].filter(Boolean).join(' · ');

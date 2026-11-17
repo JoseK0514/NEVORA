@@ -19,6 +19,8 @@ import {boardDuration, compactDuration} from '../employee-mobile/hours-model';
 import {businessDate, clock, dayWord, fmt, isComplete, sourceDestinations, sourceNames, todoTitle, weekRange, type HomeWeek} from '../employee-home-quiet';
 import {BCardNote, BDay, Dotted, wallTime} from './parts';
 import './employee-b.css';
+import {reviewCopy} from '../review-details/copy';
+import type {HomeTaskTotal} from '../../lib/action-center/review-routing';
 
 /* Employee Home on the phone, Direction B (Jose approved the mock "Employee mobile, Direction B", Nov 6, 2026). The
  * greeting on the teal hero with hours this week and the scheduled payday on glass, the next shift as the main card, then
@@ -190,12 +192,14 @@ export type HomeTodo = {key: string; item: AttentionItem; week: boolean};
 export type HomeBProps = HomeBExtras & {
   /** A Lead's Today's team: message everyone on today's team (the Updates compose), when Updates is on. */
   team?: boolean;
-  snapshot: HomeSnapshot | null; partial: boolean; todos: HomeTodo[]; week?: HomeWeek | null; name?: string; date: ReactNode; place?: string;
+  snapshot: HomeSnapshot | null; partial: boolean; todos: HomeTodo[];
+  /** Phase 4 (U03): the count's completeness and the server's all-clear (homeTaskTotal). Absent: unknown, never zero. */
+  tasks?: HomeTaskTotal; week?: HomeWeek | null; name?: string; date: ReactNode; place?: string;
   intro?: ReactNode; waiting: ReactNode; loading: boolean; paused: boolean; denied: boolean; refreshing: boolean; onRetry: () => void;
   weekTodo: (item: AttentionItem) => {title: string; detail: ReactNode};
 };
 
-export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place, intro, waiting, loading, paused, denied, refreshing, onRetry, weekTodo, hoursAuthority, payday, team, lead}: HomeBProps) {
+export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date, place, intro, waiting, loading, paused, denied, refreshing, onRetry, weekTodo, hoursAuthority, payday, team, lead}: HomeBProps) {
   const weekShown = snapshot && week && week.dates.length === 7 ? week : null;
   // A Lead's hero adds the shift they're on now (Direction B, Nov 8, 2026); Employees' figures are unchanged.
   const now = lead && snapshot ? snapshot.currentShift : null;
@@ -227,7 +231,7 @@ export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place
         {intro ?? null}
         {/* Review B6 (NV-162, NV-288): Things to do (with its deadlines) comes before a Lead's optional Today's team, so on
           * a phone the to-dos are higher and on desktop the focus order follows the columns (left, then right). */}
-        {todos.length || partial ? <BCard title="Things to do" id="b-home-todo" count={todos.length || undefined}
+        {todos.length || partial ? <BCard title="Things to do" id="b-home-todo" count={!todos.length ? undefined : tasks?.exact ? todos.length : reviewCopy().atLeast(todos.length)}
           // Review B2 (NV-037): the link opens Notifications, so it says so.
           link={todos.length > 3 ? {href: '/app/notifications', label: 'All notifications', aria: 'See all notifications'} : undefined}>
           <BList>
@@ -248,7 +252,7 @@ export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place
           <TeamCard place={(snapshot.currentShift ?? snapshot.nextShift)?.locationLabel}/>
           {weekShown ? <ComingUp week={weekShown} snapshot={snapshot} lead={lead} note={note}/> : note ? <BNote>{note}</BNote> : null}
         </div> : weekShown ? <ComingUp week={weekShown} snapshot={snapshot} lead={lead} note={note}/> : note ? <BNote>{note}</BNote> : null}
-        {!todos.length && !partial ? <BNote>You’re all set. Nothing needs you right now.</BNote> : null}
+        {!todos.length && !partial ? <BNote>{tasks?.allSet ? 'You’re all set. Nothing needs you right now.' : reviewCopy().nothingToDo}</BNote> : null}
       </> : <BCard title="Next shift" id="b-home-shift">
         {/* Review F2 (NV-075): the shared state card (icon circle, one line, one teal pill), not a full grey button. */}
         <BState kind={loading ? 'loading' : paused ? (typeof navigator !== 'undefined' && navigator.onLine === false ? 'offline' : 'paused') : denied ? 'locked' : 'failed'} line={waiting}

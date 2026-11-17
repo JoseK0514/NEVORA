@@ -22,7 +22,14 @@ const today = (shifts: TodayShift[]): Today => ({ state: "ready", observedAt: "2
 const monitor = (ids: string[]): ClockMonitor => ({ state: "ready", observedAt: "2026-10-30T15:00:00Z", timeZone: "America/Puerto_Rico", validForMs: 60_000,
   employees: ids.map(id => ({ timeEntryId: `t-${id}`, employeeId: id, employeeName: `Person ${id}`, locationId: "main", locationName: "Condado", deviceId: "d1", clockInAt: "2026-10-30T13:02:00Z", state: "ON_FLOOR", elapsedMinutes: 0, breakElapsedMinutes: null, positionName: null, scheduleMatch: "MATCHED" })) });
 const item = (id: string, type: string, priority: "URGENT" | "REVIEW", category: ActionItem["category"], extra: Partial<ActionItem> = {}) =>
-  ({ id, type, priority, category, title: `${type} title`, detail: `${type} detail`, href: `/app/go/${id}`, ...extra }) as ActionItem;
+  ({ id, type, priority, category, title: `${type} title`, detail: `${type} detail`, href: `/app/go/${id}`, ...typedReview(type, extra), ...extra }) as ActionItem;
+/** Phase 4 (U03): every timecard the server sends carries typed review facts (its own period, and whether this person
+ * may review it). A fixture without them would be an older payload, which is never counted. */
+const typedReview = (type: string, extra: Partial<ActionItem>) => {
+  if (type !== "TIMECARD" || extra.review) return {};
+  const url = new URL(extra.href ?? "/app/timecards", "https://nevora.invalid");
+  return { review: reviewFacts(false, false, "TIMECARD", { startDate: url.searchParams.get("start") ?? "2026-10-19", endDate: url.searchParams.get("end") ?? "2026-10-25" }) };
+};
 
 const items = [
   item("gap1", "COVERAGE_GAP", "URGENT", "scheduling", { title: "Position not covered at Condado", detail: "2026-10-30 · 1:00 PM–3:00 PM · Barista: 1 open", dateTime: "2026-10-30T13:00", href: "/app/schedule/coverage?shift=gap1" }),
@@ -231,7 +238,7 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(open).toContain('<span class="b-ink__k">Timecards</span><span class="b-ink__due">Open now</span>');
     expect(open).toMatch(/<div class="b-ink__big">2\sto approve<\/div>/);
     expect(open).toContain("<span>2 of 3 timecards · Pay period ended</span><span>Payday Tue, Nov 3</span>");
-    expect(open).toContain("An Owner approves your timecard");
+    expect(open).toContain("Another reviewer approves your timecard");
     expect(open).toContain('<a href="/app/timecards" class="b-btn b-btn--white b-btn--full" aria-label="Review timecards">');
     expect(open).not.toMatch(/Prepare payroll|Open timecards/);
     // Not open yet: the day approval opens leads, and the button is the quiet glass pill, never the white one.
