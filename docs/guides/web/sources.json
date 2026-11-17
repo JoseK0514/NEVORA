@@ -44,7 +44,12 @@
         "src/lib/owner-advisor/business/fence.server.ts",
         "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
         "docs/handoffs/2026-11-16-rondo-development-integration.md",
-        "docs/qa/rondo-development-integration-20261116/index.json"
+        "docs/qa/rondo-development-integration-20261116/index.json",
+        "src/components/payroll-import/import-flow.tsx",
+        "src/components/payroll-import/export-flow.tsx",
+        "src/components/restrictions/restrictions-screen.tsx",
+        "src/components/owner-advisor/business/business-page.tsx",
+        "src/components/owner-advisor/business/business-map.tsx"
       ]
     },
     {
@@ -74,7 +79,11 @@
         "src/components/period-close-history.tsx",
         "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
         "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
-        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json"
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
+        "src/components/reminders/machine.ts",
+        "src/components/reminders/view.ts",
+        "src/components/restrictions/restrictions-screen.tsx",
+        "src/components/payroll-import/import-flow.tsx"
       ]
     },
     {
@@ -101,7 +110,10 @@
         "src/app/app/help/page.tsx",
         "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
         "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
-        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json"
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
+        "src/app/app/availability/agreement/page.tsx",
+        "src/components/employee-b/home-b.tsx",
+        "src/components/access-recovery/support-reference-seam.ts"
       ]
     },
     {
@@ -140,7 +152,10 @@
         "src/lib/owner-advisor/business/fence.server.ts",
         "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
         "docs/handoffs/2026-11-16-rondo-development-integration.md",
-        "docs/qa/rondo-development-integration-20261116/index.json"
+        "docs/qa/rondo-development-integration-20261116/index.json",
+        "src/components/owner-advisor/business/business-page.tsx",
+        "src/components/owner-advisor/business/business-map.tsx",
+        "src/components/owner-advisor/business/business-client.ts"
       ]
     },
     {
@@ -195,7 +210,10 @@
         "src/lib/owner-advisor/business/fence.server.ts",
         "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
         "docs/handoffs/2026-11-16-rondo-development-integration.md",
-        "docs/qa/rondo-development-integration-20261116/index.json"
+        "docs/qa/rondo-development-integration-20261116/index.json",
+        "src/test/integration/claude-ui-joined-browser.integration.ts",
+        "src/test/integration/claude-business-ui-browser.integration.ts",
+        "src/lib/support-reference.ts"
       ]
     },
     {
@@ -239,7 +257,10 @@
         "src/lib/owner-advisor/business/fence.server.ts",
         "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
         "docs/handoffs/2026-11-16-rondo-development-integration.md",
-        "docs/qa/rondo-development-integration-20261116/index.json"
+        "docs/qa/rondo-development-integration-20261116/index.json",
+        "src/components/owner-advisor/business/business-client.ts",
+        "src/components/payroll-import/export-flow.tsx",
+        "src/components/reminders/machine.ts"
       ]
     }
   ]

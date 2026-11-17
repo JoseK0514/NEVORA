@@ -115,3 +115,11 @@ use its recovery/check control before repeating it. Use **More → Help** for
 technical support; contact your employer for work decisions. Include a safe page
 description and approximate time, without passwords, codes, bank details or pay
 documents.
+
+## View or request agreed times
+
+From **Availability**, open **Agreed times** to see the management agreement in
+effect, future versions and your requests. **Ask to change it** submits a request;
+it does not approve or activate the requested change. The agreement and your
+availability preferences are separate. A Lead follows the same personal workflow.
+If a save is unconfirmed, check the original action before sending a new request.

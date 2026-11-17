@@ -228,3 +228,18 @@ Business evidence maintenance and model retrieval use separate default-off Owner
 See [business backend contract](../../handoffs/2026-11-16-rondo-business-evidence-ui-contract.md).
 
 Posted cash is assigned by posting time, including cross-month occurrences. Cash inflows/outflows and sale/refund amounts/counts are separate from net totals. Reconciliation must hold within every admitted cash window and across shared boundaries; offsetting discrepancies cannot establish clearance. CURRENT freshness is capped at the requested window end. Source deletion conservatively clears all workspace business answer-receipt payloads as well as structured inspection content, retaining content-free operation/request identities and unrelated ordinary history.
+
+## Combined UI acceptance and uncertain operations
+
+Development is the working and acceptance line, held to production standards.
+Source publication and passing CI do not prove hosted configuration, migration
+state or browser acceptance on a hosted environment. Main and production promotion
+require Jose's separate approval. Keep business/import/retrieval and delivery holds
+truthful; this UI integration does not activate providers or authorize real data tests.
+
+For an uncertain financial or reminder write, preserve the original operation
+reference and recover its receipt under current authority. An absent completed
+receipt is not a guarantee against a late commit. Do not create a replacement to
+resolve uncertainty. Private data must hide after its observation expires or the
+user steps away, including while a refresh is pending. Share only a content-free
+support reference with support, never imported records, credentials or recovery codes.

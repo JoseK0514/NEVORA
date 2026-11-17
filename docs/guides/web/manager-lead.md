@@ -109,3 +109,21 @@ outcome** or recovery action after an unconfirmed save rather than creating a
 second request. A missing or unavailable read is not a confirmed empty result.
 Use **More → Help** for an app problem and keep private employee/pay data out of
 support messages.
+
+## Agreements, reminders and imported pay
+
+Within your granted coverage, a person's Team page offers **When they can be
+scheduled**. Review current and future agreements and decide each request against
+the current effective-week bound. Employee requests never approve themselves.
+
+Availability and an Update's **Read by** list may offer reminders to Managers
+with Company access. Eligibility, cooldown and workplace holds still apply.
+**Queued** is not delivered. When the result or its receipt is not confirmed,
+keep the original operation and use its check or exact retry; no receipt yet does
+not prove that nothing can still be queued. A restricted Manager asks an Owner
+for help rather than changing access.
+
+When explicitly granted payroll review access, **Import pay** opens the same
+file/matching/review workflow as the Owner guide. Time-export access and financial
+payroll access remain different permissions. Lead uses the Employee workflow and
+does not gain management authority from these screens.

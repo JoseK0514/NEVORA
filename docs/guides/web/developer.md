@@ -208,3 +208,22 @@ Business evidence is an additive default-off Owner module under src/lib/owner-ad
 See [business backend contract](../../handoffs/2026-11-16-rondo-business-evidence-ui-contract.md).
 
 Posted cash is assigned by posting time, including cross-month occurrences. Cash inflows/outflows and sale/refund amounts/counts are separate from net totals. Reconciliation must hold within every admitted cash window and across shared boundaries; offsetting discrepancies cannot establish clearance. CURRENT freshness is capped at the requested window end. Source deletion conservatively clears all workspace business answer-receipt payloads as well as structured inspection content, retaining content-free operation/request identities and unrelated ordinary history.
+
+## November 17 combined UI contract checks
+
+The six delivered UI feature items and Employee/Lead Phase 4 are integrated from
+Claude's exact pushed source through a checked linear tree import. Preserve
+server-owned contracts and the source inventory's honest non-ancestry disposition.
+The real joined browser journeys cover CSV custody, re-matched/corrected reviewed
+amounts, explicit paid-break decisions and an actual reconciled manifest, plus a
+post-commit Rondo context conflict, original receipt recovery, map publication and
+figures. Fixtures use ownership-marked local PostgreSQL and pinned browsers;
+forced successful API responses do not establish acceptance.
+
+Keep Rondo and timecard data observations bounded by the original request lifetime.
+Never clear uncertain command custody on a missing receipt or a post-commit response
+fence refusal. Support references come only from the failed response's validated
+X-Nevora-Request-Id header; they are separate from operation and deletion IDs.
+Rebuild all six manuals from committed final inputs. GitHub qualification uses an
+immutable candidate tag and both workflows on that exact SHA before a normal
+fast-forward to Development; hosted configuration and acceptance remain separate.

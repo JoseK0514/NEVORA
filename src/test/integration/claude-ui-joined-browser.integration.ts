@@ -19,7 +19,7 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     vi.stubEnv('NEVORA_PAYROLL_ENABLED','true');
     await seedOwnedApp(app.database.executor);const fixture=await seedPayrollFixture(app.database.executor,{breaks:true});
     page.on('pageerror',(e:Error)=>errors.push(page.url()+' '+e.stack));page.setDefaultTimeout(20000);
-    page.on('request',(r:any)=>{const u=new URL(r.url());if(u.origin===app.url&&(u.pathname.startsWith('/api/')||r.headers().rsc==='1'))requests.add(r);});
+    page.on('request',(r:any)=>{const u=new URL(r.url());if(u.origin===app.url&&u.pathname.startsWith('/api/'))requests.add(r);});
     page.on('requestfinished',(r:any)=>{requests.delete(r);});
     page.on('requestfailed',(r:any)=>{requests.delete(r);network.push({event:'failed',url:r.url(),failure:r.failure()?.errorText});});
     await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){external.push(url.origin);await route.abort();}else await route.continue();});
@@ -42,7 +42,7 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     const rematchedCsv='employeeId,gross,employeeDeductions,employerContributions,net\r\nexternal-worker,1000,123.40,70,876.60\r\n';
     const rematchChooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'Choose a file',exact:true}).click();await (await rematchChooser).setFiles({name:'fictional-rematch.csv',mimeType:'text/csv',buffer:Buffer.from(rematchedCsv)});
     await page.getByLabel('Payroll system',{exact:true}).fill('Fictional accountant');await page.getByLabel('Report or reference',{exact:true}).fill('REMATCH-'+engine);
-    await page.getByRole('button',{name:'Match people',exact:true}).click();await page.locator('.pim-pick__in').fill(fixture.ids.a);await page.locator('.pim-pick__in').press('Enter');
+    await page.getByRole('button',{name:'Match people',exact:true}).click();await page.locator('.pim-pick__in').fill(fixture.ids.a);await page.getByRole('option',{name:new RegExp(fixture.ids.a)}).waitFor();await expect.poll(()=>page.getByRole('option').count()).toBe(1);await page.locator('.pim-pick__in').press('Enter');await expect.poll(()=>page.locator('.pim-pick__in').inputValue()).toBe('María José Fictional QA');
     const zeroChoices=page.getByRole('radio',{name:'Not paid this period',exact:true});expect(await zeroChoices.count()).toBe(roster.length-1);for(const choice of await zeroChoices.all())await choice.check();
     await page.getByRole('button',{name:'Review amounts',exact:true}).click();
     for(const [field,amount] of [['gross','1001.00'],['net','877.60']]){await page.getByRole('button',{name:new RegExp('^Correct '+field+' for')}).click();await page.locator('.pim-amt__in').fill(amount);await page.locator('.pim-amt__in').press('Enter');}
