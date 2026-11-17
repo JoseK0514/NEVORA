@@ -2,7 +2,7 @@ import {createElement,type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {expect,it,vi} from 'vitest';
 vi.mock('next/link',()=>({default:({children,prefetch:_prefetch,...props}:ComponentProps<'a'>&{prefetch?:boolean})=>createElement('a',props,children)}));
-import {EmployeeNotificationList,notificationGroup,notificationTitle} from './notifications-list';
+import {EmployeeNotificationList,notificationGroup,notificationHeadline,notificationTitle} from './notifications-list';
 import type {EmployeeNotificationItem} from '../../lib/employee-view';
 const zone='America/Puerto_Rico',now=new Date('2026-10-31T16:00:00Z');
 const item=(id:string,at:string,label='Schedule update',extra:Partial<EmployeeNotificationItem>={}):EmployeeNotificationItem=>({id,label,at,href:'/app/notifications/open?notificationId='+id,reviewState:'read',actionState:'none',...extra});
@@ -51,4 +51,28 @@ it('a tapped notice stays pressed with its own spinner while it opens',()=>{
  const row=html.slice(html.indexOf('id="message-a"'),html.indexOf('</a>',html.indexOf('id="message-a"')));
  expect(row).toContain('aria-busy="true"');expect(row).toContain('em-notif-row--busy');expect(row).toContain('em-notif-spin');expect(row).not.toContain('em-notif-dot');
  expect(plain(html)).not.toContain('Opening current details');
+});
+
+it('Phase 4 (EM-005): a headline is the outcome and its object, in English and Spanish, and never guesses',()=>{
+ const head=(label:string,extra:Partial<EmployeeNotificationItem>={},lang:'en'|'es'='en')=>notificationHeadline(item('x','2026-10-30T15:20:00Z',label,extra),lang);
+ const week={kind:'scheduleWeek' as const,startDate:'2026-11-09',endDate:'2026-11-15'},day={kind:'requestDate' as const,startDate:'2026-11-26',endDate:'2026-11-26'},span={kind:'requestDate' as const,startDate:'2026-11-28',endDate:'2026-12-02'};
+ expect(head('Time off approved',{eventType:'TIME_OFF_APPROVED',outcome:'APPROVED',subject:span})).toEqual({title:'Time off approved',object:'Nov 28 – Dec 2',decided:'approved'});
+ expect(head('Time off declined',{eventType:'TIME_OFF_DENIED',outcome:'DENIED',subject:day})).toEqual({title:'Time off declined',object:'Thu, Nov 26',decided:'declined'});
+ expect(head('Time off approved',{eventType:'TIME_OFF_APPROVED',outcome:'CANCELLED',subject:day}).object).toBe('Thu, Nov 26 · Now cancelled');
+ expect(head('Schedule published',{eventType:'SCHEDULE_PUBLISHED',count:2,subject:week})).toEqual({title:'Schedule published',object:'Week of Nov 9 · 2 shifts',decided:null});
+ expect(head('Schedule published',{eventType:'SCHEDULE_PUBLISHED',count:0,subject:week}).object).toBe('Week of Nov 9 · No shifts for you');
+ // A notice that still needs the person is the action, whatever its event type; one without an event type stops at what is known.
+ expect(head('Schedule update',{eventType:'SCHEDULE_ACKNOWLEDGEMENT_REMINDER',actionState:'required',count:4,subject:week})).toEqual({title:'Confirm your schedule',object:'Week of Nov 9 · 4 shifts',decided:null});
+ expect(head('Schedule update')).toEqual({title:'Schedule updated',object:null,decided:null});expect(head('Time-off update',{subject:span}).title).toBe('Time-off request answered');
+ expect(head('Shift swap',{eventType:'SWAP_RESPONSE_REQUIRED',actionState:'available',names:['Ana Colon'],subject:day})).toEqual({title:'Swap request waiting for you',object:'Thu, Nov 26 · From Ana Colon',decided:null});
+ expect(head('Cover',{eventType:'COVERAGE_INVITATION',actionState:'available',subject:day})).toEqual({title:'Cover request waiting for you',object:'Thu, Nov 26',decided:null});
+ expect(head('Shift swap',{eventType:'SWAP_APPROVED',subject:day}).title).toBe('Shift swap approved');expect(head('Cover',{eventType:'COVERAGE_DENIED',subject:day}).decided).toBe('declined');
+ expect(head('Shift request update',{actionState:'complete'}).title).toBe('Shift request closed');expect(head('Can’t-work update',{eventType:'CALLOUT_APPROVED'}).title).toBe('Can’t-work request approved');
+ expect(head('Team update',{actionState:'required'})).toEqual({title:'Team update to acknowledge',object:null,decided:null});expect(head('Team update').title).toBe('New team update');
+ expect(head('Pay statement update').title).toBe('Pay statement shared');expect(head('Availability update',{actionState:'required'}).title).toBe('Send your availability');
+ expect(head('Holiday hours')).toEqual({title:'Holiday hours',object:null,decided:null});
+ // Spanish: every part comes from the copy module and the dates from the es-PR formatter.
+ const es=head('Schedule published',{eventType:'SCHEDULE_PUBLISHED',count:2,subject:week},'es');expect(es.title).toBe('Horario publicado');expect(es.object).toMatch(/^Semana del 9 (de )?nov\.? · 2 turnos$/);
+ expect(head('Shift swap',{eventType:'SWAP_RESPONSE_REQUIRED',actionState:'available',names:['Ana Colon'],subject:day},'es').object).toMatch(/· De Ana Colon$/);
+ expect(head('Time off approved',{eventType:'TIME_OFF_APPROVED',outcome:'CANCELLED',subject:day},'es').object).toMatch(/· Ahora cancelada$/);
 });

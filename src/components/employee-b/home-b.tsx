@@ -14,6 +14,7 @@ import {unpublishedNote} from '../../lib/publication-note';
 import {keepWhole} from '../../lib/keep-whole';
 import {addDays, weekStartFor} from '../../lib/date-utils';
 import type {EmployeeTime} from '../../lib/employee-time';
+import {workCopy} from './work-copy';
 import {useHours} from '../employee-mobile/use-hours';
 import {boardDuration, compactDuration} from '../employee-mobile/hours-model';
 import {businessDate, clock, dayWord, fmt, isComplete, sourceDestinations, sourceNames, todoTitle, weekRange, type HomeWeek} from '../employee-home-quiet';
@@ -36,6 +37,7 @@ export type HomeBExtras = {
   lead?: boolean;
 };
 
+const t = workCopy();
 type Ready = Extract<EmployeeTime, {state: 'ready'}>;
 const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
 const shortDay = (date: string) => fmt('UTC', {weekday: 'short', month: 'short', day: 'numeric'}).format(utcDay(date));
@@ -64,22 +66,23 @@ function daysAway(payday: string, today: string) {
   return days === 0 ? 'today' : days === 1 ? 'tomorrow' : days > 1 ? `in ${days} days` : null;
 }
 
-function paydayWord(payday: string, today: string) {
-  const days = Math.round((utcDay(payday).getTime() - utcDay(today).getTime()) / 86_400_000);
-  return days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : days < 7 ? fmt('UTC', {weekday: 'short'}).format(utcDay(payday)) : fmt('UTC', {month: 'short', day: 'numeric'}).format(utcDay(payday));
-}
-
 /** A Lead's current shift as the first figure ("On shift now", the range, "Shift lead · Barista"). */
 export type OnShiftFigure = {range: string; line: string | null; aria: string};
-function Figures({week, payday, worked, onShift}: {week: HomeWeek | null; payday?: string | null; worked: number | null; onShift?: OnShiftFigure | null}) {
+/** Phase 4 (EM-025): the shift ahead as the strip's first figure where the hero has room ("Next shift", "Tomorrow 9 AM").
+ * Phones leave it out: the shift card is the next thing on the screen (the stylesheet finds it by its link to the card's
+ * heading, #b-home-shift-h). */
+export type NextShiftFigure = {label: string; value: string; line: string | null; aria: string};
+function Figures({week, payday, worked, onShift, nextShift}: {week: HomeWeek | null; payday?: string | null; worked: number | null; onShift?: OnShiftFigure | null; nextShift?: NextShiftFigure | null}) {
   const scheduled = week ? week.shifts.reduce((sum, shift) => { const a = minutesOf(shift.startTime), b = minutesOf(shift.endTime); return sum + (b > a ? b - a : b + 1440 - a); }, 0) : null;
-  const items: BLiveItem[] = onShift ? [{label: 'On shift now', dot: 'live', value: onShift.range, meta: onShift.line ?? undefined, href: '#b-home-shift', aria: onShift.aria}] : [];
-  // Worked time reads as the Time tab writes it ("43 h 34"); the scheduled total stays in hours ("/56 h").
-  if (worked !== null && scheduled) items.push({label: 'This week', value: compactDuration(worked * 60), small: `/${hoursNumber(scheduled)} h`, meta: 'hours worked of scheduled', href: '/app/my-time', aria: `This week, ${boardDuration(worked * 60)} worked of ${hoursNumber(scheduled)} scheduled hours`});
-  else if (worked !== null) items.push({label: 'This week', value: compactDuration(worked * 60), href: '/app/my-time', aria: `This week, ${boardDuration(worked * 60)} worked`});
-  else if (scheduled !== null) items.push({label: 'This week', value: `${hoursNumber(scheduled)} h`, href: '/app/schedule', aria: `This week, ${hoursNumber(scheduled)} hours scheduled`});
-  // Desktop has room for the date ("Fri, Nov 13") and how far off it is; the phone keeps the short word.
-  if (payday && week) items.push({label: 'Scheduled payday', value: <><span className="eb-phone">{paydayWord(payday, week.today)}</span><span className="eb-desk">{fmt('UTC', {weekday: 'short', month: 'short', day: 'numeric'}).format(utcDay(payday))}</span></>,
+  const items: BLiveItem[] = onShift ? [{label: 'On shift now', dot: 'live', value: onShift.range, meta: onShift.line ?? undefined, href: '#b-home-shift', aria: onShift.aria}]
+    : nextShift ? [{label: nextShift.label, value: nextShift.value, meta: nextShift.line ?? undefined, href: '#b-home-shift-h', aria: nextShift.aria}] : [];
+  // Phase 4 (EM-007): the figure and its caption read as one sentence ("17 h of 56 h", "worked this week"). Worked time
+  // reads as the Time tab writes it ("43 h 34"); the scheduled total stays in hours.
+  if (worked !== null && scheduled) items.push({label: t.hours, value: compactDuration(worked * 60), small: `\u00a0${t.ofHours(hoursNumber(scheduled))}`, meta: t.workedThisWeek, href: '/app/my-time', aria: `Hours, ${boardDuration(worked * 60)} worked of ${hoursNumber(scheduled)} scheduled this week`});
+  else if (worked !== null) items.push({label: t.hours, value: compactDuration(worked * 60), meta: t.workedThisWeek, href: '/app/my-time', aria: `Hours, ${boardDuration(worked * 60)} worked this week`});
+  else if (scheduled !== null) items.push({label: t.hours, value: `${hoursNumber(scheduled)} h`, meta: t.scheduledThisWeek, href: '/app/schedule', aria: `Hours, ${hoursNumber(scheduled)} scheduled this week`});
+  // Phase 4 (EM-007): one format for the date at every width ("Fri, Nov 20"), as on Pay, and how far off it is.
+  if (payday && week) items.push({label: 'Scheduled payday', value: fmt('UTC', {weekday: 'short', month: 'short', day: 'numeric'}).format(utcDay(payday)),
     meta: daysAway(payday, week.today), href: '/app/my-pay', aria: `Scheduled payday, ${fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(utcDay(payday))}`});
   return items.length ? <BLive label="This week at a glance" items={items}/> : null;
 }
@@ -93,9 +96,9 @@ function HoursProvider({authority, children}: {authority: string; children: Reac
   const data = panel.read?.view === 'records' && panel.read.data.state === 'ready' ? panel.read.data as Ready : null;
   return <HoursRead.Provider value={data}>{children}</HoursRead.Provider>;
 }
-function HoursFigures({week, payday, onShift}: {week: HomeWeek | null; payday?: string | null; onShift?: OnShiftFigure | null}) {
+function HoursFigures({week, payday, onShift, nextShift}: {week: HomeWeek | null; payday?: string | null; onShift?: OnShiftFigure | null; nextShift?: NextShiftFigure | null}) {
   const data = useContext(HoursRead) ?? null;
-  return <Figures week={week} payday={payday} worked={data ? workedMinutes(data) : null} onShift={onShift}/>;
+  return <Figures week={week} payday={payday} worked={data ? workedMinutes(data) : null} onShift={onShift} nextShift={nextShift}/>;
 }
 
 /** "Starts in 2 h" or "Starts in 45 min" today; otherwise "Tomorrow" or the weekday. */
@@ -108,13 +111,28 @@ function startsIn(shift: PublishedAssignment, snapshot: HomeSnapshot) {
 /** A Lead's Today's team: message everyone on today's published team, through the existing Updates compose. */
 function TeamCard({place}: {place?: string}) {
   return <BCard title="Today’s team" id="b-home-team" meta={place}>
+    {/* Phase 4 (EM-016): a plain row that opens the compose page (no third button look on Home); its note is the card's
+      * footer at every width. */}
     <BList><BRow href="/app/updates/compose" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Message today’s team" sub="Everyone on shift today"
-      label="Message today’s team, everyone on shift today" trail={<BButtonLink href="/app/updates/compose" kind="ghost" label="Write to today’s team" prefetch={false}>Write</BButtonLink>}/></BList>
-    <p className="eb-cardnote eb-desk">Your message goes to today’s published team. Reading it is optional for them.</p>
+      label="Message today’s team, everyone on shift today"/></BList>
+    <BCardNote>Your message goes to today’s published team. Reading it is optional for them.</BCardNote>
   </BCard>;
 }
 
-function ShiftCard({snapshot, lead, heroShows}: {snapshot: HomeSnapshot; lead?: boolean; heroShows?: boolean}) {
+/** Today's shift that has already ended while the person is still clocked in since before its end (Nov 14 inspection: an
+ * open punch hours past the shift read as normal). From the two reads Home already has; no rule about how long is too long. */
+export function endedShiftStillOpen(week: HomeWeek | null, snapshot: HomeSnapshot, clockInAt: string | null): {startTime: string; endTime: string} | null {
+  if (!week || !clockInAt || snapshot.currentShift) return null;
+  const zone = snapshot.timeZone, nowWall = wallNow(snapshot.observedAt, zone), inWall = wallNow(clockInAt, zone);
+  if (inWall.slice(0, 10) !== week.today) return null;
+  const ended = week.shifts.filter(shift => shift.date === week.today && shift.endTime > shift.startTime && `${shift.date} ${shift.endTime}` <= nowWall && inWall < `${shift.date} ${shift.endTime}`)
+    .sort((a, b) => b.endTime.localeCompare(a.endTime))[0];
+  // A later shift today that has not started is the next shift's business ("Clocked in" for it reads as early).
+  const later = week.shifts.some(shift => shift.date === week.today && `${shift.date} ${shift.startTime}` > nowWall);
+  return ended && !later ? {startTime: ended.startTime, endTime: ended.endTime} : null;
+}
+
+function ShiftCard({snapshot, lead, heroShows, week}: {snapshot: HomeSnapshot; lead?: boolean; heroShows?: boolean; week?: HomeWeek | null}) {
   const hours = useContext(HoursRead);
   const zone = snapshot.timeZone;
   if (snapshot.publicationState === 'unavailable') return <BCard title="Next shift" id="b-home-shift"><p className="b-state" role="status">Your schedule couldn’t be checked.</p></BCard>;
@@ -125,6 +143,7 @@ function ShiftCard({snapshot, lead, heroShows}: {snapshot: HomeSnapshot; lead?: 
   const href = `/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}&shift=${encodeURIComponent(shift.shiftId)}`;
   const ends = businessDate(shift.endAt, zone);
   const clockIn = hours?.current && hours.current.state !== 'CLOCKED_OUT' ? hours.current : null;
+  const overrun = clockIn ? endedShiftStillOpen(week ?? null, snapshot, clockIn.clockInAt) : null;
   // Review B6 (NV-161, Jose approved): a Lead's hero already says "On shift now" with the range, so the card is "Your
   // shift", without the "Until" chip or the sentence (the Shift lead chip stays).
   const echo = !!(now && heroShows);
@@ -137,7 +156,9 @@ function ShiftCard({snapshot, lead, heroShows}: {snapshot: HomeSnapshot; lead?: 
       {shift.designatedLead && lead ? <p className="eb-leadline"><BChip tone="teal">Shift lead</BChip>{echo ? null : now || today ? 'You’re shift lead today' : 'You’re shift lead'}</p> : null}
       {/* Review B2 (NV-039): the instruction follows Time's clock state, so Home never sends someone who is clocked in back
         to the tablet to clock in. */}
-      {clockIn ? <div className="eb-tint" data-tone="green"><BIcon tone="green"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
+      {clockIn && overrun ? <div className="eb-tint" data-tone="amber" role="status"><BIcon tone="amber"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
+        <span className="b-notice__t">{t.stillClockedIn(clock(clockIn.clockInAt, zone))}</span><span className="b-notice__s">{t.shiftEnded(compactRange(`${wallTime(overrun.startTime)} – ${wallTime(overrun.endTime)}`), clockIn.locationName)}</span></span></div>
+        : clockIn ? <div className="eb-tint" data-tone="green"><BIcon tone="green"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
         <span className="b-notice__t">{clockIn.state === 'ON_BREAK' ? 'On break' : `Clocked in at ${clock(clockIn.clockInAt, zone)}`}</span><span className="b-notice__s">Breaks and clock out on the {shift.locationLabel} tablet</span></span></div>
         : now && hours ? <div className="eb-tint" data-tone="amber"><BIcon tone="amber"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
         <span className="b-notice__t">Not clocked in yet</span><span className="b-notice__s">Clock in on the {shift.locationLabel} tablet</span></span></div>
@@ -168,13 +189,16 @@ function ComingUp({week, snapshot, lead, note}: {week: HomeWeek; snapshot: HomeS
   const rows = all.filter(shift => shift.date >= week.today && ahead(shift, snapshot.observedAt, snapshot.timeZone) && !(shift.date === shown?.date && shift.startTime === shownStart))
     .sort((a, b) => a.date.localeCompare(b.date) || a.startTime.localeCompare(b.startTime));
   if (!rows.length) return note ? <BNote>{note}</BNote> : null;
-  return <BCard title="Coming up" id="b-home-upcoming" link={{href: '/app/schedule', label: 'See all', aria: 'See all shifts'}}>
-    <BList>{rows.slice(0, 3).map(shift => {
+  const shownRows = rows.slice(0, 3);
+  // Phase 4 (EM-015): a Lead who leads every shift listed reads it once, beside the title; the rows don't repeat it.
+  const allLed = !!lead && shownRows.length > 1 && shownRows.every(shift => shift.lead);
+  return <BCard title={allLed ? <>Coming up<span className="eb-hmeta">{t.leadAll(shownRows.length)}</span></> : 'Coming up'} id="b-home-upcoming" link={{href: '/app/schedule', label: 'See all', aria: 'See all shifts'}}>
+    <BList>{shownRows.map(shift => {
       const at = utcDay(shift.date);
       const href = `/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}${shift.id ? `&shift=${encodeURIComponent(shift.id)}` : ''}`;
       return <BRow key={`${shift.date}-${shift.startTime}`} href={href} lead={<BDay date={shift.date}/>} title={keepWhole(`${wallTime(shift.startTime)} – ${wallTime(shift.endTime)}`)}
         // Review B6 (NV-163): "Shift lead" leads the sub-line, as on Schedule, so it never competes with a chip.
-        sub={lead && shift.lead || shift.where ? <Dotted text={[lead && shift.lead ? 'Shift lead' : null, shift.where].filter(Boolean).join(' · ')}/> : undefined}
+        sub={lead && shift.lead && !allLed || shift.where ? <Dotted text={[lead && shift.lead && !allLed ? 'Shift lead' : null, shift.where].filter(Boolean).join(' · ')}/> : undefined}
         label={keepWhole(`${fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(at)}, ${wallTime(shift.startTime)} to ${wallTime(shift.endTime)}${shift.where ? `, ${shift.where}` : ''}${lead && shift.lead ? ', shift lead' : ''}`)}/>;
     })}</BList>
     {/* Review B6 (NV-273): the note about what isn't published yet qualifies these shifts, so it is the card's footer. */}
@@ -182,10 +206,21 @@ function ComingUp({week, snapshot, lead, note}: {week: HomeWeek; snapshot: HomeS
   </BCard>;
 }
 
-function TodoIcon({item, confirm}: {item: AttentionItem; confirm: boolean}) {
+function TodoIcon({item}: {item: AttentionItem}) {
   const Icon = item.ref.kind === 'SCHEDULE' ? CalendarCheckIcon : item.ref.kind === 'TIME_OFF' ? SunIcon : item.ref.kind === 'EXCHANGE' ? ArrowsLeftRightIcon
     : item.ref.kind === 'COMMUNICATION' ? MegaphoneSimpleIcon : ClockIcon;
-  return <BIcon tone={confirm || item.required ? 'teal' : 'grey'}><Icon weight="bold"/></BIcon>;
+  // Phase 4 (EM-008, EM-017): every to-do opens something, so every lead is the teal circle; the amber chip alone says
+  // "required".
+  return <BIcon tone="teal"><Icon weight="bold"/></BIcon>;
+}
+
+/** Phase 4 (EM-002): the rows Home shows, in the server's order (HomeTaskSummary ranking v1; nothing is re-ranked here).
+ * When no required row falls inside the first `limit`, the first required row after them is shown too, in its own place,
+ * so the one thing a manager asked for is never missing from Home. */
+export function homeTodoPreview<T extends {item: {required: boolean}}>(todos: readonly T[], limit: number): T[] {
+  const rows = todos.slice(0, limit);
+  if (!rows.some(todo => todo.item.required)) { const held = todos.slice(limit).find(todo => todo.item.required); if (held) rows.push(held); }
+  return rows;
 }
 
 export type HomeTodo = {key: string; item: AttentionItem; week: boolean};
@@ -206,6 +241,14 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
   const onShift: OnShiftFigure | null = now && snapshot ? {range: compactRange(`${clock(now.startAt, snapshot.timeZone)} – ${clock(now.endAt, snapshot.timeZone)}`),
     line: now.designatedLead ? ['Shift lead', now.positionLabel].filter(Boolean).join(' · ') : now.positionLabel || null,
     aria: `On shift now, ${clock(now.startAt, snapshot.timeZone)} to ${clock(now.endAt, snapshot.timeZone)}${now.designatedLead ? ', shift lead' : ''}`} : null;
+  // Phase 4 (EM-025): with nobody "on shift now" in the hero, the shift ahead is its first figure (tablets and desktop).
+  const ahead = snapshot && snapshot.publicationState !== 'unavailable' && !onShift ? snapshot.currentShift ?? snapshot.nextShift : null;
+  const nextShift: NextShiftFigure | null = ahead && snapshot ? snapshot.currentShift
+    ? {label: t.onShiftUntil, value: clock(ahead.endAt, snapshot.timeZone), line: [ahead.positionLabel, ahead.locationLabel].filter(Boolean).join(' · ') || null,
+      aria: `On shift until ${clock(ahead.endAt, snapshot.timeZone)}`}
+    : {label: t.nextShift, value: `${dayWord(ahead, snapshot)} ${clock(ahead.startAt, snapshot.timeZone).replace(/:00(?=\D)/, '')}`,
+      line: [ahead.positionLabel, ahead.locationLabel].filter(Boolean).join(' · ') || null,
+      aria: `Next shift, ${dayWord(ahead, snapshot)}, ${clock(ahead.startAt, snapshot.timeZone)} to ${clock(ahead.endAt, snapshot.timeZone)}`} : null;
   const note = snapshot?.publicationState === 'partial' ? unpublishedNote(snapshot.unpublishedLocations ?? []) : null;
   const todoRow = ({key, item, week: confirm}: HomeTodo) => {
     const title = keepWhole(confirm ? weekTodo(item).title : todoTitle(item));
@@ -214,20 +257,33 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
     // urgent (the first required one) keeps the teal Review pill, so the card has one primary action.
     return item.required
       ? key === firstRequired
-        ? <BRow key={key} href={item.href} lead={<TodoIcon item={item} confirm={confirm}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} label={`${title}, action needed, review`} trail={<BButtonLink href={item.href} kind="teal" label={`Review: ${title}`} prefetch={false}>Review</BButtonLink>}/>
-        : <BRow key={key} href={item.href} lead={<TodoIcon item={item} confirm={confirm}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} chevron label={`${title}, action needed`}/>
-      : <BRow key={key} href={item.href} lead={<TodoIcon item={item} confirm={confirm}/>} title={title} sub={sub}/>;
+        ? <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} label={`${title}, action needed, review`} trail={<BButtonLink href={item.href} kind="teal" label={`Review: ${title}`} prefetch={false}>Review</BButtonLink>}/>
+        : <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} chevron label={`${title}, action needed`}/>
+      : <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} sub={sub}/>;
   };
   const firstRequired = todos.find(todo => todo.item.required)?.key;
+  const phoneRows = homeTodoPreview(todos, 3), deskRows = homeTodoPreview(todos, 5);
+  const todoLists = deskRows.reduce<{phone: boolean; rows: HomeTodo[]}[]>((lists, row) => {
+    const phone = phoneRows.includes(row), last = lists.at(-1);
+    if (last && last.phone === phone) last.rows.push(row); else lists.push({phone, rows: [row]});
+    return lists;
+  }, []);
+  // Sources that couldn't be checked, as rows under the to-dos (in the first list when there are none).
+  const sourceRows = partial && snapshot ? HOME_SOURCES.filter(key => !isComplete(snapshot.sources[key])).map(key => {
+    const source = snapshot.sources[key];
+    const state = source.state === 'unavailable' ? (source.reason === 'review_unavailable' ? 'A changed schedule needs review' : 'Couldn’t be checked')
+      : source.reason === 'source_cap' ? 'Partly shown — more records are available' : 'Partly checked';
+    return <BRow key={key} href={sourceDestinations[key]} title={sourceNames[key]} sub={state} label={`Open ${sourceNames[key].toLowerCase()}, ${state.toLowerCase()}`}/>;
+  }) : null;
   const screen = <BScreen>
     {/* A Lead's desktop: Message today's team is the band's white action (eb-desk); phones use the Today's team card. */}
     {/* Review B1 (NV-160): one way to message the team, in the Today’s team card (the band’s copy is gone). */}
     <BHero big eyebrow={<>{snapshot ? <time dateTime={snapshot.observedAt}>{keepWhole(fmt(snapshot.timeZone, {weekday: 'long', month: 'short', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time> : date}{place ? <> · {place}</> : null}</>} title={name ? `Welcome back, ${name}` : 'Home'}>
-      {snapshot ? hoursAuthority ? <HoursFigures week={weekShown} payday={payday} onShift={onShift}/> : <Figures week={weekShown} payday={payday} worked={null} onShift={onShift}/> : null}
+      {snapshot ? hoursAuthority ? <HoursFigures week={weekShown} payday={payday} onShift={onShift} nextShift={nextShift}/> : <Figures week={weekShown} payday={payday} worked={null} onShift={onShift} nextShift={nextShift}/> : null}
     </BHero>
     <BStack>
       {snapshot ? <>
-        <ShiftCard snapshot={snapshot} lead={lead} heroShows={!!onShift}/>
+        <ShiftCard snapshot={snapshot} lead={lead} heroShows={!!onShift} week={weekShown}/>
         {intro ?? null}
         {/* Review B6 (NV-162, NV-288): Things to do (with its deadlines) comes before a Lead's optional Today's team, so on
           * a phone the to-dos are higher and on desktop the focus order follows the columns (left, then right). */}
@@ -235,16 +291,13 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
           // Review B2 (NV-037): the link opens Notifications, so it says so.
           link={todos.length > 3 ? {href: '/app/notifications', label: 'All notifications', aria: 'See all notifications'} : undefined}>
           <BList>
-            {todos.slice(0, 3).map(todoRow)}
-            {partial ? HOME_SOURCES.filter(key => !isComplete(snapshot.sources[key])).map(key => {
-              const source = snapshot.sources[key];
-              const state = source.state === 'unavailable' ? (source.reason === 'review_unavailable' ? 'A changed schedule needs review' : 'Couldn’t be checked')
-                : source.reason === 'source_cap' ? 'Partly shown — more records are available' : 'Partly checked';
-              return <BRow key={key} href={sourceDestinations[key]} title={sourceNames[key]} sub={state} label={`Open ${sourceNames[key].toLowerCase()}, ${state.toLowerCase()}`}/>;
-            }) : null}
+            {/* Phase 4 (EM-002): the server's order. Phones and tablets show the first three, desktop the first five; a
+              * required row outside them is kept (homeTodoPreview). Rows only desktop shows sit in their own list (eb-desk). */}
+            {(todoLists[0]?.rows ?? []).map(todoRow)}
+            {partial && !todoLists.length ? sourceRows : null}
           </BList>
-          {/* Desktop shows two more (the phone keeps three). */}
-          {todos.length > 3 ? <ul className="b-list eb-desk">{todos.slice(3, 5).map(todoRow)}</ul> : null}
+          {todoLists.slice(1).map((list, index) => <ul key={index} className={list.phone ? 'b-list' : 'b-list eb-desk'}>{list.rows.map(todoRow)}</ul>)}
+          {partial && todoLists.length ? <BList>{sourceRows}</BList> : null}
         </BCard> : null}
         {/* Review B6 (NV-095): a Lead's right column (Today's team over Coming up) is one column on desktop, so it flows
           * under the team card instead of waiting for the shift card's row. On a phone it is two cards in the stack. */}

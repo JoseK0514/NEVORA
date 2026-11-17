@@ -22,7 +22,7 @@ it('reads a time-off request as its dates over its days and length, in today’s
   expect(timeOffRange(request('b', 'PENDING', '2026-10-30', '2026-11-02'))).toBe('Oct 30 – Nov 2');
   expect(timeOffRange(request('c', 'PENDING', '2026-11-13', '2026-11-13'))).toBe('Nov 13');
   expect(timeOffSpan(request('c', 'PENDING', '2026-11-13', '2026-11-13'))).toBe('Fri · All day');
-  expect(timeOffSpan(request('d', 'PENDING', '2026-11-13', '2026-11-13', ['09:00', '12:00']))).toBe('Fri · Part of day · 9:00 AM – 12:00 PM');
+  expect(timeOffSpan(request('d', 'PENDING', '2026-11-13', '2026-11-13', ['09:00', '12:00']))).toBe('Fri · 9:00 AM – 12:00 PM');
 });
 
 it('maps today’s request tones to the B chips and says when a swap waits on you', () => {
@@ -49,8 +49,9 @@ it('draws Time off’s list on the phone with the same rows, links and empty wor
   const html = plain(renderToStaticMarkup(<EmployeeTimeOff authority="a" selection="list" filter="waiting"/>)), b = onlyB(html);
   expect(b).toContain('>Time off</h1>');expect(b).toContain('aria-current="page" href="/app/requests"');expect(b).toContain(`href="/app/requests?requestId=${PENDING}"`);
   expect(b).toContain('aria-hidden="true">·</span>Thu – Sat</span>');expect(b).toContain('<span class="b-sr">, </span>3 days</span>');expect(b).toContain('href="/app/requests?tab=new"');
-  // Review B1 (NV-280): the Waiting tab shows no Waiting chip on its rows; the row's name still ends ", Waiting".
-  expect(b).not.toContain('b-chip--amber">Waiting<');expect(b).toContain('3 days, Waiting"');
+  // Phase 4 (EM-023): a waiting row ends with the amber Waiting chip, and the Waiting tab carries its count.
+  expect(b).toContain('b-chip--amber">Waiting<');expect(b).toContain('3 days, Waiting"');
+  expect(b).toContain('Waiting<span class="eb-segn"><span class="b-sr">, </span>1</span>');expect(b).toContain('>Decided</a>');
   expect(b).toContain('Open a request to see its details or withdraw it.');
   expect(withoutB(html)).toContain('c-meta">Waiting<');
   fixture.read = {view: 'timeoff', enabled: true, timeZone: 'America/New_York', data: {requests: []}};

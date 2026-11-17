@@ -6,6 +6,7 @@ import type {EmployeeNotificationItem,EmployeeViewSnapshot} from '../../lib/empl
 import type {PrivatePanelState} from '../../lib/private-snapshot-client';
 import {notificationCountNote,notificationKindFor,notificationName,notificationOutcomeNote} from '../../lib/notification-facts';
 import {CorpCard,CorpCount} from '../corp/corp';
+import {ACCOUNT_LOCALE,accountCopy,type AccountLang} from '../employee-b/account-copy';
 import './account-corp.css';
 
 export type NotificationTab='all'|'unread';
@@ -53,6 +54,51 @@ export function notificationTitle(item:EmployeeNotificationItem):string{
   case 'PAYROLL_STATEMENT':return 'A pay statement was shared with you';
   default:return item.label;
  }
+}
+
+/** Phase 4 (EM-005): a row in two parts. `title` is the outcome in a few words ("Time off approved", "Confirm your
+ * schedule"); `object` is what it is about, from the dates, the name and the count the list sends ("Nov 30 – Dec 2",
+ * "Week of Nov 9 · 2 shifts", "Sat, Nov 21 · From Ana Colon"), or null when the list sends none of them (a team update's
+ * title and a pay statement's period are not in the read). `decided` is set only for a decision the event type names.
+ * Nothing is guessed: without an event type the title stops at "answered" or "updated", as notificationTitle does. */
+export type NotificationHeadline={title:string;object:string|null;decided:'approved'|'declined'|null};
+const headlineDay=(date:string,locale:string,weekday:boolean)=>new Intl.DateTimeFormat(locale,{timeZone:'UTC',...(weekday?{weekday:'short'}:{}),month:'short',day:'numeric'}).format(new Date(`${date}T12:00:00Z`));
+export function notificationHeadline(item:EmployeeNotificationItem,lang:AccountLang='en'):NotificationHeadline{
+ const t=accountCopy(lang),locale=ACCOUNT_LOCALE[lang],subject=item.subject??null,needed=item.actionState==='required',who=notificationName(item);
+ const kind=notificationKindFor(item),event=needed?null:item.eventType??null;
+ const dates=!subject?null:subject.kind==='scheduleWeek'?t.weekOf(headlineDay(subject.startDate,locale,false))
+  :subject.startDate===subject.endDate?headlineDay(subject.startDate,locale,true)
+  :`${headlineDay(subject.startDate,locale,false)} – ${subject.startDate.slice(0,7)===subject.endDate.slice(0,7)?Number(subject.endDate.slice(8)):headlineDay(subject.endDate,locale,false)}`;
+ const count=/^SCHEDULE_/.test(item.eventType??'')&&typeof item.count==='number'&&Number.isSafeInteger(item.count)&&item.count>=0?t.shifts(item.count):null;
+ const later=notificationOutcomeNote(item),now=later?t.now[later.replace(/^Now /,'')]??null:null;
+ const forYou=item.actionState==='available'&&(item.eventType==='SWAP_RESPONSE_REQUIRED'||item.eventType==='COVERAGE_INVITATION');
+ const object=[dates,count,forYou&&who?t.from(who):null,now].filter(Boolean).join(' · ')||null;
+ const decided=/_APPROVED$/.test(event??'')?'approved' as const:/_DENIED$/.test(event??'')?'declined' as const:null;
+ const title=((): string=>{
+  switch(event){
+   case 'SCHEDULE_PUBLISHED':return t.schedulePublished;
+   case 'TIME_OFF_APPROVED':return t.timeOffApproved;
+   case 'TIME_OFF_DENIED':return t.timeOffDeclined;
+   case 'CALLOUT_APPROVED':return t.calloutApproved;
+   case 'CALLOUT_DENIED':return t.calloutDeclined;
+   case 'SWAP_APPROVED':return t.swapApproved;
+   case 'SWAP_DENIED':return t.swapDeclined;
+   case 'COVERAGE_APPROVED':return t.coverApproved;
+   case 'COVERAGE_DENIED':return t.coverDeclined;
+  }
+  if(forYou)return item.eventType==='SWAP_RESPONSE_REQUIRED'?t.swapForYou:t.coverForYou;
+  switch(kind){
+   case 'SCHEDULE':return needed?t.scheduleConfirm:t.scheduleUpdated;
+   case 'TIME_OFF':return t.timeOffAnswered;
+   case 'CALLOUT':return t.calloutAnswered;
+   case 'EXCHANGE':return item.actionState==='available'?t.requestForYou:item.actionState==='complete'?t.requestClosed:t.requestUpdated;
+   case 'AVAILABILITY':return needed?t.availabilityDue:item.actionState==='complete'?t.availabilitySent:t.availabilityReminder;
+   case 'COMMUNICATION':return needed?t.updateToAcknowledge:t.updateShared;
+   case 'PAYROLL_STATEMENT':return t.payStatementShared;
+   default:return item.label;
+  }
+ })();
+ return {title,object,decided:decided&&kind?decided:null};
 }
 
 /** Board E-Notifications (upscale B7): All / Unread tabs, then the notices grouped by day in cards, one row per notice.

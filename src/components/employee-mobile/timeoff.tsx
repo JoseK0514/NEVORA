@@ -57,7 +57,7 @@ export function EmployeeTimeOff({authority,selection,filter}:{authority:string;s
  const denied=panel.state.snapshot?.state==='unavailable'&&panel.state.snapshot.reason==='access_denied';
  // Direction B (phones only): the same page as the B screen. The form, its receipt and the withdraw step stay in this page
  // once (b-keep) and are drawn as that screen's cards.
- const b=<TimeOffB page={isNew?'new':isList?'list':'detail'} filter={filter} enabled={read?read.enabled:null} earlier={!isNew&&(pending||uncertain)} requests={shown} request={row??null} zone={read?.timeZone??'UTC'}
+ const b=<TimeOffB page={isNew?'new':isList?'list':'detail'} filter={filter} enabled={read?read.enabled:null} earlier={!isNew&&(pending||uncertain)} requests={shown} request={row??null} zone={read?.timeZone??'UTC'} waiting={read?read.data.requests.filter(r=>r.status==='PENDING').length:null}
   state={read?null:<TimeOffStateB paused={panel.state.paused} denied={denied} refreshing={panel.state.refreshing} onRetry={panel.refresh}/>}/>;
  return <PlanningFrame b={b} bTitleId="b-timeoff-title" title={title} sub="" sheet={isNew} back={isList?'/app/requests/hub':isNew?listHref:'/app/requests/hub'} backLabel="Requests" selection={selection} state={panel.state} ready={!!read} refresh={panel.refresh}>
   {read&&!read.enabled?<p className="c-note" role="status">Time off is turned off for your company.</p>:read?<>

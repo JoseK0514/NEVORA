@@ -31,11 +31,13 @@ it("keeps an Owner's page closed to a Manager, with the same notice", async () =
 it.each(["EMPLOYEE", "LEAD"])("tells a %s the page is for Owners and Managers, how to get access, and the way Home", async role => {
   fixture.role = role;
   const out = renderToStaticMarkup(await RestrictedPage());
-  expect(out).toContain('<h1 id="owner-only-title">That page is for Owners and Managers</h1>');
+  // Phase 4 (EM-019): an Employee or Lead sees the one state screen too (a single title that can take focus).
+  expect(out).toMatch(/<h1 id="owner-only-title"[^>]*>That page is for Owners and Managers<\/h1>/);
+  expect(out.match(/<h1/g)).toHaveLength(1);
   expect(out).toContain("Ask your Owner if you need access.");
-  // One way forward at every width: the phone screen's teal pill and the kit's primary button.
-  expect(out).toContain('<a href="/app" class="b-btn b-btn--teal">Go to Home</a>');
-  expect(out).toContain('<a href="/app" class="c-btn">Go to Home</a>');
+  // One way on at every width, as the tinted pill, with the lock in the kit's round holder.
+  expect(out).toContain('<a href="/app" class="b-btn b-btn--ghost">Go to Home</a>');
+  expect(out.match(/Go to Home/g)).toHaveLength(1);expect(out).toContain('data-kind="locked"');
   expect(out).not.toContain("Back to Home");
   expect(await generateMetadata()).toEqual({ title: "That page is for Owners and Managers" });
 });

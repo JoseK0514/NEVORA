@@ -11,6 +11,7 @@ import {BEmpty} from './requests-b';
 import {ClockCounterClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ClockCounterClockwise';
 import {BButtonLink, BCard, BChip, BHero, BList, BNote, BRow, BScreen, BStack} from '../owner-b/b-kit';
 import {PAY_DIFFERENCE_LINE, PAY_SCOPE_LINE, type PayView} from '../employee-mobile/pay';
+import {workCopy} from './work-copy';
 import './pay.css';
 
 /* Employee Pay on the phone, Direction B (Jose approved the mock, Nov 6, 2026): money gets the dark ink hero. Statements
@@ -126,19 +127,22 @@ export function PayB(props: PayBProps) {
     </BScreen>;
   }
 
-  const latest = ready ? ordered[0] : null, earlier = ready ? ordered.slice(1, 3) : [];
+  // Phase 4 (EM-025): tablets and desktop have room for five earlier statements; phones keep two and "See all".
+  const latest = ready ? ordered[0] : null, earlier = ready ? ordered.slice(1, 3) : [], earlierWide = ready ? ordered.slice(3, 6) : [];
   const showPayday = !!nextPay && listed && daysUntil !== null && daysUntil >= 0;
   const when = daysUntil === 0 ? 'Today' : daysUntil === 1 ? 'Tomorrow' : `In ${daysUntil} days`;
   return <BScreen ink>
     {/* Desktop: Pay history is the band's glass action (eb-desk); the phone reaches it from the Earlier card. */}
     <BHero title="Pay" titleId="b-pay-title" right={<span className="eb-desk"><BButtonLink href="/app/my-pay?view=history" kind="glass"><ClockCounterClockwiseIcon size={16} weight="bold" aria-hidden="true"/>Pay history</BButtonLink></span>}>
+      {/* Phase 4 (EM-010): the period is plain band text under the date, not a chip; the one glass pill sits beside the
+        * block at 44px (phones) or 48px. */}
       {showPayday ? <div className="b-hpad ep-next">
-        <p className="ep-next__k">Scheduled payday · {when}</p>
-        <p className="ep-next__v">{payday(nextPay!.payday)}</p>
-        <div className="ep-next__row">
-          {nextPay!.period ? <span className="b-chip b-chip--ok">For work {period(nextPay!.period.startDate, nextPay!.period.endDate)}</span> : null}
-          <BButtonLink href="/app/my-time" kind="glass" label="See your hours"><ClockIcon size={15} weight="bold" aria-hidden="true"/>See your hours</BButtonLink>
+        <div className="ep-next__tx">
+          <p className="ep-next__k">Scheduled payday · {when}</p>
+          <p className="ep-next__v">{payday(nextPay!.payday)}</p>
+          {nextPay!.period ? <p className="ep-next__p">For work {period(nextPay!.period.startDate, nextPay!.period.endDate)}</p> : null}
         </div>
+        <BButtonLink href="/app/my-time" kind="glass" label="See your hours"><ClockIcon size={16} weight="bold" aria-hidden="true"/>See your hours</BButtonLink>
       </div> : null}
     </BHero>
     <BStack>
@@ -152,6 +156,7 @@ export function PayB(props: PayBProps) {
       </BCard> : fallback}
       {earlier.length ? <BCard id="b-pay-recent" title="Earlier" link={ordered.length > 3 ? {href: '/app/my-pay?view=history', label: 'See all', aria: 'See all statements'} : undefined}>
         <BList label="Earlier statements">{earlier.map(item => <Row key={item.id} item={item} byId={byId}/>)}</BList>
+        {earlierWide.length ? <ul className="b-list eb-desk" aria-label={workCopy().moreEarlierStatements}>{earlierWide.map(item => <Row key={item.id} item={item} byId={byId}/>)}</ul> : null}
       </BCard> : latest ? <BCard label="Pay history"><BList><BRow href="/app/my-pay?view=history" title="Pay history" sub="Every published statement"/></BList></BCard> : null}
       {/* Inspection Nov 14 (PY-7): a scheduled payday is not a payment from NEVORA; one quiet line says who pays. */}
       {listed ? <BNote>{PAY_SCOPE_LINE}</BNote> : null}

@@ -104,7 +104,7 @@ export function TimeTabB({data}:{data:Ready}){
   {/* The corrections sit under last week (the right column on desktop). Review F2 (NV-135): phones show them too, so
     * both widths hold the same content. */}
   <div className="eb-corrections"><BCard label="Your correction requests"><BList>
-   <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="grey"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your correction requests" sub="Sent to your manager for review"/>
+   <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your correction requests" sub="Sent to your manager for review"/>
   </BList></BCard></div>
  </HoursBScreen>;
 }
@@ -190,7 +190,7 @@ export function PastTimecardsB({data,period,today,chosen,weeks,earlier,earlierCo
    </BList>
   </BCard>
   <BCard label="Your correction requests"><BList>
-   <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="grey"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your correction requests" sub="Sent to your manager for review"/>
+   <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your correction requests" sub="Sent to your manager for review"/>
   </BList></BCard>
  </HoursBScreen>;
 }

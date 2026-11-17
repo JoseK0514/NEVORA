@@ -14,6 +14,7 @@ import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {BriefcaseIcon} from '@phosphor-icons/react/dist/ssr/Briefcase';
 import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BScreen, BStack} from '../owner-b/b-kit';
 import {BCardNote} from './parts';
+import {accountCopy} from './account-copy';
 import type {PrivatePanelState} from '../../lib/private-snapshot-client';
 import type {EmployeeViewSnapshot} from '../../lib/employee-view';
 import {timeZoneLabel} from '../../lib/time-zone-label';
@@ -38,9 +39,9 @@ function Field({label, value, help}: {label: string; value: string; help?: strin
 
 /** Profile and settings (board E-Profile): Personal info as label-over-value rows, Display with the language switch,
  * Security. The read is the page's own (one controller for both presentations). */
-export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, ending, lead, name, employeeId}: {
+export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, ending, name, employeeId}: {
   state: PrivatePanelState<EmployeeViewSnapshot>; onRetry: () => void; lang: AuthLang; passkeys: boolean; policies: boolean; ending: boolean;
-  /** A Lead's desktop adds a small Calendar and alerts card (eb-desk; Direction B, Nov 8, 2026). */
+  /** Kept for callers; since Phase 4 (EM-030) the Calendar and alerts card shows for an Employee and a Lead alike. */
   lead?: boolean;
   /** The signed-in name the shell already shows, for Name while the profile read is unavailable (review B6, NV-285). */
   name?: string;
@@ -51,6 +52,7 @@ export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, endi
   const denied = state.snapshot?.state === 'unavailable' && state.snapshot.reason === 'access_denied';
   const phase = state.paused ? 'paused' : ready ? 'ready' : denied ? 'denied' : state.refreshing ? 'loading' : 'unavailable';
   const value = (text: string | undefined) => text ?? '–';
+  const copy = accountCopy();
   return <BScreen back>
     <BHero back={{href: '/app/more', label: 'More'}} title="Profile and settings" titleId="b-profile-title" />
     <BStack>
@@ -62,6 +64,8 @@ export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, endi
             <Field label="Locations" value={value(ready?.profile.locations.join(' · '))} />
             <Field label="Time zone" value={value(ready ? timeZoneLabel(ready.profile.timeZone).replace(/ time$/, '') : undefined)} />
           </ul>
+          {/* Phase 4 (EM-029): the values can't be changed here, so the card says who changes them. */}
+          {ready ? <BCardNote>{copy.personalNote}</BCardNote> : null}
           {ready ? null : <div className="eb-status">
             <p className="b-state" role="status">{state.paused ? 'Profile paused. Return to this window while online to refresh.' : denied ? 'Your access changed. Sign in again to check your current details.' : state.refreshing ? 'Checking your current work details…' : 'We couldn’t load your details.'}</p>
             {denied ? <BButtonLink href="/login" kind="teal" full>Sign in</BButtonLink> : phase === 'unavailable' ? <BButton kind="quiet" full onClick={onRetry}>Try again</BButton> : null}
@@ -75,19 +79,20 @@ export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, endi
             </div>
           </div></li></ul>
         </BCard>
-        {lead ? <div className="eb-desk eb-calalerts"><BCard title="Calendar and alerts" id="b-profile-calendar"><ul className="b-list">
+        {/* Phase 4 (EM-030): the same card for an Employee and a Lead; both use both features. */}
+        <div className="eb-desk eb-calalerts"><BCard title="Calendar and alerts" id="b-profile-calendar"><ul className="b-list">
           <li className="b-li"><Link className="b-row b-row--link" href="/app/profile/calendar"><BIcon tone="grey"><CalendarPlusIcon weight="bold" /></BIcon>
             <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Add to calendar</span></span><span className="b-row__s">Apple, Google or Outlook</span></span><Chev /></Link></li>
           <li className="b-li"><Link className="b-row b-row--link" href="/app/profile/device-alerts"><BIcon tone="grey"><BellIcon weight="bold" /></BIcon>
             <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Alerts on this device</span></span><span className="b-row__s">Settings for this browser</span></span><Chev /></Link></li>
-        </ul></BCard></div> : null}
+        </ul></BCard></div>
         {/* Review B6 (NV-293): "Security" when it holds passkeys; "Account" when deletion is all it holds. */}
         {passkeys || policies ? <BCard title={passkeys ? 'Security' : 'Account'} id="b-profile-security">
           <ul className="b-list">
             {passkeys ? <li className="b-li"><Link id="b-profile-passkeys" className="b-row b-row--link" href="/app/profile/passkeys"><BIcon tone="grey"><KeyIcon weight="bold" /></BIcon>
               <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Passkeys</span></span></span><Chev /></Link></li> : null}
-            {policies ? <li className="b-li"><Link id="b-profile-account-deletion" className="b-row b-row--link eb-danger" href="/app/account/delete"><BIcon tone="red"><TrashIcon weight="bold" /></BIcon>
-              <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Delete my account</span></span></span><Chev /></Link></li> : null}
+            {policies ? <li className="b-li"><Link id="b-profile-account-deletion" className="b-row b-row--link" href="/app/account/delete"><BIcon tone="red"><TrashIcon weight="bold" /></BIcon>
+              <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{copy.deleteTitle}</span></span><span className="b-row__s">{copy.deleteSub}</span></span><Chev /></Link></li> : null}
           </ul>
         </BCard> : null}
       </>}
@@ -150,6 +155,8 @@ export function EmployeeCalendarB({status, url, paused, busy, notice, pendingKin
             const expanded = open === provider.id;
             return <li className="b-li" key={provider.id}>
               <button type="button" className="b-row b-row--link eb-expand" aria-expanded={expanded} aria-controls={'b-calendar-steps-' + provider.id} onClick={() => onOpen(expanded ? null : provider.id)}>
+                {/* Phase 4 (EM-017): each calendar's row leads with the calendar glyph, as every row that opens does. */}
+                <BIcon tone="grey"><CalendarPlusIcon weight="bold" /></BIcon>
                 <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{provider.name}</span></span><span className="b-row__s">{provider.detail}</span></span>
                 <CaretDownIcon className="b-chev eb-expand__caret" size={18} weight="bold" aria-hidden="true" />
               </button>
