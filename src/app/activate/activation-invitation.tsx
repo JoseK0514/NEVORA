@@ -14,6 +14,16 @@ import {ActivationSubmit} from './activation-submit';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {CopySimpleIcon} from '@phosphor-icons/react/dist/ssr/CopySimple';
 import {isPublicAccountProof} from '@/lib/auth/public-proof';
+import {WifiSlashIcon} from '@phosphor-icons/react/dist/ssr/WifiSlash';
+import {KeyIcon} from '@phosphor-icons/react/dist/ssr/Key';
+import {IdentificationCardIcon} from '@phosphor-icons/react/dist/ssr/IdentificationCard';
+import {FingerprintIcon} from '@phosphor-icons/react/dist/ssr/Fingerprint';
+import {UserSwitchIcon} from '@phosphor-icons/react/dist/ssr/UserSwitch';
+import {ACCESS_COPY} from '@/components/access-recovery/copy';
+import {AccessSteps} from '@/components/access-recovery/access-steps';
+import {SupportReference} from '@/components/access-recovery/support-reference';
+import {supportReferenceOf} from '@/components/access-recovery/support-reference-seam';
+import {passkeysFlagOn} from '@/lib/passkeys/client';
 
 export type ActivationPhase='checking'|'missing'|'ready'|'pending'|'invalid'|'unavailable'|'outcome_unknown'|'activated';
 /** Scrub first. Never retain a query string, encoded/ambiguous proof or history state. */
@@ -30,8 +40,13 @@ export function readActivationResult(value:unknown):ActivationResult {
  if(keys==='state'&&(o.state==='invalid'||o.state==='unavailable'||o.state==='outcome_unknown'))return {state:o.state};
  throw new Error('Activation response unavailable.');
 }
-export function ActivationInvitation({loginHref,workspaceName=null,lang='en',mobileAccess=false}:{loginHref:string;workspaceName?:string|null;lang?:AuthLang;mobileAccess?:boolean}) {
+/** U11 (Nov 17, 2026): `otherSession` is who is already signed in on this device, when it is someone (the page reads the
+ * session it already has; nothing about the invitation is asked). `true` when there is a session without a name to show. */
+export function ActivationInvitation({loginHref,workspaceName=null,lang='en',mobileAccess=false,otherSession=null}:{loginHref:string;workspaceName?:string|null;lang?:AuthLang;mobileAccess?:boolean;otherSession?:string|true|null}) {
  const [phase,setPhase]=useState<ActivationPhase>('checking');const [mismatch,setMismatch]=useState(false),[formVersion,setFormVersion]=useState(0),[employeeId,setEmployeeId]=useState<string|null>(null);
+ // U11: an attempt made with no connection is stopped here, before anything is sent, so the invitation is kept and the
+ // person can try again. The Support reference belongs to the one failed reply it came from and is dropped on the next try.
+ const [offline,setOffline]=useState(false),[reference,setReference]=useState<string|null>(null);
  const success=useRef<HTMLDivElement|null>(null);
  // Inspection Nov 14, 2026 (PB-007): a link that arrived but can't be read is not "no link". Shape only, checked in the
  // browser: nothing is asked of the server, so nothing about any account is learned or shown.
@@ -39,7 +54,7 @@ export function ActivationInvitation({loginHref,workspaceName=null,lang='en',mob
  const proof=useRef<string|null>(null),captured=useRef(false),mounted=useRef(false),request=useRef<AbortController|null>(null),busy=useRef(false),generation=useRef(0),formRef=useRef<HTMLFormElement|null>(null);
  useLayoutEffect(()=>{
   mounted.current=true;
-  function publishCurrent(version:number){queueMicrotask(()=>{if(mounted.current&&generation.current===version){setEmployeeId(null);setMismatch(false);setFormVersion(version);setPhase(proof.current?'ready':unusable.current?'invalid':'missing');}});}
+  function publishCurrent(version:number){queueMicrotask(()=>{if(mounted.current&&generation.current===version){setEmployeeId(null);setMismatch(false);setOffline(false);setReference(null);setFormVersion(version);setPhase(proof.current?'ready':unusable.current?'invalid':'missing');}});}
   function cancelRequest(){++generation.current;request.current?.abort();request.current=null;busy.current=false;formRef.current?.reset();}
   function capture(){
    cancelRequest();const version=generation.current;proof.current=null;
@@ -49,9 +64,10 @@ export function ActivationInvitation({loginHref,workspaceName=null,lang='en',mob
    publishCurrent(version);
   }
   if(!captured.current){captured.current=true;capture();}else publishCurrent(generation.current);
-  window.addEventListener('hashchange',capture);
+  const online=()=>setOffline(false);
+  window.addEventListener('hashchange',capture);window.addEventListener('online',online);
   return()=>{
-   window.removeEventListener('hashchange',capture);mounted.current=false;cancelRequest();
+   window.removeEventListener('hashchange',capture);window.removeEventListener('online',online);mounted.current=false;cancelRequest();
    // StrictMode replays setup/cleanup synchronously. A real unmount clears custody.
    queueMicrotask(()=>{if(!mounted.current)proof.current=null;});
   };
@@ -61,12 +77,15 @@ export function ActivationInvitation({loginHref,workspaceName=null,lang='en',mob
   event.preventDefault();const form=event.currentTarget;if(busy.current||!proof.current||!form.reportValidity())return;
   const fields=new FormData(form),password=String(fields.get('password')??'');
   if(password!==fields.get('confirmPassword')){setMismatch(true);form.querySelector<HTMLInputElement>('[name="confirmPassword"]')?.focus();return;}
-  setMismatch(false);busy.current=true;setPhase('pending');const version=generation.current,requestProof=proof.current;
+  setMismatch(false);setReference(null);
+  if(typeof navigator!=='undefined'&&navigator.onLine===false){setOffline(true);requestAnimationFrame(()=>document.getElementById('activation-offline')?.focus());return;}
+  setOffline(false);busy.current=true;setPhase('pending');const version=generation.current,requestProof=proof.current;
   const isCurrent=()=>mounted.current&&generation.current===version;
   const abort=new AbortController();request.current=abort;const timeout=setTimeout(()=>abort.abort(),20000);
   try{
    const response=await fetch('/api/auth/activate',{method:'POST',cache:'no-store',credentials:'same-origin',redirect:'error',headers:{'Content-Type':'application/json','x-nevora-activation':'1'},signal:abort.signal,body:JSON.stringify({proof:requestProof,password})});
    const result=readActivationResult(await response.json());if(!isCurrent())return;
+   setReference(supportReferenceOf(response));
    if(result.state==='activated'&&response.ok){proof.current=null;form.reset();setEmployeeId(result.employeeId);setPhase('activated');}
    else if(result.state==='invalid'&&response.status===400){proof.current=null;form.reset();setPhase('invalid');}
    else if(result.state==='unavailable'){setPhase('unavailable');}
@@ -74,7 +93,7 @@ export function ActivationInvitation({loginHref,workspaceName=null,lang='en',mob
   }catch{if(isCurrent()){proof.current=null;form.reset();setPhase('outcome_unknown');}}
   finally{clearTimeout(timeout);if(isCurrent()){busy.current=false;request.current=null;}}
  }
- return <ActivationInvitationView lang={lang} mobileAccess={mobileAccess} key={formVersion} phase={phase} mismatch={mismatch} employeeId={employeeId} loginHref={loginHref} workspaceName={workspaceName} onSubmit={submit} formRef={formRef} successRef={success}/>;
+ return <ActivationInvitationView lang={lang} mobileAccess={mobileAccess} offline={offline} supportReference={reference} otherSession={otherSession} passkeys={passkeysFlagOn()} key={formVersion} phase={phase} mismatch={mismatch} employeeId={employeeId} loginHref={loginHref} workspaceName={workspaceName} onSubmit={submit} formRef={formRef} successRef={success}/>;
 }
 /** Copies the confirmed sign-in ID; says so for two seconds. Selecting the field stays available as before. */
 function CopyId({value,a}:{value:string;a:AuthCopy['activation']}) {
@@ -89,7 +108,15 @@ function CopyId({value,a}:{value:string;a:AuthCopy['activation']}) {
  * Inspection Nov 14, 2026: the line under the title says only what is true before the server has checked anything
  * (PB-002); an expired, used or unreadable link has its own message and one next step (PB-007); the success card leads
  * with a done mark, says to save the ID, and hands the ID to Sign in at every width (PB-003, JR-7). */
-export function ActivationInvitationView({phase,mismatch=false,employeeId,loginHref,workspaceName=null,onSubmit,formRef,successRef,lang='en',mobileAccess=false}:{phase:ActivationPhase;lang?:AuthLang;mobileAccess?:boolean;mismatch?:boolean;employeeId?:string|null;loginHref:string;workspaceName?:string|null;onSubmit:(event:FormEvent<HTMLFormElement>)=>void;formRef?:RefObject<HTMLFormElement|null>;successRef?:RefObject<HTMLDivElement|null>}) {
+export function ActivationInvitationView({phase,mismatch=false,employeeId,loginHref,workspaceName=null,onSubmit,formRef,successRef,lang='en',mobileAccess=false,offline=false,supportReference=null,otherSession=null,passkeys=false}:{phase:ActivationPhase;lang?:AuthLang;mobileAccess?:boolean;mismatch?:boolean;employeeId?:string|null;loginHref:string;workspaceName?:string|null;onSubmit:(event:FormEvent<HTMLFormElement>)=>void;formRef?:RefObject<HTMLFormElement|null>;successRef?:RefObject<HTMLDivElement|null>;
+ /** U11: an attempt was stopped because the device is offline (nothing was sent). */
+ offline?:boolean;
+ /** U11: the Support reference of the one failed reply on screen, or null (always null until Codex's reader lands). */
+ supportReference?:string|null;
+ /** U11: someone is already signed in on this device (their name, or true). */
+ otherSession?:string|true|null;
+ /** U11: passkeys are offered in this build, so the form says where one is added. */
+ passkeys?:boolean}) {
  const mobile=useMobilePresentation(mobileAccess,'activation-password activation-confirm-password'),journey=useAccessJourney();
  if(mobile)return <MobileActivationView {...{phase,mismatch,employeeId,loginHref,workspaceName,onSubmit,formRef,successRef,lang}}/>;
  const canSubmit=['ready','pending','unavailable'].includes(phase);const error=mismatch||phase==='unavailable';
@@ -97,39 +124,58 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
  // Review B4 (Nov 10, 2026, NV-055): every word comes from AUTH_COPY, so a Spanish page stays Spanish. NV-196: without a
  // usable invitation the page has one model at every width (the title and line, then one card with the next step and
  // "Already activated? Sign in"); the way back is the page's own back control, so the second grey button is gone.
- const t=AUTH_COPY[lang],a=t.activation;
+ const t=AUTH_COPY[lang],a=t.activation,u=ACCESS_COPY[lang].activation;
+ // U11 (Nov 17, 2026): every step says where the person is and what comes next (the steps line), what they are setting
+ // (the facts under the passwords), and ends with "You’re set" and the ID carried to Sign in. One error style under a
+ // field; an offline attempt sends nothing; an unknown result is never shown as failed or as done.
+ const other=otherSession?<p className="ar-inline" data-tone="info"><UserSwitchIcon size={16} weight="bold" aria-hidden="true"/><span>{otherSession===true?u.otherSessionUnnamed:u.otherSession.replace('{name}',otherSession)}</span></p>:null;
  const workspace=workspaceName??t.workspaceUnavailable;
  if(phase==='activated'&&employeeId)return <>
-  <div className="q-hd"><h1>{a.activatedTitle}</h1><p>{a.activatedSub}</p></div>
+  <div className="q-hd"><h1>{u.doneTitle}</h1><p>{u.doneSub}</p></div>
   <div className="activation-success q-card" role="status" ref={successRef} tabIndex={-1}>
+   <AccessSteps journey="activation" current={3} lang={lang}/>
    <span className="q-auth__mark" aria-hidden="true"><CheckIcon size={28} weight="bold"/></span>
-   <p className="q-sr">{a.activatedTitle}. {a.activatedSub}</p>
+   <p className="q-sr">{a.activatedTitle}. {u.doneTitle}. {u.doneSub}</p>
    <div className="q-fl"><label htmlFor="activation-employee-id">{a.idForSignIn}</label>
     <div className="q-in__wrap"><input id="activation-employee-id" className="q-in" value={employeeId} readOnly autoComplete="off" aria-describedby="activation-employee-id-note" onFocus={event=>event.currentTarget.select()}/><CopyId value={employeeId} a={a}/></div>
     <p className="q-help" id="activation-employee-id-note">{a.saveId}</p></div>
+   {other}
    <Link href={loginHref} className="q-btn" onClick={()=>journey.confirm(employeeId)}>{a.continueSignIn}</Link>
+   <p className="q-auth__note ar-next">{u.doneNext}</p>
   </div>
  </>;
  const sub=phase==='checking'?`${a.opening} · ${workspace}`:canSubmit?(workspaceName?a.choose.replace('{workspace}',workspaceName):a.chooseNoWorkspace)
   :phase==='outcome_unknown'?a.notConfirmed:phase==='invalid'?null:t.quiet.activateSub;
  return <>
-  <div className="q-hd"><h1>{t.activateTitle}</h1>{sub?<p role={phase==='checking'?'status':undefined}>{sub}</p>:null}</div>
+  <div className="q-hd"><h1>{phase==='outcome_unknown'?u.unknownTitle:t.activateTitle}</h1>{sub&&phase!=='outcome_unknown'?<p role={phase==='checking'?'status':undefined}>{sub}</p>:null}</div>
   <p className="q-sr" id="activation-intro">{a.intro}</p>
   {phase==='missing'?<span className="q-sr activation-invitation-state" role="status">{a.missing}</span>:null}
   {canSubmit&&<form ref={formRef} className="q-auth__form activation-form" onSubmit={onSubmit} aria-busy={phase==='pending'} aria-describedby="activation-intro">
    <AuthValidation/>
-   {phase==='unavailable'&&!mismatch?<p id="activation-error" className="q-error q-auth__alert" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{a.unavailable}</span></p>:null}
+   <AccessSteps journey="activation" current={2} lang={lang}/>
+   {offline?<p id="activation-offline" className="q-auth__alert q-auth__alert--wait" role="alert" tabIndex={-1}><WifiSlashIcon size={20} weight="bold" aria-hidden="true"/><span>{u.offline}</span></p>:null}
+   {phase==='unavailable'&&!mismatch&&!offline?<><p id="activation-error" className="q-error q-auth__alert" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{a.unavailable}</span></p><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
    <fieldset className="q-auth__fields" disabled={phase==='pending'}>
     <ActivationPasswords quiet lang={lang} mismatch={mismatch} errorId={error?'activation-error':undefined}/>
    </fieldset>
+   <ul className="ar-facts" aria-label={u.factsLabel}>
+    <li><KeyIcon size={16} weight="bold" aria-hidden="true"/><span>{u.passwordFact}</span></li>
+    <li><IdentificationCardIcon size={16} weight="bold" aria-hidden="true"/><span>{u.idFact}</span></li>
+    {passkeys?<li><FingerprintIcon size={16} weight="bold" aria-hidden="true"/><span>{u.passkeyFact}</span></li>:null}
+   </ul>
+   {other}
    <ActivationSubmit pending={phase==='pending'} idle={t.activateAccount} busy={t.activatingAccount} className="q-btn"/>
   </form>}
   {!canSubmit&&phase!=='checking'?<div className="q-card q-auth__card">
+   {phase==='outcome_unknown'?null:<AccessSteps journey="activation" current={1} lang={lang}/>}
    {phase==='invalid'?<p className="q-auth__alert q-auth__alert--wait activation-invitation-state" role="status"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{a.invalid}</span></p>:null}
-   {phase==='outcome_unknown'?<p className="q-auth__alert q-auth__alert--wait activation-invitation-state" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{a.unknown}</span></p>:null}
+   {phase==='outcome_unknown'?<><p className="q-auth__alert q-auth__alert--wait activation-invitation-state" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{u.unknownFirst}</span></p>
+    <Link href={signInHref} className="q-btn">{t.trySigningIn}</Link>
+    <p className="q-auth__note">{a.unknown}</p><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
    {mobileAccess?<Link href="/access-help/invitation" className="q-btn">{a.inviteHelp}</Link>:null}
-   <p className="q-auth__note">{phase==='invalid'?a.invalidNext:t.quiet.noInvitation}</p>
-   <Link href={signInHref} className="q-btn q-btn--quiet">{t.alreadyActivated}</Link>
+   {phase==='invalid'?<><p className="q-auth__note">{u.invalidWhy} {u.invalidActive}</p><p className="q-auth__note">{a.invalidNext}</p></>
+    :phase==='missing'?<><p className="q-auth__note">{u.missingHow}</p><p className="q-auth__note">{t.quiet.noInvitation}</p></>:null}
+   {phase==='outcome_unknown'?null:<Link href={signInHref} className="q-btn q-btn--quiet">{t.alreadyActivated}</Link>}
   </div>:<Link href={signInHref} className="q-btn q-btn--quiet">{t.alreadyActivated}</Link>}
   <noscript><p className="q-help q-auth__alert">{a.noScript}</p></noscript>
  </>;

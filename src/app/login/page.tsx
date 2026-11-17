@@ -84,7 +84,7 @@ export default async function LoginPage({
           </div>
           <LoginSubmit idle={t.signIn} busy={t.signingIn} className="q-btn" focusPassword={Boolean(params.error || params.activated)} />
         </form>
-        <PasskeySlot t={mobile ? {...t,passkeyPhone:t.passkeyDesktop,passkeyBusyPhone:t.passkeyBusyDesktop,passkeyNotFoundPhone:t.passkeyNotFoundDesktop,passkeyUnavailablePhone:t.passkeyUnavailableDesktop} : t} quiet />
+        <PasskeySlot t={mobile ? {...t,passkeyPhone:t.passkeyDesktop,passkeyBusyPhone:t.passkeyBusyDesktop,passkeyNotFoundPhone:t.passkeyNotFoundDesktop,passkeyUnavailablePhone:t.passkeyUnavailableDesktop} : t} quiet lang={lang} />
       </AccessCard>
       <AccessOutside mobile={mobile}>
         <nav className="q-auth__links" aria-label={t.accountHelp}>

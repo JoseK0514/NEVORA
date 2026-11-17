@@ -1,0 +1,124 @@
+/* U11, access and recovery (Nov 17, 2026): the pieces the access screens share, on the sign-in pages and in the signed-in
+ * app: the steps line, the facts and "what happens" lists, the Support reference block, the last-Owner card, the
+ * assisted-recovery handover and the passkey guidance. Values from src/app/b-tokens.css. Media queries only the
+ * aliases of src/lib/b-viewport.ts. !important only inside @layer nv-b (B8), and only where an app-wide Direction B
+ * rule would otherwise restyle a paragraph or a list inside one of these blocks. Nothing here moves: there is no motion. */
+@layer nv-b {
+  html body .app-shell[data-nv-b] .q-page :is(.ar-lastowner, .ar-how, .ar-handover, .ar-ref, .ar-codeacts) :is(p, h2, h3, ol, ul, li) { padding-left: 0 !important; padding-right: 0 !important; margin-left: 0 !important; margin-right: 0 !important; }
+  /* The last-Owner card is a state card: at most 560px, with the page's own gutter on a phone. */
+  html body .app-shell[data-nv-b] .q-page .ar-lastowner { box-sizing: border-box !important; width: 100% !important; margin: var(--b-space-16) 0 0 !important; padding: 0 !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-lastowner__card { box-sizing: border-box !important; width: 100% !important; max-width: var(--b-frame-form) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-lastowner__label { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 600 !important; letter-spacing: 0 !important; color: var(--b-grey) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-path__main > h3 { margin: 3px 0 0 !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; font-weight: 600 !important; letter-spacing: 0 !important; color: var(--b-ink) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-path__main > p { margin-top: var(--b-space-2) !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-path__main > .ar-path__mail { margin-top: 6px !important; font-size: var(--b-fs-caption) !important; line-height: var(--b-lh-caption) !important; color: var(--b-grey) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-safe { margin-top: var(--b-space-8) !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 600 !important; color: var(--b-green) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-quiet { color: var(--b-teal) !important; font-size: var(--b-fs-body) !important; font-weight: 600 !important; text-decoration: none !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-paths { padding: var(--b-space-8) var(--b-space-16) var(--b-space-16) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-lastowner__label { margin: 0 var(--b-space-16) !important; padding-top: var(--b-gutter) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-ref { margin: 0 var(--b-space-16) var(--b-space-16) !important; }
+  html body .app-shell[data-nv-b] .q-page :is(.ar-how, .ar-handover) { box-sizing: border-box !important; }
+  html body .app-shell[data-nv-b] .q-page :is(.ar-how__label, .ar-handover__label) { margin: 0 0 var(--b-space-12) !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; font-weight: 600 !important; letter-spacing: 0 !important; color: var(--b-ink) !important; }
+  html body .app-shell[data-nv-b] .q-page :is(.ar-how__note, .ar-handover__after) { margin-top: var(--b-gutter) !important; margin-bottom: 0 !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-how { margin-top: var(--b-space-20) !important; padding: var(--b-inset-wide) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-how .ar-before > li { font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; }
+  /* The code and its handover are one card, as the form before it was. */
+  html body .app-shell[data-nv-b] .q-page .ar-issued { box-sizing: border-box !important; margin-top: 0 !important; padding: var(--b-inset-wide) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued > :is(.q-lead, .q-fl, .q-btn, .q-help, .ar-handover) { margin-left: 0 !important; margin-right: 0 !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued > :is(.q-lead, .q-fl, .q-help, .ar-handover) { padding-left: 0 !important; padding-right: 0 !important; }
+  /* On a phone a field block is drawn as its own card; inside this card it is a plain field. */
+  html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page .ar-issued.ar-issued.ar-issued > .q-fl { margin: var(--b-space-16) 0 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
+  /* A teal ring on a teal or tinted pill needs a gap to be seen. */
+  html body .app-shell[data-nv-b] .q-page :is(.ar-path__main, .ar-codeacts) > .b-btn:focus-visible { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: 3px !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued .ar-handover__link { color: var(--b-teal) !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 600 !important; text-decoration: none !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued > .q-lead { margin-top: 0 !important; padding-top: 0 !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued > .q-fl { margin-top: var(--b-space-16) !important; max-width: var(--b-frame-form) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued > .q-btn { width: auto !important; margin-top: var(--b-space-20) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued > .q-help { margin-top: var(--b-space-12) !important; margin-bottom: 0 !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued .ar-handover { margin-top: var(--b-space-20) !important; padding-top: var(--b-space-20) !important; border-top: 1px solid var(--b-line) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued .ar-handover__after { margin-top: var(--b-gutter) !important; }
+  html body .app-shell[data-nv-b] .q-page :is(.ar-codeacts, .ar-path__main) > .b-btn { border: 0 !important; }
+}
+
+@media (max-width: 767px) {
+  @layer nv-b {
+    html body .app-shell[data-nv-b] .q-page .ar-lastowner { width: auto !important; margin: var(--b-space-16) var(--b-space-16) 0 !important; }
+  }
+}
+
+/* ---------- Unlayered ---------- */
+.ar-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* The steps line: "Step 2 of 3", the step's name, one bar per step. */
+.ar-steps { display: grid; gap: var(--b-space-8); margin: 0 0 18px; }
+.ar-steps__now { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--b-space-8); margin: 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 500; color: var(--b-grey); letter-spacing: 0; font-variant-numeric: tabular-nums; text-align: left; }
+.ar-steps__now > b { font-weight: 600; color: var(--b-ink); }
+.ar-steps__bars { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; margin: 0; padding: 0; list-style: none; }
+.ar-steps__bars > li { position: relative; height: 4px; border-radius: var(--b-radius-pill); background: var(--b-line); }
+.ar-steps__bars > li:is([data-state="done"], [data-state="current"]) { background: var(--b-teal); }
+
+/* What the person is setting (activation). */
+.ar-facts { display: grid; gap: var(--b-space-8); margin: var(--b-space-16) 0 0; padding: 0; list-style: none; }
+.ar-facts > li { display: flex; align-items: flex-start; gap: var(--b-space-8); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); letter-spacing: 0; text-align: left; }
+.ar-facts > li > svg { flex: none; margin-top: 1px; color: var(--b-teal); }
+
+/* One line of information inside a card (someone else is signed in here). */
+.ar-inline { display: flex; align-items: flex-start; gap: var(--b-space-8); margin: var(--b-space-16) 0 0; padding: 10px var(--b-gutter); border-radius: var(--b-radius-field); background: var(--b-teal-50); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-ink2); letter-spacing: 0; text-align: left; }
+.ar-inline > svg { flex: none; margin-top: 1px; color: var(--b-teal); }
+
+/* "What happens" before a person starts: numbered, in order. */
+.ar-before { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.ar-before > li { display: flex; align-items: flex-start; gap: 10px; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); letter-spacing: 0; text-align: left; }
+.ar-before__n { flex: none; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--b-teal-50); color: var(--b-teal); font-size: var(--b-fs-count); line-height: 1; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* Support reference: label, the reference in a monospaced tabular face, Copy, one line of help. */
+.ar-ref { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--b-space-2) var(--b-space-12); margin: var(--b-space-12) 0 0; padding: var(--b-space-12) var(--b-gutter); border-radius: var(--b-radius-field); background: var(--b-quiet); text-align: left; }
+.ar-ref__label { grid-column: 1; font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); font-weight: 600; color: var(--b-grey-on-fill); letter-spacing: 0; }
+.ar-ref__value { grid-column: 1; font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-variant-numeric: tabular-nums; color: var(--b-ink); overflow-wrap: anywhere; border-radius: var(--b-space-4); }
+.ar-ref__value:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); }
+.ar-ref__copy { grid-column: 2; grid-row: 1 / span 2; position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 var(--b-gutter); border: 0; border-radius: var(--b-radius-pill); background: var(--b-teal-50); color: var(--b-teal); font: inherit; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 600; cursor: pointer; }
+.ar-ref__copy::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: max(100%, 44px); translate: 0 -50%; }
+.ar-ref__copy:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); }
+.ar-ref__hint { grid-column: 1 / -1; margin: var(--b-space-4) 0 0; font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); color: var(--b-grey-on-fill); letter-spacing: 0; }
+
+/* The last-Owner card: a state card (at most 560px), then the two real paths. */
+.ar-lastowner { display: grid; gap: var(--b-space-12); width: 100%; max-width: var(--b-frame-form); }
+.ar-lastowner__card:focus { outline: none; }
+.ar-lastowner__card:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); }
+.ar-safe { display: flex; align-items: flex-start; gap: 6px; margin: var(--b-space-8) 0 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 600; color: var(--b-green); }
+.ar-safe > svg { flex: none; margin-top: 1px; }
+.ar-lastowner__label { margin: 0 var(--b-space-16); padding-top: var(--b-gutter); border-top: 1px solid var(--b-line); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 600; color: var(--b-grey); }
+.ar-paths { display: grid; gap: var(--b-space-20); margin: 0; padding: var(--b-space-8) var(--b-space-16) var(--b-space-16); list-style: none; }
+.ar-path { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: var(--b-space-12); align-items: start; }
+.ar-path__n { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--b-quiet); color: var(--b-ink2); font-size: var(--b-fs-meta); line-height: 1; font-weight: 700; font-variant-numeric: tabular-nums; }
+.ar-path__main { display: grid; justify-items: start; min-width: 0; }
+.ar-path__main > h3 { margin: 3px 0 0; font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 600; color: var(--b-ink); letter-spacing: 0; }
+.ar-path__main > p { margin: var(--b-space-2) 0 0; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); }
+.ar-path__main > .b-btn { margin-top: 10px; min-height: 44px; text-decoration: none; }
+.ar-path__main > .ar-path__mail { margin-top: 6px; font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); color: var(--b-grey); overflow-wrap: anywhere; }
+.ar-quiet { justify-self: start; display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--b-space-4); border-radius: var(--b-radius-small); color: var(--b-teal); font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 600; text-decoration: none; }
+.ar-quiet:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); }
+
+/* Help someone sign in: how it works (before) and the handover (with a code on screen). */
+.ar-how { margin-top: var(--b-space-20); padding: var(--b-inset); }
+.ar-how__label, .ar-handover__label { margin: 0 0 var(--b-space-12); font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 600; color: var(--b-ink); letter-spacing: 0; }
+.ar-how__note, .ar-handover__after { margin: var(--b-space-12) 0 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
+.ar-handover { margin-top: var(--b-space-24); }
+.ar-handover__rows { display: grid; gap: var(--b-gutter); margin: 0; padding: 0; list-style: none; }
+.ar-handover__rows > li { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: var(--b-space-12); align-items: start; }
+.ar-handover__ico { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--b-teal-50); color: var(--b-teal); }
+.ar-handover__main { display: grid; justify-items: start; min-width: 0; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); }
+.ar-handover__main > b { font-weight: 600; color: var(--b-ink); }
+.ar-handover__main > span { margin-top: var(--b-space-2); }
+.ar-handover__rows > li:has(.ar-handover__link) { margin-bottom: calc(-1 * var(--b-space-8)); }
+.ar-handover__link { display: inline-flex; align-items: center; min-height: 44px; color: var(--b-teal); font-size: var(--b-fs-meta); font-weight: 600; text-decoration: none; }
+.ar-handover__link:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); border-radius: var(--b-space-4); }
+.ar-codeacts { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-space-8) var(--b-space-12); margin-top: 10px; }
+.ar-codeacts > .b-btn { min-height: 44px; }
+.ar-codeacts__status { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
+
+/* Passkeys in Profile: the plain explanation, the honest "can't", and a calm cancelled notice. */
+.pk-what { display: grid; gap: var(--b-space-2); }
+.pk-what > b { font-weight: 600; color: var(--b-ink); }
+.pk-keeps { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); }
+.pk-notice[data-tone="info"] { background: var(--b-teal-50); color: var(--b-ink2); }

@@ -6,6 +6,9 @@ import {PasskeyDesktopView} from "./passkey-desktop-view";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { deviceName, isPhoneLike, listPasskeys, passkeysAvailable, passkeysFlagOn, registerPasskey, removePasskey, type Passkey } from "@/lib/passkeys/client";
 import "./passkeys.css";
+import "@/components/access-recovery/access-recovery.css";
+import { ACCESS_COPY } from "@/components/access-recovery/copy";
+import type { AuthLang } from "@/lib/auth-copy";
 
 const t = PASSKEY_COPY.en;
 const subscribe = () => () => {};
@@ -14,12 +17,13 @@ type Load = { state: "loading" } | { state: "ready"; passkeys: Passkey[] } | { s
 
 /** Profile, every role: "Face ID and passkeys". Set up (named after the device), the saved list with added and
  * last-used dates, and Remove with a confirmation. Nothing renders while NEXT_PUBLIC_NEVORA_PASSKEYS is off. */
-export function PasskeySection({ asRow = false }: { asRow?: boolean } = {}) {
+export function PasskeySection({ asRow = false, lang = "en" }: { asRow?: boolean; /** U11: the guidance's language. */ lang?: AuthLang } = {}) {
+  const a = ACCESS_COPY[lang].passkey;
   const supported = useSyncExternalStore(subscribe, passkeysAvailable, () => false);
   const phone = useSyncExternalStore(subscribe, isPhoneLike, () => false);
   const [load, setLoad] = useState<Load>({ state: "loading" });
   const [busy, setBusy] = useState<"add" | "remove" | null>(null);
-  const [notice, setNotice] = useState<{ tone: "done" | "error"; text: string } | null>(null);
+  const [notice, setNotice] = useState<{ tone: "done" | "error" | "info"; text: string } | null>(null);
   const [confirm, setConfirm] = useState<Passkey | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLElement | null>(null);
@@ -50,8 +54,10 @@ export function PasskeySection({ asRow = false }: { asRow?: boolean } = {}) {
     setBusy("add"); setNotice(null);
     const result = await registerPasskey(deviceName());
     setBusy(null);
-    if (result.ok) { setNotice({ tone: "done", text: t.savedDone }); await refresh(); }
-    else if (result.error !== "cancelled") setNotice({ tone: "error", text: t.setUpFailed });
+    // U11: a closed prompt is not an error. It says that no passkey was added, and focus stays on the button.
+    if (result.ok) { setNotice({ tone: "done", text: a.added }); await refresh(); }
+    else if (result.error === "cancelled") setNotice({ tone: "info", text: a.cancelledAdd });
+    else setNotice({ tone: "error", text: a.addFailed });
   }
 
   async function remove(passkey: Passkey) {
@@ -64,7 +70,7 @@ export function PasskeySection({ asRow = false }: { asRow?: boolean } = {}) {
   }
 
   const passkeys = load.state === "ready" ? load.passkeys : [];
-  const view = <PasskeyDesktopView load={load.state} passkeys={passkeys} busy={busy} notice={notice} confirm={confirm} supported={supported} phone={phone} dialog={dialog} addButton={addButton}
+  const view = <PasskeyDesktopView lang={lang} load={load.state} passkeys={passkeys} busy={busy} notice={notice} confirm={confirm} supported={supported} phone={phone} dialog={dialog} addButton={addButton}
     onRefresh={()=>void refresh()} onAdd={()=>void add()} onReview={(key,button)=>{opener.current=button;setConfirm(key);}} onRemove={key=>void remove(key)} onKeep={()=>{setConfirm(null);opener.current?.focus();}}/>;
   if (!asRow) return view;
   // Owner and Manager Profile (Nov 1 upscale): one row like its neighbours, "Face ID · Not set up ›" ("Passkeys" off a

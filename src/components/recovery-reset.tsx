@@ -10,8 +10,17 @@ import {PasswordRules} from './auth-premium/password-rules';
 import {RecoverySubmit} from './recovery-submit';
 import {PasswordInput} from './auth-premium/password-input';
 import {AUTH_COPY, authMessage, type AuthLang} from '@/lib/auth-copy';
+import {WifiSlashIcon} from '@phosphor-icons/react/dist/ssr/WifiSlash';
+import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
+import {ACCESS_COPY} from './access-recovery/copy';
+import {AccessSteps} from './access-recovery/access-steps';
+import {recoveryIssue, recoveryNext} from './access-recovery/recovery-guidance';
+import {SupportReference} from './access-recovery/support-reference';
+import {FieldError} from './auth-premium/auth-validation';
 
-export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef, lang = 'en', mobileAccess=false,linkProof=false,onDifferentCode}: {
+export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef, lang = 'en', mobileAccess=false,linkProof=false,onDifferentCode,supportReference=null}: {
+ /** U11: the Support reference of the failed reply on screen, or null. */
+ supportReference?: string | null;
  hydrated: boolean;
  busy: boolean;
  done: boolean;
@@ -21,7 +30,11 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
  lang?: AuthLang;
  mobileAccess?:boolean;linkProof?:boolean;onDifferentCode?:()=>void;
 }) {
- const t = AUTH_COPY[lang];
+ const t = AUTH_COPY[lang], u = ACCESS_COPY[lang].recovery;
+ // U11 (Nov 17, 2026): the last step of recovery. Every refusal says what to do next; a lost reply is "not confirmed",
+ // never failed and never done; two passwords that differ use the one field error style; the finish says what changed
+ // (signed out everywhere) and what did not (the time clock PIN).
+ const issue = recoveryIssue('reset', message), next = recoveryNext(ACCESS_COPY[lang], 'reset', message);
  const feedback = useRef<HTMLDivElement>(null);
  const [password, setPassword] = useState(''), [confirm, setConfirm] = useState('');
  // The outcome is decided on AccountRecovery's English message; only what is shown is translated.
@@ -39,21 +52,26 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
  const match = mismatch && confirm !== password ? 'bad' as const : confirm && confirm === password ? 'ok' as const : 'idle' as const;
  return <>
   <div className="q-hd"><h1>{done ? t.resetDoneTitle : t.quiet.resetTitle}</h1>{done ? null : <p>{t.quiet.resetSub}</p>}</div>
-  {done ? <div className="q-card">
+  {done ? <div className="q-card q-auth__card">
+   <AccessSteps journey="recovery" current={3} lang={lang}/>
+   <span className="q-auth__mark" aria-hidden="true"><CheckIcon size={28} weight="bold"/></span>
    <div className="q-auth__receipt" ref={feedback} role="status" tabIndex={-1}>
-    <h2>{t.nextStep}</h2><p>{authMessage(lang, message)}</p>
+    <h2>{t.nextStep}</h2><p>{authMessage(lang, message)}</p><p>{u.doneNote}</p>
    </div>
    <Link href="/login" className="q-btn">{t.signInWithNewPassword}</Link>
   </div> : <>
    <noscript><p className="q-help q-auth__alert">{t.resetNoScript}</p></noscript>
    <form className="q-auth__form" onSubmit={onSubmit}>
     <AuthValidation/>
-    {message ? <div id="reset-error" className="q-auth__receipt q-auth__receipt--error" ref={feedback} role="alert" tabIndex={-1}>
+    <AccessSteps journey="recovery" current={3} lang={lang}/>
+    {message && issue === 'offline' ? <div id="reset-error" className="q-auth__alert q-auth__alert--wait" ref={feedback} role="alert" tabIndex={-1}><WifiSlashIcon size={20} weight="bold" aria-hidden="true"/><span>{u.offline}</span></div>
+    : message ? <><div id="reset-error" className={`q-auth__receipt ${uncertain || issue === 'resetUnavailable' ? 'q-auth__receipt--wait' : 'q-auth__receipt--error'}`} ref={feedback} role="alert" tabIndex={-1}>
      <h2><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/>{mismatch ? t.checkPasswords : invalid ? t.useNewCode : uncertain ? t.checkSignInFirst : t.resetNotConfirmed}</h2>
      <p>{authMessage(lang, message)}</p>
+     {next ? <p>{next}</p> : null}
      {invalid ? <Link className="q-link" href="/forgot-access">{t.requestNewCode}</Link> : null}
-     {uncertain ? <Link className="q-link" href="/login">{t.trySigningIn}</Link> : null}
-    </div> : null}
+     {uncertain || issue === 'resetUnavailable' || issue === 'ended' ? <Link className="q-link" href="/login">{t.trySigningIn}</Link> : null}
+    </div><SupportReference reference={supportReference} lang={lang} id="reset-reference"/></> : null}
     <fieldset className="q-auth__fields" disabled={!hydrated || busy}>
      <div className="q-fl">
       <label htmlFor="reset-proof">{t.recoveryCode}</label>
@@ -79,8 +97,9 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
        aria-describedby={message ? 'reset-rules reset-error reset-confirm-password-invalid' : 'reset-rules reset-confirm-password-invalid'}
        data-msg-required={t.invalid.confirm} data-msg-invalid={t.invalid.confirm} onInput={event => setConfirm(event.currentTarget.value)}/>
       <FieldInvalid id="reset-confirm-password"/>
+      {match === 'bad' ? <FieldError>{ACCESS_COPY[lang].activation.mismatch}</FieldError> : null}
      </div>
-     <PasswordRules id="reset-rules" rules={[{state: length, text: t.atLeast8}, {state: match, text: match === 'bad' ? t.activation.sameInBoth : t.activation.passwordsMatch}]}/>
+     <PasswordRules id="reset-rules" rules={[{state: length, text: t.atLeast8}, {state: match === 'bad' ? 'idle' : match, text: t.activation.passwordsMatch}]}/>
     </fieldset>
     <RecoverySubmit hydrated={hydrated} busy={busy} idle={t.resetPassword} pendingText={t.resettingPassword} className="q-btn"/>
    </form>

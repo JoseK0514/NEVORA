@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
 import { PasswordInput } from "@/components/auth-premium/password-input";
-import { FieldInvalid } from "@/components/auth-premium/auth-validation";
+import { FieldError, FieldInvalid } from "@/components/auth-premium/auth-validation";
+import { ACCESS_COPY } from "@/components/access-recovery/copy";
 import { PasswordRules } from "@/components/auth-premium/password-rules";
 import { AUTH_COPY, type AuthLang } from "@/lib/auth-copy";
 
@@ -48,11 +49,13 @@ export function ActivationPasswords({ mismatch = false, errorId, quiet = false, 
             aria-describedby={`${describedBy} activation-confirm-password-invalid`} data-msg-required={t.invalid.confirm} data-msg-invalid={t.invalid.confirm}
             onInput={event => setConfirm(event.currentTarget.value)} />
           <FieldInvalid id="activation-confirm-password" />
+          {/* U11 (Nov 17, 2026): two passwords that differ use the one field error style, under the field they belong to. */}
+          {differs ? <FieldError id={errorId}>{ACCESS_COPY[lang].activation.mismatch}</FieldError> : null}
         </div>
       </div>
       <PasswordRules id="activation-rules" rules={[
         { state: length, text: t.atLeast8, id: "activation-password-hint" },
-        differs ? { state: "bad", text: t.activation.sameInBoth, id: errorId, alert: true } : { state: match, text: t.activation.passwordsMatch },
+        { state: differs ? "idle" : match, text: t.activation.passwordsMatch },
       ]} />
     </>
   );
