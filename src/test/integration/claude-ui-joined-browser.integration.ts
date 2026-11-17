@@ -61,11 +61,16 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
       await leasePage.clock.install();await leasePage.goto(app.url+exportPath,{waitUntil:'domcontentloaded'});await leasePage.locator('.pim-person').first().waitFor();
       await leasePage.clock.pauseAt(Date.now()+1000);
       await leaseContext.route('**/api/timecards',async(route:any)=>{const actual=await route.fetch(),body=await actual.json();if(body.state==='ready')body.validForMs=1000;await route.fulfill({response:actual,json:body});});
-      await leasePage.evaluate(()=>window.dispatchEvent(new Event('blur')));await expect.poll(()=>leasePage.locator('.pim-person').count()).toBe(0);
-      await leasePage.evaluate(()=>window.dispatchEvent(new Event('focus')));await leasePage.locator('.pim-person').first().waitFor();
+      // A focus refresh while already foreground renews this read without retiring its operational parent.
+      // Await both actual response bodies, then let the rendered read commit before advancing its deadline.
+      const timeRead=leasePage.waitForResponse((r:any)=>new URL(r.url()).pathname==='/api/timecards'&&r.request().method()==='POST');
+      const closeRead=leasePage.waitForResponse((r:any)=>new URL(r.url()).pathname==='/api/period-close'&&r.request().method()==='POST');
+      await leasePage.evaluate(()=>window.dispatchEvent(new Event('focus')));
+      const reads=await Promise.all([timeRead,closeRead]);for(const response of reads){expect(response.status(),await response.text()).toBe(200);await response.finished();}
+      await leasePage.clock.runFor(20);
       const shown=await leasePage.locator('.pim-person').count();expect(shown).toBeGreaterThan(0);
       await leasePage.clock.runFor(1001);await expect.poll(()=>leasePage.locator('.pim-person').count()).toBe(0);expect(await leasePage.locator('.pim').count()).toBe(1);
-      leaseControl={realApiRows:true,separateContext:true,controlledClock:true,validForMs:1000,advancedMs:1001,shown,retired:0};
+      leaseControl={realApiRows:true,separateContext:true,controlledClock:true,validForMs:1000,warmupMs:20,advancedMs:1001,shown,retired:0};
     }finally{await leaseContext.close();}
     checks.push('A shortened real data observation expires under controlled time while its operational frame remains current; genuine write journey has an unmodified clock');
     await visit(exportPath);await page.locator('.pim-person').first().waitFor();
