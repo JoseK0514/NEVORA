@@ -54,7 +54,7 @@ export function MobileHomeTools({ weekStart, owner = false }: { weekStart: strin
     { href: "/app/inbox?filter=requests", label: "Pending requests", Icon: ClipboardTextIcon },
     { href: `/app?week=${week}&view=activity`, label: "Schedule activity", Icon: ClockCounterClockwiseIcon },
     { href: "/app/clocker-recovery", label: "Clocker recovery", Icon: WrenchIcon },
-    { href: "/app/account-recovery", label: "Account recovery", Icon: LockKeyIcon },
+    { href: "/app/account-recovery", label: "Help someone sign in", Icon: LockKeyIcon },
   ];
   return <nav className="mobile-home-tools" aria-labelledby="mobile-home-tools-title">
     <h2 id="mobile-home-tools-title">Shortcuts</h2>
