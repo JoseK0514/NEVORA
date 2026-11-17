@@ -20,7 +20,7 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     await seedOwnedApp(app.database.executor);const fixture=await seedPayrollFixture(app.database.executor,{breaks:true});
     page.on('pageerror',(e:Error)=>errors.push(e.message));page.setDefaultTimeout(20000);
     await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){external.push(url.origin);await route.abort();}else await route.continue();});
-    const visit=async(path:string)=>{if(page.url()!=='about:blank'){await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await page.waitForLoadState('networkidle');}await page.goto(app.url+path);};
+    const visit=async(path:string)=>{await page.goto(app.url+path,{waitUntil:'domcontentloaded'});};
     await visit('/login');await page.getByLabel('Employee ID',{exact:true}).fill(fixture.ids.owner);await page.getByLabel('Password',{exact:true}).fill(fixture.password);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
     const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
     const roster=await q<{id:string}>('SELECT id FROM employees ORDER BY id');
