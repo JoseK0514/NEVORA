@@ -10,6 +10,7 @@ import {runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
 import {waitForPrivateIntentClear} from './browser-render-readiness.mjs';
 import {observeRevocationActions,captureRevocationFailure} from './attention-revocation-diagnostic.mjs';
 import {waitForAttentionLoginReady} from './attention-login-readiness.mjs';
+import {returnAttentionScheduleForLayout,verifyAttentionLayoutReturn} from './attention-layout-return.mjs';
 
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,runtimeErrors:cellRuntimeErrors}){
  const label=`AT${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
@@ -49,6 +50,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  const operation=()=>page.locator('input[name="operationId"]').inputValue();
  let scenarioFailure;
  try{
+ if(width===320)await verifyAttentionLayoutReturn(browser,{persist:control=>writeFile(join(evidenceDirectory,`attention-layout-return-${engine}-report.json`),JSON.stringify({engine,...control},null,2))});
  await login();stage='full-review';await schedule('&acknowledged=1');
  assert.equal(await page.getByText('Schedule confirmed.',{exact:true}).count(),0,'query cannot fabricate success');assert(await confirm().isEnabled());
  details.reviewedRevision=await page.locator('input[name="expectedRevisionId"]').inputValue();
@@ -155,7 +157,13 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  // Empty week is a true source state, not a false success.
  stage='empty';const empty=new Date(scenario.week+'T12:00:00Z');empty.setUTCDate(empty.getUTCDate()+7);await page.goto(app.url+'/app/schedule?week='+empty.toISOString().slice(0,10));await page.waitForLoadState('networkidle');assert.equal(await confirm().count(),0);assert.equal(await page.getByText('Schedule not published yet',{exact:true}).filter({visible:true}).count(),1,'v5 shows the chosen day; an unpublished day says so');assert.equal(await page.getByText('Off — no assignment',{exact:true}).count(),0);assert.equal(await page.locator('main .b-note,main .eb-wkc__sum,main .c-note,main [data-week-note]').filter({hasText:'published this week yet'}).filter({visible:true}).count(),1,'The visible publication note names the unpublished week and says an empty day is not a day off');assert(await page.getByText(/An empty day isn’t a day off yet\./).filter({visible:true}).count());await screenshot('empty');checks.push('Unpublished empty week has no confirmation and no fabricated off/success state');
  // Return to real schedule for driver's WCAG scan.
- stage='layout';await schedule();details.responseCaptured=!!captured;
+ stage='layout';details.layoutReturn=await returnAttentionScheduleForLayout({page,origin:app.url,week:scenario.week,ready:async()=>{
+  await dayLink.waitFor();assert.equal(await dayLink.count(),1);assert.equal(await dayLink.getAttribute('href'),dayHref);
+  const confirmed=page.locator('.b-week__h .b-chip--ok:visible').filter({hasText:'Confirmed'});
+  if(width===390){await confirmed.waitFor();assert.equal(await confirmed.count(),1);assert.equal(await confirm().count(),0);}
+  else{await confirm().waitFor();assert(await confirm().isEnabled());assert.equal(await confirmed.count(),0);}
+  assert.equal(await page.getByText('Schedule not published yet',{exact:true}).filter({visible:true}).count(),0);
+ }});checks.push('Native Previous week returns the exact reviewed week and day in the original document with the current confirmation state and no main-frame document request');details.responseCaptured=!!captured;
  return {checks};
  }catch(error){scenarioFailure=error;throw error;}
  finally{revocationActions.close();details.sessionRevocationActions=revocationActions.snapshot();browser?.off('disconnected',disconnected);details.stage=stage;details.checks=checks;details.runtimeErrors=runtimeErrors;try{await writeFile(join(evidenceDirectory,`attention-${engine}-${width}-report.json`),JSON.stringify(details,null,2));}catch(error){if(!scenarioFailure)throw error;console.error('Attention diagnostic report unavailable; original scenario failure retained');}}
