@@ -96,7 +96,7 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
               await page.getByRole('button', { name: 'This week', exact: true }).waitFor();
               expect(await page.getByRole('button', { name: 'This week', exact: true }).getAttribute('aria-pressed')).toBe('true');
               await page.getByRole('button', { name: 'Last week', exact: true }).click();
-              await page.getByText('No recorded time in this period', { exact: true }).waitFor();
+              const emptyPeriod=page.getByText('No recorded time in this period', { exact: true }).filter({visible:true});await emptyPeriod.waitFor();expect(await emptyPeriod.count()).toBe(1);
               await page.setViewportSize({ width: 1440, height: 1000 });
               checks.push(engine + ': ' + actor + ' current and empty previous Insights period');
             }
