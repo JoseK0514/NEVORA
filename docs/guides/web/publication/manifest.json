@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "date": "2026-11-17",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "137abbd8895f2f32d81115085b0841e2a63f8a9a",
-  "applicationHash": "18c17b92ed8cd0acbdbcea6062ed3e4400f3fce8842cc97663808f48c48641d3",
+  "sourceSha": "f9e139823444f71027cf99612b0d2bf9640d4f03",
+  "applicationHash": "bfcedfec58a3a12e0c5fabcb48745e3a636630045f31dcfb1a09f3f8903b8d26",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
-    "sha256": "f9b17bfc83256e645d89685082e4cffcb0a216a42eea1e485033e640870490fe"
+    "sha256": "1af23bc70c850ff057cfdfd2531ce935540bcb64a8475be3d0d504a5e316604d"
   },
   "guides": [
     {
@@ -195,16 +195,16 @@
         },
         {
           "path": "docs/handoffs/2026-11-17-claude-ui-integration.md",
-          "sha256": "388530206ad9eb8dd3eddb8bdd5348dd30032471db3da3b6b08a0a0e4bb6f87b"
+          "sha256": "d5eb30a608f80da15a7ce3e528b9b1776aa8a6eea9ccabcd540a40a39a579574"
         },
         {
           "path": "docs/handoffs/2026-11-17-claude-ui-integration-contract-review.md",
-          "sha256": "6819ef653d6e4334d72feffb758cbf50e753b5f10e92dca019d7465e5d27134e"
+          "sha256": "6c5aeeb08ab67d47811c88d84de991f9bb96ca2cad7ee382c1ceb22d11efb1b9"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "cdcf819e8f98f81d6b23dc7350ed9f8ca3be8b404d0080829a0bba4e9b720dd7",
+        "sha256": "af1263a2a4c893471149a490eb63598c1f2dace6ab43c030d10e0528354934f3",
         "pageCount": 5
       }
     },
@@ -326,12 +326,12 @@
         },
         {
           "path": "docs/handoffs/2026-11-17-claude-ui-integration.md",
-          "sha256": "388530206ad9eb8dd3eddb8bdd5348dd30032471db3da3b6b08a0a0e4bb6f87b"
+          "sha256": "d5eb30a608f80da15a7ce3e528b9b1776aa8a6eea9ccabcd540a40a39a579574"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "174c6643d0fe3047716c4c1949631bf4e8af4319bc39c25543af33d94ff36ab7",
+        "sha256": "999f5da0a211140a6eecfdea610f5b896f7afb431dc20d70a5051a0c502cf772",
         "pageCount": 3
       }
     },
@@ -437,12 +437,12 @@
         },
         {
           "path": "docs/handoffs/2026-11-17-claude-ui-integration.md",
-          "sha256": "388530206ad9eb8dd3eddb8bdd5348dd30032471db3da3b6b08a0a0e4bb6f87b"
+          "sha256": "d5eb30a608f80da15a7ce3e528b9b1776aa8a6eea9ccabcd540a40a39a579574"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "c769a6c077e175750c7e79bc64b6cf313d7c3261f3540cb033a1da5e61798d3f",
+        "sha256": "d7d1bb7f9ec569cac8b48f74ad7b89ab3b8a5de7a890802e7f55850850adfed6",
         "pageCount": 3
       }
     },
@@ -596,16 +596,16 @@
         },
         {
           "path": "docs/handoffs/2026-11-17-claude-ui-integration.md",
-          "sha256": "388530206ad9eb8dd3eddb8bdd5348dd30032471db3da3b6b08a0a0e4bb6f87b"
+          "sha256": "d5eb30a608f80da15a7ce3e528b9b1776aa8a6eea9ccabcd540a40a39a579574"
         },
         {
           "path": "docs/handoffs/2026-11-17-claude-ui-integration-contract-review.md",
-          "sha256": "6819ef653d6e4334d72feffb758cbf50e753b5f10e92dca019d7465e5d27134e"
+          "sha256": "6c5aeeb08ab67d47811c88d84de991f9bb96ca2cad7ee382c1ceb22d11efb1b9"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "ecf89ba26a64f2c17a1216f2420915eb721869cbad2ed896f08d1484f150d6e3",
+        "sha256": "d67bb7f52d3e003883c905fb0f0606167c54806dec54b17b7cb25645be14264c",
         "pageCount": 4
       }
     },
@@ -635,7 +635,7 @@
         },
         {
           "path": "docs/handoffs/2026-10-21-development-assembly-sources.json",
-          "sha256": "b4a68d20060acb88cf31132c80380b2bd761069c41cedec7f732d8cb9bc56a53"
+          "sha256": "f7f2e0dc847162b5e7e9878dd6060a9a171fd955692eee58cf5e89e47583d5d5"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",
@@ -823,16 +823,20 @@
         },
         {
           "path": "docs/handoffs/2026-11-17-claude-ui-integration.md",
-          "sha256": "388530206ad9eb8dd3eddb8bdd5348dd30032471db3da3b6b08a0a0e4bb6f87b"
+          "sha256": "d5eb30a608f80da15a7ce3e528b9b1776aa8a6eea9ccabcd540a40a39a579574"
         },
         {
           "path": "docs/handoffs/2026-11-17-claude-ui-integration-contract-review.md",
-          "sha256": "6819ef653d6e4334d72feffb758cbf50e753b5f10e92dca019d7465e5d27134e"
+          "sha256": "6c5aeeb08ab67d47811c88d84de991f9bb96ca2cad7ee382c1ceb22d11efb1b9"
+        },
+        {
+          "path": "docs/handoffs/2026-11-17-claude-ui-integration-audit-hold.json",
+          "sha256": "f90ff567ff101e20cffaae137d3454be03e2c167f96081543674afef9c8741dd"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "a257f47b0093b4e9510f39a501e75bce4f1156b33c38426a29a5ffa690410768",
+        "sha256": "cf35817c613fca7b73ab7334a60a536b52c018be576c7339020490f1b2a4eaf7",
         "pageCount": 6
       }
     },
@@ -1006,16 +1010,20 @@
         },
         {
           "path": "docs/handoffs/2026-11-17-claude-ui-integration.md",
-          "sha256": "388530206ad9eb8dd3eddb8bdd5348dd30032471db3da3b6b08a0a0e4bb6f87b"
+          "sha256": "d5eb30a608f80da15a7ce3e528b9b1776aa8a6eea9ccabcd540a40a39a579574"
         },
         {
           "path": "docs/handoffs/2026-11-17-claude-ui-integration-contract-review.md",
-          "sha256": "6819ef653d6e4334d72feffb758cbf50e753b5f10e92dca019d7465e5d27134e"
+          "sha256": "6c5aeeb08ab67d47811c88d84de991f9bb96ca2cad7ee382c1ceb22d11efb1b9"
+        },
+        {
+          "path": "docs/handoffs/2026-11-17-claude-ui-integration-audit-hold.json",
+          "sha256": "f90ff567ff101e20cffaae137d3454be03e2c167f96081543674afef9c8741dd"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "a5c970662750c134e8d1564af501be9d50d3abeca521ee35746bc20567fb5d3f",
+        "sha256": "d50b2778c035d60f5181ad780f25407f10d03ff8c444bb639e6a473c18f9c93a",
         "pageCount": 6
       }
     }
