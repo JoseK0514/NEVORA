@@ -5,6 +5,7 @@ import {resolve} from 'node:path';
 import {createOwnedNextApp} from './owned-next-app';
 import {seedOwnedApp} from './owned-app-fixture';
 import {seedPayrollFixture} from './payroll-fixture';
+import {workerOnce} from '../../lib/payroll/worker';
 
 const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json'))('playwright');
 
@@ -12,18 +13,17 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
   if(!process.env.NEVORA_ALL_UI_BROWSER_EVIDENCE)throw Error('External evidence required');
   const evidence=resolve(process.env.NEVORA_ALL_UI_BROWSER_EVIDENCE,'claude-joined-'+engine);await mkdir(evidence,{recursive:true});
   const app=await createOwnedNextApp(evidence,{payrollEnabled:true});
-  const browser=await runtime[engine].launch({headless:true}),context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block',reducedMotion:'reduce'}),page=await context.newPage();
-  const errors:string[]=[],external:string[]=[],checks:string[]=[],requests=new Set<object>(),network:{event:string;url:string;failure?:string}[]=[];
+  const browser=await runtime[engine].launch({headless:true}),context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block',reducedMotion:'reduce'});
+  let page=await context.newPage();
+  const errors:string[]=[],external:string[]=[],checks:string[]=[],network:{event:string;url:string;failure?:string}[]=[];
   let complete=false;
   try{
     vi.stubEnv('NEVORA_PAYROLL_ENABLED','true');
     await seedOwnedApp(app.database.executor);const fixture=await seedPayrollFixture(app.database.executor,{breaks:true});
-    page.on('pageerror',(e:Error)=>errors.push(page.url()+' '+e.stack));page.setDefaultTimeout(20000);
-    page.on('request',(r:any)=>{const u=new URL(r.url());if(u.origin===app.url&&u.pathname.startsWith('/api/'))requests.add(r);});
-    page.on('requestfinished',(r:any)=>{requests.delete(r);});
-    page.on('requestfailed',(r:any)=>{requests.delete(r);network.push({event:'failed',url:r.url(),failure:r.failure()?.errorText});});
+    const observe=(view:any)=>{view.setDefaultTimeout(20000);view.on('pageerror',(e:Error)=>errors.push(view.url()+' '+e.stack));view.on('requestfailed',(r:any)=>network.push({event:'failed',url:r.url(),failure:r.failure()?.errorText}));};observe(page);
     await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){external.push(url.origin);await route.abort();}else await route.continue();});
-    const visit=async(path:string)=>{if(page.url()!=='about:blank'){await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await expect.poll(()=>requests.size,{timeout:20000}).toBe(0);}await page.goto(app.url+path,{waitUntil:'domcontentloaded'});};
+    // Each workflow opens in an authenticated tab. Existing navigation suites cover route transitions; no page error is filtered.
+    const visit=async(path:string)=>{if(page.url()!=='about:blank'){page=await context.newPage();observe(page);}await page.goto(app.url+path,{waitUntil:'domcontentloaded'});};
     await visit('/login');await page.getByLabel('Employee ID',{exact:true}).fill(fixture.ids.owner);await page.getByLabel('Password',{exact:true}).fill(fixture.password);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
     const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
     const roster=await q<{id:string}>('SELECT id FROM employees ORDER BY id');
@@ -77,6 +77,17 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     const result=await manifest.json();expect(result.result.state).toBe('MANIFEST_PREPARED');expect(result.result.exports).toHaveLength(1);expect(result.result.exports[0].payload.model.rows.map((r:{employeeId:string})=>r.employeeId)).toEqual([fixture.ids.a]);
     expect(await q('SELECT count(*)::int n FROM payroll_period_manifests WHERE id=$1',[result.result.id])).toEqual([{n:1}]);
     checks.push('Real paid-time export with each break explicitly decided and real exact-plan manifest');
+    await visit('/app/payroll/review?run='+fixture.runId);
+    await page.getByRole('checkbox',{name:/I reviewed revision/}).check();
+    const approving=page.waitForResponse((r:any)=>r.url()===app.url+'/api/payroll/runs'&&r.request().method()==='POST'&&r.request().postDataJSON().action==='APPROVE');await page.getByRole('button',{name:'Approve payroll',exact:true}).click();const approved=await approving;expect(approved.status(),await approved.text()).toBe(200);
+    for(let i=0;i<4;i++)await workerOnce(app.database.executor);
+    await visit('/app/payroll/review?run='+fixture.runId);await page.getByRole('checkbox',{name:'Share the approved pay statements with each employee.',exact:true}).check();
+    const publishing=page.waitForResponse((r:any)=>r.url()===app.url+'/api/payroll/runs'&&r.request().method()==='POST'&&r.request().postDataJSON().action==='PUBLISH');await page.getByRole('button',{name:'Share pay statements',exact:true}).click();const shared=await publishing;expect(shared.status(),await shared.text()).toBe(200);
+    for(let i=0;i<4;i++)await workerOnce(app.database.executor);
+    const runRead=await context.request.get(app.url+'/api/payroll/runs',{headers:{'x-nevora-payroll':'1'}});expect(runRead.status()).toBe(200);const run=(await runRead.json()).runs.find((r:{id:string})=>r.id===fixture.runId);
+    expect(run.status).toBe('APPROVED');const statements=run.documents.filter((d:{kind:string})=>d.kind==='EMPLOYEE_STATEMENT');expect(statements).toHaveLength(roster.length);expect(statements.every((d:{published:boolean})=>d.published)).toBe(true);
+    const pdf=await context.request.get(app.url+'/api/payroll/documents/'+statements[0].id,{headers:{'x-nevora-payroll':'1'}});expect(pdf.status()).toBe(200);expect((await pdf.body()).subarray(0,4).toString()).toBe('%PDF');
+    checks.push('Actual reviewed approval, local PDF worker and separately confirmed statement publication; no delivery worker');
     expect(errors).toEqual([]);expect(external).toEqual([]);complete=true;
   }finally{vi.unstubAllEnvs();if(!complete)await page.screenshot({path:resolve(evidence,'failure.png'),fullPage:true}).catch(()=>{});await context.close();await browser.close();await app.close();await writeFile(resolve(evidence,'joined-report.json'),JSON.stringify({complete,checks,errors,external,network,source:app.sourceHashes,data:'Owned fictional PostgreSQL only; real save/export/manifest, no forced success'},null,2));}
 });
