@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { BUSINESS_ERROR_CODES, BUSINESS_FINDING_CODES, BUSINESS_QUALIFIER_CODES, BUSINESS_UNAVAILABLE_CODES } from "@/lib/owner-advisor/business/contracts";
 import { uiCatalog, uiCatalogResult, uiFullRead, uiIds, uiNow, uiReceipt, uiZone } from "@/test/fixtures/rondo-business-ui";
 import {
@@ -119,6 +119,13 @@ describe("the transport", () => {
     expect(await lost.catalog()).toEqual({ kind: "unavailable" });
     const odd = createBusinessClient(answer(200, { state: "saved", receipt: { everything: "fine" } }));
     expect(await odd.send(publish)).toEqual({ kind: "uncertain" });
+  });
+  it("does not extend the server data observation by time spent delivering or parsing the response", async () => {
+    vi.useFakeTimers();
+    try {
+      const client = createBusinessClient(async () => { vi.advanceTimersByTime(16000); return new Response(JSON.stringify(uiCatalogResult())); });
+      expect(await client.catalog()).toEqual({ kind: "unavailable" });
+    } finally { vi.useRealTimers(); }
   });
   it("never lets the page abort a write", async () => {
     let seen: AbortSignal | null | undefined;

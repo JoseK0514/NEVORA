@@ -35,7 +35,12 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     const sent=saved.request().postDataJSON();expect(sent.amounts.schema).toBe('NEVORA_PAYROLL_CSV_TOTALS_V1');expect(sent.amounts.csv).toBe(csv);
     await page.getByText('Amounts saved',{exact:true}).waitFor();checks.push('Real saved CSV import; exact uploaded bytes; population review retained');
     const period=fixture.period,exportPath='/app/payroll-export/paid-time?start='+period.startDate+'&end='+period.endDate;
+    // The real read is given a shorter observation lifetime; no source rows or success values are invented.
+    await page.route('**/api/timecards',async(route:any)=>{const actual=await route.fetch(),body=await actual.json();if(body.state==='ready')body.validForMs=1000;await route.fulfill({response:actual,json:body});});
     await visit(exportPath);await page.locator('.pim-person').first().waitFor();
+    await expect.poll(()=>page.locator('.pim-person').count(),{timeout:4000}).toBe(0);
+    await page.unroute('**/api/timecards');await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.locator('.pim-person').first().waitFor();
+    checks.push('The data observation expires even while operational authority is still current');
     // Private timecards must leave the DOM immediately on loss of focus; a pending refresh cannot extend the lease.
     await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
     await expect.poll(()=>page.locator('.pim-person').count()).toBe(0);
