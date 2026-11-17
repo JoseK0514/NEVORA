@@ -292,6 +292,10 @@
     "config": "vitest.rondo-leadership.config.mts"
   },
   {
+    "name": "rondo-management-anthropic",
+    "config": "vitest.rondo-management-anthropic.config.mts"
+  },
+  {
     "name": "six-findings",
     "config": "vitest.six-findings.config.mts"
   },

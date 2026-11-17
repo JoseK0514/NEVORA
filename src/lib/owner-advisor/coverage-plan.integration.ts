@@ -39,6 +39,30 @@ it("reads a joint cross-location solution with no provider or business/request w
     .toEqual([{ shifts: 0, schedules: 0, notifications: 0, requests: 0 }]);
 });
 
+it("labels rejected candidate variants without falsely invalidating selected eligible assignments", async () => {
+  await seed();
+  await f.q("DELETE FROM availability_windows WHERE employee_id='joint-worker'");
+  const result = await inspect();
+  const plan = result.alternatives.find(p => p.assignments.some(a => a.employeeId === 'target' && a.locationId === 'loc-2'))!;
+  expect(plan.status).toBe('PARTIAL');
+  expect(plan.assignments).toHaveLength(1);
+  const rejection = plan.issues.items.find(i => i.code === 'LOCATION_NOT_ELIGIBLE');
+  expect(rejection).toBeDefined();
+  expect(rejection!.message).toMatch(/^Unidentified rejected candidate variant; do not attribute to listed workers:/);
+  expect(plan.issues.items.find(i => i.code === 'STAFFING_GAP')!.message).not.toMatch(/rejected candidate/);
+  expect(await f.q('SELECT count(*)::int n FROM shifts')).toEqual([{ n: 0 }]);
+});
+
+it("keeps a rejected longer variant distinct from the same worker's valid shorter assignment", async () => {
+  await seed();
+  await f.q("UPDATE employee_scheduling_settings SET maximum_weekly_hours=2 WHERE employee_id='target'");
+  const result = await inspect();
+  const plan = result.alternatives.find(p => p.assignments.some(a => a.employeeId === 'target') && p.issues.items.some(i => i.code === 'MAX_WEEKLY_HOURS'))!;
+  expect(plan).toBeDefined();
+  expect(plan.assignments.filter(a => a.employeeId === 'target').every(a => a.startTime === '08:00' && a.endTime === '10:00')).toBe(true);
+  expect(plan.issues.items.find(i => i.code === 'MAX_WEEKLY_HOURS')!.message).toMatch(/^Unidentified rejected candidate variant; do not attribute to listed workers:/);
+});
+
 it("retains exact provenance while a fresh investigation sees changed qualification/availability", async () => {
   await seed(); const first = await inspect();
   const retained = JSON.stringify(first);

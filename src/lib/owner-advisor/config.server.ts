@@ -1,12 +1,14 @@
 import {readFeatureFlags} from '../feature-flags';
 import "server-only";
+import { anthropicCreditActive } from "./anthropic-policy";
 export type ProviderConfig = {
   endpoint: string;
   model: string;
   key: string;
   dailyLimit: number;
-  apiStyle?: "responses" | "chat_completions";
+  apiStyle?: "responses" | "chat_completions" | "anthropic_messages";
   reasoningEffort?: "low" | "medium" | "high";
+  creditExpiresAt?: string;
 };
 /** Return provider settings only when feature/data approval, model, bounded daily
  * cap and an allowed endpoint/key are configured. Availability here is configuration
@@ -24,13 +26,20 @@ export function readConfig(
     !env.NEVORA_OWNER_ADVISOR_MODEL?.trim() ||
     !limit ||
     !/^([1-9]|[1-9][0-9]|100)$/.test(limit) ||
-    (apiStyle !== "responses" && apiStyle !== "chat_completions") ||
+    (apiStyle !== "responses" && apiStyle !== "chat_completions" && apiStyle !== "anthropic_messages") ||
+    ((apiStyle === "anthropic_messages") !== (provider === "anthropic")) ||
     (reasoningEffort !== undefined &&
       (apiStyle !== "responses" || !["low", "medium", "high"].includes(reasoningEffort)))
   )
     return null;
-  let key: string | undefined, endpoint: string;
-  if (provider === "openai") {
+  let key: string | undefined, endpoint: string, creditExpiresAt: string | undefined;
+  if (provider === "anthropic") {
+    creditExpiresAt = env.NEVORA_OWNER_ADVISOR_ANTHROPIC_CREDIT_EXPIRES_AT;
+    if (env.NEVORA_OWNER_ADVISOR_MODEL.trim() !== "claude-sonnet-5-5" ||
+      !anthropicCreditActive(creditExpiresAt)) return null;
+    key = env.ANTHROPIC_API_KEY;
+    endpoint = "https://api.anthropic.com/v1/messages";
+  } else if (provider === "openai") {
     key = env.OPENAI_API_KEY;
     endpoint = apiStyle === "responses"
       ? "https://api.openai.com/v1/responses"
@@ -54,6 +63,7 @@ export function readConfig(
     key,
     dailyLimit: Number(limit),
     apiStyle,
+    ...(creditExpiresAt ? { creditExpiresAt } : {}),
     ...(reasoningEffort ? { reasoningEffort: reasoningEffort as ProviderConfig["reasoningEffort"] } : {}),
   };
 }

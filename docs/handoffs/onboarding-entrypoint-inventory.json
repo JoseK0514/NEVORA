@@ -4574,6 +4574,83 @@
       "status": "CONVERTED",
       "reason": "Private bearer-admitted installation facts use the current APP connection, exact installation secret binding and final current-binding check in the route. Owner readiness is durable ACTIVE identity plus current credential facts; no mutation or activation capability.",
       "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/owner/advisor/knowledge/route.ts",
+      "tags": [
+        "shared-executor",
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Private GET/POST calls knowledgeHttp and companyKnowledgeService through neonNotificationExecutor/applicationSql. Current company-wide Owner/session/workspace admission and same-origin mutation checks remain mandatory; publication is guidance, never operational authority. No separate database transport.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/owner/advisor/knowledge/entries/[documentId]/versions/[versionId]/route.ts",
+      "tags": [
+        "shared-executor",
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Private exact-version citation uses knowledgeHttp, current company-wide Owner admission and AdvisorStore on scoped applicationSql; document/workspace and deletion checks fence JSON or inert plain-text navigation. No public citation or separate transport.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/owner/advisor/weekly/route.ts",
+      "tags": [
+        "shared-executor",
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Private same-origin POST uses weeklyHttp and weeklyService with current Owner/session/workspace admission on scoped applicationSql. Exact draft approval/recovery retains source, context and authority guards; weekly-off denies new planning/writes. No separate transport, publication or notification.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/lib/owner-advisor/company-knowledge.integration.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Vitest integration source. Direct pg Client is used solely against the ownership-marked disposable loopback database from companyAccessFixture for lock/fault regressions; it is not imported by runtime application entrypoints.",
+      "isolatedBehavior": "TEST_ONLY"
+    },
+    {
+      "path": "src/app/api/owner/advisor/business/route.ts",
+      "tags": [
+        "shared-executor",
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Private GET/POST uses businessHttp and businessSourceService with current company-wide Owner/session/workspace admission on scoped applicationSql. Default-off import/retrieval gates, streamed 512KiB input, full exact review, atomic immutable publication and content-free original-operation recovery remain enforced. No connector activation or external action.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/owner/advisor/business/sources/[sourceId]/versions/[versionId]/route.ts",
+      "tags": [
+        "shared-executor",
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Private exact-version navigation uses businessHttp, current company-wide Owner admission and readBusinessVersion on scoped applicationSql. Inert no-store text; current published eligibility is required with retrieval alone, historical/draft administration requires imports, deleted data is denied. No approval handle or separate transport.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/lib/owner-advisor/business/store.integration.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Vitest-only direct pg Client for bounded lock/abort and immutable custody regressions against companyAccessFixture disposable ownership-marked loopback PostgreSQL; never imported by application entrypoints.",
+      "isolatedBehavior": "TEST_ONLY"
+    },
+    {
+      "path": "src/lib/owner-advisor/business/service.integration.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Vitest-only direct pg Client for initial admission lock contention in a fresh companyAccessFixture disposable loopback database; service scenarios use the company-bound test executor and synthetic records, never customer data or providers.",
+      "isolatedBehavior": "TEST_ONLY"
     }
   ],
   "routingEvidence": "Task2: actual owned A/B PostgreSQL databases through installed Neon HTTP protocol; not hosted Neon evidence.",
@@ -4603,5 +4680,16 @@
     "reviewedSource": "74421d91b99f0f554ba60863c8b9cdda8f849d4a",
     "entrypoint": "src/app/api/manager/reminders/eligibility/route.ts",
     "evidence": "Phase 4 service/HTTP/owned SQL plus runtime-inventory removal regression; activation holds unchanged"
+  },
+  "rondoKnowledgeWeeklyReconciliation": {
+    "date": "2026-11-16",
+    "backend": "e7f00843eca42f18e12e91c8b0ac8d052486bef6",
+    "review": "Explicit source inspection; new removal-negative regression covers every Rondo route and direct-pg fixture. No classifier exemptions or routing behavior changed.",
+    "entries": [
+      "src/app/api/owner/advisor/knowledge/route.ts",
+      "src/app/api/owner/advisor/knowledge/entries/[documentId]/versions/[versionId]/route.ts",
+      "src/app/api/owner/advisor/weekly/route.ts",
+      "src/lib/owner-advisor/company-knowledge.integration.ts"
+    ]
   }
 }

@@ -38,7 +38,11 @@
         "src/components/period-close-history.tsx",
         "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
         "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
-        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json"
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
+        "src/lib/owner-advisor/business/contracts.ts",
+        "src/lib/owner-advisor/business/service.server.ts",
+        "src/lib/owner-advisor/business/fence.server.ts",
+        "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md"
       ]
     },
     {
@@ -119,7 +123,20 @@
         "docs/product/rondo-operating-contract.md",
         "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
         "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
-        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json"
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
+        "src/app/app/ai-manager/knowledge/page.tsx",
+        "src/components/owner-advisor/knowledge/knowledge-page.tsx",
+        "src/lib/owner-advisor/company-knowledge.server.ts",
+        "src/lib/owner-advisor/company-knowledge-reader.server.ts",
+        "src/app/app/ai-manager/weekly/page.tsx",
+        "src/components/owner-advisor/weekly/weekly-page.tsx",
+        "src/lib/owner-advisor/weekly-contracts.ts",
+        "src/lib/owner-advisor/weekly-service.server.ts",
+        "src/lib/data/reviewed-weekly-draft.server.ts",
+        "src/lib/owner-advisor/business/contracts.ts",
+        "src/lib/owner-advisor/business/service.server.ts",
+        "src/lib/owner-advisor/business/fence.server.ts",
+        "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md"
       ]
     },
     {
@@ -168,7 +185,11 @@
         "src/proxy.ts",
         "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
         "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
-        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json"
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
+        "src/lib/owner-advisor/business/contracts.ts",
+        "src/lib/owner-advisor/business/service.server.ts",
+        "src/lib/owner-advisor/business/fence.server.ts",
+        "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md"
       ]
     },
     {
@@ -206,7 +227,11 @@
         "src/lib/commerce/installation-facts.server.ts",
         "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
         "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
-        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json"
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
+        "src/lib/owner-advisor/business/contracts.ts",
+        "src/lib/owner-advisor/business/service.server.ts",
+        "src/lib/owner-advisor/business/fence.server.ts",
+        "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md"
       ]
     }
   ]

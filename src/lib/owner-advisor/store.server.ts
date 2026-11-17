@@ -4,6 +4,8 @@ import type { SessionMutationProof } from "@/lib/shift-changes/types";
 import type { SqlExecutor, SqlStatement } from "@/lib/notifications/types";
 import { ownerGuards, type OwnerAdmission } from "./authority.server";
 import type { AttentionReview, InternalAttention } from "./briefing";
+import type { KnowledgeFence } from './company-knowledge';
+import { knowledgeFenceGuards } from './company-knowledge-fence.server';
 import {
   AdvisorError,
   record,
@@ -20,6 +22,7 @@ export const commandHash = (command: AdvisorCommand) =>
  * same guards plus request lease checks. Provider side effects cannot be rolled back
  * by a database failure, so failed/ambiguous requests retain their recorded identity. */
 export class AdvisorStore {
+  private hasKnowledgeColumn = false;
   constructor(
     readonly proof: SessionMutationProof,
     readonly original: OwnerAdmission,
@@ -39,20 +42,33 @@ export class AdvisorStore {
     );
     return result[guards.length] as T[];
   }
-  async read() {
+  async knowledgeTransaction<T>(statement: SqlStatement, fence: KnowledgeFence, signal?: AbortSignal): Promise<T[]> {
+    const guards = [...knowledgeFenceGuards(this.scope[0], fence), ...ownerGuards(this.proof, this.original)];
+    try {
+      const results = await this.ex.transaction([...guards, statement, ...ownerGuards(this.proof, this.original), ...knowledgeFenceGuards(this.scope[0], fence)], signal);
+      return results[guards.length] as T[];
+    } catch (error) {
+      if (record(error) && typeof error.message === 'string' && error.message.includes('advisor_knowledge_changed')) throw new AdvisorError('conflict');
+      throw error;
+    }
+  }
+  async read(knowledgeFingerprint: string | null = null) {
     const [row] = await this.transaction<{
       priorities: string;
       revision: number;
       history: AdvisorMessage[];
+      knowledgeFingerprint: string | null;
+      hasKnowledgeColumn: boolean;
     }>({
-      text: "SELECT priorities,revision,history FROM owner_advisor_profiles WHERE workspace_id=$1 AND owner_id=$2",
+      text: "SELECT priorities,revision,history,to_jsonb(p)->>'knowledge_fingerprint' AS \"knowledgeFingerprint\",to_jsonb(p)?'knowledge_fingerprint' AS \"hasKnowledgeColumn\" FROM owner_advisor_profiles p WHERE workspace_id=$1 AND owner_id=$2",
       values: this.scope,
     });
+    this.hasKnowledgeColumn = row?.hasKnowledgeColumn ?? false;
     return {
       profile: row
         ? { priorities: row.priorities, revision: row.revision }
         : { priorities: "", revision: 0 },
-      history: row?.history ?? [],
+      history: row && row.knowledgeFingerprint === knowledgeFingerprint ? row.history : [],
     };
   }
   async save(
@@ -73,17 +89,35 @@ export class AdvisorStore {
     if (row.result.error) throw new AdvisorError(row.result.error);
     return row.result;
   }
-  async reserve(requestId: string, hash: string, cap: number) {
-    const [row] = await this.transaction<{
+  async reserve(requestId: string, hash: string, cap: number, knowledge?: KnowledgeFence) {
+    const statement = {
+      // JSON projection also works on the pre-knowledge schema. In feature-off
+      // mode a previously tagged answer must not become an unfenced replay.
+      text: `SELECT CASE WHEN EXISTS(SELECT 1 FROM owner_advisor_requests r WHERE workspace_id=$1 AND owner_id=$2 AND request_id=$3 AND state='completed' AND (to_jsonb(r)->>'knowledge_fingerprint') IS DISTINCT FROM $6::text) THEN jsonb_build_object('error','conflict') ELSE owner_advisor_reserve($1,$2,$3,$4,$5) END AS result`,
+      values: [...this.scope, requestId, hash, cap, knowledge?.fingerprint ?? null],
+    };
+    type Reservation = {
       result: {
         error?: AdvisorErrorCode;
         replay?: AdvisorAnswer;
         admitted?: boolean;
       };
-    }>({
-      text: "SELECT owner_advisor_reserve($1,$2,$3,$4,$5) AS result",
-      values: [...this.scope, requestId, hash, cap],
-    });
+    };
+    let row: Reservation;
+    try {
+      const guards = [...(knowledge ? knowledgeFenceGuards(this.scope[0], knowledge) : []), ...ownerGuards(this.proof, this.original)];
+      const results = await this.ex.transaction([
+        ...guards,
+        // Separate statement: the fingerprint CASE must observe a completion
+        // committed while we were waiting for the reservation/settlement lock.
+        { text: "SELECT pg_advisory_xact_lock(hashtextextended('owner-advisor:'||$1,0))", values: [this.scope[0]] },
+        statement, ...ownerGuards(this.proof, this.original), ...(knowledge ? knowledgeFenceGuards(this.scope[0], knowledge) : []),
+      ]);
+      [row] = results[guards.length + 1] as Reservation[];
+    } catch (error) {
+      if (record(error) && typeof error.message === 'string' && error.message.includes('advisor_knowledge_changed')) throw new AdvisorError('conflict');
+      throw error;
+    }
     if (row.result.error) throw new AdvisorError(row.result.error);
     return row.result;
   }
@@ -117,9 +151,18 @@ export class AdvisorStore {
   }
   /** Commit bounded recent chat history and its recoverable answer while the running
    * request lease is current; retain only the six latest completed ask payloads. */
-  async complete(requestId: string, message: string, answer: AdvisorAnswer, notebookRevision?: number, memoryRevision?: number, profileRevision?: number) {
+  async complete(requestId: string, message: string, answer: AdvisorAnswer, notebookRevision?: number, memoryRevision?: number, profileRevision?: number, knowledge?: KnowledgeFence,
+    settlement?: { before: SqlStatement[]; after: SqlStatement[] }) {
     const guards = ownerGuards(this.proof, this.original);
+    // Weekly and business evidence are session/source/time-bound. Its direct answer remains in
+    // the fenced request receipt; neither turn may enter ordinary reusable history.
+    // Capture the unrelated history and assert it unchanged inside/after settlement.
+    const priorHistory = settlement ? (await this.transaction<{ history: AdvisorMessage[] }>({
+      text: 'SELECT history FROM owner_advisor_profiles WHERE workspace_id=$1 AND owner_id=$2', values: this.scope,
+    }))[0]?.history ?? [] : undefined;
     try { await this.ex.transaction([
+      ...(settlement?.before ?? []),
+      ...(knowledge ? knowledgeFenceGuards(this.scope[0], knowledge) : []),
       ...guards,
       {
         text: "SELECT pg_advisory_xact_lock(hashtextextended('owner-advisor:'||$1,0))",
@@ -147,27 +190,34 @@ export class AdvisorStore {
         text: "INSERT INTO owner_advisor_profiles(workspace_id,owner_id) VALUES($1,$2) ON CONFLICT DO NOTHING",
         values: this.scope,
       },
-      {
-        text: `UPDATE owner_advisor_profiles SET history=(SELECT jsonb_agg(item ORDER BY n) FROM (SELECT item,n FROM jsonb_array_elements(history||$3::jsonb) WITH ORDINALITY a(item,n) ORDER BY n DESC LIMIT 12)t) WHERE workspace_id=$1 AND owner_id=$2`,
+      ...(settlement ? [{ text: `SELECT(CASE WHEN EXISTS(SELECT 1 FROM owner_advisor_profiles WHERE workspace_id=$1 AND owner_id=$2 AND history=$3::jsonb)
+        THEN '1' ELSE 'advisor_weekly_history_changed' END)::integer`, values: [...this.scope, JSON.stringify(priorHistory)] }] : [{
+        text: `UPDATE owner_advisor_profiles SET history=(SELECT jsonb_agg(item ORDER BY n) FROM (SELECT item,n FROM jsonb_array_elements((CASE WHEN (to_jsonb(owner_advisor_profiles)->>'knowledge_fingerprint') IS NOT DISTINCT FROM $4::text THEN history ELSE '[]'::jsonb END)||$3::jsonb) WITH ORDINALITY a(item,n) ORDER BY n DESC LIMIT 12)t)${knowledge || this.hasKnowledgeColumn ? ',knowledge_fingerprint=$4' : ''} WHERE workspace_id=$1 AND owner_id=$2`,
         values: [
           ...this.scope,
           JSON.stringify([
             { role: "user", content: message },
             { role: "assistant", content: answer.text },
           ]),
+          knowledge?.fingerprint ?? null,
         ],
-      },
+      },]),
       {
-        text: "UPDATE owner_advisor_requests SET state='completed',result=$4::jsonb WHERE workspace_id=$1 AND owner_id=$2 AND request_id=$3",
-        values: [...this.scope, requestId, JSON.stringify(answer)],
+        text: `UPDATE owner_advisor_requests SET state='completed',result=$4::jsonb${knowledge ? ',knowledge_fingerprint=$5' : ''} WHERE workspace_id=$1 AND owner_id=$2 AND request_id=$3`,
+        values: [...this.scope, requestId, JSON.stringify(answer), ...(knowledge ? [knowledge.fingerprint] : [])],
       },
       {
         text: "UPDATE owner_advisor_requests SET result=NULL WHERE workspace_id=$1 AND owner_id=$2 AND request_id IN(SELECT request_id FROM owner_advisor_requests WHERE workspace_id=$1 AND owner_id=$2 AND kind='ask' AND state='completed' ORDER BY created_at DESC,request_id DESC OFFSET 6)",
         values: this.scope,
       },
       ...ownerGuards(this.proof, this.original),
+      ...(knowledge ? knowledgeFenceGuards(this.scope[0], knowledge) : []),
+      ...(settlement?.after ?? []),
+      ...(settlement ? [{ text: `SELECT(CASE WHEN EXISTS(SELECT 1 FROM owner_advisor_requests WHERE workspace_id=$1 AND owner_id=$2 AND request_id=$3 AND state='completed' AND result=$4::jsonb)
+        AND EXISTS(SELECT 1 FROM owner_advisor_profiles WHERE workspace_id=$1 AND owner_id=$2 AND history=$5::jsonb)
+        THEN '1' ELSE 'advisor_weekly_settlement_custody' END)::integer`, values: [...this.scope, requestId, JSON.stringify(answer), JSON.stringify(priorHistory)] }] : []),
     ]); } catch (error) {
-      if (record(error) && typeof error.message === "string" && /"advisor_(?:notebook_changed|context_changed|lease_expired)"/.test(error.message)) throw new AdvisorError("conflict");
+      if (record(error) && typeof error.message === "string" && /"advisor_(?:notebook_changed|context_changed|lease_expired|knowledge_changed)"/.test(error.message)) throw new AdvisorError("conflict");
       throw error;
     }
   }

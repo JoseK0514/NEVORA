@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { PageBand } from "@/components/kit/kit";
 import type { AdvisorSource } from "@/lib/owner-advisor/contracts";
 import {
@@ -71,6 +72,7 @@ export function AdvisorScreen({
       <PageBand
         title="AI manager"
         summary="See what needs your attention, then investigate your options."
+        aside={<span className="oa-links"><Link className="nv-btn" data-kind="secondary" href="/app/ai-manager/weekly">Weekly plan</Link><Link className="nv-btn" data-kind="secondary" href="/app/ai-manager/knowledge">Company knowledge</Link></span>}
       />
       <div className="oa-content">
         {view.message && (

@@ -26,6 +26,11 @@ it('reads the supplied environment on each call without caching or mutating it',
   expect(readFeatureFlags({})).toMatchObject({invitationDelivery:false, mobileAccess:false});
   expect(env).toEqual({NEVORA_INVITATION_DELIVERY_ENABLED:'true', NEVORA_MOBILE_ACCESS_ENABLED:'true'});
 });
+it('keeps business imports and model retrieval independent and explicitly off by default', () => {
+  expect(readFeatureFlags({})).toMatchObject({ownerAdvisorBusinessImports:false,ownerAdvisorBusinessRetrieval:false});
+  expect(readFeatureFlags({NEVORA_OWNER_ADVISOR_BUSINESS_IMPORTS_ENABLED:'true'})).toMatchObject({ownerAdvisor:false,ownerAdvisorBusinessImports:true,ownerAdvisorBusinessRetrieval:false});
+  expect(readFeatureFlags({NEVORA_OWNER_ADVISOR_BUSINESS_RETRIEVAL_ENABLED:'true'})).toMatchObject({ownerAdvisorBusinessImports:false,ownerAdvisorBusinessRetrieval:true});
+});
 
 it('ships an explicit disabled example for every registered opt-in gate', () => {
   const lines = readFileSync('.env.example', 'utf8').split('\n');

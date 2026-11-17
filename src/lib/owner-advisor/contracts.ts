@@ -4,13 +4,18 @@ import { parsePeriod } from "@/lib/timecards/project";
 import { parseTaskFocus, type TaskFocus, NotebookError, notebookId, notebookRevision, parseNotebookCommand } from "./notebook";
 import { MemoryError, parseMemoryCommand } from "./memory";
 import { parseCoverageAction } from "./coverage-actions";
+import { parseBusinessQuery } from './business/parse';
+import { parseWeeklyToolArgs } from './weekly-contracts';
 export const ADVISOR_MAX_TOOL_CALLS = 8;
 export const ADVISOR_MAX_ANSWER_SOURCES = 1 + (ADVISOR_MAX_TOOL_CALLS - 1) * 2;
 export type AdvisorMessage = { role: "user" | "assistant"; content: string };
 export type AdvisorSource = { label: string; href: string; observedAt: string };
 export type AdvisorProfile = { priorities: string; revision: number };
 export type DecisionContext = { objective: string; focus: TaskFocus };
-export type AdvisorAnswer = { decision?: DecisionContext; text: string; sources: AdvisorSource[]; context?: { notebookRevision: number | null; memoryRevision?: number | null; profileRevision?: number; taskId: string | null } } & import("./workflow-contracts").WorkflowEvidence;
+export type AdvisorAnswer = { decision?: DecisionContext; text: string; sources: AdvisorSource[]; context?: { notebookRevision: number | null; memoryRevision?: number | null; profileRevision?: number; taskId: string | null };
+  /** Server settlement/replay custody for ALL weekly observations, including
+   * unselected options. Always stripped by publicAnswer before the client wire. */
+  weeklyInspectionRefs?: import('./weekly-contracts').WeeklyInspectionReference[]; businessInspectionRefs?: import('./business/model-contracts').BusinessInspectionReference[] } & import("./workflow-contracts").WorkflowEvidence;
 export type AdvisorSnapshot = {
   state: "ready";
   connection: "available" | "unavailable";
@@ -126,6 +131,10 @@ export function parseCommand(v: unknown): AdvisorCommand {
   throw new AdvisorError("invalid");
 }
 export type ToolCall =
+  | { name: 'business_finance'; args: import('./business/contracts').BusinessFinanceQuery }
+  | { name: 'business_sales'; args: import('./business/contracts').BusinessQuery }
+  | { name: 'weekly_plan'; args: import('./weekly-contracts').WeeklyToolArgs }
+  | { name: "company_knowledge"; args: { query: string } }
   | { name: "operational_insights"; args: import("./operational-insights").InsightRange }
   | { name: "legal_research"; args: import("./legal-research").LegalArgs }
   | { name: "attendance_payroll_review"; args: { startDate: string; endDate: string; language: "en" | "es" } }
@@ -141,6 +150,8 @@ export type ToolResult = import("./workflow-contracts").WorkflowEvidence & {
   sources: AdvisorSource[];
   partial: boolean;
   data: unknown;
+  /** Server-only; never serialize into provider or public answer. */
+  businessInspectionRef?: import('./business/model-contracts').BusinessInspectionReference;
 };
 export function parseTool(name: unknown, args: unknown): ToolCall {
   if (typeof args !== "string" || args.length > 1024)
@@ -152,6 +163,11 @@ export function parseTool(name: unknown, args: unknown): ToolCall {
     throw new AdvisorError("invalid");
   }
   if (!record(v)) throw new AdvisorError("invalid");
+  if (name === 'business_finance' || name === 'business_sales') { try { return name === 'business_finance' ? {name,args:parseBusinessQuery(v,true)} : {name,args:parseBusinessQuery(v)}; } catch { throw new AdvisorError('invalid'); } }
+  if (name === 'weekly_plan') {
+    try { return { name, args: parseWeeklyToolArgs(v) }; } catch { throw new AdvisorError('invalid'); }
+  }
+  if (name === 'company_knowledge' && Object.keys(v).join(',') === 'query' && typeof v.query === 'string' && !!v.query.trim() && v.query.length <= 300 && !/[\u0000-\u001f\u007f]/.test(v.query)) return { name, args: { query: v.query.trim() } };
   if (name === "operational_insights") { try { return { name, args: parseInsightRange(v) }; } catch { throw new AdvisorError("invalid"); } }
   if (name === "legal_research") { try { return { name, args: parseLegalArgs(v) }; } catch { throw new AdvisorError("invalid"); } }
   if (name === "attendance_payroll_review" && Object.keys(v).sort().join(",") === "endDate,language,startDate" && typeof v.startDate === "string" && typeof v.endDate === "string" && /^20/.test(v.startDate) && /^20/.test(v.endDate) && (v.language === "en" || v.language === "es")) {

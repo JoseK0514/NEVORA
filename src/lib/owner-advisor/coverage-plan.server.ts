@@ -31,7 +31,13 @@ function unavailable(input: Pick<GenerationInput, "workspace">, metadata: Omit<M
 }
 function projection(input: GenerationInput, plan: GenerationPlan, search: DayPlan["search"]): DayPlan {
   const gaps = plan.demand.blocks.filter(b => !b.covered);
-  const issues = [...new Map([...plan.explanations, ...plan.warnings].map(i =>
+  // Rejections explain candidate variants considered for an unmet requirement.
+  // Every listed addition was independently revalidated on the final ledger;
+  // stripping rejection provenance falsely attributes errors to that valid set.
+  const explanations = plan.explanations.map(i => ({ ...i, message: i.employeeIds?.length
+    ? `Unidentified rejected candidate variant; do not attribute to listed workers: ${i.message}` : i.message }));
+  const warnings = plan.warnings.map(i => ({ ...i, message: `Selected-assignment advisory: ${i.message}` }));
+  const issues = [...new Map([...explanations, ...warnings].map(i =>
     [JSON.stringify([i.code, i.message]), { code: i.code, message: text(i.message) }])).values()];
   return { search, status: plan.status,
     assignments: plan.additions.map(a => ({
@@ -142,12 +148,18 @@ function stable(value: unknown): string {
   return JSON.stringify(value) ?? "null";
 }
 export const coverageSourceVersion = (source: GenerationSource) => createHash("sha256").update(stable(source)).digest("hex");
+/** A bounded source could not be admitted, rather than an unavailable database.
+ * Carries only its observation clock; never a truncated source or made-up hash. */
+export class CoverageSourceLimit extends AdvisorError {
+  constructor(readonly observedAt: string) { super('unavailable'); }
+}
 export async function captureCoverageSource(store: AdvisorStore, signal: AbortSignal) {
   signal.throwIfAborted();
   const [row] = await store.transaction<{ source: GenerationSource | null; observedAt: string }>({
     text: `WITH sizes AS (SELECT ${sizesSql}) SELECT CASE WHEN ${withinSql} THEN ${generationSourceSql} ELSE NULL END AS source,to_jsonb(clock_timestamp()) AS "observedAt" FROM sizes`, values: [],
   }, signal);
-  if (!row || !row.source || JSON.stringify(row.source).length > 2_000_000) throw new AdvisorError("unavailable");
+  if (!row || !Number.isFinite(Date.parse(row.observedAt))) throw new AdvisorError('unavailable');
+  if (!row.source || Buffer.byteLength(JSON.stringify(row.source), 'utf8') > 2_000_000) throw new CoverageSourceLimit(new Date(row.observedAt).toISOString());
   return { source: row.source, observedAt: row.observedAt };
 }
 

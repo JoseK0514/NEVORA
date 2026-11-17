@@ -13,6 +13,10 @@ export const FEATURE_FLAGS = Object.freeze({
   mobileAccess: 'NEVORA_MOBILE_ACCESS_ENABLED',
   mobileSupport: 'NEVORA_MOBILE_ACCESS_SUPPORT_ENABLED',
   ownerAdvisor: 'NEVORA_OWNER_ADVISOR_ENABLED',
+  ownerAdvisorKnowledge: 'NEVORA_OWNER_ADVISOR_KNOWLEDGE_ENABLED',
+  ownerAdvisorWeekly: 'NEVORA_OWNER_ADVISOR_WEEKLY_ENABLED',
+  ownerAdvisorBusinessImports: 'NEVORA_OWNER_ADVISOR_BUSINESS_IMPORTS_ENABLED',
+  ownerAdvisorBusinessRetrieval: 'NEVORA_OWNER_ADVISOR_BUSINESS_RETRIEVAL_ENABLED',
   clockerPunch: 'NEVORA_CLOCKER_PUNCH_ENABLED',
   // Retained for development's legacy renderer until reviewed UI integration.
   clockerUiV2: 'NEVORA_CLOCKER_UI_V2',

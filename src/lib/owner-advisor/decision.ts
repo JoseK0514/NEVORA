@@ -1,10 +1,12 @@
-import { matchesDecisionScope, parseDecisionMetrics, renderDecisionMetric, decisionMetricNames, type DecisionMetric } from "./decision-metrics";
+import {businessMetricNames,businessReferenceProperties,businessModelMatches} from './business/metrics';
+import { matchesDecisionScope, parseDecisionMetrics, renderDecisionMetric, decisionMetricNames, weeklyDecisionMetricNames, type DecisionMetric } from "./decision-metrics";
+import { parseWeeklyDecisionReference, matchWeeklyDecisionReference, weeklyPlanMatchesScope, weeklyDecisionScope, weeklyReferenceProperties, type WeeklyDecisionReference } from './weekly-decision';
 import type { DecisionContext } from "./contracts";
 import { record, type ToolCall, type ToolResult } from "./contracts";
 import type { WorkflowEvidence } from "./workflow-contracts";
 
 export type DecisionEvidence = { id: string; call: ToolCall; result: ToolResult };
-type CoverageReference = { evidenceId: string; alternativeIndex: number };
+type CoverageReference = { evidenceId: string; alternativeIndex: number } | ({ evidenceId: string } & WeeklyDecisionReference);
 type Decision = {
   assumptions: string[]; changeCondition: string; metrics: DecisionMetric[];
   language: "en" | "es"; summary: string;
@@ -22,6 +24,13 @@ const text = (v: unknown, max: number): v is string => typeof v === "string" && 
 const object = (v: unknown, keys: string): v is Record<string, unknown> => record(v) && Object.keys(v).sort().join(",") === keys;
 const evidenceId = (v: unknown): v is string => typeof v === "string" && /^E[1-8]$/.test(v);
 const optionId = (v: unknown): v is string => typeof v === "string" && /^[a-zA-Z0-9_-]{1,24}$/.test(v);
+function coverageReference(value: unknown): CoverageReference | null {
+  if (!record(value) || !evidenceId(value.evidenceId)) return null;
+  if (object(value, 'alternativeIndex,evidenceId') && Number.isInteger(value.alternativeIndex) && Number(value.alternativeIndex) >= 0 && Number(value.alternativeIndex) <= 1)
+    return { evidenceId: value.evidenceId, alternativeIndex: Number(value.alternativeIndex) };
+  const { evidenceId: id, ...rest } = value, weekly = parseWeeklyDecisionReference(rest);
+  return weekly ? { evidenceId: String(id), ...weekly } : null;
+}
 function refs(v: unknown, minimum = 1): v is string[] {
   return Array.isArray(v) && v.length >= minimum && v.length <= 8 && v.every(evidenceId) && new Set(v).size === v.length;
 }
@@ -38,15 +47,15 @@ function parse(value: unknown): Decision | null {
     !value.options.every(o => object(o, "coverage,description,evidenceIds,feasibility,id,tradeoff") && optionId(o.id) &&
       text(o.description, 400) && text(o.tradeoff, 400) && refs(o.evidenceIds) &&
       (o.feasibility === "unverified" || o.feasibility === "canonical_coverage") &&
-      (o.coverage === null || (object(o.coverage, "alternativeIndex,evidenceId") && evidenceId(o.coverage.evidenceId) &&
-        Number.isInteger(o.coverage.alternativeIndex) && Number(o.coverage.alternativeIndex) >= 0 && Number(o.coverage.alternativeIndex) <= 1))) ||
+      (o.coverage === null || coverageReference(o.coverage) !== null)) ||
     !object(value.recommendation, "optionId,rationale") ||
     (value.recommendation.optionId !== null && !optionId(value.recommendation.optionId)) || !text(value.recommendation.rationale, 500) ||
     !Array.isArray(value.uncertainties) || value.uncertainties.length > 6 || !value.uncertainties.every(u => text(u, 200))) return null;
-  return { ...value, metrics: parseDecisionMetrics(value.metrics)! } as Decision;
+  return { ...value, options: value.options.map(o => ({ ...o, coverage: o.coverage === null ? null : coverageReference(o.coverage) })), metrics: parseDecisionMetrics(value.metrics)! } as Decision;
 }
 
-const partial = (e: DecisionEvidence) => e.result.partial || e.result.coveragePlans?.partial === true || e.result.periodReview?.partial === true;
+const partial = (e: DecisionEvidence) => e.result.partial || e.result.coveragePlans?.partial === true || e.result.periodReview?.partial === true ||
+  e.result.weeklyPlans?.partial === true || e.result.weeklyPlans?.alternatives.some(a => a.status === 'PARTIAL' || a.status === 'BUDGET_EXHAUSTED') === true;
 function scope(call: ToolCall) {
   return call.name === "attendance_payroll_review"
     ? JSON.stringify([call.name, call.args.startDate, call.args.endDate])
@@ -54,11 +63,13 @@ function scope(call: ToolCall) {
 }
 function current(e: DecisionEvidence, evidence: readonly DecisionEvidence[]) {
   const newer = evidence.slice(evidence.indexOf(e) + 1);
+  const source = e.result.weeklyPlans?.sourceFence ?? e.result.coveragePlans?.sourceVersion;
   return !newer.some(next => scope(next.call) === scope(e.call) ||
     // The canonical source fingerprint spans the whole ledger, not one date.
     // A later changed/unavailable coverage source retires older plan claims.
-    (e.result.coveragePlans && next.result.coveragePlans &&
-      (next.result.coveragePlans.state !== "ready" || next.result.coveragePlans.sourceVersion !== e.result.coveragePlans.sourceVersion)));
+    (source && (next.result.coveragePlans || next.result.weeklyPlans) &&
+      (next.result.coveragePlans?.state === 'unavailable' ||
+        (next.result.weeklyPlans?.sourceFence ?? next.result.coveragePlans?.sourceVersion) !== source)));
 }
 export function decisionEvidenceSummary(evidence: readonly DecisionEvidence[]) {
   return evidence.filter(e => current(e, evidence)).map(e => ({ id: e.id, tool: e.call.name, args: e.call.args, observedAt: e.result.observedAt, partial: partial(e) }));
@@ -66,6 +77,8 @@ export function decisionEvidenceSummary(evidence: readonly DecisionEvidence[]) {
 
 /** Selected workflow cards are actionable; observation-only comparisons remain contextual. */
 function selectedCardsMatchScope(e: DecisionEvidence, focus?: DecisionContext["focus"]): boolean {
+  if (e.result.businessEvidence && !businessModelMatches(e,focus)) return false;
+  if (e.result.weeklyPlans && !weeklyPlanMatchesScope(e, focus, true)) return false;
   const period = e.result.periodReview;
   if (period) {
     if (e.call.name !== "attendance_payroll_review" || period.startDate !== e.call.args.startDate ||
@@ -109,7 +122,12 @@ export function reviewDecision(args: unknown, evidence: readonly DecisionEvidenc
       if (option.coverage !== null) issues.push("INVALID_COVERAGE_REFERENCE");
       continue;
     }
-    const ref = option.coverage, read = ref ? byId.get(ref.evidenceId) : undefined, plan = read?.result.coveragePlans;
+    const ref = option.coverage, read = ref ? byId.get(ref.evidenceId) : undefined;
+    if (ref && 'reviewId' in ref) {
+      if (!read || !option.evidenceIds.includes(ref.evidenceId) || !matchWeeklyDecisionReference(ref, read, context?.focus)) issues.push('INVALID_COVERAGE_REFERENCE');
+      continue;
+    }
+    const plan = read?.result.coveragePlans;
     if (!ref || !option.evidenceIds.includes(ref.evidenceId) || read?.call.name !== "coverage_plan" || plan?.state !== "ready" ||
       plan.date !== read.call.args.date || !matchesDecisionScope(plan.date, context?.focus) ||
       !plan.alternatives[ref.alternativeIndex] || plan.alternatives[ref.alternativeIndex].status === "INVALID") issues.push("INVALID_COVERAGE_REFERENCE");
@@ -123,8 +141,10 @@ export function reviewDecision(args: unknown, evidence: readonly DecisionEvidenc
   const proposals = distinct(selectedReads.flatMap(e => e.result.proposals ? [e.result.proposals] : []));
   // Single-slot public cards must belong to the selected option. Ambiguous or
   // unselected reads stay cited observations, never an implicitly chosen card.
+  const businessEvidence=distinct([...used].flatMap(id=>byId.get(id)?.result.businessEvidence??[]));
   const chosenEvidence: WorkflowEvidence = {
-    ...(selected?.coverage ? { coveragePlans: byId.get(selected.coverage.evidenceId)!.result.coveragePlans } : {}),
+    ...(businessEvidence.length?{businessEvidence}:{}),
+    ...(selected?.coverage ? ('reviewId' in selected.coverage ? { weeklyPlans: byId.get(selected.coverage.evidenceId)!.result.weeklyPlans } : { coveragePlans: byId.get(selected.coverage.evidenceId)!.result.coveragePlans }) : {}),
     ...(periods.length === 1 ? { periodReview: periods[0] } : {}),
     ...(proposals.length === 1 ? { proposals: proposals[0] } : {}),
   };
@@ -134,12 +154,20 @@ export function reviewDecision(args: unknown, evidence: readonly DecisionEvidenc
   if (d.changeCondition.trim()) lines.push(`${es ? "Reconsiderar si" : "Reconsider if"}: ${d.changeCondition}`);
   const unverified: string[] = [];
   let hasCanonicalCoverage = d.metrics.some(m => m.metric.startsWith("coverage_"));
+  let hasWeeklyCoverage = d.metrics.some(m => m.metric.startsWith('weekly_'));
   for (const observation of d.observations) lines.push(`${observation.statement} [${observation.evidenceIds.join(", ")}]`);
   for (const option of d.options) {
     lines.push(`${option.id}: ${option.description} ${es ? "Consecuencia" : "Tradeoff"}: ${option.tradeoff}`);
     const ref = option.coverage;
     if (!ref) {
       unverified.push(option.id);
+      continue;
+    }
+    if ('reviewId' in ref) {
+      hasWeeklyCoverage = true;
+      const plan = byId.get(ref.evidenceId)!.result.weeklyPlans!, alternative = plan.alternatives[ref.alternativeIndex];
+      lines.push(es ? `${ref.evidenceId}: ${weeklyDecisionScope(plan, ref.alternativeIndex, true)}. Bloques pendientes: ${alternative.remaining.total}. Minutos añadidos: ${alternative.addedMinutes}. Asignaciones añadidas: ${alternative.added}. Asignaciones retiradas: ${alternative.removed}.` :
+        `${ref.evidenceId}: ${weeklyDecisionScope(plan, ref.alternativeIndex, false)}. Remaining blocks: ${alternative.remaining.total}. Added minutes: ${alternative.addedMinutes}. Added assignments: ${alternative.added}. Removed assignments: ${alternative.removed}.`);
       continue;
     }
     hasCanonicalCoverage = true;
@@ -155,6 +183,8 @@ export function reviewDecision(args: unknown, evidence: readonly DecisionEvidenc
   if (hasCanonicalCoverage) lines.push(es
     ? "Son asignaciones hipotéticas para esa fecha y alcance; cada alternativa es independiente. La búsqueda acotada no prueba optimalidad ni imposibilidad. La disponibilidad real requiere confirmación."
     : "These are hypothetical allocations for that date and scope; each alternative is separate. Bounded search is not proof of optimality or impossibility. Actual availability still needs confirmation.");
+  if (hasWeeklyCoverage) lines.push(es ? 'Son borradores semanales separados, con alcance y límites explícitos; no prueban optimalidad ni imposibilidad. Los minutos son tiempo de calendario programado, no tiempo trabajado ni costos. Los costos siguen sin verificar. Abra el conjunto exacto completo antes de que el Owner decida.' :
+    'These are separate weekly drafts with explicit scope and limits, not proof of optimality or impossibility. Minutes are scheduled business wall time, not worked time or costs. Costs remain unverified. Open the complete exact set before the Owner decides.');
   lines.push(`${es ? "Recomendación" : "Recommendation"}: ${d.recommendation.optionId ? d.recommendation.optionId + ". " : ""}${d.recommendation.rationale}`);
   if (d.uncertainties.length) lines.push(`${es ? "Por confirmar" : "Unknowns"}: ${d.uncertainties.join(" ")}`);
   for (const e of incomplete) lines.push(es ? `${e.id} es parcial; los datos omitidos o no disponibles siguen sin verificar.` : `${e.id} is partial; omitted or unavailable facts remain unverified.`);
@@ -184,3 +214,22 @@ export const decisionTool = {
     uncertainties: { type: "array", maxItems: 6, items: schemaText(200) }, nextStep: schemaText(500), outcomeCheck: schemaText(500), acknowledgedPartialEvidence: schemaRefs(0),
   }),
 };
+
+/** Preserve the legacy provider wire schema. Only investigations advertising the
+ * weekly tool receive the additional exact-identity reference/metric variants. */
+function createWeeklyDecisionTool() {
+  const properties = structuredClone(decisionTool.parameters.properties);
+  const oldOptions = properties.options as { type: string; maxItems: number; items: { properties: Record<string, unknown> } };
+  const oldMetrics = properties.metrics as { type: string; maxItems: number; items: Record<string, unknown> };
+  const weeklyCoverage = schemaObject({ evidenceId: { type: 'string', pattern: '^E[1-8]$' }, ...weeklyReferenceProperties });
+  properties.options = { ...oldOptions, items: schemaObject({ ...oldOptions.items.properties, coverage: { anyOf: [coverageSchema, weeklyCoverage, { type: 'null' }] } }) };
+  properties.metrics = { ...oldMetrics, items: { anyOf: [oldMetrics.items, schemaObject({ evidenceId: { type: 'string', pattern: '^E[1-8]$' },
+    metric: { type: 'string', enum: weeklyDecisionMetricNames }, weeklyPlan: schemaObject(weeklyReferenceProperties) })] } };
+  return { ...decisionTool, description: decisionTool.description + ' Weekly canonical references must copy the actual review ID, digest, week, location scope and alternative index. Weekly metrics use weeklyPlan with that same complete identity; no model numeric values or paths. A weekly summary never authorizes execution.', parameters: schemaObject(properties) };
+}
+export const weeklyDecisionTool = createWeeklyDecisionTool();
+
+/** Additive schema only for investigations with the read-only business tools. */
+function createBusinessDecisionTool(weekly:boolean){const base=weekly?weeklyDecisionTool:decisionTool;const properties=structuredClone(base.parameters.properties);const old=properties.metrics as {type:string;maxItems:number;items:Record<string,unknown>};properties.metrics={...old,items:{anyOf:[old.items,schemaObject({evidenceId:{type:'string',pattern:'^E[1-8]$'},metric:{type:'string',enum:businessMetricNames},business:schemaObject(businessReferenceProperties)})]}};return {...base,description:base.description+' Business metrics must copy exact queryHash, sourceDigest, currency and MINOR/scale2 references; no model amounts or arbitrary paths.',parameters:schemaObject(properties)};}
+export const businessDecisionTool=createBusinessDecisionTool(false);
+export const weeklyBusinessDecisionTool=createBusinessDecisionTool(true);

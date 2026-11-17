@@ -165,3 +165,10 @@ control and inspect current status before repeating it. **Help someone sign in**
 provides the supported recovery workflow; never collect another person's secret.
 For Rondo, use the separate [Rondo guide](rondo.md). For technical operations or
 privacy fulfillment, use the [operations guide](operations.md).
+
+
+## Local business evidence backend
+
+The local default-off finance/sales backend supports Owner-reviewed JSON/explicit CSV versions and account/location coverage maps, exact finance/sales reads and original-operation recovery. Claude owns its separate B2 interface; no new screen or real provider connection is claimed. Full review and explicit publication are required before Rondo may use a source. An Owner-declared perimeter cannot prove omitted accounts do not exist, and shared cash cannot be allocated to locations. See the technical handoff for the current bounded scope.
+
+See [business backend contract](../../handoffs/2026-11-16-rondo-business-evidence-ui-contract.md).

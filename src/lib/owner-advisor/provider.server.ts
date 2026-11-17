@@ -1,6 +1,7 @@
 import "server-only";
 import { AdvisorError, record } from "./contracts";
 import type { ProviderConfig } from "./config.server";
+import { anthropicBody, anthropicContinuation, anthropicHeaders, anthropicItems, recordAnthropicUsage } from "./anthropic.server";
 
 type Item = Record<string, unknown>;
 const fail = (): never => { throw new AdvisorError("provider_failed"); };
@@ -20,7 +21,9 @@ function outputText(content: unknown, style: "responses" | "chat") {
 export function providerItems(config: ProviderConfig, output: unknown): Item[] {
   if (!record(output)) return fail();
   let items: unknown[];
-  if (config.apiStyle === "chat_completions") {
+  if (config.apiStyle === "anthropic_messages") {
+    items = anthropicItems(config, output);
+  } else if (config.apiStyle === "chat_completions") {
     if (!Array.isArray(output.choices) || output.choices.length !== 1) return fail();
     const choice = output.choices[0];
     if (!record(choice) || choice.index !== 0 || !record(choice.message)) return fail();
@@ -91,6 +94,7 @@ export function providerBody(
   input: readonly unknown[],
   tools: readonly Item[],
 ): string {
+  if (config.apiStyle === "anthropic_messages") return anthropicBody(config, instructions, input, tools);
   const body = config.apiStyle === "chat_completions"
     ? {
       model: config.model, store: false,
@@ -110,4 +114,17 @@ export function providerBody(
   const serialized = JSON.stringify(body);
   if (serialized.length > 262144) throw new AdvisorError("limit");
   return serialized;
+}
+
+export function providerHeaders(config: ProviderConfig): Record<string, string> {
+  return config.apiStyle === "anthropic_messages" ? anthropicHeaders(config)
+    : { "Content-Type": "application/json", Authorization: `Bearer ${config.key}` };
+}
+
+export function providerContinuation(config: ProviderConfig, output: unknown, items: Item[]): Item[] {
+  return config.apiStyle === "anthropic_messages" && record(output) ? anthropicContinuation(output) : items;
+}
+
+export function recordProviderUsage(config: ProviderConfig, output: unknown): void {
+  if (config.apiStyle === "anthropic_messages") recordAnthropicUsage(config, output);
 }
