@@ -119,7 +119,8 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
           for (const path of ['/app/settings', '/app/settings/branding', '/app/settings/positions']) {
             await visit(path);
             if (actor === 'QW-MANAGER') {
-              await page.getByText('Only Owners can open Settings.', { exact: true }).waitFor();
+              await page.getByText('Settings are for Owners', { exact: true }).waitFor();
+              expect(await page.getByRole('link',{name:'Open Scheduling rules',exact:true}).getAttribute('href')).toBe('/app/schedule/settings');
               expect(new URL(page.url()).pathname).toBe(path);
               expect(await page.getByRole('button', { name: /Save/ }).count()).toBe(0);
             } else await page.locator('main').getByRole('heading', { level: 1 }).first().waitFor();
