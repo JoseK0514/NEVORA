@@ -535,11 +535,12 @@
     "parserIntegration": "c00c32796df4a2209037159b3985e55451f792a5",
     "scope": "Scoped Rondo backend, B2 client workflows, knowledge/weekly/business evidence and matching contracts/tests; preserve the newer Development auth, recovery, action-center, payroll and Schedule work. Whole candidate/collaboration ancestry is not imported.",
     "handoff": "docs/handoffs/2026-11-16-rondo-development-integration.md",
-    "qualification": "Local full Rondo browser16/16, SQL386/386 and actual Next business replay2/2 passed before the preserved parent QA-only update; final keyboard/no-overflow cases and full unit retry now qualifying. Metered model inference and 50-question scores remain unqualified.",
+    "qualification": "Local complete:14244 unit passes (954 files;944 skips and55 pending cases retained),386 Owner SQL passes,16 full Rondo browser passes plus2 final native-keyboard/mobile business-answer passes,374 release controls,18 pilot guards,build/type/lint/format/manifest/guide gates. Candidate GitHub CI and protected Development publication remain pending. No metered inference or50-question intelligence qualification.",
     "productionChanged": false,
     "preparedParent": "8148034848e01d0ecd7e97b922788761a2c1ff28",
     "parentDisposition": "Phase5 exact candidate; its protected Development publication remains owned separately and pending CI. Rondo publication waits for that delivery.",
     "jsonbParserCorrection": "91d1695d472027e8d781353b48a2e90ff12630c9",
-    "finalApplicationSource": "6a599265a394e9ee29cc4e3af93e75d0505be95a"
+    "finalApplicationSource": "6d742983f2a9bfb70af24a85902415ea438b6f09",
+    "evidence": "docs/qa/rondo-development-integration-20261116/index.json"
   }
 }

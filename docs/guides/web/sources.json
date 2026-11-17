@@ -42,7 +42,9 @@
         "src/lib/owner-advisor/business/contracts.ts",
         "src/lib/owner-advisor/business/service.server.ts",
         "src/lib/owner-advisor/business/fence.server.ts",
-        "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md"
+        "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
+        "docs/handoffs/2026-11-16-rondo-development-integration.md",
+        "docs/qa/rondo-development-integration-20261116/index.json"
       ]
     },
     {
@@ -136,7 +138,9 @@
         "src/lib/owner-advisor/business/contracts.ts",
         "src/lib/owner-advisor/business/service.server.ts",
         "src/lib/owner-advisor/business/fence.server.ts",
-        "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md"
+        "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
+        "docs/handoffs/2026-11-16-rondo-development-integration.md",
+        "docs/qa/rondo-development-integration-20261116/index.json"
       ]
     },
     {
@@ -189,7 +193,9 @@
         "src/lib/owner-advisor/business/contracts.ts",
         "src/lib/owner-advisor/business/service.server.ts",
         "src/lib/owner-advisor/business/fence.server.ts",
-        "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md"
+        "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
+        "docs/handoffs/2026-11-16-rondo-development-integration.md",
+        "docs/qa/rondo-development-integration-20261116/index.json"
       ]
     },
     {
@@ -231,7 +237,9 @@
         "src/lib/owner-advisor/business/contracts.ts",
         "src/lib/owner-advisor/business/service.server.ts",
         "src/lib/owner-advisor/business/fence.server.ts",
-        "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md"
+        "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
+        "docs/handoffs/2026-11-16-rondo-development-integration.md",
+        "docs/qa/rondo-development-integration-20261116/index.json"
       ]
     }
   ]
