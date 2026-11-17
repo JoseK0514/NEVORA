@@ -32,6 +32,9 @@ const MANAGEMENT: Entry[] = [
   ["/app/timecards/corrections", { ...detail, title: "Time corrections", cards: [{ rows: 4, avatar: true }] }],
   ["/app/timecards", { title: "Timecards", sub: true, strip: true, band: "strip", frame: "wide", cards: [{ head: true, rows: 6, avatar: true }] }],
   // Time exports and Payroll settings carry the Payroll tabs: title at 88, band 296, cards 24px under it.
+  // U01: the two step-by-step pages are forms in the sheet frame (back row, band 196, one card).
+  ["/app/payroll-export/paid-time", { ...form, title: "Paid time export", cards: [{ head: true, lines: 2 }, { rows: 4 }] }],
+  ["/app/payroll/import", { ...form, title: "Import pay", cards: [{ head: true, lines: 3 }, { rows: 2 }] }],
   ["/app/payroll-export", { title: "Time exports", sub: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ head: true, lines: 3 }, { rows: 3 }] }],
   [/^\/app\/payroll\/.+/, { back: true, band: "short", frame: "read", lift: false, cards: [{ head: true, lines: 3 }, { rows: 3 }] }],
   // Payroll: a title, its scope line and the tabs, on the strip rung (the frequency line is hidden from 768px).

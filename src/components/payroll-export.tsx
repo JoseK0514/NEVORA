@@ -20,6 +20,7 @@ import {stableExportJson} from '@/lib/payroll-export/json';
 import {selectVisibleFinalized,changeExportSelection} from '@/lib/payroll-export/selection';
 import {PayrollExportMapping} from './payroll-export-mapping';
 import {PayrollTabs,type PayrollTab} from './payroll/payroll-tabs';
+import {payrollImportCopy} from './payroll-import/copy';
 function download(text:string,type:string,name:string){const url=URL.createObjectURL(new Blob([text],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 type ProfileCommand={operationId:string;id:string;expectedRevision:number;profile:ExportProfile};
 function payrollSourceKey(cards:readonly TimecardItem[],profiles:readonly SavedExportProfile[]){
@@ -245,6 +246,8 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
   {ready?<section className="c-pay__group" aria-labelledby="time-export-options">
    <div className="c-sec-label c-pay__sec"><h2 id="time-export-options">Options</h2></div>
    <div className="c-card">
+   {/* U01: the way into the paid time export (every recorded break decided, sent in batches), for the dates shown. */}
+   <a className="c-row c-exp__item c-exp__paid" href={`/app/payroll-export/paid-time?start=${period.startDate}&end=${period.endDate}`}><span className="c-row__main"><span className="c-row__title">{payrollImportCopy.en.exp.entry.title}</span><span className="c-row__detail"><span>{payrollImportCopy.en.exp.entry.line}</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></a>
    <details className="c-exp__item" open={selected.length>0||undefined}>
     <summary className="c-row"><span className="c-row__main"><span className="c-row__title">People in this export</span><span className="c-row__detail"><span>{`${selected.length} selected · ${visibleSelection.excluded} not finalized.${visibleSelection.overLimit?' Select up to 100 people at a time.':''}`}</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></summary>
     <div className="c-exp__body">
