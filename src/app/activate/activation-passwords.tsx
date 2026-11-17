@@ -4,9 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
 import { PasswordInput } from "@/components/auth-premium/password-input";
-import { FieldError, FieldInvalid } from "@/components/auth-premium/auth-validation";
 import { ACCESS_COPY } from "@/components/access-recovery/copy";
-import { PasswordRules } from "@/components/auth-premium/password-rules";
+import { PasswordPair } from "@/components/access-recovery/password-pair";
 import { AUTH_COPY, type AuthLang } from "@/lib/auth-copy";
 
 type Rule = "idle" | "ok" | "bad";
@@ -31,34 +30,11 @@ export function ActivationPasswords({ mismatch = false, errorId, quiet = false, 
   const dot = (rule: Rule) => <span className="act-rule__dot" aria-hidden="true">{rule === "ok" ? <CheckIcon size={11} weight="bold" /> : rule === "bad" ? <XIcon size={10} weight="bold" /> : null}</span>;
   // Review B4 (Nov 10, 2026): the words come from AUTH_COPY (NV-055), the checks use the Direction B marks (NV-312) and
   // each field names what is missing under itself (NV-190).
-  if (quiet) return (
-    <>
-      <div ref={group}>
-        <div className="q-fl">
-          <label htmlFor="activation-password">{t.createPassword}</label>
-          <PasswordInput quiet id="activation-password" name="password" minLength={8} placeholder={t.quiet.newPasswordPlaceholder} autoComplete="new-password" required
-            aria-describedby={`${describedBy} activation-password-invalid`} controls={["activation-password", "activation-confirm-password"]}
-            showLabel={t.showPasswords} data-msg-required={t.invalid.newPassword} data-msg-invalid={t.invalid.newPassword}
-            onInput={event => setPassword(event.currentTarget.value)} />
-          <FieldInvalid id="activation-password" />
-        </div>
-        <div className="q-fl" data-invalid={differs ? "" : undefined}>
-          <label htmlFor="activation-confirm-password">{t.quiet.confirmPassword}</label>
-          <input id="activation-confirm-password" className="q-in" name="confirmPassword" type="password" minLength={8}
-            placeholder={t.quiet.typeAgain} autoComplete="new-password" required aria-invalid={differs || undefined}
-            aria-describedby={`${describedBy} activation-confirm-password-invalid`} data-msg-required={t.invalid.confirm} data-msg-invalid={t.invalid.confirm}
-            onInput={event => setConfirm(event.currentTarget.value)} />
-          <FieldInvalid id="activation-confirm-password" />
-          {/* U11 (Nov 17, 2026): two passwords that differ use the one field error style, under the field they belong to. */}
-          {differs ? <FieldError id={errorId}>{ACCESS_COPY[lang].activation.mismatch}</FieldError> : null}
-        </div>
-      </div>
-      <PasswordRules id="activation-rules" rules={[
-        { state: length, text: t.atLeast8, id: "activation-password-hint" },
-        { state: differs ? "idle" : match, text: t.activation.passwordsMatch },
-      ]} />
-    </>
-  );
+  // Phase 5 (Nov 17, 2026, PB-016, PB-026, PB-037): the pair every access page shares. Empty placeholders, the length
+  // rule under the first field and the match under the second, the eye on both, the keyboard's Next and Go, and one line
+  // of advice that promises no rule the server does not enforce.
+  if (quiet) return <PasswordPair prefix="activation" lang={lang} mismatch={mismatch} errorId={mismatch ? errorId : undefined}
+    newLabel={t.createPassword} confirmLabel={t.quiet.confirmPassword} advice={ACCESS_COPY[lang].activation.phrase} />;
   return (
     <>
       <div className="act-card" ref={group}>

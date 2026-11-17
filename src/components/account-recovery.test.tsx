@@ -43,8 +43,10 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
   // B7 wording (NV-188): no "portal sessions" jargon.
   const message='Password reset. You’re signed out on every device. Sign in with your new password.';
   const html=renderToStaticMarkup(<RecoveryReset hydrated busy={false} done message={message} onSubmit={()=>{}} proofRef={()=>{}}/>);
-  expect(html).toContain('Password updated');expect(html).toContain(message);
-  expect(html).toContain('role="status"');expect(html).toContain('Sign in with new password');
+  // Phase 5 (PB-017): the finish says it once. The outcome sentence above still decides the state; it is not shown.
+  expect(html).toContain('Password updated');expect(html).toContain('For your safety, we signed you out on every device.');
+  expect(html).not.toContain(message);expect(html).not.toContain('Your next step');
+  expect(html).toContain('role="status"');expect(html).toMatch(/<a class="q-btn" href="\/login">Sign in<\/a>/);
   expect(html).not.toContain('<form');expect(html).not.toContain('name="proof"');
  });
  it('keeps an uncertain outcome distinct from success and points to sign-in first',()=>{
@@ -57,15 +59,19 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
  it('explains an invalid proof without claiming account or password state',()=>{
   const message='This recovery code has expired, was already used, or cannot be verified. Request a new code or contact your manager.';
   const html=renderToStaticMarkup(<RecoveryReset hydrated busy={false} done={false} message={message} onSubmit={()=>{}} proofRef={()=>{}}/>);
-  expect(html).toContain('Use a new recovery code');expect(html).toContain(message);
-  expect(html).toContain('Request a new recovery code');expect(html).not.toContain('Password updated');
+  // Phase 5 (PB-014): one word for the task, "reset". The sentence still names no account and no password state.
+  expect(html).toContain('Use a new reset code');expect(html).toContain('This reset code has expired, was already used, or can’t be checked.');
+  expect(html).toContain('Get a new reset link');expect(html).not.toContain('Password updated');
+  // A code that came from a link is refused in the link's own words, with the code field still hidden.
+  const linked=renderToStaticMarkup(<RecoveryReset linkProof hydrated busy={false} done={false} message={message} onSubmit={()=>{}} proofRef={()=>{}}/>);
+  expect(linked).toContain('This link has expired or was already used. Reset links last 15 minutes.');expect(linked).toContain('href="/forgot-access"');
  });
  it('marks the confirmation field for mismatch and makes pending status explicit',()=>{
   const html=renderToStaticMarkup(<RecoveryReset hydrated busy={false} done={false} message="Passwords do not match." onSubmit={()=>{}} proofRef={()=>{}}/>);
   expect(html).toContain('aria-invalid="true"');expect(html).toContain('Check your passwords');
   const pending=renderToStaticMarkup(<RecoveryReset hydrated busy done={false} message="" onSubmit={()=>{}} proofRef={()=>{}}/>);
   expect(pending).toMatch(/<fieldset[^>]*disabled=""/);expect(pending).toContain('aria-busy="true"');
-  expect(pending).toContain('Resetting your password…');
+  expect(pending).toContain('Saving your new password…');
  });
  it('keeps assisted identity attestation rather than exposing the employee request form',()=>{
   const html=renderToStaticMarkup(<AccountRecovery kind="assisted" actorId="QAOWNER"/>);
@@ -78,8 +84,8 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
 describe('Sign-in pages in Spanish',()=>{
  it('shows the request and reset forms and their known messages in Spanish, keeping the English outcome logic',()=>{
   const request=renderToStaticMarkup(<AccountRecovery kind="request" lang="es"/>);
-  // Review B4 (copy audit S3): the page shares the link's name, "¿Olvidaste tu contraseña?".
-  expect(request).toContain('¿Olvidaste tu contraseña?');expect(request).toContain('Correo de recuperación');expect(request).toContain('Solicitar recuperación');
+  // Phase 5 (PB-014, PB-029): the page is an imperative and says "restablecer", the word the email uses.
+  expect(request).toContain('Restablece tu contraseña');expect(request).toContain('El correo que tiene tu lugar de trabajo.');expect(request).toContain('Enviarme el enlace');
   const reset=renderToStaticMarkup(<RecoveryReset lang="es" hydrated busy={false} done={false} message="Passwords do not match." onSubmit={()=>{}} proofRef={()=>{}}/>);
   expect(reset).toContain('aria-invalid="true"');expect(reset).toContain('Revisa tus contraseñas');expect(reset).toContain('Las contraseñas no coinciden.');
   const unknown=renderToStaticMarkup(<RecoveryReset lang="es" hydrated busy={false} done={false} message="Something new from the server." onSubmit={()=>{}} proofRef={()=>{}}/>);

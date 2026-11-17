@@ -122,3 +122,110 @@
 .pk-what > b { font-weight: 600; color: var(--b-ink); }
 .pk-keeps { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); }
 .pk-notice[data-tone="info"] { background: var(--b-teal-50); color: var(--b-ink2); }
+
+/* ---------- Phase 5 (Nov 17, 2026): the reset vocabulary, the password pair, the accepted link, the QR receipt ---------- */
+@layer nv-b {
+  /* The code field stays in the form when a link supplied the code (AccountRecovery fills and reads it); it is not shown. */
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-fl.ar-off { display: none !important; }
+  /* The pair's first field keeps the form's rhythm whether or not a field comes before it. */
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__fields > .q-fl.ar-off + .ar-pair > .q-fl:first-child { margin-top: var(--b-space-4) !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__fields > .q-fl:not(.ar-off) + .ar-pair > .q-fl:first-child { margin-top: var(--b-space-16) !important; }
+  /* The finish: the mark, one line and the button, centred. The line is plain text, not a boxed note. */
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-done > .q-auth__mark { margin: var(--b-space-4) auto 0 !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-done > .q-auth__receipt { margin: var(--b-space-16) 0 0 !important; padding: 0 !important; border: 0 !important; border-radius: var(--b-radius-small) !important; background: none !important; box-shadow: none !important; text-align: center !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-done > .q-auth__receipt > p { margin: 0 !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; color: var(--b-ink2) !important; text-wrap: balance; }
+  /* On the phone card the fields are spaced by the card's own gap, so the pair spaces its two fields the same way. */
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card .ar-pair { display: grid !important; gap: var(--b-space-16) !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card .ar-pair > .q-fl { margin-top: 0 !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card .ar-accepted { margin: 0 0 var(--b-space-12) !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card > .ar-steps { margin-bottom: var(--b-space-20) !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card .ar-done__mark { margin-left: auto !important; margin-right: auto !important; border-radius: 50% !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card .ma-note.ar-next { text-align: center !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card .ar-done__line { text-align: center !important; text-wrap: balance; }
+  /* "Use a different code" inside a refusal reads as the link beside it. */
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__receipt > .ar-linkbtn { display: inline-flex !important; align-items: center !important; min-height: 44px !important; margin: var(--b-space-2) 0 -10px var(--b-space-20) !important; padding: 0 !important; border: 0 !important; background: none !important; font: inherit; font-size: var(--b-fs-body) !important; font-weight: 600 !important; color: var(--b-teal) !important; cursor: pointer; }
+  /* The helper's receipt, inside the signed-in frame. */
+  html body .app-shell[data-nv-b] .q-page .ar-issued .ar-codeacts > .b-btn { min-height: 44px !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued .ar-showcode { font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; font-weight: 600 !important; color: var(--b-teal) !important; background: none !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued :is(.ar-share, .ar-code) :is(p, h2) { margin-left: 0 !important; margin-right: 0 !important; padding-left: 0 !important; padding-right: 0 !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued > .ar-code > .q-fl { margin: var(--b-space-16) 0 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; max-width: var(--b-frame-form) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued .ar-code .q-help { margin: var(--b-space-8) 0 0 !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued .ar-codeacts > .b-btn { border: 0 !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued .ar-codeacts > .b-btn:focus-visible { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: 3px !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued .ar-share__scan { margin-top: 0 !important; margin-bottom: 0 !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; color: var(--b-ink) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued .ar-share__left { margin-top: var(--b-space-8) !important; margin-bottom: 0 !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued .ar-codeacts__status { margin-top: var(--b-space-8) !important; margin-bottom: 0 !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued .ar-qr > p { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; text-align: center !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued .ar-code__wrap { margin-top: var(--b-space-8) !important; }
+  html body .app-shell[data-nv-b] .q-page .ar-issued .ar-code__wrap > .q-in { padding-right: 92px !important; }
+}
+
+/* A rule as the helper line of its field: a 6px grey dot until it is true, a green bold check after. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-rule { display: flex; align-items: flex-start; gap: 6px; margin: 6px 0 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 400; color: var(--b-grey); letter-spacing: 0; text-align: left; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-rule[data-state="ok"] { color: var(--b-green); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-rule--plain { padding-left: 22px; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-rule__mark { flex: none; display: grid; place-items: center; width: 16px; height: 18px; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-rule__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ar-dot); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth { --ar-dot: #9AA3A6; }
+/* While the field's own error is on screen, the error speaks for the rule. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-fl:has(.q-in[data-client-invalid]) > .ar-rule { display: none; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-pair .q-in__wrap > .q-in { padding-right: 52px; }
+
+/* "Reset link accepted": one green line with a bold check, and the way to type a code instead. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-accepted { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 var(--b-space-4); margin: 0 0 var(--b-space-4); padding: 0 var(--b-space-4) 0 var(--b-space-12); border-radius: var(--b-radius-field); background: var(--b-green-50); letter-spacing: 0; text-align: left; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-accepted__line { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 600; color: var(--b-green); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-accepted__line > svg { flex: none; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-accepted__other { display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--b-space-8); border: 0; border-radius: var(--b-radius-pill); margin-left: auto; background: none; color: var(--b-teal); font: inherit; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 600; letter-spacing: 0; cursor: pointer; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-accepted__other:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: calc(-1 * var(--b-focus-width)); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-accepted__other:disabled { cursor: default; opacity: .6; }
+
+/* The helper's receipt: the QR code in a white card, the link, the time left. */
+.ar-share { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: var(--b-space-16); margin-top: var(--b-space-20); }
+.ar-qr { box-sizing: border-box; display: grid; place-items: center; width: 220px; height: 220px; max-width: 100%; padding: var(--b-space-8); border-radius: var(--b-radius-field); background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-line); }
+.ar-qr > svg { display: block; width: 100%; height: 100%; }
+.ar-qr > svg > path { fill: var(--b-ink); }
+.ar-qr > p { margin: 0; padding: 0 var(--b-space-12); }
+.ar-share__side { display: grid; justify-items: start; align-content: center; width: 100%; min-width: 0; }
+.ar-share__scan { margin: 0; font-size: var(--b-fs-body); line-height: var(--b-lh-body); color: var(--b-ink); }
+.ar-share__left { display: flex; align-items: center; gap: 6px; margin: var(--b-space-8) 0 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); font-variant-numeric: tabular-nums; min-height: 18px; }
+.ar-share__left > svg { flex: none; }
+.ar-share .ar-codeacts { margin-top: var(--b-space-16); }
+.ar-showcode { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 var(--b-space-8); border: 0; border-radius: var(--b-radius-pill); background: none; color: var(--b-teal); font: inherit; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); font-weight: 600; cursor: pointer; }
+.ar-showcode:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); }
+.ar-showcode[aria-expanded="true"] > svg { transform: rotate(180deg); }
+.ar-codeacts__status { margin: var(--b-space-8) 0 0; min-height: 18px; }
+.ar-code__wrap { position: relative; }
+.ar-code__select { position: absolute; right: 9px; top: 9px; }
+
+@media (min-width: 768px) {
+  .ar-share { grid-template-columns: 220px minmax(0, 1fr); justify-items: start; gap: var(--b-space-24); align-items: center; }
+}
+
+/* On a phone the accepted line is its own green row and the way to type a code sits under it, to the right. */
+@media (max-width: 767px) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-accepted { padding: 0; background: none; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-accepted__line { box-sizing: border-box; width: 100%; min-height: 40px; padding: 0 var(--b-space-12); border-radius: var(--b-radius-field); background: var(--b-green-50); }
+}
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__receipt > .ar-linkbtn:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); border-radius: var(--b-radius-small); }
+
+/* ---------- Phase 5 follow-up (PB-015, PB-021): text links under the card, the workplace chip on sub-pages ---------- */
+@layer nv-b {
+  /* A button in the shell's links row reads exactly as the links beside it. */
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__links > .ar-navbtn { display: inline-flex !important; align-items: center !important; gap: 6px !important; min-height: 44px !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: var(--b-radius-small) !important; background: none !important; box-shadow: none !important; font: inherit; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; font-weight: 600 !important; letter-spacing: 0 !important; color: var(--b-teal) !important; text-align: center; cursor: pointer; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__links > .ar-navbtn:focus-visible { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__links > .ar-navbtn[aria-expanded="true"] > .ma-caret { transform: rotate(180deg); }
+  /* The answer a link in that row opens: a quiet block under the row. */
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-under__more { box-sizing: border-box !important; align-self: center !important; max-width: 376px !important; margin: var(--b-space-8) auto 0 !important; padding: var(--b-space-12) var(--b-gutter) !important; border-radius: var(--b-radius-field) !important; background: #FFFFFF !important; box-shadow: inset 0 0 0 1px var(--b-line) !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; color: var(--b-ink2) !important; text-align: left !important; letter-spacing: 0 !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-under__more[hidden] { display: none !important; }
+  /* The workplace chip under a sub-page's title takes the shell's own chip rules; this only places it. */
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-hd > .ar-ws { display: block !important; margin: var(--b-space-8) 0 var(--b-space-8) !important; padding: 0 !important; background: none !important; border: 0 !important; box-shadow: none !important; position: static !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-hd > .ar-ws > p { margin-top: 0 !important; margin-bottom: 0 !important; max-width: 100% !important; }
+}
+@media (min-width: 1024px) {
+  @layer nv-b {
+    /* On a page taller than the window the closing line follows the card, so the links row keeps clear room above it;
+     * the open answer needs more. */
+    :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col:has(.ar-steps, .ar-ws):has(> .q-auth__links, > .q-auth__under) { margin-bottom: 140px !important; }
+    :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col:has(.ar-steps, .ar-ws):has(.ar-under__more:not([hidden])) { margin-bottom: 248px !important; }
+  }
+}

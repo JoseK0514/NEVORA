@@ -11,9 +11,9 @@ import '../login/auth-signature.css';
 export const dynamic='force-dynamic';
 
 export default async function ResetAccessPage(){
- const [,lang]=await Promise.all([getPublicWorkspaceName(),readAuthLang()]);
+ const [workspaceName,lang]=await Promise.all([getPublicWorkspaceName(),readAuthLang()]);
  const t=AUTH_COPY[lang];
- return <QuietAuthShell helpFrom="reset" lang={lang} t={t} back="/login"><AccountRecovery mobileAccess={mobileAccessEnabled()} kind="reset" lang={lang}/></QuietAuthShell>;
+ return <QuietAuthShell helpFrom="reset" lang={lang} t={t} back="/login"><AccountRecovery mobileAccess={mobileAccessEnabled()} kind="reset" lang={lang} workspaceName={workspaceName}/></QuietAuthShell>;
 }
 
 export const generateMetadata=()=>mobileAccessMetadata("reset");

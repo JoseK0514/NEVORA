@@ -17,7 +17,7 @@ it('requires and completes operator password replacement over the actual login a
   expect(await app.database.executor.query({text:"SELECT count(*)::int n FROM employee_sessions WHERE employee_id='QAOWNER'",values:[]})).toEqual([{n:0}]);
   // The existing reset client consumes/scrubs the bearer fragment. It is never evidence output.
   await page.waitForFunction(()=>!location.hash);await page.locator('#reset-password').fill('Fictional operator replacement password 123!');await page.locator('#reset-confirm-password').fill('Fictional operator replacement password 123!');
-  await page.getByRole('button',{name:'Reset password',exact:true}).click();await page.getByRole('heading',{name:'Password updated',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Save new password',exact:true}).click();await page.getByRole('heading',{name:'Password updated',exact:true}).waitFor();
   expect(await app.database.executor.query({text:"SELECT must_change_password FROM employee_credentials WHERE employee_id='QAOWNER'",values:[]})).toEqual([{must_change_password:false}]);
   await login(TEST_PASSWORD);await page.waitForURL('**/login?error=invalid*');expect((await context.cookies()).some((c:{name:string})=>c.name==='fuel_session')).toBe(false);
   await login('Fictional operator replacement password 123!');await page.waitForURL('**/app');expect((await context.cookies()).some((c:{name:string})=>c.name==='fuel_session')).toBe(true);

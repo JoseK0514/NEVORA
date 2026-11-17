@@ -1,5 +1,5 @@
 import { RecoveryLoading } from "../settings/wave-c-recovery-loading";
 
 export default function Loading() {
-  return <RecoveryLoading title="Account recovery" summary="Help a verified employee get back into their account." label="account recovery" cards={[3]} />;
+  return <RecoveryLoading title="Help someone sign in" summary="Give someone a one-time link to reset their password." label="help someone sign in" cards={[3]} />;
 }

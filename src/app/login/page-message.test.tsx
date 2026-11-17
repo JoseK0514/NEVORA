@@ -8,8 +8,8 @@ vi.mock('@/app/login/actions',()=>({login:async()=>{}}));
 import LoginPage from './page';
 
 it.each([
- ['en','Too many sign-in attempts. Wait 15 minutes, then try again.'],
- ['es','Demasiados intentos de inicio de sesión. Espera 15 minutos e inténtalo de nuevo.'],
+ ['en','Too many attempts. For your safety, sign-in is paused for 15 minutes. If you forgot your password, you can reset it now.'],
+ ['es','Demasiados intentos. Por seguridad, pausamos el inicio de sesión durante 15 minutos. Si olvidaste tu contraseña, puedes restablecerla ahora.'],
 ] as const)('explains an admitted login budget denial in %s',async(lang,message)=>{
  state.lang=lang;
  const html=renderToStaticMarkup(await LoginPage({searchParams:Promise.resolve({error:'busy'})}));
@@ -17,6 +17,9 @@ it.each([
  expect(html.match(/id="login-error"/g)).toHaveLength(1);
  expect(html).toContain('role="alert"');
  expect(html.match(/<form\b/g)).toHaveLength(1);
+ // Phase 5 (PB-030): a wait is amber with the hourglass, never the red of a refusal, and the way to reset is on the page.
+ expect(html).toMatch(/<p class="q-error q-auth__alert q-auth__alert--wait" id="login-error" role="alert">/);
+ expect(html).toContain('href="/forgot-access"');
 });
 
 it('after an error the Employee ID comes back as typed and only the password is retyped (PB-006)',async()=>{
@@ -33,14 +36,20 @@ it('after an error the Employee ID comes back as typed and only the password is 
 });
 
 it.each([
- ['en','Your session ended. Sign in to continue.'],
- ['es','Tu sesión terminó. Inicia sesión para continuar.'],
-] as const)('says calmly that a session ended and keeps the way back, in %s (RA-5)',async(lang,message)=>{
+ ['en','You were signed out to keep your account safe. Sign in to pick up where you left off.','You were signed out to keep your account safe. Sign in to continue.'],
+ ['es','Cerramos tu sesión para proteger tu cuenta. Inicia sesión para continuar donde estabas.','Cerramos tu sesión para proteger tu cuenta. Inicia sesión para continuar.'],
+] as const)('says calmly that a session ended and keeps the way back, in %s (RA-5, PB-005)',async(lang,message,plain)=>{
  state.lang=lang;
  const html=renderToStaticMarkup(await LoginPage({searchParams:Promise.resolve({ended:'1',returnTo:'/app/requests?tab=my'})}));
  expect(html).toMatch(new RegExp(`<p class="q-auth__alert q-auth__alert--info" role="status"><svg[^>]*aria-hidden="true"[\\s\\S]*?</svg><span>${message}</span></p>`));
  expect(html).not.toContain('role="alert"');
  expect(html).toContain('<input type="hidden" name="returnTo" value="/app/requests?tab=my"/>');
+ // Phase 5 (PB-005): "where you left off" is promised only when there is a vetted way back; without one, or with an
+ // address the return check refuses, the note says "continue" and no return address is carried.
+ for(const params of [{ended:'1'},{ended:'1',returnTo:'https://example.invalid/app'}]){
+  const bare=renderToStaticMarkup(await LoginPage({searchParams:Promise.resolve(params)}));
+  expect(bare).toContain(`<span>${plain}</span>`);expect(bare).not.toContain(message);expect(bare).not.toContain('name="returnTo"');
+ }
  // An error or the activated notice is the one message; a bare visit shows none.
  for(const params of [{ended:'1',error:'invalid'},{ended:'1',activated:'1'},{}])expect(renderToStaticMarkup(await LoginPage({searchParams:Promise.resolve(params)}))).not.toContain(message);
 });

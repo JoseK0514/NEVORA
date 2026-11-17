@@ -118,7 +118,7 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
  /** U11: passkeys are offered in this build, so the form says where one is added. */
  passkeys?:boolean}) {
  const mobile=useMobilePresentation(mobileAccess,'activation-password activation-confirm-password'),journey=useAccessJourney();
- if(mobile)return <MobileActivationView {...{phase,mismatch,employeeId,loginHref,workspaceName,onSubmit,formRef,successRef,lang}}/>;
+ if(mobile)return <MobileActivationView {...{phase,mismatch,employeeId,loginHref,workspaceName,onSubmit,formRef,successRef,lang,offline,supportReference,otherSession,passkeys}}/>;
  const canSubmit=['ready','pending','unavailable'].includes(phase);const error=mismatch||phase==='unavailable';
  const signInHref=loginHref.replace('?activated=1&','?').replace('?activated=1','');
  // Review B4 (Nov 10, 2026, NV-055): every word comes from AUTH_COPY, so a Spanish page stays Spanish. NV-196: without a
@@ -130,6 +130,10 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
  // field; an offline attempt sends nothing; an unknown result is never shown as failed or as done.
  const other=otherSession?<p className="ar-inline" data-tone="info"><UserSwitchIcon size={16} weight="bold" aria-hidden="true"/><span>{otherSession===true?u.otherSessionUnnamed:u.otherSession.replace('{name}',otherSession)}</span></p>:null;
  const workspace=workspaceName??t.workspaceUnavailable;
+ // Phase 5 follow-up (PB-021, PB-015): the workplace is a chip under the title, as on Sign in, in the states whose line
+ // does not already name it (with the form on screen U11's line says whose account it is); what else the page offers
+ // is a text link under the card.
+ const chip=workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null;
  if(phase==='activated'&&employeeId)return <>
   <div className="q-hd"><h1>{u.doneTitle}</h1><p>{u.doneSub}</p></div>
   <div className="activation-success q-card" role="status" ref={successRef} tabIndex={-1}>
@@ -147,7 +151,7 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
  const sub=phase==='checking'?`${a.opening} · ${workspace}`:canSubmit?(workspaceName?a.choose.replace('{workspace}',workspaceName):a.chooseNoWorkspace)
   :phase==='outcome_unknown'?a.notConfirmed:phase==='invalid'?null:t.quiet.activateSub;
  return <>
-  <div className="q-hd"><h1>{phase==='outcome_unknown'?u.unknownTitle:t.activateTitle}</h1>{sub&&phase!=='outcome_unknown'?<p role={phase==='checking'?'status':undefined}>{sub}</p>:null}</div>
+  <div className="q-hd"><h1>{phase==='outcome_unknown'?u.unknownTitle:t.activateTitle}</h1>{canSubmit||phase==='checking'?null:chip}{sub&&phase!=='outcome_unknown'?<p role={phase==='checking'?'status':undefined}>{sub}</p>:null}</div>
   <p className="q-sr" id="activation-intro">{a.intro}</p>
   {phase==='missing'?<span className="q-sr activation-invitation-state" role="status">{a.missing}</span>:null}
   {canSubmit&&<form ref={formRef} className="q-auth__form activation-form" onSubmit={onSubmit} aria-busy={phase==='pending'} aria-describedby="activation-intro">
@@ -172,11 +176,12 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
    {phase==='outcome_unknown'?<><p className="q-auth__alert q-auth__alert--wait activation-invitation-state" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{u.unknownFirst}</span></p>
     <Link href={signInHref} className="q-btn">{t.trySigningIn}</Link>
     <p className="q-auth__note">{a.unknown}</p><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
-   {mobileAccess?<Link href="/access-help/invitation" className="q-btn">{a.inviteHelp}</Link>:null}
+   {mobileAccess&&phase!=='outcome_unknown'?<Link href="/access-help/invitation" className="q-btn">{a.inviteHelp}</Link>:null}
    {phase==='invalid'?<><p className="q-auth__note">{u.invalidWhy} {u.invalidActive}</p><p className="q-auth__note">{a.invalidNext}</p></>
     :phase==='missing'?<><p className="q-auth__note">{u.missingHow}</p><p className="q-auth__note">{t.quiet.noInvitation}</p></>:null}
-   {phase==='outcome_unknown'?null:<Link href={signInHref} className="q-btn q-btn--quiet">{t.alreadyActivated}</Link>}
-  </div>:<Link href={signInHref} className="q-btn q-btn--quiet">{t.alreadyActivated}</Link>}
+  </div>:null}
   <noscript><p className="q-help q-auth__alert">{a.noScript}</p></noscript>
+  {phase!=='outcome_unknown'?<nav className="q-auth__links" aria-label={t.accountHelp}><Link href={signInHref}>{t.alreadyActivated}</Link></nav>
+   :mobileAccess?<nav className="q-auth__links" aria-label={t.accountHelp}><Link href="/access-help/invitation">{a.inviteHelp}</Link></nav>:null}
  </>;
 }

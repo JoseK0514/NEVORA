@@ -112,7 +112,7 @@ describe.each(["en", "es"] as const)("new password in %s", lang => {
 
   it("done: what changed, what did not, and the next step", () => {
     const html = reset(lang, { done: true, message: RESET });
-    for (const line of [t.resetDoneTitle, authMessage(lang, RESET), u.doneNote, t.signInWithNewPassword]) expect(html).toContain(line);
+    for (const line of [t.resetDoneTitle, t.reset.doneLine, u.doneNote, t.signIn]) expect(html).toContain(line);
     expect(html).toMatch(/class="q-auth__receipt" role="status" tabindex="-1"/);
     expect(html).toMatch(/<span class="q-auth__mark" aria-hidden="true"><svg/);
     expect(html).not.toContain("<form");
@@ -137,21 +137,21 @@ describe("help someone sign in (signed in: English on screen, Spanish proven her
 
   it.each(["en", "es"] as const)("with a code: what the helper does, what the other person does, and until when, in %s", lang => {
     const u = ACCESS_COPY[lang].assisted, html = assisted(lang, { issued });
-    for (const line of [u.handoverLabel, u.you, fill(u.youDo, { id: "QA-MARIA" }), u.they, u.theyDo, u.time, u.after, u.copy, u.seePage]) expect(html).toContain(line);
+    for (const line of [u.handoverLabel, u.you, fill(u.youDo, { id: "QA-MARIA" }), u.they, u.theyDo, u.time, u.after, u.copyLink, u.showCode, u.seePage]) expect(html).toContain(line);
     // The time is the code's own expiry in the company's zone: 12:30 PM in Puerto Rico.
     expect(html).toContain(fill(u.timeDo, { time: "@" }).split("@")[0]);
     expect(html).toMatch(/12:30/);
-    expect(html).toContain('href="/forgot-access"');
+    expect(html).toContain('href="/reset-access"');
     // The how-it-works card gives way to the handover; the code is never in a link or a Support reference.
     expect(html).not.toContain("ar-how");
     expect(html).not.toContain("ar-ref");
-    expect(html).toContain('<span class="ar-codeacts__status" role="status" aria-live="polite"></span>');
+    expect(html).toContain('<p class="ar-codeacts__status" role="status" aria-live="polite"></p>');
   });
 
   it("the Spanish guidance has no English sentence of its own", () => {
     const html = assisted("es") + assisted("es", { issued });
     const en = ACCESS_COPY.en.assisted;
-    for (const line of [en.howLabel, ...en.how, en.lasts, en.limits, en.handoverLabel, en.theyDo, en.after, en.copy, en.seePage]) expect(html).not.toContain(line);
+    for (const line of [en.howLabel, ...en.how, en.lasts, en.limits, en.handoverLabel, en.theyDo, en.after, en.copyLink, en.showCode, en.seePage]) expect(html).not.toContain(line);
   });
 
   it.each(["en", "es"] as const)("offline: nothing was sent and no code was made, in %s", lang => {
@@ -160,14 +160,14 @@ describe("help someone sign in (signed in: English on screen, Spanish proven her
     expect(html).toContain(u.offline);
     expect(html).toContain('data-tone="info"');
     expect(html).not.toContain(REFERENCE);
-    expect(html).not.toContain("Code not confirmed");
+    expect(html).not.toContain(ACCESS_COPY.en.assisted.notConfirmedTitle);
   });
 
   it("a refusal keeps its message and shows the Support reference of that reply when there is one", () => {
     const message = "The recovery code could not be confirmed. Check current access before preparing another code.";
     const html = assisted("en", { message, supportReference: REFERENCE });
-    expect(html).toContain("Code not confirmed");
-    expect(html).toContain(message);
+    expect(html).toContain(ACCESS_COPY.en.assisted.notConfirmedTitle);
+    expect(html).toContain(ACCESS_COPY.en.assisted.notConfirmed);
     expect(html).toContain(REFERENCE);
     expect(assisted("en", { message })).not.toContain("ar-ref");
   });

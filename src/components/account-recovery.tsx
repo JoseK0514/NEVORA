@@ -10,11 +10,13 @@ import {supportReferenceOf} from './access-recovery/support-reference-seam';
 const subscribe=()=>()=>{};
 const assistedUnavailable='The recovery code could not be confirmed. Check current access before preparing another code.';
 type Issued={proof:string;expiresAt:string;employeeId:string};
-export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=false,lang='en',mobileAccess=false}:{kind:'request'|'reset'|'assisted';actorId?:string;employeeId?:string;from?:'settings';timeZone?:string;
+export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=false,lang='en',mobileAccess=false,workspaceName=null}:{kind:'request'|'reset'|'assisted';actorId?:string;employeeId?:string;from?:'settings';timeZone?:string;
  /** Assisted, Owner only: link to Employee PINs from the same page. */
  pins?:boolean;
  /** Sign-in pages only: the language the request and reset forms show (the messages stay English here). */
- lang?:AuthLang;mobileAccess?:boolean}){
+ lang?:AuthLang;mobileAccess?:boolean;
+ /** Sign-in pages only: the workplace's public name, shown as a chip under the title (PB-021). */
+ workspaceName?:string|null}){
  const hydrated=useSyncExternalStore(subscribe,()=>true,()=>false);
  const [message,setMessage]=useState(''),[busy,setBusy]=useState(false),[done,setDone]=useState(false),[issued,setIssued]=useState<Issued|null>(null);
  // U11 (Nov 17, 2026): the Support reference of the one failed reply on screen (null until Codex's reader lands, and
@@ -26,7 +28,7 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=fals
  const incomingProof=useRef<string|null>(null);
  const generation=useRef(0),active=useRef<AbortController|null>(null),sending=useRef(false);
  useEffect(()=>{
-  const receiveProof=()=>{if(kind!=='reset')return;const token=new URLSearchParams(window.location.hash.slice(1)).get('proof');if(!token)return;if(mobileAccess)setLinkProof(isPublicAccountProof(token));incomingProof.current=token;setDone(false);setMessage('');if(proofInput.current){proofInput.current.value=token;incomingProof.current=null;}history.replaceState(null,'',window.location.pathname);};
+  const receiveProof=()=>{if(kind!=='reset')return;const token=new URLSearchParams(window.location.hash.slice(1)).get('proof');if(!token)return;setLinkProof(isPublicAccountProof(token));incomingProof.current=token;setDone(false);setMessage('');if(proofInput.current){proofInput.current.value=token;incomingProof.current=null;}history.replaceState(null,'',window.location.pathname);};
   const frame=requestAnimationFrame(receiveProof);window.addEventListener('hashchange',receiveProof);
   const stop=()=>{generation.current++;active.current?.abort();};
   const clear=()=>{stop();setIssued(null);setMessage('');setReference(null);setBusy(false);sending.current=false;};
@@ -55,8 +57,8 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=fals
   }catch{if(current===generation.current)setMessage(kind==='reset'?'The reset outcome could not be confirmed. Try signing in with your new password before requesting another code.':kind==='assisted'?assistedUnavailable:'Recovery is unavailable. Try again or contact your manager for assisted recovery.');}
   finally{clearTimeout(timeout);if(current===generation.current){setBusy(false);sending.current=false;active.current=null;}}
  }
- if(kind==='request')return <RecoveryRequest supportReference={reference} onReview={()=>{setDone(false);setMessage('');setReference(null);}} draft={requestDraft} mobileAccess={mobileAccess} lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}/>;
+ if(kind==='request')return <RecoveryRequest workspaceName={workspaceName} supportReference={reference} onReview={()=>{setDone(false);setMessage('');setReference(null);}} draft={requestDraft} mobileAccess={mobileAccess} lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}/>;
  if(kind==='assisted')return <AssistedRecovery supportReference={reference} hydrated={hydrated} busy={busy} message={message} issued={issued} employeeId={employeeId} from={from} timeZone={timeZone} pins={pins} onSubmit={submit} onStartAgain={()=>{setIssued(null);setMessage('');setReference(null);}}/>;
- return <RecoveryReset supportReference={reference} mobileAccess={mobileAccess} linkProof={linkProof} onDifferentCode={()=>{setLinkProof(false);if(proofInput.current){proofInput.current.value='';proofInput.current.focus();}}} lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}
+ return <RecoveryReset workspaceName={workspaceName} supportReference={reference} mobileAccess={mobileAccess} linkProof={linkProof} onDifferentCode={()=>{setLinkProof(false);if(proofInput.current){proofInput.current.value='';proofInput.current.focus();}}} lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}
   proofRef={input=>{proofInput.current=input;if(input&&incomingProof.current){input.value=incomingProof.current;incomingProof.current=null;}}}/>;
 }

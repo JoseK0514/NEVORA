@@ -1,36 +1,94 @@
-/* Public policy pages (Privacy, Terms, Support, Account deletion): the sign-in brand shell with one readable
- * column. Sizes are rem so the reader's text size applies. */
-html body .employee-login-page.legal-page .employee-login-shell { width: min(760px, 100%); min-width: 0; }
-html body .employee-login-page.legal-page .employee-login-shell > * { min-width: 0; }
-html body .employee-login-page.legal-page .employee-login-brand { justify-content: flex-start; }
-.employee-login-page.legal-page .legal-brand-link { color: inherit; text-decoration: none; border-radius: 8px; }
-.employee-login-page.legal-page .legal-document {
-  box-sizing: border-box; min-width: 0; max-width: 100%;
-  padding: 40px 48px; border: 1px solid var(--login-divider); border-radius: var(--login-frame-radius);
-  background: var(--design-surface-elevated); color: var(--design-text-primary);
+/* Public policy pages (Privacy, Terms, Support, Account deletion), Phase 5 (Nov 17, 2026: PB-001, PB-024, PB-033,
+ * PB-034). The band, the wordmark, the language pill and the way back are the sign-in pages' own (auth-b.css); this
+ * sheet draws what sits under the band: the reading card, the sections, the contents list, the note and the action.
+ * Tokens from b-tokens.css; the one breakpoint is b-viewport.ts's desktop alias. !important only inside @layer nv-b
+ * (B8), and only where a sign-in or Quiet rule has to give way. */
+
+/* ---------- the reading card ---------- */
+:is(#q-root, html) main.q-doc .pl-body { position: relative; z-index: 1; margin-top: var(--b-space-16); }
+:is(#q-root, html) main.q-doc .pl-card { min-width: 0; padding: var(--b-space-8) var(--b-inset) var(--b-space-12); border-radius: var(--b-radius-card); background: #FFFFFF; box-shadow: var(--b-elev-1); }
+:is(#q-root, html) main.q-doc .pl-toc { display: none; }
+
+/* One note above a document that is not translated (teal: information). */
+:is(#q-root, html) main.q-doc .pl-note { display: flex; align-items: flex-start; gap: 10px; margin: 10px 0 var(--b-space-4); padding: var(--b-space-12) var(--b-gutter); border-radius: var(--b-radius-field); background: var(--b-teal-50); color: #0B4F4B; font-size: var(--b-fs-body); line-height: var(--b-lh-body); }
+:is(#q-root, html) main.q-doc .pl-note > svg { flex: none; margin-top: 1px; color: var(--b-teal); }
+:is(#q-root, html) main.q-doc .pl-note a { color: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+
+/* ---------- sections ---------- */
+/* "Open all": a quiet text button at the top right of the card, phones and tablets only. */
+:is(#q-root, html) main.q-doc .pl-all { display: flex; justify-content: flex-end; margin: 0 -8px; }
+:is(#q-root, html) main.q-doc .pl-all__btn { min-height: var(--b-target); padding: 0 var(--b-space-8); border: 0; border-radius: var(--b-radius-small); background: none; color: var(--b-teal); font: 600 var(--b-fs-body-sm)/var(--b-lh-body-sm) Inter, "Inter Fallback", sans-serif; cursor: pointer; }
+:is(#q-root, html) main.q-doc .pl-all__btn:disabled { cursor: default; }
+:is(#q-root, html) main.q-doc .pl-sec { border-top: 1px solid var(--b-line); scroll-margin-top: var(--b-space-16); }
+:is(#q-root, html) main.q-doc .pl-secs > .pl-sec:first-child { border-top: 0; }
+:is(#q-root, html) main.q-doc .pl-sec__h { margin: 0; font: 600 1rem/1.375rem Inter, "Inter Fallback", sans-serif; letter-spacing: -.01em; color: var(--b-ink); text-wrap: balance; }
+:is(#q-root, html) main.q-doc .pl-sec__btn { display: flex; align-items: center; justify-content: space-between; gap: var(--b-space-12); width: 100%; min-height: 52px; margin: 0; padding: var(--b-space-12) 0; border: 0; border-radius: var(--b-radius-small); background: none; color: inherit; font: inherit; letter-spacing: inherit; text-align: left; cursor: pointer; }
+:is(#q-root, html) main.q-doc .pl-sec__btn:disabled { cursor: default; }
+:is(#q-root, html) main.q-doc .pl-sec__caret { flex: none; color: var(--b-grey); }
+:is(#q-root, html) main.q-doc .pl-sec__btn[aria-expanded="true"] .pl-sec__caret { transform: rotate(180deg); }
+/* A plain heading (the pinned first section, "Questions", and every heading from 1024px). */
+:is(#q-root, html) main.q-doc .pl-sec__h:not(:has(.pl-sec__btn)) { padding: 15px 0 var(--b-space-8); }
+:is(#q-root, html) main.q-doc .pl-sec__body { padding: 0 0 var(--b-space-16); font-size: var(--b-fs-body); line-height: 1.5rem; color: var(--b-ink2); overflow-wrap: break-word; }
+:is(#q-root, html) main.q-doc .pl-sec__body[hidden] { display: none; }
+:is(#q-root, html) main.q-doc .pl-sec__body :is(p, ul) { max-width: 68ch; margin: 0 0 var(--b-space-12); text-wrap: pretty; }
+:is(#q-root, html) main.q-doc .pl-sec__body > :last-child { margin-bottom: 0; }
+:is(#q-root, html) main.q-doc .pl-sec__body ul { padding-left: var(--b-space-20); }
+:is(#q-root, html) main.q-doc .pl-sec__body li + li { margin-top: 6px; }
+:is(#q-root, html) main.q-doc .pl-sec__body strong { font-weight: 600; color: var(--b-ink); }
+:is(#q-root, html) main.q-doc .pl-sec__body a { color: var(--b-teal); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+:is(#q-root, html) main.q-doc .legal-unresolved { padding: 0 4px; border-radius: 4px; background: var(--b-amber-50); color: var(--b-amber); font-size: .875em; overflow-wrap: anywhere; }
+
+/* Account deletion's action: an outlined teal pill under the how-to, 48px, never the brightest thing on the page. */
+:is(#q-root, html) main.q-doc .pl-sec__body > .pl-start { max-width: none; margin: var(--b-space-16) 0 var(--b-space-4); }
+:is(#q-root, html) main.q-doc .pl-sec__body .pl-start__btn { display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 100%; min-height: 48px; padding: var(--b-space-8) var(--b-inset-wide); border-radius: var(--b-radius-pill); background: #FFFFFF; box-shadow: inset 0 0 0 1.5px var(--b-teal); color: var(--b-teal); font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 700; text-align: center; text-decoration: none; }
+:is(#q-root, html) main.q-doc .pl-sec__body .pl-start__btn:hover { background: var(--b-teal-50); }
+
+/* One focus ring under the band: teal, 2px. */
+:is(#q-root, html) main.q-doc :is(.pl-card, .pl-toc) :is(a, button):focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); }
+
+/* Support (PB-033): a group heading belongs to the group under it. */
+:is(#q-root, html) main.q-doc .pl-grp { margin: var(--b-space-32) var(--b-inset) var(--b-space-12); font: 600 var(--b-fs-body)/1.25rem Inter, "Inter Fallback", sans-serif; letter-spacing: -.005em; color: var(--b-ink2); }
+
+/* The operator's line under the closing links, as the sign-in pages' legal line. */
+:is(#q-root, html) main.q-doc .pl-operator { margin: 0 var(--b-space-20); font-size: 13px; line-height: 18px; color: var(--b-grey); text-align: center; }
+
+@media (prefers-reduced-motion: no-preference) {
+  :is(#q-root, html) main.q-doc .pl-sec__caret { transition: transform var(--b-dur-hover) var(--b-ease-out); }
 }
-.employee-login-page.legal-page .legal-head { display: grid; gap: 10px; padding-bottom: 24px; margin-bottom: 8px; border-bottom: 1px solid var(--login-divider); }
-.employee-login-page.legal-page .legal-head h1 { margin: 0; font: 500 2rem/1.2 var(--design-font-body); letter-spacing: -.03em; text-wrap: balance; }
-.employee-login-page.legal-page .legal-summary { margin: 0; font-size: 1.0625rem; line-height: 1.55; color: var(--design-text-secondary); text-wrap: pretty; }
-.employee-login-page.legal-page .legal-meta { margin: 0; font-size: 0.875rem; line-height: 1.5; color: var(--design-text-secondary); }
-.employee-login-page.legal-page .legal-action { justify-self: start; margin-top: 8px; padding-inline: 24px; text-decoration: none; }
-.employee-login-page.legal-page .legal-section { padding-top: 24px; }
-.employee-login-page.legal-page .legal-section h2 { margin: 0 0 8px; font: 600 1.125rem/1.4 var(--design-font-body); letter-spacing: -.01em; }
-.employee-login-page.legal-page .legal-section :is(p, li) { margin: 0 0 12px; font-size: 1rem; line-height: 1.65; color: var(--design-text-primary); text-wrap: pretty; overflow-wrap: break-word; }
-.employee-login-page.legal-page .legal-section ul { margin: 0 0 12px; padding-left: 1.25rem; }
-.employee-login-page.legal-page .legal-section li { margin-bottom: 6px; }
-.employee-login-page.legal-page .legal-document a { color: var(--login-blue); text-decoration: underline; text-underline-offset: 3px; }
-.employee-login-page.legal-page .legal-document a:hover { color: var(--login-blue-hover); }
-.employee-login-page.legal-page .legal-document a.legal-action { color: #FFFFFF; text-decoration: none; }
-.employee-login-page.legal-page .legal-unresolved { padding: 0 4px; border-radius: 4px; background: #FDF0C4; color: #6B4E00; font-family: var(--design-font-mono, monospace); font-size: 0.875em; overflow-wrap: anywhere; word-break: break-all; }
-.employee-login-page.legal-page .legal-nav { display: flex; flex-wrap: wrap; gap: 4px 20px; justify-content: center; }
-.employee-login-page.legal-page .legal-nav :is(a, span) { display: inline-flex; align-items: center; min-height: 44px; font-size: 0.9375rem; }
-.employee-login-page.legal-page .legal-nav a { color: var(--login-blue); text-decoration: none; }
-.employee-login-page.legal-page .legal-nav a:hover { text-decoration: underline; text-underline-offset: 3px; }
-.employee-login-page.legal-page .legal-nav [aria-current="page"] { color: var(--design-text-secondary); font-weight: 600; }
-.employee-login-page.legal-page :is(a, button):focus-visible { outline: 2px solid var(--login-blue); outline-offset: 3px; }
-@media (max-width: 799px) {
-  .employee-login-page.legal-page .legal-document { padding: 28px 22px; border-radius: 20px; }
-  .employee-login-page.legal-page .legal-head h1 { font-size: 1.75rem; }
-  .employee-login-page.legal-page .legal-action { justify-self: stretch; }
+
+/* ---------- desktop: plain headings, and the contents list beside the reading column ---------- */
+@media (min-width: 1024px) {
+  :is(#q-root, html) main.q-doc .pl-card { padding: var(--b-space-12) var(--b-space-32) var(--b-space-24); }
+  :is(#q-root, html) main.q-doc .pl-body--toc { display: grid; grid-template-columns: 280px minmax(0, 1fr); column-gap: var(--b-space-20); align-items: start; }
+  :is(#q-root, html) main.q-doc .pl-toc { display: block; position: sticky; top: var(--b-space-24); max-height: calc(100dvh - 48px); overflow: auto; border-radius: var(--b-radius-card); background: #FFFFFF; box-shadow: var(--b-elev-1); }
+  :is(#q-root, html) main.q-doc .pl-toc h2 { margin: 0; padding: 18px var(--b-inset-wide) 6px; font: 700 var(--b-fs-title-sm)/var(--b-lh-title-sm) Inter, "Inter Fallback", sans-serif; letter-spacing: -.01em; color: var(--b-ink); }
+  :is(#q-root, html) main.q-doc .pl-toc ul { margin: 0; padding: var(--b-space-4) 10px var(--b-space-12); list-style: none; }
+  :is(#q-root, html) main.q-doc .pl-toc a { display: block; padding: 12px; border-radius: var(--b-radius-small); font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); font-weight: 500; color: var(--b-ink2); text-decoration: none; }
+  :is(#q-root, html) main.q-doc .pl-toc a:hover { background: var(--b-canvas); }
+  :is(#q-root, html) main.q-doc .pl-toc a:focus-visible { outline-offset: -2px; }
+  :is(#q-root, html) main.q-doc .pl-note { margin: var(--b-space-12) 0 0; }
+  /* Until the page's script swaps the buttons for plain headings they already read as plain ones. */
+  :is(#q-root, html) main.q-doc .pl-all { display: none; }
+  :is(#q-root, html) main.q-doc .pl-sec { border-top: 0; scroll-margin-top: var(--b-space-24); }
+  :is(#q-root, html) main.q-doc .pl-sec__h { font: 700 var(--b-fs-title-sm)/var(--b-lh-title-sm) Inter, "Inter Fallback", sans-serif; }
+  :is(#q-root, html) main.q-doc .pl-sec__h:not(:has(.pl-sec__btn)) { padding: var(--b-space-20) 0 var(--b-space-8); }
+  :is(#q-root, html) main.q-doc .pl-sec__btn { min-height: 0; padding: var(--b-space-20) 0 var(--b-space-8); cursor: default; }
+  :is(#q-root, html) main.q-doc .pl-sec__caret { display: none; }
+  :is(#q-root, html) main.q-doc .pl-sec__body { padding-bottom: var(--b-space-8); }
+  :is(#q-root, html) main.q-doc .pl-sec__body[hidden] { display: block; }
+  :is(#q-root, html) main.q-doc .pl-sec__body .pl-start__btn { width: fit-content; }
+  :is(#q-root, html) main.q-doc .pl-grp { margin-left: 28px; margin-right: 28px; }
+}
+
+@layer nv-b {
+  /* The policy column is 860px; with a contents list beside it, 1104px (auth-b.css caps it without the layer). */
+  @media (min-width: 1024px) {
+    :is(#q-root, html) main.q-doc > .q-auth__col:has(> .pl-body--toc) { max-width: 1104px !important; }
+  }
+  /* PB-033: 12px between a group heading and its group, whatever the group is (a list, the address). */
+  :is(#q-root, html) main.q-doc .pl-grp + :is(.q-list, .q-doc__address) { margin-top: 0 !important; }
+  /* The closing links end the page with the operator's line right under them. */
+  :is(#q-root, html) main.q-doc .q-doc__links { margin-bottom: var(--b-space-4) !important; }
+  /* Each closing link's tap band is a full 44px (it measured 42). */
+  :is(#q-root, html) main.q-doc .q-doc__links a { padding-block: 14px !important; }
 }

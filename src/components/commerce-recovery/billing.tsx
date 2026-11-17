@@ -74,9 +74,14 @@ export function BillingRecovery({lang,billingOrigin,payrollEnabled,timeZone}: {l
   <div className={styles.actions}>
    {notice?.contact?<a className={styles.action} href={`mailto:${supportEmail}`}>{contactLabel(lang)}</a>:null}
    {state.phase!=='denied'?<button className={notice?.contact||state.phase==='unavailable'?styles.secondary:styles.action} type="button" disabled={opening||state.phase==='loading'} onClick={()=>void openBilling()}>{opening?t.opening:t.billing}</button>:null}
-   <button className={state.phase==='unavailable'?styles.action:styles.secondary} type="button" disabled={opening||state.phase==='loading'} onClick={()=>{setFailed(false);refresh.current?.();}}>{t.refresh}</button>
-   {status?.operational?<Link className={styles.secondary} href="/app" prefetch={false}>{t.back}</Link>:null}
-   {payrollEnabled?<Link className={styles.secondary} href="/app/my-pay" prefetch={false}>{t.pay}</Link>:null}
+   {/* Phase 5 (Nov 17, 2026): one filled button per state. Refresh is that button only when the status could not be
+     * read; otherwise it and the ways out of this page are text links, as the links under the sign-in card. */}
+   {state.phase==='unavailable'?<button className={styles.action} type="button" disabled={opening} onClick={()=>{setFailed(false);refresh.current?.();}}>{t.refresh}</button>:null}
+   {state.phase!=='unavailable'||status?.operational||payrollEnabled?<div className={styles.links}>
+    {state.phase!=='unavailable'?<button className={styles.quiet} type="button" disabled={opening||state.phase==='loading'} onClick={()=>{setFailed(false);refresh.current?.();}}>{t.refresh}</button>:null}
+    {status?.operational?<Link className={styles.quiet} href="/app" prefetch={false}>{t.back}</Link>:null}
+    {payrollEnabled?<Link className={styles.quiet} href="/app/my-pay" prefetch={false}>{t.pay}</Link>:null}
+   </div>:null}
   </div><p className={styles.footer}>{t.note}</p>
  </>;
 }

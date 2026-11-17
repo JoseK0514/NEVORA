@@ -16,9 +16,19 @@ const currentHour = () => new Date().getHours();
 const serverHour = () => -1;
 
 /** The server renders "Welcome back"; after hydration the device's hour picks the greeting, so there is no mismatch
- * and never a blank title. */
-export function Greeting({ words, id, as = "h1", className = "ap-title", mobileTitle }: { words: Greetings; id?: string; /** "p" for the phone band's copy (the sheet keeps the h1). */ as?: "h1" | "p"; className?: string; mobileTitle?: string }) {
+ * and never a blank title.
+ * Phase 5 (Nov 17, 2026, PB-036): the title no longer changes under the reader. `data-greeting` says where it is:
+ * "pending" (the server's words, held out of sight for a moment by auth-b.css so the hour's greeting is the first one
+ * read; without JavaScript they show after that moment), "ready" (the hour's greeting, faded in when motion is allowed)
+ * or "first" (someone arriving from activation: "Welcome", the same on the server and after, so nothing swaps). The
+ * line keeps its height throughout. */
+export function Greeting({ words, id, as = "h1", className = "ap-title", mobileTitle, first = false }: { words: Greetings; id?: string; /** "p" for the phone band's copy (the sheet keeps the h1). */ as?: "h1" | "p"; className?: string; mobileTitle?: string;
+  /** Straight from activation: a first sign-in, greeted once and never swapped. */ first?: boolean }) {
   const hour = useSyncExternalStore(subscribe, currentHour, serverHour);
   const Tag = as;
-  return <Tag className={className} id={id}>{mobileTitle ? <><span className="ma-only">{mobileTitle}</span><span className="ma-desktop">{hour < 0 ? words.welcome : greetingFor(hour, words)}</span></> : hour < 0 ? words.welcome : greetingFor(hour, words)}</Tag>;
+  const text = first ? words.first : hour < 0 ? words.welcome : greetingFor(hour, words);
+  const state = first ? "first" : hour < 0 ? "pending" : "ready";
+  return mobileTitle
+    ? <Tag className={className} id={id}><span className="ma-only">{mobileTitle}</span><span className="ma-desktop" data-greeting={state}>{text}</span></Tag>
+    : <Tag className={className} id={id} data-greeting={state}>{text}</Tag>;
 }
