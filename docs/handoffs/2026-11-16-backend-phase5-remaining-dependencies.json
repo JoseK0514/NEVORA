@@ -33,7 +33,7 @@
     {
       "id": "existing-browser-gates",
       "owner": "Claude and independent QA/UI",
-      "remaining": "R4 was published after full prepush qualification; its actual Development Manager check then exposed an ambiguous pending-button parent selector and the mandatory dependent evidence check correctly failed. The R5 QA-only repair and both forty-check browser replays are recorded separately, with no product change or assertion/timeout waiver. Original, R2, R3 and R4 outcomes remain preserved. Four bounded UI exceptions were explicitly authorized: CtrlK contrast, task-link44px minimum, existing Owner AI manager link relocation and account-menu focus contrast. Final exact-source mandatory R5 CI and fresh actual Development verification remain required. Independent UI disposition, future-consumer journeys and physical-device gates remain with their owners; no independent finding is self-closed."
+      "remaining": "R4 is published to Development; its actual-branch Manager oracle failure is preserved. R5 corrected that test, then its tag CI failed a native diagnostic fetch during the final Attention hard return and R5 was never published. R6 uses the existing week link with exact week/day/state/document proofs, fourteen local responsive cells and eight browser controls, retaining strict runtime/WCAG/deadline gates. Only the same four UI exceptions were approved. R6 final exact-source CI and fresh actual Development verification remain required. Independent UI disposition, future-consumer journeys and physical-device gates remain with their owners; no independent finding is self-closed."
     },
     {
       "id": "physical-devices",

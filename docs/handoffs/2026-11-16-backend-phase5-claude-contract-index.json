@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "contractPackageVersion": "NEVORA_BACKEND_CONTRACT_INDEX_2026_11_16_V7_DEVELOPMENT_PUBLICATION",
+  "contractPackageVersion": "NEVORA_BACKEND_CONTRACT_INDEX_2026_11_16_V8_DEVELOPMENT_PUBLICATION",
   "date": "2026-11-16",
   "timeZone": "America/Puerto_Rico",
   "status": "READY_FOR_CLAUDE_LOCAL_CONTRACTS_HOSTED_AND_COMBINED_ACCEPTANCE_PENDING",
   "developmentPublication": "2026-11-16-backend-phase5-development-publication.json",
-  "publicationApplicationSha": "98d403d5afd51ab13e8d8f2ca6e059b244cccb65",
+  "publicationApplicationSha": "1bee06863400fb99db3258cd6fb0546ac7cbc0cd",
   "frozenQualificationSha": "a40aaf669fb7731f00dd73b8d54909d82eb77174",
   "warning": "The six reviewed Phase2–4 application/documentation commits and later reviewed CI repairs remain assembled. The twelve contract snapshots retain their individually recorded source and application commits. A40 identifies the assembled backend qualification and the P4-AUTH-01 correction; backend runtime inputs remain unchanged. The publication record binds subsequent test-driver repairs, four explicit UI exceptions and the final immutable publication ref. Required CI conclusions belong to the exact publication commit and must be verified there. Hosted operation, unfinished Claude consumers, physical devices, independent disposition and actual Rondo model quality remain separate dependencies.",
   "contracts": [
@@ -361,9 +361,9 @@
     "qualificationSha": "a40aaf669fb7731f00dd73b8d54909d82eb77174",
     "ledger": "2026-11-16-backend-phase5-evidence/qualification-summary.json",
     "equivalence": "2026-11-16-backend-phase5-evidence/sql-evidence-equivalence.json",
-    "developmentPublicationRef": "refs/tags/candidate/backend-completion/phase5-development-20261116-r5",
+    "developmentPublicationRef": "refs/tags/candidate/backend-completion/phase5-development-20261116-r6",
     "developmentPublicationRecord": "2026-11-16-backend-phase5-development-publication.json",
-    "qualificationDriverAmendment": "2026-11-16-backend-phase5-publication-evidence/r5-qualification-amendment.json"
+    "qualificationDriverAmendment": "2026-11-16-backend-phase5-publication-evidence/r6-qualification-amendment.json"
   },
   "authCorrection": {
     "id": "P4-AUTH-01",
