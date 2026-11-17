@@ -401,6 +401,12 @@
       "bytes": 666,
       "sha256": "df12cb631870cfe0351e687446196a662a61052d36a49bda48d755a3683d2912",
       "origin": "git diff --name-only 0391b2fc1 6d742983f over declared runtime scopes; asserted empty"
+    },
+    {
+      "path": "source-hash-scan-adjudication.json",
+      "bytes": 385779,
+      "sha256": "d14ab5141e8f6e4580d1d8926305e7e91a72f5ae7bb41ac4f6bb8d1c18bd9f0f",
+      "origin": "Exhaustive validation of1092 scanner hits against committed source bytes"
     }
   ]
 }
