@@ -139,6 +139,8 @@ export default async function EmployeeProfilePage({
           <li><CorpRow href={shiftsHref} title="Shifts" label={`Shifts for ${name}`} chevron /></li>
           <li><CorpRow href={`/app/timecards#timecard-${encodeURIComponent(employee.id)}`} title="Timecards" label={`Timecards for ${name}`} chevron /></li>
           <li><CorpRow href={`/app/availability?employeeId=${encodeURIComponent(employee.id)}`} title="Availability" label={`Availability for ${name}`} chevron /></li>
+          {/* Scheduling restrictions (U02): the times agreed with this person, kept apart from the availability they send. */}
+          <li><CorpRow href={`${base}/restrictions`} title="When they can be scheduled" label={`When ${name} can be scheduled`} chevron /></li>
         </CorpRows>
       </CorpCard>
       <CorpCard as="div" ariaLabel="Access and sign-in">
