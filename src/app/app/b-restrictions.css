@@ -1,0 +1,5 @@
+/* Direction B (Nov 17, 2026): Scheduling restrictions (U02): the agreement a manager and an employee make about when the person can be scheduled, for Owner, Manager, Employee and Lead, at every width.
+ * One feature per sheet, loaded after the area sheets. Rules follow the B8 layering rule: !important only inside
+ * @layer nv-b; media queries only the aliases in src/lib/b-viewport.ts; values from src/app/b-tokens.css. */
+@layer nv-b {
+}

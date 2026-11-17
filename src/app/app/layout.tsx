@@ -50,6 +50,14 @@ import "./owner-b-schedule.css";
 import "./owner-b-time-pay.css";
 import "./owner-b-requests.css";
 import "./owner-b-settings.css";
+// Nov 17, 2026: one Direction B sheet per feature item (U01, U02, U03 with U09, U10).
+import "./b-restrictions.css";
+import "./b-payroll-import.css";
+import "./b-reminders.css";
+import "./b-review-details.css";
+// Phase 4 (Nov 17, 2026): the Employee and Lead screens, one sheet per group of screens.
+import "./employee-b-work.css";
+import "./employee-b-account.css";
 import {communicationAuthority} from "@/lib/communications/service.server";
 import {cookies, headers} from "next/headers";
 import {createHash} from "node:crypto";

@@ -1,0 +1,5 @@
+/* Direction B, Phase 4 (Nov 17, 2026): Employee and Lead Home, Schedule, Time and Pay (Phase 4), at every width.
+ * Loaded after the feature sheets. Rules follow the B8 layering rule: !important only inside @layer nv-b; media
+ * queries only the aliases in src/lib/b-viewport.ts; values from src/app/b-tokens.css. */
+@layer nv-b {
+}
