@@ -99,6 +99,19 @@ publish flag on map drafts.
 Logs: `evidence/` (ANSI stripped, gzip). Not run: WebKit/Firefox for anything but the suites above, a real phone, a
 screen reader, a hosted environment.
 
+## Where this lives, and the overlap with candidate 02
+
+Delivered on `claude-codex-collab-nevora` as a fast-forward from `e9d2ba4e` (Jose approved, Nov 17), so it travels
+with the held Phase 5 commits `7cc7547a` and `e9d2ba4e`. A separate branch briefly pushed as `claude-phase5-backend`
+was deleted to keep the three-branch ceiling. The inventory in
+`docs/handoffs/2026-10-21-development-assembly-sources.json` needs the collab branch's new head recorded as held.
+
+Candidate 02 (`e7ed9923`, tag `candidate/backend-completion/20261117-claude-ui-integration-02`) wired the same seam
+with a hardened `src/lib/support-reference.ts` (try/catch around the header read). `722babea` here carries the earlier
+`4687e455` copy. When the two lines are combined, keep candidate 02's `support-reference.ts` and its seam comment; the
+rest of this branch (pause release, route and deletion references, U10 `held`, `session-cookie.ts`) is not in
+candidate 02.
+
 ## Qualification
 
 The backend changes are qualified on their own suites. The combined source is **not** ready for Development: the
