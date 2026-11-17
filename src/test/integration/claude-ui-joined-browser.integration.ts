@@ -19,7 +19,7 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
   let complete=false;
   try{
     vi.stubEnv('NEVORA_PAYROLL_ENABLED','true');
-    await seedOwnedApp(app.database.executor);const fixture=await seedPayrollFixture(app.database.executor,{breaks:true});
+    await seedOwnedApp(app.database.executor);const fixture=await seedPayrollFixture(app.database.executor,{breaks:true,automaticPublish:false});
     const observe=(view:any)=>{view.setDefaultTimeout(20000);view.on('pageerror',(e:Error)=>errors.push(view.url()+' '+e.stack));view.on('requestfailed',(r:any)=>network.push({event:'failed',url:r.url(),failure:r.failure()?.errorText}));};observe(page);
     await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){external.push(url.origin);await route.abort();}else await route.continue();});
     // Each workflow opens in an authenticated tab. Existing navigation suites cover route transitions; no page error is filtered.
@@ -89,7 +89,8 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     await expect.poll(()=>page.evaluate((key:string)=>localStorage.getItem(key),recoveryKey)).toBe(approvalId);
     await q("UPDATE employees SET role='OWNER' WHERE id=$1",[fixture.ids.owner]);await context.clearCookies();
     await visit('/login');await page.getByLabel('Employee ID',{exact:true}).fill(fixture.ids.owner);await page.getByLabel('Password',{exact:true}).fill(fixture.password);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
-    await visit('/app/payroll/review?run='+fixture.runId);await expect.poll(()=>page.evaluate((key:string)=>localStorage.getItem(key),recoveryKey)).toBeNull();
+    const recoveredReceipt=context.waitForEvent('response',(r:any)=>new URL(r.url()).pathname==='/api/payroll/receipts'&&new URL(r.url()).searchParams.get('operationId')===approvalId);
+    await visit('/app/payroll/review?run='+fixture.runId);const recovered=await recoveredReceipt;expect(recovered.status(),await recovered.text()).toBe(200);await recovered.finished();await expect.poll(()=>page.evaluate((key:string)=>localStorage.getItem(key),recoveryKey)).toBeNull();
     checks.push('Approval committed with lost response; real revoked access refuses lookup without deleting original ID; authorized re-entry recovers receipt');
     for(let i=0;i<4;i++)await workerOnce(app.database.executor);
     await visit('/app/payroll/review?run='+fixture.runId);await page.getByRole('checkbox',{name:'Share the approved pay statements with each employee.',exact:true}).check();

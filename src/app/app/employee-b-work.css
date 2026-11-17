@@ -209,6 +209,11 @@
     /* EM-018: the notes under the cards speak for the whole page; they start on the cards' text edge. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-stack > .b-note { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
   }
+  /* A coarse tablet keeps the approved rail, with the existing touch target size for Schedule actions. */
+  @media (pointer: coarse) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-esched > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) :is(.b-week__arrow, .es-today, .q-bs) { min-width: var(--b-target-touch) !important; min-height: var(--b-target-touch) !important; }
+  }
+
 }
 
 /* Unlayered: the short and wide-only forms stay hidden wherever one of these pieces is drawn outside the Employee

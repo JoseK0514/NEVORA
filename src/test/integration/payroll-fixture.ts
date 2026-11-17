@@ -21,7 +21,7 @@ import type {
 } from "../../lib/payroll/contracts";
 export async function seedPayrollFixture(
   ex: SqlExecutor,
-  options: { published?: boolean;breaks?:boolean;period?:{startDate:string;endDate:string};payday?:string } = {},
+  options: { published?: boolean;automaticPublish?:boolean;breaks?:boolean;period?:{startDate:string;endDate:string};payday?:string } = {},
 ) {
   const [identity] = await ex.query<{ name: string; marker: string }>({
     text: "SELECT current_database() AS name,shobj_description(oid,'pg_database') AS marker FROM pg_database WHERE datname=current_database()",
@@ -92,7 +92,7 @@ export async function seedPayrollFixture(
     rules: [],
     automation: {
       prepare: true,
-      publish: true,
+      publish: options.automaticPublish ?? true,
       reminders: true,
       reminderLeadDays: [1],
     },
