@@ -37,8 +37,9 @@
   @media (min-width: 768px) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-todo .b-row__trail { min-width: 96px !important; justify-content: flex-end !important; }
   }
-  @media (min-width: 1280px) {
-    /* The amber chip stays on the title's line (the title gives way first). Narrower cards let it wrap under the title. */
+  @media (min-width: 768px) {
+    /* The amber chip stays on the title's line and the title gives way first ("…"), so every row is 72px wherever the
+     * Review pill shares the line (EM-008; was 1280px and up). Phones keep the pill under the words, so they wrap. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-todo .b-row__t { flex-wrap: nowrap !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-todo .b-row__tt { overflow: hidden !important; white-space: nowrap !important; text-overflow: ellipsis !important; text-wrap: nowrap !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-todo .b-row__t > .b-chip { flex: none !important; }
