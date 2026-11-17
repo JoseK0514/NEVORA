@@ -459,6 +459,23 @@ item names the lines it supersedes; line numbers are from the file before this s
     notification opens in place and lists each notification, each read on its own. One bell, in the top bar, for every
     role (no Notifications entry in the Employee sidebar or rail). My pay has no back link from 768px. Under "Shift
     lead": "Must be an Owner, Manager or Lead."
+- **Feature screens and Employee screens (built Nov 17, 2026; see `docs/handoffs/2026-11-17-claude-ui-delivery/README.md`).**
+  - *Sheets.* One sheet per feature (`b-restrictions.css`, `b-payroll-import.css`, `b-reminders.css`,
+    `b-review-details.css`) and two for the Employee and Lead app (`employee-b-work.css`, `employee-b-account.css`),
+    loaded after the area sheets. Rondo business keeps its own `owner-advisor/business/business.css`.
+  - *Step flows.* A flow of several steps shows a step line under the title ("Step 2 of 5 · Match people"), one
+    decision per step, Back that never loses work, and one filled button (the step's next action). Focus moves to the
+    step heading on each step and to the reason when a blocked Next is pressed.
+  - *Uncertain results.* "Not confirmed" is amber, never red and never done. It says the result is not known and
+    offers one check that looks up the original request; nothing is sent twice. A queue receipt reads "queued", never
+    "sent" or "delivered". Complete is said only when the server confirms every part.
+  - *Totals.* When a count is not complete it reads "At least N" and "You're all set" is withheld.
+  - *Rows that need a decision* (an unmatched row, an undecided break, a batch that needs a check) keep the white
+    card and take an amber edge; chips inside share one size and one left edge.
+  - *Employee rows.* A row that opens leads with the teal-50 circle and a teal bold glyph; grey is for facts that do
+    not open. A note that qualifies a card is that card's footer (13.5/18 grey, 12px above, 16px below).
+  - *Copy.* New screens keep every string in one module with `en` and `es`. Bilingual surfaces render both; the
+    signed-in app renders English until a stored language is decided.
 - **States and menus.** The state card's empty kind is grey with a tray glyph; the warning glyph is for failures.
   Menu items have 10px corners inside the 16px menu (supersedes 8px near 1891).
 - **Motion.** The press scale runs only under `prefers-reduced-motion: no-preference`.
