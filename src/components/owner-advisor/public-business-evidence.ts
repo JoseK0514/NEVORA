@@ -17,6 +17,10 @@ const keys = (v: Record<string, unknown>, list: string, optional: string[] = [])
   const present = Object.keys(v).filter(k => !optional.includes(k)).sort().join(",");
   need(present === list.split(" ").sort().join(",") && Object.keys(v).every(k => list.split(" ").includes(k) || optional.includes(k)));
 };
+// JSONB and HTTP preserve values, not object insertion order. Arrays remain ordered
+// so canonical reference ordering and all exact-field checks still apply.
+const canonical = (v: unknown): string => JSON.stringify(v, (_key, value) =>
+  obj(value) ? Object.fromEntries(Object.entries(value).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)) : value);
 const HEX = /^[a-f0-9]{64}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/;
 const MONEY = /^(0|-?[1-9][0-9]{0,29})$/;
@@ -39,7 +43,7 @@ function findings(v: unknown) {
     need(obj(f)); keys(f, "code accountRef recordIds differenceMinor", ["count", "window", "boundaryAt"]);
     need(typeof f.code === "string" && CODE.test(f.code) && (f.accountRef === null || ref(f.accountRef)) && moneyOrNull(f.differenceMinor) &&
       list(f.recordIds, 1000) && f.recordIds.every(ref) && (f.count === undefined || count(f.count)) && (f.boundaryAt === undefined || INSTANT(f.boundaryAt)));
-    if (f.window !== undefined) need(JSON.stringify(parseWindow(f.window)) === JSON.stringify(f.window));
+    if (f.window !== undefined) need(canonical(parseWindow(f.window)) === canonical(f.window));
   }
 }
 function scenarioIdentity(r: unknown, extra: string) {
@@ -90,7 +94,7 @@ function citation(c: unknown) {
     typeof c.digest === "string" && HEX.test(c.digest) && text(c.name, 240) && ref(c.namespace) && text(c.timeZone, 64) && currency(c.currency) &&
     INSTANT(c.sourceAsOf) && (c.origin === "OWNER_IMPORT" || c.origin === "CONNECTOR") && isBusinessCitationHref(c.href) &&
     c.href === `/api/owner/advisor/business/sources/${c.sourceId}/versions/${c.versionId}`);
-  need(JSON.stringify(parseWindow(c.window)) === JSON.stringify(c.window));
+  need(canonical(parseWindow(c.window)) === canonical(c.window));
 }
 function evidence(e: unknown): asserts e is BusinessModelEvidence {
   need(obj(e));
@@ -103,10 +107,10 @@ function evidence(e: unknown): asserts e is BusinessModelEvidence {
   // Scope must be the canonical form the backend parses (sorted, exact fields); finance carries a scenario, sales none.
   const scope = { window: e.window, selection: e.selection, locationScope: e.locationScope, temporalUse: e.temporalUse };
   if (e.domain === "FINANCE") {
-    need(JSON.stringify(parseBusinessQuery({ ...scope, scenario: e.scenario }, true)) === JSON.stringify({ ...scope, scenario: e.scenario }));
+    need(canonical(parseBusinessQuery({ ...scope, scenario: e.scenario }, true)) === canonical({ ...scope, scenario: e.scenario }));
     need(e.sales === null && (e.finance === null || (finance(e.finance), true)));
   } else {
-    need(e.scenario === null && JSON.stringify(parseBusinessQuery(scope)) === JSON.stringify(scope));
+    need(e.scenario === null && canonical(parseBusinessQuery(scope)) === canonical(scope));
     need(e.finance === null && (e.sales === null || (sales(e.sales), true)));
   }
   for (const c of e.citations) citation(c);

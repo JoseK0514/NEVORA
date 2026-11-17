@@ -30,6 +30,12 @@ describe("Rondo business evidence in answers", () => {
     expect(parseAnswer(answer({ businessEvidence: [finance] })).answer.businessEvidence).toHaveLength(1);
     expect(() => parseAnswer(answer({ businessEvidence: [finance, sales] }))).not.toThrow();
   });
+  it.each(["FINANCE", "SALES"])("accepts %s after JSONB changes object key order without changing values", domain => {
+    const reorder = (v: unknown): unknown => Array.isArray(v) ? v.map(reorder) : v && typeof v === "object"
+      ? Object.fromEntries(Object.entries(v).reverse().map(([k, value]) => [k, reorder(value)])) : v;
+    const e = domain === "FINANCE" ? financeEvidence() : salesEvidence();
+    expect(() => parseAnswer(reorder(answer({ businessEvidence: [e] })))).not.toThrow();
+  });
   it("accepts a cited source with no typed evidence (an unselected read stays a cited observation)", () => {
     expect(() => parseAnswer(answer())).not.toThrow();
   });
