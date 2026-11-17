@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it,vi} from 'vitest';
 import {createRequire} from 'node:module';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
@@ -16,6 +16,7 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
   const errors:string[]=[],external:string[]=[],checks:string[]=[];
   let complete=false;
   try{
+    vi.stubEnv('NEVORA_PAYROLL_ENABLED','true');
     await seedOwnedApp(app.database.executor);const fixture=await seedPayrollFixture(app.database.executor,{breaks:true});
     page.on('pageerror',(e:Error)=>errors.push(e.message));page.setDefaultTimeout(20000);
     await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){external.push(url.origin);await route.abort();}else await route.continue();});
@@ -55,5 +56,5 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     expect(await q('SELECT count(*)::int n FROM payroll_period_manifests WHERE id=$1',[result.result.id])).toEqual([{n:1}]);
     checks.push('Real paid-time export with each break explicitly decided and real exact-plan manifest');
     expect(errors).toEqual([]);expect(external).toEqual([]);complete=true;
-  }finally{if(!complete)await page.screenshot({path:resolve(evidence,'failure.png'),fullPage:true}).catch(()=>{});await context.close();await browser.close();await app.close();await writeFile(resolve(evidence,'joined-report.json'),JSON.stringify({complete,checks,errors,external,source:app.sourceHashes,data:'Owned fictional PostgreSQL only; real save/export/manifest, no forced success'},null,2));}
+  }finally{vi.unstubAllEnvs();if(!complete)await page.screenshot({path:resolve(evidence,'failure.png'),fullPage:true}).catch(()=>{});await context.close();await browser.close();await app.close();await writeFile(resolve(evidence,'joined-report.json'),JSON.stringify({complete,checks,errors,external,source:app.sourceHashes,data:'Owned fictional PostgreSQL only; real save/export/manifest, no forced success'},null,2));}
 });
