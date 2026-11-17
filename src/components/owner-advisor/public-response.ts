@@ -10,6 +10,8 @@ import { parseCoveragePlans } from "./public-coverage-plans";
 import { ADVISOR_MAX_TOOL_CALLS } from "@/lib/owner-advisor/contracts";
 import { parseWeeklyModelComparison } from "@/lib/owner-advisor/weekly-client";
 import type { WeeklyModelComparison } from "@/lib/owner-advisor/weekly-contracts";
+import { isBusinessCitationHref } from "@/lib/owner-advisor/business/metrics";
+import { parseBusinessEvidence } from "./public-business-evidence";
 function requireValue(value: unknown): asserts value {
   if (!value) throw Error("Invalid advisor response");
 }
@@ -49,7 +51,9 @@ function sources(v: unknown, maximum = 8) {
             date(s.href.slice(-10))) ||
           // Rondo's own private destinations (Nov 16, 2026): one weekly plan's review, and one company-guidance version.
           // Exact shapes only: no other query field, no fragment, nothing external.
-          WEEKLY_REVIEW.test(s.href) || KNOWLEDGE_VERSION.test(s.href)),
+          WEEKLY_REVIEW.test(s.href) || KNOWLEDGE_VERSION.test(s.href) ||
+          // One published business source version (Codex business contract): the exact private inert form only.
+          isBusinessCitationHref(s.href)),
     );
   }
 }
@@ -147,6 +151,11 @@ export function parseAnswer(value: unknown): AnswerResponse {
   if (a.coveragePlans !== undefined) parseCoveragePlans(a.coveragePlans);
   // Weekly inspection custody is the server's alone: an answer that carries it is not a public answer.
   requireValue(!("weeklyInspectionRefs" in a));
+  // Business inspection custody is server-only too (settlement/replay fences); typed evidence must be the exact public form.
+  requireValue(!("businessInspectionRefs" in a) && !("businessInspectionRef" in a));
+  if (a.businessEvidence !== undefined) {
+    try { parseBusinessEvidence(a.businessEvidence); } catch { requireValue(false); }
+  }
   if (a.weeklyPlans !== undefined) {
     try { parseWeeklyModelComparison(a.weeklyPlans, ADVISOR_MAX_TOOL_CALLS); } catch { requireValue(false); }
   }
