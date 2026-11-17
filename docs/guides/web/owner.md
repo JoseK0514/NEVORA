@@ -206,7 +206,3 @@ agreements and change requests. Management-agreed restrictions are enforceable;
 availability preferences remain separate. Review the effective Monday and changed
 days before saving or deciding a request. A missing legacy agreement does not mean
 an explicit unrestricted agreement.
-
-Current combined-source scope and qualification gates are recorded in the
-[November 17 UI integration handoff](../../handoffs/2026-11-17-claude-ui-integration.md).
-Hosted availability and promotion remain separate.

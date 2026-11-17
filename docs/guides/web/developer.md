@@ -188,10 +188,10 @@ Session code applies `safeReturnTo` again. Referer, Host and forwarded-host valu
 establish neither a prior session nor a return destination; the hint grants no
 business authority. Language remains validated cookie/Accept-Language handling.
 
-Claude must still implement the indexed consumers and qualify their current
-mobile/keyboard/EN/ES/private-state behavior. Revisit user-guide instructions
-after those consumers change; source-qualified PDFs alone do not pass an unwired
-journey. Rondo knowledge/provider/tool work and actual-model quality evidence
+The [November 17 integration handoff](../../handoffs/2026-11-17-claude-ui-integration.md)
+records the delivered consumers, combined checks and remaining product choices.
+Revisit these guides when consumers change; source-qualified PDFs alone do not
+qualify an application journey. Rondo knowledge/provider/tool work and actual-model quality evidence
 remain with its existing owner. Hosted/provider activation and physical-device
 acceptance remain separate from local backend checks.
 
@@ -227,10 +227,6 @@ X-Nevora-Request-Id header; they are separate from operation and deletion IDs.
 Rebuild all six manuals from committed final inputs. GitHub qualification uses an
 immutable candidate tag and both workflows on that exact SHA before a normal
 fast-forward to Development; hosted configuration and acceptance remain separate.
-
-Current combined-source scope and qualification gates are recorded in the
-[November 17 UI integration handoff](../../handoffs/2026-11-17-claude-ui-integration.md).
-Hosted availability and promotion remain separate.
 
 The guided paid-time flow currently sends the neutral profile. The backend supports
 reviewed paid mappings and custom rounding, but selecting a saved paid profile in

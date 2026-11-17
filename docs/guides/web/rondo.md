@@ -177,7 +177,3 @@ observed is not proof that a late commit cannot occur; do not add a replacement
 operation. Reload recovery checks the original identity and never reconstructs a
 financial command from newly entered form values. Actual-model 50-case
 qualification, provider activation and hosted acceptance remain separate.
-
-Current combined-source scope and qualification gates are recorded in the
-[November 17 UI integration handoff](../../handoffs/2026-11-17-claude-ui-integration.md).
-Hosted availability and promotion remain separate.
