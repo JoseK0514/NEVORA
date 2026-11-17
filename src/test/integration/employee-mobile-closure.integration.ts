@@ -106,6 +106,8 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, light und
      const samples: number[]=[];
      for(const label of (await page.locator('main :is(h1,h2,label,.em-request-primary,.em-request-secondary,.em-creation-help,.em-planning-help,.em-hours-help):visible').all()).slice(0,6)){
       if(!await label.isEnabled()||!(await label.innerText()).trim())continue;
+      // Reduced motion still cross-fades a kept form (Review F3, NV-329): measure the settled page, not a frame of the fade.
+      await page.evaluate(()=>Promise.all(document.getAnimations().filter(a=>a.effect?.getTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>undefined))));
       const ratio=(await label.evaluate(measureRenderedContrast)).ratio;samples.push(ratio);expect(ratio,name+' contrast '+engine+theme+scale).toBeGreaterThanOrEqual(4.5);
      }
      if(await actions.count()){
