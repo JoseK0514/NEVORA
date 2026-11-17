@@ -40,14 +40,35 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
             await route.continue();
           }
         });
+        const responses=new Map<string,any>();
         let page = await context.newPage();
-        const observe=(view:any)=>{view.setDefaultTimeout(15000);view.on('pageerror',(error:Error)=>errors.push(engine+': '+error.message.slice(0,400)));};observe(page);
-        // Background/prefetch streams are not a readiness barrier for these page visits.
-        // Each destination is checked against its rendered read state; every pageerror stays fatal.
-        const visit = (path: string) => page.goto(origin + path);
+        const observe=(view:any)=>{
+          view.setDefaultTimeout(15000);view.on('pageerror',(error:Error)=>errors.push(engine+': '+error.message.slice(0,400)));
+          view.on('response',(response:any)=>{const url=new URL(response.url());if(url.origin===origin&&response.request().method()==='GET')responses.set(url.pathname,response);});
+        };observe(page);
         // Direct URL permission probes and the independent contact-lifetime check enter authenticated tabs.
-        // Keep every old tab observed until context closure; core route journeys above and below remain real navigation.
+        // Every tab remains observed; ordinary workflow steps use the app's real navigation controls.
         const enter = async(path:string)=>{page=await context.newPage();observe(page);return page.goto(origin+path);};
+        const visit = async(path:string)=>{
+          if(page.url()==='about:blank'||path==='/login')return page.goto(origin+path);
+          if(path.includes('#'))return enter(path);
+          const target=new URL(origin+path);
+          if(new URL(page.url()).pathname!==target.pathname){
+            const links=page.locator('a[href="'+path+'"]').filter({visible:true});
+            if(await links.count())await links.first().click();
+            else if(path==='/app/schedule/new'){
+              await page.getByRole('button',{name:'Search',exact:true}).click();
+              await page.getByRole('combobox',{name:'Search pages, people and places'}).fill('add shift');
+              await page.getByRole('option',{name:/Add shift/}).click();
+            }else throw Error('No real navigation control for '+path);
+            await page.waitForURL((url:URL)=>url.pathname===target.pathname,{waitUntil:'domcontentloaded'});
+          }
+          const destination:Record<string,string>={'/app':'.c-home #b-home-on','/app/timecards':'.c-tc','/app/reports':'.c-ins','/app/inbox':'.c-todo','/app/schedule/new':'form:has([name="employeeId"])'};
+          await page.locator(destination[path]).filter({visible:true}).first().waitFor();
+          // Bind the HTTP assertion to an actual document/RSC response, including a fresh accepted prefetch.
+          await expect.poll(()=>responses.get(target.pathname)?.status(),{timeout:15000}).toBe(200);
+          return responses.get(target.pathname);
+        };
         try {
           await visit('/login');
           await page.getByLabel('Employee ID', { exact: true }).fill(actor);
