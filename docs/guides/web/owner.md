@@ -195,7 +195,9 @@ Decide each recorded break explicitly; a recorded label does not establish paid
 or unpaid treatment. Review the planned whole-person batches, recover an uncertain
 batch using its original identity, and confirm the period only after every batch
 and the server manifest reconcile. A saved file is not a provider submission or
-payment. Payroll treatment and legal suitability remain employer review matters.
+payment. This guided export uses the exact neutral format. It does not offer
+a saved rounding profile; values requiring rounding are refused. Payroll treatment
+and legal suitability remain employer review matters.
 
 ## Agreed scheduling times
 
@@ -204,3 +206,7 @@ agreements and change requests. Management-agreed restrictions are enforceable;
 availability preferences remain separate. Review the effective Monday and changed
 days before saving or deciding a request. A missing legacy agreement does not mean
 an explicit unrestricted agreement.
+
+Current combined-source scope and qualification gates are recorded in the
+[November 17 UI integration handoff](../../handoffs/2026-11-17-claude-ui-integration.md).
+Hosted availability and promotion remain separate.

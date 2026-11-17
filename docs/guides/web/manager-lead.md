@@ -127,3 +127,7 @@ When explicitly granted payroll review access, **Import pay** opens the same
 file/matching/review workflow as the Owner guide. Time-export access and financial
 payroll access remain different permissions. Lead uses the Employee workflow and
 does not gain management authority from these screens.
+
+Current combined-source scope and qualification gates are recorded in the
+[November 17 UI integration handoff](../../handoffs/2026-11-17-claude-ui-integration.md).
+Hosted availability and promotion remain separate.

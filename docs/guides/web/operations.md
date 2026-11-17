@@ -243,3 +243,7 @@ receipt is not a guarantee against a late commit. Do not create a replacement to
 resolve uncertainty. Private data must hide after its observation expires or the
 user steps away, including while a refresh is pending. Share only a content-free
 support reference with support, never imported records, credentials or recovery codes.
+
+Current combined-source scope and qualification gates are recorded in the
+[November 17 UI integration handoff](../../handoffs/2026-11-17-claude-ui-integration.md).
+Hosted availability and promotion remain separate.

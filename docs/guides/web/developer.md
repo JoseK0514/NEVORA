@@ -227,3 +227,12 @@ X-Nevora-Request-Id header; they are separate from operation and deletion IDs.
 Rebuild all six manuals from committed final inputs. GitHub qualification uses an
 immutable candidate tag and both workflows on that exact SHA before a normal
 fast-forward to Development; hosted configuration and acceptance remain separate.
+
+Current combined-source scope and qualification gates are recorded in the
+[November 17 UI integration handoff](../../handoffs/2026-11-17-claude-ui-integration.md).
+Hosted availability and promotion remain separate.
+
+The guided paid-time flow currently sends the neutral profile. The backend supports
+reviewed paid mappings and custom rounding, but selecting a saved paid profile in
+that flow is not implemented. Keep broader SCRUM-197 open for that UI and product
+choice; do not replace a precision refusal with inferred rounding.

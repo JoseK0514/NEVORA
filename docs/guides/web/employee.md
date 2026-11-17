@@ -123,3 +123,7 @@ effect, future versions and your requests. **Ask to change it** submits a reques
 it does not approve or activate the requested change. The agreement and your
 availability preferences are separate. A Lead follows the same personal workflow.
 If a save is unconfirmed, check the original action before sending a new request.
+
+Current combined-source scope and qualification gates are recorded in the
+[November 17 UI integration handoff](../../handoffs/2026-11-17-claude-ui-integration.md).
+Hosted availability and promotion remain separate.
