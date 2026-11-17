@@ -16,6 +16,7 @@ vi.mock('react', async original => ({
     return hooks.refs[index] ??= {current: initial};
   },
   useEffect: (effect: () => void | (() => void)) => {hooks.effects.push(effect);},
+  useCallback: (fn: unknown) => fn,
   useId: () => 'reference-fixture',
   useSyncExternalStore: (_subscribe: unknown, snapshot: () => unknown, serverSnapshot?: () => unknown) => hooks.server&&serverSnapshot?serverSnapshot():snapshot(),
 }));
@@ -123,4 +124,78 @@ it('offline submission explains unavailability without starting a request', asyn
   submit();
   expect(requests).toEqual([]);
   expect(hooks.states).toContainEqual({state: 'unavailable', reason: 'offline'});
+});
+
+// Phase 6 follow-up: the answer card takes focus when it mounts. The access frame (ScopedReadFrame) commits this
+// component's content one step after it renders, so at the time the focus effect runs the card is not in the document.
+function answerCard() {
+  const walk = (value: unknown): Element | undefined => {
+    if (Array.isArray(value)) return value.map(walk).find(Boolean);
+    if (!isElement(value)) return;
+    return value.props.className === 'ck-result' ? value : walk(value.props.children);
+  };
+  const card = walk(render());
+  if (!card) throw Error('Answer card missing');
+  return card.props.ref as (node: unknown) => void;
+}
+const node = () => ({focus: vi.fn(), isConnected: true});
+const focusEffect = () => { render(); hooks.effects[1]?.(); };
+
+it('moves focus to the answer when its card mounts, although the focus effect ran before the card existed', async () => {
+  change(first); submit();
+  await vi.waitFor(() => expect(observed()).toBe(true));
+  // The effect runs first, with no card in the document: nothing to focus, and the request for focus is kept.
+  expect(() => focusEffect()).not.toThrow();
+  const card = node();
+  answerCard()(card);
+  expect(card.focus).toHaveBeenCalledTimes(1);
+  expect(card.focus).toHaveBeenCalledWith({preventScroll: true});
+});
+
+it('asks for focus once: a routine renewal for the same code keeps the card and does not move focus again', async () => {
+  change(first); submit();
+  await vi.waitFor(() => expect(observed()).toBe(true));
+  const card = node();
+  answerCard()(card);
+  // The renewal: the same code is read again and the answer stays on screen the whole time.
+  window.dispatchEvent(new Event('storage'));
+  expect(observed()).toBe(true);
+  await vi.waitFor(() => expect(requests).toEqual([first, first]));
+  expect(observed()).toBe(true);
+  focusEffect();
+  // Even a card that mounts again later (after an expiry) is not a reason to take focus.
+  const later = node();
+  answerCard()(later);
+  expect(card.focus).toHaveBeenCalledTimes(1);
+  expect(later.focus).not.toHaveBeenCalled();
+});
+
+it('does not steal focus when the person has moved to another control before the answer arrives', async () => {
+  change(first); submit();
+  await vi.waitFor(() => expect(observed()).toBe(true));
+  const elsewhere = {tagName: 'A'};
+  vi.stubGlobal('document', Object.assign(new EventTarget(), {visibilityState: 'visible', activeElement: elsewhere, body: {}}));
+  const card = node();
+  answerCard()(card);
+  expect(card.focus).not.toHaveBeenCalled();
+  // The request is spent: the card does not take focus later either.
+  vi.stubGlobal('document', Object.assign(new EventTarget(), {visibilityState: 'visible', activeElement: null, body: {}}));
+  answerCard()(card);
+  expect(card.focus).not.toHaveBeenCalled();
+});
+
+it('takes focus from the control that asked, and from the document body the disabled form leaves it on', async () => {
+  const button = {tagName: 'BUTTON'}, body = {};
+  vi.stubGlobal('document', Object.assign(new EventTarget(), {visibilityState: 'visible', activeElement: button, body}));
+  change(first); submit();
+  await vi.waitFor(() => expect(observed()).toBe(true));
+  const card = node();
+  answerCard()(card);
+  expect(card.focus).toHaveBeenCalledTimes(1);
+  // The same code checked again while its card is on screen: the effect moves focus, from the body this time.
+  vi.stubGlobal('document', Object.assign(new EventTarget(), {visibilityState: 'visible', activeElement: body, body}));
+  submit();
+  await vi.waitFor(() => expect(requests).toEqual([first, first]));
+  focusEffect();
+  expect(card.focus).toHaveBeenCalledTimes(2);
 });

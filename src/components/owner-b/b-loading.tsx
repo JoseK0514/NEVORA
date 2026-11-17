@@ -43,6 +43,8 @@ const MANAGEMENT: Entry[] = [
   ["/app/employees/import", form],
   // Scheduling restrictions (U02): back row, title and the person's name (band 224), then the week card and one more.
   [/^\/app\/employees\/[^/]+\/restrictions$/, { ...detail, title: "When they can be scheduled", cards: [{ head: true, rows: 7 }, { head: true, lines: 2 }] }],
+  // One person's Clocker PIN (Phase 6): back row, the title and the person's name (band 224), one form card.
+  [/^\/app\/employees\/[^/]+\/clocker-pin$/, { ...detail, title: "Clocker PIN", cards: [{ head: true, lines: 4 }] }],
   [/^\/app\/employees\/.+/, detail],
   // Team: Home's two columns from 1024px (People, then the Team tools rail), one column on tablets.
   ["/app/employees", { sub: true, strip: true, action: true, band: "strip", frame: "rail-desktop", cards: [{ rows: 8, avatar: true }, { rail: true, rows: 5 }] }],
@@ -55,9 +57,17 @@ const MANAGEMENT: Entry[] = [
   ["/app/exchange", { back: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ rows: 4, avatar: true }] }],
   ["/app/availability", { back: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ rows: 5, avatar: true }] }],
   ["/app/settings/payroll", { title: "Payroll settings", sub: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ head: true, lines: 4 }] }],
+  // The Owner's Clocker settings (Phase 6). Tablets: a title and one line (band 224), the tablets card with a lead slot per
+  // row. PINs: search and tabs on the band (296), people rows. Photos: one card of switch rows. Review: photo rows.
+  ["/app/settings/clocker/photos/review", { ...detail, title: "Photo review", cards: [{ head: true, rows: 4 }] }],
+  ["/app/settings/clocker/photos", { ...detail, title: "Punch photos", cards: [{ lines: 2, rows: 5 }] }],
+  ["/app/settings/clocker/pins", { title: "Clocker PINs", back: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ head: true, rows: 6, avatar: true }] }],
+  ["/app/settings/clocker", { ...detail, title: "Clocker tablets", cards: [{ head: true, rows: 2, avatar: true }] }],
   [/^\/app\/settings\/.+/, form],
   ["/app/settings", { title: "Settings", band: "short", frame: "pair", lift: false, cards: [{ rows: 3 }, { rows: 4 }] }],
   ["/app/account-recovery", detail],
+  // Clocker recovery (Phase 6): back row, title and one line (band 224); help requests, the code form, the Timecards row.
+  ["/app/clocker-recovery", { ...detail, title: "Clocker recovery", cards: [{ head: true, rows: 2, avatar: true }, { head: true, lines: 3 }, { rows: 1, avatar: true }] }],
   ["/app/more", { title: "More", back: true, band: "short", frame: "read", lift: false, cards: [{ rows: 5 }] }],
   ["/app/help", { title: "Help", back: true, band: "short", frame: "read", lift: false, cards: [{ rows: 6 }] }],
   ["/app/my-pay", { back: true, band: "short", frame: "read", lift: false, cards: [{ head: true, lines: 3 }, { head: true, rows: 2 }] }],

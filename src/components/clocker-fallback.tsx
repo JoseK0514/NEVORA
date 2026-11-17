@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { BrandWordmark } from './brand-mark';
 import { ClockerIcon } from './clocker-icon';
 import { ClockerLanguageToggle, ClockerPresentation, useClockerCopy, useClockerPresentation } from './clocker-language';
+import { useClockerOnline, useWhenBackOnline } from './clocker-online';
 import styles from './clocker.module.css';
 
 /* The kiosk's own error and loading screens (Nov 14 inspection, RA-4). Before these, a failure on a shared tablet fell to
@@ -32,7 +33,18 @@ export function ClockerErrorScreen({ retry }: { retry: () => void }) {
   return <ClockerPresentation><ErrorBody retry={retry} /></ClockerPresentation>;
 }
 function ErrorBody({ retry }: { retry: () => void }) {
-  const t = useClockerCopy();
+  const t = useClockerCopy(), online = useClockerOnline();
+  // Phase 6 (RA-6): a failure with no connection says so, and the screen tries again by itself when it returns.
+  useWhenBackOnline(true, retry);
+  if (!online) return <Frame>
+    <span className={styles.ring} data-tone="red"><ClockerIcon name="offline" size={28} /></span>
+    <h1 className={styles.title}>{t('No connection')}</h1>
+    <p role="alert" className={styles.smsg}>{t('This tablet is offline, so nothing can be recorded right now.')}</p>
+    <p className={styles.blockedHint}>{t('Tell a manager so your time gets recorded.')}</p>
+    <div className={styles.stack}><button type="button" className={styles.btn} data-kind="primary" onClick={retry}><ClockerIcon name="refresh" size={20} />{t('Check connection')}</button></div>
+    <p className={styles.clears}>{t('This screen comes back by itself when the connection returns.')}</p>
+    <div className={styles.meta} data-align="center"><ClockerLanguageToggle /></div>
+  </Frame>;
   return <Frame>
     <span className={styles.ring} data-tone="red"><ClockerIcon name="stop" size={28} /></span>
     <h1 className={styles.title}>{t('Something went wrong')}</h1>

@@ -1,5 +1,6 @@
-import { RecoveryLoading } from "../settings/wave-c-recovery-loading";
+import { RouteSkeleton } from "@/components/route-skeleton";
 
+/** Clocker recovery: the page's own placeholder (its frame is the "/app/clocker-recovery" entry in b-loading.tsx). */
 export default function Loading() {
-  return <RecoveryLoading title="Clocker recovery" summary="Check a saved Clocker action and help the employee finish recovery." label="Clocker recovery" cards={[2, 2]} />;
+  return <RouteSkeleton label="Clocker recovery" shape="cards" />;
 }

@@ -1,3 +1,4 @@
+import {clockerOwnerCopy} from '@/components/clocker-owner-copy';
 import {scopedObservation} from '@/lib/company-access/observation';
 import {readEmployeeClockerPin,type EmployeePinView} from '@/lib/clocker/pins.server';
 
@@ -161,7 +162,10 @@ export default async function EmployeeProfilePage({
       <CorpCard id="person-access" label="Access">
         <CorpRows label="Access">
           <li>{canManageCore ? <CorpRow href={`${base}?edit=1`} title="Role" value={roleLabel} valueTone="soft" label={`Role, ${roleLabel}. Change it in Edit employee`} chevron /> : <CorpRow title="Role" value={roleLabel} valueTone="soft" />}</li>
-          {pinShown ? <li><CorpRow href={`${base}/clocker-pin`} title="Clocker PIN" value={pinValue} valueTone="soft" chevron /></li> : null}
+          {/* Phase 6: without a PIN the row says so and what it means, and opens the form that sets one. */}
+          {pinShown ? <li>{pin && !pin.configured
+            ? <CorpRow href={`${base}/clocker-pin`} title={clockerOwnerCopy.en.personPinNone} detail={clockerOwnerCopy.en.personPinNoneSub} value={clockerOwnerCopy.en.setPin} valueTone="teal" label={clockerOwnerCopy.en.setPinFor(name)} chevron />
+            : <CorpRow href={`${base}/clocker-pin`} title={clockerOwnerCopy.en.personPinSet} value={pinValue} valueTone="soft" label={pin?.configured ? clockerOwnerCopy.en.resetPinFor(name) : undefined} chevron />}</li> : null}
           <li><CorpRow title="Account" value={accountValue} valueTone="soft" /></li>
           {/* Review B6 (NV-092): the employee ID lives here, not in the person's first line. */}
           <li><CorpRow title="Employee ID" value={employee.id} valueTone="soft" /></li>

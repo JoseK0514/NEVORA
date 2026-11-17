@@ -147,6 +147,25 @@ export const CLOCKER_COPY:Record<string,string>={
  "Checking setup…": "Revisando configuración…",
  "Checking this tablet…": "Revisando esta tableta…",
  "Check setup": "Revisar configuración",
+ // Tablet setup (Phase 6, JR-26): the first-time screen, the code that arrives in the Owner's link, and each answer.
+ "This tablet will be the time clock for {location}.": "Esta tableta será el registro de tiempo de {location}.",
+ "How to set it up": "Cómo configurarla",
+ "On another device, the Owner opens Settings → Clocker tablets.": "En otro dispositivo, el dueño abre Settings → Clocker tablets.",
+ "The Owner adds this tablet and gets its setup code.": "El dueño añade esta tableta y obtiene su código de configuración.",
+ "Point this tablet’s camera at the code, or type the code below.": "Apunta la cámara de esta tableta al código, o escribe el código abajo.",
+ "Setup code received": "Código de configuración recibido",
+ "Tap Connect tablet to finish. The code works one time.": "Toca Registrar tableta para terminar. El código sirve una sola vez.",
+ "Type a code instead": "Escribir un código",
+ "Connecting…": "Registrando…",
+ "Connecting this tablet…": "Registrando esta tableta…",
+ "That link doesn’t have a complete setup code. Type the code from Owner Settings.": "Ese enlace no trae un código de configuración completo. Escribe el código que aparece en Settings del dueño.",
+ "Enter the complete setup code from Owner Settings.": "Escribe el código de configuración completo que aparece en Settings del dueño.",
+ "This tablet is offline. Connect it to Wi-Fi, then try again.": "Esta tableta está sin conexión. Conéctala a la red Wi-Fi e inténtalo de nuevo.",
+ "Setup not confirmed": "Configuración sin confirmar",
+ "This tablet is connected to {location}": "Esta tableta quedó registrada en {location}",
+ "{device} is ready. Your team can clock in now.": "{device} está lista. Tu equipo ya puede marcar.",
+ "Open the time clock": "Abrir el registro de tiempo",
+ "The time clock opens in a few seconds.": "El registro de tiempo se abre en unos segundos.",
  "PIN verification could not be confirmed.": "No pudimos confirmar la verificación del PIN.",
  "We could not clear tablet verification. Check the connection before continuing.": "No pudimos borrar la verificación de la tableta. Revisa la conexión antes de continuar.",
  "Enter exactly four PIN digits.": "Ingresa exactamente los cuatro dígitos del PIN.",
@@ -300,7 +319,103 @@ export const CLOCKER_COPY:Record<string,string>={
  "This shift is open at another location. Use a registered tablet at that location.": "Este turno está abierto en otra ubicación. Usa una tableta registrada en esa ubicación.",
  "Recorded clock data is inconsistent. No time was changed. Ask your manager for assistance.": "Los datos registrados no coinciden. No se cambió ningún tiempo. Pide ayuda a tu gerente.",
  "The server clock does not agree with recorded time. No time was changed.": "La hora del servidor no coincide con el tiempo registrado. No se cambió ningún tiempo.",
- "The clock result could not be confirmed. Check the original command receipt before retrying.": "No pudimos confirmar el resultado de la marcación. Revisa la marcación original antes de reintentar."
+ "The clock result could not be confirmed. Check the original command receipt before retrying.": "No pudimos confirmar el resultado de la marcación. Revisa la marcación original antes de reintentar.",
+ // ---- Phase 6 (Nov 17, 2026), the kiosk's clock-in flow. The tablet setup strings are builder B's and are not here. ----
+ // Errors by stable code (item 1): each says what happened and what to do next. The kiosk's way out is a manager.
+ "We couldn’t check your PIN. Try again, or ask a manager to record your time.":"No pudimos verificar tu PIN. Inténtalo de nuevo o pide a un gerente que registre tu tiempo.",
+ "This tablet is no longer set up for this location.":"Esta tableta ya no está configurada para esta ubicación.",
+ "This tablet’s link is not valid. Ask a manager to set up this tablet again.":"El enlace de esta tableta no es válido. Pide a un gerente que vuelva a configurar esta tableta.",
+ "This tablet did not open the Clocker from its own link. Ask a manager to open it again.":"Esta tableta no abrió Clocker desde su propio enlace. Pide a un gerente que lo abra de nuevo.",
+ "Your PIN check ran out. Enter your Employee ID and PIN again.":"La verificación de tu PIN venció. Ingresa tu ID de empleado y tu PIN de nuevo.",
+ "Your PIN check ran out. Enter your PIN again. A punch that isn’t confirmed stays saved on this tablet.":"La verificación de tu PIN venció. Ingresa tu PIN de nuevo. Una marcación sin confirmar queda guardada en esta tableta.",
+ "We couldn’t confirm that. Ask a manager to record your time.":"No pudimos confirmarlo. Pide a un gerente que registre tu tiempo.",
+ "This tablet sent something NEVORA couldn’t read. Go back and try again, or ask a manager to record your time.":"Esta tableta envió algo que NEVORA no pudo leer. Vuelve e inténtalo de nuevo, o pide a un gerente que registre tu tiempo.",
+ "Your time changed since this screen loaded.":"Tu tiempo cambió desde que se cargó esta pantalla.",
+ "This punch doesn’t match what NEVORA has. Ask a manager to check it.":"Esta marcación no coincide con lo que tiene NEVORA. Pide a un gerente que la revise.",
+ "That can’t be recorded from where you are now.":"Eso no se puede registrar desde tu estado actual.",
+ "Your shift is open at another location. Use the tablet there, or ask a manager.":"Tu turno está abierto en otra ubicación. Usa la tableta de allá o pregunta a un gerente.",
+ "Your time records need a manager’s check. Nothing was changed. Ask a manager to record your time.":"Tus registros de tiempo necesitan que un gerente los revise. No se cambió nada. Pide a un gerente que registre tu tiempo.",
+ "The time on NEVORA’s side doesn’t match your records. Nothing was changed. Ask a manager to record your time.":"La hora de NEVORA no coincide con tus registros. No se cambió nada. Pide a un gerente que registre tu tiempo.",
+ "That break is no longer offered. Go back and choose another one.":"Ese descanso ya no está disponible. Vuelve y elige otro.",
+ "The schedule changed while this was being recorded.":"El horario cambió mientras esto se registraba.",
+ "New clock-ins are paused for this workplace. Your Owner can restore access. Ask a manager to record your time.":"Las nuevas entradas están pausadas en este negocio. El dueño puede restablecer el acceso. Pide a un gerente que registre tu tiempo.",
+ // Offline and unconfirmed (item 5, RA-6 and MK-8): what is and is not saved, what to do now, and that the tablet checks again.
+ "This tablet is offline, so nothing can be recorded right now.":"Esta tableta no tiene conexión, así que ahora no se puede registrar nada.",
+ "Tell a manager so your time gets recorded.":"Avísale a un gerente para que registre tu tiempo.",
+ "This screen comes back by itself when the connection returns.":"Esta pantalla vuelve sola cuando regrese la conexión.",
+ "We couldn’t reach NEVORA, so your PIN was not checked. Nothing was recorded.":"No pudimos conectar con NEVORA, así que tu PIN no se verificó. No se registró nada.",
+ "This tablet can’t reach NEVORA right now. Nothing can be recorded until it does.":"Esta tableta no puede conectar con NEVORA en este momento. No se puede registrar nada hasta que lo logre.",
+ "This tablet checks again by itself.":"Esta tableta vuelve a comprobar sola.",
+ "We couldn’t load your time, so nothing was recorded. Tell a manager if you need your time recorded now.":"No pudimos cargar tu tiempo, así que no se registró nada. Avísale a un gerente si necesitas que registre tu tiempo ahora.",
+ "Your clock in at {time} is not confirmed yet.":"Tu entrada ({time}) aún no está confirmada.",
+ "Your clock out at {time} is not confirmed yet.":"Tu salida ({time}) aún no está confirmada.",
+ "Your break start at {time} is not confirmed yet.":"El inicio de tu descanso ({time}) aún no está confirmado.",
+ "Your break end at {time} is not confirmed yet.":"El fin de tu descanso ({time}) aún no está confirmado.",
+ "Your clock in is not confirmed yet.":"Tu entrada aún no está confirmada.",
+ "Your clock out is not confirmed yet.":"Tu salida aún no está confirmada.",
+ "Your break start is not confirmed yet.":"El inicio de tu descanso aún no está confirmado.",
+ "Your break end is not confirmed yet.":"El fin de tu descanso aún no está confirmado.",
+ "This tablet kept the attempt and will not record it twice. Tell a manager now, then tap Check if it saved.":"Esta tableta guardó el intento y no lo registrará dos veces. Avísale a un gerente ahora y luego toca Revisar si se guardó.",
+ "No connection. This tablet checks again by itself when it returns.":"Sin conexión. Esta tableta vuelve a revisar sola cuando regrese.",
+ "No connection. Wait for it to return before you clock in or out, or tell a manager.":"Sin conexión. Espera a que regrese antes de marcar, o avísale a un gerente.",
+ "Your time is recorded. This tablet could not clear its saved copy; ask a manager to check the tablet.":"Tu tiempo está registrado. Esta tableta no pudo borrar su copia guardada; pide a un gerente que revise la tableta.",
+ // Saved for later (item 3): a count of other people's saved punches, never whose they are.
+ "1 more saved on this tablet.":"1 más guardada en esta tableta.",
+ "{count} more saved on this tablet.":"{count} más guardadas en esta tableta.",
+ "Each person can check their own after their PIN.":"Cada persona puede revisar la suya después de ingresar su PIN.",
+ // Plain words in place of system words (item 9).
+ "Check your last punch":"Revisa tu última marcación",
+ "Check if it saved":"Revisar si se guardó",
+ "Send it again":"Enviar de nuevo",
+ "We haven’t confirmed your last punch yet. Tap Send it again; it won’t record twice.":"Aún no hemos confirmado tu última marcación. Toca Enviar de nuevo; no se registrará dos veces.",
+ "Recording…":"Registrando…",
+ "Keep this screen open while it saves.":"Mantén esta pantalla abierta mientras se guarda.",
+ "Getting your latest time.":"Consultando tu tiempo más reciente.",
+ "We couldn’t load your time":"No pudimos cargar tu tiempo",
+ "This tablet can’t save right now":"Esta tableta no puede guardar ahora",
+ "Someone else’s punch is waiting":"La marcación de otra persona está pendiente",
+ "The person before you has a punch that isn’t confirmed on this tablet. Ask them to enter their PIN again. Nothing was recorded for you.":"La persona anterior tiene una marcación sin confirmar en esta tableta. Pídele que ingrese su PIN de nuevo. No se registró nada para ti.",
+ "See your current status":"Mira tu estado actual",
+ "See current status":"Ver estado actual",
+ "Your earlier punch was not recorded and can no longer be sent. See your current status, then choose what to do.":"Tu marcación anterior no se registró y ya no se puede enviar. Mira tu estado actual y luego elige qué hacer.",
+ "There are no breaks to choose here yet. Ask your Owner to add one.":"Aquí aún no hay descansos para elegir. Pide al dueño que añada uno.",
+ "Something of yours is saved on this tablet for checking. Ask your Owner to check it. You can leave this screen; it stays saved.":"Hay algo tuyo guardado en esta tableta para revisión. Pide al dueño que lo revise. Puedes salir de esta pantalla; queda guardado.",
+ "Ask Owner to check":"Pedir al dueño que revise",
+ "Asking…":"Enviando…",
+ "Request sent":"Solicitud enviada",
+ "Ask again":"Pedir de nuevo",
+ "Request reference":"Referencia de la solicitud",
+ "Sending the request.":"Enviando la solicitud.",
+ "Your Owner will see it under Clocker recovery.":"El dueño la verá en Recuperación de Clocker.",
+ "We couldn’t confirm the request. Ask again; it won’t send twice.":"No pudimos confirmar la solicitud. Pide de nuevo; no se enviará dos veces.",
+ "Your punch is not confirmed yet. Tap Check if it saved before doing anything else.":"Tu marcación aún no está confirmada. Toca Revisar si se guardó antes de hacer otra cosa.",
+ "Getting ready…":"Preparando…",
+ "Enter your PIN again to check a punch that isn’t confirmed.":"Ingresa tu PIN de nuevo para revisar una marcación sin confirmar.",
+ "Photo preview":"Vista previa de la foto",
+ "The camera is off. Use this photo to record your time.":"La cámara está apagada. Usa esta foto para registrar tu tiempo.",
+ "Your time is recorded. The photo is not confirmed yet; checking it will not record your time twice.":"Tu tiempo está registrado. La foto aún no está confirmada; revisarla no registrará tu tiempo dos veces.",
+ // Punches off for the workplace (item 7, JR-26): what it means and who can turn it on.
+ "Your PIN works on this tablet.":"Tu PIN funciona en esta tableta.",
+ "Clocking in is not turned on for this workplace yet.":"El registro de tiempo aún no está activado para este negocio.",
+ "Nothing was recorded this time.":"Esta vez no se registró nada.",
+ "Your Owner can ask NEVORA support to turn it on. Until then, ask a manager to record your time.":"El dueño puede pedir al soporte de NEVORA que lo active. Mientras tanto, pide a un gerente que registre tu tiempo.",
+ "Until then, ask a manager to record your time.":"Mientras tanto, pide a un gerente que registre tu tiempo.",
+ // The receipt (item 4): the first name on every line, and the next useful fact the reply carries.
+ "Enjoy your break, {first}.":"Disfruta tu descanso, {first}.",
+ "Welcome back, {first}.":"Qué bueno verte de vuelta, {first}.",
+ "Clocked in at":"Entrada",
+ "Break started at":"Inicio del descanso",
+ "Break length":"Duración del descanso",
+ "Break type":"Tipo de descanso",
+ "Suggested length":"Duración sugerida",
+ "{minutes} min":"{minutes} min",
+ // Accessibility (item 10): the entered count, never the digits.
+ "{count} of 4 digits entered":"{count} de 4 dígitos ingresados",
+ // The Clocker's own not-found page (item 8).
+ "This time clock link doesn’t work":"El enlace de este reloj de asistencia no funciona",
+ "Error 404":"Error 404",
+ "A manager or Owner can fix it":"Un gerente o el dueño puede arreglarlo",
+ "They set up this tablet again with the current link, in Settings under Clocker tablets.":"Vuelven a configurar esta tableta con el enlace actual, en Settings, en Clocker tablets."
 };
 /** True when the kiosk can say this phrase in the chosen language. */
 export function clockerHasText(locale:ClockerLocale,key:string):boolean{return locale==='en'||Object.hasOwn(CLOCKER_COPY,key);}
@@ -323,4 +438,73 @@ export function clockerErrorText(locale:ClockerLocale,failure:{code?:unknown;err
  const code=typeof failure.code==='string'&&Object.hasOwn(CLOCKER_TRANSPORT_ERRORS,failure.code)?failure.code as ClockerTransportErrorCode:null;
  const message=code?CLOCKER_TRANSPORT_ERRORS[code]:typeof failure.error==='string'?failure.error:'We could not confirm this information. Ask your Owner for help.';
  return clockerText(locale,message);
+}
+
+/* ---- Phase 6 (Nov 17, 2026): the kiosk's errors by stable code ----
+ * Every refusal the staff-facing kiosk shows (Employee ID and PIN, the clock screen, breaks, the saved-punch path) is
+ * picked by the server's stable code, never by the server's English sentence. Each function returns the kiosk's English
+ * phrase, which is also its key in CLOCKER_COPY, so the screen prints it with the tablet's language. A reply with no
+ * code (an older server, or a reply that carries only a status) falls back to what its status means; a code the kiosk
+ * has never seen gets the general sentence with the manager fallback, not the server's words. */
+const PIN_ERRORS:Record<string,string>={
+ PIN_INPUT_INVALID:'Enter exactly four PIN digits.',
+ DEVICE_REQUIRED:'This tablet is no longer set up for this location.',
+ PIN_DENIED:'Employee ID or PIN not recognized. Check both, or ask your manager.',
+ PIN_LIMITED:'Too many attempts. Wait a few minutes before trying again.',
+ PIN_UNAVAILABLE:'We couldn’t reach NEVORA, so your PIN was not checked. Nothing was recorded.',
+ ORIGIN_REJECTED:'This tablet did not open the Clocker from its own link. Ask a manager to open it again.',
+ LOCATION_INVALID:'This tablet’s link is not valid. Ask a manager to set up this tablet again.',
+ SETUP_UNAVAILABLE:'This tablet can’t reach NEVORA right now. Nothing can be recorded until it does.',
+};
+export const CLOCKER_PIN_ERROR_FALLBACK='We couldn’t check your PIN. Try again, or ask a manager to record your time.';
+/** The kiosk's phrase for a refused Employee ID and PIN request. */
+export function clockerPinErrorKey(failure:{code?:unknown;status?:number;state?:unknown}):string{
+ if(typeof failure.code==='string'&&Object.hasOwn(PIN_ERRORS,failure.code))return PIN_ERRORS[failure.code];
+ if(typeof failure.code==='string')return CLOCKER_PIN_ERROR_FALLBACK;
+ if(failure.state==='device_required')return PIN_ERRORS.DEVICE_REQUIRED;
+ if(failure.status===429)return PIN_ERRORS.PIN_LIMITED;
+ if(failure.status===401)return PIN_ERRORS.PIN_DENIED;
+ if(typeof failure.status==='number'&&failure.status>=500)return PIN_ERRORS.PIN_UNAVAILABLE;
+ return CLOCKER_PIN_ERROR_FALLBACK;
+}
+/* Every punch code the server can send (PunchErrorCode in src/lib/clocker/punch-command.ts; clocker-copy.test.tsx checks
+ * the list against that file). AUTH_REQUIRED and CONTEXT_CHANGED send the person back to their PIN; UNAVAILABLE means the
+ * result is not confirmed, which the clock screen says with the action and its time. */
+export const CLOCKER_PUNCH_ERRORS:Record<string,string>={
+ INVALID_INPUT:'This tablet sent something NEVORA couldn’t read. Go back and try again, or ask a manager to record your time.',
+ AUTH_REQUIRED:'Your PIN check ran out. Enter your PIN again. A punch that isn’t confirmed stays saved on this tablet.',
+ CONTEXT_CHANGED:'Your PIN check ran out. Enter your PIN again. A punch that isn’t confirmed stays saved on this tablet.',
+ STALE_STATE:'Your time changed since this screen loaded.',
+ COMMAND_REUSED:'This punch doesn’t match what NEVORA has. Ask a manager to check it.',
+ INVALID_TRANSITION:'That can’t be recorded from where you are now.',
+ OTHER_LOCATION:'Your shift is open at another location. Use the tablet there, or ask a manager.',
+ INTEGRITY:'Your time records need a manager’s check. Nothing was changed. Ask a manager to record your time.',
+ CLOCK_INVALID:'The time on NEVORA’s side doesn’t match your records. Nothing was changed. Ask a manager to record your time.',
+ BREAK_TYPE_CHANGED:'That break is no longer offered. Go back and choose another one.',
+ SCHEDULE_CHANGED:'The schedule changed while this was being recorded.',
+ SUBSCRIPTION_REQUIRED:'New clock-ins are paused for this workplace. Your Owner can restore access. Ask a manager to record your time.',
+};
+export const CLOCKER_PUNCH_ERROR_FALLBACK='We couldn’t confirm that. Ask a manager to record your time.';
+/** The kiosk's phrase for a refused punch request, or null when the result is simply not confirmed (UNAVAILABLE, or no
+ * code at all): the clock screen then says which action is not confirmed and that the tablet kept the attempt. */
+export function clockerPunchErrorKey(code:unknown):string|null{
+ if(typeof code!=='string'||code==='UNAVAILABLE')return null;
+ return Object.hasOwn(CLOCKER_PUNCH_ERRORS,code)?CLOCKER_PUNCH_ERRORS[code]:CLOCKER_PUNCH_ERROR_FALLBACK;
+}
+/** "2 more saved on this tablet.": other people's saved punches as a count only. Empty when there are none. */
+export function clockerOthersSavedText(locale:ClockerLocale,count:number):string{
+ if(!Number.isInteger(count)||count<1)return '';
+ return count===1?clockerText(locale,'1 more saved on this tablet.'):clockerText(locale,'{count} more saved on this tablet.',{count});
+}
+const UNCONFIRMED:Record<string,[string,string]>={
+ CLOCK_IN:['Your clock in at {time} is not confirmed yet.','Your clock in is not confirmed yet.'],
+ CLOCK_OUT:['Your clock out at {time} is not confirmed yet.','Your clock out is not confirmed yet.'],
+ START_BREAK:['Your break start at {time} is not confirmed yet.','Your break start is not confirmed yet.'],
+ END_BREAK:['Your break end at {time} is not confirmed yet.','Your break end is not confirmed yet.'],
+};
+/** "Your clock in at 9:02 AM is not confirmed yet." The time is when the person pressed the button on this tablet; a punch
+ * read back from the tablet's journal has no time, so the sentence leaves it out. Never "not saved": the result is unknown. */
+export function clockerUnconfirmedText(locale:ClockerLocale,action:string,time:string|null):string{
+ const pair=UNCONFIRMED[action]??UNCONFIRMED.CLOCK_IN;
+ return time?clockerText(locale,pair[0],{time}):clockerText(locale,pair[1]);
 }

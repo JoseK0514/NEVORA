@@ -1,5 +1,5 @@
-/* The Clocker's own 404 (Nov 10 review, NV-174): the hint is the card's lead; sign-in is a text link under it. */
+/* The Clocker's own 404 (Phase 6, Nov 17, 2026): the public 404's band and 560px card (src/app/not-found.css). The hint
+ * leads the card; one line says what staff do meanwhile; the one action reloads the link. No sign-in link. */
 .lead.lead { margin: 0; font-size: 1rem; line-height: 1.5rem; }
-.other { margin: 16px 0 0; font-size: .9375rem; line-height: 1.375rem; color: #3F464B; }
-.signIn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; border-radius: 999px; color: #0B6E69; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
-.signIn:focus-visible { outline: 3px solid #0B6E69; outline-offset: 2px; }
+.meanwhile.meanwhile { margin: var(--b-space-16) 0 0; }
+.retry.retry { border: 0; border-radius: var(--b-radius-pill); font-family: inherit; cursor: pointer; min-height: 56px; }
