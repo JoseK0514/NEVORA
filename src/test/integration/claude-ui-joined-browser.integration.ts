@@ -26,7 +26,7 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     const roster=await q<{id:string}>('SELECT id FROM employees ORDER BY id');
     const csv='employeeId,gross,employeeDeductions,employerContributions,net\r\n'+roster.map(p=>p.id+','+(p.id===fixture.ids.a?'1000,123.40,70,876.60':'0,0,0,0')).join('\r\n')+'\r\n';
     await visit('/app/payroll/import?run='+fixture.runId);await page.getByRole('heading',{name:'Add the file from your payroll system',exact:true}).waitFor();
-    await page.getByLabel('Pay file (CSV or JSON)',{exact:true}).setInputFiles({name:'fictional-payroll.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});
+    const fileChooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'Choose a file',exact:true}).click();await (await fileChooser).setFiles({name:'fictional-payroll.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});
     await page.getByLabel('Payroll system',{exact:true}).fill('Fictional accountant');await page.getByLabel('Report or reference',{exact:true}).fill('JOINED-'+engine);
     await page.getByRole('button',{name:'Match people',exact:true}).click();await page.getByRole('button',{name:'Review amounts',exact:true}).click();
     await page.getByRole('button',{name:'Check and save',exact:true}).click();
