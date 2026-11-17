@@ -69,9 +69,9 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
               expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2), engine + ' ' + actor + ' ' + path + ' ' + width).toBe(true);
             }
             if (path === '/app') {
-              await page.locator('#home-timeline').waitFor();
-              expect(await page.locator('#home-timeline').textContent()).toContain('Fictional Owner');
-              checks.push(engine + ': ' + actor + ' unscheduled-only Home timeline');
+              await page.locator('#b-home-on').waitFor();
+              expect(await page.locator('#b-home-on').textContent()).toContain('Fictional Owner');
+              checks.push(engine + ': ' + actor + ' unscheduled real clock-in on Home');
             }
             if (path === '/app/timecards') {
               const folded = page.getByRole('button', { name: /people with no time yet/ });
