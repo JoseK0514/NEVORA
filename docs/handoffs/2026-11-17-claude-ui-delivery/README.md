@@ -158,6 +158,17 @@ None blocks integration. Each report has its full list.
 8. **"Waiting" chip** on every waiting Time off row reverses an earlier decision (NV-280).
 9. **Spanish:** all of it is a draft. "Tú" or "usted" in the signed-in app; "Dueño" or "Owner".
 
+## Since this delivery
+
+- Everything above is pushed. Phase 5 (signed-out pages and account access) is `7cc7547a`:
+  [phase-5](../../product/review-2026-11-14/fixes/phase-5/README.md).
+- Phase 6 (Clocker: the kiosk flow, the tablet setup hand-off and the Owner's Clocker settings) is
+  `3f9687dc1742aab774ac9c6ee1bfbaed4e3cadf4`, built on `5b5fe4bd`:
+  [phase-6](../../product/review-2026-11-14/fixes/phase-6/README.md). It lists its own checks, Codex items (the setup
+  code hand-off for review, punch replies with no code, scripts that press the old kiosk names) and decisions for Jose.
+- The Support reference is switched on (`5cc1c838` and before, by the backend session), so the U11 note above is
+  out of date.
+
 ## Release sequence
 
 Unchanged. Development is the working and acceptance release. Codex integrates these commits with the backend on
