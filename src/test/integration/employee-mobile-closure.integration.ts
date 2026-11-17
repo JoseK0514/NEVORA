@@ -97,6 +97,10 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, light und
      await page.evaluate(()=>new Promise<void>(ready=>requestAnimationFrame(()=>requestAnimationFrame(()=>ready()))));
      const metrics=await page.evaluate(()=>({coarse:matchMedia('(pointer:coarse)').matches,overflow:Math.max(0,document.documentElement.scrollWidth-innerWidth),teal:getComputedStyle(document.querySelector('#employee-mobile')!).getPropertyValue('--b-teal').trim().toLowerCase(),canvas:getComputedStyle(document.querySelector('#employee-mobile')!).getPropertyValue('--b-canvas').trim().toLowerCase(),colorScheme:getComputedStyle(document.querySelector('#employee-mobile')!).colorScheme}));
      expect(metrics.overflow,name+engine+JSON.stringify(size)+theme+scale).toBeLessThanOrEqual(1);expect(metrics.teal,name+' light teal '+theme).toBe('#0b6e69');expect(metrics.canvas,name+' current Direction B light canvas '+theme).toBe('#f2f5f4');expect(metrics.colorScheme,name+' light color-scheme '+theme).toBe('light');
+     // A resize can swap a presentation mid-render (Schedule's Confirm replaces its preparing twin): judge the settled page.
+     // Finite animations end and two frames pass; nothing about the 44px rule changes, and a target still small then fails.
+     await page.evaluate(()=>Promise.all(document.getAnimations().filter(a=>a.effect?.getTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>undefined))));
+     await page.evaluate(()=>new Promise<void>(ready=>requestAnimationFrame(()=>requestAnimationFrame(()=>ready()))));
      const actions=page.locator('main :is(button,a,input,select,textarea,summary):visible');
      const small=await actions.evaluateAll((elements:HTMLElement[])=>elements.flatMap(el=>{
       if(el.closest('nextjs-portal')||(el.matches('a')&&getComputedStyle(el).display==='inline'&&el.closest('p,li')))return [];
