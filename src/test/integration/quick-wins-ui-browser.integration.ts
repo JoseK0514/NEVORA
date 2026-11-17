@@ -40,12 +40,14 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
             await route.continue();
           }
         });
-        const page = await context.newPage();
-        page.setDefaultTimeout(15000);
-        page.on('pageerror', (error: Error) => errors.push(engine + ': ' + error.message.slice(0, 400)));
+        let page = await context.newPage();
+        const observe=(view:any)=>{view.setDefaultTimeout(15000);view.on('pageerror',(error:Error)=>errors.push(engine+': '+error.message.slice(0,400)));};observe(page);
         // Background/prefetch streams are not a readiness barrier for these page visits.
         // Each destination is checked against its rendered read state; every pageerror stays fatal.
         const visit = (path: string) => page.goto(origin + path);
+        // Direct URL permission probes and the independent contact-lifetime check enter authenticated tabs.
+        // Keep every old tab observed until context closure; core route journeys above and below remain real navigation.
+        const enter = async(path:string)=>{page=await context.newPage();observe(page);return page.goto(origin+path);};
         try {
           await visit('/login');
           await page.getByLabel('Employee ID', { exact: true }).fill(actor);
@@ -110,7 +112,7 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
           await page.keyboard.press('Escape');
           checks.push(engine + ': ' + actor + ' search verb synonyms and keyboard dismissal');
           for (const path of ['/app/settings', '/app/settings/branding', '/app/settings/positions']) {
-            await visit(path);
+            await enter(path);
             if (actor === 'QW-MANAGER') {
               await page.getByText('Settings are for Owners', { exact: true }).waitFor();
               expect(await page.getByRole('link',{name:'Open Scheduling rules',exact:true}).getAttribute('href')).toBe('/app/schedule/settings');
@@ -122,7 +124,7 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
           if (engine === 'chromium' && actor === 'QAOWNER') {
             // Current Things to do opens full reviews; contacts live on the person's Team page.
             // Exercise that real scoped read, including retirement while its actual RSC renewal is held.
-            await visit('/app/employees/QW-MANAGER');
+            await enter('/app/employees/QW-MANAGER');
             const call=page.getByRole('link',{name:'Call Fictional Manager',exact:true}),message=page.getByRole('link',{name:'Message Fictional Manager',exact:true});
             await call.waitFor();expect(await call.getAttribute('href')).toBe('tel:2025550141');expect(await message.getAttribute('href')).toBe('sms:2025550141');
             holdRefresh=true;
