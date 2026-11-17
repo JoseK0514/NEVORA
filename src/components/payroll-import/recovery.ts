@@ -83,7 +83,8 @@ export type PayrollAnswer =
 
 /** POST /api/payroll/runs. `status` 0 means no answer arrived. Anything not named by the contract stays unknown. */
 export function classifyPayrollAnswer(status: number, body: unknown, key: string): PayrollAnswer {
-  if (status === 401 || status === 403) return { kind: "denied", signedOut: status === 401 };
+  // A commit can precede a denied reconciliation read; retain the original write identity.
+  if (status === 401 || status === 403) return { kind: "unknown" };
   if (status >= 200 && status < 300) {
     const receipt = record(body) && record(body.receipt) ? body.receipt : null;
     return receipt && receipt.operationId === key && typeof receipt.action === "string" ? { kind: "saved", receipt: receipt as PayrollReceiptLike } : { kind: "unknown" };
