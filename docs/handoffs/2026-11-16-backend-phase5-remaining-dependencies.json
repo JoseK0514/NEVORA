@@ -33,7 +33,7 @@
     {
       "id": "existing-browser-gates",
       "owner": "Claude and independent QA/UI",
-      "remaining": "R4 is published to Development; its actual-branch Manager oracle failure is preserved. R5 corrected that test, then its tag CI failed a native diagnostic fetch during the final Attention hard return and R5 was never published. R6 uses the existing week link with exact week/day/state/document proofs, fourteen local responsive cells and eight browser controls, retaining strict runtime/WCAG/deadline gates. Only the same four UI exceptions were approved. R6 final exact-source CI and fresh actual Development verification remain required. Independent UI disposition, future-consumer journeys and physical-device gates remain with their owners; no independent finding is self-closed."
+      "remaining": "R4 is published to Development; its original Manager oracle failure is preserved. R5 native diagnostic and R6 missing document-title accessibility failures remain recorded; neither follow-up was published. R7 restores original network-idle readiness and requires the declared Schedule document title in the original deadline, with eighteen real-browser controls and fourteen responsive cells. The full single axe scan, zero-error gate and same four approved UI exceptions are retained. R7 exact-source CI and fresh actual Development verification remain required. Independent UI disposition, future-consumer journeys and physical-device gates remain with their owners; no independent finding is self-closed."
     },
     {
       "id": "physical-devices",
