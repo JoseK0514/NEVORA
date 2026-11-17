@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "date": "2026-11-16",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "635248ab2b5785388f8772c319bce2fbaa09dbdd",
+  "sourceSha": "0b22b7b936e6f1c2517eea034213f0aab529c5e5",
   "applicationHash": "819377bd10a30d418e9a10ee81fe52eee774db66a9b3c66b0834370e41140d67",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
@@ -167,16 +167,16 @@
         },
         {
           "path": "docs/handoffs/2026-11-16-rondo-development-integration.md",
-          "sha256": "839126b143e15be7b42efaf0749600eadef1204f0bde6d949fee95b049600017"
+          "sha256": "615b9d33a4d3215f6bfa03816f83b71939691913d22a5451000a44e5990ae1ba"
         },
         {
           "path": "docs/qa/rondo-development-integration-20261116/index.json",
-          "sha256": "b0e173d7300a11ce7b2492e428ccf3fd5ddfff6ae8430e06d471baf23191e60d"
+          "sha256": "4b1fe9aee6a41427213e4e23d599c682f1ea7c78f492826ba01957a1cdccb11f"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "2defe42baa38d4014b0c18506bebd27f23b4b83cd73bc670d169a4a471050f7c",
+        "sha256": "0b3cae8fb625a6cfcc874eca2b534d23dc4ba94b1e0aa2ca50d4f43c2479a512",
         "pageCount": 4
       }
     },
@@ -283,7 +283,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "e04b6fcc1cee7838773f15f0f756f21ae3cfa630de84a14f48fab98fce263af5",
+        "sha256": "b625580d832fecfeec842bf03df0691878117fd08e6a054c62ba9a1bebcada23",
         "pageCount": 3
       }
     },
@@ -378,7 +378,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "2adcd8924dc793564a1379695381d01fceb5a50634aaac1b22184c8026d00deb",
+        "sha256": "7562fb5dde17d2c5a064ae493669a03fde5395d1f60031f5a5c681459b3fe713",
         "pageCount": 3
       }
     },
@@ -512,16 +512,16 @@
         },
         {
           "path": "docs/handoffs/2026-11-16-rondo-development-integration.md",
-          "sha256": "839126b143e15be7b42efaf0749600eadef1204f0bde6d949fee95b049600017"
+          "sha256": "615b9d33a4d3215f6bfa03816f83b71939691913d22a5451000a44e5990ae1ba"
         },
         {
           "path": "docs/qa/rondo-development-integration-20261116/index.json",
-          "sha256": "b0e173d7300a11ce7b2492e428ccf3fd5ddfff6ae8430e06d471baf23191e60d"
+          "sha256": "4b1fe9aee6a41427213e4e23d599c682f1ea7c78f492826ba01957a1cdccb11f"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "6544a97e1be904d4206143b5052149298a0fc382a355a16b44bd6d3ee08c3f36",
+        "sha256": "323e58aa4c88fceb542553c5f682af0d93328b1c46d27da48d12f3b8ff03e683",
         "pageCount": 4
       }
     },
@@ -719,16 +719,16 @@
         },
         {
           "path": "docs/handoffs/2026-11-16-rondo-development-integration.md",
-          "sha256": "839126b143e15be7b42efaf0749600eadef1204f0bde6d949fee95b049600017"
+          "sha256": "615b9d33a4d3215f6bfa03816f83b71939691913d22a5451000a44e5990ae1ba"
         },
         {
           "path": "docs/qa/rondo-development-integration-20261116/index.json",
-          "sha256": "b0e173d7300a11ce7b2492e428ccf3fd5ddfff6ae8430e06d471baf23191e60d"
+          "sha256": "4b1fe9aee6a41427213e4e23d599c682f1ea7c78f492826ba01957a1cdccb11f"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "916786dcd48c073cb4e5252fe8b74fa497598ec2c7a5951d1e8ee9a5f0aa10b6",
+        "sha256": "08b69e080d15cf9129232e1283b9518aae30e57a75d2d3a8d4d5def257639d9f",
         "pageCount": 5
       }
     },
@@ -882,16 +882,16 @@
         },
         {
           "path": "docs/handoffs/2026-11-16-rondo-development-integration.md",
-          "sha256": "839126b143e15be7b42efaf0749600eadef1204f0bde6d949fee95b049600017"
+          "sha256": "615b9d33a4d3215f6bfa03816f83b71939691913d22a5451000a44e5990ae1ba"
         },
         {
           "path": "docs/qa/rondo-development-integration-20261116/index.json",
-          "sha256": "b0e173d7300a11ce7b2492e428ccf3fd5ddfff6ae8430e06d471baf23191e60d"
+          "sha256": "4b1fe9aee6a41427213e4e23d599c682f1ea7c78f492826ba01957a1cdccb11f"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "56bc4db016cf7833b9475e43c1f692866b1f5eae181e288bcdadea8e16fbea0a",
+        "sha256": "f0628dc4f4a0494ff7a44c5f7c16b7cecdb24ce4e88297d483449e813f9ca953",
         "pageCount": 5
       }
     }
