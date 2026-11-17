@@ -120,3 +120,6 @@ export function parseBusinessEvidence(v: unknown): BusinessModelEvidence[] {
   for (const e of v) evidence(e);
   return v as BusinessModelEvidence[];
 }
+/** The same exact-field checks, for a staged version's own totals on the business records page (no rule changes). */
+export const checkBusinessFinanceMetrics: (v: unknown) => void = finance;
+export const checkBusinessSalesMetrics: (v: unknown) => void = sales;
