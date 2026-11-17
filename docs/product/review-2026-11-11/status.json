@@ -929,10 +929,10 @@
   {
     "id": "PB-014",
     "severity": "Medium",
-    "status": "partly",
-    "remainder": "Two sentences outside the signed-out pages still use another word: src/app/app/help/page.tsx:132 and src/components/mobile-home-overview.tsx:57. Email wording is the server's.",
+    "status": "fixed",
+    "remainder": "",
     "by": "Claude",
-    "note": "Phase 5 (Nov 17, 2026). Built and checked in a browser in English and Spanish at 320, 390, 900 and 1440. \"Reset\" is the one word on forgot, reset, activation, the phone pages and the helper's page.",
+    "note": "Phase 5 (Nov 17, 2026). Built and checked in a browser in English and Spanish at 320, 390, 900 and 1440. \"Reset\" is the one word on forgot, reset, activation, the phone pages and the helper's page. Nov 17 follow-up: Help says a one-time reset link and the phone shortcut reads Help someone sign in. Email wording is the server's.",
     "inCodexHandoff": false
   },
   {
