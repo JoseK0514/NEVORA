@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "ad814bada6839a8d87a61202f3661b1313c01ab4",
-      "disposition": "superseded",
-      "reason": "November 17 sole-owner integration: the exact 601-path delivery from ad814bada6839a8d87a61202f3661b1313c01ab4 was imported linearly on Development22107a242 in346ca16b8b691b549d2d00f2713ad3af4226a1f0; source tree equality was checked before integration metadata. The collaboration history is preserved on its branch and is not an ancestor of this candidate. Its prior held UI prefixes are superseded by this checked delivery and documented integration repairs. Path/blob/SHA256 custody: docs/handoffs/2026-11-17-claude-ui-integration-source.json. Qualification and normal fast-forward publication require the immutable candidate tag and exact-source gates recorded in docs/handoffs/2026-11-17-claude-ui-integration.md. No product-policy approval, independent finding closure or main/production/provider activation is implied."
+      "sha": "e9d2ba4edf9800ddf8fb2e1036ffa3f29fb0fd7c",
+      "disposition": "held",
+      "reason": "The handed-over ad814bada6839a8d87a61202f3661b1313c01ab4 tree is already preserved by the checked 601-path linear import. The newer 7cc7547ac918ee808b590a3c1d8f6706c16c17a3 and e9d2ba4edf9800ddf8fb2e1036ffa3f29fb0fd7c Phase5 application/documentation delivery arrived during this bounded integration and remains held for separate source/contract/browser review. No whole-branch ancestry or acceptance is claimed."
     },
     {
       "branch": "claude/employee-mobile-phase2-20261027",
@@ -548,12 +548,21 @@
     "baseDevelopment": "22107a24272f2347bbb59a3da1f54319632772a5",
     "deliveredSource": "ad814bada6839a8d87a61202f3661b1313c01ab4",
     "manifest": "docs/handoffs/2026-11-17-claude-ui-integration-source.json",
-    "status": "Checked linear import and documented integration repairs; qualification is determined by the immutable tag and exact-source receipts",
+    "status": "Checked import and bounded contract repairs; candidate 01 held, browser expectations corrected; required full-dependency high audit blocks publication pending genuine remediation",
     "owner": "This sole-owner Codex integration chat",
     "productionChanged": false,
     "handoff": "docs/handoffs/2026-11-17-claude-ui-integration.md",
     "applicationInputCommit": "0ed96f08fd559990226a256c87d7b2c5d307b490",
-    "qualificationRef": "candidate/backend-completion/20261117-claude-ui-integration-01",
-    "broaderPayrollUi": "Neutral guided flow; saved rounded paid-profile selection remains open in SCRUM-197"
+    "qualificationRef": "candidate/backend-completion/20261117-claude-ui-integration-02",
+    "broaderPayrollUi": "Neutral guided flow; saved rounded paid-profile selection remains open in SCRUM-197",
+    "qualificationHarnessCommit": "3c56523c67bce91ddcb5ed0537cd9ebf17d26e43",
+    "publicationStatus": "HOLD",
+    "dependencyBlocker": "GHSA-fc5q-39xc-vjpf",
+    "newerHeldDelivery": {
+      "source": "e9d2ba4edf9800ddf8fb2e1036ffa3f29fb0fd7c",
+      "applicationCommit": "7cc7547ac918ee808b590a3c1d8f6706c16c17a3",
+      "scope": "Phase5 signed-out/account-access presentation and its documentation; outside the exact handed-over ad814 delivery",
+      "accepted": false
+    }
   }
 }

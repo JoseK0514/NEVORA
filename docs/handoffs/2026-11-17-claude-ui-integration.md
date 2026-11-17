@@ -2,11 +2,25 @@
 
 Development is Jose's current operating and acceptance line, held to production standards. Codex owns backend/integration and hosting; Claude owns UI. This task integrates Claude's delivered design and contracts with the existing Development backend. Main and production require separate explicit authorization. All local data and sessions used for this acceptance are owned fictional fixtures; delivery and paid model/provider activation remain off.
 
+## Qualification hold
+
+Candidate 01, `481fc6deefa1207a44c1b66c75ce81d8ece0fe08`, was not published to Development. Its immutable tag and original CI failures remain retained. Mobile Access, the full unit suite, source-bound build, SQL, Management Review, Rondo lifecycle and Step4 passed on that source; the candidate as a whole failed.
+
+Five retained browser expectations required correction: Home must qualify a partial count as At least N; Attendance must retain the more precise no cover requests were seen wording; Employee and Lead share the delivered Calendar and alerts card; Attention must observe the actual visible unpublished-week footer; and the Inbox verifier must retain separate independent-review/unknown subject rows without adding them to actionable counts. Nine regression cases and the retained RED/GREEN receipts protect that typed-fact boundary. Unchanged local RED reproductions and/or exact-source CI artifacts precede these strict corrections. Navigation and Attention each pass all 14 engine/width cells, Home passes all 14 across both engines, and Attendance passes both engines. Their check membership, private-state assertions, fatal errors and deadlines remain enforced. Qualification harness corrections are committed through `3c56523c67bce91ddcb5ed0537cd9ebf17d26e43`; application UI inputs remain those identified below.
+
+The current hard blocker is the required full-dependency high audit: [GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf) affects picomatch through the latest published 4.0.7, with no patched version listed on November 17. Local reproduction and CI report 12 high dependency-chain findings and 1 moderate Next package finding. The production-only audit passed its high gate. No audit suppression, severity change, dependency downgrade, approval exception or branch-protection bypass is applied. The [audit hold record](2026-11-17-claude-ui-integration-audit-hold.json) binds the observations and original CI run.
+
+Candidate 02 is the intended immutable source checkpoint for corrected qualification; its actual results are recorded externally. A tag is not a passing qualification. Development stays at `22107a24272f2347bbb59a3da1f54319632772a5` until both workflows and every required context pass on the exact final source. Jira SCRUM-197/SCRUM-209 updates remain held until that combined qualification. Main and production remain unchanged. Resolve the genuine dependency blocker and requalify changed source; do not force an npm downgrade or invent an advisory exception.
+
 ## Source custody
 
 Base Development: 22107a24272f2347bbb59a3da1f54319632772a5. Claude delivery: ad814bada6839a8d87a61202f3661b1313c01ab4. Main baseline: 46d6dc76922bb273379baccd329e0af636d1dcb6.
 
-The exact 601-path delivered tree was imported linearly in 346ca16b8b691b549d2d00f2713ad3af4226a1f0; tree equality was verified before integration metadata. The path/blob/SHA256 manifest is 2026-11-17-claude-ui-integration-source.json. The source inventory classifies the collaboration line as superseded by the checked import, not as an ancestry merge. This chat remained sole integrator in the handed-over detached worktree and did not touch the occupied checkout's untracked preview file.
+The exact 601-path delivered tree was imported linearly in 346ca16b8b691b549d2d00f2713ad3af4226a1f0; tree equality was verified before integration metadata. The path/blob/SHA256 manifest is 2026-11-17-claude-ui-integration-source.json. The inventory records the checked ad814 import and holds the newer Phase5 delta; it makes no whole-branch ancestry claim. This chat remained sole integrator in the handed-over detached worktree and did not touch the occupied checkout's untracked preview file.
+
+## Newer held delivery
+
+A fresh remote reconciliation found Phase5 application commit `7cc7547ac918ee808b590a3c1d8f6706c16c17a3` and documentation head `e9d2ba4edf9800ddf8fb2e1036ffa3f29fb0fd7c`, both after the handed-over ad814 source. They change signed-out/account-access presentation and include new proposals and unrun browser selectors. They are recorded as held, preserved on Claude's branch, and excluded from this bounded import. Their intake claims and decisions are not combined acceptance. The source inventory records the new exact head without weakening its checker.
 
 ## Integrated scope
 
@@ -52,7 +66,7 @@ Claude can resume UI work from the exact published Development release once its 
 
 ## Recorded verification and final release identity
 
-Application/test input commit before these documentation updates: `0ed96f08fd559990226a256c87d7b2c5d307b490`. The exact release commit is resolved from the unique immutable tag `candidate/backend-completion/20261117-claude-ui-integration-01`; it also includes these handoffs and the six generated guide distributions. No tag may be moved or reused for changed source.
+Application/test input commit before these documentation updates: `0ed96f08fd559990226a256c87d7b2c5d307b490`. The exact release commit is resolved from the unique immutable tag `candidate/backend-completion/20261117-claude-ui-integration-02`; it also includes these handoffs and the six generated guide distributions. No tag may be moved or reused for changed source.
 
 | Verification already recorded | Result and retained receipt |
 | --- | --- |
@@ -73,12 +87,12 @@ The machine index `2026-11-17-claude-ui-integration-evidence.json` records exact
 
 Final source-bound gates and publication receipts are kept in the external evidence directory above:
 
-- `unit-final.json`: the full default unit suite after all six manuals are rebuilt.
-- `all-ui-final.json`: the full combined browser suite, run without another owned application/large SQL suite in parallel.
-- `step4-final/acceptance.json`: fresh exact-SHA owned onboarding/recovery acceptance, closed resources and unchanged source.
-- `build-final-source.json`: clean exact-SHA production-build receipt; this is a build, not hosted deployment.
-- `changed-secrets-final.json` and its scanner log: redacted change-range scan; the moderate dependency assessment is in the contract review.
-- `candidate-01-qualification.json`: both candidate workflows and all ten protected contexts on the exact tag commit.
+- `unit-final-02.json`: the full default unit suite after all six manuals are rebuilt.
+- `all-ui-final-02.json`: the full combined browser suite, run without another owned application/large SQL suite in parallel.
+- `step4-final-02/acceptance.json`: fresh exact-SHA owned onboarding/recovery acceptance, closed resources and unchanged source.
+- `build-final-source-02.json`: clean exact-SHA production-build receipt; this is a build, not hosted deployment.
+- `changed-secrets-final-02.json` and its scanner log: redacted change-range scan; the moderate dependency assessment is in the contract review.
+- `candidate-02-qualification.json`: both candidate workflows and all ten protected contexts on the exact tag commit.
 - `development-publication.json`: normal fast-forward publication, fresh remote refs and both actual Development branch workflows on that same commit.
 
 Only successful exact-source gates qualify the release. The final source must remain clean throughout source-bound checks. A source change after freeze requires another immutable candidate and qualification; neither a push nor a prior source's green run is acceptance. Hosted configuration, database/environment acceptance, native/Face ID hardware verification, provider activation, paid-model qualification and independent findings remain separate.

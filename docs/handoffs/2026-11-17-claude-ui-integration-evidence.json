@@ -4,7 +4,7 @@
   "deliveredSource": "ad814bada6839a8d87a61202f3661b1313c01ab4",
   "linearImport": "346ca16b8b691b549d2d00f2713ad3af4226a1f0",
   "applicationInputCommit": "0ed96f08fd559990226a256c87d7b2c5d307b490",
-  "releaseRef": "refs/tags/candidate/backend-completion/20261117-claude-ui-integration-01",
+  "releaseRef": "refs/tags/candidate/backend-completion/20261117-claude-ui-integration-02",
   "evidenceRoot": "/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence",
   "scope": "Owned fictional data only; no hosted/production/provider/paid-model acceptance",
   "receipts": [
@@ -21,6 +21,110 @@
       "startedAt": "2026-11-17T16:48:43.179949+00:00",
       "finishedAt": "2026-11-17T16:52:04.444199+00:00",
       "logSha256": "5a9ad51c55f739934e5d8ed155be614ccd3fb09add0d52f3907f8de3fb57070f"
+    },
+    {
+      "label": "all-ui-final",
+      "argv": [
+        "env",
+        "NEVORA_ALL_UI_BROWSER_EVIDENCE=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/all-ui-final",
+        "NEVORA_OPERATOR_PASSWORD_EVIDENCE=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/all-ui-final/operator",
+        "NEVORA_READINESS_UI_EVIDENCE=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/all-ui-final/readiness",
+        "NEVORA_READINESS_MATRIX_EVIDENCE=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/all-ui-final/concurrency",
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.all-ui-browser.config.mts"
+      ],
+      "source": "481fc6deefa1207a44c1b66c75ce81d8ece0fe08",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 0,
+      "startedAt": "2026-11-17T18:30:26.255201+00:00",
+      "finishedAt": "2026-11-17T18:39:34.738765+00:00",
+      "logSha256": "0ce544da00a6dcaf57a3d366e2b7503283a46ffb538704cf01af5e038bec3432"
+    },
+    {
+      "label": "attendance-copy-green",
+      "argv": [
+        "env",
+        "PHASE_D_EXPECTED_SHA=6e415406581dd9d6d8040c884a25b6ebc695ab04",
+        "PHASE_D_EVIDENCE_DIR=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/attendance-copy-green",
+        "node",
+        "scripts/phase-d-owned.mjs",
+        "browser"
+      ],
+      "source": "6e415406581dd9d6d8040c884a25b6ebc695ab04",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 1,
+      "startedAt": "2026-11-17T19:07:04.744853+00:00",
+      "finishedAt": "2026-11-17T19:08:49.888897+00:00",
+      "logSha256": "1c65dc2936283270eb7527f34d3af3fcd7e03c6e24f6bfb7b14871796bde72f8"
+    },
+    {
+      "label": "attendance-copy-green2",
+      "argv": [
+        "env",
+        "PHASE_D_EXPECTED_SHA=3c56523c67bce91ddcb5ed0537cd9ebf17d26e43",
+        "PHASE_D_EVIDENCE_DIR=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/attendance-copy-green2",
+        "node",
+        "scripts/phase-d-owned.mjs",
+        "browser"
+      ],
+      "source": "3c56523c67bce91ddcb5ed0537cd9ebf17d26e43",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 0,
+      "startedAt": "2026-11-17T19:12:16.228282+00:00",
+      "finishedAt": "2026-11-17T19:16:49.682947+00:00",
+      "logSha256": "23d49202cfe56d79a5cd2737ebf3347496b4c94e4a0f51536ceb84c5b885c35f"
+    },
+    {
+      "label": "attendance-copy-red",
+      "argv": [
+        "env",
+        "PHASE_D_EXPECTED_SHA=481fc6deefa1207a44c1b66c75ce81d8ece0fe08",
+        "PHASE_D_EVIDENCE_DIR=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/attendance-copy-red",
+        "node",
+        "scripts/phase-d-owned.mjs",
+        "browser"
+      ],
+      "source": "481fc6deefa1207a44c1b66c75ce81d8ece0fe08",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 1,
+      "startedAt": "2026-11-17T18:43:19.378172+00:00",
+      "finishedAt": "2026-11-17T18:45:07.184333+00:00",
+      "logSha256": "2b7852f806f8bc64d7d54e732036e80a10655d322e0944aab9f170b418e6deee"
+    },
+    {
+      "label": "attention-note-green",
+      "argv": [
+        "env",
+        "PHASE_E_EXPECTED_SHA=6e415406581dd9d6d8040c884a25b6ebc695ab04",
+        "PHASE_E_EVIDENCE_DIR=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/attention-note-green",
+        "node",
+        "scripts/phase-e-owned.mjs",
+        "browser",
+        "--suite",
+        "attention"
+      ],
+      "source": "6e415406581dd9d6d8040c884a25b6ebc695ab04",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 0,
+      "startedAt": "2026-11-17T19:02:05.464739+00:00",
+      "finishedAt": "2026-11-17T19:07:04.609367+00:00",
+      "logSha256": "2d9fdc0fd8f4d02e661e325ca54bc1f3b4e540827beb167000fa67ad76cff99e"
+    },
+    {
+      "label": "audit-current-blocker",
+      "argv": [
+        "npm",
+        "audit",
+        "--audit-level=high",
+        "--json"
+      ],
+      "source": "a1ffe8148cc38711e1959408a967c67699a4f1da",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 1,
+      "startedAt": "2026-11-17T18:53:20.827481+00:00",
+      "finishedAt": "2026-11-17T18:54:12.377089+00:00",
+      "logSha256": "155026ba5536fdb3252d838200f347987af1fce25e0b4bf4534d590badf5e83e"
     },
     {
       "label": "business-joined-green",
@@ -109,6 +213,24 @@
       "startedAt": "2026-11-17T16:55:01.146336+00:00",
       "finishedAt": "2026-11-17T16:55:01.758838+00:00",
       "logSha256": "23e27f370dc405045a53ef88c59fd40329b8c661e5a87fddb4ea36ad731e0498"
+    },
+    {
+      "label": "changed-secrets-final",
+      "argv": [
+        "/Users/josek0514/Documents/ChatGPT/engineering-toolkit/bin/gitleaks",
+        "git",
+        "--redact",
+        "--no-banner",
+        "--log-opts=22107a24272f2347bbb59a3da1f54319632772a5..HEAD",
+        "--report-path=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/changed-secrets-final-scan.json",
+        "."
+      ],
+      "source": "481fc6deefa1207a44c1b66c75ce81d8ece0fe08",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 0,
+      "startedAt": "2026-11-17T18:30:35.987765+00:00",
+      "finishedAt": "2026-11-17T18:30:36.830179+00:00",
+      "logSha256": "9e007211cd0b2f0c3910d26808a7075e55f469270c916e7a9d3852fcc124764c"
     },
     {
       "label": "citation-cards-green",
@@ -280,19 +402,6 @@
       "logSha256": "e49fef9df7f5af242137b604051939a7e55a521623584aa75166843a76965f33"
     },
     {
-      "label": "employee-targeted-home-contrast",
-      "argv": [
-        "node",
-        "/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/inspect-owned-employee-contrast.mjs"
-      ],
-      "source": "5549b652e195bb9aacbcbf99c705f33d706ef0b6",
-      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exitCode": 0,
-      "startedAt": "2026-11-17T17:17:51.538344+00:00",
-      "finishedAt": "2026-11-17T17:17:52.874970+00:00",
-      "logSha256": "1eab5ce19250f4999cb6fc34aac0ab29e69a44e41bde155804c2e9ceae59cad4"
-    },
-    {
       "label": "employee-targeted-home",
       "argv": [
         "node",
@@ -306,17 +415,17 @@
       "logSha256": "5454b51b9f7c0dfe38cbb9c98a3d8b1e7ba64e7e47f39b92da26e2cf3ad45030"
     },
     {
-      "label": "employee-targeted-portrait-ready",
+      "label": "employee-targeted-home-contrast",
       "argv": [
         "node",
-        "/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/inspect-owned-employee-portrait-ready.mjs"
+        "/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/inspect-owned-employee-contrast.mjs"
       ],
-      "source": "0dedf7b6d8ca1ec7c2e8f00bfce5cfc35614fe5a",
+      "source": "5549b652e195bb9aacbcbf99c705f33d706ef0b6",
       "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "exitCode": 0,
-      "startedAt": "2026-11-17T17:37:03.049875+00:00",
-      "finishedAt": "2026-11-17T17:37:14.683886+00:00",
-      "logSha256": "e5407bdb15a22d12ccc35af5603c60b3f15f014ce4ab0cd866717aef08acd756"
+      "startedAt": "2026-11-17T17:17:51.538344+00:00",
+      "finishedAt": "2026-11-17T17:17:52.874970+00:00",
+      "logSha256": "1eab5ce19250f4999cb6fc34aac0ab29e69a44e41bde155804c2e9ceae59cad4"
     },
     {
       "label": "employee-targeted-portrait",
@@ -330,6 +439,19 @@
       "startedAt": "2026-11-17T17:36:27.546554+00:00",
       "finishedAt": "2026-11-17T17:36:45.045515+00:00",
       "logSha256": "075fdb545e9d1536ef9ec99703f7d10459acca169a74d82c34420b9d69e68dfa"
+    },
+    {
+      "label": "employee-targeted-portrait-ready",
+      "argv": [
+        "node",
+        "/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/inspect-owned-employee-portrait-ready.mjs"
+      ],
+      "source": "0dedf7b6d8ca1ec7c2e8f00bfce5cfc35614fe5a",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 0,
+      "startedAt": "2026-11-17T17:37:03.049875+00:00",
+      "finishedAt": "2026-11-17T17:37:14.683886+00:00",
+      "logSha256": "e5407bdb15a22d12ccc35af5603c60b3f15f014ce4ab0cd866717aef08acd756"
     },
     {
       "label": "employee-targeted-ready-contrast",
@@ -387,6 +509,131 @@
       "startedAt": "2026-11-17T18:17:16.931756+00:00",
       "finishedAt": "2026-11-17T18:17:17.783342+00:00",
       "logSha256": "0d83bdd4ec1d0d7d7621910b532d5cff0d840306ec4f8bf00953c478e260c88b"
+    },
+    {
+      "label": "home-count-green",
+      "argv": [
+        "env",
+        "PHASE_E_EXPECTED_SHA=a1ffe8148",
+        "PHASE_E_BROWSER_ENGINE=chromium",
+        "PHASE_E_EVIDENCE_DIR=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/home-count-green",
+        "node",
+        "scripts/phase-e-owned.mjs",
+        "browser",
+        "--suite",
+        "home"
+      ],
+      "source": "a1ffe8148cc38711e1959408a967c67699a4f1da",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 1,
+      "startedAt": "2026-11-17T18:50:52.559378+00:00",
+      "finishedAt": "2026-11-17T18:50:52.738390+00:00",
+      "logSha256": "07ef2e553b7c773ec926337df2ac269bcb725aec9a0e674e6bf75068d9141942"
+    },
+    {
+      "label": "home-count-green2",
+      "argv": [
+        "env",
+        "PHASE_E_EXPECTED_SHA=a1ffe8148cc38711e1959408a967c67699a4f1da",
+        "PHASE_E_BROWSER_ENGINE=chromium",
+        "PHASE_E_EVIDENCE_DIR=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/home-count-green2",
+        "node",
+        "scripts/phase-e-owned.mjs",
+        "browser",
+        "--suite",
+        "home"
+      ],
+      "source": "a1ffe8148cc38711e1959408a967c67699a4f1da",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 0,
+      "startedAt": "2026-11-17T18:51:02.339518+00:00",
+      "finishedAt": "2026-11-17T18:55:20.942918+00:00",
+      "logSha256": "c71895c10a2a5f8d57550809a31be90c7c43d46c03f87170676e86b660cc0c8b"
+    },
+    {
+      "label": "home-count-red",
+      "argv": [
+        "env",
+        "PHASE_E_EXPECTED_SHA=481fc6deefa1207a44c1b66c75ce81d8ece0fe08",
+        "PHASE_E_BROWSER_ENGINE=chromium",
+        "PHASE_E_EVIDENCE_DIR=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/home-count-red",
+        "node",
+        "scripts/phase-e-owned.mjs",
+        "browser",
+        "--suite",
+        "home"
+      ],
+      "source": "481fc6deefa1207a44c1b66c75ce81d8ece0fe08",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 1,
+      "startedAt": "2026-11-17T18:40:26.457710+00:00",
+      "finishedAt": "2026-11-17T18:41:31.186017+00:00",
+      "logSha256": "cfda77a3ca318fa3c55e1fdcaec9434c225c1c7c86156626d63f046a5eab0509"
+    },
+    {
+      "label": "home-count-webkit-green",
+      "argv": [
+        "env",
+        "PHASE_E_EXPECTED_SHA=3c56523c67bce91ddcb5ed0537cd9ebf17d26e43",
+        "PHASE_E_BROWSER_ENGINE=webkit",
+        "PHASE_E_EVIDENCE_DIR=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/home-count-webkit-green",
+        "node",
+        "scripts/phase-e-owned.mjs",
+        "browser",
+        "--suite",
+        "home"
+      ],
+      "source": "3c56523c67bce91ddcb5ed0537cd9ebf17d26e43",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 0,
+      "startedAt": "2026-11-17T19:16:53.064479+00:00",
+      "finishedAt": "2026-11-17T19:21:46.488447+00:00",
+      "logSha256": "f8009ef186b31b34aaa781d5efb0b9ec0bf6529a74d24be221fc798c263576a1"
+    },
+    {
+      "label": "inbox-review-custody-green",
+      "argv": [
+        "npm",
+        "test",
+        "--",
+        "src/test/phase-d-inbox-browser-support.test.ts"
+      ],
+      "source": "6e415406581dd9d6d8040c884a25b6ebc695ab04",
+      "sourceDiffSha256": "7577e38e4a4a649dd4336739dff1da26fe3d2169f4fe9734591ed94c34aa56ec",
+      "exitCode": 0,
+      "startedAt": "2026-11-17T19:11:35.292590+00:00",
+      "finishedAt": "2026-11-17T19:11:35.782690+00:00",
+      "logSha256": "ca257ad1f2b9ba426eae3ce7b434d0a8ab895236cd7637414efe4aa72afb738f"
+    },
+    {
+      "label": "inbox-review-custody-green2",
+      "argv": [
+        "npm",
+        "test",
+        "--",
+        "src/test/phase-d-inbox-browser-support.test.ts"
+      ],
+      "source": "6e415406581dd9d6d8040c884a25b6ebc695ab04",
+      "sourceDiffSha256": "458591a64e0ef8b8932ac6f213708a22da69087b524afdf77f1524bd0a9f7614",
+      "exitCode": 0,
+      "startedAt": "2026-11-17T19:12:04.415076+00:00",
+      "finishedAt": "2026-11-17T19:12:04.880021+00:00",
+      "logSha256": "962c9c58f3956e4646c18d0a96d1610d79f8e56e6f4c161774cc22b255107d89"
+    },
+    {
+      "label": "inbox-review-custody-red",
+      "argv": [
+        "npm",
+        "test",
+        "--",
+        "src/test/phase-d-inbox-browser-support.test.ts"
+      ],
+      "source": "6e415406581dd9d6d8040c884a25b6ebc695ab04",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 1,
+      "startedAt": "2026-11-17T19:11:07.399820+00:00",
+      "finishedAt": "2026-11-17T19:11:08.006721+00:00",
+      "logSha256": "c4ce9ae71c939a0333a65991f785ac2499350763dfc7386bb219dbb828eb3f45"
     },
     {
       "label": "inspection-custody-final",
@@ -656,6 +903,119 @@
       "logSha256": "917dcd552a479b5ab4b136f76649ef3edb730ac5dcb34e3e4c8582fda75d921e"
     },
     {
+      "label": "manuals-rebuild",
+      "argv": [
+        "node",
+        "scripts/manuals/build-manuals.mjs",
+        "--date",
+        "2026-11-17"
+      ],
+      "source": "212f4ee745e9c2e732c4dd0b932ba279a9f0e01e",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 0,
+      "startedAt": "2026-11-17T18:22:48.143338+00:00",
+      "finishedAt": "2026-11-17T18:22:55.060053+00:00",
+      "logSha256": "098fe7fee070e2d25ce73b3bf5880b58ec7d8077604b4451864be092d12d2ce4"
+    },
+    {
+      "label": "manuals-rebuild2",
+      "argv": [
+        "node",
+        "scripts/manuals/build-manuals.mjs",
+        "--date",
+        "2026-11-17"
+      ],
+      "source": "137abbd8895f2f32d81115085b0841e2a63f8a9a",
+      "sourceDiffSha256": "470a65b0ec1e3d71bc4262d77bb44907c17fd22df9d49d802ea52352ac8ca147",
+      "exitCode": 0,
+      "startedAt": "2026-11-17T18:29:33.513111+00:00",
+      "finishedAt": "2026-11-17T18:29:41.452513+00:00",
+      "logSha256": "df1243404864cff20c25bf090c6c072a20e96023e6129306d5c78a071cf79ffd"
+    },
+    {
+      "label": "manuals-verify",
+      "argv": [
+        "node",
+        "scripts/manuals/check-manuals.mjs"
+      ],
+      "source": "212f4ee745e9c2e732c4dd0b932ba279a9f0e01e",
+      "sourceDiffSha256": "470a65b0ec1e3d71bc4262d77bb44907c17fd22df9d49d802ea52352ac8ca147",
+      "exitCode": 0,
+      "startedAt": "2026-11-17T18:25:55.635746+00:00",
+      "finishedAt": "2026-11-17T18:25:57.817422+00:00",
+      "logSha256": "591caa3066cebd6de90fe0962da0215ac3f2f3d1b8f6f149c2595e1c3a660b36"
+    },
+    {
+      "label": "manuals-verify2",
+      "argv": [
+        "node",
+        "scripts/manuals/check-manuals.mjs"
+      ],
+      "source": "137abbd8895f2f32d81115085b0841e2a63f8a9a",
+      "sourceDiffSha256": "d3c55435f429eb64c43298b0eeb69614bbb95696f77c1cd583a38ce6cbfdffc0",
+      "exitCode": 0,
+      "startedAt": "2026-11-17T18:29:55.499604+00:00",
+      "finishedAt": "2026-11-17T18:29:57.959792+00:00",
+      "logSha256": "5985f528a98925041ef0a0c96c9943ba2fb92a3042cb51419200c984e5183234"
+    },
+    {
+      "label": "navigation-profile-green",
+      "argv": [
+        "env",
+        "PHASE_E_EXPECTED_SHA=frozen",
+        "PHASE_E_EVIDENCE_DIR=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/navigation-profile-green",
+        "node",
+        "scripts/phase-e-owned.mjs",
+        "browser",
+        "--suite",
+        "navigation"
+      ],
+      "source": "6e415406581dd9d6d8040c884a25b6ebc695ab04",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 1,
+      "startedAt": "2026-11-17T18:55:53.035280+00:00",
+      "finishedAt": "2026-11-17T18:55:53.111049+00:00",
+      "logSha256": "07ef2e553b7c773ec926337df2ac269bcb725aec9a0e674e6bf75068d9141942"
+    },
+    {
+      "label": "navigation-profile-green2",
+      "argv": [
+        "env",
+        "PHASE_E_EXPECTED_SHA=6e415406581dd9d6d8040c884a25b6ebc695ab04",
+        "PHASE_E_EVIDENCE_DIR=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/navigation-profile-green2",
+        "node",
+        "scripts/phase-e-owned.mjs",
+        "browser",
+        "--suite",
+        "navigation"
+      ],
+      "source": "6e415406581dd9d6d8040c884a25b6ebc695ab04",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 0,
+      "startedAt": "2026-11-17T18:56:01.937230+00:00",
+      "finishedAt": "2026-11-17T19:02:02.547016+00:00",
+      "logSha256": "19adee59186665a204457f9952f8405cc8fc48fb351d6db9df44d7cd90401166"
+    },
+    {
+      "label": "navigation-profile-red",
+      "argv": [
+        "env",
+        "PHASE_E_EXPECTED_SHA=481fc6deefa1207a44c1b66c75ce81d8ece0fe08",
+        "PHASE_E_EVIDENCE_DIR=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/navigation-profile-red",
+        "node",
+        "scripts/phase-e-owned.mjs",
+        "browser",
+        "--suite",
+        "navigation"
+      ],
+      "source": "481fc6deefa1207a44c1b66c75ce81d8ece0fe08",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 1,
+      "startedAt": "2026-11-17T18:48:37.600270+00:00",
+      "finishedAt": "2026-11-17T18:49:22.687393+00:00",
+      "logSha256": "54822fe3013fafff38a144913512894e1a26d4eaacd6f53266b8c7e1b889528b"
+    },
+    {
       "label": "on-now-unscheduled-green",
       "argv": [
         "npx",
@@ -687,20 +1047,6 @@
       "logSha256": "6f27b2d75fce62fe6ddcd4d383346329c418ef73c1af8dce543cc8b89da177fc"
     },
     {
-      "label": "onboarding-inventory-final",
-      "argv": [
-        "npm",
-        "run",
-        "check:onboarding-manifest"
-      ],
-      "source": "0ed96f08fd559990226a256c87d7b2c5d307b490",
-      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exitCode": 0,
-      "startedAt": "2026-11-17T18:17:16.931412+00:00",
-      "finishedAt": "2026-11-17T18:17:17.460611+00:00",
-      "logSha256": "41b741fc1bdd1f3f0636e7b649c1500c29233c19299644045d7b8280d14e2a8a"
-    },
-    {
       "label": "onboarding-inventory",
       "argv": [
         "npm",
@@ -715,20 +1061,18 @@
       "logSha256": "ee148070498b2ae6d8a82d14dbc0e099112001bf5af480dd596213b2dbe9f176"
     },
     {
-      "label": "passkeys-network-green",
+      "label": "onboarding-inventory-final",
       "argv": [
-        "env",
-        "NEVORA_PASSKEY_NETWORK_EVIDENCE=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/passkeys-network-green",
-        "node",
-        "scripts/payroll-postgres.mjs",
-        "vitest.passkeys-network.config.mts"
+        "npm",
+        "run",
+        "check:onboarding-manifest"
       ],
       "source": "0ed96f08fd559990226a256c87d7b2c5d307b490",
       "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "exitCode": 0,
-      "startedAt": "2026-11-17T18:13:57.377194+00:00",
-      "finishedAt": "2026-11-17T18:14:17.422956+00:00",
-      "logSha256": "81968f6e4f5da41552e4b7230f6e9beebf0734afd22147a0d26bb4758134dc0b"
+      "startedAt": "2026-11-17T18:17:16.931412+00:00",
+      "finishedAt": "2026-11-17T18:17:17.460611+00:00",
+      "logSha256": "41b741fc1bdd1f3f0636e7b649c1500c29233c19299644045d7b8280d14e2a8a"
     },
     {
       "label": "passkeys-network",
@@ -745,6 +1089,22 @@
       "startedAt": "2026-11-17T17:18:30.813356+00:00",
       "finishedAt": "2026-11-17T17:19:25.682389+00:00",
       "logSha256": "f8a0e0d57932ea52793efe2fe139b9578ca6dea2c953f4998e3b62e2cf867eb7"
+    },
+    {
+      "label": "passkeys-network-green",
+      "argv": [
+        "env",
+        "NEVORA_PASSKEY_NETWORK_EVIDENCE=/Users/josek0514/Documents/Codex/2026-11-17/nevora-claude-ui-integration/evidence/passkeys-network-green",
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.passkeys-network.config.mts"
+      ],
+      "source": "0ed96f08fd559990226a256c87d7b2c5d307b490",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 0,
+      "startedAt": "2026-11-17T18:13:57.377194+00:00",
+      "finishedAt": "2026-11-17T18:14:17.422956+00:00",
+      "logSha256": "81968f6e4f5da41552e4b7230f6e9beebf0734afd22147a0d26bb4758134dc0b"
     },
     {
       "label": "passkeys-sql",
@@ -1121,6 +1481,20 @@
       "logSha256": "cbe98741c7e2860cfcc07617f5738c8638a3d7d8a0de8f709293e8746a34c634"
     },
     {
+      "label": "source-inventory",
+      "argv": [
+        "npm",
+        "run",
+        "check:development-sources"
+      ],
+      "source": "a65ad6e7e51c0d313be8d0e45d5e120c5e90a5d2",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 0,
+      "startedAt": "2026-11-17T16:51:45.263732+00:00",
+      "finishedAt": "2026-11-17T16:51:46.811394+00:00",
+      "logSha256": "7e44b8f8663ecf707e98349e33e83064cc16a84cd0084cd41cb8f84718031dc8"
+    },
+    {
       "label": "source-inventory-final",
       "argv": [
         "npm",
@@ -1135,17 +1509,17 @@
       "logSha256": "7e44b8f8663ecf707e98349e33e83064cc16a84cd0084cd41cb8f84718031dc8"
     },
     {
-      "label": "source-inventory",
+      "label": "source-inventory-frozen",
       "argv": [
         "npm",
         "run",
         "check:development-sources"
       ],
-      "source": "a65ad6e7e51c0d313be8d0e45d5e120c5e90a5d2",
+      "source": "481fc6deefa1207a44c1b66c75ce81d8ece0fe08",
       "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "exitCode": 0,
-      "startedAt": "2026-11-17T16:51:45.263732+00:00",
-      "finishedAt": "2026-11-17T16:51:46.811394+00:00",
+      "startedAt": "2026-11-17T18:31:03.110820+00:00",
+      "finishedAt": "2026-11-17T18:31:06.026800+00:00",
       "logSha256": "7e44b8f8663ecf707e98349e33e83064cc16a84cd0084cd41cb8f84718031dc8"
     },
     {
@@ -1238,15 +1612,33 @@
       "startedAt": "2026-11-17T16:45:24.315451+00:00",
       "finishedAt": "2026-11-17T16:45:29.818358+00:00",
       "logSha256": "2bbbaa1cccb26f53a37ace53db9cac06a04d69567d9e08fbf3cf604ff3aeee7a"
+    },
+    {
+      "label": "unit-final",
+      "argv": [
+        "npm",
+        "test",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "source": "481fc6deefa1207a44c1b66c75ce81d8ece0fe08",
+      "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 0,
+      "startedAt": "2026-11-17T18:39:38.311493+00:00",
+      "finishedAt": "2026-11-17T18:49:48.326000+00:00",
+      "logSha256": "3ab73772b774940e59ccb87d34610be0184ad25e13e9628e9f73d35de8d7e2ee"
     }
   ],
   "finalGateReceipts": [
-    "unit-final.json",
-    "all-ui-final.json",
-    "step4-final/acceptance.json",
-    "build-final-source.json",
-    "candidate-01-qualification.json",
+    "unit-final-02.json",
+    "all-ui-final-02.json",
+    "step4-final-02/acceptance.json",
+    "build-final-source-02.json",
+    "changed-secrets-final-02.json",
+    "candidate-02-qualification.json",
     "development-publication.json"
   ],
-  "rule": "Require successful exact-source final gates; missing receipts do not qualify. Retain failed attempts and use a new immutable tag after any frozen-source change."
+  "rule": "Require successful exact-source final gates; missing receipts do not qualify. Retain failed attempts and use a new immutable tag after any frozen-source change.",
+  "qualificationHarnessCommit": "3c56523c67bce91ddcb5ed0537cd9ebf17d26e43",
+  "qualificationHold": "Required high dependency audit fails for unpatched picomatch; no Development publication or Jira acceptance update"
 }

@@ -221,7 +221,8 @@
         "src/test/integration/claude-business-ui-browser.integration.ts",
         "src/lib/support-reference.ts",
         "docs/handoffs/2026-11-17-claude-ui-integration.md",
-        "docs/handoffs/2026-11-17-claude-ui-integration-contract-review.md"
+        "docs/handoffs/2026-11-17-claude-ui-integration-contract-review.md",
+        "docs/handoffs/2026-11-17-claude-ui-integration-audit-hold.json"
       ]
     },
     {
@@ -270,7 +271,8 @@
         "src/components/payroll-import/export-flow.tsx",
         "src/components/reminders/machine.ts",
         "docs/handoffs/2026-11-17-claude-ui-integration.md",
-        "docs/handoffs/2026-11-17-claude-ui-integration-contract-review.md"
+        "docs/handoffs/2026-11-17-claude-ui-integration-contract-review.md",
+        "docs/handoffs/2026-11-17-claude-ui-integration-audit-hold.json"
       ]
     }
   ]
