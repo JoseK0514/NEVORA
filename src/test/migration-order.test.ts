@@ -28,7 +28,7 @@ describe('migration order authority', () => {
   });
   it('keeps both independent PR34 files before the Clocker tail and the additive Publish changes and Owner review storage without prefix sorting', () => {
     // 0043 (Publish changes held-edit history) depends only on base tables and follows the Clocker tail; 0044/0045 are additive Owner AI storage.
-    expect(BASE_MIGRATIONS.slice(-29)).toEqual([
+    expect(BASE_MIGRATIONS.slice(-32)).toEqual([
       '0037_owner_briefing_reviews.sql', '0038_read_path_indexes.sql', '0039_native_payroll_setup_records.sql',
       '0038_clocker_pin_operation_reference.sql', '0039_clocker_review_requests.sql',
       '0040_clocker_photo_policy_evidence.sql', '0041_clocker_photo_platform_cleanup.sql',
@@ -52,6 +52,9 @@ describe('migration order authority', () => {
       '0046_owner_advisor_memory.sql',
       '0063_initial_password_replacement.sql',
       '0065_scheduling_restrictions.sql',
+      '0064_owner_company_knowledge.sql',
+      '0066_owner_advisor_weekly.sql',
+      '0067_owner_business_evidence.sql',
     ]);
   });
 
