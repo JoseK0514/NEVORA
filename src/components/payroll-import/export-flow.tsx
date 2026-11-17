@@ -42,12 +42,12 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
   useEffect(() => { latest.current = work; }, [work]);
   const active = useRef(false), focused = useRef(true), readSequence = useRef(0), validUntil = useRef(0);
   const expiry = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pausePrivate = useCallback(() => {
+  const cancelRead = useCallback(() => {
     readSequence.current++; validUntil.current = 0;
     if (expiry.current) clearTimeout(expiry.current);
     expiry.current = null;
-    setLoaded({ state: "loading" });
   }, []);
+  const pausePrivate = useCallback(() => { cancelRead(); setLoaded({ state: "loading" }); }, [cancelRead]);
   const hasLease = () => focused.current && document.visibilityState !== "hidden" && navigator.onLine && performance.now() < validUntil.current;
   const started = Object.keys(work.states).length > 0;
   const unresolved = Object.values(work.states).some(holdsCustody) || holdsCustody(work.record);
@@ -95,12 +95,11 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
     window.addEventListener("online", again); window.addEventListener("focus", again); window.addEventListener("pageshow", again);
     window.addEventListener("offline", hide); window.addEventListener("blur", hide); window.addEventListener("pagehide", hide); document.addEventListener("visibilitychange", visible);
     return () => {
-      active.current = false; readSequence.current++; validUntil.current = 0;
-      if (expiry.current) clearTimeout(expiry.current); clearInterval(poll);
+      active.current = false; cancelRead(); clearInterval(poll);
       window.removeEventListener("online", again); window.removeEventListener("focus", again); window.removeEventListener("pageshow", again);
       window.removeEventListener("offline", hide); window.removeEventListener("blur", hide); window.removeEventListener("pagehide", hide); document.removeEventListener("visibilitychange", visible);
     };
-  }, [load, pausePrivate]);
+  }, [load, pausePrivate, cancelRead]);
 
   const source = loaded.state === "ready" ? loaded.source : null;
   const ready = useMemo(() => source ? exportReadiness(source) : null, [source]);

@@ -13,14 +13,17 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
   const evidence=resolve(process.env.NEVORA_ALL_UI_BROWSER_EVIDENCE,'claude-joined-'+engine);await mkdir(evidence,{recursive:true});
   const app=await createOwnedNextApp(evidence,{payrollEnabled:true});
   const browser=await runtime[engine].launch({headless:true}),context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block',reducedMotion:'reduce'}),page=await context.newPage();
-  const errors:string[]=[],external:string[]=[],checks:string[]=[];
+  const errors:string[]=[],external:string[]=[],checks:string[]=[],requests=new Set<object>(),network:{event:string;url:string;failure?:string}[]=[];
   let complete=false;
   try{
     vi.stubEnv('NEVORA_PAYROLL_ENABLED','true');
     await seedOwnedApp(app.database.executor);const fixture=await seedPayrollFixture(app.database.executor,{breaks:true});
-    page.on('pageerror',(e:Error)=>errors.push(e.message));page.setDefaultTimeout(20000);
+    page.on('pageerror',(e:Error)=>errors.push(page.url()+' '+e.stack));page.setDefaultTimeout(20000);
+    page.on('request',(r:any)=>{const u=new URL(r.url());if(u.origin===app.url&&(u.pathname.startsWith('/api/')||r.headers().rsc==='1'))requests.add(r);});
+    page.on('requestfinished',(r:any)=>{requests.delete(r);});
+    page.on('requestfailed',(r:any)=>{requests.delete(r);network.push({event:'failed',url:r.url(),failure:r.failure()?.errorText});});
     await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){external.push(url.origin);await route.abort();}else await route.continue();});
-    const visit=async(path:string)=>{await page.goto(app.url+path,{waitUntil:'domcontentloaded'});};
+    const visit=async(path:string)=>{if(page.url()!=='about:blank'){await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await expect.poll(()=>requests.size,{timeout:20000}).toBe(0);}await page.goto(app.url+path,{waitUntil:'domcontentloaded'});};
     await visit('/login');await page.getByLabel('Employee ID',{exact:true}).fill(fixture.ids.owner);await page.getByLabel('Password',{exact:true}).fill(fixture.password);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
     const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
     const roster=await q<{id:string}>('SELECT id FROM employees ORDER BY id');
@@ -34,6 +37,20 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     await page.getByRole('button',{name:'Save amounts',exact:true}).click();const saved=await imported;expect(saved.status(),await saved.text()).toBe(200);
     const sent=saved.request().postDataJSON();expect(sent.amounts.schema).toBe('NEVORA_PAYROLL_CSV_TOTALS_V1');expect(sent.amounts.csv).toBe(csv);
     await page.getByText('Amounts saved',{exact:true}).waitFor();checks.push('Real saved CSV import; exact uploaded bytes; population review retained');
+    const populationBefore=await q('SELECT payload FROM payroll_period_populations ORDER BY revision');
+    await visit('/app/payroll/import?run='+fixture.runId);await page.getByRole('heading',{name:'Add the file from your payroll system',exact:true}).waitFor();
+    const rematchedCsv='employeeId,gross,employeeDeductions,employerContributions,net\r\nexternal-worker,1000,123.40,70,876.60\r\n';
+    const rematchChooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'Choose a file',exact:true}).click();await (await rematchChooser).setFiles({name:'fictional-rematch.csv',mimeType:'text/csv',buffer:Buffer.from(rematchedCsv)});
+    await page.getByLabel('Payroll system',{exact:true}).fill('Fictional accountant');await page.getByLabel('Report or reference',{exact:true}).fill('REMATCH-'+engine);
+    await page.getByRole('button',{name:'Match people',exact:true}).click();await page.locator('.pim-pick__in').fill(fixture.ids.a);await page.locator('.pim-pick__in').press('Enter');
+    const zeroChoices=page.getByRole('radio',{name:'Not paid this period',exact:true});expect(await zeroChoices.count()).toBe(roster.length-1);for(const choice of await zeroChoices.all())await choice.check();
+    await page.getByRole('button',{name:'Review amounts',exact:true}).click();
+    for(const [field,amount] of [['gross','1001.00'],['net','877.60']]){await page.getByRole('button',{name:new RegExp('^Correct '+field+' for')}).click();await page.locator('.pim-amt__in').fill(amount);await page.locator('.pim-amt__in').press('Enter');}
+    await page.getByRole('button',{name:'Check and save',exact:true}).click();
+    const rematched=page.waitForResponse((r:any)=>r.url()===app.url+'/api/payroll/runs'&&r.request().method()==='POST');await page.getByRole('button',{name:'Save amounts',exact:true}).click();const revised=await rematched;expect(revised.status(),await revised.text()).toBe(200);
+    const reviewed=revised.request().postDataJSON().amounts;expect(reviewed.schema).toBe('NEVORA_PAYROLL_IMPORT_V1');expect(reviewed.sourceDocument).toBeUndefined();expect(reviewed.rows.find((r:{employeeId:string})=>r.employeeId===fixture.ids.a)).toMatchObject({grossMinor:'100100',netMinor:'87760'});
+    await page.getByText('Amounts saved',{exact:true}).waitFor();expect(await q('SELECT payload FROM payroll_period_populations ORDER BY revision')).toEqual(populationBefore);
+    checks.push('Rematched and corrected CSV saves canonical reviewed JSON; missing-person choices do not replace persisted population facts');
     const period=fixture.period,exportPath='/app/payroll-export/paid-time?start='+period.startDate+'&end='+period.endDate;
     // The real read is given a shorter observation lifetime; no source rows or success values are invented.
     await page.route('**/api/timecards',async(route:any)=>{const actual=await route.fetch(),body=await actual.json();if(body.state==='ready')body.validForMs=1000;await route.fulfill({response:actual,json:body});});
@@ -61,5 +78,5 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     expect(await q('SELECT count(*)::int n FROM payroll_period_manifests WHERE id=$1',[result.result.id])).toEqual([{n:1}]);
     checks.push('Real paid-time export with each break explicitly decided and real exact-plan manifest');
     expect(errors).toEqual([]);expect(external).toEqual([]);complete=true;
-  }finally{vi.unstubAllEnvs();if(!complete)await page.screenshot({path:resolve(evidence,'failure.png'),fullPage:true}).catch(()=>{});await context.close();await browser.close();await app.close();await writeFile(resolve(evidence,'joined-report.json'),JSON.stringify({complete,checks,errors,external,source:app.sourceHashes,data:'Owned fictional PostgreSQL only; real save/export/manifest, no forced success'},null,2));}
+  }finally{vi.unstubAllEnvs();if(!complete)await page.screenshot({path:resolve(evidence,'failure.png'),fullPage:true}).catch(()=>{});await context.close();await browser.close();await app.close();await writeFile(resolve(evidence,'joined-report.json'),JSON.stringify({complete,checks,errors,external,network,source:app.sourceHashes,data:'Owned fictional PostgreSQL only; real save/export/manifest, no forced success'},null,2));}
 });

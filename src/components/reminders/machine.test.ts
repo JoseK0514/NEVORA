@@ -44,7 +44,11 @@ describe('reading the server answers', () => {
     expect(parse('eligibility', 401, {status: 'blocked', reason: 'access_denied'})).toEqual({kind: 'blocked', reason: 'signed_out'});
     expect(parse('eligibility', 403, {status: 'blocked', reason: 'invalid_command'})).toEqual({kind: 'blocked', reason: 'invalid_command'});
     expect(parse('eligibility', 409, {status: 'conflict', reason: 'source_or_operation_changed'})).toEqual({kind: 'conflict', reason: 'changed'});
-    expect(parse('send', 409, {status: 'conflict', reason: 'source_expires_before_delivery'})).toEqual({kind: 'conflict', reason: 'expires_first'});
+    expect(parse('eligibility', 409, {status: 'conflict', reason: 'source_expires_before_delivery'})).toEqual({kind: 'conflict', reason: 'expires_first'});
+  });
+  it('does not retire a dispatched command on a refusal from the post-commit response fence', () => {
+    for (const [status,body] of [[403,{status:'blocked',reason:'access_denied'}],[409,{status:'conflict',reason:'source_or_operation_changed'}]] as const)
+      expect(parse('send',status,body)).toEqual({kind:'unknown'});
   });
   it('a failed read is a failed check, with the support reference only when it is a real one', () => {
     expect(parse('eligibility', 503, {status: 'unavailable', reason: 'read_failed'}, NOTE)).toEqual({kind: 'failed', reference: NOTE});
