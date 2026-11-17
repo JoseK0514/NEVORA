@@ -262,7 +262,7 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(card).toContain("9:00 AM – 5:00 PM");
     expect(card).not.toMatch(/Person b|Person c/);
     // Nobody on: the card says so and names the next start; it never lists a shift that hasn't begun.
-    expect(phone({ today: today([shift("b", "upcoming")]) })).toContain("Nobody is working right now. Next shift starts 9:00 AM.");
+    expect(phone({ today: today([shift("b", "upcoming")]), monitor: monitor([]) })).toContain("Nobody is working right now. Next shift starts 9:00 AM.");
     // A correction that waits on this person is counted and has its row; their own is not.
     const fix = (id: string, title: string, name: string, own=false) => item(id, "TIME_CORRECTION", "REVIEW", "timekeeping", { title, detail: `${name} · Recorded time correction.`, review:reviewFacts(own,own,'TIME_CORRECTION') });
     const counted = phone({ value: needsYou([fix("f1", "Time correction waiting for review", "James Ortiz"), fix("f2", "Your correction needs another reviewer", "Carmen Ruiz",true)], "2026-10-30", []) });
@@ -270,6 +270,24 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(counted).toMatch(/>1\stime correction</);
     expect(counted).toContain('href="/app/inbox#todo-corrections"');
     expect(counted).not.toContain("Carmen Ruiz");
+  });
+  it("keeps an actually clocked-in person on Home without inventing a scheduled shift", () => {
+    const live=monitor(["unscheduled"]);
+    if(live.state!=="ready")throw Error("Fictional ready monitor expected");
+    live.employees[0].scheduleMatch="UNMATCHED";
+    const out=phone({today:today([]),monitor:live});
+    const card=out.slice(out.indexOf('id="b-home-on"'),out.indexOf('class="b-home-col b-home-col--b"'));
+    expect(card).toContain("Person unscheduled");
+    expect(card).toContain("Clocked in 9:02 AM");
+    expect(card).toContain("Condado");
+    expect(card).toContain('b-chip--green">Working');
+    expect(card).not.toContain("Nobody is working right now");
+    expect(card).not.toContain("5:00 PM");
+    const retired=phone({today:today([]),monitor:null});
+    expect(retired).not.toContain("Person unscheduled");
+    const matched=phone({today:today([shift("a","clocked_in")]),monitor:monitor(["a"])});
+    const matchedCard=matched.slice(matched.indexOf('id="b-home-on"'),matched.indexOf('class="b-home-col b-home-col--b"'));
+    expect(matchedCard.match(/<li class="b-li">/g)).toHaveLength(1);
   });
   it("says coverage as one line with a bar, and nothing about what isn't required (Phase 3, OW-006)", () => {
     const coverage = { state: "ready" as const, staffing: { required: 20160, covered: 11610, percent: 57.6 }, positions: { required: 0, covered: 0, percent: null }, lead: { required: 0, covered: 0, percent: null } };

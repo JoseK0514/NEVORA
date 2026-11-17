@@ -18,7 +18,7 @@ import { reviewCopy } from "@/components/review-details/copy";
 import { Explain } from "@/components/review-details/explain";
 import type { ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
-import type { ClockMonitor } from "@/lib/time-clock";
+import type { ClockMonitor, ClockMonitorEmployee } from "@/lib/time-clock";
 import type { ActionCenterConnection } from "@/components/manager-action-center";
 import { HomeSetupProgress } from "@/components/owner-setup-card";
 import { BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BInk, BList, BLive, BRow, BScreen, BStack, BState, BWhen, partOfDay, type BLiveItem } from "./b-kit";
@@ -129,7 +129,7 @@ export function HomeB(props: HomeBProps) {
         {props.billing ?? null}
         {props.setup ? <BCard label="Finish setting up"><div className="b-setup"><HomeSetupProgress.Provider value={ready?.setupProgress ?? null}>{props.setup}</HomeSetupProgress.Provider></div></BCard> : null}
         <NeedsYouCard {...props} gapRows={gapRows} openHref={openHref} />
-        {ready ? <OnNow shifts={ready.shifts} timeZone={ready.timeZone} /> : null}
+        {ready ? <OnNow shifts={ready.shifts} open={open} timeZone={ready.timeZone} /> : null}
       </div>
       <div className="b-home-col b-home-col--b">
         <PaydayTile {...props} />
@@ -211,24 +211,31 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
 /** Phase 3 (MG-011, OW-031): who is working right now, from Today's shifts (the read Home already has). People on the
  * clock first (a late arrival says so in Jose's words), then people whose shift began with no clock-in. No estimate: a
  * shift that hasn't started isn't listed, and when nobody is on the card says so and names the next start. */
-function OnNow({ shifts, timeZone }: { shifts: TodayShift[]; timeZone: string }) {
+function OnNow({ shifts, open, timeZone }: { shifts: TodayShift[]; open: ClockMonitorEmployee[] | null; timeZone: string }) {
   const byStart = (a: TodayShift, b: TodayShift) => a.startAt.localeCompare(b.startAt) || a.employeeName.localeCompare(b.employeeName);
   const seen = new Set<string>();
   const once = (shift: TodayShift) => seen.has(shift.employeeId) ? false : (seen.add(shift.employeeId), true);
   const on = [...shifts.filter(working).sort(byStart), ...shifts.filter(shift => shift.status === "not_clocked_in").sort(byStart)].filter(once);
+  // A real clock-in can have no scheduled match. Keep that person visible, with the actual start only;
+  // a matching Today row remains the single row for that person. Retired monitor data supplies no extras.
+  const extra = (open ?? []).filter(person => !seen.has(person.employeeId)).filter(person => (seen.add(person.employeeId), true))
+    .sort((a, b) => a.clockInAt.localeCompare(b.clockInAt) || a.employeeName.localeCompare(b.employeeName));
+  const total = on.length + extra.length;
   const next = shifts.filter(shift => shift.status === "upcoming" || shift.status === "starting").sort(byStart)[0];
   const places = new Set(shifts.map(shift => shift.locationName)).size > 1;
   return <BCard title="On now" id="b-home-on" link={{ href: "/app?view=attendance", label: "See everyone", aria: "See everyone working today" }}>
-    {on.length ? <BList label="On now">{on.slice(0, ON_NOW_ROWS).map(shift => {
+    {total ? <BList label="On now">{[...on.map(shift => {
       const waiting = shift.status === "not_clocked_in";
       const state = waiting ? ATTENDANCE_WORDS.notClockedIn : shift.status === "on_break" ? "On break" : shift.late ? lateText(shift, ATTENDANCE_WORDS.late, t) : "Working";
       const when = `${clockText(shift.startAt, timeZone)} – ${clockText(shift.endAt, timeZone)}`;
       return <BRow key={shift.id} lead={<BAvatar name={shift.employeeName} ring={waiting || shift.late ? "late" : "on"} />} title={shift.employeeName}
         sub={places ? `${when} · ${shift.locationName}` : when} end={<BChip tone={waiting || shift.late ? "amber" : shift.status === "on_break" ? "grey" : "green"}>{state}</BChip>}
         label={`${shift.employeeName}, ${state}, ${when}${places ? `, ${shift.locationName}` : ""}`} />;
-    })}</BList>
+    }), ...extra.map(person => <BRow key={`clock:${person.timeEntryId}`} lead={<BAvatar name={person.employeeName} ring="on" />} title={person.employeeName}
+      sub={`Clocked in ${clockText(person.clockInAt, timeZone)} · ${person.locationName}`}
+      end={<BChip tone={person.state === "ON_BREAK" ? "grey" : "green"}>{person.state === "ON_BREAK" ? "On break" : "Working"}</BChip>} />)].slice(0, ON_NOW_ROWS)}</BList>
       : <p className="b-state">{next ? `Nobody is working right now. Next shift starts ${clockText(next.startAt, timeZone)}.` : "Nobody is working right now."}</p>}
-    {on.length > ON_NOW_ROWS ? <p className="b-on-more">{`+${on.length - ON_NOW_ROWS} more`}</p> : null}
+    {total > ON_NOW_ROWS ? <p className="b-on-more">{`+${total - ON_NOW_ROWS} more`}</p> : null}
   </BCard>;
 }
 
