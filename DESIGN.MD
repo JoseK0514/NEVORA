@@ -476,6 +476,21 @@ item names the lines it supersedes; line numbers are from the file before this s
     not open. A note that qualifies a card is that card's footer (13.5/18 grey, 12px above, 16px below).
   - *Copy.* New screens keep every string in one module with `en` and `es`. Bilingual surfaces render both; the
     signed-in app renders English until a stored language is decided.
+- **Signed-out pages (Phase 5, built Nov 17, 2026; see `docs/product/review-2026-11-14/fixes/phase-5/README.md`).**
+  - *Front door.* The bare domain goes to sign-in. The panel carries the wordmark, the headline and three proof rows
+    at its foot; no eyebrow.
+  - *One card rule.* On all six pages the card holds the form and its one filled button. Alternatives are text links
+    24px under the card (`nav.q-auth__links`), never a second button inside it.
+  - *Phone band.* Row 1: wordmark and language pill. Row 2: the back link. Hit areas 48px.
+  - *Rhythm (desktop).* Title to subtitle 8, subtitle to first label 24, label to field 8, field to next label 20,
+    last field to button 24.
+  - *Words.* "Reset" is the one word for getting back in. Titles are imperatives ("Reset your password", "Choose a
+    new password", "Set up your account"); Sign in keeps its greeting.
+  - *Password pair.* Empty placeholders; each rule under its own field; a mismatch shows after leaving the field and
+    is announced once.
+  - *Finish.* A 56px teal-50 circle with a 28px bold check, a short title, one line, one filled button.
+  - *Policy pages.* The language pill on the band. Legal text is not translated without counsel: in Spanish the page
+    chrome is Spanish and one note says the document is in English. The footer no longer says "(en inglés)".
 - **States and menus.** The state card's empty kind is grey with a tray glyph; the warning glyph is for failures.
   Menu items have 10px corners inside the 16px menu (supersedes 8px near 1891).
 - **Motion.** The press scale runs only under `prefers-reduced-motion: no-preference`.
