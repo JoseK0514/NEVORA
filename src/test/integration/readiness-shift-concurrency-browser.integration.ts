@@ -10,6 +10,9 @@ import { hashPassword } from '../../lib/auth/password';
 import { readOwnerOperationalScope, assignOperationalScope } from '../../lib/company-access/operational-scope.server';
 import { generationNeedKey } from '../../lib/scheduling/generation-claims';
 import { getWorkspace } from '../../lib/data/workspaces';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { SigPendingLabel } from '../../components/signature/sig-button';
 
 type TracedRequest = { url(): string; method(): string; headers(): Record<string, string>; isNavigationRequest(): boolean; failure(): { errorText?: string } | null };
 
@@ -25,6 +28,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
   const q = <T = Record<string, unknown>>(text: string, values: unknown[] = []) => app.database.executor.query<T>({ text, values });
   const browsers: { close(): Promise<void> }[] = [], checks: string[] = [], errors: unknown[] = [], runtimeExecutions: unknown[] = [], runtimeControls: unknown[] = [];
   const runtimeTrace: Record<string, unknown>[] = [], runtimeFailureTraces: unknown[] = [], routerReadControls: unknown[] = [];
+  const deletionLocatorControls: Record<string, unknown>[] = [];
   let stage = 'seed', traceOmitted = 0, failureTracesOmitted = 0;
   const trace = (value: Record<string, unknown>) => { if (runtimeTrace.length === 240) { runtimeTrace.shift(); traceOmitted++; } runtimeTrace.push({ at: Math.round(performance.now()), stage, completedChecks: checks.length, ...value }); };
   let complete = false, failureShot: (() => Promise<void>) | undefined, serial = 0;
@@ -71,6 +75,38 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         runtimeExecutions.push(execution);
       }
       const p0 = await c0.newPage(), p1 = await c1.newPage(), p2 = await c2.newPage(), page = (n: number) => n === 2 ? p2 : n ? p1 : p0;
+      // A pending submit has a different accessible name. The form's stable
+      // identity must survive that label change, including after outcome loss.
+      const deletionForm = (target: typeof p0) => target.locator('form.c-shift__delete');
+      const unknownDeletionLock = async (target: typeof p0, version: string) => {
+        const deletion = deletionForm(target);
+        await deletion.getByRole('alert').getByText('Deletion outcome unknown', { exact: true }).waitFor();
+        expect(await deletion.count()).toBe(1);
+        expect(await deletion.locator('fieldset[disabled]').count()).toBe(1);
+        const submit = deletion.locator('fieldset button[type="submit"]');
+        expect(await submit.count()).toBe(1);
+        expect(await submit.evaluate((element: HTMLButtonElement) => element.matches(':disabled'))).toBe(true);
+        expect(await deletion.locator('[name="expectedReviewVersion"]').inputValue()).toBe(version);
+        return deletion;
+      };
+      const controlContext = await b0.newContext({ serviceWorkers: 'block' });
+      try {
+        const controlPage = await controlContext.newPage(); controlPage.setDefaultTimeout(20000);
+        for (const pending of [true, false]) {
+          const label = renderToStaticMarkup(createElement(SigPendingLabel, { pending, pendingText: 'Deleting…', children: 'Delete this shift' }));
+          await controlPage.setContent('<form id="edit-shift-form"><fieldset><input name="notes" value="Fictional retained draft"></fieldset></form><form class="c-shift__delete"><fieldset disabled><button type="submit">' + label + '</button></fieldset><input type="hidden" name="expectedReviewVersion" value="fictional-version"><div role="alert"><p>Deletion outcome unknown</p></div></form>');
+          const legacyMatches = await controlPage.locator('form').filter({ has: controlPage.getByRole('button', { name: 'Delete this shift', exact: true }) }).count();
+          expect(legacyMatches).toBe(pending ? 0 : 1);
+          const deletion = await unknownDeletionLock(controlPage, 'fictional-version');
+          // An unrelated disabled edit form must never prove deletion safety.
+          await controlPage.locator('#edit-shift-form fieldset').evaluate((element: HTMLFieldSetElement) => { element.disabled = true; });
+          await deletion.locator('fieldset').evaluate((element: HTMLFieldSetElement) => { element.disabled = false; });
+          await expect(unknownDeletionLock(controlPage, 'fictional-version')).rejects.toThrow();
+          await deletion.locator('fieldset').evaluate((element: HTMLFieldSetElement) => { element.disabled = true; });
+          await unknownDeletionLock(controlPage, 'fictional-version');
+          deletionLocatorControls.push({ engine, pendingLabel: pending, legacyMatches, canonicalForms: 1, disabledFieldsets: 1, nativeSubmitDisabled: true, unlockedDeletionRejectedWithUnrelatedDisabledEdit: true });
+        }
+      } finally { await controlContext.close(); }
       const pendingRouterReads = [new Set<object>(), new Set<object>(), new Set<object>()];
       const documentRequests = [0, 0, 0], drainReceipts: { page: number; pending: number }[] = [];
       for (const n of [0, 1, 2]) {
@@ -217,9 +253,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         expect(await q('SELECT id FROM shifts WHERE id=$1', [id])).toEqual([]);
         expect(await form(n).locator('[name="notes"]').inputValue()).toBe('Retained before lost deletion');
         if (n === 0) {
-          const deletion = page(n).locator('form').filter({ has: page(n).getByRole('button', { name: 'Delete this shift', exact: true }) });
-          expect(await deletion.locator('fieldset[disabled]').count()).toBe(1);
-          expect(await deletion.locator('[name="expectedReviewVersion"]').inputValue()).toBe(version);
+          const deletion = await unknownDeletionLock(page(n), version);
           await deletion.getByRole('button', { name: 'Reload current shift', exact: true }).waitFor();
           // Even a synthetic programmatic submit cannot bypass the uncertainty
           // fence; only explicit current-view review can create a new intent.
@@ -243,5 +277,5 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
     expect(await q('SELECT id FROM notifications')).toEqual([]);
     expect(errors).toEqual([]); complete = true;
   } catch (error) { await failureShot?.().catch(() => {}); throw error; }
-  finally { await Promise.all(browsers.map(b => b.close())); await app.close(); await writeFile(resolve(evidence, 'report.json'), JSON.stringify({ complete, checks, errors, runtimeControls, runtimeExecutions, routerReadControls, runtimeTrace, runtimeFailureTraces, traceOmitted, failureTracesOmitted, fictionalOnly: true, source: app.sourceHashes }, null, 2)); }
+  finally { await Promise.all(browsers.map(b => b.close())); await app.close(); await writeFile(resolve(evidence, 'report.json'), JSON.stringify({ complete, checks, errors, runtimeControls, runtimeExecutions, deletionLocatorControls, routerReadControls, runtimeTrace, runtimeFailureTraces, traceOmitted, failureTracesOmitted, fictionalOnly: true, source: app.sourceHashes }, null, 2)); }
 }, 480000);
