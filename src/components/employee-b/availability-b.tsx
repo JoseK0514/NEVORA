@@ -2,6 +2,7 @@ import './employee-b.css';
 import './time.css';
 import type {ReactNode} from 'react';
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
+import {HandshakeIcon} from '@phosphor-icons/react/dist/ssr/Handshake';
 import {BButtonLink,BCard,BHero,BScreen,BStack} from '../owner-b/b-kit';
 
 /* Availability on the phone, Direction B (Jose approved the mock "Employee mobile, Direction B", Nov 6, 2026): back to
@@ -15,7 +16,9 @@ export const availabilitySubB=(week:string|null,range?:string)=>week&&range?`Use
 export function AvailabilityB({sub,change,children}:{sub:string;/** Change one week's link (the usual week only). */change?:string|null;children?:ReactNode}){
  return <BScreen back>
   <BHero back={{href:'/app/schedule',label:'Schedule'}} title="Availability" titleId={AVAILABILITY_B_TITLE_ID} sub={sub}>
-   {change?<div className="b-hrow"><BButtonLink href={change} kind="glass"><CalendarBlankIcon size={16} weight="bold" aria-hidden="true"/>Change one week</BButtonLink></div>:null}
+   {/* Scheduling restrictions (U02): the times agreed with the manager are their own page, one tap from here. */}
+   <div className="b-hrow">{change?<BButtonLink href={change} kind="glass"><CalendarBlankIcon size={16} weight="bold" aria-hidden="true"/>Change one week</BButtonLink>:null}
+    <BButtonLink href="/app/availability/agreement" kind="glass"><HandshakeIcon size={16} weight="bold" aria-hidden="true"/>Agreed times</BButtonLink></div>
   </BHero>
   {children?<BStack>{children}</BStack>:null}
  </BScreen>;

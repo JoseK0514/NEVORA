@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type {ReactNode} from 'react';
+import {workCopy} from './work-copy';
 
 /* Small shared pieces for the Employee Direction B phone screens. */
 
@@ -12,9 +13,10 @@ export function wallTime(time: string) {
 }
 
 /** A day as a row's lead: "SAT" over "7". Today's number is teal. */
-export function BDay({date, today, past}: {date: string; today?: boolean; past?: boolean}) {
+export function BDay({date, today, past, pick}: {date: string; today?: boolean; past?: boolean;
+  /** Phase 4 (EM-013): the day the desktop Schedule's day card shows (the chosen day, else today). */ pick?: boolean}) {
   const at = utcDay(date);
-  return <span className={`b-day eb-day${today ? ' eb-day--today' : ''}${past ? ' eb-day--past' : ''}`} aria-hidden="true">
+  return <span className={`b-day eb-day${today ? ' eb-day--today' : ''}${past ? ' eb-day--past' : ''}${pick ? ' eb-day--pick' : ''}`} aria-hidden="true">
     <span>{new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', weekday: 'short'}).format(at)}</span><b>{at.getUTCDate()}</b>
   </span>;
 }
@@ -26,11 +28,13 @@ export function BValue({children, sub}: {children: ReactNode; sub?: ReactNode}) 
 
 /** "Customer Support · Main Office": each segment kept whole, and a "·" only between segments on the same line. Each
  * segment carries its dot in front; the line is pulled left by one dot's width and clipped, so the dot that would start
- * a line (the first, or one after a wrap) falls outside and never shows. Screen readers hear a comma between segments. */
+ * a line (the first, or one after a wrap) falls outside and never shows. Screen readers hear a comma between segments.
+ * Phase 4 (EM-015): a Lead's "Shift lead" marker reads "Lead" on phones, so the line stays one line. */
 export function Dotted({text}: {text: string}) {
   const parts = text.split(' · ');
   return <span className="eb-dots"><span className="eb-dots__in">{parts.map((part, index) =>
-    <span key={index} className="eb-dots__p"><span className="eb-dots__sep" aria-hidden="true">·</span>{index ? <span className="b-sr">, </span> : null}{part}</span>)}</span></span>;
+    <span key={index} className="eb-dots__p"><span className="eb-dots__sep" aria-hidden="true">·</span>{index ? <span className="b-sr">, </span> : null}
+      {part === 'Shift lead' ? <><span className="eb-lead-l">Shift lead</span><span className="eb-lead-s">{workCopy().leadShort}</span></> : part}</span>)}</span></span>;
 }
 
 /** A quiet line inside a card, under its rows (a hint, or what a list means). */

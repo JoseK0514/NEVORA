@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useMemo, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useId, useMemo, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpEmpty, CorpNav, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle } from '../corp/corp';
@@ -8,7 +8,8 @@ import './payroll-home-corp.css';
 import './payroll-corp.css';
 import type { OpenPayPeriod } from '@/lib/payroll/pay-calendar.server';
 import type { PayrollCapabilities, PayrollJob, PayrollMissingPeriod, PayrollRun, PayrollRunsResponse } from '@/lib/payroll/contracts';
-import { parsePayrollImport, readRuns } from './api';
+import { readRuns } from './api';
+import { payrollImportCopy } from '../payroll-import/copy';
 import { formatPayrollMoney, formatSignedPayrollMoney } from './money';
 import { usePayrollOperation, usePayrollResource } from './use-payroll';
 import { NativeReview } from './native-review';
@@ -31,7 +32,7 @@ import { ListChecksIcon } from '@phosphor-icons/react/dist/ssr/ListChecks';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { keepWhole } from '@/lib/keep-whole';
 
-export type PayrollView = 'home' | 'review' | 'fix' | 'people' | 'prepare' | 'history';
+export type PayrollView = 'home' | 'review' | 'fix' | 'people' | 'prepare' | 'history' | 'import';
 type Operation = ReturnType<typeof usePayrollOperation>;
 
 const statusLabels = { BLOCKED: 'Needs attention', WAITING_FOR_AMOUNTS: 'Waiting for amounts', REVIEW_REQUIRED: 'Review required', APPROVED: 'Approved' };
@@ -274,6 +275,7 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
   // Payroll settings is a "Settings" link on the title row.
   const isTab = (href: string) => !!tabs?.some(item => item.href === href);
   const exportsHref = current ? `/app/payroll-export?start=${current.period.startDate}&end=${current.period.endDate}` : '/app/payroll-export';
+  const paidHref = current ? `/app/payroll-export/paid-time?start=${current.period.startDate}&end=${current.period.endDate}` : '/app/payroll-export/paid-time';
   const exportsRow = <li className={isTab('/app/payroll-export') ? 'c-only-phone' : undefined}><CorpRow href={exportsHref} one title="Time exports" chevron /></li>;
   // Backend (Nov 15, 2026): this period's timecards, with the day approval opens while the period runs and "Pay period
   // ended" after (the words Things to do uses; it doesn't claim what's left to approve). It opens Timecards on that period.
@@ -357,6 +359,7 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
         </BCard>
         <BCard label="Payroll tools"><BList label="Payroll tools">
           <BRow href={exportsHref} lead={<BIcon tone="grey"><UploadSimpleIcon weight="bold" /></BIcon>} title="Time exports" sub="Hours by person and pay period" />
+          <BRow href={paidHref} lead={<BIcon tone="grey"><ListChecksIcon weight="bold" /></BIcon>} title={payrollImportCopy.en.exp.entry.title} sub={payrollImportCopy.en.exp.entry.line} />
         </BList></BCard>
       </>}
     </BStack>
@@ -516,43 +519,19 @@ function Jobs({ jobs, canApprove, locked, operation }: { jobs: PayrollJob[]; can
   </PayGroup>;
 }
 
-/** Provider or accountant amounts (historical provider runs): the neutral import, or a linked correction from one. */
+/** Provider or accountant amounts (historical provider runs): the way into the import (U01, /app/payroll/import), or
+ * into a linked correction once the payroll is approved. The file, the matching, the amounts and the save live there;
+ * this card no longer takes a file itself. */
 function ImportAmounts({ run, capabilities, operation, correction, primary }: { run: PayrollRun; capabilities: PayrollCapabilities; operation: Operation; correction: boolean; primary: boolean }) {
-  const [importText, setImportText] = useState('');
-  const [importError, setImportError] = useState('');
-  const fileId = useId();
-  const locked = operation.busy || (!!operation.pending && !operation.resuming);
-  const submit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); setImportError('');
-    const problem = flagProblems(event.currentTarget); if (problem) { setImportError(problem); return; }
-    try {
-      const amounts = parsePayrollImport(importText);
-      if (amounts.period.startDate !== run.period.startDate || amounts.period.endDate !== run.period.endDate || amounts.payday !== run.payday) throw new Error('The import period and payday must match this draft.');
-      if (correction) {
-        const reason = String(new FormData(event.currentTarget).get('correctionReason') ?? '').trim();
-        if (!reason) throw new Error('Explain the correction before creating its linked revision.');
-        void operation.submit({ action: 'CORRECT', runId: run.id, expectedRevision: run.revision, reason, amounts });
-      } else void operation.submit({ action: 'IMPORT', runId: run.id, expectedRevision: run.revision, amounts });
-    } catch (failure) { setImportError(failure instanceof Error ? failure.message : 'Check the payroll import.'); }
-  };
+  const entry = payrollImportCopy.en.imp.entry, locked = operation.busy || (!!operation.pending && !operation.resuming);
+  const href = `/app/payroll/import?run=${encodeURIComponent(run.id)}`;
   return <PayGroup id="payroll-import" label={correction ? 'Create a linked correction' : 'Import provider amounts'} aside={run.sourceName ? <span className="c-pay__aside">{run.sourceName}</span> : undefined}><CorpBody>
-    <form className="c-form" {...formKeys} onSubmit={submit}><fieldset className="c-pay__fieldset" disabled={locked}>
-      <p className="c-pay__detail">Use the neutral JSON import supplied by your payroll provider or accountant. {capabilities.internalCalculatorAvailable ? 'Historical provider runs retain their imported amounts. Native payroll does not replace the source of this historical review.' : 'NEVORA preserves imported amounts; a statutory calculator is unavailable.'}</p>
-      <div className="c-field"><label className="c-field__label" htmlFor={fileId}>Payroll import file</label><input id={fileId} className="c-in c-pay__file" type="file" accept="application/json,.json" onChange={async event => {
-        const file = event.target.files?.[0]; if (!file) return;
-        setImportError('');
-        try { if (file.size > 524288) throw new Error('Choose an import smaller than 512 KB.'); setImportText(await file.text()); } catch (failure) { setImportError(failure instanceof Error ? failure.message : 'The import file could not be read.'); }
-      }} /></div>
-      <details className="c-pay__more"><summary>Import format and contents</summary>
-        <p className="c-pay__detail">Required: schema NEVORA_PAYROLL_IMPORT_V1, currency USD, sourceName, sourceReference, period, payday and rows. Each row includes employeeId, grossMinor, employeeDeductions, employerContributions and netMinor. Each amount is a whole-cent string; each line includes code, label and amountMinor.</p>
-        <label className="c-field"><span className="c-field__label">Import JSON</span><textarea className="c-in" rows={8} value={importText} onChange={event => setImportText(event.target.value)} spellCheck={false} /></label>
-      </details>
-      {importText ? <p className="c-pay__detail">Import loaded in this page. Review employee amounts after the server validates it.</p> : null}
-      {correction ? <p className="c-pay__detail">{SETTLE_NOTE}</p> : null}
-      {correction ? <label className="c-field"><span className="c-field__label">Correction reason</span><textarea className="c-in" name="correctionReason" required maxLength={300} rows={3} /></label> : null}
-      {importError ? <p className="c-error" role="alert">{importError}</p> : null}
-      <CorpButton type="submit" full kind={primary ? undefined : 'secondary'} disabled={!importText}>{correction ? 'Create correction draft' : 'Validate and import amounts'}</CorpButton>
-    </fieldset></form>
+    <b className="c-pay__strong">{correction ? entry.titleCorrection : entry.title}</b>
+    <p className="c-pay__detail">{correction ? entry.lineCorrection : entry.line}</p>
+    <p className="c-pay__detail">{capabilities.internalCalculatorAvailable ? 'Historical provider runs retain their imported amounts. Native payroll does not replace the source of this historical review.' : 'NEVORA preserves imported amounts; a statutory calculator is unavailable.'}</p>
+    {correction ? <p className="c-pay__detail">{SETTLE_NOTE}</p> : null}
+    {locked ? <CorpButton full kind={primary ? undefined : 'secondary'} disabled>{correction ? entry.actionCorrection : entry.action}</CorpButton>
+      : <CorpButtonLink full href={href} kind={primary ? undefined : 'secondary'}>{correction ? entry.actionCorrection : entry.action}</CorpButtonLink>}
   </CorpBody></PayGroup>;
 }
 

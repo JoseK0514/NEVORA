@@ -28,6 +28,10 @@ import {timeZoneLabel} from '../lib/time-zone-label';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { CorpBody,CorpButtonLink,CorpCard,CorpNav,CorpPage,CorpPill,CorpStats,CorpTitle } from './corp/corp';
 import './reports-corp.css';
+import {scheduledDays} from '@/lib/reports/scheduled-days';
+import {reviewCopy} from './review-details/copy';
+import {Explain} from './review-details/explain';
+const t=reviewCopy();
 type State='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'paused'|'access_lost';
 /** IS-B1, IS-B29: a fresh snapshot is read a third of the way through the current one's life (and retried while there's time)
  * and swapped in when verified, so the report only empties if every read fails before expiry.
@@ -221,7 +225,7 @@ export function ReportsView({report,state,onThisWeek}:{report:PeriodReports|null
     <section className="nv-card" id="report-attendance" tabIndex={-1}><Heading title="Clock-in notes"/><div className="wb-body wb-body--tight"><p className="wb-note">Clock-ins compared with each person’s schedule and break targets. These notes don’t decide lateness, discipline or pay.</p>{report.attendance.state==='limited'&&<p className="wb-box wb-note wb-inline-icon" role="status"><InfoIcon size={18} weight="bold" aria-hidden="true"/><span>Some clock-ins couldn’t be compared with the schedule.</span></p>}</div>{report.attendance.groups.length?<ul className="wb-records">{report.attendance.groups.map(g=><li key={g.entryId}><span className="wb-record__title">{report.hoursByEmployee.find(e=>e.id===g.employeeId)?.name??'Former employee'}</span><span className="wb-record__meta">{report.hoursByLocation.find(l=>l.id===g.locationId)?.name??'Former location'}</span><ul className="wb-observations">{g.observations.map(o=><li key={o.id}>{o.message}</li>)}</ul></li>)}</ul>:report.attendance.state==='ready'?<Empty>Nothing to note for this period.</Empty>:null}</section>
     <div className="wb-insights-grid wb-insights-grid--two" id="report-changes" tabIndex={-1}>
      <section className="nv-card"><Heading title="Time off and can’t work" meta={requests.length?String(requests.length):undefined}/>{requests.length?<ul className="wb-records">{requests.map(r=><li key={`${r.kind}:${r.id}`}><span className="wb-record__head"><span className="wb-record__title">{r.employeeName}</span><Status tone={requestTone(r.status)}>{sentence(readable(r.status))}</Status></span><span className="wb-record__meta">{r.kind==='CALLOUT'?'Can’t work':'Time off'} · {keepWhole(r.endDate!==r.date?formatDateRange(r.date,r.endDate):formatDisplayDate(r.date))}</span></li>)}</ul>:<Empty>No requests in this period.</Empty>}</section>
-     <section className="nv-card"><Heading title="Shift changes and coverage"/><div className="wb-body"><p className="wb-text">{report.coverageReliability.observedCoverageRequests?`${report.coverageReliability.completedCoverageRequests} of ${report.coverageReliability.observedCoverageRequests} coverage requests filled.`:'No coverage requests in this period.'}{report.coverageReliability.unclassifiedEvents?` ${report.coverageReliability.unclassifiedEvents} older ${report.coverageReliability.unclassifiedEvents===1?'change':'changes'} couldn’t be classified.`:''}</p></div>{report.shiftChanges.length>0&&<details className="wb-disclosure wb-disclosure--ruled"><summary><span>View {report.shiftChanges.length} {report.shiftChanges.length===1?'change':'changes'}</span><CaretDownIcon size={20} weight="bold" aria-hidden="true"/></summary><ul className="wb-records">{report.shiftChanges.map(e=><li key={e.id}><span className="wb-record__meta">{keepWhole(formatDisplayDate(e.sourceDate))} · {changeText(e)}</span></li>)}</ul></details>}</section>
+     <section className="nv-card"><Heading title="Shift changes and coverage"/><div className="wb-body"><p className="wb-text">{report.coverageReliability.observedCoverageRequests?`${report.coverageReliability.completedCoverageRequests} of ${report.coverageReliability.observedCoverageRequests} coverage requests seen in this period were filled.`:t.coverNoneSeen}{report.coverageReliability.unclassifiedEvents?` ${report.coverageReliability.unclassifiedEvents} older ${report.coverageReliability.unclassifiedEvents===1?'change':'changes'} couldn’t be classified.`:''}</p></div>{report.shiftChanges.length>0&&<details className="wb-disclosure wb-disclosure--ruled"><summary><span>View {report.shiftChanges.length} {report.shiftChanges.length===1?'change':'changes'}</span><CaretDownIcon size={20} weight="bold" aria-hidden="true"/></summary><ul className="wb-records">{report.shiftChanges.map(e=><li key={e.id}><span className="wb-record__meta">{keepWhole(formatDisplayDate(e.sourceDate))} · {changeText(e)}</span></li>)}</ul></details>}</section>
      <section className="nv-card"><Heading title="Schedule stability"/><div className="wb-body"><p className="wb-text">{report.scheduleStability.revisionCount} {report.scheduleStability.revisionCount===1?'schedule change':'schedule changes'} published for this period.</p></div></section>
     </div>
     <section className="nv-card" id="report-approvals" tabIndex={-1}><Heading title="Approval status" meta={report.approvals.length?`${report.approvals.length} ${report.approvals.length===1?'timecard':'timecards'}`:undefined}/>{report.approvals.length?<ul className="wb-records">{report.approvals.map(c=><li key={c.employeeId}><span className="wb-record__head"><span className="wb-record__title">{c.employeeName}</span><Status tone={cardTone[c.state]??'neutral'}>{sentence(readable(c.state))}</Status></span><span className="wb-record__meta">{c.issueCount} {c.issueCount===1?'item':'items'} to review</span></li>)}</ul>:<Empty>No timecards to review in this period.</Empty>}<div className="nv-card__foot wb-foot-action"><span>Open this period in Timecards to review recorded time and approval details.</span><Link className="nv-link" href={href}>Review timecards<ArrowRightIcon size={18} weight="bold" aria-hidden="true"/></Link></div></section>
@@ -281,9 +285,19 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
  const lateKnown=report.attendance.state==='ready'||late>0;
  // Nov 14 inspection: the reason under an empty figure is one short line that says why it is empty (the same words
  // the printed report uses). The figure slot keeps the kit's grey dash: words there would wrap at figure size.
- const reasons=[lateKnown?null:'Some clock-ins couldn’t be compared with the schedule.',cover.observedCoverageRequests?null:'No cover requests this period.'].filter((line):line is string=>!!line);
+ // Phase 4 (U09): cover requests are a history of what was seen in the period. None seen is said as such, and older
+ // changes that could not be read mean there may be more; neither is a full staffing figure.
+ const reasons=[lateKnown?null:'Some clock-ins couldn’t be compared with the schedule.',cover.observedCoverageRequests?null:t.coverNoneSeen,cover.unclassifiedEvents?t.coverUnread(cover.unclassifiedEvents):null].filter((line):line is string=>!!line);
  const days=wholeWeek(recordedByDay(report),report.period);
- const most=days?Math.max(1,...days.map(day=>day.minutes??0)):1;
+ // Phase 4 (U09, OW-026): the published schedule's time per day, behind each day's recorded bar. Sparse: a day in the
+ // period with no row has no published schedule (no bar, and the line under the chart names it); never a zero.
+ const plan=days?scheduledDays(report,days.filter(day=>day.minutes!==null).map(day=>day.date)):null;
+ const planOf=(date:string)=>plan?.get(date);
+ const planMinutes=(date:string)=>{const day=planOf(date);return day?.state==='scheduled'?day.minutes:0;};
+ const most=days?Math.max(1,...days.map(day=>Math.max(day.minutes??0,planMinutes(day.date)))):1;
+ const noPlan=plan?[...plan].filter(([,day])=>day.state==='none').map(([date])=>date):[];
+ const unconfirmed=plan?[...plan].filter(([,day])=>day.state==='unconfirmed').map(([date])=>date):[];
+ const named=(dates:string[])=>dates.length<=3?dates.map(dayLabel).join(', '):plural(dates.length,'day','days');
  return <>
   <CorpCard id="ins-labor" label="Hours worked" aside={gap!==null&&gap!==BigInt(0)?<CorpPill tone={gap>BigInt(0)?'neutral':'amber'}>{`${gap>BigInt(0)?'':'+'}${spoken(gap)} ${gap>BigInt(0)?'under':'over'} plan`}</CorpPill>:undefined}>{/* Review B5 (NV-072): over plan is an amber chip */}
    <div className="c-ins__labor"><b className="c-num">{spoken(recorded)}</b>{planned!==null?<span className="c-num">{`of ${spoken(planned)} planned`}</span>:null}</div>
@@ -299,10 +313,11 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
      under the figures still says why it is missing. Time off always has a figure, so the card is never empty. */}
    <CorpStats items={[
     ...(lateKnown?[{label:'Late clock\u2011ins',value:late}]:[]),
-    ...(cover.observedCoverageRequests?[{label:'Cover filled',value:`${cover.completedCoverageRequests} of ${cover.observedCoverageRequests}`}]:[]),
+    ...(cover.observedCoverageRequests?[{label:t.coverSeen,value:t.coverSeenValue(cover.completedCoverageRequests,cover.observedCoverageRequests)}]:[]),
     {label:'Time off',value:offDays?plural(offDays,'day','days'):'0'},
    ]}/>
    {reasons.length?<p className="c-ins__reason">{reasons.join(' ')}</p>:null}
+   <div className="c-ins__explain"><Explain text={t.coverSeenExplain} label={t.explain}/></div>
   </CorpCard>
   {/* R13: the period's total is said once, in Hours worked; this card shows how it falls across the days. */}
   <CorpCard id="ins-days" label="Hours by day">
@@ -311,10 +326,21 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
     {days.map(day=><span key={day.date} className="c-ins__col">
      {/* Visual-craft J: a day with no recorded time gets no bar and no "0", only the baseline; days to come get nothing. */}
      {days.length<=7?<small className="c-num">{day.minutes?Math.round(day.minutes/60):''}</small>:null}
-     {day.minutes===null?null:day.minutes>0?<i style={{height:`${Math.round(day.minutes/most*100)}%`}}/>:<i className="c-ins__zero"/>}
+     <span className="c-ins__pair" data-plan={planOf(day.date)?.state}>
+      {planMinutes(day.date)>0?<b className="c-ins__plan" style={{height:`${Math.round(planMinutes(day.date)/most*100)}%`}}/>:null}
+      {day.minutes===null?null:day.minutes>0?<i style={{height:`${Math.round(day.minutes/most*100)}%`}}/>:<i className="c-ins__zero"/>}
+     </span>
      <em>{days.length<=7?dayName(day.date):''}</em>
     </span>)}
-   </div><ul className="c-sr" aria-label="Hours by day">{days.filter(day=>day.minutes!==null).map(day=><li key={day.date}>{dayLabel(day.date)}: {day.minutes?spoken(BigInt(day.minutes!)*MINUTE_NS):'no hours'}</li>)}</ul></>
+   </div><ul className="c-sr" aria-label="Hours by day">{days.filter(day=>day.minutes!==null).map(day=>{const planned=planOf(day.date);
+    return <li key={day.date}>{t.dayRecorded(dayLabel(day.date),day.minutes?spoken(BigInt(day.minutes!)*MINUTE_NS):'no hours')}{planned?`, ${planned.state==='scheduled'?t.dayScheduled(spoken(BigInt(planned.minutes)*MINUTE_NS)):planned.state==='none'?t.noPublishedSchedule.toLowerCase():t.scheduleUnconfirmed.toLowerCase()}`:''}</li>;})}</ul>
+   {plan?<div className="c-ins__legend">
+    <p className="c-ins__keys"><span><i data-key="recorded" aria-hidden="true"/>{t.recordedLegend}</span><span><i data-key="plan" aria-hidden="true"/>{t.scheduledLegend}</span></p>
+    {noPlan.length?<p className="c-ins__reason">{`${t.noPublishedSchedule}: ${named(noPlan)}`}</p>:null}
+    {unconfirmed.length?<p className="c-ins__reason">{`${t.scheduleUnconfirmed}: ${named(unconfirmed)}`}</p>:null}
+    {report.scheduledByDay?.state==='unpublished'?<p className="c-ins__reason">{t.scheduleIncomplete}</p>:null}
+    <div className="c-ins__explain"><Explain text={t.scheduledExplain} label={t.explain}/></div>
+   </div>:null}</>
     :days&&days.some(day=>(day.minutes??0)>0)?<div className="c-empty c-empty--card"><b className="c-empty__title">Not enough data yet</b><span className="c-empty__body">The chart appears once two days have recorded time.</span></div>
     :<div className="c-empty c-empty--card"><b className="c-empty__title">No recorded time in this period</b><span className="c-empty__body">Hours appear here as people clock in and out.</span></div>}
    <details className="c-ins__counted">

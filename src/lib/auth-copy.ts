@@ -152,12 +152,13 @@ const en = {
     noScript: "JavaScript is required to open your secure email invitation. Use an enabled browser or contact your Owner.",
     passwordsMatch: "Passwords match", sameInBoth: "Enter the same password in both fields.", inviteHelp: "Get invitation help",
   },
-  /** Review B4: the forms' own messages replace the browser's bubble (the server still checks everything). */
+  /** Review B4: the forms' own messages replace the browser's bubble (the server still checks everything).
+   * U11 (Nov 17, 2026): no closing period, as the Phase 3 forms rule says for a field error. */
   invalid: {
-    employeeId: "Enter your Employee ID.", password: "Enter your password.", email: "Enter your recovery email.",
-    emailFormat: "Enter an email address like name@example.com.", code: "Paste your recovery code.",
-    codeShort: "Paste the complete recovery code.", newPassword: "Create a password of at least 8 characters.",
-    confirm: "Type the password again.",
+    employeeId: "Enter your Employee ID", password: "Enter your password", email: "Enter your recovery email",
+    emailFormat: "Enter an email address like name@example.com", code: "Paste your recovery code",
+    codeShort: "Paste the complete recovery code", newPassword: "Create a password of at least 8 characters",
+    confirm: "Type the password again",
   },
   notFound: {
     title: "Page not found", eyebrow: "Error 404",
@@ -304,10 +305,10 @@ const es: AuthCopy = {
     passwordsMatch: "Las contraseñas coinciden", sameInBoth: "Escribe la misma contraseña en ambos campos.", inviteHelp: "Ayuda con la invitación",
   },
   invalid: {
-    employeeId: "Escribe tu ID de empleado.", password: "Escribe tu contraseña.", email: "Escribe tu correo de recuperación.",
-    emailFormat: "Escribe un correo como nombre@ejemplo.com.", code: "Pega tu código de recuperación.",
-    codeShort: "Pega el código de recuperación completo.", newPassword: "Crea una contraseña de al menos 8 caracteres.",
-    confirm: "Vuelve a escribir la contraseña.",
+    employeeId: "Escribe tu ID de empleado", password: "Escribe tu contraseña", email: "Escribe tu correo de recuperación",
+    emailFormat: "Escribe un correo como nombre@ejemplo.com", code: "Pega tu código de recuperación",
+    codeShort: "Pega el código de recuperación completo", newPassword: "Crea una contraseña de al menos 8 caracteres",
+    confirm: "Vuelve a escribir la contraseña",
   },
   notFound: {
     title: "Página no encontrada", eyebrow: "Error 404",

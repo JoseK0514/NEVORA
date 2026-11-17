@@ -262,8 +262,11 @@
 /* An invalid field gets the red edge, its label turns red, and its own message sits under it (NV-189, NV-190). */
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-in[aria-invalid="true"]:not(#ab-none) { box-shadow: inset 0 0 0 2px var(--b-red) !important; border-color: var(--b-red) !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-fl:has(> .q-in[aria-invalid="true"], > .q-in__wrap > .q-in[aria-invalid="true"]) > label:not(#ab-none) { color: var(--b-red) !important; }
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__invalid { display: block; margin: 6px 0 0; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--b-red); letter-spacing: 0; text-align: left; }
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__invalid:empty { display: none; }
+/* U11 (Nov 17, 2026): the one field error style of the Phase 3 forms rule: a 16px bold warning glyph, red 13.5/18, no
+ * closing period. The line shows only while its text is not empty. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__invalid { display: flex; align-items: flex-start; gap: 6px; margin: 6px 0 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 500; color: var(--b-red); letter-spacing: 0; text-align: left; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__invalid > svg { flex: none; width: 16px; height: 16px; margin-top: 1px; color: var(--b-red); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__invalid:has(> span:empty) { display: none; }
 
 /* Password rules: grey "not yet", green "done", red "check" (NV-195, NV-312). */
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__rules, .ma-rules):not(#ab-none) { display: flex; flex-direction: column; gap: 6px; padding: 0; list-style: none; font-size: 14px !important; line-height: 20px; color: var(--b-grey) !important; }
@@ -454,3 +457,37 @@
 @media (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
   #mobile-access-page.q-auth .ma-hero { display: none !important; }
 }
+
+/* ---------- U11, access and recovery (Nov 17, 2026) ----------
+ * The sign-in look's part of activation, recovery and passkey guidance. The shared pieces (the steps line, the facts,
+ * the "what happens" list, the Support reference block) are drawn by src/components/access-recovery/access-recovery.css;
+ * these rules only seat them in the sign-in card. Presentation only. */
+/* Under the passkey button: what a passkey is, then the state of the last try. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__what { margin: 10px 0 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); text-align: center; text-wrap: balance; letter-spacing: 0; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note { display: grid; gap: var(--b-space-2); margin: var(--b-space-12) 0 0; padding: 10px var(--b-gutter); border-radius: var(--b-radius-field); background: var(--b-quiet); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-ink2); text-align: left; letter-spacing: 0; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note > b { font-weight: 600; color: var(--b-ink); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note[data-tone="wait"] { background: var(--b-amber-50); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note[data-tone="wait"] > b { color: var(--b-amber); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note[data-tone="stop"] { background: var(--b-red-50); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note[data-tone="stop"] > b { color: var(--b-red); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note > .q-link { justify-self: start; display: inline-flex; align-items: center; min-height: 44px !important; margin: 0 0 -10px; font-size: var(--b-fs-meta) !important; }
+/* A device that can't use a passkey: the note takes the button's place at the card's foot. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey--none .q-passkey__note { margin-top: 0; }
+/* An outcome that is not confirmed is amber (check), never red (failed). */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__receipt--wait:not(#ab-none) { margin: 0 0 18px !important; background: var(--b-amber-50) !important; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__receipt--wait h2 { display: flex; align-items: center; gap: var(--b-space-8); color: var(--b-amber) !important; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__receipt--wait p { color: var(--b-ink2) !important; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__receipt :is(p + p) { margin-top: var(--b-space-8); }
+/* The link inside a refusal keeps a 44px target without adding height to the block. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__receipt:is(.q-auth__receipt--wait, .q-auth__receipt--error) > .q-link { display: inline-flex; align-items: center; min-height: 44px !important; margin: var(--b-space-2) 0 -10px; }
+/* The next step under a refusal, inside its alert. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__alert .ar-alert__next { display: block; margin-top: var(--b-space-4); font-weight: 400; color: var(--b-ink2); }
+/* A state card's main action is the same teal pill as a form's. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__card > .q-btn:not(.q-btn--sec, .q-btn--quiet, .q-btn--link) { width: 100% !important; height: 52px !important; margin: var(--b-space-16) 0 0 !important; border-radius: var(--b-radius-pill) !important; background: var(--b-band-solid) !important; color: var(--b-on-band) !important; font-weight: 700 !important; box-shadow: var(--b-elev-glow) !important; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__card > .q-auth__note { text-align: left; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__card > .q-auth__note + .q-auth__note { margin-top: var(--b-space-8); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__note.ar-next { margin-top: var(--b-space-12); text-align: center; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); }
+/* The steps line leads the card. On the band (phones and tablets) the card's first child is the steps line. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(form, .q-card) > .ar-steps { margin: 0 0 18px; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__form > .ar-before { margin-bottom: 18px; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__form > .ar-ref { margin-bottom: 18px; }

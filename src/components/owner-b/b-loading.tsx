@@ -32,12 +32,17 @@ const MANAGEMENT: Entry[] = [
   ["/app/timecards/corrections", { ...detail, title: "Time corrections", cards: [{ rows: 4, avatar: true }] }],
   ["/app/timecards", { title: "Timecards", sub: true, strip: true, band: "strip", frame: "wide", cards: [{ head: true, rows: 6, avatar: true }] }],
   // Time exports and Payroll settings carry the Payroll tabs: title at 88, band 296, cards 24px under it.
+  // U01: the two step-by-step pages are forms in the sheet frame (back row, band 196, one card).
+  ["/app/payroll-export/paid-time", { ...form, title: "Paid time export", cards: [{ head: true, lines: 2 }, { rows: 4 }] }],
+  ["/app/payroll/import", { ...form, title: "Import pay", cards: [{ head: true, lines: 3 }, { rows: 2 }] }],
   ["/app/payroll-export", { title: "Time exports", sub: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ head: true, lines: 3 }, { rows: 3 }] }],
   [/^\/app\/payroll\/.+/, { back: true, band: "short", frame: "read", lift: false, cards: [{ head: true, lines: 3 }, { rows: 3 }] }],
   // Payroll: a title, its scope line and the tabs, on the strip rung (the frequency line is hidden from 768px).
   ["/app/payroll", { title: "Payroll", sub: true, strip: true, band: "strip", frame: "rail-desktop", cards: [{ head: true, rows: 3 }, { rail: true, head: true, lines: 3 }] }],
   ["/app/employees/new", { ...detail, cards: [{ head: true, lines: 4 }] }],
   ["/app/employees/import", form],
+  // Scheduling restrictions (U02): back row, title and the person's name (band 224), then the week card and one more.
+  [/^\/app\/employees\/[^/]+\/restrictions$/, { ...detail, title: "When they can be scheduled", cards: [{ head: true, rows: 7 }, { head: true, lines: 2 }] }],
   [/^\/app\/employees\/.+/, detail],
   // Team: Home's two columns from 1024px (People, then the Team tools rail), one column on tablets.
   ["/app/employees", { sub: true, strip: true, action: true, band: "strip", frame: "rail-desktop", cards: [{ rows: 8, avatar: true }, { rail: true, rows: 5 }] }],
@@ -73,6 +78,8 @@ const EMPLOYEE: Entry[] = [
   // Swap shift, Offer for cover and Can't work are forms: back row, band 196.
   [/^\/app\/exchange\/.+/, form],
   ["/app/exchange", { title: "Pick up and swap", back: true, strip: true, band: "strip", frame: "pair", lift: false, cards: [{ rows: 3 }, { rows: 3 }] }],
+  // Scheduling restrictions (U02): the Employee's own agreement, opened from Availability.
+  ["/app/availability/agreement", { title: "Agreed times", back: true, sub: true, band: "sub", frame: "read", lift: false, cards: [{ head: true, rows: 7 }, { head: true, lines: 2 }] }],
   ["/app/availability", { title: "Availability", back: true, sub: true, band: "sub", frame: "wide", lift: false, cards: [{ rows: 7 }] }],
   // Notifications and Updates are sidebar pages: title at 88, a strip, band 296, the first card lifted 52px over it.
   ["/app/notifications", { title: "Notifications", strip: true, band: "strip", frame: "read", cards: [{ rows: 5 }] }],

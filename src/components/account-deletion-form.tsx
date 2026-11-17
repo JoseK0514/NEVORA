@@ -16,6 +16,10 @@ import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
 import { EmployeeDeletionView, type DeletionView } from "./employee-mobile/deletion";
 import { shown as onScreen } from "./employee-b/account-host";
+import { LastOwnerCard } from "./access-recovery/last-owner-card";
+import { supportReferenceOfState } from "./access-recovery/support-reference-seam";
+import { SupportReference } from "./access-recovery/support-reference";
+import type { AuthLang } from "@/lib/auth-copy";
 
 type Account = { name: string; role: string; employeeId: string; roleKey?: "OWNER" | "MANAGER" | "LEAD" | "EMPLOYEE" };
 type Done = Extract<DeletionFormState, { reference: string }>;
@@ -30,8 +34,10 @@ const unresolved = (token: string) => <mark className="legal-unresolved">[CONFIR
  * A rejected action call (lost reply, server error) is unknown, not a failure: the page keeps the form and asks
  * the same question again, which returns the saved request if there is one.
  * Quiet (v4, inspection Oct 24): grouped rows on the white page for every role; the wording is unchanged. */
-export function AccountDeletionForm({ account, period, retention, existing, owner = false, workplaceName = null }: {
+export function AccountDeletionForm({ account, period, retention, existing, owner = false, workplaceName = null, lang = "en" }: {
   account: Account; period: string | null; retention: string | null; existing: Done | null; owner?: boolean; workplaceName?: string | null;
+  /** U11: the language of the last-Owner card and the Support reference (the signed-in app is English today). */
+  lang?: AuthLang;
 }) {
   const [confirmed, setConfirmed] = useState(false);
   const [shown, setShown] = useState(false);
@@ -108,6 +114,16 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
     </>;
   }
 
+  // U11 (Nov 17, 2026): the server refused because this is the only Owner who can sign in. No request was created and
+  // no session ended, so this is a calm state card with the two real paths, not an error. A reload shows the form again
+  // for the deliberate retry.
+  if (state.kind === "unavailable" && state.reason === "LAST_OWNER") {
+    return <>{header}
+      <LastOwnerCard supportEmail={SUPPORT_EMAIL} teamHref={owner ? "/app/employees" : null} lang={lang} outcomeRef={outcome} supportReference={supportReferenceOfState(state)} />
+      {workplace}
+    </>;
+  }
+
   const passwordError = state.kind === "wrong_password" ? "That password isn’t right. Try again." : errors.password;
   const checking = retry && state.kind !== "failed";
   return <>{header}
@@ -162,6 +178,8 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
         <p className="q-help">{state.kind === "failed" ? "Nothing was saved and you’re still signed in." : state.kind === "unavailable" ? <>Email <a className="q-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> and we’ll help you.</>
           : state.kind === "busy" ? (checking ? "Wait about 15 minutes, then check again. We still haven’t confirmed whether your request was saved." : "Wait about 15 minutes, then try again. Nothing was sent.")
           : <>Your request may have been saved. Check your request to find out; if it wasn’t saved, it’s sent again. You can also email <a className="q-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.</>}</p>
+        {/* U11: the Support reference of this one reply, when the action carries one (none today). */}
+        <SupportReference reference={supportReferenceOfState(state)} lang={lang} id="deletion-reference" />
       </div> : null}
       <button type="submit" className="q-btn q-deletion__confirm" disabled={pending || !confirmed}>{pending ? (checking ? "Checking…" : "Sending request…") : checking ? "Check my request" : "Confirm deletion request"}</button>
       <Link className="q-btn q-btn--quiet q-deletion__keep" href="/app/profile" aria-disabled={pending || undefined} tabIndex={pending ? -1 : undefined}

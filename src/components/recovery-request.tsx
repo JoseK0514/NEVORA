@@ -10,14 +10,27 @@ import {AuthValidation,FieldInvalid} from '@/components/auth-premium/auth-valida
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {EnvelopeSimpleIcon} from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
+import {WifiSlashIcon} from '@phosphor-icons/react/dist/ssr/WifiSlash';
+import {ACCESS_COPY} from './access-recovery/copy';
+import {AccessSteps} from './access-recovery/access-steps';
+import {recoveryIssue,recoveryNext} from './access-recovery/recovery-guidance';
+import {SupportReference} from './access-recovery/support-reference';
 
 /** Presentation only: AccountRecovery owns the existing request and privacy contract.
  * Quiet (v4, approved Oct 23): the title and one line, two fields, Request recovery, then I have a code and
  * Can't use your email? (which opens its answer in place). */
-export function RecoveryRequest({hydrated,busy,done,message,onSubmit,lang='en',mobileAccess=false,onReview,draft}:{
+export function RecoveryRequest({hydrated,busy,done,message,onSubmit,lang='en',mobileAccess=false,onReview,draft,supportReference=null}:{
  hydrated:boolean;busy:boolean;done:boolean;message:string;onSubmit:FormEventHandler<HTMLFormElement>;lang?:AuthLang;mobileAccess?:boolean;onReview?:()=>void;draft?:{employeeId:string;email:string};
+ /** U11: the Support reference of the failed reply on screen, or null. */
+ supportReference?:string|null;
 }){
- const t=AUTH_COPY[lang];
+ const t=AUTH_COPY[lang],u=ACCESS_COPY[lang].recovery;
+ // U11 (Nov 17, 2026): the page says what will happen before the person starts, where they are (the steps line), and
+ // after the request only what is true: an email was asked for, never that it was sent or arrived; how many times they
+ // can ask; and under every refusal the next thing to do. An offline attempt sends nothing and is amber, not red.
+ const issue=recoveryIssue('request',message),next=recoveryNext(ACCESS_COPY[lang],'request',message);
+ // An offline attempt is a wait, not a refusal, so it does not take the refusal's id (and its red).
+ const noteId=issue==='offline'?'recovery-offline':'recovery-error';
  const feedback=useRef<HTMLDivElement>(null);
  useEffect(()=>{if(message)feedback.current?.focus();},[message,done]);
  const mobile=useMobilePresentation(mobileAccess,'recovery-employee-id recovery-email');
@@ -33,32 +46,37 @@ export function RecoveryRequest({hydrated,busy,done,message,onSubmit,lang='en',m
  // if nothing arrives, the way back to sign in, and the form again with what was typed.
  const kept=draft&&(draft.employeeId||draft.email)?draft:typed;
  return <>
-  <div className="q-hd"><h1 id="recovery-title">{done?t.checkEmail.title:t.forgotTitle}</h1><p>{done?t.checkEmail.sub:t.quiet.forgotSub}</p></div>
+  <div className="q-hd"><h1 id="recovery-title">{done?t.checkEmail.title:t.forgotTitle}</h1><p>{done?u.requestedSub:t.quiet.forgotSub}</p></div>
   {done?<div className="q-card q-auth__card">
+   <AccessSteps journey="recovery" current={2} lang={lang}/>
    <span className="q-auth__mark" aria-hidden="true"><EnvelopeSimpleIcon size={28} weight="bold"/></span>
    <div className="q-auth__receipt" ref={feedback} role="status" tabIndex={-1} aria-labelledby="recovery-title">
-    {message?<p>{authMessage(lang,message)}</p>:null}<p>{t.checkEmail.expires}</p>
+    {message?<p>{authMessage(lang,message)}</p>:null}<p>{u.notConfirmed} {t.checkEmail.expires}</p>
    </div>
-   <p className="q-auth__note">{t.checkEmail.nothing}</p>
+   <p className="q-auth__note">{t.checkEmail.sub} {t.checkEmail.nothing}</p>
+   <p className="q-auth__note">{u.askAgain}</p>
    <Link href="/login" className="q-btn">{t.backToSignIn}</Link>
    {onReview?<button type="button" className="q-btn q-btn--quiet" onClick={onReview}>{t.checkEmail.review}</button>:null}
   </div>:<>
    <noscript><p className="q-help q-auth__alert">{t.requestNoScript}</p></noscript>
    <form className="q-auth__form" onSubmit={event=>{const fields=new FormData(event.currentTarget);setTyped({employeeId:String(fields.get('employeeId')??'').trim(),email:String(fields.get('email')??'').trim()});onSubmit(event);}}>
     <AuthValidation/>
-    {message?<div id="recovery-error" className="q-error q-auth__alert" ref={feedback} role="alert" tabIndex={-1}><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{authMessage(lang,message)}</span></div>:null}
+    <AccessSteps journey="recovery" current={1} lang={lang}/>
+    {message&&issue==='offline'?<div id="recovery-offline" className="q-auth__alert q-auth__alert--wait" ref={feedback} role="alert" tabIndex={-1}><WifiSlashIcon size={20} weight="bold" aria-hidden="true"/><span>{u.offline}</span></div>
+    :message?<><div id="recovery-error" className="q-error q-auth__alert" ref={feedback} role="alert" tabIndex={-1}><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span><span>{authMessage(lang,message)}</span>{next?<span className="ar-alert__next">{next}</span>:null}</span></div><SupportReference reference={supportReference} lang={lang} id="recovery-reference"/></>
+    :<ol className="ar-before" aria-label={u.beforeLabel}>{u.before.map((line,index)=><li key={line}><span className="ar-before__n" aria-hidden="true">{index+1}</span><span>{line}</span></li>)}</ol>}
     <fieldset className="q-auth__fields" disabled={!hydrated||busy}>
      <div className="q-fl">
       <label htmlFor="recovery-employee-id">{t.employeeId}</label>
       <input id="recovery-employee-id" className="q-in" name="employeeId" defaultValue={kept.employeeId} placeholder={t.quiet.idPlaceholder} required maxLength={200}
-       autoComplete="username" autoCapitalize="none" spellCheck={false} aria-describedby={message?'recovery-error recovery-employee-id-invalid':'recovery-employee-id-invalid'}
+       autoComplete="username" autoCapitalize="none" spellCheck={false} aria-describedby={message?`${noteId} recovery-employee-id-invalid`:'recovery-employee-id-invalid'}
        data-msg-required={t.invalid.employeeId}/>
       <FieldInvalid id="recovery-employee-id"/>
      </div>
      <div className="q-fl">
       <label htmlFor="recovery-email">{t.recoveryEmail}</label>
       <input id="recovery-email" className="q-in" name="email" type="email" defaultValue={kept.email} placeholder={t.quiet.emailPlaceholder} required maxLength={254}
-       autoComplete="email" autoCapitalize="none" spellCheck={false} aria-describedby={message?'recovery-email-hint recovery-error recovery-email-invalid':'recovery-email-hint recovery-email-invalid'}
+       autoComplete="email" autoCapitalize="none" spellCheck={false} aria-describedby={message?`recovery-email-hint ${noteId} recovery-email-invalid`:'recovery-email-hint recovery-email-invalid'}
        data-msg-required={t.invalid.email} data-msg-invalid={t.invalid.emailFormat}/>
       <span className="q-sr" id="recovery-email-hint">{t.recoveryEmailHint}</span>
       <FieldInvalid id="recovery-email"/>

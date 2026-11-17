@@ -10,7 +10,14 @@ vi.mock('next/link', () => ({default: ({children, prefetch: _prefetch, ...props}
 const {ThingsToDoPage} = await import('./manager-inbox-corp');
 
 const item = (id: string, type: ActionItem['type'], category: ActionItem['category'], priority: ActionItem['priority'] = 'REVIEW', extra: Partial<ActionItem> = {}): ActionItem =>
-  ({id, type, category, priority, title: `Title ${id}`, detail: `Detail ${id}`, href: '/app/requests?tab=pending&requestId=r1', ...extra} as ActionItem);
+  ({id, type, category, priority, title: `Title ${id}`, detail: `Detail ${id}`, href: '/app/requests?tab=pending&requestId=r1', ...typedReview(type, extra), ...extra} as ActionItem);
+/** Phase 4 (U03): every timecard the server sends carries typed review facts (its own period, and whether this person
+ * may review it). A fixture without them would be an older payload, which is never counted. */
+const typedReview = (type: string, extra: Partial<ActionItem>) => {
+  if (type !== 'TIMECARD' || extra.review) return {};
+  const url = new URL(extra.href ?? '/app/timecards', 'https://nevora.invalid');
+  return {review: reviewFacts(false, false, 'TIMECARD', {startDate: url.searchParams.get('start') ?? '2026-10-12', endDate: url.searchParams.get('end') ?? '2026-10-18'})};
+};
 const ready = (items: ActionItem[], limitedAttendance = false): ActionCenter => ({
   state: 'ready', observedAt: '2026-10-16T14:30:00Z', validForMs: 30000, weekStart: '2026-10-12', items, limitedAttendance,
   counts: {total: items.length, scheduling: 0, requests: 0, timekeeping: 0},
@@ -27,8 +34,8 @@ const items = [
   item('EXCHANGE:e1', 'EXCHANGE', 'requests'),
   item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT', {title: 'Position not covered at Condado', detail: '2026-10-16 · 1:00 PM–3:00 PM · Barista: 1 open', dateTime: '2026-10-16T13:00', href: '/app/schedule?shift=gap'}),
   item('fix1', 'TIME_CORRECTION', 'timekeeping', 'REVIEW', {href: '/app/timecards?correction=fix1', review:reviewFacts(false,false,'TIME_CORRECTION')}),
-  item('card1', 'TIMECARD', 'timekeeping', 'REVIEW', {title: 'Period timecard needs review', detail: 'Marco Silva · Oct 12 – 18 · Fix recorded-time issues before finalizing.', href: '/app/timecards#timecard-e1'}),
-  item('card2', 'TIMECARD', 'timekeeping', 'REVIEW', {title: 'Period timecard needs review', detail: 'Priya Lal · Oct 12 – 18 · Fix recorded-time issues before finalizing.', href: '/app/timecards#timecard-e2'}),
+  item('card1', 'TIMECARD', 'timekeeping', 'REVIEW', {title: 'Period timecard needs review', detail: 'Marco Silva · Oct 5 – 11 · Fix recorded-time issues before finalizing.', href: '/app/timecards#timecard-e1', review: reviewFacts(false, false, 'TIMECARD', {startDate: '2026-10-05', endDate: '2026-10-11'})}),
+  item('card2', 'TIMECARD', 'timekeeping', 'REVIEW', {title: 'Period timecard needs review', detail: 'Priya Lal · Oct 5 – 11 · Fix recorded-time issues before finalizing.', href: '/app/timecards#timecard-e2', review: reviewFacts(false, false, 'TIMECARD', {startDate: '2026-10-05', endDate: '2026-10-11'})}),
   item('target1', 'TARGET_MISSING', 'scheduling', 'MISSING_INPUT', {href: '/app/schedule/settings#target-hours'}),
   item('target2', 'TARGET_MISSING', 'scheduling', 'MISSING_INPUT', {href: '/app/schedule/settings#target-hours'}),
 ];
@@ -130,7 +137,7 @@ it('reads an open shift and a pay period the way the board does', () => {
   // Review B2 (NV-002): timecards that wait are on Things to do now (Waiting for review), not on Later and done.
   const html = page({snapshot: ready(items)});
   // Timecards: one row per period, naming whose cards wait; it opens Time.
-  expect(html).toMatch(/<a class="c-row" href="\/app\/timecards" aria-label="Timecards to approve, Oct 12 – 18: Marco, Priya">/);
+  expect(html).toMatch(/<a class="c-row" href="\/app\/timecards" aria-label="Timecards to approve, Oct 5 – 11, pay period ended: Marco, Priya">/);
   // Nov 14, 2026 inspection (BR-7): the row says how many cards it holds, then whose.
   expect(html).toContain('<span>2\u00a0timecards · Marco, Priya</span>');
 });
