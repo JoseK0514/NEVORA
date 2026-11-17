@@ -16,7 +16,7 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
   const browser=await runtime[engine].launch({headless:true}),context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block',reducedMotion:'reduce'});
   let page=await context.newPage();
   const errors:string[]=[],external:string[]=[],checks:string[]=[],network:{event:string;url:string;failure?:string}[]=[];
-  let complete=false;
+  let complete=false,leaseControl:Record<string,unknown>|null=null;
   try{
     vi.stubEnv('NEVORA_PAYROLL_ENABLED','true');
     await seedOwnedApp(app.database.executor);const fixture=await seedPayrollFixture(app.database.executor,{breaks:true,automaticPublish:false});
@@ -52,12 +52,23 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     await page.getByText('Amounts saved',{exact:true}).waitFor();expect(await q('SELECT payload FROM payroll_period_populations ORDER BY revision')).toEqual(populationBefore);
     checks.push('Rematched and corrected CSV saves canonical reviewed JSON; missing-person choices do not replace persisted population facts');
     const period=fixture.period,exportPath='/app/payroll-export/paid-time?start='+period.startDate+'&end='+period.endDate;
-    // The real read is given a shorter observation lifetime; no source rows or success values are invented.
-    await context.route('**/api/timecards',async(route:any)=>{const actual=await route.fetch(),body=await actual.json();if(body.state==='ready')body.validForMs=1000;await route.fulfill({response:actual,json:body});});
+    // Fault injection uses actual API rows and a controlled monotonic clock in a separate context.
+    // The complete saved import/export/manifest/approval journey below keeps its normal browser clock.
+    const leaseContext=await browser.newContext({viewport:{width:1440,height:1000},storageState:await context.storageState(),serviceWorkers:'block',reducedMotion:'reduce'});
+    const leasePage=await leaseContext.newPage();observe(leasePage);
+    try{
+      await leaseContext.route('**/*',async(route:any)=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){external.push(url.origin);await route.abort();}else await route.continue();});
+      await leasePage.clock.install();await leasePage.goto(app.url+exportPath,{waitUntil:'domcontentloaded'});await leasePage.locator('.pim-person').first().waitFor();
+      await leasePage.clock.pauseAt(Date.now()+1000);
+      await leaseContext.route('**/api/timecards',async(route:any)=>{const actual=await route.fetch(),body=await actual.json();if(body.state==='ready')body.validForMs=1000;await route.fulfill({response:actual,json:body});});
+      await leasePage.evaluate(()=>window.dispatchEvent(new Event('blur')));await expect.poll(()=>leasePage.locator('.pim-person').count()).toBe(0);
+      await leasePage.evaluate(()=>window.dispatchEvent(new Event('focus')));await leasePage.locator('.pim-person').first().waitFor();
+      const shown=await leasePage.locator('.pim-person').count();expect(shown).toBeGreaterThan(0);
+      await leasePage.clock.runFor(1001);await expect.poll(()=>leasePage.locator('.pim-person').count()).toBe(0);expect(await leasePage.locator('.pim').count()).toBe(1);
+      leaseControl={realApiRows:true,separateContext:true,controlledClock:true,validForMs:1000,advancedMs:1001,shown,retired:0};
+    }finally{await leaseContext.close();}
+    checks.push('A shortened real data observation expires under controlled time while its operational frame remains current; genuine write journey has an unmodified clock');
     await visit(exportPath);await page.locator('.pim-person').first().waitFor();
-    await expect.poll(()=>page.locator('.pim-person').count(),{timeout:4000}).toBe(0);
-    await context.unroute('**/api/timecards');await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.locator('.pim-person').first().waitFor();
-    checks.push('The data observation expires even while operational authority is still current');
     // Private timecards must leave the DOM immediately on loss of focus; a pending refresh cannot extend the lease.
     await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
     await expect.poll(()=>page.locator('.pim-person').count()).toBe(0);
@@ -101,5 +112,5 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     const pdf=await context.request.get(app.url+'/api/payroll/documents/'+statements[0].id,{headers:{'x-nevora-payroll':'1'}});expect(pdf.status()).toBe(200);expect((await pdf.body()).subarray(0,4).toString()).toBe('%PDF');
     checks.push('Actual reviewed approval, local PDF worker and separately confirmed statement publication; no delivery worker');
     expect(errors).toEqual([]);expect(external).toEqual([]);complete=true;
-  }finally{vi.unstubAllEnvs();if(!complete)await page.screenshot({path:resolve(evidence,'failure.png'),fullPage:true}).catch(()=>{});await context.close();await browser.close();await app.close();await writeFile(resolve(evidence,'joined-report.json'),JSON.stringify({complete,checks,errors,external,network,source:app.sourceHashes,data:'Owned fictional PostgreSQL only; real save/export/manifest, no forced success'},null,2));}
+  }finally{vi.unstubAllEnvs();if(!complete)await page.screenshot({path:resolve(evidence,'failure.png'),fullPage:true}).catch(()=>{});await context.close();await browser.close();await app.close();await writeFile(resolve(evidence,'joined-report.json'),JSON.stringify({complete,checks,errors,external,network,leaseControl,source:app.sourceHashes,data:'Owned fictional PostgreSQL only; real save/export/manifest, no forced success'},null,2));}
 });

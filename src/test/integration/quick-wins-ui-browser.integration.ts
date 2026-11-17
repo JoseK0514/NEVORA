@@ -63,7 +63,10 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
             const response = await visit(path);
             expect(response?.status(), engine + ' ' + actor + ' ' + path).toBe(200);
             await page.locator('main').getByRole('heading', { level: 1 }).first().waitFor();
-            await page.waitForLoadState('networkidle');
+            // Background action-center reads remain live. Wait on rendered read state, not global silence.
+            await page.evaluate(()=>document.fonts.ready);
+            await expect.poll(()=>page.locator('main [aria-busy="true"]:visible').count(),{timeout:15000}).toBe(0);
+            if(path==='/app')await expect.poll(()=>page.locator('#b-home-on').innerText(),{timeout:15000}).toContain('Fictional Owner');
             for (const width of [320, 390, 768, 1440]) {
               await page.setViewportSize({ width, height: 1000 });
               expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2), engine + ' ' + actor + ' ' + path + ' ' + width).toBe(true);
@@ -155,8 +158,6 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
           throw error;
         } finally {
           releaseRefresh();
-          await page.evaluate(() => window.dispatchEvent(new Event('pagehide'))).catch(() => {});
-          await page.waitForLoadState('networkidle').catch(() => {});
           await context.close();
         }
       }
