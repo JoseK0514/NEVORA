@@ -189,8 +189,8 @@ export function createBusinessClient(fetcher: Fetcher = (input, init) => fetch(i
     if (response.ok) { try { return { kind: "ok", result: parseBusinessResult(body), receivedAt: Date.now() }; } catch { return lost; } }
     // Only the closed envelope is believed. An unknown code, an extra field or a raw upstream message is not an answer.
     if (!isBusinessErrorResult(body)) return response.status === 401 || response.status === 403 ? { kind: "refused", code: "forbidden", detail: null } : lost;
-    // The server may stop after it saved (deadline, capacity, a busy lock): for a write these are never "failed".
-    if (body.code === "unavailable" || body.code === "cancelled" || body.code === "busy") return lost;
+    // Receipt finalization can fail after execute committed. Conflict or a flag change is also uncertain for writes.
+    if (body.code === "unavailable" || body.code === "cancelled" || body.code === "busy" || write && (body.code === "conflict" || body.code === "disabled")) return lost;
     return { kind: "refused", code: body.code, detail: body.detail ?? null };
   }
   return {

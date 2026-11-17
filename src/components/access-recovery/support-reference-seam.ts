@@ -1,16 +1,8 @@
-/* The one seam between the screens and Codex's support-reference reader (contract B10, Nov 16, 2026).
- *
- * `src/lib/support-reference.ts` is not in Development yet, so today no screen can have a reference: this reader always
- * answers null and every "Support reference" block renders nothing.
- *
- * TO SWITCH ON (one line, when the module lands): replace the `export const readSupportReference` line below with
- *   export { readSupportReference } from "@/lib/support-reference";
- * Its signature is the same (`(response: Pick<Response, "headers">) => string | null`): it reads X-Nevora-Request-Id from
- * that one response and returns it only when it is a UUID. Nothing else changes: the callers already pass the failed
- * response and bind the result to that one failure. */
+/* Bind each failed response to its own validated, content-free diagnostic header. */
+import { readSupportReference } from "@/lib/support-reference";
+export { readSupportReference } from "@/lib/support-reference";
 export type SupportReferenceReader = (response: Pick<Response, "headers">) => string | null;
 
-export const readSupportReference: SupportReferenceReader = () => null;
 
 /** The reference of one failed response, or null. Never throws, never keeps anything between calls, and never falls
  * back to another kind of ID (an operation, a `DEL-…` deletion reference). Only failures are read: a success has none. */

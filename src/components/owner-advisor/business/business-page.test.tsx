@@ -199,9 +199,11 @@ describe("problems and recovery", () => {
   it("still isn't called failed when the check finds no receipt, and offers no resend once the exact command is gone", () => {
     const still = card({ meta, payload, status: "unconfirmed" });
     expect(still).toContain("No confirmation yet. It may still go through.");
-    expect(still).toContain("Stop checking");
+    expect(still).not.toContain("Stop checking");
+    expect(still).toContain("Check again");
+    expect(card({ meta, payload: null, status: "unconfirmed" })).not.toContain("Stop checking");
     const reloaded = card({ meta, payload: null, status: "uncertain" });
-    expect(reloaded).toContain("Check it, then look at the list before adding it again.");
+    expect(reloaded).toContain("Keep this change’s reference and check again. Do not add it as a new change while it is unconfirmed.");
     expect(reloaded).not.toContain("Send again");
     expect(card({ meta, payload: null, status: "checking" })).toContain("Checking your change");
     expect(card({ meta, payload: null, status: "foreign" })).toContain("It was made under another sign-in.");

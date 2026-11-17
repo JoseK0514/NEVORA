@@ -84,9 +84,12 @@ describe("Support reference", () => {
     expect(html).toContain('role="group" aria-labelledby="x-label"');
     if (lang === "es") expect(html).not.toMatch(/Support reference|Copy|password/);
   });
-  it("the seam answers null today, so no screen shows a reference until Codex's reader lands", () => {
-    expect(readSupportReference(response({ "X-Nevora-Request-Id": REFERENCE }))).toBeNull();
-    expect(supportReferenceOf(response({ "X-Nevora-Request-Id": REFERENCE }))).toBeNull();
+  it("reads only the failed response own validated support header", () => {
+    expect(readSupportReference(response({ "X-Nevora-Request-Id": REFERENCE }))).toBe(REFERENCE);
+    expect(supportReferenceOf(response({ "X-Nevora-Request-Id": REFERENCE }))).toBe(REFERENCE);
+    expect(readSupportReference(response({ "X-Nevora-Request-Id": "DEL-7KQ2M9XA" }))).toBeNull();
+    expect(supportReferenceOf(response({ "X-Nevora-Request-Id": REFERENCE }, true))).toBeNull();
+    expect(supportReferenceOf(response({}))).toBeNull();
   });
   it("with a reader, binds a reference to the one failed response it came from and validates it", () => {
     const read = (reply: Pick<Response, "headers">) => reply.headers.get("X-Nevora-Request-Id");

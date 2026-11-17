@@ -92,6 +92,9 @@ describe("the transport", () => {
       expect(write).toEqual({ kind: "uncertain" });
       expect(reading).toEqual({ kind: "unavailable" });
       expect(list).toEqual({ kind: "unavailable" });
+    } else if (code === "conflict" || code === "disabled") {
+      expect(write).toEqual({ kind: "uncertain" });
+      for (const outcome of [reading, list]) expect(outcome).toEqual({ kind: "refused", code, detail: null });
     } else for (const outcome of [write, reading, list]) expect(outcome).toEqual({ kind: "refused", code, detail: null });
   });
   it("keeps the safe validation detail and nothing else", async () => {
