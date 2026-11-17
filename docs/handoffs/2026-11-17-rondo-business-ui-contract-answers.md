@@ -201,3 +201,19 @@ Claude can build the page/card against the qualified Development commit, preserv
 question 1's parser correction, cover EN/ES and mobile/keyboard states, and return
 an exact reviewed UI commit for combined API/browser acceptance. Existing evidence
 of backend and transport behavior is not acceptance of a page that is not built.
+
+## CI qualification correction
+
+Candidate `e82c43af663a4d3f1835f929e659900e6b217ab8` completed the 392-case
+adviser SQL suite successfully on GitHub. Its outer release-postgres job then
+hit 30 minutes during the next suite, leaving later required suites unrun.
+The previous successful Development run took 26m21s; this runner took 17m25s
+for release SQL and 10m52s for adviser SQL alone. This is an orchestration
+budget defect, not a passing release or a failed test assertion.
+
+The outer job budget is now bounded at 45 minutes. Every original command,
+required context, artifact requirement and individual test/SQL deadline is
+preserved. A RED/GREEN workflow regression protects a 40–50-minute outer budget
+and the existing tests continue to reject skipped/ignored mandatory checks.
+The original cancelled run is retained. A new immutable candidate must earn all
+checks; its passing SHA, rather than the cancelled candidate, is the UI base.

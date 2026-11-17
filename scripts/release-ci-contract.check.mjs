@@ -451,3 +451,17 @@ test('central billing is a mandatory source-bound two-browser gate in the combin
  assert.equal(gate.env.NEVORA_CENTRAL_BILLING_EVIDENCE,'${{ runner.temp }}/nevora-step4-local/central-billing');
  const index=job.steps.indexOf(gate);assert(index>job.steps.findIndex(step=>step.name==='Combined company lifecycle and recovery gate'));assert(index<job.steps.findIndex(step=>step.name==='Upload combined company lifecycle evidence'));
 });
+
+test('release SQL has a bounded overall budget for all mandatory sequential suites',()=>{
+ // Nov 17: the 30-minute outer job cancelled after two passing suites consumed
+ // 17m25s + 10m52s, leaving no time for leadership, conversations and payroll.
+ // This is runner orchestration headroom, not a test timeout or failure waiver.
+ const verify=job=>{
+  assert(Number.isInteger(job['timeout-minutes']));
+  assert(job['timeout-minutes']>=40&&job['timeout-minutes']<=50,'Release SQL needs 40–50 minutes for all sequential gates');
+  assert.equal(job.if,undefined);assert.equal(job['continue-on-error'],undefined);
+  for(const step of job.steps)assert.equal(step['continue-on-error'],undefined);
+ };
+ const job=workflow.jobs['release-postgres'];verify(job);
+ for(const minutes of [0,30,51,undefined])assert.throws(()=>verify({...job,'timeout-minutes':minutes}));
+});
