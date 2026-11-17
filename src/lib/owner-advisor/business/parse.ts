@@ -1,9 +1,9 @@
-import type { BusinessCommand, BusinessCoverageMap, BusinessFinanceQuery, BusinessQuery, BusinessRecord, BusinessSourceSpec, BusinessVersionInput, BusinessWindow } from './contracts';
+import type { BusinessCommand, BusinessCoverageMap, BusinessFinanceQuery, BusinessQuery, BusinessRecord, BusinessSourceSpec, BusinessVersionInput, BusinessWindow, BusinessValidationField } from './contracts';
 import { minor } from './money';
 import { parseBusinessCsv, parseCsvMapping } from './csv';
 export const BUSINESS_INPUT_BYTES = 512 * 1024;
 export function checkpoint(signal?: AbortSignal): void { signal?.throwIfAborted(); }
-export function invalid(field = 'input'): never { throw Error(`INVALID_INPUT:${field}`); }
+export function invalid(field: BusinessValidationField = 'input'): never { throw Error(`INVALID_INPUT:${field}`); }
 export function object(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value) || ![Object.prototype, null].includes(Object.getPrototypeOf(value))) return invalid();
   return value as Record<string, unknown>;

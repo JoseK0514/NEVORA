@@ -4,6 +4,9 @@ vi.mock('@/lib/auth/session', () => ({ getSession: state.session, requireSession
 vi.mock('@/lib/data/sql-executor', () => ({ neonNotificationExecutor: () => state.executor }));
 vi.mock('./service.server', async original => ({ ...await original<typeof import('./service.server')>(), businessSourceService: state.service, readBusinessVersion: state.version }));
 import { businessHttp } from './http.server';
+import { AdvisorError } from '../contracts';
+import { BusinessValidationError } from './service.server';
+import { BUSINESS_ERROR_CODES, isBusinessErrorResult } from './contracts';
 const url = 'http://localhost/api/owner/advisor/business';
 const headers = () => new Headers({ 'x-nevora-business-evidence': '1', origin: 'http://localhost', 'content-type': 'application/json' });
 const request = (body: BodyInit = '{}', overrides: Record<string, string> = {}) => new Request(url, { method: 'POST', headers: { ...Object.fromEntries(headers()), ...overrides }, body });
@@ -79,4 +82,28 @@ it('returns private no-store JSON and does not expose raw upstream errors', asyn
   state.service.mockRejectedValue(Error('Private SQL and secret must stay internal'));
   const unavailable = await businessHttp(request()); expect(unavailable.status).toBe(503);
   expect(await unavailable.text()).toBe('{"state":"error","code":"unavailable"}');
+});
+
+it('does not expose non-business adviser error codes through the business HTTP contract', async () => {
+  state.service.mockRejectedValue(new AdvisorError('provider_failed'));
+  const result = await businessHttp(request());
+  expect(result.status).toBe(503);
+  expect(await result.json()).toEqual({ state: 'error', code: 'unavailable' });
+});
+
+it.each(BUSINESS_ERROR_CODES)('returns the closed %s error envelope with its expected status', async code => {
+  state.service.mockRejectedValue(new AdvisorError(code));
+  const response = await businessHttp(request()), result = await response.json();
+  const status = code === 'forbidden' ? 403 : code === 'invalid' ? 400 : code === 'conflict' ? 409 : code === 'limit' ? 429 : 503;
+  expect(response.status).toBe(status);
+  expect(isBusinessErrorResult(result)).toBe(true);
+  expect(result).toEqual({ state: 'error', code });
+});
+it('preserves only the safe validation detail envelope for field and row feedback', async () => {
+  const detail = { code: 'INVALID_INPUT', field: 'duplicate_record', row: 2, line: null } as const;
+  state.service.mockRejectedValue(new BusinessValidationError(detail));
+  const response = await businessHttp(request()), result = await response.json();
+  expect(response.status).toBe(400);
+  expect(isBusinessErrorResult(result)).toBe(true);
+  expect(result).toEqual({ state: 'error', code: 'invalid', detail });
 });

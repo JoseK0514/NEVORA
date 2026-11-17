@@ -3,7 +3,7 @@ import type { SqlStatement } from '@/lib/notifications/types';
 import type { AdvisorStore } from '../store.server';
 import { ownerGuards } from '../authority.server';
 import { AdvisorError } from '../contracts';
-import type { BusinessCatalog, BusinessCommand, BusinessMapView, BusinessReceipt, BusinessVersionView } from './contracts';
+import type { BusinessCatalog, BusinessCommand, BusinessLocation, BusinessReviewReceipt, BusinessMapView, BusinessReceipt, BusinessVersionView } from './contracts';
 import { businessDigest } from './digest.server';
 import { parseBusinessCsv } from './csv';
 import { checkpoint, normalizeBusinessVersion, parseBusinessCommand, parseBusinessMap, uuid } from './parse';
@@ -39,18 +39,18 @@ export class BusinessStore {
   }
   async catalog(signal: AbortSignal, options: { includeLocations?: boolean } = {}): Promise<BusinessCatalog> {
     await this.available(signal);
-    const [raw] = await this.guarded<{ state: { revision: number; evidenceRevision: number; mapRevision: number } | null; sources: BusinessCatalog['sources']; versions: BusinessVersionView[]; maps: (Omit<BusinessMapView, 'input'> & { payload: string | null })[]; locations: string[] }>({
+    const [raw] = await this.guarded<{ state: { revision: number; evidenceRevision: number; mapRevision: number } | null; sources: BusinessCatalog['sources']; versions: BusinessVersionView[]; maps: (Omit<BusinessMapView, 'input'> & { payload: string | null })[]; locations: BusinessLocation[] }>({
       text: `SELECT (SELECT jsonb_build_object('revision',revision,'evidenceRevision',evidence_revision,'mapRevision',map_revision) FROM owner_advisor_business_state WHERE workspace_id=$1) AS state,
        COALESCE((SELECT jsonb_agg(jsonb_build_object('sourceId',source_id,'revision',revision,'name',name,'domain',domain,'namespace',namespace,'currency',currency,'scale',scale,'maxAgeMinutes',max_age_minutes,'active',active,'deleted',deleted) ORDER BY source_id) FROM owner_advisor_business_sources WHERE workspace_id=$1 AND NOT deleted),'[]') AS sources,
        COALESCE((SELECT jsonb_agg(jsonb_build_object('sourceId',v.source_id,'versionId',v.version_id,'timeZone',time_zone,'digest',digest,'status',status,'current',EXISTS(SELECT 1 FROM owner_advisor_business_windows x WHERE x.workspace_id=v.workspace_id AND x.version_id=v.version_id),'input',NULL,'publishEligible',owner_id=$2 AND status='DRAFT' AND completeness='COMPLETE' AND time_zone=(SELECT time_zone FROM workspaces WHERE id=$1),'publishedAt',CASE WHEN published_at IS NULL THEN NULL ELSE to_char(published_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') END,'metadata',jsonb_build_object('window',jsonb_build_object('fromAt',to_char(from_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),'toAt',to_char(to_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')),'sourceAsOf',to_char(source_as_of AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),'completeness',completeness,'rowCount',row_count,'payloadBytes',payload_bytes)) ORDER BY v.version_id) FROM owner_advisor_business_versions v WHERE workspace_id=$1 AND payload IS NOT NULL),'[]') AS versions,
        COALESCE((SELECT jsonb_agg(jsonb_build_object('mapVersionId',map_version_id,'digest',digest,'status',status,'current',current,'payload',CASE WHEN current THEN payload ELSE NULL END) ORDER BY map_version_id) FROM owner_advisor_business_maps WHERE workspace_id=$1 AND payload IS NOT NULL),'[]') AS maps,
-       COALESCE((SELECT jsonb_agg(id ORDER BY id) FROM (SELECT id FROM locations WHERE $3::boolean AND workspace_id=$1 AND active ORDER BY id LIMIT 10001) active_locations),'[]') AS locations`, values: [this.workspaceId, this.ownerId, options.includeLocations !== false],
+       COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'name',name) ORDER BY id) FROM (SELECT id,name FROM locations WHERE $3::boolean AND workspace_id=$1 AND active ORDER BY id LIMIT 10001) active_locations),'[]') AS locations`, values: [this.workspaceId, this.ownerId, options.includeLocations !== false],
     }, signal);
     if (!raw || raw.locations.length > 10000 || Buffer.byteLength(JSON.stringify(raw)) > 2*1024*1024) throw new AdvisorError('limit');
     const versions = raw.versions;
     const sources = raw.sources.map(s => ({ ...s, scopeDigest: businessDigest({ sourceId: s.sourceId, revision: s.revision, versions: versions.filter(v => v.sourceId === s.sourceId).map(v => ({ versionId: v.versionId, digest: v.digest, status: v.status, current: v.current })) }) }));
     return { revision: raw.state?.revision ?? 0, evidenceRevision: raw.state?.evidenceRevision ?? 0, mapRevision: raw.state?.mapRevision ?? 0, timeZone: this.advisor.original.workspace.timeZone,
-      activeLocationIds: raw.locations, sources, versions, maps: raw.maps.map(({ payload, ...m }) => ({ ...m, input: payload ? (() => { const input = parseBusinessMap(JSON.parse(payload)); if (businessDigest(input) !== m.digest) throw new AdvisorError('conflict'); return input; })() : null })) };
+      activeLocationIds: raw.locations.map(l => l.id), activeLocations: raw.locations, sources, versions, maps: raw.maps.map(({ payload, ...m }) => ({ ...m, input: payload ? (() => { const input = parseBusinessMap(JSON.parse(payload)); if (businessDigest(input) !== m.digest) throw new AdvisorError('conflict'); return input; })() : null })) };
   }
   /** Metadata count/UTF-8 admission precedes fetching any full record payload. */
   async materialize(catalog: BusinessCatalog, ids: string[], signal: AbortSignal): Promise<BusinessCatalog> {
@@ -92,9 +92,13 @@ export class BusinessStore {
     if (!row?.payload) throw new AdvisorError('forbidden'); const input = parseBusinessMap(JSON.parse(row.payload)); if (businessDigest(input) !== row.digest) throw new AdvisorError('conflict');
     return { mapVersionId: row.map_version_id, digest: row.digest, status: row.status, current: row.current, input };
   }
+  async reviewReceipt(id: string, signal: AbortSignal): Promise<BusinessReviewReceipt> {
+    const [row] = await this.guarded<{ id: string; expiresAt: string }>({ text: 'SELECT read_receipt_id AS id, expires_at::text AS "expiresAt" FROM owner_advisor_business_read_receipts WHERE workspace_id=$1 AND owner_id=$2 AND request_id=$3::uuid AND authority=$4 AND session_hash=$5 AND expires_at>clock_timestamp()', values: [this.workspaceId, this.ownerId, uuid(id), this.advisor.original.authority, this.advisor.proof.sessionTokenHash] }, signal);
+    if (!row || !Number.isFinite(Date.parse(row.expiresAt))) throw new AdvisorError('conflict');
+    return { readReceiptId: row.id, readReceiptExpiresAt: new Date(row.expiresAt).toISOString() };
+  }
   async reviewHandle(id: string, signal: AbortSignal): Promise<string> {
-    const [row] = await this.guarded<{ id: string }>({ text: 'SELECT read_receipt_id AS id FROM owner_advisor_business_read_receipts WHERE workspace_id=$1 AND owner_id=$2 AND request_id=$3::uuid AND authority=$4 AND session_hash=$5 AND expires_at>clock_timestamp()', values: [this.workspaceId, this.ownerId, uuid(id), this.advisor.original.authority, this.advisor.proof.sessionTokenHash] }, signal);
-    if (!row) throw new AdvisorError('conflict'); return row.id;
+    return (await this.reviewReceipt(id, signal)).readReceiptId;
   }
   async reserveInspection(identity: string, queryHash: string, context: unknown, signal: AbortSignal): Promise<BusinessInspection> {
     if (!/^[a-f0-9]{64}$/.test(queryHash)) throw new AdvisorError('conflict'); uuid(identity);

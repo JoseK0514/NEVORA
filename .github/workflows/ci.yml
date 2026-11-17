@@ -535,7 +535,10 @@ jobs:
   release-postgres:
     name: release-postgres
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    # All mandatory SQL suites run sequentially. Nov 17 exceeded 30 minutes
+    # after successful release + advisor suites, before the remaining gates.
+    # Preserve individual test/SQL deadlines and allow bounded runner headroom.
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

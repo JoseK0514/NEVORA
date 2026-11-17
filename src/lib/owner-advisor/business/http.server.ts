@@ -6,8 +6,13 @@ import { isOperationalAuthorizationError } from '@/lib/company-access/operationa
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { correctionBoundary, correctionJson, correctionResponseHeaders } from '@/lib/time-corrections/http.server';
 import { AdvisorError } from '../contracts';
+import { isBusinessErrorCode, type BusinessErrorCode, type BusinessErrorResult, type BusinessValidationDetail } from './contracts';
 import { BUSINESS_INPUT_BYTES, uuid } from './parse';
 import { businessExecution, businessSourceService, BusinessValidationError, readBusinessVersion } from './service.server';
+function businessErrorJson(code: BusinessErrorCode, status: number, detail?: BusinessValidationDetail): Response {
+  const result: BusinessErrorResult = { state: 'error', code, ...(detail ? { detail } : {}) };
+  return correctionJson(result, status);
+}
 async function readBody(request: Request, signal: AbortSignal): Promise<unknown> {
   if (request.body?.locked) throw new AdvisorError('invalid');
   const reader = request.body?.getReader(); if (!reader) throw new AdvisorError('invalid');
@@ -27,18 +32,18 @@ export async function businessHttp(request: Request, navigation?: { params: Prom
   const signal = AbortSignal.any([request.signal, AbortSignal.timeout(20000)]); let abort = () => {};
   const execute = async () => {
     signal.throwIfAborted(); const write = request.method === 'POST';
-    if (navigation ? request.method !== 'GET' : !['GET','POST'].includes(request.method)) return correctionJson({ state: 'error', code: 'invalid' }, 405);
+    if (navigation ? request.method !== 'GET' : !['GET','POST'].includes(request.method)) return businessErrorJson('invalid', 405);
     let boundaryRequest = request;
     if (navigation) {
       const headers = new Headers(request.headers), site = headers.get('sec-fetch-site');
-      if (site && !['same-origin','none'].includes(site)) return correctionJson({ state: 'error', code: 'forbidden' }, 403);
+      if (site && !['same-origin','none'].includes(site)) return businessErrorJson('forbidden', 403);
       headers.set('x-nevora-business-evidence','1'); if (site === 'none') headers.delete('sec-fetch-site');
       boundaryRequest = new Request(request.url, { headers, signal: request.signal });
     }
     const denied = correctionBoundary(boundaryRequest, write, 'x-nevora-business-evidence', BUSINESS_INPUT_BYTES);
-    if (denied) return correctionJson({ state: 'error', code: denied === 403 ? 'forbidden' : denied === 503 ? 'unavailable' : 'invalid' }, denied);
+    if (denied) return businessErrorJson(denied === 403 ? 'forbidden' : denied === 503 ? 'unavailable' : 'invalid', denied);
     const session = await getSession(); signal.throwIfAborted();
-    if (!session) return correctionJson({ state: 'error', code: 'forbidden' }, 401);
+    if (!session) return businessErrorJson('forbidden', 401);
     if (session.role !== 'OWNER') throw new AdvisorError('forbidden');
     const proof = await requireSessionMutationProof(); signal.throwIfAborted();
     if (proof.employee.id !== session.id || proof.employee.role !== 'OWNER') throw new AdvisorError('forbidden');
@@ -59,8 +64,8 @@ export async function businessHttp(request: Request, navigation?: { params: Prom
       if (request.body && !request.body.locked) void request.body.cancel().catch(() => {}); reject(new AdvisorError('cancelled'));
     }; signal.addEventListener('abort', abort, { once: true }); if (signal.aborted) abort(); })]);
   } catch (error) {
-    if (isRedirectError(error)) return correctionJson({ state: 'error', code: 'forbidden' }, 401);
-    const code = isManagementAuthorizationError(error) || isOperationalAuthorizationError(error) ? 'forbidden' : signal.aborted ? 'cancelled' : error instanceof AdvisorError ? error.code : 'unavailable';
-    return correctionJson({ state: 'error', code, ...(error instanceof BusinessValidationError ? { detail: error.detail } : {}) }, code === 'forbidden' ? 403 : code === 'invalid' ? 400 : code === 'conflict' ? 409 : code === 'limit' ? 429 : 503);
+    if (isRedirectError(error)) return businessErrorJson('forbidden', 401);
+    const code = isManagementAuthorizationError(error) || isOperationalAuthorizationError(error) ? 'forbidden' : signal.aborted ? 'cancelled' : error instanceof AdvisorError && isBusinessErrorCode(error.code) ? error.code : 'unavailable';
+    return businessErrorJson(code, code === 'forbidden' ? 403 : code === 'invalid' ? 400 : code === 'conflict' ? 409 : code === 'limit' ? 429 : 503, error instanceof BusinessValidationError ? error.detail : undefined);
   } finally { signal.removeEventListener('abort', abort); }
 }
