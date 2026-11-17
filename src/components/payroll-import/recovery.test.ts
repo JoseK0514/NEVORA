@@ -74,8 +74,8 @@ describe("answers from the payroll routes", () => {
     expect(classifyPayrollAnswer(503, fixtures.imports.recovery.unknownResponse, original.key)).toEqual({ kind: "unknown" });
     expect(classifyPayrollAnswer(0, undefined, original.key)).toEqual({ kind: "unknown" });
     expect(classifyPayrollAnswer(500, { error: "ANYTHING" }, original.key)).toEqual({ kind: "unknown" });
-    expect(classifyPayrollAnswer(403, {}, original.key)).toEqual({ kind: "denied", signedOut: false });
-    expect(classifyPayrollAnswer(401, {}, original.key)).toEqual({ kind: "denied", signedOut: true });
+    expect(classifyPayrollAnswer(403, {}, original.key)).toEqual({ kind: "unknown" });
+    expect(classifyPayrollAnswer(401, {}, original.key)).toEqual({ kind: "unknown" });
   });
   it("reads a receipt look-up: found, not there yet, or not readable", () => {
     expect(classifyReceiptLook(200, fixtures.imports.recovery.receiptRead, original.key).kind).toBe("saved");

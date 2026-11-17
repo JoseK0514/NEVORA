@@ -53,10 +53,10 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     checks.push('Rematched and corrected CSV saves canonical reviewed JSON; missing-person choices do not replace persisted population facts');
     const period=fixture.period,exportPath='/app/payroll-export/paid-time?start='+period.startDate+'&end='+period.endDate;
     // The real read is given a shorter observation lifetime; no source rows or success values are invented.
-    await page.route('**/api/timecards',async(route:any)=>{const actual=await route.fetch(),body=await actual.json();if(body.state==='ready')body.validForMs=1000;await route.fulfill({response:actual,json:body});});
+    await context.route('**/api/timecards',async(route:any)=>{const actual=await route.fetch(),body=await actual.json();if(body.state==='ready')body.validForMs=1000;await route.fulfill({response:actual,json:body});});
     await visit(exportPath);await page.locator('.pim-person').first().waitFor();
     await expect.poll(()=>page.locator('.pim-person').count(),{timeout:4000}).toBe(0);
-    await page.unroute('**/api/timecards');await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.locator('.pim-person').first().waitFor();
+    await context.unroute('**/api/timecards');await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.locator('.pim-person').first().waitFor();
     checks.push('The data observation expires even while operational authority is still current');
     // Private timecards must leave the DOM immediately on loss of focus; a pending refresh cannot extend the lease.
     await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
@@ -79,7 +79,18 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     checks.push('Real paid-time export with each break explicitly decided and real exact-plan manifest');
     await visit('/app/payroll/review?run='+fixture.runId);
     await page.getByRole('checkbox',{name:/I reviewed revision/}).check();
-    const approving=page.waitForResponse((r:any)=>r.url()===app.url+'/api/payroll/runs'&&r.request().method()==='POST'&&r.request().postDataJSON().action==='APPROVE');await page.getByRole('button',{name:'Approve payroll',exact:true}).click();const approved=await approving;expect(approved.status(),await approved.text()).toBe(200);
+    let approvalId='';let resolveApproval:(id:string)=>void=()=>{},rejectApproval:(error:unknown)=>void=()=>{};const approvalCommitted=new Promise<string>((resolve,reject)=>{resolveApproval=resolve;rejectApproval=reject;});
+    await page.route('**/api/payroll/runs',async(route:any)=>{const body=route.request().postDataJSON();if(route.request().method()==='POST'&&body?.action==='APPROVE'){try{const actual=await route.fetch();expect(actual.status(),await actual.text()).toBe(200);await route.abort('connectionreset');resolveApproval(body.operationId);}catch(error){rejectApproval(error);}}else await route.continue();});
+    await page.getByRole('button',{name:'Approve payroll',exact:true}).click();approvalId=await approvalCommitted;
+    await page.getByRole('button',{name:'Check action reference',exact:true}).waitFor();
+    const recoveryKey=await page.evaluate((id:string)=>Object.keys(localStorage).find(key=>key.startsWith('nevora-payroll-operation:')&&localStorage.getItem(key)===id),approvalId);expect(recoveryKey).toBeTruthy();
+    await q("UPDATE employees SET role='EMPLOYEE' WHERE id=$1",[fixture.ids.owner]);
+    const deniedLookup=page.waitForResponse((r:any)=>new URL(r.url()).pathname==='/api/payroll/receipts');await page.getByRole('button',{name:'Check action reference',exact:true}).click();expect((await deniedLookup).status()).toBe(403);
+    await expect.poll(()=>page.evaluate((key:string)=>localStorage.getItem(key),recoveryKey)).toBe(approvalId);
+    await q("UPDATE employees SET role='OWNER' WHERE id=$1",[fixture.ids.owner]);await context.clearCookies();
+    await visit('/login');await page.getByLabel('Employee ID',{exact:true}).fill(fixture.ids.owner);await page.getByLabel('Password',{exact:true}).fill(fixture.password);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
+    await visit('/app/payroll/review?run='+fixture.runId);await expect.poll(()=>page.evaluate((key:string)=>localStorage.getItem(key),recoveryKey)).toBeNull();
+    checks.push('Approval committed with lost response; real revoked access refuses lookup without deleting original ID; authorized re-entry recovers receipt');
     for(let i=0;i<4;i++)await workerOnce(app.database.executor);
     await visit('/app/payroll/review?run='+fixture.runId);await page.getByRole('checkbox',{name:'Share the approved pay statements with each employee.',exact:true}).check();
     const publishing=page.waitForResponse((r:any)=>r.url()===app.url+'/api/payroll/runs'&&r.request().method()==='POST'&&r.request().postDataJSON().action==='PUBLISH');await page.getByRole('button',{name:'Share pay statements',exact:true}).click();const shared=await publishing;expect(shared.status(),await shared.text()).toBe(200);
