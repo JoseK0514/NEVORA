@@ -7,6 +7,7 @@ import { AdvisorStore } from '../store.server';
 import { readFeatureFlags } from '@/lib/feature-flags';
 import type { AdmittedBusinessScope, BusinessApiResult, BusinessCommand, BusinessFinanceQuery, BusinessQuery, BusinessReadResult, BusinessUnavailable, BusinessVersionView, ValidatedBusinessMap } from './contracts';
 import { BusinessStore } from './store.server';
+import { isBusinessValidationCode, isBusinessValidationField, type BusinessValidationCode, type BusinessValidationDetail } from './contracts';
 import { checkpoint, normalizeBusinessVersion, parseBusinessCommand, uuid } from './parse';
 import { parseBusinessCsv } from './csv';
 import { businessDigest } from './digest.server';
@@ -15,7 +16,7 @@ import { calculateSales } from './sales';
 import { selectBusinessScope, validateBusinessMap } from './scope';
 import { businessFlags, captureBusinessContext, captureBusinessSnapshot, businessContextGuards, businessSnapshotGuards, type BusinessContext, type BusinessOrigin, type BusinessSnapshot } from './context.server';
 type Body = Omit<BusinessApiResult, 'authority' | 'observedAt' | 'validForMs'>;
-const body = (state: Body['state'], extra: Partial<Body> = {}): Body => ({ state, reason: null, catalog: null, version: null, map: null, receipt: null, result: null, readReceiptId: null, ...extra });
+const body = (state: Body['state'], extra: Partial<Body> = {}): Body => ({ state, reason: null, catalog: null, version: null, map: null, receipt: null, result: null, readReceiptId: null, readReceiptExpiresAt: null, ...extra });
 export function businessExecution(raw: SqlExecutor, incoming: AbortSignal) {
   const signal = AbortSignal.any([incoming, AbortSignal.timeout(20000)]), combine = (other?: AbortSignal) => other ? AbortSignal.any([signal, other]) : signal;
   const settings: SqlStatement[] = [{ text: "SET LOCAL lock_timeout='1500ms'", values: [] }, { text: "SET LOCAL statement_timeout='5000ms'", values: [] }];
@@ -24,13 +25,13 @@ export function businessExecution(raw: SqlExecutor, incoming: AbortSignal) {
   return { signal, ex };
 }
 export class BusinessValidationError extends AdvisorError {
-  constructor(readonly detail: { code: string; field: string | null; row: number | null; line: number | null }, limit = false) { super(limit ? 'limit' : 'invalid'); }
+  constructor(readonly detail: BusinessValidationDetail, limit = false) { super(limit ? 'limit' : 'invalid'); }
 }
 function validationFailure(error: unknown): never {
   const message = error instanceof Error ? error.message : '';
   const csv = /^(INVALID_CSV_RECORD|INPUT_LIMIT):row ([0-9]+):line ([0-9]+)$/.exec(message);
   const field = /^INVALID_INPUT:([A-Za-z_]{1,64})(?::row ([0-9]+))?$/.exec(message);
-  throw new BusinessValidationError({ code: csv ? csv[1] : message === 'INPUT_LIMIT' ? 'INPUT_LIMIT' : message === 'INVALID_MONEY' ? 'INVALID_MONEY' : 'INVALID_INPUT', field: field?.[1] ?? null, row: csv ? Number(csv[2]) : field?.[2] ? Number(field[2]) : null, line: csv ? Number(csv[3]) : null }, message.startsWith('INPUT_LIMIT'));
+  throw new BusinessValidationError({ code: csv ? csv[1] as 'INVALID_CSV_RECORD' | 'INPUT_LIMIT' : message === 'INPUT_LIMIT' ? 'INPUT_LIMIT' : message === 'INVALID_MONEY' ? 'INVALID_MONEY' : 'INVALID_INPUT', field: isBusinessValidationField(field?.[1]) ? field[1] : null, row: csv ? Number(csv[2]) : field?.[2] ? Number(field[2]) : null, line: csv ? Number(csv[3]) : null }, message.startsWith('INPUT_LIMIT'));
 }
 function flagsCheck(env: Record<string,string|undefined>, context?: BusinessContext) {
   if (!businessFlags(env).parent) throw new AdvisorError('disabled');
@@ -56,7 +57,7 @@ function reviewedVersion(view: BusinessVersionView, timeZone: string, observedAt
   const scope: AdmittedBusinessScope = { domain: input.source.domain, timeZone: view.timeZone, query: { window: input.window, selection: { kind: 'SOURCE', sourceId: view.sourceId }, locationScope: { kind: 'ALL' }, temporalUse: 'HISTORICAL' },
     versions: [{ version: { ...view, input }, window: input.window, accountRefs, locationIds, metrics: ['CASH','OBLIGATIONS','RECEIVABLES','SALES'] }], accounts: [], locationIds, completeScope: false, sourceSubtotal: true, observedAt, expiresAt: new Date(Date.parse(observedAt)+15000).toISOString(), qualifiers: [] };
   return { ...view, validation: { finance: input.source.domain === 'FINANCE' ? calculateFinance(scope, null) : null, sales: input.source.domain === 'SALES' ? calculateSales(scope) : null,
-    qualifiers: ['SOURCE_SUBTOTAL','OWNER_IMPORT_NOT_INDEPENDENTLY_VERIFIED', ...(view.timeZone !== timeZone ? ['SOURCE_TIMEZONE_CHANGED_RESTAGE_REQUIRED'] : []), ...(input.completeness === 'PARTIAL' ? ['PARTIAL_NOT_PUBLISHABLE'] : ['OWNER_REPORTED_COMPLETENESS']), ...(view.status === 'DRAFT' ? ['DRAFT_VALIDATION_ONLY'] : [])] } };
+    qualifiers: ['SOURCE_SUBTOTAL','OWNER_IMPORT_NOT_INDEPENDENTLY_VERIFIED', ...(view.timeZone !== timeZone ? ['SOURCE_TIMEZONE_CHANGED_RESTAGE_REQUIRED'] as const : []), ...(input.completeness === 'PARTIAL' ? ['PARTIAL_NOT_PUBLISHABLE'] as const : ['OWNER_REPORTED_COMPLETENESS'] as const), ...(view.status === 'DRAFT' ? ['DRAFT_VALIDATION_ONLY'] as const : [])] } };
 }
 export type BusinessEvidenceInspection = { result: BusinessReadResult; snapshot: BusinessSnapshot; context: BusinessContext };
 /** Internal counterpart retains private provenance; only result is a public DTO. */
@@ -142,7 +143,7 @@ export async function businessSourceService(proof: SessionMutationProof, raw: Sq
   }
   if (command.op === 'stage_coverage_map') {
     try { validateBusinessMap(command.map, await store.catalog(signal)); } catch (error) {
-      if (error instanceof AdvisorError) throw error; const code = error instanceof Error && ['MISSING_SOURCE','INCOMPLETE_SCOPE','OVERLAP','ACCOUNT_CURRENCY_CONFLICT','INPUT_LIMIT'].includes(error.message) ? error.message : 'INVALID_MAP';
+      if (error instanceof AdvisorError) throw error; const code: BusinessValidationCode = error instanceof Error && isBusinessValidationCode(error.message) && ['MISSING_SOURCE','INCOMPLETE_SCOPE','OVERLAP','ACCOUNT_CURRENCY_CONFLICT','INPUT_LIMIT'].includes(error.message) ? error.message : 'INVALID_MAP';
       throw new BusinessValidationError({ code, field: 'map', row: null, line: null }, code === 'INPUT_LIMIT');
     }
   }
@@ -155,7 +156,7 @@ export async function businessSourceService(proof: SessionMutationProof, raw: Sq
   }
   const hash = businessDigest(command); await store.reserveOperation(command, hash, signal);
   const receipt = await store.execute(command, hash, signal, { contextDigest, validUntil: context.validUntil, before: [...assertions, ...stable], after: assertions });
-  if (command.op === 'read_source_version' || command.op === 'read_coverage_map') return finish(body('ready', { version: view ?? null, map, receipt, readReceiptId: await store.reviewHandle(command.requestId, signal) }), context, [...stable, ...(view ? [versionGuard(store, view)] : [])]);
+  if (command.op === 'read_source_version' || command.op === 'read_coverage_map') return finish(body('ready', { version: view ?? null, map, receipt, ...await store.reviewReceipt(command.requestId, signal) }), context, [...stable, ...(view ? [versionGuard(store, view)] : [])]);
   return finish(body('saved', { receipt }), context);
 }
 export async function readBusinessVersion(proof: SessionMutationProof, raw: SqlExecutor, env: Record<string,string|undefined>, incoming: AbortSignal, sourceId: string, versionId: string): Promise<BusinessVersionView> {

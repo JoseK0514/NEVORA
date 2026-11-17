@@ -3,7 +3,10 @@
 Codex owns backend/hosting; Claude owns **B2** UI. Approved scope is local backend,
 schema, tests and handoff. Development is the operating/acceptance line; integrate
 and verify the exact combined source there before any separately approved main
-promotion. No push, runtime deployment, real connector or paid inference is implied.
+promotion. Jose authorized the November 17 backend follow-up into Development. Runtime
+deployment, main/production, real connectors and paid inference remain separate.
+The authoritative answers to Claude's questions 2–9 are in
+[the November 17 contract addendum](2026-11-17-rondo-business-ui-contract-answers.md).
 
 ## Public interfaces
 
@@ -27,8 +30,8 @@ contracts; no inferred column/date/currency mapping. Errors expose safe code/fie
 row/line, never rejected raw payloads or credentials.
 
 Stage returns an immutable candidate, not usable Rondo knowledge. Full read returns
-all bounded rows, validation findings, exact digest/revision and a five-minute
-readReceiptId. Publication requires that exact receipt/digest/revision and explicit
+all bounded rows, validation findings, exact digest/revision and a readReceiptId with its persisted readReceiptExpiresAt (at most five
+minutes, possibly shorter). validForMs remains a separate response observation lease. Publication requires that exact receipt/digest/revision and explicit
 acknowledged:true. A different Owner may read but cannot adopt the initiator's
 pending publication. Discard is explicit. Do not create a publication button from
 an abbreviated card or inert citation response. Reconciliation mismatches may be
@@ -44,7 +47,10 @@ never an invented zero. Exact-window corrections preserve disjoint other windows
 
 After an uncertain write retain its original requestId and exact payload.
 `check_source_operation` takes a fresh requestId and original operationId. A failed
-recovery response is still uncertain; retry the same original operation. Do not
+recovery response is still uncertain. Retry the same original operation only
+while its exact payload remains in memory; after reload, use content-free
+operation metadata to check its outcome. not_saved is not proof that a request
+cannot still commit. Do not
 mint a replacement operation, declare failure, or alter an acknowledgement to
 circumvent a conflict. Capacity exhaustion must still allow original-operation
 recovery. Receipts are content-free and survive source erasure.

@@ -20,7 +20,7 @@ export const businessFingerprintSql = `md5(jsonb_build_object(
   JOIN owner_advisor_business_versions v ON v.workspace_id=x.workspace_id AND v.source_id=x.source_id AND v.version_id=x.version_id
   WHERE x.workspace_id=$1 AND s.active AND NOT s.deleted AND v.status='PUBLISHED' AND v.payload IS NOT NULL),'[]'),
  'map',COALESCE((SELECT jsonb_agg(jsonb_build_array(map_version_id,digest) ORDER BY map_version_id) FROM owner_advisor_business_maps WHERE workspace_id=$1 AND current AND status='PUBLISHED' AND payload IS NOT NULL),'[]'),
- 'locations',COALESCE((SELECT jsonb_agg(id ORDER BY id) FROM locations WHERE workspace_id=$1 AND active),'[]'))::text)`;
+ 'locations',COALESCE((SELECT jsonb_agg(jsonb_build_array(id,name) ORDER BY id) FROM locations WHERE workspace_id=$1 AND active),'[]'))::text)`;
 export async function captureBusinessSnapshot(store: BusinessStore, signal: AbortSignal): Promise<BusinessSnapshot> {
   const [row] = await store.guarded<{ fingerprint: string; epoch: number; at: string }>({ text: `SELECT ${businessFingerprintSql} AS fingerprint,COALESCE((SELECT evidence_revision::float8 FROM owner_advisor_business_state WHERE workspace_id=$1),0) AS epoch,clock_timestamp()::text AS at`, values: [store.workspaceId] }, signal);
   if (!row || !/^[a-f0-9]{32}$/.test(row.fingerprint)) throw new AdvisorError('unavailable');

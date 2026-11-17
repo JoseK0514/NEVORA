@@ -1,5 +1,5 @@
 import { businessDate } from '@/lib/business-time';
-import type { AdmittedBusinessScope, BusinessFinanceQuery, BusinessFinding, BusinessRecord, FinanceMetrics, FinanceScenarioInputs } from './contracts';
+import type { AdmittedBusinessScope, BusinessFinanceQuery, BusinessFinding, BusinessFindingCode, BusinessRecord, FinanceMetrics, FinanceScenarioInputs } from './contracts';
 import { admittedRows } from './records';
 import { checkpoint } from './parse';
 import { minor, moneyTotal } from './money';
@@ -7,7 +7,7 @@ type Balance = Extract<BusinessRecord, { kind: 'BALANCE' }>;
 export function calculateFinance(input: AdmittedBusinessScope, scenario: BusinessFinanceQuery['scenario'], signal?: AbortSignal): FinanceMetrics {
   const { rows, excluded } = admittedRows(input, signal); const findings: BusinessFinding[] = []; let excludedRows = excluded;
   const exclusions = new Map<string, BusinessFinding>();
-  const exclude = (code: string, accountRef: string) => { const key = JSON.stringify([code, accountRef]); const old = exclusions.get(key); if (old) old.count!++; else exclusions.set(key, { code, accountRef, recordIds: [], differenceMinor: null, count: 1 }); };
+  const exclude = (code: BusinessFindingCode, accountRef: string) => { const key = JSON.stringify([code, accountRef]); const old = exclusions.get(key); if (old) old.count!++; else exclusions.set(key, { code, accountRef, recordIds: [], differenceMinor: null, count: 1 }); };
   const currencies = [...new Set(input.versions.map(v => v.version.input.source.currency))].sort().map(currency => {
     const selected = rows.filter(r => r.currency === currency).map(r => r.record);
     const accounts = [...new Set(input.versions.filter(v => v.version.input.source.currency === currency).flatMap(v => v.accountRefs))];
