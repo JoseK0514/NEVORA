@@ -1,4 +1,5 @@
 import {beforeEach,expect,it,vi} from 'vitest';
+import {readSupportReference} from '../support-reference';
 const mocks=vi.hoisted(()=>({session:vi.fn(),proof:vi.fn(),execute:vi.fn(),lookup:vi.fn(),enabled:vi.fn(),eligibility:vi.fn()}));
 vi.mock('../auth/session',()=>({getSession:mocks.session,readSessionMutationProof:mocks.proof}));
 vi.mock('../workspace-presentation/current.server',()=>({moduleEnabled:mocks.enabled}));
@@ -42,10 +43,13 @@ it('correlates an unexpected eligibility HTTP failure and ignores a forged incom
   mocks.eligibility.mockRejectedValue(new Error('private workforce and fictional password'));
   const incoming='11111111-1111-4111-8111-111111111111';
   const response=await managerReminderEligibilityHttp(request({'X-Nevora-Request-Id':incoming}));
-  const reference=response.headers.get('X-Nevora-Request-Id');
+  const reference=readSupportReference(response);
   expect(response.status).toBe(503);expect(reference).toMatch(/^[a-f0-9-]{36}$/);expect(reference).not.toBe(incoming);
   expect(await response.json()).toEqual({status:'unavailable',reason:'read_failed'});
-  expect(sink).toHaveBeenCalledTimes(1);expect(JSON.parse(sink.mock.calls[0][0])).toMatchObject({route:'/api/manager/reminders/eligibility',requestId:reference});
+  expect(sink).toHaveBeenCalledTimes(1);
+  // Local responder round trip: the consumer's validated header identifies the
+  // one sanitized event, without exposing private error data or changing the body.
+  expect(JSON.parse(sink.mock.calls[0][0])).toEqual({event:'server_request_error',route:'/api/manager/reminders/eligibility',requestId:reference,errorClass:'Error'});
   expect(JSON.stringify(sink.mock.calls)).not.toMatch(/workforce|password|fictional/);
  }finally{sink.mockRestore();}
 });
