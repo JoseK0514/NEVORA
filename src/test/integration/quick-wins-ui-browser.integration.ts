@@ -36,7 +36,7 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
           const url = new URL(route.request().url());
           if (['http:', 'https:'].includes(url.protocol) && url.origin !== origin) await route.abort('blockedbyclient');
           else {
-            if (holdRefresh && url.pathname === '/app/inbox' && route.request().headers().rsc === '1') await new Promise<void>(release => pendingRefresh.push(release));
+            if (holdRefresh && url.pathname === '/app/employees/QW-MANAGER' && route.request().headers().rsc === '1') await new Promise<void>(release => pendingRefresh.push(release));
             await route.continue();
           }
         });
@@ -126,32 +126,25 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
             checks.push(engine + ': ' + actor + ' Settings route ' + path);
           }
           if (engine === 'chromium' && actor === 'QAOWNER') {
-            await context.route('**/api/manager/today', async (route: { fulfill(options: unknown): Promise<void> }) => {
-              const now = Date.now(), observedAt = new Date(now).toISOString();
-              const shift = { id: 'quick-wins-contact', employeeId: 'QW-MANAGER', employeeName: 'Fictional Manager', locationId: 'loc-1', locationName: 'Northside Main Office', positionName: null,
-                startAt: new Date(now - 3600000).toISOString(), endAt: new Date(now + 3600000).toISOString(), status: 'not_clocked_in', firstClockInAt: null, late: false };
-              await route.fulfill({ status: 200, json: { state: 'ready', observedAt, validForMs: 60000, timeZone: 'America/Puerto_Rico', today: observedAt.slice(0, 10), counts: { scheduled: 1, clockedIn: 0, late: 0, notClockedIn: 1 }, shifts: [shift], missed: [shift] } });
-            });
-            await visit('/app/inbox?item=shift%3Aquick-wins-contact');
-            const call = page.getByRole('link', { name: 'Call Fictional Manager', exact: true });
-            await call.waitFor();
-            holdRefresh = true;
-            await call.waitFor({ state: 'detached', timeout: 20000 });
-            await page.getByRole('button', { name: 'Try again', exact: true }).click();
-            await page.getByRole('link', { name: /Contact for Fictional Manager:/ }).waitFor();
-            expect(await call.count()).toBe(0);
-            expect(await page.getByRole('link', { name: 'Text Fictional Manager', exact: true }).count()).toBe(0);
-            releaseRefresh();
-            await call.waitFor();
-            holdRefresh = true;
-            await page.evaluate(() => window.dispatchEvent(new Event('blur')));
-            await call.waitFor({ state: 'detached' });
-            await page.evaluate(() => window.dispatchEvent(new Event('focus')));
-            await page.getByRole('link', { name: /Contact for Fictional Manager:/ }).waitFor();
-            expect(await call.count()).toBe(0);
-            releaseRefresh();
-            await call.waitFor();
-            checks.push('chromium: real directory contacts expire and clear on blur; fresh authority and RSC restore them; controlled Today response only');
+            // Current Things to do opens full reviews; contacts live on the person's Team page.
+            // Exercise that real scoped read, including retirement while its actual RSC renewal is held.
+            await visit('/app/employees/QW-MANAGER');
+            const call=page.getByRole('link',{name:'Call Fictional Manager',exact:true}),message=page.getByRole('link',{name:'Message Fictional Manager',exact:true});
+            await call.waitFor();expect(await call.getAttribute('href')).toBe('tel:2025550141');expect(await message.getAttribute('href')).toBe('sms:2025550141');
+            holdRefresh=true;
+            await call.waitFor({state:'detached',timeout:20000});
+            await page.getByRole('button',{name:'Try again',exact:true}).click();
+            await expect.poll(()=>pendingRefresh.length,{timeout:15000}).toBeGreaterThan(0);
+            expect(await call.count()).toBe(0);expect(await message.count()).toBe(0);
+            releaseRefresh();await call.waitFor();
+            holdRefresh=true;
+            await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await call.waitFor({state:'detached'});
+            expect(await message.count()).toBe(0);
+            await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+            await expect.poll(()=>pendingRefresh.length,{timeout:15000}).toBeGreaterThan(0);
+            expect(await call.count()).toBe(0);expect(await message.count()).toBe(0);
+            releaseRefresh();await call.waitFor();
+            checks.push('chromium: actual Team contact links expire and clear on blur; fresh authority and real RSC restore them; no synthesized Today response');
           }
         } catch (error) {
           await page.screenshot({ path: output + '/' + engine + '-' + actor + '-failure.png', fullPage: true }).catch(() => {});
