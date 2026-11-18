@@ -3,7 +3,7 @@ import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {RecoveryRequest} from './recovery-request';
 import {AssistedRecovery} from './assisted-recovery';
 import {RecoveryReset} from './recovery-reset';
-import {isPasswordRejection,passwordRejectionMessage,passwordLength,MIN_PASSWORD_CHARACTERS} from '@/lib/auth/password-requirements';
+import {isPasswordRejection,passwordRejectionMessage,passwordLength,MIN_PASSWORD_CHARACTERS,isPasswordTooLong} from '@/lib/auth/password-requirements';
 import type {AuthLang} from '@/lib/auth-copy';
 import {isPublicAccountProof} from '@/lib/auth/public-proof';
 const subscribe=()=>()=>{};
@@ -34,6 +34,7 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=fals
  async function submit(event:React.FormEvent<HTMLFormElement>){
   event.preventDefault();if(sending.current)return;
   const form=new FormData(event.currentTarget),password=String(form.get('password')??'');
+  if(kind==='reset'&&isPasswordTooLong(password)){setMessage(passwordRejectionMessage(lang,'too_long'));return;}
   if(kind==='reset'&&passwordLength(password)<MIN_PASSWORD_CHARACTERS){setMessage(passwordRejectionMessage(lang,'too_short'));return;}
   if(kind==='reset'&&password!==String(form.get('confirmPassword')??'')){setMessage('Passwords do not match.');return;}
   const body=kind==='reset'?{proof:String(form.get('proof')??'').trim(),password}:kind==='request'?{employeeId:String(form.get('employeeId')??'').trim(),email:String(form.get('email')??'').trim()}:{employeeId:String(form.get('employeeId')??'').trim(),attestation:String(form.get('attestation')??'').trim()};

@@ -1,3 +1,4 @@
+import {isPasswordTooLong} from './password-requirements';
 import 'server-only';
 import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import {createHash,randomBytes} from 'node:crypto';
@@ -100,7 +101,7 @@ export async function issueInitialPasswordReplacement(employeeId:string,reviewed
  * after commit. Clocker device/PIN proofs and operational records are untouched. */
 export async function resetPasswordWithProof(token:string,password:string,executor:SqlExecutor=neonNotificationExecutor(),delivery:RecoveryDelivery|null=null):Promise<{state:'reset'|'invalid'|'unavailable';passwordReason?:PasswordRejection}>{
  if(!/^[A-Za-z0-9_-]{43}$/.test(token)||Buffer.from(token,'base64url').length!==32||Buffer.from(token,'base64url').toString('base64url')!==token)return {state:'invalid'};
- if(password.length>1024)return {state:'invalid',passwordReason:'too_long'};
+ if(isPasswordTooLong(password))return {state:'invalid',passwordReason:'too_long'};
  try{
   const tokenHash=hash(token),globalScope=hash('NEVORA password reset limit global v1');
   // Only codes that exist are counted (10 tries per code, 250 resets per 15 minutes overall), so random codes from
@@ -118,8 +119,8 @@ export async function resetPasswordWithProof(token:string,password:string,execut
   const rows=await executor.query<{employeeId:string;method:string;passwordHash:string;mustChange:boolean}>({text:'SELECT p.employee_id AS "employeeId",p.method,c.password_hash AS "passwordHash",c.must_change_password AS "mustChange" FROM password_recovery_proofs p JOIN employee_credentials c ON c.employee_id=p.employee_id JOIN employees e ON e.id=p.employee_id JOIN locations l ON l.id=e.primary_location_id WHERE p.token_hash=$1 AND l.workspace_id=$2 AND e.active AND p.used_at IS NULL AND p.retired_at IS NULL AND p.expires_at>clock_timestamp() AND p.credential_updated_at=c.password_updated_at AND p.employee_updated_at=e.updated_at',values:[tokenHash,workspace.id]});
   if(!rows[0])return {state:'invalid'};const employeeId=rows[0].employeeId;
   const passwordReason=passwordRejection(password,{employeeId,companyName:workspace.name});if(passwordReason)return {state:'invalid',passwordReason};
+  if((rows[0].mustChange||rows[0].method==='INITIAL_PASSWORD')&&await verifyPassword(password,rows[0].passwordHash))return {state:'invalid',passwordReason:'temporary_password'};
   const newHash=await hashPassword(password);
-  if((rows[0].mustChange||rows[0].method==='INITIAL_PASSWORD')&&await verifyPassword(password,rows[0].passwordHash))return {state:'invalid'};
   const statements:SqlStatement[]=[...workspaceReadGuard(workspace),
    {text:'SELECT id FROM employees WHERE id=$1 FOR UPDATE',values:[employeeId]},
    {text:'SELECT employee_id FROM employee_credentials WHERE employee_id=$1 FOR UPDATE',values:[employeeId]},

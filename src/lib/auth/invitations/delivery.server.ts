@@ -14,13 +14,16 @@ export function invitationDelivery(env:Record<string,string|undefined>=process.e
  if(!mail)return null;
  return {async send({registeredEmail,proof,expiresAt,employeeId,companyName,firstName,timeZone}) {
   if(!validRegisteredEmail(registeredEmail)||!/^[A-Za-z0-9_-]{43}$/.test(proof)||Buffer.from(proof,'base64url').toString('base64url')!==proof||!Number.isFinite(Date.parse(expiresAt)))throw new InvitationDeliveryError('FAILED');
+  let prepared=false;
   try {
    const email=invitationEmail(`${mail.origin}/activate#proof=${await publicWorkspaceToken('INVITATION',proof,Date.parse(expiresAt))}`,employeeId,companyName?{companyName,firstName,timeZone,expiresAt}:undefined);
+   prepared=true;
    const result=await mail.sendRegistered(registeredEmail,email.subject,email.text,email.html);
    const accepted=result.accepted;
    if(accepted?.length!==1||accepted[0]?.toLowerCase()!==registeredEmail.toLowerCase())throw new InvitationDeliveryError('UNKNOWN');
    return {providerAccepted:true};
   } catch(error) {
+   if(!prepared)throw new InvitationDeliveryError('FAILED');
    if(error instanceof InvitationDeliveryError)throw error;
    if(error instanceof StagingRecipientDenied)throw new InvitationDeliveryError('FAILED');
    const e=error as {command?:unknown;responseCode?:unknown};

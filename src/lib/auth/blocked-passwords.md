@@ -7,7 +7,7 @@ https://github.com/danielmiessler/SecLists/blob/6b19c2f5088c45b5dadb4d8918d2ab4f
 
 This common-credential corpus derives from the xato breach compilation. The upstream MIT license is retained in `blocked-passwords.LICENSE`. Source SHA-256: `424a3e03a17df0a2bc2b3ca749d81b04e79d59cb7aeec8876a5a3f308d0caf51` (8,557,632 bytes; 1,000,000 lines).
 
-Values shorter than the selected 15-character minimum already fail the length rule. Retain only values of at least 15 Unicode code points and at most 1,024 UTF-16 units, normalize NFC for screening, then store their sorted unique SHA-256 digests. There are 10,908 retained digests. Password hashing and existing credential verification retain their original byte semantics.
+Values shorter than the selected 15-character minimum already fail the length rule. Retain only values of at least 15 Unicode code points and at most 1,024 Unicode code points, normalize NFC for screening, then store their sorted unique SHA-256 digests. There are 10,908 retained digests. Password hashing and existing credential verification retain their original byte semantics.
 
 To reproduce, download the pinned source to an untracked scratch directory and run:
 

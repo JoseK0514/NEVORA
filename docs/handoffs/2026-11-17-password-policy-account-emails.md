@@ -10,7 +10,7 @@ Development is the primary operating/acceptance release, held to production stan
 
 ## Delivered behavior
 
-- One server policy enforces at least 15 Unicode code points, long phrases/spaces, a 1,024 UTF-16-unit resource cap, a pinned local common/breached-password corpus, and current Employee ID/company-name values and predictable derivatives. Whole values are screened; unrelated phrases containing company words remain allowed.
+- One server policy enforces at least 15 Unicode code points, long phrases/spaces, a 1,024-code-point resource cap, a pinned local common/breached-password corpus, and current Employee ID/company-name values and predictable derivatives. Whole values are screened; unrelated phrases containing company words remain allowed.
 - All supported enrollment paths use that policy: employee invitation, email/assisted/initial-password reset, initial Owner activation, operator company setup/bootstrap, and commerce company setup. Specific EN/ES reasons leave a valid invitation/reset form usable. No composition rules or periodic rotation were added; existing first-use temporary-password replacement remains.
 - Existing persisted passwords verify with their original bytes and scrypt format. There is no forced migration or mass reset.
 - PB-022 invitation, reset and password-change messages now have branded HTML and an equivalent English/Spanish text fallback, official wordmark, teal action, canonical company/name and existing app terminology. Reset says 15 minutes, invitation says seven days; actual deadlines come from issued proofs. Delivery never extends expiry. Links remain complete workspace-bound fragments, with existing origin/recipient/staging/TLS/deadline restrictions and failed/unknown handling.
@@ -23,7 +23,7 @@ Development is the primary operating/acceptance release, held to production stan
 
 The NIST basis is [SP 800-63B-4 section 3.1.1.2](https://pages.nist.gov/800-63-4/sp800-63b.html#passwordver). This implements the selected password requirements; it does not certify the full application against NIST.
 
-Initial Owner policy context is read only after the existing SQL admission function validates the grant. It uses the unique inactive Owner profile in that bound workspace and fails closed if ambiguous. APP retains no direct access to private grant tables; restricted-role integration tests cover this boundary. There are no schema or privilege changes.
+Initial Owner policy context is read only after the existing SQL admission function validates the grant. The final claim transaction rechecks the screened company name/version after the existing claim function takes its normal locks; any change rolls back the credential and receipt together. It uses the unique inactive Owner profile in that bound workspace and fails closed if ambiguous. APP retains no direct access to private grant tables; restricted-role integration tests cover this boundary. There are no schema or privilege changes.
 
 ## Verification
 

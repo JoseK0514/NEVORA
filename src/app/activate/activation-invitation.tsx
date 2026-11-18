@@ -8,7 +8,7 @@ import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {MobileActivationView} from '@/components/mobile-access/activation-view';
 import {useAccessJourney} from '@/components/mobile-access/journey';
 import {useLayoutEffect,useRef,useState,type FormEvent,type RefObject} from 'react';
-import {isPasswordRejection,passwordRejectionMessage,type PasswordRejection} from '@/lib/auth/password-requirements';
+import {isPasswordRejection,passwordRejectionMessage,isPasswordTooLong,type PasswordRejection} from '@/lib/auth/password-requirements';
 import type {ActivationResult} from '@/lib/auth/invitations/model';
 import {ActivationPasswords} from './activation-passwords';
 import {ActivationSubmit} from './activation-submit';
@@ -63,6 +63,8 @@ export function ActivationInvitation({loginHref,workspaceName=null,lang='en',mob
  async function submit(event:FormEvent<HTMLFormElement>){
   event.preventDefault();const form=event.currentTarget;if(busy.current||!proof.current||!form.reportValidity())return;
   const fields=new FormData(form),password=String(fields.get('password')??'');
+  setPasswordReason(undefined);
+  if(isPasswordTooLong(password)){setMismatch(false);setPasswordReason('too_long');return;}
   if(password!==fields.get('confirmPassword')){setMismatch(true);form.querySelector<HTMLInputElement>('[name="confirmPassword"]')?.focus();return;}
   setMismatch(false);setPasswordReason(undefined);busy.current=true;setPhase('pending');const version=generation.current,requestProof=proof.current;
   const isCurrent=()=>mounted.current&&generation.current===version;
@@ -122,7 +124,7 @@ export function ActivationInvitationView({phase,passwordReason,mismatch=false,em
   {phase==='missing'?<span className="q-sr activation-invitation-state" role="status">{a.missing}</span>:null}
   {canSubmit&&<form ref={formRef} className="q-auth__form activation-form" onSubmit={onSubmit} aria-busy={phase==='pending'} aria-describedby="activation-intro">
    <AuthValidation/>
-   {passwordReason?<p id="activation-error" className="q-error q-auth__alert" role="alert">{passwordRejectionMessage(lang,passwordReason)}</p>:null}
+   {passwordReason&&!mismatch?<p id="activation-error" className="q-error q-auth__alert" role="alert">{passwordRejectionMessage(lang,passwordReason)}</p>:null}
    {phase==='unavailable'&&!mismatch?<p id="activation-error" className="q-error q-auth__alert" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{a.unavailable}</span></p>:null}
    <fieldset className="q-auth__fields" disabled={phase==='pending'}>
     <ActivationPasswords quiet lang={lang} mismatch={mismatch} errorId={error?'activation-error':undefined}/>

@@ -67,7 +67,7 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
      </div>
      <div className="q-fl">
       <label htmlFor="reset-password">{t.newPassword}</label>
-      <PasswordInput quiet id="reset-password" name="password" required minLength={MIN_PASSWORD_CHARACTERS} maxLength={1024} autoComplete="new-password"
+      <PasswordInput quiet id="reset-password" name="password" required minLength={MIN_PASSWORD_CHARACTERS} autoComplete="new-password"
        placeholder={t.quiet.newPasswordPlaceholder} aria-describedby="reset-rules reset-password-invalid"
        controls={['reset-password', 'reset-confirm-password']} showLabel={t.showPasswords}
        data-msg-required={t.invalid.newPassword} data-msg-invalid={t.invalid.newPassword} onInput={event => setPassword(event.currentTarget.value)}/>
@@ -75,7 +75,7 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
      </div>
      <div className="q-fl">
       <label htmlFor="reset-confirm-password">{t.quiet.confirmPassword}</label>
-      <input id="reset-confirm-password" className="q-in" name="confirmPassword" type="password" required minLength={MIN_PASSWORD_CHARACTERS} maxLength={1024}
+      <input id="reset-confirm-password" className="q-in" name="confirmPassword" type="password" required minLength={MIN_PASSWORD_CHARACTERS}
        autoComplete="new-password" placeholder={t.quiet.typeAgain} aria-invalid={mismatch || undefined}
        aria-describedby={message ? 'reset-rules reset-error reset-confirm-password-invalid' : 'reset-rules reset-confirm-password-invalid'}
        data-msg-required={t.invalid.confirm} data-msg-invalid={t.invalid.confirm} onInput={event => setConfirm(event.currentTarget.value)}/>

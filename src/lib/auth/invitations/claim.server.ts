@@ -1,3 +1,4 @@
+import {isPasswordTooLong} from '../password-requirements';
 import 'server-only';
 import {randomUUID} from 'node:crypto';
 import type {Workspace} from '@/lib/domain';
@@ -57,7 +58,7 @@ function failure(error:unknown,commitAttempted:boolean,aborted:boolean):Activati
  * commit. An unresolved commit returns outcome_unknown and creates no session. */
 export async function claimInvitation(proof:string,password:string,executor:SqlExecutor=neonNotificationExecutor(),signal?:AbortSignal):Promise<ActivationResult>{
  if(!validProof(proof)||typeof password!=='string'||signal?.aborted)return {state:'invalid'};
- if(password.length>1024)return {state:'invalid',passwordReason:'too_long'};
+ if(isPasswordTooLong(password))return {state:'invalid',passwordReason:'too_long'};
  let release:(()=>void)|null=null,commitAttempted=false;
  try{
   const digest=invitationProofDigest(proof);

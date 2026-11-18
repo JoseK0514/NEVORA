@@ -160,7 +160,7 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
  if(!evidence)throw Error('Select external NEVORA_MOBILE_ACCESS_EVIDENCE');
  await mkdir(evidence,{recursive:true});
  const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
- const {invitationEmail,recoveryEmail,passwordChangedEmail}=await import('../../lib/auth/account-email-copy');
+ const {readAccountEmailSet,decodeAccountEmail}=await import('./account-email-smtp.test-support');
  const {passwordRejectionMessage}=await import('../../lib/auth/password-requirements');
  const smtp=await createOwnedSmtp();
  const app=await createOwnedNextApp(evidence,{mobileAccessEnabled:true,recoverySmtpPort:smtp.port,invitationSmtpPort:smtp.port,pinDevTypeReferences:true}).catch(async e=>{await smtp.close();throw e;});
@@ -199,7 +199,7 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
     step=engine+' invitation policy '+lang;await context.addCookies([{name:'nv-lang',value:lang,url:origin}]);await page.goto('about:blank');
     // Reopen in a fresh document: a same-document fragment navigation can race hydration in WebKit.
     await page.goto(origin+'/activate#proof='+proof);await page.locator('#activation-password').fill('qwertyuiopasdfgh');await page.locator('#activation-confirm-password').fill('qwertyuiopasdfgh');await page.locator('button[type="submit"]').click();
-    await expect.poll(()=>page.locator('#activation-error').innerText()).toBe(passwordRejectionMessage(lang,'breached'));
+    await expect.poll(()=>page.locator('#activation-error,#activation-policy-error').innerText()).toBe(passwordRejectionMessage(lang,'breached'));
     expect(await page.locator('#activation-password').getAttribute('minlength')).toBe('15');
     await page.locator('#activation-confirm-password').fill('different fictional phrase');await page.locator('button[type="submit"]').click();expect(await page.locator('#activation-error').count()).toBe(1);expect(await page.locator('#activation-error').innerText()).not.toContain(passwordRejectionMessage(lang,'breached'));
     await page.locator('#activation-confirm-password').fill('qwertyuiopasdfgh');
@@ -226,12 +226,14 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
    const next='a distant orchestra carries through the winter valley';await page.locator('#reset-password').fill(next);await page.locator('#reset-confirm-password').fill(next);await page.locator('button[type="submit"]').click();await page.locator('a[href="/login"]').first().waitFor();
    const replay=await context.request.post(origin+'/api/auth/reset-access',{headers:{Origin:origin,'x-nevora-recovery':'1'},data:{proof:resetProof,password:next}});expect(replay.status()).toBe(400);
    await page.goto(origin+'/login');await page.locator('#login-employee-id').fill(id);await page.locator('#login-password').fill(next);await page.locator('button[type="submit"]').click();await page.waitForURL('**/app',{timeout:45000});
-   const expires=(await q<{expiry:string}>('SELECT expires_at::text AS expiry FROM password_recovery_proofs WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 1',[id]))[0].expiry as string;
-   const invitationExpires=(await q<{expiry:string}>('SELECT expires_at::text AS expiry FROM company_invitations WHERE employee_id=$1 ORDER BY issued_at DESC LIMIT 1',[id]))[0].expiry;
+   await expect.poll(()=>smtp.messages.filter((m:{recipient:string})=>m.recipient.includes(engine+'@example.invalid')).length).toBe(3);
+   const captured=readAccountEmailSet(smtp.messages,engine+'@example.invalid');
+   expect(()=>readAccountEmailSet(smtp.messages.filter(m=>!decodeAccountEmail(m.body).text.includes('/login')),engine+'@example.invalid')).toThrow();
    const preview=await context.newPage();let previewHtml='';
    await preview.route(origin+'/__owned-email-preview',async(route:{fulfill(v:{status:number;contentType:string;body:string}):Promise<void>})=>route.fulfill({status:200,contentType:'text/html',body:previewHtml}));
-   const emailContext={companyName:'North Harbor Foods',firstName:'Avery',timeZone:'America/Puerto_Rico',expiresAt:expires};
-   for(const [kind,email] of [['invitation',invitationEmail(origin+'/activate#proof='+proof,id,{...emailContext,expiresAt:invitationExpires})],['reset',recoveryEmail(origin+'/reset-access#proof='+resetProof,emailContext)],['changed',passwordChangedEmail(origin,emailContext)]] as const){
+   for(const email of captured){const kind=email.kind;
+    expect(email.text).toContain('North Harbor Foods');expect(email.html).toContain('North Harbor Foods');
+    if(kind==='reset'){expect(email.text).toContain('15 minutes');expect(email.text).toContain('15 minutos');}
     step=engine+' '+kind+' email';await writeFile(evidence+'/'+engine+'-'+kind+'.html',email.html);await writeFile(evidence+'/'+engine+'-'+kind+'.txt',email.text);
     for(const width of [320,1440]){
      await preview.setViewportSize({width,height:1000});previewHtml=email.html;await preview.goto(origin+'/__owned-email-preview',{waitUntil:'networkidle'});

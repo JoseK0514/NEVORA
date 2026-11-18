@@ -62,3 +62,7 @@ it('the success card leads with a done mark and says to save the ID (PB-003, JR-
  expect(html).toContain('<p class="q-help" id="activation-employee-id-note">Save this ID. You sign in with it.</p>');
 });
 it('offers Owner-assisted login-ID/status recovery for an unknown outcome',()=>{const html=renderToStaticMarkup(<ActivationInvitationView phase="outcome_unknown" loginHref="/login" onSubmit={()=>{}}/>);expect(html).toContain('confirm your account status and Employee ID');expect(html).not.toContain('type="submit"');});
+it('reports only the current mismatch without a stale policy message or duplicate error ID',()=>{
+ const html=renderToStaticMarkup(<ActivationInvitationView phase="ready" mismatch passwordReason="breached" loginHref="/login" onSubmit={()=>{}}/>);
+ const ids=[...html.matchAll(/ id="([^"]+)"/g)].map(m=>m[1]);expect(new Set(ids).size).toBe(ids.length);expect(html).not.toContain('known breach');
+});

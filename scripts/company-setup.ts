@@ -135,10 +135,13 @@ export async function assertEmptyDatabase(client: Pick<Client,'query'>) {
 /** Historical migrations remain the schema authority. Strip only their outer
  * transaction markers so the entire fresh install has one atomic boundary. */
 type CredentialCompanyInput = Omit<CompanyInput, 'owner'> & { owner: Omit<OwnerInput, 'password'> };
-export async function setupCompany(client: Client, input: CompanyInput) {
+async function hashCompanyEnrollment(input: CompanyInput) {
   const rejection=passwordRejection(input.owner.password,{employeeId:input.owner.id,companyName:input.name});
   if(rejection)throw new Error(passwordRejectionMessage('en',rejection));
-  return setupCompanyWithCredential(client,input,await hashPassword(input.owner.password));
+  return hashPassword(input.owner.password);
+}
+export async function setupCompany(client: Client, input: CompanyInput) {
+  return setupCompanyWithCredential(client,input,await hashCompanyEnrollment(input));
 }
 export async function setupCompanyWithCredential(client: Client, input: CredentialCompanyInput, passwordHash: string,
   afterInstall?: (client: Client, ids: { workspaceId: string; locationId: string }) => Promise<void>,passwordOrigin:OwnerPasswordOrigin='OPERATOR') {

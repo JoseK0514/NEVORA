@@ -107,7 +107,7 @@ it('operator password requires replacement before session issuance; the proof is
  const {reviewed,issued:p}=await initialReplacement();expect(p.state).toBe('issued');if(p.state!=='issued')throw Error('Expected proof');
  await expect(createSession('c34-a',reviewed)).rejects.toThrow('session_login_changed');
  expect(await f.q("SELECT method,actor_employee_id,attestation FROM password_recovery_proofs")).toEqual([{method:'INITIAL_PASSWORD',actor_employee_id:null,attestation:null}]);
- expect(await resetPasswordWithProof(p.proof,'Fictional previous password',f.db.executor)).toEqual({state:'invalid'});
+ expect(await resetPasswordWithProof(p.proof,'Fictional previous password',f.db.executor)).toEqual({state:'invalid',passwordReason:'temporary_password'});
  expect(await resetPasswordWithProof(p.proof,'Fictional replacement password',f.db.executor)).toEqual({state:'reset'});
  expect(await f.q("SELECT must_change_password FROM employee_credentials WHERE employee_id='c34-a'")).toEqual([{must_change_password:false}]);
  expect(await f.q("SELECT count(*)::int AS n FROM employee_sessions WHERE employee_id='c34-a'")).toEqual([{n:0}]);
@@ -126,7 +126,7 @@ it.each(['EMAIL','ASSISTED'] as const)('a legitimate %s recovery cannot keep an 
  if(method==='ASSISTED')token=(await issued()).proof;
  else await requestPasswordRecovery('c34-a','avery@example.invalid',{send:async(_email,proof)=>{token=proof;}},f.db.executor);
  expect(token).toMatch(/^[A-Za-z0-9_-]{43}$/);
- expect(await resetPasswordWithProof(token,'Fictional previous password',f.db.executor)).toEqual({state:'invalid'});
+ expect(await resetPasswordWithProof(token,'Fictional previous password',f.db.executor)).toEqual({state:'invalid',passwordReason:'temporary_password'});
  expect(await f.q("SELECT must_change_password FROM employee_credentials WHERE employee_id='c34-a'")).toEqual([{must_change_password:true}]);
  expect(await resetPasswordWithProof(token,'Fictional alternate replacement password',f.db.executor)).toEqual({state:'reset'});
  expect(await f.q("SELECT must_change_password FROM employee_credentials WHERE employee_id='c34-a'")).toEqual([{must_change_password:false}]);

@@ -3,7 +3,7 @@
 export type AccountEmailContext = {companyName:string;firstName?:string|null;expiresAt?:string;timeZone?:string};
 export type AccountEmail = {subject:string;text:string;html:string};
 const escapeHtml=(value:string)=>value.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
-function textValue(value:string,max:number):string{if(!value.trim()||value.length>max||/[\u0000-\u001f\u007f]/.test(value))throw Error('Invalid account email context');return value.trim();}
+function textValue(value:string,max:number):string{if(!value.trim()||Array.from(value).length>max||/[\u0000-\u001f\u007f]/.test(value))throw Error('Invalid account email context');return value.trim();}
 function safeLink(value:string):URL{const url=new URL(value);if(url.username||url.password||!(url.protocol==='https:'||(url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname))))throw Error('Invalid account email link');return url;}
 function deadline(context:AccountEmailContext|undefined,lang:'en'|'es'):string{
  if(!context?.expiresAt)return '';
