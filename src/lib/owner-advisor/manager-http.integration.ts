@@ -1,8 +1,9 @@
 import { randomUUID } from 'node:crypto';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { companyAccessFixture } from '@/test/integration/company-access-fixture';
+import { createDisposableFoundationDatabase } from '@/test/integration/local-postgres';
 import { assignOperationalScope, readOwnerOperationalScope } from '@/lib/company-access/operational-scope.server';
-import type { SqlExecutor } from '@/lib/notifications/types';
+import type { SqlExecutor, SqlStatement } from '@/lib/notifications/types';
 import type { SessionMutationProof } from '@/lib/shift-changes/types';
 import { GET as managerGet } from '@/app/api/manager/advisor/route';
 import { GET as ownerGet } from '@/app/api/owner/advisor/route';
@@ -88,12 +89,19 @@ it('returns only the assigned active locations and exact weekly and guided facts
 });
 
 it('denies another location, a location in a separate workspace database, and Owner APIs', async () => {
-  const foreign = await companyAccessFixture();
+  const originalUrl = process.env.FUEL_TEST_DATABASE_URL;
+  if (!originalUrl) throw Error('Missing owned SQL environment');
+  const foreignUrl = new URL(originalUrl);
+  foreignUrl.pathname = '/nevora_foundation_test_foreign_rondo';
+  vi.stubEnv('FUEL_TEST_DATABASE_URL', foreignUrl.href);
+  const foreign = await createDisposableFoundationDatabase({ mode: 'current-runtime' });
+  vi.stubEnv('FUEL_TEST_DATABASE_URL', originalUrl);
   try {
-    const locations = await foreign.q<{ id: string }>(`
-      INSERT INTO locations(id,name,short_name,workspace_id,clocker_key)
-      VALUES ('foreign-rondo','Foreign fictional branch','Foreign','workspace-fuel','foreign-rondo') RETURNING id
-    `);
+    const locations = await foreign.executor.query<{ id: string }>({
+      text: `INSERT INTO locations(id,name,short_name,workspace_id,clocker_key)
+        VALUES ('foreign-rondo','Foreign fictional branch','Foreign','workspace-fuel','foreign-rondo') RETURNING id`,
+      values: [],
+    });
     expect(locations).toEqual([{ id: 'foreign-rondo' }]);
     for (const locationId of ['loc-2', 'foreign-rondo']) {
       const result = await managerGet(managerRequest(weeklyView.replace('loc-1', locationId)));
@@ -101,7 +109,7 @@ it('denies another location, a location in a separate workspace database, and Ow
       expect(await result.json()).toEqual({ state: 'error', code: 'forbidden' });
     }
   } finally {
-    await foreign.db.dispose();
+    await foreign.dispose();
   }
   const ownerRoute = (url: string, header: string, method = 'GET') => new Request(`http://localhost/api/owner/advisor${url}`, {
     method, headers: { [header]: '1', origin: 'http://localhost', 'content-type': 'application/json' },
@@ -134,8 +142,8 @@ it('withholds an in-flight response when access is revoked during the schedule r
   const original = fixture.db.executor;
   state.executor = {
     ...original,
-    async query(statement, signal) {
-      const result = await original.query(statement, signal);
+    async query<T>(statement: SqlStatement, signal?: AbortSignal): Promise<T[]> {
+      const result = await original.query<T>(statement, signal);
       if (statement.text.includes('operational scoped roster')) await setScope();
       return result;
     },
