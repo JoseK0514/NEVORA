@@ -3,6 +3,8 @@ import { randomUUID } from 'node:crypto';
 import type { Client } from 'pg';
 import {canonicalCompanyManifest,lockFreshCompany,installCompanyBase,insertOwnerProfile,installCompanyFinal,type OwnerPasswordOrigin} from '../src/lib/company-bootstrap/server';
 export {migrationBody} from '../src/lib/company-bootstrap/server';
+import {passwordRejection} from '../src/lib/auth/password-policy';
+import {passwordRejectionMessage} from '../src/lib/auth/password-requirements';
 import { hashPassword } from '../src/lib/auth/password';
 import { normalizePhoneNumber } from '../src/lib/phone';
 import { validateWorkspaceProfile } from '../src/lib/workspace/validation';
@@ -37,7 +39,8 @@ export function readOwnerInput(env: Environment): OwnerInput {
     throw new Error('BOOTSTRAP_EMAIL must be a valid email address.');
   }
   const password = env.BOOTSTRAP_PASSWORD ?? '';
-  if (password.length < 8) throw new Error('BOOTSTRAP_PASSWORD must contain at least 8 characters.');
+  const reason=passwordRejection(password,{employeeId:id,companyName:env.COMPANY_NAME??''});
+  if(reason)throw new Error('BOOTSTRAP_PASSWORD: '+passwordRejectionMessage('en',reason));
   return { id, firstName, lastName, phone, email, password };
 }
 
@@ -99,8 +102,10 @@ export async function bootstrapOwner(client: Client, owner: OwnerInput, location
   await client.query('BEGIN');
   try {
     await client.query("SELECT pg_advisory_xact_lock(hashtextextended('nevora.company.setup',0))");
-    const workspace = await client.query('SELECT id FROM workspaces WHERE singleton=true AND active=true FOR SHARE');
+    const workspace = await client.query('SELECT id,name FROM workspaces WHERE singleton=true AND active=true FOR SHARE');
     if (workspace.rowCount !== 1) throw new Error('One active configured company is required.');
+    const rejection=passwordRejection(owner.password,{employeeId:owner.id,companyName:workspace.rows[0].name});
+    if(rejection)throw new Error(passwordRejectionMessage('en',rejection));
     const activeLocations = await client.query(`SELECT id FROM locations
       WHERE id=ANY($1::text[]) AND workspace_id=$2 AND active=true ORDER BY id FOR SHARE`,
     [locations.eligibleLocationIds, workspace.rows[0].id]);
@@ -131,6 +136,8 @@ export async function assertEmptyDatabase(client: Pick<Client,'query'>) {
  * transaction markers so the entire fresh install has one atomic boundary. */
 type CredentialCompanyInput = Omit<CompanyInput, 'owner'> & { owner: Omit<OwnerInput, 'password'> };
 export async function setupCompany(client: Client, input: CompanyInput) {
+  const rejection=passwordRejection(input.owner.password,{employeeId:input.owner.id,companyName:input.name});
+  if(rejection)throw new Error(passwordRejectionMessage('en',rejection));
   return setupCompanyWithCredential(client,input,await hashPassword(input.owner.password));
 }
 export async function setupCompanyWithCredential(client: Client, input: CredentialCompanyInput, passwordHash: string,

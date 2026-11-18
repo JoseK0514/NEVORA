@@ -8,13 +8,14 @@ import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {AuthValidation} from '@/components/auth-premium/auth-validation';
 import {ActivationSubmit} from '@/app/activate/activation-submit';
 import type {ActivationPhase} from '@/app/activate/activation-invitation';
+import {passwordRejectionMessage,type PasswordRejection} from '@/lib/auth/password-requirements';
 import type {AuthLang} from '@/lib/auth-copy';
 import {MOBILE_ACCESS_COPY} from './copy';
 import {AccessPasswordPair} from './password-pair';
 import {useAccessJourney} from './journey';
 import {AccessCard,AccessOutside} from './chrome';
 
-export function MobileActivationView({phase,mismatch=false,employeeId,loginHref,workspaceName,onSubmit,formRef,successRef,lang}:{phase:ActivationPhase;mismatch?:boolean;employeeId?:string|null;loginHref:string;workspaceName?:string|null;onSubmit:(event:FormEvent<HTMLFormElement>)=>void;formRef?:RefObject<HTMLFormElement|null>;successRef?:RefObject<HTMLDivElement|null>;lang:AuthLang}) {
+export function MobileActivationView({phase,passwordReason,mismatch=false,employeeId,loginHref,workspaceName,onSubmit,formRef,successRef,lang}:{phase:ActivationPhase;passwordReason?:PasswordRejection;mismatch?:boolean;employeeId?:string|null;loginHref:string;workspaceName?:string|null;onSubmit:(event:FormEvent<HTMLFormElement>)=>void;formRef?:RefObject<HTMLFormElement|null>;successRef?:RefObject<HTMLDivElement|null>;lang:AuthLang}) {
  const t=MOBILE_ACCESS_COPY[lang],journey=useAccessJourney(),input=useRef<HTMLInputElement>(null),version=useRef({generation:0}),[copyStatus,setCopyStatus]=useState('');
  useEffect(()=>{const lifetime=version.current;lifetime.generation++;return()=>{lifetime.generation++;};},[employeeId,lang]);
  const canSubmit=['ready','pending','unavailable'].includes(phase),signInHref=loginHref.replace('?activated=1&','?').replace('?activated=1','');
@@ -28,7 +29,7 @@ export function MobileActivationView({phase,mismatch=false,employeeId,loginHref,
  const sub=phase==='checking'?(lang==='es'?'Abriendo tu invitación…':'Opening your invitation…'):canSubmit?t.inviteSub.replace('{workplace}',workspaceName??t.workspaceUnavailable):phase==='invalid'?t.inviteInvalidBody:phase==='outcome_unknown'?t.inviteUnknownBody:t.activateSub;
  const help=phase!=='checking'&&!canSubmit;
  return <><AccessCard><div className="q-hd"><h1>{title}</h1><p role={phase==='checking'?'status':undefined}>{sub}</p></div>
-  {canSubmit?<form ref={formRef} className="q-auth__form activation-form" onSubmit={onSubmit} aria-busy={phase==='pending'}><AuthValidation/><fieldset className="q-auth__fields" disabled={phase==='pending'}><AccessPasswordPair prefix="activation" lang={lang} mismatch={mismatch} newLabel={t.createPassword}/>{mismatch?<p id="activation-error" className="q-auth__alert" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{t.mismatch}</span></p>:phase==='unavailable'?<p id="activation-error" className="q-auth__alert" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{t.inviteUnavailable}</span></p>:null}</fieldset><ActivationSubmit pending={phase==='pending'} idle={t.activateAccount} busy={t.activating} className="q-btn"/></form>:null}
+  {canSubmit?<form ref={formRef} className="q-auth__form activation-form" onSubmit={onSubmit} aria-busy={phase==='pending'}><AuthValidation/>{passwordReason?<p id="activation-policy-error" className="q-auth__alert" role="alert">{passwordRejectionMessage(lang,passwordReason)}</p>:null}<fieldset className="q-auth__fields" disabled={phase==='pending'}><AccessPasswordPair prefix="activation" lang={lang} mismatch={mismatch} newLabel={t.createPassword}/>{mismatch?<p id="activation-error" className="q-auth__alert" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{t.mismatch}</span></p>:phase==='unavailable'?<p id="activation-error" className="q-auth__alert" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{t.inviteUnavailable}</span></p>:null}</fieldset><ActivationSubmit pending={phase==='pending'} idle={t.activateAccount} busy={t.activating} className="q-btn"/></form>:null}
   {help?<div className="ma-actions"><Link href="/access-help/invitation" className="q-btn">{t.inviteHelp}</Link></div>:null}</AccessCard>
   <AccessOutside><Link className="q-btn q-btn--quiet" href={signInHref}>{t.alreadyActivated}</Link>
   {canSubmit?<details className="ma-details"><summary>{t.inviteAbout}<CaretDownIcon className="ma-caret" size={16} weight="bold" aria-hidden="true"/></summary><p>{t.inviteExpires}</p></details>:null}

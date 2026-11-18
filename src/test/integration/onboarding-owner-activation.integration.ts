@@ -76,3 +76,13 @@ it('skips ten expired pending registrations and fairly rotates live activation w
   const second=await runOwnerActivationWorker({store:f.store,config:f.config,connect:f.provider.connect});expect(second.state).toBe('pending');expect(second.operationId).not.toBe(first.operationId);
  }finally{await f.close();}
 });
+
+it.each([['twelve chars','too_short'],['qwertyuiopasdfgh','breached'],['Fictional fictional-north2026!','company_name']] as const)('PB-026 keeps the initial Owner grant usable after refusing %s',async(candidate,passwordReason)=>{
+ const f=await onboardingJourneyFixture();try{
+  const c=await f.createCompany(),{proof}=await c.grant();
+  expect(await activateInitialOwner(c.binding,{...command(proof),password:candidate})).toEqual({state:'invalid',passwordReason});
+  expect((await c.resource.db.pool.query('SELECT count(*)::int n FROM employee_credentials')).rows[0].n).toBe(0);
+  expect((await c.resource.db.pool.query('SELECT consumed_at FROM onboarding_owner_grants')).rows[0].consumed_at).toBeNull();
+  expect((await activateInitialOwner(c.binding,command(proof))).state).toBe('activated');
+ }finally{await f.close();}
+});

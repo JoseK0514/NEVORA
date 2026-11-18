@@ -8,6 +8,7 @@ import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {MobileActivationView} from '@/components/mobile-access/activation-view';
 import {useAccessJourney} from '@/components/mobile-access/journey';
 import {useLayoutEffect,useRef,useState,type FormEvent,type RefObject} from 'react';
+import {isPasswordRejection,passwordRejectionMessage,type PasswordRejection} from '@/lib/auth/password-requirements';
 import type {ActivationResult} from '@/lib/auth/invitations/model';
 import {ActivationPasswords} from './activation-passwords';
 import {ActivationSubmit} from './activation-submit';
@@ -27,10 +28,12 @@ export function readActivationResult(value:unknown):ActivationResult {
  if(!value||typeof value!=='object'||Array.isArray(value))throw new Error('Activation response unavailable.');
  const o=value as Record<string,unknown>,keys=Object.keys(o).sort().join(',');
  if(o.state==='activated'&&keys==='employeeId,state'&&typeof o.employeeId==='string'&&o.employeeId.length>0&&o.employeeId.length<=128&&o.employeeId.trim()===o.employeeId)return {state:'activated',employeeId:o.employeeId};
+ if(keys==='passwordReason,state'&&o.state==='invalid'&&isPasswordRejection(o.passwordReason))return {state:'invalid',passwordReason:o.passwordReason};
  if(keys==='state'&&(o.state==='invalid'||o.state==='unavailable'||o.state==='outcome_unknown'))return {state:o.state};
  throw new Error('Activation response unavailable.');
 }
 export function ActivationInvitation({loginHref,workspaceName=null,lang='en',mobileAccess=false}:{loginHref:string;workspaceName?:string|null;lang?:AuthLang;mobileAccess?:boolean}) {
+ const [passwordReason,setPasswordReason]=useState<PasswordRejection|undefined>(undefined);
  const [phase,setPhase]=useState<ActivationPhase>('checking');const [mismatch,setMismatch]=useState(false),[formVersion,setFormVersion]=useState(0),[employeeId,setEmployeeId]=useState<string|null>(null);
  const success=useRef<HTMLDivElement|null>(null);
  // Inspection Nov 14, 2026 (PB-007): a link that arrived but can't be read is not "no link". Shape only, checked in the
@@ -39,7 +42,7 @@ export function ActivationInvitation({loginHref,workspaceName=null,lang='en',mob
  const proof=useRef<string|null>(null),captured=useRef(false),mounted=useRef(false),request=useRef<AbortController|null>(null),busy=useRef(false),generation=useRef(0),formRef=useRef<HTMLFormElement|null>(null);
  useLayoutEffect(()=>{
   mounted.current=true;
-  function publishCurrent(version:number){queueMicrotask(()=>{if(mounted.current&&generation.current===version){setEmployeeId(null);setMismatch(false);setFormVersion(version);setPhase(proof.current?'ready':unusable.current?'invalid':'missing');}});}
+  function publishCurrent(version:number){queueMicrotask(()=>{if(mounted.current&&generation.current===version){setEmployeeId(null);setPasswordReason(undefined);setMismatch(false);setFormVersion(version);setPhase(proof.current?'ready':unusable.current?'invalid':'missing');}});}
   function cancelRequest(){++generation.current;request.current?.abort();request.current=null;busy.current=false;formRef.current?.reset();}
   function capture(){
    cancelRequest();const version=generation.current;proof.current=null;
@@ -61,20 +64,21 @@ export function ActivationInvitation({loginHref,workspaceName=null,lang='en',mob
   event.preventDefault();const form=event.currentTarget;if(busy.current||!proof.current||!form.reportValidity())return;
   const fields=new FormData(form),password=String(fields.get('password')??'');
   if(password!==fields.get('confirmPassword')){setMismatch(true);form.querySelector<HTMLInputElement>('[name="confirmPassword"]')?.focus();return;}
-  setMismatch(false);busy.current=true;setPhase('pending');const version=generation.current,requestProof=proof.current;
+  setMismatch(false);setPasswordReason(undefined);busy.current=true;setPhase('pending');const version=generation.current,requestProof=proof.current;
   const isCurrent=()=>mounted.current&&generation.current===version;
   const abort=new AbortController();request.current=abort;const timeout=setTimeout(()=>abort.abort(),20000);
   try{
    const response=await fetch('/api/auth/activate',{method:'POST',cache:'no-store',credentials:'same-origin',redirect:'error',headers:{'Content-Type':'application/json','x-nevora-activation':'1'},signal:abort.signal,body:JSON.stringify({proof:requestProof,password})});
    const result=readActivationResult(await response.json());if(!isCurrent())return;
    if(result.state==='activated'&&response.ok){proof.current=null;form.reset();setEmployeeId(result.employeeId);setPhase('activated');}
+   else if(result.state==='invalid'&&response.status===400&&result.passwordReason){setPasswordReason(result.passwordReason);setPhase('ready');}
    else if(result.state==='invalid'&&response.status===400){proof.current=null;form.reset();setPhase('invalid');}
    else if(result.state==='unavailable'){setPhase('unavailable');}
    else{proof.current=null;form.reset();setPhase('outcome_unknown');}
   }catch{if(isCurrent()){proof.current=null;form.reset();setPhase('outcome_unknown');}}
   finally{clearTimeout(timeout);if(isCurrent()){busy.current=false;request.current=null;}}
  }
- return <ActivationInvitationView lang={lang} mobileAccess={mobileAccess} key={formVersion} phase={phase} mismatch={mismatch} employeeId={employeeId} loginHref={loginHref} workspaceName={workspaceName} onSubmit={submit} formRef={formRef} successRef={success}/>;
+ return <ActivationInvitationView lang={lang} mobileAccess={mobileAccess} key={formVersion} phase={phase} passwordReason={passwordReason} mismatch={mismatch} employeeId={employeeId} loginHref={loginHref} workspaceName={workspaceName} onSubmit={submit} formRef={formRef} successRef={success}/>;
 }
 /** Copies the confirmed sign-in ID; says so for two seconds. Selecting the field stays available as before. */
 function CopyId({value,a}:{value:string;a:AuthCopy['activation']}) {
@@ -89,10 +93,10 @@ function CopyId({value,a}:{value:string;a:AuthCopy['activation']}) {
  * Inspection Nov 14, 2026: the line under the title says only what is true before the server has checked anything
  * (PB-002); an expired, used or unreadable link has its own message and one next step (PB-007); the success card leads
  * with a done mark, says to save the ID, and hands the ID to Sign in at every width (PB-003, JR-7). */
-export function ActivationInvitationView({phase,mismatch=false,employeeId,loginHref,workspaceName=null,onSubmit,formRef,successRef,lang='en',mobileAccess=false}:{phase:ActivationPhase;lang?:AuthLang;mobileAccess?:boolean;mismatch?:boolean;employeeId?:string|null;loginHref:string;workspaceName?:string|null;onSubmit:(event:FormEvent<HTMLFormElement>)=>void;formRef?:RefObject<HTMLFormElement|null>;successRef?:RefObject<HTMLDivElement|null>}) {
+export function ActivationInvitationView({phase,passwordReason,mismatch=false,employeeId,loginHref,workspaceName=null,onSubmit,formRef,successRef,lang='en',mobileAccess=false}:{phase:ActivationPhase;passwordReason?:PasswordRejection;lang?:AuthLang;mobileAccess?:boolean;mismatch?:boolean;employeeId?:string|null;loginHref:string;workspaceName?:string|null;onSubmit:(event:FormEvent<HTMLFormElement>)=>void;formRef?:RefObject<HTMLFormElement|null>;successRef?:RefObject<HTMLDivElement|null>}) {
  const mobile=useMobilePresentation(mobileAccess,'activation-password activation-confirm-password'),journey=useAccessJourney();
- if(mobile)return <MobileActivationView {...{phase,mismatch,employeeId,loginHref,workspaceName,onSubmit,formRef,successRef,lang}}/>;
- const canSubmit=['ready','pending','unavailable'].includes(phase);const error=mismatch||phase==='unavailable';
+ if(mobile)return <MobileActivationView {...{phase,passwordReason,mismatch,employeeId,loginHref,workspaceName,onSubmit,formRef,successRef,lang}}/>;
+ const canSubmit=['ready','pending','unavailable'].includes(phase);const error=mismatch||Boolean(passwordReason)||phase==='unavailable';
  const signInHref=loginHref.replace('?activated=1&','?').replace('?activated=1','');
  // Review B4 (Nov 10, 2026, NV-055): every word comes from AUTH_COPY, so a Spanish page stays Spanish. NV-196: without a
  // usable invitation the page has one model at every width (the title and line, then one card with the next step and
@@ -118,6 +122,7 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
   {phase==='missing'?<span className="q-sr activation-invitation-state" role="status">{a.missing}</span>:null}
   {canSubmit&&<form ref={formRef} className="q-auth__form activation-form" onSubmit={onSubmit} aria-busy={phase==='pending'} aria-describedby="activation-intro">
    <AuthValidation/>
+   {passwordReason?<p id="activation-error" className="q-error q-auth__alert" role="alert">{passwordRejectionMessage(lang,passwordReason)}</p>:null}
    {phase==='unavailable'&&!mismatch?<p id="activation-error" className="q-error q-auth__alert" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{a.unavailable}</span></p>:null}
    <fieldset className="q-auth__fields" disabled={phase==='pending'}>
     <ActivationPasswords quiet lang={lang} mismatch={mismatch} errorId={error?'activation-error':undefined}/>

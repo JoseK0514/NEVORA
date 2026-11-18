@@ -55,12 +55,12 @@ function ownerGuards(proof: SessionMutationProof, workspace: Workspace, employee
 }
 
 type Target = {
- employeeId:string;employeeVersion:string;email:string|null;active:boolean;credentialed:boolean;self:boolean;
+ employeeId:string;firstName:string;employeeVersion:string;email:string|null;active:boolean;credentialed:boolean;self:boolean;
  invitationRevision:number;invitationId:string|null;issuedAt:string|null;expiresAt:string|null;issuerName:string|null;
  invitationState:'ISSUED'|'CONSUMED'|'REVOKED'|'EXPIRED'|'INVALIDATED'|null;delivery:DeliveryState|null;
 };
 function targetStatement(workspaceId: string, employeeId: string, actorId: string): SqlStatement {
- return {text:`SELECT e.id AS "employeeId",e.updated_at::text AS "employeeVersion",e.email,e.active,
+ return {text:`SELECT e.id AS "employeeId",e.first_name AS "firstName",e.updated_at::text AS "employeeVersion",e.email,e.active,
   EXISTS(SELECT 1 FROM employee_credentials c WHERE c.employee_id=e.id) AS credentialed,e.id=$3 AS self,
   COALESCE(i.revision,0) AS "invitationRevision",i.id::text AS "invitationId",i.issued_at::text AS "issuedAt",i.expires_at::text AS "expiresAt",
   concat(issuer.first_name,' ',issuer.last_name) AS "issuerName",
@@ -224,7 +224,7 @@ export async function issueOrRevokeInvitation(proof: SessionMutationProof, emplo
   if(!saved) return {state:'outcome_unknown',operationId:command.operationId};
   if(command.action==='REVOKE') return {state:'saved',receipt:saved};
   let outcome:DeliveryState='UNKNOWN';
-  try {const sent=await delivery!.send({employeeId:target.employeeId,registeredEmail:target.email!,proof:bearer!,expiresAt:saved.expiresAt!});if(sent.providerAccepted===true)outcome='PROVIDER_ACCEPTED';}
+  try {const sent=await delivery!.send({employeeId:target.employeeId,registeredEmail:target.email!,proof:bearer!,expiresAt:saved.expiresAt!,companyName:workspace.name,firstName:target.firstName,timeZone:workspace.timeZone});if(sent.providerAccepted===true)outcome='PROVIDER_ACCEPTED';}
   catch(error) {if(error && typeof error==='object' && 'deliveryState' in error && error.deliveryState==='FAILED')outcome='FAILED';}
   try {await executor.query({text:'INSERT INTO company_invitation_delivery_events(workspace_id,id,invitation_id,state) VALUES($1,$2,$3,$4)',values:[workspace.id,randomUUID(),invitationId,outcome]});}
   catch {return {state:'outcome_unknown',operationId:command.operationId};}

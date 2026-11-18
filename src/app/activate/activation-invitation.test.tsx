@@ -31,6 +31,12 @@ it('does not offer another potentially completed activation after an uncertain o
 
 it.each([{state:['activated']},{state:'activated',proof:'private'},{state:'other'},null])('rejects malformed/expanded public result envelopes before using them',value=>{expect(()=>readActivationResult(value)).toThrow();});
 it('accepts the own login ID only in the exact confirmed-success envelope',()=>{expect(readActivationResult({state:'activated',employeeId:'OWN-FIXTURE-ID'})).toEqual({state:'activated',employeeId:'OWN-FIXTURE-ID'});});
+it('accepts only recognized password rejection reasons and preserves a usable invitation form',()=>{
+ expect(readActivationResult({state:'invalid',passwordReason:'breached'})).toEqual({state:'invalid',passwordReason:'breached'});
+ expect(()=>readActivationResult({state:'invalid',passwordReason:'untrusted value'})).toThrow();
+ const html=renderToStaticMarkup(<ActivationInvitationView phase="ready" passwordReason="breached" lang="es" loginHref="/login" onSubmit={()=>{}}/>);
+ expect(html).toContain('filtración conocida');expect(html).toContain('<form');expect(html).toContain('minLength="15"');
+});
 it.each([{state:'activated'},{state:'activated',employeeId:''},{state:'activated',employeeId:['OWN-FIXTURE-ID']},{state:'invalid',employeeId:'OWN-FIXTURE-ID'},{state:'unavailable',employeeId:'OWN-FIXTURE-ID'},{state:'outcome_unknown',employeeId:'OWN-FIXTURE-ID'}])('rejects missing success identity and any failure identity',value=>{expect(()=>readActivationResult(value)).toThrow();});
 it('keeps a confirmed recipient ID visible until explicit normal sign-in',()=>{const html=renderToStaticMarkup(<ActivationInvitationView phase="activated" employeeId="OWN-FIXTURE-ID" loginHref="/login?activated=1" onSubmit={()=>{}}/>);expect(html).toContain('OWN-FIXTURE-ID');expect(html).toContain('Continue to sign in');expect(html).toContain('href="/login?activated=1"');});
 // Inspection Nov 14, 2026.

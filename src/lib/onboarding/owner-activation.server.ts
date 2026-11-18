@@ -10,6 +10,8 @@ import {assertWorkspaceBindingCurrent} from '../workspace-routing/resolver.serve
 import {sealWorkspaceToken,openWorkspaceToken} from '../workspace-routing/token-envelope.server';
 import {getWorkspaceDb} from '../workspace-routing/transport.server';
 import type {SqlExecutor} from '../notifications/types';
+import {passwordRejection} from '../auth/password-policy';
+import type {PasswordRejection} from '../auth/password-requirements';
 import {hashPassword} from '../auth/password';
 import {tryAcquireInvitationPasswordWork} from '../auth/invitations/admission.server';
 import {connectBootstrap} from './provisioning/connection.server';
@@ -17,7 +19,7 @@ import type {BootstrapConnector} from './provisioning/provider';
 import type {ProvisionedResource} from './provisioning/model';
 
 export type BootstrapRedirect={state:'ready';operationId:string;url:string;expiresAt:string}|{state:'pending';operationId:string;pollAfterMs:number}|{state:'invalid'|'unavailable'}|{state:'limited';retryAfterMs:number}|{state:'outcome_unknown';operationId:string};
-export type OwnerActivationResult={state:'activated';employeeId:string;nextAction:'SIGN_IN'}|{state:'invalid'|'conflict'|'limited'|'unavailable'}|{state:'outcome_unknown';operationId:string};
+export type OwnerActivationResult={state:'activated';employeeId:string;nextAction:'SIGN_IN'}|{state:'invalid'|'conflict'|'limited'|'unavailable';passwordReason?:PasswordRejection}|{state:'outcome_unknown';operationId:string};
 const routing=(c:EnabledConfig)=>({...c,tokenKey:c.workspaceTokenKey});
 const grantPurpose=(environment:string,workspaceId:string,incarnation:string)=>'owner-grant:'+environment+':'+workspaceId+':'+incarnation;
 const custodyPurpose=(operationId:string)=>'owner-grant-request:'+operationId;
@@ -56,7 +58,8 @@ export async function requestOwnerBootstrapGrant(session:VerifiedSignupSession,v
 /** Uses the same real scrypt format and process work bound as employee claims.
  * No session is issued here; normal sign-in recovers any lost response/cookie. */
 export async function activateInitialOwner(binding:WorkspaceBinding,value:unknown,executor:SqlExecutor=getWorkspaceDb(binding),signal?:AbortSignal):Promise<OwnerActivationResult>{
- if(!isClosedRecord(value,['schemaVersion','operationId','proof','password'])||value.schemaVersion!==1||!isOperationId(value.operationId)||typeof value.password!=='string'||value.password.length<8||value.password.length>1024||signal?.aborted)return {state:'invalid'};
+ if(!isClosedRecord(value,['schemaVersion','operationId','proof','password'])||value.schemaVersion!==1||!isOperationId(value.operationId)||typeof value.password!=='string'||signal?.aborted)return {state:'invalid'};
+ if(value.password.length>1024)return {state:'invalid',passwordReason:'too_long'};
  let release:(()=>void)|null=null,attempted=false;
  try{
   const f=await assertWorkspaceBindingCurrent(binding),r=f.record;
@@ -71,6 +74,9 @@ export async function activateInitialOwner(binding:WorkspaceBinding,value:unknow
   const admitted=await call(null);
   if(admitted?.state==='activated')return {state:'activated',employeeId:admitted.employee_id!,nextAction:'SIGN_IN'};
   if(admitted?.state!=='admitted')return {state:admitted?.state==='conflict'?'conflict':admitted?.state==='limited'?'limited':'invalid'};
+  const subjects=await executor.query<{employeeId:string;companyName:string}>({text:`SELECT e.id AS "employeeId",w.name AS "companyName" FROM public.employees e JOIN public.locations l ON l.id=e.primary_location_id JOIN public.workspaces w ON w.id=l.workspace_id WHERE w.id=$1 AND w.singleton AND w.active AND e.role='OWNER' AND NOT e.active AND NOT EXISTS(SELECT 1 FROM public.employee_credentials c WHERE c.employee_id=e.id) LIMIT 2`,values:[r.id]});
+  if(subjects.length!==1)return {state:'invalid'};
+  const passwordReason=passwordRejection(value.password,subjects[0]);if(passwordReason)return {state:'invalid',passwordReason};
   const hash=await hashPassword(value.password);if(signal?.aborted)return {state:'invalid'};
   attempted=true;const committed=await call(hash);
   if(committed?.state==='activated')return {state:'activated',employeeId:committed.employee_id!,nextAction:'SIGN_IN'};

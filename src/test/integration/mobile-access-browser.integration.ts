@@ -154,3 +154,86 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
   await writeFile(evidence+'/mobile-access-results.json',JSON.stringify({complete:complete&&closed,scope:'Real Next/server actions, invocation-owned PostgreSQL and loopback SMTP only; no real email/native clipboard/production service used.',checks,errors,windowExceptions,frameworkDiagnostics,guideContrast,profileNavigation},null,2));}
  }
 });
+
+it('PB-026 and PB-022 enforce new passwords and render bilingual company emails in real browsers',async()=>{
+ const evidence=process.env.NEVORA_MOBILE_ACCESS_EVIDENCE;
+ if(!evidence)throw Error('Select external NEVORA_MOBILE_ACCESS_EVIDENCE');
+ await mkdir(evidence,{recursive:true});
+ const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
+ const {invitationEmail,recoveryEmail,passwordChangedEmail}=await import('../../lib/auth/account-email-copy');
+ const {passwordRejectionMessage}=await import('../../lib/auth/password-requirements');
+ const smtp=await createOwnedSmtp();
+ const app=await createOwnedNextApp(evidence,{mobileAccessEnabled:true,recoverySmtpPort:smtp.port,invitationSmtpPort:smtp.port,pinDevTypeReferences:true}).catch(async e=>{await smtp.close();throw e;});
+ const origin=app.url,q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
+ const errors:string[]=[],checks:string[]=[],browsers:{close():Promise<void>}[]=[];
+ let step='seed',passed=false;
+ try{
+  await seedOwnedApp(app.database.executor);
+  await q("UPDATE workspaces SET name='North Harbor Foods',updated_at=clock_timestamp() WHERE singleton");
+  for(const engine of ['chromium','webkit']){
+   const id='PB022-'+engine;
+   await q("INSERT INTO employees(id,first_name,last_name,email,phone,role,primary_location_id) VALUES($1,'Avery','Fixture',$2,'2025550101','EMPLOYEE','loc-1')",[id,engine+'@example.invalid']);
+   const browser=await runtime[engine].launch({headless:true});browsers.push(browser);
+   const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce',serviceWorkers:'block'});
+   await context.route('**/*',async(route:{request():{url():string};abort(reason?:string):Promise<void>;continue():Promise<void>})=>{
+    const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==origin)await route.abort();else await route.continue();
+   });
+   const page=await context.newPage();page.setDefaultTimeout(20000);page.on('pageerror',(e:Error)=>errors.push(engine+': '+step+': '+e.name+' '+e.message));
+   step=engine+' Owner sign-in and invitation';
+   await page.goto(origin+'/login');await page.locator('#login-employee-id').fill('QAOWNER');await page.locator('#login-password').fill(TEST_PASSWORD);await page.locator('button[type="submit"]').click();await page.waitForURL('**/app',{timeout:45000});
+   const headers={Origin:origin,'x-nevora-company-access':'1','x-nevora-actor':'QAOWNER'};
+   const status=await (await context.request.get(origin+'/api/company-access/invitations/'+id,{headers})).json();
+   const issue=await context.request.post(origin+'/api/company-access/invitations/'+id,{headers,data:{action:'ISSUE',operationId:randomUUID(),expectedEmployeeVersion:status.employeeVersion,expectedInvitationRevision:status.invitationRevision}});expect(issue.status()).toBe(200);
+   const mail=smtp.messages.find((m:{recipient:string})=>m.recipient.includes(engine+'@example.invalid'));if(!mail)throw Error('Owned invitation not captured');
+   const proof=/#proof=([A-Za-z0-9_-]{43})/.exec(mail.body.replace(/=\r?\n/g,'').replace(/=3D/g,'='))?.[1];if(!proof)throw Error('Missing owned invitation proof');
+   const short=await context.request.post(origin+'/api/auth/activate',{headers:{Origin:origin,'x-nevora-activation':'1'},data:{proof,password:'short value'}});expect(short.status()).toBe(400);expect(await short.json()).toEqual({state:'invalid',passwordReason:'too_short'});
+   await context.clearCookies();await context.addCookies([{name:'nv-lang',value:'en',url:origin}]);
+   await page.goto(origin+'/activate#proof='+proof);await page.locator('#activation-password').waitFor();expect(new URL(page.url()).hash).toBe('');
+   for(const lang of ['en','es'] as const){
+    step=engine+' invitation policy '+lang;await context.addCookies([{name:'nv-lang',value:lang,url:origin}]);await page.reload();
+    // Reload loses in-memory proof custody; explicitly reopen the same unconsumed invitation.
+    await page.goto(origin+'/activate#proof='+proof);await page.locator('#activation-password').fill('qwertyuiopasdfgh');await page.locator('#activation-confirm-password').fill('qwertyuiopasdfgh');await page.locator('button[type="submit"]').click();
+    await expect.poll(()=>page.locator('#activation-error').innerText()).toBe(passwordRejectionMessage(lang,'breached'));
+    expect(await page.locator('#activation-password').getAttribute('minlength')).toBe('15');
+    await page.setViewportSize({width:lang==='en'?1440:320,height:1000});await page.screenshot({path:evidence+'/'+engine+'-activation-'+lang+'.png',fullPage:true});
+   }
+   const first='quiet meadows under winter skies';await page.locator('#activation-password').fill(first);await page.locator('#activation-confirm-password').fill(first);await page.locator('button[type="submit"]').click();await page.locator('#activation-employee-id').waitFor();expect(await page.locator('#activation-employee-id').inputValue()).toBe(id);
+   step=engine+' reset password policy';
+   await context.addCookies([{name:'nv-lang',value:'es',url:origin}]);
+   await page.goto(origin+'/forgot-access');await page.locator('#recovery-employee-id').fill(id);await page.locator('#recovery-email').fill(engine+'@example.invalid');await page.locator('button[type="submit"]').click();
+   await expect.poll(()=>smtp.messages.filter((m:{recipient:string;body:string})=>m.recipient.includes(engine+'@example.invalid')&&m.body.includes('/reset-access')).length).toBe(1);
+   const resetMail=smtp.messages.find((m:{recipient:string;body:string})=>m.recipient.includes(engine+'@example.invalid')&&m.body.includes('/reset-access'))!;
+   const resetProof=/#proof=([A-Za-z0-9_-]{43})/.exec(resetMail.body.replace(/=\r?\n/g,'').replace(/=3D/g,'='))?.[1];if(!resetProof)throw Error('Missing owned reset proof');
+   await page.goto(origin+'/reset-access#proof='+resetProof);await page.locator('#reset-password').waitFor();
+   for(const [candidate,reason] of [['NorthHarborFoods2026!','company_name'],['qwertyuiopasdfgh','breached']] as const){
+    await page.locator('#reset-password').fill(candidate);await page.locator('#reset-confirm-password').fill(candidate);await page.locator('button[type="submit"]').click();await expect.poll(()=>page.locator('#reset-error').innerText()).toContain(passwordRejectionMessage('es',reason));
+    expect(await page.locator('#reset-error').evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);
+   }
+   await page.screenshot({path:evidence+'/'+engine+'-reset-es.png',fullPage:true});
+   const next='a distant orchestra carries through the winter valley';await page.locator('#reset-password').fill(next);await page.locator('#reset-confirm-password').fill(next);await page.locator('button[type="submit"]').click();await page.locator('a[href="/login"]').first().waitFor();
+   const replay=await context.request.post(origin+'/api/auth/reset-access',{headers:{Origin:origin,'x-nevora-recovery':'1'},data:{proof:resetProof,password:next}});expect(replay.status()).toBe(400);
+   await page.goto(origin+'/login');await page.locator('#login-employee-id').fill(id);await page.locator('#login-password').fill(next);await page.locator('button[type="submit"]').click();await page.waitForURL('**/app',{timeout:45000});
+   const expires=(await q<{expiry:string}>('SELECT expires_at::text AS expiry FROM password_recovery_proofs WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 1',[id]))[0].expiry as string;
+   const invitationExpires=(await q<{expiry:string}>('SELECT expires_at::text AS expiry FROM company_invitations WHERE employee_id=$1 ORDER BY issued_at DESC LIMIT 1',[id]))[0].expiry;
+   const emailContext={companyName:'North Harbor Foods',firstName:'Avery',timeZone:'America/Puerto_Rico',expiresAt:expires};
+   for(const [kind,email] of [['invitation',invitationEmail(origin+'/activate#proof='+proof,id,{...emailContext,expiresAt:invitationExpires})],['reset',recoveryEmail(origin+'/reset-access#proof='+resetProof,emailContext)],['changed',passwordChangedEmail(origin,emailContext)]] as const){
+    step=engine+' '+kind+' email';await writeFile(evidence+'/'+engine+'-'+kind+'.html',email.html);await writeFile(evidence+'/'+engine+'-'+kind+'.txt',email.text);
+    for(const width of [320,1440]){
+     await page.setViewportSize({width,height:1000});await page.setContent(email.html,{waitUntil:'networkidle'});
+     expect(await page.locator('section[lang="en"]').count()).toBe(1);expect(await page.locator('section[lang="es"]').count()).toBe(1);
+     expect(await page.locator('img[alt="NEVORA"]').evaluate((el:HTMLImageElement)=>el.complete&&el.naturalWidth>0)).toBe(true);
+     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+     await page.keyboard.press('Tab');expect(await page.evaluate(()=>document.activeElement?.tagName)).toBe('A');
+     await page.screenshot({path:evidence+'/'+engine+'-'+kind+'-email-'+width+'.png',fullPage:true});
+    }
+   }
+   checks.push(engine+': real local SMTP invitation/reset, 15 minimum, EN/ES breach reasons with retained proof, company rejection, long phrase acceptance, reset single-use, ordinary sign-in, all three bilingual HTML/text emails at 320/1440px with keyboard links and no overflow');
+   await context.close();
+  }
+  expect(errors).toEqual([]);passed=true;
+ }finally{
+  for(const browser of browsers)await browser.close().catch(()=>{});
+  await writeFile(evidence+'/password-email-report.json',JSON.stringify({passed,step,checks,errors},null,2));
+  await app.close();await smtp.close();
+ }
+},360000);

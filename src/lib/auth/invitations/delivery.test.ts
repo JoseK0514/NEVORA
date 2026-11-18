@@ -4,6 +4,19 @@ import {fakeInvitationSmtp} from '@/test/integration/company-access-smtp.test-su
 vi.mock('server-only',()=>({}));
 import {invitationDelivery} from './delivery.server';
 
+it('PB-022 sends bilingual HTML and plain text through real owned SMTP with company and issued expiry',async()=>{
+ const smtp=await fakeInvitationSmtp();try{
+  const expiresAt=new Date(Date.now()+7*86400000).toISOString();
+  await invitationDelivery(smtp.env)!.send({registeredEmail:'target@example.invalid',employeeId:'FICTIONAL-EMPLOYEE',proof:randomBytes(32).toString('base64url'),expiresAt,companyName:'Harbor Studio',firstName:'Avery',timeZone:'America/Puerto_Rico'});
+  expect(smtp.messages).toHaveLength(1);
+  const mail=smtp.messages[0].replace(/=\r\n/g,'').replace(/=3D/g,'=');
+  expect(mail).toContain('multipart/alternative');expect(mail).toContain('text/plain');expect(mail).toContain('text/html');
+  expect(mail).toContain('Harbor Studio');expect(mail).toContain('lang="en"');expect(mail).toContain('lang="es"');
+  expect(mail).toContain('FICTIONAL-EMPLOYEE');expect(mail).toContain('/activate#proof=');
+  expect(mail).not.toContain('Your Owner invited');
+ }finally{await smtp.close();}
+});
+
 it('actual configurable invitation transport sends only the registered recipient and a fragment proof through owned SMTP',async()=>{
  const smtp=await fakeInvitationSmtp();
  try {

@@ -1,4 +1,5 @@
 'use client';
+import {MIN_PASSWORD_CHARACTERS,passwordLength} from '@/lib/auth/password-requirements';
 import {useMobilePresentation} from '@/components/mobile-access/use-mobile-presentation';
 
 import Link from 'next/link';
@@ -35,7 +36,7 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
  if(mobile)return <MobileRecoveryReset {...{hydrated,busy,done,message,onSubmit,proofRef,lang,linkProof,onDifferentCode}}/>;
  // Review B4 (Nov 10, 2026): the code's hint and the password's live checks show on every width, not only in a
  // placeholder (NV-195); the error leads the card above the fields (NV-319); fields name what is missing (NV-190).
- const length = password.length >= 8 ? 'ok' as const : 'idle' as const;
+ const length = passwordLength(password) >= MIN_PASSWORD_CHARACTERS ? 'ok' as const : 'idle' as const;
  const match = mismatch && confirm !== password ? 'bad' as const : confirm && confirm === password ? 'ok' as const : 'idle' as const;
  return <>
   <div className="q-hd"><h1>{done ? t.resetDoneTitle : t.quiet.resetTitle}</h1>{done ? null : <p>{t.quiet.resetSub}</p>}</div>
@@ -66,7 +67,7 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
      </div>
      <div className="q-fl">
       <label htmlFor="reset-password">{t.newPassword}</label>
-      <PasswordInput quiet id="reset-password" name="password" required minLength={8} maxLength={1024} autoComplete="new-password"
+      <PasswordInput quiet id="reset-password" name="password" required minLength={MIN_PASSWORD_CHARACTERS} maxLength={1024} autoComplete="new-password"
        placeholder={t.quiet.newPasswordPlaceholder} aria-describedby="reset-rules reset-password-invalid"
        controls={['reset-password', 'reset-confirm-password']} showLabel={t.showPasswords}
        data-msg-required={t.invalid.newPassword} data-msg-invalid={t.invalid.newPassword} onInput={event => setPassword(event.currentTarget.value)}/>
@@ -74,13 +75,13 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
      </div>
      <div className="q-fl">
       <label htmlFor="reset-confirm-password">{t.quiet.confirmPassword}</label>
-      <input id="reset-confirm-password" className="q-in" name="confirmPassword" type="password" required minLength={8} maxLength={1024}
+      <input id="reset-confirm-password" className="q-in" name="confirmPassword" type="password" required minLength={MIN_PASSWORD_CHARACTERS} maxLength={1024}
        autoComplete="new-password" placeholder={t.quiet.typeAgain} aria-invalid={mismatch || undefined}
        aria-describedby={message ? 'reset-rules reset-error reset-confirm-password-invalid' : 'reset-rules reset-confirm-password-invalid'}
        data-msg-required={t.invalid.confirm} data-msg-invalid={t.invalid.confirm} onInput={event => setConfirm(event.currentTarget.value)}/>
       <FieldInvalid id="reset-confirm-password"/>
      </div>
-     <PasswordRules id="reset-rules" rules={[{state: length, text: t.atLeast8}, {state: match, text: match === 'bad' ? t.activation.sameInBoth : t.activation.passwordsMatch}]}/>
+     <PasswordRules id="reset-rules" rules={[{state: length, text: t.atLeast15}, {state: match, text: match === 'bad' ? t.activation.sameInBoth : t.activation.passwordsMatch}]}/>
     </fieldset>
     <RecoverySubmit hydrated={hydrated} busy={busy} idle={t.resetPassword} pendingText={t.resettingPassword} className="q-btn"/>
    </form>

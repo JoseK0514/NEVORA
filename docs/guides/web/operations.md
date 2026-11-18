@@ -203,6 +203,12 @@ Email and assisted recovery also require a different password while replacement
 is pending. A customer-chosen password in self-service signup is distinguished
 from an operator-created password and does not require choosing it twice.
 
+New and replacement passwords use the shared 15-character policy, including
+operator setup and initial Owner activation. The local, pinned breach blocklist
+is finite and must be refreshed using `scripts/password-blocklist.mjs`; its source,
+license and refresh procedure are in `src/lib/auth/blocked-passwords.md`. This does
+not change verification of existing credentials or introduce periodic rotation.
+
 Keep payroll calculation mode `external` for this release. Native table presence
 does not enable calculation. Imported statement validation and approval do not
 prove tax correctness, wage payment or remittance. Do not turn on customer payroll,

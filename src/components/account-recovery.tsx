@@ -3,6 +3,7 @@ import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {RecoveryRequest} from './recovery-request';
 import {AssistedRecovery} from './assisted-recovery';
 import {RecoveryReset} from './recovery-reset';
+import {isPasswordRejection,passwordRejectionMessage,passwordLength,MIN_PASSWORD_CHARACTERS} from '@/lib/auth/password-requirements';
 import type {AuthLang} from '@/lib/auth-copy';
 import {isPublicAccountProof} from '@/lib/auth/public-proof';
 const subscribe=()=>()=>{};
@@ -33,6 +34,7 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=fals
  async function submit(event:React.FormEvent<HTMLFormElement>){
   event.preventDefault();if(sending.current)return;
   const form=new FormData(event.currentTarget),password=String(form.get('password')??'');
+  if(kind==='reset'&&passwordLength(password)<MIN_PASSWORD_CHARACTERS){setMessage(passwordRejectionMessage(lang,'too_short'));return;}
   if(kind==='reset'&&password!==String(form.get('confirmPassword')??'')){setMessage('Passwords do not match.');return;}
   const body=kind==='reset'?{proof:String(form.get('proof')??'').trim(),password}:kind==='request'?{employeeId:String(form.get('employeeId')??'').trim(),email:String(form.get('email')??'').trim()}:{employeeId:String(form.get('employeeId')??'').trim(),attestation:String(form.get('attestation')??'').trim()};
   if(kind==='request'&&mobileAccess)setRequestDraft({employeeId:String(form.get('employeeId')??'').trim(),email:String(form.get('email')??'').trim()});
@@ -44,6 +46,7 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=fals
    if(kind==='request'&&response.status===202&&data.state==='accepted'){setMessage(data.message);setDone(true);}
    else if(kind==='reset'&&response.ok&&data.state==='reset'){setMessage('Password reset. You’re signed out on every device. Sign in with your new password.');setDone(true);}
    else if(kind==='assisted'&&response.ok&&data.state==='issued'&&isPublicAccountProof(data.proof)&&Number.isFinite(Date.parse(data.expiresAt))&&data.employeeId===(body as {employeeId:string}).employeeId){setIssued(data);}
+   else if(kind==='reset'&&response.status===400&&data.state==='invalid'&&isPasswordRejection(data.passwordReason))setMessage(passwordRejectionMessage(lang,data.passwordReason));
    else setMessage(kind==='reset'&&data.state==='invalid'?'This recovery code has expired, was already used, or cannot be verified. Request a new code or contact your manager.':response.status===401||response.status===403?(kind==='assisted'?'Your session ended. Sign in again to issue a code.':'Your access ended. Sign in again.'):kind==='assisted'?assistedUnavailable:'Recovery could not be confirmed. Keep your current access and try again.');
   }catch{if(current===generation.current)setMessage(kind==='reset'?'The reset outcome could not be confirmed. Try signing in with your new password before requesting another code.':kind==='assisted'?assistedUnavailable:'Recovery is unavailable. Try again or contact your manager for assisted recovery.');}
   finally{clearTimeout(timeout);if(current===generation.current){setBusy(false);sending.current=false;active.current=null;}}
