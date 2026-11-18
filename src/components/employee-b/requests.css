@@ -119,7 +119,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pickup .b-btn--teal { align-self: flex-start; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why > summary { list-style: none; cursor: pointer; transition-property: background-color; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why > summary::-webkit-details-marker { display: none; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why > summary:active { background-color: rgb(16 24 32 / 0.04); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why > summary:active { background-color: var(--b-press-tint); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why > summary:focus-visible { outline: 2px solid var(--b-teal); outline-offset: -2px; border-radius: var(--b-radius-card); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why[open] .eb-why__chev { rotate: 180deg; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why__list { display: flex; flex-direction: column; margin: 0; padding: 0 var(--b-inset) var(--b-space-8) 66px; list-style: none; }

@@ -139,7 +139,7 @@
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card .ar-pair > .q-fl { margin-top: 0 !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card .ar-accepted { margin: 0 0 var(--b-space-12) !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card > .ar-steps { margin-bottom: var(--b-space-20) !important; }
-  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card .ar-done__mark { margin-left: auto !important; margin-right: auto !important; border-radius: 50% !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card .ar-done__mark { margin-left: auto !important; margin-right: auto !important; border-radius: 50% !important; background: var(--b-green-50) !important; color: var(--b-green) !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card .ma-note.ar-next { text-align: center !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card .ar-done__line { text-align: center !important; text-wrap: balance; }
   /* "Use a different code" inside a refusal reads as the link beside it. */

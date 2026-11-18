@@ -114,7 +114,7 @@ describe.each(["en", "es"] as const)("new password in %s", lang => {
     const html = reset(lang, { done: true, message: RESET });
     for (const line of [t.resetDoneTitle, t.reset.doneLine, u.doneNote, t.signIn]) expect(html).toContain(line);
     expect(html).toMatch(/class="q-auth__receipt" role="status" tabindex="-1"/);
-    expect(html).toMatch(/<span class="q-auth__mark" aria-hidden="true"><svg/);
+    expect(html).toMatch(/<span class="q-auth__mark q-auth__mark--done" aria-hidden="true"><svg/);
     expect(html).not.toContain("<form");
   });
 });

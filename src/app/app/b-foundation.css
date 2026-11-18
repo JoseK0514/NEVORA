@@ -285,7 +285,7 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__s { margin: 0; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__main > .b-btn { margin-top: 10px; min-height: 44px; }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-spin { display: block; width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid currentColor; border-right-color: transparent; }
-@media (prefers-reduced-motion: no-preference) { :is(#c-root, html) body .app-shell[data-nv-b] .b-spin { animation: b-spin var(--b-spin-dur, 800ms) linear infinite; } }
+@media (prefers-reduced-motion: no-preference) { :is(#c-root, html) body .app-shell[data-nv-b] .b-spin { animation: b-spin var(--b-dur-spin, 800ms) linear infinite; } }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint[data-tone="green"] { background: var(--b-green-50); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint[data-tone="amber"] { background: var(--b-amber-50); }
 :is(#c-root, html) body .app-shell[data-nv-b] .cm-block.conflict .cm-block__warn { flex: none; color: var(--b-amber); }

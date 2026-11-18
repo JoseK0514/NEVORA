@@ -450,6 +450,9 @@
 /* Receipts (PB-003, PB-004): the done mark, a 56px teal-wash circle with a bold check or envelope, leads the card on
  * every width; a receipt's lines keep a gap. */
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__mark { display: grid; place-items: center; width: 56px; height: 56px; margin: 0; border-radius: 50%; background: #E3F1EF; color: var(--b-teal); }
+/* A finish (a check) is done, and done is green in every part of the product: the app's success mark and the Clocker's
+ * receipt use the same green (decided Nov 17, 2026). The envelope ("check your email") stays teal: it is information. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__mark.q-auth__mark--done { background: var(--b-green-50); color: var(--b-green); }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__receipt p + p { margin-top: var(--b-space-8); }
 
 /* Short touch landscape keeps the sign-in action in view. The welcome art is

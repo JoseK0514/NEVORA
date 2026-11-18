@@ -5,12 +5,11 @@
 /* Loading (Phase 7, package C). Three things live here: the one shimmer, the hand-over from placeholder to page, and the
  * one spinner's sizes and its busy-button label.
  *
- * Private properties (no token is this long; listed for Jose in the Phase 7 report):
- *   --b-shimmer-dur   one pass of the light band, 1600ms
- *   --b-shimmer-wait  how long loading must last before the band first moves, 300ms (a fast page never shows it)
- *   --b-shimmer-span  how far the band travels: the window on a phone, the widest frame from 768px
- *   --b-spin-dur      one turn of the spinner, 800ms (the value b-foundation.css already used) */
-:is(#c-root, html) .app-shell[data-nv-b] { --b-shimmer-dur: 1600ms; --b-shimmer-wait: 300ms; --b-shimmer-span: 100vw; --b-spin-dur: 800ms; }
+ * Timings are tokens in src/app/b-tokens.css (Nov 17, 2026): --b-dur-shimmer (one pass of the light band, 1600ms),
+ * --b-delay-shimmer (how long loading must last before the band first moves, 300ms, so a fast page never shows it) and
+ * --b-dur-spin (one turn of the spinner, 800ms). One private distance stays here:
+ *   --b-shimmer-span  how far the band travels: the window on a phone, the widest frame from 768px */
+:is(#c-root, html) .app-shell[data-nv-b] { --b-shimmer-span: 100vw; }
 @media (min-width: 768px) { :is(#c-root, html) .app-shell[data-nv-b] { --b-shimmer-span: var(--b-frame-wide); } }
 
 /* 1. The shimmer. One soft light band crosses every placeholder block: the kit's page placeholder (BLoadingScreen draws
@@ -21,14 +20,14 @@
  * - Every band has the same width, the same travel and the same clock, so blocks that share a left edge show it at the
  *   same place at the same moment: the page reads as one surface. A row's lines start 48px right of the card's edge
  *   (the 36px lead and its 12px gap); their band starts 48px earlier to stay in step.
- * - It waits --b-shimmer-wait before the first pass. Until then the band sits outside the block.
+ * - It waits --b-delay-shimmer before the first pass. Until then the band sits outside the block.
  * - Reduced motion: no band is drawn at all. The placeholder is the static one Phase 2 built. */
 :is(#c-root, html) .app-shell[data-nv-b] :is(.b-screen[data-b-load] .b-skel, .be-skel__bar, .be-skel__dot, .kn-skel__bar, .kn-skel__dot, .wk-skel__bar) { position: relative; overflow: hidden; }
 @media (prefers-reduced-motion: no-preference) {
   :is(#c-root, html) .app-shell[data-nv-b] :is(.b-screen[data-b-load] .b-skel, .be-skel__bar, .be-skel__dot, .kn-skel__bar, .kn-skel__dot, .wk-skel__bar)::after {
     content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: min(calc(var(--b-shimmer-span) * 0.3), 160px); pointer-events: none;
     background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--b-on-band) 72%, transparent) 50%, transparent);
-    transform: translateX(-100%); animation: b-shimmer var(--b-shimmer-dur) linear var(--b-shimmer-wait) infinite; }
+    transform: translateX(-100%); animation: b-shimmer var(--b-dur-shimmer) linear var(--b-delay-shimmer) infinite; }
   /* On the teal band the blocks are glass, so the light is the glass edge: a lift of a few percent, not a white bar. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen[data-b-load] .b-hero .b-skel::after { background: linear-gradient(90deg, transparent, var(--b-glass-edge) 50%, transparent); }
   :is(#c-root, html) .app-shell[data-nv-b] :is(.b-screen[data-b-load] .b-skel-row:has(> .b-skel--av) .b-skel-row__tx .b-skel, .be-skel__lines > .be-skel__bar, .kn-skel__lines > .kn-skel__bar)::after { left: -48px; }

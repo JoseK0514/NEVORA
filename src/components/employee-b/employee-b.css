@@ -120,7 +120,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add { width: 100%; padding: 10px var(--b-inset); }
 /* Phase 7 (UI-7, RA-21): the tint fades only when motion is allowed. */
 @media (prefers-reduced-motion: no-preference) { :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add { transition-property: background-color; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); } }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add:active { background-color: rgb(16 24 32 / 0.04); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add:active { background-color: var(--b-press-tint); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add .b-ico svg { width: 16px; height: 16px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .b-list + .eb-cardnote { padding-top: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__t .q-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 var(--b-space-8); border-radius: var(--b-radius-pill); background: var(--b-teal-50); color: var(--b-teal); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }

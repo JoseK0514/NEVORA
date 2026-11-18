@@ -53,7 +53,7 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
   <div className="q-hd"><h1>{done ? t.resetDoneTitle : t.quiet.resetTitle}</h1>{workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null}{done ? null : <p>{t.quiet.resetSub}</p>}</div>
   {done ? <div className="q-card q-auth__card ar-done">
    <AccessSteps journey="recovery" current={3} lang={lang}/>
-   <span className="q-auth__mark" aria-hidden="true"><CheckIcon size={28} weight="bold"/></span>
+   <span className="q-auth__mark q-auth__mark--done" aria-hidden="true"><CheckIcon size={28} weight="bold"/></span>
    <div className="q-auth__receipt" ref={feedback} role="status" tabIndex={-1}><p>{t.reset.doneLine}</p></div>
    <Link href="/login" className="q-btn">{t.signIn}</Link>
    <p className="q-auth__note ar-next">{u.doneNote}</p>

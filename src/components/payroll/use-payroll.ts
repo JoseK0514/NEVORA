@@ -77,7 +77,9 @@ export function confirmedTitle(command: { action?: string }): string | null {
 function confirmedMessage(command: { action?: string }) {
   switch (command.action) {
     case 'APPROVE': return 'Payroll approved';
-    case 'PUBLISH': return 'Pay statements shared';
+    // Publishing only queues the statements; the worker shares them later. The receipt confirms the save, not the sharing,
+    // so it says "Saved" (decided Nov 17, 2026; the old toast said the statements were already shared).
+    case 'PUBLISH': return 'Saved';
     case 'PAYMENT_EXPORT': return 'Payment file ready';
     default: return 'Saved';
   }
@@ -149,7 +151,7 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
     try {
       const receipt = readReceipt(await payrollRequest(path, next));
       if (!receipt || receipt.operationId !== next.operationId) throw new Error('The action response is unconfirmed. Check its saved reference.');
-      setReceipt(receipt); finish(next.operationId); setMessage('Saved. Check the status below.'); setConfirmed(confirmedTitle(next)); if (!inlineResult || !confirmedTitle(next)) toast(confirmedMessage(next)); await reload();
+      setReceipt(receipt); finish(next.operationId); setMessage('Saved. Check the status below.'); setConfirmed(confirmedTitle(next)); if (!inlineResult) toast(confirmedMessage(next)); await reload();
     } catch (failure) {
       if (failure instanceof PayrollRequestError && (failure.code === 'OPERATION_CONFLICT' || (reconstructed && [400, 409].includes(failure.status)))) {
         command.current = null; setRetryAvailable(false);

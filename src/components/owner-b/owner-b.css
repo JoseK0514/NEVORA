@@ -181,7 +181,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-decide > .b-btn { flex: 1; }
 :is(#c-root, html) .app-shell[data-nv-b][data-corp-root] .b-back { display: none; }
 :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row--link, .b-row__hit[href]) { transition-property: background-color; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-row--link:active, :is(#c-root, html) .app-shell[data-nv-b] .b-row:has(> .b-row__hit[href]:active) { background-color: rgb(16 24 32 / 0.04); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-row--link:active, :is(#c-root, html) .app-shell[data-nv-b] .b-row:has(> .b-row__hit[href]:active) { background-color: var(--b-press-tint); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-row__tx { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-row__t { display: flex; align-items: center; gap: var(--b-space-2) var(--b-space-8); font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 600; color: var(--b-ink); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-row__tt { min-width: 0; overflow-wrap: anywhere; }

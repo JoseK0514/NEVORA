@@ -172,7 +172,7 @@ describe("PB-017: the finish says it once", () => {
   it.each(LANGS)("in %s: the mark, the title, one line, one filled button to sign in", lang => {
     const t = AUTH_COPY[lang], html = reset(lang, { done: true, message: RESET_DONE });
     expect(html).toContain(`<h1>${t.resetDoneTitle}</h1>`);
-    expect(html).toMatch(/<span class="q-auth__mark" aria-hidden="true"><svg[^>]*width="28" height="28"/);
+    expect(html).toMatch(/<span class="q-auth__mark q-auth__mark--done" aria-hidden="true"><svg[^>]*width="28" height="28"/);
     expect(html).toContain(`<div class="q-auth__receipt" role="status" tabindex="-1"><p>${t.reset.doneLine}</p></div>`);
     expect(html).toContain(`<a class="q-btn" href="/login">${t.signIn}</a>`);
     expect(html.match(/class="q-btn"/g)).toHaveLength(1);

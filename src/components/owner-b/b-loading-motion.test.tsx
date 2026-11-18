@@ -91,7 +91,7 @@ describe("one shimmer, from the shared placeholder", () => {
     // Nothing in the markup asks for motion: no shimmer class, no inline animation.
     expect(html).not.toMatch(/shimmer|animation|b-shim/);
     expect(count(html, 'class="b-skel')).toBeGreaterThan(10);
-    expect(shimmer).toMatch(/\.b-screen\[data-b-load\] \.b-skel, [^{]*\)::after \{[^}]*animation: b-shimmer var\(--b-shimmer-dur\) linear var\(--b-shimmer-wait\) infinite;/);
+    expect(shimmer).toMatch(/\.b-screen\[data-b-load\] \.b-skel, [^{]*\)::after \{[^}]*animation: b-shimmer var\(--b-dur-shimmer\) linear var\(--b-delay-shimmer\) infinite;/);
   });
   it("no page, loading file or table entry applies it: only the sheet names the shimmer", () => {
     const files = walk(src).filter(path => /\.(tsx?|css)$/.test(path) && !/\.test\.tsx?$/.test(path));
@@ -103,7 +103,7 @@ describe("one shimmer, from the shared placeholder", () => {
   it("is one keyframe that moves a pseudo-element by transform only, slowly, after a wait", () => {
     expect([...shimmer.matchAll(/@keyframes ([\w-]+)/g)].map(match => match[1])).toEqual(["b-shimmer", "b-arrive"]);
     expect(shimmer).toContain("@keyframes b-shimmer { from { transform: translateX(-100%); } to { transform: translateX(var(--b-shimmer-span)); } }");
-    expect(shimmer).toMatch(/--b-shimmer-dur: 1600ms; --b-shimmer-wait: 300ms;/);
+    expect(readFileSync(join(process.cwd(), 'src/app/b-tokens.css'), 'utf8')).toMatch(/--b-dur-shimmer: 1600ms; --b-delay-shimmer: 300ms; --b-dur-spin: 800ms;/);
     // Before the wait is over the band sits outside its block.
     expect(shimmer).toMatch(/::after \{[^}]*transform: translateX\(-100%\); animation: b-shimmer/);
     expect(shimmer).not.toMatch(/background-position|transition: all|filter|blur/);
@@ -162,7 +162,7 @@ describe("one spinner", () => {
     expect(root).toMatch(/\.sig-btn__spin \{[^}]*border: 2px solid currentColor; border-right-color: transparent; \}/);
     expect(root).toContain("@media (prefers-reduced-motion: no-preference) { .sig-btn__spin { animation: b-spin 800ms linear infinite; } }");
     expect(foundation).toMatch(/\.b-spin \{[^}]*border: 2\.5px solid currentColor; border-right-color: transparent; \}/);
-    expect(foundation).toContain("@media (prefers-reduced-motion: no-preference) { :is(#c-root, html) body .app-shell[data-nv-b] .b-spin { animation: b-spin var(--b-spin-dur, 800ms) linear infinite; } }");
+    expect(foundation).toContain("@media (prefers-reduced-motion: no-preference) { :is(#c-root, html) body .app-shell[data-nv-b] .b-spin { animation: b-spin var(--b-dur-spin, 800ms) linear infinite; } }");
     for (const text of [root, foundation, shimmer]) expect(text).not.toMatch(/prefers-reduced-motion: reduce\) \{[^}]*spin/);
   });
   it("has two sizes: 20px in a state card and 16px beside words", () => {

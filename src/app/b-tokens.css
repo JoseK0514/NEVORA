@@ -40,6 +40,11 @@
   --b-press-scale: 0.96; --b-dur-press: 150ms; --b-ease-out: ease-out;
   /* motion (Phase 1 names): 150ms for press, hover and every exit, 300ms for an entrance, all ease-out */
   --b-dur-hover: 150ms; --b-dur-exit: 150ms; --b-dur-enter: 300ms;
+  /* Phase 7 (Nov 17, 2026): the scrim under a sheet, the press tint (4% ink on white; 8% of a control's own text colour on
+   * the band and on tabs), the loading shimmer (one pass, and how long loading lasts before it first moves) and one
+   * turn of the spinner. */
+  --b-scrim: rgb(10 24 23 / 0.32); --b-press-tint: rgb(16 24 32 / 0.04); --b-press-tint-own: color-mix(in srgb, currentColor 8%, transparent);
+  --b-dur-shimmer: 1600ms; --b-delay-shimmer: 300ms; --b-dur-spin: 800ms;
   /* shape and targets */
   --b-radius-card: 22px; --b-radius-pill: 999px; --b-radius-field: 14px; --b-radius-small: 10px;
   --b-target: 44px; --b-target-touch: 48px;

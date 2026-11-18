@@ -138,7 +138,7 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
   <div className="q-hd"><h1>{u.doneTitle}</h1><p>{u.doneSub}</p></div>
   <div className="activation-success q-card" role="status" ref={successRef} tabIndex={-1}>
    <AccessSteps journey="activation" current={3} lang={lang}/>
-   <span className="q-auth__mark" aria-hidden="true"><CheckIcon size={28} weight="bold"/></span>
+   <span className="q-auth__mark q-auth__mark--done" aria-hidden="true"><CheckIcon size={28} weight="bold"/></span>
    <p className="q-sr">{a.activatedTitle}. {u.doneTitle}. {u.doneSub}</p>
    <div className="q-fl"><label htmlFor="activation-employee-id">{a.idForSignIn}</label>
     <div className="q-in__wrap"><input id="activation-employee-id" className="q-in" value={employeeId} readOnly autoComplete="off" aria-describedby="activation-employee-id-note" onFocus={event=>event.currentTarget.select()}/><CopyId value={employeeId} a={a}/></div>

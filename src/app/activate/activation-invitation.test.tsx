@@ -51,7 +51,7 @@ it('says only what is true before the server has checked the invitation (PB-002)
 });
 it('the success card leads with a done mark and says to save the ID (PB-003, JR-7)',()=>{
  const html=renderToStaticMarkup(<ActivationInvitationView phase="activated" employeeId="OWN-FIXTURE-ID" loginHref="/login?activated=1" onSubmit={()=>{}}/>);
- expect(html).toMatch(/<span class="q-auth__mark" aria-hidden="true"><svg/);
+ expect(html).toMatch(/<span class="q-auth__mark q-auth__mark--done" aria-hidden="true"><svg/);
  expect(html).toContain('aria-describedby="activation-employee-id-note"');
  expect(html).toContain('<p class="q-help" id="activation-employee-id-note">Save this ID. You sign in with it.</p>');
 });
