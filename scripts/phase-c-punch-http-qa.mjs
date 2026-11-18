@@ -1,3 +1,4 @@
+import {showClockerSetupCode} from './clocker-qa-setup-code.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {randomBytes,randomUUID} from 'node:crypto';
@@ -9,7 +10,7 @@ import {createOwnedNextApp} from '../src/test/integration/owned-next-app.ts';
 import {seedOwnedApp,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 const evidence=resolve(process.env.PHASE_C_EVIDENCE_DIR??join(homedir(),'.codex/visualizations/nevora-c34-http'));
 await mkdir(evidence,{recursive:true});
-const runtime=createRequire(join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'));
+const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'));
 const pw=await import(pathToFileURL(runtime.resolve('playwright')).href);const playwright=pw.default??pw;
 const report={checks:[],errors:[],screenshots:[],limits:['Real Next HTTP with owned local PostgreSQL; DB transport substituted in a scratch copy.','Existing Playwright used because Browser plugin is not listed.','API activation is test-only. Tablet punch controls, hosted Neon and physical iPad are not certified.']};
 let app;const browsers=[];
@@ -25,8 +26,8 @@ async function api(page,payload){return page.evaluate(async data=>{
 async function command(page,action){const result=await api(page,{operation:'state'});assert.equal(result.status,200,'Punch state route');assert.equal(result.body.state,'ready');const v=result.body,s=v.snapshot;
  return {...(action==='START_BREAK'?{breakType:{id:v.breakTypes[0].id,version:v.breakTypes[0].version}}:{}),commandId:randomUUID(),action,verificationId:v.verificationId,expected:{revision:s.revision,timeEntryId:s.entry?.id??null,timeEntryVersion:s.entry?.version??null,breakEntryId:s.break?.id??null,breakEntryVersion:s.break?.version??null}};
 }
-async function verify(page,pin){await page.getByRole('heading',{name:'Enter Your PIN',exact:true}).waitFor();await page.getByLabel('Employee PIN',{exact:true}).fill(pin);await page.getByRole('button',{name:'Continue',exact:true}).click();await page.getByRole('heading',{name:/^Hi, /}).waitFor();}
-async function done(page){await page.getByRole('button',{name:'Done',exact:true}).click();await page.waitForFunction(()=>{const input=document.querySelector('input[name=pin]');return input&&!input.matches(':disabled');});}
+async function verify(page,pin,employeeId){await page.getByRole('heading',{name:'Enter your Employee ID',exact:true}).waitFor();await page.locator('#clocker-employee-id').fill(employeeId);await page.getByRole('button',{name:'Continue',exact:true}).click();await page.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await page.getByLabel('Employee PIN',{exact:true}).fill(pin);await page.getByRole('button',{name:'Continue',exact:true}).click();await page.getByRole('heading',{name:/^Hi, /}).waitFor();}
+async function done(page){await page.getByRole('button',{name:'Done',exact:true}).click();await page.getByRole('heading',{name:'Enter your Employee ID',exact:true}).waitFor();await page.waitForFunction(()=>{const input=document.querySelector('#clocker-employee-id');return input&&!input.matches(':disabled');});}
 try{
  app=await createOwnedNextApp(evidence,{clockerPinKey:randomBytes(32).toString('hex'),clockerPunchEnabled:true});
  const q=(text,values=[])=>app.database.executor.query({text,values});
@@ -39,16 +40,16 @@ try{
   for(const [id,name,pin] of [[idA,'Avery',pinA],[idB,'Blair',pinB]]){
    await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,$2,'QA','555','EMPLOYEE','loc-1');",[id,name]);
    await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1')",[id]);
-   await goto(p,`/app/employees/${id}/clocker-pin`);await p.getByLabel('New Clocker PIN',{exact:true}).fill(pin);await p.getByLabel('Confirm Clocker PIN',{exact:true}).fill(pin);
-   await p.getByRole('button',{name:'Save PIN',exact:true}).click();await p.getByRole('status').filter({hasText:'PIN saved'}).waitFor();
+   await goto(p,`/app/employees/${id}/clocker-pin`);await p.getByLabel('New PIN',{exact:true}).fill(pin);await p.getByLabel('Type it again',{exact:true}).fill(pin);
+   await p.getByRole('button',{name:'Save PIN',exact:true}).click();await p.getByRole('status').filter({hasText:'PIN set for'}).waitFor();
   }
   await q("INSERT INTO clocker_break_types(id,workspace_id,name,category,target_minutes,created_by,updated_by) VALUES($1,'workspace-fuel',$2,'REST',15,'QAOWNER','QAOWNER')",['http-rest-'+engine,engine+' rest']);
-  await goto(p,'/app/settings/clocker');await p.getByRole('button',{name:'Add device',exact:true}).click();
-  const name=engine+' Punch tablet',dialog=p.getByRole('dialog');await dialog.getByLabel('Device name',{exact:true}).fill(name);
-  await dialog.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await dialog.getByRole('button',{name:'Create setup code',exact:true}).click();await dialog.waitFor({state:'hidden'});
-  const code=await p.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();
+  await goto(p,'/app/settings/clocker');await p.getByRole('button',{name:/^Add (?:a )?tablet$/}).click();
+  const name=engine+' Punch tablet',dialog=p.getByRole('dialog');await dialog.getByLabel('Tablet name',{exact:true}).fill(name);
+  await dialog.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await dialog.getByRole('button',{name:'Get setup code',exact:true}).click();await dialog.waitFor({state:'hidden'});
+  const displayedSetup=await showClockerSetupCode(p);const code=await displayedSetup.inputValue();assert(code);
   const tablet=await context(browser),t=await tablet.newPage();t.setDefaultTimeout(15000);t.on('pageerror',e=>runtimeErrors.push(e.message));
-  await goto(t,'/clocker/2');await t.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await t.getByRole('button',{name:'Connect Tablet',exact:true}).click();await verify(t,pinA);
+  await goto(t,'/clocker/2');await t.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await t.getByRole('button',{name:'Connect tablet',exact:true}).click();await verify(t,pinA,idA);
   const [clockDate]=await q("SELECT (clock_timestamp() AT TIME ZONE 'America/Puerto_Rico')::date::text AS day,date_trunc('week',clock_timestamp() AT TIME ZONE 'America/Puerto_Rico')::date::text AS week");
   const revision='c6-http-'+engine,position='c6-http-position-'+engine;
   await q("INSERT INTO positions(id,workspace_id,name) VALUES($1,'workspace-fuel',$2)",[position,'Published HTTP '+engine]);
@@ -83,15 +84,15 @@ try{
   const recovered=await api(t,{operation:'receipt',commandId:lost.commandId,verificationId:(await api(t,{operation:'state'})).body.verificationId});assert.equal(recovered.status,200);assert.equal(recovered.body.state,'committed');
   assert.deepEqual((await api(t,{operation:'execute',command:lost})).body,recovered.body);
   assert.equal((await q('SELECT count(*)::int AS n FROM time_entries WHERE employee_id=$1',[idA]))[0].n,2);checked(engine+': lost committed response recovers its receipt without duplicate time');
-  await done(t);await verify(t,pinA);
+  await done(t);await verify(t,pinA,idA);
   assert.equal((await api(t,{operation:'execute',command:lost})).body.code,'CONTEXT_CHANGED');
   assert.deepEqual((await api(t,{operation:'receipt',commandId:lost.commandId,verificationId:(await api(t,{operation:'state'})).body.verificationId})).body,recovered.body);checked(engine+': re-verification permits receipt recovery, not blind old-command replay');
-  await done(t);await verify(t,pinB);
+  await done(t);await verify(t,pinB,idB);
   assert.equal((await api(t,{operation:'receipt',commandId:lost.commandId,verificationId:(await api(t,{operation:'state'})).body.verificationId})).body.state,'unknown');
   assert.equal((await api(t,{operation:'execute',command:lost})).body.code,'CONTEXT_CHANGED');checked(engine+': next employee cannot inherit prior punches or receipts');
   const forbidden=await tablet.request.post(app.url+'/api/clocker/2/punch',{headers:{Origin:'https://evil.invalid','X-Nevora-Clocker':'1'},data:{operation:'state'}});assert.equal(forbidden.status(),403);checked(engine+': cross-origin request rejected by actual HTTP route');
-  await goto(p,'/app/settings/clocker');await p.getByRole('button',{name:`Manage ${name}`,exact:true}).click();await p.getByRole('button',{name:'Revoke access',exact:true}).click();
-  await p.getByRole('dialog').getByRole('button',{name:'Revoke device',exact:true}).click();await p.getByRole('dialog').waitFor({state:'hidden'});
+  await goto(p,'/app/settings/clocker');await p.getByRole('button',{name:`Manage ${name}`,exact:true}).click();await p.getByRole('button',{name:'Remove tablet',exact:true}).click();
+  await p.getByRole('dialog').getByRole('button',{name:'Remove tablet',exact:true}).click();await p.getByRole('dialog').waitFor({state:'hidden'});
   assert.equal((await api(t,{operation:'state'})).status,401);checked(engine+': revoked device loses API access immediately');
   assert.deepEqual(runtimeErrors,[]);checked(engine+': no unexpected runtime or hydration errors');
   await tablet.close();await owner.close();await browser.close();

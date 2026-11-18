@@ -17,7 +17,7 @@ async function context(browser){
  });return c;
 }
 async function go(page,path){const r=await page.goto(origin+path,{waitUntil:'networkidle'});assert.equal(r.status(),200,path);}
-async function idle(page){await page.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();}
+async function idle(page){await page.getByRole('heading',{name:'Enter your Employee ID',exact:true}).waitFor();}
 async function photoCheck(portal,page,tablet,verify){
  await go(portal,'/app/settings/clocker/photos');
  {const help=portal.locator('details.c-photos__help');if(!await help.evaluate(e=>e.open))await help.locator(':scope > summary').click();}await portal.getByLabel('Assistance contact',{exact:true}).fill('Fictional staging Owner desk');await portal.getByLabel('Assistance instructions',{exact:true}).fill('Fictional acceptance testing only. Ask the test Owner for an accessible alternative.');
@@ -52,12 +52,12 @@ for(const engine of (process.env.CLOCKER_STAGE_ENGINES??'chromium,webkit').split
   await go(portal,'/app/employees/CLOCKEREMP1/clocker-pin');await portal.getByLabel('New PIN',{exact:true}).fill('4826');await portal.getByLabel('Type it again',{exact:true}).fill('4826');await portal.getByRole('button',{name:'Save PIN',exact:true}).click();await portal.getByRole('status').filter({hasText:'PIN set for'}).waitFor();checks.push(engine+' Owner sets fictional employee PIN');
   await go(portal,'/app/settings/clocker');await portal.getByRole('button',{name:/^Add (?:a )?tablet$/}).click();const dialog=portal.getByRole('dialog');
   await dialog.getByLabel('Tablet name',{exact:true}).fill(`Staging ${engine} acceptance`);await dialog.getByRole('combobox',{name:'Location',exact:true}).selectOption('135ce64c-9153-4e0d-abc2-933b2098e718');await dialog.getByRole('button',{name:'Get setup code',exact:true}).click();await dialog.waitFor({state:'hidden'});
-  const code=await await showClockerSetupCode(portal).inputValue();assert(code);
+  const displayedSetup=await showClockerSetupCode(portal);const code=await displayedSetup.inputValue();assert(code);
   await go(page,'/clocker/'+location);await page.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await page.getByRole('button',{name:'Connect tablet',exact:true}).click();await idle(page);checks.push(engine+' Owner-created tablet enrollment');
   assert.equal(await page.locator('link[rel=manifest]').getAttribute('href'),'/clocker/'+location+'/manifest.webmanifest');
   const geometry=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,small:[...document.querySelectorAll('main button,main input')].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&r.height<44;}).length}));assert.equal(geometry.overflow,false);assert.equal(geometry.small,0);checks.push(engine+' tablet geometry and location-specific launch metadata');
   await page.screenshot({path:join(evidence,engine+'-pin.png'),fullPage:true});
-  const verify=async()=>{await page.locator('input[name=pin]').fill('4826');await page.getByRole('button',{name:'Continue',exact:true}).click();await page.getByRole('heading',{name:'Hi, Alex.',exact:true}).waitFor();};
+  const verify=async()=>{await idle(page);await page.locator('#clocker-employee-id').fill('CLOCKEREMP1');await page.getByRole('button',{name:'Continue',exact:true}).click();await page.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await page.locator('input[name=pin]').fill('4826');await page.getByRole('button',{name:'Continue',exact:true}).click();await page.getByRole('heading',{name:'Hi, Alex.',exact:true}).waitFor();};
   await verify();
   if(process.env.CLOCKER_STAGE_RECOVER_OPEN==='true'&&await page.getByRole('button',{name:'Clock out',exact:true}).count()){
    await page.getByRole('button',{name:'Clock out',exact:true}).click();await page.getByRole('button',{name:'Confirm clock out',exact:true}).click();await page.getByRole('heading',{name:'Clock out recorded',exact:true}).waitFor();await page.getByRole('button',{name:'Done',exact:true}).click();await idle(page);await verify();checks.push(engine+' prior aborted fictional session closed through its canonical Clock Out receipt');
