@@ -238,3 +238,21 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
   await app.close();await smtp.close();
  }
 },360000);
+
+it('PB-022 long and absent names keep account emails readable on a narrow screen',async()=>{
+ const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
+ const {invitationEmail,recoveryEmail,passwordChangedEmail}=await import('../../lib/auth/account-email-copy');
+ for(const engine of ['chromium','webkit']){
+  const browser=await runtime[engine].launch({headless:true});
+  try{
+   const page=await browser.newPage({viewport:{width:320,height:900}});await page.route('**/*',(r:{abort():Promise<void>})=>r.abort());
+   for(const context of [{companyName:'A'.repeat(160),firstName:'B'.repeat(160)},{companyName:'Fictional Shop',firstName:null}]){
+    for(const email of [invitationEmail('https://company.invalid/activate#proof=FICTIONAL','F'.repeat(128),context),recoveryEmail('https://company.invalid/reset-access#proof=FICTIONAL',context),passwordChangedEmail('https://company.invalid',context)]){
+     await page.setContent(email.html,{waitUntil:'load'});
+     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+     expect(await page.locator('body').evaluate((el:HTMLElement)=>getComputedStyle(el).fontFamily)).toContain('Arial');
+    }
+   }
+  }finally{await browser.close();}
+ }
+});
