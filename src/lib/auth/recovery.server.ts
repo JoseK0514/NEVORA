@@ -1,4 +1,4 @@
-import {isPasswordTooLong} from './password-requirements';
+import {isPasswordTooLong,passwordLength,MIN_PASSWORD_CHARACTERS} from './password-requirements';
 import 'server-only';
 import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import {createHash,randomBytes} from 'node:crypto';
@@ -104,6 +104,7 @@ export async function issueInitialPasswordReplacement(employeeId:string,reviewed
 export async function resetPasswordWithProof(token:string,password:string,executor:SqlExecutor=neonNotificationExecutor(),delivery:RecoveryDelivery|null=null):Promise<{state:'reset'|'invalid'|'unavailable';passwordReason?:PasswordRejection}>{
  if(!/^[A-Za-z0-9_-]{43}$/.test(token)||Buffer.from(token,'base64url').length!==32||Buffer.from(token,'base64url').toString('base64url')!==token)return {state:'invalid'};
  if(isPasswordTooLong(password))return {state:'invalid',passwordReason:'too_long'};
+ if(passwordLength(password)<MIN_PASSWORD_CHARACTERS)return {state:'invalid',passwordReason:'too_short'};
  try{
   const tokenHash=hash(token),globalScope=hash('NEVORA password reset limit global v1');
   // Only codes that exist are counted (10 tries per code, 250 resets per 15 minutes overall), so random codes from

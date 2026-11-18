@@ -1,9 +1,13 @@
 import {it,expect} from '@rstest/core';
 import {Client} from 'pg';
-import {randomUUID} from 'node:crypto';
+import {randomUUID,createHash} from 'node:crypto';
 import {BASE_MIGRATIONS,FINAL_MIGRATIONS} from '../../../db/migrations/order';
 import {missingMigrationFiles} from '../../lib/migration-order';
-import {readFile} from 'node:fs/promises';
+import {readFile,mkdtemp,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {spawnSync} from 'node:child_process';
+import baseline from '../../../scripts/rehearsal/2026-11-18-development-baseline.json';
 import {createDisposableFoundationDatabase} from './local-postgres';
 const indexSql=()=>readFile('db/migrations/0038_read_path_indexes.sql','utf8');
 type Database=Awaited<ReturnType<typeof createDisposableFoundationDatabase>>;
@@ -57,4 +61,64 @@ it('upgrades the existing full chain by exact filename, preserves rows and keeps
   await client.query(insert,[randomUUID(),1,hash,'2026-11-05T12:00:00Z']);
   await expect(client.query(insert,[randomUUID(),2,hash,'2026-11-05T12:00:01Z'])).rejects.toMatchObject({constraint:'company_invitations_lifetime'});
  }finally{await client.end();await database.dispose();}
+});
+
+it('upgrades the recorded Development schema and restores both its rollback backup and the final schema', async()=>{
+ const database=await createDisposableFoundationDatabase({mode:'empty'}),client=new Client({connectionString:database.connectionString});
+ const directory=await mkdtemp(join(tmpdir(),'nevora-schema-restore-'));
+ let sourceDisposed=false;
+ const tool=(name:string,args:string[])=>{
+  const bin=process.env.NEVORA_TEST_PG_BIN;if(!bin)throw Error('Owned PostgreSQL binaries required');
+  const result=spawnSync(join(bin,name),args,{encoding:'utf8',timeout:20000});
+  if(result.error||result.status!==0)throw Error(`Owned ${name} failed: ${result.error?.message??result.stderr}`);
+ };
+ const state=async(c:Client)=>({
+  employees:(await c.query("SELECT id,first_name,active FROM employees WHERE id='R1-RESTORE'")).rows,
+  ledger:(await c.query('SELECT revision,payload FROM native_payroll_setup_records ORDER BY revision')).rows,
+  operations:(await c.query('SELECT request_id,command_hash,state,receipt FROM owner_advisor_business_operations ORDER BY request_id')).rows,
+ });
+ const restore=async(file:string)=>{
+  const target=await createDisposableFoundationDatabase({mode:'empty'});
+  const restored=new Client({connectionString:target.connectionString});
+  try{tool('pg_restore',['--exit-on-error','--no-owner','--dbname',target.connectionString,file]);await restored.connect();return {restored,target};}
+  catch(error){await restored.end();await target.dispose();throw error;}
+ };
+ try{
+  await client.connect();
+  expect(baseline.sourceSha).toBe('22107a24272f2347bbb59a3da1f54319632772a5');
+  expect(BASE_MIGRATIONS.slice(0,baseline.base.length)).toEqual(baseline.base.map(f=>f.name));
+  expect(FINAL_MIGRATIONS).toEqual(baseline.postCompany.map(f=>f.name));
+  for(const file of [...baseline.base,...baseline.postCompany])expect(createHash('sha256').update(await readFile('db/migrations/'+file.name)).digest('hex'),file.name).toBe(file.sha256);
+  for(const file of baseline.base)await client.query(await readFile('db/migrations/'+file.name,'utf8'));
+  await client.query("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('R1-RESTORE','Fictional','Restore','2025550198','OWNER','loc-1')");
+  for(const file of baseline.postCompany)await client.query(await readFile('db/migrations/'+file.name,'utf8'));
+  await client.query("INSERT INTO native_payroll_setup_records(workspace_id,kind,subject_id,revision,operation_id,actor_employee_id,facts_sha256,payload) VALUES('workspace-fuel','COMPANY_DEFAULTS','COMPANY',1,$1,'R1-RESTORE',repeat('a',64),$2)",[randomUUID(),JSON.stringify({factsSha256:'a'.repeat(64),revision:1,kind:'COMPANY_DEFAULTS',subjectId:'COMPANY'})]);
+  const operationId=randomUUID();
+  await client.query("INSERT INTO owner_advisor_business_operations(workspace_id,owner_id,request_id,command_kind,command_hash,state,receipt) VALUES('workspace-fuel','R1-RESTORE',$1,'stage_source_version',repeat('b',64),'completed',$2)",[operationId,JSON.stringify({operationId,action:'stage_source_version',revision:1})]);
+  const before=await state(client),oldBackup=join(directory,'development.dump');
+  tool('pg_dump',['--format=custom','--no-owner','--file',oldBackup,'--dbname',database.connectionString]);
+  const additions=BASE_MIGRATIONS.slice(baseline.base.length);
+  expect(additions).toEqual(['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql']);
+  for(const file of additions)await client.query(await readFile('db/migrations/'+file,'utf8'));
+  expect(await state(client)).toEqual(before);
+  expect((await client.query("SELECT hire_date,termination_date,birth_date FROM employees WHERE id='R1-RESTORE'")).rows).toEqual([{hire_date:null,termination_date:null,birth_date:null}]);
+  expect((await client.query('SELECT count(*)::int n FROM clocker_schedule_match_policy')).rows).toEqual([{n:0}]);
+  await client.query("UPDATE employees SET hire_date='2016-01-01',birth_date='1990-01-01' WHERE id='R1-RESTORE'");
+  await client.query("INSERT INTO clocker_schedule_match_policy(workspace_id,version,early_clock_in_grace_minutes,updated_by) VALUES('workspace-fuel',1,10,'R1-RESTORE')");
+  const finalBackup=join(directory,'final.dump');tool('pg_dump',['--format=custom','--no-owner','--file',finalBackup,'--dbname',database.connectionString]);
+  await client.end();await database.dispose();sourceDisposed=true;
+  const {restored:old,target:oldTarget}=await restore(oldBackup);
+  try{expect(await state(old)).toEqual(before);expect((await old.query("SELECT to_regclass('clocker_schedule_match_policy') AS policy")).rows).toEqual([{policy:null}]);}finally{await old.end();await oldTarget.dispose();}
+  const {restored:final,target:finalTarget}=await restore(finalBackup);
+  try{
+   expect(await state(final)).toEqual(before);
+   expect((await final.query("SELECT hire_date::text,birth_date::text FROM employees WHERE id='R1-RESTORE'")).rows).toEqual([{hire_date:'2016-01-01',birth_date:'1990-01-01'}]);
+   expect((await final.query('SELECT version,previous_grace_minutes,early_clock_in_grace_minutes FROM clocker_schedule_match_policy_revisions')).rows).toEqual([{version:1,previous_grace_minutes:0,early_clock_in_grace_minutes:10}]);
+   await expect(final.query('DELETE FROM native_payroll_setup_records')).rejects.toThrow('immutable ledger');
+   await expect(final.query('DELETE FROM owner_advisor_business_operations')).rejects.toThrow('advisor_business_immutable');
+   await expect(final.query('DELETE FROM clocker_schedule_match_policy_revisions')).rejects.toThrow('append_only');
+  }finally{await final.end();await finalTarget.dispose();}
+ }finally{
+  try{if(!sourceDisposed){await client.end();await database.dispose();}}finally{await rm(directory,{recursive:true,force:true});}
+ }
 });

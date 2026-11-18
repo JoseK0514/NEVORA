@@ -10,6 +10,7 @@ rs.mock('react', ()=>{
   initial&&typeof initial==='object'&&'snapshot'in initial&&'paused'in initial
    ?{snapshot:fixture.snapshot,paused:false,refreshing:false}:initial)};
 });
+import styles from './recovery.module.css';
 import {CentralBilling} from './central';
 import {parseCentralStatus} from '@/lib/commerce/central-billing';
 const base={state:'paid',operational:true,trialEndsAt:'2026-12-09T00:06:15.800Z',paidThrough:'2026-12-09T00:29:58.000Z',
@@ -68,7 +69,14 @@ it('sends a team over 30 to a quote with the support address',()=>{
 // that is not the main one is an outlined pill; everything else (the way back while there is something to do here) is a
 // text link. In static rendering the link is still "loading", so Refresh and Close are not drawn; the browser capture
 // covers them.
-const kinds=(html:string)=>{const of=(name:string)=>[...html.matchAll(new RegExp(`<(?:a|button)[^>]*class="[^"]*\\b_?${name}[^"]*"[^>]*>([^<]*)<`,'g'))].map(match=>match[1]);return {filled:of('action'),outlined:of('secondary'),quiet:of('quiet')};};
+const kinds=(html:string)=>{
+ const controls=[...html.matchAll(/<(?:a|button)[^>]*class="([^"]*)"[^>]*>([^<]*)</g)];
+ const of=(name:'action'|'secondary'|'quiet')=>{
+  expect(styles[name]).toEqual(expect.any(String));
+  return controls.filter(match=>match[1].split(/\s+/).includes(styles[name])).map(match=>match[2]);
+ };
+ return {filled:of('action'),outlined:of('secondary'),quiet:of('quiet')};
+};
 it.each(['en','es'] as const)('draws one filled button per billing state in %s, with the way back as a text link',lang=>{
  const paid=kinds(render('portal',lang));
  expect(paid.filled).toEqual([lang==='en'?'Manage billing in Stripe':'Administrar facturación en Stripe']);

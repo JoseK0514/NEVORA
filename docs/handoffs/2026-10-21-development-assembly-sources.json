@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-11-17T02:39:33.861287+00:00",
+  "observedAt": "2026-11-18T20:52:45.156244+00:00",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -364,7 +364,7 @@
     },
     {
       "branch": "development",
-      "sha": "22a9d598eb470cd380ee739d7396f06ecf335ed5",
+      "sha": "22107a24272f2347bbb59a3da1f54319632772a5",
       "disposition": "target",
       "reason": "Current development database-rehearsal delivery inspected and included by the sole finisher. Incoming changes follow/hash the shared canonical bootstrap and passkey dependency chain; operations negative fixtures retain strict cleanup/permission assertions. Source-bound documents remain historical evidence. Main and held Claude UI are unchanged; combined acceptance and hosted gates remain open. November 16 readiness integration: this exact current remote base and its protected fixes are retained; Jose assigned combined integration and development delivery to this chat."
     },
@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "e9d2ba4edf9800ddf8fb2e1036ffa3f29fb0fd7c",
-      "disposition": "held",
-      "reason": "The handed-over ad814bada6839a8d87a61202f3661b1313c01ab4 tree is already preserved by the checked 601-path linear import. The newer 7cc7547ac918ee808b590a3c1d8f6706c16c17a3 and e9d2ba4edf9800ddf8fb2e1036ffa3f29fb0fd7c Phase5 application/documentation delivery arrived during this bounded integration and remains held for separate source/contract/browser review. No whole-branch ancestry or acceptance is claimed."
+      "sha": "69aa0970c73c2f93ef330b4252523dddd2aa2f64",
+      "disposition": "included",
+      "reason": "November 18 backend completion candidate includes this exact pushed UI and 30-day business checkpoint through a real merge (4e83dfa53); later uncommitted Claude premium work is outside this source. Source ancestry is established; combined acceptance and Development publication require their own evidence."
     },
     {
       "branch": "claude/employee-mobile-phase2-20261027",
@@ -512,9 +512,21 @@
       "disposition": "held",
       "reason": "Jose authorized archiving/retiring this older extra remote copy on November 6 after clarification. Exact remote archive was created atomically with guarded deletion and verified at 28c98b79; main/development/collaboration and all 135 local worktree heads/paths plus local branches were unchanged. Underlying Owner Direction B UI and the unique schedule week-state key fix remain held outside native integration, fully recoverable through this exact archive. No UI acceptance or import is implied.",
       "archiveRef": "refs/tags/archive/branches/2026-11-06/claude/youthful-mendel-9mg8hu"
+    },
+    {
+      "branch": "codex/nevora-password-emails-20261117",
+      "sha": "6d31d122c078a43297e37a90280f2c657b03b8b6",
+      "disposition": "included",
+      "reason": "Approved password/email implementation from PR39 included through real merge 6b7dab08c. The open draft PR and its remote source are preserved pending release reconciliation; their existence does not waive the branch ceiling."
+    },
+    {
+      "branch": "nevora-30-day-phase",
+      "sha": "69aa0970c73c2f93ef330b4252523dddd2aa2f64",
+      "disposition": "included",
+      "reason": "Jose explicitly authorized this extra branch on November 18, recorded in docs/handoffs/2026-11-18-30-day-phase.md. Exact source is already included through collaboration merge 4e83dfa53; the exception is scoped to this phase, not other branches."
     }
   ],
-  "maximumActiveBranches": 3,
+  "maximumActiveBranches": 4,
   "phase5FinalSourceReconciliation": {
     "date": "2026-11-16",
     "previousCollaboration": "40ccc4e4e5b74b48c8fd86ef50c4ec6efe9b4dd1",
@@ -564,5 +576,15 @@
       "scope": "Phase5 signed-out/account-access presentation and its documentation; outside the exact handed-over ad814 delivery",
       "accepted": false
     }
+  },
+  "november18Reconciliation": {
+    "baseDevelopment": "22107a24272f2347bbb59a3da1f54319632772a5",
+    "pushedUi": "69aa0970c73c2f93ef330b4252523dddd2aa2f64",
+    "priorTooling": "66b86420dec773f01c9fa829d5498fab4507b941",
+    "passwordEmails": "6d31d122c078a43297e37a90280f2c657b03b8b6",
+    "committedRondo": "99636b3da504595197e7b12b7d7c8f0aab833020",
+    "branchCeilingReason": "Three normal branches plus Jose’s explicitly authorized nevora-30-day-phase exception. The fifth observed password PR branch still exceeds this ceiling; no general exception or remote deletion is inferred. Preserve the open PR and reconcile before publication.",
+    "uncommittedGrounding": "Held until Claude-ready checkpoint per Jose; not imported; original finite model evidence retained.",
+    "publication": "Candidate only; main and production unchanged."
   }
 }

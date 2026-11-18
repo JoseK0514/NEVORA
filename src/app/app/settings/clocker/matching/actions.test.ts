@@ -1,10 +1,11 @@
+import * as setupActual from "@/lib/clocker/setup.server" with { rstest: "importActual" };
 import { beforeEach, expect, it, rs } from '@rstest/core';
 const m = rs.hoisted(() => ({ proof: rs.fn(), headers: rs.fn(), save: rs.fn(), read: rs.fn() }));
 rs.mock('server-only', () => ({}));
 rs.mock('next/headers', () => ({ headers: m.headers }));
 rs.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: m.proof }));
-rs.mock('@/lib/clocker/setup.server', async () => {
-  const actual = await rs.importActual<typeof import('@/lib/clocker/setup.server')>('@/lib/clocker/setup.server');
+rs.mock('@/lib/clocker/setup.server', () => {
+  const actual = setupActual;
   return { ...actual, clockerSecurity: async () => ({ production: false, origin: undefined }) };
 });
 rs.mock('@/lib/clocker/schedule-grace.server', () => ({

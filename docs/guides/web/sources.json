@@ -116,7 +116,9 @@
         "src/app/app/availability/agreement/page.tsx",
         "src/components/employee-b/home-b.tsx",
         "src/components/access-recovery/support-reference-seam.ts",
-        "docs/handoffs/2026-11-17-claude-ui-integration.md"
+        "docs/handoffs/2026-11-17-claude-ui-integration.md",
+        "src/components/access-recovery/password-pair.tsx",
+        "src/lib/auth/password-requirements.ts"
       ]
     },
     {
@@ -160,7 +162,10 @@
         "src/components/owner-advisor/business/business-map.tsx",
         "src/components/owner-advisor/business/business-client.ts",
         "docs/handoffs/2026-11-17-claude-ui-integration.md",
-        "docs/handoffs/2026-11-17-claude-ui-integration-contract-review.md"
+        "docs/handoffs/2026-11-17-claude-ui-integration-contract-review.md",
+        "src/lib/owner-advisor/manager-contracts.ts",
+        "src/lib/owner-advisor/manager.server.ts",
+        "src/lib/owner-advisor/business/ui-contract.integration.ts"
       ]
     },
     {
@@ -224,7 +229,12 @@
         "db/migrations/0069_clocker_early_grace.sql",
         "src/lib/clocker/schedule-candidates.ts",
         "src/lib/clocker/schedule-grace.server.ts",
-        "src/lib/attendance/project.ts"
+        "src/lib/attendance/project.ts",
+        "src/lib/owner-advisor/manager-contracts.ts",
+        "src/lib/owner-advisor/manager.server.ts",
+        "src/lib/auth/password-requirements.ts",
+        "src/test/integration/release1-migrations.integration.ts",
+        "scripts/rehearsal/2026-11-18-development-baseline.json"
       ]
     },
     {
@@ -271,7 +281,9 @@
         "docs/qa/rondo-development-integration-20261116/index.json",
         "src/app/healthz/route.ts",
         "src/lib/analytics/redact.ts",
-        "src/lib/feature-flags.ts"
+        "src/lib/feature-flags.ts",
+        "src/test/integration/release1-migrations.integration.ts",
+        "scripts/rehearsal/2026-11-18-development-baseline.json"
       ]
     }
   ]

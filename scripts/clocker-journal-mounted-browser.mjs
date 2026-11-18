@@ -16,9 +16,9 @@ export async function mountedJournalBundle(){
    builder.onResolve({filter:/^next\/image$/},()=>({path:'image',namespace:'fixture'}));
    builder.onLoad({filter:/.*/,namespace:'fixture'},()=>({contents:'import React from "react";export default function Image(props){return React.createElement("img",props);}',loader:'js',resolveDir:process.cwd()}));
    if(negative)builder.onLoad({filter:/\/clocker-punch-panel\.tsx$/},async args=>{
-    const original=await readFile(args.path,'utf8'),scoped='const {references:refs}=await store.references(locationKey,fresh.subject);';
+    const original=await readFile(args.path,'utf8'),scoped='const {references:refs,otherCount:others}=await store.references(locationKey,fresh.subject);';
     assert.equal(original.split(scoped).length,2,'Negative control must replace the exact initial subject-scoped read once');
-    return {contents:original.replace(scoped,"const refs=fresh.subject==='2'.repeat(64)?await store.references(locationKey):(await store.references(locationKey,fresh.subject)).references;"),loader:'tsx',resolveDir:resolve('src/components')};
+    return {contents:original.replace(scoped,"const {references:scopedRefs,otherCount:others}=await store.references(locationKey,fresh.subject);const refs=fresh.subject==='2'.repeat(64)?await store.references(locationKey):scopedRefs;"),loader:'tsx',resolveDir:resolve('src/components')};
    });
   }}],
  });
@@ -54,16 +54,16 @@ export async function runMountedJournalTransition(context,origin,engine,evidence
  try{
   await page.goto(origin+'/mounted');await page.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();
   await page.evaluate(async({location,a,aHistory,bHistory})=>{const store=await ClockerJournal.openClockerJournal();try{await store.saveExact(location,aHistory);await store.resolveExact(location,aHistory,'recorded');await store.saveExact(location,bHistory);await store.resolveExact(location,bHistory,'reviewed-context');await store.saveExact(location,a);}finally{store.close();}},{location,a,aHistory,bHistory});
-  await pin('1111');await page.getByRole('button',{name:'Check Action Status',exact:true}).waitFor();await page.getByRole('button',{name:'Help with a saved action',exact:true}).click();
+  await pin('1111');await page.getByRole('button',{name:'Check if it saved',exact:true}).waitFor();await page.getByRole('button',{name:'Ask Owner to check',exact:true}).click();
   const aView=await state();assert.deepEqual(aView.codes.sort(),[a.command.commandId,aHistory.command.commandId].sort());assert.deepEqual(aView.actions,[]);assert(!aView.text.includes(bHistory.command.commandId),'A sees only its own pending/history');
   result.observations.push({phase:'A verified: actual panel reads pending and resolved history',...aView});
   await page.getByRole('button',{name:'Return to PIN',exact:true}).click();await page.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();
   const unverified=await state();assert.equal(unverified.pin,'entry');assert.equal(unverified.panel,undefined);assert.deepEqual(unverified.codes,[]);assert.deepEqual(unverified.actions,[]);noA(unverified);
   result.observations.push({phase:'A → unverified: private panel unmounts and identifiers/actions clear',...unverified});
-  await pin('2222');await page.getByRole('button',{name:'Clock in',exact:true}).waitFor();await page.getByRole('button',{name:'Help with a saved action',exact:true}).click();
-  const bView=await state();noA(bView);assert.deepEqual(bView.codes,[bHistory.command.commandId]);assert.deepEqual(bView.actions,['Clock in']);assert.equal(await page.getByRole('button',{name:'Check Action Status',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Retry Same Action',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Review current status',exact:true}).count(),0);
+  await pin('2222');await page.getByRole('button',{name:'Clock in',exact:true}).waitFor();await page.getByRole('button',{name:'Ask Owner to check',exact:true}).click();
+  const bView=await state();noA(bView);assert.deepEqual(bView.codes,[bHistory.command.commandId]);assert.deepEqual(bView.actions,['Clock in']);assert.equal(await page.getByRole('button',{name:'Check if it saved',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Send it again',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'See current status',exact:true}).count(),0);
   result.observations.push({phase:'B verified: only B history and B current actions render',...bView});
-  await page.getByRole('button',{name:'Done',exact:true}).click();await pin('1111');await page.getByRole('button',{name:'Check Action Status',exact:true}).waitFor();await page.getByRole('button',{name:'Help with a saved action',exact:true}).click();
+  await page.getByRole('button',{name:'Done',exact:true}).click();await pin('1111');await page.getByRole('button',{name:'Check if it saved',exact:true}).waitFor();await page.getByRole('button',{name:'Ask Owner to check',exact:true}).click();
   const returned=await state();assert.deepEqual(returned.codes.sort(),aView.codes);assert.deepEqual(returned.actions,[]);
   const retained=await page.evaluate(async({location,subject})=>{const store=await ClockerJournal.openClockerJournal();try{return {pending:await store.read(location,subject),owner:await store.references(location)};}finally{store.close();}},{location,subject:subjectA});
   assert.deepEqual(retained.pending,a);assert.deepEqual(retained.owner.map(item=>item.commandId).sort(),[a.command.commandId,aHistory.command.commandId,bHistory.command.commandId].sort());assert(result.requests.every(item=>item.operation!=='execute'&&item.operation!=='receipt'));assert.deepEqual(result.errors,[]);

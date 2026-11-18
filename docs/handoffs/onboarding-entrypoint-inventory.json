@@ -4686,6 +4686,16 @@
       "status": "PROVEN_NON_RUNTIME",
       "reason": "Vitest-only direct pg Client for initial admission lock contention in a fresh companyAccessFixture disposable loopback database; service scenarios use the company-bound test executor and synthetic records, never customer data or providers.",
       "isolatedBehavior": "TEST_ONLY"
+    },
+    {
+      "path": "src/app/api/manager/advisor/route.ts",
+      "tags": [
+        "shared-executor",
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "GET uses the scoped neonNotificationExecutor/applicationSql, current Manager session and matching mutation proof, parent/Manager flags, and bounded location/week read guards. The provider-free guided API reads only authorized operational schedules; no Owner finance, knowledge administration or mutation is exposed.",
+      "isolatedBehavior": "BOUND_APPLICATION"
     }
   ],
   "routingEvidence": "Task2: actual owned A/B PostgreSQL databases through installed Neon HTTP protocol; not hosted Neon evidence.",

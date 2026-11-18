@@ -1,3 +1,4 @@
+import {showClockerSetupCode} from './clocker-qa-setup-code.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {randomBytes} from 'node:crypto';
@@ -35,7 +36,7 @@ async function geometry(page,name){
   console.error('[C2 browser] FAIL '+name+' '+JSON.stringify(r));
  }
 }
-async function save(page,pin){await page.getByLabel('New PIN',{exact:true}).fill(pin);await page.getByLabel('Confirm PIN',{exact:true}).fill(pin);await page.getByRole('button',{name:'Save',exact:true}).filter({visible:true}).click();await page.getByRole('status').filter({hasText:'PIN saved'}).waitFor();}
+async function save(page,pin){await page.getByLabel('New PIN',{exact:true}).fill(pin);await page.getByLabel('Type it again',{exact:true}).fill(pin);await page.getByRole('button',{name:'Save PIN',exact:true}).filter({visible:true}).click();await page.getByRole('status').filter({hasText:'PIN set for'}).waitFor();}
 async function verify(page,pin){await page.getByLabel('Employee PIN',{exact:true}).fill(pin);await page.getByRole('button',{name:'Continue',exact:true}).click();}
 async function failureDiagnostics(){
  for(const browser of browsers)for(const c of browser.contexts())for(const page of c.pages()){
@@ -66,12 +67,12 @@ try{
   assert.equal(await p.getByLabel('Confirm PIN',{exact:true}).inputValue(),'');checked(engine+': secure PIN setup clears the inputs');
   await goto(p,'/app/settings/clocker');await p.getByRole('button',{name:'Add tablet',exact:true}).click();
   const d=p.getByRole('dialog');await d.getByLabel('Tablet name',{exact:true}).fill(engine+' PIN tablet');await d.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await d.getByRole('button',{name:'Get setup code',exact:true}).click();await d.waitFor({state:'hidden'});
-  const code=await p.getByRole('textbox',{name:/^Setup code · expires /}).inputValue();
+  const code=await await showClockerSetupCode(p).inputValue();
   const tablet=await context(browser,{width:1024,height:768});const t=await tablet.newPage();await t.clock.install();t.setDefaultTimeout(15000);t.on('pageerror',e=>errors.push(e.message));
   await goto(t,'/clocker/2');await t.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await t.getByRole('button',{name:'Connect tablet',exact:true}).click();await t.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();
   await verify(t,'9999');await t.locator('main [role=alert]').filter({hasText:'PIN not recognized'}).waitFor();checked(engine+': wrong PIN does not reveal identity');
   await verify(t,'0246');await t.getByRole('heading',{name:'Hi, Avery.',exact:true}).waitFor();
-  assert.equal(await t.getByRole('button',{name:'Clock In',exact:true}).count(),0);
+  assert.equal(await t.getByRole('button',{name:'Clock in',exact:true}).count(),0);
   const meta=(await tablet.cookies()).filter(c=>c.name==='nevora_clocker_identity').map(({httpOnly,sameSite})=>({httpOnly,sameSite}));assert.deepEqual(meta,[{httpOnly:true,sameSite:'Strict'}]);
   checked(engine+': actual PIN verification uses protected cookie and exposes no fake punch action');
   await t.getByRole('button',{name:'Done',exact:true}).click();await t.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();

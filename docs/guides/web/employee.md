@@ -10,7 +10,7 @@ notifications have separate availability and acceptance. See the
 1. Obtain your company sign-in address and a private account invitation from
    your Owner. Open the invitation from your email in a browser with JavaScript
    enabled.
-2. On **Activate account**, choose and confirm your password. After confirmed
+2. On **Set up your account**, choose and confirm your password, then choose **Activate account**. After confirmed
    activation, keep the displayed **Employee ID**; use it with your password to
    sign in. Activation does not itself prove you are signed in.
 3. If the link is invalid or expired, ask the Owner for a new invitation. If
@@ -24,7 +24,7 @@ refused with a specific reason. Existing passwords keep working, with no schedul
 password changes. New or reset passwords follow these rules.
 
 Keep your invitation, password, recovery code and passkeys private. Use the
-sign-in help/recovery flow if needed. Your manager can help through an authorized
+**Forgot password?** to request a reset link. Open it on **Choose a new password**, enter and confirm a new phrase, then choose **Save new password**. Your manager can help through an authorized
 recovery process without learning your password.
 
 ## Find your work

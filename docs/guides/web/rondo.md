@@ -177,3 +177,7 @@ observed is not proof that a late commit cannot occur; do not add a replacement
 operation. Reload recovery checks the original identity and never reconstructs a
 financial command from newly entered form values. Actual-model 50-case
 qualification, provider activation and hosted acceptance remain separate.
+
+## Scoped Manager guidance
+
+The Development backend also provides a separate guided Manager API for an authorized location and week: four scheduling questions and a weekly summary. Its UI is owned by Claude and depends on the selected release and feature settings. It does not give Managers Owner business records, payroll, knowledge administration, schedule mutation or free-text paid AI. Use only destinations actually offered to your signed-in role.

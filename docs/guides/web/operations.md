@@ -261,3 +261,9 @@ receipt is not a guarantee against a late commit. Do not create a replacement to
 resolve uncertainty. Private data must hide after its observation expires or the
 user steps away, including while a refresh is pending. Share only a content-free
 support reference with support, never imported records, credentials or recovery codes.
+
+## Combined Development release checks
+
+Use the final candidate SHA and its source inventory, not an old Preview's Ready status. Qualify the full dependency tree and production tree, actual role/privacy/recovery journeys, all required cloud contexts and the actual Development workflows. Rebuild all six source-bound manuals after application or guide changes. Preserve the source-bound production build's artifact hashes across the development-marker check.
+
+The local restore rehearsal verifies both the earlier Development backup and the schema including employment dates and Clocker grace. It does not replace the selected hosted Neon migration/restore run or independent disaster-recovery acceptance. Before hosted work, verify the exact fictional database binding, migration ledger, restricted principals and rollback artifact. Keep provider/retention/Tax and production approval holds in force.

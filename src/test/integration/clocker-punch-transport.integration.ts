@@ -29,7 +29,7 @@ function call(body:object,headers:Record<string,string>={},enabled=true,location
 }
 it('is disabled by default without touching punch data',async()=>{
  const response=await call({operation:'execute',command:await command()}, {},false);
- expect(response.status).toBe(503);expect(await response.json()).toMatchObject({state:'disabled'});
+ expect(response.status).toBe(503);expect(await response.json()).toMatchObject({state:'disabled',code:'PUNCHES_DISABLED'});
  expect(await f.q('SELECT * FROM clocker_command_ledger')).toEqual([]);
 });
 it('returns real state and committed receipts without credential or employee identity fields',async()=>{
@@ -53,7 +53,8 @@ it('returns the same receipt for an identical repeated HTTP command',async()=>{
 });
 it.each(['origin','header','content-type','fetch-site'])('blocks unsafe %s requests before punch writes',async kind=>{
  const headers:Record<string,string>=kind==='origin'?{origin:'https://evil.invalid'}:kind==='header'?{'X-Nevora-Clocker':'0'}:kind==='content-type'?{'Content-Type':'text/plain'}:{'Sec-Fetch-Site':'cross-site'};
- expect((await call({operation:'execute',command:await command()},headers)).status).toBe(403);
+ const response=await call({operation:'execute',command:await command()},headers);
+ expect(response.status).toBe(403);expect(await response.json()).toMatchObject({code:'ORIGIN_REJECTED'});
  expect(await f.q('SELECT * FROM clocker_command_ledger')).toEqual([]);
 });
 it.each(['employeeId','locationId','deviceId','timestamp','pin'])('rejects forged %s command authority',async field=>{
@@ -67,7 +68,8 @@ it.each([{operation:'delete'}, {operation:'state',employeeId:'c34-b'}, {operatio
 it('requires both the enrolled device and current PIN identity',async()=>{
  const c=await command();jar.delete('nevora_clocker_identity');
  expect((await call({operation:'execute',command:c})).status).toBe(401);
- jar.clear();expect((await call({operation:'state'})).status).toBe(401);
+ jar.clear();const response=await call({operation:'state'});expect(response.status).toBe(401);
+ expect(await response.json()).toMatchObject({state:'device_required',code:'DEVICE_REQUIRED'});
  expect(await f.q('SELECT * FROM time_entries')).toEqual([]);
 });
 it('a wrong-location request cannot write against another tablet binding',async()=>{

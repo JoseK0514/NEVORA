@@ -1,3 +1,4 @@
+import * as clockerCopyActual from "./clocker-copy" with { rstest: "importActual" };
 import * as rstestImportedActual0 from "react" with { rstest: 'importActual' };
 import * as rstestImportedActual1 from "./clocker-language" with { rstest: 'importActual' };
 // The kiosk's setup screen (Phase 6, JR-26): the first-time screen in both languages, the code that arrives in the
@@ -21,9 +22,9 @@ rs.mock('react', () => {
     useCallback: (fn: unknown, deps: unknown[]) => hooks.on ? fn : react.useCallback(fn as () => void, deps),
   };
 });
-rs.mock('./clocker-language', async () => {
+rs.mock('./clocker-language', () => {
   const real = rstestImportedActual1;
-  const {clockerText} = await import('./clocker-copy');
+  const {clockerText} = clockerCopyActual;
   return {...real, useClockerCopy: () => hooks.on ? (key: string, params?: Record<string, string | number>) => clockerText(hooks.locale, key, params) : real.useClockerCopy()};
 });
 import {ClockerSetup, SETUP_WELCOME_MS} from './clocker-setup';

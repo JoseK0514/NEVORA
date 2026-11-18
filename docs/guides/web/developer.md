@@ -261,3 +261,11 @@ The guided paid-time flow currently sends the neutral profile. The backend suppo
 reviewed paid mappings and custom rounding, but selecting a saved paid profile in
 that flow is not implemented. Keep broader SCRUM-197 open for that UI and product
 choice; do not replace a precision refusal with inferred rounding.
+
+## Joined password, Manager Rondo and restore contracts
+
+The shared browser-safe password requirements count Unicode code points, enforce the selected 15-character minimum and reject oversized input without truncation. Identity/company screening remains server-side and revision-fenced. Policy refusals keep valid proofs available. Password-only sign-in for existing credentials keeps the original verification bytes.
+
+The Manager Rondo route is provider-free, read-only and location/week-scoped, with its own feature flag and current-role checks; its wire contract is in `src/lib/owner-advisor/manager-contracts.ts`. Owner finance and knowledge administration remain outside that role. Business full-read renewals can repeat the exact original command until the persisted read handle expires; a renewed 15-second observation never extends publication consent. Preserve immutable operation identities and capacity guards.
+
+The final-schema restore test uses a recorded Development migration-hash manifest, real owned `pg_dump`/`pg_restore`, earlier-backup rollback and final-backup restoration. It never targets a caller's existing database. Hosted restoration and independent acceptance remain separate.

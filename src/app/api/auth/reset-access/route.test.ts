@@ -32,6 +32,13 @@ it('refusals carry no Support reference and log nothing',async()=>{
  const response=await POST(request({proof:proof(),password:'Fictional-NEW-password'}));
  expect(response.status).toBe(400);expect(readSupportReference(response)).toBeNull();expect(sink).not.toHaveBeenCalled();
 });
+it('refuses a short password before storage and returns the specific enrollment reason',async()=>{
+ const response=await POST(request({proof:proof(),password:'short'}));
+ expect(response.status).toBe(400);
+ expect(await response.json()).toEqual({state:'invalid',passwordReason:'too_short'});
+ expect(readSupportReference(response)).toBeNull();
+ expect(m.transaction).not.toHaveBeenCalled();expect(m.query).not.toHaveBeenCalled();expect(sink).not.toHaveBeenCalled();
+});
 it('ignores a caller-supplied request ID',async()=>{
  m.transaction.mockRejectedValue(Error('fictional'));
  const forged='11111111-1111-4111-8111-111111111111';

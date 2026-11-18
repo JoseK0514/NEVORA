@@ -55,6 +55,26 @@ it('reports an already-shortened database handle instead of inventing observedAt
   expect(handle.readReceiptExpiresAt).toBe(new Date(row.expiry).toISOString());
   expect(Date.parse(handle.readReceiptExpiresAt) - Date.now()).toBeLessThan(45000);
 });
+it('renews the response observation with the original full-read identity at capacity without extending its publication handle', async () => {
+  const staged = await draft();
+  const command = { op: 'read_source_version', requestId: randomUUID(), sourceId: staged.receipt!.sourceId, versionId: staged.receipt!.versionId };
+  const first = await call(command);
+  await f.q("INSERT INTO owner_advisor_business_operations(workspace_id,owner_id,request_id,command_kind,command_hash) SELECT 'workspace-fuel','owner',gen_random_uuid(),'stage_source_version',repeat('b',64) FROM generate_series(1,9998)");
+  const renewed = await call(command);
+  expect(renewed.state).toBe('ready');
+  expect(renewed.version).toEqual(first.version);
+  expect(renewed.receipt).toEqual(first.receipt);
+  expect(renewed.readReceiptId).toBe(first.readReceiptId);
+  expect(renewed.readReceiptExpiresAt).toBe(first.readReceiptExpiresAt);
+  expect(Date.parse(renewed.observedAt)).toBeGreaterThan(Date.parse(first.observedAt));
+  expect(renewed.validForMs).toBeLessThanOrEqual(15000);
+  expect(await f.q('SELECT count(*)::int n FROM owner_advisor_business_operations')).toEqual([{n:10000}]);
+  await expect(call({...command, requestId:randomUUID()})).rejects.toMatchObject({code:'limit'});
+  expect((await call({op:'check_source_operation',requestId:randomUUID(),operationId:staged.receipt!.operationId})).receipt).toEqual(staged.receipt);
+  await f.q("UPDATE owner_advisor_business_read_receipts SET expires_at=clock_timestamp()-interval '1 second' WHERE request_id=$1::uuid",[command.requestId]);
+  await expect(call(command)).rejects.toMatchObject({code:'conflict'});
+  expect(await f.q('SELECT count(*)::int n FROM owner_advisor_business_operations')).toEqual([{n:10000}]);
+});
 it('binds coverage publication to the full-read receipt revision, not its older staged input revision', async () => {
   const staged = await call({ op: 'stage_coverage_map', requestId: randomUUID(), map: { expectedRevision: 0, accounts: [], cells: [] } });
   const full = await call({ op: 'read_coverage_map', requestId: randomUUID(), mapVersionId: staged.receipt!.mapVersionId });
