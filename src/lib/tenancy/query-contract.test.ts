@@ -4,8 +4,8 @@ const db = rs.hoisted(() => ({ query: rs.fn(), transaction: rs.fn() }));
 rs.mock('../db', () => ({ getDb: rs.fn(()=>{throw Error('legacy proof transport forbidden');}), getTenantRuntimeDb: () => db }));
 import { resolvePortalProof, resolveCalendarReadProof } from './resolve.server';
 import type { PortalProof } from './types';
-const path = './query-contract';
-const contract: typeof import('./query-contract') | null = await import(path).catch(() => null);
+
+const contract: typeof import('./query-contract') | null = await import('./query-contract').catch(() => null);
 const digest = 'a'.repeat(64);
 const facts = (workspaceId = 'tenant-a') => ({ authorityCurrent: true, kind: 'PORTAL', workspaceId,
   workspaceVersion: '2026-10-08 10:00:00.123456+00', workspaceIncarnation: '1',

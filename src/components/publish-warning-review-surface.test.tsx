@@ -7,8 +7,8 @@ import type { PublishWarningReviewSurfaceProps } from './publish-warning-review-
 
 // An absent new surface is a feature assertion inside each case, never an
 // import/collection failure. The actual source-bound policy builds all reviews.
-const modulePath = './publish-warning-review-surface';
-const surface = await import(modulePath).catch(() => null);
+
+const surface = await import('./publish-warning-review-surface').catch(() => null);
 const NOW = '2026-10-09T12:00:00Z';
 type Source = PublishWarningSnapshot & { target: NonNullable<PublishWarningSnapshot['target']>;
  canonical: NonNullable<PublishWarningSnapshot['canonical']>; readiness: NonNullable<PublishWarningSnapshot['readiness']> };
@@ -44,6 +44,7 @@ function ready(s: Source = warned()): Extract<PublishWarningReview, { state: 're
 function render(review: PublishWarningReview = ready(), changes: Partial<PublishWarningReviewSurfaceProps> = {}) {
  const renderer = surface?.PublishWarningReviewSurface;
  expect(renderer, 'unused F2 warning review surface must be implemented').toBeTypeOf('function');
+ if (!renderer) throw Error('Expected component renderer');
  const current = review.state === 'ready' ? review : ready();
  const callbacks = { onReasonChange: rs.fn(), onConfirm: rs.fn(), onReturnToReview: rs.fn() };
  const props: PublishWarningReviewSurfaceProps = { result: { state: 'review', review }, connection: 'ready', expected: {

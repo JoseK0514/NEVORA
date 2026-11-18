@@ -6,8 +6,8 @@ import { planWeek } from './planner';
 
 import type { GenerationExplanationSnapshot, GenerationExplanationView } from './explanation-view';
 
-const path = './explanation-view';
-const implementation: typeof import('./explanation-view') | null = await import(path).catch(() => null);
+
+const implementation: typeof import('./explanation-view') | null = await import('./explanation-view').catch(() => null);
 const view = (value: unknown) => implementation?.buildGenerationExplanationView(value);
 const NOW = '2026-10-09T14:00:00Z';
 function canonical(value: unknown): string {

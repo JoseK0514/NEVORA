@@ -11,9 +11,9 @@ import { getTenantRuntimeDb } from '../db';
 import { RUNTIME_CATALOG_SHARED_FENCE_SQL } from './runtime/catalog-fence.server';
 import { resolvePortalProof } from './resolve.server';
 import type { PortalProof } from './types';
-const cp = './query-contract', ep = './executor.server';
-const c: typeof import('./query-contract') | null = await import(cp).catch(() => null);
-const e: typeof import('./executor.server') | null = await import(ep).catch(() => null);
+
+const c: typeof import('./query-contract') | null = await import('./query-contract').catch(() => null);
+const e: typeof import('./executor.server') | null = await import('./executor.server').catch(() => null);
 const digest = 'a'.repeat(64);
 async function proof(workspaceId = 'tenant-a') {
   db.query.mockImplementation((text, values) => ({ text, values, then: () => { throw Error('query awaited outside transaction'); } }));

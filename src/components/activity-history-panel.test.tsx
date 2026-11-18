@@ -8,8 +8,8 @@ import type { ActivityHistoryPanelProps, ActivityHistoryObservationBinding } fro
 // Actual unchanged projector + F6 evaluator on fictional local observations.
 // No DB/private issuer/authority is created. A missing new panel fails each
 // feature assertion, not test collection or an absent import assertion.
-const modulePath = './activity-history-panel';
-const surface = await import(modulePath).catch(() => null);
+
+const surface = await import('./activity-history-panel').catch(() => null);
 const AT = '2026-10-09T12:00:00Z', OBSERVED = '2026-10-09T13:00:00Z';
 const fields: ActivityProjectionInput['requestedFields'] = ['audit.metadata', 'audit.source', 'employee.identity', 'attendance', 'request', 'timecard'];
 function fixture(): ActivityProjectionInput {
@@ -58,6 +58,7 @@ function ready(input: ActivityProjectionInput) {
 function render(input = fixture(), changes: Partial<ActivityHistoryPanelProps> = {}) {
  const renderer = surface?.ActivityHistoryPanel;
  expect(renderer, 'unused F5 activity history panel must be implemented').toBeTypeOf('function');
+ if (!renderer) throw Error('Expected component renderer');
  const binding = observation(input);
  const props: ActivityHistoryPanelProps = { result: { state: 'projection', projection: projectActivity(input), binding },
   expected: { ...binding }, connection: 'ready', sourceCurrent: true, ...changes };

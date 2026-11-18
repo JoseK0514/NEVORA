@@ -2,8 +2,8 @@ import { createHash } from 'node:crypto';
 import { describe, expect, it } from '@rstest/core';
 import type { EmployeeCsvLimits, EmployeeCsvMapping, EmployeeCsvPreviewSnapshot } from './csv';
 
-const implementationPath = './csv';
-const implementation: typeof import('./csv') | null = await import(implementationPath).catch(() => null);
+
+const implementation: typeof import('./csv') | null = await import('./csv').catch(() => null);
 const headers = ['Number', 'First', 'Last', 'Phone', 'Email', 'Role', 'Primary', 'Eligible', 'Positions'];
 const fields = ['employeeNumber', 'firstName', 'lastName', 'phone', 'email', 'role', 'primaryLocationCode', 'eligibleLocationCodes', 'positionCodes'] as const;
 const mapping: EmployeeCsvMapping = { version: 'F9-CSV-MAPPING-1', columns: fields.map((field, column) => ({ column, header: headers[column], field })) };

@@ -79,17 +79,17 @@ it.each(['early-my-time-route\n','early-my-time-route-Violet7','Violet7','loadin
  expect(errors[0]).toMatchObject({failure:{stage:null}});expect(()=>cell.assertClean()).toThrow();
 });
 it('connects the actual Home stage reader before registering scenario page listeners',async()=>{
- const fixture=resolve('src/test/integration/owned-app-fixture.ts');
- rs.doMock(fixture,()=>({seedOwnedScenario:async()=>({actors:['fictional']}),TEST_PASSWORD:'fictional'}));
+ rs.doMock('./integration/owned-app-fixture.ts',()=>({seedOwnedScenario:async()=>({actors:['fictional']}),TEST_PASSWORD:'fictional'}));
  try{
-  const {runScenario}=await import(resolve('scripts/phase-e-home-browser-scenarios.mjs'));
+  // @ts-expect-error The JavaScript QA scenario has no TypeScript declaration.
+  const {runScenario}=await import('../../scripts/phase-e-home-browser-scenarios.mjs');
   const errors:unknown[]=[],context=new EventEmitter(),observedPage=new EventEmitter(),cell=observeBrowserCell({suite:'home',engine:'webkit',width:320,status:'failed'},errors);
   cell.observeContext(context,'primary');context.emit('page',observedPage);
   const stop=new Error('Stop before scenario listeners');
   await expect(runScenario({app:{database:{executor:{}}},engine:'webkit',width:320,page:{on(){throw stop;}},runtimeErrors:cell})).rejects.toBe(stop);
   observedPage.emit('pageerror',new Error('Violet7'));
   expect(errors[0]).toMatchObject({failure:{stage:'seed'}});expect(()=>cell.assertClean()).toThrow();
- }finally{rs.doUnmock(fixture);}
+ }finally{rs.doUnmock('./integration/owned-app-fixture.ts');}
 });
 it.each([
  ['Minified React error #418; visit https', '/react.dev/errors/418?args[]=PRIVATE_ACTOR_TOKEN', 'Minified React error #418', 418],

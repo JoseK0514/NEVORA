@@ -1,12 +1,10 @@
-import * as rstestOriginal0 from "../../../../lib/notifications/worker" with { rstest: 'importActual' };
-import * as rstestOriginal1 from "../../../../lib/notifications/config" with { rstest: 'importActual' };
 import { afterEach, expect, it, rs } from '@rstest/core';
 import { fixture } from '../../../../lib/notifications/worker.test-support';
 import type { WorkerDeps } from '../../../../lib/notifications/worker';
 const state = rs.hoisted(() => ({ deps: undefined as WorkerDeps | undefined, factory: rs.fn(), workspace: rs.fn() }));
 rs.mock('@/lib/db', () => ({ getDb: rs.fn() }));
-rs.mock('../../../../lib/notifications/worker',  () => ({ ...rstestOriginal0, createWorkerDeps: () => { state.factory(); return state.deps!; } }));
-rs.mock('../../../../lib/notifications/config', ()=>({...rstestOriginal1,loadWorkspaceNotificationConfig:async()=>{state.workspace();return state.deps!.config;}}));
+rs.mock('../../../../lib/notifications/worker',  () => ({ ...rs.requireActual<typeof import("../../../../lib/notifications/worker")>("../../../../lib/notifications/worker"), createWorkerDeps: () => { state.factory(); return state.deps!; } }));
+rs.mock('../../../../lib/notifications/config', ()=>({...rs.requireActual<typeof import("../../../../lib/notifications/config")>("../../../../lib/notifications/config"),loadWorkspaceNotificationConfig:async()=>{state.workspace();return state.deps!.config;}}));
 afterEach(() => { rs.unstubAllEnvs(); state.factory.mockClear(); state.workspace.mockReset(); });
 async function routes() { return { dispatch: await import('./dispatch/route'), reminders: await import('./reminders/route'), cli: await import('../../../../../scripts/fuel-notification-worker') }; }
 const request = (secret = 's'.repeat(32)) => new Request('https://example.test/api/internal/notifications/dispatch', { headers: { Authorization: `Bearer ${secret}` } });

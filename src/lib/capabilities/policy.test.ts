@@ -4,8 +4,8 @@ import type { Capability, CapabilityInput } from './types';
 
 // Loading an absent implementation is an ordinary missing-feature assertion in
 // the first RED run; expectations below are literal approved-policy outcomes.
-const modulePath = './policy';
-const implementation: typeof import('./policy') | null = await import(modulePath).catch(() => null);
+
+const implementation: typeof import('./policy') | null = await import('./policy').catch(() => null);
 const evaluate = (value: unknown) => implementation?.evaluateCapability(value);
 
 const managementGrants: Capability[] = [

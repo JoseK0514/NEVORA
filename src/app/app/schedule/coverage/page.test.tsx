@@ -1,4 +1,3 @@
-import * as rstestOriginal0 from "@/lib/data/coverage-repair.server" with { rstest: 'importActual' };
 import { createElement, type ComponentProps } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, rs } from '@rstest/core';
@@ -22,7 +21,7 @@ rs.mock('@/lib/company-access/operational-scope.server',()=>({
 rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:()=>{throw Error('Unexpected restricted editor in Company coverage fixture');}}));
 rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 rs.mock('@/lib/data/coverage-repair.server',  () => {
-  const actual = rstestOriginal0;
+  const actual = rs.requireActual<typeof import("@/lib/data/coverage-repair.server")>("@/lib/data/coverage-repair.server");
   return { ...actual, readCoverageRepair: async (locator: CoverageRepairLocator, proof: ReturnType<typeof managementProof>, refresh: boolean) => {
     const result = actual.deriveCoverageRepair(m.source!, locator, refresh);
     return { ...result, candidates: result.candidates.map(c => ({ ...c, review: actual.createCoverageRepairReview(m.source!, result.locator, c.employeeId, proof) })) };

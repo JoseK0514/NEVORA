@@ -3,6 +3,20 @@ import * as rstestOriginal0 from "react" with { rstest: 'importActual' };
 import {renderToStaticMarkup} from 'react-dom/server';
 import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 
+import {createHash} from 'node:crypto';
+import timecardsStyles from './timecards.module.css';
+import timecardsSignatureStyles from './timecards-signature.module.css';
+import signatureStyles from './signature/signature.module.css';
+
+const scopedClasses = new Map<string, string>(([
+ ['src/components/timecards.module.css', timecardsStyles],
+ ['src/components/timecards-signature.module.css', timecardsSignatureStyles],
+ ['src/components/signature/signature.module.css', signatureStyles],
+] as const).flatMap(([file, styles]) => {
+ const hash = createHash('sha1').update(file).digest('hex').slice(0, 6);
+ return Object.entries(styles).map(([local, scoped]) => [scoped, `_${local}_${hash}`] as const);
+}));
+
 const host=rs.hoisted(()=>({cursor:0,mounted:false,slots:[] as {value:unknown}[],effects:[] as (()=>void|(()=>void))[]}));
 rs.mock('react',()=>({...rstestOriginal0,
  useState:(initial:unknown)=>{const i=host.cursor++;const slot=host.slots[i]??(host.slots[i]={value:typeof initial==='function'?(initial as ()=>unknown)():initial});return [slot.value,(next:unknown)=>{slot.value=typeof next==='function'?(next as (old:unknown)=>unknown)(slot.value):next;}];},
@@ -43,5 +57,9 @@ it('renders every employee Timecards view exactly as before the upscale (UI-9, U
  const html=out.join('\n')+'\n';
  expect(html).not.toContain('people with no time yet');
  for(const part of out)expect(part).toContain('Your timecard');
- await expect(html).toMatchFileSnapshot('./__snapshots__/timecards-employee-unchanged.html');
+ // Preserve the original snapshot's CSS module naming without changing its
+ // element, class order or source module checks. Unknown classes stay intact.
+ const legacyMarkup = html.replace(/ class="([^"]*)"/g, (_, value: string) =>
+  ` class="${value.split(' ').map(token => scopedClasses.get(token) ?? token).join(' ')}"`);
+ await expect(legacyMarkup).toMatchFileSnapshot('./__snapshots__/timecards-employee-unchanged.html');
 });

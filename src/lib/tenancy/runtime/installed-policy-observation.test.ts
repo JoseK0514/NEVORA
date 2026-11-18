@@ -7,8 +7,7 @@ type Inspector = typeof import('./installed-policy-observation').inspectInstalle
 let inspector: Inspector | undefined;
 beforeAll(async () => {
   if (existsSync(new URL('./installed-policy-observation.ts', import.meta.url))) {
-    const modulePath = './installed-policy-observation';
-    inspector = (await import(modulePath)).inspectInstalledPortalPolicyObservation;
+    inspector = (await import('./installed-policy-observation')).inspectInstalledPortalPolicyObservation;
   }
 });
 function inspectInstalledPortalPolicyObservation(raw: unknown, expected: unknown) {
