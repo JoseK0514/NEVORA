@@ -155,10 +155,10 @@
   {
     "id": "EM-018",
     "severity": "Medium",
-    "status": "partly",
-    "remainder": "One sentence for a partly published week: both wordings are Jose's Oct 18 text. Jose to choose.",
+    "status": "fixed",
+    "remainder": "",
     "by": "Claude",
-    "note": "Phase 4 (Nov 17, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. A card's note is its footer everywhere.",
+    "note": "Phase 4 (Nov 17, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. A card's note is its footer everywhere. Nov 17 decision: one sentence, published first, as Schedule says it (Your Main Office shifts are published. West Office hasn't published this week yet.); Home names its current and next shift locations.",
     "inCodexHandoff": false
   },
   {
