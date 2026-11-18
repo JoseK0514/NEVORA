@@ -215,12 +215,13 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
    await page.goto(origin+'/login');await page.locator('#login-employee-id').fill(id);await page.locator('#login-password').fill(next);await page.locator('button[type="submit"]').click();await page.waitForURL('**/app',{timeout:45000});
    const expires=(await q<{expiry:string}>('SELECT expires_at::text AS expiry FROM password_recovery_proofs WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 1',[id]))[0].expiry as string;
    const invitationExpires=(await q<{expiry:string}>('SELECT expires_at::text AS expiry FROM company_invitations WHERE employee_id=$1 ORDER BY issued_at DESC LIMIT 1',[id]))[0].expiry;
-   const preview=await context.newPage();await preview.goto('about:blank');
+   const preview=await context.newPage();let previewHtml='';
+   await preview.route(origin+'/__owned-email-preview',async(route:{fulfill(v:{status:number;contentType:string;body:string}):Promise<void>})=>route.fulfill({status:200,contentType:'text/html',body:previewHtml}));
    const emailContext={companyName:'North Harbor Foods',firstName:'Avery',timeZone:'America/Puerto_Rico',expiresAt:expires};
    for(const [kind,email] of [['invitation',invitationEmail(origin+'/activate#proof='+proof,id,{...emailContext,expiresAt:invitationExpires})],['reset',recoveryEmail(origin+'/reset-access#proof='+resetProof,emailContext)],['changed',passwordChangedEmail(origin,emailContext)]] as const){
     step=engine+' '+kind+' email';await writeFile(evidence+'/'+engine+'-'+kind+'.html',email.html);await writeFile(evidence+'/'+engine+'-'+kind+'.txt',email.text);
     for(const width of [320,1440]){
-     await preview.setViewportSize({width,height:1000});await preview.setContent(email.html,{waitUntil:'networkidle'});
+     await preview.setViewportSize({width,height:1000});previewHtml=email.html;await preview.goto(origin+'/__owned-email-preview',{waitUntil:'networkidle'});
      expect(await preview.locator('section[lang="en"]').count()).toBe(1);expect(await preview.locator('section[lang="es"]').count()).toBe(1);
      expect(await preview.locator('img[alt="NEVORA"]').evaluate((el:HTMLImageElement)=>el.complete&&el.naturalWidth>0)).toBe(true);
      expect(await preview.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
