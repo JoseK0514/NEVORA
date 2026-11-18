@@ -17,7 +17,7 @@ export type EmploymentDateField = keyof EmploymentDates;
 export type EmploymentDateError = { field: EmploymentDateField; message: string };
 
 export const EMPLOYMENT_DATE_FIELDS = ['hireDate', 'terminationDate', 'birthDate'] as const satisfies readonly EmploymentDateField[];
-/** Matches the database floor on birth_date; also applied to the other two dates. */
+/** Matches the database floor on the birth date column; also applied to the other two dates. */
 export const EARLIEST_EMPLOYMENT_DATE = '1900-01-01';
 export const EMPTY_EMPLOYMENT_DATES: EmploymentDates = { hireDate: null, terminationDate: null, birthDate: null };
 
