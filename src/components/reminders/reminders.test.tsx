@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {reminderCopy, type ReminderLang} from './copy';
 import {buildCommand, type ReminderState, type ReminderTarget} from './machine';
@@ -82,7 +82,7 @@ describe('reminder row control, English', () => {
       unknownLooking: 'We couldn’t confirm this reminder. Checking…',
       unknownStill: 'Still not confirmed. Nothing new was sent. Check again',
       unknownAccess: 'We couldn’t confirm this reminder. Sign in again, then check. Check again',
-      notSent: 'Not sent. Nothing was queued. Send again',
+      notSent: 'Not confirmed yet. No queue receipt was found. It may still be queued. Send again',
       error: `Couldn’t check if a reminder can go. Support reference ${NOTE} Try again`,
     });
   });
@@ -98,7 +98,8 @@ describe('reminder row control, English', () => {
     const tone = (name: string) => reminderLine(states[name], {timeZone: TZ, actor: 'OWNER', now}).tone;
     expect(['held', 'heldModule', 'conflict', 'tooLate', 'unknown', 'error'].map(tone)).toEqual(Array(6).fill('amber'));
     expect(['blocked', 'signedOut', 'stale'].map(tone)).toEqual(Array(3).fill('red'));
-    expect(['cooldown', 'queued', 'alreadyQueued', 'notSent', 'sending'].map(tone)).toEqual(Array(5).fill('grey'));
+    expect(['cooldown', 'queued', 'alreadyQueued', 'sending'].map(tone)).toEqual(Array(4).fill('grey'));
+    expect(tone('notSent')).toBe('amber');
     // Colour is never the only signal: amber and red lines carry an icon too.
     for (const name of ['held', 'blocked', 'conflict', 'unknown']) expect(row(states[name], 'en')).toContain('<svg');
   });
@@ -130,7 +131,7 @@ describe('reminder row control, Spanish', () => {
     noEnglish(row(states.ready, 'es', {offline: true}));
     expect(text(row(states.queued, 'es'))).toBe('Recordatorio en cola · 3:02 PM');
     expect(text(row(states.unknown, 'es'))).toBe('No pudimos confirmar este recordatorio. Verificar de nuevo');
-    expect(text(row(states.notSent, 'es'))).toBe('No se envió. No quedó nada en cola. Enviar de nuevo');
+    expect(text(row(states.notSent, 'es'))).toBe('Aún sin confirmar. No se encontró un recibo de cola. Todavía puede quedar en cola. Enviar de nuevo');
     expect(text(row(states.cooldown, 'es'))).toBe('Un recordatorio al día · se puede recordar de nuevo hoy después de las 9:00 PM');
     expect(row(states.ready, 'es')).toContain('aria-label="Recordar a Ana Colon"');
   });

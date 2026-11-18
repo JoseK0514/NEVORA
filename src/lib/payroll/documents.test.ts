@@ -1,4 +1,4 @@
-import { it, expect } from "vitest";
+import { it, expect } from '@rstest/core';
 import { mkdir, writeFile } from "node:fs/promises";
 import { PDFDocument } from "pdf-lib";
 import { generatePdfs, paymentDocument } from "./documents";

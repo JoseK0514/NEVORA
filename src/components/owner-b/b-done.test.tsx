@@ -4,9 +4,9 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createRef } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 
-vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...rest }: { href: string; children: React.ReactNode; prefetch?: boolean }) => <a href={href} {...rest}>{children}</a> }));
+rs.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...rest }: { href: string; children: React.ReactNode; prefetch?: boolean }) => <a href={href} {...rest}>{children}</a> }));
 
 import { BDoneMark, BState } from "./b-kit";
 import { MOMENTS_COPY, momentsCopy } from "./moments-copy";

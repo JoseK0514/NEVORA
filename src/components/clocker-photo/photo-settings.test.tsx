@@ -2,13 +2,13 @@
 // that says why.
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {describe, expect, it, vi} from 'vitest';
+import {describe, expect, it, rs} from '@rstest/core';
 import {ClockerPhotoSettings} from './photo-settings';
 import {englishIn} from '../clocker-owner-copy.testkit';
 import type {PhotoPolicy} from '@/lib/clocker/photo-server/contracts';
 
 const policy = (enabled: boolean): PhotoPolicy => ({version: 1, enabled, events: ['CLOCK_IN', 'CLOCK_OUT'], retentionDays: 30, failureBehavior: 'ALLOW_WITH_EXCEPTION', captureMaxBytes: 524288, captureMaxDimension: 640, uploadWindowSeconds: 300} as PhotoPolicy);
-const render = (enabled: boolean, lang: 'en' | 'es' = 'en') => renderToStaticMarkup(createElement(ClockerPhotoSettings, {initialPolicy: policy(enabled), saveAction: vi.fn(), readAction: vi.fn(), lang}));
+const render = (enabled: boolean, lang: 'en' | 'es' = 'en') => renderToStaticMarkup(createElement(ClockerPhotoSettings, {initialPolicy: policy(enabled), saveAction: rs.fn(), readAction: rs.fn(), lang}));
 
 describe('Punch photos', () => {
   it('opens with what the setting does, in one sentence', () => {

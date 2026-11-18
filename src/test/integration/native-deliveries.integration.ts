@@ -1,4 +1,4 @@
-import {afterAll, beforeEach, expect, it} from 'vitest';
+import {afterAll, beforeEach, expect, it} from '@rstest/core';
 import {createHash, generateKeyPairSync, randomUUID, sign} from 'node:crypto';
 import {createDisposableFoundationDatabase} from './local-postgres';
 import {installFixtureCompanyAccess} from './fixture-company-access';

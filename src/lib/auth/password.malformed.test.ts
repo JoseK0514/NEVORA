@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from '@rstest/core';
 import { scryptSync } from 'node:crypto';
 import { hashPassword, verifyPassword } from './password';
 

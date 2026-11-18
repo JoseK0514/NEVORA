@@ -1,31 +1,31 @@
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 
-const data = vi.hoisted(() => ({
-  requireRoles: vi.fn(async (_roles: string[]) => ({ id: "owner", role: "OWNER" })),
-  locations: vi.fn(async () => [
+const data = rs.hoisted(() => ({
+  requireRoles: rs.fn(async (_roles: string[]) => ({ id: "owner", role: "OWNER" })),
+  locations: rs.fn(async () => [
     { id: "east", workspaceId: "w", name: "East Office", shortName: "East", clockerKey: "east-office", active: true },
     { id: "west", workspaceId: "w", name: "West Office", shortName: "Studio", clockerKey: "west-office", active: true },
     { id: "old", workspaceId: "w", name: "Old Office", shortName: "Old", clockerKey: "old-office", active: false },
   ]),
-  workspace: vi.fn(async () => ({ id: "w", name: "Test Company", active: true, timeZone: "America/Puerto_Rico" })),
+  workspace: rs.fn(async () => ({ id: "w", name: "Test Company", active: true, timeZone: "America/Puerto_Rico" })),
 }));
-vi.mock("@/lib/auth/permissions", () => ({ requireRoles: data.requireRoles }));
-vi.mock("@/lib/data/workspaces", () => ({ getWorkspace: data.workspace }));
-vi.mock("@/lib/data/employees", () => ({ listLocations: data.locations, listEmployees: async () => [{ id: "worker", active: true, eligibleLocationIds: ["west"] }, { id: "retired", active: false, eligibleLocationIds: ["east", "west"] }] }));
-vi.mock("@/lib/data/positions", () => ({ listPositions: async () => [] }));
-vi.mock("@/lib/data/schedule-health", () => ({
+rs.mock("@/lib/auth/permissions", () => ({ requireRoles: data.requireRoles }));
+rs.mock("@/lib/data/workspaces", () => ({ getWorkspace: data.workspace }));
+rs.mock("@/lib/data/employees", () => ({ listLocations: data.locations, listEmployees: async () => [{ id: "worker", active: true, eligibleLocationIds: ["west"] }, { id: "retired", active: false, eligibleLocationIds: ["east", "west"] }] }));
+rs.mock("@/lib/data/positions", () => ({ listPositions: async () => [] }));
+rs.mock("@/lib/data/schedule-health", () => ({
   listLocationStaffingSettings: async () => [{ locationId: "west", minimumStaffPerShift: 1, requiresDesignatedLead: false }],
   listCoverageWindows: async () => [{ id: "west-coverage", locationId: "west", dayOfWeek: 1, startTime: "09:00", endTime: "17:00" }],
 }));
-vi.mock("@/components/kit/kit", () => import("../../../../components/kit/kit"));
-vi.mock("@/lib/scheduling/location-readiness", () => import("../../../../lib/scheduling/location-readiness"));
+
+
 import LocationsPage from "./page";
 import { LocationsSearch } from "./locations-search";
 import LocationsError from "./error";
 import { createElement } from "react";
 
-beforeEach(() => { vi.clearAllMocks(); });
+beforeEach(() => { rs.clearAllMocks(); });
 const render = async (q?: string | string[], status?: string | string[]) => renderToStaticMarkup(await LocationsPage({ searchParams: Promise.resolve({ q, status }) }));
 
 // Quiet (v4, approved Oct 23): one row per location (short name, people, status). The approved page has no search
@@ -84,6 +84,6 @@ it("renders a progressive native search form and an unavailable state with recov
   expect(search).toContain('method="get"'); expect(search).toContain('action="/app/settings/locations"');
   expect(search).toContain('value="Office"'); expect(search).toContain('name="status" value="inactive"');
   expect(search).toContain('role="status"'); expect(search).not.toContain('disabled=""');
-  const error = renderToStaticMarkup(createElement(LocationsError, { reset: vi.fn() }));
+  const error = renderToStaticMarkup(createElement(LocationsError, { reset: rs.fn() }));
   expect(error).toContain('role="alert"'); expect(error).toContain("Try again"); expect(error).toContain('href="/app/settings"');
 });

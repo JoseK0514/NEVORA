@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {rememberClose,pendingClose,forgetClose} from './recovery';
 const a={authority:'a'.repeat(64),command:{operationId:'11111111-1111-4111-8111-111111111111',timeEntryId:'entry',expectedSourceHash:'b'.repeat(32),closedAt:'2026-11-10T12:00:00Z',reason:'Fictional verified end.'}};
 it('retains the exact operation across component lifecycles without exposing it to another actor',()=>{

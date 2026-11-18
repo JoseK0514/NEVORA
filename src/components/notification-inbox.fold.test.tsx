@@ -1,11 +1,12 @@
+import * as rstestOriginal0 from "react" with { rstest: 'importActual' };
 import type {ReactElement,ReactNode} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {beforeEach,expect,it,vi} from 'vitest';
+import {beforeEach,expect,it,rs} from '@rstest/core';
 import type {EmployeeNotificationItem} from '../lib/employee-view';
 
 // A minimal hook host: state persists between renders so a click can be followed by a fresh render.
-const host=vi.hoisted(()=>({cursor:0,slots:[] as {value:unknown}[]}));
-vi.mock('react',async()=>({...await vi.importActual<typeof import('react')>('react'),
+const host=rs.hoisted(()=>({cursor:0,slots:[] as {value:unknown}[]}));
+rs.mock('react',()=>({...rstestOriginal0,
  useState:(initial:unknown)=>{const i=host.cursor++;const slot=host.slots[i]??(host.slots[i]={value:typeof initial==='function'?(initial as ()=>unknown)():initial});return [slot.value,(next:unknown)=>{slot.value=typeof next==='function'?(next as (old:unknown)=>unknown)(slot.value):next;}];},
  useRef:(initial:unknown)=>{const i=host.cursor++;return (host.slots[i]??(host.slots[i]={value:{current:initial}})).value;},
 }));
@@ -13,7 +14,7 @@ import {NotificationInbox} from './notification-inbox';
 
 const summary=(id:string,at:string,reviewState:'read'|'unread'):EmployeeNotificationItem=>({id,label:'Operations need review',at,href:'/app/notifications/open?notificationId='+id,reviewState,actionState:'available'});
 const items=[summary('a','2026-11-15T14:00:00Z','unread'),summary('b','2026-11-15T13:00:00Z','read'),summary('c','2026-11-15T12:00:00Z','unread')];
-const onMarkRead=vi.fn(async()=>{});
+const onMarkRead=rs.fn(async()=>{});
 const render=()=>{host.cursor=0;return NotificationInbox({state:{paused:false,refreshing:false,snapshot:{state:'ready',kind:'notifications',coverage:'complete',items,observedAt:'2026-11-15T14:05:00Z',validForMs:60000} as never},onRetry:()=>{},onMarkRead});};
 function nodes(v:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(v))return v.flatMap(nodes);if(!v||typeof v!=='object'||!('props'in v))return [];const n=v as ReactElement<Record<string,unknown>>;return [n,...nodes(n.props.children as ReactNode)];}
 const fold=()=>nodes(render()).find(n=>n.type==='button'&&String(n.props.className).includes('q-notif-fold'))!;

@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {PlanningOperation} from './planning-operation';
 import type {PlanningCommand,PlanningResult} from '@/lib/employee-planning';
 const fixture=():Extract<PlanningCommand,{kind:'availability'}>=>({kind:'availability',selection:'2026-11-02',basis:'a'.repeat(32),windows:[{dayOfWeek:1,startTime:'09:00',endTime:'17:00'}],changedDays:[1],confirmEmpty:false});

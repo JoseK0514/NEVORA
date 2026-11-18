@@ -1,6 +1,6 @@
 import { shiftPeriod } from '../lib/scheduling/periods';
 import { createHash } from 'node:crypto';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, rs } from '@rstest/core';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { automaticWeek, automaticAssignment } from '../test/fixtures/automatic-week';
@@ -11,8 +11,8 @@ import type { GenerationExplanationPanelProps, GenerationExplanationObservationB
 
 // An absent surface fails the feature assertion in each case, not collection.
 // Every displayed DTO below comes from the unchanged canonical source projector.
-const modulePath = './generation-explanation-panel';
-const surface = await import(modulePath).catch(() => null);
+
+const surface = await import('./generation-explanation-panel').catch(() => null);
 const NOW = '2026-10-09T14:00:00Z';
 function canonical(value: unknown): string {
  if (Array.isArray(value)) return '[' + value.map(v => canonical(v ?? null)).join(',') + ']';
@@ -77,7 +77,8 @@ function saved(s: GenerationExplanationSnapshot, changed = true) {
 function render(s = snapshot(), changes: Partial<GenerationExplanationPanelProps> = {}) {
  const renderer = surface?.GenerationExplanationPanel;
  expect(renderer, 'unused F3 explanation panel must be implemented').toBeTypeOf('function');
- const lookup = vi.fn();
+ if (!renderer) throw Error('Expected component renderer');
+ const lookup = rs.fn();
  const binding = observation(s);
  const props: GenerationExplanationPanelProps = { result: { state: 'view', view: project(s), binding },
   expected: { ...binding }, connection: 'ready', sourceCurrent: true, onLookupOriginalOutcome: lookup, ...changes };

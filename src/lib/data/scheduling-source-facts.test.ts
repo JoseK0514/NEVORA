@@ -1,5 +1,5 @@
-import { it, expect, vi } from 'vitest';
-vi.mock('@/lib/db', () => import('../db'));
+import { it, expect } from '@rstest/core';
+
 import { mapSchedulingSourceFacts } from './scheduling-source-facts';
 import type { GenerationSource } from './generation-guards';
 import {mapWeekendHistory} from './scheduling-weekend-history';

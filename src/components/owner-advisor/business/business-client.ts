@@ -182,28 +182,37 @@ export function citationHref(sourceId: string, versionId: string) { return `${BU
 export const newRequestId = () => crypto.randomUUID();
 
 export function createBusinessClient(fetcher: Fetcher = (input, init) => fetch(input, init)) {
-  async function settle(response: Response, write: boolean): Promise<BusinessOutcome> {
+  async function settle(response: Response, write: boolean, began: number): Promise<BusinessOutcome> {
     const lost: BusinessOutcome = write ? { kind: "uncertain" } : { kind: "unavailable" };
     let body: unknown;
     try { body = await response.json(); } catch { return response.status === 401 || response.status === 403 ? { kind: "refused", code: "forbidden", detail: null } : lost; }
-    if (response.ok) { try { return { kind: "ok", result: parseBusinessResult(body), receivedAt: Date.now() }; } catch { return lost; } }
+    if (response.ok) {
+      try {
+        const result = parseBusinessResult(body);
+        // Conservatively include request, delivery and parsing time; receiving a response cannot restart its lease.
+        const validForMs = Math.floor(result.validForMs - Math.max(0, performance.now() - began));
+        if (validForMs < 1) return lost;
+        return { kind: "ok", result: { ...result, validForMs }, receivedAt: Date.now() };
+      } catch { return lost; }
+    }
     // Only the closed envelope is believed. An unknown code, an extra field or a raw upstream message is not an answer.
     if (!isBusinessErrorResult(body)) return response.status === 401 || response.status === 403 ? { kind: "refused", code: "forbidden", detail: null } : lost;
-    // The server may stop after it saved (deadline, capacity, a busy lock): for a write these are never "failed".
-    if (body.code === "unavailable" || body.code === "cancelled" || body.code === "busy") return lost;
+    // Receipt finalization can fail after execute committed. Conflict or a flag change is also uncertain for writes.
+    if (body.code === "unavailable" || body.code === "cancelled" || body.code === "busy" || write && (body.code === "conflict" || body.code === "disabled")) return lost;
     return { kind: "refused", code: body.code, detail: body.detail ?? null };
   }
   return {
     async catalog(signal?: AbortSignal): Promise<BusinessOutcome> {
-      try { return await settle(await fetcher(BUSINESS_ENDPOINT, { method: "GET", credentials: "same-origin", cache: "no-store", redirect: "error", signal, headers }), false); }
+      const began = performance.now();
+      try { return await settle(await fetcher(BUSINESS_ENDPOINT, { method: "GET", credentials: "same-origin", cache: "no-store", redirect: "error", signal, headers }), false, began); }
       catch { return { kind: "unavailable" }; }
     },
     /** A write is never aborted by the page: leaving mid-write would turn a likely success into an uncertain result. */
     async send(command: BusinessPageCommand, signal?: AbortSignal): Promise<BusinessOutcome> {
-      const write = isWrite(command);
+      const write = isWrite(command), began = performance.now();
       try {
         return await settle(await fetcher(BUSINESS_ENDPOINT, { method: "POST", credentials: "same-origin", cache: "no-store", redirect: "error", signal: write ? undefined : signal,
-          headers: { ...headers, "content-type": "application/json" }, body: JSON.stringify(command) }), write);
+          headers: { ...headers, "content-type": "application/json" }, body: JSON.stringify(command) }), write, began);
       } catch { return write ? { kind: "uncertain" } : { kind: "unavailable" }; }
     },
   };

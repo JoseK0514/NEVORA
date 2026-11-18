@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { projectActivity } from './project';
 import type { ActivityProjectionInput, ActivityRecordObservation } from './types';
 

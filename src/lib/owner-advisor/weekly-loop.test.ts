@@ -1,12 +1,12 @@
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 import { investigate } from './loop.server';
 import type { ToolCall } from './contracts';
 const config = { endpoint: 'https://provider.invalid/responses', model: 'fictional', key: 'fictional', dailyLimit: 3 };
 const args = { weekStart: '2026-11-16', locationScope: { kind: 'ALL' } };
 const call = (name: string, value: unknown, id: string) => ({ type: 'function_call', name, arguments: JSON.stringify(value), call_id: id });
 const prose = { output: [{ type: 'message', content: [{ type: 'output_text', text: 'Only a bounded inspection was requested.' }] }] };
-const deps = () => ({ check: vi.fn(async () => {}), signal: new AbortController().signal,
-  tool: vi.fn(async (_call: ToolCall, _budget: { sourceSlots: number; occurrence?: number }) => ({ observedAt: new Date().toISOString(), sources: [], partial: false, data: {} })) });
+const deps = () => ({ check: rs.fn(async () => {}), signal: new AbortController().signal,
+  tool: rs.fn(async (_call: ToolCall, _budget: { sourceSlots: number; occurrence?: number }) => ({ observedAt: new Date().toISOString(), sources: [], partial: false, data: {} })) });
 
 it('rejects an unadvertised weekly call before any additional read effect', async () => {
   const d = deps();

@@ -4,10 +4,10 @@ import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 
-vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
-vi.mock("./owner-b.css", () => ({}));
+rs.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
+rs.mock("./owner-b.css", () => ({}));
 
 import { BBusyLabel, BButton, BLoadingScreen, BSpin, BState, type BLoadingShape } from "./b-kit";
 import { B_LOADING_TABLE, BRouteLoading, loadingShape } from "./b-loading";

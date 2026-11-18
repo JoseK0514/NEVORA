@@ -1,11 +1,11 @@
 import type { MouseEvent, ReactElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, rs } from '@rstest/core';
 import { SigButton, SigPendingLabel } from './sig-button';
 
 type Props = Record<string, unknown> & { onClick?: (event: MouseEvent<HTMLElement>) => void };
 const element = (node: ReactElement) => node as ReactElement<Props>;
-const click = () => { const event = { preventDefault: vi.fn(), defaultPrevented: false }; return event; };
+const click = () => { const event = { preventDefault: rs.fn(), defaultPrevented: false }; return event; };
 const openTag = (html: string) => html.slice(0, html.indexOf('>') + 1);
 
 describe('SigButton', () => {
@@ -47,7 +47,7 @@ describe('SigButton', () => {
   });
 
   it('pending swallows the click and does not call onClick', () => {
-    const onClick = vi.fn();
+    const onClick = rs.fn();
     const button = element(SigButton({ pending: true, pendingText: 'Sending…', onClick, children: 'Send request' }));
     const event = click();
     button.props.onClick?.(event as unknown as MouseEvent<HTMLElement>);
@@ -57,7 +57,7 @@ describe('SigButton', () => {
   });
 
   it('idle forwards the click', () => {
-    const onClick = vi.fn();
+    const onClick = rs.fn();
     const button = element(SigButton({ onClick, children: 'Done' }));
     const event = click();
     button.props.onClick?.(event as unknown as MouseEvent<HTMLElement>);
@@ -82,7 +82,7 @@ describe('SigButton', () => {
   });
 
   it.each([['pending', { pending: true }], ['disabled', { disabled: true }]] as const)('a %s link is aria-disabled and blocks navigation', (_, state) => {
-    const onClick = vi.fn();
+    const onClick = rs.fn();
     const tag = openTag(renderToStaticMarkup(<SigButton href="/app" {...state}>Go to Home</SigButton>));
     expect(tag).toContain('aria-disabled="true"');
     expect(tag).toContain('href="/app"');

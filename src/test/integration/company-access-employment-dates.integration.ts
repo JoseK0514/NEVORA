@@ -1,9 +1,9 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import {companyAccessFixture} from './company-access-fixture';
 import type {CoreProfileInput,EmployeeCoreAccessCommand} from '../../lib/company-access/model';
 import type {EmploymentDates} from '../../lib/employment-dates';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 import {readOwnerOperationalScope} from '../../lib/company-access/operational-scope.server';
 import {readOperationalEmployeeProfile} from '../../lib/company-access/operational-read.server';
 import {saveEmployeeCoreAccessProfile,createEmployeeWithAccess} from '../../lib/company-access/employee-profile.server';

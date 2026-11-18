@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { POLICY_COPY } from "./policy-copy";
 import { PolicySections } from "./policy-sections";
 import { allOpen, foldingIds, openedIds, toggled, toggledAll } from "./policy-sections-state";

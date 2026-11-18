@@ -1,3 +1,4 @@
+import { releaseTestReport } from './lib/release-test-report.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {existsSync,lstatSync,readFileSync,readdirSync,writeFileSync} from 'node:fs';
@@ -46,6 +47,7 @@ function loadAllocation(source){
 }
 
 export function validateClockerReport(report,source,expectedFiles){
+ report=releaseTestReport(report,source);
  assert(report?.success===true,'Clocker SQL report did not succeed');
  assert(Number.isSafeInteger(report.numTotalTests)&&report.numTotalTests>0,'Empty Clocker SQL execution');
  assert(report.numPassedTests===report.numTotalTests&&!report.numFailedTests&&!report.numPendingTests&&!report.numTodoTests,'Clocker SQL execution contains failed or skipped tests');

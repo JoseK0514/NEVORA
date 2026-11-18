@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {installFixtureCompanyAccess} from './integration/fixture-company-access';
 import type {SqlExecutor,SqlStatement} from '../lib/notifications/types';
 

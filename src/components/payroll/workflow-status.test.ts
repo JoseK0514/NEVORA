@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import type { PayrollBacklogSummary, PayrollCapabilities } from '@/lib/payroll/contracts';
 import { UNKNOWN_BLOCKER, backlogDescription, noticeOutcome, noticeReadiness, payrollBlockerPlace, payrollExceptionMessage, payrollReviewNotes, reminderWindow } from './workflow-status';
 

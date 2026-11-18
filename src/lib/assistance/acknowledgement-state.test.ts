@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { buildAcknowledgementState } from "./acknowledgement-state";
 import type { PublishedShiftSnapshot } from "./publication-diff";
 

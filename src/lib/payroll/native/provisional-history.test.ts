@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { nativeEmployeePresentation } from './document-mapping';
 import { renderNativeEmployeePaystub } from './paystub-document';
 import { buildNativeRunCandidate } from './preparation';

@@ -1,4 +1,4 @@
-import { beforeAll, expect, it } from 'vitest';
+import { beforeAll, expect, it } from '@rstest/core';
 import { randomUUID } from 'node:crypto';
 import { automaticWeek } from '@/test/fixtures/automatic-week';
 import { fictionalProfile } from '@/test/fixtures/shift-changes';

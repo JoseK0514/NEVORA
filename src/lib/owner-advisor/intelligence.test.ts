@@ -1,11 +1,11 @@
-import { expect, it, vi } from "vitest";
+import { expect, it, rs } from '@rstest/core';
 import { investigate } from "./loop.server";
 import { ownerDecision, decisionReply, decisionCall } from "@/test/fixtures/owner-decision";
 import { ownerCoveragePlan } from "@/test/fixtures/owner-coverage-plan";
 import type { ToolCall, ToolResult } from "./contracts";
 const config = { endpoint: "https://provider.invalid/responses", model: "fictional", key: "fixture", dailyLimit: 3 };
 const observedAt = "2026-10-30T12:00:00Z";
-const dependencies = () => ({ signal: new AbortController().signal, check: vi.fn(async () => {}), tool: vi.fn(async (_call: ToolCall): Promise<ToolResult> => ({ observedAt, partial: false, sources: [], data: { date: "2026-10-30", scheduled: 2 } })) });
+const dependencies = () => ({ signal: new AbortController().signal, check: rs.fn(async () => {}), tool: rs.fn(async (_call: ToolCall): Promise<ToolResult> => ({ observedAt, partial: false, sources: [], data: { date: "2026-10-30", scheduled: 2 } })) });
 const read = { type: "function_call", name: "coverage_plan", arguments: '{"date":"2026-10-22"}', call_id: "coverage-1" };
 function coverageDecision() {
   const d = ownerDecision();

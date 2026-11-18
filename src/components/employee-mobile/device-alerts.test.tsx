@@ -1,6 +1,6 @@
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import type {DeviceSnapshot} from '../../lib/notifications/device-client';
 import {EmployeeAlertsB} from '../employee-b/account-b-client';
 const ready:DeviceSnapshot={state:'ready',server:{supported:true,enabled:false,configurationAvailable:true,testAllowed:false},standalone:true,capabilities:{secure:true,push:true,notifications:true,serviceWorker:true,requiresStandalone:false,installPrompt:false}};

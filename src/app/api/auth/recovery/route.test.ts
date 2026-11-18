@@ -1,8 +1,8 @@
-import {beforeEach,it,expect,vi} from 'vitest';
-const f=vi.hoisted(()=>({after:vi.fn(),request:vi.fn(),delivery:vi.fn()}));
-vi.mock('next/server',()=>({after:f.after}));
-vi.mock('@/lib/auth/recovery.server',()=>({requestPasswordRecovery:f.request}));
-vi.mock('@/lib/auth/recovery-delivery.server',()=>({recoveryDelivery:f.delivery}));
+import {beforeEach,it,expect,rs} from '@rstest/core';
+const f=rs.hoisted(()=>({after:rs.fn(),request:rs.fn(),delivery:rs.fn()}));
+rs.mock('next/server',()=>({after:f.after}));
+rs.mock('@/lib/auth/recovery.server',()=>({requestPasswordRecovery:f.request}));
+rs.mock('@/lib/auth/recovery-delivery.server',()=>({recoveryDelivery:f.delivery}));
 import {POST} from './route';
 import {authMessage} from '@/lib/auth-copy';
 const request=(employeeId='known',email='known@example.invalid',headers:Record<string,string>={})=>new Request('https://portal.test/api/auth/recovery',{method:'POST',headers:{origin:'https://portal.test','content-type':'application/json','x-nevora-recovery':'1',...headers},body:JSON.stringify({employeeId,email})});

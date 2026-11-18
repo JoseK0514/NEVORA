@@ -47,7 +47,7 @@ function ToastItem({ item, onClose }: { item: Toast; onClose: (id: number) => vo
     const visibility = () => (document.hidden ? pause() : run());
     document.addEventListener("visibilitychange", visibility);
     return () => { pause(); document.removeEventListener("visibilitychange", visibility); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line hooks-preserved/exhaustive-deps
   }, []);
   const Icon = item.tone === "success" ? CheckCircleIcon : InfoIcon;
   return <li ref={self} className="nevora-toast" data-tone={item.tone} data-leaving={leaving || undefined}

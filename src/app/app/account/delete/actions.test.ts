@@ -1,12 +1,12 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, rs } from '@rstest/core';
 
-const state = vi.hoisted(() => ({ proof: vi.fn(), admit: vi.fn(), allowed: vi.fn(), submit: vi.fn(), check: vi.fn(), active: vi.fn(), visible: vi.fn(), order: [] as string[] }));
-vi.mock("next/headers", () => ({ headers: async () => new Headers({ "x-forwarded-for": "203.0.113.9" }) }));
-vi.mock("@/lib/auth/session", () => ({ readSessionMutationProof: state.proof }));
-vi.mock("@/lib/auth/login-limits.server", () => ({ admitLoginAttempt: state.admit, clientAddress: (value: string | null) => value }));
-vi.mock("@/lib/auth/login-limits", () => ({ passwordLoginAllowed: state.allowed }));
-vi.mock("@/lib/account-deletion/requests.server", () => ({ submitDeletionRequest: state.submit, checkDeletionRequest: state.check, activeDeletionRequest: state.active }));
-vi.mock("@/lib/legal/policies", () => ({ POLICY_VERSION: "2026-10-20", policiesVisible: state.visible }));
+const state = rs.hoisted(() => ({ proof: rs.fn(), admit: rs.fn(), allowed: rs.fn(), submit: rs.fn(), check: rs.fn(), active: rs.fn(), visible: rs.fn(), order: [] as string[] }));
+rs.mock("next/headers", () => ({ headers: async () => new Headers({ "x-forwarded-for": "203.0.113.9" }) }));
+rs.mock("@/lib/auth/session", () => ({ readSessionMutationProof: state.proof }));
+rs.mock("@/lib/auth/login-limits.server", () => ({ admitLoginAttempt: state.admit, clientAddress: (value: string | null) => value }));
+rs.mock("@/lib/auth/login-limits", () => ({ passwordLoginAllowed: state.allowed }));
+rs.mock("@/lib/account-deletion/requests.server", () => ({ submitDeletionRequest: state.submit, checkDeletionRequest: state.check, activeDeletionRequest: state.active }));
+rs.mock("@/lib/legal/policies", () => ({ POLICY_VERSION: "2026-10-20", policiesVisible: state.visible }));
 import { requestAccountDeletion, type DeletionFormState } from "./actions";
 
 const request = { reference: "DEL-7KQ2M9XA", status: "received", confirmedAt: "2030-01-01 10:00:00+00" };
@@ -19,8 +19,8 @@ const form = (fields: Record<string, string> = {}) => { const data = new FormDat
 const proof = { sessionTokenHash: "a".repeat(64), employee: { id: "FICTIONAL-E1", firstName: "Own", lastName: "Person", role: "EMPLOYEE", primaryLocationId: "loc-1" } };
 
 beforeEach(() => {
-  vi.clearAllMocks();
-  vi.spyOn(console, "error").mockImplementation(() => undefined);
+  rs.clearAllMocks();
+  rs.spyOn(console, "error").mockImplementation(() => undefined);
   state.order = [];
   state.visible.mockReturnValue(true);
   state.proof.mockResolvedValue(proof);
@@ -105,7 +105,7 @@ describe("Support reference", () => {
     const first = await requestAccountDeletion(idle, form()), second = await requestAccountDeletion(idle, form());
     const references = [first, second].map(result => (result as { supportReference?: string }).supportReference);
     expect(references[0]).toMatch(UUID); expect(references[1]).toMatch(UUID); expect(references[0]).not.toBe(references[1]);
-    const logged = vi.mocked(console.error).mock.calls.map(([line]) => JSON.parse(String(line)));
+    const logged = rs.mocked(console.error).mock.calls.map(([line]) => JSON.parse(String(line)));
     expect(logged).toEqual(references.map(requestId => ({ event: "server_request_error", route: "/app/account/delete", requestId, errorClass: "Error" })));
     expect(JSON.stringify(logged)).not.toMatch(/FICTIONAL|password|private/);
   });

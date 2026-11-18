@@ -1,7 +1,7 @@
 // Every child punch-engine scenario retained against the single canonical C5 service.
 import { randomUUID } from 'node:crypto';
 import { Client } from 'pg';
-import { afterEach, beforeEach, expect, it } from 'vitest';
+import { afterEach, beforeEach, expect, it } from '@rstest/core';
 import { createPunchFixture } from './clocker-punch-fixture';
 import { ClockerPunchService } from '../../lib/clocker/punches.server';
 import { setEmployeeClockerPin, clearClockerIdentity } from '../../lib/clocker/pins.server';

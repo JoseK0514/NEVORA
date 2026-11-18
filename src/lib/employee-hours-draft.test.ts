@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {buildHoursProposal,type HoursDraft,type HoursEdit} from './employee-hours-draft';
 const info:HoursEdit={key:'entry:own',kind:'ENTRY_BOUNDARY',entryId:'own',recordedStartAt:'2026-10-27T13:00:00Z',recordedEndAt:'2026-10-27T21:00:00Z',context:{state:'confirmed',sourceKind:'RECORDED',startAt:'2026-10-27T13:00:00Z',endAt:'2026-10-27T21:00:00Z',totalDecisions:0,decisions:[]}};
 const draft=():HoursDraft=>({basis:'a'.repeat(32),startDate:'2026-10-27',startTime:'09:00',endDate:'2026-10-27',endTime:'17:00',reason:'Clock ended early',locationId:''});

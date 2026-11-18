@@ -1,8 +1,8 @@
 // UNEXECUTED future src/lib/tenancy/runtime/portal-generated-publication.test.ts.
 // Direct actual exported module tests; no private declarations/VM/source eval,
 // fabricated Client responses, parser mocks or serialized positive authority.
-import {describe,it,expect,vi} from 'vitest';
-vi.mock('server-only', () => ({}));
+import {describe,it,expect,rs} from '@rstest/core';
+rs.mock('server-only', () => ({}));
 import type {Client} from 'pg';
 import {writeCurrentControlledPortalInstallationBytes,isControlledPortalGeneratedPublication} from './portal-native-installation-producer.server';
 const unavailable={status:'BLOCKED',code:'CONTROLLED_PORTAL_PUBLICATION_UNAVAILABLE',reconciliation:'FRESH_ROOT_OWNED_ORIGINAL_INPUT_RECHECK_REQUIRED'};

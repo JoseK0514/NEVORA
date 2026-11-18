@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {Client} from 'pg';
 import {randomUUID} from 'node:crypto';
 import {BASE_MIGRATIONS,FINAL_MIGRATIONS} from '../../../db/migrations/order';

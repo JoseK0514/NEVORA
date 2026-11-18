@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 
 /**
  * Data minimization for migration 0068 (security requirement). The birth date is

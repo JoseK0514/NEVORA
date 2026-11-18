@@ -1,5 +1,5 @@
 // Owner roster import: the browser's reading of a pasted or uploaded list, held against the server's own parser.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { parseRosterTable, ROSTER_MAX_BYTES as SERVER_MAX_BYTES, ROSTER_MAX_ROWS as SERVER_MAX_ROWS } from "@/lib/onboarding/roster";
 import { ROSTER_MAX_BYTES, ROSTER_MAX_ROWS, decodeFile, detectDelimiter, headerField, parseCells, peopleCount, readTable, removeRow, rowValues, serializeGrid, updateRow } from "./table";
 

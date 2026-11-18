@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { encodeQr, qrCapacity, qrCodewords, qrFormatBits, qrPath, qrVersionBits } from "./qr";
 
 /* The encoder draws the helper's one-time reset link. These tests pin its structure and three matrices that were read

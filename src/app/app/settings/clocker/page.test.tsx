@@ -1,16 +1,16 @@
-import { beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from 'react-dom/server';
-const mocks = vi.hoisted(() => ({ role: vi.fn(), proof: vi.fn(), devices: vi.fn(), locations: vi.fn(), workspace: vi.fn() }));
-vi.mock('@/lib/auth/permissions', () => ({ requireRoles: mocks.role }));
-vi.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: mocks.proof }));
-vi.mock('@/lib/clocker/devices.server', () => ({ listClockerDevices: mocks.devices }));
-vi.mock('@/lib/data/locations', () => ({ listLocations: mocks.locations }));
-vi.mock('@/lib/data/workspaces', () => ({ getWorkspace: mocks.workspace }));
-vi.mock('./actions', () => ({ manageClockerDeviceAction: vi.fn() }));
+const mocks = rs.hoisted(() => ({ role: rs.fn(), proof: rs.fn(), devices: rs.fn(), locations: rs.fn(), workspace: rs.fn() }));
+rs.mock('@/lib/auth/permissions', () => ({ requireRoles: mocks.role }));
+rs.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: mocks.proof }));
+rs.mock('@/lib/clocker/devices.server', () => ({ listClockerDevices: mocks.devices }));
+rs.mock('@/lib/data/locations', () => ({ listLocations: mocks.locations }));
+rs.mock('@/lib/data/workspaces', () => ({ getWorkspace: mocks.workspace }));
+rs.mock('./actions', () => ({ manageClockerDeviceAction: rs.fn() }));
 import ClockerDevicesPage from './page';
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  rs.clearAllMocks();
   mocks.role.mockResolvedValue({ role: 'OWNER' });
   mocks.proof.mockResolvedValue({ employee: { id: 'owner' }, sessionTokenHash: 'fixture-proof' });
   mocks.devices.mockResolvedValue([]);

@@ -1,27 +1,27 @@
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import type {BonusYear} from '@/lib/reports/christmas-bonus';
 import ChristmasBonusPage from './page';
 
-const fixture=vi.hoisted(()=>({role:'MANAGER',denied:false,read:vi.fn(),workspace:vi.fn(),unavailable:false,timeZone:'America/Puerto_Rico'}));
-vi.mock('@/lib/auth/session',()=>({
+const fixture=rs.hoisted(()=>({role:'MANAGER',denied:false,read:rs.fn(),workspace:rs.fn(),unavailable:false,timeZone:'America/Puerto_Rico'}));
+rs.mock('@/lib/auth/session',()=>({
  requireSession:async()=>({id:'actor',role:fixture.role}),
  requireSessionMutationProof:async()=>({employee:{id:'actor',role:fixture.role},sessionTokenHash:'a'.repeat(64)}),
 }));
-vi.mock('next/link',()=>({default:({href,children,prefetch:_prefetch,...props}:React.ComponentProps<'a'>&{prefetch?:boolean})=>createElement('a',{href,...props},children)}));
-vi.mock('next/navigation',()=>({redirect:(href:string)=>{throw Error(`redirect:${href}`);},usePathname:()=>'/app/reports/christmas-bonus',useRouter:()=>({refresh:()=>undefined,replace:()=>undefined,push:()=>undefined})}));
-vi.mock('@/lib/company-access/operational-scope.server',()=>({
+rs.mock('next/link',()=>({default:({href,children,prefetch:_prefetch,...props}:React.ComponentProps<'a'>&{prefetch?:boolean})=>createElement('a',{href,...props},children)}));
+rs.mock('next/navigation',()=>({redirect:(href:string)=>{throw Error(`redirect:${href}`);},usePathname:()=>'/app/reports/christmas-bonus',useRouter:()=>({refresh:()=>undefined,replace:()=>undefined,push:()=>undefined})}));
+rs.mock('@/lib/company-access/operational-scope.server',()=>({
  withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>fixture.denied
   ?{state:'unavailable',reason:'access_denied'}
   :{state:'ready',data:await load(),authority:'company-fixture',observedAt:'2026-11-18T16:00:00Z',validForMs:15000},
 }));
-vi.mock('@/components/company-access/scoped-read-frame',()=>({
+rs.mock('@/components/company-access/scoped-read-frame',()=>({
  ScopedReadFrame:({observation,children,unavailable}:{observation?:{authority:string};children?:React.ReactNode;unavailable?:React.ReactNode})=>
   createElement('section',{'data-authority':observation?.authority},observation?children:unavailable),
 }));
-vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>{fixture.workspace();return {timeZone:fixture.timeZone};}}));
-vi.mock('@/lib/reports/christmas-bonus.server',()=>({readChristmasBonusReport:async(_proof:unknown,year:BonusYear)=>{
+rs.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>{fixture.workspace();return {timeZone:fixture.timeZone};}}));
+rs.mock('@/lib/reports/christmas-bonus.server',()=>({readChristmasBonusReport:async(_proof:unknown,year:BonusYear)=>{
  fixture.read(year);
  if(fixture.unavailable)return {state:'unavailable',reason:'read_failed'};
  const hours=(h:number)=>(BigInt(h)*BigInt(3_600_000_000_000)).toString();
@@ -34,8 +34,8 @@ vi.mock('@/lib/reports/christmas-bonus.server',()=>({readChristmasBonusReport:as
   summary:{people:3,reached:1,checkBreaks:0,needsHireDate:1,notConfirmed:0,unfinalizedDays:3,peopleWithUnfinalizedDays:1}}};
 }}));
 
-beforeEach(()=>{fixture.role='MANAGER';fixture.denied=false;fixture.unavailable=false;fixture.timeZone='America/Puerto_Rico';fixture.read.mockClear();fixture.workspace.mockClear();vi.useFakeTimers();vi.setSystemTime(new Date('2026-11-18T16:00:00Z'));});
-afterEach(()=>vi.useRealTimers());
+beforeEach(()=>{fixture.role='MANAGER';fixture.denied=false;fixture.unavailable=false;fixture.timeZone='America/Puerto_Rico';fixture.read.mockClear();fixture.workspace.mockClear();rs.useFakeTimers();rs.setSystemTime(new Date('2026-11-18T16:00:00Z'));});
+afterEach(()=>rs.useRealTimers());
 
 it.each(['MANAGER','OWNER'])('shows %s the latest completed bonus year inside the current authority frame, with the disclaimer and key dates',async role=>{
  fixture.role=role;

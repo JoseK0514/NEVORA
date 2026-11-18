@@ -1,4 +1,4 @@
-import { it, expect } from 'vitest';
+import { it, expect } from '@rstest/core';
 import { evaluateOperationalRules } from './operational-rules';
 import { fictionalProfile, configured } from '../../test/fixtures/shift-changes';
 import type { OperationalRuleInput } from '../shift-changes/types';

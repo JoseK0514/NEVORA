@@ -1,17 +1,17 @@
 import {createElement,type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import type {CommunicationContext,CommunicationDraft,CommunicationRead} from '../lib/communications/types';
 import {ComposeForm} from './communication-compose';
 
-vi.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children)}));
-vi.mock('next/navigation',()=>({useRouter:()=>({push:vi.fn()})}));
+rs.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children)}));
+rs.mock('next/navigation',()=>({useRouter:()=>({push:rs.fn()})}));
 const context:Extract<CommunicationContext,{state:'ready'}>={state:'ready',authority:'a'.repeat(64),observedAt:'2026-10-12T12:00:00Z',validForMs:45000,management:true,businessDate:'2026-10-12',timeZone:'America/Puerto_Rico',locations:[{id:'main',label:'Main Office',todayTeam:true}],shifts:[]};
 const draft:CommunicationDraft={type:'LOCATION_ANNOUNCEMENT',scope:{kind:'LOCATION',locationId:'main'},title:'Opening routine',body:'Line one\n<script>plain text</script>',acknowledgement:'REQUIRED',expiresAt:null};
 const editing:Extract<CommunicationRead,{state:'ready'}>={state:'ready',id:'11111111-1111-4111-8111-111111111111',revisionId:'22222222-2222-4222-8222-222222222222',contentHash:'b'.repeat(64),title:draft.title,body:draft.body,type:draft.type,publishedAt:context.observedAt,editedAt:null,acknowledgement:'REQUIRED',ownAcknowledgedAt:null,ownReadAt:null,authority:context.authority,observedAt:context.observedAt,validForMs:45000,timeZone:context.timeZone,expiresAt:null,authorContext:'Management',canWithdraw:true,management:{draft,recipients:[]}};
-const action={pending:false,notice:null,hasUnknown:false,canRetry:false,setNotice:vi.fn(),send:vi.fn(async()=>{}),lookup:vi.fn(async()=>{}),retry:vi.fn(async()=>{}),clear:vi.fn(),pause:vi.fn()};
+const action={pending:false,notice:null,hasUnknown:false,canRetry:false,setNotice:rs.fn(),send:rs.fn(async()=>{}),lookup:rs.fn(async()=>{}),retry:rs.fn(async()=>{}),clear:rs.fn(),pause:rs.fn()};
 function render(extra:Partial<ComponentProps<typeof ComposeForm>>={}) {
- return renderToStaticMarkup(createElement(ComposeForm,{context,mode:'manager',authority:context.authority,retained:{current:null},retain:vi.fn(),action,...extra}));
+ return renderToStaticMarkup(createElement(ComposeForm,{context,mode:'manager',authority:context.authority,retained:{current:null},retain:rs.fn(),action,...extra}));
 }
 it('puts writing before delivery and requires audience review before any publication action',()=>{
  const html=render();expect(html.indexOf('id="communication-title"')).toBeLessThan(html.indexOf('id="communication-type"'));

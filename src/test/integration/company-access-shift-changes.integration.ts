@@ -1,6 +1,6 @@
 import {randomUUID} from 'node:crypto';
 import {Client} from 'pg';
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {companyAccessFixture} from './company-access-fixture';
 import {configureFictionalShiftChanges,reviewedFixtureSource} from './shift-change-api';
 import {isOperationalAuthorizationError,readOwnerOperationalScope,assignOperationalScope} from '../../lib/company-access/operational-scope.server';
@@ -11,13 +11,13 @@ import {readOperationalRuleProfileView,readShiftChangeHistoryView,readShiftChang
 import {isManagementAuthorizationError} from '../../lib/data/management-session';
 import type {SessionMutationProof,ShiftChangeCommand} from '../../lib/shift-changes/types';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
-const ctx=vi.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
-vi.mock('server-only',()=>({}));
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>ctx.proof}));
-vi.mock('@/lib/auth/permissions',()=>({MANAGER_ROLES:['OWNER','MANAGER'],requireRoles:async()=>ctx.proof!.employee,requireSelfService:async()=>ctx.proof!.employee}));
-vi.mock('next/navigation',()=>({redirect:(destination:string)=>{throw Object.assign(new Error('Owned redirect'),{destination});}}));
-vi.mock('next/cache',()=>({revalidatePath:()=>{}}));
-vi.mock('@/lib/db',()=>{
+const ctx=rs.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
+rs.mock('server-only',()=>({}));
+rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>ctx.proof}));
+rs.mock('@/lib/auth/permissions',()=>({MANAGER_ROLES:['OWNER','MANAGER'],requireRoles:async()=>ctx.proof!.employee,requireSelfService:async()=>ctx.proof!.employee}));
+rs.mock('next/navigation',()=>({redirect:(destination:string)=>{throw Object.assign(new Error('Owned redirect'),{destination});}}));
+rs.mock('next/cache',()=>({revalidatePath:()=>{}}));
+rs.mock('@/lib/db',()=>{
  const statement=(text:string,values:readonly unknown[]=[])=>({statement:{text,values},then:(yes:(rows:unknown[])=>unknown,no:(error:unknown)=>unknown)=>ctx.ex!.query({text,values}).then(yes,no)});
  const tagged=Object.assign((strings:TemplateStringsArray,...values:unknown[])=>statement(strings.reduce((text,part,i)=>text+(i?'$'+i:'')+part,''),values),{query:statement,transaction:(queries:{statement:SqlStatement}[])=>ctx.ex!.transaction(queries.map(q=>q.statement))});return {getDb:()=>tagged,queryRows:(rows:unknown)=>rows};
 });

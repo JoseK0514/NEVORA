@@ -1,6 +1,6 @@
 // U11 (Nov 17, 2026): passkey guidance and states, English and Spanish. The WebAuthn calls and their server verification
 // are not touched (src/lib/passkeys/client.test.ts and the passkey integration tests guard them).
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import { PasskeySignInView, PasskeySlot, PasskeyUnsupported } from "./passkey-slot";
 import { PasskeyDesktopView } from "@/components/passkeys/passkey-desktop-view";

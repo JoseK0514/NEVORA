@@ -1,5 +1,5 @@
 import {projectConfig} from './vitest.shared.mts';
-import {defineConfig} from 'vitest/config';
+import {defineConfig} from './vitest.shared.mts';
 import {employeeMobileProjects} from './vitest.employee-mobile-communications.config.mts';
 // Own account-deletion requests: actual action/SQL lifecycle, then the browser port.
 export default projectConfig('employee-mobile-deletion', defineConfig({test:{fileParallelism:false,passWithNoTests:false,projects:employeeMobileProjects([

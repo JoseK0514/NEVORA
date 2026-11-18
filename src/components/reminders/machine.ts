@@ -102,8 +102,10 @@ export function parseReminderResponse(request: ReminderRequest, status: number, 
     case 'held':
       return {kind: 'held', reason: 'activation_held'};
     case 'blocked':
+      if (request === 'send') return {kind: 'unknown'};
       return {kind: 'blocked', reason: status === 401 ? 'signed_out' : reason === 'invalid_command' ? 'invalid_command' : 'access_denied'};
     case 'conflict':
+      if (request === 'send') return {kind: 'unknown'};
       return {kind: 'conflict', reason: reason === 'source_expires_before_delivery' ? 'expires_first' : 'changed'};
     case 'unavailable':
       if (reason === 'module_off') return {kind: 'held', reason: 'module_off'};
@@ -137,7 +139,7 @@ export function reduceReminder(state: ReminderState, event: ReminderEvent): Remi
     case 'eligibility':
       return state.phase === 'checking' ? fromEligibility(command, event.outcome, !!state.kept) : state;
     case 'send':
-      // Ready, or a confirmed "nothing was queued": the exact original body and id go out (again).
+      // Ready, or no completed receipt observed: the exact original body and id go out (again).
       return state.phase === 'ready' || state.phase === 'not_sent' ? {phase: 'sending', command} : state;
     case 'sent': {
       if (state.phase !== 'sending') return state;

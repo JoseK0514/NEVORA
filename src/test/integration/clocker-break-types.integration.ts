@@ -1,6 +1,6 @@
 
 
-import { beforeEach, afterEach, expect, it } from 'vitest';
+import { beforeEach, afterEach, expect, it } from '@rstest/core';
 import { createPunchFixture } from './clocker-punch-fixture';
 import { listBreakTypes, saveBreakType } from '../../lib/clocker/break-types.server';
 let f: Awaited<ReturnType<typeof createPunchFixture>>;

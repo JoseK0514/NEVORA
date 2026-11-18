@@ -1,5 +1,5 @@
 /** Opt-in fictional paired evaluation. No approval/ledger initialization occurs here. */
-import {beforeAll,afterAll,expect,it,vi} from 'vitest';
+import {beforeAll,afterAll,expect,it,rs} from '@rstest/core';
 import {execFileSync} from 'node:child_process';
 import {readFile,writeFile,rename} from 'node:fs/promises';
 import {resolve,join,isAbsolute} from 'node:path';
@@ -40,10 +40,10 @@ beforeAll(async()=>{
   if(!response.ok)throw Error('Catalog authentication failed');
   const model=validatePartnerCatalog(await response.json());await writeFile(join(evidence,'catalog-model.json'),JSON.stringify(model,null,2),{flag:'wx',mode:0o600});
  }
- vi.stubEnv('NEVORA_PAYROLL_ENABLED','false');
+ rs.stubEnv('NEVORA_PAYROLL_ENABLED','false');
  await writeFile(join(evidence,'manifest.json'),JSON.stringify({sourceHead,case:scenario,caseHash:hash(scenario),fixtureFileHash:createHash('sha256').update(await readFile('src/test/integration/owner-advisor-partner-fixture.ts')).digest('hex'),scoringRubric,rubricHash:hash(scoringRubric),variants,model:PILOT.model,maxCalls:40,maxMicrodollars:10000000,reservationMicrodollars:250000,maxOutputTokens:4096,providerDeadlineMs:20000,investigationDeadlineMs:60000,maxCallsPerInvestigation:6,maxTurns:2,applicationDailyAskLimit:2,criticCalls:1,independentConversations:true,sourceReplay:'none; legal model cases unsupported',ratesChecked:!scripted,approval:scripted?'not-required-scripted-only':'explicit-marker-and-fresh-ledger-admitted',strongerModel:{status:'unconfigured-not-run',model:null}},null,2),{flag:'wx',mode:0o600});
 });
-afterAll(async()=>{try{await persist();}finally{vi.unstubAllEnvs();}});
+afterAll(async()=>{try{await persist();}finally{rs.unstubAllEnvs();}});
 
 it.each(variants)('captures independent paired service conversation and optional one-call critic: $id',async variant=>{
  const f=await companyAccessFixture();

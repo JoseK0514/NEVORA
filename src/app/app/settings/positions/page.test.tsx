@@ -1,16 +1,16 @@
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import type { Position } from "@/lib/domain";
 
-const mocks = vi.hoisted(() => ({ requireRoles: vi.fn(), listPositions: vi.fn() }));
-vi.mock("@/lib/auth/permissions", () => ({ requireRoles: mocks.requireRoles }));
-vi.mock("@/lib/data/positions", () => ({ listPositions: mocks.listPositions }));
-vi.mock("../actions", () => ({ createPositionAction: vi.fn(), updatePositionAction: vi.fn() }));
+const mocks = rs.hoisted(() => ({ requireRoles: rs.fn(), listPositions: rs.fn() }));
+rs.mock("@/lib/auth/permissions", () => ({ requireRoles: mocks.requireRoles }));
+rs.mock("@/lib/data/positions", () => ({ listPositions: mocks.listPositions }));
+rs.mock("../actions", () => ({ createPositionAction: rs.fn(), updatePositionAction: rs.fn() }));
 import PositionsPage from "./page";
 
 const position: Position = { id: "support", workspaceId: "test", name: "Customer support", active: true, createdAt: "2026-10-12", updatedAt: "2026-10-12" };
 beforeEach(() => {
-  vi.clearAllMocks();
+  rs.clearAllMocks();
   mocks.requireRoles.mockResolvedValue({ id: "owner", role: "OWNER" });
   mocks.listPositions.mockResolvedValue([position, { ...position, id: "retired", name: "Retired qualification", active: false }]);
 });

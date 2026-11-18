@@ -1,4 +1,4 @@
-import {describe,it,expect} from 'vitest';
+import {describe,it,expect} from '@rstest/core';
 import {parsePlanningCommand,parseEmployeePlanning,sameHours,mergePlanningDraft,planningChangedDays,planningHoursIssue,type PlanningHours} from './employee-planning';
 const id='c3849d11-f86e-4f08-8b90-84a8e2053290';
 const request={kind:'request',requestId:id,startDate:'2026-11-02',endDate:'2026-11-02',startTime:null,endTime:null,note:''};

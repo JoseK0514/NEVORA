@@ -1,6 +1,6 @@
 import {EventEmitter} from 'node:events';
 import {resolve} from 'node:path';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 const {interceptedInboxResponse,refreshInboxAndWaitForRows,withActorRole}=await import(resolve('scripts/phase-e-navigation-request.mjs'));
 
 // Controlled transport ordering: an older valid read finishes after the new

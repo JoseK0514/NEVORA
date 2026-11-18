@@ -15,17 +15,18 @@ process.env.FUEL_TEST_DATABASE_URL=fixture;
 const rows=[],configurations=[];
 for(const suite of suites){
  const file='vitest.employee-mobile-'+suite+'.config.mts',bytes=readFileSync(file),config=(await import(pathToFileURL(resolve(file)).href)).default;
- allowed(config,['resolve','test'],'configuration');allowed(config.test,['name','include','projects','fileParallelism','maxWorkers','testTimeout','hookTimeout','passWithNoTests'],'root test');
- // Project naming is metadata; keep every effective execution-contract check.
- assert.equal(config.test.name,'employee-mobile-'+suite,'Inspect changed project identity before claiming coverage');
+ const keys=['name','include','exclude','projects','pool','resolve','testTimeout','hookTimeout','env','passWithNoTests','plugins','tools'];
+ allowed(config,keys,'configuration');
+ assert.equal(config.name,'employee-mobile-'+suite,'Inspect changed project identity before claiming coverage');
  configurations.push({suite,file,sha256:createHash('sha256').update(bytes).digest('hex')});
- for(const group of config.test.projects??[config]){
-  allowed(group,['extends','resolve','test'],'project');const test=group.test;
-  allowed(test,['name','include','projects','fileParallelism','maxWorkers','testTimeout','hookTimeout','env','passWithNoTests'],'project test');
-  const parallel=test.fileParallelism??config.test.fileParallelism;
+ for(const test of config.projects??[config]){
+  allowed(test,keys,'project');
+  allowed(test.pool,['type','maxWorkers'],'worker pool');
+  assert.equal(test.pool.type,'forks','Inspect unsupported worker pool before claiming coverage');
+  const maxWorkers=test.pool.maxWorkers??config.pool.maxWorkers??null;
   for(const input of test.include??[]){
    assert(input.startsWith('src/test/integration/')&&input.endsWith('.integration.ts'),'Inspect nonliteral test selection before claiming coverage');
-   const contract={file:input,environment:{FUEL_TEST_DATABASE_URL:fixture,...test.env},fileParallelism:parallel,maxWorkers:test.maxWorkers??config.test.maxWorkers??(parallel===false?1:null),timeout:test.testTimeout??config.test.testTimeout,hookTimeout:test.hookTimeout??config.test.hookTimeout,passWithNoTests:test.passWithNoTests??config.test.passWithNoTests??false,resolve:group.resolve??config.resolve};
+   const contract={file:input,environment:{FUEL_TEST_DATABASE_URL:fixture,...test.env},fileParallelism:maxWorkers!==1,maxWorkers,timeout:test.testTimeout??config.testTimeout,hookTimeout:test.hookTimeout??config.hookTimeout,passWithNoTests:test.passWithNoTests??config.passWithNoTests??false,resolve:test.resolve??config.resolve,exclude:test.exclude??config.exclude};
    rows.push({suite,contract,key:JSON.stringify(stable(contract))});
   }
  }

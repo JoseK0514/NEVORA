@@ -1,9 +1,9 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it, vi } from "vitest";
+import { expect, it, rs } from '@rstest/core';
 
-vi.mock("next/link", () => ({ default: ({ href, children, ...props }: ComponentProps<"a">) => createElement("a", { href, ...props }, children) }));
-vi.mock("./scoped-read-frame", () => ({ ScopedReadFrame: ({ unavailable }: { unavailable: React.ReactNode }) => createElement("div", { className: "scoped-unavailable" }, unavailable) }));
+rs.mock("next/link", () => ({ default: ({ href, children, ...props }: ComponentProps<"a">) => createElement("a", { href, ...props }, children) }));
+rs.mock("./scoped-read-frame", () => ({ ScopedReadFrame: ({ unavailable }: { unavailable: React.ReactNode }) => createElement("div", { className: "scoped-unavailable" }, unavailable) }));
 import { OperationalUnavailable } from "./operational-unavailable";
 
 // Inspection Oct 24: a Manager without an access assignment saw legacy bordered cards with outlined buttons.

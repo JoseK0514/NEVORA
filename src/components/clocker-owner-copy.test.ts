@@ -1,5 +1,5 @@
 // The Owner's Clocker settings (Phase 6): one copy module, English and Spanish, key for key.
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {clockerOwnerCopy, clockerOwnerWhen} from './clocker-owner-copy';
 import {englishIn} from './clocker-owner-copy.testkit';
 

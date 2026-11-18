@@ -1,4 +1,4 @@
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, expect, it, rs } from '@rstest/core';
 import { createHash } from "node:crypto";
 import { fetchLegalSource } from "./legal-research.server";
 import { legalApplicability, parseLegalResearch } from "./legal-research";
@@ -6,7 +6,7 @@ import { LEGAL_SOURCES } from "./legal-sources";
 const source = LEGAL_SOURCES[0];
 const signal = () => new AbortController().signal;
 const html = (s = "<p>Source facts</p>") => new Response(s, { headers: { "Content-Type": "text/html" } });
-afterEach(() => vi.useRealTimers());
+afterEach(() => { rs.useRealTimers(); });
 it("fetches only a registry identity with credentialless fixed GET and hashes actual bytes", async () => {
   let request: unknown;
   const result = await fetchLegalSource(source.id, signal(), async (url, init) => { request = { url, init }; return html(); });
@@ -43,8 +43,8 @@ it("enforces the streaming byte cap and cancels the stream", async () => {
   expect(cancelled).toBe(true);
 });
 it("bounds an uncooperative fetch at eight seconds", async () => {
-  vi.useFakeTimers(); const promise = fetchLegalSource(source.id, signal(), () => new Promise(() => {}));
-  await vi.advanceTimersByTimeAsync(8000);
+  rs.useFakeTimers(); const promise = fetchLegalSource(source.id, signal(), () => new Promise(() => {}));
+  await rs.advanceTimersByTimeAsync(8000);
   expect(await promise).toMatchObject({ retrieval: "unavailable", failure: "timeout" });
 });
 it("cancels a stalled stream and propagates caller cancellation", async () => {
@@ -81,9 +81,9 @@ it("binds review to the registry document version independently from interpretat
   expect(legalApplicability({ ...input(), sourceVersion: "changed-document" } as any, [{ ...review, sourceVersion: source.version } as any]).state).toBe("unverified");
 });
 it("times out a stalled response body and cancels its reader", async () => {
-  vi.useFakeTimers(); let cancelled = false;
+  rs.useFakeTimers(); let cancelled = false;
   const promise = fetchLegalSource(source.id, signal(), async () => new Response(new ReadableStream({ cancel() { cancelled = true; } }), { headers: { "Content-Type": "text/html" } }));
-  await vi.advanceTimersByTimeAsync(8000);
+  await rs.advanceTimersByTimeAsync(8000);
   expect(await promise).toMatchObject({ retrieval: "unavailable", failure: "timeout", hash: null }); expect(cancelled).toBe(true);
 });
 

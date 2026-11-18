@@ -1,9 +1,9 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, rs } from '@rstest/core';
 
-const state = vi.hoisted(() => ({ session: vi.fn(), proof: vi.fn(), document: vi.fn(), module: vi.fn() }));
-vi.mock("@/lib/auth/session", () => ({ getSession: state.session, requireSessionMutationProof: state.proof }));
-vi.mock("@/lib/payroll/access", () => ({ document: state.document }));
-vi.mock("@/lib/workspace-presentation/current.server", () => ({ moduleEnabled: state.module }));
+const state = rs.hoisted(() => ({ session: rs.fn(), proof: rs.fn(), document: rs.fn(), module: rs.fn() }));
+rs.mock("@/lib/auth/session", () => ({ getSession: state.session, requireSessionMutationProof: state.proof }));
+rs.mock("@/lib/payroll/access", () => ({ document: state.document }));
+rs.mock("@/lib/workspace-presentation/current.server", () => ({ moduleEnabled: state.module }));
 import { PayrollError } from "@/lib/payroll/model";
 import { navigationFailure } from "./navigation";
 import { GET as download } from "./[id]/route";
@@ -17,7 +17,7 @@ const employee = { id: "FICTIONAL-E1", role: "EMPLOYEE" };
 const bytes = Buffer.from("%PDF-1.7 fictional");
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  rs.clearAllMocks();
   state.session.mockResolvedValue(employee);
   state.proof.mockResolvedValue({ employee, sessionTokenHash: "a".repeat(64) });
   state.module.mockResolvedValue(true);

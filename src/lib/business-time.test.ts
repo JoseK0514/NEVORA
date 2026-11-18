@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { formatBusinessClock, formatBusinessTimestamp, businessDate, businessTime, localDateTimeToInstant, shiftBoundaryInstants, formatBusinessDateTimeInput, formatBusinessDateTime, InvalidBusinessLocalTimeError } from './business-time';
 import { durationMinutes, weekStartFor } from './date-utils';
 

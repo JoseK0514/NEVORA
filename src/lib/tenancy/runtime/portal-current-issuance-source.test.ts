@@ -1,6 +1,6 @@
 // SOURCE PREPARATION ONLY. All assertions UNEXECUTED. No native/issuer mocks.
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { loadPortalRuntimeSourceImage } from './portal-runtime-startup-loader';
 import { inspectPortalCurrentIssuanceSource, comparePortalCurrentIssuanceSources,
   isPortalCurrentIssuanceSourceObservation } from './portal-current-issuance-source';

@@ -1,15 +1,15 @@
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import { createElement } from "react";
 import { LocationConfigurationFields } from "@/components/location-configuration-fields";
 
-const mocks = vi.hoisted(() => ({ requireRoles: vi.fn(), create: vi.fn() }));
-vi.mock("@/lib/auth/permissions", () => ({ requireRoles: mocks.requireRoles }));
-vi.mock("../../actions", () => ({ createLocationAction: mocks.create }));
+const mocks = rs.hoisted(() => ({ requireRoles: rs.fn(), create: rs.fn() }));
+rs.mock("@/lib/auth/permissions", () => ({ requireRoles: mocks.requireRoles }));
+rs.mock("../../actions", () => ({ createLocationAction: mocks.create }));
 import NewLocationPage from "./page";
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  rs.clearAllMocks();
   mocks.requireRoles.mockResolvedValue({ id: "test-owner", role: "OWNER" });
 });
 

@@ -1,6 +1,6 @@
 import {readFile} from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {companyAccessFixture} from './company-access-fixture';
 import {setEmployeeClockerPin} from '../../lib/clocker/pins.server';
 import {listOwnerClockerPinStatuses,readClockerPinOperation} from '../../lib/clocker/pin-operations.server';

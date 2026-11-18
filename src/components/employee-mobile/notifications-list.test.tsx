@@ -1,7 +1,7 @@
 import {createElement,type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it,vi} from 'vitest';
-vi.mock('next/link',()=>({default:({children,prefetch:_prefetch,...props}:ComponentProps<'a'>&{prefetch?:boolean})=>createElement('a',props,children)}));
+import {expect,it,rs} from '@rstest/core';
+rs.mock('next/link',()=>({default:({children,prefetch:_prefetch,...props}:ComponentProps<'a'>&{prefetch?:boolean})=>createElement('a',props,children)}));
 import {EmployeeNotificationList,notificationGroup,notificationHeadline,notificationTitle} from './notifications-list';
 import type {EmployeeNotificationItem} from '../../lib/employee-view';
 const zone='America/Puerto_Rico',now=new Date('2026-10-31T16:00:00Z');

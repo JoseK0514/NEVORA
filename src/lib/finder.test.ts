@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { finderItems, rankFinder } from './finder';
 
 const data = { people: [{ id: 'E1', name: 'Alexandra Rivera', role: 'Employee' }, { id: 'E2', name: 'Morgan Rivera', role: 'Manager' }, { id: 'AR-9', name: 'Taylor Brooks', role: 'Lead' }], locations: [{ id: 'l1', name: 'Main Office' }] };

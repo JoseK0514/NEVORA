@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {encodeMessageCursor,parseMessageCursor} from './employee-message-page';
 it('retains the database microsecond boundary and actor-owned text key without treating a cursor as authority',()=>{
  const value={at:'2026-10-27T16:00:01.123456Z',id:'own-notice_19'};const token=encodeMessageCursor(value);

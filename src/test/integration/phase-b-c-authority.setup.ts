@@ -1,12 +1,12 @@
 
-import { vi } from 'vitest';
+import { rs } from '@rstest/core';
 
 /** Opt-in integrated-schema replay of the ORIGINAL Phase B expiry regressions.
  * Only the owned disposable fixture is extended; authorization and SQL are real.
  * Not loaded by the ordinary foundation or Clocker suite. Never uses DATABASE_URL.
  */
-vi.mock('./local-postgres', async load => {
-  const actual = await load<typeof import('./local-postgres')>();
+rs.mock('./local-postgres',  () => {
+  const actual = rs.requireActual<typeof import('./local-postgres')>('./local-postgres');
   return {
     ...actual,
     createDisposableFoundationDatabase: async (options: Parameters<typeof actual.createDisposableFoundationDatabase>[0]) => {

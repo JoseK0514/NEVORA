@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-vi.mock('server-only',()=>({}));
+import { describe, it, expect, rs } from '@rstest/core';
+rs.mock('server-only',()=>({}));
 import { randomBytes, createHash } from 'node:crypto';
 import { createPortalCredentialSessionNativeFixture, type NativeOptions } from './portal-credential-session.postgres-fixture';
 import { verifyPassword } from './password';

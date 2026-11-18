@@ -1,26 +1,23 @@
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { managementProof } from '../../../test/fixtures/management';
-vi.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => managementProof('E', 'EMPLOYEE') }));
-const mocks = vi.hoisted(() => ({ normal: vi.fn(), weekly: vi.fn() }));
-vi.mock("@/lib/auth/permissions", () => ({
+rs.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => managementProof('E', 'EMPLOYEE') }));
+const mocks = rs.hoisted(() => ({ normal: rs.fn(), weekly: rs.fn() }));
+rs.mock("@/lib/auth/permissions", () => ({
   requireSelfService: async () => ({ id: "E", role: "EMPLOYEE" }),
 }));
-vi.mock("@/lib/data/availability", () => ({
+rs.mock("@/lib/data/availability", () => ({
   replaceAvailability: mocks.normal,
 }));
-vi.mock("@/lib/data/week-settings", () => ({
+rs.mock("@/lib/data/week-settings", () => ({
   getWeekSettings: async () => null,
   replaceWeeklyAvailability: mocks.weekly,
   AvailabilityDeadlineError: class extends Error {},
   AvailabilityConcurrencyError: class extends Error {},
 }));
-vi.mock("@/lib/date-utils", () => import("../../../lib/date-utils"));
-vi.mock(
-  "@/lib/scheduling/periods",
-  () => import("../../../lib/scheduling/periods"),
-);
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
-vi.mock("next/navigation", () => ({
+
+
+rs.mock("next/cache", () => ({ revalidatePath: rs.fn() }));
+rs.mock("next/navigation", () => ({
   redirect: (path: string) => {
     throw new Error(`redirect:${path}`);
   },
@@ -29,7 +26,7 @@ import {
   saveAvailabilityAction,
   saveWeeklyAvailabilityAction,
 } from "./actions";
-beforeEach(() => vi.clearAllMocks());
+beforeEach(() => { rs.clearAllMocks(); });
 it.each(["00:00", "24:00"])(
   "normal and weekly inputs support a midnight day endpoint (%s)",
   async (midnight) => {

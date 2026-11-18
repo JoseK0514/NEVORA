@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {shiftRequestStatus,timeOffStatus} from './request-status';
 import {requestStatus} from './exchange-view';
 import type {RequestSummary} from '@/lib/employee-exchange';

@@ -1,12 +1,12 @@
-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import { randomUUID } from 'node:crypto';
 import type { SessionMutationProof } from '@/lib/shift-changes/types';
 import type { SqlExecutor } from '@/lib/notifications/types';
 import { companyAccessFixture } from '@/test/integration/company-access-fixture';
 import { fictionalProfile } from '@/test/fixtures/shift-changes';
-const state = vi.hoisted(() => ({ proof: null as SessionMutationProof | null, ex: null as SqlExecutor | null }));
-vi.mock('@/lib/auth/session', () => ({ getSession: async () => state.proof?.employee ?? null, requireSessionMutationProof: async () => state.proof }));
-vi.mock('@/lib/data/sql-executor', () => ({ neonNotificationExecutor: () => state.ex }));
+const state = rs.hoisted(() => ({ proof: null as SessionMutationProof | null, ex: null as SqlExecutor | null }));
+rs.mock('@/lib/auth/session', () => ({ getSession: async () => state.proof?.employee ?? null, requireSessionMutationProof: async () => state.proof }));
+rs.mock('@/lib/data/sql-executor', () => ({ neonNotificationExecutor: () => state.ex }));
 import { POST } from '@/app/api/owner/advisor/weekly/route';
 import * as weeklyPlanner from './weekly-plan.server';
 let f: Awaited<ReturnType<typeof companyAccessFixture>>;
@@ -17,8 +17,8 @@ const request = (body: unknown, signal?: AbortSignal) => new Request(url, { meth
 const compare = () => ({ op: 'compare_week', requestId: randomUUID(), weekStart: '2026-11-16', mode: 'FILL_GAPS_ONLY', locationScope: { kind: 'SELECTED', locationIds: ['loc-1'] } });
 const call = (body: unknown) => POST(request(body));
 beforeEach(async () => {
-  vi.stubEnv('NEVORA_OWNER_ADVISOR_ENABLED', 'true'); vi.stubEnv('NEVORA_OWNER_ADVISOR_WEEKLY_ENABLED', 'true');
-  vi.stubEnv('ANTHROPIC_API_KEY', ''); vi.stubEnv('OPENAI_API_KEY', ''); vi.stubEnv('FUEL_PORTAL_ORIGIN', 'http://localhost');
+  rs.stubEnv('NEVORA_OWNER_ADVISOR_ENABLED', 'true'); rs.stubEnv('NEVORA_OWNER_ADVISOR_WEEKLY_ENABLED', 'true');
+  rs.stubEnv('ANTHROPIC_API_KEY', ''); rs.stubEnv('OPENAI_API_KEY', ''); rs.stubEnv('FUEL_PORTAL_ORIGIN', 'http://localhost');
   f = await companyAccessFixture(); state.proof = f.owner; state.ex = f.db.executor;
   await f.q(`UPDATE location_staffing_settings SET minimum_staff_per_shift=1,requires_designated_lead=false;
     INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('target','loc-1');
@@ -27,7 +27,7 @@ beforeEach(async () => {
     INSERT INTO weekly_availability_submissions(employee_id,week_start,uses_normal_availability) VALUES('target','2026-11-16',true);`);
   await f.q("INSERT INTO employee_scheduling_settings(employee_id,maximum_weekly_hours,operational_rule_profile) VALUES('target',40,$1::jsonb)", [JSON.stringify(fictionalProfile())]);
 });
-afterEach(async () => { vi.restoreAllMocks(); vi.unstubAllEnvs(); await f?.db.dispose(); });
+afterEach(async () => { rs.restoreAllMocks(); rs.unstubAllEnvs(); await f?.db.dispose(); });
 async function reviewed() {
   const compared = await call(compare()); expect(compared.status).toBe(200);
   const result = await compared.json(), option = result.comparison.alternatives[0];
@@ -38,7 +38,7 @@ async function reviewed() {
 }
 
 it('uses the real private compare/read/apply/check route without model credentials or network calls', async () => {
-  const outbound = vi.spyOn(globalThis, 'fetch').mockRejectedValue(Error('No network allowed'));
+  const outbound = rs.spyOn(globalThis, 'fetch').mockRejectedValue(Error('No network allowed'));
   const p = await reviewed(); expect(p.full.review.changes.additions).toHaveLength(2);
   expect(p.full.validForMs).toBeGreaterThan(0); expect(p.full.validForMs).toBeLessThanOrEqual(15000);
   expect(await f.q('SELECT count(*)::int n FROM shifts')).toEqual([{ n: 0 }]);
@@ -88,12 +88,12 @@ it('returns unavailable for missing schema and does not treat it as an empty pla
 
 it('keeps new actions off while allowing minimal authorized historical recovery', async () => {
   const p = await reviewed(); await call(p.command);
-  vi.stubEnv('NEVORA_OWNER_ADVISOR_WEEKLY_ENABLED', 'false');
+  rs.stubEnv('NEVORA_OWNER_ADVISOR_WEEKLY_ENABLED', 'false');
   expect((await call(compare())).status).toBe(503);
   expect((await call({ op: 'read_week_plan', requestId: randomUUID(), reviewId: p.option.id })).status).toBe(503);
   const response = await call(p.command); expect(response.status).toBe(200);
   expect(await response.json()).toMatchObject({ state: 'saved', review: null, comparison: null, progress: null });
-  vi.stubEnv('NEVORA_OWNER_ADVISOR_ENABLED', 'false'); expect((await call(p.command)).status).toBe(503);
+  rs.stubEnv('NEVORA_OWNER_ADVISOR_ENABLED', 'false'); expect((await call(p.command)).status).toBe(503);
 });
 
 it('rechecks feature-off before returning details after a committed save', async () => {
@@ -101,7 +101,7 @@ it('rechecks feature-off before returning details after a committed save', async
   state.ex = { ...f.db.executor, async transaction(statements, signal) {
     const result = await f.db.executor.transaction(statements, signal);
     if (!changed && statements.some(s => s.text.includes('UPDATE owner_advisor_weekly_reviews SET applied_operation'))) {
-      changed = true; vi.stubEnv('NEVORA_OWNER_ADVISOR_WEEKLY_ENABLED', 'false');
+      changed = true; rs.stubEnv('NEVORA_OWNER_ADVISOR_WEEKLY_ENABLED', 'false');
     }
     return result;
   } };
@@ -111,7 +111,7 @@ it('rechecks feature-off before returning details after a committed save', async
 
 it.each(['request', 'deadline'])('recovers the original committed operation on %s abort after commit', async kind => {
   const p = await reviewed(), controller = new AbortController(); let aborted = false;
-  const deadline = kind === 'deadline' ? vi.spyOn(AbortSignal, 'timeout').mockReturnValue(controller.signal) : null;
+  const deadline = kind === 'deadline' ? rs.spyOn(AbortSignal, 'timeout').mockReturnValue(controller.signal) : null;
   state.ex = { ...f.db.executor, async transaction(statements, signal) {
     const result = await f.db.executor.transaction(statements, signal);
     if (!aborted && statements.some(s => s.text.includes('UPDATE owner_advisor_weekly_reviews SET applied_operation'))) { aborted = true; controller.abort(); }
@@ -148,7 +148,7 @@ it('bounds private response validity to the actual session expiry and denies lat
 });
 
 it('denies an unsaved approval while weekly actions are off and withholds its plan details', async () => {
-  const p = await reviewed(); vi.stubEnv('NEVORA_OWNER_ADVISOR_WEEKLY_ENABLED', 'false');
+  const p = await reviewed(); rs.stubEnv('NEVORA_OWNER_ADVISOR_WEEKLY_ENABLED', 'false');
   const denied = await call(p.command); expect(denied.status).toBe(503); expect(await denied.json()).toEqual({ state: 'error', code: 'disabled' });
   const observed = await (await call({ op: 'check_week_plan', requestId: randomUUID(), reviewId: p.option.id })).json();
   expect(observed).toMatchObject({ state: 'unavailable', comparison: null, review: null, receipt: null });
@@ -159,7 +159,7 @@ it('rejects changed knowledge feature context before returning a complete privat
   const result = await (await call(compare())).json(), option = result.comparison.alternatives[0]; let changed = false;
   state.ex = { ...f.db.executor, async transaction(statements, signal) {
     const rows = await f.db.executor.transaction(statements, signal);
-    if (!changed && statements.some(s => s.text.startsWith('WITH issued AS'))) { changed = true; vi.stubEnv('NEVORA_OWNER_ADVISOR_KNOWLEDGE_ENABLED', 'true'); }
+    if (!changed && statements.some(s => s.text.startsWith('WITH issued AS'))) { changed = true; rs.stubEnv('NEVORA_OWNER_ADVISOR_KNOWLEDGE_ENABLED', 'true'); }
     return rows;
   } };
   const response = await call({ op: 'read_week_plan', requestId: randomUUID(), reviewId: option.id });
@@ -176,7 +176,7 @@ it.each(['employees','utf8'])('returns an idempotent INPUT_LIMIT through the pri
     await f.q(`INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('limit-parent','loc-1','2026-11-16','DRAFT','owner');
       INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,notes) VALUES('limit-legacy-shift','limit-parent','target','2026-11-16','08:00','12:00',repeat('😀',600000))`);
   }
-  const planner=vi.spyOn(weeklyPlanner,'compareWeeklyPlans'),command=compare(),response=await call(command);
+  const planner=rs.spyOn(weeklyPlanner,'compareWeeklyPlans'),command=compare(),response=await call(command);
   expect(response.status).toBe(200);
   const result=await response.json();
   expect(result.comparison).toMatchObject({state:'unavailable',reason:'INPUT_LIMIT',sourceVersion:null,alternatives:[],baseline:null,partial:true});

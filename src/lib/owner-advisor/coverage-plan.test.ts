@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { setImmediate as yieldTurn } from "node:timers/promises";
 import { automaticWeek, realisticAutomaticWeek, automaticAssignment } from "@/test/fixtures/automatic-week";
 import * as coverage from "./coverage-plan.server";

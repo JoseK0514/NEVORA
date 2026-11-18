@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {Client} from 'pg';
 import {bootstrapOwner, readCompanyInput, setupCompany} from '../../../scripts/company-setup';
 import {createDisposableFoundationDatabase} from './local-postgres';

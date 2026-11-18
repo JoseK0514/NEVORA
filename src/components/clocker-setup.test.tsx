@@ -1,12 +1,14 @@
+import * as rstestImportedActual0 from "react" with { rstest: 'importActual' };
+import * as rstestImportedActual1 from "./clocker-language" with { rstest: 'importActual' };
 // The kiosk's setup screen (Phase 6, JR-26): the first-time screen in both languages, the code that arrives in the
 // Owner's link, and each answer. The interaction tests drive the component's own handlers with hooks held here (the
 // project has no DOM test environment); the enrolment calls are the ones the screen has always made.
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
+import {afterEach, beforeEach, describe, expect, it, rs} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
 
-const hooks = vi.hoisted(() => ({on: false, locale: 'en' as 'en' | 'es', states: [] as unknown[], refs: [] as {current: unknown}[], effects: [] as (() => void | (() => void))[], s: 0, r: 0}));
-vi.mock('react', async original => {
-  const react = await original<typeof import('react')>();
+const hooks = rs.hoisted(() => ({on: false, locale: 'en' as 'en' | 'es', states: [] as unknown[], refs: [] as {current: unknown}[], effects: [] as (() => void | (() => void))[], s: 0, r: 0}));
+rs.mock('react', () => {
+  const react = rstestImportedActual0;
   return {...react,
     useState: (initial: unknown) => {
       if (!hooks.on) return react.useState(initial);
@@ -19,8 +21,8 @@ vi.mock('react', async original => {
     useCallback: (fn: unknown, deps: unknown[]) => hooks.on ? fn : react.useCallback(fn as () => void, deps),
   };
 });
-vi.mock('./clocker-language', async original => {
-  const real = await original<typeof import('./clocker-language')>();
+rs.mock('./clocker-language', () => {
+  const real = rstestImportedActual1;
   const {clockerText} = await import('./clocker-copy');
   return {...real, useClockerCopy: () => hooks.on ? (key: string, params?: Record<string, string | number>) => clockerText(hooks.locale, key, params) : real.useClockerCopy()};
 });
@@ -80,7 +82,7 @@ describe('the setup code from the Owner’s link, and each answer', () => {
   const replaced: string[] = [];
   let listeners: Record<string, (() => void)[]>;
   let online = true;
-  const input = {value: '', focus: vi.fn()};
+  const input = {value: '', focus: rs.fn()};
   let tree: unknown;
   function draw() {
     hooks.s = 0; hooks.r = 0; hooks.effects = [];
@@ -103,10 +105,10 @@ describe('the setup code from the Owner’s link, and each answer', () => {
     hooks.on = true; hooks.locale = 'en'; hooks.states = []; hooks.refs = []; sent.length = 0; urls.length = 0; replaced.length = 0; listeners = {}; online = true; input.value = ''; input.focus.mockClear();
     answers = {status: {status: 200, body: {state: 'unregistered'}}, prepare: {status: 200, body: {state: 'prepared'}}, redeem: {status: 200, body: {state: 'connected', deviceName: 'Front counter tablet'}}};
     location = {hash: `#setup=${code}`, pathname: '/clocker/calle-loiza', search: ''};
-    vi.stubGlobal('window', {location, history: {state: null, replaceState: (_state: unknown, _title: string, url: string) => {replaced.push(url); location.hash = '';}},
+    rs.stubGlobal('window', {location, history: {state: null, replaceState: (_state: unknown, _title: string, url: string) => {replaced.push(url); location.hash = '';}},
       addEventListener: (name: string, fn: () => void) => {(listeners[name] ??= []).push(fn);}, removeEventListener: () => {}, setTimeout, clearTimeout});
-    vi.stubGlobal('navigator', {get onLine() {return online;}});
-    vi.stubGlobal('fetch', async (url: string, init: RequestInit) => {
+    rs.stubGlobal('navigator', {get onLine() {return online;}});
+    rs.stubGlobal('fetch', async (url: string, init: RequestInit) => {
       const body = JSON.parse(String(init.body)); sent.push(body); urls.push(url);
       const answer = answers[body.step];
       if (answer === 'abort') throw new TypeError('Failed to fetch');
@@ -115,7 +117,7 @@ describe('the setup code from the Owner’s link, and each answer', () => {
       return {ok: reply.status < 400, status: reply.status, json: async () => reply.body};
     });
   });
-  afterEach(() => {hooks.on = false; vi.unstubAllGlobals();});
+  afterEach(() => {hooks.on = false; rs.unstubAllGlobals();});
 
   it('reads the code once, removes it from the address bar, keeps it out of state, and waits for a tap', async () => {
     await mount();

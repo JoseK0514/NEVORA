@@ -1,4 +1,4 @@
-import{expect,it}from'vitest';
+import{expect,it}from'@rstest/core';
 import{readCommerceAuthorityRoutingConfig}from'./config.server';
 const env={NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_PORTAL_BASE_DOMAIN:'portal-staging.nevora.team',NEVORA_CONTROL_DATABASE_URL:'postgresql://nv_control_commerce_aaaaaaaaaaaaaaaaaaaaaaaa:fictional@ep-fixture.neon.tech/control?sslmode=verify-full',NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:Buffer.alloc(32,3).toString('base64url')};
 it('creates machine APP routing without a browser token-envelope capability',()=>{const config=readCommerceAuthorityRoutingConfig(env);expect(config.secretScope).toBe('COMMERCE_APP_ONLY');expect(config).not.toHaveProperty('tokenKey');});

@@ -1,20 +1,21 @@
-import { it, expect, beforeEach, afterEach, vi } from "vitest";
+import * as rstestOriginal0 from "./operational-insights.server" with { rstest: 'importActual' };
+import { it, expect, beforeEach, afterEach, rs } from '@rstest/core';
 import { companyAccessFixture } from "@/test/integration/company-access-fixture";
 import type { SessionMutationProof } from "@/lib/shift-changes/types";
 import type { SqlExecutor } from "@/lib/notifications/types";
-const state = vi.hoisted(() => ({
+const state = rs.hoisted(() => ({
   proof: null as SessionMutationProof | null,
   ex: null as SqlExecutor | null,
-  historicalRead: vi.fn(),
+  historicalRead: rs.fn(),
 }));
-vi.mock("@/lib/auth/session", () => ({
+rs.mock("@/lib/auth/session", () => ({
   getSession: async () => state.proof?.employee ?? null,
   requireSessionMutationProof: async () => state.proof,
 }));
-vi.mock("@/lib/data/sql-executor", () => ({
+rs.mock("@/lib/data/sql-executor", () => ({
   neonNotificationExecutor: () => state.ex,
 }));
-vi.mock('./operational-insights.server',async importOriginal=>{const actual=await importOriginal<typeof import('./operational-insights.server')>();return {...actual,readOperationalInsights:async(...args:Parameters<typeof actual.readOperationalInsights>)=>{state.historicalRead();return actual.readOperationalInsights(...args);}};});
+rs.mock('./operational-insights.server', ()=>{const actual=rstestOriginal0;return {...actual,readOperationalInsights:async(...args:Parameters<typeof actual.readOperationalInsights>)=>{state.historicalRead();return actual.readOperationalInsights(...args);}};});
 import {parseAnswer} from '@/components/owner-advisor/public-response';
 import {ownerDecision,decisionReply} from '@/test/fixtures/owner-decision';
 import { GET, POST } from "@/app/api/owner/advisor/route";
@@ -24,12 +25,12 @@ beforeEach(async () => {
   f = await companyAccessFixture();
   state.ex = f.db.executor;
   state.proof = f.owner;
-  vi.stubEnv("NEVORA_OWNER_ADVISOR_ENABLED", "true");
-  vi.stubEnv("NEVORA_OWNER_ADVISOR_PROVIDER", "");
+  rs.stubEnv("NEVORA_OWNER_ADVISOR_ENABLED", "true");
+  rs.stubEnv("NEVORA_OWNER_ADVISOR_PROVIDER", "");
 });
 afterEach(async () => {
-  vi.restoreAllMocks();
-  vi.unstubAllEnvs();
+  rs.restoreAllMocks();
+  rs.unstubAllEnvs();
   await f?.db.dispose();
 });
 const request = (body?: unknown, headers: Record<string, string> = {}) =>
@@ -75,13 +76,13 @@ it("checks same origin, header, bounded JSON and forbids client-controlled histo
   );
 });
 it("returns honest disabled/unavailable states with no outbound fetch", async () => {
-  const outbound = vi
+  const outbound = rs
     .spyOn(globalThis, "fetch")
     .mockRejectedValue(new Error("unexpected outbound"));
   try {
-    vi.stubEnv("NEVORA_OWNER_ADVISOR_ENABLED", "false");
+    rs.stubEnv("NEVORA_OWNER_ADVISOR_ENABLED", "false");
     expect((await GET(request())).status).toBe(404);
-    vi.stubEnv("NEVORA_OWNER_ADVISOR_ENABLED", "true");
+    rs.stubEnv("NEVORA_OWNER_ADVISOR_ENABLED", "true");
     const r = await GET(request());
     expect(r.status).toBe(200);
     expect(await r.json()).toMatchObject({
@@ -108,10 +109,10 @@ it("keeps legacy/default and lease snapshots lightweight and scans history only 
  expect(state.historicalRead).toHaveBeenCalledTimes(2);
 });
 it.each(['ask','ask_task'])('returns actual unchanged-client-compatible fresh and replayed %s HTTP answers, while preserving internal guards and explicit schema2',async op=>{
- vi.stubEnv('NEVORA_OWNER_ADVISOR_PROVIDER','openai');vi.stubEnv('NEVORA_OWNER_ADVISOR_DATA_APPROVED','true');vi.stubEnv('NEVORA_OWNER_ADVISOR_MODEL','fictional');vi.stubEnv('NEVORA_OWNER_ADVISOR_DAILY_LIMIT','10');vi.stubEnv('OPENAI_API_KEY','fictional-not-a-key');
+ rs.stubEnv('NEVORA_OWNER_ADVISOR_PROVIDER','openai');rs.stubEnv('NEVORA_OWNER_ADVISOR_DATA_APPROVED','true');rs.stubEnv('NEVORA_OWNER_ADVISOR_MODEL','fictional');rs.stubEnv('NEVORA_OWNER_ADVISOR_DAILY_LIMIT','10');rs.stubEnv('OPENAI_API_KEY','fictional-not-a-key');
  const taskId=crypto.randomUUID();if(op==='ask_task'){expect((await POST(request({op:'notebook',requestId:crypto.randomUUID(),expectedRevision:0,change:{kind:'save_task',taskId,objective:'Review current evidence',notes:'',state:'open',focus:{kind:'general'}}}))).status).toBe(200);}
  const d={...ownerDecision(),summary:'Review the current evidence before any action.',observations:[{statement:'A current briefing is available.',evidenceIds:['E1']}],acknowledgedPartialEvidence:['E1']};
- const provider=vi.spyOn(globalThis,'fetch').mockImplementation(async()=>Response.json(decisionReply(d)));
+ const provider=rs.spyOn(globalThis,'fetch').mockImplementation(async()=>Response.json(decisionReply(d)));
  const command={op,requestId:crypto.randomUUID(),message:'Review current evidence',...(op==='ask_task'?{taskId,expectedNotebookRevision:1}:{})};
  const first=await POST(request(command));expect(first.status).toBe(200);const a=parseAnswer(await first.json()).answer;
  expect(a.context).toEqual({notebookRevision:op==='ask_task'?1:0,taskId:op==='ask_task'?taskId:null});

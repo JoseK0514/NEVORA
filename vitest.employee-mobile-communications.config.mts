@@ -1,5 +1,5 @@
 import {projectConfig} from './vitest.shared.mts';
-import {defineConfig} from 'vitest/config';
+import {defineConfig} from './vitest.shared.mts';
 import {vitestResolution as resolution} from './vitest.shared.mts';
 import {communicationFixtureUrl} from './src/test/integration/employee-mobile-communications-fixtures';
 const groups=[

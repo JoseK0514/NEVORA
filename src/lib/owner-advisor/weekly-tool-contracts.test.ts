@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { parseTool } from './contracts';
 const args = { weekStart: '2026-11-16', locationScope: { kind: 'SELECTED', locationIds: ['b', 'a'] } };
 it('admits only a canonical read-only weekly comparison and sorts explicit scope', () => {

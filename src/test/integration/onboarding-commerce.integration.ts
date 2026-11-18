@@ -1,5 +1,5 @@
 import {readFile} from 'node:fs/promises';
-import {afterEach,beforeEach,expect,it} from 'vitest';
+import {afterEach,beforeEach,expect,it} from '@rstest/core';
 import {freshOnboardingDatabase} from './onboarding-fixture';
 import {onboardingJourneyFixture} from './onboarding-journey-fixture';
 import {CommerceStore} from '../../../services/commerce/store';

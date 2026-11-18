@@ -1,18 +1,18 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { CoverageRepairConflictError } from "@/lib/scheduling/coverage-repair";
 import NewShiftPage from "./page";
 
-const state = vi.hoisted(() => ({ read: vi.fn(), decode: vi.fn(), proof: { employee: { id: "manager" } } }));
-vi.mock("next/link", () => ({ default: ({ children, ...props }: ComponentProps<"a">) => createElement("a", props, children) }));
-vi.mock("@/lib/auth/permissions", () => ({ MANAGER_ROLES: ["MANAGER", "OWNER"], requireRoles: vi.fn() }));
-vi.mock("@/lib/auth/session", () => ({ requireSessionMutationProof: async () => state.proof }));
-vi.mock("@/lib/data/coverage-repair.server", () => ({ readCoverageRepairSelection: state.read, decodeCoverageRepairReview: state.decode }));
-vi.mock("@/lib/data/employees", () => ({ listEmployees: vi.fn(), listLocations: vi.fn() }));
-vi.mock("@/lib/data/workspaces", () => ({ getWorkspace: vi.fn() }));
-vi.mock("@/lib/data/positions", () => ({ listPositions: vi.fn() }));
-vi.mock("@/app/app/schedule/actions", () => ({ createShiftAction: vi.fn() }));
+const state = rs.hoisted(() => ({ read: rs.fn(), decode: rs.fn(), proof: { employee: { id: "manager" } } }));
+rs.mock("next/link", () => ({ default: ({ children, ...props }: ComponentProps<"a">) => createElement("a", props, children) }));
+rs.mock("@/lib/auth/permissions", () => ({ MANAGER_ROLES: ["MANAGER", "OWNER"], requireRoles: rs.fn() }));
+rs.mock("@/lib/auth/session", () => ({ requireSessionMutationProof: async () => state.proof }));
+rs.mock("@/lib/data/coverage-repair.server", () => ({ readCoverageRepairSelection: state.read, decodeCoverageRepairReview: state.decode }));
+rs.mock("@/lib/data/employees", () => ({ listEmployees: rs.fn(), listLocations: rs.fn() }));
+rs.mock("@/lib/data/workspaces", () => ({ getWorkspace: rs.fn() }));
+rs.mock("@/lib/data/positions", () => ({ listPositions: rs.fn() }));
+rs.mock("@/app/app/schedule/actions", () => ({ createShiftAction: rs.fn() }));
 
 const locator = { version: 1, weekStart: "2030-10-07", gapKey: "gap", locationId: "real-location", date: "2030-10-07", startTime: "20:00", endTime: "24:00", target: "POSITION", positionId: "real-position", reported: { missingStaff: 2, requiresLead: true, positions: [{ positionId: "real-position", missing: 1 }] } };
 const selected = { locator, employeeId: "real-employee", employeeName: "Taylor Rivera", locationName: "Main Office", positionName: "Customer Support", isDesignatedLead: true };
@@ -76,12 +76,12 @@ it("an unavailable data source remains an error rather than a stale or fabricate
 });
 
 // Server composition tests; actual mounted finite-body behavior is checked separately.
-const operationalPageFixture=vi.hoisted(()=>({denied:false}));
-vi.mock('@/lib/company-access/operational-scope.server',()=>({readOperationalAuthority:async()=>({state:'ready',scope:{mode:'COMPANY',locationIds:[]}}),withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
-vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+const operationalPageFixture=rs.hoisted(()=>({denied:false}));
+rs.mock('@/lib/company-access/operational-scope.server',()=>({readOperationalAuthority:async()=>({state:'ready',scope:{mode:'COMPANY',locationIds:[]}}),withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 
 beforeEach(()=>{operationalPageFixture.denied=false;});
 
 it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({searchParams:Promise.resolve({review:'retained-review'})}));expect(html).toContain('current company-wide management access');expect(state.read).not.toHaveBeenCalled();expect(html).not.toContain('Taylor Rivera');});
 
-vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>{throw Error('Unexpected scoped read in Company fixture');}}));
+rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>{throw Error('Unexpected scoped read in Company fixture');}}));

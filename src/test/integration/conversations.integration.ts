@@ -1,6 +1,6 @@
 import {readFile} from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
-import {beforeEach,afterEach,expect,it,describe} from 'vitest';
+import {beforeEach,afterEach,expect,it,describe} from '@rstest/core';
 import {assignOperationalScope,readOwnerOperationalScope} from '../../lib/company-access/operational-scope.server';
 import {createDisposableFoundationDatabase} from './local-postgres';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';

@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {reviewCopy, type ReviewCopy} from './copy';
 
 /* Phase 4 package D: the signed-in app renders English today, so the Spanish copy is proven here: every key exists in

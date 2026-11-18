@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { automaticWeek } from "@/test/fixtures/automatic-week";
 import { fictionalProfile } from "@/test/fixtures/shift-changes";
 import { deriveGenerationDemand } from "../scheduling/generation/demand";

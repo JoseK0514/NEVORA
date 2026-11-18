@@ -1,11 +1,11 @@
 import { readFileSync } from "node:fs";
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 
-vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
-const nav = vi.hoisted(() => ({ pathname: "/app/schedule" }));
-vi.mock("next/navigation", () => ({ usePathname: () => nav.pathname, useRouter: () => ({ refresh: () => undefined, push: () => undefined, replace: () => undefined }) }));
+rs.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
+const nav = rs.hoisted(() => ({ pathname: "/app/schedule" }));
+rs.mock("next/navigation", () => ({ usePathname: () => nav.pathname, useRouter: () => ({ refresh: () => undefined, push: () => undefined, replace: () => undefined }) }));
 
 import { CORP_NO_VALUE, CorpCard, CorpEmpty, CorpEmptyRow, CorpLoadFailed, CorpPill, CorpSection, CorpSegments, CorpStats, countLabel } from "./corp";
 import { CorpSkeleton } from "./corp-client";

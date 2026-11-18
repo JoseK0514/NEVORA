@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { generatePdfs } from "../documents";
 import { nativeDocumentFixture } from "./document-fixtures.test-support";
 import { NATIVE_COMPANY_SUMMARY_TEMPLATE_V1, NATIVE_COMPANY_SUMMARY_TEMPLATE_V2, renderNativeCompanySummary, type NativeCompanySummaryPresentation } from "./company-summary-document";

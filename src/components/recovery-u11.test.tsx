@@ -1,6 +1,6 @@
 // U11 (Nov 17, 2026): every recovery state in English and Spanish. The request and reset contracts themselves (fields,
 // lengths, the hedged acceptance, the proof's custody) are covered by account-recovery.test.tsx and are not touched here.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import { RecoveryRequest } from "./recovery-request";
 import { RecoveryReset } from "./recovery-reset";

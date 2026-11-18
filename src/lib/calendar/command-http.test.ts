@@ -1,8 +1,9 @@
-import {beforeEach,expect,it,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
-const f=vi.hoisted(()=>({session:vi.fn(),query:vi.fn(),transaction:vi.fn()}));
-vi.mock('@/lib/auth/session',()=>({readSessionMutationProof:f.session}));
-vi.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({query:f.query,transaction:f.transaction})}));
+import * as rstestOriginal0 from "@/lib/company-access/operational-scope.server" with { rstest: 'importActual' };
+import {beforeEach,expect,it,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
+const f=rs.hoisted(()=>({session:rs.fn(),query:rs.fn(),transaction:rs.fn()}));
+rs.mock('@/lib/auth/session',()=>({readSessionMutationProof:f.session}));
+rs.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({query:f.query,transaction:f.transaction})}));
 // Actual HTTP boundary, JSON reader, validator and service. Only session and
 // executor and Company admission I/O are replaced; no database is connected.
 import {employeeCalendarHandler,managerCalendarRevokeHandler} from '@/lib/calendar/http.server';
@@ -11,7 +12,7 @@ const employee={employee:{id:'fictional-self',firstName:'Fictional',lastName:'Se
 const manager={...employee,employee:{...employee.employee,role:'MANAGER' as const}};
 const invalid: unknown[]=[['ISSUE'],['ROTATE'],['REVOKE'],[],['ISSUE','ROTATE'],['ISSUE','ISSUE'],null,true,7,{}, {value:'ISSUE'}, {toString:null}, {toString:'ISSUE'}];
 function request(proof:typeof employee|typeof manager,kind:unknown){const authority=calendarAuthority(proof);return new Request('https://fixture.invalid/api/employee/calendar-subscriptions',{method:'POST',headers:{Origin:'https://fixture.invalid','Content-Type':'application/json','X-Nevora-Calendar':'1','X-Nevora-Calendar-Authority':authority},body:JSON.stringify({kind,operationId:'11111111-1111-4111-8111-111111111111',authority,expectedGeneration:null})});}
-beforeEach(()=>{vi.resetAllMocks();f.query.mockRejectedValue(Error('Injected executor boundary; database forbidden'));f.transaction.mockRejectedValue(Error('Injected transaction boundary; database forbidden'));});
+beforeEach(()=>{rs.resetAllMocks();f.query.mockRejectedValue(Error('Injected executor boundary; database forbidden'));f.transaction.mockRejectedValue(Error('Injected transaction boundary; database forbidden'));});
 for(const route of ['employee','manager'] as const){
   it.each(invalid.map((kind,index)=>({kind,index})))(`${route} real JSON kind case $index is 400 without data access`,async({kind})=>{
     const proof=route==='employee'?employee:manager;f.session.mockResolvedValue(proof);
@@ -27,4 +28,4 @@ it('manager scalar REVOKE reaches the protected service',async()=>{f.session.moc
 
 // Only Company admission I/O is replaced for these parser/transport tests.
 // Current role/scope/lifecycle/late-loss/rollback are exercised with real SQL.
-vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({workspace:{id:'northside',name:'Northside',timeZone:'America/New_York',active:true,createdAt:'2030-01-01 00:00:00+00',updatedAt:'2030-01-01 00:00:00.123456+00'},authority:'a'.repeat(64),scope:{mode:'COMPANY',locationIds:[]}})}));
+rs.mock('@/lib/company-access/operational-scope.server', ()=>({...rstestOriginal0,assertOperationalAccess:async()=>({workspace:{id:'northside',name:'Northside',timeZone:'America/New_York',active:true,createdAt:'2030-01-01 00:00:00+00',updatedAt:'2030-01-01 00:00:00.123456+00'},authority:'a'.repeat(64),scope:{mode:'COMPANY',locationIds:[]}})}));

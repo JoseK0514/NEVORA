@@ -1,22 +1,23 @@
-import { beforeEach, expect, it, vi } from 'vitest';
+import * as rstestOriginal0 from "./request-notifications" with { rstest: 'importActual' };
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { managementProof } from '../../test/fixtures/management';
 import { createTimeOffRequest } from './requests';
 import { commitRequestTransition } from './request-notifications';
-vi.mock('./notification-transactions',()=>({neonNotificationExecutor:()=>({})}));
-vi.mock('./request-notifications',async original=>({...await original<typeof import('./request-notifications')>(),commitRequestTransition:vi.fn(async()=>true)}));
-beforeEach(()=>vi.clearAllMocks());
+rs.mock('./notification-transactions',()=>({neonNotificationExecutor:()=>({})}));
+rs.mock('./request-notifications', ()=>({...rstestOriginal0,commitRequestTransition:rs.fn(async()=>true)}));
+beforeEach(()=>{ rs.clearAllMocks(); });
 it("keeps the form's unique request ID and session actor on repeated protected transaction attempts",async()=>{
  const request={proof:managementProof('FC-9004','EMPLOYEE'),requestId:'dc6b44c9-6e3f-4f0e-890c-328067ebfe9e',employeeId:'FC-9004',startDate:'2026-11-18',endDate:'2026-11-18'};
  await createTimeOffRequest(request);await createTimeOffRequest(request);
  expect(commitRequestTransition).toHaveBeenCalledTimes(2);
- for(const [attempt] of vi.mocked(commitRequestTransition).mock.calls){
+ for(const [attempt] of rs.mocked(commitRequestTransition).mock.calls){
   expect(attempt.actorEmployeeId).toBe(request.employeeId);
   expect(attempt.after.record.id).toBe(request.requestId);
   expect(attempt.mutation.values[0]).toBe(request.requestId);
  }
 });
 
-import {describe} from 'vitest';
+import {describe} from '@rstest/core';
 import * as requests from './requests';
 import {createDisposableFoundationDatabase} from '../../test/integration/local-postgres';
 import {Client} from 'pg';
@@ -27,7 +28,7 @@ const command={requestId:withdrawalId,operationId:`TIME_OFF_WITHDRAW:${withdrawa
 it('provides a narrow own-pending withdrawal writer without opening generic employee terminal writes',async()=>{
  expect(typeof requests.withdrawTimeOffRequest).toBe('function');
  await expect(requests.withdrawTimeOffRequest({...command,proof:managementProof('foreign','EMPLOYEE')},{} as SqlExecutor)).rejects.toThrow('management_authorization');
- const real=await vi.importActual<typeof import('./request-notifications')>('./request-notifications');
+ const real=await rs.importActual<typeof import('./request-notifications')>('./request-notifications');
  await expect(real.commitRequestTransition({actorEmployeeId:'employee',selfServiceProof:command.proof,after:{kind:'TIME_OFF',source:{kind:'TIME_OFF',id:withdrawalId,version:'CANCELLED'},updatedAt:'2030-01-01',record:{id:withdrawalId,employeeId:'employee',employeeName:'Fictional',startDate:'2030-01-01',endDate:'2030-01-01',createdAt:'2030-01-01',status:'CANCELLED'}},mutation:{text:'SELECT 1',values:[]}},{} as SqlExecutor)).rejects.toThrow('management_authorization');
 });
 
@@ -41,7 +42,7 @@ describe.skipIf(!process.env.FUEL_TEST_DATABASE_URL)('owned PostgreSQL withdrawa
   for(const file of ['0031_native_payroll.sql','0032_company_access_invitations.sql'])await q(await readFile('db/migrations/'+file,'utf8'));
   for(const actor of ['employee','manager','foreign'])await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,clock_timestamp()+interval '1 day')",[managementProof(actor).sessionTokenHash,actor]);
   await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,created_at) VALUES($1,'employee','2030-10-07','2030-10-08','Original fictional reason','2030-01-01T00:00:00Z')",[withdrawalId]);
-  const real=await vi.importActual<typeof import('./request-notifications')>('./request-notifications');vi.mocked(commitRequestTransition).mockImplementation(real.commitRequestTransition);
+  const real=await rs.importActual<typeof import('./request-notifications')>('./request-notifications');rs.mocked(commitRequestTransition).mockImplementation(real.commitRequestTransition);
   return {...db,q};
  }
  async function seedProcessingDelivery(q:(text:string,values?:unknown[])=>Promise<Record<string,unknown>[]>,notificationId:string){

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { inventorySourceCandidates } from './consumers';
 
 describe('inert TypeScript source consumer candidates', () => {

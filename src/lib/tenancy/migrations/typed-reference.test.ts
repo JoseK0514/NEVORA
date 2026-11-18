@@ -1,4 +1,4 @@
-import { describe,expect,it } from 'vitest';
+import { describe,expect,it } from '@rstest/core';
 import { decodeTypedMigrationWireValue } from './typed-wire';
 import { traverseTypedMigrationWireValue,type TypedMigrationCellLineage,type TypedMigrationLineageNode } from './typed-lineage';
 import { getOwnershipRegistry } from './ownership';

@@ -1,20 +1,20 @@
 // Real action/SQL regressions. Only framework context/transport is adapted.
 import { createHash } from 'node:crypto';
 import { Client } from 'pg';
-import { beforeAll, afterAll, beforeEach, it, expect, vi } from 'vitest';
+import { beforeAll, afterAll, beforeEach, it, expect, rs } from '@rstest/core';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
-const context = vi.hoisted(() => ({ executor: null as SqlExecutor | null, cookie: '' }));
-vi.mock('@/lib/db', () => {
+const context = rs.hoisted(() => ({ executor: null as SqlExecutor | null, cookie: '' }));
+rs.mock('@/lib/db', () => {
   const statement = (text: string, values: readonly unknown[] = []) => ({ statement: { text, values }, then: (yes: (r: unknown[]) => unknown, no: (e: unknown) => unknown) => context.executor!.query({ text, values }).then(yes, no) });
   const tagged = Object.assign((strings: TemplateStringsArray, ...values: unknown[]) => statement(strings.reduce((t, p, i) => t + (i ? '$' + i : '') + p, ''), values), {
     query: statement, transaction: (queries: { statement: SqlStatement }[]) => context.executor!.transaction(queries.map(q => q.statement)),
   });
   return { getDb: () => tagged, queryRows: (r: unknown) => r };
 });
-vi.mock('next/headers', () => ({ cookies: async () => ({ get: (n: string) => n === 'fuel_session' ? { value: context.cookie } : undefined }) }));
-vi.mock('@/lib/data/notification-transactions', async original => ({ ...await original<Record<string, unknown>>(), neonNotificationExecutor: () => context.executor! }));
-vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
-vi.mock('next/navigation', () => ({ redirect: (destination: string) => { throw Object.assign(new Error('redirect'), { destination }); } }));
+rs.mock('next/headers', () => ({ cookies: async () => ({ get: (n: string) => n === 'fuel_session' ? { value: context.cookie } : undefined }) }));
+rs.mock('@/lib/data/notification-transactions',  () => ({ ...rs.requireActual<typeof import('@/lib/data/notification-transactions')>('@/lib/data/notification-transactions'), neonNotificationExecutor: () => context.executor! }));
+rs.mock('next/cache', () => ({ revalidatePath: rs.fn() }));
+rs.mock('next/navigation', () => ({ redirect: (destination: string) => { throw Object.assign(new Error('redirect'), { destination }); } }));
 import { createDisposableFoundationDatabase } from './local-postgres';
 import { saveAvailabilityAction, saveWeeklyAvailabilityAction } from '../../app/app/availability/actions';
 import { requestTimeOffAction } from '../../app/app/requests/actions';

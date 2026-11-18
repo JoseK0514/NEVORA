@@ -1,6 +1,6 @@
 // Owner roster import: the routes' answers (docs/handoffs/2026-11-14-owner-simplicity.md) read into what the screen
 // shows. Preview rows come from the server's own parser; command results from its v1 fixtures. Fictional data only.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { parseRosterTable } from "@/lib/onboarding/roster";
 import { onboardingHttpStatus, type OnboardingResult } from "@/lib/onboarding/contracts";
 import { commandResults } from "@/lib/onboarding/fixtures/v1/command-results";

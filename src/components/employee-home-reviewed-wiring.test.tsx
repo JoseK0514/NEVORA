@@ -1,7 +1,7 @@
 // PREPARED / UNEXECUTED. Root owns adoption and actual QA.
 import {isValidElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {afterEach, describe, expect, it, vi} from 'vitest';
+import {afterEach, describe, expect, it, rs} from '@rstest/core';
 import {EmployeeDashboard} from './employee-dashboard';
 import {EmployeeHomeActions, EmployeeHomeReviewedRenderer, createEmployeeHomeController, type HomeLifetime} from './employee-home-actions';
 import {EmployeeHomeQuietView} from './employee-home-quiet';
@@ -13,7 +13,7 @@ import type {PrivatePanelState} from '../lib/private-snapshot-client';
 const authority = 'a'.repeat(64), timeAuthority = 'b'.repeat(64);
 const at = '2030-10-07T12:00:00.000Z';
 const controllers: ReturnType<typeof createEmployeeHomeController>[] = [];
-afterEach(() => { for (const controller of controllers.splice(0)) controller.stop(); vi.useRealTimers(); });
+afterEach(() => { for (const controller of controllers.splice(0)) controller.stop(); rs.useRealTimers(); });
 
 function snapshot(extra: Partial<HomeSnapshot> = {}): HomeSnapshot {
   return {
@@ -136,7 +136,7 @@ describe('reviewed Home renderer uses the original release boundary', () => {
   });
 
   it('forwards the same explicit retry to Home and original redacted clock controls without invoking it during render', () => {
-    const onRetry = vi.fn(), state: PrivatePanelState<HomeLifetime> = {snapshot: {state: 'unavailable', reason: 'read_failed'}, paused: false, refreshing: false};
+    const onRetry = rs.fn(), state: PrivatePanelState<HomeLifetime> = {snapshot: {state: 'unavailable', reason: 'read_failed'}, paused: false, refreshing: false};
     const view = adapter(state, {onRetry}); expect(view.props.onRetry).toBe(onRetry);
     // The view holds state (Show all), so it is rendered rather than called; its Try again is the forwarded retry.
     expect(view.type).toBe(EmployeeHomeQuietView); expect(onRetry).not.toHaveBeenCalled();
@@ -147,34 +147,34 @@ describe('reviewed Home renderer uses the original release boundary', () => {
 
 describe('original controller lifetime and late-result behavior reaches the reviewed view', () => {
   it('clears released data and clock mounting at the original controller lifetime boundary', async () => {
-    vi.useFakeTimers(); let latest: PrivatePanelState<HomeLifetime> = {snapshot: null, refreshing: true, paused: false};
+    rs.useFakeTimers(); let latest: PrivatePanelState<HomeLifetime> = {snapshot: null, refreshing: true, paused: false};
     const read = projectEmployeeHome(snapshot({validForMs: 1000}));
     const controller = createEmployeeHomeController(value => { latest = value; }, async () => read, authority); controllers.push(controller);
-    controller.start(); await vi.advanceTimersByTimeAsync(0);
+    controller.start(); await rs.advanceTimersByTimeAsync(0);
     expect(html(latest)).toContain('PRIVATE_ASSIGNMENT_LOCATION'); expect(adapter(latest).props.ownTimeSlot).not.toBeNull();
-    await vi.advanceTimersByTimeAsync(1000);
+    await rs.advanceTimersByTimeAsync(1000);
     expect(latest.snapshot).toEqual({state: 'unavailable', reason: 'read_failed'});
     expect(adapter(latest).props.status).toBe('unavailable'); expect(adapter(latest).props.ownTimeSlot).toBeNull(); suppressPrivate(html(latest));
   });
 
   it('never releases a reply whose lifetime was consumed by its original round trip', async () => {
-    vi.useFakeTimers(); let latest: PrivatePanelState<HomeLifetime> = {snapshot: null, refreshing: true, paused: false};
+    rs.useFakeTimers(); let latest: PrivatePanelState<HomeLifetime> = {snapshot: null, refreshing: true, paused: false};
     let reply!: (value: unknown) => void;
     const controller = createEmployeeHomeController(value => { latest = value; }, () => new Promise(resolve => { reply = resolve; }), authority); controllers.push(controller);
-    controller.start(); await vi.advanceTimersByTimeAsync(0); await vi.advanceTimersByTimeAsync(1001);
-    reply(projectEmployeeHome(snapshot({validForMs: 1000}))); await vi.advanceTimersByTimeAsync(0);
+    controller.start(); await rs.advanceTimersByTimeAsync(0); await rs.advanceTimersByTimeAsync(1001);
+    reply(projectEmployeeHome(snapshot({validForMs: 1000}))); await rs.advanceTimersByTimeAsync(0);
     expect(latest.snapshot).toEqual({state: 'unavailable', reason: 'read_failed'}); expect(adapter(latest).props.ownTimeSlot).toBeNull(); suppressPrivate(html(latest));
   });
 
   it('discards a late paused reply then renders denial for a new reply with former authority', async () => {
-    vi.useFakeTimers(); let latest: PrivatePanelState<HomeLifetime> = {snapshot: null, refreshing: true, paused: false};
+    rs.useFakeTimers(); let latest: PrivatePanelState<HomeLifetime> = {snapshot: null, refreshing: true, paused: false};
     const replies: ((value: unknown) => void)[] = [];
     const controller = createEmployeeHomeController(value => { latest = value; }, () => new Promise(resolve => { replies.push(resolve); }), authority); controllers.push(controller);
-    controller.start(); await vi.advanceTimersByTimeAsync(0); controller.pause();
-    replies[0](projectEmployeeHome(snapshot())); await vi.advanceTimersByTimeAsync(0);
+    controller.start(); await rs.advanceTimersByTimeAsync(0); controller.pause();
+    replies[0](projectEmployeeHome(snapshot())); await rs.advanceTimersByTimeAsync(0);
     expect(latest).toEqual({snapshot: null, refreshing: false, paused: true}); expect(adapter(latest).props.status).toBe('paused'); suppressPrivate(html(latest));
-    controller.start(); await vi.advanceTimersByTimeAsync(0);
-    replies[1](projectEmployeeHome(snapshot({authority: 'c'.repeat(64)}))); await vi.advanceTimersByTimeAsync(0);
+    controller.start(); await rs.advanceTimersByTimeAsync(0);
+    replies[1](projectEmployeeHome(snapshot({authority: 'c'.repeat(64)}))); await rs.advanceTimersByTimeAsync(0);
     expect(latest.snapshot).toEqual({state: 'unavailable', reason: 'access_denied'});
     expect(adapter(latest).props.status).toBe('unauthorized'); expect(adapter(latest).props.ownTimeSlot).toBeNull(); suppressPrivate(html(latest));
   });

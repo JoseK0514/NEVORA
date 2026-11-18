@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { invitationEmail, passwordChangedEmail, recoveryEmail } from "./account-email-copy";
 
 const link = "https://portal.test/activate#proof=FICTIONAL_PROOF";

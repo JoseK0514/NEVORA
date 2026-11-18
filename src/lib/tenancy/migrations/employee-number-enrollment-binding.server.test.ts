@@ -1,5 +1,5 @@
 // SOURCE-ONLY regression assertions. Unexecuted; no database or lease fixture.
-import {describe,it,expect} from 'vitest';
+import {describe,it,expect} from '@rstest/core';
 import type {Client} from 'pg';
 import {
  getControlledEnrollmentInstallerBinding,isControlledEnrollmentInstallerExecution,

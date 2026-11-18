@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect,it,vi } from 'vitest';
-vi.mock('@/app/app/schedule/generation-actions',()=>({generateWeekAction:vi.fn(),clearGenerationExclusionAction:vi.fn()}));
+import { expect,it,rs } from '@rstest/core';
+rs.mock('@/app/app/schedule/generation-actions',()=>({generateWeekAction:rs.fn(),clearGenerationExclusionAction:rs.fn()}));
 import { ScheduleGenerationControls, GenerationFeedback } from './schedule-generation-controls';
 it('exposes explicit peer modes and scoped week without automatic submission',()=>{const html=renderToStaticMarkup(createElement(ScheduleGenerationControls,{weekStart:'2026-10-05',selectedLocation:'north',review:{editable:true,exclusions:[],coverage:{percentage:null,unavailable:true,requiredMinutes:0,coveredMinutes:0},attempted:1,needsSetup:0}}));expect(html).toContain('Build draft');expect(html).toContain('Fill gaps only');expect(html).toContain('value="BUILD_WEEK"');expect(html).toContain('value="FILL_GAPS_ONLY"');expect(html).toContain('No staffing needs set');expect(html).not.toContain('employeeId');});
 it('disables generation on published scope but keeps viewing useful',()=>{const html=renderToStaticMarkup(createElement(ScheduleGenerationControls,{weekStart:'2026-10-05',selectedLocation:'all',review:{editable:false,exclusions:[],coverage:null,attempted:0,needsSetup:0}}));expect(html.match(/disabled=""/g)).toHaveLength(2);expect(html).toContain('Draft');});

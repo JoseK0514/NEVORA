@@ -2,7 +2,7 @@ import {Client} from 'pg';
 import {randomUUID} from 'node:crypto';
 import {readOwnerOperationalScope,assignOperationalScope} from '../../lib/company-access/operational-scope.server';
 import {Temporal} from '@js-temporal/polyfill';
-import {afterEach,beforeEach,describe,expect,it} from 'vitest';
+import {afterEach,beforeEach,describe,expect,it} from '@rstest/core';
 import {createPunchFixture} from './clocker-punch-fixture';
 import {readAttendanceReview} from '../../lib/data/attendance-review.server';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';

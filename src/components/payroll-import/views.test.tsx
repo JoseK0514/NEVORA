@@ -1,9 +1,9 @@
 // U01: what each step and each state renders, in English and in Spanish (server string render; fictional data only).
 import { createElement, type ComponentProps, type ReactElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 
-vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
+rs.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
 
 import { planPaidExportBatches, type PaidExportBatchPlan } from "@/lib/payroll-export/batches";
 import { payrollImportCopy, type PayrollImportCopy, type PayrollImportLang } from "./copy";

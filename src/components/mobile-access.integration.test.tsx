@@ -2,7 +2,7 @@ import {MobileRecoveryRequest,MobileRecoveryReset} from './mobile-access/recover
 import {MobileActivationView} from './mobile-access/activation-view';
 import {AccessHelpView} from './mobile-access/help-view';
 import {EmployeeHomeQuietView} from './employee-home-quiet';
-import {afterEach,describe,expect,it,vi} from 'vitest';
+import {afterEach,describe,expect,it,rs} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {QuietAuthShell} from './auth-premium/auth-shell';
 
@@ -10,16 +10,16 @@ import {QuietAuthShell} from './auth-premium/auth-shell';
 import {ActivationInvitationView} from '@/app/activate/activation-invitation';
 import {AUTH_COPY} from '@/lib/auth-copy';
 
-vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{},push:()=>{}})}));
-afterEach(()=>vi.unstubAllEnvs());
+rs.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{},push:()=>{}})}));
+afterEach(()=>{ rs.unstubAllEnvs(); });
 
 describe('Frozen mobile access integration',()=>{
  it('keeps the rollout off by default and exposes real Help only after explicit enablement',()=>{
-  vi.stubEnv('NEVORA_MOBILE_ACCESS_ENABLED',undefined);
+  rs.stubEnv('NEVORA_MOBILE_ACCESS_ENABLED',undefined);
   expect(renderToStaticMarkup(<QuietAuthShell lang="en" t={AUTH_COPY.en}>Content</QuietAuthShell>)).not.toContain('data-mobile-access="true"');
-  vi.stubEnv('NEVORA_MOBILE_ACCESS_ENABLED','false');
+  rs.stubEnv('NEVORA_MOBILE_ACCESS_ENABLED','false');
   expect(renderToStaticMarkup(<QuietAuthShell lang="en" t={AUTH_COPY.en}>Content</QuietAuthShell>)).not.toContain('data-mobile-access="true"');
-  vi.stubEnv('NEVORA_MOBILE_ACCESS_ENABLED','true');
+  rs.stubEnv('NEVORA_MOBILE_ACCESS_ENABLED','true');
   const html=renderToStaticMarkup(<QuietAuthShell lang="es" t={AUTH_COPY.es}>Content</QuietAuthShell>);
   expect(html).toContain('data-mobile-access="true"');
   expect(html).toContain('/access-help');

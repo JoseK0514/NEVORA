@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, rs } from '@rstest/core';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
-vi.mock('server-only', () => ({}));
-vi.mock('../data/notification-transactions', () => ({ neonNotificationExecutor: () => { throw Error('Unit tests pass an executor'); } }));
-vi.mock('../data/workspaces', () => ({
+rs.mock('server-only', () => ({}));
+rs.mock('../data/notification-transactions', () => ({ neonNotificationExecutor: () => { throw Error('Unit tests pass an executor'); } }));
+rs.mock('../data/workspaces', () => ({
   getWorkspace: async () => ({ id: 'workspace', name: 'Fictional Co', timeZone: 'America/Puerto_Rico', active: true, createdAt: 'c', updatedAt: 'u' }),
   workspaceReadGuard: () => [{ text: 'SELECT workspace_guard', values: [] }],
 }));
@@ -10,8 +10,8 @@ import { ClockerScheduleGraceError, readClockerScheduleGrace, readEarlyClockInGr
 
 const owner = { employeeId: 'owner', sessionTokenHash: 'a'.repeat(64) };
 function executor(options: { query?: () => Promise<unknown[]>; transaction?: (statements: readonly SqlStatement[]) => Promise<unknown[][]> } = {}) {
-  const query = vi.fn(options.query ?? (async () => []));
-  const transaction = vi.fn(options.transaction ?? (async (statements: readonly SqlStatement[]) => statements.map(() => [])));
+  const query = rs.fn(options.query ?? (async () => []));
+  const transaction = rs.fn(options.transaction ?? (async (statements: readonly SqlStatement[]) => statements.map(() => [])));
   return { query, transaction, executor: { query, transaction } as unknown as SqlExecutor };
 }
 

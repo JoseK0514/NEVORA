@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {unconfiguredPhotoPolicy,unconfiguredPhotoNoticeProfile} from '../photo-server/validation';
 import {noticeSettingsDraft,noticeSettingsUpdate,readCompanyNoticeSettings,verifySavedNoticeSettings} from './notice-settings';
 

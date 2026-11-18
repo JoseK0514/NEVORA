@@ -1,9 +1,9 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, rs } from '@rstest/core';
 import { claimRootChrome, rootChromeClaimed, subscribeRootChrome } from './root-chrome';
 
 describe('root chrome claim (QA D16)', () => {
   it('holds while any page claims it, tells subscribers, and a release is counted once', () => {
-    const heard = vi.fn(), stop = subscribeRootChrome(heard);
+    const heard = rs.fn(), stop = subscribeRootChrome(heard);
     expect(rootChromeClaimed()).toBe(false);
     const a = claimRootChrome(), b = claimRootChrome();
     expect(rootChromeClaimed()).toBe(true);

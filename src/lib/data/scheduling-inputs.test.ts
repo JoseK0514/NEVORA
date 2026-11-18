@@ -1,12 +1,14 @@
-vi.mock('./sql-session-contract',()=>import('../../test/fixtures/business-sql-session'));
+import * as rstestOriginal0 from "../../test/fixtures/business-sql-session" with { rstest: 'importActual' };
+import * as rstestOriginal1 from "@/lib/company-access/operational-scope.server" with { rstest: 'importActual' };
+rs.mock('./sql-session-contract',()=>rstestOriginal0);
 import { managementProof } from '../../test/fixtures/management';
-import { beforeEach, describe, expect, it, vi } from "vitest";
-const mocks = vi.hoisted(() => ({
-  query: vi.fn(),
-  transaction: vi.fn(),
+import { beforeEach, describe, expect, it, rs } from '@rstest/core';
+const mocks = rs.hoisted(() => ({
+  query: rs.fn(),
+  transaction: rs.fn(),
   statements: [] as Array<{ text: string; values: unknown[] }>,
 }));
-vi.mock("@/lib/db", () => ({
+rs.mock("@/lib/db", () => ({
   getDb: () =>
     Object.assign(
       (strings: TemplateStringsArray, ...values: unknown[]) => {
@@ -44,7 +46,7 @@ import {
 } from "./week-settings";
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  rs.clearAllMocks();
   mocks.statements.length = 0;
   mocks.transaction.mockResolvedValue([]);
 });
@@ -147,12 +149,12 @@ describe("target and maximum persistence", () => {
   it("saves target and maximum into the existing settings record", async () => {
     const sql = {
       query: async () => [{ id: 'northside', name: 'Northside Services', timeZone: 'America/New_York', active: true, updatedAt: 'version' }],
-      transaction: vi.fn(async () => []),
+      transaction: rs.fn(async () => []),
     } as unknown as import('../notifications/types').SqlExecutor;
     await saveEmployeeHourTargets([
       { employeeId: "E", targetWeeklyHours: 24, maximumWeeklyHours: 40 },
     ], managementProof('M'), sql);
-    const batch = vi.mocked(sql.transaction).mock.calls[0][0];
+    const batch = rs.mocked(sql.transaction).mock.calls[0][0];
     const write = batch.find(s => s.text.includes('INSERT INTO employee_scheduling_settings'))!;
     expect(write.text).toContain('maximum_weekly_hours');
     expect(write.values).toEqual(['E', 24, 40]);
@@ -414,4 +416,4 @@ it('coverage reads retain named quotas including inactive catalog requirements',
 // Business-unit admission I/O only. Real current Company/restriction/lifecycle
 // and rollback checks run in company-access-configuration/global-scheduling SQL.
 // Keep the actual operationalScopeStatements assembly in each write batch.
-vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'northside',name:'Northside Services',active:true,timeZone:'America/New_York',createdAt:'2030-01-01 00:00:00+00',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));
+rs.mock('@/lib/company-access/operational-scope.server', ()=>({...rstestOriginal1,assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'northside',name:'Northside Services',active:true,timeZone:'America/New_York',createdAt:'2030-01-01 00:00:00+00',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));

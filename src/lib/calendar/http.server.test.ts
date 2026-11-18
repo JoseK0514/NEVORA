@@ -1,7 +1,7 @@
-import {expect,it,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
-vi.mock('../auth/session',()=>({readSessionMutationProof:vi.fn()}));
-vi.mock('./service.server',()=>({calendarAuthority:vi.fn(),getEmployeeCalendarSubscription:vi.fn(),manageEmployeeCalendarSubscription:vi.fn(),revokeEmployeeCalendarSubscription:vi.fn(),validCalendarCommand:vi.fn()}));
+import {expect,it,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
+rs.mock('../auth/session',()=>({readSessionMutationProof:rs.fn()}));
+rs.mock('./service.server',()=>({calendarAuthority:rs.fn(),getEmployeeCalendarSubscription:rs.fn(),manageEmployeeCalendarSubscription:rs.fn(),revokeEmployeeCalendarSubscription:rs.fn(),validCalendarCommand:rs.fn()}));
 import {createCalendarFeedHandler} from './http.server';
 import type {CalendarFeedRead} from './types';
 import {employeeCalendarHandler,managerCalendarRevokeHandler} from './http.server';
@@ -15,24 +15,24 @@ it('unknown and revoked are identical generic private 404 and never 304',async()
 const ownProof={employee:{id:'fictional-self',firstName:'Fictional',lastName:'Self',role:'EMPLOYEE' as const,primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
 function manageRequest(method='POST',overrides:Record<string,string>={},body:unknown={kind:'ISSUE',operationId:'fictional-operation',authority:'fixture-authority',expectedGeneration:null}){return new Request('https://fixture.invalid/api/employee/calendar-subscriptions',{method,headers:{'X-Nevora-Calendar':'1','X-Nevora-Calendar-Authority':'fixture-authority',Origin:'https://fixture.invalid','Content-Type':'application/json',...overrides},...(method==='POST'?{body:JSON.stringify(body)}:{})});}
 it('management rejects cross-origin, missing marker, excessive body and stale authority before mutation',async()=>{
- vi.mocked(readSessionMutationProof).mockResolvedValue(ownProof);vi.mocked(calendarAuthority).mockReturnValue('fixture-authority');vi.mocked(manageEmployeeCalendarSubscription).mockClear();
+ rs.mocked(readSessionMutationProof).mockResolvedValue(ownProof);rs.mocked(calendarAuthority).mockReturnValue('fixture-authority');rs.mocked(manageEmployeeCalendarSubscription).mockClear();
  for(const headers of [{Origin:'https://outside.invalid'},{'X-Nevora-Calendar':'0'},{'X-Nevora-Calendar-Authority':'stale'}] as Record<string,string>[])expect((await employeeCalendarHandler(manageRequest('POST',headers))).status).toBe(403);
  expect((await employeeCalendarHandler(manageRequest('POST',{'Content-Length':'5000'}))).status).toBe(400);expect(manageEmployeeCalendarSubscription).not.toHaveBeenCalled();
 });
 it('current Employee proof controls own status and issuance without a durable URL',async()=>{
- vi.mocked(readSessionMutationProof).mockResolvedValue(ownProof);vi.mocked(calendarAuthority).mockReturnValue('fixture-authority');vi.mocked(validCalendarCommand).mockReturnValue(true);
- vi.mocked(getEmployeeCalendarSubscription).mockResolvedValue({state:'none',id:null,generation:null,issuedAt:null,allowedLocationIds:[],authority:'fixture-authority',observedAt:'2026-10-27',validForMs:45000,canIssue:true});expect((await employeeCalendarHandler(manageRequest('GET'))).status).toBe(200);
- vi.mocked(manageEmployeeCalendarSubscription).mockResolvedValue({status:'created',operationId:'o',id:'id',generation:'g',url:'/api/calendar/fictional-sentinel/schedule.ics'});const response=await employeeCalendarHandler(manageRequest());expect(response.status).toBe(200);expect((await response.json()).url).toBe('https://fixture.invalid/api/calendar/fictional-sentinel/schedule.ics');expect(response.headers.get('Cache-Control')).toBe('no-store, private');
- vi.mocked(readSessionMutationProof).mockResolvedValue({...ownProof,employee:{...ownProof.employee,role:'MANAGER'}});expect((await employeeCalendarHandler(manageRequest())).status).toBe(403);
+ rs.mocked(readSessionMutationProof).mockResolvedValue(ownProof);rs.mocked(calendarAuthority).mockReturnValue('fixture-authority');rs.mocked(validCalendarCommand).mockReturnValue(true);
+ rs.mocked(getEmployeeCalendarSubscription).mockResolvedValue({state:'none',id:null,generation:null,issuedAt:null,allowedLocationIds:[],authority:'fixture-authority',observedAt:'2026-10-27',validForMs:45000,canIssue:true});expect((await employeeCalendarHandler(manageRequest('GET'))).status).toBe(200);
+ rs.mocked(manageEmployeeCalendarSubscription).mockResolvedValue({status:'created',operationId:'o',id:'id',generation:'g',url:'/api/calendar/fictional-sentinel/schedule.ics'});const response=await employeeCalendarHandler(manageRequest());expect(response.status).toBe(200);expect((await response.json()).url).toBe('https://fixture.invalid/api/calendar/fictional-sentinel/schedule.ics');expect(response.headers.get('Cache-Control')).toBe('no-store, private');
+ rs.mocked(readSessionMutationProof).mockResolvedValue({...ownProof,employee:{...ownProof.employee,role:'MANAGER'}});expect((await employeeCalendarHandler(manageRequest())).status).toBe(403);
 });
 it('manager route permits only current manager revocation and denies issue',async()=>{
- vi.mocked(readSessionMutationProof).mockResolvedValue({...ownProof,employee:{...ownProof.employee,role:'MANAGER'}});vi.mocked(calendarAuthority).mockReturnValue('fixture-authority');vi.mocked(validCalendarCommand).mockReturnValue(true);vi.mocked(revokeEmployeeCalendarSubscription).mockClear();
+ rs.mocked(readSessionMutationProof).mockResolvedValue({...ownProof,employee:{...ownProof.employee,role:'MANAGER'}});rs.mocked(calendarAuthority).mockReturnValue('fixture-authority');rs.mocked(validCalendarCommand).mockReturnValue(true);rs.mocked(revokeEmployeeCalendarSubscription).mockClear();
  expect((await managerCalendarRevokeHandler(manageRequest(),'fictional-target')).status).toBe(400);expect(revokeEmployeeCalendarSubscription).not.toHaveBeenCalled();
- vi.mocked(revokeEmployeeCalendarSubscription).mockResolvedValue({status:'revoked',operationId:'o',id:'id',generation:'g'});expect((await managerCalendarRevokeHandler(manageRequest('POST',{}, {kind:'REVOKE',operationId:'o',authority:'fixture-authority',expectedGeneration:null}),'fictional-target')).status).toBe(200);
- vi.mocked(readSessionMutationProof).mockResolvedValue(ownProof);expect((await managerCalendarRevokeHandler(manageRequest(),'fictional-target')).status).toBe(403);
+ rs.mocked(revokeEmployeeCalendarSubscription).mockResolvedValue({status:'revoked',operationId:'o',id:'id',generation:'g'});expect((await managerCalendarRevokeHandler(manageRequest('POST',{}, {kind:'REVOKE',operationId:'o',authority:'fixture-authority',expectedGeneration:null}),'fictional-target')).status).toBe(200);
+ rs.mocked(readSessionMutationProof).mockResolvedValue(ownProof);expect((await managerCalendarRevokeHandler(manageRequest(),'fictional-target')).status).toBe(403);
 });
 it('issuance uses the verified browser origin when Next exposes an internal loopback request URL',async()=>{
- vi.mocked(readSessionMutationProof).mockResolvedValue(ownProof);vi.mocked(calendarAuthority).mockReturnValue('fixture-authority');vi.mocked(validCalendarCommand).mockReturnValue(true);vi.mocked(manageEmployeeCalendarSubscription).mockResolvedValue({status:'created',operationId:'o',id:'id',generation:'g',url:'/api/calendar/fictional-sentinel/schedule.ics'});
+ rs.mocked(readSessionMutationProof).mockResolvedValue(ownProof);rs.mocked(calendarAuthority).mockReturnValue('fixture-authority');rs.mocked(validCalendarCommand).mockReturnValue(true);rs.mocked(manageEmployeeCalendarSubscription).mockResolvedValue({status:'created',operationId:'o',id:'id',generation:'g',url:'/api/calendar/fictional-sentinel/schedule.ics'});
  const request=new Request('http://localhost:3000/api/employee/calendar-subscriptions',{method:'POST',headers:{Host:'fixture.invalid','X-Forwarded-Proto':'https',Origin:'https://fixture.invalid','X-Nevora-Calendar':'1','X-Nevora-Calendar-Authority':'fixture-authority','Content-Type':'application/json'},body:JSON.stringify({kind:'ISSUE'})});const response=await employeeCalendarHandler(request);expect(response.status).toBe(200);expect((await response.json()).url).toBe('https://fixture.invalid/api/calendar/fictional-sentinel/schedule.ics');
 });
 it('source failure is 503 rather than empty successful calendar',async()=>{const response=await createCalendarFeedHandler(async()=>({state:'unavailable',reason:'sql'}))(request(),context);expect(response.status).toBe(503);expect(await response.text()).not.toContain('VCALENDAR');});

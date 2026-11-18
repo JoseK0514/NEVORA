@@ -1,4 +1,4 @@
-import {beforeEach,afterEach,expect,it} from 'vitest';
+import {beforeEach,afterEach,expect,it} from '@rstest/core';
 import {createHash,randomUUID} from 'node:crypto';
 import {previewCommunicationAudience,executeCommunicationCommand,communicationAuthority,readCommunication,recordCommunicationRead} from '../../lib/communications/service.server';
 import type {CommunicationDraft} from '../../lib/communications/types';

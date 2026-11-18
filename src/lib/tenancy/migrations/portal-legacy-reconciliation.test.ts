@@ -1,8 +1,8 @@
 // UNEXECUTED proposed focused regression source. Root must adopt the bound
 // additions before running; an absent export/import failure is not feature RED.
-import {describe,it,expect,vi} from 'vitest';
+import {describe,it,expect,rs} from '@rstest/core';
 import type {Client} from 'pg';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 import {reconcileGuardedTypedLocalPortalLegacyAccessEnrollment} from './typed-guarded-backfill.server';
 import {observePortalLegacyEnrollmentCompleteTarget,preparePortalLegacyReconciliationExpectation,
  isPortalLegacyReconciliationFailure,isPortalLegacyEnrollmentFailure} from './portal-legacy-access-enrollment.server';

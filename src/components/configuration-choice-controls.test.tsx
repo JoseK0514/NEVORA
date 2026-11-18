@@ -1,23 +1,23 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it, vi } from "vitest";
+import { expect, it, rs } from '@rstest/core';
 
-vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
-vi.mock("next/link", () => ({
+rs.mock("next/navigation", () => ({ useRouter: () => ({ refresh: rs.fn() }) }));
+rs.mock("next/link", () => ({
   default: ({ href, children, ...props }: React.ComponentProps<"a">) =>
     createElement("a", { href, ...props }, children),
 }));
-vi.mock("../app/app/employees/actions", () => ({
-  saveOperationalRulesAction: vi.fn(),
+rs.mock("../app/app/employees/actions", () => ({
+  saveOperationalRulesAction: rs.fn(),
 }));
-vi.mock("../app/app/schedule/settings/actions", () => ({
-  saveShiftChangePolicyAction: vi.fn(),
+rs.mock("../app/app/schedule/settings/actions", () => ({
+  saveShiftChangePolicyAction: rs.fn(),
 }));
-vi.mock("./policy-save-form", () => ({
+rs.mock("./policy-save-form", () => ({
   PolicySaveForm: ({ children }: { children: React.ReactNode }) =>
     createElement("form", null, children),
 }));
-vi.mock("./shift-change-form", () => ({
+rs.mock("./shift-change-form", () => ({
   ShiftChangeForm: ({ children }: { children: React.ReactNode }) =>
     createElement("form", null, children),
 }));

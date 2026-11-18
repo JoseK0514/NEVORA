@@ -1,13 +1,13 @@
 import {createHash,randomUUID} from 'node:crypto';
 import {PDFDocument} from 'pdf-lib';
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import {createPunchFixture} from './clocker-punch-fixture';
 import {document,statements} from '../../lib/payroll/access';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 let f:Awaited<ReturnType<typeof createPunchFixture>>;
 const self:SessionMutationProof={employee:{id:'c34-a',role:'EMPLOYEE',firstName:'Avery',lastName:'Fictional',primaryLocationId:'loc-1'},sessionTokenHash:'d'.repeat(64)};
-beforeEach(async()=>{vi.stubEnv('NEVORA_PAYROLL_ENABLED','true');f=await createPunchFixture({companyAccess:true});await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'c34-a',clock_timestamp()+interval '1 day'),(repeat('e',64),'c34-b',clock_timestamp()+interval '1 day')");});
-afterEach(async()=>{await f?.db.dispose();vi.unstubAllEnvs();});
+beforeEach(async()=>{rs.stubEnv('NEVORA_PAYROLL_ENABLED','true');f=await createPunchFixture({companyAccess:true});await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'c34-a',clock_timestamp()+interval '1 day'),(repeat('e',64),'c34-b',clock_timestamp()+interval '1 day')");});
+afterEach(async()=>{await f?.db.dispose();rs.unstubAllEnvs();});
 it('actual published own-statement access minimizes persisted provenance and preserves verified PDF integrity and person scope',async()=>{
  const [{id:workspaceId}]=await f.q<{id:string}>('SELECT id FROM workspaces WHERE singleton');
  const runId=randomUUID(),documentId=randomUUID(),pdf=await PDFDocument.create();pdf.addPage().drawText('Fictional privacy regression');

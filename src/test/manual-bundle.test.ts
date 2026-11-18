@@ -1,4 +1,4 @@
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
+import {afterEach, beforeEach, describe, expect, it, rs} from '@rstest/core';
 import childProcess, {execFileSync, spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {writeFileSync} from 'node:fs';
@@ -32,7 +32,7 @@ async function saveManifest() {
 async function observeRealGit<T>(observe: (args: string[]) => void, run: () => Promise<T>) {
   const actual = childProcess.execFileSync;
   // Observe the expensive boundary while executing real Git and real files.
-  const spy = vi.spyOn(childProcess, 'execFileSync').mockImplementation(((...args: unknown[]) => {
+  const spy = rs.spyOn(childProcess, 'execFileSync').mockImplementation(((...args: unknown[]) => {
     const result = Reflect.apply(actual, childProcess, args);
     if (args[0] === 'git' && Array.isArray(args[1])) observe(args[1] as string[]);
     return result;

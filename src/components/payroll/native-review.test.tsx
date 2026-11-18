@@ -1,17 +1,17 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from 'react-dom/server';
 import type { PayrollRunsResponse } from '@/lib/payroll/contracts';
 import { nativeCapabilities, nativeRun, statement } from './native-ui-fixture.test-support';
 import { PayrollRuns } from './payroll-runs';
 
-const boundary = vi.hoisted(() => ({ data: null as PayrollRunsResponse | null, loading: false, error: '' }));
+const boundary = rs.hoisted(() => ({ data: null as PayrollRunsResponse | null, loading: false, error: '' }));
 // Only the HTTP/lifecycle boundary is substituted for static render tests.
 // Actual operations and lifecycle are exercised in the owned browser harness.
-vi.mock('./use-payroll', () => ({ PAYROLL_SIGNED_OUT: 'Your session ended. Sign in again to see payroll.',
+rs.mock('./use-payroll', () => ({ PAYROLL_SIGNED_OUT: 'Your session ended. Sign in again to see payroll.',
   usePayrollResource: (path: string) => ({ ...boundary, data: path === '/api/payroll/portal-statements' ? { version: 'PAYROLL_PORTAL_STATEMENTS_V1', statements: [] } : boundary.data, reload: async () => {} }),
   usePayrollOperation: () => ({ busy: false, pending: null, resuming: false, message: '', error: '', revisionConflict: false, submit: async () => {}, receipt: null }),
 }));
-vi.mock('next/navigation', () => ({ usePathname: () => '/app/payroll/review', useRouter: () => ({ push: () => {}, replace: () => {} }) }));
+rs.mock('next/navigation', () => ({ usePathname: () => '/app/payroll/review', useRouter: () => ({ push: () => {}, replace: () => {} }) }));
 const RUN = '18d8e87c-9765-4dbd-9f4b-691b045c8b73';
 // Release 1: the review, its fix list and each person's amounts are separate pages of the same workspace.
 function render(view: 'review' | 'fix' | 'people' = 'review') { return renderToStaticMarkup(<PayrollRuns recoveryScope="fictional-scope" view={view} runId={RUN} names={{ E1: 'Fictional Employee' }} />); }

@@ -1,21 +1,21 @@
 import { readFileSync } from "node:fs";
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it, vi } from "vitest";
+import { expect, it, rs } from '@rstest/core';
 import { AppShell } from "./app-shell";
 import { NavIcon } from "./nav-icon";
 
-const navigationMock = vi.hoisted(() => ({ pathname: "/app/my-time" }));
-vi.mock("next/navigation", () => ({ usePathname: () => navigationMock.pathname, useRouter: () => ({ push: () => {}, replace: () => {}, refresh: () => {} }), useSearchParams: () => new URLSearchParams() }));
-vi.mock("next/link", () => ({
+const navigationMock = rs.hoisted(() => ({ pathname: "/app/my-time" }));
+rs.mock("next/navigation", () => ({ usePathname: () => navigationMock.pathname, useRouter: () => ({ push: () => {}, replace: () => {}, refresh: () => {} }), useSearchParams: () => new URLSearchParams() }));
+rs.mock("next/link", () => ({
   default: ({ href, children, ...props }: ComponentProps<"a">) => createElement("a", { href, ...props }, children),
   useLinkStatus: () => ({ pending: false }),
 }));
-vi.mock("@/components/brand-mark", () => import("./brand-mark"));
-vi.mock("@/components/nav-icon", () => import("./nav-icon"));
-vi.mock("@/lib/navigation", () => import("../lib/navigation"));
-vi.mock("@/app/login/actions", () => ({ logout: vi.fn() }));
-vi.mock("next/image", () => ({ default: () => null }));
+
+
+
+rs.mock("@/app/login/actions", () => ({ logout: rs.fn() }));
+rs.mock("next/image", () => ({ default: () => null }));
 
 const company={state:'ready' as const,employeeId:'actor',role:'MANAGER' as const,source:'LEGACY_ADOPTION' as const,scope:{mode:'COMPANY' as const,locationIds:[] as []},scopeRevision:1,authority:'fictional',locations:[],observedAt:'2026-10-14T12:00:00Z',validForMs:15000};
 

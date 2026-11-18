@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, it } from 'vitest';
+import { afterEach, beforeEach, expect, it } from '@rstest/core';
 import { companyAccessFixture } from '@/test/integration/company-access-fixture';
 import { configured, fictionalProfile } from '@/test/fixtures/shift-changes';
 import { AdvisorStore } from './store.server';

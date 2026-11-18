@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { durationMinutes } from "../date-utils";
 import { validateShift, type ValidateShiftInput } from "./validate-shift";
 import { calculateScheduleHealth } from "./schedule-health";

@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {exchangeSummary,exchangeSlot,employeeHistory,parseEmployeeExchange,calloutSummary} from './employee-exchange';
 import type {CalloutRecord} from './data/callouts';
 it('carries only typed coverage history through an own callout public summary',()=>{

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { businessDate } from './business-time';
 import { employmentDateErrors, hasEmploymentDate, isCalendarDate, parseEmploymentDates, EMPTY_EMPLOYMENT_DATES } from './employment-dates';
 

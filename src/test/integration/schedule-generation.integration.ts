@@ -1,14 +1,14 @@
 import { deleteGeneratedDraftShift, saveEmployeeSchedulingProfile } from './management-api';
 import { bindFixtureCallout, fixtureProof } from './shift-change-api';
 import { managementProof } from '../fixtures/management';
-import { afterAll, beforeAll, beforeEach, expect, it, vi, afterEach } from 'vitest';
+import { afterAll, beforeAll, beforeEach, expect, it, rs, afterEach } from '@rstest/core';
 import { setTimeout as delay } from 'node:timers/promises';
 import { Client } from 'pg';
 import { Temporal } from '@js-temporal/polyfill';
 import { selectGenerationScope } from '../../lib/scheduling/generation/scope';
 import { readGenerationReviewSnapshot } from '../../lib/data/schedule-generation-snapshot';
 import * as planner from '../../lib/scheduling/generation/planner';
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => { rs.restoreAllMocks(); });
 import { createDisposableGenerationDatabase } from './local-postgres';
 import { generateWeekDraft, readGenerationSnapshot } from '../../lib/data/schedule-generation';
 import { GenerationConflictError, readGenerationSource } from '../../lib/data/generation-guards';
@@ -221,7 +221,7 @@ it('late write failure rolls back new parents, assignments and timestamps', asyn
   expect(await source()).toEqual(before);
 });
 it('fresh snapshot/re-solve after input change, with one retry owner capped at three attempts', async () => {
-  const solving = vi.spyOn(planner, 'planWeek');
+  const solving = rs.spyOn(planner, 'planWeek');
   let reads = 0,
     writes = 0;
   const racing: SqlExecutor = {
@@ -793,7 +793,7 @@ it.each(remainingWriters.flatMap(item => ['writer-first', 'generation-first'].ma
     if (kind === 'coverage-insert') await q('DELETE FROM location_coverage_windows');
     if (kind === 'maximum-change') await q("INSERT INTO employee_scheduling_settings(employee_id,maximum_weekly_hours) VALUES('worker',40)");
     let reads = 0;
-    const solving = vi.spyOn(planner, 'planWeek');
+    const solving = rs.spyOn(planner, 'planWeek');
     await withOwnedTestResources(async defer => {
       const generation = await heldExecutor(defer, s => order === 'generation-first' && s.text.includes('generation_source_conflict'));
       const counted: SqlExecutor = {...generation.executor, query: async <T,>(s: SqlStatement) => {
@@ -825,7 +825,7 @@ it.each(remainingWriters.flatMap(item => ['writer-first', 'generation-first'].ma
   });
 
 it.each(['writer-first','generation-first'])('fences a workspace-zone change / %s at the actual PostgreSQL lock boundary',async order=>{
-  const solving=vi.spyOn(planner,'planWeek');let reads=0;
+  const solving=rs.spyOn(planner,'planWeek');let reads=0;
   await withOwnedTestResources(async defer=>{
     const generation=await heldExecutor(defer,s=>order==='generation-first'&&s.text.includes('generation_source_conflict'));
     const writer=await heldExecutor(defer,()=>order==='writer-first');

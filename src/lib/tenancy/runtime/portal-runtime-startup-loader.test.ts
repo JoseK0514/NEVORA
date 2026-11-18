@@ -3,7 +3,7 @@
 // Proposed target alongside the adopted loader; root owns adoption and runs.
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { loadPortalRuntimeSourceImage, isLoadedPortalRuntimeSourceImage, linkPortalRuntimeStartupSourceImage } from './portal-runtime-startup-loader';
 
 type Data = Record<string, unknown>;

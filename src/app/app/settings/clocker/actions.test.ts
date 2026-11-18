@@ -1,9 +1,9 @@
-import { beforeEach, expect, it, vi } from 'vitest';
-const mocks=vi.hoisted(()=>({proof:vi.fn(),headers:vi.fn(),register:vi.fn(),rename:vi.fn(),rotate:vi.fn(),revoke:vi.fn()}));
-vi.mock('server-only',()=>({}));
-vi.mock('next/headers',()=>({headers:mocks.headers}));
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:mocks.proof}));
-vi.mock('@/lib/clocker/devices.server',()=>({
+import { beforeEach, expect, it, rs } from '@rstest/core';
+const mocks=rs.hoisted(()=>({proof:rs.fn(),headers:rs.fn(),register:rs.fn(),rename:rs.fn(),rotate:rs.fn(),revoke:rs.fn()}));
+rs.mock('server-only',()=>({}));
+rs.mock('next/headers',()=>({headers:mocks.headers}));
+rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:mocks.proof}));
+rs.mock('@/lib/clocker/devices.server',()=>({
  registerClockerDevice:mocks.register,renameClockerDevice:mocks.rename,rotateClockerDevice:mocks.rotate,revokeClockerDevice:mocks.revoke,
  ClockerDeviceError:class extends Error{constructor(public code:string,message:string){super(message);}},
 }));
@@ -11,7 +11,7 @@ import {manageClockerDeviceAction} from './actions';
 const record={id:'tablet',name:'Front tablet',locationId:'loc-1',workspaceId:'workspace-fuel',active:true,version:2,credentialVersion:1,lastSeenAt:null,enrollmentExpiresAt:'2030-10-07 12:10:00-04',enrolledAt:null,revokedAt:null,state:'PENDING'};
 const data=(values:Record<string,string>)=>{const form=new FormData();for(const [key,value]of Object.entries(values))form.set(key,value);return form;};
 beforeEach(()=>{
- vi.clearAllMocks();
+ rs.clearAllMocks();
  mocks.proof.mockResolvedValue({employee:{id:'real-owner',role:'OWNER'},sessionTokenHash:'a'.repeat(64)});
  mocks.headers.mockResolvedValue(new Headers({host:'localhost:3000',origin:'http://localhost:3000'}));
  mocks.register.mockResolvedValue({device:{...record,credentialHash:'must-not-leak'},enrollmentToken:'nev_enr_'+'e'.repeat(64)});

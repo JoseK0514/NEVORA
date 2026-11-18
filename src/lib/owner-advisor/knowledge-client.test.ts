@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 import {
   KNOWLEDGE_HEADER, KNOWLEDGE_LIMITS, companyTime, createKnowledgeClient, documentErrors, entryState, entrySummary, isoInstant, normalizeText, parseReceipt, parseSnapshot,
   parseVersion, profileBody, profileErrors, refusedCharacter, utf8Bytes, zonedInput, zonedInstant, type KnowledgeEntry,
@@ -116,7 +116,7 @@ describe("what an entry is now", () => {
 describe("transport", () => {
   const command = { op: "archive" as const, requestId: "11111111-1111-4111-8111-111111111111", expectedRevision: 2, documentId: DOC };
   it("sends the intent header same-origin, and Accept alone for the JSON version view", async () => {
-    const fetcher = vi.fn(async () => new Response(JSON.stringify({ ...meta(V1), documentId: DOC, kind: "document", body: "x", profileFields: null, current: true, archived: false }), { status: 200 }));
+    const fetcher = rs.fn(async () => new Response(JSON.stringify({ ...meta(V1), documentId: DOC, kind: "document", body: "x", profileFields: null, current: true, archived: false }), { status: 200 }));
     const client = createKnowledgeClient(fetcher);
     expect((await client.version(DOC, V1, new AbortController().signal)).kind).toBe("ready");
     const [url, init] = fetcher.mock.calls[0] as unknown as [string, RequestInit];
@@ -133,7 +133,7 @@ describe("transport", () => {
     expect((await createKnowledgeClient(async () => new Response("not json", { status: 200 })).write(command)).kind).toBe("uncertain");
   });
   it("posts the command as is", async () => {
-    const fetcher = vi.fn(async () => new Response(JSON.stringify({ state: "archived", operationId: "op", documentId: DOC, revision: 3, savedAt: "2026-11-16T12:00:00Z" }), { status: 200 }));
+    const fetcher = rs.fn(async () => new Response(JSON.stringify({ state: "archived", operationId: "op", documentId: DOC, revision: 3, savedAt: "2026-11-16T12:00:00Z" }), { status: 200 }));
     const outcome = await createKnowledgeClient(fetcher).write(command);
     expect(outcome.kind).toBe("receipt");
     const init = (fetcher.mock.calls[0] as unknown as [string, RequestInit])[1];

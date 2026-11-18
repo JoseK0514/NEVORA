@@ -1,6 +1,6 @@
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 import {companyAccessFixture} from './company-access-fixture';
 import {createTimeOffRequest,reviewTimeOffRequest} from '../../lib/data/requests';
 import {publishScheduleChanges} from '../../lib/data/publication-revisions';

@@ -3,7 +3,7 @@
 // native invocation, authenticated executing source or operation authority.
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { inspectNativePortalRootObservation } from './portal-native-root-observation';
 
 type Data = Record<string, unknown>;

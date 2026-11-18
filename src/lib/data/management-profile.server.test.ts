@@ -1,7 +1,7 @@
-import {beforeEach,expect,it,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
-const authority=vi.hoisted(()=>({read:vi.fn()}));
-vi.mock('../company-access/operational-scope.server',()=>({readOperationalAuthority:authority.read}));
+import {beforeEach,expect,it,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
+const authority=rs.hoisted(()=>({read:rs.fn()}));
+rs.mock('../company-access/operational-scope.server',()=>({readOperationalAuthority:authority.read}));
 beforeEach(()=>{authority.read.mockReset();authority.read.mockImplementation(async(p:SessionMutationProof)=>({
  state:'ready',employeeId:p.employee.id,role:p.employee.role,source:'OWNER_ASSIGNMENT',scope:{mode:'COMPANY',locationIds:[]},scopeRevision:1,authority:'a'.repeat(64),
  locations:[{id:'loc-1',name:'Fictional Office',shortName:'Office'}],observedAt:new Date().toISOString(),validForMs:15000,
@@ -13,11 +13,11 @@ import type {SqlExecutor,SqlStatement} from '../notifications/types';
 const proof=(role:'OWNER'|'MANAGER'|'LEAD'|'EMPLOYEE'='OWNER'):SessionMutationProof=>({employee:{id:'qa-self',firstName:'QA',lastName:'Self',role,primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)});
 const workspace={id:'w',name:'Fictional QA',timeZone:'America/Puerto_Rico',active:true,createdAt:'2026-01-01',updatedAt:'2026-01-01'};
 function database(row:object|undefined,expired=false) {
-  const transaction=vi.fn(async(statements:readonly SqlStatement[])=>{
+  const transaction=rs.fn(async(statements:readonly SqlStatement[])=>{
     if(expired)throw Object.assign(Error('invalid input syntax for type integer: "management_authorization"'),{code:'22P02'});
     return statements.map(s=>s.text.startsWith('WITH observed')&&row?[row]:[]);
   });
-  return {query:vi.fn(async(s:SqlStatement)=>s.text.includes('pg_catalog')?[{installed:0}]:[workspace]),transaction} as unknown as SqlExecutor;
+  return {query:rs.fn(async(s:SqlStatement)=>s.text.includes('pg_catalog')?[{installed:0}]:[workspace]),transaction} as unknown as SqlExecutor;
 }
 const ready={observedAt:'2026-10-19T14:00:00Z',validForMs:600000,email:'qa@example.invalid',phone:null,scope:'all',names:['Fictional Office'],choices:{'time-off':false}};
 it('projects only current Company Access location names, ignoring the legacy global projection',async()=>{
@@ -44,7 +44,7 @@ it.each(['OWNER','MANAGER'] as const)('returns only the %s own contact, active l
     expect(result.alerts.find(t=>t.id==='time-off')?.on).toBe(false);
     expect(JSON.stringify(result)).not.toContain('sessionTokenHash');
   }
-  const statements=(db.transaction as ReturnType<typeof vi.fn>).mock.calls[0][0] as SqlStatement[];
+  const statements=(db.transaction as ReturnType<typeof rs.fn>).mock.calls[0][0] as SqlStatement[];
   expect(statements.find(s=>s.text.startsWith('WITH observed'))?.values).toEqual(['qa-self','a'.repeat(64),role]);
 });
 it('accepts a verified empty location set and missing contact values',async()=>{
@@ -68,7 +68,7 @@ it('validates choices and forbids another employee identifier or Manager payroll
 });
 it('saves a topic with an upsert and live session guards before and after writes',async()=>{
   const db=database(undefined);await saveManagementAlertChoice(proof(),{topicId:'time-off',on:false},db);
-  const statements=(db.transaction as ReturnType<typeof vi.fn>).mock.calls[0][0] as SqlStatement[];
+  const statements=(db.transaction as ReturnType<typeof rs.fn>).mock.calls[0][0] as SqlStatement[];
   expect(statements.find(s=>s.text.startsWith('UPDATE employees SET management_alert_choices'))?.values).toEqual(['qa-self','time-off',false]);
   expect(statements.at(-1)?.text).toContain('expires_at>clock_timestamp()');
 });

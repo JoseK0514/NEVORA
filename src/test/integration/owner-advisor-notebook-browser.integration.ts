@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { randomUUID } from "node:crypto";
 import { createRequire } from "node:module";
 import { mkdir, readFile, writeFile } from "node:fs/promises";

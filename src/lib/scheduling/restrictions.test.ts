@@ -1,4 +1,4 @@
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it} from '@rstest/core';
 import {applyRestrictionCommand,emptyRestrictionDocument,parseRestrictionCommand,parseRestrictionDocument,resolveRestrictionDay,RestrictionError} from './restrictions';
 import {addDays} from '../date-utils';
 

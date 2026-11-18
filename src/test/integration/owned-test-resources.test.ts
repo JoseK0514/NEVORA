@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { withOwnedTestResources } from './owned-test-resources';
 
 describe('owned SQL test resource lifetime', () => {

@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import type {SqlExecutor, SqlStatement} from '../notifications/types';
 import type {SessionMutationProof} from '../shift-changes/types';
 import {assertOperationalAccess, OperationalAuthorizationError, OperationalUnavailableError} from './operational-scope.server';

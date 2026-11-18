@@ -1,7 +1,7 @@
-import {beforeEach,expect,it,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
-const m=vi.hoisted(()=>({session:null as null|{id:string;role:string},token:'a'.repeat(64),read:vi.fn()}));
-vi.mock('./auth/session',()=>({getSession:async()=>m.session,requireSessionMutationProof:async()=>({employee:m.session,sessionTokenHash:m.token})}));
+import {beforeEach,expect,it,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
+const m=rs.hoisted(()=>({session:null as null|{id:string;role:string},token:'a'.repeat(64),read:rs.fn()}));
+rs.mock('./auth/session',()=>({getSession:async()=>m.session,requireSessionMutationProof:async()=>({employee:m.session,sessionTokenHash:m.token})}));
 import {createEmployeeViewGet} from './employee-view-route.server';
 import {createPortalNotificationViewGet,createManagementNotificationReadPost} from './employee-view-route.server';
 import {employeeViewAuthority} from './employee-view-authority.server';
@@ -51,10 +51,10 @@ it('management marking read requires an exact own-session binding and same-origi
 });
 
 it('validates the configured portal origin when the server request URL differs behind a host proxy',async()=>{
- m.session={id:'self',role:'MANAGER'};m.read.mockResolvedValue(true);vi.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1:43210');
+ m.session={id:'self',role:'MANAGER'};m.read.mockResolvedValue(true);rs.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1:43210');
  try{
  const factory=createManagementNotificationReadPost;
  const response=await factory(m.read)(new Request('http://localhost:43210/api/notifications/read',{method:'POST',headers:{Origin:'http://127.0.0.1:43210',Host:'127.0.0.1:43210','sec-fetch-site':'same-origin','Content-Type':'application/json','X-Nevora-Notification-Read':'1','X-Nevora-Employee-View':binding('notifications')},body:JSON.stringify({notificationId:'own-intent'})}));
  expect(response.status).toBe(200);
- }finally{vi.unstubAllEnvs();}
+ }finally{rs.unstubAllEnvs();}
 });

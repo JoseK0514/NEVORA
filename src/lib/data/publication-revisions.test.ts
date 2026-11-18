@@ -1,6 +1,7 @@
+import * as rstestOriginal0 from "@/lib/company-access/operational-scope.server" with { rstest: 'importActual' };
 import { managementProof, schedulingSourceFixture } from '../../test/fixtures/management';
 import {assignmentFacts} from './assignment-facts.test-support';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { publishScheduleWithRevision } from './publication-revisions';
 import { commitPublishedWeekChange, type GuardedWeekState } from './notification-transactions';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
@@ -13,8 +14,8 @@ function recorder(initial = state()) {
   const batches: SqlStatement[][] = [];
   const db = {state:initial};
   const executor: SqlExecutor = {
-    query:vi.fn(async statement => statement.text.startsWith('SELECT id, name, time_zone') ? [{id:'test-workspace',name:'Test',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}] : [{state:structuredClone(db.state),source:schedulingSourceFixture(db.state),read_at:'2030-10-07 12:00:00.654321+00'}]) as SqlExecutor['query'],
-    transaction:vi.fn(async statements => { batches.push([...statements]); return statements.map(() => []); }),
+    query:rs.fn(async statement => statement.text.startsWith('SELECT id, name, time_zone') ? [{id:'test-workspace',name:'Test',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}] : [{state:structuredClone(db.state),source:schedulingSourceFixture(db.state),read_at:'2030-10-07 12:00:00.654321+00'}]) as SqlExecutor['query'],
+    transaction:rs.fn(async statements => { batches.push([...statements]); return statements.map(() => []); }),
   };
   return {executor,batches,db};
 }
@@ -25,7 +26,7 @@ function published() {
   s.acknowledgements=[{weekStart:week,employeeId:'E',revisionId:'r1'}];
   return s;
 }
-beforeEach(()=>{vi.stubEnv('PUSH_ENVIRONMENT','test');});
+beforeEach(()=>{rs.stubEnv('PUSH_ENVIRONMENT','test');});
 it('first publication commits update, actual immutable snapshot and durable intent in ordered batch', async()=>{
   const r=recorder();
   const result=await publishScheduleWithRevision({proof:managementProof('M'),locationId:'loc-1',weekStart:week,managerId:'M'},r.executor);
@@ -74,15 +75,15 @@ it.each(['remove','reassign','lead','location','callout'])('%s notifies only mea
 });
 it('snapshot conflict recomputes from fresh microsecond versions and changed recipient access, at most three attempts',async()=>{
   const r=recorder(); let attempts=0;
-  vi.mocked(r.executor.transaction).mockImplementation(async statements=>{r.batches.push([...statements]);if(++attempts<3){r.db.state.schedules[0].updatedAt='2030-10-07 12:00:00.123457+00';r.db.state.recipients[0].role='LEAD';throw Object.assign(new Error('schedule_week_version_conflict'),{code:'22P02'});}return statements.map(()=>[]);});
+  rs.mocked(r.executor.transaction).mockImplementation(async statements=>{r.batches.push([...statements]);if(++attempts<3){r.db.state.schedules[0].updatedAt='2030-10-07 12:00:00.123457+00';r.db.state.recipients[0].role='LEAD';throw Object.assign(new Error('schedule_week_version_conflict'),{code:'22P02'});}return statements.map(()=>[]);});
   await publishScheduleWithRevision({proof:managementProof('M'),locationId:'loc-1',weekStart:week,managerId:'M'},r.executor);
   expect(attempts).toBe(3); expect(notificationValues(r.batches[2]).map(v=>v[1])).toEqual(['E']);
   expect(JSON.stringify(r.batches[0])).toContain('123456');expect(JSON.stringify(r.batches[2])).toContain('123457');
 });
 it('persistent guard failure stops after three full attempts; outbox failure is not retried or reported successful',async()=>{
-  const r=recorder();vi.mocked(r.executor.transaction).mockRejectedValue(Object.assign(new Error('schedule_week_version_conflict'),{code:'22P02'}));
+  const r=recorder();rs.mocked(r.executor.transaction).mockRejectedValue(Object.assign(new Error('schedule_week_version_conflict'),{code:'22P02'}));
   await expect(publishScheduleWithRevision({proof:managementProof('M'),locationId:'loc-1',weekStart:week,managerId:'M'},r.executor)).rejects.toThrow('schedule_week_version_conflict');expect(r.executor.transaction).toHaveBeenCalledTimes(3);
-  vi.mocked(r.executor.transaction).mockReset().mockRejectedValue(new Error('outbox failed'));
+  rs.mocked(r.executor.transaction).mockReset().mockRejectedValue(new Error('outbox failed'));
   await expect(publishScheduleWithRevision({proof:managementProof('M'),locationId:'loc-1',weekStart:week,managerId:'M'},r.executor)).rejects.toThrow('outbox failed');expect(r.executor.transaction).toHaveBeenCalledTimes(1);
 });
 it('multi-week changes acquire every unique week lock in sorted order before mutation',async()=>{
@@ -93,7 +94,7 @@ it('multi-week changes acquire every unique week lock in sorted order before mut
 });
 it('two publishing managers rebuild the loser and emit only the first personal publication',async()=>{
   const r=recorder();let tail=Promise.resolve();
-  vi.mocked(r.executor.transaction).mockImplementation(async statements=>{
+  rs.mocked(r.executor.transaction).mockImplementation(async statements=>{
     let release!:()=>void;const prior=tail;tail=new Promise<void>(resolve=>{release=resolve;});await prior;
     try {
       r.batches.push([...statements]);
@@ -119,7 +120,7 @@ it('a two-week manual swap produces separate actual revisions and former/new-rec
 });
 it('outbox insert failure leaves the staged business publication and immutable revision uncommitted',async()=>{
   const r=recorder();let committed=structuredClone(r.db.state);
-  vi.mocked(r.executor.transaction).mockImplementation(async statements=>{
+  rs.mocked(r.executor.transaction).mockImplementation(async statements=>{
     const staged=structuredClone(committed);
     for(const statement of statements){
       if(statement.text.includes("SET status='PUBLISHED'")) staged.schedules[0].status='PUBLISHED';
@@ -137,11 +138,11 @@ it('publication retains the schedule source and affected-location metadata',asyn
 
 import { listCapturedShiftPositions } from './publication-revisions';
 it('reads latest captured identities for the exact week/shift batch and projects only position context',async()=>{
-  const query=vi.fn(async(_statement:SqlStatement)=>[
+  const query=rs.fn(async(_statement:SqlStatement)=>[
     {source_shift_id:'archived',position_id:'cashier',position_name:'Original Cashier',notes:'PRIVATE',employee_id:'PRIVATE'},
     {source_shift_id:'positionless',position_id:null,position_name:null},
   ]);
-  const executor:SqlExecutor={query:query as SqlExecutor['query'],transaction:vi.fn()};
+  const executor:SqlExecutor={query:query as SqlExecutor['query'],transaction:rs.fn()};
   expect(await listCapturedShiftPositions({weekStart:week,shiftIds:['archived','positionless','archived']},executor)).toEqual([
     {sourceShiftId:'archived',positionId:'cashier',positionName:'Original Cashier'},
     {sourceShiftId:'positionless',positionId:undefined,positionName:undefined},
@@ -157,11 +158,11 @@ it('reads latest captured identities for the exact week/shift batch and projects
   expect(executor.transaction).not.toHaveBeenCalled();
 });
 it('an empty non-Draft identity batch performs no history read or writes',async()=>{
-  const executor:SqlExecutor={query:vi.fn(),transaction:vi.fn()};
+  const executor:SqlExecutor={query:rs.fn(),transaction:rs.fn()};
   expect(await listCapturedShiftPositions({weekStart:week,shiftIds:[]},executor)).toEqual([]);
   expect(executor.query).not.toHaveBeenCalled();expect(executor.transaction).not.toHaveBeenCalled();
 });
 
 // These business/unit fixtures do not execute SQL. Current scope admission and
 // rollback are exercised by company-access-schedule-*.integration.ts.
-vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));
+rs.mock('@/lib/company-access/operational-scope.server', ()=>({...rstestOriginal0,assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));

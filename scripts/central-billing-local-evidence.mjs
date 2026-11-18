@@ -1,3 +1,4 @@
+import { releaseTestReport } from './lib/release-test-report.mjs';
 import assert from 'node:assert/strict';
 import {join,basename} from 'node:path';
 import {readFileSync,readdirSync,lstatSync} from 'node:fs';
@@ -12,6 +13,7 @@ export const centralBillingChecks=Object.freeze([
  'controlled blur retires private details before a held actual response returns; focus obtains a fresh read; real catalog session revocation returns denial and removes private data/actions',
 ]);
 export function verifyCentralBillingEvidence({custody,source,approvedMirrorHashes,packets,inventory,cluster,vitest}){
+ vitest=releaseTestReport(vitest,source);
  assert.match(custody.checkpoint,/^[a-f0-9]{40}$/);assert.match(custody.tree,/^[a-f0-9]{40}$/);assert.equal(custody.sourceClean,true);
  assert.equal(cluster.suite,'central-billing');assert.equal(cluster.sourceSha,custody.checkpoint);for(const key of ['started','stopped','removed'])assert.equal(cluster[key],true);assert.equal(cluster.exitCode,0);
  for(const [key,value]of Object.entries({success:true,numTotalTests:2,numPassedTests:2,numFailedTests:0,numPendingTests:0,numTodoTests:0}))assert.equal(vitest[key],value);

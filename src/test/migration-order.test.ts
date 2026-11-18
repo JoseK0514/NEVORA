@@ -1,5 +1,5 @@
 import {readdir} from 'node:fs/promises';
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {BASE_MIGRATIONS, FINAL_MIGRATIONS, HELD_MIGRATIONS} from '../../db/migrations/order';
 import {CURRENT_MIGRATIONS} from './integration/local-postgres';
 

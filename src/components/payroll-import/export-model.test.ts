@@ -1,5 +1,5 @@
 // U01 paid time: the break decisions gate, the plan as shown, and what "complete" requires.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import fixtures from "../../../docs/handoffs/2026-11-16-backend-phase2-finance-fixtures.json";
 import { PAYROLL_EXPORT_COMMAND_BYTES, paidExportBatchProgress, planPaidExportBatches, type PaidExportBatchPlan } from "@/lib/payroll-export/batches";
 import { parseExportCommand } from "@/lib/payroll-export/command";

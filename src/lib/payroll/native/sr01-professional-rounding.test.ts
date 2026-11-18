@@ -1,5 +1,5 @@
-import {beforeEach,afterEach} from 'vitest';
-import { describe, expect, it, vi } from 'vitest';
+import {beforeEach,afterEach} from '@rstest/core';
+import { describe, expect, it, rs } from '@rstest/core';
 import type { SqlExecutor, SqlStatement } from '../../notifications/types';
 import type { Source } from '../service';
 import { newRun } from '../service';
@@ -8,10 +8,10 @@ import { input, entry } from './fixtures.test-support';
 import { nativeDocumentFixture } from './document-fixtures.test-support';
 import type { RecordedSourceCapture, RecordedSourceRequest } from './recorded-source.server';
 
-vi.mock('server-only', () => ({}));
+rs.mock('server-only', () => ({}));
 // Database execution is forbidden in this bounded task. Substitute only the
 // recorded-source transport; exercise the actual native capture/acceptance code.
-vi.mock('./recorded-source.server', () => ({
+rs.mock('./recorded-source.server', () => ({
   buildRecordedSourceCapture: (request: RecordedSourceRequest) => ({ text: 'SR01_UNIT_CAPTURE', values: [request] }),
   projectRecordedSourceCapture: (_request: RecordedSourceRequest, value: RecordedSourceCapture) => value,
 }));
@@ -168,5 +168,5 @@ describe('SR01 scoped accountant-confirmed final periodic collection', () => {
   });
 });
 
-beforeEach(()=>vi.stubEnv('NEVORA_PAYROLL_CALCULATION_MODE','native_provisional'));
-afterEach(()=>vi.unstubAllEnvs());
+beforeEach(()=>{ rs.stubEnv('NEVORA_PAYROLL_CALCULATION_MODE','native_provisional'); });
+afterEach(()=>{ rs.unstubAllEnvs(); });

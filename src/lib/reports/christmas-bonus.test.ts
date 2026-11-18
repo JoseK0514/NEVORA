@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { businessDate } from '../business-time';
 import { bonusStatus, bonusYear, bonusYearChoices, christmasBonusApplies, christmasBonusThresholdHours, latestCompletedBonusYear, projectChristmasBonusReport, selectBonusYear } from './christmas-bonus';
 

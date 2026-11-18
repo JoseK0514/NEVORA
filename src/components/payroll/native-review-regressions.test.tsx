@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { input } from '@/lib/payroll/native/fixtures.test-support';
 import { fictionalWorkweekPolicy } from '@/lib/payroll/native/workweek-fixtures.test-support';

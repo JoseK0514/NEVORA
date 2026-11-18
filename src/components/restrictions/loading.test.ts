@@ -1,6 +1,6 @@
 // Scheduling restrictions (U02): the two new routes keep their own frame while they load.
-import { describe, expect, it, vi } from "vitest";
-vi.mock("@/components/owner-b/owner-b.css", () => ({}));
+import { describe, expect, it, rs } from '@rstest/core';
+rs.mock("@/components/owner-b/owner-b.css", () => ({}));
 import { loadingShape } from "@/components/owner-b/b-loading";
 
 describe("loading placeholders for the agreement pages", () => {

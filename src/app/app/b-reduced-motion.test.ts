@@ -2,7 +2,7 @@
 // moves anything (a transition, an animation or keyframes) must also say what happens under prefers-reduced-motion.
 import {readdirSync, readFileSync} from 'node:fs';
 import {join, relative} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {OVERLAY_EXIT_MS} from '@/components/kit/overlay-exit';
 
 const root = join(__dirname, '..', '..');

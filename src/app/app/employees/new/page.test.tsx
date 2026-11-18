@@ -1,36 +1,36 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 
-const access=vi.hoisted(()=>({denied:false}));
-vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'reviewer',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
+const access=rs.hoisted(()=>({denied:false}));
+rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'reviewer',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
 
-const m = vi.hoisted(() => ({ role: "MANAGER", noLocations: false }));
+const m = rs.hoisted(() => ({ role: "MANAGER", noLocations: false }));
 beforeEach(() => { m.role = "MANAGER"; m.noLocations = false; access.denied=false; });
 
-vi.mock("next/link", () => ({
+rs.mock("next/link", () => ({
   default: ({ href, children, ...props }: React.ComponentProps<"a">) =>
     createElement("a", { href, ...props }, children),
 }));
-vi.mock("@/lib/auth/permissions", () => ({
+rs.mock("@/lib/auth/permissions", () => ({
   MANAGER_ROLES: ["OWNER", "MANAGER"],
   requireRoles: async () => ({ id: "actor", role: m.role }),
 }));
-vi.mock("@/lib/data/employees", () => ({
+rs.mock("@/lib/data/employees", () => ({
   listLocations: async () => [
     { id:"loc",workspaceId:"w",clockerKey:"loc",name:"Main Office",shortName:"Main",active: !m.noLocations },
   ],
 }));
-vi.mock("@/lib/data/positions", () => ({ listPositions: async () => [] }));
-vi.mock("@/components/phone-input", () => ({
+rs.mock("@/lib/data/positions", () => ({ listPositions: async () => [] }));
+rs.mock("@/components/phone-input", () => ({
   PhoneInput: (props: React.ComponentProps<"input">) => createElement("input", props),
 }));
-vi.mock("@/components/employee-scheduling-fields", () => ({
+rs.mock("@/components/employee-scheduling-fields", () => ({
   EmployeeSchedulingFields: () => null,
 }));
-vi.mock("@/components/select-field", () => import("../../../../components/select-field"));
-vi.mock("@/app/app/employees/actions", () => ({ createEmployeeFormAction: vi.fn() }));
+
+rs.mock("@/app/app/employees/actions", () => ({ createEmployeeFormAction: rs.fn() }));
 
 import NewEmployeePage from "./page";
 
@@ -99,7 +99,7 @@ it("announces a server validation error without rendering untrusted error codes"
 it('honors company-read denial before loading employee-creation catalogs (presentation boundary)',async()=>{access.denied=true;const html=renderToStaticMarkup(await NewEmployeePage({searchParams:Promise.resolve({})}));expect(html).toContain('Employee creation unavailable');expect(html).toContain('Return to Home');expect(html).not.toContain('new-employee-form');});
 
 // This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
-vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 
 it("offers the three optional employment dates in step 2, none required", async () => {
   const html = renderToStaticMarkup(await NewEmployeePage({ searchParams: Promise.resolve({}) }));

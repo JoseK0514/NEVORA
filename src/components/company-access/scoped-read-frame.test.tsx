@@ -1,14 +1,15 @@
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import * as rstestOriginal0 from "react" with { rstest: 'importActual' };
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import {Children,isValidElement,type ReactNode} from 'react';
 
-const fixture=vi.hoisted(()=>({
+const fixture=rs.hoisted(()=>({
  states:[] as unknown[],effects:[] as (()=>void|(()=>void))[],
- start:vi.fn(),pause:vi.fn(),stop:vi.fn(),
- router:{refresh:vi.fn(),replace:vi.fn()},reload:vi.fn(),changed:null as null|((state:unknown)=>void),
- navigation:{pending:vi.fn(()=>false),current:vi.fn(()=>null as null|{source:string}),discard:vi.fn(),subscribe:vi.fn(()=>()=>{})},
+ start:rs.fn(),pause:rs.fn(),stop:rs.fn(),
+ router:{refresh:rs.fn(),replace:rs.fn()},reload:rs.fn(),changed:null as null|((state:unknown)=>void),
+ navigation:{pending:rs.fn(()=>false),current:rs.fn(()=>null as null|{source:string}),discard:rs.fn(),subscribe:rs.fn(()=>()=>{})},
 }));
-vi.mock('react',async original=>({
- ...await original<Record<string,unknown>>(),
+rs.mock('react', ()=>({
+ ...rstestOriginal0,
  useState:(initial:unknown)=>{
   const index=fixture.states.length;fixture.states.push(initial);
   return [initial,(value:unknown)=>{
@@ -18,9 +19,9 @@ vi.mock('react',async original=>({
  useRef:(current:unknown)=>({current}),
  useEffect:(effect:()=>void|(()=>void))=>{fixture.effects.push(effect);},
 }));
-vi.mock('next/navigation',()=>({useRouter:()=>fixture.router}));
-vi.mock('../app-navigation',()=>({useAppNavigation:()=>fixture.navigation}));
-vi.mock('@/lib/private-snapshot-client',()=>({
+rs.mock('next/navigation',()=>({useRouter:()=>fixture.router}));
+rs.mock('../app-navigation',()=>({useAppNavigation:()=>fixture.navigation}));
+rs.mock('@/lib/private-snapshot-client',()=>({
  createPrivateSnapshotController:(changed:(state:unknown)=>void)=>{fixture.changed=changed;return {start:fixture.start,pause:fixture.pause,stop:fixture.stop};},
 }));
 
@@ -39,19 +40,19 @@ function activateRecovery(){
  button.props.onClick();
 }
 beforeEach(async()=>{
- fixture.states=[];fixture.effects=[];vi.clearAllMocks();fixture.navigation.pending.mockReturnValue(false);fixture.navigation.current.mockReturnValue(null);resetScopedReadTab();
+ fixture.states=[];fixture.effects=[];rs.clearAllMocks();fixture.navigation.pending.mockReturnValue(false);fixture.navigation.current.mockReturnValue(null);resetScopedReadTab();
  fixture.navigation.discard.mockImplementation(()=>{fixture.navigation.pending.mockReturnValue(false);fixture.navigation.current.mockReturnValue(null);});
- vi.stubGlobal('window',Object.assign(new EventTarget(),{location:{pathname:'/app/payroll-export',search:'?start=2026-09-21&end=2026-09-27',hash:'',reload:fixture.reload}}));
- vi.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible',hasFocus:()=>true}));
- vi.stubGlobal('navigator',{onLine:true});
+ rs.stubGlobal('window',Object.assign(new EventTarget(),{location:{pathname:'/app/payroll-export',search:'?start=2026-09-21&end=2026-09-27',hash:'',reload:fixture.reload}}));
+ rs.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible',hasFocus:()=>true}));
+ rs.stubGlobal('navigator',{onLine:true});
  view=ScopedReadFrame({children:'Current receipt'});
  dispose=fixture.effects[0]();
  await Promise.resolve();
  fixture.states[0]=receipt;
  fixture.states[1]={required:false,view:null};
- vi.clearAllMocks();
+ rs.clearAllMocks();
 });
-afterEach(()=>{dispose?.();dispose=undefined;vi.clearAllTimers();vi.useRealTimers();vi.unstubAllGlobals();});
+afterEach(()=>{dispose?.();dispose=undefined;rs.clearAllTimers();rs.useRealTimers();rs.unstubAllGlobals();});
 
 it('retains the current receipt and authority on duplicate active window focus',()=>{
  window.dispatchEvent(new Event('focus'));
@@ -91,7 +92,7 @@ it('clears hidden content and rechecks after visibility is restored',()=>{
 
 
 it('explicit recovery preempts a stalled destination with the captured source only after a fresh authority read',()=>{
- vi.useFakeTimers();
+ rs.useFakeTimers();
  const source='/app/payroll-export?start=2026-09-21&end=2026-09-27';
  fixture.navigation.pending.mockReturnValue(true);fixture.navigation.current.mockReturnValue({source});
  // The browser's address can already point at the destination; the accepted source remains the recovery target.
@@ -106,7 +107,7 @@ it('explicit recovery preempts a stalled destination with the captured source on
  expect(fixture.router.replace).toHaveBeenCalledWith(source,{scroll:false});
  expect(fixture.reload).not.toHaveBeenCalled();
  expect(fixture.router.refresh).not.toHaveBeenCalled();
- vi.advanceTimersByTime(1500);
+ rs.advanceTimersByTime(1500);
  expect(fixture.router.refresh).toHaveBeenCalledTimes(1);
 });
 

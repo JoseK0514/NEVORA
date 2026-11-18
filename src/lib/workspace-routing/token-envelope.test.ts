@@ -1,5 +1,5 @@
 import type{WorkspaceRoutingConfig}from'./config.server';
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {sealWorkspaceToken,openWorkspaceToken,type TokenPurpose} from './token-envelope.server';
 import {resolveWorkspaceBinding} from './resolver.server';
 import type {ControlStore} from '../onboarding/control-store.server';

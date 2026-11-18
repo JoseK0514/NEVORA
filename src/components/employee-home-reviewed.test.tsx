@@ -3,7 +3,7 @@ import {EmployeeTimeView} from './employee-time-panel';
 import {projectEmployeeTime} from '../lib/employee-time';
 import {Children, isValidElement, type ReactElement, type ReactNode} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {describe, expect, it, vi} from 'vitest';
+import {describe, expect, it, rs} from '@rstest/core';
 import {projectEmployeeHome, HOME_SOURCES} from '../lib/employee-home/project';
 import type {AttentionItem, EmployeeHomeRead, HomeSnapshot, PublishedAssignment} from '../lib/employee-home/types';
 import {EmployeeHomeReviewedView, untilLabel, type EmployeeHomeReviewedViewProps} from './employee-home-reviewed';
@@ -39,7 +39,7 @@ function item(id: string, extra: Partial<AttentionItem> = {}): AttentionItem {
 function props(home: EmployeeHomeRead = projectEmployeeHome(snapshot()), extra: Partial<EmployeeHomeReviewedViewProps> = {}): EmployeeHomeReviewedViewProps {
   return {
     home, status: home.state,
-    refreshing: false, onRetry: vi.fn(), displayName: 'Alexandra',
+    refreshing: false, onRetry: rs.fn(), displayName: 'Alexandra',
     ownTimeSlot: <div data-test-own-time="released">Private own recorded-time slot</div>,
     ...extra,
   };
@@ -65,16 +65,16 @@ function nativeElements(node: ReactNode): ReactElement<Record<string, unknown>>[
 
 describe('released Home data and navigation', () => {
   it('reserves the workspace date across UTC midnight without releasing private Home data', () => {
-    vi.useFakeTimers();
+    rs.useFakeTimers();
     try {
-      vi.setSystemTime(new Date('2030-10-07T01:00:00Z'));
+      rs.setSystemTime(new Date('2030-10-07T01:00:00Z'));
       const loading = html(props(undefined, {status: 'loading', timeZone: 'America/Puerto_Rico'}));
       expect(loading).toContain('Sunday, October');
       expect(loading).not.toContain('Monday, October');
       expect(loading).not.toContain('Private location');
       expect(loading).not.toContain('Alexandra');
     } finally {
-      vi.useRealTimers();
+      rs.useRealTimers();
     }
   });
 
@@ -274,7 +274,7 @@ describe('truthful source states and refresh intent', () => {
   });
 
   it('binds the explicit Home retry once without submitting anything during render', () => {
-    const onRetry = vi.fn();
+    const onRetry = rs.fn();
     const view = EmployeeHomeReviewedView(props({state: 'unavailable', reason: 'read_failed'}, {status: 'unavailable', onRetry}));
     const button = nativeElements(view).find(element => element.type === 'button' && element.props['data-home-refresh'] === true);
     expect(onRetry).not.toHaveBeenCalled();

@@ -1,5 +1,5 @@
-import { expect, it, vi } from 'vitest';
-vi.mock('@/lib/db', () => ({getDb: () => { throw new Error('Unexpected database'); }, queryRows: (rows: unknown) => rows}));
+import { expect, it, rs } from '@rstest/core';
+rs.mock('@/lib/db', () => ({getDb: () => { throw new Error('Unexpected database'); }, queryRows: (rows: unknown) => rows}));
 import { sqlNotificationStateRepository as productionStateRepository, evaluateNotificationSource as evaluateWithPolicy } from './notification-state';
 import type { NotificationIntent, SqlExecutor, SqlStatement } from '../notifications/types';
 const row = { id: 'notification', employee_id: 'employee', type: 'TIME_OFF_DECIDED', title: 'Generic', body: 'Generic', event_key: 'event', environment: 'test', source_kind: 'TIME_OFF', source_id: 'request', source_version: 'v1', effective_version: 'v1', purpose: 'EVENT', urgency: 'normal', due_at: '2026-10-02T12:00:00Z', expires_at: '2026-10-03T12:00:00Z', item_keys: [] };

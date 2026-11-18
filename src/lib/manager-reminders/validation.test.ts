@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {validManagerReminderCommand} from './validation';
 const base={operationId:'11111111-1111-4111-8111-111111111111',authority:'a'.repeat(64),employeeId:'employee'};
 it('accepts only a revision/deadline-bound single-recipient action',()=>{

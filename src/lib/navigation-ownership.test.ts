@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {activeNavigationHref} from './navigation';
 const company = {state:'ready' as const,employeeId:'M1',role:'MANAGER' as const,source:'LEGACY_ADOPTION' as const,scope:{mode:'COMPANY' as const,locationIds:[] as []},scopeRevision:1,authority:'fictional',locations:[],observedAt:'2026-10-14T12:00:00Z',validForMs:15000};
 it.each(['/app/requests','/app/requests/hub','/app/requests?tab=my&requestId=own'])('selected_route_correct canonical employee Requests ownership: %s',path=>{

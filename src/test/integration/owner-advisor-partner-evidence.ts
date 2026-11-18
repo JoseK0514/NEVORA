@@ -1,4 +1,4 @@
-/** Turns executed Vitest assertions into layer-specific coverage; never scores model judgment. */
+/** Classifies executed runner assertions as deterministic preflight evidence. */
 import {partnerCases} from '../fixtures/owner-advisor-partner';
 export const partnerChecks:Record<string,string[]>={
  'neutral-bottleneck':['preflights actual canonical source and unchanged business tables: scarce'],
@@ -35,7 +35,10 @@ export const partnerChecks:Record<string,string[]>={
  'budget-custody':['partner startup guard rejects unapproved, exhausted, reused and altered identity without provider calls'],
 };
 type Assertion={fullName:string;status:string};
-export function summarizePartnerAssertions(reports:{testResults:{assertionResults:Assertion[]}[]}[]){
- const assertions=reports.flatMap(r=>r.testResults.flatMap(t=>t.assertionResults));
+type ExecutedReport={testResults:{assertionResults:Assertion[]}[]}|{tool:'rstest';tests:Assertion[]};
+export function summarizePartnerAssertions(reports:ExecutedReport[]){
+ const assertions=reports.flatMap(report=>'tool' in report
+  ? report.tests.map(({fullName,status})=>({fullName,status:status==='pass'?'passed':status}))
+  : report.testResults.flatMap(file=>file.assertionResults));
  return partnerCases.map(c=>{const checks=partnerChecks[c.id].map(needle=>{const matches=assertions.filter(a=>a.fullName.includes(needle));return {needle,status:!matches.length?'not-run':matches.every(a=>a.status==='passed')?'passed':'not-passed',matches};});return {id:c.id,layer:'deterministic-preflight',status:checks.every(c=>c.status==='passed')?'passed':'incomplete',checks,scriptedTransport:'separate-result-required',actualModelSample:'not-run',semanticAssessment:'not-assessed'};});
 }

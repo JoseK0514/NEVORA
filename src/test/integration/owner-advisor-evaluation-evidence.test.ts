@@ -1,4 +1,4 @@
-import { afterEach, expect, it } from "vitest";
+import { afterEach, expect, it } from '@rstest/core';
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";

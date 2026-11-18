@@ -1,7 +1,7 @@
 import {createElement, type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect, it, vi} from 'vitest';
-vi.mock('next/link', () => ({default: ({children, scroll: _scroll, prefetch: _prefetch, ...props}: ComponentProps<'a'> & {scroll?: boolean; prefetch?: boolean}) => createElement('a', props, children)}));
+import {expect, it, rs} from '@rstest/core';
+rs.mock('next/link', () => ({default: ({children, scroll: _scroll, prefetch: _prefetch, ...props}: ComponentProps<'a'> & {scroll?: boolean; prefetch?: boolean}) => createElement('a', props, children)}));
 import {ScheduleB, type ScheduleBProps} from './schedule-b';
 
 /* Employee Schedule on the phone, Direction B (fictional data): the screen draws what the page passes. */

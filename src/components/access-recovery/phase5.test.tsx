@@ -1,5 +1,5 @@
 import React from "react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import { AUTH_COPY, authMessage, type AuthLang } from "@/lib/auth-copy";
 import { MOBILE_ACCESS_COPY } from "@/components/mobile-access/copy";
@@ -13,7 +13,7 @@ import { AssistedReceipt } from "./assisted-receipt";
 import { PasswordPair } from "./password-pair";
 import { OFFLINE_MESSAGE } from "./recovery-guidance";
 
-vi.stubGlobal("React", React);
+rs.stubGlobal("React", React);
 
 /* Phase 5, package B (Nov 17, 2026): one word for the task ("reset"), imperative titles, the accepted link, the password
  * pair, the one-line finish, the helper's reset link, and the phone pages with the same guidance as every other width.

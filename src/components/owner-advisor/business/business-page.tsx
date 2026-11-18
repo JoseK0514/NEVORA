@@ -303,7 +303,6 @@ export function PendingCard({ t, pending, onCheck, onResend, onStop }: { t: Busi
       <span className="be-acts">
         <CorpButton kind="primary" size="md" onClick={onCheck}>{t.checkAgain}</CorpButton>
         {pending.payload ? <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--go" onClick={onResend}>{t.sendAgain}</CorpButton> : null}
-        {pending.status === "unconfirmed" ? <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" onClick={onStop}>{t.stopChecking}</CorpButton> : null}
       </span>
     </BState>
   </section>;

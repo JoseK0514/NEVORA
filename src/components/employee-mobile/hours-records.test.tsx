@@ -1,6 +1,6 @@
 
 import {renderToStaticMarkup} from 'react-dom/server';
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {HoursRecordsView} from './hours-records';
 const noop=()=>{};
 it('never presents zero recorded totals or correction controls when recorded time is unavailable',()=>{const html=renderToStaticMarkup(<HoursRecordsView data={{state:'unavailable',reason:'read_failed'}} entryId={null} onRefresh={noop}/>);expect(html).not.toContain('0h');expect(html).not.toContain('Request a correction');expect(html).toContain('role="status"');});

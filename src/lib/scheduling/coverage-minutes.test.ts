@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import type {CoverageBlock} from './schedule-health';
 import {summarizeCoverageMinutes} from './coverage-minutes';
 const block:CoverageBlock={key:'one',locationId:'place',locationName:'Fictional',date:'2030-10-08',startTime:'08:00',endTime:'12:00',assignedStaff:1,requiredStaff:2,gap:1,staffCovered:false,requiresLead:true,leadCovered:false,leadNames:[],positionCoverage:[{positionId:'barista',positionName:'Barista',assigned:1,required:2,missing:1}],positionsCovered:false,covered:false};

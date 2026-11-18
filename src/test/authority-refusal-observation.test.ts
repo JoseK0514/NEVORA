@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {expectedNotificationRefusal,safeNotificationRefusal,type ObservedNotificationRefusal} from './integration/authority-refusal-observation';
 const origin='http://127.0.0.1:12345',url=origin+'/api/notifications',entry={engine:'chromium',text:'Failed to load resource: the server responded with a status of 403 (Forbidden)',url,at:200};
 const reply:ObservedNotificationRefusal={engine:'chromium',url,status:403,at:100,authorityLoss:true,bodySafe:true};

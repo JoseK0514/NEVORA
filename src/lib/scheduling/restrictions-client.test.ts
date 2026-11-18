@@ -1,5 +1,5 @@
 // Scheduling restrictions (U02): the browser client for the two endpoints, against documents the server's own rules made.
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 import { applyRestrictionCommand, emptyRestrictionDocument } from "./restrictions";
 import { createRestrictionsClient, newOperationId, parseRestrictionsDocument, type RestrictionsCommand } from "./restrictions-client";
 
@@ -12,7 +12,7 @@ const authority = { scope: "management" as const, actorId: "OWNER-1", view: "vie
 
 describe("what is sent", () => {
   it("posts to the role's endpoint with the contract's headers and exact bodies", async () => {
-    const fetcher = vi.fn(async () => json(200, { state: "ready", data: saved.document, legacyUnconfirmed: false, earliestWeek: "2030-10-14" }));
+    const fetcher = rs.fn(async () => json(200, { state: "ready", data: saved.document, legacyUnconfirmed: false, earliestWeek: "2030-10-14" }));
     await createRestrictionsClient(authority, fetcher).read("EMP-1");
     const [url, init] = fetcher.mock.calls[0] as unknown as [string, RequestInit];
     expect(url).toBe("/api/manager/scheduling-restrictions");
@@ -20,7 +20,7 @@ describe("what is sent", () => {
     expect(init.credentials).toBe("same-origin");
     expect(init.headers).toEqual({ "Content-Type": "application/json", "x-nevora-scheduling-restrictions": "1", "x-nevora-actor": "OWNER-1", "x-nevora-employee-view": "view-value" });
     expect(JSON.parse(String(init.body))).toEqual({ action: "read", employeeId: "EMP-1" });
-    const employee = vi.fn(async () => json(200, { state: "saved", receipt: saved.receipt, data: saved.document, changed: true }));
+    const employee = rs.fn(async () => json(200, { state: "saved", receipt: saved.receipt, data: saved.document, changed: true }));
     await createRestrictionsClient({ ...authority, scope: "employee" }, employee).command("EMP-1", SET);
     const [employeeUrl, employeeInit] = employee.mock.calls[0] as unknown as [string, RequestInit];
     expect(employeeUrl).toBe("/api/employee/scheduling-restrictions");

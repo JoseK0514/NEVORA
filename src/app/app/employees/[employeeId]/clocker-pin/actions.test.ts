@@ -1,14 +1,14 @@
-import { beforeEach, expect, it, vi } from 'vitest';
-const m=vi.hoisted(()=>({proof:vi.fn(),headers:vi.fn(),save:vi.fn(),key:vi.fn()}));
-vi.mock('server-only',()=>({}));
-vi.mock('next/headers',()=>({headers:m.headers}));
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:m.proof}));
-vi.mock('@/lib/clocker/pin-crypto.server',()=>({readPinKey:m.key}));
-vi.mock('@/lib/clocker/pins.server',()=>({setEmployeeClockerPin:m.save,ClockerPinError:class extends Error{constructor(public code:string){super('Safe PIN error');}}}));
+import { beforeEach, expect, it, rs } from '@rstest/core';
+const m=rs.hoisted(()=>({proof:rs.fn(),headers:rs.fn(),save:rs.fn(),key:rs.fn()}));
+rs.mock('server-only',()=>({}));
+rs.mock('next/headers',()=>({headers:m.headers}));
+rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:m.proof}));
+rs.mock('@/lib/clocker/pin-crypto.server',()=>({readPinKey:m.key}));
+rs.mock('@/lib/clocker/pins.server',()=>({setEmployeeClockerPin:m.save,ClockerPinError:class extends Error{constructor(public code:string){super('Safe PIN error');}}}));
 import { saveClockerPinAction } from './actions';
 const form=(overrides:Record<string,string|undefined>={})=>{const data=new FormData();for(const [k,v] of Object.entries({employeeId:'worker',pin:'0123',confirmPin:'0123',expectedVersion:'0',operationId:'11111111-1111-4111-8111-111111111111',...overrides})){if(v!==undefined)data.set(k,v);}return data;};
 beforeEach(()=>{
- vi.clearAllMocks();m.proof.mockResolvedValue({employee:{id:'actor',role:'OWNER'},sessionTokenHash:'a'.repeat(64)});
+ rs.clearAllMocks();m.proof.mockResolvedValue({employee:{id:'actor',role:'OWNER'},sessionTokenHash:'a'.repeat(64)});
  m.headers.mockResolvedValue(new Headers({host:'localhost:3000',origin:'http://localhost:3000'}));
  m.key.mockReturnValue(Buffer.alloc(32,1));m.save.mockResolvedValue({employeeId:'worker',configured:true,version:1});
 });

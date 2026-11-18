@@ -1,24 +1,26 @@
-vi.mock('./sql-session-contract',()=>import('../../test/fixtures/business-sql-session'));
-import {beforeEach,expect,it,vi} from 'vitest';
+import * as rstestOriginal0 from "../../test/fixtures/business-sql-session" with { rstest: 'importActual' };
+import * as rstestOriginal1 from "../db" with { rstest: 'importActual' };
+rs.mock('./sql-session-contract',()=>rstestOriginal0);
+import {beforeEach,expect,it,rs} from '@rstest/core';
 import {requireSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {getDb} from '@/lib/db';
 import {getAttendanceReview} from './attendance-review';
 import {readAttendanceReview} from './attendance-review.server';
 
-vi.mock('server-only',()=>({}));
-vi.mock('@/lib/auth/session',()=>({
-  requireSession:vi.fn(),
-  requireSessionMutationProof:vi.fn(),
+rs.mock('server-only',()=>({}));
+rs.mock('@/lib/auth/session',()=>({
+  requireSession:rs.fn(),
+  requireSessionMutationProof:rs.fn(),
 }));
-vi.mock('@/lib/auth/permissions',()=>import('../auth/permissions'));
-vi.mock('next/navigation',()=>({
+
+rs.mock('next/navigation',()=>({
   redirect:(path:string)=>{throw Error(`redirect:${path}`);},
 }));
-vi.mock('@/lib/db',async()=>({
-  ...await vi.importActual<typeof import('../db')>('../db'),
-  getDb:vi.fn(),
+rs.mock('@/lib/db',()=>({
+  ...rstestOriginal1,
+  getDb:rs.fn(),
 }));
-vi.mock('./attendance-review.server',()=>({readAttendanceReview:vi.fn()}));
+rs.mock('./attendance-review.server',()=>({readAttendanceReview:rs.fn()}));
 
 const employee={
   id:'owner',
@@ -30,11 +32,11 @@ const employee={
 const proof={employee,sessionTokenHash:'a'.repeat(64)};
 
 beforeEach(()=>{
-  vi.clearAllMocks();
-  vi.mocked(requireSession).mockResolvedValue(employee);
-  vi.mocked(requireSessionMutationProof).mockResolvedValue(proof);
-  vi.mocked(getDb).mockReturnValue({} as ReturnType<typeof getDb>);
-  vi.mocked(readAttendanceReview).mockResolvedValue({
+  rs.clearAllMocks();
+  rs.mocked(requireSession).mockResolvedValue(employee);
+  rs.mocked(requireSessionMutationProof).mockResolvedValue(proof);
+  rs.mocked(getDb).mockReturnValue({} as ReturnType<typeof getDb>);
+  rs.mocked(readAttendanceReview).mockResolvedValue({
     state:'ready',
     engineVersion:1,
     workspaceId:'workspace-fuel',
@@ -68,7 +70,7 @@ it('derives both manager role and fresh reader proof from the portal cookie boun
 });
 
 it.each(['EMPLOYEE','LEAD'] as const)('rejects %s before database setup or proof derivation',async role=>{
-  vi.mocked(requireSession).mockResolvedValue({...employee,role});
+  rs.mocked(requireSession).mockResolvedValue({...employee,role});
   await expect(getAttendanceReview()).rejects.toThrow('redirect:/app/restricted');
   expect(getDb).not.toHaveBeenCalled();
   expect(requireSessionMutationProof).not.toHaveBeenCalled();
@@ -76,19 +78,19 @@ it.each(['EMPLOYEE','LEAD'] as const)('rejects %s before database setup or proof
 });
 
 it('reports missing database configuration without deriving a business-data proof',async()=>{
-  vi.mocked(getDb).mockImplementation(()=>{throw Error('DATABASE_URL is not configured.');});
+  rs.mocked(getDb).mockImplementation(()=>{throw Error('DATABASE_URL is not configured.');});
   expect(await getAttendanceReview()).toEqual({state:'unavailable',reason:'not_configured'});
   expect(requireSessionMutationProof).not.toHaveBeenCalled();
   expect(readAttendanceReview).not.toHaveBeenCalled();
 });
 
 it('a session lost between role check and fresh proof is an authority denial',async()=>{
-  vi.mocked(requireSessionMutationProof).mockRejectedValue(Error('redirect:/login'));
+  rs.mocked(requireSessionMutationProof).mockRejectedValue(Error('redirect:/login'));
   expect(await getAttendanceReview()).toEqual({state:'unavailable',reason:'access_denied'});
   expect(readAttendanceReview).not.toHaveBeenCalled();
 });
 
 it('never reflects a reader transport diagnostic at the server boundary',async()=>{
-  vi.mocked(readAttendanceReview).mockRejectedValue(Error('postgres://secret token_hash=private'));
+  rs.mocked(readAttendanceReview).mockRejectedValue(Error('postgres://secret token_hash=private'));
   expect(await getAttendanceReview()).toEqual({state:'unavailable',reason:'read_failed'});
 });

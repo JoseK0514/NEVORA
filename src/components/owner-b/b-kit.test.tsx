@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { BState } from "./b-kit";
 
 const glyph = (html: string) => html.match(/<span class="b-ico[^"]*"[^>]*>(.*?)<\/span>/)?.[1] ?? "";

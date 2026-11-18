@@ -1,4 +1,4 @@
-import { expect,it } from 'vitest';
+import { expect,it } from '@rstest/core';
 import { readFile } from 'node:fs/promises';
 import { createDisposableExchangeDatabase } from './local-postgres';
 it('aborts contradictory legacy cross-column participation without deleting history or partially migrating',async()=>{

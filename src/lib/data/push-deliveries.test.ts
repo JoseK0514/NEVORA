@@ -1,14 +1,14 @@
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 import type { SqlExecutor, DeliveryClaim } from '../notifications/types';
 async function setup(rows: unknown[][] = [[],[]]) {
   const implementation = await import('./push-deliveries').catch(() => ({}));
   expect(implementation).toHaveProperty('sqlDeliveryRepository');
-  const executor = { query:vi.fn().mockResolvedValue([]), transaction:vi.fn().mockResolvedValue(rows) } as unknown as SqlExecutor;
+  const executor = { query:rs.fn().mockResolvedValue([]), transaction:rs.fn().mockResolvedValue(rows) } as unknown as SqlExecutor;
   return { executor, repository:(implementation as typeof import('./push-deliveries')).sqlDeliveryRepository('test',executor) };
 }
 it('historical_notifications_are_not_replayed', async () => {
   const {repository,executor} = await setup(); await repository.materialize(['intent-1']);
-  const statement = vi.mocked(executor.transaction).mock.calls[0][0][0];
+  const statement = rs.mocked(executor.transaction).mock.calls[0][0][0];
   expect(statement.text).toMatch(/push_state = 'pending'/);
   expect(statement.text).toMatch(/n\.purpose <> 'EVENT' OR s\.consent_at <= n\.created_at/);
   expect(statement.text).toMatch(/n\.purpose <> 'SUMMARY' OR n\.source_kind = 'MANAGER_SUMMARY'/);
@@ -19,7 +19,7 @@ it('historical_notifications_are_not_replayed', async () => {
 it('interrupted_claims_are_reclaimed_under_database_time_and_skip_locked', async () => {
   const {repository,executor} = await setup();
   expect(await repository.claim({now:new Date('2030-10-01'),limit:10,leaseSeconds:120,mode:'all'})).toEqual([]);
-  const batch = vi.mocked(executor.transaction).mock.calls[0][0];
+  const batch = rs.mocked(executor.transaction).mock.calls[0][0];
   const statement = batch.at(-1)!;
   expect(statement.text).toMatch(/FOR UPDATE OF d SKIP LOCKED/);
   expect(statement.text).toMatch(/lease_expires_at <= now\(\)/);
@@ -34,7 +34,7 @@ it('stale_lease_cannot_finish', async () => {
   const {repository,executor} = await setup();
   const claim = {deliveryId:'delivery-1',generation:'old-generation',leaseToken:'old-token'} as DeliveryClaim;
   expect(await repository.finish(claim,{state:'provider_accepted'})).toBe(false);
-  const statement = vi.mocked(executor.query).mock.calls[0][0];
+  const statement = rs.mocked(executor.query).mock.calls[0][0];
   expect(statement.values.slice(0,3)).toEqual(['delivery-1','old-generation','old-token']);
   expect(statement.text).toMatch(/lease_token = \$3/);
   expect(statement.text).toMatch(/generation = \$2/);
@@ -45,11 +45,11 @@ it('release_and_generation_cancellation_fence_superseded_work', async () => {
   const {repository,executor} = await setup();
   const claim = {deliveryId:'delivery-1',generation:'generation-1',leaseToken:'token'} as DeliveryClaim;
   expect(await repository.release(claim)).toBe(false);
-  const release = vi.mocked(executor.query).mock.calls[0][0];
+  const release = rs.mocked(executor.query).mock.calls[0][0];
   expect(release.text).toMatch(/lease_token = \$3/);
   expect(release.text).toMatch(/generation = \$2/);
   await repository.cancelForGeneration('install-hash','generation-1');
-  expect(vi.mocked(executor.query).mock.calls[1][0].values).toEqual(['install-hash','generation-1','test']);
+  expect(rs.mocked(executor.query).mock.calls[1][0].values).toEqual(['install-hash','generation-1','test']);
 });
 it('invalid_claim_parameters_and_retry_without_time_are_rejected', async () => {
   const {repository,executor} = await setup();
@@ -77,7 +77,7 @@ it('materialization_expires_selected_intents_and_does_nothing_for_empty_batch', 
   const {repository,executor} = await setup();
   await repository.materialize([]); expect(executor.transaction).not.toHaveBeenCalled();
   await repository.materialize(['expired-intent']);
-  const batch = vi.mocked(executor.transaction).mock.calls[0][0];
+  const batch = rs.mocked(executor.transaction).mock.calls[0][0];
   expect(batch.at(-1)!.text).toMatch(/UPDATE notifications SET push_state = 'expired'/);
   expect(batch.at(-1)!.text).toMatch(/expires_at <= now\(\)/);
 });
@@ -90,9 +90,9 @@ it('self_test_cannot_fan_out_to_other_account_devices_or_stale_generations', asy
   await repository.claim({now:new Date(),limit:10,leaseSeconds:120,mode:'all'});
   await repository.finish({deliveryId:'test-delivery',generation:'current-generation',leaseToken:'lease'} as DeliveryClaim,
     {state:'provider_accepted'});
-  const materialize = vi.mocked(executor.transaction).mock.calls[0][0][0];
-  const claim = vi.mocked(executor.transaction).mock.calls[1][0].at(-1)!;
-  const finish = vi.mocked(executor.query).mock.calls[0][0];
+  const materialize = rs.mocked(executor.transaction).mock.calls[0][0][0];
+  const claim = rs.mocked(executor.transaction).mock.calls[1][0].at(-1)!;
+  const finish = rs.mocked(executor.query).mock.calls[0][0];
   for (const statement of [materialize,claim,finish]) {
     expect(statement.text).toMatch(/n\.purpose <> 'TEST' OR \(n\.source_kind = 'SELF_TEST' AND s\.id = n\.source_id AND s\.generation = n\.source_version\)/);
     expect(statement.text).toMatch(/n\.source_kind <> 'SELF_TEST' OR n\.purpose = 'TEST'/);
@@ -104,16 +104,16 @@ it('worker_repository_scopes_claims_materialization_and_cleanup_to_its_environme
   await repository.materialize(['intent-1']);
   await repository.claim({now:new Date(),limit:10,leaseSeconds:120,mode:'all'});
   await repository.cancelForGeneration('install-hash','generation-1');
-  const materialize = vi.mocked(executor.transaction).mock.calls[0][0];
+  const materialize = rs.mocked(executor.transaction).mock.calls[0][0];
   expect(materialize[0].text).toMatch(/n\.environment = \$2/);
   expect(materialize[0].values).toEqual([['intent-1'],'test']);
   expect(materialize[1].text).toMatch(/environment = \$2/);
-  const claim = vi.mocked(executor.transaction).mock.calls[1][0];
+  const claim = rs.mocked(executor.transaction).mock.calls[1][0];
   expect(claim[0].text).toMatch(/environment = \$1/);
   expect(claim[0].values).toEqual(['test']);
   expect(claim[1].text).toMatch(/n\.environment = \$4/);
   expect(claim[1].values).toEqual([10,120,'all','test',null]);
-  const cancel = vi.mocked(executor.query).mock.calls[0][0];
+  const cancel = rs.mocked(executor.query).mock.calls[0][0];
   expect(cancel.text).toMatch(/s\.environment = \$3/);
   expect(cancel.values).toEqual(['install-hash','generation-1','test']);
 });
@@ -122,7 +122,7 @@ it('quiet_deferral_is_conditional_and_restores_the_unattempted_claim_without_ext
   const {repository,executor}=await setup();
   const claim={deliveryId:'delivery',generation:'generation',leaseToken:'lease'} as DeliveryClaim;
   expect(await repository.defer(claim,new Date('2030-01-02T11:00:00Z'))).toBe(false);
-  const statement=vi.mocked(executor.query).mock.calls[0][0];
+  const statement=rs.mocked(executor.query).mock.calls[0][0];
   expect(statement.values).toEqual(['delivery','generation','lease','test','2030-01-02T11:00:00.000Z']);
   expect(statement.text).toMatch(/d\.generation = \$2 AND d\.lease_token = \$3/);
   expect(statement.text).toMatch(/d\.status = 'processing' AND d\.lease_expires_at > now\(\)/);
@@ -135,7 +135,7 @@ it('quiet_deferral_is_conditional_and_restores_the_unattempted_claim_without_ext
 it('test_claims_restrict_accounts_and_summary_seeds_never_claim',async()=>{
   const {repository,executor}=await setup();
   await repository.claim({now:new Date(),limit:10,leaseSeconds:120,mode:'all',recipientIds:['allowed']});
-  const statement=vi.mocked(executor.transaction).mock.calls[0][0][1];
+  const statement=rs.mocked(executor.transaction).mock.calls[0][0][1];
   expect(statement.values).toEqual([10,120,'all','test',['allowed']]);
   expect(statement.text).toMatch(/n\.employee_id = ANY\(\$5::text\[\]\)/);
   expect(statement.text).toMatch(/n\.purpose <> 'SUMMARY' OR n\.source_kind = 'MANAGER_SUMMARY'/);

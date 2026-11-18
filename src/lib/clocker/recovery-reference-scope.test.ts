@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {historyReferenceSubject,scopedJournalReferences} from './recovery-journal';
 const subject='a'.repeat(64),other='b'.repeat(64),own={commandId:'own',action:'CLOCK_IN'},foreign={commandId:'foreign',action:'CLOCK_OUT'};
 it('returns only the verified subject references and a count of other or unreadable records',()=>{

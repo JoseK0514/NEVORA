@@ -1,4 +1,4 @@
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import { AdvisorScreen } from "./advisor";
 import { createAdvisorController, initialView, type AdvisorView } from "./controller";
@@ -13,7 +13,7 @@ function snapshot(): AdvisorSnapshot {
   };
 }
 const actions = { editQuestion() {}, editPriorities() {}, ask() {}, save() {}, cancel() {}, refresh() {}, reviewConflict() {} };
-afterEach(() => vi.useRealTimers());
+afterEach(() => { rs.useRealTimers(); });
 it("shows sourced priority cards and personal review controls without requiring a model connection", () => {
   const html = renderToStaticMarkup(<AdvisorScreen view={{ ...initialView, snapshot: snapshot() }} actions={actions} />);
   expect(html).toContain("Needs your attention");
@@ -31,7 +31,7 @@ it("rejects malformed attention data instead of showing untrusted action links o
   expect(() => parseSnapshot({ ...valid, attention: { ...valid.attention, items: [{...valid.attention!.items[0], source: { label: "Evil", href: "https://evil.invalid", observedAt: valid.observedAt }}] } })).toThrow();
 });
 it("saves an exact current issue and confirms it only after a fresh protected read", async () => {
-  vi.useFakeTimers();
+  rs.useFakeTimers();
   let state: AdvisorView | undefined;
   let posted: unknown;
   let reads = 0;
@@ -44,7 +44,7 @@ it("saves an exact current issue and confirms it only after a fresh protected re
     return Response.json(snapshot());
   });
   controller.start();
-  await vi.advanceTimersByTimeAsync(0);
+  await rs.advanceTimersByTimeAsync(0);
   await controller.reviewItem("a".repeat(64), "deferred");
   expect(posted).toMatchObject({ op: "review_briefing", issueId: "a".repeat(64), fingerprint: "b".repeat(64), expectedRevision: 0, disposition: "deferred" });
   expect(reads).toBe(2);

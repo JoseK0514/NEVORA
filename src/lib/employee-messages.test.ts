@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {parseEmployeeMessages} from './employee-messages';
 const envelope=()=>({state:'ready',kind:'communications',view:'notifications',selection:'first',authority:'a'.repeat(64),communicationAuthority:'b'.repeat(64),observedAt:'2026-10-27T17:00:00Z',validForMs:40000,timeZone:'America/Puerto_Rico',updates:'on',data:{value:{state:'ready',kind:'notifications',observedAt:'2026-10-27T17:00:00Z',validForMs:45000,coverage:'complete',items:[]},nextCursor:null}});
 it('retains confirmed empty, partial, unavailable and module-off as distinct current states',()=>{

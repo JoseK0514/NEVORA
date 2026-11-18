@@ -1,5 +1,5 @@
-import {afterEach,expect,it,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
+import {afterEach,expect,it,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
 import {readPortalNotificationList,markManagementNotificationRead} from './portal-notification-list.server';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
 import type {SessionMutationProof} from '../shift-changes/types';
@@ -7,9 +7,9 @@ import {notificationReadManifest} from './employee-notification-list.server';
 import {notificationReadSql} from './notification-state';
 import {workspaceReadSql} from './workspaces';
 const proof={employee:{id:'owner',role:'OWNER'},sessionTokenHash:'a'.repeat(64)} as SessionMutationProof;
-afterEach(()=>vi.restoreAllMocks());
+afterEach(()=>{ rs.restoreAllMocks(); });
 it.each(['list','read'] as const)('cancels stalled %s workspace reads and forwards the eight-second signal',async kind=>{
- const controller=new AbortController(),timeout=vi.spyOn(AbortSignal,'timeout').mockReturnValue(controller.signal);
+ const controller=new AbortController(),timeout=rs.spyOn(AbortSignal,'timeout').mockReturnValue(controller.signal);
  let received:AbortSignal|undefined;
  const executor:SqlExecutor={query:async<T>(_statement:SqlStatement,signal?:AbortSignal)=>{received=signal;return new Promise<T[]>(()=>{});},transaction:async(_statements,signal)=>{received=signal;return new Promise<unknown[][]>(()=>{});}};
  const operation=kind==='list'?readPortalNotificationList(proof,'test',executor):markManagementNotificationRead(proof,'own','test',executor);
@@ -25,7 +25,7 @@ it('bounds expanded management sources and rejects arbitrary SQL',()=>{
  expect(()=>manifest.identify({text:notificationReadSql.intent(),values:['fictional-over-budget']})).toThrow('budget');
 });
 it('rejects an oversized source observation without releasing a ready view',async()=>{
- const query=vi.fn(async()=>{throw Error('Unbounded query');});let count=0;
+ const query=rs.fn(async()=>{throw Error('Unbounded query');});let count=0;
  const executor:SqlExecutor={query,transaction:async statements=>{
   count++;
   return statements.map(statement=>{

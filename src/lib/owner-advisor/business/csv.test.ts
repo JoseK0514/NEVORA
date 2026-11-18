@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { parseBusinessCsv } from './csv';
 import { normalizeBusinessVersion } from './parse';
 import { businessDigest } from './digest.server';

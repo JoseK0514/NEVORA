@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {EmployeeCreationOperation} from './creation-operation';
 it('locks one original creation payload and reconciles it before resend; stale handlers cannot submit or recover',async()=>{
  const operation=new EmployeeCreationOperation(()=> '11111111-1111-4111-8111-111111111111');const sent:Record<string,FormDataEntryValue>[]=[];let allowed=true;

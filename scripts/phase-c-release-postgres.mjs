@@ -14,7 +14,7 @@ if (!bin || !existsSync(join(bin, 'initdb')) || !existsSync(join(bin, 'pg_ctl'))
 
 const suites = [
   { label: 'foundation', prefix: 'nevora_foundation_test_', command: ['npm', 'run', 'test:foundation:integration'] },
-  { label: 'phase-b-authority', prefix: 'nevora_foundation_test_', command: [process.execPath, 'node_modules/vitest/vitest.mjs', 'run', '--config', 'vitest.phase-b-c-authority.config.mts'] },
+  { label: 'phase-b-authority', prefix: 'nevora_foundation_test_', command: [process.execPath, 'scripts/run-rstest.mjs', 'run', '--config', 'vitest.phase-b-c-authority.config.mts'] },
   { label: 'generation', prefix: 'nevora_generation_test_', command: ['npm', 'run', 'test:generation:integration'] },
   { label: 'exchanges', prefix: 'nevora_exchange_test_', command: ['npm', 'run', 'test:exchanges:integration'] },
   { label: 'notifications', prefix: 'fuel_phase3_test_', command: ['npm', 'run', 'test:notifications:integration'] },

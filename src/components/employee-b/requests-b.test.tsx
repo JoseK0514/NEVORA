@@ -1,9 +1,9 @@
-import {beforeEach, expect, it, vi} from 'vitest';
+import {beforeEach, expect, it, rs} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
-const fixture = vi.hoisted(() => ({read: null as unknown, paused: false}));
-vi.mock('@/app/app/exchange/actions', () => ({shiftChangeAction: vi.fn(), reconcileShiftChangeAction: vi.fn()}));
-vi.mock('@/app/app/employee-planning/actions', () => ({saveEmployeePlanningAction: vi.fn(), checkEmployeePlanningAction: vi.fn()}));
-vi.mock('../employee-mobile/use-planning', () => ({usePlanning: () => ({state: {snapshot: fixture.read ? {state: 'ready'} : null, paused: fixture.paused, refreshing: !fixture.read && !fixture.paused}, read: fixture.read, refresh: () => {}, accept: () => {}, allowed: () => true, live: {current: null}})}));
+const fixture = rs.hoisted(() => ({read: null as unknown, paused: false}));
+rs.mock('@/app/app/exchange/actions', () => ({shiftChangeAction: rs.fn(), reconcileShiftChangeAction: rs.fn()}));
+rs.mock('@/app/app/employee-planning/actions', () => ({saveEmployeePlanningAction: rs.fn(), checkEmployeePlanningAction: rs.fn()}));
+rs.mock('../employee-mobile/use-planning', () => ({usePlanning: () => ({state: {snapshot: fixture.read ? {state: 'ready'} : null, paused: fixture.paused, refreshing: !fixture.read && !fixture.paused}, read: fixture.read, refresh: () => {}, accept: () => {}, allowed: () => true, live: {current: null}})}));
 import {RequestsHubB, bTone} from './requests-b';
 import {exchangeChip} from './exchange-b';
 import {timeOffRange, timeOffSpan} from './timeoff-b';

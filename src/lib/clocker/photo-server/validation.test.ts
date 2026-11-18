@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { parsePhotoCommand, parsePhotoFailure, parsePhotoNotice, parsePhotoPolicyUpdate, unconfiguredPhotoPolicy, publicPhotoPolicy } from './validation';
 import { PHOTO_ACTIONS } from './contracts';
 const command = { commandId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', verificationId: 'a'.repeat(64) };

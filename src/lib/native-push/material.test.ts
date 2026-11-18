@@ -1,5 +1,5 @@
 import {createDecipheriv, hkdfSync} from 'node:crypto';
-import {expect, it} from 'vitest';
+import {expect, it} from '@rstest/core';
 import {encryptSubscriptionMaterial} from '../notifications/installation';
 
 // Catch plaintext storage, unauthenticated/wrong-context decryption and purpose

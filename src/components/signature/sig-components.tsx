@@ -115,7 +115,7 @@ const initialsOf = (name: string) => name.trim().split(/\s+/).slice(0, 2).map(pa
 export function SigAvatar({ name, src, size = 40, labelled = false }: { name: string; src?: string; size?: 32 | 40 | 56; labelled?: boolean }) {
   const a11y = labelled ? { role: "img" as const, "aria-label": name } : { "aria-hidden": true as const };
   return <span className="sig-avatar" data-size={size} {...a11y}>
-    {/* eslint-disable-next-line @next/next/no-img-element -- avatars come from arbitrary storage URLs at fixed small sizes */}
+    {/* eslint-disable-next-line next-preserved/no-img-element -- avatars come from arbitrary storage URLs at fixed small sizes */}
     {src ? <img src={src} alt="" width={size} height={size} /> : initialsOf(name)}
   </span>;
 }

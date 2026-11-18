@@ -1,11 +1,11 @@
 import { randomUUID } from "node:crypto";
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import { companyAccessFixture } from "@/test/integration/company-access-fixture";
 import { advisorService } from "./service.server";
 
 let f: Awaited<ReturnType<typeof companyAccessFixture>>;
-beforeEach(async () => { f = await companyAccessFixture(); vi.spyOn(console, "info").mockImplementation(() => {}); vi.spyOn(Date, "now").mockReturnValue(Date.parse("2026-11-15T12:00:00Z")); });
-afterEach(async () => { vi.restoreAllMocks(); await f?.db.dispose(); });
+beforeEach(async () => { f = await companyAccessFixture(); rs.spyOn(console, "info").mockImplementation(() => {}); rs.spyOn(Date, "now").mockReturnValue(Date.parse("2026-11-15T12:00:00Z")); });
+afterEach(async () => { rs.restoreAllMocks(); await f?.db.dispose(); });
 const env = {
   NEVORA_OWNER_ADVISOR_ENABLED: "true", NEVORA_OWNER_ADVISOR_DATA_APPROVED: "true",
   NEVORA_OWNER_ADVISOR_PROVIDER: "anthropic", NEVORA_OWNER_ADVISOR_API_STYLE: "anthropic_messages",
@@ -20,7 +20,7 @@ const command = () => ({ op: "ask", requestId: randomUUID(), message: "Consulta 
 const signal = () => new AbortController().signal;
 
 it("uses current Owner authority, scoped persistence, exact replay and the existing daily reservation", async () => {
-  const fetch = vi.fn(async () => wire());
+  const fetch = rs.fn(async () => wire());
   await expect(advisorService(f.manager, f.db.executor, env, signal(), command(), fetch)).rejects.toThrow();
   expect(fetch).not.toHaveBeenCalled();
   const c = command();
@@ -36,7 +36,7 @@ it("uses current Owner authority, scoped persistence, exact replay and the exist
 });
 
 it("rejects model-supplied workplace scope before a requested read and retains the uncertain attempt", async () => {
-  const fetch = vi.fn(async () => wire([{ type: "tool_use", id: "foreign-scope", name: "published_staffing", input: { date: "2026-11-15", workspaceId: "foreign-private-company" } }], "tool_use"));
+  const fetch = rs.fn(async () => wire([{ type: "tool_use", id: "foreign-scope", name: "published_staffing", input: { date: "2026-11-15", workspaceId: "foreign-private-company" } }], "tool_use"));
   await expect(advisorService(f.owner, f.db.executor, env, signal(), command(), fetch)).rejects.toThrow("invalid");
   expect(await f.q("SELECT history FROM owner_advisor_profiles")).toEqual([]);
   await expect(advisorService(f.owner, f.db.executor, env, signal(), command(), fetch)).rejects.toThrow();
@@ -44,7 +44,7 @@ it("rejects model-supplied workplace scope before a requested read and retains t
 });
 
 it("discards native output after authority changes during inference", async () => {
-  const fetch = vi.fn(async () => { await f.q("UPDATE employees SET role='MANAGER' WHERE id='owner'"); return wire(); });
+  const fetch = rs.fn(async () => { await f.q("UPDATE employees SET role='MANAGER' WHERE id='owner'"); return wire(); });
   await expect(advisorService(f.owner, f.db.executor, env, signal(), command(), fetch)).rejects.toThrow();
   expect(await f.q("SELECT history FROM owner_advisor_profiles")).toEqual([]);
   expect(await f.q("SELECT count(*)::int n FROM owner_advisor_requests WHERE state='completed'")).toEqual([{ n: 0 }]);

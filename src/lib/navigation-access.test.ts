@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import type {OperationalAuthorityView} from './company-access/model';
 import {activeNavigationHref,navigationForRole,teamToolsForRole} from './navigation';
 import type {PayrollCapabilities} from './payroll/contracts';

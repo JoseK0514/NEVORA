@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { PDFArray, PDFDocument, PDFRawStream, StandardFonts, decodePDFRawStream } from "pdf-lib";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import {
   NATIVE_PAYSTUB_PRESENTATION_VERSION, NATIVE_PAYSTUB_TEMPLATE_V1,
   NativePaystubDocumentError, preflightNativePaystubGlyphs, renderNativeEmployeePaystub,

@@ -1,5 +1,5 @@
 // Child validation scenarios retained against the canonical command envelope.
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { parsePunchCommand } from './punch-command';
 const base={commandId:'e5616987-26a9-46d2-829b-d69b611be658',action:'CLOCK_IN',verificationId:'a'.repeat(64),expected:{revision:0,timeEntryId:null,timeEntryVersion:null,breakEntryId:null,breakEntryVersion:null}};
 it('accepts an explicit off-clock revision without employee or client time fields',()=>{expect(parsePunchCommand(base)).toEqual(base);});

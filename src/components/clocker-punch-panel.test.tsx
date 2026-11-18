@@ -1,10 +1,11 @@
-import {expect,it,vi} from 'vitest';
-const hooks=vi.hoisted(()=>({states:[] as unknown[],index:0,online:true}));
-vi.mock('react',async original=>({...await original<Record<string,unknown>>(),useState:(initial:unknown)=>[hooks.states[hooks.index++]??initial,()=>{}],useRef:(initial:unknown)=>({current:initial}),useEffect:()=>{},useContext:()=>null}));
-vi.mock('./clocker-shell',()=>({useReportTabletHealth:()=>{}}));
-vi.mock('./clocker-online',()=>({useClockerOnline:()=>hooks.online,useWhenBackOnline:()=>{}}));
-vi.mock('./clocker-motion',()=>({useClockerMotion:()=>({current:null})}));
-vi.mock('./clocker-language',()=>({useClockerCopy:()=>((key:string)=>key),useClockerPresentation:()=>({v2:true,locale:'en'}),useClockerIntlLocale:()=>'en-US',useClockerSpanish:()=>false,Es:()=>null}));
+import * as rstestImportedActual0 from "react" with { rstest: 'importActual' };
+import {expect,it,rs} from '@rstest/core';
+const hooks=rs.hoisted(()=>({states:[] as unknown[],index:0,online:true}));
+rs.mock('react',() => ({...rstestImportedActual0,useState:(initial:unknown)=>[hooks.states[hooks.index++]??initial,()=>{}],useRef:(initial:unknown)=>({current:initial}),useEffect:()=>{},useContext:()=>null}));
+rs.mock('./clocker-shell',()=>({useReportTabletHealth:()=>{}}));
+rs.mock('./clocker-online',()=>({useClockerOnline:()=>hooks.online,useWhenBackOnline:()=>{}}));
+rs.mock('./clocker-motion',()=>({useClockerMotion:()=>({current:null})}));
+rs.mock('./clocker-language',()=>({useClockerCopy:()=>((key:string)=>key),useClockerPresentation:()=>({v2:true,locale:'en'}),useClockerIntlLocale:()=>'en-US',useClockerSpanish:()=>false,Es:()=>null}));
 import {ClockerPunchPanel} from './clocker-punch-panel';
 import {ClockerRecoveryHandoff} from './clocker-recovery';
 function findHandoff(value:unknown):unknown{

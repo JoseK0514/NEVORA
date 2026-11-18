@@ -1,13 +1,13 @@
-import { beforeEach, expect, it, vi } from 'vitest';
-const m = vi.hoisted(() => ({ proof: vi.fn(), headers: vi.fn(), save: vi.fn(), read: vi.fn() }));
-vi.mock('server-only', () => ({}));
-vi.mock('next/headers', () => ({ headers: m.headers }));
-vi.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: m.proof }));
-vi.mock('@/lib/clocker/setup.server', async () => {
-  const actual = await vi.importActual<typeof import('@/lib/clocker/setup.server')>('@/lib/clocker/setup.server');
+import { beforeEach, expect, it, rs } from '@rstest/core';
+const m = rs.hoisted(() => ({ proof: rs.fn(), headers: rs.fn(), save: rs.fn(), read: rs.fn() }));
+rs.mock('server-only', () => ({}));
+rs.mock('next/headers', () => ({ headers: m.headers }));
+rs.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: m.proof }));
+rs.mock('@/lib/clocker/setup.server', async () => {
+  const actual = await rs.importActual<typeof import('@/lib/clocker/setup.server')>('@/lib/clocker/setup.server');
   return { ...actual, clockerSecurity: async () => ({ production: false, origin: undefined }) };
 });
-vi.mock('@/lib/clocker/schedule-grace.server', () => ({
+rs.mock('@/lib/clocker/schedule-grace.server', () => ({
   saveClockerScheduleGrace: m.save, readClockerScheduleGrace: m.read,
   ClockerScheduleGraceError: class extends Error { constructor(public code: string) { super(code === 'STALE' ? 'Shift matching changed. Reload before saving.' : 'Safe grace error'); } },
 }));
@@ -20,7 +20,7 @@ const form = (extra: Record<string, string | undefined> = {}) => {
   return data;
 };
 beforeEach(() => {
-  vi.clearAllMocks();
+  rs.clearAllMocks();
   m.proof.mockResolvedValue({ employee: { id: 'owner', role: 'OWNER' }, sessionTokenHash: 'a'.repeat(64) });
   m.headers.mockResolvedValue(new Headers({ host: 'localhost:3000', origin: 'http://localhost:3000' }));
   m.save.mockResolvedValue({ earlyClockInGraceMinutes: 10, version: 1 });

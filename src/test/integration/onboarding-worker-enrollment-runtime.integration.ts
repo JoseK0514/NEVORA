@@ -1,4 +1,4 @@
-import {afterAll,afterEach,beforeAll,expect,it,vi} from 'vitest';
+import {afterAll,afterEach,beforeAll,expect,it,rs} from '@rstest/core';
 import {createHash,generateKeyPairSync,randomBytes,randomUUID} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import {Pool} from 'pg';
@@ -28,7 +28,7 @@ beforeAll(async()=>{
  const admin=await f.db.pool.connect();try{await configureWorkerEnrollmentIssuer(admin,f.principals!.roles[1]);}finally{admin.release();}
  originalHashes=(await f.db.pool.query("SELECT id,ciphertext,active FROM nevora_onboarding.workspace_secrets ORDER BY id")).rows;
 },60000);
-afterEach(()=>{vi.unstubAllEnvs();});
+afterEach(()=>{rs.unstubAllEnvs();});
 afterAll(async()=>{
  if(!f)return;try{expect((await f.db.pool.query('SELECT id,ciphertext,active FROM nevora_onboarding.workspace_secrets ORDER BY id')).rows).toEqual(originalHashes);}finally{for(const p of readers)await p.end();for(const role of roles){await f.db.pool.query('DROP OWNED BY '+role);await f.db.pool.query('DROP ROLE '+role);}await f.close();}
 });
@@ -57,10 +57,10 @@ it('runs the canonical company SQL and Worker commerce connection using only a r
  expect(await db.query({text:'SELECT current_user::text AS login',values:[]})).toEqual([{login:e.request.loginRole}]);
  expect(await readQueueHealth(db,'test')).toMatchObject({workspaceId:e.request.workspaceId});
  await expect(db.query({text:'SELECT * FROM employee_credentials',values:[]})).rejects.toMatchObject({code:'42501'});
- vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');vi.stubEnv('NEVORA_COMMERCE_API_ORIGIN','https://fictional-commerce.example.invalid');vi.stubEnv('NEVORA_COMMERCE_WORKER_BINDING_KEY',undefined);vi.stubEnv('NEVORA_COMMERCE_BINDING_KEY',undefined);
+ rs.stubEnv('NEVORA_WORKSPACE_MODE','isolated');rs.stubEnv('NEVORA_COMMERCE_API_ORIGIN','https://fictional-commerce.example.invalid');rs.stubEnv('NEVORA_COMMERCE_WORKER_BINDING_KEY',undefined);rs.stubEnv('NEVORA_COMMERCE_BINDING_KEY',undefined);
  const connection=await withWorkspaceBinding(e.binding,isolatedCommerceConnection);expect(connection.role).toBe('WORKER');expect(connection.secret).toBe(material.commerceWorkerSecret);expect(connection.secret).not.toBe(workspaceInstanceSecret(ownerRoot,e.request));
  expect(createHash('sha256').update(connection.secret).digest('hex')).toBe((await a.c.resource.db.pool.query('SELECT worker_secret_hash FROM nevora_commerce_installation')).rows[0].worker_secret_hash);
- vi.stubEnv('NEVORA_COMMERCE_BINDING_KEY',ownerRoot);await expect(withWorkspaceBinding(e.binding,isolatedCommerceConnection)).rejects.toThrow('worker_owner_key_forbidden');
+ rs.stubEnv('NEVORA_COMMERCE_BINDING_KEY',ownerRoot);await expect(withWorkspaceBinding(e.binding,isolatedCommerceConnection)).rejects.toThrow('worker_owner_key_forbidden');
 });
 it('refuses foreign company routing, a substituted recipient and a forged binding',async()=>{
  const first=await enrollment(),second=await enrollment(b);
@@ -111,13 +111,13 @@ it('F2 refuses colliding Worker/Owner hashes before sealing and on current enrol
   await expect(processWorkerEnrollmentOnce(f.principals!.pools[1],[cold.selected],sha,f.config.encryptionKey,ownerRoot,verifyWorkerEnrollmentCompany)).rejects.toThrow('worker_enrollment_invalid');
   expect((await f.db.pool.query('SELECT status,ciphertext FROM nevora_onboarding.worker_runtime_enrollments WHERE id=$1',[cold.selected.id])).rows).toEqual([{status:'PENDING',ciphertext:null}]);
   await company.query('UPDATE nevora_commerce_installation SET worker_secret_hash=$1,instance_secret_hash=$1',[original.worker_secret_hash]);
-  vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');vi.stubEnv('NEVORA_COMMERCE_API_ORIGIN','https://fictional.invalid');vi.stubEnv('NEVORA_COMMERCE_WORKER_BINDING_KEY',undefined);vi.stubEnv('NEVORA_COMMERCE_BINDING_KEY',undefined);
+  rs.stubEnv('NEVORA_WORKSPACE_MODE','isolated');rs.stubEnv('NEVORA_COMMERCE_API_ORIGIN','https://fictional.invalid');rs.stubEnv('NEVORA_COMMERCE_WORKER_BINDING_KEY',undefined);rs.stubEnv('NEVORA_COMMERCE_BINDING_KEY',undefined);
   await expect(withWorkspaceBinding(warm.binding,isolatedCommerceConnection)).rejects.toThrow('commerce_not_enrolled');
  }finally{await company.query('UPDATE nevora_commerce_installation SET instance_secret_hash=$1,worker_secret_hash=$2',[original.instance_secret_hash,original.worker_secret_hash]);}
 });
 it.each(['revoke','expire'] as const)('F3 rechecks enrolled admission after an asynchronous entitlement %s',async mode=>{
  const {readCommerceAuthority,resetCommerceAccessCache}=await import('@/lib/commerce/access');resetCommerceAccessCache();const e=await enrollment(a,{runtimeMs:mode==='expire'?2500:3600000});
- vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');vi.stubEnv('NEVORA_COMMERCE_API_ORIGIN','https://fictional.invalid');vi.stubEnv('NEVORA_COMMERCE_WORKER_BINDING_KEY',undefined);vi.stubEnv('NEVORA_COMMERCE_BINDING_KEY',undefined);
+ rs.stubEnv('NEVORA_WORKSPACE_MODE','isolated');rs.stubEnv('NEVORA_COMMERCE_API_ORIGIN','https://fictional.invalid');rs.stubEnv('NEVORA_COMMERCE_WORKER_BINDING_KEY',undefined);rs.stubEnv('NEVORA_COMMERCE_BINDING_KEY',undefined);
  try{await expect(withWorkspaceBinding(e.binding,()=>readCommerceAuthority(async()=>{
   if(mode==='revoke')await f.db.pool.query('UPDATE nevora_onboarding.worker_runtime_enrollments SET revoked_at=clock_timestamp() WHERE id=$1',[e.selected.id]);
   else await f.db.pool.query('SELECT pg_sleep(GREATEST(0,EXTRACT(EPOCH FROM (expires_at-clock_timestamp())))+0.05) FROM nevora_onboarding.worker_runtime_enrollments WHERE id=$1',[e.selected.id]);
@@ -126,7 +126,7 @@ it.each(['revoke','expire'] as const)('F3 rechecks enrolled admission after an a
 });
 it('F3 retains valid entitlement and cache positives while denying a later revoked receipt',async()=>{
  const {readCommerceAuthority,resetCommerceAccessCache}=await import('@/lib/commerce/access');resetCommerceAccessCache();const e=await enrollment();
- vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');vi.stubEnv('NEVORA_COMMERCE_API_ORIGIN','https://fictional.invalid');vi.stubEnv('NEVORA_COMMERCE_WORKER_BINDING_KEY',undefined);vi.stubEnv('NEVORA_COMMERCE_BINDING_KEY',undefined);
+ rs.stubEnv('NEVORA_WORKSPACE_MODE','isolated');rs.stubEnv('NEVORA_COMMERCE_API_ORIGIN','https://fictional.invalid');rs.stubEnv('NEVORA_COMMERCE_WORKER_BINDING_KEY',undefined);rs.stubEnv('NEVORA_COMMERCE_BINDING_KEY',undefined);
  let fetched=0;const get=()=>withWorkspaceBinding(e.binding,()=>readCommerceAuthority(async()=>{fetched++;return Response.json({businessId:e.request.workspaceId,installationId:e.request.workspaceId,state:'active',operational:true,validUntil:Date.now()+30000});}));
  try{expect((await get()).operational).toBe(true);expect((await get()).operational).toBe(true);expect(fetched).toBe(1);await f.db.pool.query('UPDATE nevora_onboarding.worker_runtime_enrollments SET revoked_at=clock_timestamp() WHERE id=$1',[e.selected.id]);await expect(get()).rejects.toThrow('Workspace is unavailable');expect(fetched).toBe(1);}finally{resetCommerceAccessCache();}
 });

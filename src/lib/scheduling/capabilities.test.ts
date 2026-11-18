@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { employeeCanWorkPosition } from './capabilities';
 const barista = {id:'barista',workspaceId:'w',name:'Barista',active:true,createdAt:'',updatedAt:''};
 it('access Lead is not a Barista qualification',()=>{

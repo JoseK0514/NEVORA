@@ -1,4 +1,4 @@
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, expect, it, rs } from '@rstest/core';
 import type { PunchCommand, PunchReceipt } from '../punch-types';
 import { unconfiguredPhotoPolicy } from '../photo-server/validation';
 import type { PhotoNotice, PhotoPolicy } from '../photo-server/contracts';
@@ -12,14 +12,14 @@ const receipt: PunchReceipt = {commandId:command.commandId,action:command.action
 function fixture(patch: Partial<PhotoPolicy> = {}, context:Partial<PhotoSessionContext>={}) {
   const policy: PhotoPolicy={version:1,enabled:true,events:['CLOCK_IN','START_BREAK','END_BREAK','CLOCK_OUT'],retentionDays:7,
     failureBehavior:'ALLOW_WITH_EXCEPTION',captureMaxBytes:524288,captureMaxDimension:640,uploadWindowSeconds:300,...patch};
-  const camera={open:vi.fn(async()=>undefined),capture:vi.fn(async()=>({blob:new Blob(['synthetic'],{type:'image/jpeg'}),width:100,height:100})),close:vi.fn()};
-  const preserveIntent=vi.fn<PhotoBindings['preserveIntent']>(),commitExactPunch=vi.fn<PhotoBindings['commitExactPunch']>(async()=>({state:'committed',receipt}));
-  const readExactPunch=vi.fn<PhotoBindings['readExactPunch']>(async()=>({state:'committed' as const,receipt}));
-  const upload=vi.fn<PhotoTransport['upload']>(async()=>({commandId:command.commandId,state:'stored' as const}));
-  const status=vi.fn<PhotoTransport['status']>(async()=>({commandId:command.commandId,state:policy.enabled&&policy.events.includes(command.action)?'stored':'not_required'}));
-  const reportMissing=vi.fn<PhotoTransport['reportMissing']>(async()=>({commandId:command.commandId,state:'missing' as const}));
+  const camera={open:rs.fn(async()=>undefined),capture:rs.fn(async()=>({blob:new Blob(['synthetic'],{type:'image/jpeg'}),width:100,height:100})),close:rs.fn()};
+  const preserveIntent=rs.fn<PhotoBindings['preserveIntent']>(),commitExactPunch=rs.fn<PhotoBindings['commitExactPunch']>(async()=>({state:'committed',receipt}));
+  const readExactPunch=rs.fn<PhotoBindings['readExactPunch']>(async()=>({state:'committed' as const,receipt}));
+  const upload=rs.fn<PhotoTransport['upload']>(async()=>({commandId:command.commandId,state:'stored' as const}));
+  const status=rs.fn<PhotoTransport['status']>(async()=>({commandId:command.commandId,state:policy.enabled&&policy.events.includes(command.action)?'stored':'not_required'}));
+  const reportMissing=rs.fn<PhotoTransport['reportMissing']>(async()=>({commandId:command.commandId,state:'missing' as const}));
   const bindings:PhotoBindings={preserveIntent,commitExactPunch,readExactPunch,transport:{upload,status,reportMissing}};
-  const createObjectURL=vi.fn(()=> 'blob:private-synthetic'),revokeObjectURL=vi.fn();
+  const createObjectURL=rs.fn(()=> 'blob:private-synthetic'),revokeObjectURL=rs.fn();
   const notice:PhotoNotice={policyVersion:policy.version,profileVersion:1,companyName:'Fictional Example Company',retentionDays:policy.retentionDays??7,
     assistanceContact:'Fictional on-site Owner',assistanceInstructions:'Ask the on-site Owner for a different way to record time.',
     cleanupDisclosure:'Fictional test cleanup disclosure.',backupDisclosure:'Fictional test backup disclosure.'};
@@ -31,7 +31,7 @@ function fixture(patch: Partial<PhotoPolicy> = {}, context:Partial<PhotoSessionC
 const instances: ReturnType<typeof fixture>[]=[];
 function setup(patch:Partial<PhotoPolicy>={},context:Partial<PhotoSessionContext>={}){const f=fixture(patch,context);instances.push(f);return f;}
 async function capture(f:ReturnType<typeof fixture>){await f.session.open({} as HTMLVideoElement);await f.session.capture();}
-afterEach(()=>{instances.splice(0).forEach(f=>{f.unsubscribe();f.session.dispose();});vi.useRealTimers();});
+afterEach(()=>{instances.splice(0).forEach(f=>{f.unsubscribe();f.session.dispose();});rs.useRealTimers();});
 
 it('uses all configured events while retaining the exact original punch ID', async()=>{
  const f=setup();await capture(f);await f.session.submit();
@@ -48,7 +48,7 @@ it('cannot launch real capture from unconfigured or unauthorized setup',async()=
  const f=setup({retentionDays:null,failureBehavior:null});await f.session.open({} as HTMLVideoElement);
  expect(f.session.getSnapshot().phase).toBe('setup_required');expect(f.camera.open).not.toHaveBeenCalled();
  const unauthorized=new PunchPhotoSession({intent:{subject:'b'.repeat(64),command},policy:{...unconfiguredPhotoPolicy(),version:1,enabled:true,retentionDays:7,failureBehavior:'ALLOW_WITH_EXCEPTION'},proofExpiresAt:new Date(Date.now()+10000).toISOString(),screenExpiresAt:new Date(Date.now()+10000).toISOString(),captureAuthorized:false},
-  {preserveIntent:vi.fn(),commitExactPunch:vi.fn(),readExactPunch:vi.fn(),transport:{upload:vi.fn(),status:vi.fn(),reportMissing:vi.fn()}});
+  {preserveIntent:rs.fn(),commitExactPunch:rs.fn(),readExactPunch:rs.fn(),transport:{upload:rs.fn(),status:rs.fn(),reportMissing:rs.fn()}});
  expect(unauthorized.getSnapshot().phase).toBe('setup_required');unauthorized.dispose();
 });
 it('skips only explicitly unselected events without opening camera',async()=>{
@@ -95,16 +95,16 @@ it('clears private blob/preview and stops camera on cancellation before punching
  expect(f.commitExactPunch).not.toHaveBeenCalled();expect(f.camera.close).toHaveBeenCalled();
 });
 it('expires within the short shared-tablet session and ignores late results',async()=>{
- vi.useFakeTimers();const f=setup();await capture(f);
+ rs.useFakeTimers();const f=setup();await capture(f);
  let resolve!:(value:unknown)=>void;f.commitExactPunch.mockImplementation(()=>new Promise(r=>{resolve=r;}) as never);
- const sending=f.session.submit();await vi.advanceTimersByTimeAsync(25000);
+ const sending=f.session.submit();await rs.advanceTimersByTimeAsync(25000);
  expect(f.session.getSnapshot()).toMatchObject({phase:'expired',previewUrl:null});
  resolve({state:'committed',receipt});await sending;expect(f.upload).not.toHaveBeenCalled();
 });
 it('does not attach a previous person image after cancellation during capture',async()=>{
  const f=setup();await f.session.open({} as HTMLVideoElement);
  let resolve!:(value:{blob:Blob;width:number;height:number})=>void;
- f.camera.capture.mockImplementation(()=>new Promise(r=>{resolve=r;}));const pending=f.session.capture();await vi.waitFor(()=>expect(resolve).toBeTypeOf('function'));f.session.cancel();
+ f.camera.capture.mockImplementation(()=>new Promise(r=>{resolve=r;}));const pending=f.session.capture();await rs.waitFor(()=>expect(resolve).toBeTypeOf('function'));f.session.cancel();
  resolve({blob:new Blob(['synthetic'],{type:'image/jpeg'}),width:100,height:100});await pending;
  expect(f.session.getSnapshot().previewUrl).toBeNull();expect(f.createObjectURL).not.toHaveBeenCalled();
 });
@@ -151,8 +151,8 @@ it('pins validated notice data to the effective policy and rejects a stale notic
  expect(stale.session.getSnapshot().phase).toBe('setup_required');expect(stale.session.getSnapshot().notice).toBeNull();
 });
 it('enforces the original deadline even when collection is unavailable and an alternative is selected',async()=>{
- vi.useFakeTimers();const f=setup({}, {notice:null,screenExpiresAt:new Date(Date.now()+1000).toISOString()});
- await vi.advanceTimersByTimeAsync(1000);await f.session.submitWithoutPhoto();
+ rs.useFakeTimers();const f=setup({}, {notice:null,screenExpiresAt:new Date(Date.now()+1000).toISOString()});
+ await rs.advanceTimersByTimeAsync(1000);await f.session.submitWithoutPhoto();
  expect(f.session.getSnapshot().phase).toBe('expired');expect(f.commitExactPunch).not.toHaveBeenCalled();
 });
 it('preserves an alternative after durable recovery storage is repaired',async()=>{
@@ -188,11 +188,11 @@ it('waits for durable readback and refuses a late storage result after cancellat
  const work=f.session.submit();await Promise.resolve();expect(f.commitExactPunch).not.toHaveBeenCalled();f.session.cancel();release();await work;expect(f.commitExactPunch).not.toHaveBeenCalled();
 });
 it('discards a camera opened under a changed policy or PIN context',async()=>{
- const f=fixture();const verifyContext=vi.fn(async()=>{});let release!:()=>void;f.camera.open.mockImplementation(()=>new Promise<undefined>(r=>{release=()=>r(undefined);}));
+ const f=fixture();const verifyContext=rs.fn(async()=>{});let release!:()=>void;f.camera.open.mockImplementation(()=>new Promise<undefined>(r=>{release=()=>r(undefined);}));
  const session=new PunchPhotoSession(f.context,{...f.bindings,verifyContext},f.environment);const work=session.open({} as HTMLVideoElement);await Promise.resolve();await Promise.resolve();verifyContext.mockRejectedValue(Error('Owner turned photos off'));release();await work;
  expect(session.getSnapshot()).toMatchObject({phase:'cancelled',previewUrl:null});expect(f.camera.close).toHaveBeenCalled();expect(f.commitExactPunch).not.toHaveBeenCalled();session.dispose();
 });
 it('inherits the original PIN monotonic deadline even if wall time moves backwards',async()=>{
- const mono=vi.spyOn(performance,'now').mockReturnValue(1000);let wall:ReturnType<typeof vi.spyOn>|undefined;
- try{const f=setup({}, {screenMonotonicExpiresAt:2000});const prior=Date.now();wall=vi.spyOn(Date,'now').mockReturnValue(prior-120000);mono.mockReturnValue(2001);await f.session.open({} as HTMLVideoElement);expect(f.session.getSnapshot().phase).toBe('expired');expect(f.camera.open).not.toHaveBeenCalled();}finally{wall?.mockRestore();mono.mockRestore();}
+ const mono=rs.spyOn(performance,'now').mockReturnValue(1000);let wall:ReturnType<typeof rs.spyOn>|undefined;
+ try{const f=setup({}, {screenMonotonicExpiresAt:2000});const prior=Date.now();wall=rs.spyOn(Date,'now').mockReturnValue(prior-120000);mono.mockReturnValue(2001);await f.session.open({} as HTMLVideoElement);expect(f.session.getSnapshot().phase).toBe('expired');expect(f.camera.open).not.toHaveBeenCalled();}finally{wall?.mockRestore();mono.mockRestore();}
 });

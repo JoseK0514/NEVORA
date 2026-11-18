@@ -1,15 +1,15 @@
 // F10 local request regressions. Real private resolver/executor/builders are used;
 // Next cookie and DB transport responses are fictional unit observations only.
 // No native guard/current-source/tenant authorization or hosted PASS is proved.
-import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, afterEach, describe, expect, it, rs } from '@rstest/core';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { RequestCookies } from 'next/dist/compiled/@edge-runtime/cookies';
-vi.mock('server-only', () => ({}));
-const request = vi.hoisted(() => ({ cookies: vi.fn(), headers: vi.fn() }));
-vi.mock('next/headers', () => ({ cookies: request.cookies, headers: request.headers }));
-const transport = vi.hoisted(() => ({ query: vi.fn(), transaction: vi.fn(), runtime: vi.fn(), legacy: vi.fn() }));
-vi.mock('../db', () => ({ getTenantRuntimeDb: transport.runtime, getDb: transport.legacy }));
+rs.mock('server-only', () => ({}));
+const request = rs.hoisted(() => ({ cookies: rs.fn(), headers: rs.fn() }));
+rs.mock('next/headers', () => ({ cookies: request.cookies, headers: request.headers }));
+const transport = rs.hoisted(() => ({ query: rs.fn(), transaction: rs.fn(), runtime: rs.fn(), legacy: rs.fn() }));
+rs.mock('../db', () => ({ getTenantRuntimeDb: transport.runtime, getDb: transport.legacy }));
 import { resolveSelectedPortalRequest } from './portal-request.server';
 import { createTenantExecutor } from '../tenancy/executor.server';
 import { getTenantProofFacts } from '../tenancy/resolve.server';
@@ -22,7 +22,7 @@ const bearerA = Buffer.alloc(32, 1).toString('base64url');
 const bearerB = Buffer.alloc(32, 2).toString('base64url');
 const digest = (value: string) => createHash('sha256').update(value, 'utf8').digest('hex');
 const cookie = (bearer: unknown) => ({ name: 'fuel_session', value: bearer });
-const store = (rows: unknown) => ({ getAll: vi.fn(() => rows) });
+const store = (rows: unknown) => ({ getAll: rs.fn(() => rows) });
 function subject(locator: string) {
   const side = locator === 'tenant-aa' ? 'a' : 'b';
   return { locator, workspaceId: `workspace-${side}`, employeeId: `employee-${side}`,
@@ -106,7 +106,7 @@ function installFictionalTransport() {
   });
 }
 beforeEach(() => {
-  vi.useFakeTimers(); vi.setSystemTime(NOW);
+  rs.useFakeTimers(); rs.setSystemTime(NOW);
   request.cookies.mockReset(); request.cookies.mockResolvedValue(store([cookie(bearerA)]));
   request.headers.mockReset(); request.headers.mockResolvedValue(new Headers({ cookie: `fuel_session=${bearerA}` }));
   transport.query.mockReset(); transport.transaction.mockReset(); transport.runtime.mockReset(); transport.legacy.mockReset();
@@ -116,7 +116,7 @@ beforeEach(() => {
     then() { throw Error('query awaited outside owning transaction'); } }));
   installFictionalTransport();
 });
-afterEach(() => { vi.useRealTimers(); });
+afterEach(() => { rs.useRealTimers(); });
 
 // These are actual production APIs under fictional wire inputs, not a proof
 // factory mock. Native positive cases remain root-owned separate prerequisites.

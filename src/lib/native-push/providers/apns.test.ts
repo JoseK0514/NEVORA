@@ -1,9 +1,9 @@
-import {afterEach, expect, it, vi} from 'vitest';
+import {afterEach, expect, it, rs} from '@rstest/core';
 import {generateKeyPairSync, verify} from 'node:crypto';
 import type {NativeTransportResponse} from './transport';
-const forbidden = vi.hoisted(() => vi.fn(() => {throw Error('Real network forbidden in native provider tests');}));
-vi.mock('node:https', () => ({request: forbidden}));
-vi.mock('node:http2', () => ({connect: forbidden}));
+const forbidden = rs.hoisted(() => rs.fn(() => {throw Error('Real network forbidden in native provider tests');}));
+rs.mock('node:https', () => ({request: forbidden}));
+rs.mock('node:http2', () => ({connect: forbidden}));
 async function api() {
   const m = await import('./apns').catch(() => ({})); expect(m).toHaveProperty('createApnsSender');
   return m as typeof import('./apns');
@@ -15,9 +15,9 @@ const config = {origin: 'https://nevora.example', environment: 'test' as const, 
 const input = () => ({installation: {origin: config.origin, environment: 'test' as const, platform: 'ios' as const, provider: 'apns-sandbox' as const, appId: config.appId, keyFingerprint: '0'.repeat(64), generation, token: 'a1b2'},
   payload: {notificationId: 'fictional-notice', generation}, ttlSeconds: 60, urgency: 'normal' as const, signal: new AbortController().signal, beforeHandoff: async (): Promise<number | null> => 60});
 const response = (statusCode = 200, body: unknown = null, retryAfter?: string): NativeTransportResponse => ({statusCode, body: body === null ? Buffer.alloc(0) : Buffer.from(JSON.stringify(body)), ...(retryAfter ? {retryAfter} : {})});
-afterEach(() => {vi.useRealTimers(); expect(forbidden).not.toHaveBeenCalled();});
+afterEach(() => {rs.useRealTimers(); expect(forbidden).not.toHaveBeenCalled();});
 it('sends only generic data to the exact sandbox topic with a real ES256 JOSE provider signature', async () => {
-  const m = await api(), transport = vi.fn(async () => response());
+  const m = await api(), transport = rs.fn(async () => response());
   expect(await m.createApnsSender(config, transport).send(input())).toEqual({kind: 'accepted'});
   const [request] = transport.mock.calls[0] as unknown as [Parameters<import('./transport').NativeTransport>[0]];
   expect(request.endpoint).toBe('https://api.sandbox.push.apple.com/3/device/a1b2');
@@ -31,7 +31,7 @@ it('sends only generic data to the exact sandbox topic with a real ES256 JOSE pr
   expect(request.headers['apns-collapse-id']).toMatch(/^[a-f0-9]{64}$/);
 });
 it('keeps production provider/origin/app binding separate and rejects mismatched records before IO', async () => {
-  const m = await api(), transport = vi.fn(async () => response());
+  const m = await api(), transport = rs.fn(async () => response());
   const production = {...config, environment: 'production' as const, provider: 'apns-production' as const};
   const value = input();
   expect(await m.createApnsSender(production, transport).send(value)).toEqual({kind: 'failed', errorClass: 'provider_configuration'});
@@ -66,7 +66,7 @@ it('honors a bounded HTTP-date Retry-After and refuses an unrepresentable retry 
   expect(await m.createApnsSender(config, async () => response(503, null, '9'.repeat(100))).send(input())).toEqual({kind: 'failed', errorClass: 'provider_response'});
 });
 it('fails closed on missing/bad configuration, invalid TTL, stale payload generation and private fields', async () => {
-  const m = await api(), transport = vi.fn(async () => response()), sender = m.createApnsSender(config, transport);
+  const m = await api(), transport = rs.fn(async () => response()), sender = m.createApnsSender(config, transport);
   expect(await m.createApnsSender(null, transport).send(input())).toEqual({kind: 'failed', errorClass: 'provider_configuration'});
   for (const bad of [{...config, privateKey: pair.publicKey}, {...config, teamId: 'bad'}, {...config, keyId: 'bad'},
     {...config, privateKey: generateKeyPairSync('ec', {namedCurve: 'secp384r1'}).privateKey}]) {
@@ -81,14 +81,14 @@ it('fails closed on missing/bad configuration, invalid TTL, stale payload genera
 it('redacts unknown transport failures and bounds an injected transport that ignores cancellation', async () => {
   const m = await api();
   expect(await m.createApnsSender(config, async () => {throw Error('fictional private provider key/token');}).send(input())).toEqual({kind: 'retry', errorClass: 'transport_error'});
-  vi.useFakeTimers(); const sender = m.createApnsSender(config, async () => await new Promise<never>(() => {}));
-  const pending = sender.send(input()); await vi.advanceTimersByTimeAsync(8001);
+  rs.useFakeTimers(); const sender = m.createApnsSender(config, async () => await new Promise<never>(() => {}));
+  const pending = sender.send(input()); await rs.advanceTimersByTimeAsync(8001);
   expect(await pending).toEqual({kind: 'retry', errorClass: 'transport_timeout'});
 });
 it('requires the attempt gate before APNs IO and uses its shorter current TTL', async () => {
   const m = await api(), requests: Parameters<import('./transport').NativeTransport>[0][] = [];
   const sender = m.createApnsSender(config, async request => {requests.push(request); return response();});
-  const beforeHandoff = vi.fn(async () => 10), value = {...input(), beforeHandoff};
+  const beforeHandoff = rs.fn(async () => 10), value = {...input(), beforeHandoff};
   expect(await sender.send(value)).toEqual({kind: 'accepted'});
   expect(beforeHandoff).toHaveBeenCalledOnce(); expect(requests[0].headers['apns-expiration']).toBe(String(now.getTime() / 1000 + 10));
   expect(await sender.send({...value, beforeHandoff: async () => null})).toEqual({kind: 'not_sent'});

@@ -1,10 +1,11 @@
-import {afterEach,expect,it,vi} from 'vitest';
+import * as rstestOriginal0 from "react" with { rstest: 'importActual' };
+import {afterEach,expect,it,rs} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
-const fixture=vi.hoisted(()=>({snapshot:null as unknown}));
+const fixture=rs.hoisted(()=>({snapshot:null as unknown}));
 // Seed the real component's private snapshot for static rendering. Effects,
 // browser lifetime, normal Owner proof and real Stripe remain separate retests.
-vi.mock('react',async original=>{
- const actual=await original<typeof import('react')>();
+rs.mock('react', ()=>{
+ const actual=rstestOriginal0;
  return {...actual,useState:(initial:unknown)=>actual.useState(
   initial&&typeof initial==='object'&&'snapshot'in initial&&'paused'in initial
    ?{snapshot:fixture.snapshot,paused:false,refreshing:false}:initial)};

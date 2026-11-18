@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {parseEmployeeRequests} from './employee-requests';
 const ready=()=>({state:'ready',kind:'requests',authority:'a'.repeat(64),observedAt:'2026-10-27T12:00:00Z',validForMs:45000,timeZone:'America/Puerto_Rico',modules:{timeOff:true,marketplace:true},open:[],recent:[],incoming:0});
 it('accepts a finite own Requests projection and rejects unknown private fields and malformed terms',()=>{

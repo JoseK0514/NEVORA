@@ -2,7 +2,7 @@ import {fixtureProof} from './shift-change-api';
 import { saveWorkspaceProfile, createLocation, updateLocation, insertEmployee, createPosition, updatePosition, updateEmployeeProfile } from './management-api';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { CURRENT_MIGRATIONS, createDisposableFoundationDatabase } from './local-postgres';
 import { hashPassword } from '../../lib/auth/password';
 
@@ -116,13 +116,13 @@ it('preserves formerly legal legacy location names while validating new writes',
 });
 
 it('cleans up successful CREATE when COMMENT fails', async () => {
-  const { Client } = await import('pg'); const { vi } = await import('vitest');
+  const { Client } = await import('pg'); const { rs: rs } = await import('@rstest/core');
   const url = new URL(process.env.FUEL_TEST_DATABASE_URL!); const name = decodeURIComponent(url.pathname.slice(1));
   const adminUrl = new URL(url); adminUrl.pathname = '/postgres';
   const observer = new Client({ connectionString: adminUrl.href }); await observer.connect();
   const original = Client.prototype.query;
   let failComment = true; let testCreatedOid: number | undefined;
-  const spy = vi.spyOn(Client.prototype, 'query').mockImplementation(function (this: InstanceType<typeof Client>, ...args: unknown[]) {
+  const spy = rs.spyOn(Client.prototype, 'query').mockImplementation(function (this: InstanceType<typeof Client>, ...args: unknown[]) {
     const text = typeof args[0] === 'string' ? args[0] : '';
     if (failComment && text.startsWith('COMMENT ON DATABASE')) { failComment = false; return Promise.reject(new Error('injected-comment-failure')); }
     if (text.startsWith('CREATE DATABASE')) {
@@ -148,12 +148,12 @@ it('cleans up successful CREATE when COMMENT fails', async () => {
 });
 
 it('closes a connected worker when backend PID lookup fails', async () => {
-  const { Client } = await import('pg'); const { vi } = await import('vitest');
+  const { Client } = await import('pg'); const { rs: rs } = await import('@rstest/core');
   const db = await createDisposableFoundationDatabase({ mode: 'empty' });
   const target = new URL(db.connectionString); const name = decodeURIComponent(target.pathname.slice(1)); target.pathname = '/postgres';
   const observer = new Client({ connectionString: target.href }); await observer.connect();
   const original = Client.prototype.query;
-  const spy = vi.spyOn(Client.prototype, 'query').mockImplementation(function (this: InstanceType<typeof Client>, ...args: unknown[]) {
+  const spy = rs.spyOn(Client.prototype, 'query').mockImplementation(function (this: InstanceType<typeof Client>, ...args: unknown[]) {
     if (args[0] === 'SELECT pg_backend_pid() AS pid') return Promise.reject(new Error('injected-pid-failure'));
     return Reflect.apply(original, this, args);
   } as typeof original);

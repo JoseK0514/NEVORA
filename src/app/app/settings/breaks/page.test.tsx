@@ -1,15 +1,15 @@
-import { beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-const mocks = vi.hoisted(() => ({ roles: vi.fn(), proof: vi.fn(), list: vi.fn() }));
-vi.mock('@/lib/auth/permissions', () => ({ requireRoles: mocks.roles }));
-vi.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: mocks.proof }));
-vi.mock('@/lib/clocker/break-types.server', () => ({ listBreakTypes: mocks.list }));
-vi.mock('./actions', () => ({ saveBreakTypeAction: vi.fn() }));
+const mocks = rs.hoisted(() => ({ roles: rs.fn(), proof: rs.fn(), list: rs.fn() }));
+rs.mock('@/lib/auth/permissions', () => ({ requireRoles: mocks.roles }));
+rs.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: mocks.proof }));
+rs.mock('@/lib/clocker/break-types.server', () => ({ listBreakTypes: mocks.list }));
+rs.mock('./actions', () => ({ saveBreakTypeAction: rs.fn() }));
 import BreakTypesPage from './page';
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  rs.clearAllMocks();
   mocks.roles.mockResolvedValue(undefined);
   mocks.proof.mockResolvedValue({ employee: { id: 'owner' }, sessionTokenHash: 'a'.repeat(64) });
 });

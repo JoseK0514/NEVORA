@@ -336,7 +336,7 @@
       "title": "NEVORA Employee web guide",
       "markdown": {
         "path": "docs/guides/web/employee.md",
-        "sha256": "42013ef57d36643619e65fc13c33441a3b74aec2061e9125b98477a19ef4095d"
+        "sha256": "090f29dfcd0c387613d8f07041084a57febb05b61a856a5254ae271df3051828"
       },
       "evidence": [
         {
@@ -357,7 +357,7 @@
         },
         {
           "path": "src/app/app/availability/page.tsx",
-          "sha256": "d2340a521286da98678a6749c92b9741e246af485bdab3c0d34a4590451e4b1c"
+          "sha256": "fac6e83a56b7aac3da34494b71152a97fa5035c9db530091679b5383c835057f"
         },
         {
           "path": "src/app/app/requests/hub/page.tsx",
@@ -418,6 +418,22 @@
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
           "sha256": "6688c85c3b15c960295273b476052e789ffbee93adaf295e661ee81548a6838d"
+        },
+        {
+          "path": "src/app/app/availability/agreement/page.tsx",
+          "sha256": "5c1ad72b70be386599610b57e8b54fda2b5957890fc69cf6093f165991108217"
+        },
+        {
+          "path": "src/components/employee-b/home-b.tsx",
+          "sha256": "5a7672e77680d14079186e53e672d37a800ba64a556d1a4a3219f32ea6fcbff2"
+        },
+        {
+          "path": "src/components/access-recovery/support-reference-seam.ts",
+          "sha256": "48a63a4e14e9f88aafddf63e5f3f542d0c5d6f05572dd48205c6abf62b1510e6"
+        },
+        {
+          "path": "docs/handoffs/2026-11-17-claude-ui-integration.md",
+          "sha256": "d5eb30a608f80da15a7ce3e528b9b1776aa8a6eea9ccabcd540a40a39a579574"
         }
       ],
       "pdf": {
@@ -431,7 +447,7 @@
       "title": "Rondo web guide",
       "markdown": {
         "path": "docs/guides/web/rondo.md",
-        "sha256": "3e6e249a6ce0563fce3c7fae23916e41bf54940802e812a38c3116284761bee5"
+        "sha256": "8681f46581b09e70f25d4ab37e35cd2791c614bc38af89203645dfe1521e719a"
       },
       "evidence": [
         {
@@ -508,7 +524,7 @@
         },
         {
           "path": "src/components/owner-advisor/knowledge/knowledge-page.tsx",
-          "sha256": "e02472bc5400fd3b1b186788566ce8036d8c454bfcb8f24cd27af19fdcdf622d"
+          "sha256": "caf80590a412ad8bdfc80000f12304cd605d8f573ec5f0dcc4da8c331cae3ebd"
         },
         {
           "path": "src/lib/owner-advisor/company-knowledge.server.ts",
@@ -561,6 +577,26 @@
         {
           "path": "docs/qa/rondo-development-integration-20261116/index.json",
           "sha256": "4b1fe9aee6a41427213e4e23d599c682f1ea7c78f492826ba01957a1cdccb11f"
+        },
+        {
+          "path": "src/components/owner-advisor/business/business-page.tsx",
+          "sha256": "58d59802f0a577948d9368917b9c9a020c772cb1c9cd32fa695fbdd7cc39ce12"
+        },
+        {
+          "path": "src/components/owner-advisor/business/business-map.tsx",
+          "sha256": "1dd0c7de18573691c6b623fa9e5228afa30b8d78fcb5b82269ca45bc9ce29e06"
+        },
+        {
+          "path": "src/components/owner-advisor/business/business-client.ts",
+          "sha256": "dfd1e5f8be638c3c93d5c13af9c6654842fdc5c696e180585c3a734036e35a2c"
+        },
+        {
+          "path": "docs/handoffs/2026-11-17-claude-ui-integration.md",
+          "sha256": "d5eb30a608f80da15a7ce3e528b9b1776aa8a6eea9ccabcd540a40a39a579574"
+        },
+        {
+          "path": "docs/handoffs/2026-11-17-claude-ui-integration-contract-review.md",
+          "sha256": "6c5aeeb08ab67d47811c88d84de991f9bb96ca2cad7ee382c1ceb22d11efb1b9"
         }
       ],
       "pdf": {
@@ -587,7 +623,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "7a6fe7b1d2fcfb2d17e4b7200717cfd0956f1cba625a8334af4954ae5574219e"
+          "sha256": "6407fc63c49c1dabd859a2ddab2b7ca974dc9c6c18661dc7389d779435466dbe"
         },
         {
           "path": "docs/development/developer-guide.md",
@@ -595,7 +631,7 @@
         },
         {
           "path": "docs/handoffs/2026-10-21-development-assembly-sources.json",
-          "sha256": "94066c92fac8a0a4a5316f493dfdd8c798e6986cae4aa522bb06ed7de958d816"
+          "sha256": "f7f2e0dc847162b5e7e9878dd6060a9a171fd955692eee58cf5e89e47583d5d5"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",

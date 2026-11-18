@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-vi.mock('server-only', () => ({}));
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
+rs.mock('server-only', () => ({}));
 import { createDisposableExchangeDatabase } from './local-postgres';
 import { seedOwnedApp, seedOwnedScenario } from './owned-app-fixture';
 import { readEmployeeHome } from '../../lib/data/employee-home.server';

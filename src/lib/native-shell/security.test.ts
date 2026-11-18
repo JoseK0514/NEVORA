@@ -1,4 +1,4 @@
-import {expect, it} from 'vitest';
+import {expect, it} from '@rstest/core';
 import config from '../../../next.config';
 import {nativeContentSecurityPolicy} from './security';
 import {nativeContext} from './context';

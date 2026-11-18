@@ -1,6 +1,6 @@
 import {renderBusinessMetric} from './metrics';
 import type {BusinessModelEvidence} from './model-contracts';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, rs } from '@rstest/core';
 import type { BusinessCatalog, BusinessCoverageMap, BusinessFinanceQuery, BusinessQuery, BusinessVersionView } from './contracts';
 import { fictionalBusinessInput, fictionalBusinessId, businessJanuary } from '@/test/fixtures/rondo-business';
 import { validateBusinessMap, selectBusinessScope } from './scope';
@@ -118,9 +118,9 @@ it.each(['FINANCE','SALES'] as const)('does not label an old requested subwindow
  f.query={...f.query,window:{...businessJanuary},temporalUse:'CURRENT'};expect(run(f,'2026-02-01T23:59:59.999Z').state).toBe('ready');expect(run(f,'2026-02-02T00:00:00.000Z')).toEqual({state:'unavailable',reason:'STALE'});
 });
 it('cannot render a historical subwindow balance as a current cash metric',()=>{
- vi.useFakeTimers({toFake:['Date']});vi.setSystemTime(new Date('2026-02-01T00:00:01.000Z'));
+ rs.useFakeTimers({toFake:['Date']});rs.setSystemTime(new Date('2026-02-01T00:00:01.000Z'));
  try{const f=fixture('FINANCE');f.query={...f.query,window:{fromAt:businessJanuary.fromAt,toAt:'2026-01-02T00:00:00.000Z'},temporalUse:'CURRENT'};f.catalog.versions[0].input!.records.push({kind:'BALANCE',recordId:'jan-2-anchor',revision:'1',accountRef:'operating',at:f.query.window.toAt,amountMinor:'100000'});
  const got=run(f),model:BusinessModelEvidence={...f.query,scenario:null,state:got.state,reason:got.state==='ready'?null:got.reason,domain:'FINANCE',completeScope:got.state==='ready'&&got.scope.completeScope,sourceSubtotal:false,observedAt:new Date().toISOString(),expiresAt:new Date(Date.now()+15000).toISOString(),qualifiers:[],finance:got.state==='ready'?calculateFinance(got.scope,null):null,sales:null,citations:[],timeZone:'UTC',queryHash:'a'.repeat(64),sourceDigest:'b'.repeat(64)};
  expect(renderBusinessMetric('business_cash_balance',{queryHash:model.queryHash,sourceDigest:model.sourceDigest,currency:'USD',unit:'MINOR',scale:2},{call:{name:'business_finance',args:f.query},result:{businessEvidence:[model]}},'en')).toBeNull();
- }finally{vi.useRealTimers();}
+ }finally{rs.useRealTimers();}
 });

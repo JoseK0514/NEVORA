@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { CANONICAL_PORTAL_CAPABILITY_RULE_OBSERVATIONS, evaluateCapability } from './policy';
 import { CAPABILITIES } from './types';
 import type { CapabilityDenial, CapabilityInput } from './types';

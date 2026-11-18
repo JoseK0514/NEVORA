@@ -1,23 +1,23 @@
 import {getShiftForManagement} from '../../lib/data/schedules';
 import { createHash } from 'node:crypto';
 import { Client } from 'pg';
-import { afterAll, beforeAll, beforeEach, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, expect, it, rs } from '@rstest/core';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 
 // Only framework cookies/cache/navigation and SQL transport are substituted.
 // Authentication, proof derivation, actions, planner and ordered SQL are real.
-const context = vi.hoisted(() => ({ executor: null as SqlExecutor | null, token: '' }));
-vi.mock('@/lib/db', () => {
+const context = rs.hoisted(() => ({ executor: null as SqlExecutor | null, token: '' }));
+rs.mock('@/lib/db', () => {
   const statement = (text: string, values: readonly unknown[] = []) => ({ statement: { text, values }, then: (yes: (rows: unknown[]) => unknown, no: (error: unknown) => unknown) => context.executor!.query({ text, values }).then(yes, no) });
   const tagged = Object.assign((strings: TemplateStringsArray, ...values: unknown[]) => statement(strings.reduce((text, part, index) => text + (index ? '$' + index : '') + part, ''), values), {
     query: statement, transaction: (queries: { statement: SqlStatement }[]) => context.executor!.transaction(queries.map(query => query.statement)),
   });
   return { getDb: () => tagged, queryRows: (rows: unknown) => rows };
 });
-vi.mock('next/headers', () => ({ cookies: async () => ({ get: (name: string) => name === 'fuel_session' && context.token ? { value: context.token } : undefined }) }));
-vi.mock('@/lib/data/notification-transactions', async original => ({ ...await original<Record<string, unknown>>(), neonNotificationExecutor: () => context.executor! }));
-vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
-vi.mock('next/navigation', () => ({ redirect: (destination: string) => { throw Object.assign(new Error('redirect'), { destination }); } }));
+rs.mock('next/headers', () => ({ cookies: async () => ({ get: (name: string) => name === 'fuel_session' && context.token ? { value: context.token } : undefined }) }));
+rs.mock('@/lib/data/notification-transactions',  () => ({ ...rs.requireActual<typeof import('@/lib/data/notification-transactions')>('@/lib/data/notification-transactions'), neonNotificationExecutor: () => context.executor! }));
+rs.mock('next/cache', () => ({ revalidatePath: rs.fn() }));
+rs.mock('next/navigation', () => ({ redirect: (destination: string) => { throw Object.assign(new Error('redirect'), { destination }); } }));
 
 import { requireSessionMutationProof } from '../../lib/auth/session';
 import { generateWeekAction, clearGenerationExclusionAction } from '../../app/app/schedule/generation-actions';

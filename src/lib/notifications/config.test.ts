@@ -1,5 +1,5 @@
 import { createECDH } from 'node:crypto';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 async function api() { const m = await import('./config').catch(() => ({})); expect(m).toHaveProperty('readNotificationConfig'); return m as typeof import('./config'); }
 // Deterministic test scalar: generated ECDH private keys may serialize to fewer than 32 bytes.
 export function validEnv() { const ecdh = createECDH('prime256v1'); ecdh.setPrivateKey(Buffer.alloc(32, 1)); return { FUEL_PORTAL_ORIGIN: 'https://fuel.example', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'true', PUSH_DELIVERY_ENABLED: 'true', PUSH_TEST_DELIVERY_ENABLED: 'true', PUSH_TEST_ACCOUNT_IDS: 'employee', PUSH_VAPID_PUBLIC_KEY: ecdh.getPublicKey().toString('base64url'), PUSH_VAPID_PRIVATE_KEY: ecdh.getPrivateKey().toString('base64url'), PUSH_VAPID_SUBJECT: 'mailto:test@example.com', PUSH_SUBSCRIPTION_ENCRYPTION_KEY: Buffer.alloc(32, 7).toString('base64url'), NOTIFICATION_WORKER_SECRET: 'w'.repeat(32) }; }

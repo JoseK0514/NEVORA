@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { coverageRepairUrl, parseCoverageRepairLocator, reportedCoverageState, type CoverageRepairLocator } from './coverage-repair';
 
 const locator: CoverageRepairLocator = {

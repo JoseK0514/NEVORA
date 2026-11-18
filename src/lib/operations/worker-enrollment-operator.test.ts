@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {mkdtemp,mkdir,readFile,writeFile,chmod,lstat,symlink,rm,realpath} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';

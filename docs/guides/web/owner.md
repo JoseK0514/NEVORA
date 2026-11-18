@@ -195,8 +195,42 @@ For Rondo, use the separate [Rondo guide](rondo.md). For technical operations or
 privacy fulfillment, use the [operations guide](operations.md).
 
 
-## Local business evidence backend
+## Business records, when enabled
 
-The local default-off finance/sales backend supports Owner-reviewed JSON/explicit CSV versions and account/location coverage maps, exact finance/sales reads and original-operation recovery. Claude owns its separate B2 interface; no new screen or real provider connection is claimed. Full review and explicit publication are required before Rondo may use a source. An Owner-declared perimeter cannot prove omitted accounts do not exist, and shared cash cannot be allocated to locations. See the technical handoff for the current bounded scope.
+Open **AI manager → Business records**. Add a JSON file or explicitly map a CSV,
+review every bounded row and the server's findings, and acknowledge the exact
+version before **Publish for Rondo**. **Main records** reviews the account and
+location perimeter; **Check figures** reads the eligible published records for the
+chosen period. These controls depend on the existing default-off feature flags;
+this source guide does not establish hosted activation or an accounting connector.
+An Owner-declared perimeter cannot prove no account is missing, and shared cash
+cannot be allocated to locations. Receivables are not cash and net receipts are
+not profit. An unconfirmed change keeps its original reference: check that change,
+even after a conflict, instead of creating a replacement.
 
-See [business backend contract](../../handoffs/2026-11-16-rondo-business-evidence-ui-contract.md).
+## Import pay and export paid time
+
+On **Review payroll**, **Import pay** opens file selection, exact person matching,
+amount review and confirmation. An untouched supported CSV is retained exactly.
+Re-matched or corrected CSV data is saved as the reviewed structured amounts;
+keep the original file separately when the confirmation says it is not retained.
+Choices for people omitted from a file do not replace the server's reviewed
+period population or create persisted employment facts. Resolve a population
+refusal on **Who's included** and review again.
+
+**Paid time export** requires a current reviewed population and finalized cards.
+Decide each recorded break explicitly; a recorded label does not establish paid
+or unpaid treatment. Review the planned whole-person batches, recover an uncertain
+batch using its original identity, and confirm the period only after every batch
+and the server manifest reconcile. A saved file is not a provider submission or
+payment. This guided export uses the exact neutral format. It does not offer
+a saved rounding profile; values requiring rounding are refused. Payroll treatment
+and legal suitability remain employer review matters.
+
+## Agreed scheduling times
+
+From a person's Team page, **When they can be scheduled** shows current and future
+agreements and change requests. Management-agreed restrictions are enforceable;
+availability preferences remain separate. Review the effective Monday and changed
+days before saving or deciding a request. A missing legacy agreement does not mean
+an explicit unrestricted agreement.

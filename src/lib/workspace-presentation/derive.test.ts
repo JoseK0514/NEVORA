@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { contrast, hueDistance, luminance, parseHex, rgbToOklch } from "./color";
 import { BRAND_CSS_VARS, DEFAULT_TOKENS, brandStyle, contrastReport, deriveBrand, isDefaultBrand, normalizeSeed } from "./derive";
 

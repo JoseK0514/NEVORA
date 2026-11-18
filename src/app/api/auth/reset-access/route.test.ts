@@ -1,17 +1,17 @@
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import {randomBytes} from 'node:crypto';
 import {readSupportReference} from '@/lib/support-reference';
 // The real reset service runs; only its database is replaced. Fictional values only.
-const m=vi.hoisted(()=>({transaction:vi.fn(),query:vi.fn()}));
-vi.mock('server-only',()=>({}));
-vi.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({transaction:m.transaction,query:m.query})}));
-vi.mock('@/lib/auth/recovery-delivery.server',()=>({recoveryDelivery:()=>null}));
-vi.mock('@/lib/workspace-routing/runtime-config.server',()=>({workspaceRuntimeEnvironment:async()=>({})}));
+const m=rs.hoisted(()=>({transaction:rs.fn(),query:rs.fn()}));
+rs.mock('server-only',()=>({}));
+rs.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({transaction:m.transaction,query:m.query})}));
+rs.mock('@/lib/auth/recovery-delivery.server',()=>({recoveryDelivery:()=>null}));
+rs.mock('@/lib/workspace-routing/runtime-config.server',()=>({workspaceRuntimeEnvironment:async()=>({})}));
 import {POST} from './route';
 const request=(body:unknown)=>new Request('https://owned.invalid/api/auth/reset-access',{method:'POST',headers:{origin:'https://owned.invalid','content-type':'application/json','x-nevora-recovery':'1'},body:JSON.stringify(body)});
 const proof=()=>randomBytes(32).toString('base64url');
-let sink:ReturnType<typeof vi.spyOn>;
-beforeEach(()=>{vi.resetAllMocks();sink=vi.spyOn(console,'error').mockImplementation(()=>undefined);});
+let sink:ReturnType<typeof rs.spyOn>;
+beforeEach(()=>{rs.resetAllMocks();sink=rs.spyOn(console,'error').mockImplementation(()=>undefined);});
 afterEach(()=>sink.mockRestore());
 
 it('an unexpected storage failure answers 503 with one Support reference that names the one sanitized log line',async()=>{

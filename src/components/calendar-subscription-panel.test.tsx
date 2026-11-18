@@ -1,5 +1,5 @@
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {CalendarSubscriptionView} from './calendar-subscription-panel';
 const state={state:'active' as const,id:'id',generation:'generation',issuedAt:'2026-10-08',allowedLocationIds:['loc-1'],authority:'authority',observedAt:'2026-10-08',validForMs:45000,canIssue:true};
 const base={status:state,url:'intentional-transient-url',paused:false,busy:false,notice:'',onCommand:()=>{},onCopy:()=>{},onRetry:()=>{}};

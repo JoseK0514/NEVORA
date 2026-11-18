@@ -29,7 +29,7 @@ try {
   started = true;
   console.log('[Premium release] New owned loopback cluster started.');
   const command = process.argv.slice(2);
-  const args = command.length ? command : ['node_modules/vitest/vitest.mjs', 'run', '--config', 'vitest.premium-release-integration.config.mts'];
+  const args = command.length ? command : ['scripts/run-rstest.mjs', 'run', '--config', 'vitest.premium-release-integration.config.mts'];
   const result = spawnSync(process.execPath, args, { env, stdio: 'inherit' });
   if (result.error) console.error(result.error.message);
   process.exitCode = result.status ?? 1;

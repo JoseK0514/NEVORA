@@ -1,16 +1,16 @@
-import {beforeEach,expect,it,vi} from 'vitest';
+import {beforeEach,expect,it,rs} from '@rstest/core';
 import {handleClockerPin} from './pin-transport.server';
 import {handleClockerSetup} from './setup.server';
 import type {ClockerCookieStore} from './setup.server';
 import type {SqlExecutor} from '../notifications/types';
-const mocks=vi.hoisted(()=>({authenticate:vi.fn(),redeem:vi.fn(),verify:vi.fn()}));
-vi.mock('./devices.server',()=>({authenticateClockerDevice:mocks.authenticate,redeemClockerEnrollment:mocks.redeem,clockerCredentialWasIssued:vi.fn(),ClockerDeviceError:class extends Error{constructor(public code:string){super(code);}}}));
-vi.mock('./pins.server',()=>({verifyEmployeeClockerPin:mocks.verify,readClockerIdentity:vi.fn(),clearClockerIdentity:vi.fn()}));
-vi.mock('../workspace-routing/token-envelope.server',()=>({privateWorkspaceToken:async(_kind:string,value:string)=>value}));
+const mocks=rs.hoisted(()=>({authenticate:rs.fn(),redeem:rs.fn(),verify:rs.fn()}));
+rs.mock('./devices.server',()=>({authenticateClockerDevice:mocks.authenticate,redeemClockerEnrollment:mocks.redeem,clockerCredentialWasIssued:rs.fn(),ClockerDeviceError:class extends Error{constructor(public code:string){super(code);}}}));
+rs.mock('./pins.server',()=>({verifyEmployeeClockerPin:mocks.verify,readClockerIdentity:rs.fn(),clearClockerIdentity:rs.fn()}));
+rs.mock('../workspace-routing/token-envelope.server',()=>({privateWorkspaceToken:async(_kind:string,value:string)=>value}));
 const executor={} as SqlExecutor;
 let cookies:Map<string,string>;
 let store:ClockerCookieStore;
-beforeEach(()=>{vi.resetAllMocks();cookies=new Map();store={get:name=>cookies.has(name)?{value:cookies.get(name)!}:undefined,set:(name,value)=>{cookies.set(name,value);}};});
+beforeEach(()=>{rs.resetAllMocks();cookies=new Map();store={get:name=>cookies.has(name)?{value:cookies.get(name)!}:undefined,set:(name,value)=>{cookies.set(name,value);}};});
 function request(body:object,headers:Record<string,string>={}){return new Request('http://localhost/api/clocker/2/pin',{method:'POST',headers:{host:'localhost',origin:'http://localhost','x-nevora-clocker':'1','content-type':'application/json',...headers},body:JSON.stringify(body)});}
 const pin=(body:object,headers:Record<string,string>={},location='2',security={production:false})=>handleClockerPin(request(body,headers),location,{cookies:store,executor,security,key:Buffer.alloc(32)});
 const setup=(body:object,headers:Record<string,string>={},location='2',security={production:false})=>handleClockerSetup(request(body,headers),location,{cookies:store,executor,security,finishPortalSession:async()=>{}});

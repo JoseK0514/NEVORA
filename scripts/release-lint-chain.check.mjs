@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
+import { spawnSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
@@ -35,14 +36,12 @@ after(() => {
 
 test('the installed development graph contains none of the vulnerable glob chain', () => {
   const lock = json('package-lock.json');
-  for (const name of ['braces', 'micromatch', 'fast-glob']) {
+  for (const name of ['braces', 'micromatch', 'fast-glob', 'picomatch']) {
     assert.deepEqual(Object.keys(lock.packages).filter(path => path.endsWith('/' + name)), [], name + ' must be removed, not suppressed');
   }
   assert.equal(json('tools/eslint-plugin-next/package.json').dependencies.glob, '14.0.4');
-  assert.equal(json('package.json').devDependencies['@nevora/eslint-config-next'], 'file:tools/eslint-config-next');
+  assert.equal(json('package.json').devDependencies['@nevora/eslint-plugin-next'], 'file:tools/eslint-plugin-next');
   assert.equal(require('glob/package.json').version, '14.0.4');
-  const parserRequire=createRequire(require.resolve('@typescript-eslint/typescript-estree/package.json'));
-  assert.equal(parserRequire('minimatch/package.json').version, '11.0.5');
   for(const [path,pkg] of Object.entries(lock.packages))if(path.endsWith('/minimatch')&&Number(pkg.version?.split('.')[0])>=7)assert.ok(Number(pkg.version.split('.')[0])>=11,'No affected minimatch7-10 may remain in the installed graph');
 });
 
@@ -68,7 +67,11 @@ for (const folder of ['eslint-config-next', 'eslint-plugin-next']) {
 }
 test('all 22 original Next rules and their recommended severities remain enabled', () => {
   assert.equal(Object.keys(nextPlugin.rules).length, 22);
-  assert.ok(Object.keys(nextPlugin.configs.recommended.rules).length > 0);
+  const oxlint = json('.oxlintrc.json');
+  assert(oxlint.jsPlugins.some(plugin => plugin.name === 'next-preserved' && plugin.specifier === '@nevora/eslint-plugin-next'));
+  for (const [rule, severity] of Object.entries(nextPlugin.configs['core-web-vitals'].rules)) {
+    assert.equal(oxlint.rules[rule.replace('@next/next/', 'next-preserved/')], severity, rule);
+  }
   const config = json('tools/eslint-plugin-next/PROVENANCE.json');
   const rules = config.upstream.retainedFiles.filter(row => row.path.startsWith('dist/rules/') && row.path.endsWith('.js'));
   assert.equal(rules.length, 22);
@@ -125,6 +128,27 @@ for (const [label, pattern] of [
   });
 }
 
+function lintWithOxlint(code, pattern) {
+  const file = join(fixture, 'fixture.jsx');
+  const config = join(fixture, 'oxlint.json');
+  writeFileSync(file, code);
+  writeFileSync(config, JSON.stringify({
+    categories: { correctness: 'off' },
+    plugins: [],
+    jsPlugins: [{ name: 'next-fixture', specifier: join(root, 'tools/eslint-plugin-next/dist/index.js') }],
+    settings: { next: { rootDir: pattern } },
+    rules: { 'next-fixture/no-html-link-for-pages': 'error' },
+  }));
+  const result = spawnSync(join(root, 'node_modules/.bin/oxlint'), ['-c', config, '-f', 'json', file],
+    { cwd: fixture, encoding: 'utf8' });
+  assert.ifError(result.error);
+  assert([0, 1].includes(result.status), result.stderr);
+  const { diagnostics } = JSON.parse(result.stdout);
+  assert(diagnostics.every(item => item.code === 'next-fixture(no-html-link-for-pages)' && item.severity === 'error'));
+  assert.equal(result.status, diagnostics.length ? 1 : 0);
+  return diagnostics;
+}
+
 function lint(code, pattern) {
   const config = {
     languageOptions: { ecmaVersion: 2022, sourceType: 'module', parserOptions: { ecmaFeatures: { jsx: true } } },
@@ -138,6 +162,7 @@ for (const relative of ['apps/web', 'apps/linked', 'apps/*', 'apps/{web,mobile}'
   test('real no-html-link-for-pages detection remains active for ' + relative, () => {
     const messages = lint('const element = <a href="/about">About</a>;', join(fixture, relative));
     assert.ok(messages.some(item => item.ruleId === 'next/no-html-link-for-pages' && item.severity === 2), JSON.stringify(messages));
+    assert.equal(lintWithOxlint('const element = <a href="/about">About</a>;', join(fixture, relative)).length, messages.length);
   });
 }
 for (const code of [
@@ -148,5 +173,6 @@ for (const code of [
 ]) {
   test('existing allowed navigation remains allowed: ' + code, () => {
     assert.deepEqual(lint(code, join(fixture, 'apps/web')), []);
+    assert.deepEqual(lintWithOxlint(code, join(fixture, 'apps/web')), []);
   });
 }

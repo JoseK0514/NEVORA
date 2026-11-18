@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from '@rstest/core';
 import { createDisposableFoundationDatabase } from './local-postgres';
 
 type Db = Awaited<ReturnType<typeof createDisposableFoundationDatabase>>;

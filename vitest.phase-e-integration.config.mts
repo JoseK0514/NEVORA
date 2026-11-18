@@ -1,5 +1,5 @@
 import {projectConfig} from './vitest.shared.mts';
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from './vitest.shared.mts';
 // Deliberately explicit: no glob can silently select an unrelated/empty suite.
 const suites: Record<string, string> = {
   assignments: 'src/test/integration/phase-e-published-assignments.integration.ts',

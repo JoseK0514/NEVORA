@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
+import { describe, expect, it, rs, beforeAll, afterAll } from '@rstest/core';
 import { Client } from 'pg';
 import { readFileSync, writeFileSync, realpathSync, appendFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
@@ -12,18 +12,18 @@ const disconnected = () => new Client({ host: '127.0.0.1', port: 1, user: 'ficti
 
 describe('owned local guarded backfill request boundary', () => {
   it('denies non-local mode before any client or resource access', async () => {
-    const client = disconnected(); const query = vi.spyOn(client, 'query');
+    const client = disconnected(); const query = rs.spyOn(client, 'query');
     expect(await executeGuardedLocalBackfill(client, { mode: 'PRODUCTION' })).toEqual({ status: 'BLOCKED', code: 'OWNED_LOCAL_MODE_REQUIRED' });
     expect(query).not.toHaveBeenCalled();
   });
   it('refuses an ambient caller transaction without rolling it back', async () => {
-    const client = disconnected(); const query = vi.spyOn(client, 'query');
-    vi.spyOn(client, 'getTransactionStatus').mockReturnValue('T');
+    const client = disconnected(); const query = rs.spyOn(client, 'query');
+    rs.spyOn(client, 'getTransactionStatus').mockReturnValue('T');
     expect(await executeGuardedLocalBackfill(client, { mode: 'OWNED_LOCAL' })).toEqual({ status: 'BLOCKED', code: 'CLIENT_NOT_IDLE' });
     expect(query).not.toHaveBeenCalled();
   });
   it('rejects an accessor envelope without invoking it or returning its error', async () => {
-    const client = disconnected(); const query = vi.spyOn(client, 'query'); let invoked = 0;
+    const client = disconnected(); const query = rs.spyOn(client, 'query'); let invoked = 0;
     const request = Object.defineProperty({}, 'mode', { enumerable: true, get() { invoked++; throw new Error('PRIVATE_PAYLOAD'); } });
     expect(await executeGuardedLocalBackfill(client, request)).toEqual({ status: 'BLOCKED', code: 'UNSUPPORTED_REQUEST' });
     expect(invoked).toBe(0); expect(query).not.toHaveBeenCalled();
@@ -119,7 +119,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL whole-plan guarded backfill', () =
     expect(plan.status, JSON.stringify(plan.diagnostics)).toBe('READY_FOR_GUARDED_EXECUTION');
     const request: GuardedBackfillRequest = { mode: 'OWNED_LOCAL', identity, facts, backfill, authority: { reference: lease.authorizationReference, operatorRole: identity.role, factsDigest: facts.factsDigest, planDigest: plan.digest } };
     const queries: string[] = [], originalQuery = client.query.bind(client);
-    vi.spyOn(client, 'query').mockImplementation(((...args: unknown[]) => { queries.push(typeof args[0] === 'string' ? args[0] : (args[0] as { text: string }).text); return Reflect.apply(originalQuery, client, args); }) as typeof client.query);
+    rs.spyOn(client, 'query').mockImplementation(((...args: unknown[]) => { queries.push(typeof args[0] === 'string' ? args[0] : (args[0] as { text: string }).text); return Reflect.apply(originalQuery, client, args); }) as typeof client.query);
     const original = await originals(observer);
     records.push({ database: name, oid, marker, factsDigest: facts.factsDigest, planDigest: plan.digest, originalDigest: ownershipDigest(original), schemaDigest: facts.currentSchemaDigest, sourceRows: facts.tables.reduce((n, t) => n + t.expectedCount, 0) });
     return { client, second, observer, request, name, oid, marker, original, queries };
@@ -169,7 +169,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL whole-plan guarded backfill', () =
   }, 30000);
   it('rolls back every attribution and operator binding after an actual mid-plan SQL failure', async () => {
     const f = await fixture(), original = Client.prototype.query.bind(f.client); let inserted = false;
-    const spy = vi.spyOn(f.client, 'query').mockImplementation(((...args: unknown[]) => {
+    const spy = rs.spyOn(f.client, 'query').mockImplementation(((...args: unknown[]) => {
       if (typeof args[0] === 'string' && args[0].startsWith('INSERT INTO public."clocker_pin_events_tenant_ownership"')) { inserted = true; return original('SELECT 1/0'); }
       return Reflect.apply(original, f.client, args);
     }) as typeof f.client.query);
@@ -213,7 +213,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL whole-plan guarded backfill', () =
   }, 30000);
   it('does not claim rollback after COMMIT outcome uncertainty; a fresh client reconciles the exact original plan', async () => {
     const f = await fixture(), original = Client.prototype.query.bind(f.client);
-    const spy = vi.spyOn(f.client, 'query').mockImplementation((async (...args: unknown[]) => {
+    const spy = rs.spyOn(f.client, 'query').mockImplementation((async (...args: unknown[]) => {
       f.queries.push(typeof args[0] === 'string' ? args[0] : (args[0] as { text: string }).text);
       const result = await Reflect.apply(original, f.client, args);
       if (args[0] === 'COMMIT') throw new Error('Fictional lost acknowledgement with PRIVATE_PAYLOAD'); return result;
@@ -298,7 +298,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL whole-plan guarded backfill', () =
   }, 30000);
   it('cleans only its own attempted BEGIN when an acknowledgement is lost before attribution', async () => {
     const f = await fixture(), original = Client.prototype.query.bind(f.client), commands: string[] = [];
-    const spy = vi.spyOn(f.client, 'query').mockImplementation((async (...args: unknown[]) => {
+    const spy = rs.spyOn(f.client, 'query').mockImplementation((async (...args: unknown[]) => {
       const text = typeof args[0] === 'string' ? args[0] : (args[0] as { text: string }).text; commands.push(text);
       const result = await Reflect.apply(original, f.client, args);
       if (text === 'BEGIN ISOLATION LEVEL SERIALIZABLE') throw new Error('Fictional BEGIN acknowledgement loss'); return result;
@@ -308,7 +308,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL whole-plan guarded backfill', () =
   }, 30000);
   it('reports rollback uncertainty without claiming completion or exposing raw failure payloads', async () => {
     const f = await fixture(), original = Client.prototype.query.bind(f.client);
-    const spy = vi.spyOn(f.client, 'query').mockImplementation(((...args: unknown[]) => {
+    const spy = rs.spyOn(f.client, 'query').mockImplementation(((...args: unknown[]) => {
       if (args[0] === 'ROLLBACK') return Promise.reject(new Error('PRIVATE_ROLLBACK_PAYLOAD'));
       if (typeof args[0] === 'string' && args[0].startsWith('INSERT INTO public."clocker_pin_events_tenant_ownership"')) return original('SELECT 1/0');
       return Reflect.apply(original, f.client, args);

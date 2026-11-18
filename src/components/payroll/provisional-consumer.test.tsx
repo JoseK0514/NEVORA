@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { approvedHistory } from '@/lib/payroll/native/provisional-history.test-support';
 import { buildNativeRunCandidate, type NativePreparationFacts } from '@/lib/payroll/native/preparation';

@@ -188,10 +188,10 @@ Session code applies `safeReturnTo` again. Referer, Host and forwarded-host valu
 establish neither a prior session nor a return destination; the hint grants no
 business authority. Language remains validated cookie/Accept-Language handling.
 
-Claude must still implement the indexed consumers and qualify their current
-mobile/keyboard/EN/ES/private-state behavior. Revisit user-guide instructions
-after those consumers change; source-qualified PDFs alone do not pass an unwired
-journey. Rondo knowledge/provider/tool work and actual-model quality evidence
+The [November 17 integration handoff](../../handoffs/2026-11-17-claude-ui-integration.md)
+records the delivered consumers, combined checks and remaining product choices.
+Revisit these guides when consumers change; source-qualified PDFs alone do not
+qualify an application journey. Rondo knowledge/provider/tool work and actual-model quality evidence
 remain with its existing owner. Hosted/provider activation and physical-device
 acceptance remain separate from local backend checks.
 
@@ -237,3 +237,27 @@ phase handoff, `docs/handoffs/2026-11-18-30-day-phase.md`.
 - `NEVORA_WEB_ANALYTICS_ENABLED` (default false) renders Vercel Web Analytics with
   `src/lib/analytics/redact.ts`, an allowlist of public paths that strips query
   strings and drops every other path.
+
+## November 17 combined UI contract checks
+
+The six delivered UI feature items and Employee/Lead Phase 4 are integrated from
+Claude's exact pushed source through a checked linear tree import. Preserve
+server-owned contracts and the source inventory's honest non-ancestry disposition.
+The real joined browser journeys cover CSV custody, re-matched/corrected reviewed
+amounts, explicit paid-break decisions and an actual reconciled manifest, plus a
+post-commit Rondo context conflict, original receipt recovery, map publication and
+figures. Fixtures use ownership-marked local PostgreSQL and pinned browsers;
+forced successful API responses do not establish acceptance.
+
+Keep Rondo and timecard data observations bounded by the original request lifetime.
+Never clear uncertain command custody on a missing receipt or a post-commit response
+fence refusal. Support references come only from the failed response's validated
+X-Nevora-Request-Id header; they are separate from operation and deletion IDs.
+Rebuild all six manuals from committed final inputs. GitHub qualification uses an
+immutable candidate tag and both workflows on that exact SHA before a normal
+fast-forward to Development; hosted configuration and acceptance remain separate.
+
+The guided paid-time flow currently sends the neutral profile. The backend supports
+reviewed paid mappings and custom rounding, but selecting a saved paid profile in
+that flow is not implemented. Keep broader SCRUM-197 open for that UI and product
+choice; do not replace a precision refusal with inferred rounding.

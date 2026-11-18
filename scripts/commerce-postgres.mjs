@@ -51,7 +51,7 @@ try {
   const result = spawnSync(
     process.execPath,
     [
-      "node_modules/vitest/vitest.mjs",
+      "scripts/run-rstest.mjs",
       "run",
       "services/commerce",
       ...process.argv.slice(2),

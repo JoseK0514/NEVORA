@@ -1,5 +1,5 @@
-import { it, expect, vi } from 'vitest';
-vi.mock('@/lib/db', () => import('../db'));
+import { it, expect, rs } from '@rstest/core';
+
 import { getShiftValidationContext } from './schedules';
 import { validateShift } from '../scheduling/validate-shift';
 import { fictionalProfile, configured } from '../../test/fixtures/shift-changes';
@@ -7,7 +7,7 @@ import type { SqlExecutor } from '../notifications/types';
 it('A096 manual context loads configured rule and complete dated rest ledger', async () => {
     const profile = fictionalProfile();
     profile.maximumShift = configured({ minutes: 420, timeBasis: 'WALL_CLOCK' });
-    const executor: SqlExecutor = { transaction: vi.fn(), query: vi.fn(async ({ text, values }) => {
+    const executor: SqlExecutor = { transaction: rs.fn(), query: rs.fn(async ({ text, values }) => {
             if (text.includes('SELECT e.active'))
                 return [{ active: true, role: 'EMPLOYEE', position_ids: [], eligible_location_ids: ['loc'], maximum_weekly_hours: 40, operational_rule_profile: profile }];
             if (text.includes('FROM shifts sh')) {

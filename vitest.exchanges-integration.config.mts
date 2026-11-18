@@ -1,5 +1,5 @@
 import {projectConfig} from './vitest.shared.mts';
-import { defineConfig, configDefaults } from 'vitest/config';
+import { defineConfig, configDefaults } from './vitest.shared.mts';
 export default projectConfig('exchanges-integration', defineConfig({
  // company-access-shift-changes belongs to vitest.company-access-integration.config.mts:
  // its fixture provisions a nevora_foundation_test_* database, while this suite's

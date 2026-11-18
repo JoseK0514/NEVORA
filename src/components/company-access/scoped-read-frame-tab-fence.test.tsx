@@ -1,17 +1,18 @@
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import * as rstestOriginal0 from "react" with { rstest: 'importActual' };
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 
 // Inspection Oct 24: every frame instance fenced its own access (an authority read after mount, then a second page
 // render newer than it), so each tab tap cost two extra round trips. The fence is now kept once per tab. These tests
 // pin the security rule: a later frame skips the extra work only if nothing retired since the tab's cutoff, the page
 // was rendered after that cutoff, and its authority matches the fence. Otherwise it fences again, as before.
-const fixture=vi.hoisted(()=>({
+const fixture=rs.hoisted(()=>({
  states:[] as unknown[],effects:[] as (()=>void|(()=>void))[],
- start:vi.fn(),pause:vi.fn(),stop:vi.fn(),
+ start:rs.fn(),pause:rs.fn(),stop:rs.fn(),
  changed:null as null|((state:unknown)=>void),
- router:{refresh:vi.fn(),replace:vi.fn()},
+ router:{refresh:rs.fn(),replace:rs.fn()},
 }));
-vi.mock('react',async original=>({
- ...await original<Record<string,unknown>>(),
+rs.mock('react', ()=>({
+ ...rstestOriginal0,
  useState:(initial:unknown)=>{
   const index=fixture.states.length;fixture.states.push(initial);
   return [initial,(value:unknown)=>{fixture.states[index]=typeof value==='function'?value(fixture.states[index]):value;}];
@@ -19,9 +20,9 @@ vi.mock('react',async original=>({
  useRef:(current:unknown)=>({current}),
  useEffect:(effect:()=>void|(()=>void))=>{fixture.effects.push(effect);},
 }));
-vi.mock('next/navigation',()=>({useRouter:()=>fixture.router}));
-vi.mock('../app-navigation',()=>({useAppNavigation:()=>null}));
-vi.mock('@/lib/private-snapshot-client',()=>({
+rs.mock('next/navigation',()=>({useRouter:()=>fixture.router}));
+rs.mock('../app-navigation',()=>({useAppNavigation:()=>null}));
+rs.mock('@/lib/private-snapshot-client',()=>({
  createPrivateSnapshotController:(changed:(state:unknown)=>void)=>{fixture.changed=changed;return {start:fixture.start,pause:fixture.pause,stop:fixture.stop};},
 }));
 
@@ -40,15 +41,15 @@ async function fenceAt(seconds:number,authority='fictional-authority-A'){
  await mount({authority,observedAt:at(seconds-2),validForMs:15000});
  expect(fixture.start).toHaveBeenCalledTimes(1);
  fixture.changed!({snapshot:{state:'ready',authority,observedAt:at(seconds),validForMs:15000,requestStartedAt:performance.now()},refreshing:false,paused:false});
- vi.clearAllMocks();
+ rs.clearAllMocks();
 }
 beforeEach(()=>{
- resetScopedReadTab();vi.clearAllMocks();
- vi.stubGlobal('window',new EventTarget());
- vi.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible',hasFocus:()=>true}));
- vi.stubGlobal('navigator',{onLine:true});
+ resetScopedReadTab();rs.clearAllMocks();
+ rs.stubGlobal('window',new EventTarget());
+ rs.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible',hasFocus:()=>true}));
+ rs.stubGlobal('navigator',{onLine:true});
 });
-afterEach(()=>{while(disposers.length)disposers.pop()!();vi.unstubAllGlobals();});
+afterEach(()=>{while(disposers.length)disposers.pop()!();rs.unstubAllGlobals();});
 
 it('a later page rendered after the tab cutoff, same authority, opens without a second check or render',async()=>{
  await fenceAt(10);
@@ -62,7 +63,7 @@ it('a later page rendered after the tab cutoff, same authority, opens without a 
 it.each(['blur','pagehide','offline','storage','pageshow','online'])('after %s anywhere in the tab, the next page fences again',async event=>{
  await fenceAt(10);
  window.dispatchEvent(new Event(event));
- vi.clearAllMocks();
+ rs.clearAllMocks();
  await mount({authority:'fictional-authority-A',observedAt:at(30),validForMs:15000});
  expect(fixture.start).toHaveBeenCalledTimes(1);
  expect(fixture.states[1]).toEqual({required:true,view:null});
@@ -89,7 +90,7 @@ it('a fresh tab with no fence yet checks first, exactly as before',async()=>{
 it('a page outside its validity window (a prefetch left in the cache) fences again and refreshes for real',async()=>{
  await mount({authority:'fictional-authority-A',observedAt:at(8),validForMs:15000});
  fixture.changed!({snapshot:{state:'ready',authority:'fictional-authority-A',observedAt:at(10),validForMs:15000,requestStartedAt:performance.now()-20000},refreshing:false,paused:false});
- vi.clearAllMocks();
+ rs.clearAllMocks();
  await mount({authority:'fictional-authority-A',observedAt:at(11),validForMs:15000});
  expect(fixture.start).toHaveBeenCalledTimes(1);
  expect(fixture.states[1]).toEqual({required:true,view:null});

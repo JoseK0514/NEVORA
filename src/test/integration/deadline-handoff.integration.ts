@@ -1,7 +1,7 @@
 import { fixtureProof } from './shift-change-api';
 import { setAvailabilityDeadline, saveWorkspaceProfile } from './management-api';
 import { Client } from 'pg';
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 import { createDisposableFoundationDatabase } from './local-postgres';
 import {installFixtureCompanyAccess} from './fixture-company-access';
@@ -9,8 +9,8 @@ import { withOwnedTestResources } from './owned-test-resources';
 
 // Keep action, civil conversion, repository, SQL guards and PostgreSQL real.
 // Only Next request context and the SQL transport are supplied by this fixture.
-const transport = vi.hoisted(() => ({ executor: null as SqlExecutor | null }));
-vi.mock('../../lib/db', () => {
+const transport = rs.hoisted(() => ({ executor: null as SqlExecutor | null }));
+rs.mock('../../lib/db', () => {
   const statement = (text: string, values: readonly unknown[] = []) => ({
     statement: { text, values },
     then: (yes: (rows: unknown[]) => unknown, no: (error: unknown) => unknown) => transport.executor!.query({ text, values }).then(yes, no),
@@ -21,9 +21,9 @@ vi.mock('../../lib/db', () => {
   });
   return { getDb: () => tagged, queryRows: (result: unknown) => Array.isArray(result) ? result : [] };
 });
-vi.mock('../../lib/auth/session', () => ({ requireSession: async () => ({ id: 'manager', role: 'MANAGER' }), requireSessionMutationProof: async () => fixtureProof(transport.executor!, 'manager') }));
-vi.mock('next/cache', () => ({ revalidatePath: () => {} }));
-vi.mock('next/navigation', () => ({ redirect: (destination: string) => { throw Object.assign(new Error('redirect'), { destination }); } }));
+rs.mock('../../lib/auth/session', () => ({ requireSession: async () => ({ id: 'manager', role: 'MANAGER' }), requireSessionMutationProof: async () => fixtureProof(transport.executor!, 'manager') }));
+rs.mock('next/cache', () => ({ revalidatePath: () => {} }));
+rs.mock('next/navigation', () => ({ redirect: (destination: string) => { throw Object.assign(new Error('redirect'), { destination }); } }));
 import { setAvailabilityDeadlineAction } from '../../app/app/schedule/actions';
 
 import { getWorkspace, WorkspaceTimezoneLockedError } from '../../lib/data/workspaces';

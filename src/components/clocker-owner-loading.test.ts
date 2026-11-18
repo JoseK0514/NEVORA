@@ -1,6 +1,6 @@
 // The Owner's Clocker settings (Phase 6): each route keeps its own frame while it loads.
-import {describe, expect, it, vi} from 'vitest';
-vi.mock('@/components/owner-b/owner-b.css', () => ({}));
+import {describe, expect, it, rs} from '@rstest/core';
+rs.mock('@/components/owner-b/owner-b.css', () => ({}));
 import {loadingShape} from '@/components/owner-b/b-loading';
 
 describe('loading placeholders for the Clocker settings', () => {

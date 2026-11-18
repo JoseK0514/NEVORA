@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { describeBackfillJournal, assessBackfillJournal } from './journal-contract';

@@ -36,10 +36,19 @@ async function post(path: string, headers: Record<string, string>, body: string)
 
 export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, timeZone }: { lang?: PayrollImportLang; actorId: string; workspaceId: string; period: Period; timeZone: string }) {
   const copy = payrollImportCopy[lang];
-  const [work, setWork, dropWork] = useHeld<Work>(`export:${actorId}:${period.startDate}:${period.endDate}`, emptyWork);
+  const [work, setWork, dropWork] = useHeld<Work>(`export:${workspaceId}:${actorId}:${period.startDate}:${period.endDate}`, emptyWork);
   const [loaded, setLoaded] = useState<Loaded>({ state: "loading" }), [busy, setBusy] = useState(false);
   const offline = useOffline(), latest = useRef(work), running = useRef(false);
   useEffect(() => { latest.current = work; }, [work]);
+  const active = useRef(false), focused = useRef(true), readSequence = useRef(0), validUntil = useRef(0);
+  const expiry = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cancelRead = useCallback(() => {
+    readSequence.current++; validUntil.current = 0;
+    if (expiry.current) clearTimeout(expiry.current);
+    expiry.current = null;
+  }, []);
+  const pausePrivate = useCallback(() => { cancelRead(); setLoaded({ state: "loading" }); }, [cancelRead]);
+  const hasLease = () => focused.current && document.visibilityState !== "hidden" && navigator.onLine && performance.now() < validUntil.current;
   const started = Object.keys(work.states).length > 0;
   const unresolved = Object.values(work.states).some(holdsCustody) || holdsCustody(work.record);
   useLeaveGuard(unresolved || (started && work.record.phase !== "saved"));
@@ -47,33 +56,50 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
   useEffect(() => () => { if (latest.current.record.phase === "saved") dropWork(); }, [dropWork]);
 
   const load = useCallback(async () => {
+    if (!active.current || !focused.current || document.visibilityState === "hidden" || !navigator.onLine) return;
+    const sequence = ++readSequence.current, began = performance.now();
     const [close, time] = await Promise.all([
       post("/api/period-close", { "x-nevora-period-close": "1", "x-nevora-actor": actorId }, JSON.stringify({ action: "READ", command: period })),
       post("/api/timecards", { "x-nevora-timecards": "1", "x-nevora-actor": actorId }, JSON.stringify(period)),
     ]);
+    if (!active.current || !focused.current || sequence !== readSequence.current) return;
     const status = [close.status, time.status];
-    if (status.includes(401)) { setLoaded({ state: "failed", why: "signed_out" }); return; }
-    if (status.includes(403)) { setLoaded({ state: "failed", why: "denied" }); return; }
+    if (status.includes(401)) { pausePrivate(); setLoaded({ state: "failed", why: "signed_out" }); return; }
+    if (status.includes(403)) { pausePrivate(); setLoaded({ state: "failed", why: "denied" }); return; }
     try {
       const read = close.status === 200 ? parsePeriodRead(close.body, period) : null;
       if (!read || time.status !== 200) throw new Error("unavailable");
-      const source: ExportSource = { read, cards: parseCurrentTimecards(time.body, period).cards }, key = sourceKey(source), now = latest.current;
+      const parsed = parseCurrentTimecards(time.body, period), deadline = began + parsed.validForMs;
+      const remaining = deadline - performance.now();
+      if (remaining < 1) throw new Error("Expired timecard read");
+      const source: ExportSource = { read, cards: parsed.cards }, key = sourceKey(source), now = latest.current;
+      // Starting a new read never cancels the old deadline. Only a completed paired read can renew it.
+      if (expiry.current) clearTimeout(expiry.current);
+      validUntil.current = deadline;
+      expiry.current = setTimeout(() => { if (active.current) pausePrivate(); }, remaining);
       setLoaded({ state: "ready", source });
       // Once a batch is out the plan is fixed: a newer read is shown for names only and never changes the plan.
       if (Object.keys(now.states).length || now.source === key) return;
       // The timecards or the people changed before anything was sent: keep every choice whose break is still there.
       const ready = exportReadiness(source), kept = "included" in ready ? keepDecisions(periodBreaks(ready.included, period), now.decisions) : { decisions: now.decisions, dropped: 0 };
       setWork(value => ({ ...value, source: key, decisions: kept.decisions, plan: null, planFor: null, planProblem: null, step: value.source && value.step > 1 ? 1 : value.step, changed: value.source ? kept.dropped : null }));
-    } catch { setLoaded(value => value.state === "ready" ? value : { state: "failed", why: "network" }); }
-  }, [actorId, period, setWork]);
+    } catch { pausePrivate(); setLoaded({ state: "failed", why: "network" }); }
+  }, [actorId, period, setWork, pausePrivate]);
   useEffect(() => {
-    let active = true;
-    queueMicrotask(() => { if (active) void load(); });
-    const again = () => { if (document.visibilityState === "visible" && navigator.onLine) void load(); };
-    const poll = setInterval(again, 30_000);
-    window.addEventListener("online", again); document.addEventListener("visibilitychange", again);
-    return () => { active = false; clearInterval(poll); window.removeEventListener("online", again); document.removeEventListener("visibilitychange", again); };
-  }, [load]);
+    active.current = true; focused.current = document.visibilityState !== "hidden";
+    queueMicrotask(() => { if (active.current) void load(); });
+    const hide = (event?: Event) => { if (event?.type === "blur" && event.target !== window) return; focused.current = false; pausePrivate(); };
+    const again = () => { if (document.visibilityState !== "hidden" && navigator.onLine) { focused.current = true; void load(); } };
+    const visible = () => document.visibilityState === "hidden" ? hide() : again();
+    const poll = setInterval(() => { if (focused.current) void load(); }, 30_000);
+    window.addEventListener("online", again); window.addEventListener("focus", again); window.addEventListener("pageshow", again);
+    window.addEventListener("offline", hide); window.addEventListener("blur", hide); window.addEventListener("pagehide", hide); document.addEventListener("visibilitychange", visible);
+    return () => {
+      active.current = false; cancelRead(); clearInterval(poll);
+      window.removeEventListener("online", again); window.removeEventListener("focus", again); window.removeEventListener("pageshow", again);
+      window.removeEventListener("offline", hide); window.removeEventListener("blur", hide); window.removeEventListener("pagehide", hide); document.removeEventListener("visibilitychange", visible);
+    };
+  }, [load, pausePrivate, cancelRead]);
 
   const source = loaded.state === "ready" ? loaded.source : null;
   const ready = useMemo(() => source ? exportReadiness(source) : null, [source]);
@@ -105,6 +131,7 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
 
   /** Send one batch's stored body, exactly as planned, and settle its state from the verified reply. */
   async function sendBatch(current: PaidExportBatchPlan, key: string): Promise<boolean> {
+    if (!hasLease()) { pausePrivate(); return false; }
     const batch = current.batches.find(item => item.command.operationId === key);
     if (!batch) return false;
     const custody: Custody = { key, body: batch.body };
@@ -125,6 +152,7 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
   async function run(only?: string) {
     const current = latest.current.plan;
     if (!current || running.current) return;
+    if (!hasLease()) { pausePrivate(); return; }
     running.current = true; setBusy(true);
     try {
       if (only) await sendBatch(current, only);
@@ -138,11 +166,13 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
   async function confirm() {
     const current = latest.current.plan;
     if (!current || running.current) return;
+    if (!hasLease()) { pausePrivate(); return; }
     const replies = current.batches.map(batch => { const state = latest.current.states[batch.command.operationId]; return state?.phase === "saved" ? state.receipt : null; });
     if (replies.includes(null)) return;
     running.current = true; setBusy(true);
     try {
       const progress = await paidExportBatchProgress(current, replies).catch(() => null);
+      if (!hasLease()) { pausePrivate(); return; }
       if (progress?.state !== "READY_FOR_MANIFEST") { setWork(value => ({ ...value, record: { phase: "blocked", custody: { key: current.planId, body: "" }, reason: "conflict" } })); return; }
       const custody: Custody = latest.current.record.phase === "unknown" ? latest.current.record.custody : { key: current.planId, body: JSON.stringify(current.manifestRequest) };
       const sending = writeReducer(latest.current.record, { type: "send", custody });
@@ -157,6 +187,7 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
     } finally { running.current = false; setBusy(false); }
   }
   function downloadBatch(key: string) {
+    if (!hasLease()) { pausePrivate(); return; }
     const state = work.states[key], reply = state?.phase === "saved" ? state.receipt as { export?: { csv?: string } } : null;
     if (reply?.export?.csv) download(reply.export.csv, "text/csv;charset=utf-8", `nevora-paid-time-${period.startDate}-${key.slice(0, 8)}.csv`);
   }

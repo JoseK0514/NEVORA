@@ -2,7 +2,7 @@
 // measured from the token values, and the Phase 1 names exist.
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 
 const source = readFileSync(join(__dirname, 'b-tokens.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
 const token = (name: string) => {

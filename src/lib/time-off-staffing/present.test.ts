@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import type {ActionItem} from '../action-center/project';
 import {staffingRepairActions} from './actions';
 import {conflictConsequence,isStaffingRepair,repairOwnerLine,repairTitle,repairWhen} from './present';

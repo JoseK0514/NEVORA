@@ -1,17 +1,17 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it, vi } from "vitest";
+import { expect, it, rs } from '@rstest/core';
 import { AppErrorScreen, errorReference, portalErrorAdvice } from "./app-error-screen";
 import RootError from "../app/error";
 import GlobalError from "../app/global-error";
-const router=vi.hoisted(()=>({refresh:vi.fn(),path:'/app/schedule'}));
-vi.mock('next/navigation',()=>({useRouter:()=>router,usePathname:()=>router.path}));
+const router=rs.hoisted(()=>({refresh:rs.fn(),path:'/app/schedule'}));
+rs.mock('next/navigation',()=>({useRouter:()=>router,usePathname:()=>router.path}));
 
-vi.mock("./app-error-screen.css", () => ({}));
-vi.mock("@/components/kit/kit.css", () => ({}));
-vi.mock("@/app/not-found.css", () => ({}));
-vi.mock("./public-error-screen.css", () => ({}));
-vi.mock("@/components/access-recovery/access-recovery.css", () => ({}));
+rs.mock("./app-error-screen.css", () => ({}));
+rs.mock("@/components/kit/kit.css", () => ({}));
+rs.mock("@/app/not-found.css", () => ({}));
+rs.mock("./public-error-screen.css", () => ({}));
+rs.mock("@/components/access-recovery/access-recovery.css", () => ({}));
 
 it("uses the portal's own error words, with a retry and a full-load link home", () => {
   const html = renderToStaticMarkup(createElement(AppErrorScreen, { reset: () => {} }));
@@ -95,12 +95,12 @@ it("signed-out and public addresses get the public screen: same words, Try again
 });
 
 it("UI Try again asks Next to refetch (retry), not just re-render the failed result (reset)", async () => {
-  const error = new Error("fictional transient failure"), reset = vi.fn(), retry = vi.fn();
+  const error = new Error("fictional transient failure"), reset = rs.fn(), retry = rs.fn();
   for (const Boundary of [RootError, GlobalError]) {
     const tree = JSON.stringify(Boundary({ error, reset, retry }), (_key, value) => typeof value === "function" ? (value === retry ? "RETRY" : value === reset ? "RESET" : "fn") : value);
     expect(tree).toContain('"reset":"RETRY"');
   }
-  vi.doMock("@/components/kit/focus-after-retry", () => ({ focusAfterRetry: () => {} }));
+  rs.doMock("@/components/kit/focus-after-retry", () => ({ focusAfterRetry: () => {} }));
   const PortalError = (await import("../app/app/error")).default;
   const find = (node: unknown): (() => void) | null => {
     if (!node || typeof node !== "object") return null;

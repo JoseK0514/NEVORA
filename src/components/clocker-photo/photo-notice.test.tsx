@@ -1,5 +1,5 @@
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import type {PhotoNotice} from '@/lib/clocker/photo-server/contracts';
 import {unconfiguredPhotoPolicy} from '@/lib/clocker/photo-server/validation';
 import {ClockerPresentation} from '../clocker-language';

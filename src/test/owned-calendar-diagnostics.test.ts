@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { randomUUID } from 'node:crypto';
 import { calendarTrace, pendingReads } from './integration/calendar-request-monitor';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { installOwnedCalendarDiagnostics } from './integration/owned-calendar-diagnostics.mjs';
 
 it('accounts for real marked loopback Calendar requests without recording private headers, bodies or query values',async()=>{

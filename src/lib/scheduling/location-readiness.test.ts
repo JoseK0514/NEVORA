@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { createNorthsideFixture } from '../../test/fixtures/nevora-workspace';
 import { evaluateLocationReadiness, type LocationReadinessInput } from './location-readiness';
 function input(): LocationReadinessInput { const f=createNorthsideFixture();return {workspace:f.workspace,location:f.locations[0],staffing:null,coverageWindows:[],positions:f.positions,eligibleEmployees:f.employees}; }

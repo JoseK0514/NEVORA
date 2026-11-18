@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 import { PortalSignout, startSignoutCleanup } from './portal-signout';
-vi.mock('@/app/login/actions',()=>({logout:vi.fn()}));
+rs.mock('@/app/login/actions',()=>({logout:rs.fn()}));
 it('retains native server action submit form',()=>{
  const html=renderToStaticMarkup(<PortalSignout className="sidebar-signout-form"><button type="submit">Sign out</button></PortalSignout>);
  expect(html).toContain('<form'); expect(html).toContain('type="submit"'); expect(html).toContain('sidebar-signout-form');

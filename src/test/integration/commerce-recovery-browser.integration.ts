@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {createRequire} from 'node:module';
 import {resolve,join} from 'node:path';
 import {mkdir,writeFile,readFile} from 'node:fs/promises';

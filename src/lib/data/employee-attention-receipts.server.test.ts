@@ -1,5 +1,5 @@
-vi.mock('server-only',()=>({}));
-import {expect,it,vi} from 'vitest';
+rs.mock('server-only',()=>({}));
+import {expect,it,rs} from '@rstest/core';
 import {attentionIntent,attentionSourceVersion,recordEmployeeAttentionReceipt} from './employee-attention-receipts.server';
 const proof={employee:{id:'employee-1',firstName:'Fictional',lastName:'Self',role:'EMPLOYEE' as const,primaryLocationId:'loc-1'},sessionTokenHash:'b'.repeat(64)};
 const ref={kind:'TIME_OFF' as const,id:'request',version:'v1'},op='11111111-1111-4111-8111-111111111111';

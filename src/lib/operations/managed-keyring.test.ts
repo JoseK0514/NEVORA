@@ -1,4 +1,4 @@
-import {beforeAll,expect,it} from 'vitest';
+import {beforeAll,expect,it} from '@rstest/core';
 import {createECDH,generateKeyPairSync} from 'node:crypto';
 import {parseManagedHostConfig,managedChildEnvironment} from './managed-host';
 import {managedDestinations} from './managed-destinations';

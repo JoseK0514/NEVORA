@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {parseCommand,parseQuery} from './model';
 import {hashCommand} from './hash.server';
 const id='12345678-1234-4234-8234-123456789abc';

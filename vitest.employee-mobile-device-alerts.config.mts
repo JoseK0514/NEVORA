@@ -1,5 +1,5 @@
 import {projectConfig} from './vitest.shared.mts';
-import {defineConfig} from 'vitest/config';
+import {defineConfig} from './vitest.shared.mts';
 import {employeeMobileProjects} from './vitest.employee-mobile-communications.config.mts';
 const projects=employeeMobileProjects([
  'src/test/integration/employee-mobile-profile-sql.integration.ts',

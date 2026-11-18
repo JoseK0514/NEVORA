@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { databaseTarget,readCommerceConfig } from "./config";
 it("rejects driver target overrides, duplicate TLS modes and maintenance databases", () => {
   for (const target of [

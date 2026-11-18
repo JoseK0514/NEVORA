@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 const authority='a'.repeat(64);
 const status={supported:true,enabled:true,configurationAvailable:true,testAllowed:false,ownershipGeneration:'own-generation',vapidPublicKey:'public-key',dismissalScope:'own-scope',authority,validForMs:1200};
 async function protocol(){const m=await import('./device-protocol').catch(()=>({}));expect(m).toHaveProperty('parseDeviceStatus');return m as typeof import('./device-protocol');}

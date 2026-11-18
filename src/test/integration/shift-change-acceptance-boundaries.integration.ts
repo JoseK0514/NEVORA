@@ -1,6 +1,6 @@
 import {reviewedFixtureSource} from './shift-change-api';
 import { randomUUID } from 'node:crypto';
-import { afterAll, beforeAll, expect, it } from 'vitest';
+import { afterAll, beforeAll, expect, it } from '@rstest/core';
 import { Client } from 'pg';
 import { createDisposableExchangeDatabase } from './local-postgres';
 import { fixtureShift, proof, seedShiftChanges } from './shift-change-fixture';

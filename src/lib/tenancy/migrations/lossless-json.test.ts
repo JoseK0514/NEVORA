@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { describe,expect,it } from 'vitest';
+import { describe,expect,it } from '@rstest/core';
 import { canonicalOwnershipJson } from './ownership';
 import { parseLosslessJsonWire,lookupLosslessJsonPath,walkLosslessJsonLeaves,toExistingJsonValue,type LosslessJsonEnvelope,type LosslessJsonNode } from './lossless-json';
 function parsed(wire:unknown):LosslessJsonEnvelope{

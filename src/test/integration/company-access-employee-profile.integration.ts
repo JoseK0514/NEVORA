@@ -1,9 +1,9 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import {companyAccessFixture} from './company-access-fixture';
 import {hashPassword} from '../../lib/auth/password';
 import type {CoreProfileInput,EmployeeCoreAccessCommand,ScopeSelection,CreateEmployeeWithAccessCommand} from '../../lib/company-access/model';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 import {readOwnerOperationalScope,readOperationalAuthority} from '../../lib/company-access/operational-scope.server';
 import {saveEmployeeCoreAccessProfile,createEmployeeWithAccess,readEmployeeCoreAccessOperation} from '../../lib/company-access/employee-profile.server';
 type Fixture=Awaited<ReturnType<typeof companyAccessFixture>>;

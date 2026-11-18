@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { seal, unseal, token, digest } from "./security";
 it("binds encrypted credentials to the owning installation and rejects tampering", () => {
   const key = Buffer.alloc(32, 7);

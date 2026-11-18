@@ -1,4 +1,4 @@
-import { expect,it } from 'vitest';
+import { expect,it } from '@rstest/core';
 import { decideShiftChangeTransition } from './lifecycle';
 import type { TransitionInput, ConsentSnapshot } from './types';
 const consent: ConsentSnapshot = {employeeId:'source',consentedAt:'2026-10-01T00:00:00Z',source:{shiftId:'shift',scheduleId:'schedule',workspaceId:'workspace',timeZone:'America/Puerto_Rico',weekStart:'2026-10-05',date:'2026-10-06',startTime:'10:00',endTime:'18:00',locationId:'location',employeeId:'source',assignmentEpisodeId:'episode',termsRevision:1,positionId:null,isDesignatedLead:false,scheduledBreaks:{status:'UNKNOWN'}},target:null};

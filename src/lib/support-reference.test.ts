@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {readSupportReference} from './support-reference';
 
 const reference='c34ed09a-1129-455c-9b60-3018cfce2f40';

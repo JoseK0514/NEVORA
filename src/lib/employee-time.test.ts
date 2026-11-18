@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {projectEmployeeTime,parseEmployeeTime,formatRecordedDuration} from './employee-time';
 const entry=(extra:Record<string,unknown>={})=>({id:'e1',employee_id:'worker',location_name:'Main Office',clock_in_at:'2030-10-07T12:00:00Z',clock_out_at:null,status:'CLOCKED_IN',history_valid:true,breaks:[],...extra});
 const source=(entries:unknown[]=[],extra:Record<string,unknown>={})=>({observedAt:'2030-10-07T16:00:00Z',expiresAt:'2030-10-08T16:00:00Z',timeZone:'America/Puerto_Rico',recentCount:0,entries,...extra});

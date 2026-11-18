@@ -1,8 +1,8 @@
 // Clocker PINs (Phase 6): who has a PIN and who does not, people without one first, one action per row.
 import {createElement, type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {describe, expect, it, vi} from 'vitest';
-vi.mock('next/link', () => ({default: ({href, children, ...props}: ComponentProps<'a'>) => createElement('a', {href, ...props}, children)}));
+import {describe, expect, it, rs} from '@rstest/core';
+rs.mock('next/link', () => ({default: ({href, children, ...props}: ComponentProps<'a'>) => createElement('a', {href, ...props}, children)}));
 import {ClockerPinInventory, ClockerPinsUnavailable} from './clocker-pin-inventory';
 import {englishIn} from './clocker-owner-copy.testkit';
 import type {OwnerPinStatus} from '../lib/clocker/pin-operations.server';

@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import type {TimecardItem} from '../timecards/read-model';
 import {selectVisibleFinalized,changeExportSelection} from './selection';
 const item=(id:string,state:TimecardItem['state']='FINALIZED')=>({card:{employeeId:id},state} as TimecardItem);

@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {accountCopy} from './account-copy';
 import {notificationHeadline} from '../employee-mobile/notifications-list';
 import type {EmployeeNotificationItem} from '../../lib/employee-view';

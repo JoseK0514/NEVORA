@@ -1,4 +1,4 @@
-import {afterEach,expect,it,vi} from 'vitest';
+import {afterEach,expect,it,rs} from '@rstest/core';
 import {createServer} from 'node:http';
 import {createOwnedInternalRedirectFetch} from './owned-internal-redirect';
 const canonical='https://step4-alpha.portal.example.invalid';
@@ -16,7 +16,7 @@ async function fixture(){
  return {origin:'http://127.0.0.1:'+address.port,release,seen,async close(){release();server.closeAllConnections();await new Promise<void>((resolve,reject)=>server.close(error=>error?reject(error):resolve()));}};
 }
 async function bounded<T>(promise:Promise<T>){let timer:ReturnType<typeof setTimeout>|undefined;try{return await Promise.race([promise,new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Owned stream did not settle before release')),1500);})]);}finally{clearTimeout(timer);}}
-afterEach(()=>vi.unstubAllEnvs());
+afterEach(()=>{ rs.unstubAllEnvs(); });
 it('carries canonical Host and unchanged cookie through real owned HTTP when native Node fetch omits Host',async()=>{
  const f=await fixture();try{const native=await fetch(f.origin+'/login',internal);expect(native.status).toBe(403);await native.text();const response=await createOwnedInternalRedirectFetch(f.origin,canonical)(f.origin+'/login',internal);expect(response.status).toBe(200);expect(response.headers.get('content-type')).toBe('text/x-component');expect(await response.text()).toBe('firstlast');expect(f.seen.at(-1)).toEqual({path:'/login',host:new URL(canonical).host,forwarded:new URL(canonical).host,cookie:'fictional=owned'});}finally{await f.close();}
 });
@@ -27,11 +27,11 @@ it('cancels an actual held response through the original caller signal',async()=
  const f=await fixture(),controller=new AbortController();try{const response=await bounded(createOwnedInternalRedirectFetch(f.origin,canonical)(new Request(f.origin+'/held',{headers:internal.headers,signal:controller.signal}),{next:{internal:1}} as RequestInit));expect(response.status).toBe(200);const reader=response.body!.getReader();await bounded(reader.read());controller.abort();await expect(bounded(reader.read())).rejects.toThrow();}finally{await f.close();}
 });
 it('leaves foreign, unmarked, unknown-marker and non-GET calls with their original transport',async()=>{
- const base=vi.fn<typeof fetch>(async()=>new Response(null,{status:204})),upstream='http://127.0.0.1:39981',run=createOwnedInternalRedirectFetch(upstream,canonical,base);
+ const base=rs.fn<typeof fetch>(async()=>new Response(null,{status:204})),upstream='http://127.0.0.1:39981',run=createOwnedInternalRedirectFetch(upstream,canonical,base);
  for(const [input,init]of [['https://foreign.invalid/login',internal],[upstream+'/login',{}],[upstream+'/login',{...internal,next:{internal:false}}],[upstream+'/login',{...internal,method:'POST',body:'unchanged'}]] as const){expect((await run(input,init as RequestInit)).status).toBe(204);expect(base.mock.calls.at(-1)?.[0]).toBe(input);expect(base.mock.calls.at(-1)?.[1]).toBe(init);}
 });
 it.each(['https://127.0.0.1:39981','http://192.168.0.1:39981','http://127.0.0.1:39981/path','http://user:secret@127.0.0.1:39981'])('refuses an unowned internal socket %s',upstream=>expect(()=>createOwnedInternalRedirectFetch(upstream,canonical)).toThrow());
-it('refuses production mode and unregistered canonical identities before creating any request',()=>{vi.stubEnv('NODE_ENV','production');expect(()=>createOwnedInternalRedirectFetch('http://127.0.0.1:39981',canonical)).toThrow();vi.stubEnv('NODE_ENV','test');expect(()=>createOwnedInternalRedirectFetch('http://127.0.0.1:39981','https://foreign.invalid')).toThrow();});
+it('refuses production mode and unregistered canonical identities before creating any request',()=>{rs.stubEnv('NODE_ENV','production');expect(()=>createOwnedInternalRedirectFetch('http://127.0.0.1:39981',canonical)).toThrow();rs.stubEnv('NODE_ENV','test');expect(()=>createOwnedInternalRedirectFetch('http://127.0.0.1:39981','https://foreign.invalid')).toThrow();});
 
 it('follows only actual in-scope redirects while preserving manual/error modes',async()=>{const f=await fixture();try{const run=createOwnedInternalRedirectFetch(f.origin,canonical);expect(await (await run(f.origin+'/redirect',internal)).text()).toBe('firstlast');const manual=await run(f.origin+'/redirect',{...internal,redirect:'manual'});expect(manual.status).toBe(303);expect(manual.headers.get('location')).toBe('/login');await manual.text();await expect(run(f.origin+'/redirect',{...internal,redirect:'error'})).rejects.toThrow('refused');}finally{await f.close();}});
 it.each(['/escape','/malformed'])('rejects an out-of-scope or malformed redirect %s without another request',async path=>{const f=await fixture();try{const run=createOwnedInternalRedirectFetch(f.origin,canonical);await expect(run(f.origin+path,internal)).rejects.toThrow('left its scope');expect(f.seen).toHaveLength(1);}finally{await f.close();}});

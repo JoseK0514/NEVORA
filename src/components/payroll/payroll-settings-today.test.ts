@@ -1,5 +1,5 @@
-import { expect, it, vi } from "vitest";
-vi.mock("./native-payroll-config", () => ({ NativePayrollConfig: () => null }));
+import { expect, it, rs } from '@rstest/core';
+rs.mock("./native-payroll-config", () => ({ NativePayrollConfig: () => null }));
 import { today } from "./payroll-settings";
 
 it("UI effective dates default to today in the company's time zone, not the device's", () => {

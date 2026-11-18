@@ -1,7 +1,7 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it, vi } from "vitest";
-vi.mock("next/link", () => ({ default: ({ children, ...props }: ComponentProps<"a">) => createElement("a", props, children) }));
+import { expect, it, rs } from '@rstest/core';
+rs.mock("next/link", () => ({ default: ({ children, ...props }: ComponentProps<"a">) => createElement("a", props, children) }));
 import { MobileHomeOverview, MobileHomeTools } from "./mobile-home-overview";
 
 it("keeps selected-week facts, draft context and exact week destinations in the phone summary", () => {

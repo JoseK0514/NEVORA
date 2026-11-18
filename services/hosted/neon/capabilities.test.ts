@@ -1,4 +1,4 @@
-import {describe,it,expect} from 'vitest';
+import {describe,it,expect} from '@rstest/core';
 import {approvedCapabilityNames,roleCapabilitiesAllowed,provisionerEnvironment,configurationDiagnostics,INERT_HOST_CAPABILITIES,deploymentCapabilitiesAllowed} from './capabilities';
 import {readCommerceConfig} from '../../commerce/config';
 const worker='nv_control_provision_'+'a'.repeat(24),app='nv_control_app_'+'b'.repeat(24);

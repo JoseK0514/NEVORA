@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {parsePendingPunch} from './punch-client';
 import {journalKey,legacyRecords} from './recovery-journal';
 const pending={subject:'a'.repeat(64),command:{commandId:'11111111-1111-4111-8111-111111111111',action:'CLOCK_IN',verificationId:'b'.repeat(64),expected:{revision:0,timeEntryId:null,timeEntryVersion:null,breakEntryId:null,breakEntryVersion:null}}};

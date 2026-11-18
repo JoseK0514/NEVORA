@@ -1,7 +1,7 @@
-import {beforeEach,it,expect,vi} from 'vitest';
-const state=vi.hoisted(()=>({session:{id:'M1',role:'MANAGER'} as {id:string;role:string}|null,mutate:vi.fn(),parse:vi.fn()}));
-vi.mock('@/lib/auth/session',()=>({getSession:async()=>state.session,requireSessionMutationProof:async()=>({employee:state.session,sessionTokenHash:'a'.repeat(64)})}));
-vi.mock('@/lib/timecards/service',()=>({mutateTimecard:state.mutate,parseTimecardCommand:state.parse}));
+import {beforeEach,it,expect,rs} from '@rstest/core';
+const state=rs.hoisted(()=>({session:{id:'M1',role:'MANAGER'} as {id:string;role:string}|null,mutate:rs.fn(),parse:rs.fn()}));
+rs.mock('@/lib/auth/session',()=>({getSession:async()=>state.session,requireSessionMutationProof:async()=>({employee:state.session,sessionTokenHash:'a'.repeat(64)})}));
+rs.mock('@/lib/timecards/service',()=>({mutateTimecard:state.mutate,parseTimecardCommand:state.parse}));
 import {POST} from './route';
 const req=(actor='M1')=>new Request('https://example.test/api/manager/timecards',{method:'POST',headers:{origin:'https://example.test','content-type':'application/json','x-nevora-timecards':'1','x-nevora-actor':actor},body:JSON.stringify({action:'APPROVE'})});
 beforeEach(()=>{state.session={id:'M1',role:'MANAGER'};state.mutate.mockReset();state.parse.mockReset();state.parse.mockImplementation(v=>v);state.mutate.mockResolvedValue({status:'approved',operationId:'fictional',revision:1});});

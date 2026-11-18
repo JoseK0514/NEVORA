@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { reviewDecision, type DecisionEvidence } from "./decision";
 import { ownerDecision } from "@/test/fixtures/owner-decision";
 import { ownerCoveragePlan } from "@/test/fixtures/owner-coverage-plan";

@@ -1,19 +1,19 @@
-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-const state = vi.hoisted(() => ({ session: vi.fn(), proof: vi.fn(), service: vi.fn(), executor: { query: vi.fn(), transaction: vi.fn() } }));
-vi.mock('@/lib/auth/session', () => ({ getSession: state.session, requireSessionMutationProof: state.proof }));
-vi.mock('@/lib/data/sql-executor', () => ({ neonNotificationExecutor: () => state.executor }));
-vi.mock('./weekly-service.server', () => ({ weeklyService: state.service }));
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
+const state = rs.hoisted(() => ({ session: rs.fn(), proof: rs.fn(), service: rs.fn(), executor: { query: rs.fn(), transaction: rs.fn() } }));
+rs.mock('@/lib/auth/session', () => ({ getSession: state.session, requireSessionMutationProof: state.proof }));
+rs.mock('@/lib/data/sql-executor', () => ({ neonNotificationExecutor: () => state.executor }));
+rs.mock('./weekly-service.server', () => ({ weeklyService: state.service }));
 import { weeklyHttp } from './weekly-http.server';
 const url = 'http://localhost/api/owner/advisor/weekly';
 const headers = () => new Headers({ 'x-nevora-owner-advisor': '1', origin: 'http://localhost', 'content-type': 'application/json' });
 const request = (body: BodyInit = '{}', overrides: Record<string, string> = {}) => new Request(url, { method: 'POST', headers: { ...Object.fromEntries(headers()), ...overrides }, body });
 beforeEach(() => {
-  vi.resetAllMocks();
+  rs.resetAllMocks();
   state.session.mockResolvedValue({ id: 'owner', role: 'OWNER' });
   state.proof.mockResolvedValue({ employee: { id: 'owner', role: 'OWNER' }, sessionTokenHash: 'a'.repeat(64) });
   state.service.mockResolvedValue({ state: 'ready', validForMs: 15000 });
 });
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => { rs.restoreAllMocks(); });
 
 it.each([
   ['origin', '', 403], ['origin', 'https://evil.invalid', 403], ['sec-fetch-site', 'cross-site', 403],
@@ -46,15 +46,15 @@ it('rejects malformed JSON and fatal UTF-8 without invoking the service', async 
 });
 
 it.each([undefined, '1'])('bounds actual streamed bytes with Content-Length %s and cancels the body', async length => {
-  const cancel = vi.fn(), body = new ReadableStream<Uint8Array>({ start(controller) { controller.enqueue(new Uint8Array(16385).fill(32)); }, cancel });
+  const cancel = rs.fn(), body = new ReadableStream<Uint8Array>({ start(controller) { controller.enqueue(new Uint8Array(16385).fill(32)); }, cancel });
   const h = headers(); if (length) h.set('content-length', length);
   const response = await weeklyHttp(new Request(url, { method: 'POST', headers: h, body, duplex: 'half' } as RequestInit));
   expect(response.status).toBe(400); expect(cancel).toHaveBeenCalled(); expect(state.service).not.toHaveBeenCalled();
 });
 
 it.each(['request', 'deadline'])('cancels an open body promptly on %s abort', async kind => {
-  const controller = new AbortController(); if (kind === 'deadline') vi.spyOn(AbortSignal, 'timeout').mockReturnValue(controller.signal);
-  const cancel = vi.fn(), body = new ReadableStream<Uint8Array>({ start(c) { c.enqueue(new TextEncoder().encode('{')); }, cancel });
+  const controller = new AbortController(); if (kind === 'deadline') rs.spyOn(AbortSignal, 'timeout').mockReturnValue(controller.signal);
+  const cancel = rs.fn(), body = new ReadableStream<Uint8Array>({ start(c) { c.enqueue(new TextEncoder().encode('{')); }, cancel });
   const pending = weeklyHttp(new Request(url, { method: 'POST', headers: headers(), body, signal: kind === 'request' ? controller.signal : undefined, duplex: 'half' } as RequestInit));
   await Promise.resolve(); await Promise.resolve(); await Promise.resolve(); controller.abort();
   const result = await pending; expect(result.status).toBe(503); expect(await result.json()).toEqual({ state: 'error', code: 'cancelled' });
@@ -62,7 +62,7 @@ it.each(['request', 'deadline'])('cancels an open body promptly on %s abort', as
 });
 
 it('uses one entry deadline across pending authentication and ignores its late result', async () => {
-  const controller = new AbortController(); vi.spyOn(AbortSignal, 'timeout').mockReturnValue(controller.signal);
+  const controller = new AbortController(); rs.spyOn(AbortSignal, 'timeout').mockReturnValue(controller.signal);
   let release: ((value: unknown) => void) | undefined;
   state.session.mockImplementation(() => new Promise(resolve => { release = resolve; }));
   const pending = weeklyHttp(request()); controller.abort();

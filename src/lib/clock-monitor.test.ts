@@ -1,4 +1,4 @@
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it} from '@rstest/core';
 import {projectClockMonitor,parseClockMonitor,formatMonitorDuration} from './clock-monitor';
 const row=()=>({id:'entry',employee_id:'worker',employee_name:'Sam Cruz',location_id:'loc-1',location_name:'Main Office',device_id:'tablet',clock_in_at:'2030-10-06T23:00:00.123456Z',status:'CLOCKED_IN',break_start_at:null,open_break_count:0,history_valid:true,schedule_context:null});
 const source=()=>({observedAt:'2030-10-07T03:30:00.123456Z',expiresAt:'2030-10-08T00:00:00Z',timeZone:'America/Puerto_Rico',rows:[row()]});

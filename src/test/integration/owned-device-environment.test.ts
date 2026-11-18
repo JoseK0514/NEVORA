@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import * as owned from './owned-next-app';
 import {NextRequest} from 'next/server';
 it('owned device setup stays loopback-only with provider and test delivery disabled',()=>{

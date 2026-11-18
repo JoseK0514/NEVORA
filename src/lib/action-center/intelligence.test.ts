@@ -1,5 +1,5 @@
 import { calculateScheduleHealth } from '../scheduling/schedule-health';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import type { ActionFact, ActionIntelligenceInput, SourceKey } from './intelligence';
 import { buildManagerActionItems } from '../assistance/manager-actions';
 import { projectAttendance } from '../attendance/project';
@@ -10,8 +10,8 @@ import { ALL_OBSERVATION_KINDS } from '@/test/fixtures/attendance-exceptions';
 
 // The initial RED run reports behavior assertions rather than a missing-module
 // collection error. This test still requires the actual implementation to exist.
-const modulePath = './intelligence';
-const implementation: typeof import('./intelligence') | null = await import(modulePath).catch(() => null);
+
+const implementation: typeof import('./intelligence') | null = await import('./intelligence').catch(() => null);
 const project = (input: unknown) => implementation?.buildActionIntelligence(input);
 const NOW = '2026-10-09T12:00:00Z';
 const binding = { workspaceId: 'tenant-a', actorId: 'manager', role: 'MANAGER' as const,

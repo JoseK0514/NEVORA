@@ -1,6 +1,6 @@
 // Owner roster import: one import from paste to saved, against a stand-in for the two routes. The preview answers come
 // from the server's own parser; the import answers are the contract's states. Fictional data only.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { parseRosterTable } from "@/lib/onboarding/roster";
 import { commandResults } from "@/lib/onboarding/fixtures/v1/command-results";
 import { rosterImportCopy } from "./copy";

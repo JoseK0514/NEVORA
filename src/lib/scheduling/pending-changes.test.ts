@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { buildSchedulePendingChanges } from './pending-changes';
 
 const base = { sourceShiftId: 's1', scheduleId: 'a', locationId: 'loc-1', employeeId: 'E', date: '2030-10-11', startTime: '09:00', endTime: '17:00', isDesignatedLead: false, isCalloutApproved: false };

@@ -1,5 +1,5 @@
 import {readFile} from 'node:fs/promises';
-import {afterEach,beforeEach,expect,it} from 'vitest';
+import {afterEach,beforeEach,expect,it} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import {createDisposableFoundationDatabase} from './local-postgres';
 import {previewCommunicationAudience,executeCommunicationCommand,readCommunication,findCommunicationOperation,communicationAuthority,recordCommunicationRead} from '../../lib/communications/service.server';

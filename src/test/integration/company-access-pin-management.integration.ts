@@ -1,4 +1,4 @@
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import {Client} from 'pg';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
@@ -7,12 +7,12 @@ import {companyAccessFixture} from './company-access-fixture';
 import {assignOperationalScope,readOwnerOperationalScope} from '../../lib/company-access/operational-scope.server';
 import {readEmployeeClockerPin,setEmployeeClockerPin,verifyEmployeeClockerPin} from '../../lib/clocker/pins.server';
 import {registerClockerDevice,redeemClockerEnrollment,authenticateClockerDevice} from '../../lib/clocker/devices.server';
-const ctx=vi.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
-vi.mock('server-only',()=>({}));
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>ctx.proof}));
-vi.mock('next/headers',()=>({headers:async()=>new Headers({host:'127.0.0.1:4001',origin:'http://127.0.0.1:4001','sec-fetch-site':'same-origin'})}));
-vi.mock('@/lib/clocker/pin-crypto.server',async original=>({...await original<Record<string,unknown>>(),readPinKey:()=>Buffer.alloc(32,61)}));
-vi.mock('@/lib/db',()=>{
+const ctx=rs.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
+rs.mock('server-only',()=>({}));
+rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>ctx.proof}));
+rs.mock('next/headers',()=>({headers:async()=>new Headers({host:'127.0.0.1:4001',origin:'http://127.0.0.1:4001','sec-fetch-site':'same-origin'})}));
+rs.mock('@/lib/clocker/pin-crypto.server', ()=>({...rs.requireActual<typeof import('@/lib/clocker/pin-crypto.server')>('@/lib/clocker/pin-crypto.server'),readPinKey:()=>Buffer.alloc(32,61)}));
+rs.mock('@/lib/db',()=>{
  const statement=(text:string,values:readonly unknown[]=[])=>({statement:{text,values},then:(yes:(rows:unknown[])=>unknown,no:(error:unknown)=>unknown)=>ctx.ex!.query({text,values}).then(yes,no)});
  const tagged=Object.assign((strings:TemplateStringsArray,...values:unknown[])=>statement(strings.reduce((text,part,i)=>text+(i?'$'+i:'')+part,''),values),{query:statement,transaction:(queries:{statement:SqlStatement}[])=>ctx.ex!.transaction(queries.map(q=>q.statement))});return {getDb:()=>tagged,queryRows:(rows:unknown)=>rows};
 });

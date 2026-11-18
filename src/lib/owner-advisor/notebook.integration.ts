@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import { randomUUID } from "node:crypto";
 import { companyAccessFixture } from "@/test/integration/company-access-fixture";
 import { advisorService } from "./service.server";
@@ -46,7 +46,7 @@ it("uses selected saved context but refuses to persist an answer when the Owner 
   await advisorService(f.owner, f.db.executor, env, signal(), save(0));
   const taskId = randomUUID();
   await advisorService(f.owner, f.db.executor, env, signal(), { op: "notebook", requestId: randomUUID(), expectedRevision: 1, change: { kind: "save_task", taskId, objective: "Investigate Saturday coverage", notes: "Check Ana's availability", state: "open", focus: { kind: "coverage", date: "2026-10-31" } } });
-  const transport = vi.fn<Transport>(async (_url, init) => {
+  const transport = rs.fn<Transport>(async (_url, init) => {
     const body = JSON.parse(String(init?.body));
     expect(JSON.stringify(body.input)).toContain("Check Ana's availability");
     await advisorService(f.owner, f.db.executor, env, signal(), save(2, "Updated while investigating"));
@@ -63,7 +63,7 @@ it("isolates a second Owner's notebook and refuses to continue the first Owner's
   await f.q("UPDATE employees SET role='OWNER' WHERE id='manager'");
   const other = { ...f.manager, employee: { ...f.manager.employee, role: "OWNER" as const } };
   expect(await advisorService(other, f.db.executor, env, signal())).toMatchObject({ notebook: { state: "ready", notebook: { revision: 0, goals: [], tasks: [] } } });
-  const transport = vi.fn<Transport>(async () => answer());
+  const transport = rs.fn<Transport>(async () => answer());
   await expect(advisorService(other, f.db.executor, env, signal(), { op: "ask_task", requestId: randomUUID(), taskId, expectedNotebookRevision: 0, message: "Continue" }, transport)).rejects.toThrow("conflict");
   expect(transport).not.toHaveBeenCalled();
 });

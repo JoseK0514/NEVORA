@@ -1,23 +1,24 @@
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
-const host=vi.hoisted(()=>({effect:undefined as undefined|(()=>void|(()=>void)),changed:vi.fn()}));
-vi.mock('react',async()=>({...await vi.importActual<typeof import('react')>('react'),
+import * as rstestOriginal0 from "react" with { rstest: 'importActual' };
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
+const host=rs.hoisted(()=>({effect:undefined as undefined|(()=>void|(()=>void)),changed:rs.fn()}));
+rs.mock('react',()=>({...rstestOriginal0,
  useState:(initial:unknown)=>[initial,host.changed],useRef:(initial:unknown)=>({current:initial}),
  useEffect:(effect:()=>void|(()=>void))=>{host.effect=effect;},
 }));
-vi.mock('next/navigation',()=>({usePathname:()=>'/app'}));
+rs.mock('next/navigation',()=>({usePathname:()=>'/app'}));
 import {NotificationBell} from './notification-bell';
 let cleanup:void|(()=>void);
 let pending:{signal:AbortSignal;resolve:(response:Response)=>void}[];
-const flush=()=>vi.advanceTimersByTimeAsync(0);
+const flush=()=>rs.advanceTimersByTimeAsync(0);
 async function mount(){NotificationBell({authority:'a'.repeat(64)});cleanup=host.effect?.();await flush();}
 async function ready(index:number){pending[index].resolve(Response.json({state:'ready',kind:'notifications',observedAt:new Date().toISOString(),validForMs:45000,coverage:'complete',items:[]}));await flush();}
 beforeEach(()=>{
  pending=[];host.effect=undefined;host.changed.mockClear();
- vi.useFakeTimers({toFake:['setTimeout','clearTimeout','Date','performance']});
- vi.stubGlobal('window',new EventTarget());vi.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));vi.stubGlobal('navigator',{onLine:true});
- vi.stubGlobal('fetch',(_path:string,init?:RequestInit)=>new Promise<Response>(resolve=>{if(!init?.signal)throw Error('Expected fenced notification read');pending.push({signal:init.signal,resolve});}));
+ rs.useFakeTimers({toFake:['setTimeout','clearTimeout','Date','performance']});
+ rs.stubGlobal('window',new EventTarget());rs.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));rs.stubGlobal('navigator',{onLine:true});
+ rs.stubGlobal('fetch',(_path:string,init?:RequestInit)=>new Promise<Response>(resolve=>{if(!init?.signal)throw Error('Expected fenced notification read');pending.push({signal:init.signal,resolve});}));
 });
-afterEach(()=>{cleanup?.();cleanup=undefined;vi.unstubAllGlobals();vi.useRealTimers();});
+afterEach(()=>{cleanup?.();cleanup=undefined;rs.unstubAllGlobals();rs.useRealTimers();});
 it('duplicate foreground focus/pageshow/visibility events do not abort or restart a current notification read',async()=>{
  await mount();expect(pending).toHaveLength(1);
  window.dispatchEvent(new Event('focus'));window.dispatchEvent(new Event('pageshow'));document.dispatchEvent(new Event('visibilitychange'));await flush();

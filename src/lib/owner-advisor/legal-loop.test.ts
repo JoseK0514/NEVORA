@@ -1,5 +1,5 @@
 import { gpoAmendmentFixture } from "@/test/fixtures/legal-gpo";
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { investigate } from "./loop.server";
 import { fetchLegalSource } from "./legal-research.server";
 import { parseAnswer } from "@/components/owner-advisor/public-response";

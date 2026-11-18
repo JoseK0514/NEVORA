@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {spawnSync} from 'node:child_process';
 import {tmpdir} from 'node:os';
 const environment=(flag:'false'|'unset')=>({PATH:process.env.PATH??'',TMPDIR:tmpdir(),NODE_ENV:'test' as const,...(flag==='false'?{NEVORA_PAYROLL_ENABLED:'false'}:{})});

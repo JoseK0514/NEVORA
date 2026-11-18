@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import type { SqlExecutor } from '../notifications/types';
 import type { Workspace } from '../domain';
 import { prepareEmployeeCreationMutation, prepareEmployeeProfileMutation } from './employees';

@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {createECDH} from 'node:crypto';
 import * as protection from './installation';
 import {parseNotificationRuntimeConfig} from './runtime-config';

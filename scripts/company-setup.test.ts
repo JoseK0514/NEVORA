@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { migrationBody, readCompanyInput, readOwnerLocations, readSetupTarget } from './company-setup';
 
 const env = {

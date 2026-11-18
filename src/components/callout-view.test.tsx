@@ -1,11 +1,11 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it, vi } from "vitest";
+import { expect, it, rs } from '@rstest/core';
 import type { ExchangeShift } from "../lib/data/exchanges";
 
-vi.mock("next/link", () => ({ default: ({ children, ...props }: ComponentProps<"a">) => createElement("a", props, children) }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
-vi.mock("@/app/app/exchange/actions", () => ({ shiftChangeAction: vi.fn(), reconcileShiftChangeAction: vi.fn() }));
+rs.mock("next/link", () => ({ default: ({ children, ...props }: ComponentProps<"a">) => createElement("a", props, children) }));
+rs.mock("next/navigation", () => ({ useRouter: () => ({ refresh: rs.fn() }) }));
+rs.mock("@/app/app/exchange/actions", () => ({ shiftChangeAction: rs.fn(), reconcileShiftChangeAction: rs.fn() }));
 
 import { CalloutView } from "./callout-view";
 

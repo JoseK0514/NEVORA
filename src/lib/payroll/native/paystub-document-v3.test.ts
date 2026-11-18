@@ -1,5 +1,5 @@
-import {beforeEach,afterEach,vi} from 'vitest';
-import { expect, it } from 'vitest';
+import {beforeEach,afterEach,rs} from '@rstest/core';
+import { expect, it } from '@rstest/core';
 import { PDFDocument } from 'pdf-lib';
 import { generatePdfs } from '../documents';
 import { captureNativePayroll } from './source.server';
@@ -72,5 +72,5 @@ it('records v3 even when server capture blocks a new run before source populatio
   expect(result.run.rows).toBeNull();
 });
 
-beforeEach(()=>vi.stubEnv('NEVORA_PAYROLL_CALCULATION_MODE','native_provisional'));
-afterEach(()=>vi.unstubAllEnvs());
+beforeEach(()=>{ rs.stubEnv('NEVORA_PAYROLL_CALCULATION_MODE','native_provisional'); });
+afterEach(()=>{ rs.unstubAllEnvs(); });

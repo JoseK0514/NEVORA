@@ -1,5 +1,5 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-vi.mock('server-only', () => ({}));
+import { afterAll, beforeAll, describe, expect, it, rs } from '@rstest/core';
+rs.mock('server-only', () => ({}));
 import { Client } from 'pg';
 import { createHash } from 'node:crypto';
 import { unlinkSync, appendFileSync, lstatSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';

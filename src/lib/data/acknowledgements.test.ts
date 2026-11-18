@@ -1,9 +1,11 @@
-vi.mock('./sql-session-contract',()=>import('../../test/fixtures/business-sql-session'));
-vi.mock('server-only',()=>({}));
-import { expect, it, vi } from "vitest";
+import * as rstestOriginal0 from "../../test/fixtures/business-sql-session" with { rstest: 'importActual' };
+import * as rstestOriginal1 from "../db" with { rstest: 'importActual' };
+rs.mock('./sql-session-contract',()=>rstestOriginal0);
+rs.mock('server-only',()=>({}));
+import { expect, it, rs } from '@rstest/core';
 import { acknowledgeScheduleWeek, getAcknowledgementSummary, listUnacknowledgedEmployeeIds } from "./acknowledgements";
-vi.mock("./publication-revisions", () => ({ getLatestPublicationRevision: vi.fn(async () => ({ id: "revision-1" })), listRevisionShifts: vi.fn(async () => [{ employeeId: "employee-1" }, { employeeId: "owner-1" }]) }));
-vi.mock("../db", async importOriginal => ({ ...await importOriginal<typeof import("../db")>(), getDb: () => ({ query: async (sql: string) => sql.includes("FROM employees") ? [{ id: "employee-1" }] : [] }) }));
+rs.mock("./publication-revisions", () => ({ getLatestPublicationRevision: rs.fn(async () => ({ id: "revision-1" })), listRevisionShifts: rs.fn(async () => [{ employeeId: "employee-1" }, { employeeId: "owner-1" }]) }));
+rs.mock("../db",  () => ({ ...rstestOriginal1, getDb: () => ({ query: async (sql: string) => sql.includes("FROM employees") ? [{ id: "employee-1" }] : [] }) }));
 it("requires acknowledgement only from scheduled self-service roles", async () => {
   expect(await getAcknowledgementSummary("2030-10-07")).toEqual({ scheduledEmployees: 1, acknowledgedEmployees: 0 });
   expect(await listUnacknowledgedEmployeeIds("2030-10-07")).toEqual(["employee-1"]);
@@ -17,11 +19,11 @@ const ref={kind:'SCHEDULE' as const,id:'2030-10-07',version:'revision-1'};
 const intent=attentionIntent(proof,workspace.id,'CONFIRM_WEEK',ref);
 const input={proof,weekStart:ref.id,expectedRevisionId:ref.version,...intent};
 function executor(){
- const transaction=vi.fn(async(statements:readonly import('../notifications/types').SqlStatement[])=>statements.map(s=>
+ const transaction=rs.fn(async(statements:readonly import('../notifications/types').SqlStatement[])=>statements.map(s=>
   s.text.includes('FROM workspaces WHERE singleton=true')&&s.text.includes('created_at')?[workspace]:
   s.text.startsWith('SELECT result FROM employee_attention_operations')?[{result:{status:'committed',operationId:intent.operationId,id:ref.id,version:ref.version}}]:
   s.text.startsWith('SELECT jsonb_build_object')?[{detail:{id:ref.id,version:ref.version,required:true}}]:[]));
- return {query:vi.fn(),transaction};
+ return {query:rs.fn(),transaction};
 }
 it('acknowledgement commits under the week lock and cancels outstanding reminders including claimed deliveries',async()=>{
  const db=executor();expect(await acknowledgeScheduleWeek(input,db)).toMatchObject({status:'committed'});

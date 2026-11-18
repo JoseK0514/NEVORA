@@ -63,7 +63,7 @@ const en = {
   versionState: { draft: "Draft", draft_locked: "Draft", in_use: "In use", past: "Past period", replaced: "Replaced", discarded: "Discarded", erased: "Erased" },
   // Problems and recovery
   notConfirmed: "Not confirmed yet", notConfirmedLine: (op: Op) => `Your ${en.opNoun[op]} may have gone through. Checking can’t apply it twice.`,
-  notConfirmedStill: "No confirmation yet. It may still go through.", notConfirmedReload: "Check it, then look at the list before adding it again.",
+  notConfirmedStill: "No confirmation yet. It may still go through.", notConfirmedReload: "Keep this change’s reference and check again. Do not add it as a new change while it is unconfirmed.",
   opNoun: { stage: "draft", publish: "publish", discard: "discard", withdraw: "withdrawal", delete: "delete" } as Record<Op, string>,
   checkAgain: "Check again", sendAgain: "Send again", stopChecking: "Stop checking", checking: "Checking your change",
   foreign: "Earlier change cleared", foreignLine: "It was made under another sign-in.", ok: "OK",
@@ -185,7 +185,7 @@ const es: BusinessCopy = {
   plainText: "Abrir como texto sin formato", plainTextLine: "Privado · abre en una pestaña nueva", replacedNote: "Una versión más reciente reemplazó esta.", seeRecord: "Ver el registro",
   versionState: { draft: "Borrador", draft_locked: "Borrador", in_use: "En uso", past: "Período pasado", replaced: "Reemplazado", discarded: "Descartado", erased: "Borrado" },
   notConfirmed: "Aún sin confirmar", notConfirmedLine: (op: Op) => `Puede que ${es.opNoun[op]} se haya completado. Verificar no lo aplica dos veces.`,
-  notConfirmedStill: "Todavía sin confirmación. Aún puede completarse.", notConfirmedReload: "Verifique y mire la lista antes de añadirlo de nuevo.",
+  notConfirmedStill: "Todavía sin confirmación. Aún puede completarse.", notConfirmedReload: "Conserve la referencia y vuelva a verificar. No lo añada como un cambio nuevo mientras siga sin confirmar.",
   opNoun: { stage: "su borrador", publish: "su publicación", discard: "su descarte", withdraw: "su retiro", delete: "su eliminación" },
   checkAgain: "Verificar de nuevo", sendAgain: "Enviar de nuevo", stopChecking: "Dejar de verificar", checking: "Verificando su cambio",
   foreign: "Cambio anterior descartado", foreignLine: "Se hizo con otro inicio de sesión.", ok: "Aceptar",

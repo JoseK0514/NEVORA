@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {summarizePartnerAssertions} from './owner-advisor-partner-evidence';
 it('partner comparison layers never convert preflight or scripted transport into model assessment',()=>{
  const result=summarizePartnerAssertions([{testResults:[{assertionResults:[{fullName:'genuine no-problem fixture is configured and fully covered before any alternative',status:'passed'}]}]}]);
@@ -8,6 +8,12 @@ it('partner comparison layers never convert preflight or scripted transport into
 it('partner comparison layers report absent guard evidence as not-run',()=>{
  const result=summarizePartnerAssertions([]);expect(result).toHaveLength(32);expect(result.every(r=>r.status==='incomplete'&&r.checks.every(c=>c.status==='not-run'))).toBe(true);
  expect(summarizePartnerAssertions([{testResults:[{assertionResults:[{fullName:'genuine no-problem fixture is configured and fully covered before any alternative',status:'failed'}]}]}]).find(r=>r.id==='no-problem')!.status).toBe('incomplete');
+});
+
+it.each([['pass','passed'],['fail','incomplete'],['skip','incomplete']] as const)('classifies an Rstest %s assertion as %s', (status, expected)=>{
+ const fullName='genuine no-problem fixture is configured and fully covered before any alternative';
+ const result=summarizePartnerAssertions([{tool:'rstest',tests:[{fullName,status}]}]);
+ expect(result.find(row=>row.id==='no-problem')).toMatchObject({status:expected,actualModelSample:'not-run'});
 });
 
 it('partner startup guard rejects unapproved, exhausted, reused and altered identity without provider calls',async()=>{

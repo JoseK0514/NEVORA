@@ -1,6 +1,6 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, rs } from '@rstest/core';
 import { buildPushEnvelope, PUSH_KINDS } from './payloads';
 import type { NotificationIntent } from './types';
 
@@ -42,24 +42,24 @@ function storage() {
     },
   };
 }
-type Client = { id: string; url: string; type: string; focus: ReturnType<typeof vi.fn>; navigate: ReturnType<typeof vi.fn>; postMessage: ReturnType<typeof vi.fn> };
-function client(path: string, id = path): Client { return { id, url: new URL(path, origin).href, type: 'window', focus: vi.fn(async () => {}), navigate: vi.fn(async () => {}), postMessage: vi.fn() }; }
+type Client = { id: string; url: string; type: string; focus: ReturnType<typeof rs.fn>; navigate: ReturnType<typeof rs.fn>; postMessage: ReturnType<typeof rs.fn> };
+function client(path: string, id = path): Client { return { id, url: new URL(path, origin).href, type: 'window', focus: rs.fn(async () => {}), navigate: rs.fn(async () => {}), postMessage: rs.fn() }; }
 function harness(db = storage(), retire = false, stores = new Map<string, Map<string, Response>>()) {
   const handlers = new Map<string, (event: Record<string, unknown>) => void>();
   const writes: string[] = [];
   const windows: Client[] = [client('/app', 'portal')];
-  const notices: { title: string; data: typeof envelope; close: ReturnType<typeof vi.fn> }[] = [];
-  const network = vi.fn(async (_request: Request | string) => new Response('online'));
+  const notices: { title: string; data: typeof envelope; close: ReturnType<typeof rs.fn> }[] = [];
+  const network = rs.fn(async (_request: Request | string) => new Response('online'));
   const self = {
     location: { origin },
     addEventListener: (name: string, fn: (event: Record<string, unknown>) => void) => handlers.set(name, fn),
-    skipWaiting: vi.fn(),
-    clients: { get: vi.fn(async (id: string) => windows.find(c => c.id === id)), matchAll: vi.fn(async () => windows), claim: vi.fn(), openWindow: vi.fn(async (_url: string) => {}) },
-    registration: { scope: `${origin}/app`, unregister: vi.fn(async () => true), getNotifications: vi.fn(async () => notices.filter(n => !n.close.mock.calls.length)), showNotification: vi.fn(async (title: string, options: { data: typeof envelope }) => { notices.push({ title, data: options.data, close: vi.fn() }); }) },
+    skipWaiting: rs.fn(),
+    clients: { get: rs.fn(async (id: string) => windows.find(c => c.id === id)), matchAll: rs.fn(async () => windows), claim: rs.fn(), openWindow: rs.fn(async (_url: string) => {}) },
+    registration: { scope: `${origin}/app`, unregister: rs.fn(async () => true), getNotifications: rs.fn(async () => notices.filter(n => !n.close.mock.calls.length)), showNotification: rs.fn(async (title: string, options: { data: typeof envelope }) => { notices.push({ title, data: options.data, close: rs.fn() }); }) },
   };
   const caches = {
     keys: async () => [...stores.keys()],
-    delete: vi.fn(async (name: string) => stores.delete(name)),
+    delete: rs.fn(async (name: string) => stores.delete(name)),
     open: async (name: string) => {
       if (!stores.has(name)) stores.set(name, new Map());
       return {
@@ -240,20 +240,20 @@ describe('portal service worker source', () => {
     await h.push(); expect(h.notices).toHaveLength(1);
   });
   it('acknowledges durable active/suppressed ownership over the supplied MessageChannel only', async () => {
-    const h = harness(); const port = { postMessage: vi.fn() };
+    const h = harness(); const port = { postMessage: rs.fn() };
     for (const [type, status] of [['SET_OWNER', 'active'], ['SUPPRESS_OWNER', 'suppressed'], ['SET_OWNER', 'suppressed']]) {
       await h.dispatch('message', { source: h.windows[0], data: { version: 1, type, generation }, ports: [port] });
       expect(port.postMessage).toHaveBeenLastCalledWith({ version: 1, type: 'OWNER_STATE', generation, status });
     }
   });
   it('unavailable storage acknowledges failure rather than successful local enrollment', async () => {
-    const h = harness(); h.db.fail(); const port = { postMessage: vi.fn() };
+    const h = harness(); h.db.fail(); const port = { postMessage: rs.fn() };
     await h.dispatch('message', { source: h.windows[0], data: { version: 1, type: 'SET_OWNER', generation }, ports: [port] });
     expect(port.postMessage).toHaveBeenCalledWith({ version: 1, type: 'OWNER_STATE', generation, status: 'unavailable' });
   });
   it('saturated storage acknowledges unavailable and keeps oldest tombstone', async () => {
     const h = harness(); for (let i = 0; i < 129; i++) await h.message('SUPPRESS_OWNER', `old-${i}`);
-    const port = { postMessage: vi.fn() };
+    const port = { postMessage: rs.fn() };
     await h.dispatch('message', { source: h.windows[0], data: { version: 1, type: 'SET_OWNER', generation }, ports: [port] });
     expect(port.postMessage).toHaveBeenCalledWith({ version: 1, type: 'OWNER_STATE', generation, status: 'unavailable' });
     expect([...h.db.data.values()]).toEqual([expect.objectContaining({ current: null, blocked: true, suppressed: expect.arrayContaining(['old-0']) })]);
@@ -270,7 +270,7 @@ describe('portal service worker source', () => {
   it('client moving from portal to Clocker during click lookup is not navigated', async () => {
     const h = harness(); await h.message('SET_OWNER');
     const clocker = client('/clocker/110', 'portal'); h.self.clients.get.mockResolvedValueOnce(clocker);
-    await h.dispatch('notificationclick', { notification: { data: envelope, close: vi.fn() } });
+    await h.dispatch('notificationclick', { notification: { data: envelope, close: rs.fn() } });
     expect(clocker.navigate).not.toHaveBeenCalled(); expect(h.windows[0].navigate).not.toHaveBeenCalled(); expect(h.self.clients.openWindow).toHaveBeenCalledOnce();
   });
   it('suppression arriving before initial SET still fences that generation', async () => {
@@ -287,18 +287,18 @@ describe('portal service worker source', () => {
     const h = harness(); await h.message('SET_OWNER');
     const clocker = client('/clocker/2'); const clocker110 = client('/clocker/110'); const lookalike = client('/application');
     h.windows.splice(0, 1, clocker, clocker110, lookalike);
-    const close = vi.fn(); await h.dispatch('notificationclick', { notification: { data: envelope, close } });
+    const close = rs.fn(); await h.dispatch('notificationclick', { notification: { data: envelope, close } });
     expect(close).toHaveBeenCalledOnce(); expect(h.self.clients.openWindow).toHaveBeenCalledWith(`${origin}/app/notifications/open?notificationId=${envelope.notificationId}`);
     for (const c of h.windows) { expect(c.navigate).not.toHaveBeenCalled(); expect(c.focus).not.toHaveBeenCalled(); }
   });
   it('click reuses only a current same-origin portal client', async () => {
-    const h = harness(); await h.message('SET_OWNER'); await h.dispatch('notificationclick', { notification: { data: envelope, close: vi.fn() } });
+    const h = harness(); await h.message('SET_OWNER'); await h.dispatch('notificationclick', { notification: { data: envelope, close: rs.fn() } });
     expect(h.windows[0].navigate).toHaveBeenCalledWith(`${origin}/app/notifications/open?notificationId=${envelope.notificationId}`); expect(h.windows[0].focus).toHaveBeenCalledOnce(); expect(h.self.clients.openWindow).not.toHaveBeenCalled();
   });
   it('suppressed, expired and forged click data cannot navigate', async () => {
     const h = harness(); await h.message('SET_OWNER');
-    for (const data of [{ ...envelope, url: 'https://evil.example' }, { ...envelope, expiresAt: '2000-01-01' }]) await h.dispatch('notificationclick', { notification: { data, close: vi.fn() } });
-    await h.message('SUPPRESS_OWNER'); await h.dispatch('notificationclick', { notification: { data: envelope, close: vi.fn() } });
+    for (const data of [{ ...envelope, url: 'https://evil.example' }, { ...envelope, expiresAt: '2000-01-01' }]) await h.dispatch('notificationclick', { notification: { data, close: rs.fn() } });
+    await h.message('SUPPRESS_OWNER'); await h.dispatch('notificationclick', { notification: { data: envelope, close: rs.fn() } });
     expect(h.windows[0].navigate).not.toHaveBeenCalled(); expect(h.self.clients.openWindow).not.toHaveBeenCalled();
   });
   it('updates retain the normal waiting lifecycle and clean only owned cache versions', async () => {
@@ -332,13 +332,13 @@ describe('durable suppression independent of IndexedDB',()=>{
   const next=harness(first.db,false,first.stores);await next.push();expect(next.notices).toEqual([]);
  });
  it('acknowledges unavailable when neither durable store can record suppression',async()=>{
-  const h=harness();await h.message('SET_OWNER');h.db.fail();vi.spyOn(h.caches,'open').mockRejectedValue(new Error('cache storage unavailable'));
-  const port={postMessage:vi.fn()};await h.dispatch('message',{source:h.windows[0],data:{version:1,type:'SUPPRESS_OWNER',generation},ports:[port]});
+  const h=harness();await h.message('SET_OWNER');h.db.fail();rs.spyOn(h.caches,'open').mockRejectedValue(new Error('cache storage unavailable'));
+  const port={postMessage:rs.fn()};await h.dispatch('message',{source:h.windows[0],data:{version:1,type:'SUPPRESS_OWNER',generation},ports:[port]});
   expect(port.postMessage).toHaveBeenLastCalledWith({version:1,type:'OWNER_STATE',generation,status:'unavailable'});
   h.db.recover();await h.push();expect(h.notices).toEqual([]);
  });
  it('retains IDB suppression if the independent fallback fails',async()=>{
-  const h=harness();await h.message('SET_OWNER');vi.spyOn(h.caches,'open').mockRejectedValue(new Error('cache storage unavailable'));
+  const h=harness();await h.message('SET_OWNER');rs.spyOn(h.caches,'open').mockRejectedValue(new Error('cache storage unavailable'));
   await h.message('SUPPRESS_OWNER');const restarted=harness(h.db,false,h.stores);await restarted.push();expect(restarted.notices).toEqual([]);
  });
  it('fails closed after fallback-only saturation without evicting an old generation',async()=>{

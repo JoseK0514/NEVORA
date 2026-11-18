@@ -1,8 +1,9 @@
-import {afterEach,expect,it,vi} from 'vitest';
+import * as rstestOriginal0 from "node:child_process" with { rstest: 'importActual' };
+import {afterEach,expect,it,rs} from '@rstest/core';
 import {chmodSync,lstatSync,mkdirSync,mkdtempSync,readFileSync,readlinkSync,rmSync,statSync,symlinkSync,writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-vi.mock('node:child_process',async original=>({...await original<typeof import('node:child_process')>(),execFileSync:()=>{throw Error('Dependency copy must not fork a helper');}}));
+rs.mock('node:child_process', ()=>({...rstestOriginal0,execFileSync:()=>{throw Error('Dependency copy must not fork a helper');}}));
 import {copyOwnedDependencies} from './owned-next-app';
 let root:string|undefined;
 afterEach(()=>{if(root)rmSync(root,{recursive:true,force:true});root=undefined;});

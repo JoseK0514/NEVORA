@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {coreCommandFromForm,createCommandFromForm,readInvitationStatus,readInvitationResult,readScopeResult,readEmployeeResult,readOperationalNavigation} from './commands';
 const operationId='d56eb98d-27d9-49c0-a214-937c596929ed';
 const employee={id:'E1',firstName:'A',lastName:'B',phone:'7875550100',email:'a@example.invalid',role:'EMPLOYEE' as const,active:true,primaryLocationId:'L1',eligibleLocationIds:['L1'],positionIds:[],updatedAt:'2026-10-14 12:00:00+00'};

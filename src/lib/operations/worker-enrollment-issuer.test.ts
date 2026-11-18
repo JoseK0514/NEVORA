@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {readWorkerEnrollmentIssuerConfig} from './worker-enrollment-issuer';
 import {managedDestinations} from './managed-destinations';
 const sha='a'.repeat(40),d=managedDestinations.test,root=Buffer.alloc(32,51).toString('base64url'),workerRoot=Buffer.alloc(32,52).toString('base64url'),selected=[{id:'11111111-1111-4111-8111-111111111111',requestHash:'b'.repeat(64)}];

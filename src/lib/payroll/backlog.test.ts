@@ -1,4 +1,4 @@
-import { it, expect } from "vitest";
+import { it, expect } from '@rstest/core';
 import { missingPayrollPeriods } from "./backlog";
 import type { PayrollSettingsRevision } from "./contracts";
 const revision = (
