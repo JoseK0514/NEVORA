@@ -178,7 +178,7 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
    await context.route('**/*',async(route:{request():{url():string};abort(reason?:string):Promise<void>;continue():Promise<void>})=>{
     const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==origin)await route.abort();else await route.continue();
    });
-   const page=await context.newPage();page.setDefaultTimeout(20000);page.on('pageerror',(e:Error)=>errors.push(engine+': '+step+': '+e.name+' '+e.message));
+   let page=await context.newPage();page.setDefaultTimeout(20000);
    step=engine+' Owner sign-in and invitation';
    await page.goto(origin+'/login');await page.locator('#login-employee-id').fill('QAOWNER');await page.locator('#login-password').fill(TEST_PASSWORD);await page.locator('button[type="submit"]').click();await page.waitForURL('**/app',{timeout:45000});
    const headers={Origin:origin,'x-nevora-company-access':'1','x-nevora-actor':'QAOWNER'};
@@ -187,11 +187,11 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
    const mail=smtp.messages.find((m:{recipient:string})=>m.recipient.includes(engine+'@example.invalid'));if(!mail)throw Error('Owned invitation not captured');
    const proof=/#proof=([A-Za-z0-9_-]{43})/.exec(mail.body.replace(/=\r?\n/g,'').replace(/=3D/g,'='))?.[1];if(!proof)throw Error('Missing owned invitation proof');
    const short=await context.request.post(origin+'/api/auth/activate',{headers:{Origin:origin,'x-nevora-activation':'1'},data:{proof,password:'short value'}});expect(short.status()).toBe(400);expect(await short.json()).toEqual({state:'invalid',passwordReason:'too_short'});
-   await context.clearCookies();await context.addCookies([{name:'nv-lang',value:'en',url:origin}]);
+   await page.close();await context.clearCookies();page=await context.newPage();page.setDefaultTimeout(20000);page.on('pageerror',(e:Error)=>errors.push(engine+': '+step+': '+e.name+' '+e.message));await context.addCookies([{name:'nv-lang',value:'en',url:origin}]);
    await page.goto(origin+'/activate#proof='+proof);await page.locator('#activation-password').waitFor();expect(new URL(page.url()).hash).toBe('');
    for(const lang of ['en','es'] as const){
-    step=engine+' invitation policy '+lang;await context.addCookies([{name:'nv-lang',value:lang,url:origin}]);await page.reload();
-    // Reload loses in-memory proof custody; explicitly reopen the same unconsumed invitation.
+    step=engine+' invitation policy '+lang;await context.addCookies([{name:'nv-lang',value:lang,url:origin}]);await page.goto('about:blank');
+    // Reopen in a fresh document: a same-document fragment navigation can race hydration in WebKit.
     await page.goto(origin+'/activate#proof='+proof);await page.locator('#activation-password').fill('qwertyuiopasdfgh');await page.locator('#activation-confirm-password').fill('qwertyuiopasdfgh');await page.locator('button[type="submit"]').click();
     await expect.poll(()=>page.locator('#activation-error').innerText()).toBe(passwordRejectionMessage(lang,'breached'));
     expect(await page.locator('#activation-password').getAttribute('minlength')).toBe('15');
@@ -215,16 +215,17 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
    await page.goto(origin+'/login');await page.locator('#login-employee-id').fill(id);await page.locator('#login-password').fill(next);await page.locator('button[type="submit"]').click();await page.waitForURL('**/app',{timeout:45000});
    const expires=(await q<{expiry:string}>('SELECT expires_at::text AS expiry FROM password_recovery_proofs WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 1',[id]))[0].expiry as string;
    const invitationExpires=(await q<{expiry:string}>('SELECT expires_at::text AS expiry FROM company_invitations WHERE employee_id=$1 ORDER BY issued_at DESC LIMIT 1',[id]))[0].expiry;
+   const preview=await context.newPage();await preview.goto('about:blank');
    const emailContext={companyName:'North Harbor Foods',firstName:'Avery',timeZone:'America/Puerto_Rico',expiresAt:expires};
    for(const [kind,email] of [['invitation',invitationEmail(origin+'/activate#proof='+proof,id,{...emailContext,expiresAt:invitationExpires})],['reset',recoveryEmail(origin+'/reset-access#proof='+resetProof,emailContext)],['changed',passwordChangedEmail(origin,emailContext)]] as const){
     step=engine+' '+kind+' email';await writeFile(evidence+'/'+engine+'-'+kind+'.html',email.html);await writeFile(evidence+'/'+engine+'-'+kind+'.txt',email.text);
     for(const width of [320,1440]){
-     await page.setViewportSize({width,height:1000});await page.setContent(email.html,{waitUntil:'networkidle'});
-     expect(await page.locator('section[lang="en"]').count()).toBe(1);expect(await page.locator('section[lang="es"]').count()).toBe(1);
-     expect(await page.locator('img[alt="NEVORA"]').evaluate((el:HTMLImageElement)=>el.complete&&el.naturalWidth>0)).toBe(true);
-     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-     await page.keyboard.press('Tab');expect(await page.evaluate(()=>document.activeElement?.tagName)).toBe('A');
-     await page.screenshot({path:evidence+'/'+engine+'-'+kind+'-email-'+width+'.png',fullPage:true});
+     await preview.setViewportSize({width,height:1000});await preview.setContent(email.html,{waitUntil:'networkidle'});
+     expect(await preview.locator('section[lang="en"]').count()).toBe(1);expect(await preview.locator('section[lang="es"]').count()).toBe(1);
+     expect(await preview.locator('img[alt="NEVORA"]').evaluate((el:HTMLImageElement)=>el.complete&&el.naturalWidth>0)).toBe(true);
+     expect(await preview.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+     await preview.keyboard.press('Tab');expect(await preview.evaluate(()=>document.activeElement?.tagName)).toBe('A');
+     await preview.screenshot({path:evidence+'/'+engine+'-'+kind+'-email-'+width+'.png',fullPage:true});
     }
    }
    checks.push(engine+': real local SMTP invitation/reset, 15 minimum, EN/ES breach reasons with retained proof, company rejection, long phrase acceptance, reset single-use, ordinary sign-in, all three bilingual HTML/text emails at 320/1440px with keyboard links and no overflow');
