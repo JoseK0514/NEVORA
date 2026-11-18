@@ -65,7 +65,7 @@ export function useExitValue<T>(present: boolean, value: T): {value: T | null; l
     const timer = setTimeout(() => set({present: false, holding: false, kept: state.kept}), OVERLAY_EXIT_MS);
     return () => clearTimeout(timer);
     // The kept value cannot change while the hold runs (nothing is present to replace it).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line hooks-preserved/exhaustive-deps
   }, [holding]);
   return present ? {value, leaving: false} : holding ? {value: state.kept, leaving: true} : {value: null, leaving: false};
 }

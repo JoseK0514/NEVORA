@@ -35,7 +35,7 @@ rs.mock('@/lib/reports/christmas-bonus.server',()=>({readChristmasBonusReport:as
 }}));
 
 beforeEach(()=>{fixture.role='MANAGER';fixture.denied=false;fixture.unavailable=false;fixture.timeZone='America/Puerto_Rico';fixture.read.mockClear();fixture.workspace.mockClear();rs.useFakeTimers();rs.setSystemTime(new Date('2026-11-18T16:00:00Z'));});
-afterEach(()=>rs.useRealTimers());
+afterEach(()=>{rs.useRealTimers();});
 
 it.each(['MANAGER','OWNER'])('shows %s the latest completed bonus year inside the current authority frame, with the disclaimer and key dates',async role=>{
  fixture.role=role;

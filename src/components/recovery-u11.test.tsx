@@ -70,7 +70,7 @@ describe.each(["en", "es"] as const)("new password in %s", lang => {
 
   it("the form: step 3, the code, two passwords and the live checks", () => {
     const html = reset(lang);
-    for (const line of [step(lang, 3), t.recoveryCode, t.newPassword, t.atLeast8, t.resetPassword]) expect(html).toContain(line);
+    for (const line of [step(lang, 3), t.recoveryCode, t.newPassword, t.atLeast15, t.resetPassword]) expect(html).toContain(line);
     expect(html).toMatch(/<span class="q-auth__invalid"><svg[^>]*width="16" height="16"[^>]*>.*?<\/svg><span id="reset-proof-invalid"><\/span><\/span>/);
   });
 

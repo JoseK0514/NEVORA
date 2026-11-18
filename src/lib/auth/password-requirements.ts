@@ -12,4 +12,3 @@ const messages:Record<'en'|'es',Record<PasswordRejection,string>>={
  es:{too_short:'Usa al menos 15 caracteres.',too_long:'Usa un máximo de 1,024 caracteres.',common:'Esta contraseña es muy común o predecible. Elige otra frase.',breached:'Esta contraseña aparece en una filtración conocida. Elige otra frase.',employee_id:'Evita tu ID de empleado o una variación predecible.',company_name:'Evita el nombre de la empresa o una variación predecible.',temporary_password:'Elige una contraseña diferente a tu contraseña temporal.'},
 };
 export function passwordRejectionMessage(lang:'en'|'es',reason:PasswordRejection):string{return messages[lang][reason];}
-

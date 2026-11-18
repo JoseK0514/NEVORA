@@ -3,7 +3,7 @@ import { afterEach, expect, it, rs } from '@rstest/core';
 
 const db = rs.hoisted(() => ({ getDb: rs.fn() }));
 rs.mock("@/lib/db", () => db);
-afterEach(() => db.getDb.mockClear());
+afterEach(() => {db.getDb.mockClear();});
 
 it("answers liveness without caching or reading the database", async () => {
   const { GET, HEAD } = await import("./route");

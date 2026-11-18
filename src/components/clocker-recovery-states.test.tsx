@@ -44,7 +44,7 @@ function requests(state: OwnerReviewRequestsResult | null, loading = false, lang
 }
 const card = (tree: unknown, kind: string) => all(tree).find(node => node.props.className === 'b-statecard' && node.props['data-kind'] === kind);
 beforeEach(() => { hooks.states = []; hooks.refs = []; hooks.server = false; rs.stubGlobal('window', new EventTarget()); rs.stubGlobal('document', Object.assign(new EventTarget(), {visibilityState: 'visible'})); rs.stubGlobal('navigator', {onLine: true}); });
-afterEach(() => rs.unstubAllGlobals());
+afterEach(() => {rs.unstubAllGlobals();});
 
 describe('checking a code', () => {
   it('before any check: what the page is for, one field with its label and help, one filled button', () => {

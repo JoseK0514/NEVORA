@@ -21,7 +21,7 @@ rs.mock('react', () => {
     useCallback: (fn: unknown, deps: unknown[]) => hooks.on ? fn : react.useCallback(fn as () => void, deps),
   };
 });
-rs.mock('./clocker-language', () => {
+rs.mock('./clocker-language', async () => {
   const real = rstestImportedActual1;
   const {clockerText} = await import('./clocker-copy');
   return {...real, useClockerCopy: () => hooks.on ? (key: string, params?: Record<string, string | number>) => clockerText(hooks.locale, key, params) : real.useClockerCopy()};
