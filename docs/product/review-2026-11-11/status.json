@@ -785,10 +785,10 @@
   {
     "id": "OW-037",
     "severity": "Low",
-    "status": "partly",
-    "remainder": "The 1.2s hold and automatic advance to the next timecard is not built; it moves focus on its own. Jose to choose.",
+    "status": "fixed",
+    "remainder": "",
     "by": "Claude",
-    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Green success block and a tinted Finalize period pill. Phase 7 (Nov 17, 2026): the approved result uses the shared success mark; nothing advances on a timer.",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Green success block and a tinted Finalize period pill. Phase 7 (Nov 17, 2026): the approved result uses the shared success mark; nothing advances on a timer. Decided Nov 17, 2026 (Jose asked Claude to settle it): no automatic advance; the next timecard opens on \"Next timecard\".",
     "inCodexHandoff": false
   },
   {
