@@ -29,7 +29,9 @@ it('keeps one mobile Access presentation in short touch landscape and preserves 
       const heading=visible('h1')[0]?.getBoundingClientRect(),primary=visible('.ma-actions > .q-btn')[0]?.getBoundingClientRect();
       return {coarse:matchMedia('(pointer:coarse)').matches,overflow:Math.max(0,document.documentElement.scrollWidth-innerWidth),mobileHeaders:visible('.ma-header').length,desktopHeaders:visible('.ma-desktop').length,cards:visible('.ma-card').length,cardBorder:parseFloat(getComputedStyle(visible('.ma-card')[0]??document.body).borderTopWidth),cardShadow:getComputedStyle(visible('.ma-card')[0]??document.body).boxShadow,forms:visible('form').length,headings:visible('h1').length,headingTop:heading?.top,headingBottom:heading?.bottom,primaryBottom:primary?.bottom,targets:visible('.ma-language,.q-btn').map(el=>el.getBoundingClientRect().height),windowError:document.documentElement.dataset.accessWindowError==='true'};
      });
-     sample.targets=await page.locator('.ma-language:visible,.q-btn:visible').evaluateAll(accessTargetHeights);
+     // Phase5 keeps recovery/sign-in help as text links; they are still required interactive targets.
+     const targets=page.locator('.ma-language:visible,.q-btn:visible,.q-auth__links a:visible');
+     sample.targets=await targets.evaluateAll(accessTargetHeights);
      measurements.push({engine,theme,scale,path,...sample});
      const check=(ok:boolean,reason:string)=>{if(!ok)failures.push({engine,theme,scale,path,reason,sample});};
      check(sample.coarse,'Native pointer must be coarse');check(sample.overflow<=1,'No sideways document scroll');check(sample.mobileHeaders===1&&sample.desktopHeaders===0,'Exactly one mobile header');check(sample.headings===1&&sample.forms<=1,'One operative page and at most one form');check(!sample.windowError,'No window exceptions');
