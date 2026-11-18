@@ -193,7 +193,7 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
     await page.setViewportSize({width,height:1000});
     const candidate='a fictional oversized phrase '.repeat(50);
     for(const selector of ['#activation-password','#activation-confirm-password']){await page.locator(selector).fill('');await page.locator(selector).focus();await page.keyboard.insertText(candidate);expect(await page.locator(selector).inputValue()).toBe(candidate);}
-    await page.locator('button[type="submit"]').click();await expect.poll(()=>page.locator('#activation-error').innerText()).toBe(passwordRejectionMessage('en','too_long'));
+    await page.locator('button[type="submit"]').click();await expect.poll(()=>page.locator('#activation-error,#activation-policy-error').innerText()).toBe(passwordRejectionMessage('en','too_long'));
    }
    for(const lang of ['en','es'] as const){
     step=engine+' invitation policy '+lang;await context.addCookies([{name:'nv-lang',value:lang,url:origin}]);await page.goto('about:blank');
