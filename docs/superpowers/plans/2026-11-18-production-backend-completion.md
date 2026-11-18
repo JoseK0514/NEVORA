@@ -83,3 +83,10 @@ Ruling: Recognize only the explicitly authorized 30-day branch as an additional 
 Ruling: Keep durable mutation receipts and the hard capacity guard; qualify existing exact-read-ID renewal instead of pruning history or inventing longer publication consent. Cost if wrong: Claude must adopt the documented renewal contract and a genuinely full durable ledger still requires an explicit retention/capacity design.
 
 Ruling: Retain the prior specific wait-for-Claude/no-commit instruction on the separate grounding patch. Cost if wrong: hosted Rondo knowledge behavior remains unavailable until that separately owned checkpoint is ready.
+
+
+## Post-review execution checkpoint
+
+The single fresh review is preserved at `docs/handoffs/2026-11-18-backend-candidate-review.md`. Its three backend/API issues (including the regraded malformed-input contract) are corrected at98c152927 with observed RED→GREEN regressions. Full post-review Rondo404, recovery26 and reset-route15 pass; current PhaseD211, ClockerHTTP23 and tablet44 pass without weakened guards. The original Clocker104, owned restore12, releaseSQL817 and commerce249 evidence remains scoped to its exact source; the later code changes are the reviewed server checks and QA corrections, with final source/CI receipts still required.
+
+Five Important frontend issues and the Welcome touch band remain Claude-owned release holds; the actionable contract is `docs/handoffs/2026-11-18-claude-frontend-release-blockers.md`. The openPR39 source, unavailable hosted binding identity, held grounding patch, real provider/physical and independent acceptance gates remain intact. No main/production or hosted database mutation occurred. The plan remains open for combined qualification/publication; completed backend engineering is not represented as a production-ready combined release.
