@@ -12,9 +12,11 @@ Read [AGENTS.md](../../../AGENTS.md), the relevant repository skills,
 [package.json](../../../package.json), tests and the code you intend to change.
 Fetch and reconcile `origin/development` before new integration work. Inspect
 status and ownership; preserve other agents' changes and use a detached worktree
-for isolation. Only `development`, `main` and `claude-codex-collab-nevora` are
-active branches under the current policy. Main and production require Jose's
-explicit authorization.
+for isolation. The normal working branches are `development`, `main` and
+`claude-codex-collab-nevora`. Jose separately authorized `nevora-30-day-phase`;
+that specific exception does not authorize further branches. Reconcile any
+held PR source through the inventory before publication. Main and production
+require Jose's explicit authorization.
 
 Run `npm run check:development-sources` after fetching before assembly. Its
 [inventory](../../handoffs/2026-10-21-development-assembly-sources.json) detects
