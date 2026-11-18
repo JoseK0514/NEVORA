@@ -1,5 +1,3 @@
-import * as rstestOriginal0 from "@/lib/db" with { rstest: 'importActual' };
-import * as rstestOriginal1 from "@/lib/data/notification-transactions" with { rstest: 'importActual' };
 import { afterAll, beforeAll, describe, it, rs } from '@rstest/core';
 import assert from 'node:assert/strict';
 import { Client } from 'pg';
@@ -23,14 +21,14 @@ const transport = rs.hoisted(() => ({
 }));
 rs.mock('server-only', () => ({}));
 rs.mock('@/lib/db',  () => {
-  const original = rstestOriginal0;
+  const original = rs.requireActual<typeof import('@/lib/db')>('@/lib/db');
   return { ...original, getDb: () => {
     if (!transport.db) throw Error('F1_TRANSPORT_NOT_ACTIVE');
     return transport.db;
   } };
 });
 rs.mock('@/lib/data/notification-transactions',  () => {
-  const original = rstestOriginal1;
+  const original = rs.requireActual<typeof import('@/lib/data/notification-transactions')>('@/lib/data/notification-transactions');
   return { ...original, neonNotificationExecutor: () => {
     if (!transport.executor) throw Error('F1_TRANSPORT_NOT_ACTIVE');
     return transport.executor;

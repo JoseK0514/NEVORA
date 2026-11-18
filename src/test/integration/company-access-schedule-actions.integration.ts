@@ -1,4 +1,3 @@
-import * as rstestOriginal0 from "../../lib/data/notification-transactions" with { rstest: 'importActual' };
 import {it,expect,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
@@ -18,7 +17,7 @@ rs.mock('../../lib/auth/session',()=>({requireSessionMutationProof:async()=>ctx.
 rs.mock('../../lib/auth/permissions',()=>({MANAGER_ROLES:['OWNER','MANAGER'],requireRoles:async()=>ctx.proof!.employee}));
 rs.mock('next/cache',()=>({revalidatePath:()=>{}}));
 rs.mock('next/navigation',()=>({redirect:(destination:string)=>{throw Object.assign(new Error('Owned redirect'),{destination});}}));
-rs.mock('../../lib/data/notification-transactions', ()=>({...rstestOriginal0,neonNotificationExecutor:()=>ctx.ex!}));
+rs.mock('../../lib/data/notification-transactions', ()=>({...rs.requireActual<typeof import('../../lib/data/notification-transactions')>('../../lib/data/notification-transactions'),neonNotificationExecutor:()=>ctx.ex!}));
 import {createShiftAction,updateShiftAction,deleteShiftAction,publishScheduleAction} from '../../app/app/schedule/actions';
 type ReadObserver=(statement:SqlStatement,rows:unknown[],contract:unknown[]|undefined)=>void|Promise<void>;
 /** Observe completed real reads before returning their rows to the action.

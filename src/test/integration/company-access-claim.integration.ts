@@ -1,4 +1,3 @@
-import * as rstestOriginal0 from "../../lib/data/notification-transactions" with { rstest: 'importActual' };
 import {it,expect,rs} from '@rstest/core';
 import {randomBytes,randomUUID} from 'node:crypto';
 import {createServer} from 'node:http';
@@ -10,7 +9,7 @@ import { issueOrRevokeInvitation,invitationProofDigest,invitationEmailFingerprin
 import {requestPasswordRecovery} from '../../lib/auth/recovery.server';
 const context=rs.hoisted(()=>({executor:null as SqlExecutor|null}));
 rs.mock('server-only',()=>({}));
-rs.mock('../../lib/data/notification-transactions', ()=>({...rstestOriginal0,neonNotificationExecutor:()=>{if(!context.executor)throw Error('No owned executor');return context.executor;}}));
+rs.mock('../../lib/data/notification-transactions', ()=>({...rs.requireActual<typeof import('../../lib/data/notification-transactions')>('../../lib/data/notification-transactions'),neonNotificationExecutor:()=>{if(!context.executor)throw Error('No owned executor');return context.executor;}}));
 import {claimInvitation,clearTerminalInvitationDigests} from '../../lib/auth/invitations/claim.server';
 import {activateEmployeeCredential} from '../../lib/data/employees';
 import {POST} from '../../app/api/auth/activate/route';

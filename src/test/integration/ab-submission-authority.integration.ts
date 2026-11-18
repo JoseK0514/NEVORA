@@ -1,4 +1,3 @@
-import * as rstestOriginal0 from "@/lib/data/notification-transactions" with { rstest: 'importActual' };
 // Real action/SQL regressions. Only framework context/transport is adapted.
 import { createHash } from 'node:crypto';
 import { Client } from 'pg';
@@ -13,7 +12,7 @@ rs.mock('@/lib/db', () => {
   return { getDb: () => tagged, queryRows: (r: unknown) => r };
 });
 rs.mock('next/headers', () => ({ cookies: async () => ({ get: (n: string) => n === 'fuel_session' ? { value: context.cookie } : undefined }) }));
-rs.mock('@/lib/data/notification-transactions',  () => ({ ...rstestOriginal0, neonNotificationExecutor: () => context.executor! }));
+rs.mock('@/lib/data/notification-transactions',  () => ({ ...rs.requireActual<typeof import('@/lib/data/notification-transactions')>('@/lib/data/notification-transactions'), neonNotificationExecutor: () => context.executor! }));
 rs.mock('next/cache', () => ({ revalidatePath: rs.fn() }));
 rs.mock('next/navigation', () => ({ redirect: (destination: string) => { throw Object.assign(new Error('redirect'), { destination }); } }));
 import { createDisposableFoundationDatabase } from './local-postgres';

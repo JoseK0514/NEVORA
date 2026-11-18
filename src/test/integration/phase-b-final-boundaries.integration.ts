@@ -1,4 +1,3 @@
-import * as rstestOriginal0 from "@/lib/data/notification-transactions" with { rstest: 'importActual' };
 import {getShiftForManagement} from '../../lib/data/schedules';
 import { Client } from 'pg';
 import { expect, it, rs } from '@rstest/core';
@@ -14,7 +13,7 @@ rs.mock('@/lib/db', () => {
   });
   return { getDb: () => tagged, queryRows: (rows: unknown) => rows };
 });
-rs.mock('@/lib/data/notification-transactions',  () => ({ ...rstestOriginal0, neonNotificationExecutor: () => context.executor! }));
+rs.mock('@/lib/data/notification-transactions',  () => ({ ...rs.requireActual<typeof import('@/lib/data/notification-transactions')>('@/lib/data/notification-transactions'), neonNotificationExecutor: () => context.executor! }));
 import { createDisposableFoundationDatabase } from './local-postgres';
 import {installFixtureCompanyAccess} from './fixture-company-access';
 import { ensureSchedule, insertShift, updateShift, deleteShift } from '../../lib/data/schedules';

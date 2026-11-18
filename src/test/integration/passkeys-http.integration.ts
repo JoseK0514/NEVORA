@@ -1,4 +1,3 @@
-import * as rstestOriginal0 from "../../lib/data/notification-transactions" with { rstest: 'importActual' };
 import { beforeEach, afterEach, describe, expect, it, rs } from '@rstest/core';
 import { createHash } from "node:crypto";
 import type { PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON } from "@simplewebauthn/server";
@@ -19,7 +18,7 @@ rs.mock("@/lib/db",()=>{
  return {getDb:()=>({query:statement,transaction:(queries:{statement:{text:string;values:readonly unknown[]}}[],options?:{fetchOptions?:{signal?:AbortSignal}})=>db.executor.transaction(queries.map(q=>q.statement),options?.fetchOptions?.signal)}),queryRows:(rows:unknown)=>rows};
 });
 rs.mock("../../lib/data/notification-transactions",  () => ({
-  ...rstestOriginal0, neonNotificationExecutor: () => db.executor,
+  ...rs.requireActual<typeof import('../../lib/data/notification-transactions')>('../../lib/data/notification-transactions'), neonNotificationExecutor: () => db.executor,
 }));
 rs.mock("../../lib/notifications/logout", () => ({
   prepareInstallationForLogin: async () => ({ state: "complete" }), createLogoutDeps: () => ({}), terminatePortalSession: async () => ({}),

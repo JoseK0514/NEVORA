@@ -1,4 +1,3 @@
-import * as rstestOriginal0 from "@/lib/data/notification-transactions" with { rstest: 'importActual' };
 import { createHash } from 'node:crypto';
 import { beforeAll, afterAll, beforeEach, it, expect, rs } from '@rstest/core';
 import type { SqlExecutor } from '../../lib/notifications/types';
@@ -6,7 +5,7 @@ const context = rs.hoisted(() => ({ executor: null as SqlExecutor | null }));
 const token = 'fictional-ab-catalog-session';
 rs.mock('next/headers', () => ({ cookies: async () => ({ get: () => ({ value: 'fictional-ab-catalog-session' }) }) }));
 rs.mock('@/lib/db', () => ({ getDb: () => ({ query: (text: string, values: readonly unknown[]) => context.executor!.query({ text, values }) }), queryRows: (rows: unknown) => rows }));
-rs.mock('@/lib/data/notification-transactions',  () => ({ ...rstestOriginal0, neonNotificationExecutor: () => context.executor! }));
+rs.mock('@/lib/data/notification-transactions',  () => ({ ...rs.requireActual<typeof import('@/lib/data/notification-transactions')>('@/lib/data/notification-transactions'), neonNotificationExecutor: () => context.executor! }));
 rs.mock('next/cache', () => ({ revalidatePath: rs.fn() }));
 rs.mock('next/navigation', () => ({ redirect: (destination: string) => { throw Object.assign(new Error('redirect'), { destination }); } }));
 import { createDisposableFoundationDatabase } from './local-postgres';

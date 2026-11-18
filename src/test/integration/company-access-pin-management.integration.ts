@@ -1,4 +1,3 @@
-import * as rstestOriginal0 from "@/lib/clocker/pin-crypto.server" with { rstest: 'importActual' };
 import {expect,it,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import {Client} from 'pg';
@@ -12,7 +11,7 @@ const ctx=rs.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMuta
 rs.mock('server-only',()=>({}));
 rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>ctx.proof}));
 rs.mock('next/headers',()=>({headers:async()=>new Headers({host:'127.0.0.1:4001',origin:'http://127.0.0.1:4001','sec-fetch-site':'same-origin'})}));
-rs.mock('@/lib/clocker/pin-crypto.server', ()=>({...rstestOriginal0,readPinKey:()=>Buffer.alloc(32,61)}));
+rs.mock('@/lib/clocker/pin-crypto.server', ()=>({...rs.requireActual<typeof import('@/lib/clocker/pin-crypto.server')>('@/lib/clocker/pin-crypto.server'),readPinKey:()=>Buffer.alloc(32,61)}));
 rs.mock('@/lib/db',()=>{
  const statement=(text:string,values:readonly unknown[]=[])=>({statement:{text,values},then:(yes:(rows:unknown[])=>unknown,no:(error:unknown)=>unknown)=>ctx.ex!.query({text,values}).then(yes,no)});
  const tagged=Object.assign((strings:TemplateStringsArray,...values:unknown[])=>statement(strings.reduce((text,part,i)=>text+(i?'$'+i:'')+part,''),values),{query:statement,transaction:(queries:{statement:SqlStatement}[])=>ctx.ex!.transaction(queries.map(q=>q.statement))});return {getDb:()=>tagged,queryRows:(rows:unknown)=>rows};

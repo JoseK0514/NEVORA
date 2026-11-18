@@ -1,4 +1,3 @@
-import * as rstestOriginal0 from "@/lib/data/notification-transactions" with { rstest: 'importActual' };
 import { createHash } from 'node:crypto';
 import { expect, it, rs } from '@rstest/core';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
@@ -12,7 +11,7 @@ rs.mock('@/lib/db', () => {
   return { getDb: () => tagged, queryRows: (rows: unknown) => rows };
 });
 rs.mock('next/headers', () => ({ cookies: async () => ({ get: (name: string) => context.cookies.has(name) ? { value: context.cookies.get(name)! } : undefined }) }));
-rs.mock('@/lib/data/notification-transactions',  () => ({ ...rstestOriginal0, neonNotificationExecutor: () => context.executor! }));
+rs.mock('@/lib/data/notification-transactions',  () => ({ ...rs.requireActual<typeof import('@/lib/data/notification-transactions')>('@/lib/data/notification-transactions'), neonNotificationExecutor: () => context.executor! }));
 rs.mock('next/cache', () => ({ revalidatePath: rs.fn() }));
 rs.mock('next/navigation', () => ({ redirect: (destination: string) => { throw Object.assign(new Error('redirect'), { destination }); } }));
 import { createDisposableFoundationDatabase } from './local-postgres';

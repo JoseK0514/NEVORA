@@ -1,4 +1,3 @@
-import * as rstestOriginal0 from "@/lib/data/notification-transactions" with { rstest: 'importActual' };
 import {readFile} from 'node:fs/promises';
 // Real action/SQL regressions for own account-deletion requests. Only the framework context (cookies, headers)
 // and the database transport are adapted; every statement runs on the disposable PostgreSQL.
@@ -16,7 +15,7 @@ rs.mock('@/lib/db',()=>{
 rs.mock('next/headers',()=>({cookies:async()=>{const cookie=context.device.getStore()??context.cookie;return {get:(n:string)=>n==='fuel_session'&&cookie?{value:cookie}:undefined};},headers:async()=>new Headers({'x-forwarded-for':'198.51.100.7'})}));
 // The accepting transaction commits; only its reply is lost when `lose` is set. That is the Neon HTTP case.
 rs.mock('@/lib/data/notification-transactions', ()=>{
- const implementation=rstestOriginal0;
+ const implementation=rs.requireActual<typeof import('@/lib/data/notification-transactions')>('@/lib/data/notification-transactions');
  return {...implementation,neonNotificationExecutor:()=>{
   // Keep the actual session-contract adapter for reads and mutations; only its
   // installed-application transport above is substituted with owned PostgreSQL.

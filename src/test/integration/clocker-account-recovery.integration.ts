@@ -1,4 +1,3 @@
-import * as rstestOriginal0 from "../../lib/data/notification-transactions" with { rstest: 'importActual' };
 import {beforeEach,afterEach,it,expect,rs} from '@rstest/core';
 import {createHash,randomBytes,randomUUID} from 'node:crypto';
 import {createPunchFixture} from './clocker-punch-fixture';
@@ -6,7 +5,7 @@ import {issueInitialPasswordReplacement,issueAssistedRecovery,requestPasswordRec
 import {hashPassword,verifyPassword} from '../../lib/auth/password';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 rs.mock('next/headers',()=>({cookies:async()=>({set:rs.fn()})}));
-rs.mock('../../lib/data/notification-transactions', ()=>({...rstestOriginal0,neonNotificationExecutor:()=>f.db.executor}));
+rs.mock('../../lib/data/notification-transactions', ()=>({...rs.requireActual<typeof import('../../lib/data/notification-transactions')>('../../lib/data/notification-transactions'),neonNotificationExecutor:()=>f.db.executor}));
 import {ClockerPunchService} from '../../lib/clocker/punches.server';
 import {submitTimeCorrection,reviewTimeCorrection} from '../../lib/time-corrections/service';
 import {createSession} from '../../lib/auth/session';

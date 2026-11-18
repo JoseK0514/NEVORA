@@ -1,4 +1,3 @@
-import * as rstestOriginal0 from "@/lib/data/notification-transactions" with { rstest: 'importActual' };
 import {getShiftForManagement} from '../../lib/data/schedules';
 import { createHash,randomUUID } from 'node:crypto';
 import {readFile} from 'node:fs/promises';
@@ -26,7 +25,7 @@ rs.mock('next/headers', () => ({ cookies: async () => ({
   set: (name: string, value: string) => { context.cookieWrites++; context.cookies.set(name, value); },
   delete: (name: string) => context.cookies.delete(name),
 }) }));
-rs.mock('@/lib/data/notification-transactions',  () => ({ ...rstestOriginal0, neonNotificationExecutor: () => context.executor! }));
+rs.mock('@/lib/data/notification-transactions',  () => ({ ...rs.requireActual<typeof import('@/lib/data/notification-transactions')>('@/lib/data/notification-transactions'), neonNotificationExecutor: () => context.executor! }));
 rs.mock('next/cache', () => ({ revalidatePath: rs.fn() }));
 rs.mock('next/navigation', () => ({ redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));
 

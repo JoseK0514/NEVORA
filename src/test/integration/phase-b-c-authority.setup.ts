@@ -1,4 +1,3 @@
-import * as rstestOriginal0 from "./local-postgres" with { rstest: 'importActual' };
 
 import { rs } from '@rstest/core';
 
@@ -7,7 +6,7 @@ import { rs } from '@rstest/core';
  * Not loaded by the ordinary foundation or Clocker suite. Never uses DATABASE_URL.
  */
 rs.mock('./local-postgres',  () => {
-  const actual = rstestOriginal0;
+  const actual = rs.requireActual<typeof import('./local-postgres')>('./local-postgres');
   return {
     ...actual,
     createDisposableFoundationDatabase: async (options: Parameters<typeof actual.createDisposableFoundationDatabase>[0]) => {
