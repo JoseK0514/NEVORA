@@ -2505,6 +2505,14 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/app/healthz/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Unauthenticated liveness-only GET/HEAD for uptime monitors. Returns a static {status:\"ok\"} with no-store and reads no session, cookie, database, configuration, provider or workspace state, so it cannot cross a company boundary or wake a database in single-company or isolated mode. Outside the /app, /api and /clocker proxy matcher; route.test.ts guards both properties."
+    },
+    {
       "path": "src/app/layout.tsx",
       "tags": [
         "request-entrypoint"
