@@ -1,9 +1,25 @@
 import type {
   AttendanceSource,
   HistoricalShift,
+  ObservationKind,
   RecordedBreak,
   RecordedEntry,
 } from "@/lib/attendance/types";
+
+const observationKinds: Record<ObservationKind, true> = {
+  TIME_HISTORY_INCONSISTENT: true,
+  SCHEDULE_UNMATCHED: true,
+  SCHEDULE_AMBIGUOUS: true,
+  CLOCK_IN_AFTER_SCHEDULE_START: true,
+  CLOCK_OUT_BEFORE_SCHEDULE_END: true,
+  OPEN_AFTER_SCHEDULE_END: true,
+  OPEN_PAST_LIMIT: true,
+  BREAK_TARGET_EXCEEDED: true,
+};
+
+/** Every attendance observation kind. Typed as a complete record, so a new kind
+ * fails typecheck here until consumers' acceptance tests also cover it. */
+export const ALL_OBSERVATION_KINDS = Object.keys(observationKinds) as ObservationKind[];
 
 export function makeRecordedEntry(
   overrides: Partial<RecordedEntry> = {},

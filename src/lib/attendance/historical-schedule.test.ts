@@ -331,3 +331,82 @@ describe("D1.1 saved historical schedule resolution", () => {
     }
   });
 });
+
+describe("saved early clock-in grace evidence", () => {
+  // The fixture shift is 08:00–16:00 in Puerto Rico: 12:00Z–20:00Z.
+  const early = (clockInAt: string, overrides: Record<string, unknown>) => {
+    const entry = makeRecordedEntry({ clockInAt });
+    entry.scheduleContext = matchedContext(entry, overrides);
+    const source = validated([entry]);
+    return resolveHistoricalSchedule(source, source.entries[0]);
+  };
+
+  it("accepts a match captured inside the saved grace window and still compares against the scheduled start", () => {
+    expect(early("2030-10-07T11:50:00Z", { earlyGraceMinutes: 10 })).toEqual({
+      state: "matched",
+      startAt: "2030-10-07T12:00:00Z",
+      endAt: "2030-10-07T20:00:00Z",
+      timeZone: "America/Puerto_Rico",
+      revisionId: "revision-1",
+      publishedShiftId: "published-shift-1",
+    });
+  });
+
+  it("uses the grace saved with the punch, never a wider or absent one", () => {
+    // Without saved grace the same early punch cannot be a strict match.
+    expect(early("2030-10-07T11:50:00Z", {})).toEqual({
+      state: "not_evaluated",
+      reason: "schedule_reference_invalid",
+    });
+    // Outside the saved 10 minutes, even by one second.
+    expect(early("2030-10-07T11:49:59Z", { earlyGraceMinutes: 10 })).toEqual({
+      state: "not_evaluated",
+      reason: "schedule_reference_invalid",
+    });
+    // The end stays exclusive.
+    expect(early("2030-10-07T20:00:00Z", { earlyGraceMinutes: 10 })).toEqual({
+      state: "not_evaluated",
+      reason: "schedule_reference_invalid",
+    });
+  });
+
+  it.each([-1, 31, 1.5, "10", null])(
+    "treats a malformed saved grace %s as invalid evidence",
+    (earlyGraceMinutes) => {
+      expect(early("2030-10-07T12:00:00Z", { earlyGraceMinutes })).toEqual({
+        state: "not_evaluated",
+        reason: "schedule_context_invalid",
+      });
+    },
+  );
+
+  it("keeps saved UNMATCHED and AMBIGUOUS outcomes that carry the grace in effect", () => {
+    const unmatched = makeRecordedEntry({ clockInAt: "2030-10-07T11:40:00Z" });
+    unmatched.scheduleContext = {
+      ...matchedContext(unmatched),
+      status: "UNMATCHED",
+      reason: "NO_MATCH",
+      candidateCount: 0,
+      match: null,
+      earlyGraceMinutes: 10,
+    };
+    const ambiguous = makeRecordedEntry({ id: "entry-2", clockInAt: "2030-10-07T11:55:00Z" });
+    ambiguous.scheduleContext = {
+      ...matchedContext(ambiguous),
+      status: "AMBIGUOUS",
+      reason: "OVERLAPPING_SHIFTS",
+      candidateCount: 2,
+      match: null,
+      earlyGraceMinutes: 10,
+    };
+    const source = validated([unmatched, ambiguous]);
+    expect(resolveHistoricalSchedule(source, source.entries[0])).toEqual({
+      state: "unmatched",
+      reason: "NO_MATCH",
+    });
+    expect(resolveHistoricalSchedule(source, source.entries[1])).toEqual({
+      state: "ambiguous",
+      reason: "OVERLAPPING_SHIFTS",
+    });
+  });
+});

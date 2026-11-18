@@ -2,6 +2,7 @@ import type {UserRole} from '@/lib/domain';
 import type {EmployeeManagementProfile} from '@/lib/data/employees';
 import type {ScopeSelection,OwnerScopeContext,CoreProfileInput,EmployeeCoreAccessCommand,CreateEmployeeWithAccessCommand,InvitationStatusResult,InvitationResult,ScopeResult,EmployeeCoreAccessResult,AccessFailure,OperationalAuthorityView} from '@/lib/company-access/model';
 import {normalizePhoneNumber} from '@/lib/phone';
+import {EMPLOYMENT_DATE_FIELDS,hasEmploymentDate,isCalendarDate,type EmploymentDates} from '@/lib/employment-dates';
 const roles=['OWNER','MANAGER','LEAD','EMPLOYEE'] as const;
 function object(v:unknown):Record<string,unknown>{if(!v||typeof v!=='object'||Array.isArray(v))throw new Error('Current information could not be read.');return v as Record<string,unknown>;}
 function text(v:unknown):string{if(typeof v!=='string'||!v||v.length>2048)throw new Error('Current information could not be read.');return v;}
@@ -22,8 +23,19 @@ function profile(f:FormData):CoreProfileInput {
  const phone=normalizePhoneNumber(text(f.get('phone')));if(!phone)throw new Error('Enter a valid contact phone number.');
  return {firstName:text(f.get('firstName')).trim(),lastName:text(f.get('lastName')).trim(),phone,email:String(f.get('email')??'').trim()||null,role:choice(f.get('role'),roles),primaryLocationId:text(f.get('primaryLocationId')),active:active==='true'};
 }
+/** The three optional date inputs, or undefined when the form has none (the
+ * Deactivate/Reactivate form), so its command leaves the stored dates alone.
+ * Blank is null. The server applies the business-date rules; only shape and
+ * hire/termination order are checked here. */
+export function employmentDatesFromForm(f:FormData):EmploymentDates|undefined {
+ if(!EMPLOYMENT_DATE_FIELDS.some(key=>f.has(key)))return undefined;
+ const read=(key:typeof EMPLOYMENT_DATE_FIELDS[number])=>{const v=String(f.get(key)??'').trim();if(!v)return null;if(!isCalendarDate(v))throw new Error('Enter real dates, or leave them blank.');return v;};
+ const dates={hireDate:read('hireDate'),terminationDate:read('terminationDate'),birthDate:read('birthDate')};
+ if(dates.hireDate&&dates.terminationDate&&dates.terminationDate<dates.hireDate)throw new Error('The termination date can’t be before the hire date.');
+ return dates;
+}
 export function coreCommandFromForm(f:FormData,employee:EmployeeManagementProfile,current:OwnerScopeContext|null,actorRole:UserRole,scope:ScopeSelection|null,operationId:string):EmployeeCoreAccessCommand {
- const next=profile(f);const command:EmployeeCoreAccessCommand={operationId,employeeId:employee.id,expectedEmployeeUpdatedAt:employee.updatedAt,profile:next};
+ const next=profile(f),dates=employmentDatesFromForm(f);const command:EmployeeCoreAccessCommand={operationId,employeeId:employee.id,expectedEmployeeUpdatedAt:employee.updatedAt,profile:next,...(dates?{employmentDates:dates}:{})};
  if(actorRole==='OWNER'&&next.role==='MANAGER'&&next.active&&(employee.role!=='MANAGER'||!employee.active)){
   if(!current||current.employeeId!==employee.id||current.employeeUpdatedAt!==employee.updatedAt)throw new Error('Reload current management access before this role change.');
   command.managerTransitionScope={expectedScopeRevision:current.scopeRevision,expectedRoleGeneration:current.roleGeneration,scope:selectedScope(scope)};
@@ -32,7 +44,9 @@ export function coreCommandFromForm(f:FormData,employee:EmployeeManagementProfil
 }
 export function createCommandFromForm(f:FormData,actorRole:UserRole,scope:ScopeSelection|null,operationId:string):CreateEmployeeWithAccessCommand {
  const p=profile(f);const {active:_,...facts}=p;void _;
- const command:CreateEmployeeWithAccessCommand={operationId,employee:{id:text(f.get('id')).trim().toUpperCase(),...facts,eligibleLocationIds:f.getAll('eligibleLocationIds').map(String),positionIds:f.getAll('positionIds').map(String)}};
+ const dates=employmentDatesFromForm(f);
+ const command:CreateEmployeeWithAccessCommand={operationId,employee:{id:text(f.get('id')).trim().toUpperCase(),...facts,eligibleLocationIds:f.getAll('eligibleLocationIds').map(String),positionIds:f.getAll('positionIds').map(String)},
+  ...(dates&&hasEmploymentDate(dates)?{employmentDates:dates}:{})};
  if(p.role==='MANAGER'&&actorRole==='OWNER')command.initialManagerScope=selectedScope(scope);
  return command;
 }

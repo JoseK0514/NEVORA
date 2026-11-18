@@ -6,20 +6,24 @@
 export const SUPPORT_EMAIL = "support@thevelani.com";
 export const POLICY_OPERATOR = "VELANI LLC";
 /** Bump when the published wording changes; deletion requests record the version they were accepted under. */
-export const POLICY_VERSION = "2026-11-10";
+export const POLICY_VERSION = "2026-11-18";
 
 /* Confirmed by Jose on October 20, 2026 (Neon and Vercel verified in the connected accounts). Backup expiry
  * follows the production database Codex set up on November 1, 2026: a seven-day restore history, independently
  * read back, plus separately kept recovery snapshots. Change the effective date if the policies take effect on a
- * later day. */
+ * later day.
+ * November 18, 2026: Jose asked for the processor list to name Stripe, the Owner advisor's AI providers, mobile push
+ * services and public-page Web Analytics, and for employment dates to be listed, pending counsel review. Before this
+ * wording is published, counsel confirms it and EFFECTIVE_DATE becomes the publication day (see "Changes"). Render
+ * is not listed: it hosts only a staging service today; add it if production processing moves there. */
 export const POLICY_FACTS: Record<string, string | null> = {
   EFFECTIVE_DATE: "October 20, 2026",
   SUPPORT_RESPONSE_TIME: "We aim to respond to support and privacy inquiries within two business days. Business days are Monday through Friday, excluding public holidays observed in Puerto Rico. Requests that need investigation may take longer to resolve.",
   DELETION_COMPLETION_PERIOD: "30 calendar days after we receive the request",
   RETENTION_SCHEDULE: "attendance, approved timecards, payroll calculations, published pay statements and their corrections and approvals for three years from the record’s final entry, and records supporting employment taxes for at least four years after the tax is due or paid, whichever is later; security and access logs for up to 90 days; records of privacy requests for 24 months after the request is closed; and records under a legal hold or unresolved dispute until the hold is released and the applicable period has passed. The longest applicable period applies, and a deletion request doesn’t restart it.",
   BACKUP_EXPIRY: "NEVORA’s workforce database has a seven-day restore-history window. Changed or deleted information can remain in that history until it expires. Separate recovery snapshots, such as those taken before an upgrade, are restricted to their purpose, are never used to restore a deleted account, and are deleted when no longer needed for that purpose. This window does not determine retention of provider logs or mailbox copies.",
-  PROCESSORS_AND_PURPOSES: "Vercel hosts the application and runs its servers; Neon stores the database; a transactional email provider delivers recovery codes and other account email; and your browser’s push service, run by its maker (such as Apple, Google or Mozilla), delivers the notifications you turn on.",
-  HOSTING_TRANSFER_DETAILS: "Our database and application servers are in the United States, in Northern Virginia. Email delivery, push notification services and our providers’ logs and support may process information in other locations.",
+  PROCESSORS_AND_PURPOSES: "Vercel hosts the application and runs its servers and, where turned on, counts visits to NEVORA’s public pages with its cookieless Web Analytics, which receives no account details and no pages inside the signed-in app; Neon stores the database; a transactional email provider delivers recovery codes and other account email; your browser’s push service, run by its maker (such as Apple, Google or Mozilla), or Apple’s or Google’s push service in NEVORA’s mobile apps, delivers the notifications you turn on; Stripe processes subscription billing and payment details for organizations that subscribe to NEVORA; and, where an organization turns on the Owner advisor, the AI provider it is configured to use (Anthropic or OpenAI) processes the Owner’s questions and the workplace information needed to answer them.",
+  HOSTING_TRANSFER_DETAILS: "Our database and application servers are in the United States, in Northern Virginia. Email delivery, push notification services, billing, the Owner advisor’s AI provider and our providers’ logs and support may process information in other locations.",
   SALE_SHARING_AND_TRACKING_STATEMENT: "NEVORA does not display advertisements, sell personal information, or share personal information for cross-context behavioral advertising. We do not track users across other companies’ applications or websites for advertising purposes. We disclose information to your employer and our service providers as necessary to operate NEVORA and for the purposes described in this policy.",
   EMPLOYER_DATA_RESPONSIBILITIES: "Your employer decides how NEVORA is used for workplace activities, including scheduling, attendance, timekeeping, payroll records and employee administration. VELANI LLC operates NEVORA and processes these workplace records on your employer’s documented instructions. Requests about workplace records your employer controls are coordinated with your employer, and VELANI LLC helps locate, correct, export or delete information where appropriate. VELANI LLC handles requests about information it controls for its own business purposes, such as direct support communications and service administration. Your employer remains responsible for employment decisions, payroll accuracy, required workplace notices and its own recordkeeping obligations.",
   REGIONAL_PRIVACY_DETAILS: "NEVORA currently serves the participating employer and its authorized workforce in Puerto Rico. Applicable United States federal and Puerto Rico requirements govern the handling of relevant workplace records.",
@@ -45,11 +49,11 @@ export const PRIVACY: PolicyDocument = {
     { heading: "Information NEVORA uses", blocks: [
       { p: ["Depending on the features your organization turns on and your role, NEVORA handles:"] },
       { list: [
-        ["Account and work profile information, such as your name, sign-in and contact details, employee ID, role, workplace and assigned work locations."],
+        ["Account and work profile information, such as your name, sign-in and contact details, employee ID, role, workplace and assigned work locations, and, where your employer records them, your hire, termination and birth dates. Birth dates are visible only to the Owner and the managers who maintain your profile."],
         ["Scheduling and attendance information, such as shifts, availability, time-off requests, shift exchanges, recorded work and break times, corrections and approval history."],
         ["Payroll-related information and documents where those features are turned on, including the pay records your organization enters."],
         ["Workplace content, such as company updates, shift notes, requests and acknowledgements."],
-        ["Service and security information, such as sign-in and session records, access events, support requests and the technical information needed to deliver and protect the service."],
+        ["Service and security information, such as sign-in and session records, access events, support requests and the technical information needed to deliver and protect the service, and, where turned on, aggregate counts of visits to NEVORA’s public pages."],
         ["Notification delivery information, such as push subscriptions on devices where you turn notifications on."],
       ] },
       { p: ["Information comes from you, your organization and its authorized users, your use of NEVORA, and the service providers that perform these functions. If a feature needs a device permission, it explains why when it asks."] },

@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 const SECTIONS: [path: string, subject: string][] = [
   ["/app/settings/clocker/photos", "Punch photos are"],
   ["/app/settings/clocker/pins", "Clocker PINs are"],
+  ["/app/settings/clocker/matching", "Shift matching is"],
   ["/app/settings/clocker", "Clocker tablets are"],
   ["/app/settings/company-policies", "Company policies are"],
   ["/app/settings/workspace", "Company profile is"],

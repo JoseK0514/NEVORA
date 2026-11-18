@@ -95,7 +95,7 @@ tracking (none observed in code), retention rule, removal path. **Verify before 
 
 | Data class | Tables | Removal path (runbook) |
 |---|---|---|
-| Identity and contact | `employees` (name, phone, email, role, location) | De-identify the row (name, phone, email cleared) if work records must stay; else delete. |
+| Identity and contact | `employees` (name, phone, email, role, location; optional date of birth, hire and termination dates from 0068) | De-identify the row (name, phone, email and date of birth cleared) if work records must stay; else delete. Hire and termination dates follow the work records. |
 | Credentials and sessions | `employee_credentials`, `employee_sessions`, `password_recovery_proofs`, `password_recovery_limits`, `employee_clocker_pins`, `clocker_pin_sessions` | Delete. Sessions already gone at request. |
 | Notifications | `push_subscriptions`, `push_deliveries`, `notifications`, `employee_attention_receipts` | Delete subscriptions and the person’s inbox items. |
 | Calendar feeds | `calendar_subscriptions` (revoked at request), `calendar_operations` | Already revoked; delete after the retention decision. |

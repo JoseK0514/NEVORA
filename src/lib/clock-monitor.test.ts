@@ -25,6 +25,15 @@ describe('persisted live clock projection',()=>{
   const c=captured();Object.assign(c.match,{positionId:null,positionName:null});const s=source();Object.assign(s.rows[0],{schedule_context:c});
   expect(projectClockMonitor(s)).toMatchObject({employees:[{positionName:null,scheduleMatch:'MATCHED'}]});
  });
+ it('accepts a captured early clock-in grace and still never exposes it',()=>{
+  const s=source();Object.assign(s.rows[0],{schedule_context:{...captured(),earlyGraceMinutes:10}});
+  const v=projectClockMonitor(s);expect(v).toMatchObject({employees:[{positionName:'Recorded position',scheduleMatch:'MATCHED'}]});
+  expect(JSON.stringify(v)).not.toMatch(/earlyGrace/);
+ });
+ it.each([-1,31,1.5,'10',null])('rejects a malformed captured grace %s',earlyGraceMinutes=>{
+  const s=source();Object.assign(s.rows[0],{schedule_context:{...captured(),earlyGraceMinutes}});
+  expect(()=>projectClockMonitor(s)).toThrow();
+ });
  it('limits display freshness to the remaining authorization lifetime',()=>{const s=source();s.expiresAt='2030-10-07T03:30:02.123456Z';expect(projectClockMonitor(s)).toMatchObject({validForMs:2000});});
  it.each([
   {status:'ON_BREAK'}, {open_break_count:2}, {history_valid:false}, {status:'CLOCKED_OUT'},

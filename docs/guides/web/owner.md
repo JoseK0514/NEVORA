@@ -19,7 +19,7 @@ Settings includes these current destinations:
 | --- | --- |
 | Company | Company profile, locations, branding, features and team terms, company policies |
 | Scheduling | Positions, break types and scheduling rules |
-| Clocker | Clocker tablets, PINs, punch photos and recovery |
+| Clocker | Clocker tablets, PINs, punch photos, shift matching and recovery |
 | Pay | Payroll settings, when payroll is available to this environment |
 
 Confirm the company timezone, active locations and positions before planning.
@@ -54,6 +54,14 @@ Use **Refresh invitation** for current state. If an action is unconfirmed, use
 **Check action outcome** before sending another invitation. For management
 access conflicts, reload the current employee and review the current assignment.
 An earlier receipt records an action; it does not prove access is unchanged now.
+
+**Employment dates** are optional on the add and edit forms: hire date,
+termination date and date of birth. In Puerto Rico the hire date decides which
+wage rules apply (people hired before January 26, 2017 follow the earlier
+rules), and the date of birth supports minors' hour limits. Only you and
+company-wide Managers see or edit them, and they never appear on schedules, the
+kiosk, exports or employee screens. A termination date is a record only: it
+never deactivates anyone.
 
 Deactivate or change access through the employee's current form. Payroll review
 and approval grants are separate from management scope. A Lead has personal
@@ -113,6 +121,17 @@ attendance or hours worked. Employees use their location's enrolled **Clocker**
 to record punches. The personal time view is not a promise of phone clock-in.
 Review Clocker recovery and any photo requirements through the Owner tools.
 
+**Settings → Clocker → Shift matching** sets the **Early clock-in grace**, 0 to
+30 minutes. A punch up to that many minutes before a shift start counts toward
+that shift; paid time still starts at the actual punch. It starts at 0 (strict
+matching), only you can change it, every save is recorded, and punches already
+recorded keep how they were matched.
+
+Attendance review flags a forgotten clock-out. A punch matched to a shift
+shows **No clock-out recorded · scheduled end passed**; a punch with no single
+matching shift shows **No clock-out after 12 hours** once it has been open more
+than 12 hours. Both are review prompts only: nothing closes a punch for you.
+
 For another person’s eligible open punch, use **Close open punch** in the
 Timecards inspector. Enter the verified company-local end time, a reason and
 the confirmation, then choose **Record close**. Read the open-break explanation
@@ -130,6 +149,15 @@ approve or reject it. Follow current-source and finalized-period restrictions.
 **Insights** uses a selected reporting period. Verify that period and the
 underlying records before drawing conclusions. **Time exports** exports time
 data; it is distinct from payroll approval or sending money.
+
+In a Puerto Rico workspace, **Insights → Christmas bonus hours** shows each
+person's hours on finalized timecards for a bonus year (October 1 to
+September 30) against 700 hours (hired before January 26, 2017) or 1,350 hours
+(hired on or after). A person is **Reached**, **Check breaks** (reached only if
+breaks count), **Not confirmed** (short, with time not yet finalized), **Not
+reached**, or needs a hire date. It shows no money and doesn't decide
+eligibility; confirm with your payroll provider or counsel before paying between
+November 15 and December 15 (exemption filings are due December 1).
 
 When payroll is enabled:
 

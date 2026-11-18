@@ -14,6 +14,8 @@ function position(context:unknown,clockInAt:string):Pick<ClockMonitorEmployee,'p
  if(context===null)return {positionName:null,scheduleMatch:null};
  if(!object(context)||context.version!==1||!Array.isArray(context.reviewedRevisionIds)||!integer(context.candidateCount)||
    instant(context.capturedAt).epochNanoseconds!==instant(clockInAt).epochNanoseconds)return fail();
+ // Optional version-1 field: the early clock-in grace (0–30 minutes) fixed at punch time; absent means strict matching.
+ if(context.earlyGraceMinutes!==undefined&&!(integer(context.earlyGraceMinutes)&&context.earlyGraceMinutes<=30))return fail();
  zone(context.timeZone);
  if(context.status==='MATCHED'){
   const m=context.match;

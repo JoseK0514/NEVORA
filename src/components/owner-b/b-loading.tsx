@@ -53,6 +53,8 @@ const MANAGEMENT: Entry[] = [
   [/^\/app\/employees\/.+/, detail],
   // Team: Home's two columns from 1024px (People, then the Team tools rail), one column on tablets.
   ["/app/employees", { sub: true, strip: true, action: true, band: "strip", frame: "rail-desktop", cards: [{ rows: 8, avatar: true }, { rail: true, rows: 5 }] }],
+  // Christmas bonus hours (opened from Insights): back row, title and the bonus year line, the notice, then people.
+  ["/app/reports/christmas-bonus", { ...detail, title: "Christmas bonus hours", cards: [{ lines: 3 }, { head: true, stats: 3 }, { head: true, rows: 5, avatar: true }] }],
   ["/app/reports", { title: "Insights", band: "short", frame: "wide", lift: false, cards: [{ head: true, stats: 3 }, { head: true, lines: 3 }] }],
   ["/app/updates/compose", titled],
   [/^\/app\/updates\/.+/, form],
@@ -66,6 +68,8 @@ const MANAGEMENT: Entry[] = [
   // row. PINs: search and tabs on the band (296), people rows. Photos: one card of switch rows. Review: photo rows.
   ["/app/settings/clocker/photos/review", { ...detail, title: "Photo review", cards: [{ head: true, rows: 4 }] }],
   ["/app/settings/clocker/photos", { ...detail, title: "Punch photos", cards: [{ lines: 2, rows: 5 }] }],
+  // Shift matching: one card with the grace field, its help and a note.
+  ["/app/settings/clocker/matching", { ...detail, title: "Shift matching", cards: [{ lines: 3 }] }],
   ["/app/settings/clocker/pins", { title: "Clocker PINs", back: true, strip: true, band: 264, frame: "read", lift: false, cards: [{ head: true, rows: 6, avatar: true }] }],
   ["/app/settings/clocker", { ...detail, title: "Clocker tablets", cards: [{ head: true, rows: 2, avatar: true }] }],
   [/^\/app\/settings\/.+/, form],

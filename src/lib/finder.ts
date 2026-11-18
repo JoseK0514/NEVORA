@@ -47,6 +47,7 @@ const SETTINGS_PAGES: { href: string; label: string; keywords: string }[] = [
   { href: '/app/settings/clocker', label: 'Clocker tablets', keywords: 'clocker tablets devices kiosk' },
   { href: '/app/settings/clocker/pins', label: 'Clocker PINs', keywords: 'pin pins code codes clocker time clock' },
   { href: '/app/settings/clocker/photos', label: 'Punch photos', keywords: 'photos pictures camera punch clocker' },
+  { href: '/app/settings/clocker/matching', label: 'Shift matching', keywords: 'early clock in grace tolerance shift match clocker' },
 ];
 /** Review Nov 14 (AR-14): Payroll settings, for an Owner who can set payroll up (the Settings hub's Pay row). */
 const PAYROLL_SETTINGS = { href: '/app/settings/payroll', label: 'Payroll settings', keywords: 'pay schedule payday pay period payroll setup' };

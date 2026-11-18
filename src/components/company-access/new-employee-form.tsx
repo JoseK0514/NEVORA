@@ -10,6 +10,7 @@ import {ReturnToNext} from '@/components/team/return-to-next';
 import {EmployeeAccessForm} from './employee-access-form';
 import {createCommandFromForm} from './commands';
 import {OperationalScopeSelectionFields} from './manager-operational-scope-fields';
+import {EmploymentDateFields} from '../employment-date-fields';
 
 /** Add employee (Release 1, boards O-AddEmployee and O-AddEmployeePay): two steps in one form. Step 1 is who they are
  * (name, mobile phone, optional email, role and location); step 2 is their Employee ID (the server requires one), the
@@ -62,6 +63,7 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
     <ChoiceField key={primary} label="Locations they can work at" name="eligibleLocationIds" choices={activeLocations.map(location=>({value:location.id,label:location.shortName,checked:location.id===primary,
      help:location.id===primary?'Their location, always included':undefined}))}/>
     {role==='MANAGER'&&actorRole==='OWNER'?<OperationalScopeSelectionFields locations={activeLocations.map(l=>({id:l.id,name:l.name}))} value={scope} onChange={setScope} error={null}/>:null}
+    <EmploymentDateFields idPrefix="new"/>
    </div>
    {/* Tablets and desktop (kit form grammar): the actions sit in the card's footer, Cancel or Back then Next or Add, auto
     width on the right. Phones keep them in the header. The same handlers and the same submit as the header. */}

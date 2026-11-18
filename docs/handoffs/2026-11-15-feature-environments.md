@@ -17,6 +17,7 @@ The typed opt-in registry is `src/lib/feature-flags.ts`. Only exact `true` enabl
 | Owner advisor | NEVORA_OWNER_ADVISOR_ENABLED | false | Still requires independent provider/data approval | unobserved | unobserved |
 | Punch API | NEVORA_CLOCKER_PUNCH_ENABLED | false | Still requires configured clocker origin and PIN key | unobserved | unobserved |
 | Legacy clocker renderer | NEVORA_CLOCKER_UI_V2 | false | Still consumed by current development source | unobserved | unobserved |
+| Public-page web analytics (added Nov 18) | NEVORA_WEB_ANALYTICS_ENABLED | false | Allowlist/redaction and flag tests; also needs Vercel project Web Analytics and counsel-reviewed policy | unobserved | unobserved |
 
 The example is checked by `src/lib/feature-flags.test.ts`. It does not describe a deployed environment. This chat has not read or changed hosted flag configuration; every hosted value above is intentionally unobserved. Populate those cells only after the owning hosting service identifies the exact deployment/environment and returns a safe nonsecret flag observation. Never copy a complete environment or secret values into this table.
 

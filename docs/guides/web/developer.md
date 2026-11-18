@@ -208,3 +208,32 @@ Business evidence is an additive default-off Owner module under src/lib/owner-ad
 See [business backend contract](../../handoffs/2026-11-16-rondo-business-evidence-ui-contract.md).
 
 Posted cash is assigned by posting time, including cross-month occurrences. Cash inflows/outflows and sale/refund amounts/counts are separate from net totals. Reconciliation must hold within every admitted cash window and across shared boundaries; offsetting discrepancies cannot establish clearance. CURRENT freshness is capped at the requested window end. Source deletion conservatively clears all workspace business answer-receipt payloads as well as structured inspection content, retaining content-free operation/request identities and unrelated ordinary history.
+
+## 30-day business phase additions
+
+The `nevora-30-day-phase` work adds these contracts; details are in the
+phase handoff, `docs/handoffs/2026-11-18-30-day-phase.md`.
+
+- Migration `0068_employee_employment_dates.sql` adds nullable `hire_date`,
+  `termination_date` and `birth_date`. They stay out of the shared `Employee`
+  DTO; `src/lib/employment-dates.privacy.test.ts` fails if `birth_date` or the
+  other dates appear outside the management edit path and the bonus report.
+  A termination date never changes `active`.
+- `src/lib/reports/christmas-bonus.ts` projects finalized timecard snapshots with
+  `projectTimecard`, clipped to an Oct 1–Sep 30 business-local bonus year. It
+  computes no money and is read only for `America/Puerto_Rico` workspaces.
+- `GET /healthz` is liveness only and reads nothing; it is classified in the
+  onboarding entrypoint inventory and sits outside the proxy matcher.
+- Migration `0069_clocker_early_grace.sql` adds the Owner's early clock-in grace
+  (`clocker_schedule_match_policy` plus append-only revisions). A shift covers
+  `[start − G, end)`; G = 0 reproduces the previous context exactly. The grace
+  used is read server-side at punch time, kept in the captured context as an
+  optional `earlyGraceMinutes` (still `version: 1`), and checked by the SQL
+  resolver; a missing or unreadable setting means 0, never a blocked punch.
+- Attendance observation `OPEN_PAST_LIMIT` flags a consistent open entry with an
+  unmatched, ambiguous or not-evaluated schedule once it is open strictly more
+  than `OPEN_ENTRY_REVIEW_LIMIT_HOURS` (12). It is computed per read, never
+  stored, and writes nothing; matched entries keep `OPEN_AFTER_SCHEDULE_END`.
+- `NEVORA_WEB_ANALYTICS_ENABLED` (default false) renders Vercel Web Analytics with
+  `src/lib/analytics/redact.ts`, an allowlist of public paths that strips query
+  strings and drops every other path.

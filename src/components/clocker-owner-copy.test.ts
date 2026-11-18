@@ -37,7 +37,7 @@ describe('Clocker owner copy', () => {
   });
   it('never promises what the server did not confirm, and never shows "not confirmed" as failed or saved', () => {
     for (const lang of [en, es]) {
-      for (const key of ['notConfirmedBody', 'pinUnknownBody', 'photosNotConfirmed'] as const) expect(lang[key]).not.toMatch(/failed|falló/i);
+      for (const key of ['notConfirmedBody', 'pinUnknownBody', 'photosNotConfirmed', 'graceNotConfirmed'] as const) expect(lang[key]).not.toMatch(/failed|falló/i);
     }
     expect(en.removeBody).toContain('stops right away'); expect(en.removeBody).toContain('Time already recorded stays');
     expect(en.replaceBody).toContain('stops working right away');

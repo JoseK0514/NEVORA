@@ -5,7 +5,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 const m = vi.hoisted(() => ({
   actorRole: "MANAGER",
   employeeRole: "EMPLOYEE",
-  profileUnavailable:false, invitation:vi.fn(), hours:vi.fn(),
+  profileUnavailable:false, invitation:vi.fn(), hours:vi.fn(), profileOptions:[] as unknown[],
 }));
 
 vi.mock("next/link", () => ({
@@ -56,7 +56,7 @@ vi.mock("@/lib/employee-display", () => ({
 vi.mock("@/lib/phone", () => ({ formatPhoneNumber: (value: string) => value, normalizePhoneNumber: (value: string) => value }));
 vi.mock("@/components/page-header", () => ({ PageHeader: ({ title }: { title: string }) => createElement("h1", null, title) }));
 vi.mock("@/components/employee-core-profile-form", () => ({
-  EmployeeCoreProfileForm: ({ownerScope,more}:{ownerScope?:{scopeRevision:number};more?:React.ReactNode}) => createElement("div", { "data-testid": "employee-core-form", "data-scope-revision":ownerScope?.scopeRevision??"none" }, "Employee details", more),
+  EmployeeCoreProfileForm: ({ownerScope,more,employmentDates}:{ownerScope?:{scopeRevision:number};more?:React.ReactNode;employmentDates?:{hireDate:string|null;birthDate:string|null}}) => createElement("div", { "data-testid": "employee-core-form", "data-scope-revision":ownerScope?.scopeRevision??"none", "data-hire":employmentDates?.hireDate, "data-birth":employmentDates?.birthDate }, "Employee details", more),
   EmployeeStatusForm: ({employee}:{employee:{firstName:string}}) => createElement("button", { "data-testid": "employee-status-form" }, `Deactivate ${employee.firstName}`),
   SheetField: ({label,href}:{label:string;href:string}) => createElement("a", { href }, label),
 }));
@@ -190,10 +190,12 @@ beforeEach(()=>{operationalPageFixture.denied=false;});
 
 it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({params:Promise.resolve({employeeId:'worker'})}));expect(html).toContain('current company-wide management access');expect(html).not.toContain('Sam');expect(html).not.toContain('employee-core-profile-form');});
 
-vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalEmployeeHours:m.hours,readOperationalEmployeeProfile:async()=>{
+vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalEmployeeHours:m.hours,readOperationalEmployeeProfile:async(_proof:unknown,_id:unknown,_ex:unknown,options?:{employmentDates?:boolean})=>{
+ m.profileOptions.push(options);
  if(m.profileUnavailable)return {state:'unavailable',reason:'source_changed'};
  const source=await import('@/lib/data/employees'),profile=await source.getEmployeeManagementProfile('worker'),locations=await source.listLocations();
- return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'COMPANY',locationIds:[]},data:{profile,locations,ownerScope:m.actorRole==='OWNER'?{employeeId:'worker',employeeUpdatedAt:'2026-10-05 12:00:00+00',role:m.employeeRole,active:true,roleGeneration:'9',scopeRevision:7,scopeState:'UNASSIGNED',scope:null}:null}};
+ return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'COMPANY',locationIds:[]},data:{profile,locations,ownerScope:m.actorRole==='OWNER'?{employeeId:'worker',employeeUpdatedAt:'2026-10-05 12:00:00+00',role:m.employeeRole,active:true,roleGeneration:'9',scopeRevision:7,scopeState:'UNASSIGNED',scope:null}:null,
+  ...(options?.employmentDates?{employmentDates:{hireDate:'2016-08-01',terminationDate:null,birthDate:'1995-04-12'}}:{})}};
 }}));
 vi.mock('@/lib/auth/invitations/service.server',()=>({readInvitationStatus:m.invitation}));
 it('mounts real Owner invitation and scope controls with the coherent profile context',async()=>{
@@ -208,4 +210,14 @@ it('does not request or render Owner invitation/scope controls for a Manager',as
 });
 it('withholds the profile and Owner controls when the coherent read changed',async()=>{
  m.actorRole='OWNER';m.profileUnavailable=true;const html=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}));expect(html).toContain('Employee profile unavailable');expect(html).not.toContain('Sam');expect(m.invitation).not.toHaveBeenCalled();
+});
+
+it('reads employment dates only for the edit sheet and never shows them on the overview or Access pages',async()=>{
+ m.actorRole='MANAGER';m.employeeRole='EMPLOYEE';m.profileOptions.length=0;
+ const overview=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}));
+ const access=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'}),searchParams:Promise.resolve({view:'access'})}));
+ const edit=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'}),searchParams:Promise.resolve({edit:'1'})}));
+ expect(m.profileOptions).toEqual([{employmentDates:false},{employmentDates:false},{employmentDates:true}]);
+ for(const html of [overview,access])expect(html).not.toMatch(/1995-04-12|2016-08-01|data-birth|data-hire/);
+ expect(edit).toContain('data-hire="2016-08-01" data-birth="1995-04-12"');
 });

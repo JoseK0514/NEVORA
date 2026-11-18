@@ -51,7 +51,8 @@ export default async function EmployeeProfilePage({
   const editing = query.edit === "1" ? "core" : query.edit === "positions" ? "positions" : query.edit === "rules" ? "rules" : null;
   const accessView = !editing && query.view === "access";
   const source=await withOperationalCompany(proof,async()=>{
-    const profile=await readOperationalEmployeeProfile(proof,employeeId);
+    // Employment dates (birth date included) are read only for the edit sheet, never for the overview or Access pages.
+    const profile=await readOperationalEmployeeProfile(proof,employeeId,undefined,{employmentDates:editing==='core'});
     if(profile.state==='unavailable')return {profile,positions:[],operational:null,profileUnavailable:false,invitation:null,pin:null,hours:null};
     const positions=await listPositions({includeInactive:true});
     let operational=null,profileUnavailable=false;
@@ -66,7 +67,7 @@ export default async function EmployeeProfilePage({
   if(source.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={source.reason}/>;
   const {profile,positions,operational,profileUnavailable,invitation,pin,hours}=source.data;
   if(profile.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={profile.reason}/>;
-  const {profile:employee,locations,ownerScope}=profile.data;
+  const {profile:employee,locations,ownerScope,employmentDates}=profile.data;
   const primaryLocation = locations.find(
     (location) => location.id === employee.primaryLocationId,
   );
@@ -227,7 +228,7 @@ export default async function EmployeeProfilePage({
     <CorpPage className="c-sheetpage c-editemp" labelledBy="person-edit-title">
       <SheetMarker />
       {canManageCore ? (
-        <EmployeeCoreProfileForm employee={employee} locations={locations} actorId={actor.id} actorRole={actor.role} ownerScope={ownerScope} action={saveEmployeeCoreProfileAction} cancelHref={base} more={more} />
+        <EmployeeCoreProfileForm employee={employee} locations={locations} actorId={actor.id} actorRole={actor.role} ownerScope={ownerScope} action={saveEmployeeCoreProfileAction} cancelHref={base} more={more} employmentDates={employmentDates} />
       ) : (<>
         <FormHead titleId="person-edit-title" title="Edit employee" left={<FormHeadLink href={base}>Cancel</FormHeadLink>} />
         <CorpNote>Only an Owner can change another Owner. Positions and hours stay available here.</CorpNote>

@@ -49,3 +49,82 @@ it('replays an actual pre-C6 engine receipt without backfilling its absent conte
  expect(await f.q('SELECT schedule_context FROM time_entries')).toEqual([{schedule_context:null}]);
  expect(await f.q('SELECT count(*)::int AS count FROM clocker_command_ledger')).toEqual([{count:1}]);
 });
+
+// Owner early clock-in grace (migration 0069): the SQL resolver and captureScheduleContext agree, and the resolver only
+// applies a grace above 0 that equals the persisted setting.
+const graceScope={employeeId:'c34-a',locationId:'loc-1',workspaceId:'workspace-fuel',timeZone:'America/Puerto_Rico'};
+const graceShift=(id:string,start:string,end:string)=>({id,revisionId:'r',sourceShiftId:id,scheduleId:'schedule',employeeId:'c34-a',
+ locationId:'loc-1',date:'2030-10-07',startTime:start,endTime:end,positionId:null,positionName:null,isCalloutApproved:false});
+const graceSource=(...shifts:ReturnType<typeof graceShift>[])=>({anchorDate:'2030-10-07',publication:{revisions:[{id:'r',weekStart:'2030-10-07',revisionNumber:1}],shifts}});
+const saveGrace=(minutes:number,version=1)=>version===1
+ ?f.q("INSERT INTO clocker_schedule_match_policy(workspace_id,version,early_clock_in_grace_minutes,updated_by) VALUES('workspace-fuel',1,$1,'c34-owner')",[minutes])
+ :f.q("UPDATE clocker_schedule_match_policy SET version=$2,early_clock_in_grace_minutes=$1,updated_by='c34-owner' WHERE workspace_id='workspace-fuel'",[minutes,version]);
+const resolve=async(prepared:unknown,at:string)=>(await f.q<{context:ReturnType<typeof captureScheduleContext>}>(
+ 'SELECT clocker_resolve_schedule_context($1::jsonb,$2,$3,$4::timestamptz) AS context',[JSON.stringify(prepared),'c34-a','loc-1',at]))[0].context;
+const comparable=(context:ReturnType<typeof captureScheduleContext>)=>({...context,capturedAt:Temporal.Instant.from(context.capturedAt).toString()});
+
+it.each([
+ {name:'grace window start',grace:10,at:'2030-10-07T11:50:00Z',status:'MATCHED'},
+ {name:'one microsecond outside the grace window',grace:10,at:'2030-10-07T11:49:59.999999Z',status:'UNMATCHED'},
+ {name:'10:01 early',grace:10,at:'2030-10-07T11:49:59Z',status:'UNMATCHED'},
+ {name:'maximum grace',grace:30,at:'2030-10-07T11:30:00Z',status:'MATCHED'},
+ {name:'exclusive end under grace',grace:10,at:'2030-10-07T20:00:00Z',status:'UNMATCHED'},
+])('SQL capture applies the persisted early grace exactly like TypeScript: $name',async v=>{
+ await saveGrace(v.grace);
+ const prepared=prepareScheduleCapture(graceSource(graceShift('day','08:00:00','16:00:00')),graceScope,v.grace);
+ const context=await resolve(prepared,v.at);
+ expect(context.status).toBe(v.status);
+ expect(context.earlyGraceMinutes).toBe(v.grace);
+ expect(comparable(context)).toEqual(captureScheduleContext(prepared,v.at));
+});
+
+it('SQL keeps back-to-back and overlapping grace windows ambiguous exactly like TypeScript',async()=>{
+ await saveGrace(10);
+ const backToBack=prepareScheduleCapture(graceSource(graceShift('morning','08:00:00','12:00:00'),graceShift('afternoon','12:00:00','16:00:00')),graceScope,10);
+ const close=prepareScheduleCapture(graceSource(graceShift('first','08:00:00','08:03:00'),graceShift('second','08:05:00','16:00:00')),graceScope,10);
+ for(const [prepared,at,status] of [[backToBack,'2030-10-07T15:55:00Z','AMBIGUOUS'],[backToBack,'2030-10-07T16:00:00Z','MATCHED'],
+  [close,'2030-10-07T11:57:00Z','AMBIGUOUS'],[close,'2030-10-07T12:04:00Z','MATCHED']] as const){
+  const context=await resolve(prepared,at);
+  expect(context.status).toBe(status);expect(comparable(context)).toEqual(captureScheduleContext(prepared,at));
+ }
+});
+
+it('SQL keeps an unresolved local-time candidate reached through grace ambiguous',async()=>{
+ await f.q("UPDATE workspaces SET time_zone='America/New_York' WHERE id='workspace-fuel'");await saveGrace(10);
+ const prepared=prepareScheduleCapture({anchorDate:'2030-11-03',publication:{revisions:[{id:'r',weekStart:'2030-10-28',revisionNumber:1}],
+  shifts:[{...graceShift('fold','01:30:00','02:30:00'),date:'2030-11-03'}]}},{...graceScope,timeZone:'America/New_York'},10);
+ const context=await resolve(prepared,'2030-11-03T05:25:00Z');
+ expect(context).toMatchObject({status:'AMBIGUOUS',reason:'UNRESOLVED_LOCAL_TIME',earlyGraceMinutes:10});
+ expect(comparable(context)).toEqual(captureScheduleContext(prepared,'2030-11-03T05:25:00Z'));
+});
+
+it('SQL refuses a grace the Owner has not saved, while strict capture never needs the setting',async()=>{
+ const strict=prepareScheduleCapture(graceSource(graceShift('day','08:00:00','16:00:00')),graceScope);
+ const graced=prepareScheduleCapture(graceSource(graceShift('day','08:00:00','16:00:00')),graceScope,10);
+ await expect(resolve(graced,'2030-10-07T11:55:00Z')).rejects.toThrow('clocker_punch_SCHEDULE_CHANGED');
+ await saveGrace(5);
+ await expect(resolve(graced,'2030-10-07T11:55:00Z')).rejects.toThrow('clocker_punch_SCHEDULE_CHANGED');
+ for(const forged of [31,'10',1.5,-1,null])await expect(resolve({...graced,earlyGraceMinutes:forged},'2030-10-07T11:55:00Z')).rejects.toThrow('clocker_punch_SCHEDULE_CHANGED');
+ // A capture prepared without grace (a failed read, or older code) stays strict even though 5 is saved.
+ const context=await resolve(strict,'2030-10-07T11:55:00Z');
+ expect(context).toMatchObject({status:'UNMATCHED',reason:'NO_MATCH'});expect(context).not.toHaveProperty('earlyGraceMinutes');
+ expect(comparable(context)).toEqual(captureScheduleContext(strict,'2030-10-07T11:55:00Z'));
+ expect(await resolve({...strict,earlyGraceMinutes:0},'2030-10-07T11:55:00Z')).toEqual(context);
+});
+
+it('Owner grace rows are versioned, audited with actor and time, Owner-only and never deleted',async()=>{
+ await expect(f.q("INSERT INTO clocker_schedule_match_policy(workspace_id,version,early_clock_in_grace_minutes,updated_by) VALUES('workspace-fuel',2,10,'c34-owner')")).rejects.toThrow('clocker_grace_STALE');
+ await expect(f.q("INSERT INTO clocker_schedule_match_policy(workspace_id,version,early_clock_in_grace_minutes,updated_by) VALUES('workspace-fuel',1,10,'c34-a')")).rejects.toThrow('clocker_grace_FORBIDDEN');
+ await expect(saveGrace(31)).rejects.toMatchObject({code:'23514'});
+ await saveGrace(10);await saveGrace(5,2);
+ await expect(saveGrace(7,4)).rejects.toThrow('clocker_grace_STALE');
+ expect(await f.q(`SELECT version,actor_employee_id AS actor,previous_grace_minutes AS previous,early_clock_in_grace_minutes AS minutes,
+  occurred_at IS NOT NULL AS timed FROM clocker_schedule_match_policy_revisions ORDER BY version`)).toEqual([
+  {version:1,actor:'c34-owner',previous:0,minutes:10,timed:true},{version:2,actor:'c34-owner',previous:10,minutes:5,timed:true}]);
+ await expect(f.q('DELETE FROM clocker_schedule_match_policy')).rejects.toThrow('clocker_grace_IMMUTABLE');
+ await expect(f.q('TRUNCATE clocker_schedule_match_policy')).rejects.toThrow();
+ await expect(f.q('UPDATE clocker_schedule_match_policy_revisions SET early_clock_in_grace_minutes=0')).rejects.toMatchObject({code:'23514'});
+ await expect(f.q('DELETE FROM clocker_schedule_match_policy_revisions')).rejects.toMatchObject({code:'23514'});
+ await expect(f.q('TRUNCATE clocker_schedule_match_policy_revisions')).rejects.toThrow();
+ expect(await f.q('SELECT early_clock_in_grace_minutes AS minutes,version FROM clocker_schedule_match_policy')).toEqual([{minutes:5,version:2}]);
+});

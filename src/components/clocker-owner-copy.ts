@@ -1,4 +1,4 @@
-/* The Owner's Clocker settings (Phase 6): every word the tablets, PINs, punch photos and recovery pages show, in English
+/* The Owner's Clocker settings (Phase 6): every word the tablets, PINs, punch photos, shift matching and recovery pages show, in English
  * and Puerto Rico Spanish (neutral imperative, as the other Spanish pages). The signed-in app renders `en` today; `es`
  * is proven by clocker-owner-copy.test.ts and each screen's Spanish render test.
  * Words to keep: a tablet is "connected" only when the server says so; a setup code "works one time"; a PIN is never
@@ -222,6 +222,23 @@ const en = {
   photosLoadFailedTitle: 'Couldn’t load photo settings',
   photosHelpFailedTitle: 'Couldn’t load help for your team',
   photosCheck: 'Check the photo settings.',
+
+  // ---------- Shift matching ----------
+  matchingTitle: 'Shift matching',
+  matchingSub: 'How the Clocker links a clock-in to a published shift.',
+  graceLabel: 'Early clock-in grace',
+  graceUnit: 'minutes',
+  graceHelp: 'Punches up to this many minutes before a shift start count toward that shift. Paid time still starts at the actual punch. 0 keeps strict matching.',
+  graceInvalid: 'Enter a whole number of minutes from 0 to 30.',
+  graceNote: 'A change applies to clock-ins after you save. Clock-ins already recorded keep how they were matched.',
+  graceSave: 'Save',
+  graceSaved: 'Saved. Clock-ins from now on use this grace.',
+  graceNotConfirmed: 'We couldn’t confirm that save. Reload the setting before you try again.',
+  graceReload: 'Reload setting',
+  graceReloaded: 'Saved setting loaded. A change you hadn’t saved was replaced.',
+  graceReloadFailed: 'Couldn’t load the saved setting. Your change is still here.',
+  graceLoadFailedTitle: 'Couldn’t load shift matching',
+  graceLoadFailedBody: 'The setting couldn’t be read. Nothing was changed.',
 
   // ---------- Clocker recovery ----------
   recoveryTitle: 'Clocker recovery',
@@ -483,6 +500,22 @@ const es: ClockerOwnerCopy = {
   photosLoadFailedTitle: 'No se pudo cargar la configuración de fotos',
   photosHelpFailedTitle: 'No se pudo cargar la ayuda para su equipo',
   photosCheck: 'Revise la configuración de fotos.',
+
+  matchingTitle: 'Asociación con turnos',
+  matchingSub: 'Cómo el Clocker vincula una entrada con un turno publicado.',
+  graceLabel: 'Margen de entrada anticipada',
+  graceUnit: 'minutos',
+  graceHelp: 'Las marcaciones hechas hasta esta cantidad de minutos antes del inicio de un turno cuentan para ese turno. El tiempo pagado sigue empezando en la marcación real. 0 mantiene la asociación estricta.',
+  graceInvalid: 'Escriba un número entero de minutos de 0 a 30.',
+  graceNote: 'Un cambio aplica a las entradas después de guardar. Las entradas ya registradas conservan cómo se asociaron.',
+  graceSave: 'Guardar',
+  graceSaved: 'Guardado. Las entradas de ahora en adelante usan este margen.',
+  graceNotConfirmed: 'No pudimos confirmar ese guardado. Vuelva a cargar la configuración antes de intentarlo de nuevo.',
+  graceReload: 'Volver a cargar la configuración',
+  graceReloaded: 'Se cargó la configuración guardada. El cambio sin guardar se reemplazó.',
+  graceReloadFailed: 'No se pudo cargar la configuración guardada. Su cambio sigue aquí.',
+  graceLoadFailedTitle: 'No se pudo cargar la asociación con turnos',
+  graceLoadFailedBody: 'No se pudo leer la configuración. No se cambió nada.',
 
   recoveryTitle: 'Recuperación de Clocker',
   recoverySub: 'Verifique una entrada o salida que alguien no está seguro de haber guardado.',

@@ -4,6 +4,7 @@ import type { EmployeeManagementProfile } from '@/lib/data/employees';
 import type { CatalogLocation } from '@/lib/data/locations';
 import type { ScheduleShiftRow, ManagementShift } from '@/lib/data/schedules';
 import type { ClockMonitorEmployee } from '@/lib/time-clock';
+import type { EmploymentDates } from '@/lib/employment-dates';
 
 export type ScopeSelection =
   | { mode: 'COMPANY'; locationIds: [] }
@@ -47,6 +48,9 @@ export type EmployeeCoreAccessCommand = {
   operationId:string; employeeId:string; expectedEmployeeUpdatedAt:string;
   profile:CoreProfileInput;
   managerTransitionScope?:ManagerTransitionScope;
+  /** Present: replace all three dates (null clears one). Absent: leave them as
+   * they are (the Deactivate/Reactivate command never carries them). */
+  employmentDates?:EmploymentDates;
 };
 export type EmployeeCoreAccessReceipt = {
   operationId:string; employeeId:string; updatedAt:string; role:UserRole;
@@ -69,6 +73,9 @@ export type CreateEmployeeWithAccessCommand = {
     email:string|null;role:UserRole;primaryLocationId:string;
     eligibleLocationIds:string[];positionIds:string[]};
   initialManagerScope?:ScopeSelection;
+  /** Optional; only the single Add employee form sends it. Roster and onboarding
+   * people imports accept closed records without it, so their contract is unchanged. */
+  employmentDates?:EmploymentDates;
 };
 
 export type ScopedRosterEmployee = {
@@ -109,6 +116,9 @@ export type OperationalClockMonitorData = {
 export type OperationalEmployeeProfileData = {
   profile:EmployeeManagementProfile;locations:CatalogLocation[];
   ownerScope:OwnerScopeContext|null;
+  /** Only when the caller asked for them and the actor may edit this person's
+   * core profile (an Owner, or a Manager for a non-Owner). Bound to profile.updatedAt. */
+  employmentDates?:EmploymentDates;
 };
 
 export type ScopeReceipt={operationId:string;employeeId:string;revision:number;
