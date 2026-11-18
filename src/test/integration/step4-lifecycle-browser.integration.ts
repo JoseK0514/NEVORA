@@ -1,4 +1,5 @@
 import {it,expect,rs} from '@rstest/core';
+import {showClockerSetupCode} from '../../../scripts/clocker-qa-setup-code.mjs';
 import {createRequire} from 'node:module';
 import {randomUUID} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
@@ -219,9 +220,9 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
    await saveBreakType({employeeId:'OWNER-1',sessionTokenHash:ownerProof.sessionTokenHash},{name:'Step4 rest',category:'REST',targetMinutes:15,active:true,expectedVersion:0},ex);
   });
   const locationKey=(await company.resource.db.pool.query('SELECT clocker_key FROM locations WHERE id=$1',[home])).rows[0].clocker_key;
-  await page.bringToFront();await page.goto(front+'/app/employees/EMP-1/clocker-pin');browserDiagnostics.ownerBeforePin=await page.evaluate(()=>({focus:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine}));await page.getByLabel('New PIN',{exact:true}).fill('2468');await page.getByLabel('Confirm PIN',{exact:true}).fill('2468');await page.getByRole('button',{name:'Save',exact:true}).click();await page.getByRole('status').filter({hasText:'PIN saved'}).waitFor();
+  await page.bringToFront();await page.goto(front+'/app/employees/EMP-1/clocker-pin');browserDiagnostics.ownerBeforePin=await page.evaluate(()=>({focus:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine}));await page.getByLabel('New PIN',{exact:true}).fill('2468');await page.getByLabel('Type it again',{exact:true}).fill('2468');await page.getByRole('button',{name:'Save PIN',exact:true}).click();await page.getByRole('status').filter({hasText:'PIN set for'}).waitFor();
   await page.goto(front+'/app/settings/clocker');await page.getByRole('button',{name:'Add tablet',exact:true}).click();const dialog=page.getByRole('dialog');await dialog.getByLabel('Tablet name',{exact:true}).fill('Fictional Step4 tablet');await dialog.getByRole('combobox',{name:'Location',exact:true}).selectOption(home);await dialog.getByRole('button',{name:'Get setup code',exact:true}).click();await dialog.waitFor({state:'hidden'});
-  const code=await page.getByRole('textbox',{name:/^Setup code · expires /}).inputValue();expect(code).toBeTruthy();
+  const code=await (await showClockerSetupCode(page)).inputValue();expect(code).toBeTruthy();
   const tabletContext=await browser.newContext({serviceWorkers:'block',proxy:{server:proxy.server}});await watchContext(tabletContext,'tablet');const tablet=await tabletContext.newPage();tablet.setDefaultTimeout(15000);
   observe(tablet);
   await tablet.goto(front+'/clocker/'+locationKey);const setupInput=tablet.getByRole('textbox',{name:'Setup code',exact:true});expect(code).toMatch(/^nw1_v1\./);expect(Number(await setupInput.getAttribute('maxlength'))).toBeGreaterThanOrEqual(code.length);await setupInput.fill(code);await tablet.getByRole('button',{name:'Connect tablet',exact:true}).click();

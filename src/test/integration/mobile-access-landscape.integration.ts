@@ -24,6 +24,9 @@ it('keeps one mobile Access presentation in short touch landscape and preserves 
      expect((await page.goto(app.url+path))?.status()).toBe(200);await page.locator('#mobile-access-page').waitFor();await page.locator('.ma-header:visible').waitFor();if(['/login','/forgot-access','/reset-access','/activate'].includes(path))await page.locator('.ma-card:visible').waitFor();if(path==='/activate'){await page.locator('.ma-card .ma-actions a[href="/access-help/invitation"]:visible').waitFor();await page.locator('.ma-outside a[href="/login"]:visible').waitFor();}
      if(path==='/reset-access')await page.locator('.ma-card #reset-proof:not(:disabled)').waitFor();
      await page.evaluate(({theme,scale}:{theme:string;scale:number})=>{localStorage.setItem('nv-theme',theme);document.documentElement.dataset.theme=theme;(window as Window&{__nvApplyTheme?:()=>void}).__nvApplyTheme?.();document.documentElement.style.fontSize=scale+'%';scrollTo(0,0);},{theme,scale});
+     // The public header/card may precede the page's hydrated heading. Require
+     // the operative heading before taking the unchanged one-page geometry sample.
+     await page.getByRole('heading',{level:1}).filter({visible:true}).waitFor();
      const sample=await page.evaluate(()=>{
       const visible=(selector:string)=>[...document.querySelectorAll<HTMLElement>(selector)].filter(el=>el.getClientRects().length&&getComputedStyle(el).visibility!=='hidden');
       const heading=visible('h1')[0]?.getBoundingClientRect(),primary=visible('.ma-actions > .q-btn')[0]?.getBoundingClientRect();
