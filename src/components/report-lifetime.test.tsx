@@ -146,3 +146,9 @@ it('report table regions expose explicit native keyboard focus targets',async()=
   expect(region).toContain('role="region"');expect(region).toContain('tabindex="0"');
  }
 });
+it('links to the yearly Christmas bonus hours report on screen, outside the printed period report',async()=>{
+ reads();await mount();const output=html();
+ expect(output).toMatch(/<a [^>]*href="\/app\/reports\/christmas-bonus"[^>]*>[\s\S]*?Christmas bonus hours/);
+ expect(output.indexOf('/app/reports/christmas-bonus')).toBeLessThan(output.indexOf('c-ins-print'));
+ event('blur');expect(html()).toContain('/app/reports/christmas-bonus');
+});

@@ -1,0 +1,7 @@
+/* Christmas bonus hours (opened from Insights). The year form: the field, then its button 12px under it, as Insights'
+ * custom period form spaces them. Everything else is the corporate kit. */
+:is(#c-root, html) .c-bonus .c-bonus__year { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+:is(#c-root, html) .c-bonus .c-bonus__year > .c-field { align-self: stretch; }
+/* A person's line holds the figures and facts the report is for (hours, hire date, ID, days not finalized); it wraps
+ * at every width instead of ending in "…" as kit rows do on tablets and desktop. */
+:is(#c-root, html) .c-bonus #bonus-people .c-row__detail > span:first-child { white-space: normal; overflow: visible; text-overflow: clip; }

@@ -26,7 +26,7 @@ import {Avatar,Card,KitLink,Row,Rows,StatGrid,Status,Tile,type KitTone} from './
 import {keepWhole} from '../lib/keep-whole';
 import {timeZoneLabel} from '../lib/time-zone-label';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
-import { CorpBody,CorpButtonLink,CorpCard,CorpNav,CorpPage,CorpPill,CorpStats,CorpTitle } from './corp/corp';
+import { CorpBody,CorpButtonLink,CorpCard,CorpNav,CorpPage,CorpPill,CorpRow,CorpRows,CorpStats,CorpTitle } from './corp/corp';
 import './reports-corp.css';
 import {scheduledDays} from '@/lib/reports/scheduled-days';
 import {reviewCopy} from './review-details/copy';
@@ -525,6 +525,10 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
   {custom_}
   {notice&&notice!==PERIOD_ERROR?<p className="c-ins__error" id="report-export-error" role="alert">{notice}</p>:null}
   <div className="wb-insights c-ins__body" data-report-entrance=""><CorpReportsView report={report} state={state}/></div>
+  {/* Christmas bonus hours: a yearly report of its own (Oct 1 to Sep 30), so it opens as a page, not a period here. */}
+  <CorpCard id="ins-more" as="div" ariaLabel="Yearly reports"><CorpRows label="Yearly reports">
+   <li><CorpRow href="/app/reports/christmas-bonus" bold title="Christmas bonus hours" detail="Who reached the Puerto Rico hours threshold" chevron/></li>
+  </CorpRows></CorpCard>
   {/* Print only. The report refreshes itself; its old Refresh footer stays with the printable report, out of view. */}
   <div className="c-ins-print"><ReportsView report={report} state={state} onThisWeek={presets&&mode!=='now'?()=>choose('now'):undefined}/>
    <p className="cm-page-foot"><span>{keepWhole(rangeText(period))}{report?<> · {timeZoneLabel(report.timeZone)}</>:null}</span><button type="button" className="cm-refresh" aria-label="Refresh" aria-busy={busy||undefined} onClick={()=>reloadRef.current()}><ArrowsClockwiseIcon size={16} weight="bold" aria-hidden="true"/>Refresh</button></p>
