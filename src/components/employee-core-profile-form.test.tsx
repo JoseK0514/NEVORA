@@ -103,3 +103,21 @@ it("uses aligned Apple-mode profile surfaces and a readable full-width commit ac
   );
   expect(coreMobileFooter).toBeGreaterThan(genericMobileFooter);
 });
+
+it("shows the optional employment dates only when they were read for this editor, with the termination note", () => {
+  const without = renderToStaticMarkup(<EmployeeCoreProfileForm employee={employee} locations={locations} actorId="OWNER1" actorRole="OWNER" action={vi.fn()} />);
+  expect(without).not.toContain('name="hireDate"');
+  expect(without).not.toContain('name="birthDate"');
+  const html = renderToStaticMarkup(<EmployeeCoreProfileForm employee={employee} locations={locations} actorId="OWNER1" actorRole="MANAGER" action={vi.fn()}
+    employmentDates={{ hireDate: "2015-03-02", terminationDate: null, birthDate: "1990-05-01" }} />);
+  expect(html).toMatch(/type="date"[^>]*name="hireDate"[^>]*value="2015-03-02"/);
+  expect(html).toMatch(/type="date"[^>]*name="terminationDate"[^>]*value=""/);
+  expect(html).toMatch(/type="date"[^>]*name="birthDate"[^>]*value="1990-05-01"/);
+  expect(html).toContain("It doesn’t deactivate anyone.");
+  expect(html).toContain("Only Owners and Managers who can edit this profile see it.");
+  // The account status still travels unchanged in the same command.
+  expect(html).toContain('name="active" value="false"');
+  // Deactivate and Reactivate never carry dates, so they can't clear them.
+  const status = renderToStaticMarkup(<EmployeeStatusForm employee={{ ...employee, active: true }} locations={locations} actorId="OWNER1" actorRole="OWNER" action={vi.fn()} />);
+  expect(status).not.toMatch(/hireDate|terminationDate|birthDate/);
+});

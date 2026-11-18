@@ -12,6 +12,8 @@ import {CorpField} from '@/components/corp/corp';
 import {FormHead,FormHeadLink,PhoneField} from '@/components/team/team-forms';
 import type { EmployeeManagementProfile } from "@/lib/data/employees";
 import type { Location, UserRole } from "@/lib/domain";
+import type { EmploymentDates } from "@/lib/employment-dates";
+import { EmploymentDateFields } from "./employment-date-fields";
 
 type EmployeeCoreProfileProps={
  employee:EmployeeManagementProfile;locations:Location[];actorId:string;actorRole:UserRole;
@@ -20,6 +22,9 @@ type EmployeeCoreProfileProps={
  cancelHref?:string;
  /** Picker rows that open their own sheets (Positions, Hours and rules), after the role and location. */
  more?:ReactNode;
+ /** Hire, termination and birth dates, read with this profile version for an actor who may edit them. Without them the
+  * sheet shows no date fields and the save leaves the stored dates unchanged. */
+ employmentDates?:EmploymentDates;
 };
 const roleNames:Record<UserRole,string>={OWNER:'Owner',MANAGER:'Manager',LEAD:'Lead',EMPLOYEE:'Employee'};
 
@@ -29,10 +34,10 @@ export function EmployeeCoreProfileForm(props:EmployeeCoreProfileProps){
 
 /** Edit employee (Release 1, board O-EditEmployee): a sheet with Cancel · Edit employee · Save. The same command as before;
  * the account status is unchanged here (Access and sign-in deactivates and reactivates). */
-function EmployeeCoreProfileEditor({employee,locations,actorRole,ownerScope=null,action,cancelHref,more}:EmployeeCoreProfileProps){
+function EmployeeCoreProfileEditor({employee,locations,actorRole,ownerScope=null,action,cancelHref,more,employmentDates}:EmployeeCoreProfileProps){
   // Editable drafts retain the versions they were opened against. An RSC refresh
   // must not silently attach dirty fields to a newer employee/access revision.
-  const [baseline]=useState(()=>({employee,ownerScope}));
+  const [baseline]=useState(()=>({employee,ownerScope,employmentDates}));
   const [role,setRole]=useState(employee.role),[scope,setScope]=useState<ScopeSelection|null>(null);
   const active=String(employee.active);
   const needsScope=actorRole==='OWNER'&&role==='MANAGER'&&active==='true'&&(baseline.employee.role!=='MANAGER'||!baseline.employee.active);
@@ -79,6 +84,7 @@ function EmployeeCoreProfileEditor({employee,locations,actorRole,ownerScope=null
       {role!==baseline.employee.role?<p className="c-callout" role="status"><span><b>{`${roleNames[baseline.employee.role]} to ${roleNames[role]} when you save`}</b>
         {role==='MANAGER'&&actorRole!=='OWNER'?'An Owner assigns their management access after this. No access is granted automatically.':null}</span></p>:null}
       {needsScope&&(baseline.ownerScope?<ManagerOperationalScopeFields current={baseline.ownerScope} locations={locations.filter(l=>l.active).map(l=>({id:l.id,name:l.name}))} value={scope} onChange={setScope} error={null}/>:<p role="alert" className="c-error">Current management access is unavailable. Reload this employee before promoting or reactivating a Manager.</p>)}
+      {baseline.employmentDates?<EmploymentDateFields idPrefix="edit" value={baseline.employmentDates}/>:null}
       {more}
     </EmployeeAccessForm>
   </>;
