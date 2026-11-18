@@ -630,3 +630,7 @@
 @media (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .q-auth__col:has(> .ma-hero) > .ma-only { padding-bottom: 56px !important; }
 }
+
+/* Reset finish (Phase 5 follow-up, Nov 17, 2026): one way on, the filled Sign in button. The frame's Sign in back link is
+ * hidden once the password is updated, at every width and with mobile Access. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:has(:is(.ar-done, .ar-done__mark)) :is(.q-auth__back, .ma-back) { display: none !important; }

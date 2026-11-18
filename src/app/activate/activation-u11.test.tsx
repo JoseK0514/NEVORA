@@ -13,7 +13,7 @@ const view = (phase: ActivationPhase, lang: "en" | "es", props: Props = {}) =>
   renderToStaticMarkup(<ActivationInvitationView phase={phase} lang={lang} loginHref="/login?activated=1" workspaceName="Northside Café" onSubmit={() => {}} {...props} />);
 const step = (lang: "en" | "es", n: number) => ACCESS_COPY[lang].steps.of.replace("{n}", String(n)).replace("{total}", "3");
 // English that must never show on a Spanish page (the brand and the workspace's own name aside).
-const ENGLISH = /Step \d|Activate account|password|Sign in|invitation|Employee ID|offline|Support reference|You’re|Try signing|Already activated/;
+const ENGLISH = /Step \d|Set up account|password|Sign in|invitation|Employee ID|offline|Support reference|You’re|Try signing|Already activated/;
 
 describe.each(["en", "es"] as const)("activation in %s", lang => {
   const t = AUTH_COPY[lang], u = ACCESS_COPY[lang].activation;

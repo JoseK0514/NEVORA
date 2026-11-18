@@ -27,7 +27,7 @@ const en = {
     mismatch: "Enter the same password in both fields",
     /** Phase 5 (PB-026): advice only. The one rule the server enforces is the length. */
     phrase: "Use a phrase you don’t use anywhere else",
-    offline: "You’re offline. Nothing was sent. Reconnect, then choose Activate account",
+    offline: "You’re offline. Nothing was sent. Reconnect, then choose Set up account",
     invalidWhy: "An invitation link works once and lasts 7 days.",
     invalidActive: "If you already activated, sign in with your Employee ID.",
     missingHow: "The link is in the email your workplace sent you. Open it on this device.",
@@ -174,7 +174,7 @@ const es: AccessCopy = {
     doneNext: "Ahora: inicia sesión. Tu ID de empleado ya está escrito.",
     mismatch: "Escribe la misma contraseña en ambos campos",
     phrase: "Usa una frase que no uses en ningún otro lugar",
-    offline: "No tienes conexión. No se envió nada. Vuelve a conectarte y elige Activar cuenta",
+    offline: "No tienes conexión. No se envió nada. Vuelve a conectarte y elige Configurar cuenta",
     invalidWhy: "Un enlace de invitación funciona una sola vez y dura 7 días.",
     invalidActive: "Si ya activaste tu cuenta, inicia sesión con tu ID de empleado.",
     missingHow: "El enlace está en el correo que te envió tu lugar de trabajo. Ábrelo en este dispositivo.",

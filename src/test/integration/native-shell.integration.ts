@@ -121,7 +121,7 @@ export async function verifyNativeBackend(app: App, browser: Browser, checks: Na
       await page.goto(app.url + '/activate#proof=' + proof);
       await page.locator('#activation-password').fill(TEST_PASSWORD);
       await page.locator('#activation-confirm-password').fill(TEST_PASSWORD);
-      await page.getByRole('button', {name: 'Activate account', exact: true}).click();
+      await page.getByRole('button', {name: 'Set up account', exact: true}).click();
       await page.locator('#activation-employee-id').waitFor();
       assert.equal(await page.locator('#activation-employee-id').inputValue(), 'QA-NATIVE-JOIN');
       const activated = await login('QA-NATIVE-JOIN'); await session(activated.context, 200, 'authenticated');

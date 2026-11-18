@@ -10,7 +10,7 @@ import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRigh
 import {BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BNote, BRow, BScreen, BStack, BState, compactRange, type BLiveItem} from '../owner-b/b-kit';
 import {HOME_SOURCES} from '../../lib/employee-home/project';
 import type {AttentionItem, HomeSnapshot, PublishedAssignment} from '../../lib/employee-home/types';
-import {unpublishedNote} from '../../lib/publication-note';
+import {homePublishedNames, unpublishedNote} from '../../lib/publication-note';
 import {keepWhole} from '../../lib/keep-whole';
 import {addDays, weekStartFor} from '../../lib/date-utils';
 import type {EmployeeTime} from '../../lib/employee-time';
@@ -249,7 +249,7 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
     : {label: t.nextShift, value: `${dayWord(ahead, snapshot)} ${clock(ahead.startAt, snapshot.timeZone).replace(/:00(?=\D)/, '')}`,
       line: [ahead.positionLabel, ahead.locationLabel].filter(Boolean).join(' · ') || null,
       aria: `Next shift, ${dayWord(ahead, snapshot)}, ${clock(ahead.startAt, snapshot.timeZone)} to ${clock(ahead.endAt, snapshot.timeZone)}`} : null;
-  const note = snapshot?.publicationState === 'partial' ? unpublishedNote(snapshot.unpublishedLocations ?? []) : null;
+  const note = snapshot?.publicationState === 'partial' ? unpublishedNote(snapshot.unpublishedLocations ?? [], homePublishedNames([snapshot.currentShift, snapshot.nextShift], snapshot.unpublishedLocations)) : null;
   const todoRow = ({key, item, week: confirm}: HomeTodo) => {
     const title = keepWhole(confirm ? weekTodo(item).title : todoTitle(item));
     const sub = confirm ? weekTodo(item).detail : item.deadlineAt && snapshot ? `Respond by ${keepWhole(fmt(snapshot.timeZone, {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}).format(new Date(item.deadlineAt)))}` : undefined;

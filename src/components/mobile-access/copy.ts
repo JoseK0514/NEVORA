@@ -2,12 +2,12 @@
 import type {AuthLang} from '@/lib/auth-copy';
 import {NUVORA_BRAND} from '@/lib/brand';
 const en={
-  "activateAccount": "Activate account",
+  "activateAccount": "Set up account",
   "activateSub": "Open the invitation link your workplace sent to your email to set up your account.",
   "activateTitle": "Set up your account",
   "activatedSub": "Your account is activated. Sign in with this Employee ID and your new password.",
   "activatedTitle": "You’re all set",
-  "activating": "Activating account…",
+  "activating": "Setting up your account…",
   "alreadyActivated": "Already activated? Sign in",
   "assistActive": "I already activated my account",
   "assistActiveBody": "Use your Employee ID and the password you created. If you forgot your password, reset it instead of asking for another invitation.",
@@ -211,12 +211,12 @@ const en={
 };
 export type MobileAccessCopy = {[K in keyof typeof en]:string};
 const es:MobileAccessCopy={
-  "activateAccount": "Activar cuenta",
+  "activateAccount": "Configurar cuenta",
   "activateSub": "Abre el enlace de invitación que tu trabajo envió a tu correo para configurar tu cuenta.",
   "activateTitle": "Configura tu cuenta",
   "activatedSub": "Tu cuenta está activada. Inicia sesión con este ID de empleado y tu contraseña nueva.",
   "activatedTitle": "Todo listo",
-  "activating": "Activando cuenta…",
+  "activating": "Configurando tu cuenta…",
   "alreadyActivated": "¿Ya la activaste? Inicia sesión",
   "assistActive": "Ya activé mi cuenta",
   "assistActiveBody": "Usa tu ID de empleado y la contraseña que creaste. Si la olvidaste, restablécela en lugar de pedir otra invitación.",

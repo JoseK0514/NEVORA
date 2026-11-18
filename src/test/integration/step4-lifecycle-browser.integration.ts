@@ -164,7 +164,7 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
   let employeePassword='Fictional Step4 Employee password 123!';
   await employeePage.goto(front+'/activate#proof='+proof);
   await employeePage.getByLabel('Create password',{exact:true}).fill(employeePassword);await employeePage.getByLabel('Confirm password',{exact:true}).fill(employeePassword);
-  await employeePage.getByRole('button',{name:'Activate account',exact:true}).click();await employeePage.getByRole('link',{name:'Continue to sign in',exact:true}).waitFor();
+  await employeePage.getByRole('button',{name:'Set up account',exact:true}).click();await employeePage.getByRole('link',{name:'Continue to sign in',exact:true}).waitFor();
   expect(new URL(employeePage.url()).hash).toBe('');
   await employeePage.getByRole('link',{name:'Continue to sign in',exact:true}).click();
   await employeePage.getByLabel('Employee ID',{exact:true}).fill('EMP-1');await employeePage.getByLabel('Password',{exact:true}).fill(employeePassword);await employeePage.getByRole('button',{name:'Sign in',exact:true}).click();await employeePage.waitForURL(front+'/app');
