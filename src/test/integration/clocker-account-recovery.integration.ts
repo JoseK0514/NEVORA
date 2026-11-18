@@ -141,3 +141,10 @@ it('a replacement requirement changed after recovery pre-read cannot be cleared 
  expect(await resetPasswordWithProof(p.proof,'Fictional previous password',ex)).toEqual({state:'invalid'});expect(changed).toBe(true);
  expect(await f.q("SELECT must_change_password FROM employee_credentials WHERE employee_id='c34-a'")).toEqual([{must_change_password:true}]);
 });
+
+it('explains temporary password reuse and accepts a different password with the same proof',async()=>{
+ const {issued:p}=await initialReplacement();if(p.state!=='issued')throw Error('Expected proof');
+ expect(await resetPasswordWithProof(p.proof,'Fictional previous password',f.db.executor)).toEqual({state:'invalid',passwordReason:'temporary_password'});
+ expect((await f.q('SELECT used_at FROM password_recovery_proofs WHERE token_hash=$1',[createHash('sha256').update(p.proof).digest('hex')]))[0].used_at).toBeNull();
+ expect(await resetPasswordWithProof(p.proof,'quiet meadows under winter skies',f.db.executor)).toEqual({state:'reset'});
+});

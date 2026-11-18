@@ -35,14 +35,14 @@ describe('Frozen mobile access integration',()=>{
  it('preserves bounded raw or isolated reset proof transport and password bounds in the mobile form',()=>{
   const html=renderToStaticMarkup(<MobileRecoveryReset lang="en" hydrated busy={false} done={false} message="" onSubmit={()=>{}} proofRef={()=>{}}/>);
   expect(html).toContain('minLength="43"');expect(html).toContain('maxLength="4096"');
-  expect(html.match(/maxLength="1024"/g)).toHaveLength(2);
+  expect(html).not.toContain('maxLength="1024"');
 
  });
  it('localizes activation without calling a syntactically valid invitation verified',()=>{
   const html=renderToStaticMarkup(<MobileActivationView lang="es" phase="ready" workspaceName="Actual configured workplace" loginHref="/login?activated=1" onSubmit={()=>{}}/>);
   /* B7 wording (NV-187) */expect(html).toContain('Crea tu contraseña');expect(html).toContain('Actual configured workplace');
   expect(html).not.toMatch(/Invitation verified|invitación verificada/i);
-  expect(html.match(/maxLength="1024"/g)).toHaveLength(2);
+  expect(html).not.toContain('maxLength="1024"');
   expect(html).not.toContain('activation-employee-id');
  });
  it('renders the confirmed-success receipt ID with the ordinary sign-in destination',()=>{

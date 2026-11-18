@@ -48,3 +48,8 @@ it('keeps the recovery fragment, expiry and security warning before role-specifi
  expect(es).toContain('Si no lo pediste, conserva tu contraseña actual y comunícate con tu gerente.');
  for(const half of [en,es])expect(half.split('\n').filter(line=>line===link)).toHaveLength(1);
 });
+
+it('accepts valid long supplementary-plane profile names in every account email',()=>{
+ const context={companyName:'𐐀'.repeat(110),firstName:'𐐁'.repeat(110)};
+ for(const email of [()=>invitationEmail(link,'10482',context),()=>recoveryEmail(link,context),()=>passwordChangedEmail('https://portal.test',context)])expect(email).not.toThrow();
+});

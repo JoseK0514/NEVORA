@@ -86,3 +86,16 @@ it.each([['twelve chars','too_short'],['qwertyuiopasdfgh','breached'],['Fictiona
   expect((await activateInitialOwner(c.binding,command(proof))).state).toBe('activated');
  }finally{await f.close();}
 });
+
+it('rolls back an initial Owner credential if company policy context changes during hashing',async()=>{
+ const f=await onboardingJourneyFixture(),real=passwords.hashPassword;let spy:ReturnType<typeof vi.spyOn>|undefined;
+ try{
+  const c=await f.createCompany(),{proof}=await c.grant(),cmd={...command(proof),password:'Renamed Fictional Workspace'};
+  spy=vi.spyOn(passwords,'hashPassword').mockImplementation(async value=>{const encoded=await real(value);await c.resource.db.pool.query("UPDATE workspaces SET name=$1,updated_at=clock_timestamp()",[cmd.password]);return encoded;});
+  expect((await activateInitialOwner(c.binding,cmd)).state).toBe('unavailable');spy.mockRestore();
+  expect((await c.resource.db.pool.query('SELECT count(*)::int n FROM employee_credentials')).rows[0].n).toBe(0);
+  expect((await c.resource.db.pool.query('SELECT consumed_at FROM onboarding_owner_grants')).rows[0].consumed_at).toBeNull();
+  expect(await activateInitialOwner(c.binding,{...command(proof),password:cmd.password})).toEqual({state:'invalid',passwordReason:'company_name'});
+  expect((await activateInitialOwner(c.binding,command(proof))).state).toBe('activated');
+ }finally{spy?.mockRestore();await f.close();}
+});

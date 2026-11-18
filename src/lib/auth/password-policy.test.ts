@@ -38,3 +38,8 @@ describe('new password enrollment',()=>{
   expect(passwordRejectionMessage('es','too_short')).toContain('15');
  });
 });
+
+it('uses the same 1024-code-point limit for supplementary characters and ASCII',()=>{
+ const supplementary=Array.from({length:513},(_,i)=>String.fromCodePoint(0x1f300+i)).join('');
+ expect(passwordRejection(supplementary,context)).toBeNull();
+});

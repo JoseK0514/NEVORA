@@ -56,3 +56,10 @@ it('classifies a staging-recipient refusal as definitely failed without opening 
   expect(smtp.connections).toBe(0);expect(smtp.messages.length).toBe(0);
  }finally{await smtp.close();}
 });
+
+it('classifies a rendering failure before SMTP as FAILED without opening a connection',async()=>{
+ const smtp=await fakeInvitationSmtp();try{
+  await expect(invitationDelivery(smtp.env)!.send({registeredEmail:'target@example.invalid',proof:randomBytes(32).toString('base64url'),expiresAt:new Date(Date.now()+900000).toISOString(),companyName:'Fictional Shop',timeZone:'Invalid/Zone'})).rejects.toMatchObject({deliveryState:'FAILED'});
+  expect(smtp.connections).toBe(0);expect(smtp.messages).toHaveLength(0);
+ }finally{await smtp.close();}
+});
