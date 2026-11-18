@@ -225,7 +225,7 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
      expect(await preview.locator('section[lang="en"]').count()).toBe(1);expect(await preview.locator('section[lang="es"]').count()).toBe(1);
      expect(await preview.locator('img[alt="NEVORA"]').evaluate((el:HTMLImageElement)=>el.complete&&el.naturalWidth>0)).toBe(true);
      expect(await preview.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-     await preview.keyboard.press('Tab');expect(await preview.evaluate(()=>document.activeElement?.tagName)).toBe('A');
+     await preview.keyboard.press(process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab');expect(await preview.evaluate(()=>document.activeElement?.tagName)).toBe('A');
      await preview.screenshot({path:evidence+'/'+engine+'-'+kind+'-email-'+width+'.png',fullPage:true});
     }
    }
