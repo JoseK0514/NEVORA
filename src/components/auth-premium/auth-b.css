@@ -623,3 +623,10 @@
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col .ma-outside > .q-auth__langnote { margin-top: var(--b-space-8) !important; }
 }
 :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-outside > .q-auth__proof--page { margin-top: var(--b-space-16) !important; }
+
+/* Welcome in short touch landscape: the illustration (.ma-hero) is not drawn there, so the band keeps its own 56px under
+ * the header row, as on every other access page; the card's 40px rise lands on the band, never on the wordmark and the
+ * language pill. */
+@media (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .q-auth__col:has(> .ma-hero) > .ma-only { padding-bottom: 56px !important; }
+}
