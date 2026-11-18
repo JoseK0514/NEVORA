@@ -1,3 +1,4 @@
+import { releaseTestReport } from './lib/release-test-report.mjs';
 import assert from 'node:assert/strict';
 import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import { createHash, randomBytes } from 'node:crypto';
@@ -548,7 +549,8 @@ export function verifyRequiredJobs(jobs) {
 function sqlCommand(suite, evidence) {
   return [process.execPath, 'node_modules/vitest/vitest.mjs', 'run', '--config', 'vitest.phase-e-integration.config.mts', SQL_SUITES[suite], '--reporter=default', '--reporter=json', '--outputFile', join(evidence, 'sql-' + suite + '.json')];
 }
-function verifySqlExecution(report, source, suite) {
+export function verifySqlExecution(report, source, suite) {
+  report = releaseTestReport(report, source);
   const cases = report.testResults?.flatMap(item => item.assertionResults ?? []) ?? [];
   if (report.success !== true || !Number.isSafeInteger(report.numTotalTests) || report.numTotalTests < 1 || report.numPassedTests !== report.numTotalTests || report.numPendingTests || report.numTodoTests || report.numFailedTests || cases.length !== report.numTotalTests || cases.some(item => item.status !== 'passed')) throw Error('Required SQL suite has missing/failed/skipped executed tests');
   if (!Object.hasOwn(SQL_SUITES, suite) || report.testResults.length !== 1 || report.testResults[0].status !== 'passed' || report.testResults[0].name !== join(source, SQL_SUITES[suite])) throw Error('SQL evidence does not identify the exact owning fixture: ' + suite);

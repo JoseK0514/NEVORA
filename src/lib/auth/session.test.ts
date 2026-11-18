@@ -1,12 +1,12 @@
-vi.mock('../data/sql-session-contract',()=>import('../../test/fixtures/business-sql-session'));
+import { sessionTransaction } from '../../test/fixtures/business-sql-session';
+vi.mock('../data/sql-session-contract',()=>({
+  sessionTransaction: (...args: Parameters<typeof sessionTransaction>) => sessionTransaction(...args),
+}));
 import { beforeEach, afterEach, expect, it, vi } from 'vitest';
 const state = vi.hoisted(() => ({ values: new Map<string, string>(), query: vi.fn(), signals: [] as AbortSignal[], workspace: vi.fn(() => { throw new Error('workspace unavailable'); }), transaction: vi.fn(), headers: new Headers() }));
 vi.mock('next/headers', () => ({ headers: async () => state.headers, cookies: async () => ({ get: (name: string) => state.values.has(name) ? { value: state.values.get(name)! } : undefined, set: (name: string, value: string) => state.values.set(name, value), delete: (name: string) => state.values.delete(name) }) }));
 vi.mock('next/navigation', () => ({ redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));
 vi.mock('@/lib/db', () => ({ getDb: () => ({ query: state.query, transaction: state.transaction }), queryRows: (r: unknown) => r }));
-vi.mock('@/lib/notifications/logout', () => import('../notifications/logout'));
-vi.mock('@/lib/notifications/config', () => import('../notifications/config'));
-vi.mock('@/lib/notifications/installation', () => import('../notifications/installation'));
 vi.mock('../db', () => ({ getDb: () => ({ query: state.query, transaction: state.transaction }), queryRows: (r: unknown) => r }));
 vi.mock('@/lib/data/workspaces',()=>({getWorkspace:state.workspace}));
 import { destroySession } from './session';
