@@ -230,6 +230,10 @@ The `nevora-30-day-phase` work adds these contracts; details are in the
   used is read server-side at punch time, kept in the captured context as an
   optional `earlyGraceMinutes` (still `version: 1`), and checked by the SQL
   resolver; a missing or unreadable setting means 0, never a blocked punch.
+- Attendance observation `OPEN_PAST_LIMIT` flags a consistent open entry with an
+  unmatched, ambiguous or not-evaluated schedule once it is open strictly more
+  than `OPEN_ENTRY_REVIEW_LIMIT_HOURS` (12). It is computed per read, never
+  stored, and writes nothing; matched entries keep `OPEN_AFTER_SCHEDULE_END`.
 - `NEVORA_WEB_ANALYTICS_ENABLED` (default false) renders Vercel Web Analytics with
   `src/lib/analytics/redact.ts`, an allowlist of public paths that strips query
   strings and drops every other path.

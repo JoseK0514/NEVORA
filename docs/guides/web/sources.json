@@ -50,7 +50,8 @@
         "src/app/app/reports/christmas-bonus/page.tsx",
         "src/lib/reports/christmas-bonus.ts",
         "src/app/app/settings/clocker/matching/page.tsx",
-        "src/lib/clocker/schedule-grace.server.ts"
+        "src/lib/clocker/schedule-grace.server.ts",
+        "src/lib/attendance/project.ts"
       ]
     },
     {
@@ -83,7 +84,8 @@
         "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
         "src/lib/employment-dates.ts",
         "src/lib/company-access/employee-profile.server.ts",
-        "src/app/app/reports/christmas-bonus/page.tsx"
+        "src/app/app/reports/christmas-bonus/page.tsx",
+        "src/components/manager-attendance-review.tsx"
       ]
     },
     {
@@ -212,7 +214,8 @@
         "src/lib/analytics/redact.ts",
         "db/migrations/0069_clocker_early_grace.sql",
         "src/lib/clocker/schedule-candidates.ts",
-        "src/lib/clocker/schedule-grace.server.ts"
+        "src/lib/clocker/schedule-grace.server.ts",
+        "src/lib/attendance/project.ts"
       ]
     },
     {

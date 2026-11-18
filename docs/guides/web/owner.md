@@ -127,6 +127,11 @@ that shift; paid time still starts at the actual punch. It starts at 0 (strict
 matching), only you can change it, every save is recorded, and punches already
 recorded keep how they were matched.
 
+Attendance review flags a forgotten clock-out. A punch matched to a shift
+shows **No clock-out recorded · scheduled end passed**; a punch with no single
+matching shift shows **No clock-out after 12 hours** once it has been open more
+than 12 hours. Both are review prompts only: nothing closes a punch for you.
+
 For another person’s eligible open punch, use **Close open punch** in the
 Timecards inspector. Enter the verified company-local end time, a reason and
 the confirmation, then choose **Record close**. Read the open-break explanation
