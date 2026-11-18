@@ -5,7 +5,7 @@ import {fakeInvitationSmtp} from './company-access-smtp.test-support';
 rs.mock('server-only',()=>({}));
 import {invitationDelivery} from '../../lib/auth/invitations/delivery.server';
 const origin='http://127.0.0.1:32123';
-afterEach(()=>rs.unstubAllEnvs());
+afterEach(()=>{ rs.unstubAllEnvs(); });
 it('owned mail stays invitation-disabled without an explicit port and ignores ambient provider configuration',()=>{
  rs.stubEnv('NEVORA_INVITATION_DELIVERY_ENABLED','true');rs.stubEnv('NEVORA_RECOVERY_SMTP_HOST','smtp.example.invalid');rs.stubEnv('NEVORA_RECOVERY_SMTP_PORT','465');
  const env=ownedMailEnvironment(origin);expect(env).toEqual({NEVORA_INVITATION_DELIVERY_ENABLED:'false'});expect(invitationDelivery(env)).toBeNull();

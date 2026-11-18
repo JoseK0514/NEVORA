@@ -1,7 +1,7 @@
 import {afterEach, expect, it, rs} from '@rstest/core';
 import {onRequestError} from './instrumentation';
 
-afterEach(() => rs.restoreAllMocks());
+afterEach(() => { rs.restoreAllMocks(); });
 it('records the framework route template and digest without request paths or headers', async () => {
   const sink = rs.spyOn(console, 'error').mockImplementation(() => {});
   await onRequestError(Object.assign(new Error('secret'), {digest: '90210'}), {

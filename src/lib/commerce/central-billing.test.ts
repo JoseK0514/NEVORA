@@ -5,7 +5,7 @@ const catalog={currency:'usd',trialDays:30,plans:[{key:'small',employees:15,amou
 const status={state:'paid',operational:true,trialEndsAt:null,paidThrough:'2026-12-01T00:00:00.000Z',graceEndsAt:null,plan:'small',employeeLimit:15,activeEmployees:4,reason:null,billing:true,export:true,businessName:'Fictional business',applicationUrl:'https://fixture.example.invalid',timeZone:'America/Puerto_Rico'};
 const json=(value:unknown,status=200)=>Response.json(value,{status});
 function fixture(){let stamp=Date.parse('2026-11-13T00:00:00Z');const transport=rs.fn(async(url:string,_init:RequestInit):Promise<Response>=>url.endsWith('/exchange')?json({accessToken:token,expiresIn:28800}):url.endsWith('/status')?json(status):url.endsWith('/plans')?json(catalog):json({url:'https://checkout.stripe.com/c/pay/fictional'}));const key=rs.fn(()=>operation);const client=createCentralBillingClient(origin,transport,key,()=>stamp);return {client,transport,key,advance:(ms:number)=>{stamp+=ms;}};}
-afterEach(()=>rs.useRealTimers());
+afterEach(()=>{ rs.useRealTimers(); });
 it('takes only a canonical handoff and scrubs even an invalid or retired fragment',()=>{
  for(const hash of ['#handoff='+proof,'#handoff=short','#token='+proof,'#handoff='+proof+'&other=private']){const scrub=rs.fn();expect(takeBillingFragment({hash,pathname:'/pages/plans',search:''},scrub)).toBe(hash==='#handoff='+proof?proof:null);expect(scrub).toHaveBeenCalledExactlyOnceWith('/pages/plans');}
 });

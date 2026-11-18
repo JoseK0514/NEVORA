@@ -4,7 +4,7 @@ import { readThemeChoice, writeThemeChoice, THEME_KEY, THEME_SCRIPT } from './th
 
 // Review B1 (NV-067, Nov 10, 2026): Direction B is light only. A device that saved Dark or System earlier must load
 // Light, and the stored choice is cleared; the old dark/system behaviour these tests covered is retired.
-afterEach(() => rs.unstubAllGlobals());
+afterEach(() => { rs.unstubAllGlobals(); });
 
 function bootstrap(stored: string | null, darkDevice: boolean, blocked = false) {
   const attrs: Record<string, string> = {}, removed: string[] = [];

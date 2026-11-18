@@ -1,7 +1,7 @@
 import {afterEach,expect,it,rs} from '@rstest/core';
 import type {HomeSnapshot} from '../lib/employee-home/types';
 const snapshot=():HomeSnapshot=>({observedAt:'2030-10-07T12:00:00.000Z',authority:'a'.repeat(64),validForMs:45000,timeZone:'America/Puerto_Rico',sources:Object.fromEntries(['schedule','acknowledgements','exchanges','timeOff','ownTime','communications'].map(k=>[k,{state:k==='communications'?'partial':'complete',observedAt:'2030-10-07T12:00:00.000Z',version:'v1',reason:k==='communications'?'integration_pending':null}])) as HomeSnapshot['sources'],publicationState:'complete',nextShift:null,currentShift:null,attention:[]});
-afterEach(()=>rs.useRealTimers());
+afterEach(()=>{ rs.useRealTimers(); });
 it('late_former_authority_reply_discarded',async()=>{
  const subject=await import('./employee-home-actions').catch(()=>null);
  expect(subject?.createEmployeeHomeController,'Home requires a bound private lifetime controller').toBeTypeOf('function');

@@ -23,7 +23,7 @@ rs.mock('@/components/reports',()=>({Reports:(props:unknown)=>{fixture.reports(p
 rs.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>{fixture.workspace();return {timeZone:'America/Puerto_Rico'};}}));
 
 beforeEach(()=>{fixture.role='MANAGER';fixture.denied=false;fixture.reports.mockClear();fixture.workspace.mockClear();rs.useFakeTimers();rs.setSystemTime(new Date('2026-10-20T12:00:00Z'));});
-afterEach(()=>rs.useRealTimers());
+afterEach(()=>{ rs.useRealTimers(); });
 
 it.each(['MANAGER','OWNER'])('keeps the clean Insights layout and period props inside the current authority frame for %s',async role=>{
  fixture.role=role;

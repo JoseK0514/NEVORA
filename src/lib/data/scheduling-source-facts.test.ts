@@ -1,4 +1,4 @@
-import { it, expect, rs } from '@rstest/core';
+import { it, expect } from '@rstest/core';
 
 import { mapSchedulingSourceFacts } from './scheduling-source-facts';
 import type { GenerationSource } from './generation-guards';

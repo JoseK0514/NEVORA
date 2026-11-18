@@ -2,7 +2,7 @@ import {afterEach,expect,it,rs} from '@rstest/core';
 import {NEVORA_FAILURES,clearsProtectedData,failureRecovery,nevoraFailure,privateReadBody,FAILURE_MESSAGES} from './nevora-failure';
 
 const response=(status:number,failure?:string,body:unknown={state:'unavailable'})=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json',...(failure?{'X-Nevora-Failure':failure}:{})}});
-afterEach(()=>rs.unstubAllGlobals());
+afterEach(()=>{ rs.unstubAllGlobals(); });
 
 it('maps every contract value to its recovery (CLAUDE-CONTRACT.md table)',()=>{
  expect(Object.fromEntries(NEVORA_FAILURES.map(code=>[code,failureRecovery(code)]))).toEqual({

@@ -13,7 +13,7 @@ function fixture() {
   const env: CameraEnvironment = { secureContext: true, getUserMedia: media, createCanvas: () => canvas };
   return { stop, stream, video, drawImage, canvas, media, env, camera: new PunchCamera(env) };
 }
-afterEach(() => rs.useRealTimers());
+afterEach(() => { rs.useRealTimers(); });
 
 it('requests only video with preferred front camera and inline muted playback', async () => {
   const f = fixture(); await f.camera.open(f.video, new AbortController().signal, 1000);

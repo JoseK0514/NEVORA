@@ -19,7 +19,7 @@ rs.mock('@/components/company-access/scoped-operational-views', () => ({ScopedMa
 rs.mock('@/components/company-access/operational-unavailable', () => ({OperationalUnavailable: () => <p>Home unavailable</p>}));
 import DashboardPage from './page';
 beforeEach(() => {state.role = 'OWNER'; state.scope = 'COMPANY'; state.authority = 'ready'; state.payStatements = true; state.read.mockReset().mockResolvedValue({state: 'ready', overdue: {payday: '2026-10-27', period: {startDate: '2026-10-19', endDate: '2026-10-25'}}}); state.dashboard.mockClear(); state.employee.mockClear(); rs.stubEnv('NEVORA_PAYROLL_ENABLED', 'true'); rs.stubEnv('NEVORA_MOBILE_ACCESS_ENABLED', 'false');});
-afterEach(() => rs.unstubAllEnvs());
+afterEach(() => { rs.unstubAllEnvs(); });
 it('adds protected preparation facts to authorized Owner overview alongside next payday', async () => {
   renderToStaticMarkup(await DashboardPage({searchParams: Promise.resolve({})}));
   expect(state.read).toHaveBeenCalledOnce();

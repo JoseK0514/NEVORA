@@ -4,7 +4,7 @@ const m=rs.hoisted(()=>({claim:rs.fn()}));
 rs.mock('@/lib/auth/invitations/claim.server',()=>({claimInvitation:m.claim}));
 import {POST} from './route';
 const request=(body:string)=>new Request('https://owned.invalid/api/auth/activate',{method:'POST',headers:{origin:'https://owned.invalid','content-type':'application/json','x-nevora-activation':'1'},body});
-beforeEach(()=>rs.resetAllMocks());
+beforeEach(()=>{ rs.resetAllMocks(); });
 it('a source-construction failure is unavailable without echoing identity or proof',async()=>{
  m.claim.mockRejectedValueOnce(Error('Owned source unavailable'));
  const response=await POST(request(JSON.stringify({proof:randomBytes(32).toString('base64url'),password:'Owned-example-password'})));

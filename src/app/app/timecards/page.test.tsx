@@ -14,7 +14,7 @@ import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import TimecardsPage from './page';
 
 beforeEach(()=>{fixture.role='MANAGER';fixture.denied=false;fixture.payroll=null;fixture.company.mockReset();rs.useFakeTimers();rs.setSystemTime(new Date('2026-10-20T12:00:00Z'));});
-afterEach(()=>rs.useRealTimers());
+afterEach(()=>{ rs.useRealTimers(); });
 
 it.each(['MANAGER','OWNER'])('keeps the clean current-week %s view inside the current Company lifetime frame',async role=>{
  fixture.role=role;

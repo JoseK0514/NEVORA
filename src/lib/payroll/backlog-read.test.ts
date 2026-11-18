@@ -4,7 +4,7 @@ import type { SessionMutationProof } from '../shift-changes/types';
 import { readPayrollBacklog } from './backlog-read';
 import { runs } from './service';
 const proof: SessionMutationProof = {employee: {id: 'QAMANAGER', firstName: 'Fictional', lastName: 'Manager', role: 'MANAGER', primaryLocationId: 'loc-1'}, sessionTokenHash: 'a'.repeat(64)};
-afterEach(() => rs.unstubAllEnvs());
+afterEach(() => { rs.unstubAllEnvs(); });
 it('preserves the runs policy that Managers receive no company backlog', async () => {
   rs.stubEnv('NEVORA_PAYROLL_ENABLED', 'true');
   const statements: SqlStatement[] = [];

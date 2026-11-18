@@ -8,7 +8,7 @@ import { Temporal } from '@js-temporal/polyfill';
 import { selectGenerationScope } from '../../lib/scheduling/generation/scope';
 import { readGenerationReviewSnapshot } from '../../lib/data/schedule-generation-snapshot';
 import * as planner from '../../lib/scheduling/generation/planner';
-afterEach(() => rs.restoreAllMocks());
+afterEach(() => { rs.restoreAllMocks(); });
 import { createDisposableGenerationDatabase } from './local-postgres';
 import { generateWeekDraft, readGenerationSnapshot } from '../../lib/data/schedule-generation';
 import { GenerationConflictError, readGenerationSource } from '../../lib/data/generation-guards';

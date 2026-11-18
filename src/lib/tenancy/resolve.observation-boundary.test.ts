@@ -30,7 +30,7 @@ beforeEach(() => {
   database.query.mockImplementation((text, values) => ({ text, values,
     then() { throw Error('resolver query awaited outside transaction'); } }));
 });
-afterEach(() => rs.useRealTimers());
+afterEach(() => { rs.useRealTimers(); });
 
 describe('resolver inspects inert owned transport data before reading metadata', () => {
   it('preserves normal data, exact text, private issuance and owning transaction', async () => {

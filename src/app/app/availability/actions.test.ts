@@ -26,7 +26,7 @@ import {
   saveAvailabilityAction,
   saveWeeklyAvailabilityAction,
 } from "./actions";
-beforeEach(() => rs.clearAllMocks());
+beforeEach(() => { rs.clearAllMocks(); });
 it.each(["00:00", "24:00"])(
   "normal and weekly inputs support a midnight day endpoint (%s)",
   async (midnight) => {

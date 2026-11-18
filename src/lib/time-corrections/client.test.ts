@@ -4,7 +4,7 @@ import { reviewManagerTimeCorrection, submitEmployeeTimeCorrection } from './cli
 const operationId='11111111-1111-4111-8111-111111111111';
 const request={operationId,kind:'ENTRY_BOUNDARY' as const,timeEntryId:'recorded-entry',proposedStartAt:'2020-10-07T12:00:00Z',proposedEndAt:'2020-10-07T13:00:00Z',reason:'Review this recorded interval.'};
 const review={operationId,requestId:'22222222-2222-4222-8222-222222222222',expectedRevision:1,decision:'APPROVE' as const};
-afterEach(()=>rs.unstubAllGlobals());
+afterEach(()=>{ rs.unstubAllGlobals(); });
 
 describe('D2 same-operation response recovery',()=>{
   for(const [name,send] of [

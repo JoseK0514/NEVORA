@@ -11,7 +11,7 @@ beforeEach(()=>{
   mocks.proof.mockReset().mockResolvedValue({employee:{id:'self',role:'OWNER'},sessionTokenHash:'a'.repeat(64)});
   mocks.read.mockReset().mockResolvedValue({state:'unavailable',reason:'read_failed'});mocks.save.mockReset().mockResolvedValue(undefined);
 });
-afterEach(()=>rs.unstubAllEnvs());
+afterEach(()=>{ rs.unstubAllEnvs(); });
 const get=()=>new Request('http://localhost:3000/api/management/profile',{headers:{'Sec-Fetch-Site':'same-origin'}});
 const post=(value:unknown={topicId:'time-off',on:false},headers:Record<string,string>={})=>new Request('http://localhost:3000/api/management/profile/alerts',{method:'POST',headers:{origin:'http://localhost:3000','Sec-Fetch-Site':'same-origin','Content-Type':'application/json','X-Nevora-Profile-Alerts':'1',...headers},body:JSON.stringify(value)});
 it('uses the agreed 200 unavailable snapshot and disables private caching',async()=>{

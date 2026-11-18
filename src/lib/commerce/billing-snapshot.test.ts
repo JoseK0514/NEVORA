@@ -2,7 +2,7 @@ import {afterEach,expect,it,rs} from '@rstest/core';
 import {parseBillingSnapshot,type BillingSnapshot} from './billing-snapshot';
 import {createPrivateSnapshotController,type PrivatePanelState} from '../private-snapshot-client';
 const value=()=>({state:'restricted',operational:false,trialEndsAt:'2026-11-12T12:00:00.000Z',paidThrough:null,graceEndsAt:null,plan:'small',employeeLimit:15,activeEmployees:4,reason:'trial_ended',billing:true,export:true,observedAt:new Date().toISOString(),validForMs:15000});
-afterEach(()=>rs.useRealTimers());
+afterEach(()=>{ rs.useRealTimers(); });
 it('decodes only a bounded private company billing snapshot and strips unreviewed financial identity',()=>{const parsed=parseBillingSnapshot({...value(),stripeCustomerId:'must-not-disclose',instanceSecret:'must-not-disclose'});expect(parsed.state).toBe('ready');expect(JSON.stringify(parsed)).not.toContain('must-not-disclose');});
 it.each([0,-1,15001,Infinity,NaN,0.5,'15000',null,undefined])('rejects an invalid disclosure lifetime %s',validForMs=>{expect(()=>parseBillingSnapshot({...value(),validForMs})).toThrow();});
 it.each([null,undefined,'tomorrow','2026-11-12T12:00:00+00:00'])('rejects missing or noncanonical server observation %s',observedAt=>{expect(()=>parseBillingSnapshot({...value(),observedAt})).toThrow();});

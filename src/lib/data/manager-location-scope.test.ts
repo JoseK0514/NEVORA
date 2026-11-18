@@ -42,7 +42,7 @@ function fakeExecutor(installed: number, snapshot: unknown, failure?: unknown) {
 const readStatement = (statements: SqlStatement[]) => statements.find(s => s.text.includes('scope AS MATERIALIZED'))!;
 const sentinel = (value: string) => Object.assign(new Error(`invalid input syntax for type integer: "${value}"`), { code: '22P02' });
 
-beforeEach(() => rs.clearAllMocks());
+beforeEach(() => { rs.clearAllMocks(); });
 
 describe('manager location scope SQL', () => {
   it('legacy storage reads every workspace location and still types the actor parameter', () => {

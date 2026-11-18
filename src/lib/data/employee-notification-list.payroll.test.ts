@@ -10,7 +10,7 @@ import type {SqlExecutor,SqlStatement} from '../notifications/types';
 
 // Transport contract fixture: actual canonical source check and protected replay
 // run unchanged. These returned facts do not certify Finance's SQL predicate.
-afterEach(()=>rs.unstubAllEnvs());
+afterEach(()=>{ rs.unstubAllEnvs(); });
 type Mode='normal'|'source-lost'|'version-changed'|'authority-lost'|'foreign'|'new-candidate'|'missing-read'|'source-failed';
 async function read(role:'EMPLOYEE'|'LEAD'|'MANAGER'|'OWNER',mode:Mode='normal',count=1,readAt:string|null=null,kind='PAYROLL_STATEMENT') {
  rs.stubEnv('NEVORA_PAYROLL_ENABLED','true');

@@ -3,7 +3,7 @@ import {afterEach,expect,it,rs} from '@rstest/core';
 import {ClockerPresentation} from './clocker-language';
 import {ClockerPinGate,PinRequestError,requestPin} from './clocker-pin-gate';
 
-afterEach(()=>rs.unstubAllGlobals());
+afterEach(()=>{ rs.unstubAllGlobals(); });
 const reply=(status:number,body:object)=>rs.fn(async()=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json'}}));
 const failure=async(status:number,body:object)=>{
  rs.stubGlobal('fetch',reply(status,body));

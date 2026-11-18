@@ -38,7 +38,7 @@ beforeEach(()=>{
  for(const [key,value] of Object.entries({NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_PORTAL_BASE_DOMAIN:f.config.portalBaseDomain,NEVORA_CONTROL_DATABASE_URL:f.control.connectionUrl,NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:f.config.encryptionKey,NEVORA_WORKSPACE_TOKEN_SECRET:f.config.tokenKey,NEVORA_ONBOARDING_ENABLED:'false'}))rs.stubEnv(key,value);
  cookies.values.clear();
 });
-afterEach(()=>rs.unstubAllEnvs());
+afterEach(()=>{ rs.unstubAllEnvs(); });
 function request(origin:string,path:string,marker:string,body:unknown,extra:Record<string,string>={}){return new Request(origin+path,{method:'POST',headers:{host:new URL(origin).host,origin,'content-type':'application/json',[marker]:'1',...extra},body:JSON.stringify(body)});}
 it('reads the same employee ID from its own database and rejects copied session cookies even with identical stored inner hashes',async()=>{
  const [a,b]=f.companies;

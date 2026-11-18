@@ -84,7 +84,7 @@ beforeEach(() => {
   rs.stubEnv('FUEL_TEST_DATABASE_URL', 'postgresql://fixture@127.0.0.1:54321/nevora_foundation_test_bootstrap');
   rs.stubEnv('FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN', 'yes');
 });
-afterEach(() => rs.unstubAllEnvs());
+afterEach(() => { rs.unstubAllEnvs(); });
 
 it('runs exact migration files sequentially on one closed bootstrap connection, keeping runtime connections separate', async () => {
   const sql = await Promise.all(CURRENT_MIGRATIONS.map(file => readFile(`db/migrations/${file}`, 'utf8')));

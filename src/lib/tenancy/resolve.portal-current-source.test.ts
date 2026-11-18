@@ -86,7 +86,7 @@ beforeEach(() => {
   transport.query.mockImplementation((text: string, values: readonly unknown[]) => ({ text, values,
     then() { throw Error('lazy query awaited outside owning batch'); } }));
 });
-afterEach(() => rs.useRealTimers());
+afterEach(() => { rs.useRealTimers(); });
 
 describe('private versioned Portal current-source transport', () => {
   it('retains the full exact native snapshot only in the private execution payload', async () => {

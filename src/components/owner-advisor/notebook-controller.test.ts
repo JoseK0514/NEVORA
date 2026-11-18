@@ -8,7 +8,7 @@ const snapshot = (revision = 1, closed = false) => ({
   briefing: { observedAt: new Date().toISOString(), sources: [], partial: true, data: null },
   notebook: { state: "ready", notebook: { revision, goals: [], tasks: [{ id: taskId, objective: "Investigate weekend coverage", notes: "Owner notes", state: closed ? "closed" : "open", focus: { kind: "general" }, updatedAt: "2026-10-30T12:00:00.000Z" }] } },
 });
-afterEach(() => rs.useRealTimers());
+afterEach(() => { rs.useRealTimers(); });
 
 it("binds continuation to an open task and its current revision; pause retires the selection and answer", async () => {
   rs.useFakeTimers();

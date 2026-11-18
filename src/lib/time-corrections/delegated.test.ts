@@ -5,7 +5,7 @@ import {submitDelegatedTimeCorrection} from './client';
 import type {CorrectionRequestCommand} from './validation';
 const scope='b'.repeat(64),ready={state:'ready',employeeId:'E1',employeeName:'Fictional Worker',observedAt:'2026-11-10T12:00:00Z',timeZone:'America/Puerto_Rico',validForMs:15000,recoveryScope:scope,authority:'a'.repeat(64),totalRequests:0,requests:[],targets:[],locations:[]};
 const command:CorrectionRequestCommand={operationId:'11111111-1111-4111-8111-111111111111',kind:'MISSING_ENTRY',locationId:'L1',proposedStartAt:'2026-11-01T10:00:00Z',proposedEndAt:'2026-11-01T12:00:00Z',reason:'Confirmed work for separate review.'};
-afterEach(()=>rs.unstubAllGlobals());
+afterEach(()=>{ rs.unstubAllGlobals(); });
 it('rejects a wrong target/company, absent originating authority and invalid observation budgets',()=>{
  expect(parseDelegatedTimeCorrections(ready,'E1',scope)).toMatchObject({state:'ready',employeeId:'E1'});
  for(const patch of [{employeeId:'E2'},{recoveryScope:'c'.repeat(64)},{authority:undefined},{validForMs:0},{validForMs:15001}])expect(()=>parseDelegatedTimeCorrections({...ready,...patch},'E1',scope)).toThrow();

@@ -9,7 +9,7 @@ const dependencies = () => ({
   tool: rs.fn(async (): Promise<ToolResult> => ({ observedAt: "2026-10-23T13:00:00Z", sources: [], partial: false, data: {} })),
   signal: new AbortController().signal,
 });
-afterEach(() => rs.restoreAllMocks());
+afterEach(() => { rs.restoreAllMocks(); });
 
 it("retains bounded safe HTTP diagnostics and cancels a rejected provider body without retrying", async () => {
   const d = dependencies(), cancel = rs.fn();

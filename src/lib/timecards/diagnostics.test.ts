@@ -7,7 +7,7 @@ const workspace={id:'test-workspace',active:true,timeZone:'America/Puerto_Rico'}
 rs.mock('../data/workspaces',()=>({getWorkspace:async()=>workspace,workspaceReadGuard:()=>[]}));
 rs.mock('../company-access/operational-scope.server', ()=>({...rstestOriginal0,assertOperationalAccess:async()=>({workspace,authority:'a'.repeat(64)}),operationalScopeStatements:()=>[]}));
 import {readTimecards,mutateTimecard} from './service';
-afterEach(()=>rs.restoreAllMocks());
+afterEach(()=>{ rs.restoreAllMocks(); });
 const command={startDate:'2030-10-07',endDate:'2030-10-13',operationId:'11111111-1111-4111-8111-111111111111',employeeId:'E',expectedRevision:0,expectedSourceHash:'a'.repeat(32),action:'APPROVE'};
 it.each(['read','command'])('handled unexpected timecard %s failure shares its private response reference',async kind=>{
  const sink=rs.spyOn(console,'error').mockImplementation(()=>{});

@@ -2,7 +2,7 @@ import {createHash} from 'node:crypto';
 import {afterEach, expect, it, rs} from '@rstest/core';
 import {traceOwnedMigration, type MigrationFailureReceipt} from './owned-migration-diagnostics';
 
-afterEach(()=>rs.useRealTimers());
+afterEach(()=>{ rs.useRealTimers(); });
 const identity={file:'0002_schedule_health.sql',index:2,total:60,pid:42,statementTimeout:'5s',sql:'PRIVATE SQL and parameters'};
 
 it('executes once, returns the original result, and never samples a fast migration',async()=>{

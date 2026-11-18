@@ -15,7 +15,7 @@ describe('actual control-database verified registration',()=>{
  beforeAll(async()=>{fixture=await freshOnboardingControl();store=createControlStore(fixture.pool);});
  afterAll(async()=>{await fixture?.close();});
  beforeEach(async()=>{mail.length=0;await fixture.pool.query('TRUNCATE nevora_onboarding.registrations,nevora_onboarding.admission_counters,nevora_onboarding.email_subjects CASCADE');});
- afterEach(()=>rs.unstubAllEnvs());
+ afterEach(()=>{ rs.unstubAllEnvs(); });
  it('HTTP registration gives unrelated edge addresses separate durable network budgets without persisting IPs',async()=>{
   rs.stubEnv('VERCEL','1');const c={...config,verificationBucketLimit:2};const h=registrationHttpHandlers({config:c,store,delivery,admission:{mode:'open'}});
   const request=(email:string,ip:string,spoof='198.51.100.99')=>h.request(new Request(c.signupOrigin+'/api/onboarding/registrations',{method:'POST',headers:{origin:c.signupOrigin,'content-type':'application/json','x-vercel-forwarded-for':ip,'x-forwarded-for':spoof},body:JSON.stringify(command(email))}));

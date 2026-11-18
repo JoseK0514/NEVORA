@@ -15,7 +15,7 @@ import {withoutB} from '../owner-b/test-support';
 import {homePreviewRecords, previewEmployeeHome, previewManagerHome, previewActionCenter, previewToday} from './home-fixtures';
 import HomePreviewPage from '@/app/ui-preview/home/page';
 
-afterEach(() => rs.unstubAllEnvs());
+afterEach(() => { rs.unstubAllEnvs(); });
 
 it('copies only fictional display fields with the original people, locations and 21 shifts', () => {
   expect(homePreviewRecords.workspace.name).toBe('Northside QA Workforce');

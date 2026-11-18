@@ -7,7 +7,7 @@ import {notificationReadManifest} from './employee-notification-list.server';
 import {notificationReadSql} from './notification-state';
 import {workspaceReadSql} from './workspaces';
 const proof={employee:{id:'owner',role:'OWNER'},sessionTokenHash:'a'.repeat(64)} as SessionMutationProof;
-afterEach(()=>rs.restoreAllMocks());
+afterEach(()=>{ rs.restoreAllMocks(); });
 it.each(['list','read'] as const)('cancels stalled %s workspace reads and forwards the eight-second signal',async kind=>{
  const controller=new AbortController(),timeout=rs.spyOn(AbortSignal,'timeout').mockReturnValue(controller.signal);
  let received:AbortSignal|undefined;

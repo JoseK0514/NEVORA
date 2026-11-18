@@ -24,7 +24,7 @@ const dependencies = () => ({
   signal: new AbortController().signal, check: rs.fn(async () => {}),
   tool: rs.fn(async (_call: ToolCall): Promise<ToolResult> => ({ observedAt: "2026-11-15T12:00:00Z", sources: [{ label: "Today", href: "/app", observedAt: "2026-11-15T12:00:00Z" }], partial: false, data: { scheduled: 2 } })),
 });
-beforeEach(() => rs.spyOn(Date, "now").mockReturnValue(Date.parse("2026-11-15T12:00:00Z")));
+beforeEach(() => { rs.spyOn(Date, "now").mockReturnValue(Date.parse("2026-11-15T12:00:00Z")); });
 afterEach(() => { rs.restoreAllMocks(); rs.useRealTimers(); });
 
 describe("direct Anthropic Owner adapter", () => {

@@ -11,7 +11,7 @@ beforeEach(() => {
   rs.stubEnv('VERCEL', '1'); rs.stubEnv('VERCEL_ENV', 'preview');
   rs.stubEnv('VERCEL_URL', 'nevora-candidate-123.vercel.app');
 });
-afterEach(() => rs.unstubAllEnvs());
+afterEach(() => { rs.unstubAllEnvs(); });
 
 describe('exact Vercel preview browser admission', () => {
   it('admits this immutable deployment while retaining the explicitly configured portal origin', () => {

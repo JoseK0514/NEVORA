@@ -12,7 +12,7 @@ import {
 import { hashPassword } from "../../lib/auth/password";
 import { fictionalProfile } from "../fixtures/shift-changes";
 // Each engine owns its fixture and the unchanged per-test budget, including cleanup.
-it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned PostgreSQL and Next in %s", { concurrent: false }, async (engine) => {
+it.sequential.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned PostgreSQL and Next in %s", async (engine) => {
   const evidence = process.env.NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE;
   if (!evidence) throw Error("Explicit external evidence directory required");
   await mkdir(evidence, { recursive: true });

@@ -6,7 +6,7 @@ import type {SqlExecutor} from '../notifications/types';
 import { commitRequestTransition } from './request-notifications';
 rs.mock('./notification-transactions',()=>({neonNotificationExecutor:()=>({})}));
 rs.mock('./request-notifications', ()=>({...rstestOriginal0,commitRequestTransition:rs.fn(async()=>true)}));
-beforeEach(()=>rs.clearAllMocks());
+beforeEach(()=>{ rs.clearAllMocks(); });
 it('never turns malformed creation timestamps into a valid pending request',async()=>{
  const row={id:'r',employee_id:'e',employee_name:'Fictional',start_date:'2030-10-07',end_date:'2030-10-07',status:'PENDING',created_at:'2030-02-30T12:00:00Z'};
  const executor={query:async()=>[row]} as unknown as SqlExecutor;

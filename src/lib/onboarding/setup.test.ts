@@ -6,7 +6,7 @@ it('rejects client authority, unknown fields and malformed named timezones in bu
 });
 
 it('refuses an unclassified transaction before any SQL and composes explicitly declared mutations',async()=>{
- const {onboardingMutationExecutor}=await import('./setup.server');const {vi}=await import('vitest');
+ const {onboardingMutationExecutor}=await import('./setup.server');const { rs: vi } = await import('@rstest/core');
  const f=await import('../workspace-routing/resolver.server');const spy=vi.spyOn(f,'workspaceBindingFacts').mockReturnValue({record:{id:'fictional-company'}} as never);
  const transaction=vi.fn(async(s:readonly {text:string}[])=>s.map(()=>[])),ex={query:vi.fn(),transaction};
  const input={proof:{sessionTokenHash:'a'.repeat(64),employee:{id:'OWNER-1'}} as never,binding:{} as never,operationId:'12345678-1234-4234-8234-123456789012',expectedVersion:'1',kind:'SETUP_BUSINESS',hash:'a'.repeat(64),matches:()=>false};

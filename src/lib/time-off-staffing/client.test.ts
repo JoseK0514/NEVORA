@@ -5,7 +5,7 @@ const item={id:'LEAVE_STAFFING:r1:s1',requestId:'r1',state:'approval_conflict',e
  employeeInstruction:'awaiting_decision',publicationId:'p1',revisionNumber:2,shiftId:'s1',locationId:'loc-1',locationName:'West',date:'2030-10-08',startTime:'08:00',endTime:'12:00',overlapMinutes:240,overlapDates:['2030-10-08']};
 const ready=(weekStart:string,items:unknown[]=[item],extra={})=>({state:'ready',authority:'view-1',weekStart,observedAt:'2030-10-06T12:00:00.000Z',validForMs:30000,items,...extra});
 const authority={scope:'management' as const,actorId:'manager-1',view:'view-1'};
-afterEach(()=>rs.unstubAllGlobals());
+afterEach(()=>{ rs.unstubAllGlobals(); });
 
 it('lists the Mondays a request touches and stops past six weeks',()=>{
  expect(weeksFor('2030-10-08','2030-10-08')).toEqual(['2030-10-07']);

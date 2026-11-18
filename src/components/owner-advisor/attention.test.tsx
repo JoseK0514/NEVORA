@@ -13,7 +13,7 @@ function snapshot(): AdvisorSnapshot {
   };
 }
 const actions = { editQuestion() {}, editPriorities() {}, ask() {}, save() {}, cancel() {}, refresh() {}, reviewConflict() {} };
-afterEach(() => rs.useRealTimers());
+afterEach(() => { rs.useRealTimers(); });
 it("shows sourced priority cards and personal review controls without requiring a model connection", () => {
   const html = renderToStaticMarkup(<AdvisorScreen view={{ ...initialView, snapshot: snapshot() }} actions={actions} />);
   expect(html).toContain("Needs your attention");

@@ -3,7 +3,7 @@ import {staffTaskRequest, sendStaffTaskCommand, readStaffTaskOperation, parseSta
 import type {StaffTaskCommand} from './types';
 const authority = 'a'.repeat(64), id = '00000000-0000-4000-8000-000000000001';
 const command: StaffTaskCommand = {kind: 'COMPLETE', operationId: id, authority, taskId: id, expectedRevision: 1};
-afterEach(() => rs.unstubAllGlobals());
+afterEach(() => { rs.unstubAllGlobals(); });
 it('uses only fixed same-origin endpoints with no-store credentials and intent headers', async () => {
   const fetch = rs.fn().mockResolvedValue(Response.json({state: 'ready'})); rs.stubGlobal('fetch', fetch);
   await staffTaskRequest('query', authority, {fromDate: '2026-11-11', toDate: '2026-11-17', view: 'MINE', locationId: null});

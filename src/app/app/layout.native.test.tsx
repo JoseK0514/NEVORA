@@ -80,4 +80,4 @@ it.each(['/app/billing','/app/account/delete'])('keeps current session admission
  await expect(layout()).rejects.toThrow('session unavailable');
 });
 
-afterEach(()=>rs.unstubAllEnvs());
+afterEach(()=>{ rs.unstubAllEnvs(); });

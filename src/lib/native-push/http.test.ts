@@ -32,7 +32,7 @@ async function setup() {
   const make = (value: typeof config | null = config) => (api()).then(m => m.createNativeRegistrationHandlers({config: value, session, repository: factory as unknown as Parameters<typeof m.createNativeRegistrationHandlers>[0]['repository']}));
   return {repository, session, factory, make, handlers: await make()};
 }
-afterEach(() => rs.useRealTimers());
+afterEach(() => { rs.useRealTimers(); });
 it('requires current browser authority for explicit receipt reconciliation without redefining ordinary enrollment',async()=>{
  const f=await setup(),body={...enrollment(),operation:'reconcile'};
  expect((await f.handlers.challenge(request('challenge',body))).status).toBe(200);

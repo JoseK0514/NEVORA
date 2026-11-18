@@ -8,7 +8,7 @@ const id='170837ce-471d-4c6f-a322-aa73ce9863d6',appRef='5d332a0d-69ab-45a4-9c0b-
 const config={environment:'test' as const,portalBaseDomain:'portal.example.invalid',controlDatabaseUrl:'postgresql://fixture@127.0.0.1/fictional',encryptionKey:Buffer.alloc(32,9).toString('base64url'),tokenKey:Buffer.alloc(32,8).toString('base64url')};
 const row={id,canonical_origin:'https://alpha.portal.example.invalid',environment:'test',incarnation:'1',revision:'1',lifecycle:'ACTIVE',provider_project_id:'fictional-project-a',app_secret_ref:appRef,app_role_name:'nv_app_alpha',worker_secret_ref:null,worker_role_name:null};
 function registry(value:unknown=row):ControlStore{return {async query(){return {rows:value===null?[]:[value],rowCount:value===null?0:1};},async transaction(){throw Error('No mutation belongs in routing resolution');}} as ControlStore;}
-afterEach(()=>rs.unstubAllEnvs());
+afterEach(()=>{ rs.unstubAllEnvs(); });
 describe('canonical workspace routing',()=>{
  it('defaults only an absent mode to legacy and rejects misspelled modes',()=>{expect(workspaceMode({})).toBe('single_company');expect(()=>workspaceMode({NEVORA_WORKSPACE_MODE:'isolate'})).toThrow();});
  it('accepts only one registered business label under the approved portal domain',()=>{expect(parseWorkspaceOrigin('https://alpha.portal.example.invalid',config)).toBe('https://alpha.portal.example.invalid');});

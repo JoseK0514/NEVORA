@@ -5,7 +5,7 @@ rs.mock('@/lib/db', () => ({ getDb: () => ({ query: async () => [{ id: 'legacy' 
 import { createTimeOffRequest, reviewTimeOffRequest } from './requests';
 import { fixture, intents } from './request-notification-fixtures.test-support';
 beforeEach(() => { rs.useFakeTimers(); rs.setSystemTime(new Date('2030-10-07T12:00:00Z')); });
-afterEach(() => rs.useRealTimers());
+afterEach(() => { rs.useRealTimers(); });
 it.each(['APPROVED', 'DENIED'] as const)('time_off_decision_returns_without_provider_contact: %s', async status => {
   const r = fixture('TIME_OFF'); const provider = rs.fn(() => new Promise(() => {})); rs.stubGlobal('fetch', provider);
   try {

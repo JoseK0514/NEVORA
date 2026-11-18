@@ -168,5 +168,5 @@ describe('SR01 scoped accountant-confirmed final periodic collection', () => {
   });
 });
 
-beforeEach(()=>rs.stubEnv('NEVORA_PAYROLL_CALCULATION_MODE','native_provisional'));
-afterEach(()=>rs.unstubAllEnvs());
+beforeEach(()=>{ rs.stubEnv('NEVORA_PAYROLL_CALCULATION_MODE','native_provisional'); });
+afterEach(()=>{ rs.unstubAllEnvs(); });

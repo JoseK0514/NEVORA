@@ -15,7 +15,7 @@ const snap = () => ({
   observedAt: new Date().toISOString(),
   validForMs: 15000,
 });
-afterEach(() => rs.useRealTimers());
+afterEach(() => { rs.useRealTimers(); });
 it("inspects without a provider, fences the result with fresh access and retires it on pause", async () => {
   rs.useFakeTimers();
   let state: AdvisorView | undefined;

@@ -23,7 +23,7 @@ function nodes(v:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isAr
 function form(){const data=new FormData();for(const node of nodes(render()))if(node.type==='input'&&node.props.type==='hidden')data.set(String(node.props.name),String(node.props.value));data.set('confirmed','yes');return data;}
 const submit=(data:FormData=form())=>(render().props.action as (form:FormData)=>Promise<WithdrawalActionState>)(data);
 beforeEach(()=>{host.state={outcome:'idle'};host.pending=false;rs.clearAllMocks();rs.stubEnv('__NEXT_EXPERIMENTAL_AUTH_INTERRUPTS','true');});
-afterEach(()=>rs.unstubAllEnvs());
+afterEach(()=>{ rs.unstubAllEnvs(); });
 it('recovers rejected browser proxy into an unconfirmed outcome with the same protected retry controls',async()=>{
  rs.mocked(withdrawTimeOffAction).mockRejectedValueOnce(TypeError('Failed to fetch'));
  expect(await submit()).toEqual({outcome:'unavailable'});

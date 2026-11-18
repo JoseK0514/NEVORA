@@ -72,5 +72,5 @@ it('records v3 even when server capture blocks a new run before source populatio
   expect(result.run.rows).toBeNull();
 });
 
-beforeEach(()=>rs.stubEnv('NEVORA_PAYROLL_CALCULATION_MODE','native_provisional'));
-afterEach(()=>rs.unstubAllEnvs());
+beforeEach(()=>{ rs.stubEnv('NEVORA_PAYROLL_CALCULATION_MODE','native_provisional'); });
+afterEach(()=>{ rs.unstubAllEnvs(); });

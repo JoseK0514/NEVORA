@@ -36,7 +36,7 @@ function form(employee: string, position: string) {
   Object.entries({ expectedReviewVersion:'a'.repeat(64), shiftId: 'shift', weekStart: '2030-10-07', date: '2030-10-07', employeeId: employee, positionId: position, locationId: 'main', startTime: '08:00', endTime: '12:00' }).forEach(([key,value]) => data.set(key,value));
   return data;
 }
-beforeEach(() => rs.clearAllMocks());
+beforeEach(() => { rs.clearAllMocks(); });
 it.each([createShiftAction, updateShiftAction])('qualified reassignment submits the explicit position to the guarded writer', async action => {
   await expect(action(form('lee','cashier'))).rejects.toMatchObject({ destination: expect.stringContaining('/app/schedule?week=2030-10-07') });
   expect(action === createShiftAction ? writes.insert : writes.update).toHaveBeenCalledWith(expect.objectContaining({ employeeId: 'LEE', positionId: 'cashier' }));
@@ -52,5 +52,5 @@ it.each([createShiftAction, updateShiftAction])('an explicit No position selecti
 
 // These business/unit fixtures do not execute SQL. Current scope admission and
 // rollback are exercised by company-access-schedule-*.integration.ts.
-rs.mock('@/lib/company-access/operational-scope.server', original=>({...rstestOriginal0,assertOriginalOperationalAccess:async(_proof:unknown,original:{authority:string})=>{expect(original.authority).toBe('f'.repeat(64));},assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},authority:'f'.repeat(64),workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));
+rs.mock('@/lib/company-access/operational-scope.server', () =>({...rstestOriginal0,assertOriginalOperationalAccess:async(_proof:unknown,original:{authority:string})=>{expect(original.authority).toBe('f'.repeat(64));},assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},authority:'f'.repeat(64),workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));
 rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',data:{saveAvailability:'available',shift:{reviewVersion:'a'.repeat(64),id:'test-shift'},employeeOptions:[],positionOptions:[]}})}));

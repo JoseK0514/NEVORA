@@ -13,7 +13,7 @@ async function api() {
   expect(m).toHaveProperty('runNativeWorker');
   return m as typeof import('./worker');
 }
-afterEach(() => rs.useRealTimers());
+afterEach(() => { rs.useRealTimers(); });
 function fixture(count = 1) {
   let now = time, active = true, deliverable = true, role = 'EMPLOYEE', sourceReason = 'current';
   let provider: NativeProviderResult = {kind: 'accepted'};

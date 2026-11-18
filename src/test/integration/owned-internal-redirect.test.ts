@@ -16,7 +16,7 @@ async function fixture(){
  return {origin:'http://127.0.0.1:'+address.port,release,seen,async close(){release();server.closeAllConnections();await new Promise<void>((resolve,reject)=>server.close(error=>error?reject(error):resolve()));}};
 }
 async function bounded<T>(promise:Promise<T>){let timer:ReturnType<typeof setTimeout>|undefined;try{return await Promise.race([promise,new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Owned stream did not settle before release')),1500);})]);}finally{clearTimeout(timer);}}
-afterEach(()=>rs.unstubAllEnvs());
+afterEach(()=>{ rs.unstubAllEnvs(); });
 it('carries canonical Host and unchanged cookie through real owned HTTP when native Node fetch omits Host',async()=>{
  const f=await fixture();try{const native=await fetch(f.origin+'/login',internal);expect(native.status).toBe(403);await native.text();const response=await createOwnedInternalRedirectFetch(f.origin,canonical)(f.origin+'/login',internal);expect(response.status).toBe(200);expect(response.headers.get('content-type')).toBe('text/x-component');expect(await response.text()).toBe('firstlast');expect(f.seen.at(-1)).toEqual({path:'/login',host:new URL(canonical).host,forwarded:new URL(canonical).host,cookie:'fictional=owned'});}finally{await f.close();}
 });

@@ -3,7 +3,7 @@ import type { SqlExecutor } from '../notifications/types';
 import type { SessionMutationProof } from '../shift-changes/types';
 import { statements } from './access';
 
-afterEach(() => rs.unstubAllEnvs());
+afterEach(() => { rs.unstubAllEnvs(); });
 const proof: SessionMutationProof = { employee: { id: 'SELF', firstName: 'Fictional', lastName: 'Person', role: 'EMPLOYEE', primaryLocationId: 'L1' }, sessionTokenHash: 'a'.repeat(64) };
 function databaseRows(payload: Record<string, unknown>): SqlExecutor {
   return {

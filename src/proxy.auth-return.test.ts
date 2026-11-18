@@ -2,8 +2,8 @@ import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import {NextRequest} from 'next/server';
 import {proxy} from './proxy';
 
-beforeEach(()=>rs.stubEnv('NEVORA_COMMERCE_ENABLED','false'));
-afterEach(()=>rs.unstubAllEnvs());
+beforeEach(()=>{ rs.stubEnv('NEVORA_COMMERCE_ENABLED','false'); });
+afterEach(()=>{ rs.unstubAllEnvs(); });
 
 it.each(['GET','POST'])('P4-AUTH-01 replaces caller destinations with the actual vetted %s request',async method=>{
  const request=new NextRequest('https://actual.example/app/schedule?week=2030-01-07',{method,headers:{

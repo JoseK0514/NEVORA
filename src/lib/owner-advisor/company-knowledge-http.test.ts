@@ -2,7 +2,7 @@ import { afterEach, expect, it, rs } from '@rstest/core';
 rs.mock('@/lib/auth/session', () => ({ getSession: async () => ({ id: 'owner', role: 'OWNER' }), requireSessionMutationProof: async () => ({ employee: { id: 'owner', role: 'OWNER' } }) }));
 rs.mock('@/lib/data/sql-executor', () => ({ neonNotificationExecutor: () => ({}) }));
 import { knowledgeHttp } from './company-knowledge-http.server';
-afterEach(() => rs.restoreAllMocks());
+afterEach(() => { rs.restoreAllMocks(); });
 function openRequest(signal?: AbortSignal) {
   const cancel = rs.fn();
   const body = new ReadableStream<Uint8Array>({ start(c) { c.enqueue(new TextEncoder().encode('{')); }, cancel });

@@ -160,7 +160,7 @@ function client(){
  Object.defineProperty(c.connection,'stream',{value:socket});Object.assign(c,{_txStatus:'I',_activeQuery:null,_queryQueue:[],_connected:true,_connecting:false,_ending:false,readyForQuery:true});
  const query=rs.spyOn(c,'query').mockRejectedValue(new Error('FICTIONAL_TRANSPORT_NOT_CONFIGURED'));return {c,query};
 }
-afterEach(()=>rs.restoreAllMocks());
+afterEach(()=>{ rs.restoreAllMocks(); });
 const OIDS:Record<string,number>={text:25,date:1082,time:1083,smallint:21,timestamptz:1184,integer:23,jsonb:3802,boolean:16,uuid:2950,'text[]':1009,'char(64)':1042,'numeric(5,2)':1700,bigint:20,timestamp:1114,'char(32)':1042};
 function field(name:string,type:string){return {name,dataTypeID:OIDS[type],format:'text'};}
 type Mutation=(tag:string,rows:(string|null)[][])=>void;

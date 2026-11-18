@@ -8,7 +8,7 @@ const configured = () => ({NATIVE_PUSH_REGISTRATION_ENABLED: 'true', NATIVE_PUSH
   NATIVE_PUSH_ORIGIN: 'https://nevora.example', NATIVE_PUSH_IOS_APP_ID: 'com.velani.nevora.development',
   NATIVE_PUSH_IOS_PROVIDER: 'apns-sandbox', NATIVE_PUSH_ANDROID_APP_ID: 'com.velani.nevora.development',
   NATIVE_PUSH_TOKEN_ENCRYPTION_KEY: Buffer.alloc(32, 5).toString('base64url')});
-afterEach(() => rs.unstubAllEnvs());
+afterEach(() => { rs.unstubAllEnvs(); });
 it('is disabled without every explicit registration setting; no provider delivery is enabled', async () => {
   const m = await api();
   expect(m.readNativeRegistrationConfig({})).toBeNull();

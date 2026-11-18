@@ -42,7 +42,7 @@ it('recovers a failed browser cookie write after real password sign-in without c
 });
 
 it('processes real leased payroll and notification work with WORKER while denying Owner takeover SQL',async()=>{
- const {vi}=await import('vitest'),{withWorkspaceBinding}=await import('@/lib/workspace-routing/context.server'),{claimJob,finishJob}=await import('@/lib/payroll/worker'),{sqlDeliveryRepository}=await import('@/lib/data/push-deliveries'),{getWorkspaceDb}=await import('@/lib/workspace-routing/transport.server');
+ const {withWorkspaceBinding}=await import('@/lib/workspace-routing/context.server'),{claimJob,finishJob}=await import('@/lib/payroll/worker'),{sqlDeliveryRepository}=await import('@/lib/data/push-deliveries'),{getWorkspaceDb}=await import('@/lib/workspace-routing/transport.server');
  const f=await onboardingJourneyFixture();try{
   const c=await f.createCompany();await f.activateCompany(c);const binding=await resolveWorkspaceBinding({origin:c.origin},f.store,f.routing,'WORKER'),ex=getWorkspaceDb(binding);rs.stubEnv('NEVORA_WORKSPACE_MODE','isolated');rs.stubEnv('NEVORA_PAYROLL_ENABLED','true');
   await withWorkspaceBinding(binding,async()=>{
@@ -62,7 +62,7 @@ it('processes real leased payroll and notification work with WORKER while denyin
 });
 
 it('uses the actual isolated APP principal for Owner memory while another company and WORKER remain isolated',async()=>{
- const {vi}=await import('vitest'),{withWorkspaceBinding}=await import('@/lib/workspace-routing/context.server'),{getWorkspaceDb}=await import('@/lib/workspace-routing/transport.server'),{advisorService}=await import('@/lib/owner-advisor/service.server');
+ const {withWorkspaceBinding}=await import('@/lib/workspace-routing/context.server'),{getWorkspaceDb}=await import('@/lib/workspace-routing/transport.server'),{advisorService}=await import('@/lib/owner-advisor/service.server');
  const f=await onboardingJourneyFixture();try{
   const a=await f.activateCompany(await f.createCompany()),b=await f.activateCompany(await f.createCompany('beta','b@example.invalid'));
   rs.stubEnv('NEVORA_WORKSPACE_MODE','isolated');

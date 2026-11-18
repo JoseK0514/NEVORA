@@ -5,7 +5,7 @@ import { createTimeOffRequest } from './requests';
 import { commitRequestTransition } from './request-notifications';
 rs.mock('./notification-transactions',()=>({neonNotificationExecutor:()=>({})}));
 rs.mock('./request-notifications', ()=>({...rstestOriginal0,commitRequestTransition:rs.fn(async()=>true)}));
-beforeEach(()=>rs.clearAllMocks());
+beforeEach(()=>{ rs.clearAllMocks(); });
 it("keeps the form's unique request ID and session actor on repeated protected transaction attempts",async()=>{
  const request={proof:managementProof('FC-9004','EMPLOYEE'),requestId:'dc6b44c9-6e3f-4f0e-890c-328067ebfe9e',employeeId:'FC-9004',startDate:'2026-11-18',endDate:'2026-11-18'};
  await createTimeOffRequest(request);await createTimeOffRequest(request);

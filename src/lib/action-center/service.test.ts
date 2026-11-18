@@ -39,7 +39,7 @@ beforeEach(()=>{
   readers.staffing.mockResolvedValue({state:'ready',validForMs:45000,items:[]});
   readers.cards.mockImplementation(async(_proof,period)=>period.startDate==='2026-09-14'?previous():current());
 });
-afterEach(()=>rs.restoreAllMocks());
+afterEach(()=>{ rs.restoreAllMocks(); });
 
 it('bounds the actual action-center response by the shorter previous-week source',async()=>{
   const result=await read();

@@ -1,6 +1,6 @@
 import { it, expect, rs, afterEach } from '@rstest/core';
 import { nativeDeviceRuntime } from './device-runtime';
-afterEach(() => rs.unstubAllGlobals());
+afterEach(() => { rs.unstubAllGlobals(); });
 it('iOS and Android use closed versioned messages and drop retired replies', async () => {
     const bodies: string[] = [];
     let answer!: (value: object) => void;

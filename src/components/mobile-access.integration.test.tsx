@@ -11,7 +11,7 @@ import {ActivationInvitationView} from '@/app/activate/activation-invitation';
 import {AUTH_COPY} from '@/lib/auth-copy';
 
 rs.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{},push:()=>{}})}));
-afterEach(()=>rs.unstubAllEnvs());
+afterEach(()=>{ rs.unstubAllEnvs(); });
 
 describe('Frozen mobile access integration',()=>{
  it('keeps the rollout off by default and exposes real Help only after explicit enablement',()=>{

@@ -1,6 +1,6 @@
 import {afterEach,expect,it,rs} from '@rstest/core';
 import {fixtureReadGate} from './integration/fixture-read-gate';
-afterEach(()=>rs.useRealTimers());
+afterEach(()=>{ rs.useRealTimers(); });
 const deferred=()=>{let resolve!:()=>void;const promise=new Promise<void>(ready=>resolve=ready);return{promise,resolve};};
 it('drains an active read before mutation and queues new reads until publication completes',async()=>{
  const first=deferred(),mutation=deferred(),events:string[]=[],gate=fixtureReadGate();

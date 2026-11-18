@@ -3,7 +3,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 rs.mock('next/navigation',()=>({notFound:()=>{throw Error('NOT_FOUND');},useRouter:()=>({refresh:()=>{}})}));
 rs.mock('@/lib/auth-lang.server',()=>({readAuthLang:async()=>'en'}));
 import AccessHelpPage from './page';
-afterEach(()=>rs.unstubAllEnvs());
+afterEach(()=>{ rs.unstubAllEnvs(); });
 const page=(topic:string[]=[],from?:string)=>AccessHelpPage({params:Promise.resolve({topic}),searchParams:Promise.resolve({from})});
 it('does not expose new public help routes before mobile rollout',async()=>{
  rs.stubEnv('NEVORA_MOBILE_ACCESS_ENABLED','false');await expect(page()).rejects.toThrow('NOT_FOUND');

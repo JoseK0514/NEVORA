@@ -24,7 +24,7 @@ beforeEach(() => {
     constructor(form: { data: FormData }) { super(); for (const [key, value] of form.data.entries()) this.append(key, value); }
   });
 });
-afterEach(() => rs.unstubAllGlobals());
+afterEach(() => { rs.unstubAllGlobals(); });
 function mount(action: (data: FormData) => Promise<ConfigurationResult>, reviewedUpdatedAt: string, reviewedShiftVersion?: string) {
   hooks.index = 0;
   return (ConfigurationForm as (props: { action: typeof action; children: ReactNode; reviewedUpdatedAt: string; reviewedShiftVersion?: string }) => ReturnType<typeof ConfigurationForm>)({ action, children: null, reviewedUpdatedAt, reviewedShiftVersion });

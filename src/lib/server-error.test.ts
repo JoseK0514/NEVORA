@@ -1,7 +1,7 @@
 import {afterEach, expect, it, rs} from '@rstest/core';
 import {reportServerError} from './server-error';
 
-afterEach(() => rs.restoreAllMocks());
+afterEach(() => { rs.restoreAllMocks(); });
 const reference = 'c34ed09a-1129-455c-9b60-3018cfce2f40';
 
 it('logs only bounded diagnostic metadata and preserves the framework digest', () => {

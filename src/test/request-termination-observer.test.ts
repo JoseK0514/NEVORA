@@ -1,7 +1,7 @@
 import {EventEmitter} from 'node:events';
 import {afterEach,expect,it,rs} from '@rstest/core';
 import {observeRequestTermination} from './integration/request-termination-observer';
-afterEach(()=>rs.useRealTimers());
+afterEach(()=>{ rs.useRealTimers(); });
 for(const event of ['requestfinished','requestfailed'] as const)it('records '+event+' only for the first exact action object',async()=>{
  const source=new EventEmitter(),request={owned:true},sameUrl={owned:true},other={owned:false};
  const observer=observeRequestTermination(source,(request:{owned:boolean})=>request.owned,15000);let settled=false;void observer.result.then(()=>settled=true);

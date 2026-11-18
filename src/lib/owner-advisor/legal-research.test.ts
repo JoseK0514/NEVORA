@@ -6,7 +6,7 @@ import { LEGAL_SOURCES } from "./legal-sources";
 const source = LEGAL_SOURCES[0];
 const signal = () => new AbortController().signal;
 const html = (s = "<p>Source facts</p>") => new Response(s, { headers: { "Content-Type": "text/html" } });
-afterEach(() => rs.useRealTimers());
+afterEach(() => { rs.useRealTimers(); });
 it("fetches only a registry identity with credentialless fixed GET and hashes actual bytes", async () => {
   let request: unknown;
   const result = await fetchLegalSource(source.id, signal(), async (url, init) => { request = { url, init }; return html(); });

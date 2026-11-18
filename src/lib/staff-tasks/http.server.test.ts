@@ -17,7 +17,7 @@ beforeEach(() => {
   f.execute.mockResolvedValue({status: 'committed', operationId});
   f.recover.mockResolvedValue({status: 'committed', operationId});
 });
-afterEach(() => rs.unstubAllEnvs());
+afterEach(() => { rs.unstubAllEnvs(); });
 it('bootstraps the current private context without a previous authority header', async () => {
   const r = await staffTaskHttp(request('context', undefined, {'x-nevora-staff-task-authority': ''}, 'GET'), 'context');
   expect(r.status).toBe(200); expect(f.context).toHaveBeenCalledOnce();

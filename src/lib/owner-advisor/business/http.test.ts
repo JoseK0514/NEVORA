@@ -17,7 +17,7 @@ beforeEach(() => {
   state.proof.mockResolvedValue({ employee: { id: 'owner', role: 'OWNER' }, sessionTokenHash: 'a'.repeat(64) });
   state.service.mockResolvedValue({ state: 'ready', validForMs: 15000 });
 });
-afterEach(() => rs.restoreAllMocks());
+afterEach(() => { rs.restoreAllMocks(); });
 
 it.each([
   ['origin', '', 403], ['origin', 'https://evil.invalid', 403], ['sec-fetch-site', 'cross-site', 403],

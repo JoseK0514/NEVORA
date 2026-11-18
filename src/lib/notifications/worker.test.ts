@@ -4,7 +4,7 @@ import { fixture } from './worker.test-support';
 rs.mock('@/lib/db', () => ({ getDb: rs.fn() }));
 const time = Date.parse('2030-01-01T16:00:00Z');
 async function moduleUnderTest() { const m = await import('./worker').catch(() => ({})); expect(m).toHaveProperty('runDispatch'); return m as typeof import('./worker'); }
-afterEach(() => rs.useRealTimers());
+afterEach(() => { rs.useRealTimers(); });
 it('reads legacy subscription material through the previous key after activating a new write key',async()=>{
  const {deps}=fixture();Object.assign(deps.config,{subscriptionEncryptionKey:Buffer.alloc(32,47).toString('base64url'),subscriptionEncryptionKeyId:'new-key',subscriptionPreviousEncryptionKey:Buffer.alloc(32,3).toString('base64url'),subscriptionPreviousEncryptionKeyId:'old-key',subscriptionLegacyEncryptionKeyId:'old-key'});
  const m=await moduleUnderTest();expect(await m.runDispatch({mode:'all',deps})).toMatchObject({accepted:1,failed:0});

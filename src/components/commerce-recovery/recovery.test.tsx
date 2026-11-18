@@ -84,4 +84,4 @@ it('explains the bare headcount: upgrade or deactivate up to 30 people, a quote 
  expect(contactLabel('en')).toBe('Email support@thevelani.com');expect(contactLabel('es')).toBe('Escribir a support@thevelani.com');
 });
 
-afterEach(()=>rs.unstubAllEnvs());
+afterEach(()=>{ rs.unstubAllEnvs(); });

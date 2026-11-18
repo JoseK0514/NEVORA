@@ -11,7 +11,7 @@ rs.mock('../db', () => ({ getDb: () => ({ query: state.query, transaction: state
 rs.mock('@/lib/data/workspaces',()=>({getWorkspace:state.workspace}));
 import { destroySession } from './session';
 beforeEach(() => { state.values.clear(); state.values.set('fuel_session', 'fictional'); state.query.mockReset(); state.headers = new Headers(); });
-afterEach(() => rs.useRealTimers());
+afterEach(() => { rs.useRealTimers(); });
 it('destroySession_always_clears_auth_cookie_after_storage_rejection', async () => { state.query.mockRejectedValue(new Error('storage unavailable')); await expect(destroySession()).resolves.toBeUndefined(); expect(state.values.has('fuel_session')).toBe(false); });
 it('destroySession_caps_hung_session_revocation_at_one_second', async () => { rs.useFakeTimers(); state.query.mockImplementation((_sql, _values, options) => { if (options?.fetchOptions?.signal)
     state.signals.push(options.fetchOptions.signal); return new Promise(() => { }); }); const result = destroySession(); await rs.advanceTimersByTimeAsync(1000); expect(state.values.has('fuel_session')).toBe(false); await result; expect(state.signals.at(-1)?.aborted).toBe(true); });
