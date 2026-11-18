@@ -164,7 +164,7 @@ try{
   // Current verification expiry must block the visible action, not record time.
   await verify(t);await t.getByRole('button',{name:'Start break',exact:true}).waitFor();
   await q("UPDATE clocker_pin_sessions SET expires_at=clock_timestamp()-interval '1 second'");
-  await startBreak(t);await t.getByRole('heading',{name:'Verify your PIN again',exact:true}).waitFor();
+  await startBreak(t);await t.getByRole('heading',{name:'Enter your PIN again',exact:true}).waitFor();
   assert.equal(await count(),before+8);checked(engine+': expired verification never creates a time record');
   await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await verify(t);await t.getByRole('button',{name:'Check if it saved',exact:true}).click();await reviewObsolete(t,before+8);await t.getByRole('button',{name:'Start break',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Send it again',exact:true}).count(),0);await startBreak(t);await success(t,'Break start');await done(t);
   // Responsive controls, keyboard confirmation and clear identity on Escape.
@@ -187,20 +187,20 @@ try{
   diagnostic.phase('continue','before');await verify(t,'2468',diagnostic);diagnostic.phase('continue','after');await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();
   await diagnostic.close();currentPinDiagnostic=undefined;
   await t.evaluate(()=>{window.__restoreStorage=IDBObjectStore.prototype.put;IDBObjectStore.prototype.put=function(){throw new DOMException('Test storage denial','QuotaExceededError');};});
-  await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('heading',{name:'Browser storage needed',exact:true}).waitFor();assert.equal(await count(),guardStart);
+  await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('heading',{name:'This tablet can’t save right now',exact:true}).waitFor();assert.equal(await count(),guardStart);
   await t.evaluate(()=>{IDBObjectStore.prototype.put=window.__restoreStorage;delete window.__restoreStorage;});
   await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await idle(t);checked(engine+': blocked browser recovery storage prevents the request entirely');
   // A second tab changes the shared HttpOnly cookie. The old screen must not act as that employee.
   await verify(t);await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();
   const tab=await tablet.newPage();await goto(tab,'/clocker/2');await verify(tab,'3579',undefined,'PUNCH-B');await tab.getByRole('button',{name:'Clock in',exact:true}).waitFor();
-  await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('heading',{name:'Verify your PIN again',exact:true}).waitFor();assert.equal(await count(),guardStart);
+  await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('heading',{name:'Enter your PIN again',exact:true}).waitFor();assert.equal(await count(),guardStart);
   await done(tab);await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await verify(t);
   await t.getByRole('button',{name:'Check if it saved',exact:true}).click();await reviewObsolete(t,guardStart);await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Send it again',exact:true}).count(),0);await t.getByRole('button',{name:'Clock in',exact:true}).click();await success(t,'Clock in');await done(t);
   assert.equal((await q("SELECT count(*)::int AS n FROM time_entries WHERE employee_id='PUNCH-B'"))[0].n,0);
   await verify(t);await t.getByRole('button',{name:'Clock out',exact:true}).click();await t.getByRole('button',{name:'Confirm clock out',exact:true}).click();await success(t,'Clock out');await done(t);
   await tab.close();checked(engine+': a stale tab cannot clock a newly verified different employee');
   await t.route('**/api/clocker/2/punch',route=>route.request().postDataJSON()?.operation==='state'?route.abort('failed'):route.continue());
-  await verify(t);await t.getByRole('heading',{name:'Clock state unavailable',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Clock in',exact:true}).count(),0);await shot(t,engine+'-unavailable');
+  await verify(t);await t.getByRole('heading',{name:'We couldn’t load your time',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Clock in',exact:true}).count(),0);await shot(t,engine+'-unavailable');
   await t.unroute('**/api/clocker/2/punch');await t.getByRole('button',{name:'Try again',exact:true}).click();await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();await done(t);
   checked(engine+': an unavailable clock read never displays a false off-clock action');
   // C5 and the tablet run through one canonical engine, including real Owner edits.
