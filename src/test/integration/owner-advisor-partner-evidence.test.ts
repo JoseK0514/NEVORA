@@ -10,6 +10,12 @@ it('partner comparison layers report absent guard evidence as not-run',()=>{
  expect(summarizePartnerAssertions([{testResults:[{assertionResults:[{fullName:'genuine no-problem fixture is configured and fully covered before any alternative',status:'failed'}]}]}]).find(r=>r.id==='no-problem')!.status).toBe('incomplete');
 });
 
+it.each([['pass','passed'],['fail','incomplete'],['skip','incomplete']] as const)('classifies an Rstest %s assertion as %s', (status, expected)=>{
+ const fullName='genuine no-problem fixture is configured and fully covered before any alternative';
+ const result=summarizePartnerAssertions([{tool:'rstest',tests:[{fullName,status}]}]);
+ expect(result.find(row=>row.id==='no-problem')).toMatchObject({status:expected,actualModelSample:'not-run'});
+});
+
 it('partner startup guard rejects unapproved, exhausted, reused and altered identity without provider calls',async()=>{
  const {execFileSync}=await import('node:child_process');
  // The guard suite uses only its own mkdtemp fictional ledgers and sentinel transports.
