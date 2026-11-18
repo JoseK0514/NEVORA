@@ -42,6 +42,15 @@ test('both release readers accept the same complete Rstest execution and case id
   assert.equal(releaseTestReport(legacy, source), legacy);
 });
 
+test('Clocker admits distinct parameterized cases with the same display title', () => {
+  const value = report();
+  for (const rows of [value.tests, value.files[0].results]) {
+    rows[1] = { ...rows[0], testId: rows[1].testId };
+  }
+  assert.deepEqual(validateClockerReport(value, source, [file]), { files: [file], tests: 2 });
+  assert.throws(() => verifySqlExecution(value, source, 'assignments'), /Duplicate executed SQL case identity/);
+});
+
 const failures = {
   'a failed run': value => { value.status = 'fail'; },
   'an unhandled error': value => { value.unhandledErrors = [{ message: 'fixture error' }]; },

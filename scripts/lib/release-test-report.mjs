@@ -50,14 +50,12 @@ export function releaseTestReport(report, source) {
     seenFiles.add(name);
     assert.equal(file.status, 'pass', 'Failed or skipped Rstest file');
     assert(Array.isArray(file.results) && file.results.length > 0, 'Missing Rstest file tests');
-    const names = new Set();
     const assertionResults = file.results.map(test => {
       const identity = testIdentity(test);
       assert.equal(test.testPath, path, 'Rstest case belongs to another file');
       assert.equal(test.project, file.project, 'Rstest case belongs to another project');
-      assert(!seenTests.has(test.testId) && !names.has(test.fullName), 'Duplicate Rstest test');
+      assert(!seenTests.has(test.testId), 'Duplicate Rstest test ID');
       seenTests.set(test.testId, identity);
-      names.add(test.fullName);
       return { status: 'passed', fullName: [...test.parentNames, test.name].join(' ') };
     });
     return { name, status: 'passed', assertionResults };
