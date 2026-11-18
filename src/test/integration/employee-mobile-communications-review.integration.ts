@@ -1,4 +1,4 @@
-import {afterAll,beforeAll,expect,it} from 'vitest';
+import {afterAll,beforeAll,expect,it} from '@rstest/core';
 import {createRequire} from 'node:module';
 import {access,mkdir,writeFile} from 'node:fs/promises';
 import {join,resolve} from 'node:path';

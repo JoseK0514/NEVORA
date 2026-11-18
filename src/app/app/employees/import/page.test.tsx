@@ -1,27 +1,27 @@
 // The Owner roster import page: who may open it, what it says where the import is off, and what it hands the screen.
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, rs } from '@rstest/core';
 
-const m = vi.hoisted(() => ({ role: "OWNER", routed: true, denied: false, commerce: false }));
+const m = rs.hoisted(() => ({ role: "OWNER", routed: true, denied: false, commerce: false }));
 beforeEach(() => { m.role = "OWNER"; m.routed = true; m.denied = false; m.commerce = false; });
 
-vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => undefined }) }));
-vi.mock("@/lib/auth/session", () => ({
+rs.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
+rs.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => undefined }) }));
+rs.mock("@/lib/auth/session", () => ({
   requireSession: async () => ({ id: "actor", role: m.role }),
   requireSessionMutationProof: async () => ({ employee: { id: "actor", role: m.role }, sessionTokenHash: "a".repeat(64) }),
 }));
-vi.mock("@/lib/auth/permissions", () => ({ isManagerRole: (role: string) => role === "OWNER" || role === "MANAGER" }));
-vi.mock("@/lib/company-access/operational-scope.server", () => ({
+rs.mock("@/lib/auth/permissions", () => ({ isManagerRole: (role: string) => role === "OWNER" || role === "MANAGER" }));
+rs.mock("@/lib/company-access/operational-scope.server", () => ({
   withOperationalCompany: async (_proof: unknown, load: () => Promise<unknown>) => m.denied ? { state: "unavailable", reason: "access_denied" }
     : { state: "ready", data: await load(), coverage: { kind: "COMPANY", locationIds: [] }, authority: "fixture", observedAt: "2026-11-14T12:00:00Z", validForMs: 15000 },
 }));
 // The access frame checks the person's access in the browser before it shows a page; here it shows the page.
-vi.mock("@/components/company-access/scoped-read-frame", () => ({ ScopedReadFrame: ({ children, unavailable }: { children?: React.ReactNode; unavailable?: React.ReactNode }) => children ?? unavailable ?? null }));
-vi.mock("@/lib/workspace-routing/config.server", () => ({ readWorkspaceRoutingConfig: () => { if (!m.routed) throw Error("Workspace is unavailable"); return {}; } }));
-vi.mock("@/lib/commerce/access", () => ({ commerceEnabled: () => m.commerce }));
-vi.mock("@/lib/data/employees", () => ({
+rs.mock("@/components/company-access/scoped-read-frame", () => ({ ScopedReadFrame: ({ children, unavailable }: { children?: React.ReactNode; unavailable?: React.ReactNode }) => children ?? unavailable ?? null }));
+rs.mock("@/lib/workspace-routing/config.server", () => ({ readWorkspaceRoutingConfig: () => { if (!m.routed) throw Error("Workspace is unavailable"); return {}; } }));
+rs.mock("@/lib/commerce/access", () => ({ commerceEnabled: () => m.commerce }));
+rs.mock("@/lib/data/employees", () => ({
   listLocations: async () => [
     { id: "cafe", workspaceId: "w", clockerKey: "cafe", name: "Northside Café", shortName: "Café", active: true },
     { id: "old", workspaceId: "w", clockerKey: "old", name: "Closed Shop", shortName: "Closed", active: false },

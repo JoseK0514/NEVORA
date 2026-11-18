@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
-import { beforeEach, afterEach, it, expect } from "vitest";
+import { beforeEach, afterEach, it, expect } from '@rstest/core';
 import { createPunchFixture } from "./clocker-punch-fixture";
 import {
   settings,
@@ -931,7 +931,7 @@ import type {
   NotificationIntent,
   ProviderResult,
 } from "../../lib/notifications/types";
-import { vi } from "vitest";
+import { rs } from '@rstest/core';
 async function statementIntents() {
   await approve();
   await workerOnce(f.db.executor);
@@ -992,7 +992,7 @@ async function fakeDispatcher(
   );
   await sqlSubscriptionRepository(f.db.executor).enroll(enrollment);
   const workspace = (await import("../../lib/data/workspaces")).getWorkspace;
-  const send = vi.fn(async () => result);
+  const send = rs.fn(async () => result);
   const deps: WorkerDeps = {
     executor: f.db.executor,
     state: sqlNotificationStateRepository(f.db.executor),

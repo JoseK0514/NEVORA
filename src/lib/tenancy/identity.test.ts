@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { bindLegacyEmployment, employmentNamespaceKey, newEmployeeNumber, normalizeEmployeeNumber, normalizeWorkspaceLocator, preflightEmploymentNamespaces, prepareNewEmployment } from './identity';
 import type { NamespaceRow } from './identity';
 

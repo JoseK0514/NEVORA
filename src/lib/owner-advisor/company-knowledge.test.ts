@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { parseKnowledgeCommand, knowledgeDigest, knowledgeExcerpt, knowledgeSourceHref, knowledgeLimits } from './company-knowledge';
 const id = '11111111-1111-4111-8111-111111111111';
 const draft = () => ({ op: 'draft_document', requestId: id, expectedRevision: 0, documentId: null, title: 'Opening procedure', locale: 'en', category: 'operations', body: 'Open at 08:00.\r\nCheck the recorded roster.', sourceName: 'opening.md' });

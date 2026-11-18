@@ -2,8 +2,8 @@
 import {reconcileGuardedTypedLocalPortalLegacyAccessEnrollment} from './typed-guarded-backfill.server';
 import type {GuardedTypedBackfillRequest,GuardedTypedPortalLegacyAccessEnrollmentOutcome,GuardedTypedPortalLegacyReconciliationOutcome} from './typed-guarded-backfill.server';
 // PRC_NATIVE_REBASE_IMPORT_END
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-vi.mock('server-only', () => ({}));
+import { afterAll, beforeAll, describe, expect, it, rs } from '@rstest/core';
+rs.mock('server-only', () => ({}));
 import { appendFileSync, existsSync, readFileSync, realpathSync, renameSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { createHash, randomBytes } from 'node:crypto';
@@ -1032,7 +1032,7 @@ async function PLB03WholeOriginalPreservedLiveFailureRollback(f:Fixture,command:
  const connection=driver.connection,pulse=driver._pulseQueryQueue;
  let liveInserts=0,aborted:unknown,insideLive:unknown,nativeFault:unknown,failedBlockFault:unknown,abortedClientStatus:unknown;
  let probeSettlement:Promise<void>|undefined,probeFailure:unknown,callbackSettlements=0;
- const pulseSpy=vi.spyOn(driver,'_pulseQueryQueue').mockImplementation(()=>{
+ const pulseSpy=rs.spyOn(driver,'_pulseQueryQueue').mockImplementation(()=>{
   const query=driver.readyForQuery?driver._queryQueue[0]:undefined;
   if(query?.text===liveLiteral![1]){
    expect(liveInserts).toBe(0);expect(driver.connection).toBe(connection);expect(query.values).toEqual(expectedLive);
@@ -1065,7 +1065,7 @@ async function PLB03WholeOriginalPreservedLiveFailureRollback(f:Fixture,command:
   }
   Reflect.apply(pulse,f.observer,[]);
  });
- const spy=vi.spyOn(f.observer,'query').mockImplementation((async(...args:unknown[])=>{
+ const spy=rs.spyOn(f.observer,'query').mockImplementation((async(...args:unknown[])=>{
   commands.push(queryText(args[0]));return Reflect.apply(native,f.observer,args);
  }) as Client['query']);let outcome:unknown;
  try{outcome=await executeGuardedTypedLocalPortalLegacyAccessEnrollment(f.observer,f.request);}
@@ -1204,7 +1204,7 @@ registerPortalWholeOriginalCredentialedCases(rootReviewedCredentialedLegacyComma
     // this own client immediately before the capture's real COMMIT. It returns
     // native results; no source facts, issuers, comparator classes or rows mock.
     const nativeCapture = first.query.bind(first); let captureSnapshot = '', sqlPairs: unknown[] = [];
-    const captureSpy = vi.spyOn(first, 'query').mockImplementation((async (...args: unknown[]) => {
+    const captureSpy = rs.spyOn(first, 'query').mockImplementation((async (...args: unknown[]) => {
       const sql = queryText(args[0]);
       if (sql === 'COMMIT') {
         captureSnapshot = (await nativeCapture('SELECT pg_current_snapshot()::text snapshot')).rows[0].snapshot;
@@ -1249,7 +1249,7 @@ registerPortalWholeOriginalCredentialedCases(rootReviewedCredentialedLegacyComma
     const chain: Chain = { facts, snapshot, ownership: owner.observations, namespaces: ns.observations, keys: key.observations,
       constraints: constrained.observations, assignments, plan };
     const queries: string[] = [], native = first.query.bind(first);
-    vi.spyOn(first, 'query').mockImplementation(((...args: unknown[]) => { queries.push(queryText(args[0])); return Reflect.apply(native, first, args); }) as Client['query']);
+    rs.spyOn(first, 'query').mockImplementation(((...args: unknown[]) => { queries.push(queryText(args[0])); return Reflect.apply(native, first, args); }) as Client['query']);
     const f: Fixture = { id, name, oid, marker, observer, first, second, original: initial, chain, request, queries }; fixtures.push(f);
     if (journalInstallation) {
       const described = describeTypedBackfillJournal(plan); expect(described.status).toBe('DESCRIBED');
@@ -1403,7 +1403,7 @@ async function prcAttach(c:Client,name:string){
  expect(identity.database).toBe(name);expect(identity.role).toBe(lease.user);
  const pulse=driver._pulseQueryQueue,connection=driver.connection,seen=new WeakSet<object>();
  const state:PRCHook={commands:[],lostAck:0,writeFaults:0,settlements:0,restore:()=>{}};
- const spy=vi.spyOn(driver,'_pulseQueryQueue').mockImplementation(()=>{
+ const spy=rs.spyOn(driver,'_pulseQueryQueue').mockImplementation(()=>{
   const query=driver.readyForQuery?driver._queryQueue[0]:undefined;
   if(query&&!seen.has(query)){
    seen.add(query);expect(driver.connection).toBe(connection);state.commands.push(query.text);
@@ -1848,7 +1848,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
     mapping:enrollmentOrdered(await enrollmentRows(f.observer)),catalog:await observeMigrationCatalog(f.observer),native:await enrollmentNativeCatalog(f.observer)};}
   function enrollmentRecord(c:Client,after?:(sql:string,args:unknown[],native:Client['query'],result:unknown)=>Promise<void>){
     const native=Client.prototype.query.bind(c),commands:string[]=[];
-    const spy=vi.spyOn(c,'query').mockImplementation((async(...args:unknown[])=>{
+    const spy=rs.spyOn(c,'query').mockImplementation((async(...args:unknown[])=>{
       const sql=queryText(args[0]);commands.push(sql);const result=await Reflect.apply(native,c,args);if(after)await after(sql,args,native,result);return result;
     }) as Client['query']);return {commands,restore:()=>spy.mockRestore()};
   }
@@ -1915,7 +1915,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
     await enrollmentApplied(f);const before=await enrollmentTuple(f),attempts:unknown[]=[];
     for(const loseAck of [false,true]){
       const native=Client.prototype.query.bind(f.observer),commands:string[]=[];let inserts=0,rolledBack=false;
-      const spy=vi.spyOn(f.observer,'query').mockImplementation((async(...args:unknown[])=>{
+      const spy=rs.spyOn(f.observer,'query').mockImplementation((async(...args:unknown[])=>{
         const sql=queryText(args[0]);commands.push(sql);
         if(sql.includes('F10_EMPLOYEE_NUMBER_INSERT')&&++inserts===2)return native('SELECT 1/0');
         const result=await Reflect.apply(native,f.observer,args);if(sql==='ROLLBACK'){rolledBack=true;if(loseAck)throw Error('PRIVATE_ENROLLMENT_ROLLBACK_ACK');}return result;
@@ -2058,7 +2058,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
   });
   actualCase('02', 'rolls back every earlier direct attribution and actor manifest after an actual mid-plan DML failure', async f => {
     const native = Client.prototype.query.bind(f.first); let failed = false, earlierWrites = 0; const commands: string[] = [];
-    const spy = vi.spyOn(f.first, 'query').mockImplementation(((...args: unknown[]) => {
+    const spy = rs.spyOn(f.first, 'query').mockImplementation(((...args: unknown[]) => {
       const sql = queryText(args[0]); commands.push(sql);
       if (/^UPDATE public\./.test(sql)) earlierWrites++;
       if (sql.startsWith('INSERT INTO public."clocker_pin_events_tenant_ownership"')) { failed = true; return native('SELECT 1/0'); }
@@ -2071,7 +2071,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
   });
   actualCase('03', 'rolls back its attempt after a real source read fails before attribution and hides SQL error detail', async f => {
     const native = Client.prototype.query.bind(f.first); const commands: string[] = []; let readFailed = false, ownedBegin = false;
-    const spy = vi.spyOn(f.first, 'query').mockImplementation(((...args: unknown[]) => {
+    const spy = rs.spyOn(f.first, 'query').mockImplementation(((...args: unknown[]) => {
       const sql = queryText(args[0]); commands.push(sql); if (sql === 'BEGIN ISOLATION LEVEL SERIALIZABLE') ownedBegin = true;
       if (ownedBegin && !readFailed && /^SELECT /.test(sql) && sql.includes(' FROM public."employees"')) { readFailed = true; return native('SELECT 1/0'); }
       return Reflect.apply(native, f.first, args);
@@ -2083,7 +2083,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
   });
   actualCase('04', 'cleans only its own real BEGIN after its acknowledgement is lost', async f => {
     const native = Client.prototype.query.bind(f.first), commands: string[] = [];
-    const spy = vi.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
+    const spy = rs.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
       const sql = queryText(args[0]); commands.push(sql); const result = await Reflect.apply(native, f.first, args);
       if (sql === 'BEGIN ISOLATION LEVEL SERIALIZABLE') throw Error('PRIVATE_FICTIONAL_BEGIN_ACK'); return result;
     }) as Client['query']);
@@ -2094,7 +2094,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
   });
   actualCase('05', 'reports uncertain real COMMIT acknowledgement without rollback and reconciles the original plan with a fresh owned connection', async f => {
     const native = Client.prototype.query.bind(f.first), commands: string[] = [];
-    const spy = vi.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
+    const spy = rs.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
       const sql = queryText(args[0]); commands.push(sql); const result = await Reflect.apply(native, f.first, args);
       if (sql === 'COMMIT') throw Error('PRIVATE_FICTIONAL_COMMIT_ACK'); return result;
     }) as Client['query']);
@@ -2103,7 +2103,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
     expect(outcome).toEqual({ status: 'UNCERTAIN', code: 'COMMIT_OUTCOME_UNKNOWN', planDigest: f.chain.plan.digest, reconciliation: 'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED' });
     expect(commands.filter(sql => sql === 'COMMIT')).toHaveLength(1); expect(commands).not.toContain('ROLLBACK'); await expectApplied(f);
     const fresh = await connect(f.name, f.request.identity.role), before = await targets(f), nativeFresh = fresh.query.bind(fresh), retrySql: string[] = [];
-    const retrySpy = vi.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => { retrySql.push(queryText(args[0])); return Reflect.apply(nativeFresh, fresh, args); }) as Client['query']);
+    const retrySpy = rs.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => { retrySql.push(queryText(args[0])); return Reflect.apply(nativeFresh, fresh, args); }) as Client['query']);
     try { expect(await executeGuardedTypedLocalBackfill(fresh, f.request)).toMatchObject({ status: 'UNCHANGED', planDigest: f.chain.plan.digest }); }
     finally { retrySpy.mockRestore(); }
     expect(retrySql.some(sql => /^(INSERT|UPDATE|DELETE|TRUNCATE)\b/.test(sql))).toBe(false); expect(await targets(f)).toEqual(before); await expectApplied(f);
@@ -2111,7 +2111,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
   actualCase('06', 'leaves an ambient caller transaction and its own marker under caller control', async f => {
     await f.first.query('BEGIN'); await f.first.query('SET LOCAL application_name=\'caller-owned-fictional-marker\'');
     const native = f.first.query.bind(f.first), commands: string[] = [];
-    const spy = vi.spyOn(f.first, 'query').mockImplementation(((...args: unknown[]) => { commands.push(queryText(args[0])); return Reflect.apply(native, f.first, args); }) as Client['query']);
+    const spy = rs.spyOn(f.first, 'query').mockImplementation(((...args: unknown[]) => { commands.push(queryText(args[0])); return Reflect.apply(native, f.first, args); }) as Client['query']);
     try { expect(await executeGuardedTypedLocalBackfill(f.first, f.request)).toEqual({ status: 'BLOCKED', code: 'CLIENT_NOT_IDLE' }); expect(commands).toEqual([]); }
     finally { spy.mockRestore(); }
     expect(f.first.getTransactionStatus()).toBe('T'); expect((await f.first.query("SELECT current_setting('application_name') name")).rows[0].name).toBe('caller-owned-fictional-marker');
@@ -2121,7 +2121,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
     const native = Client.prototype.query.bind(f.first); let releaseLock!: () => void, notifyLock!: () => void;
     const locked = new Promise<void>(resolve => { notifyLock = resolve; }), released = new Promise<void>(resolve => { releaseLock = resolve; });
     const firstCommands: string[] = [];
-    const spy = vi.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
+    const spy = rs.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
       const sql = queryText(args[0]); firstCommands.push(sql); const result = await Reflect.apply(native, f.first, args);
       if (sql.startsWith('LOCK TABLE ')) { notifyLock(); await released; } return result;
     }) as Client['query']);
@@ -2226,7 +2226,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
 
   actualCase('13', 'reports uncertain real ROLLBACK acknowledgement and reconciles safely with the original plan on a fresh owned client', async f => {
     const native = Client.prototype.query.bind(f.first), commands: string[] = []; let failedDml = false;
-    const spy = vi.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
+    const spy = rs.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
       const sql = queryText(args[0]); commands.push(sql);
       if (sql.startsWith('INSERT INTO public."clocker_pin_events_tenant_ownership"')) { failedDml = true; return native('SELECT 1/0'); }
       const result = await Reflect.apply(native, f.first, args);
@@ -2241,7 +2241,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
     // uncertain response or an assertion that it received a rollback ACK.
     expect(f.first.getTransactionStatus()).toBe('I'); await expectUnapplied(f);
     const fresh = await connect(f.name, f.request.identity.role), nativeFresh = fresh.query.bind(fresh), freshCommands: string[] = [];
-    const freshSpy = vi.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => { freshCommands.push(queryText(args[0])); return Reflect.apply(nativeFresh, fresh, args); }) as Client['query']);
+    const freshSpy = rs.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => { freshCommands.push(queryText(args[0])); return Reflect.apply(nativeFresh, fresh, args); }) as Client['query']);
     try {
       expect(await executeGuardedTypedLocalBackfill(fresh, f.request)).toMatchObject({ status: 'APPLIED', planDigest: f.chain.plan.digest });
       await expectApplied(f); const appliedTargets = await targets(f), boundary = freshCommands.length;
@@ -2269,7 +2269,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
     await expectJournalApplied(f); const firstJournal = await journalRows(f), firstTargets = await targets(f), firstMetadata = await metadata(f);
     const observation = await journalObservation(f); expect(observation.rows.every((r: { state: string }) => r.state === 'STARTED')).toBe(true);
     const fresh = await connect(f.name, f.request.identity.role), native = fresh.query.bind(fresh), commands: string[] = [];
-    const spy = vi.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => { commands.push(queryText(args[0])); return Reflect.apply(native, fresh, args); }) as Client['query']);
+    const spy = rs.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => { commands.push(queryText(args[0])); return Reflect.apply(native, fresh, args); }) as Client['query']);
     try { expect(await executeGuardedTypedLocalBackfillWithJournal(fresh, f.request)).toEqual({ ...outcome, status: 'UNCHANGED',
       journal: { descriptorChecksum: journalDescriptor(f).descriptorChecksum, chunkCount: journalDescriptor(f).chunks.length, effectsVerified: false,
         verification: 'ATOMIC_STRUCTURE_NOT_EFFECTS_OR_DATABASE_VERIFICATION', integration: 'MATCHING_EXISTING_OBSERVATIONS_NO_PRIOR_ATOMICITY_CLAIM' } }); }
@@ -2305,12 +2305,12 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
     const native = Client.prototype.query.bind(f.first), firstCommands: string[] = [];
     let release!: () => void, acquired!: () => void;
     const gate = new Promise<void>(resolve => { release = resolve; }), locked = new Promise<void>(resolve => { acquired = resolve; });
-    const spy = vi.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
+    const spy = rs.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
       const sql = queryText(args[0]); firstCommands.push(sql); const result = await Reflect.apply(native, f.first, args);
       if (sql.startsWith('LOCK TABLE public.')) { acquired(); await gate; } return result;
     }) as Client['query']);
     const secondCommands: string[] = [], secondNative = Client.prototype.query.bind(f.second);
-    const secondSpy = vi.spyOn(f.second, 'query').mockImplementation(((...args: unknown[]) => { secondCommands.push(queryText(args[0])); return Reflect.apply(secondNative, f.second, args); }) as Client['query']);
+    const secondSpy = rs.spyOn(f.second, 'query').mockImplementation(((...args: unknown[]) => { secondCommands.push(queryText(args[0])); return Reflect.apply(secondNative, f.second, args); }) as Client['query']);
     const one = executeGuardedTypedLocalBackfillWithJournal(f.first, f.request); let two: ReturnType<typeof executeGuardedTypedLocalBackfillWithJournal> | undefined;
     try {
       await Promise.race([locked, one.then(() => { throw Error('First source-lock acquisition required'); })]);
@@ -2341,7 +2341,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
   });
   journalCase('J03', 'rolls back STARTED journal and all earlier direct effects on actual mid-attribution failure', async f => {
     const native = Client.prototype.query.bind(f.first), commands: string[] = []; let failed = false, directWrites = 0;
-    const spy = vi.spyOn(f.first, 'query').mockImplementation(((...args: unknown[]) => {
+    const spy = rs.spyOn(f.first, 'query').mockImplementation(((...args: unknown[]) => {
       const sql = queryText(args[0]); commands.push(sql); if (sql.startsWith('UPDATE public.')) directWrites++;
       if (sql.startsWith('INSERT INTO public."clocker_pin_events_tenant_ownership"')) { failed = true; return native('SELECT 1/0'); }
       return Reflect.apply(native, f.first, args);
@@ -2360,7 +2360,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
     const described = describeTypedBackfillJournal(alternate.plan); expect(described.status).toBe('DESCRIBED');
     if (described.status !== 'DESCRIBED') throw Error('Genuine distinct descriptor required');
     const native = Client.prototype.query.bind(f.first), commands: string[] = []; let injected = false, directWrites = 0, deferredCode = '';
-    const spy = vi.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
+    const spy = rs.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
       const sql = queryText(args[0]); commands.push(sql); if (sql.startsWith('UPDATE public.')) directWrites++;
       if (sql === 'SET CONSTRAINTS ALL IMMEDIATE' && !injected) {
         injected = true;
@@ -2383,7 +2383,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
   });
   journalCase('J05', 'lost real BEGIN acknowledgement rolls back only its own attempt, then a fresh original-plan request applies safely', async f => {
     const native = Client.prototype.query.bind(f.first), commands: string[] = [];
-    const spy = vi.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
+    const spy = rs.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
       const sql = queryText(args[0]); commands.push(sql); const result = await Reflect.apply(native, f.first, args);
       if (sql === 'BEGIN ISOLATION LEVEL SERIALIZABLE') throw Error('PRIVATE_FICTIONAL_JOURNAL_BEGIN_ACK'); return result;
     }) as Client['query']);
@@ -2398,7 +2398,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
   });
   journalCase('J06', 'lost real COMMIT acknowledgement remains uncertain, performs no later SQL, and fresh retry leaves the entire tuple identical', async f => {
     const native = Client.prototype.query.bind(f.first), commands: string[] = [];
-    const spy = vi.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
+    const spy = rs.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
       const sql = queryText(args[0]); commands.push(sql); const result = await Reflect.apply(native, f.first, args);
       if (sql === 'COMMIT') throw Error('PRIVATE_FICTIONAL_JOURNAL_COMMIT_ACK'); return result;
     }) as Client['query']);
@@ -2408,7 +2408,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
     expect(commands[commands.length - 1]).toBe('COMMIT'); expect(commands).not.toContain('ROLLBACK'); await expectJournalApplied(f);
     const tuple = { journal: await journalRows(f), targets: await targets(f), metadata: await metadata(f) };
     const fresh = await connect(f.name, f.request.identity.role), freshNative = fresh.query.bind(fresh), freshCommands: string[] = [];
-    const freshSpy = vi.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => { freshCommands.push(queryText(args[0])); return Reflect.apply(freshNative, fresh, args); }) as Client['query']);
+    const freshSpy = rs.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => { freshCommands.push(queryText(args[0])); return Reflect.apply(freshNative, fresh, args); }) as Client['query']);
     try { expect(await executeGuardedTypedLocalBackfillWithJournal(fresh, f.request)).toMatchObject({ status: 'UNCHANGED', planDigest: f.chain.plan.digest }); }
     finally { freshSpy.mockRestore(); }
     expect(anyDml(freshCommands)).toBe(false); expect({ journal: await journalRows(f), targets: await targets(f), metadata: await metadata(f) }).toEqual(tuple);
@@ -2416,7 +2416,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
   });
   journalCase('J07', 'lost real ROLLBACK acknowledgement remains uncertain and a fresh original-plan request safely applies exactly once', async f => {
     const native = Client.prototype.query.bind(f.first), commands: string[] = []; let dmlFailed = false;
-    const spy = vi.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
+    const spy = rs.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
       const sql = queryText(args[0]); commands.push(sql);
       if (sql.startsWith('INSERT INTO public."clocker_pin_events_tenant_ownership"')) { dmlFailed = true; return native('SELECT 1/0'); }
       const result = await Reflect.apply(native, f.first, args);
@@ -2429,7 +2429,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
     expect(commands[commands.length - 1]).toBe('ROLLBACK'); expect(commands.filter(sql => sql === 'ROLLBACK')).toHaveLength(1);
     await expectUnapplied(f); await expectJournalEmpty(f);
     const fresh = await connect(f.name, f.request.identity.role), freshNative = fresh.query.bind(fresh), freshCommands: string[] = [];
-    const freshSpy = vi.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => { freshCommands.push(queryText(args[0])); return Reflect.apply(freshNative, fresh, args); }) as Client['query']);
+    const freshSpy = rs.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => { freshCommands.push(queryText(args[0])); return Reflect.apply(freshNative, fresh, args); }) as Client['query']);
     try {
       expect(await executeGuardedTypedLocalBackfillWithJournal(fresh, f.request)).toMatchObject({ status: 'APPLIED', planDigest: f.chain.plan.digest });
       await expectJournalApplied(f); const tuple = { journal: await journalRows(f), targets: await targets(f), metadata: await metadata(f) }, boundary = freshCommands.length;
@@ -2489,7 +2489,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
       .rejects.toMatchObject({ code: 'P0001' });
     expect(await journalRows(f)).toEqual(before);
     const fresh = await connect(f.name, f.request.identity.role), native = fresh.query.bind(fresh), commands: string[] = [];
-    const spy = vi.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => { commands.push(queryText(args[0])); return Reflect.apply(native, fresh, args); }) as Client['query']);
+    const spy = rs.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => { commands.push(queryText(args[0])); return Reflect.apply(native, fresh, args); }) as Client['query']);
     try { expect(await executeGuardedTypedLocalBackfillWithJournal(fresh, f.request)).toMatchObject({ status: 'UNCHANGED' }); } finally { spy.mockRestore(); }
     expect(anyDml(commands)).toBe(false); expect(commands.some(sql => sql.includes('FROM public."employees"'))).toBe(true);
     expect(commands.some(sql => sql.includes('clocker_pin_events_tenant_ownership'))).toBe(true); expect(commands.some(sql => sql.includes('F10_TYPED_JOURNAL_READ'))).toBe(true);
@@ -2606,7 +2606,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
   type JRUncertain = Extract<Awaited<ReturnType<typeof executeGuardedTypedLocalBackfillWithJournal>>, { status: 'UNCERTAIN' }>;
   async function jrMintUncertain(f: Fixture, ack: 'COMMIT' | 'ROLLBACK'): Promise<{ attempt: JRUncertain; commands: string[] }> {
     const native = Client.prototype.query.bind(f.first), commands: string[] = []; let failedDml = false, acknowledgedNative = false;
-    const spy = vi.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
+    const spy = rs.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
       const sql = queryText(args[0]); commands.push(sql);
       if (ack === 'ROLLBACK' && sql.startsWith('INSERT INTO public."clocker_pin_events_tenant_ownership"')) {
         failedDml = true; return native('SELECT 1/0');
@@ -2643,7 +2643,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
   }
   async function jrWithFreshClient<T>(f: Fixture, label: string, check: (client: Client, commands: string[]) => Promise<T>): Promise<T> {
     const fresh = await connect(f.name, f.request.identity.role), native = Client.prototype.query.bind(fresh), commands: string[] = [];
-    const spy = vi.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => {
+    const spy = rs.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => {
       commands.push(queryText(args[0])); return Reflect.apply(native, fresh, args);
     }) as Client['query']);
     let closed = false;
@@ -2763,7 +2763,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
         expect(commands).toHaveLength(boundary); results.push({ name: item.name, outcome });
       }
       const native = Client.prototype.query.bind(f.first), sameCommands: string[] = [];
-      const spy = vi.spyOn(f.first, 'query').mockImplementation(((...args: unknown[]) => { sameCommands.push(queryText(args[0])); return Reflect.apply(native, f.first, args); }) as Client['query']);
+      const spy = rs.spyOn(f.first, 'query').mockImplementation(((...args: unknown[]) => { sameCommands.push(queryText(args[0])); return Reflect.apply(native, f.first, args); }) as Client['query']);
       try { expect(await reconcileGuardedTypedLocalBackfillJournal(f.first, original.attempt)).toEqual({ status: 'BLOCKED', code: 'TYPED_JOURNAL_FRESH_CLIENT_REQUIRED' }); }
       finally { spy.mockRestore(); }
       expect(sameCommands).toEqual([]); expect(commands).toEqual([]); expect(getterCalls).toBe(0); expect(proxyTraps).toBe(0); expect(clientReads).toBe(0);
@@ -2877,7 +2877,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
     let uncertainCommit: Awaited<ReturnType<typeof reconcileGuardedTypedLocalBackfillJournal>> | undefined;
     await jrWithFreshClient(f, 'observe-commit-ack', async (fresh, commands) => {
       const native = Client.prototype.query.bind(fresh); let realCommit = false;
-      const spy = vi.spyOn(fresh, 'query').mockImplementation((async (...args: unknown[]) => {
+      const spy = rs.spyOn(fresh, 'query').mockImplementation((async (...args: unknown[]) => {
         const sql = queryText(args[0]); commands.push(sql); const result = await Reflect.apply(native, fresh, args);
         if (sql === 'COMMIT') { realCommit = true; throw Error('PRIVATE_FICTIONAL_JR_RECONCILIATION_COMMIT_ACK'); } return result;
       }) as Client['query']);
@@ -2893,7 +2893,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
       expect(await reconcileGuardedTypedLocalBackfillJournal(fresh, uncertainCommit)).toEqual({ status: 'BLOCKED', code: 'TYPED_JOURNAL_ORIGINAL_UNCERTAIN_ATTEMPT_REQUIRED' });
       expect(commands).toHaveLength(invalidBoundary);
       const native = Client.prototype.query.bind(fresh); let actualReadFailure = false, realRollback = false;
-      const spy = vi.spyOn(fresh, 'query').mockImplementation((async (...args: unknown[]) => {
+      const spy = rs.spyOn(fresh, 'query').mockImplementation((async (...args: unknown[]) => {
         const sql = queryText(args[0]); commands.push(sql);
         if (!actualReadFailure && sql.includes('F10_TYPED_JOURNAL_READ')) { actualReadFailure = true; return native('SELECT 1/0'); }
         const result = await Reflect.apply(native, fresh, args);
@@ -2909,7 +2909,7 @@ definePortalLegacyReconciliationNativeCases(prcGetFixture);
       const boundary = commands.length, retryNative = Client.prototype.query.bind(fresh);
       // Restore a recorder after the fault spy has restored the native method.
       // The successful original-handle observation must have its own actual SQL.
-      const retrySpy = vi.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => {
+      const retrySpy = rs.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => {
         commands.push(queryText(args[0])); return Reflect.apply(retryNative, fresh, args);
       }) as Client['query']);
       try {

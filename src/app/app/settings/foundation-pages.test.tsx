@@ -1,19 +1,19 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {createElement} from 'react';
 import {EmployeeSchedulingFields} from '../../../components/employee-scheduling-fields';
 import type {Position} from '../../../lib/domain';
-vi.mock('@/lib/auth/permissions',()=>({requireRoles:async()=>({id:'owner',role:'OWNER'})}));
-vi.mock('@/components/page-header',()=>import('../../../components/page-header'));
-vi.mock('@/components/kit/kit',()=>import('../../../components/kit/kit'));
-vi.mock('@/components/configuration-form',()=>import('../../../components/configuration-form'));
-vi.mock('@/components/location-configuration-fields',()=>import('../../../components/location-configuration-fields'));
-vi.mock('@/lib/scheduling/location-readiness',()=>import('../../../lib/scheduling/location-readiness'));
-vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({id:'w',name:'Northside',timeZone:'America/New_York',active:true}),isWorkspaceTimezoneLocked:async()=>true,WorkspaceTimezoneLockedError:class extends Error{constructor(){super('Changing the business timezone requires a separately reviewed conversion because operational records already exist.');}}}));
-vi.mock('@/lib/data/employees',()=>({listLocations:async()=>[{id:'east',workspaceId:'w',name:'East Office',shortName:'East',clockerKey:'east-office',active:true},{id:'old',workspaceId:'w',name:'Old Office',shortName:'Old',clockerKey:'old-office',active:false}],listEmployees:async()=>[]}));
-vi.mock('@/lib/data/positions',()=>({listPositions:async()=>[]}));
-vi.mock('@/lib/data/schedule-health',()=>({listLocationStaffingSettings:async()=>[],listCoverageWindows:async()=>[]}));
-vi.mock('./actions',()=>({saveWorkspaceProfileAction:vi.fn(),createLocationAction:vi.fn(),updateLocationAction:vi.fn(),createPositionAction:vi.fn(),updatePositionAction:vi.fn()}));
+rs.mock('@/lib/auth/permissions',()=>({requireRoles:async()=>({id:'owner',role:'OWNER'})}));
+
+
+
+
+
+rs.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({id:'w',name:'Northside',timeZone:'America/New_York',active:true}),isWorkspaceTimezoneLocked:async()=>true,WorkspaceTimezoneLockedError:class extends Error{constructor(){super('Changing the business timezone requires a separately reviewed conversion because operational records already exist.');}}}));
+rs.mock('@/lib/data/employees',()=>({listLocations:async()=>[{id:'east',workspaceId:'w',name:'East Office',shortName:'East',clockerKey:'east-office',active:true},{id:'old',workspaceId:'w',name:'Old Office',shortName:'Old',clockerKey:'old-office',active:false}],listEmployees:async()=>[]}));
+rs.mock('@/lib/data/positions',()=>({listPositions:async()=>[]}));
+rs.mock('@/lib/data/schedule-health',()=>({listLocationStaffingSettings:async()=>[],listCoverageWindows:async()=>[]}));
+rs.mock('./actions',()=>({saveWorkspaceProfileAction:rs.fn(),createLocationAction:rs.fn(),updateLocationAction:rs.fn(),createPositionAction:rs.fn(),updatePositionAction:rs.fn()}));
 import WorkspacePage from './workspace/page';
 import LocationsPage from './locations/page';
 import PositionsPage from './positions/page';

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { loadPinnedMigrations } from '../inventory/source';
 import { getOwnershipRegistry, OWNERSHIP_SCHEMA_COMMIT, OWNERSHIP_SCHEMA_TREE, ownershipDigest, canonicalOwnershipJson, type JsonValue } from './ownership';
 import { preflightTenantBackfill,resumeTenantBackfill,planNewOwnershipWrite,type BackfillCapture,type LegacyRow,type OwnershipRecord,type HistoricalReference } from './backfill';

@@ -1,4 +1,4 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {Client} from 'pg';
 import type {SqlExecutor} from '../../lib/notifications/types';
 import {isManagementAuthorizationError} from '../../lib/data/management-session';
@@ -12,7 +12,7 @@ import {commitPublishedWeekChange} from '../../lib/data/notification-transaction
 import {getWorkspace} from '../../lib/data/workspaces';
 import {generationNeedKey} from '../../lib/scheduling/generation-claims';
 import {publishScheduleWithRevision} from '../../lib/data/publication-revisions';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 const week='2026-10-12';
 type Fixture=Awaited<ReturnType<typeof fixture>>;
 async function choose(f:Awaited<ReturnType<typeof companyAccessFixture>>,mode:'COMPANY'|'LOCATIONS'){

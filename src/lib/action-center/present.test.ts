@@ -1,5 +1,5 @@
 import {reviewFacts} from './review-facts';
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {ATTENDANCE_WORDS, correctionLine, groupHeading, presentItem, spacedRanges, splitNoClockIn} from './present';
 import type {ActionItem} from './project';
 

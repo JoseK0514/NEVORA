@@ -1,11 +1,12 @@
-import {afterEach, beforeEach, expect, it, vi} from 'vitest';
+import * as rstestOriginal0 from "react" with { rstest: 'importActual' };
+import {afterEach, beforeEach, expect, it, rs} from '@rstest/core';
 
-const hooks = vi.hoisted(() => ({
+const hooks = rs.hoisted(() => ({
   states: [] as unknown[], refs: [] as {current: unknown}[],
   effects: [] as (() => void | (() => void))[], stateIndex: 0, refIndex: 0, server: false,
 }));
-vi.mock('react', async original => ({
-  ...await original<Record<string, unknown>>(),
+rs.mock('react',  () => ({
+  ...rstestOriginal0,
   useState: (initial: unknown) => {
     const index = hooks.stateIndex++;
     if (!(index in hooks.states)) hooks.states[index] = initial;
@@ -19,8 +20,8 @@ vi.mock('react', async original => ({
   useId: () => 'reference-fixture',
   useSyncExternalStore: (_subscribe: unknown, snapshot: () => unknown, serverSnapshot?: () => unknown) => hooks.server&&serverSnapshot?serverSnapshot():snapshot(),
 }));
-vi.mock('gsap', () => ({default: {registerPlugin: () => {}}}));
-vi.mock('@gsap/react', () => ({useGSAP: () => {}}));
+rs.mock('gsap', () => ({default: {registerPlugin: () => {}}}));
+rs.mock('@gsap/react', () => ({useGSAP: () => {}}));
 
 import {ClockerRecoveryReview} from './clocker-recovery-review';
 import {ScopedReadFrame} from './company-access/scoped-read-frame';
@@ -55,10 +56,10 @@ const requests: string[] = [];
 let dispose: (() => void) | void;
 beforeEach(() => {
   hooks.states = []; hooks.refs = []; hooks.server=false; requests.length = 0;
-  vi.stubGlobal('window', new EventTarget());
-  vi.stubGlobal('document', Object.assign(new EventTarget(), {visibilityState: 'visible'}));
-  vi.stubGlobal('navigator', {onLine: true});
-  vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+  rs.stubGlobal('window', new EventTarget());
+  rs.stubGlobal('document', Object.assign(new EventTarget(), {visibilityState: 'visible'}));
+  rs.stubGlobal('navigator', {onLine: true});
+  rs.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
     const {commandId} = JSON.parse(String(init.body));
     requests.push(commandId);
     return {ok: true, status: 200, json: async () => ({
@@ -68,7 +69,7 @@ beforeEach(() => {
   render();
   dispose = hooks.effects[0]();
 });
-afterEach(() => {dispose?.(); dispose = undefined; vi.unstubAllGlobals();});
+afterEach(() => {dispose?.(); dispose = undefined; rs.unstubAllGlobals();});
 const observed = () => hooks.states.some(value => value && typeof value === 'object' && 'state' in value && value.state === 'ready');
 
 it('withholds receipt submission until hydration even with a valid reference and initialized controller', async () => {
@@ -82,12 +83,12 @@ it('withholds receipt submission until hydration even with a valid reference and
   expect(requests).toEqual([]);
   hooks.server=false;
   submit();
-  await vi.waitFor(()=>expect(requests).toEqual([first]));
+  await rs.waitFor(()=>expect(requests).toEqual([first]));
 });
 
 it('editing a reference retires its receipt before a lifecycle refresh can read it again', async () => {
   change(first); submit();
-  await vi.waitFor(() => expect(observed()).toBe(true));
+  await rs.waitFor(() => expect(observed()).toBe(true));
   expect(requests).toEqual([first]);
   change(second);
   window.dispatchEvent(new Event('storage'));
@@ -95,30 +96,30 @@ it('editing a reference retires its receipt before a lifecycle refresh can read 
   expect(requests).toEqual([first]);
   expect(observed()).toBe(false);
   submit();
-  await vi.waitFor(() => expect(requests).toEqual([first, second]));
+  await rs.waitFor(() => expect(requests).toEqual([first, second]));
 });
 
 it('keeps the selected reference outside the access barrier and clears and re-reads receipt data on return',async()=>{
   expect(find(render(),ScopedReadFrame)?.props.observation).toEqual(observation);
   change(first);submit();
-  await vi.waitFor(()=>expect(observed()).toBe(true));
+  await rs.waitFor(()=>expect(observed()).toBe(true));
   window.dispatchEvent(new Event('blur'));
   expect(observed()).toBe(false);
   expect(find(render(),'input')?.props.value).toBe(first);
   expect(requests).toEqual([first]);
   window.dispatchEvent(new Event('focus'));
-  await vi.waitFor(()=>expect(requests).toEqual([first,first]));
-  await vi.waitFor(()=>expect(observed()).toBe(true));
+  await rs.waitFor(()=>expect(requests).toEqual([first,first]));
+  await rs.waitFor(()=>expect(observed()).toBe(true));
 });
 
 it('uppercase references are normalized to the server command format', async () => {
   change(first.toUpperCase()); submit();
-  await vi.waitFor(() => expect(requests).toEqual([first]));
+  await rs.waitFor(() => expect(requests).toEqual([first]));
 });
 
 it('offline submission explains unavailability without starting a request', async () => {
   change(first);
-  vi.stubGlobal('navigator', {onLine: false});
+  rs.stubGlobal('navigator', {onLine: false});
   window.dispatchEvent(new Event('offline'));
   submit();
   expect(requests).toEqual([]);

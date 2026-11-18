@@ -1,4 +1,4 @@
-import {afterEach,beforeEach,expect,it,vi} from "vitest";
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import {ownerCoverageAction,REVIEW_ID} from "@/test/fixtures/owner-coverage-action";
 import {ownerCoveragePlan} from "@/test/fixtures/owner-coverage-plan";
 import type {CoverageActionCommand} from "@/lib/owner-advisor/coverage-actions";
@@ -8,10 +8,10 @@ let calls:CoverageActionCommand[],responses:(Response|Promise<Response>|Error)[]
 const reply=(state:"coverage_review"|"coverage_saved"|"coverage_checked")=>new Response(JSON.stringify(ownerCoverageAction(state)),{status:200});
 const plan=()=>{const p=ownerCoveragePlan();p.alternatives[0].assignments.forEach(a=>a.positionId=null);return p;};
 beforeEach(()=>{
- vi.useFakeTimers();calls=[];responses=[];
+ rs.useFakeTimers();calls=[];responses=[];
  c=createCoverageActionController((next:CoverageActionView)=>v=next,(async(_url:RequestInfo|URL,init?:RequestInit)=>{calls.push(JSON.parse(String(init?.body)));const r=responses.shift();if(r instanceof Error)throw r;if(!r)throw Error("No reply");return await r;}) as typeof fetch,(()=>{let n=0;return ()=>n++===0?REVIEW_ID:"22222222-2222-4222-8222-222222222222";})());c.access("owner",15000);
 });
-afterEach(()=>{c.stop();vi.useRealTimers();});
+afterEach(()=>{c.stop();rs.useRealTimers();});
 it("prepares exact selected IDs and never saves before explicit acknowledgement",async()=>{
  responses.push(reply("coverage_review"));await c.prepare(plan(),0);
  expect(calls[0]).toMatchObject({op:"prepare_coverage_draft",date:"2026-10-22",assignments:[{employeeId:"ana",locationId:"north",startTime:"08:00",endTime:"12:00",positionId:null,isDesignatedLead:false}]});
@@ -35,7 +35,7 @@ it("fences a late save reply after pause and cannot start another plan while out
  expect(v.result).toBeNull();c.access("owner",15000);await c.prepare(plan(),0);expect(calls).toHaveLength(2);expect(v.stage).toBe("uncertain");
 });
 it("expires private DOM state, refuses stale/foreign responses, and never polls a business save",async()=>{
- responses.push(reply("coverage_review"));await c.prepare(plan(),0);await vi.advanceTimersByTimeAsync(15001);expect(v.result).toBeNull();expect(calls).toHaveLength(1);
+ responses.push(reply("coverage_review"));await c.prepare(plan(),0);await rs.advanceTimersByTimeAsync(15001);expect(v.result).toBeNull();expect(calls).toHaveLength(1);
  c.access("owner",15000);const bad=ownerCoverageAction();bad.authority="other";responses.push(new Response(JSON.stringify(bad)));await c.prepare(plan(),0);expect(v.result).toBeNull();
 });
 it("blocks expired review confirmation and preserves a lost prepare for explicit recovery",async()=>{

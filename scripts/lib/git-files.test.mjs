@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterAll, beforeAll, expect, it } from 'vitest';
+import { afterAll, beforeAll, expect, it } from '@rstest/core';
 import { gitFileList } from './git-files.mjs';
 
 // A throwaway repository whose untracked listing is larger than Node's default 1 MiB buffer (HARN-1).

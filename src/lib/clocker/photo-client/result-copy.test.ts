@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import type {PunchReceipt} from '../punch-types';
 import {photoResultMessage,offlinePhotoMessage} from './result-copy';
 

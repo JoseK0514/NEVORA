@@ -1,10 +1,10 @@
 import { createElement, type ComponentProps } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 import { AppShell } from './app-shell';
-vi.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children),useLinkStatus:()=>({pending:false})}));
-vi.mock('next/navigation',()=>({usePathname:()=>'/app',useRouter: () => ({ push: () => {}, replace: () => {}, refresh: () => {} }), useSearchParams:()=>new URLSearchParams()}));
-vi.mock('@/app/login/actions',()=>({logout:vi.fn()}));
+rs.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children),useLinkStatus:()=>({pending:false})}));
+rs.mock('next/navigation',()=>({usePathname:()=>'/app',useRouter: () => ({ push: () => {}, replace: () => {}, refresh: () => {} }), useSearchParams:()=>new URLSearchParams()}));
+rs.mock('@/app/login/actions',()=>({logout:rs.fn()}));
 // Quiet (v4): on phones Sign out is on Profile (from More); the shell keeps it in the account menu.
 it.each(['OWNER','MANAGER'] as const)('%s has native sign-out in the account menu',role=>{
  for(const notificationsEnabled of [false,true]){

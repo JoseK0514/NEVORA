@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {projectPersonHours} from './person-hours';
 const base={employeeId:'e',today:'2026-11-09',weekStart:'2026-11-09',timeZone:'America/Puerto_Rico',observedAt:'2026-11-10T12:00:00Z',scheduledComplete:true,shifts:[{employeeId:'e',locationId:'a',date:'2026-11-08',startTime:'22:00',endTime:'02:00',isCalloutApproved:false},{employeeId:'e',locationId:'b',date:'2026-11-09',startTime:'09:00',endTime:'17:00',isCalloutApproved:false}],timecardSource:{employeeId:'e',employeeName:'Private name',timeZone:'America/Puerto_Rico',startDate:'2026-11-09',endDate:'2026-11-15',pendingCorrections:0,entries:[],corrections:[]}};
 it('splits published overnight shifts at the canonical workweek and respects location scope',()=>{

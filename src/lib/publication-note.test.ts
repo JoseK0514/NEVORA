@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { joinNames, unpublishedNote } from './publication-note';
 
 it('names what is final and who has not published yet', () => {

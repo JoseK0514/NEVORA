@@ -1,4 +1,4 @@
-import {expect, it} from 'vitest';
+import {expect, it} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {AvailabilityDayRows} from './availability-corp';
 import {availabilityWeekLabel} from './availability-week-label';

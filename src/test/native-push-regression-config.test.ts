@@ -1,4 +1,4 @@
-import {expect, it} from 'vitest';
+import {expect, it} from '@rstest/core';
 import {nativeRegressionTarget} from './integration/native-push-fixture-url';
 it('preserves the owned cluster while choosing only the factory-specific disposable database namespace', () => {
   expect(nativeRegressionTarget('postgresql://nevora_test@127.0.0.1:54321/nevora_foundation_test_c1_012345abcdef', 'fuel_phase3_test_'))

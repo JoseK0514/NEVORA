@@ -1,5 +1,5 @@
 import { calculateScheduleHealth } from '../scheduling/schedule-health';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import type { ActionFact, ActionIntelligenceInput, SourceKey } from './intelligence';
 import { buildManagerActionItems } from '../assistance/manager-actions';
 import { projectAttendance } from '../attendance/project';

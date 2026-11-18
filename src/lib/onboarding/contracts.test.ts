@@ -1,4 +1,4 @@
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it} from '@rstest/core';
 import {parseRegistrationCommand,parseWorkspaceCommand,parseOnboardingCommand,parseOnboardingSnapshot,safeOnboardingDestination,onboardingHttpStatus} from './contracts';
 import setupFixture from './fixtures/v1/setup-state.json';
 import {commandResults} from './fixtures/v1/command-results';

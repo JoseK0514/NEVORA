@@ -1,12 +1,12 @@
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, expect, it, rs } from '@rstest/core';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import type { SessionMutationProof } from '../shift-changes/types';
 import { readPayrollBacklog } from './backlog-read';
 import { runs } from './service';
 const proof: SessionMutationProof = {employee: {id: 'QAMANAGER', firstName: 'Fictional', lastName: 'Manager', role: 'MANAGER', primaryLocationId: 'loc-1'}, sessionTokenHash: 'a'.repeat(64)};
-afterEach(() => vi.unstubAllEnvs());
+afterEach(() => rs.unstubAllEnvs());
 it('preserves the runs policy that Managers receive no company backlog', async () => {
-  vi.stubEnv('NEVORA_PAYROLL_ENABLED', 'true');
+  rs.stubEnv('NEVORA_PAYROLL_ENABLED', 'true');
   const statements: SqlStatement[] = [];
   const ex: SqlExecutor = {query: async <T,>(s: SqlStatement) => s.text.includes('to_regclass') ? [{available: false}] as T[] : [], transaction: async batch => {
     statements.push(...batch);
@@ -19,7 +19,7 @@ it('preserves the runs policy that Managers receive no company backlog', async (
   expect(statements.some(s => s.text.includes('WITH context AS'))).toBe(false);
 });
 it('rejects a missing source row rather than synthesizing an empty history', async () => {
-  vi.stubEnv('NEVORA_PAYROLL_ENABLED', 'true');
+  rs.stubEnv('NEVORA_PAYROLL_ENABLED', 'true');
   const ex: SqlExecutor = {query: async () => [], transaction: async batch => batch.map(() => [])};
   await expect(readPayrollBacklog({...proof, employee: {...proof.employee, role: 'OWNER'}}, ex)).rejects.toThrow('payroll_history_unavailable');
 });

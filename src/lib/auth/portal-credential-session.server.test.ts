@@ -1,9 +1,9 @@
 // UNEXECUTED regression source for the actual future module API. These cases
 // verify local closed-input denial/source protocol only, never native custody.
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, rs } from '@rstest/core';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-vi.mock('server-only', () => ({}));
+rs.mock('server-only', () => ({}));
 import { bindOwnedLocalPortalVerifier, verifyAndCreatePortalSessionOnOwnedVerifier } from './portal-credential-session.server';
 
 const ordinary = () => ({ workspaceLocator: ' Fiction-01 ', employeeNumber: ' number ', password: 'fictional-password' });

@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {policyEffectiveInstant as convert} from './business-time';
 
 it('preserves an unchanged policy effective instant including seconds',()=>{

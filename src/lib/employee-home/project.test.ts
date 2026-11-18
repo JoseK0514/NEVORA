@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import type {HomeSnapshot,AttentionItem} from './types';
 // Dynamic lookup executes each behavioral test even before this new interface exists.
 async function project(snapshot:HomeSnapshot){

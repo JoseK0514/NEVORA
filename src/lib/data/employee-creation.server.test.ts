@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {readEmployeeCreation} from './employee-creation.server';
 import type {SqlExecutor} from '../notifications/types';
 import type {SessionMutationProof} from '../shift-changes/types';

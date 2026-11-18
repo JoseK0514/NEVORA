@@ -403,7 +403,7 @@ function AppShellView({
   const Profile = notificationsEnabled ? "button" : "div";
   // The NEVORA wordmark never changes; a company logo sits beside it in a white chip.
   const companyLogo = brand?.logoUrl ? <span className="company-logo-chip">
-    {/* eslint-disable-next-line @next/next/no-img-element -- an immutable, same-origin asset already sized for the chip */}
+    {/* eslint-disable-next-line next-preserved/no-img-element -- an immutable, same-origin asset already sized for the chip */}
     <img src={brand.logoUrl} alt={`${workspaceName} logo`} decoding="async" />
   </span> : null;
   // Round 2 (R13): one profile entry. "Profile and device settings" retired from this menu; this device's alerts stay one

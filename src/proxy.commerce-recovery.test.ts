@@ -1,29 +1,29 @@
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import type {NextRequest} from 'next/server';
 import {proxy} from './proxy';
 import {resetCommerceAccessCache} from './lib/commerce/access';
 
-const fixture=vi.hoisted(()=>({bind:vi.fn()}));
-vi.mock('./lib/commerce/isolated-connection.server',()=>({
+const fixture=rs.hoisted(()=>({bind:rs.fn()}));
+rs.mock('./lib/commerce/isolated-connection.server',()=>({
   withCommerceRequest:fixture.bind,
   isolatedCommerceConnection:async()=>({origin:'https://billing.example.test',installationId:'fictional',secret:'a'.repeat(43)}),
 }));
 beforeEach(()=>{
-  vi.stubEnv('NEVORA_COMMERCE_ENABLED','true');
-  vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');
+  rs.stubEnv('NEVORA_COMMERCE_ENABLED','true');
+  rs.stubEnv('NEVORA_WORKSPACE_MODE','isolated');
   fixture.bind.mockReset().mockImplementation(async(_request,work)=>work());
 });
-afterEach(()=>{vi.unstubAllEnvs();vi.unstubAllGlobals();resetCommerceAccessCache();});
+afterEach(()=>{rs.unstubAllEnvs();rs.unstubAllGlobals();resetCommerceAccessCache();});
 const request=(path:string,headers:Record<string,string>,method='GET')=>
   Object.assign(new Request('https://company.example.test'+path,{method,headers}),{
     nextUrl:new URL('https://company.example.test'+path),
   }) as NextRequest;
 function authority(state:'restricted'|'unavailable'){
-  const fetcher=vi.fn(async()=>{
+  const fetcher=rs.fn(async()=>{
     if(state==='unavailable')throw Error('Synthetic billing outage');
     return Response.json({state:'restricted',operational:false,validUntil:Date.now()+10000});
   });
-  vi.stubGlobal('fetch',fetcher);return fetcher;
+  rs.stubGlobal('fetch',fetcher);return fetcher;
 }
 const documentHeaders:Record<string,string>[]=[{accept:'text/html'},{'sec-fetch-mode':'navigate'}];
 const documents=['/app','/app/schedule','/app/notifications'].flatMap(path=>
@@ -129,8 +129,8 @@ it.each(['PUT','PATCH','DELETE'])(
   expect((await proxy(request('/app/account/delete',{},method)))?.status).toBe(402);
  });
 it.each(['true','false'])('clears a caller recovery marker on operational routes when commerce=%s',async enabled=>{
- vi.stubEnv('NEVORA_COMMERCE_ENABLED',enabled);
- vi.stubGlobal('fetch',async()=>Response.json({state:'paid',operational:true,validUntil:Date.now()+10000}));
+ rs.stubEnv('NEVORA_COMMERCE_ENABLED',enabled);
+ rs.stubGlobal('fetch',async()=>Response.json({state:'paid',operational:true,validUntil:Date.now()+10000}));
  const response=await proxy(request('/app',{'x-nevora-recovery-route':'/app/billing'}));
  expect(response?.headers.has('x-middleware-request-x-nevora-recovery-route')).toBe(false);
  expect(response?.headers.get('x-middleware-override-headers')).not.toContain('x-nevora-recovery-route');

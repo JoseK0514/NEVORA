@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {validateCommunicationDraft as validate,parseCommunicationTransport as parse} from './validation';
 import {canAuthorCommunication} from './policy';
 const draft={type:'TODAYS_TEAM',scope:{kind:'TODAYS_TEAM',locationId:'loc-1',businessDate:'2030-10-07'},title:'Update',body:'Operational detail',acknowledgement:'OPTIONAL',expiresAt:null};

@@ -1,7 +1,7 @@
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {sessionTransaction} from './sql-session-contract';
 const statement={text:'SELECT 1 AS value',values:[]};
-function driver(result:unknown){const query=vi.fn(()=>({lazy:true})),transaction=vi.fn().mockResolvedValue(result);return {query,transaction,sql:{query,transaction} as unknown as Parameters<typeof sessionTransaction>[0]};}
+function driver(result:unknown){const query=rs.fn(()=>({lazy:true})),transaction=rs.fn().mockResolvedValue(result);return {query,transaction,sql:{query,transaction} as unknown as Parameters<typeof sessionTransaction>[0]};}
 it('rejects malformed or unconfirmed provider batches instead of returning their business rows',async()=>{
  for(const result of [null,[],[[],[],[{value:1}],[]],[[],[],[{value:1}],[{sql_session_contract:0}]],[[],[],[{value:1}],{sql_session_contract:1}]]){
   const {sql}=driver(result);await expect(sessionTransaction(sql,[statement])).rejects.toThrow('SQL session contract result unavailable');

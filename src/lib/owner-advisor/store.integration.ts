@@ -1,4 +1,4 @@
-import { it, expect, beforeEach, afterEach } from "vitest";
+import { it, expect, beforeEach, afterEach } from '@rstest/core';
 import { companyAccessFixture } from "@/test/integration/company-access-fixture";
 import { AdvisorStore } from "./store.server";
 import { admitOwner } from "./authority.server";

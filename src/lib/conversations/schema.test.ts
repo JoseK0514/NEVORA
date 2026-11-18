@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {communicationDevelopmentAllowedSql} from '../communications/sql';

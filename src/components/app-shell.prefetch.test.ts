@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 
 // Phase 1 (inspection Oct 24): each tab tap waited for a server round trip behind a placeholder React holds for
 // 300 ms. The Owner and Manager tab bar now loads its destinations in full ahead of the tap, and the tapped tab lights

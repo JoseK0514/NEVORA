@@ -1,4 +1,4 @@
-import {afterEach,beforeEach,expect,it} from 'vitest';
+import {afterEach,beforeEach,expect,it} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import {createDisposableExchangeDatabase} from './local-postgres';
 import {fixtureShift,proof,seedShiftChanges} from './shift-change-fixture';

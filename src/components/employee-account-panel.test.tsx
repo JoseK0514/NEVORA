@@ -1,8 +1,8 @@
 import {createElement,type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {EmployeeAccountView} from './employee-account-panel';
-vi.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children)}));
+rs.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children)}));
 const inbox={state:'ready' as const,kind:'notifications' as const,observedAt:'2026-10-08T12:00:00Z',validForMs:45000,coverage:'complete' as const,items:[{id:'own',label:'Time off update',at:'2026-10-08T12:00:00Z',href:'/app/notifications/open?notificationId=own'}]};
 it('hides all new private content while paused, including previously ready snapshots',()=>{
  const html=renderToStaticMarkup(<EmployeeAccountView kind="notifications" state={{snapshot:inbox,paused:true,refreshing:false}} onRetry={()=>{}}/>);

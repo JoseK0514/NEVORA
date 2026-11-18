@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { automaticWeek, automaticAssignment } from "@/test/fixtures/automatic-week";
 import * as planner from "./planner";
 import { deriveGenerationDemand } from "./demand";

@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {availabilitySummary} from './availability-summary';
 const w=(dayOfWeek:number,startTime='07:00',endTime='17:00')=>({dayOfWeek,startTime,endTime});
 it('says the weekly availability in a few words',()=>{

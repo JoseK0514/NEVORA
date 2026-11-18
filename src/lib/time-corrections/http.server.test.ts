@@ -1,4 +1,4 @@
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
+import {afterEach, beforeEach, describe, expect, it, rs} from '@rstest/core';
 import {correctionBoundary, correctionBoundaryResponse} from './http.server';
 
 const deployed = 'https://nevora-candidate-123.vercel.app';
@@ -6,12 +6,12 @@ const request = (origin = deployed, host = 'nevora-candidate-123.vercel.app') =>
   method: 'POST', headers: {host, origin, 'sec-fetch-site': 'same-origin', 'content-type': 'application/json', 'x-nevora-timecards': '1'}, body: '{}',
 });
 beforeEach(() => {
-  vi.stubEnv('NEVORA_WORKSPACE_MODE', 'single_company');
-  vi.stubEnv('FUEL_PORTAL_ORIGIN', 'https://nevora-stable.vercel.app');
-  vi.stubEnv('VERCEL', '1'); vi.stubEnv('VERCEL_ENV', 'preview');
-  vi.stubEnv('VERCEL_URL', 'nevora-candidate-123.vercel.app');
+  rs.stubEnv('NEVORA_WORKSPACE_MODE', 'single_company');
+  rs.stubEnv('FUEL_PORTAL_ORIGIN', 'https://nevora-stable.vercel.app');
+  rs.stubEnv('VERCEL', '1'); rs.stubEnv('VERCEL_ENV', 'preview');
+  rs.stubEnv('VERCEL_URL', 'nevora-candidate-123.vercel.app');
 });
-afterEach(() => vi.unstubAllEnvs());
+afterEach(() => rs.unstubAllEnvs());
 
 describe('exact Vercel preview browser admission', () => {
   it('admits this immutable deployment while retaining the explicitly configured portal origin', () => {
@@ -25,7 +25,7 @@ describe('exact Vercel preview browser admission', () => {
     expect(correctionBoundary(request(deployed, 'other.vercel.app'), true, 'x-nevora-timecards')).toBe(403);
   });
   it('still requires Origin when preview expansion is unavailable', () => {
-    vi.stubEnv('VERCEL_ENV', 'production');
+    rs.stubEnv('VERCEL_ENV', 'production');
     const headers = new Headers(request().headers); headers.delete('origin');
     expect(correctionBoundary(new Request(deployed, {method:'POST',headers,body:'{}'}), true, 'x-nevora-timecards')).toBe(403);
   });
@@ -36,12 +36,12 @@ describe('exact Vercel preview browser admission', () => {
     }
   });
   it.each(['production', 'development'])('does not expand origin admission in %s', environment => {
-    vi.stubEnv('VERCEL_ENV', environment);
+    rs.stubEnv('VERCEL_ENV', environment);
     expect(correctionBoundary(request(), true, 'x-nevora-timecards')).toBe(403);
   });
   it('requires the platform marker and rejects malformed platform deployment names', () => {
-    vi.stubEnv('VERCEL', '0'); expect(correctionBoundary(request(), true, 'x-nevora-timecards')).toBe(403);
-    vi.stubEnv('VERCEL', '1'); vi.stubEnv('VERCEL_URL', 'nevora-candidate-123.vercel.app/path');
+    rs.stubEnv('VERCEL', '0'); expect(correctionBoundary(request(), true, 'x-nevora-timecards')).toBe(403);
+    rs.stubEnv('VERCEL', '1'); rs.stubEnv('VERCEL_URL', 'nevora-candidate-123.vercel.app/path');
     expect(correctionBoundary(request(), true, 'x-nevora-timecards')).toBe(403);
   });
   it('retains JSON, intent, same-site and valid configured-origin controls', () => {
@@ -50,11 +50,11 @@ describe('exact Vercel preview browser admission', () => {
       const headers = new Headers(original.headers); headers.set(name, value);
       expect(correctionBoundary(new Request(original.url, {method: 'POST', headers, body: '{}'}), true, 'x-nevora-timecards')).toBe(403);
     }
-    vi.stubEnv('FUEL_PORTAL_ORIGIN', 'https://invalid.test/path');
+    rs.stubEnv('FUEL_PORTAL_ORIGIN', 'https://invalid.test/path');
     expect(correctionBoundary(request(), true, 'x-nevora-timecards')).toBe(503);
   });
   it('keeps isolated workspace routing authoritative even on Vercel Preview', () => {
-    vi.stubEnv('NEVORA_WORKSPACE_MODE', 'isolated');
+    rs.stubEnv('NEVORA_WORKSPACE_MODE', 'isolated');
     expect(correctionBoundary(request(), true, 'x-nevora-timecards')).toBe(503);
   });
   it('reports admission failure without calling it session expiry or revealing the expected origin', async () => {

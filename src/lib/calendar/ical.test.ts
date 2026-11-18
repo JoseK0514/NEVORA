@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {serializeCalendar} from './ical';
 import type {CalendarEvent} from './types';
 const event:CalendarEvent={uid:'opaque@nevora.calendar',sequence:4,stamp:'2026-10-08T10:00:00Z',lastModified:'2026-10-08T10:00:00Z',status:'CONFIRMED',startAt:'2026-10-09T12:00:00Z',endAt:'2026-10-09T20:00:00Z',summary:'Work shift',location:'Café 😀; west, branch\r\nATTENDEE:evil'};

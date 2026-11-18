@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import { BUSINESS_VALIDATION_CODES, BUSINESS_VALIDATION_FIELDS } from "@/lib/owner-advisor/business/contracts";
 import { uiCatalog, uiFullRead, uiIds, uiNow } from "@/test/fixtures/rondo-business-ui";
@@ -8,7 +8,7 @@ import {
 } from "./business-page";
 import { BUSINESS_COPY, type BusinessLang } from "./copy";
 
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: () => {}, replace: () => {}, refresh: () => {} }) }));
+rs.mock("next/navigation", () => ({ useRouter: () => ({ push: () => {}, replace: () => {}, refresh: () => {} }) }));
 
 // Fictional data only. Each state is rendered from the same parsed shapes the page gets from the API.
 const wire = <T,>(value: T): T => JSON.parse(JSON.stringify(value));

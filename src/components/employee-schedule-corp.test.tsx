@@ -1,11 +1,11 @@
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect, it, vi} from 'vitest';
+import {expect, it, rs} from '@rstest/core';
 import {EmployeeScheduleCorp} from './employee-schedule-corp';
 import type {EmployeeMyScheduleProps} from './employee-my-schedule';
 
-vi.mock('next/link', () => ({default: ({children, scroll: _scroll, prefetch: _prefetch, ...props}: React.ComponentProps<'a'> & {scroll?: boolean; prefetch?: boolean}) => createElement('a', props, children)}));
-vi.mock('next/navigation', () => ({useRouter: () => ({push: vi.fn(), replace: vi.fn()})}));
+rs.mock('next/link', () => ({default: ({children, scroll: _scroll, prefetch: _prefetch, ...props}: React.ComponentProps<'a'> & {scroll?: boolean; prefetch?: boolean}) => createElement('a', props, children)}));
+rs.mock('next/navigation', () => ({useRouter: () => ({push: rs.fn(), replace: rs.fn()})}));
 
 /* Nov 1 upscale (S12, S5, S13, B12) on fictional data: today is Sunday, Nov 1, 2026. */
 const shift = (id: string, date: string, startTime = '08:00', endTime = '16:00') => ({id, scheduleId: 's', employeeId: 'self', employeeName: 'Fictional Employee', locationId: 'condado', date, startTime, endTime,

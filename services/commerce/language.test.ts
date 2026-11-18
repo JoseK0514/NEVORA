@@ -1,17 +1,17 @@
-import {afterEach,expect,it,vi} from 'vitest';
+import {afterEach,expect,it,rs} from '@rstest/core';
 import {Pool} from 'pg';
 import {createCommerce} from './service';
 import {CommerceStore,type Business} from './store';
 import {billingActorHash} from './billing-operations';
 const context=expect.objectContaining({actor:billingActorHash(Buffer.alloc(32,7),['fictional',null]),assertCurrent:expect.any(Function),bindCustomer:expect.any(Function)});
 const pools:Pool[]=[];
-afterEach(async()=>{vi.restoreAllMocks();await Promise.all(pools.splice(0).map(p=>p.end()));});
+afterEach(async()=>{rs.restoreAllMocks();await Promise.all(pools.splice(0).map(p=>p.end()));});
 function app(){
  const b:Business={id:'11111111-1111-4111-8111-111111111111',state:'ready',email:'owner@example.invalid',profile:{email:'owner@example.invalid'},planKey:'small',trialStart:null,trialEnd:null,paidThrough:null,pastDueSince:null,subscriptionStatus:null,customerId:null,subscriptionId:null,employeeCount:7,enrollmentSource:'onboarding',incarnation:'1',slotId:null,origin:'https://company.example.test'};
  const pool=new Pool({connectionString:'postgresql://fictional@127.0.0.1:1/catalog'});pools.push(pool);
  const store=new CommerceStore(pool,Buffer.alloc(32,7),'onboarding');
- vi.spyOn(store,'session').mockResolvedValue(b.id);vi.spyOn(store,'tokenOwner').mockResolvedValue(null);vi.spyOn(store,'business').mockResolvedValue(b);vi.spyOn(store,'rate').mockResolvedValue(undefined);
- const billing={checkout:vi.fn(async()=> 'https://checkout.stripe.com/fictional'),portal:vi.fn(async()=> 'https://billing.stripe.com/fictional'),webhook:vi.fn()};
+ rs.spyOn(store,'session').mockResolvedValue(b.id);rs.spyOn(store,'tokenOwner').mockResolvedValue(null);rs.spyOn(store,'business').mockResolvedValue(b);rs.spyOn(store,'rate').mockResolvedValue(undefined);
+ const billing={checkout:rs.fn(async()=> 'https://checkout.stripe.com/fictional'),portal:rs.fn(async()=> 'https://billing.stripe.com/fictional'),webhook:rs.fn()};
  const service=createCommerce({store,origin:'https://billing.example.test',allowedOrigins:['https://www.thevelani.com'],provisioningMode:'onboarding',headcount:async()=>7,billing});
  return {billing,send:(path:string,body:unknown)=>service(new Request('https://billing.example.test'+path,{method:'POST',headers:{origin:'https://www.thevelani.com','content-type':'application/json',authorization:'Bearer fictional','idempotency-key':'22222222-2222-4222-8222-222222222222'},body:JSON.stringify(body)}),'127.0.0.1')};
 }

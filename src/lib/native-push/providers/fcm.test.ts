@@ -1,8 +1,8 @@
-import {afterEach, expect, it, vi} from 'vitest';
+import {afterEach, expect, it, rs} from '@rstest/core';
 import type {NativeTransportRequest, NativeTransportResponse} from './transport';
-const forbidden = vi.hoisted(() => vi.fn(() => {throw Error('Real network forbidden in native provider tests');}));
-vi.mock('node:https', () => ({request: forbidden}));
-vi.mock('node:http2', () => ({connect: forbidden}));
+const forbidden = rs.hoisted(() => rs.fn(() => {throw Error('Real network forbidden in native provider tests');}));
+rs.mock('node:https', () => ({request: forbidden}));
+rs.mock('node:http2', () => ({connect: forbidden}));
 async function api() {
   const m = await import('./fcm').catch(() => ({})); expect(m).toHaveProperty('createFcmSender');
   return m as typeof import('./fcm');
@@ -12,8 +12,8 @@ const scope = {origin: 'https://nevora.example', environment: 'test' as const, a
 const input = () => ({installation: {...scope, platform: 'android' as const, provider: 'fcm' as const, keyFingerprint: '0'.repeat(64), generation, token: 'fictional-token:opaque-1'},
   payload: {notificationId: 'fictional-notice', generation}, ttlSeconds: 60, urgency: 'normal' as const, signal: new AbortController().signal, beforeHandoff: async (): Promise<number | null> => 60});
 const response = (statusCode = 200, body: unknown = {name: 'projects/fictional-test/messages/opaque-notice'}, retryAfter?: string): NativeTransportResponse => ({statusCode, body: Buffer.from(JSON.stringify(body)), ...(retryAfter ? {retryAfter} : {})});
-const config = () => ({...scope, projectId: 'fictional-test', accessToken: vi.fn(async () => 'fictional-access-token'), clock: () => new Date(now)});
-afterEach(() => {vi.useRealTimers(); expect(forbidden).not.toHaveBeenCalled();});
+const config = () => ({...scope, projectId: 'fictional-test', accessToken: rs.fn(async () => 'fictional-access-token'), clock: () => new Date(now)});
+afterEach(() => {rs.useRealTimers(); expect(forbidden).not.toHaveBeenCalled();});
 it('sends exact HTTPv1 generic notification/data with package, priority and TTL restrictions', async () => {
   const m = await api(), cfg = config(), requests: NativeTransportRequest[] = [];
   const sender = m.createFcmSender(cfg, async request => {requests.push(request); return response();});
@@ -42,7 +42,7 @@ it.each([
   expect(await (await api()).createFcmSender(config(), async () => response(status, body, retryAfter)).send(input())).toEqual(outcome);
 });
 it('rejects foreign app/environment, malformed configuration/token/TTL and private payload fields before IO', async () => {
-  const m = await api(), transport = vi.fn(async () => response()), cfg = config(), sender = m.createFcmSender(cfg, transport);
+  const m = await api(), transport = rs.fn(async () => response()), cfg = config(), sender = m.createFcmSender(cfg, transport);
   expect(await m.createFcmSender(null, transport).send(input())).toEqual({kind: 'failed', errorClass: 'provider_configuration'});
   expect(await m.createFcmSender({...cfg, projectId: '../foreign'}, transport).send(input())).toEqual({kind: 'failed', errorClass: 'provider_configuration'});
   expect((await sender.send({...input(), installation: {...input().installation, environment: 'production'}})).kind).toBe('failed');
@@ -54,11 +54,11 @@ it('rejects foreign app/environment, malformed configuration/token/TTL and priva
   expect(transport).not.toHaveBeenCalled();
 });
 it('bounds credential waits and forbids a late credential callback from starting a send after cancellation', async () => {
-  const m = await api(), transport = vi.fn(async () => response()); let resolve!: (value: string) => void;
-  const accessToken = vi.fn(() => new Promise<string>(yes => {resolve = yes;}));
-  vi.useFakeTimers(); const pending = m.createFcmSender({...config(), accessToken}, transport).send(input());
-  await vi.advanceTimersByTimeAsync(8001); expect(await pending).toEqual({kind: 'retry', errorClass: 'transport_timeout'});
-  resolve('fictional-late-token'); await vi.advanceTimersByTimeAsync(0); expect(transport).not.toHaveBeenCalled();
+  const m = await api(), transport = rs.fn(async () => response()); let resolve!: (value: string) => void;
+  const accessToken = rs.fn(() => new Promise<string>(yes => {resolve = yes;}));
+  rs.useFakeTimers(); const pending = m.createFcmSender({...config(), accessToken}, transport).send(input());
+  await rs.advanceTimersByTimeAsync(8001); expect(await pending).toEqual({kind: 'retry', errorClass: 'transport_timeout'});
+  resolve('fictional-late-token'); await rs.advanceTimersByTimeAsync(0); expect(transport).not.toHaveBeenCalled();
 });
 it('detaches mutable token/payload input before awaiting credentials', async () => {
   const m = await api(), requests: NativeTransportRequest[] = []; let resolve!: (value: string) => void;
@@ -70,8 +70,8 @@ it('detaches mutable token/payload input before awaiting credentials', async () 
   expect(message.token).toBe('fictional-token:opaque-1'); expect(message.data.notificationId).toBe('fictional-notice');
 });
 it('rechecks attempt authority after credential preparation and skips a revoked provider handoff', async () => {
-  const m = await api(), transport = vi.fn(async () => response()); let resolve!: (value: string) => void, allowed = true;
-  const beforeHandoff = vi.fn(async () => allowed ? 60 : null);
+  const m = await api(), transport = rs.fn(async () => response()); let resolve!: (value: string) => void, allowed = true;
+  const beforeHandoff = rs.fn(async () => allowed ? 60 : null);
   const value = {...input(), beforeHandoff};
   const pending = m.createFcmSender({...config(), accessToken: () => new Promise<string>(yes => {resolve = yes;})}, transport).send(value);
   expect(beforeHandoff).not.toHaveBeenCalled(); allowed = false; resolve('fictional-valid-token');

@@ -1,6 +1,6 @@
 import {type ReactNode} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it} from '@rstest/core';
 import {CorpCorrections,CorpFixTime,CorpHoursFrame,CorpPastTimecards,CorpTimeEntry,CorpTimeTab} from '../employee-mobile/hours-corp';
 import {HoursCorrectionOperation} from '../employee-mobile/hours-operation';
 import {HoursBContext,type HoursBHead} from './time-b';

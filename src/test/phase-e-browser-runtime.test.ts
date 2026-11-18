@@ -1,7 +1,7 @@
 import {chmodSync,mkdtempSync,mkdirSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
-import {afterEach,expect,it,vi} from 'vitest';
+import {afterEach,expect,it,rs} from '@rstest/core';
 import {EventEmitter} from 'node:events';
 const runtimeModule=resolve('scripts/phase-e-browser-qa.mjs');
 const {darwinWebKitLaunch}=await import(runtimeModule);
@@ -80,7 +80,7 @@ it.each(['early-my-time-route\n','early-my-time-route-Violet7','Violet7','loadin
 });
 it('connects the actual Home stage reader before registering scenario page listeners',async()=>{
  const fixture=resolve('src/test/integration/owned-app-fixture.ts');
- vi.doMock(fixture,()=>({seedOwnedScenario:async()=>({actors:['fictional']}),TEST_PASSWORD:'fictional'}));
+ rs.doMock(fixture,()=>({seedOwnedScenario:async()=>({actors:['fictional']}),TEST_PASSWORD:'fictional'}));
  try{
   const {runScenario}=await import(resolve('scripts/phase-e-home-browser-scenarios.mjs'));
   const errors:unknown[]=[],context=new EventEmitter(),observedPage=new EventEmitter(),cell=observeBrowserCell({suite:'home',engine:'webkit',width:320,status:'failed'},errors);
@@ -89,7 +89,7 @@ it('connects the actual Home stage reader before registering scenario page liste
   await expect(runScenario({app:{database:{executor:{}}},engine:'webkit',width:320,page:{on(){throw stop;}},runtimeErrors:cell})).rejects.toBe(stop);
   observedPage.emit('pageerror',new Error('Violet7'));
   expect(errors[0]).toMatchObject({failure:{stage:'seed'}});expect(()=>cell.assertClean()).toThrow();
- }finally{vi.doUnmock(fixture);}
+ }finally{rs.doUnmock(fixture);}
 });
 it.each([
  ['Minified React error #418; visit https', '/react.dev/errors/418?args[]=PRIVATE_ACTOR_TOKEN', 'Minified React error #418', 418],

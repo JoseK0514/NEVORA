@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { parseToday, projectToday, shiftStatus, STATUS_TEXT } from "./project";
 
 const now = Date.parse("2030-10-16T14:00:00Z"); // 10:00 in Puerto Rico

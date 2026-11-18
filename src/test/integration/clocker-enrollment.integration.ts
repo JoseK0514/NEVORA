@@ -1,5 +1,5 @@
 
-import { afterEach, beforeEach, expect, it } from 'vitest';
+import { afterEach, beforeEach, expect, it } from '@rstest/core';
 import { createDisposableFoundationDatabase } from './local-postgres';
 import { registerClockerDevice, revokeClockerDevice } from '../../lib/clocker/devices.server';
 import { handleClockerSetup, type ClockerCookieStore } from '../../lib/clocker/setup.server';

@@ -1,7 +1,7 @@
 
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
-vi.mock('@/app/app/exchange/actions',()=>({shiftChangeAction:vi.fn(),reconcileShiftChangeAction:vi.fn()}));
+rs.mock('@/app/app/exchange/actions',()=>({shiftChangeAction:rs.fn(),reconcileShiftChangeAction:rs.fn()}));
 import {Pickup,ResponsiveEmployeeRequests,IncomingRequestSection} from './requests';
 import {PickupOperation} from './pickup-operation';
 import {onlyB,withoutB} from '../owner-b/test-support';

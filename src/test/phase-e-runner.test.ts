@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, 
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
-import { afterEach, expect, it } from 'vitest';
+import { afterEach, expect, it } from '@rstest/core';
 
 const runner = resolve('scripts/phase-e-owned.mjs');
 const browserRunner = resolve('scripts/phase-e-browser-qa.mjs');

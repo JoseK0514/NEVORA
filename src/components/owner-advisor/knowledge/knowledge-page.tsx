@@ -349,7 +349,7 @@ function useLatest(ctx: Ctx, entry: KnowledgeEntry | null) {
       setState(result.kind === "ready" ? { kind: "ready", version: result.value } : { kind: "failed" });
     });
     return () => controller.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line hooks-preserved/exhaustive-deps
   }, [documentId]);
   return state;
 }

@@ -1,4 +1,4 @@
-import {expect, it} from 'vitest';
+import {expect, it} from '@rstest/core';
 import {WORK_COPY, workCopy} from './work-copy';
 
 /* Phase 4: every new sentence on the Employee and Lead work screens has an English and a Spanish entry. */

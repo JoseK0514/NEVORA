@@ -1,6 +1,6 @@
 import {readFile} from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import {createPunchFixture} from './clocker-punch-fixture';
 import {readTimecards,mutateTimecard} from '../../lib/timecards/service';
 import {readPeriodClose,savePeriodPopulation} from '../../lib/period-close/service';
@@ -19,12 +19,12 @@ function formatted(ex:SqlExecutor,zone:string,style:string):SqlExecutor{
  return {query:async<T>(statement:SqlStatement,signal?:AbortSignal)=>(await transaction([statement],signal))[0] as T[],transaction};
 }
 beforeEach(async()=>{
- vi.stubEnv('NEVORA_PAYROLL_ENABLED','true');f=await createPunchFixture();
+ rs.stubEnv('NEVORA_PAYROLL_ENABLED','true');f=await createPunchFixture();
  await f.q(await readFile('db/migrations/0032_company_access_invitations.sql','utf8'));
  await f.q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES('R14-old-time','c34-a','loc-1',$1,'2026-09-22T12:00Z','2026-09-22T20:00Z','CLOCKED_OUT',1)",[f.devices[0].device.id]);
  legacy=formatted(f.db.executor,'America/Puerto_Rico','ISO, MDY');current=formatted(f.db.executor,'UTC','ISO, YMD');
 });
-afterEach(async()=>{await f?.db.dispose();vi.unstubAllEnvs();});
+afterEach(async()=>{await f?.db.dispose();rs.unstubAllEnvs();});
 async function card(ex:SqlExecutor){const view=await readTimecards(owner,period,ex);if(view.state!=='ready')throw Error('Expected current timecard');const item=view.cards.find(c=>c.source.employeeId==='c34-a');if(!item)throw Error('Expected employee card');return item;}
 async function act(action:'APPROVE'|'FINALIZE'|'REOPEN',ex:SqlExecutor){const c=await card(ex);return mutateTimecard(owner,{operationId:randomUUID(),employeeId:'c34-a',...period,expectedRevision:c.revision,expectedSourceHash:c.sourceHash,action,...(action==='REOPEN'?{note:'Explicit review after timestamp session rollout'}:{})},ex);}
 const history=()=>f.q("SELECT to_jsonb(r) AS row FROM timecard_revisions r WHERE employee_id='c34-a' ORDER BY revision");

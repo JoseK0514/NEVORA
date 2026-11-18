@@ -117,7 +117,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, sample
       <li><div className="q-row q-row--one">
         <span className="q-rt"><b>Logo</b></span>
         {logo ? <span className="q-logo">
-          {/* eslint-disable-next-line @next/next/no-img-element -- immutable same-origin asset */}
+          {/* eslint-disable-next-line next-preserved/no-img-element -- immutable same-origin asset */}
           <img src={logoUrl(logo)} alt={`${workspaceName} logo`} /></span> : <span className="q-rv q-rv--ph">None</span>}
         <input ref={fileInput} id="brand-logo-file" className="q-sr" type="file" accept="image/png,image/webp" onChange={e => upload(e.target.files?.[0])} disabled={busy !== null} />
         <label htmlFor="brand-logo-file" className="q-bs" aria-disabled={busy !== null || undefined}>{busy === "logo" ? "Uploading…" : logo ? "Replace" : "Upload"}</label>

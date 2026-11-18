@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from '@rstest/core';
 import { Pool } from "pg";
 import { randomUUID } from "node:crypto";
 import { installCatalog } from "./catalog";

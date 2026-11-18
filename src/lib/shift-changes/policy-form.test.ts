@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {parseOperationalProfileForm} from './policy-form';
 function form(){const f=new FormData();f.set('employeeId','e');f.set('expectedRevision','2');for(const k of ['minimumRest','maximumShift','maximumDaily','breaks','projectedOvertime'])f.set(k+'.status','UNKNOWN');return f;}
 it('rules remain unknown without numerics; not applicable is an explicit review',()=>{const f=form();f.set('maximumShift.status','NOT_APPLICABLE');const p=parseOperationalProfileForm(f);expect(p?.replacement.minimumRest).toEqual({status:'UNKNOWN'});expect(p?.replacement.maximumShift.status).toBe('NOT_APPLICABLE');});

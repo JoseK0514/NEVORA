@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { applyMemoryCommand, emptyMemory, ownerMemoryContext, parseMemory, parseMemoryCommand, purgeMemory } from "./memory";
 const now = "2026-11-01T12:00:00.000Z", id = "20000000-0000-4000-8000-000000000002";
 const command = (change: unknown, expectedRevision = 0) => parseMemoryCommand({ op: "memory", requestId: id, expectedRevision, change });

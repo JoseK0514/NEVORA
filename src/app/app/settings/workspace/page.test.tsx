@@ -1,19 +1,19 @@
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 
-const mocks = vi.hoisted(() => ({
+const mocks = rs.hoisted(() => ({
   locked: false,
-  requireRoles: vi.fn(async () => ({ id: "owner", role: "OWNER" })),
+  requireRoles: rs.fn(async () => ({ id: "owner", role: "OWNER" })),
 }));
-vi.mock("@/lib/auth/permissions", () => ({ requireRoles: mocks.requireRoles }));
-vi.mock("@/lib/data/workspaces", () => ({
+rs.mock("@/lib/auth/permissions", () => ({ requireRoles: mocks.requireRoles }));
+rs.mock("@/lib/data/workspaces", () => ({
   getWorkspace: async () => ({ name: "Northside Operations", timeZone: "America/Puerto_Rico" }),
   isWorkspaceTimezoneLocked: async () => mocks.locked,
   WorkspaceTimezoneLockedError: class extends Error {
     constructor() { super("Changing the business timezone requires a separately reviewed conversion because operational records already exist."); }
   },
 }));
-vi.mock("../actions", () => ({ saveWorkspaceProfileAction: vi.fn() }));
+rs.mock("../actions", () => ({ saveWorkspaceProfileAction: rs.fn() }));
 
 import WorkspacePage from "./page";
 

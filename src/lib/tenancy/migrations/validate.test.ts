@@ -2,7 +2,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import { readFileSync, writeFileSync, realpathSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { Client } from 'pg';
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from '@rstest/core';
 import { getOwnershipRegistry, OWNERSHIP_SOURCE, verifyOwnershipSource } from './ownership';
 import { lexSql } from '../inventory/sql-lexer';
 

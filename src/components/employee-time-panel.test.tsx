@@ -1,5 +1,5 @@
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {EmployeeTimeView} from './employee-time-panel';
 import {projectEmployeeTime} from '../lib/employee-time';
 import type {EmployeeTimePanelState} from '../lib/employee-time-client';

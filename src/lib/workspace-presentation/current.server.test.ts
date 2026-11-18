@@ -1,11 +1,13 @@
-import { beforeEach, expect, it, vi } from "vitest";
-const state = vi.hoisted(() => ({ fail: false, missingTable: false, noWorkspace: false, disabled: [] as string[] }));
-vi.mock("react", async () => ({ ...(await vi.importActual<typeof import("react")>("react")), cache: <T,>(fn: T) => fn }));
-vi.mock("@/components/module-off", () => ({ ModuleOff: () => null }));
-vi.mock("../auth/session", () => ({ getSession: async () => null }));
-vi.mock("../data/workspaces", () => ({ getWorkspace: async () => { if (state.noWorkspace) throw Error("fictional: no database"); return { id: "workspace-fictional" }; } }));
-vi.mock("./service", async () => {
-  const { ALL_MODULES_ON } = await import("./modules");
+import * as rstestOriginal0 from "react" with { rstest: 'importActual' };
+import * as rstestOriginal1 from "./modules";
+import { beforeEach, expect, it, rs } from '@rstest/core';
+const state = rs.hoisted(() => ({ fail: false, missingTable: false, noWorkspace: false, disabled: [] as string[] }));
+rs.mock("react",  () => ({ ...(rstestOriginal0), cache: <T,>(fn: T) => fn }));
+rs.mock("@/components/module-off", () => ({ ModuleOff: () => null }));
+rs.mock("../auth/session", () => ({ getSession: async () => null }));
+rs.mock("../data/workspaces", () => ({ getWorkspace: async () => { if (state.noWorkspace) throw Error("fictional: no database"); return { id: "workspace-fictional" }; } }));
+rs.mock("./service",  () => {
+  const { ALL_MODULES_ON } = rstestOriginal1;
   return { readActivePresentation: async (_id: string, _ex: unknown, options?: { strict?: boolean }) => {
     if (state.fail && options?.strict) throw Error("fictional database blip");
     if (state.missingTable) return { style: undefined, tokens: null, logoAssetId: null, revision: 0, words: "standard", modules: ALL_MODULES_ON };

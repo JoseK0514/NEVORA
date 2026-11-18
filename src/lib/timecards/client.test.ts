@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {parseCurrentTimecards,parseTimecardReceipt} from './client';
 import type {TimecardCommand} from './service';
 const command:TimecardCommand={operationId:'123e4567-e89b-42d3-a456-426614174000',employeeId:'E1',startDate:'2026-09-21',endDate:'2026-09-27',expectedRevision:3,expectedSourceHash:'a'.repeat(32),action:'APPROVE'};

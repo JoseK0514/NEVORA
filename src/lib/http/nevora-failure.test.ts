@@ -1,8 +1,8 @@
-import {afterEach,expect,it,vi} from 'vitest';
+import {afterEach,expect,it,rs} from '@rstest/core';
 import {NEVORA_FAILURES,clearsProtectedData,failureRecovery,nevoraFailure,privateReadBody,FAILURE_MESSAGES} from './nevora-failure';
 
 const response=(status:number,failure?:string,body:unknown={state:'unavailable'})=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json',...(failure?{'X-Nevora-Failure':failure}:{})}});
-afterEach(()=>vi.unstubAllGlobals());
+afterEach(()=>rs.unstubAllGlobals());
 
 it('maps every contract value to its recovery (CLAUDE-CONTRACT.md table)',()=>{
  expect(Object.fromEntries(NEVORA_FAILURES.map(code=>[code,failureRecovery(code)]))).toEqual({
@@ -20,8 +20,8 @@ it('ignores unknown header values and never names an origin or suggests sign-in 
 });
 it('turns a read into data or a reason: data-clearing failures end access, the rest are unknown (not zero)',async()=>{
  const announced:string[]=[];
- vi.stubGlobal('window',{dispatchEvent:(event:CustomEvent)=>{announced.push(event.detail.recovery);return true;}});
- vi.stubGlobal('CustomEvent',class{type:string;detail:unknown;constructor(type:string,init:{detail:unknown}){this.type=type;this.detail=init.detail;}});
+ rs.stubGlobal('window',{dispatchEvent:(event:CustomEvent)=>{announced.push(event.detail.recovery);return true;}});
+ rs.stubGlobal('CustomEvent',class{type:string;detail:unknown;constructor(type:string,init:{detail:unknown}){this.type=type;this.detail=init.detail;}});
  expect(await privateReadBody(response(200,undefined,{state:'ready'}))).toEqual({ok:true,body:{state:'ready'}});
  expect(await privateReadBody(response(401,'authentication_required'))).toMatchObject({ok:false,reason:'access_denied'});
  expect(await privateReadBody(response(403,'view_invalid'))).toMatchObject({ok:false,reason:'access_denied'});

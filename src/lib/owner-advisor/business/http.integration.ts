@@ -1,11 +1,11 @@
-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import { randomUUID } from 'node:crypto';
 import { companyAccessFixture } from '@/test/integration/company-access-fixture';
 import { fictionalBusinessInput } from '@/test/fixtures/rondo-business';
 import type { BusinessApiResult } from './contracts';
-const state = vi.hoisted(() => ({ session: vi.fn(), proof: vi.fn(), executor: { current: null as unknown } }));
-vi.mock('@/lib/auth/session', () => ({ getSession: state.session, requireSessionMutationProof: state.proof }));
-vi.mock('@/lib/data/sql-executor', () => ({ neonNotificationExecutor: () => state.executor.current }));
+const state = rs.hoisted(() => ({ session: rs.fn(), proof: rs.fn(), executor: { current: null as unknown } }));
+rs.mock('@/lib/auth/session', () => ({ getSession: state.session, requireSessionMutationProof: state.proof }));
+rs.mock('@/lib/data/sql-executor', () => ({ neonNotificationExecutor: () => state.executor.current }));
 import { POST, GET } from '@/app/api/owner/advisor/business/route';
 import { GET as versionGet } from '@/app/api/owner/advisor/business/sources/[sourceId]/versions/[versionId]/route';
 let f: Awaited<ReturnType<typeof companyAccessFixture>>;
@@ -13,8 +13,8 @@ const url = 'http://localhost/api/owner/advisor/business';
 const headers = { origin: 'http://localhost', 'content-type': 'application/json', 'x-nevora-business-evidence': '1' };
 const post = (value: unknown) => POST(new Request(url, { method: 'POST', headers, body: JSON.stringify(value) }));
 beforeEach(async () => { f = await companyAccessFixture(); state.executor.current = f.db.executor; state.session.mockResolvedValue(f.owner.employee); state.proof.mockResolvedValue(f.owner);
-  vi.stubEnv('FUEL_PORTAL_ORIGIN','http://localhost'); vi.stubEnv('NEVORA_OWNER_ADVISOR_ENABLED','true'); vi.stubEnv('NEVORA_OWNER_ADVISOR_BUSINESS_IMPORTS_ENABLED','true'); vi.stubEnv('NEVORA_OWNER_ADVISOR_BUSINESS_RETRIEVAL_ENABLED','true'); vi.spyOn(globalThis,'fetch').mockRejectedValue(Error('No external requests')); });
-afterEach(async () => { vi.restoreAllMocks(); vi.unstubAllEnvs(); await f?.db.dispose(); });
+  rs.stubEnv('FUEL_PORTAL_ORIGIN','http://localhost'); rs.stubEnv('NEVORA_OWNER_ADVISOR_ENABLED','true'); rs.stubEnv('NEVORA_OWNER_ADVISOR_BUSINESS_IMPORTS_ENABLED','true'); rs.stubEnv('NEVORA_OWNER_ADVISOR_BUSINESS_RETRIEVAL_ENABLED','true'); rs.spyOn(globalThis,'fetch').mockRejectedValue(Error('No external requests')); });
+afterEach(async () => { rs.restoreAllMocks(); rs.unstubAllEnvs(); await f?.db.dispose(); });
 it('runs authenticated route+SQL full review and returns only inert private version text without an approval handle', async () => {
   const input = fictionalBusinessInput(); input.source.name = '<script>fictional inert source</script>';
   const response = await post({ op: 'stage_source_version', requestId: randomUUID(), format: 'JSON', input }); expect(response.status).toBe(200);
@@ -46,7 +46,7 @@ it('fails new writes on missing schema while preserving original minimal recover
   const command={op:'stage_source_version',requestId:randomUUID(),format:'JSON',input:fictionalBusinessInput()}; const saved=await (await post(command)).json() as BusinessApiResult;
   await f.q('DROP FUNCTION owner_business_execute(text,text,uuid,text,text,text,jsonb,text,text,jsonb,text,timestamptz)');
   expect((await post({...command,requestId:randomUUID()})).status).toBe(503);
-  vi.stubEnv('NEVORA_OWNER_ADVISOR_BUSINESS_IMPORTS_ENABLED','false');vi.stubEnv('NEVORA_OWNER_ADVISOR_BUSINESS_RETRIEVAL_ENABLED','false');
+  rs.stubEnv('NEVORA_OWNER_ADVISOR_BUSINESS_IMPORTS_ENABLED','false');rs.stubEnv('NEVORA_OWNER_ADVISOR_BUSINESS_RETRIEVAL_ENABLED','false');
   const recovered=await post({op:'check_source_operation',requestId:randomUUID(),operationId:command.requestId}); expect(recovered.status).toBe(200); expect(await recovered.json()).toMatchObject({receipt:saved.receipt,version:null,catalog:null});
   state.session.mockResolvedValue(f.manager.employee);state.proof.mockResolvedValue(f.manager);expect((await GET(new Request(url,{headers}))).status).toBe(403);
 });

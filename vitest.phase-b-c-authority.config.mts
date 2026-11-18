@@ -1,5 +1,5 @@
 import {projectConfig} from './vitest.shared.mts';
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from './vitest.shared.mts';
 export default projectConfig('phase-b-c-authority', defineConfig({
   test: {
     include: [

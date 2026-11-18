@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { AUTH_COPY, authMessage, preferredAuthLang } from "./auth-copy";
 import { greetingFor } from "@/components/auth-premium/greeting";
 

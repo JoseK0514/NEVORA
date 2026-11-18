@@ -1,4 +1,4 @@
-import {afterAll,beforeAll,beforeEach,expect,it,vi} from 'vitest';
+import {afterAll,beforeAll,beforeEach,expect,it,rs} from '@rstest/core';
 import {createDisposableGenerationDatabase} from './local-postgres';
 import {installFixtureCompanyAccess} from './fixture-company-access';
 import {fixtureProof} from './shift-change-api';
@@ -12,7 +12,7 @@ import {validateShift} from '../../lib/scheduling/validate-shift';
 import {publishScheduleWithRevision} from '../../lib/data/publication-revisions';
 import {addDays} from '../../lib/date-utils';
 import {applyRestrictionCommand,emptyRestrictionDocument,RestrictionError} from '../../lib/scheduling/restrictions';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 let database:Awaited<ReturnType<typeof createDisposableGenerationDatabase>>;
 const q=(text:string,values:readonly unknown[]=[])=>database.executor.query<Record<string,unknown>>({text,values});
 const owner=managementProof('owner','OWNER'),worker=managementProof('worker','EMPLOYEE');

@@ -1,5 +1,5 @@
 import {createHash} from 'node:crypto';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {verifyExportReply} from './client';
 import {adpRunColumns,adpRunPaidColumns,mappedPayrollCsv,neutralPaidProfile,neutralProfile,type CanonicalPayrollExport} from './model';
 import {projectPaidPayrollExport} from './paid-time';

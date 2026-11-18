@@ -3,7 +3,7 @@ import { Client } from 'pg';
 import { createHash } from 'node:crypto';
 import { appendFileSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { expect } from 'vitest';
+import { expect } from '@rstest/core';
 import { bindOwnedLocalPortalVerifier } from './portal-credential-session.server';
 import { createPortalCredentialSessionNativeFixture, type NativeOptions } from './portal-credential-session.postgres-fixture';
 import { makePortalNativeObserver } from './portal-credential-session.postgres-observer';

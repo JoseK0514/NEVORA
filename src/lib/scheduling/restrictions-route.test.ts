@@ -1,14 +1,14 @@
-import {beforeEach,afterEach,expect,it,vi} from 'vitest';
+import {beforeEach,afterEach,expect,it,rs} from '@rstest/core';
 import {createRestrictionPost} from './restrictions-route.server';
 import {employeeViewAuthority} from '../employee-view-authority.server';
 import {managementProof} from '../../test/fixtures/management';
 import {getSession,requireSessionMutationProof} from '../auth/session';
 import {RestrictionError,emptyRestrictionDocument} from './restrictions';
-vi.mock('../auth/session',()=>({getSession:vi.fn(),requireSessionMutationProof:vi.fn()}));
+rs.mock('../auth/session',()=>({getSession:rs.fn(),requireSessionMutationProof:rs.fn()}));
 const proof=managementProof('owner','OWNER');
-beforeEach(()=>{vi.stubEnv('FUEL_PORTAL_ORIGIN','https://dev.example.test');vi.mocked(getSession).mockResolvedValue(proof.employee);vi.mocked(requireSessionMutationProof).mockResolvedValue(proof);});
-afterEach(()=>{vi.unstubAllEnvs();vi.clearAllMocks();});
-const services=()=>({read:vi.fn(async()=>({document:emptyRestrictionDocument(),legacyUnconfirmed:true,earliestWeek:'2030-10-07'})),mutate:vi.fn()});
+beforeEach(()=>{rs.stubEnv('FUEL_PORTAL_ORIGIN','https://dev.example.test');rs.mocked(getSession).mockResolvedValue(proof.employee);rs.mocked(requireSessionMutationProof).mockResolvedValue(proof);});
+afterEach(()=>{rs.unstubAllEnvs();rs.clearAllMocks();});
+const services=()=>({read:rs.fn(async()=>({document:emptyRestrictionDocument(),legacyUnconfirmed:true,earliestWeek:'2030-10-07'})),mutate:rs.fn()});
 function request(body:unknown={employeeId:'worker',action:'read'},headers:Record<string,string>={},url='https://dev.example.test/api/manager/scheduling-restrictions'){
  return new Request(url,{method:'POST',headers:{origin:'https://dev.example.test','content-type':'application/json','x-nevora-scheduling-restrictions':'1','x-nevora-actor':'owner','x-nevora-employee-view':employeeViewAuthority(proof,'planning'),...headers},body:typeof body==='string'?body:JSON.stringify(body)});
 }
@@ -28,12 +28,12 @@ it('does not accept the Employee route as management admission',async()=>{
  expect((await createRestrictionPost('employee',services())(request())).status).toBe(403);
 });
 it('denies an employee selecting another employee even with a valid own lifetime',async()=>{
- const worker=managementProof('worker','EMPLOYEE');vi.mocked(getSession).mockResolvedValue(worker.employee);vi.mocked(requireSessionMutationProof).mockResolvedValue(worker);
+ const worker=managementProof('worker','EMPLOYEE');rs.mocked(getSession).mockResolvedValue(worker.employee);rs.mocked(requireSessionMutationProof).mockResolvedValue(worker);
  const response=await createRestrictionPost('employee',services())(request({employeeId:'other',action:'read'},{'x-nevora-actor':'worker','x-nevora-employee-view':employeeViewAuthority(worker,'planning')}));
  expect(response.status).toBe(403);
 });
 it('rejects session/proof role mismatch',async()=>{
- vi.mocked(getSession).mockResolvedValue({...proof.employee,role:'MANAGER'});
+ rs.mocked(getSession).mockResolvedValue({...proof.employee,role:'MANAGER'});
  expect((await createRestrictionPost('management',services())(request())).status).toBe(403);
 });
 it('rejects oversized bodies, extra authority fields and malformed commands',async()=>{

@@ -1,11 +1,11 @@
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {fetchPrivatePunchPhoto} from './private-photo';
 
 const reference={deviceId:'fictional-tablet',commandId:'90ef3e34-415b-4513-bb06-6017d35367e3'};
 const bytes=new Uint8Array([255,216,255,224,0,2,255,217]);
 const response=()=>new Response(bytes,{headers:{'content-type':'image/jpeg','cache-control':'no-store, private'}});
 it('requests bounded private bytes with exact original metadata and same-origin security options',async()=>{
- const fetcher=vi.fn<typeof fetch>(async()=>response());const controller=new AbortController();
+ const fetcher=rs.fn<typeof fetch>(async()=>response());const controller=new AbortController();
  const blob=await fetchPrivatePunchPhoto('fictional-location',reference,controller.signal,fetcher);
  expect(blob.type).toBe('image/jpeg');expect(blob.size).toBe(bytes.length);
  const [path,options]=fetcher.mock.calls[0];expect(path).toBe('/api/clocker/fictional-location/photos/'+reference.commandId);
@@ -23,7 +23,7 @@ it.each([
  await expect(fetchPrivatePunchPhoto('fictional-location',reference,new AbortController().signal,async()=>make())).rejects.toThrow();
 });
 it('rejects arbitrary paths and references before any HTTP',async()=>{
- const fetcher=vi.fn<typeof fetch>();
+ const fetcher=rs.fn<typeof fetch>();
  await expect(fetchPrivatePunchPhoto('../other',reference,new AbortController().signal,fetcher)).rejects.toThrow();
  await expect(fetchPrivatePunchPhoto('fictional-location',{...reference,commandId:'other'},new AbortController().signal,fetcher)).rejects.toThrow();
  expect(fetcher).not.toHaveBeenCalled();

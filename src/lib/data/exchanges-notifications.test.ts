@@ -1,10 +1,11 @@
+import * as rstestOriginal0 from "@/lib/company-access/operational-scope.server" with { rstest: 'importActual' };
 import {managementProof} from '../../test/fixtures/management';
-import { beforeEach, afterEach, expect, it, vi } from 'vitest';
-vi.mock('@/lib/db', () => ({ getDb: () => ({ query: async () => [{ id: 'legacy' }] }), queryRows: (value: unknown) => value }));
+import { beforeEach, afterEach, expect, it, rs } from '@rstest/core';
+rs.mock('@/lib/db', () => ({ getDb: () => ({ query: async () => [{ id: 'legacy' }] }), queryRows: (value: unknown) => value }));
 import { approveCoverageExchange, approveSwapExchange, cancelExchange, claimCoverage, createCoverageOffer, createSwapProposal, denyExchange, respondToSwap } from './shift-change-compat.test-support';
 import { fixture, intents, week, verifyReadOnlyFences } from './shift-change-compat.test-support';
-beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date('2030-10-07T12:00:00Z')); });
-afterEach(() => { try { verifyReadOnlyFences(); } finally { vi.useRealTimers(); } });
+beforeEach(() => { rs.useFakeTimers(); rs.setSystemTime(new Date('2030-10-07T12:00:00Z')); });
+afterEach(() => { try { verifyReadOnlyFences(); } finally { rs.useRealTimers(); } });
 const transitions = [
   { name: 'claim', status: 'OPEN', run: claimCoverage, input: { exchangeId: 'request-1', employeeId: 'F' }, expected: [['M','SUMMARY'],['O','SUMMARY']] },
   { name: 'decline', status: 'EMPLOYEE_PENDING', run: respondToSwap, input: { exchangeId: 'request-1', employeeId: 'F', accept: false }, expected: [['E','EVENT']] },
@@ -101,8 +102,8 @@ it('missing optional request-recipient lock IDs retains the Task 5 assignment lo
  expect(r.businessBatches[0].find(s=>s.text.includes('FROM employees')&&s.text.includes('FOR SHARE'))!.values[0]).toEqual(['E','M']);
 });
 it('published outcome returns with a stalled provider and without any provider request',async()=>{
- const provider=vi.fn(()=>new Promise(()=>{}));vi.stubGlobal('fetch',provider);const r=fixture('EXCHANGE','MANAGER_PENDING');
- try{expect(await approveCoverageExchange({exchangeId:'request-1',managerId:'M'},r.executor)).toBe(true);expect(provider).not.toHaveBeenCalled();}finally{vi.unstubAllGlobals();}
+ const provider=rs.fn(()=>new Promise(()=>{}));rs.stubGlobal('fetch',provider);const r=fixture('EXCHANGE','MANAGER_PENDING');
+ try{expect(await approveCoverageExchange({exchangeId:'request-1',managerId:'M'},r.executor)).toBe(true);expect(provider).not.toHaveBeenCalled();}finally{rs.unstubAllGlobals();}
 });
 it('decision recipients use the guarded current shift location rather than the earlier request read',async()=>{
  const r=fixture('EXCHANGE','MANAGER_PENDING');r.state.shifts[0].locationId='NEW';r.state.schedules[0].locationId='NEW';r.state.revisions[0].shifts[0].locationId='NEW';
@@ -180,8 +181,8 @@ it.each([
 
 // This SQL-assembly fixture models admission I/O only. Current SQL scope guards,
 // snapshot and postcommit fences remain real; owned integration tests execute them.
-vi.mock('@/lib/company-access/operational-scope.server', async original => ({
- ...await original<Record<string,unknown>>(),
+rs.mock('@/lib/company-access/operational-scope.server',  () => ({
+ ...rstestOriginal0,
  assertOperationalAccess: async () => ({
   scope:{mode:'COMPANY',locationIds:[]},authority:'b'.repeat(64),
   observedAt:'2030-10-07T12:00:00.000Z',validForMs:15000,

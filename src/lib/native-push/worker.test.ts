@@ -1,4 +1,4 @@
-import {afterEach, expect, it, vi} from 'vitest';
+import {afterEach, expect, it, rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import {DEFAULT_NOTIFICATION_POLICY} from '../notifications/policy';
 import {sealNativeToken} from './material';
@@ -13,7 +13,7 @@ async function api() {
   expect(m).toHaveProperty('runNativeWorker');
   return m as typeof import('./worker');
 }
-afterEach(() => vi.useRealTimers());
+afterEach(() => rs.useRealTimers());
 function fixture(count = 1) {
   let now = time, active = true, deliverable = true, role = 'EMPLOYEE', sourceReason = 'current';
   let provider: NativeProviderResult = {kind: 'accepted'};
@@ -141,8 +141,8 @@ it('does not release an ambiguously committed provider acceptance', async () => 
   expect((await runNativeWorker({deps: f.deps, mode: 'all'})).accepted).toBe(0); expect(f.released).toEqual([]);
 });
 it('bounds a hung transport and aborts every attempted request', async () => {
-  vi.useFakeTimers(); const {runNativeWorker} = await api(), f = fixture(3); const signals: AbortSignal[] = [];
+  rs.useFakeTimers(); const {runNativeWorker} = await api(), f = fixture(3); const signals: AbortSignal[] = [];
   f.deps.sender.send = async input => {signals.push(input.signal); await input.beforeHandoff(input.signal); return new Promise(() => {});};
-  const work = runNativeWorker({deps: f.deps, mode: 'retry'}); await vi.advanceTimersByTimeAsync(20000);
+  const work = runNativeWorker({deps: f.deps, mode: 'retry'}); await rs.advanceTimersByTimeAsync(20000);
   expect((await work).retried).toBe(3); expect(signals).toHaveLength(3); expect(signals.every(s => s.aborted)).toBe(true);
 });

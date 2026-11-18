@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, expect, it, rs } from '@rstest/core';
 import { createInstallationProof, sealInstallationProof, openCleanupReceipt, INSTALLATION_COOKIE, CLEANUP_COOKIE, sealCleanupReceipt } from './installation';
 import { readNotificationConfig } from './config';
 import type { InstallationProof, SubscriptionRepository } from './types';
@@ -18,10 +18,10 @@ function setup() {
     const deps = { clock: () => now, revokeSession: async (hash: string, _signal: AbortSignal) => { revoked.add(hash); }, subscriptions: (_signal: AbortSignal) => repo, sealReceipt: (receipt: Parameters<typeof sealCleanupReceipt>[0]) => sealCleanupReceipt(receipt, key), secureCookies: true, openReceipt: (value: string) => openCleanupReceipt(value, key, now) };
     return { proof, values, cookies, config, repo, deps, revoked, active };
 }
-afterEach(() => vi.useRealTimers());
+afterEach(() => rs.useRealTimers());
 it('successful_cleanup_affects_only_this_installation', async () => { const m = await api(); const s = setup(); expect(await m.terminatePortalSession({ sessionToken: 'old-session', installation: s.proof, cookies: s.cookies, deps: s.deps })).toEqual({ state: 'complete' }); expect(s.revoked.has(sessionHash)).toBe(true); expect(s.active).toEqual(new Set(['other-device'])); expect(s.values.has('fuel_session')).toBe(false); });
 it('cleanup_rejection_does_not_block_signout', async () => { const m = await api(); const s = setup(); s.repo.detach = async () => { throw new Error('storage failure'); }; expect(await m.terminatePortalSession({ sessionToken: 'old-session', installation: s.proof, cookies: s.cookies, deps: s.deps })).toEqual({ state: 'pending' }); expect(s.values.has('fuel_session')).toBe(false); expect(s.revoked.has(sessionHash)).toBe(true); expect(openCleanupReceipt(s.values.get(CLEANUP_COOKIE)!, key, now)?.sessionHash).toBe(sessionHash); });
-it('cleanup_timeout_does_not_block_signout', async () => { const m = await api(); const s = setup(); vi.useFakeTimers(); const signals: AbortSignal[] = []; s.deps.revokeSession = async (_hash, signal) => { signals.push(signal); return new Promise(() => { }); }; s.deps.subscriptions = (signal) => { signals.push(signal); return s.repo; }; s.repo.detach = async () => new Promise(() => { }); const done = m.terminatePortalSession({ sessionToken: 'old-session', installation: s.proof, cookies: s.cookies, deps: s.deps }); await vi.advanceTimersByTimeAsync(1000); expect(await done).toEqual({ state: 'pending' }); expect(s.values.has('fuel_session')).toBe(false); expect(signals).toHaveLength(2); expect(signals.every(signal => signal.aborted)).toBe(true); });
+it('cleanup_timeout_does_not_block_signout', async () => { const m = await api(); const s = setup(); rs.useFakeTimers(); const signals: AbortSignal[] = []; s.deps.revokeSession = async (_hash, signal) => { signals.push(signal); return new Promise(() => { }); }; s.deps.subscriptions = (signal) => { signals.push(signal); return s.repo; }; s.repo.detach = async () => new Promise(() => { }); const done = m.terminatePortalSession({ sessionToken: 'old-session', installation: s.proof, cookies: s.cookies, deps: s.deps }); await rs.advanceTimersByTimeAsync(1000); expect(await done).toEqual({ state: 'pending' }); expect(s.values.has('fuel_session')).toBe(false); expect(signals).toHaveLength(2); expect(signals.every(signal => signal.aborted)).toBe(true); });
 it('session_revocation_survives_push_transaction_failure', async () => { const m = await api(); const s = setup(); s.repo.detach = async () => { throw new Error('transaction rolled back'); }; await m.terminatePortalSession({ sessionToken: 'old-session', installation: s.proof, cookies: s.cookies, deps: s.deps }); expect(s.revoked.has(sessionHash)).toBe(true); expect(s.active.has(s.proof.generation)).toBe(true); });
 it('session_delete_rejection_and_complete_storage_outage_remain_pending', async () => { const m = await api(); const s = setup(); s.deps.revokeSession = async () => { throw new Error('unavailable'); }; s.repo.detach = async () => { throw new Error('unavailable'); }; expect(await m.terminatePortalSession({ sessionToken: 'old-session', installation: s.proof, cookies: s.cookies, deps: s.deps })).toEqual({ state: 'pending' }); expect(s.values.has('fuel_session')).toBe(false); expect(s.revoked.size).toBe(0); expect(s.active.has(s.proof.generation)).toBe(true); });
 it('signing_misconfiguration_retains_existing_opaque_proof', async () => { const m = await api(); const s = setup(); s.repo.detach = async () => { throw new Error('outage'); }; s.deps.sealReceipt = () => { throw new Error('missing key'); }; const opaque = s.values.get(INSTALLATION_COOKIE); expect(await m.terminatePortalSession({ sessionToken: 'old-session', cookies: s.cookies, deps: s.deps })).toEqual({ state: 'pending' }); expect(s.values.get(INSTALLATION_COOKIE)).toBe(opaque); expect(s.values.get(CLEANUP_COOKIE)).toBe(opaque); expect(s.values.has('fuel_session')).toBe(false); });
@@ -133,7 +133,7 @@ it('multiple_session_recovery_keeps_shared_one_second_abort_budget',async()=>{
     const m=await api();const s=setup();const signals:AbortSignal[]=[];
     s.values.set(CLEANUP_COOKIE,sealCleanupReceipt({...s.proof,sessionHash,revokeSession:true,issuedAt:now.toISOString(),expiresAt:'2026-10-03T12:00:00Z',sessionRevocations:[{sessionHash:createHash('sha256').update('another').digest('hex'),issuedAt:now.toISOString(),expiresAt:'2026-10-03T12:00:00Z'}]},key));
     s.deps.revokeSession=async(_hash,signal)=>{signals.push(signal);return new Promise(()=>{});};s.deps.subscriptions=(signal)=>{signals.push(signal);return s.repo;};s.repo.reconcile=async()=>new Promise(()=>{});
-    vi.useFakeTimers();const pending=m.reconcilePendingInstallation(s.cookies,s.config,s.deps);await vi.advanceTimersByTimeAsync(1000);expect(await pending).toEqual({state:'pending'});expect(signals).toHaveLength(3);expect(signals.every(signal=>signal.aborted)).toBe(true);expect(s.values.has(CLEANUP_COOKIE)).toBe(true);
+    rs.useFakeTimers();const pending=m.reconcilePendingInstallation(s.cookies,s.config,s.deps);await rs.advanceTimersByTimeAsync(1000);expect(await pending).toEqual({state:'pending'});expect(signals).toHaveLength(3);expect(signals.every(signal=>signal.aborted)).toBe(true);expect(s.values.has(CLEANUP_COOKIE)).toBe(true);
 });
 it('confirmed_auth_success_retires_prior_obligation_during_push_only_outage', async () => {
     const m = await api(); const s = setup();
@@ -164,9 +164,9 @@ it('partial_reconciliation_retires_only_confirmed_auth_operations_before_deadlin
     let finishAmbiguous: (() => void) | undefined;
     s.deps.revokeSession = async (hash) => { if (hash === ambiguousHash) await new Promise<void>(resolve => { finishAmbiguous = resolve; }); else s.revoked.add(hash); };
     s.repo.reconcile = async () => { throw new Error('push table outage'); };
-    vi.useFakeTimers();
+    rs.useFakeTimers();
     const result = m.reconcilePendingInstallation(s.cookies, s.config, s.deps);
-    await vi.advanceTimersByTimeAsync(1000);
+    await rs.advanceTimersByTimeAsync(1000);
     expect(await result).toEqual({ state: 'pending' });
     const retained = openCleanupReceipt(s.values.get(CLEANUP_COOKIE)!, key, now)!;
     expect(retained.revokeSession).toBe(false);
@@ -183,7 +183,7 @@ it('partial_reconciliation_retires_only_confirmed_auth_operations_before_deadlin
 it('workspace outage does not prevent cookie termination or account-switch fencing',async()=>{
  const m=await api();const s=setup();
  // Workspace is deliberately unavailable; these runtime-only APIs must not read it.
- const workspace=await import('../data/workspaces');const lookup=vi.spyOn(workspace,'getWorkspace').mockRejectedValue(new Error('workspace unavailable'));
+ const workspace=await import('../data/workspaces');const lookup=rs.spyOn(workspace,'getWorkspace').mockRejectedValue(new Error('workspace unavailable'));
  try {
   s.repo.detach=async()=>{throw new Error('cleanup unavailable');};
   expect(await m.terminatePortalSession({sessionToken:'old-session',installation:s.proof,cookies:s.cookies,deps:s.deps})).toEqual({state:'pending'});

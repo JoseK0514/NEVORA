@@ -1,9 +1,9 @@
 import {renderToStaticMarkup} from 'react-dom/server';
 import {createElement} from 'react';
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 
-vi.mock('next/navigation',()=>({useRouter:()=>({refresh:vi.fn(),replace:vi.fn()})}));
-vi.mock('../app-navigation',()=>({useAppNavigation:()=>null}));
+rs.mock('next/navigation',()=>({useRouter:()=>({refresh:rs.fn(),replace:rs.fn()})}));
+rs.mock('../app-navigation',()=>({useAppNavigation:()=>null}));
 
 import {ScopedReadFrame,STUCK_MS} from './scoped-read-frame';
 

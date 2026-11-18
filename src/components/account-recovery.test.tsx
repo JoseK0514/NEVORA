@@ -1,11 +1,11 @@
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {describe,it,expect,vi} from 'vitest';
+import {describe,it,expect,rs} from '@rstest/core';
 import {AccountRecovery} from './account-recovery';
 import {RecoveryRequest} from './recovery-request';
 import {RecoveryReset} from './recovery-reset';
 import {MobileRecoveryReset} from './mobile-access/recovery-views';
-vi.stubGlobal('React',React);
+rs.stubGlobal('React',React);
 
 describe('Recovery presentation preserves its workflow boundaries',()=>{
  it('lets the mobile reset transport an isolated-company envelope without truncation',()=>{

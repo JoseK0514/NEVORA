@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 
-vi.mock('./api', () => ({ readStatements: vi.fn() }));
+rs.mock('./api', () => ({ readStatements: rs.fn() }));
 const { PaydayMoment } = await import('./my-pay');
 
 it('shows the newest statement as the payday moment without inventing amounts', () => {

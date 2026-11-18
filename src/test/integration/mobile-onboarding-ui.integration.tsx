@@ -1,4 +1,4 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {createRequire} from 'node:module';
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {resolve,join} from 'node:path';
@@ -7,7 +7,7 @@ import {MobileOnboardingGuide} from '../../components/mobile-access/onboarding-g
 import {measureRenderedContrast} from '../../../scripts/browser-contrast.mjs';
 
 // Presentation continuity only; authenticated activation remains in the owned Access journey.
-vi.mock('../../components/mobile-access/journey',()=>({useAccessJourney:()=>({confirmedId:'FICTIONAL-GUIDE',dismiss:()=>{}})}));
+rs.mock('../../components/mobile-access/journey',()=>({useAccessJourney:()=>({confirmedId:'FICTIONAL-GUIDE',dismiss:()=>{}})}));
 
 it('keeps the actual Quick guide readable and keyboard usable in both Employee themes and enlarged text',async()=>{
  const root=process.env.NEVORA_MOBILE_ACCESS_EVIDENCE;if(!root)throw Error('Select external NEVORA_MOBILE_ACCESS_EVIDENCE');

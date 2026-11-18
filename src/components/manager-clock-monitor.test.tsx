@@ -1,9 +1,9 @@
 import {createElement,type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {ClockMonitorCard} from './manager-clock-monitor';
 import type {ClockMonitor} from '../lib/time-clock';
-vi.mock('next/link',()=>({default:({href,children,...props}:ComponentProps<'a'>)=>createElement('a',{href,...props},children)}));
+rs.mock('next/link',()=>({default:({href,children,...props}:ComponentProps<'a'>)=>createElement('a',{href,...props},children)}));
 const ready:ClockMonitor={state:'ready',observedAt:'2030-10-07T14:00:00Z',timeZone:'America/Puerto_Rico',validForMs:45000,employees:[
  {timeEntryId:'a',employeeId:'a',employeeName:'Avery Cruz',locationId:'loc',locationName:'Main Office',deviceId:'d',clockInAt:'2030-10-07T12:00:00Z',state:'ON_FLOOR',elapsedMinutes:120,breakElapsedMinutes:null,positionName:'Recorded Position',scheduleMatch:'MATCHED'},
  {timeEntryId:'b',employeeId:'b',employeeName:'Blair Lee',locationId:'loc2',locationName:'West Office',deviceId:'d2',clockInAt:'2030-10-07T13:00:00Z',breakStartAt:'2030-10-07T13:50:00Z',state:'ON_BREAK',elapsedMinutes:60,breakElapsedMinutes:10,positionName:null,scheduleMatch:'UNMATCHED'},

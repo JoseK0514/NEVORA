@@ -1,8 +1,8 @@
-import {expect, it, vi} from 'vitest';
+import {expect, it, rs} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
 import type {ComponentProps} from 'react';
 
-vi.mock('next/link', () => ({default: ({children, ...props}: ComponentProps<'a'>) => <a {...props}>{children}</a>}));
+rs.mock('next/link', () => ({default: ({children, ...props}: ComponentProps<'a'>) => <a {...props}>{children}</a>}));
 
 import {HomePreview, previewPayroll, previewSidebar, type PreviewRole} from './home-preview';
 import {navigationForRole, sidebarNavigation} from '@/lib/navigation';

@@ -1,13 +1,13 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it, vi } from "vitest";
+import { expect, it, rs } from '@rstest/core';
 import { withoutB } from "./owner-b/test-support";
 import { ManagerDashboard, homeWeek } from "./manager-dashboard";
 import { WeekSummary } from "./clean/week-summary";
-vi.mock("next/link", () => ({ default: ({href,children,...props}: ComponentProps<"a">) => createElement("a",{href,...props},children) }));
-vi.mock("@/components/nav-icon", () => import("./nav-icon"));
-vi.mock("@/components/status-pill", () => import("./status-pill"));
-vi.mock("@/lib/date-utils", () => import("../lib/date-utils"));
+rs.mock("next/link", () => ({ default: ({href,children,...props}: ComponentProps<"a">) => createElement("a",{href,...props},children) }));
+
+
+
 const dashboardProps: ComponentProps<typeof ManagerDashboard> = {
     workspaceName:"Northside Services",timeZone:"America/Puerto_Rico",firstName:"Alex",weekStart:"2026-09-28",weekLabel:"Sep 28 – Oct 4",previousWeek:"2026-09-21",nextWeek:"2026-10-05",view:"overview",readyLocationCount:0,totalLocations:2,availabilitySubmitted:2,availabilityEligible:3,activeEmployees:10,unavailableAllWeek:0,coverageIssueCount:0,coverageConfigured:true,pendingRequestCount:7,managerActions:[],locations:[],days:[],hours:[],latestRevision:null,
 };
@@ -33,7 +33,7 @@ it("loads the current Action Center without exposing unverified server-provided 
   expect(html).not.toContain('href="/app/clocker-recovery"');
 });
 
-vi.mock("@/lib/business-time",()=>import("../lib/business-time"));
+
 
 it("summarizes the selected planning week and counts only explicitly published schedules", () => {
   // The summary moved from Home to Schedule (clean Manager v3); it is built from the same dashboard read.

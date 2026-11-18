@@ -1,15 +1,15 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 import RequestsPage from './page';
 
-vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{},replace:()=>{}})}));
-vi.mock('@/lib/auth/session', () => ({ requireSession: async () => ({ id: 'fictional', role: 'EMPLOYEE' }),
+rs.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{},replace:()=>{}})}));
+rs.mock('@/lib/auth/session', () => ({ requireSession: async () => ({ id: 'fictional', role: 'EMPLOYEE' }),
   // The page binds its planning view to the real proof shape (employee id and session token hash).
   requireSessionMutationProof: async () => ({ employee: { id: 'fictional', firstName: 'Fictional', lastName: 'Employee', role: 'EMPLOYEE', primaryLocationId: 'loc-1' }, sessionTokenHash: 'a'.repeat(64) }) }));
-vi.mock('@/lib/auth/permissions', () => ({ isTimeOffReviewerRole: () => false }));
-vi.mock('@/components/manager-time-off', () => ({ ManagerTimeOff: () => null }));
-vi.mock('@/app/app/requests/time-off-form', () => ({ TimeOffForm: () => null }));
-vi.mock('@/lib/data/requests', () => ({ listEmployeeTimeOffRequests: async () => [
+rs.mock('@/lib/auth/permissions', () => ({ isTimeOffReviewerRole: () => false }));
+rs.mock('@/components/manager-time-off', () => ({ ManagerTimeOff: () => null }));
+rs.mock('@/app/app/requests/time-off-form', () => ({ TimeOffForm: () => null }));
+rs.mock('@/lib/data/requests', () => ({ listEmployeeTimeOffRequests: async () => [
   { id: 'dc6b44c9-6e3f-4f0e-890c-328067ebfe9e', employeeId:'fictional', status: 'PENDING', startDate: '2030-10-07', endDate: '2030-10-08', allDay: true, reason: 'Fictional pending request' },
   { id: 'approved', employeeId:'fictional', status: 'APPROVED', startDate: '2030-10-09', endDate: '2030-10-10', allDay: true, reason: 'Fictional approved request' },
   { id:'foreign',employeeId:'foreign',status:'PENDING',startDate:'2030-10-09',endDate:'2030-10-10'},

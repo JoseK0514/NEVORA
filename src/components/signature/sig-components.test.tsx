@@ -1,10 +1,10 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, rs } from '@rstest/core';
 import { SigAvatar, SigBanner, SigCard, SigCardRow, SigEmpty, SigField, SigFieldGroup, SigList, SigPill, SigRow, SigSkeleton, SigTabs } from './sig-components';
 import { SigSheet, SigToast } from './sig-overlays';
 import { SigFade } from './sig-fade';
 
-vi.mock('next/link', () => ({ default: ({ href, children, ...rest }: { href: string; children: unknown }) => <a href={href} {...rest}>{children as never}</a> }));
+rs.mock('next/link', () => ({ default: ({ href, children, ...rest }: { href: string; children: unknown }) => <a href={href} {...rest}>{children as never}</a> }));
 
 describe('Signature components', () => {
   it('list rows link, act or sit still, with a chevron only when they go somewhere', () => {

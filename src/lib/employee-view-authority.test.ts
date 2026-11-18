@@ -1,5 +1,5 @@
-import {expect,it,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
+import {expect,it,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
 import {employeeViewAuthority} from './employee-view-authority.server';
 import type {SessionMutationProof} from './shift-changes/types';
 const proof={employee:{id:'self',role:'EMPLOYEE'},sessionTokenHash:'a'.repeat(64)} as SessionMutationProof;

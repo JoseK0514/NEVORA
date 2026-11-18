@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {missingMigrationFiles} from './migration-order';
 const current=['0038_read_path_indexes.sql','0039_native_payroll_setup_records.sql','0038_clocker_pin_operation_reference.sql','0039_clocker_review_requests.sql'];
 it('does not treat a shared numeric prefix as an applied migration',()=>{

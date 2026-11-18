@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import {
   NATIVE_PAYSTUB_PRESENTATION_VERSION, NATIVE_PAYSTUB_TEMPLATE_V2,
   preflightNativePaystubGlyphs, renderNativeEmployeePaystub, type NativePaystubPresentation,

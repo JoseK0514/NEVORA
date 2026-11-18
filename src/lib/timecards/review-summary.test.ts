@@ -1,4 +1,4 @@
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it} from '@rstest/core';
 import {classifyTimecardReview,summarizeTimecardReview} from './review-summary';
 import {parseTimecardsResponse,type TimecardItem} from './read-model';
 import {combineManagerActions} from '../action-center/project';

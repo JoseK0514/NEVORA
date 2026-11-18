@@ -1,5 +1,5 @@
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect, it} from 'vitest';
+import {expect, it} from '@rstest/core';
 import {projectEmployeeHome, HOME_SOURCES} from '../lib/employee-home/project';
 import type {AttentionItem, HomeSnapshot, PublishedAssignment} from '../lib/employee-home/types';
 import {EmployeeHomeCorpView, homeTodoRows} from './employee-home-corp';

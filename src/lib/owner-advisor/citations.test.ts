@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { investigate } from "./loop.server";
 import { parseAnswer } from "@/components/owner-advisor/public-response";
 import type { ToolCall } from "./contracts";

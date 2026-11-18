@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it, rs } from '@rstest/core';
 import { Client } from 'pg';
 import { appendFileSync, lstatSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -10,11 +10,11 @@ import { RUNTIME_CATALOG_SHARED_FENCE_SQL, INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL
 
 type Plan = { text: string; values: unknown[]; then: () => never };
 type LocalTransport = { query: (text: string, values: unknown[]) => unknown; transaction: (plans: Plan[], options: Record<string, unknown>) => Promise<unknown[]> };
-const transport = vi.hoisted(() => ({ value: null as LocalTransport | null }));
-vi.mock('server-only', () => ({}));
+const transport = rs.hoisted(() => ({ value: null as LocalTransport | null }));
+rs.mock('server-only', () => ({}));
 // This is an explicit local transport adapter, never actual Neon. Only the
 // resolver lookup returns fictional facts; executor plans execute on owned PG.
-vi.mock('../../db', () => ({ getDb: () => { throw Error('legacy_transport_forbidden'); },
+rs.mock('../../db', () => ({ getDb: () => { throw Error('legacy_transport_forbidden'); },
   getTenantRuntimeDb: (kind: string) => { if (kind !== 'APP' || !transport.value) throw Error('native_fixture_transport_unavailable'); return transport.value; } }));
 
 const leasePath = process.env.F_ROLE_OWNED_LEASE, runPath = process.env.F_ROLE_RUN_DIR;

@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { readPinKey, pinFingerprint, hashClockerPin, verifyClockerPin } from '../../lib/clocker/pin-crypto.server';
 const key = Buffer.alloc(32, 29);
 it('requires an explicit 32-byte server key, without a default or echo', () => {

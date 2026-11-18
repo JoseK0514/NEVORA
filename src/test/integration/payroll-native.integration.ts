@@ -2,7 +2,7 @@ import { newRun, command, readPayrollCapabilities } from "../../lib/payroll/serv
 import type { SqlExecutor } from "../../lib/notifications/types";
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
-import { beforeEach, afterEach, it, expect } from "vitest";
+import { beforeEach, afterEach, it, expect } from '@rstest/core';
 import { createPunchFixture } from "./clocker-punch-fixture";
 import { nativeProfiles, saveNativeProfile } from "../../lib/payroll/native/profiles.server";
 import { input } from "../../lib/payroll/native/fixtures.test-support";

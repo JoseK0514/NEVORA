@@ -1,12 +1,13 @@
+import * as rstestOriginal0 from "node:fs/promises" with { rstest: 'importActual' };
 import {randomUUID} from 'node:crypto';
 import {mkdir,mkdtemp,readFile,rename,rm,symlink,writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {afterEach,expect,it,vi} from 'vitest';
+import {afterEach,expect,it,rs} from '@rstest/core';
 
-const state=vi.hoisted(()=>({failRemoval:false}));
-vi.mock('node:fs/promises',async original=>{
- const fs=await original<typeof import('node:fs/promises')>();
+const state=rs.hoisted(()=>({failRemoval:false}));
+rs.mock('node:fs/promises', ()=>{
+ const fs=rstestOriginal0;
  return {...fs,rm:(...args:Parameters<typeof fs.rm>)=>state.failRemoval?Promise.reject(Error('Owned derived removal failed')):fs.rm(...args)};
 });
 import {releaseOwnedDerivedArtifacts} from './owned-next-app';

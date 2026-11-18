@@ -2,7 +2,7 @@ import {fixtureProof} from './shift-change-api';
 import { saveWorkspaceProfile, createLocation, updateLocation, insertEmployee, createPosition, updatePosition, updateEmployeeProfile } from './management-api';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { CURRENT_MIGRATIONS, createDisposableFoundationDatabase } from './local-postgres';
 import { hashPassword } from '../../lib/auth/password';
 

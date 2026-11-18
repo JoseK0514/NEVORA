@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 
 it('records current Phase C architecture without rewriting the historical charter', async () => {
   const charter = await readFile('docs/architecture/fuel-automation-charter.md', 'utf8');

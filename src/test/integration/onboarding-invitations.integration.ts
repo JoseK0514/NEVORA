@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import {onboardingJourneyFixture} from './onboarding-journey-fixture';
 import {saveOnboardingPerson} from '@/lib/onboarding/people.server';

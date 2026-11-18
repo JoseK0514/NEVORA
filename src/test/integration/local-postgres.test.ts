@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 
-const state = vi.hoisted(() => ({
+const state = rs.hoisted(() => ({
   clients: [] as { database: string; statements: string[]; ended: boolean }[],
   events: [] as string[],
   exists: false,
@@ -12,7 +12,7 @@ const state = vi.hoisted(() => ({
   pendingEnds: [] as (() => void)[],
 }));
 
-vi.mock('pg', () => {
+rs.mock('pg', () => {
   class Client {
     record: (typeof state.clients)[number];
     constructor(options: { connectionString: string }) {
@@ -80,11 +80,11 @@ beforeEach(() => {
   state.failConnect = false;
   state.deferRuntimeEnd = false;
   state.pendingEnds.length = 0;
-  vi.stubEnv('DATABASE_URL', '');
-  vi.stubEnv('FUEL_TEST_DATABASE_URL', 'postgresql://fixture@127.0.0.1:54321/nevora_foundation_test_bootstrap');
-  vi.stubEnv('FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN', 'yes');
+  rs.stubEnv('DATABASE_URL', '');
+  rs.stubEnv('FUEL_TEST_DATABASE_URL', 'postgresql://fixture@127.0.0.1:54321/nevora_foundation_test_bootstrap');
+  rs.stubEnv('FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN', 'yes');
 });
-afterEach(() => vi.unstubAllEnvs());
+afterEach(() => rs.unstubAllEnvs());
 
 it('runs exact migration files sequentially on one closed bootstrap connection, keeping runtime connections separate', async () => {
   const sql = await Promise.all(CURRENT_MIGRATIONS.map(file => readFile(`db/migrations/${file}`, 'utf8')));
@@ -157,7 +157,7 @@ it('waits for actual backend closure after pool drain before forcing owned datab
   state.deferRuntimeEnd = true;
   const disposal = db.dispose();
   try {
-    await vi.waitFor(() => expect(state.pendingEnds).toHaveLength(1));
+    await rs.waitFor(() => expect(state.pendingEnds).toHaveLength(1));
     expect(state.exists).toBe(true);
     expect(state.events).not.toContain('drop');
   } finally {

@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {summarizePartnerAssertions} from './owner-advisor-partner-evidence';
 it('partner comparison layers never convert preflight or scripted transport into model assessment',()=>{
  const result=summarizePartnerAssertions([{testResults:[{assertionResults:[{fullName:'genuine no-problem fixture is configured and fully covered before any alternative',status:'passed'}]}]}]);

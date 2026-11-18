@@ -1,5 +1,5 @@
 // Scheduling restrictions (U02): the browser's week logic, checked against the server's own rules (fictional data only).
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { applyRestrictionCommand, emptyRestrictionDocument, normalizeRestrictionHours, parseRestrictionCommand, resolveRestrictionDay } from "./restrictions";
 import {
   DAY_ORDER, admissibleMondays, allowedByDay, carriedInto, changedDays, cleanNote, decidedRequests, findReceipt, firstAdmissible, isAdmissibleMonday, openPlan, planAllowed, planFromUnavailable,

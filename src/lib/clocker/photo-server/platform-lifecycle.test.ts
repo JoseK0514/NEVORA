@@ -1,4 +1,4 @@
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {createPlatformPhotoLifecycle,readPhotoPlatformBinding} from './platform-lifecycle';
 const env={NEVORA_ENVIRONMENT:'staging',NEVORA_CLOCKER_PHOTO_RUNTIME:'neon-staging-v1',NEVORA_CLOCKER_PHOTO_PROJECT:'project-test',NEVORA_CLOCKER_PHOTO_BRANCH:'br-test',NEVORA_CLOCKER_PHOTO_WORKSPACE:'company-test'};
 it('requires an explicit isolated staging binding and never activates from a photo preference',()=>{
@@ -8,8 +8,8 @@ it('requires an explicit isolated staging binding and never activates from a pho
  expect(readPhotoPlatformBinding(env)).toEqual({workspaceId:'company-test',projectId:'project-test',branchId:'br-test'});
 });
 it('reads only fresh platform attestation for the exact Company and fails closed on missing health',async()=>{
- const query=vi.fn().mockResolvedValue([{cleanup_disclosure:'Verified test cleanup disclosure.',backup_disclosure:'Verified test backup disclosure.'}]);
- const executor={query,transaction:vi.fn()};
+ const query=rs.fn().mockResolvedValue([{cleanup_disclosure:'Verified test cleanup disclosure.',backup_disclosure:'Verified test backup disclosure.'}]);
+ const executor={query,transaction:rs.fn()};
  const provider=createPlatformPhotoLifecycle(executor,readPhotoPlatformBinding(env)!);
  expect(await provider({workspaceId:'other',policyVersion:1,retentionDays:7})).toBeNull();expect(query).not.toHaveBeenCalled();
  expect(await provider({workspaceId:'company-test',policyVersion:1,retentionDays:7})).toEqual({cleanupDisclosure:'Verified test cleanup disclosure.',backupDisclosure:'Verified test backup disclosure.'});

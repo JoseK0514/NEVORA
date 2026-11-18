@@ -1,5 +1,5 @@
 import {randomUUID} from 'node:crypto';
-import {beforeEach,afterEach,it,expect,vi} from 'vitest';
+import {beforeEach,afterEach,it,expect,rs} from '@rstest/core';
 import {createDisposableExchangeDatabase} from './local-postgres';
 import {fixtureShift,seedShiftChanges,proof} from './shift-change-fixture';
 import {reviewedFixtureTerms} from './shift-change-api';
@@ -13,7 +13,7 @@ import {loadWorkspaceNotificationConfig} from '../../lib/notifications/config';
 import {readEmployeeRequests} from '../../lib/data/employee-requests.server';
 import type {SqlExecutor} from '../../lib/notifications/types';
 let db:Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
-vi.mock('../../lib/db',()=>{
+rs.mock('../../lib/db',()=>{
  // Preserve lazy construction and execute the real ordered SQL session batch.
  const statement=(text:string,values:readonly unknown[]=[],options?:{fetchOptions?:{signal?:AbortSignal}})=>({statement:{text,values},then:(yes:(rows:unknown[])=>unknown,no:(error:unknown)=>unknown)=>db.executor.query({text,values},options?.fetchOptions?.signal).then(yes,no)});
  return {getDb:()=>({query:statement,transaction:(queries:{statement:{text:string;values:readonly unknown[]}}[],options?:{fetchOptions?:{signal?:AbortSignal}})=>db.executor.transaction(queries.map(q=>q.statement),options?.fetchOptions?.signal)}),queryRows:(rows:unknown)=>rows};

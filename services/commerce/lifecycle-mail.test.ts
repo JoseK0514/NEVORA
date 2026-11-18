@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import type {Business} from './store';
 import {lifecycleMailCurrent,lifecycleMailCopy} from './lifecycle-mail';
 const now=Date.parse('2030-01-01T00:00:00Z'),day=86400000;

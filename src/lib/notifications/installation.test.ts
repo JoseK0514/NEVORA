@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 async function api() { const m = await import('./installation').catch(() => ({})); expect(m).toHaveProperty('createInstallationProof'); return m as typeof import('./installation'); }
 const key = Buffer.alloc(32, 7);
 const now = new Date('2026-10-02T12:00:00Z');

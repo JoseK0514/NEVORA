@@ -1,7 +1,7 @@
-import {expect, it, vi} from 'vitest';
+import {expect, it, rs} from '@rstest/core';
 import {createElement, type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-vi.mock('next/link', () => ({default: ({children, ...props}: ComponentProps<'a'>) => createElement('a', props, children)}));
+rs.mock('next/link', () => ({default: ({children, ...props}: ComponentProps<'a'>) => createElement('a', props, children)}));
 import {ActionCenterSurface} from './manager-action-center';
 import {OwnerSetupCard, OwnerSetupCorp, hoursReason} from './owner-setup-card';
 import {PresentationProvider} from './presentation-context';

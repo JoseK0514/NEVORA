@@ -1,5 +1,5 @@
 /** Validates fictional scenario facts and real read boundaries, never model judgment. */
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import { resilienceScenarios } from "@/test/fixtures/owner-advisor-resilience";
 import { companyAccessFixture } from "@/test/integration/company-access-fixture";
 import { seedResilienceScenario, resilienceBusinessSnapshot } from "@/test/integration/owner-advisor-resilience-fixture";
@@ -8,8 +8,8 @@ import { AdvisorTools } from "./tools.server";
 import { admitOwner } from "./authority.server";
 
 let f: Awaited<ReturnType<typeof companyAccessFixture>>;
-beforeEach(async () => { vi.stubEnv("NEVORA_PAYROLL_ENABLED", "false"); f = await companyAccessFixture(); });
-afterEach(async () => { try { await f?.db.dispose(); } finally { vi.unstubAllEnvs(); } });
+beforeEach(async () => { rs.stubEnv("NEVORA_PAYROLL_ENABLED", "false"); f = await companyAccessFixture(); });
+afterEach(async () => { try { await f?.db.dispose(); } finally { rs.unstubAllEnvs(); } });
 
 it.each(resilienceScenarios)("preflights real fixture/read authority, not AI judgment: $id", async scenario => {
   const setup = await seedResilienceScenario(f, scenario), before = await resilienceBusinessSnapshot(f);

@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
-vi.mock('server-only', () => ({}));
+import { describe, expect, it, rs } from '@rstest/core';
+rs.mock('server-only', () => ({}));
 import { inspectPortalSourceBinding } from './portal-source-binding';
 import { getTenantProofFacts } from '../resolve.server';
 import type { TenantProof } from '../types';

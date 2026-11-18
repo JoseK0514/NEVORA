@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {resolve} from 'node:path';
 const {readVisibleInboxCards}=await import(resolve('scripts/phase-d-inbox-browser-support.mjs'));
 const start='2026-09-21',end='2026-09-27',href=(id:string)=>`/app/timecards?start=${start}&end=${end}#timecard-${id}`;

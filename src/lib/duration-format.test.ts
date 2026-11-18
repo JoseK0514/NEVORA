@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {dateRangeText, durationRow, durationSentence, durationTotal, minutesFromNanoseconds, relativeTimeText, timeRangeText} from './duration-format';
 
 const MINUTE = BigInt(60_000_000_000);

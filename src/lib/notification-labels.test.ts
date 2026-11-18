@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {NOTIFICATION_KINDS,NOTIFICATION_LABELS,notificationKind} from './notification-labels';
 
 it('maps each row label back to exactly its kind, and nothing else',()=>{

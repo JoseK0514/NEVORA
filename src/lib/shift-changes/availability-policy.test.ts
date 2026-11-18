@@ -1,4 +1,4 @@
-import {describe,it,expect} from 'vitest';
+import {describe,it,expect} from '@rstest/core';
 import {approvalAvailability} from './availability-policy';
 describe('approval availability policy',()=>{
  it('reports the current rule once without repeating it as a row notice',()=>{

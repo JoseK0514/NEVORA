@@ -1,21 +1,22 @@
+import * as rstestOriginal0 from "@/lib/data/notification-transactions" with { rstest: 'importActual' };
 import {readFile} from 'node:fs/promises';
 // Real action/SQL regressions for own account-deletion requests. Only the framework context (cookies, headers)
 // and the database transport are adapted; every statement runs on the disposable PostgreSQL.
 import {createHash} from 'node:crypto';
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
-const context=await vi.hoisted(async()=>{const {AsyncLocalStorage}=await import('node:async_hooks');return {executor:null as SqlExecutor|null,cookie:'',lose:false,beforeAccept:null as null|(()=>Promise<void>),device:new AsyncLocalStorage<string>()};});
-vi.mock('@/lib/db',()=>{
+const context=await rs.hoisted(async()=>{const {AsyncLocalStorage}=await import('node:async_hooks');return {executor:null as SqlExecutor|null,cookie:'',lose:false,beforeAccept:null as null|(()=>Promise<void>),device:new AsyncLocalStorage<string>()};});
+rs.mock('@/lib/db',()=>{
  const statement=(text:string,values:readonly unknown[]=[])=>({statement:{text,values},then:(yes:(r:unknown[])=>unknown,no:(e:unknown)=>unknown)=>context.executor!.query({text,values}).then(yes,no)});
  const tagged=Object.assign((strings:TemplateStringsArray,...values:unknown[])=>statement(strings.reduce((t,p,i)=>t+(i?'$'+i:'')+p,''),values),{
   query:statement,transaction:(queries:{statement:SqlStatement}[])=>context.executor!.transaction(queries.map(q=>q.statement)),
  });
  return {getDb:()=>tagged,queryRows:(r:unknown)=>r};
 });
-vi.mock('next/headers',()=>({cookies:async()=>{const cookie=context.device.getStore()??context.cookie;return {get:(n:string)=>n==='fuel_session'&&cookie?{value:cookie}:undefined};},headers:async()=>new Headers({'x-forwarded-for':'198.51.100.7'})}));
+rs.mock('next/headers',()=>({cookies:async()=>{const cookie=context.device.getStore()??context.cookie;return {get:(n:string)=>n==='fuel_session'&&cookie?{value:cookie}:undefined};},headers:async()=>new Headers({'x-forwarded-for':'198.51.100.7'})}));
 // The accepting transaction commits; only its reply is lost when `lose` is set. That is the Neon HTTP case.
-vi.mock('@/lib/data/notification-transactions',async original=>{
- const implementation=await original<typeof import('../../lib/data/notification-transactions')>();
+rs.mock('@/lib/data/notification-transactions', ()=>{
+ const implementation=rstestOriginal0;
  return {...implementation,neonNotificationExecutor:()=>{
   // Keep the actual session-contract adapter for reads and mutations; only its
   // installed-application transport above is substituted with owned PostgreSQL.
@@ -26,7 +27,7 @@ vi.mock('@/lib/data/notification-transactions',async original=>{
   }};
  }};
 });
-vi.mock('next/navigation',()=>({redirect:(destination:string)=>{throw Object.assign(new Error('redirect'),{destination});},notFound:()=>{throw new Error('notFound');}}));
+rs.mock('next/navigation',()=>({redirect:(destination:string)=>{throw Object.assign(new Error('redirect'),{destination});},notFound:()=>{throw new Error('notFound');}}));
 import {createDisposableExchangeDatabase} from './local-postgres';
 import {seedOwnedApp,TEST_PASSWORD} from './owned-app-fixture';
 import {hashPassword} from '../../lib/auth/password';

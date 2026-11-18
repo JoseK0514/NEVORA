@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, rs } from '@rstest/core';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { preparePublishWarningReview, evaluatePublishWarningPolicy } from '../lib/scheduling/publish-warning-policy';
@@ -45,7 +45,7 @@ function render(review: PublishWarningReview = ready(), changes: Partial<Publish
  const renderer = surface?.PublishWarningReviewSurface;
  expect(renderer, 'unused F2 warning review surface must be implemented').toBeTypeOf('function');
  const current = review.state === 'ready' ? review : ready();
- const callbacks = { onReasonChange: vi.fn(), onConfirm: vi.fn(), onReturnToReview: vi.fn() };
+ const callbacks = { onReasonChange: rs.fn(), onConfirm: rs.fn(), onReturnToReview: rs.fn() };
  const props: PublishWarningReviewSurfaceProps = { result: { state: 'review', review }, connection: 'ready', expected: {
   reviewId: current.reviewId, fingerprint: current.fingerprint, selection: { ...current.selection } }, now: NOW,
   reason: '  Reviewed configured shortages  ', ...callbacks, ...changes };

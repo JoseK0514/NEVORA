@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import sharp from 'sharp';
 import {decodePunchJpeg} from './decode';
 it('fully decodes fictional pixels and removes input metadata',async()=>{

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { defaultEntries } from "./wave-c-form";
 
 // Review Nov 11 (OW-024): Save shows only after a change. The baseline is what the form was rendered with.

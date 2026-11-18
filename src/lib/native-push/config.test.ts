@@ -1,4 +1,4 @@
-import {afterEach, expect, it, vi} from 'vitest';
+import {afterEach, expect, it, rs} from '@rstest/core';
 async function api() {
   const m = await import('./config').catch(() => ({}));
   expect(m).toHaveProperty('readNativeRegistrationConfig');
@@ -8,7 +8,7 @@ const configured = () => ({NATIVE_PUSH_REGISTRATION_ENABLED: 'true', NATIVE_PUSH
   NATIVE_PUSH_ORIGIN: 'https://nevora.example', NATIVE_PUSH_IOS_APP_ID: 'com.velani.nevora.development',
   NATIVE_PUSH_IOS_PROVIDER: 'apns-sandbox', NATIVE_PUSH_ANDROID_APP_ID: 'com.velani.nevora.development',
   NATIVE_PUSH_TOKEN_ENCRYPTION_KEY: Buffer.alloc(32, 5).toString('base64url')});
-afterEach(() => vi.unstubAllEnvs());
+afterEach(() => rs.unstubAllEnvs());
 it('is disabled without every explicit registration setting; no provider delivery is enabled', async () => {
   const m = await api();
   expect(m.readNativeRegistrationConfig({})).toBeNull();
@@ -35,7 +35,7 @@ it.each(['https://bad..example', 'https://-bad.example', 'https://bad_.example',
 it('separates production config from test/preview processes and provider environments', async () => {
   const m = await api(); const production = {...configured(), NATIVE_PUSH_ENVIRONMENT: 'production', NATIVE_PUSH_IOS_PROVIDER: 'apns-production', NODE_ENV: 'production'};
   expect(m.readNativeRegistrationConfig(production)).toBeNull();
-  vi.stubEnv('NODE_ENV', 'production');
+  rs.stubEnv('NODE_ENV', 'production');
   expect(m.readNativeRegistrationConfig({...production, VERCEL_ENV: 'preview'})).toBeNull();
   expect(m.readNativeRegistrationConfig({...production, VERCEL_ENV: 'development'})).toBeNull();
   expect(m.readNativeRegistrationConfig(production)?.environment).toBe('production');

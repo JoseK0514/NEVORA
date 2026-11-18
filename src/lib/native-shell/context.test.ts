@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import type {UserRole} from '@/lib/domain';
 import {nativeContext, nativeRoleSupported} from './context';
 

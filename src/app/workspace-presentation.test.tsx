@@ -1,22 +1,22 @@
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 import { createElement, type ComponentProps } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 import EmployeesPage from './app/employees/page';
 import MyTimePage from './app/my-time/page';
 import { EmployeeDashboard } from '../components/employee-dashboard';
 
-vi.mock('@/lib/auth/permissions', () => ({MANAGER_ROLES:['OWNER','MANAGER'],requireRoles:async()=>{},isManagerRole:()=>false}));
-vi.mock('@/lib/auth/session', () => ({requireSession:async()=>({id:'self',role:'EMPLOYEE'}),requireSessionMutationProof:async()=>({employee:{id:'self',role:'EMPLOYEE'},sessionTokenHash:'a'.repeat(64)})}));
-vi.mock('@/lib/data/employees', () => ({listEmployees:async()=>[],listLocations:async()=>[]}));
-vi.mock('@/lib/employee-display', () => import('../lib/employee-display'));
-vi.mock('@/lib/phone', () => import('../lib/phone'));
-vi.mock('@/components/page-header', () => import('../components/page-header'));
-vi.mock('@/components/status-pill', () => import('../components/status-pill'));
-vi.mock('@/components/nav-icon', () => import('../components/nav-icon'));
-vi.mock('@/lib/date-utils', () => import('../lib/date-utils'));
-vi.mock('next/link', () => ({default:({href,children,...props}:ComponentProps<'a'>)=>createElement('a',{href,...props},children)}));
-vi.mock('next/navigation', () => ({usePathname:()=>'/app',useRouter:()=>({push:vi.fn(),refresh:vi.fn()}),redirect:()=>{throw Error('REDIRECT');}}));
+rs.mock('@/lib/auth/permissions', () => ({MANAGER_ROLES:['OWNER','MANAGER'],requireRoles:async()=>{},isManagerRole:()=>false}));
+rs.mock('@/lib/auth/session', () => ({requireSession:async()=>({id:'self',role:'EMPLOYEE'}),requireSessionMutationProof:async()=>({employee:{id:'self',role:'EMPLOYEE'},sessionTokenHash:'a'.repeat(64)})}));
+rs.mock('@/lib/data/employees', () => ({listEmployees:async()=>[],listLocations:async()=>[]}));
+
+
+
+
+
+
+rs.mock('next/link', () => ({default:({href,children,...props}:ComponentProps<'a'>)=>createElement('a',{href,...props},children)}));
+rs.mock('next/navigation', () => ({usePathname:()=>'/app',useRouter:()=>({push:rs.fn(),refresh:rs.fn()}),redirect:()=>{throw Error('REDIRECT');}}));
 it('uses generic customer copy in the directory and unconnected timekeeping page', async () => {
   const directory=renderToStaticMarkup(await EmployeesPage());
   expect(directory).not.toContain('across Fuel');

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-import { beforeEach, afterEach, expect, it } from 'vitest';
+import { beforeEach, afterEach, expect, it } from '@rstest/core';
 import { createPunchFixture } from './clocker-punch-fixture';
 import { saveBreakType } from '../../lib/clocker/break-types.server';
 import { ClockerPunchService } from '../../lib/clocker/punches.server';

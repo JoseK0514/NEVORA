@@ -2,7 +2,7 @@
 // public or fictional source bytes; positive output cannot grant authority.
 import { existsSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from '@rstest/core';
 type Inspector = typeof import('./installed-policy-observation').inspectInstalledPortalPolicyObservation;
 let inspector: Inspector | undefined;
 beforeAll(async () => {

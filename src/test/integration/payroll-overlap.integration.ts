@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { afterEach, beforeEach, expect, it } from 'vitest';
+import { afterEach, beforeEach, expect, it } from '@rstest/core';
 import { createDisposableFoundationDatabase } from './local-postgres';
 import { seedNativeOverlapFixture, overlapFirstPeriod, overlapSecondPeriod } from './payroll-overlap-fixture.test-support';
 import { command, readRun, receipt } from '../../lib/payroll/service';

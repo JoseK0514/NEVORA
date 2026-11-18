@@ -1,4 +1,4 @@
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it} from '@rstest/core';
 import type {EmployeeNotificationItem} from './employee-view';
 import {notificationCountNote,notificationKindFor,notificationName,notificationOutcomeNote} from './notification-facts';
 import {collapseNotifications,notificationPresentation,notificationTitle} from './notification-inbox-view';

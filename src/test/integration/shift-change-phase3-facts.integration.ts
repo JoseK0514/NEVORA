@@ -1,4 +1,4 @@
-import {beforeAll,afterAll,it,expect,vi} from 'vitest';
+import {beforeAll,afterAll,it,expect,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import {createDisposableExchangeDatabase} from './local-postgres';
 import {seedShiftChanges,fixtureShift,proof,publishFixtureWeek} from './shift-change-fixture';
@@ -11,7 +11,7 @@ import {assignOperationalScope,readOwnerOperationalScope} from '../../lib/compan
 import {getCallout} from '../../lib/data/callouts';
 import {readEmployeeExchange} from '../../lib/data/employee-exchange.server';
 import {parseEmployeeExchange} from '../../lib/employee-exchange';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 let db:Awaited<ReturnType<typeof createDisposableExchangeDatabase>>,requestId:string;
 const q=(text:string,values:readonly unknown[]=[])=>db.executor.query({text,values});
 const item=():ActionItem=>({id:'EXCHANGE:'+requestId,type:'EXCHANGE',category:'requests',priority:'REVIEW',title:'Fictional swap',detail:'Review requested',href:'/app/exchange'});

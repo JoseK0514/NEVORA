@@ -1,15 +1,16 @@
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import * as rstestOriginal0 from "node:fs/promises" with { rstest: 'importActual' };
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import {mkdtempSync,realpathSync,rmSync,readFileSync,writeFileSync,existsSync,chmodSync,symlinkSync,lstatSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import * as files from 'node:fs/promises';
 import {spawnSync} from 'node:child_process';
-vi.mock('node:fs/promises',async original=>({...await original<typeof import('node:fs/promises')>()}));
+rs.mock('node:fs/promises', ()=>({...rstestOriginal0}));
 import {parseOperationsConfig,workerInvocation,superviseProcess,readInvocationHealth,type OperationsConfig} from './supervisor';
 let directory:string,config:OperationsConfig;
 beforeEach(()=>{directory=realpathSync(mkdtempSync(join(tmpdir(),'nv-workforce-')));config={enabled:true,environment:'test',sourceSha:'a'.repeat(40),scopeId:randomUUID(),stateDirectory:directory,deadlineMs:2000,graceMs:100};});
-afterEach(()=>{vi.restoreAllMocks();for(const file of ['pid','descendant'])if(existsSync(join(directory,file))){const pid=Number(readFileSync(join(directory,file),'utf8'));if(Number.isSafeInteger(pid)&&pid>1)try{process.kill(-pid,'SIGKILL');}catch{try{process.kill(pid,'SIGKILL');}catch{}}}rmSync(directory,{recursive:true,force:true});});
+afterEach(()=>{rs.restoreAllMocks();for(const file of ['pid','descendant'])if(existsSync(join(directory,file))){const pid=Number(readFileSync(join(directory,file),'utf8'));if(Number.isSafeInteger(pid)&&pid>1)try{process.kill(-pid,'SIGKILL');}catch{try{process.kill(pid,'SIGKILL');}catch{}}}rmSync(directory,{recursive:true,force:true});});
 const node=(code:string)=>({file:process.execPath,args:['-e',code]});
 const receipt=()=>JSON.parse(readFileSync(join(directory,'payroll.json'),'utf8'));
 async function waitFor(file:string){const until=Date.now()+5000;while(!existsSync(file)){if(Date.now()>until)throw Error('Owned child did not become ready');await new Promise(ok=>setTimeout(ok,10));}}
@@ -33,15 +34,15 @@ it('records successful exit only, strips child output and uses private atomic fi
 });
 it('durably publishes lock/running state before a real child effect and terminal state before unlock',async()=>{
  const effect=join(directory,'effect'),events:{lock:boolean;status:string|null;effect:boolean}[]=[],original=files.open;
- vi.spyOn(files,'open').mockImplementation(async(...args:Parameters<typeof files.open>)=>{
-  const handle=await original(...args);if(String(args[0])===directory){const sync=handle.sync.bind(handle);vi.spyOn(handle,'sync').mockImplementation(async()=>{events.push({lock:existsSync(join(directory,'payroll.lock')),status:existsSync(join(directory,'payroll.json'))?receipt().status:null,effect:existsSync(effect)});await sync();});}return handle;
+ rs.spyOn(files,'open').mockImplementation(async(...args:Parameters<typeof files.open>)=>{
+  const handle=await original(...args);if(String(args[0])===directory){const sync=handle.sync.bind(handle);rs.spyOn(handle,'sync').mockImplementation(async()=>{events.push({lock:existsSync(join(directory,'payroll.lock')),status:existsSync(join(directory,'payroll.json'))?receipt().status:null,effect:existsSync(effect)});await sync();});}return handle;
  });
  await superviseProcess(config,'payroll',node(`require('fs').writeFileSync(${JSON.stringify(effect)},'owned')`));
  expect(events).toEqual([{lock:true,status:null,effect:false},{lock:true,status:'running',effect:false},{lock:true,status:'succeeded',effect:true},{lock:false,status:'succeeded',effect:true}]);
 });
 it.each([1,2])('fails closed before child effects if acquisition durability step %i fails',async(failAt)=>{
  const effect=join(directory,'effect'),original=files.open;let calls=0;
- vi.spyOn(files,'open').mockImplementation(async(...args:Parameters<typeof files.open>)=>{const handle=await original(...args);if(String(args[0])===directory){const sync=handle.sync.bind(handle);vi.spyOn(handle,'sync').mockImplementation(async()=>{if(++calls===failAt)throw Error('owned durability fault');await sync();});}return handle;});
+ rs.spyOn(files,'open').mockImplementation(async(...args:Parameters<typeof files.open>)=>{const handle=await original(...args);if(String(args[0])===directory){const sync=handle.sync.bind(handle);rs.spyOn(handle,'sync').mockImplementation(async()=>{if(++calls===failAt)throw Error('owned durability fault');await sync();});}return handle;});
  await expect(superviseProcess(config,'payroll',node(`require('fs').writeFileSync(${JSON.stringify(effect)},'unexpected')`))).rejects.toThrow('operations_state_unavailable');expect(existsSync(effect)).toBe(false);expect(existsSync(join(directory,'payroll.lock'))).toBe(true);
 });
 it('rejects an actual private FIFO before blocking outside the child watchdog',()=>{
@@ -112,7 +113,7 @@ it('detects an actual killed supervisor without automatically replacing its in-f
 },10000);
 it('bounds an unconfirmed termination and retains the lock while the real child is still alive',async()=>{
  const original=process.kill.bind(process),pidFile=join(directory,'pid');
- const blocked=vi.spyOn(process,'kill').mockImplementation((pid,signal)=>pid<0&&signal!==0?true:original(pid,signal));
+ const blocked=rs.spyOn(process,'kill').mockImplementation((pid,signal)=>pid<0&&signal!==0?true:original(pid,signal));
  const pending=superviseProcess({...config,deadlineMs:200,graceMs:50},'payroll',node(`require('fs').writeFileSync(${JSON.stringify(pidFile)},String(process.pid));setInterval(()=>{},1000)`));
  try{
   await waitFor(pidFile);

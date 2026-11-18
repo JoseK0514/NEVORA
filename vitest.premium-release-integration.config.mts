@@ -1,5 +1,5 @@
 import {projectConfig} from './vitest.shared.mts';
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from './vitest.shared.mts';
 export default projectConfig('premium-release-integration', defineConfig({
   test: {
     include: ['src/test/integration/premium-*.integration.ts'],

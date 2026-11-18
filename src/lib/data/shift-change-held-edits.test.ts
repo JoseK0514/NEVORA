@@ -1,12 +1,13 @@
-import { beforeEach, afterEach, expect, it, vi } from 'vitest';
-vi.mock('@/lib/db', () => ({ getDb: () => ({ query: async () => [{ id: 'legacy' }] }), queryRows: (value: unknown) => value }));
+import * as rstestOriginal0 from "@/lib/company-access/operational-scope.server" with { rstest: 'importActual' };
+import { beforeEach, afterEach, expect, it, rs } from '@rstest/core';
+rs.mock('@/lib/db', () => ({ getDb: () => ({ query: async () => [{ id: 'legacy' }] }), queryRows: (value: unknown) => value }));
 import { approveCalloutAndOpenCoverage, approveCoverageExchange, claimCoverage, createCallout, createCoverageOffer, createSwapProposal, fixture, intents, shiftChangeResult, verifyReadOnlyFences } from './shift-change-compat.test-support';
 import { PUBLISH_CHANGES_FIRST } from './shift-changes';
 import { calloutShiftFromRow } from './exchanges';
 import { matchesCalloutShift } from '../shift-changes/displayed-terms';
 import type { ShiftTerms } from '../shift-changes/types';
-beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date('2030-10-07T12:00:00Z')); });
-afterEach(() => { try { verifyReadOnlyFences(); } finally { vi.useRealTimers(); } });
+beforeEach(() => { rs.useFakeTimers(); rs.setSystemTime(new Date('2030-10-07T12:00:00Z')); });
+afterEach(() => { try { verifyReadOnlyFences(); } finally { rs.useRealTimers(); } });
 
 // Publish changes (Jose, 2026-10-29): people must never consent to, or be
 // approved into, terms they were not shown. A shift whose live row differs from
@@ -118,8 +119,8 @@ it('a held shift binds the report to the live assignment identity, not to the di
 });
 
 // This SQL-assembly fixture models admission I/O only, as in callouts-notifications.test.ts.
-vi.mock('@/lib/company-access/operational-scope.server', async original => ({
- ...await original<Record<string,unknown>>(),
+rs.mock('@/lib/company-access/operational-scope.server',  () => ({
+ ...rstestOriginal0,
  assertOperationalAccess: async () => ({
   scope:{mode:'COMPANY',locationIds:[]},authority:'b'.repeat(64),
   observedAt:'2030-10-07T12:00:00.000Z',validForMs:15000,

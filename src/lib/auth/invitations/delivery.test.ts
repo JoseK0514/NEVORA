@@ -1,7 +1,7 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {randomBytes} from 'node:crypto';
 import {fakeInvitationSmtp} from '@/test/integration/company-access-smtp.test-support';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 import {invitationDelivery} from './delivery.server';
 
 it('actual configurable invitation transport sends only the registered recipient and a fragment proof through owned SMTP',async()=>{

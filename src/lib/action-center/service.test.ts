@@ -1,4 +1,4 @@
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import type {AttendanceDisplayReview} from '../attendance/read-model';
 import type {ManagerTimeCorrections} from '../time-corrections/read-model';
 import {parseTimecardsResponse,type TimecardsResult} from '../timecards/read-model';
@@ -6,17 +6,17 @@ import {ALL_MODULES_ON} from '../workspace-presentation/modules';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {SqlExecutor} from '../notifications/types';
 
-const readers=vi.hoisted(()=>({attendance:vi.fn(),corrections:vi.fn(),cards:vi.fn(),presentation:vi.fn(),staffing:vi.fn()}));
+const readers=rs.hoisted(()=>({attendance:rs.fn(),corrections:rs.fn(),cards:rs.fn(),presentation:rs.fn(),staffing:rs.fn()}));
 // Canonical reader I/O is replaced only to control source lifetimes/failures.
 // Real company/session/SQL behavior is exercised by the owned D7 integration suite.
-vi.mock('../company-access/company-result.server',()=>({readCompanyResult:async(_proof:unknown,load:()=>Promise<unknown>)=>load()}));
-vi.mock('../data/workspaces',()=>({getWorkspace:async()=>({id:'workspace-test',timeZone:'America/Puerto_Rico'}),workspaceReadGuard:()=>[]}));
-vi.mock('../data/attendance-review.server',()=>({readAttendanceReview:readers.attendance}));
-vi.mock('../data/time-corrections.server',()=>({readManagerTimeCorrections:readers.corrections}));
-vi.mock('../timecards/service',()=>({readTimecards:readers.cards}));
-vi.mock('../time-off-staffing/service.server',()=>({readLeaveStaffing:readers.staffing}));
-vi.mock('../workspace-presentation/service',()=>({readActivePresentation:readers.presentation}));
-vi.mock('../data/action-request-facts.server',()=>({withActionRequestFacts:async(_proof:unknown,_workspace:unknown,items:unknown)=>items}));
+rs.mock('../company-access/company-result.server',()=>({readCompanyResult:async(_proof:unknown,load:()=>Promise<unknown>)=>load()}));
+rs.mock('../data/workspaces',()=>({getWorkspace:async()=>({id:'workspace-test',timeZone:'America/Puerto_Rico'}),workspaceReadGuard:()=>[]}));
+rs.mock('../data/attendance-review.server',()=>({readAttendanceReview:readers.attendance}));
+rs.mock('../data/time-corrections.server',()=>({readManagerTimeCorrections:readers.corrections}));
+rs.mock('../timecards/service',()=>({readTimecards:readers.cards}));
+rs.mock('../time-off-staffing/service.server',()=>({readLeaveStaffing:readers.staffing}));
+rs.mock('../workspace-presentation/service',()=>({readActivePresentation:readers.presentation}));
+rs.mock('../data/action-request-facts.server',()=>({withActionRequestFacts:async(_proof:unknown,_workspace:unknown,items:unknown)=>items}));
 import {readActionCenter} from './service';
 
 const observedAt='2026-09-28T12:00:00Z',week='2026-09-21';
@@ -32,14 +32,14 @@ const executor:SqlExecutor={query:async<T>()=>[{observedAt,remaining:45000}] as 
 const read=()=>readActionCenter(proof,week,executor,async()=>[]);
 
 beforeEach(()=>{
-  vi.resetAllMocks();
-  vi.spyOn(performance,'now').mockReturnValue(0);
+  rs.resetAllMocks();
+  rs.spyOn(performance,'now').mockReturnValue(0);
   readers.attendance.mockResolvedValue(attendance);readers.corrections.mockResolvedValue(corrections);
   readers.presentation.mockResolvedValue({modules:ALL_MODULES_ON});
   readers.staffing.mockResolvedValue({state:'ready',validForMs:45000,items:[]});
   readers.cards.mockImplementation(async(_proof,period)=>period.startDate==='2026-09-14'?previous():current());
 });
-afterEach(()=>vi.restoreAllMocks());
+afterEach(()=>rs.restoreAllMocks());
 
 it('bounds the actual action-center response by the shorter previous-week source',async()=>{
   const result=await read();
@@ -51,7 +51,7 @@ it.each(['access_denied','read_failed','schema_missing'] as const)('refuses an u
   expect(await read()).toEqual({state:'unavailable',reason:reason==='access_denied'?'access_denied':'read_failed'});
 });
 it('does not return source rows after the shorter previous-week budget expires during loading',async()=>{
-  vi.spyOn(performance,'now').mockReturnValueOnce(0).mockReturnValue(1500);
+  rs.spyOn(performance,'now').mockReturnValueOnce(0).mockReturnValue(1500);
   expect(await read()).toEqual({state:'unavailable',reason:'read_failed'});
 });
 it('preserves a previous-week reader rejection as unavailable without private diagnostics',async()=>{

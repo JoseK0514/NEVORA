@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { verifyBundle } from '../../scripts/manuals/bundle.mjs';
 
 it('qualifies the actual checked-in web manuals and PDFs against current application and source bytes', async () => {

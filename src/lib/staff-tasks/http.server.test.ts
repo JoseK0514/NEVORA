@@ -1,14 +1,14 @@
-import {beforeEach, afterEach, expect, it, vi} from 'vitest';
-const f = vi.hoisted(() => ({session: vi.fn(), proof: vi.fn(), context: vi.fn(), list: vi.fn(), detail: vi.fn(), execute: vi.fn(), recover: vi.fn()}));
-vi.mock('../auth/session', () => ({getSession: f.session, requireSessionMutationProof: f.proof}));
-vi.mock('./service.server', () => ({staffTaskAuthority: () => 'a'.repeat(64), readStaffTaskContext: f.context, listStaffTasks: f.list, readStaffTask: f.detail, executeStaffTaskCommand: f.execute, findStaffTaskOperation: f.recover}));
+import {beforeEach, afterEach, expect, it, rs} from '@rstest/core';
+const f = rs.hoisted(() => ({session: rs.fn(), proof: rs.fn(), context: rs.fn(), list: rs.fn(), detail: rs.fn(), execute: rs.fn(), recover: rs.fn()}));
+rs.mock('../auth/session', () => ({getSession: f.session, requireSessionMutationProof: f.proof}));
+rs.mock('./service.server', () => ({staffTaskAuthority: () => 'a'.repeat(64), readStaffTaskContext: f.context, listStaffTasks: f.list, readStaffTask: f.detail, executeStaffTaskCommand: f.execute, findStaffTaskOperation: f.recover}));
 import {staffTaskHttp} from './http.server';
 const operationId = '00000000-0000-4000-8000-000000000001';
 function request(action = 'commands', body: unknown = {kind: 'COMPLETE', operationId}, headers: Record<string, string> = {}, method = 'POST') {
   return new Request('https://nevora.invalid/api/staff-tasks/' + action, {method, headers: {'x-nevora-staff-task': '1', 'x-nevora-staff-task-authority': 'a'.repeat(64), origin: 'https://nevora.invalid', 'content-type': 'application/json', ...headers}, ...(method === 'POST' ? {body: JSON.stringify(body)} : {})});
 }
 beforeEach(() => {
-  vi.resetAllMocks(); vi.stubEnv('FUEL_PORTAL_ORIGIN', 'https://nevora.invalid');
+  rs.resetAllMocks(); rs.stubEnv('FUEL_PORTAL_ORIGIN', 'https://nevora.invalid');
   f.session.mockResolvedValue({id: 'alice', role: 'EMPLOYEE'});
   f.proof.mockResolvedValue({employee: {id: 'alice', role: 'EMPLOYEE'}, sessionTokenHash: 'b'.repeat(64)});
   f.context.mockResolvedValue({state: 'ready', authority: 'a'.repeat(64)});
@@ -17,7 +17,7 @@ beforeEach(() => {
   f.execute.mockResolvedValue({status: 'committed', operationId});
   f.recover.mockResolvedValue({status: 'committed', operationId});
 });
-afterEach(() => vi.unstubAllEnvs());
+afterEach(() => rs.unstubAllEnvs());
 it('bootstraps the current private context without a previous authority header', async () => {
   const r = await staffTaskHttp(request('context', undefined, {'x-nevora-staff-task-authority': ''}, 'GET'), 'context');
   expect(r.status).toBe(200); expect(f.context).toHaveBeenCalledOnce();

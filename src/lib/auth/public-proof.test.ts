@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {isPublicAccountProof,isPublicClockerEnrollment} from './public-proof';
 it('accepts bounded opaque envelope syntax for transport without claiming verification',()=>{
  const envelope='nw1_v1.'+'A'.repeat(16)+'.'+'B'.repeat(100)+'.'+'A'.repeat(22);

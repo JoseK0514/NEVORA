@@ -1,7 +1,7 @@
-import {beforeEach,it,expect,vi} from 'vitest';
-const f=vi.hoisted(()=>({create:vi.fn(),send:vi.fn()}));
-vi.mock('server-only',()=>({}));
-vi.mock('nodemailer',()=>({default:{createTransport:f.create}}));
+import {beforeEach,it,expect,rs} from '@rstest/core';
+const f=rs.hoisted(()=>({create:rs.fn(),send:rs.fn()}));
+rs.mock('server-only',()=>({}));
+rs.mock('nodemailer',()=>({default:{createTransport:f.create}}));
 import {recoveryDelivery} from './recovery-delivery.server';
 const env={NODE_ENV:'production',FUEL_PORTAL_ORIGIN:'https://portal.test',NEVORA_RECOVERY_SMTP_HOST:'smtp.example.invalid',NEVORA_RECOVERY_SMTP_PORT:'587',NEVORA_RECOVERY_FROM:'recovery@example.invalid',NEVORA_RECOVERY_SMTP_USER:'fictional-user',NEVORA_RECOVERY_SMTP_PASSWORD:'fictional-only'};
 beforeEach(()=>{f.create.mockReset();f.send.mockReset();f.create.mockReturnValue({sendMail:f.send});f.send.mockResolvedValue({});});

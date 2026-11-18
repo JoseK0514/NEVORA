@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 
 it('defines an exact release PostgreSQL gate for non-Clocker integration suites', async () => {
   const pkg = JSON.parse(await readFile('package.json', 'utf8')) as { scripts?: Record<string, string> };

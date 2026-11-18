@@ -1,29 +1,31 @@
-import { beforeEach, it, expect, vi } from "vitest";
-const mocks = vi.hoisted(() => ({
+import * as rstestOriginal0 from "@/lib/data/locations" with { rstest: 'importActual' };
+import * as rstestOriginal1 from "@/lib/data/positions" with { rstest: 'importActual' };
+import { beforeEach, it, expect, rs } from '@rstest/core';
+const mocks = rs.hoisted(() => ({
   role: "OWNER",
-  workspace: vi.fn(),
-  location: vi.fn(),
-  position: vi.fn(),
+  workspace: rs.fn(),
+  location: rs.fn(),
+  position: rs.fn(),
 }));
-vi.mock("@/lib/auth/session", () => ({ requireSessionMutationProof: async () => ({employee:{id:"trusted-owner",role:mocks.role},sessionTokenHash:"a".repeat(64)}) }));
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
-vi.mock("@/lib/auth/permissions", () => ({
+rs.mock("@/lib/auth/session", () => ({ requireSessionMutationProof: async () => ({employee:{id:"trusted-owner",role:mocks.role},sessionTokenHash:"a".repeat(64)}) }));
+rs.mock("next/cache", () => ({ revalidatePath: rs.fn() }));
+rs.mock("@/lib/auth/permissions", () => ({
   requireRoles: async (roles: string[]) => {
     if (!roles.includes(mocks.role)) throw Error("denied");
     return { id: "trusted-owner", role: mocks.role };
   },
 }));
-vi.mock("@/lib/data/workspaces", () => ({
+rs.mock("@/lib/data/workspaces", () => ({
   getWorkspace: async () => ({ timeZone: "America/New_York" }),
   saveWorkspaceProfile: mocks.workspace,
 }));
-vi.mock("@/lib/data/locations", async original => ({
-  ...await original<Record<string, unknown>>(),
+rs.mock("@/lib/data/locations",  () => ({
+  ...rstestOriginal0,
   createLocation: mocks.location,
   updateLocation: mocks.location,
 }));
-vi.mock("@/lib/data/positions", async original => ({
-  ...await original<Record<string, unknown>>(),
+rs.mock("@/lib/data/positions",  () => ({
+  ...rstestOriginal1,
   createPosition: mocks.position,
   updatePosition: mocks.position,
 }));
@@ -42,7 +44,7 @@ const actions = [
   updatePositionAction,
 ];
 beforeEach(() => {
-  vi.clearAllMocks();
+  rs.clearAllMocks();
   mocks.role = "OWNER";
   mocks.location.mockResolvedValue({ updatedAt: 'own.123457' });
   mocks.position.mockResolvedValue({ updatedAt: 'own.123457' });

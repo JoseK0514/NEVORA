@@ -1,7 +1,7 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, rs } from '@rstest/core';
 import { validateBreakType } from '../../clocker/break-types';
 import { buildRecordedSourceCapture, projectRecordedSourceCapture, type RecordedSourceRequest } from './recorded-source.server';
-vi.mock('server-only', () => ({}));
+rs.mock('server-only', () => ({}));
 const uuid = (n: number) => `00000000-0000-4000-8000-${n.toString().padStart(12, '0')}`;
 const period = { startDate: '2026-09-21', endDate: '2026-09-27' };
 const request = (): RecordedSourceRequest => ({ workspaceId: 'workspace-fuel', employeeId: 'worker', timeZone: 'America/Puerto_Rico', period,

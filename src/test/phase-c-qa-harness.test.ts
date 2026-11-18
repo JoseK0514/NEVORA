@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 
 it('waits for the Lead Home private snapshot before navigating to My Time in browser QA', async () => {
   const source = await readFile('scripts/phase-c-employee-time-ui-qa.mjs', 'utf8');

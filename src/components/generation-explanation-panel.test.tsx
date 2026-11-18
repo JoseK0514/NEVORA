@@ -1,6 +1,6 @@
 import { shiftPeriod } from '../lib/scheduling/periods';
 import { createHash } from 'node:crypto';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, rs } from '@rstest/core';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { automaticWeek, automaticAssignment } from '../test/fixtures/automatic-week';
@@ -77,7 +77,7 @@ function saved(s: GenerationExplanationSnapshot, changed = true) {
 function render(s = snapshot(), changes: Partial<GenerationExplanationPanelProps> = {}) {
  const renderer = surface?.GenerationExplanationPanel;
  expect(renderer, 'unused F3 explanation panel must be implemented').toBeTypeOf('function');
- const lookup = vi.fn();
+ const lookup = rs.fn();
  const binding = observation(s);
  const props: GenerationExplanationPanelProps = { result: { state: 'view', view: project(s), binding },
   expected: { ...binding }, connection: 'ready', sourceCurrent: true, onLookupOriginalOutcome: lookup, ...changes };

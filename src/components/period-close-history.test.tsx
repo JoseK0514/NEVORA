@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { appendPeriodHistory, type LoadedPeriodHistory } from './period-close-history';
 import { shiftDraftText } from './shift-review-recovery';
 

@@ -1,8 +1,8 @@
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {withManagementBrowserEvidence} from './integration/management-browser-evidence';
 
 it('a stalled optional capture cannot hold barriers, owned closure or the failure receipt',async()=>{
- vi.useFakeTimers();
+ rs.useFakeTimers();
  const primary=Error('owned primary'),calls:string[]=[];
  let releaseCapture:()=>void=()=>{},active:()=>boolean=()=>false,captureState='';
  const stalled=new Promise<void>(resolve=>{releaseCapture=resolve;});
@@ -14,11 +14,11 @@ it('a stalled optional capture cannot hold barriers, owned closure or the failur
  // Observe rejection immediately; a missing capture bound must fail without hanging the suite.
  const observed=run.then(()=>({state:'resolved'}),error=>({state:'rejected',error}));
  try{
-  await vi.advanceTimersByTimeAsync(2001);
+  await rs.advanceTimersByTimeAsync(2001);
   const result=await Promise.race([observed,Promise.resolve({state:'stalled'})]);
   expect(result.state).toBe('rejected');if('error'in result)expect(result.error).toBe(primary);
   expect(calls).toEqual(['barriers','capture','browser','app','report']);expect(captureState).toBe('timed_out');expect(active()).toBe(false);
- }finally{releaseCapture();await observed;vi.useRealTimers();}
+ }finally{releaseCapture();await observed;rs.useRealTimers();}
 });
 it('throwing capture and browser/app closure cannot replace the primary or skip the report',async()=>{
  const primary=Error('owned primary'),browser=Error('owned browser close'),app=Error('owned app close'),calls:string[]=[];

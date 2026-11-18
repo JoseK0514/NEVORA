@@ -1,13 +1,14 @@
-import {it,expect,vi} from 'vitest';
+import * as rstestOriginal0 from "../../lib/data/notification-transactions" with { rstest: 'importActual' };
+import {it,expect,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import type {SqlExecutor} from '../../lib/notifications/types';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import {companyAccessFixture} from './company-access-fixture';
 import {fakeInvitationSmtp} from './company-access-smtp.test-support';
-const context=vi.hoisted(()=>({executor:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
-vi.mock('server-only',()=>({}));
-vi.mock('../../lib/auth/session',()=>({getSession:async()=>context.proof?.employee??null,requireSessionMutationProof:async()=>{if(!context.proof)throw Error('No test session');return context.proof;}}));
-vi.mock('../../lib/data/notification-transactions',async importOriginal=>({...await importOriginal<typeof import('../../lib/data/notification-transactions')>(),neonNotificationExecutor:()=>{if(!context.executor)throw Error('Missing owned executor');return context.executor;}}));
+const context=rs.hoisted(()=>({executor:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
+rs.mock('server-only',()=>({}));
+rs.mock('../../lib/auth/session',()=>({getSession:async()=>context.proof?.employee??null,requireSessionMutationProof:async()=>{if(!context.proof)throw Error('No test session');return context.proof;}}));
+rs.mock('../../lib/data/notification-transactions', ()=>({...rstestOriginal0,neonNotificationExecutor:()=>{if(!context.executor)throw Error('Missing owned executor');return context.executor;}}));
 import {POST,GET} from '../../app/api/company-access/invitations/[employeeId]/route';
 
 it('normal Owner route uses the real configured invitation adapter into owned SMTP, returns metadata only and enforces headers/body',async()=>{

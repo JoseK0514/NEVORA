@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {executeManagerReminder,findManagerReminderOperation,readManagerReminderEligibility} from './service.server';
 import {communicationAuthority} from '../communications/service.server';
 import type {SessionMutationProof} from '../shift-changes/types';

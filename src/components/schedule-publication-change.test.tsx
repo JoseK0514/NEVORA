@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { SchedulePublicationChange } from './schedule-publication-change';
 it('is absent without actual changes and collapsed, one plain row per change (upscale S6)',()=>{
  expect(renderToStaticMarkup(<SchedulePublicationChange changes={[]}/>)).toBe('');

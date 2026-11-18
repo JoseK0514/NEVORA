@@ -1,4 +1,4 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {randomUUID,createHash} from 'node:crypto';
 import {PDFDocument} from 'pdf-lib';
 import {saveNativeProfile} from '../../lib/payroll/native/profiles.server';
@@ -8,7 +8,7 @@ import {companyAccessFixture} from './company-access-fixture';
 import {getWorkspace,workspaceReadGuard} from '../../lib/data/workspaces';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import type {OperationalFootprint,ScopeCommand} from '../../lib/company-access/model';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 import {readOperationalAuthority,assignOperationalScope,readOwnerOperationalScope,operationalScopeStatements,withOperationalCompany} from '../../lib/company-access/operational-scope.server';
 type Fixture=Awaited<ReturnType<typeof companyAccessFixture>>;
 async function selection(f:Fixture,action:'ASSIGN'|'REVOKE',scope?:{mode:'COMPANY';locationIds:[]}|{mode:'LOCATIONS';locationIds:string[]}):Promise<ScopeCommand>{

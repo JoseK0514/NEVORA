@@ -1,4 +1,4 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {createRequire} from 'node:module';
 import {randomUUID} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
@@ -57,8 +57,8 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
   const catalog=await freshOnboardingDatabase();defer(()=>catalog.close());await catalog.pool.query(await readFile(new URL('../../../services/commerce/schema.sql',import.meta.url),'utf8'));
   const store=new CommerceStore(catalog.pool,Buffer.alloc(32,19)),bindingKey=Buffer.alloc(32,23).toString('base64url'),provider=new StripeFixture();
   const f=await onboardingJourneyFixture({commerce:{key:bindingKey,workerKey:Buffer.alloc(32,24).toString('base64url'),enroll:input=>store.enrollWorkspace(input)}});defer(()=>f.close());
-  defer(()=>{vi.unstubAllEnvs();});
-  for(const [name,value] of Object.entries({NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_PORTAL_BASE_DOMAIN:f.config.portalBaseDomain,NEVORA_CONTROL_DATABASE_URL:f.db.connectionUrl,NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:f.config.encryptionKey,NEVORA_WORKSPACE_TOKEN_SECRET:f.config.workspaceTokenKey,NEVORA_PAYROLL_ENABLED:'true',NEVORA_PAYROLL_CALCULATION_MODE:'native_provisional'}))vi.stubEnv(name,value);
+  defer(()=>{rs.unstubAllEnvs();});
+  for(const [name,value] of Object.entries({NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_PORTAL_BASE_DOMAIN:f.config.portalBaseDomain,NEVORA_CONTROL_DATABASE_URL:f.db.connectionUrl,NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:f.config.encryptionKey,NEVORA_WORKSPACE_TOKEN_SECRET:f.config.workspaceTokenKey,NEVORA_PAYROLL_ENABLED:'true',NEVORA_PAYROLL_CALCULATION_MODE:'native_provisional'}))rs.stubEnv(name,value);
   const company=await f.createCompany('step4-alpha','step4-alpha@example.invalid'),grant=await company.grant(),password='Fictional Step4 Owner password 123!';
   expect((await activateInitialOwner(company.binding,{schemaVersion:1,operationId:randomUUID(),proof:grant.proof,password})).state).toBe('activated');expect((await company.work()).state).toBe('complete');
   expect((await company.resource.db.pool.query('SELECT count(*)::int n FROM employee_sessions')).rows).toEqual([{n:0}]);stages.push({stage:'registration-provisioning-original-owner-activation',state:'passed'});
@@ -125,7 +125,7 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
   // Keep the original helper's existing-database refusal and teardown guards.
   const fallback=process.env.FUEL_TEST_DATABASE_URL;if(!fallback)throw Error('Owned unused fallback selector absent');const secondFallback=new URL(fallback);secondFallback.pathname+='_'+randomUUID().replaceAll('-','').slice(0,8);
   let secondApp:Awaited<ReturnType<typeof createOwnedNextApp>>;
-  try{vi.stubEnv('FUEL_TEST_DATABASE_URL',secondFallback.href);secondApp=await createOwnedNextApp(join(root,'second-app'),{...options,isolatedWorkspaces:{...options.isolatedWorkspaces,origins:[second.origin],targets:secondTargets},payrollEnabled:true});}finally{vi.stubEnv('FUEL_TEST_DATABASE_URL',fallback);}
+  try{rs.stubEnv('FUEL_TEST_DATABASE_URL',secondFallback.href);secondApp=await createOwnedNextApp(join(root,'second-app'),{...options,isolatedWorkspaces:{...options.isolatedWorkspaces,origins:[second.origin],targets:secondTargets},payrollEnabled:true});}finally{rs.stubEnv('FUEL_TEST_DATABASE_URL',fallback);}
   defer(()=>secondApp.close());apps.set(second.origin,secondApp);
   ownedAppRoots.push(secondApp.root);
   const secondFront='http://beta.step4.localhost',secondProxy=await startOwnedDomainProxy(secondApp.url,{[secondFront]:second.origin});defer(()=>secondProxy.close());

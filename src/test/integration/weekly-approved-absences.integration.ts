@@ -1,5 +1,5 @@
-import { beforeEach, afterEach, expect, it, vi } from 'vitest';
-vi.mock('server-only',()=>({}));
+import { beforeEach, afterEach, expect, it, rs } from '@rstest/core';
+rs.mock('server-only',()=>({}));
 import { createDisposableFoundationDatabase } from './local-postgres';
 import { readWeeklyApprovedAbsences } from '../../lib/data/weekly-approved-absences.server';
 import type { SessionMutationProof } from '../../lib/shift-changes/types';

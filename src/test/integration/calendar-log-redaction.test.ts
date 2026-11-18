@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {createCalendarLogRedactor} from './calendar-log-redaction';
 async function redact(parts:string[]){const stream=createCalendarLogRedactor(),output:Buffer[]=[];stream.on('data',(data:Buffer)=>output.push(data));const ended=new Promise<void>((ready,reject)=>{stream.once('end',ready);stream.once('error',reject);});for(const part of parts)stream.write(part);stream.end();await ended;return Buffer.concat(output).toString('utf8');}
 it('suppresses split capability paths and bare credentials while retaining unrelated logs',async()=>{

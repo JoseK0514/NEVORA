@@ -1,12 +1,14 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import * as rstestOriginal0 from "react" with { rstest: 'importActual' };
+import * as rstestOriginal1 from "../app/app/settings/wave-c-form" with { rstest: 'importActual' };
+import { afterEach, beforeEach, describe, expect, it, rs } from '@rstest/core';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 // The interaction tests below drive the component's own handlers with hooks held here (the project has no DOM test
 // environment). While `hooks.on` is false every hook is React's own, so the markup tests render normally.
-const hooks = vi.hoisted(() => ({ on: false, server: false, states: [] as unknown[], refs: [] as { current: unknown }[], effects: [] as (() => void | (() => void))[], s: 0, r: 0 }));
-vi.mock('react', async original => {
-  const react = await original<typeof import('react')>();
+const hooks = rs.hoisted(() => ({ on: false, server: false, states: [] as unknown[], refs: [] as { current: unknown }[], effects: [] as (() => void | (() => void))[], s: 0, r: 0 }));
+rs.mock('react',  () => {
+  const react = rstestOriginal0;
   return { ...react,
     useState: (initial: unknown) => {
       if (!hooks.on) return react.useState(initial);
@@ -22,8 +24,8 @@ vi.mock('react', async original => {
     },
   };
 });
-vi.mock('./toaster', () => ({ toast: vi.fn() }));
-vi.mock('../app/app/settings/wave-c-form', async original => ({ ...await original<Record<string, unknown>>(), lockPageScroll: () => () => {} }));
+rs.mock('./toaster', () => ({ toast: rs.fn() }));
+rs.mock('../app/app/settings/wave-c-form',  () => ({ ...rstestOriginal1, lockPageScroll: () => () => {} }));
 import { ClockerDeviceManager } from './clocker-device-manager';
 import { CorpButton } from './corp/corp';
 import { QuietSheet } from './quiet/quiet-sheet';
@@ -37,7 +39,7 @@ const device = (id: string, state: ClockerDeviceView['state'], locationId = 'mai
   id, name: id, locationId, state, version: 7, lastSeenAt: null, enrollmentExpiresAt: null,
 });
 const render = (devices: ClockerDeviceView[], available = locations) => renderToStaticMarkup(createElement(ClockerDeviceManager, {
-  initialDevices: devices, locations: available, timeZone: 'America/Puerto_Rico', action: vi.fn(),
+  initialDevices: devices, locations: available, timeZone: 'America/Puerto_Rico', action: rs.fn(),
 }));
 
 // Release 1 (board O-ClockerDevices); Owner premium R3/R8 (round 2): one Tablets card (every tablet that isn't removed; its
@@ -119,7 +121,7 @@ describe('tablet sheet, driven through the component’s handlers', () => {
   const handle = (node: Node) => ({ node, focus: () => { focused.push((node.props['aria-label'] as string) ?? (node.props.label as string) ?? text(node)); } });
   class FakeInput { constructor(public value: string) {} }
   let nameValue = '';
-  const requestSubmit = vi.fn();
+  const requestSubmit = rs.fn();
   // The sheet's form: the selector the component asks for when the sheet opens, and its one field.
   const fakeForm = {
     querySelector: (selector: string) => {
@@ -134,7 +136,7 @@ describe('tablet sheet, driven through the component’s handlers', () => {
   let available = locations;
   function draw() {
     hooks.s = 0; hooks.r = 0; hooks.effects = [];
-    tree = ClockerDeviceManager({ initialDevices: devices, locations: available, timeZone: 'America/Puerto_Rico', action: vi.fn() });
+    tree = ClockerDeviceManager({ initialDevices: devices, locations: available, timeZone: 'America/Puerto_Rico', action: rs.fn() });
     return all(tree);
   }
   const settle = () => { draw(); hooks.effects[0]?.(); return draw(); };
@@ -145,7 +147,7 @@ describe('tablet sheet, driven through the component’s handlers', () => {
     return found.props as { disabled?: boolean; onClick: (event: unknown) => void; className?: string; kind?: string };
   };
   const has = (label: string) => !!find(label);
-  const row = { focus: vi.fn(), isConnected: true };
+  const row = { focus: rs.fn(), isConnected: true };
   const press = (label: string) => { button(label).onClick({ currentTarget: row }); return settle(); };
   const sheet = () => { const nodes = draw(); return { title: text(nodes.find(node => node.props.id === 'clocker-dialog-title')), open: !!nodes.find(node => node.type === 'form'),
     sheetOpen: nodes.find(node => node.type === QuietSheet)?.props.open }; };
@@ -159,11 +161,11 @@ describe('tablet sheet, driven through the component’s handlers', () => {
   beforeEach(() => {
     hooks.on = true; hooks.server = false; hooks.states = []; hooks.refs = [{ current: fakeForm }]; focused.length = 0; row.focus.mockClear(); requestSubmit.mockClear();
     devices = tablets; available = locations; nameValue = '';
-    vi.stubGlobal('requestAnimationFrame', (callback: () => void) => { callback(); return 0; });
-    vi.stubGlobal('window', Object.assign(new EventTarget(), { setTimeout, clearTimeout }));
-    vi.stubGlobal('HTMLInputElement', FakeInput);
+    rs.stubGlobal('requestAnimationFrame', (callback: () => void) => { callback(); return 0; });
+    rs.stubGlobal('window', Object.assign(new EventTarget(), { setTimeout, clearTimeout }));
+    rs.stubGlobal('HTMLInputElement', FakeInput);
   });
-  afterEach(() => { hooks.on = false; vi.unstubAllGlobals(); });
+  afterEach(() => { hooks.on = false; rs.unstubAllGlobals(); });
 
   it('Active: the sheet is titled with the tablet, Done on the right; Replace tablet is secondary and Remove tablet quiet', () => {
     press('Fictional front desk tablet, options');

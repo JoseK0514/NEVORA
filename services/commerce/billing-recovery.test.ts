@@ -1,4 +1,4 @@
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {createCommerce,type BillingPort} from './service';
 import {type Business,type CommerceStore} from './store';
 import {prepareCheckoutPlan} from './checkout';
@@ -11,7 +11,7 @@ const original:Business={id:'11111111-1111-4111-8111-111111111111',state:'ready'
 async function status(patch:Partial<Business>={},enabled=true,authorized=true){
  const business={...original,...patch};
  const store={session:async()=>{if(!authorized)throw Error('unauthorized');return business.id;},tokenOwner:async()=>null,business:async()=>business} as unknown as CommerceStore;
- const billing={checkout:vi.fn(),portal:vi.fn(),webhook:vi.fn()} as unknown as BillingPort;
+ const billing={checkout:rs.fn(),portal:rs.fn(),webhook:rs.fn()} as unknown as BillingPort;
  const app=createCommerce({store,origin:'https://billing.example.test',allowedOrigins:['https://billing.example.test'],
   now:()=>stamp,headcount:async()=>1,...(enabled?{billing}:{})});
  const response=await app(new Request('https://billing.example.test/v1/status',{headers:{authorization:'Bearer fixture'}}),'127.0.0.1');
@@ -39,15 +39,15 @@ it('does not offer a financial action without billing configuration or ready com
  expect((await status({},true,false)).response.status).not.toBe(200);
 });
 function planning(status='canceled',cancelAtPeriodEnd=false){
- const handoff=vi.fn(async()=>{}),creates=vi.fn(async()=>{throw Error('unexpected_mutation');});
+ const handoff=rs.fn(async()=>{}),creates=rs.fn(async()=>{throw Error('unexpected_mutation');});
  const business={...original,subscriptionStatus:status};
  const stripe={customers:{retrieve:async()=>({id:'cus_fixture',metadata:{nevora_business_id:business.id}}),create:creates},
   prices:{retrieve:async()=>({id:'price_small',active:true,livemode:false,currency:'usd',unit_amount:1900,recurring:{interval:'month',interval_count:1}})},
-  subscriptions:{retrieve:vi.fn(async()=>({id:'sub_fixture',customer:'cus_fixture',status,cancel_at_period_end:cancelAtPeriodEnd,metadata:{nevora_business_id:business.id}})),list:async()=>({data:[],has_more:false}),create:creates},
+  subscriptions:{retrieve:rs.fn(async()=>({id:'sub_fixture',customer:'cus_fixture',status,cancel_at_period_end:cancelAtPeriodEnd,metadata:{nevora_business_id:business.id}})),list:async()=>({data:[],has_more:false}),create:creates},
   checkout:{sessions:{create:creates}}};
  const ports={store:{key:Buffer.alloc(32,9),handoff},stripe,prices:{small:'price_small',team:'price_team'},
   origin:'https://billing.example.test',now:()=>stamp,live:false,headcount:async()=>1};
- const client={query:vi.fn(async()=>({rowCount:0,rows:[]}))};
+ const client={query:rs.fn(async()=>({rowCount:0,rows:[]}))};
  return {ports,business,client,handoff,creates};
 }
 it('existing Checkout planner preserves the later original paid anchor and uses setup, without creating a subscription or charge',async()=>{

@@ -1,4 +1,4 @@
-import {expect, it} from 'vitest';
+import {expect, it} from '@rstest/core';
 import {decodeNativeControl} from './native-device-control';
 const ownerId = 'a'.repeat(32);
 const valid = () => ({headers: new Headers({'x-nevora-native-test-owner': ownerId, 'content-type': 'application/json'}), method: 'POST', path: '/native-test', body: '{"action":"revoke"}', ownerId});

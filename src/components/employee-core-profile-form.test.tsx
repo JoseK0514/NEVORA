@@ -2,14 +2,14 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it, vi } from "vitest";
+import { expect, it, rs } from '@rstest/core';
 
 const cssPath = fileURLToPath(new URL("../app/globals.css", import.meta.url));
 
-vi.mock("@/components/phone-input", () => ({
+rs.mock("@/components/phone-input", () => ({
   PhoneInput: (props: Record<string, unknown>) => createElement("input", props),
 }));
-vi.mock("@/components/select-field", () => import("./select-field"));
+
 
 import { EmployeeCoreProfileForm, EmployeeStatusForm } from "./employee-core-profile-form";
 
@@ -39,7 +39,7 @@ it("renders stable identity and account lifecycle guidance (presentation smoke)"
       employee={employee}
       locations={locations}
       actorId="OWNER1" actorRole="OWNER"
-      action={vi.fn()}
+      action={rs.fn()}
     />,
   );
   expect(html).toContain('name="employeeId" value="worker"');
@@ -51,12 +51,12 @@ it("renders stable identity and account lifecycle guidance (presentation smoke)"
   expect(html).toMatch(/type="email"[^>]*maxLength="254"|maxLength="254"[^>]*type="email"/);
   // Release 1 (O-PersonAccess): the account status changes on Access and sign-in; the edit sheet keeps it as it is.
   expect(html).toContain('name="active" value="false"');
-  const status = renderToStaticMarkup(<EmployeeStatusForm employee={{ ...employee, active: true }} locations={locations} actorId="OWNER1" actorRole="OWNER" action={vi.fn()} />);
+  const status = renderToStaticMarkup(<EmployeeStatusForm employee={{ ...employee, active: true }} locations={locations} actorId="OWNER1" actorRole="OWNER" action={rs.fn()} />);
   expect(status).toContain("Deactivate Sam");
   expect(status).toContain('name="active" value="false"');
   expect(status).toContain("Deactivation signs them out right away");
   expect(status).toContain("history is preserved");
-  const reactivate = renderToStaticMarkup(<EmployeeStatusForm employee={employee} locations={locations} actorId="OWNER1" actorRole="OWNER" action={vi.fn()} />);
+  const reactivate = renderToStaticMarkup(<EmployeeStatusForm employee={employee} locations={locations} actorId="OWNER1" actorRole="OWNER" action={rs.fn()} />);
   expect(reactivate).toContain("Reactivate Sam");
   expect(reactivate).toContain('name="active" value="true"');
   expect(reactivate).toContain("Reactivating needs a fresh sign-in");
@@ -68,7 +68,7 @@ it("keeps the current inactive primary location visible without offering unrelat
       employee={employee}
       locations={locations}
       actorId="OWNER1" actorRole="OWNER"
-      action={vi.fn()}
+      action={rs.fn()}
     />,
   );
   expect(html).toContain("Old (Inactive — can only be retained while inactive)");
@@ -80,10 +80,10 @@ it("keeps the current inactive primary location visible without offering unrelat
 
 it("only offers Owner authority to an Owner actor", () => {
   const ownerHtml = renderToStaticMarkup(
-    <EmployeeCoreProfileForm employee={employee} locations={locations} actorId="OWNER1" actorRole="OWNER" action={vi.fn()} />,
+    <EmployeeCoreProfileForm employee={employee} locations={locations} actorId="OWNER1" actorRole="OWNER" action={rs.fn()} />,
   );
   const managerHtml = renderToStaticMarkup(
-    <EmployeeCoreProfileForm employee={employee} locations={locations} actorId="OWNER1" actorRole="MANAGER" action={vi.fn()} />,
+    <EmployeeCoreProfileForm employee={employee} locations={locations} actorId="OWNER1" actorRole="MANAGER" action={rs.fn()} />,
   );
   expect(ownerHtml).toContain('value="OWNER"');
   expect(managerHtml).not.toContain('value="OWNER"');

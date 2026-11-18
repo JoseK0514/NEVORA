@@ -1,7 +1,7 @@
 // Review B8: the Direction B stylesheets share one definition of "phone" (src/lib/b-viewport.ts) and one cascade layer.
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {B_DESKTOP, B_PHONE, B_TABLET, B_WIDE} from '@/lib/b-viewport';
 
 const root = join(__dirname, '..', '..');

@@ -1,5 +1,5 @@
 import {projectConfig} from './vitest.shared.mts';
-import {defineConfig} from 'vitest/config';
+import {defineConfig} from './vitest.shared.mts';
 import {employeeMobileProjects} from './vitest.employee-mobile-communications.config.mts';
 // Own published Pay statements and protected PDFs on Employee/Lead phones. The statement/correction SQL contract
 // lives in configurable-payroll.integration.ts and the PDF route contract in navigation.test.ts.

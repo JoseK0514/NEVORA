@@ -1,16 +1,17 @@
-import { beforeEach, expect, it, vi } from 'vitest';
+import * as rstestOriginal0 from "@/lib/company-access/operational-scope.server" with { rstest: 'importActual' };
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { managementProof } from '../../../test/fixtures/management';
 import { CoverageRepairConflictError, type CoverageRepairLocator } from '../../../lib/scheduling/coverage-repair';
-const m = vi.hoisted(() => ({ role: 'MANAGER', repair: vi.fn(), ordinary: vi.fn(), ensure: vi.fn() }));
-vi.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => managementProof('M') }));
-vi.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['MANAGER','OWNER'], requireRoles: async (roles: string[]) => { if (!roles.includes(m.role)) throw { destination: '/app' }; return { id: 'M' }; } }));
-vi.mock('next/navigation', () => ({ redirect: (destination: string) => { throw { destination }; } }));
-vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
-vi.mock('@/lib/data/schedules', () => ({ createCoverageRepairShift: m.repair, insertShift: m.ordinary, ensureSchedule: m.ensure }));
+const m = rs.hoisted(() => ({ role: 'MANAGER', repair: rs.fn(), ordinary: rs.fn(), ensure: rs.fn() }));
+rs.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => managementProof('M') }));
+rs.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['MANAGER','OWNER'], requireRoles: async (roles: string[]) => { if (!roles.includes(m.role)) throw { destination: '/app' }; return { id: 'M' }; } }));
+rs.mock('next/navigation', () => ({ redirect: (destination: string) => { throw { destination }; } }));
+rs.mock('next/cache', () => ({ revalidatePath: rs.fn() }));
+rs.mock('@/lib/data/schedules', () => ({ createCoverageRepairShift: m.repair, insertShift: m.ordinary, ensureSchedule: m.ensure }));
 import { createShiftAction } from './actions';
 const locator: CoverageRepairLocator = { version: 1, weekStart: '2030-10-07', gapKey: 'loc-1|2030-10-07|08:00|12:00', locationId: 'loc-1', date: '2030-10-07', startTime: '08:00', endTime: '12:00', target: 'POSITION', positionId: 'barista', reported: { missingStaff: 2, requiresLead: true, positions: [{ positionId: 'barista', missing: 1 }] } };
 function form() { const f = new FormData(); Object.entries({ coverageRepairReview: 'untrusted-retained-hint', actorEmployeeId: 'FORGED', weekStart: locator.weekStart, employeeId: 'E', locationId: locator.locationId, date: locator.date, startTime: locator.startTime, endTime: locator.endTime, positionId: 'barista', isDesignatedLead: 'on' }).forEach(([k,v]) => f.set(k,v)); return f; }
-beforeEach(() => { vi.clearAllMocks(); m.role = 'MANAGER'; m.repair.mockResolvedValue({ id: 'saved', locator }); });
+beforeEach(() => { rs.clearAllMocks(); m.role = 'MANAGER'; m.repair.mockResolvedValue({ id: 'saved', locator }); });
 
 it('save invokes only the atomic repair writer with current server actor/proof and returns the exact gap', async () => {
   const outcome = await createShiftAction(form()).then(value => ({ value, error: undefined }), error => ({ value: undefined, error }));
@@ -41,5 +42,5 @@ it('an infrastructure failure is never converted into a known successful save', 
 
 // These business/unit fixtures do not execute SQL. Current scope admission and
 // rollback are exercised by company-access-schedule-*.integration.ts.
-vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOriginalOperationalAccess:async(_proof:unknown,original:{authority:string})=>{expect(original.authority).toBe('f'.repeat(64));},assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},authority:'f'.repeat(64),workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));
-vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',data:{saveAvailability:'available',shift:{id:'test-shift'},employeeOptions:[],positionOptions:[]}})}));
+rs.mock('@/lib/company-access/operational-scope.server', original=>({...rstestOriginal0,assertOriginalOperationalAccess:async(_proof:unknown,original:{authority:string})=>{expect(original.authority).toBe('f'.repeat(64));},assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},authority:'f'.repeat(64),workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));
+rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',data:{saveAvailability:'available',shift:{id:'test-shift'},employeeOptions:[],positionOptions:[]}})}));

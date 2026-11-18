@@ -1,14 +1,15 @@
-import {it,expect,vi} from 'vitest';
+import * as rstestOriginal0 from "../../lib/data/notification-transactions" with { rstest: 'importActual' };
+import {it,expect,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import type {SqlExecutor} from '../../lib/notifications/types';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import {companyAccessFixture} from './company-access-fixture';
-const context=vi.hoisted(()=>({executor:null as SqlExecutor|null,proof:null as SessionMutationProof|null,refreshFails:false}));
-vi.mock('server-only',()=>({}));
-vi.mock('../../lib/auth/session',()=>({getSession:async()=>context.proof?.employee??null,requireSessionMutationProof:async()=>{if(!context.proof)throw Error('No test session');return context.proof;}}));
-vi.mock('../../lib/auth/permissions',()=>({MANAGER_ROLES:['OWNER','MANAGER'],requireRoles:async()=>{if(!context.proof)throw Error('No test actor');return context.proof.employee;}}));
-vi.mock('next/cache',()=>({revalidatePath:()=>{if(context.refreshFails)throw Error('Owned refresh failure');}}));
-vi.mock('../../lib/data/notification-transactions',async importOriginal=>({...await importOriginal<typeof import('../../lib/data/notification-transactions')>(),neonNotificationExecutor:()=>{if(!context.executor)throw Error('Missing owned executor');return context.executor;}}));
+const context=rs.hoisted(()=>({executor:null as SqlExecutor|null,proof:null as SessionMutationProof|null,refreshFails:false}));
+rs.mock('server-only',()=>({}));
+rs.mock('../../lib/auth/session',()=>({getSession:async()=>context.proof?.employee??null,requireSessionMutationProof:async()=>{if(!context.proof)throw Error('No test session');return context.proof;}}));
+rs.mock('../../lib/auth/permissions',()=>({MANAGER_ROLES:['OWNER','MANAGER'],requireRoles:async()=>{if(!context.proof)throw Error('No test actor');return context.proof.employee;}}));
+rs.mock('next/cache',()=>({revalidatePath:()=>{if(context.refreshFails)throw Error('Owned refresh failure');}}));
+rs.mock('../../lib/data/notification-transactions', ()=>({...rstestOriginal0,neonNotificationExecutor:()=>{if(!context.executor)throw Error('Missing owned executor');return context.executor;}}));
 import {saveEmployeeCoreProfileAction,createEmployeeFormAction} from '../../app/app/employees/actions';
 import {GET} from '../../app/api/company-access/employee-operations/[operationId]/route';
 

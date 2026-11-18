@@ -1,5 +1,5 @@
-import { expect, it, vi } from 'vitest';
-vi.mock('@/lib/db', () => ({ getDb: () => ({ query: async () => [] }), queryRows: (value: unknown) => value }));
+import { expect, it, rs } from '@rstest/core';
+rs.mock('@/lib/db', () => ({ getDb: () => ({ query: async () => [] }), queryRows: (value: unknown) => value }));
 import { getCallout, shownCalloutTerms, type CalloutRecord } from './callouts';
 import { PUBLISH_CHANGES_FIRST, publishFirstHref } from '../shift-changes/publish-first';
 import type { SqlExecutor } from '../notifications/types';
@@ -12,7 +12,7 @@ const row = {
   display_held: true, live_date: '2030-10-08', live_start_time: '10:00:00', live_end_time: '17:00:00', live_location_id: 'loc-1', live_position_id: null, live_is_designated_lead: false,
   shown_position_id: null, shown_is_designated_lead: false,
 };
-const executor = (rows: unknown[]) => { const query = vi.fn(async () => rows); return { executor: { query, transaction: vi.fn() } as unknown as SqlExecutor, query }; };
+const executor = (rows: unknown[]) => { const query = rs.fn(async () => rows); return { executor: { query, transaction: rs.fn() } as unknown as SqlExecutor, query }; };
 
 it('the employee view reads the published version and pairs it with the live terms; the default read stays live', async () => {
   const own = executor([row]);

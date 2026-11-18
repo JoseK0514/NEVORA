@@ -1,4 +1,4 @@
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {createRequire} from 'node:module';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
@@ -18,7 +18,7 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
   const errors:string[]=[],external:string[]=[],checks:string[]=[],network:{event:string;url:string;failure?:string}[]=[];
   let complete=false,leaseControl:Record<string,unknown>|null=null;
   try{
-    vi.stubEnv('NEVORA_PAYROLL_ENABLED','true');
+    rs.stubEnv('NEVORA_PAYROLL_ENABLED','true');
     await seedOwnedApp(app.database.executor);const fixture=await seedPayrollFixture(app.database.executor,{breaks:true,automaticPublish:false});
     const observe=(view:any)=>{view.setDefaultTimeout(20000);view.on('pageerror',(e:Error)=>errors.push(view.url()+' '+e.stack));view.on('requestfailed',(r:any)=>network.push({event:'failed',url:r.url(),failure:r.failure()?.errorText}));};observe(page);
     await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){external.push(url.origin);await route.abort();}else await route.continue();});
@@ -117,5 +117,5 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     const pdf=await context.request.get(app.url+'/api/payroll/documents/'+statements[0].id,{headers:{'x-nevora-payroll':'1'}});expect(pdf.status()).toBe(200);expect((await pdf.body()).subarray(0,4).toString()).toBe('%PDF');
     checks.push('Actual reviewed approval, local PDF worker and separately confirmed statement publication; no delivery worker');
     expect(errors).toEqual([]);expect(external).toEqual([]);complete=true;
-  }finally{vi.unstubAllEnvs();if(!complete)await page.screenshot({path:resolve(evidence,'failure.png'),fullPage:true}).catch(()=>{});await context.close();await browser.close();await app.close();await writeFile(resolve(evidence,'joined-report.json'),JSON.stringify({complete,checks,errors,external,network,leaseControl,source:app.sourceHashes,data:'Owned fictional PostgreSQL only; real save/export/manifest, no forced success'},null,2));}
+  }finally{rs.unstubAllEnvs();if(!complete)await page.screenshot({path:resolve(evidence,'failure.png'),fullPage:true}).catch(()=>{});await context.close();await browser.close();await app.close();await writeFile(resolve(evidence,'joined-report.json'),JSON.stringify({complete,checks,errors,external,network,leaseControl,source:app.sourceHashes,data:'Owned fictional PostgreSQL only; real save/export/manifest, no forced success'},null,2));}
 });

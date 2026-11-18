@@ -1,16 +1,16 @@
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 
-const mocks = vi.hoisted(() => ({ role: vi.fn(), list: vi.fn(), notFound: vi.fn(() => { throw new Error("not-found"); }) }));
-vi.mock("@/lib/auth/permissions", () => ({ requireRoles: mocks.role }));
-vi.mock("@/lib/data/locations", () => ({ listLocations: mocks.list }));
-vi.mock("../../actions", () => ({ updateLocationAction: vi.fn() }));
-vi.mock("next/navigation", () => ({ notFound: mocks.notFound }));
-vi.mock("@/components/edit-location-form", () => import("../../../../../components/edit-location-form"));
+const mocks = rs.hoisted(() => ({ role: rs.fn(), list: rs.fn(), notFound: rs.fn(() => { throw new Error("not-found"); }) }));
+rs.mock("@/lib/auth/permissions", () => ({ requireRoles: mocks.role }));
+rs.mock("@/lib/data/locations", () => ({ listLocations: mocks.list }));
+rs.mock("../../actions", () => ({ updateLocationAction: rs.fn() }));
+rs.mock("next/navigation", () => ({ notFound: mocks.notFound }));
+
 import EditLocationPage from "./page";
 
 const location = { id: "east", workspaceId: "w", name: "East office", shortName: "East", clockerKey: "east-office", active: true };
-beforeEach(() => { vi.clearAllMocks(); mocks.role.mockResolvedValue({ id: "owner", role: "OWNER" }); mocks.list.mockResolvedValue([location]); });
+beforeEach(() => { rs.clearAllMocks(); mocks.role.mockResolvedValue({ id: "owner", role: "OWNER" }); mocks.list.mockResolvedValue([location]); });
 const render = async (id = "east") => renderToStaticMarkup(await EditLocationPage({ params: Promise.resolve({ locationId: id }) }));
 
 it("preserves editable fields and the stable Clocker link without accepting a replacement key", async () => {

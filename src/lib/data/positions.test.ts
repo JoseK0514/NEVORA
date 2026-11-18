@@ -1,5 +1,5 @@
 import { managementProof } from '../../test/fixtures/management';
-import { expect,it } from 'vitest';
+import { expect,it } from '@rstest/core';
 import { createPosition,listPositions } from './positions';
 import type {SqlExecutor} from '../notifications/types';
 it('rejects blank and overlong plain-text names before IO',async()=>{

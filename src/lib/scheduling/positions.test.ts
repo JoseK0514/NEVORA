@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { calculateScheduleHealth } from './schedule-health';
 import { validateShift } from './validate-shift';
 const workspace = { id: 'w', active: true, timeZone: 'America/New_York' };

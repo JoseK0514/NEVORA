@@ -1,19 +1,19 @@
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import type { SqlStatement } from "@/lib/notifications/types";
-vi.mock("server-only", () => ({}));
-const mocks = vi.hoisted(() => ({ session: vi.fn(), proof: vi.fn(), query: vi.fn(), transaction: vi.fn() }));
-vi.mock("@/lib/auth/session", () => ({ getSession: mocks.session, requireSessionMutationProof: mocks.proof }));
+rs.mock("server-only", () => ({}));
+const mocks = rs.hoisted(() => ({ session: rs.fn(), proof: rs.fn(), query: rs.fn(), transaction: rs.fn() }));
+rs.mock("@/lib/auth/session", () => ({ getSession: mocks.session, requireSessionMutationProof: mocks.proof }));
 // Only DB transport and server session are replaced. Route, parsers, workspace
 // validation, current-role guard construction and save service remain real.
-vi.mock("@/lib/data/notification-transactions", () => ({ neonNotificationExecutor: () => ({ query: mocks.query, transaction: mocks.transaction }) }));
+rs.mock("@/lib/data/notification-transactions", () => ({ neonNotificationExecutor: () => ({ query: mocks.query, transaction: mocks.transaction }) }));
 import { GET, POST } from "./route";
 const owner = { id: "owner", firstName: "Fictional", lastName: "Owner", role: "OWNER", primaryLocationId: "loc-1" };
 const rule = { thresholdMinutes: 7, comparison: "GT", effectiveFrom: "2030-10-07T00:00:00Z" };
 const command = { operationId: "11111111-1111-4111-8111-111111111111", expectedRevision: 0, locationId: null, settings: { version: 1, attendance: { lateness: rule } } };
 const request = (input: unknown) => new Request("https://nevora.invalid/api/company-policies", { method: "POST", headers: { "origin": "https://nevora.invalid", "content-type": "application/json", "x-nevora-company-policies": "1" }, body: JSON.stringify(input) });
 beforeEach(() => {
-  vi.resetAllMocks();
-  vi.stubEnv("FUEL_PORTAL_ORIGIN", "https://nevora.invalid");
+  rs.resetAllMocks();
+  rs.stubEnv("FUEL_PORTAL_ORIGIN", "https://nevora.invalid");
   mocks.session.mockResolvedValue(owner);
   mocks.proof.mockResolvedValue({ employee: owner, sessionTokenHash: "a".repeat(64) });
   mocks.query.mockResolvedValue([{ id: "workspace-fuel", name: "Fictional Company", timeZone: "America/Puerto_Rico", active: true, createdAt: "2030-10-01T00:00:00Z", updatedAt: "2030-10-01T00:00:00Z" }]);

@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import type {TimecardIssue} from '@/lib/timecards/project';
 import {employeeTimecardPresentation} from './employee-timecard-presentation';
 

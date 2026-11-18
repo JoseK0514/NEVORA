@@ -1,11 +1,11 @@
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 import { ClockerPhotoService, type ClockerPhotoRepository } from './service';
 import { unconfiguredPhotoPolicy } from './validation';
 
 const proof = { workspaceId: 'fictional-workspace', employeeId: 'fictional-owner', sessionTokenHash: 'a'.repeat(64) };
 const context = { companyName: 'Fictional Company', policy: { ...unconfiguredPhotoPolicy(), version: 1, enabled: true }, profile: { version: 1, assistanceContact: 'Fictional company desk', assistanceInstructions: 'Ask for assisted punching.' } };
 function fixture() {
-  const repository = { managementNoticeContext: vi.fn(async () => context), saveNoticeProfile: vi.fn(async () => context.profile), cleanupExpired: vi.fn(async () => 2), cleanupOrphans: vi.fn(async () => 1), listPhotos: vi.fn() } as unknown as ClockerPhotoRepository;
+  const repository = { managementNoticeContext: rs.fn(async () => context), saveNoticeProfile: rs.fn(async () => context.profile), cleanupExpired: rs.fn(async () => 2), cleanupOrphans: rs.fn(async () => 1), listPhotos: rs.fn() } as unknown as ClockerPhotoRepository;
   return { repository, service: new ClockerPhotoService(repository) };
 }
 it('company-edited assistance cannot certify operational cleanup or backup behavior', async () => {
@@ -25,7 +25,7 @@ it('shares one bounded cleanup budget between expired photos and orphan finaliza
   const { repository, service } = fixture();
   expect(await service.cleanupPhotoEvidence(proof, 3)).toEqual({ expired: 2, orphanFinalized: 1 });
   expect(repository.cleanupExpired).toHaveBeenCalledWith(proof, 3); expect(repository.cleanupOrphans).toHaveBeenCalledWith(proof, 1);
-  vi.mocked(repository.cleanupOrphans).mockClear();
+  rs.mocked(repository.cleanupOrphans).mockClear();
   expect(await service.cleanupPhotoEvidence(proof, 2)).toEqual({ expired: 2, orphanFinalized: 0 });
   expect(repository.cleanupOrphans).not.toHaveBeenCalled();
 });

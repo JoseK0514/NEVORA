@@ -1,10 +1,10 @@
 import {createElement,type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {EmployeeAccountView} from '../employee-account-panel';
 import type {EmployeeProfile} from '../../lib/employee-view';
 import {ProfileSignInId} from './profile-view';
-vi.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children)}));
+rs.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children)}));
 const own:EmployeeProfile={state:'ready',kind:'profile',observedAt:'2026-10-27T12:00:00Z',validForMs:45000,profile:{name:'Own private name',role:'Lead',workspace:'Fictional workplace',timeZone:'America/Puerto_Rico',locations:['Main Office','West Office']}};
 const draw=(snapshot:EmployeeProfile|{state:'unavailable';reason:'read_failed'|'access_denied'}|null,paused=false,refreshing=false)=>renderToStaticMarkup(<EmployeeAccountView kind="profile" employeeMobile state={{snapshot,paused,refreshing}} onRetry={()=>{}} quiet/>);
 it('Personal info comes from the ready own projection, read only, with no refresh footer',()=>{

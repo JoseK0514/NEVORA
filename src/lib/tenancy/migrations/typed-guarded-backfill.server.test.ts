@@ -1,5 +1,6 @@
-import {describe,it,expect,vi,afterEach} from 'vitest';
-vi.mock('server-only', () => ({}));
+import * as rstestOriginal0 from "node:fs" with { rstest: 'importActual' };
+import {describe,it,expect,rs,afterEach} from '@rstest/core';
+rs.mock('server-only', () => ({}));
 import {Client} from 'pg';
 import {Socket} from 'node:net';
 import {createHash} from 'node:crypto';
@@ -18,11 +19,11 @@ import {getTypedReferenceColumnContract,validateTypedMigrationCellReferences,typ
 import {validateTypedSourceConstraints,type TypedSourceConstraintWithKeysObservations} from './typed-constraints';
 import {getTypedKeyComparatorContracts,getTypedKeyComparatorStockDescriptors,validateTypedKeyComparators,type TypedKeyComparatorCapture,type TypedKeyComparatorComponent} from './typed-key-comparators';
 
-const custody=vi.hoisted(()=>({lease:''}));
-vi.mock('node:fs',async original=>{const actual=await original<typeof import('node:fs')>();return {...actual,
- readFileSync:vi.fn((path:unknown,...args:unknown[])=>{if(path==='/fictional/ownership.json')return custody.lease;if(path==='/fictional/data/postmaster.pid')return '99999\n/fictional/data\n123456\n54321\n';return Reflect.apply(actual.readFileSync,actual,[path,...args]);}),
- realpathSync:vi.fn((path:unknown)=>typeof path==='string'&&path.startsWith('/fictional')?path:Reflect.apply(actual.realpathSync,actual,[path])),
- statSync:vi.fn((path:unknown)=>path==='/fictional/ownership.json'?{isFile:()=>true,mode:0o100600,uid:process.getuid?.()}:Reflect.apply(actual.statSync,actual,[path]))};});
+const custody=rs.hoisted(()=>({lease:''}));
+rs.mock('node:fs', ()=>{const actual=rstestOriginal0;return {...actual,
+ readFileSync:rs.fn((path:unknown,...args:unknown[])=>{if(path==='/fictional/ownership.json')return custody.lease;if(path==='/fictional/data/postmaster.pid')return '99999\n/fictional/data\n123456\n54321\n';return Reflect.apply(actual.readFileSync,actual,[path,...args]);}),
+ realpathSync:rs.fn((path:unknown)=>typeof path==='string'&&path.startsWith('/fictional')?path:Reflect.apply(actual.realpathSync,actual,[path])),
+ statSync:rs.fn((path:unknown)=>path==='/fictional/ownership.json'?{isFile:()=>true,mode:0o100600,uid:process.getuid?.()}:Reflect.apply(actual.statSync,actual,[path]))};});
 const registry=getOwnershipRegistry();
 const sha=(v:string)=>v.repeat(64);
 type RowSpec={table:string;wire:Record<string,string|null>;owner?:string};
@@ -157,9 +158,9 @@ function client(){
  const c=new Client({host:'127.0.0.1',port:54321,database:'fictional_case_one',user:'fictional_operator',ssl:false}),socket=new Socket();
  Object.defineProperties(socket,{remoteAddress:{value:'127.0.0.1'},localAddress:{value:'127.0.0.1'},remotePort:{value:54321}});
  Object.defineProperty(c.connection,'stream',{value:socket});Object.assign(c,{_txStatus:'I',_activeQuery:null,_queryQueue:[],_connected:true,_connecting:false,_ending:false,readyForQuery:true});
- const query=vi.spyOn(c,'query').mockRejectedValue(new Error('FICTIONAL_TRANSPORT_NOT_CONFIGURED'));return {c,query};
+ const query=rs.spyOn(c,'query').mockRejectedValue(new Error('FICTIONAL_TRANSPORT_NOT_CONFIGURED'));return {c,query};
 }
-afterEach(()=>vi.restoreAllMocks());
+afterEach(()=>rs.restoreAllMocks());
 const OIDS:Record<string,number>={text:25,date:1082,time:1083,smallint:21,timestamptz:1184,integer:23,jsonb:3802,boolean:16,uuid:2950,'text[]':1009,'char(64)':1042,'numeric(5,2)':1700,bigint:20,timestamp:1114,'char(32)':1042};
 function field(name:string,type:string){return {name,dataTypeID:OIDS[type],format:'text'};}
 type Mutation=(tag:string,rows:(string|null)[][])=>void;
@@ -184,7 +185,7 @@ function transport(input:GuardedTypedBackfillRequest,journal=false){
  const journalStates=new Map<string,string>();
  const originalDescriptor=()=>{const d=describeTypedBackfillJournal(r.plan);if(d.status!=='DESCRIBED')throw Error('FICTIONAL_GENUINE_DESCRIPTOR_REQUIRED');return d.descriptor;};
  const journalView=()=>{const d=originalDescriptor();return {format:'TYPED_BACKFILL_JOURNAL_OBSERVATION_V1',boundary:d.boundary,descriptorChecksum:d.descriptorChecksum,rows:d.chunks.map(chunk=>({chunk,state:journalStates.get(chunk.id),retryIdentity:chunk.retryIdentity})),effectsVerified:false,reconciliation:null};};
- vi.spyOn(process,'kill').mockReturnValue(true);
+ rs.spyOn(process,'kill').mockReturnValue(true);
  const wireKey=(table:string,rowKey:readonly JsonValue[])=>canonicalOwnershipJson([table,rowKey]);
  for(const e of r.plan.entries)owners.set(wireKey(e.table,e.key),null);
  const metadata=()=>[actor,manifest];let beginFailure=false,commitFailure=false,rollbackFailure=false,pause:Promise<void>|undefined;let before:{actor:string|null;manifest:string|null;owners:Map<string,string|null>;sidecars:Map<string,(string|null)[][]>;journalDescriptor:unknown;journalStates:Map<string,string>}|undefined;
@@ -267,7 +268,7 @@ describe('whole-plan typed executor fictional transport lifecycle',()=>{
  it('never attempts rollback after COMMIT has begun, returning original plan reconciliation',async()=>{const r=request(base()),f=transport(r);f.setCommitFailure();expect(await executeGuardedTypedLocalBackfill(f.c,r)).toEqual({status:'UNCERTAIN',code:'COMMIT_OUTCOME_UNKNOWN',planDigest:r.plan.digest,reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED'});expect(f.queries.at(-1)!.text).toBe('COMMIT');});
  it('identical complete retry does no DML and retains original manifest',async()=>{const r=request(base()),f=transport(r);expect(await executeGuardedTypedLocalBackfill(f.c,r)).toMatchObject({status:'APPLIED'});const n=f.queries.length;expect(await executeGuardedTypedLocalBackfill(f.c,r)).toMatchObject({status:'UNCHANGED',planDigest:r.plan.digest});expect(f.queries.slice(n).filter(q=>/^(UPDATE|INSERT)/.test(q.text))).toEqual([]);});
  it('refuses mixedpartial ownership with an absent protocol manifest',async()=>{const r=request(base()),f=transport(r);f.owners.set(canonicalOwnershipJson(['employees',['E']]),'A');expect(await executeGuardedTypedLocalBackfill(f.c,r)).toEqual({status:'BLOCKED',code:'DIRECT_OWNERSHIP_STATE_DRIFT'});expect(f.queries.some(q=>q.text.startsWith('UPDATE'))).toBe(false);expect(f.queries.at(-1)!.text).toBe('ROLLBACK');});
- it('does not passthrough arbitrary SQL error code/message or invoke hostile error accessors',async()=>{const r=request(),f=transport(r);let n=0;const bad=Object.defineProperty({},'code',{get(){n++;throw Error('secret');}});vi.spyOn(f.c,'query').mockRejectedValueOnce(bad);expect(await executeGuardedTypedLocalBackfill(f.c,r)).toEqual({status:'BLOCKED',code:'TYPED_GUARDED_BACKFILL_FAILED'});expect(n).toBe(0);});
+ it('does not passthrough arbitrary SQL error code/message or invoke hostile error accessors',async()=>{const r=request(),f=transport(r);let n=0;const bad=Object.defineProperty({},'code',{get(){n++;throw Error('secret');}});rs.spyOn(f.c,'query').mockRejectedValueOnce(bad);expect(await executeGuardedTypedLocalBackfill(f.c,r)).toEqual({status:'BLOCKED',code:'TYPED_GUARDED_BACKFILL_FAILED'});expect(n).toBe(0);});
 });
 
 describe('typed atomic source, target and hostile-input regressions',()=>{
@@ -291,7 +292,7 @@ describe('post-effect and genuine SQL-key helper failures',()=>{
  it('blocks changed supplied opaque SQL-key class through genuine helper error issuer',async()=>{const r=request(base()),f=transport(r);f.setMutation((tag,rows)=>{if(tag==='KEY_ROWS'&&rows[0]&&rows[0].at(-1)!==null)rows[0][rows[0].length-1]='2';});expect(await executeGuardedTypedLocalBackfill(f.c,r)).toEqual({status:'BLOCKED',code:'KEY_RECHECK_COMPARATOR_DRIFT'});expect(f.queries.some(q=>q.text.startsWith('UPDATE'))).toBe(false);expect(f.queries.at(-1)!.text).toBe('ROLLBACK');});
  it('rolls back post-attribution role drift before commit',async()=>{const r=request(base()),f=transport(r);f.setMutation((tag,rows)=>{if(tag==='IDENTITY'&&f.metadata()[0]!==null)rows[0][6]='foreign-current-role';});expect(await executeGuardedTypedLocalBackfill(f.c,r)).toEqual({status:'BLOCKED',code:'OWNED_DATABASE_IDENTITY_DRIFT'});expect(f.queries.some(q=>q.text.startsWith('UPDATE public.'))).toBe(true);expect(f.queries.some(q=>q.text==='COMMIT')).toBe(false);expect(f.metadata()).toEqual([null,null]);});
  it('rolls back if original source bytes change after attribution',async()=>{const r=request(base()),f=transport(r);f.setMutation((tag,rows)=>{if(tag==='ORIGINAL_ROWS'&&f.metadata()[0]!==null&&rows[0])rows[0][0]='corrupted-original';});expect(await executeGuardedTypedLocalBackfill(f.c,r)).toEqual({status:'BLOCKED',code:'CURRENT_SOURCE_DRIFT'});expect(f.metadata()).toEqual([null,null]);expect(f.queries.at(-1)!.text).toBe('ROLLBACK');});
- it('sanitizes an arbitrary thrown proxy without any getter/prototype traps',async()=>{const r=request(),f=transport(r);let n=0;const proxy=new Proxy({},{get(){n++;throw Error('SECRET');},getPrototypeOf(){n++;throw Error('SECRET');}});vi.spyOn(f.c,'query').mockRejectedValueOnce(proxy);expect(await executeGuardedTypedLocalBackfill(f.c,r)).toEqual({status:'BLOCKED',code:'TYPED_GUARDED_BACKFILL_FAILED'});expect(n).toBe(0);});
+ it('sanitizes an arbitrary thrown proxy without any getter/prototype traps',async()=>{const r=request(),f=transport(r);let n=0;const proxy=new Proxy({},{get(){n++;throw Error('SECRET');},getPrototypeOf(){n++;throw Error('SECRET');}});rs.spyOn(f.c,'query').mockRejectedValueOnce(proxy);expect(await executeGuardedTypedLocalBackfill(f.c,r)).toEqual({status:'BLOCKED',code:'TYPED_GUARDED_BACKFILL_FAILED'});expect(n).toBe(0);});
 });
 
 // Distinct successor behavior RED: old entrypoint/assertions remain intact.

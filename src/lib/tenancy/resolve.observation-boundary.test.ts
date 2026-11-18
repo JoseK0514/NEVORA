@@ -1,7 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-vi.mock('server-only', () => ({}));
-const database = vi.hoisted(() => ({ query: vi.fn(), transaction: vi.fn() }));
-vi.mock('../db', () => ({ getTenantRuntimeDb: () => database }));
+import { afterEach, beforeEach, describe, expect, it, rs } from '@rstest/core';
+rs.mock('server-only', () => ({}));
+const database = rs.hoisted(() => ({ query: rs.fn(), transaction: rs.fn() }));
+rs.mock('../db', () => ({ getTenantRuntimeDb: () => database }));
 import { getTenantProofFacts, resolvePortalProof, resolveProvisionerScope } from './resolve.server';
 import type { ProvisionerOperator } from './types';
 
@@ -25,12 +25,12 @@ async function resolve(value: unknown) {
   return resolvePortalProof('tenant-aa', digest);
 }
 beforeEach(() => {
-  vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-09T12:00:00Z'));
+  rs.useFakeTimers(); rs.setSystemTime(new Date('2026-10-09T12:00:00Z'));
   database.query.mockReset(); database.transaction.mockReset();
   database.query.mockImplementation((text, values) => ({ text, values,
     then() { throw Error('resolver query awaited outside transaction'); } }));
 });
-afterEach(() => vi.useRealTimers());
+afterEach(() => rs.useRealTimers());
 
 describe('resolver inspects inert owned transport data before reading metadata', () => {
   it('preserves normal data, exact text, private issuance and owning transaction', async () => {

@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {createECDH} from 'node:crypto';
 import {parseManagedHostConfig as parseHost,managedChildEnvironment,signHealthRequest,authorizeHealthRequest,managedHealth} from './managed-host';
 

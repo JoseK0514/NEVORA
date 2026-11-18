@@ -1,5 +1,5 @@
 import {createHash} from 'node:crypto';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
 import {traceOwnedFixtureSeed,type OwnedSetupReceipt} from './owned-setup-trace';
 

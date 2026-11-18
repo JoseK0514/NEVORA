@@ -1,11 +1,11 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {readFileSync} from 'node:fs';
 import {createServer} from 'node:http';
 import {ownedIsolatedEnvironment,isolatedTransportAdapter,probeOwnedIsolatedRuntime,type OwnedIsolatedRuntime} from './owned-isolated-runtime';
 const options=():OwnedIsolatedRuntime=>({environment:'test',controlDatabaseUrl:'postgresql://nv_onboard_aaaaaaaa:fictional@127.0.0.1:54321/nv_onboarding_test_aaaaaaaaaaaaaaaaaaaa',encryptionKey:Buffer.alloc(32,1).toString('base64url'),tokenKey:Buffer.alloc(32,2).toString('base64url'),portalBaseDomain:'portal.example.invalid',origins:['https://alpha.portal.example.invalid'],targets:[{uri:'postgresql://nv_app_aaaaaaaaaaaaaaaaaaaaaaaa:fictional@ep-aaaaaaaa.us-east-1.aws.neon.tech/nv_app_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?sslmode=require',connectionUrl:'postgresql://nv_app_aaaaaaaaaaaaaaaaaaaaaaaa:fictional@127.0.0.1:54321/nv_app_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',name:'nv_app_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',oid:1234,marker:'nevora-step4-owned:11111111-1111-4111-8111-111111111111'}]});
 it('ordinary browser fixtures ignore ambient isolated/provider credentials',()=>{
- vi.stubEnv('NEVORA_OWNED_ISOLATED_TARGETS','ambient');vi.stubEnv('DATABASE_URL','ambient-production');
- try{expect(ownedIsolatedEnvironment()).toEqual({});}finally{vi.unstubAllEnvs();}
+ rs.stubEnv('NEVORA_OWNED_ISOLATED_TARGETS','ambient');rs.stubEnv('DATABASE_URL','ambient-production');
+ try{expect(ownedIsolatedEnvironment()).toEqual({});}finally{rs.unstubAllEnvs();}
 });
 it('accepts explicit fictional loopback mappings without manufacturing a verified SQL identity',()=>{
  const value=options(),env=ownedIsolatedEnvironment(value);expect(env.NEVORA_WORKSPACE_MODE).toBe('isolated');expect(env.NEVORA_ONBOARDING_ENVIRONMENT).toBe('test');expect(JSON.parse(env.NEVORA_OWNED_ISOLATED_TARGETS)).toEqual(value.targets);expect(env.DATABASE_URL).toBeUndefined();

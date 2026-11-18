@@ -1,12 +1,13 @@
-vi.mock('@/lib/data/sql-session-contract',()=>import('../../../test/fixtures/business-sql-session'));
+import * as rstestOriginal0 from "../../../test/fixtures/business-sql-session" with { rstest: 'importActual' };
+rs.mock('@/lib/data/sql-session-contract',()=>rstestOriginal0);
 import { createHash } from "node:crypto";
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
-const deps = vi.hoisted(() => ({ query: vi.fn(), session: vi.fn() }));
-vi.mock("@/lib/db", () => ({
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
+const deps = rs.hoisted(() => ({ query: rs.fn(), session: rs.fn() }));
+rs.mock("@/lib/db", () => ({
   getDb: () => ({ query: deps.query }),
   queryRows: (value: unknown) => value,
 }));
-vi.mock("@/lib/auth/session", () => ({
+rs.mock("@/lib/auth/session", () => ({
   readSessionMutationProof: async () => {
     const employee = await deps.session();
     return employee ? { sessionTokenHash: "f".repeat(64), employee } : null;
@@ -18,17 +19,17 @@ import { POST as handoff } from "./handoff/route";
 const secret = "a".repeat(43),
   id = "22222222-2222-4222-8222-222222222222";
 beforeEach(() => {
-  vi.stubEnv("NEVORA_COMMERCE_ENABLED", "true");
-  vi.stubEnv("NEVORA_COMMERCE_API_ORIGIN", "https://billing.example.test");
-  vi.stubEnv("NEVORA_COMMERCE_INSTALLATION_ID", "slot-a");
-  vi.stubEnv("NEVORA_COMMERCE_INSTANCE_SECRET", secret);
-  vi.stubEnv("FUEL_PORTAL_ORIGIN", "https://company.example.test");
+  rs.stubEnv("NEVORA_COMMERCE_ENABLED", "true");
+  rs.stubEnv("NEVORA_COMMERCE_API_ORIGIN", "https://billing.example.test");
+  rs.stubEnv("NEVORA_COMMERCE_INSTALLATION_ID", "slot-a");
+  rs.stubEnv("NEVORA_COMMERCE_INSTANCE_SECRET", secret);
+  rs.stubEnv("FUEL_PORTAL_ORIGIN", "https://company.example.test");
   deps.query.mockReset();
   deps.session.mockReset();
 });
 afterEach(() => {
-  vi.unstubAllEnvs();
-  vi.unstubAllGlobals();
+  rs.unstubAllEnvs();
+  rs.unstubAllGlobals();
 });
 it("rejects installation facts and policy requests with another installation secret", async () => {
   expect(
@@ -104,7 +105,7 @@ it("requires a current Owner and same-origin request for the Velani billing hand
       instance_secret_hash: createHash("sha256").update(secret).digest("hex"),
     },
   ]);
-  vi.stubGlobal("fetch", async () =>
+  rs.stubGlobal("fetch", async () =>
     Response.json({
       handoff: "b".repeat(43),
       businessId: id,
@@ -128,7 +129,7 @@ it("does not return a billing handoff if Owner authority is revoked during the n
       },
     ])
     .mockResolvedValue([]);
-  vi.stubGlobal("fetch", async () =>
+  rs.stubGlobal("fetch", async () =>
     Response.json({
       handoff: "b".repeat(43),
       businessId: id,
@@ -153,7 +154,7 @@ it("does not mint or return another installation billing session when its local 
       instance_secret_hash: "mismatch",
     },
   ]);
-  vi.stubGlobal("fetch", async () =>
+  rs.stubGlobal("fetch", async () =>
     Response.json({ handoff: "b".repeat(43), businessId: id }),
   );
   const response = await handoff(
@@ -166,7 +167,7 @@ it("does not mint or return another installation billing session when its local 
 });
 
 it("keeps a staging billing handoff on its configured trusted frontend", async () => {
-  vi.stubEnv("NEVORA_COMMERCE_UI_ORIGIN", "https://staging.example.test");
+  rs.stubEnv("NEVORA_COMMERCE_UI_ORIGIN", "https://staging.example.test");
   deps.session.mockResolvedValue({ id: "OWNER", role: "OWNER" });
   deps.query.mockResolvedValue([
     {
@@ -176,7 +177,7 @@ it("keeps a staging billing handoff on its configured trusted frontend", async (
       instance_secret_hash: createHash("sha256").update(secret).digest("hex"),
     },
   ]);
-  vi.stubGlobal("fetch", async () =>
+  rs.stubGlobal("fetch", async () =>
     Response.json({
       handoff: "b".repeat(43),
       businessId: id,

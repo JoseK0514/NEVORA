@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {buildCommand, canSend, frozen, initialReminder, parseReminderResponse, reduceReminder, sameReminder, type ReminderCommand, type ReminderOutcome, type ReminderState, type ReminderTarget} from './machine';
 import {lookupFlow, sendFlow} from './flows';
 import type {ReminderTransport} from './client';

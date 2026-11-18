@@ -1,5 +1,5 @@
 import { managementProof } from '../../test/fixtures/management';
-import { expect,it } from 'vitest';
+import { expect,it } from '@rstest/core';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import {listLocations,findActiveLocationByClockerKey,createLocation} from './locations';
 import {createNorthsideFixture} from '../../test/fixtures/nevora-workspace';

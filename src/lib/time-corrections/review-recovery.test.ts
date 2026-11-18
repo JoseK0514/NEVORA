@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {createManagerReviewRecovery,managerReviewRecoveryKey} from './review-recovery';
 const command={operationId:'11111111-1111-4111-8111-111111111111',requestId:'22222222-2222-4222-8222-222222222222',expectedRevision:3,decision:'APPROVE' as const,note:'Fictional original note'};
 it('retains the exact command across private pane lifetimes without storing queue fields',()=>{

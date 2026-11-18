@@ -1,7 +1,7 @@
 import { notificationPolicyFor as fixturePolicyFor } from './policy';
 const fixtureNotificationPolicy=fixturePolicyFor('America/Puerto_Rico');
-import { expect, it, vi } from 'vitest';
-vi.mock('@/lib/db',()=>({getDb:()=>{throw new Error('Unexpected database');},queryRows:(rows:unknown)=>rows}));
+import { expect, it, rs } from '@rstest/core';
+rs.mock('@/lib/db',()=>({getDb:()=>{throw new Error('Unexpected database');},queryRows:(rows:unknown)=>rows}));
 import { runReminders, planSourceReminders, buildSummaryGroup } from './reminders';
 import { DEFAULT_NOTIFICATION_POLICY as policy } from './policy';
 import { readNotificationConfig as readRuntimeConfig } from './config';
@@ -50,7 +50,7 @@ it('resolved_source_cancels_due_reminder_and_claimed_deliveries',async()=>{
  expect(result.cancelled).toBe(1); expect(saved.flat().some(s=>s.text.includes('push_deliveries') && s.values.includes(intent.id))).toBe(true);
 });
 it('disabled_scanner_has_no_database_or_provider_work',async()=>{
- const executor = {query:vi.fn(),transaction:vi.fn()} as unknown as SqlExecutor;
+ const executor = {query:rs.fn(),transaction:rs.fn()} as unknown as SqlExecutor;
  const state = {} as NotificationStateRepository;
  expect((await runReminders({state,executor,config:readNotificationConfig({}),clock:()=>now})).disabled).toBe(true);
  expect(executor.query).not.toHaveBeenCalled();

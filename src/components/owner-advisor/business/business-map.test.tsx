@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import { BUSINESS_UNAVAILABLE_CODES, type BusinessReadResult } from "@/lib/owner-advisor/business/contracts";
 import { uiCatalog, uiCatalogResult, uiIds, uiMapRead, uiNow, uiQueryResult } from "@/test/fixtures/rondo-business-ui";
@@ -7,7 +7,7 @@ import { FiguresPanel, FiguresResult, MapContents, MapReviewContent, MapView, ma
 import { BusinessPage, IssueCard, businessContext } from "./business-page";
 import { BUSINESS_COPY, type BusinessLang } from "./copy";
 
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: () => {}, replace: () => {}, refresh: () => {} }) }));
+rs.mock("next/navigation", () => ({ useRouter: () => ({ push: () => {}, replace: () => {}, refresh: () => {} }) }));
 
 // Fictional data only. Query answers and map reads are parsed from the wire form before they are rendered.
 const wire = <T,>(value: T): T => JSON.parse(JSON.stringify(value));

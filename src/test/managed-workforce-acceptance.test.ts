@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {createServer} from 'node:net';
 import {spawn,type SpawnOptions} from 'node:child_process';
 import {mkdtemp,writeFile,rm} from 'node:fs/promises';

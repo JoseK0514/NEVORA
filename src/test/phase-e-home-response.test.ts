@@ -1,21 +1,21 @@
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {resolve} from 'node:path';
 const {fulfillHeldResponse}=await import(resolve('scripts/browser-held-response.mjs'));
 
 it('does not deliver into a request the browser already cancelled after document navigation',async()=>{
- const fulfill=vi.fn(async()=>{});
+ const fulfill=rs.fn(async()=>{});
  const route={request:()=>({failure:()=>({errorText:'net::ERR_ABORTED'})}),fulfill};
  expect(await fulfillHeldResponse(route,{},true)).toBe('document-left');
  expect(fulfill).not.toHaveBeenCalled();
 });
 it('still delivers a live late response after navigation so the real lifetime guard must reject it',async()=>{
- const response={response:{}},fulfill=vi.fn(async()=>{});
+ const response={response:{}},fulfill=rs.fn(async()=>{});
  const route={request:()=>({failure:()=>null}),fulfill};
  expect(await fulfillHeldResponse(route,response,true)).toBe('fulfilled');
  expect(fulfill).toHaveBeenCalledExactlyOnceWith(response);
 });
 it('keeps the same-document held-response exercise even when its client read was aborted',async()=>{
- const fulfill=vi.fn(async()=>{throw Error('Discarded request');});
+ const fulfill=rs.fn(async()=>{throw Error('Discarded request');});
  const route={request:()=>({failure:()=>({errorText:'net::ERR_ABORTED'})}),fulfill};
  expect(await fulfillHeldResponse(route,{},false)).toBe('request-aborted');
  expect(fulfill).toHaveBeenCalledTimes(1);

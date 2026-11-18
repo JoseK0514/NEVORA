@@ -1,10 +1,11 @@
-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import * as rstestOriginal0 from "react" with { rstest: 'importActual' };
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import type { FormEvent, ReactNode } from 'react';
 
 // Keep one component's hook slots mounted between prop refreshes. DOM behavior
 // and dirty controls are separately exercised by the real two-engine app proof.
-const hooks = vi.hoisted(() => ({ slots: [] as unknown[], index: 0 }));
-vi.mock('react', async original => ({ ...await original<Record<string, unknown>>(), useState: (initial: unknown) => {
+const hooks = rs.hoisted(() => ({ slots: [] as unknown[], index: 0 }));
+rs.mock('react',  () => ({ ...rstestOriginal0, useState: (initial: unknown) => {
   const index = hooks.index++;
   if (!(index in hooks.slots)) hooks.slots[index] = typeof initial === 'function' ? (initial as () => unknown)() : initial;
   return [hooks.slots[index], (next: unknown) => { hooks.slots[index] = next; }];
@@ -19,11 +20,11 @@ import { ShiftReviewRecovery } from './shift-review-recovery';
 const NativeFormData = FormData;
 beforeEach(() => {
   hooks.slots = []; hooks.index = 0;
-  vi.stubGlobal('FormData', class extends NativeFormData {
+  rs.stubGlobal('FormData', class extends NativeFormData {
     constructor(form: { data: FormData }) { super(); for (const [key, value] of form.data.entries()) this.append(key, value); }
   });
 });
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => rs.unstubAllGlobals());
 function mount(action: (data: FormData) => Promise<ConfigurationResult>, reviewedUpdatedAt: string, reviewedShiftVersion?: string) {
   hooks.index = 0;
   return (ConfigurationForm as (props: { action: typeof action; children: ReactNode; reviewedUpdatedAt: string; reviewedShiftVersion?: string }) => ReturnType<typeof ConfigurationForm>)({ action, children: null, reviewedUpdatedAt, reviewedShiftVersion });

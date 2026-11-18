@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { parseCommand, parseTool } from "./contracts";
 it("admits explicit legal research and private inspections without private outbound arguments", () => {
   const tool = { name: "legal_research", args: { jurisdiction: "PR_US", topic: "working_time" } };

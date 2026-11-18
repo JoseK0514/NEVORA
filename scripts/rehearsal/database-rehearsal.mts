@@ -1,3 +1,4 @@
+import { releaseTestReport } from '../lib/release-test-report.mjs';
 /** Disposable PostgreSQL rehearsal. Adds no runtime/migration/CI behavior. */
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
@@ -380,7 +381,7 @@ async function fixtureDiagnostics(c: Cluster) {
   for (const key of Object.keys(env)) if (/DATABASE_URL|^PG(?:HOST|HOSTADDR|PORT|USER|PASSWORD|DATABASE|SERVICE|SERVICEFILE|PASSFILE)$|SMTP|VAPID|^PUSH_/.test(key)) delete env[key];
   Object.assign(env, { FUEL_TEST_DATABASE_URL: `postgresql://${c.user}@127.0.0.1:${c.port}/${name}`, FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN: 'yes',
     NEVORA_REHEARSAL_CANDIDATE: candidate, NEVORA_REHEARSAL_FIXTURE_OUTPUT: output, PUSH_DELIVERY_ENABLED: 'false' });
-  const child = spawn(process.execPath, ['node_modules/vitest/vitest.mjs', 'run', '--config', 'scripts/rehearsal/vitest.fixture-diagnostics.config.mts',
+  const child = spawn(process.execPath, ['scripts/run-rstest.mjs', 'run', '--config', 'scripts/rehearsal/vitest.fixture-diagnostics.config.mts',
     '--reporter=json', '--outputFile=' + join(output, 'fixture-tests.json')], { env, detached: true, stdio: ['ignore', 'pipe', 'pipe'] });
   fixtureProcessGroup = child.pid; lifecycle(true);
   const result = await new Promise<{ status: number | null; error?: Error; stdout: string; stderr: string }>(done => {
@@ -401,7 +402,7 @@ async function fixtureDiagnostics(c: Cluster) {
     child.once('close', status => { clearTimeout(timer); clearTimeout(killTimer); fixtureProcessGroup = undefined; done({ status, error, stdout, stderr }); });
   });
   writeFileSync(join(output, 'fixture-run.log'), (result.stdout ?? '') + (result.stderr ?? ''), { mode: 0o600 });
-  const tests = existsSync(join(output, 'fixture-tests.json')) ? JSON.parse(readFileSync(join(output, 'fixture-tests.json'), 'utf8')) : {};
+  const tests = existsSync(join(output, 'fixture-tests.json')) ? releaseTestReport(JSON.parse(readFileSync(join(output, 'fixture-tests.json'), 'utf8')), process.cwd()) : {};
   const traces = readdirSync(output).filter(file => /^fixture-sql-[0-9]+\.json$/.test(file)).map(file => JSON.parse(readFileSync(join(output, file), 'utf8')) as SqlTraceReport);
   report.fixtureDiagnostics = { exitCode: result.status, passed: tests.numPassedTests ?? 0, failed: tests.numFailedTests ?? 0, traces };
   await check('fixture-diagnostics', 'two actual Clocker/Company Access fixtures initialize and dispose without hidden SQL failures', async () => {

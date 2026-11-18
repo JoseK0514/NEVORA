@@ -1,4 +1,4 @@
-import {beforeAll,expect,it} from 'vitest';
+import {beforeAll,expect,it} from '@rstest/core';
 import {generateKeyPairSync} from 'node:crypto';
 import {openWorkerEnrollment,sealWorkerEnrollment,workerRecipientFingerprint,type WorkerEnrollmentIdentity,type WorkerEnrollmentMaterial} from './worker-enrollment';
 

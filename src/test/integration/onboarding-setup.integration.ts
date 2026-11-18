@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {randomUUID,createHash} from 'node:crypto';
 import {onboardingJourneyFixture} from './onboarding-journey-fixture';
 import {activateInitialOwner} from '@/lib/onboarding/owner-activation.server';

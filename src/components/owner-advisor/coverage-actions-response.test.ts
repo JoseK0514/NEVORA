@@ -1,4 +1,4 @@
-import {expect,it} from "vitest";
+import {expect,it} from '@rstest/core';
 import {ownerCoverageAction} from "@/test/fixtures/owner-coverage-action";
 import {parseCoverageActionResult} from "./coverage-actions-response";
 it.each(["coverage_review","coverage_saved","coverage_checked"] as const)("accepts a bounded %s with exact receipt relationships",state=>{

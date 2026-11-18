@@ -1,8 +1,8 @@
-import {randomUUID} from 'node:crypto';import {beforeAll,afterAll,expect,it,vi} from 'vitest';
+import {randomUUID} from 'node:crypto';import {beforeAll,afterAll,expect,it,rs} from '@rstest/core';
 import {createDisposableExchangeDatabase} from './local-postgres';import {seedShiftChanges,proof,fixtureShift} from './shift-change-fixture';
 import {executeShiftChange} from '../../lib/data/shift-changes';import {listEmployeePublishedShifts} from '../../lib/data/exchanges';
 let db:Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
-vi.mock('../../lib/db',()=>{
+rs.mock('../../lib/db',()=>{
  // Preserve lazy construction and execute the real ordered SQL session batch.
  const statement=(text:string,values:readonly unknown[]=[],options?:{fetchOptions?:{signal?:AbortSignal}})=>({statement:{text,values},then:(yes:(rows:unknown[])=>unknown,no:(error:unknown)=>unknown)=>db.executor.query({text,values},options?.fetchOptions?.signal).then(yes,no)});
  return {getDb:()=>({query:statement,transaction:(queries:{statement:{text:string;values:readonly unknown[]}}[],options?:{fetchOptions?:{signal?:AbortSignal}})=>db.executor.transaction(queries.map(q=>q.statement),options?.fetchOptions?.signal)}),queryRows:(rows:unknown)=>rows};

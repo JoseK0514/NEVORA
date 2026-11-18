@@ -1,11 +1,11 @@
-import { beforeEach, expect, it, vi } from "vitest";
-const state = vi.hoisted(() => ({ role: "EMPLOYEE" as string | null, enabled: true, document: vi.fn() }));
-vi.mock("@/lib/auth/session", () => ({
+import { beforeEach, expect, it, rs } from '@rstest/core';
+const state = rs.hoisted(() => ({ role: "EMPLOYEE" as string | null, enabled: true, document: rs.fn() }));
+rs.mock("@/lib/auth/session", () => ({
   getSession: async () => (state.role ? { id: "fictional", role: state.role } : null),
   requireSessionMutationProof: async () => ({ employee: { id: "fictional", role: state.role } }),
 }));
-vi.mock("@/lib/payroll/access", () => ({ document: state.document }));
-vi.mock("@/lib/workspace-presentation/current.server", () => ({ moduleEnabled: async () => state.enabled }));
+rs.mock("@/lib/payroll/access", () => ({ document: state.document }));
+rs.mock("@/lib/workspace-presentation/current.server", () => ({ moduleEnabled: async () => state.enabled }));
 import { GET as view } from "./route";
 import { GET as download } from "../route";
 

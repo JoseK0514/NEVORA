@@ -1,4 +1,6 @@
-import { afterAll, beforeAll, describe, it, vi } from 'vitest';
+import * as rstestOriginal0 from "@/lib/db" with { rstest: 'importActual' };
+import * as rstestOriginal1 from "@/lib/data/notification-transactions" with { rstest: 'importActual' };
+import { afterAll, beforeAll, describe, it, rs } from '@rstest/core';
 import assert from 'node:assert/strict';
 import { Client } from 'pg';
 import { createHash, randomBytes } from 'node:crypto';
@@ -15,20 +17,20 @@ import type { F1NativeCallback, F1NativeVectorId } from './f1-canonical-native-c
 // Only root may opt in using its already-created exact fictional lease.
 // No database, role, process or client is created at module import.
 // No 0026, runtime graph/enrollment, singleton alteration or provider call.
-const transport = vi.hoisted(() => ({
+const transport = rs.hoisted(() => ({
   executor: null as SqlExecutor | null,
   db: null as { query(text: string, values?: readonly unknown[]): Promise<unknown[]> } | null,
 }));
-vi.mock('server-only', () => ({}));
-vi.mock('@/lib/db', async importOriginal => {
-  const original = await importOriginal<typeof import('../../lib/db')>();
+rs.mock('server-only', () => ({}));
+rs.mock('@/lib/db',  () => {
+  const original = rstestOriginal0;
   return { ...original, getDb: () => {
     if (!transport.db) throw Error('F1_TRANSPORT_NOT_ACTIVE');
     return transport.db;
   } };
 });
-vi.mock('@/lib/data/notification-transactions', async importOriginal => {
-  const original = await importOriginal<typeof import('../../lib/data/notification-transactions')>();
+rs.mock('@/lib/data/notification-transactions',  () => {
+  const original = rstestOriginal1;
   return { ...original, neonNotificationExecutor: () => {
     if (!transport.executor) throw Error('F1_TRANSPORT_NOT_ACTIVE');
     return transport.executor;

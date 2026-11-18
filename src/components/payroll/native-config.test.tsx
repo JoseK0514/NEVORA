@@ -1,12 +1,12 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from 'react-dom/server';
 import type { NativeProfilesResponse } from '@/lib/payroll/native/contracts';
 import type { PayrollSettingsResponse } from '@/lib/payroll/contracts';
 import { NativePayrollConfig } from './native-payroll-config';
 import { nativeCapabilities } from './native-ui-fixture.test-support';
 
-const boundary=vi.hoisted(()=>({data:null as NativeProfilesResponse|null,loading:false,error:''}));
-vi.mock('./use-payroll', () => ({ PAYROLL_SIGNED_OUT: 'Your session ended. Sign in again to see payroll.',usePayrollResource:(path:string)=>({...boundary,data:path==='/api/payroll/runs'?{version:'PAYROLL_API_V1',capabilities:{canReview:true},runs:[],jobs:[]}:boundary.data,reload:async()=>{}}),usePayrollOperation:()=>({busy:false,pending:null,locked:false,message:'',error:'',revisionConflict:false,resuming:false,receipt:null,submit:async()=>{}})}));
+const boundary=rs.hoisted(()=>({data:null as NativeProfilesResponse|null,loading:false,error:''}));
+rs.mock('./use-payroll', () => ({ PAYROLL_SIGNED_OUT: 'Your session ended. Sign in again to see payroll.',usePayrollResource:(path:string)=>({...boundary,data:path==='/api/payroll/runs'?{version:'PAYROLL_API_V1',capabilities:{canReview:true},runs:[],jobs:[]}:boundary.data,reload:async()=>{}}),usePayrollOperation:()=>({busy:false,pending:null,locked:false,message:'',error:'',revisionConflict:false,resuming:false,receipt:null,submit:async()=>{}})}));
 const settings:PayrollSettingsResponse={version:'PAYROLL_API_V1',capabilities:nativeCapabilities,revisions:[],exceptions:[],grants:[],employees:[{id:'E1',name:'Fictional Employee',active:true}],futureDraftImpact:[]};
 const sources={employees:[{id:'E1',name:'Fictional Employee',role:'EMPLOYEE',active:true}],locations:[{id:'L1',name:'Fictional location',active:true}],breakTypes:[]};
 const render=()=>renderToStaticMarkup(<NativePayrollConfig settings={settings} sources={sources} recoveryScope="fictional-owner"/>);

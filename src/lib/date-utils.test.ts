@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { formatTimeRange, isDateInWeek, isValidIsoDate, isValidWeekStart } from './date-utils';
 it.each(['2026-02-29','2026-02-30','2026-02-31'])('rejects impossible date %s instead of lexical inclusion',date=>{
  expect(isDateInWeek(date,'2026-02-23')).toBe(false);

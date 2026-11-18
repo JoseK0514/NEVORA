@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { accessAt, parseSignup, planFor } from "./model";
 const start = Date.parse("2026-11-07T12:00:00Z");
 const base = {

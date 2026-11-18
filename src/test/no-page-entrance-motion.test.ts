@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 
 // Phase 1 (inspection Oct 24): 14 gsap page entrances painted content, moved it back and animated it in after every
 // navigation, which read as lag and cost main-thread time exactly when a page arrived. Pages now appear in place.

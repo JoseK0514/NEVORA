@@ -1,27 +1,28 @@
+import * as rstestOriginal0 from "@/lib/workspace-presentation/service" with { rstest: 'importActual' };
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import ExchangePage, { generateMetadata } from './page';
 import type { ExchangeRecord } from '../../../lib/data/exchanges';
 import type { CalloutRecord } from '../../../lib/data/callouts';
-const f=vi.hoisted(()=>({activity:[] as ExchangeRecord[],callouts:[] as CalloutRecord[],selected:null as ExchangeRecord|null,selectedCallout:null as CalloutRecord|null,allowed:['2'],assigned:[] as ReturnType<typeof exchange>['sourceShift'][],reviewed:null as {source:Record<string,string|boolean|number>;sourceTermsFingerprint:string;target:null;targetTermsFingerprint:null}|null,coverageAllowed:false,coverageNotice:'Coverage unavailable',operation:null as {status:'pending'|'completed';operationId:string;requestId:string;revision:number}|null}));
-vi.mock('next/link',()=>({default:({children,...props}:React.ComponentProps<'a'>)=>createElement('a',props,children)}));
-vi.mock('@/lib/scheduling/validate-shift',()=>({schedulingIssueMessage:()=>''}));
-vi.mock('@/components/manager-shift-requests',()=>({ManagerShiftRequests:()=>null}));
-vi.mock('@/components/nav-icon',()=>({NavIcon:()=>null}));
-vi.mock('@/components/status-pill',()=>import('../../../components/status-pill'));
-vi.mock('@/lib/auth/permissions',()=>({isManagerRole:()=>false}));
-vi.mock('@/lib/auth/session',()=>({requireSession:async()=>({id:'self',role:'EMPLOYEE'}),requireSessionMutationProof:async()=>({employee:{id:'self',role:'EMPLOYEE'},sessionTokenHash:'a'.repeat(64)})}));
-vi.mock('@/lib/date-utils',()=>import('../../../lib/date-utils'));
-vi.mock('@/lib/exchange-marketplace',()=>import('../../../lib/exchange-marketplace'));
-vi.mock('@/lib/notifications/destinations',()=>import('../../../lib/notifications/destinations'));
-vi.mock('@/lib/data/notification-state',()=>({sqlNotificationStateRepository:()=>({recipientAccess:async()=>({employeeId:'self',role:'EMPLOYEE',active:true,allowedLocationIds:f.allowed})})}));
-vi.mock('@/lib/data/callouts',()=>({listEmployeeCallouts:async()=>f.callouts,getCallout:async()=>f.selectedCallout,shownCalloutTerms:(_callout:unknown,terms:unknown)=>terms}));
-vi.mock('@/lib/data/exchanges',()=>({listEmployeeExchangeActivity:async()=>f.activity,listEmployeePublishedShifts:async()=>f.assigned,listIncomingSwaps:async()=>[],listOpenCoverage:async()=>[],getExchange:async()=>f.selected}));
-vi.mock('@/app/app/exchange/actions',()=>({shiftChangeAction:vi.fn(),reconcileShiftChangeAction:vi.fn(async()=>{throw new Error('Action cache invalidation is forbidden during render');}),cancelExchangeAction:vi.fn(),claimCoverageAction:vi.fn(),offerCoverageAction:vi.fn(),respondSwapAction:vi.fn()}));
-vi.mock('@/app/app/exchange/callout/actions',()=>({cancelCalloutAction:vi.fn()}));
+const f=rs.hoisted(()=>({activity:[] as ExchangeRecord[],callouts:[] as CalloutRecord[],selected:null as ExchangeRecord|null,selectedCallout:null as CalloutRecord|null,allowed:['2'],assigned:[] as ReturnType<typeof exchange>['sourceShift'][],reviewed:null as {source:Record<string,string|boolean|number>;sourceTermsFingerprint:string;target:null;targetTermsFingerprint:null}|null,coverageAllowed:false,coverageNotice:'Coverage unavailable',operation:null as {status:'pending'|'completed';operationId:string;requestId:string;revision:number}|null}));
+rs.mock('next/link',()=>({default:({children,...props}:React.ComponentProps<'a'>)=>createElement('a',props,children)}));
+rs.mock('@/lib/scheduling/validate-shift',()=>({schedulingIssueMessage:()=>''}));
+rs.mock('@/components/manager-shift-requests',()=>({ManagerShiftRequests:()=>null}));
+rs.mock('@/components/nav-icon',()=>({NavIcon:()=>null}));
+
+rs.mock('@/lib/auth/permissions',()=>({isManagerRole:()=>false}));
+rs.mock('@/lib/auth/session',()=>({requireSession:async()=>({id:'self',role:'EMPLOYEE'}),requireSessionMutationProof:async()=>({employee:{id:'self',role:'EMPLOYEE'},sessionTokenHash:'a'.repeat(64)})}));
+
+
+
+rs.mock('@/lib/data/notification-state',()=>({sqlNotificationStateRepository:()=>({recipientAccess:async()=>({employeeId:'self',role:'EMPLOYEE',active:true,allowedLocationIds:f.allowed})})}));
+rs.mock('@/lib/data/callouts',()=>({listEmployeeCallouts:async()=>f.callouts,getCallout:async()=>f.selectedCallout,shownCalloutTerms:(_callout:unknown,terms:unknown)=>terms}));
+rs.mock('@/lib/data/exchanges',()=>({listEmployeeExchangeActivity:async()=>f.activity,listEmployeePublishedShifts:async()=>f.assigned,listIncomingSwaps:async()=>[],listOpenCoverage:async()=>[],getExchange:async()=>f.selected}));
+rs.mock('@/app/app/exchange/actions',()=>({shiftChangeAction:rs.fn(),reconcileShiftChangeAction:rs.fn(async()=>{throw new Error('Action cache invalidation is forbidden during render');}),cancelExchangeAction:rs.fn(),claimCoverageAction:rs.fn(),offerCoverageAction:rs.fn(),respondSwapAction:rs.fn()}));
+rs.mock('@/app/app/exchange/callout/actions',()=>({cancelCalloutAction:rs.fn()}));
 function exchange(id:string,owner='self'):ExchangeRecord{return {id,kind:'SWAP',status:'APPROVED',requestedByEmployeeId:owner,targetEmployeeId:'self',requestedByName:'Fictional',requestedByRole:'EMPLOYEE',sourceShift:{id:'shift',scheduleId:'week',employeeId:owner,employeeName:'Fictional',locationId:'2',locationName:'Drive',weekStart:'2026-10-05',date:'2026-10-05',startTime:'08:00',endTime:'12:00'},createdAt:'2026-10-03T12:00:00Z'};}
-beforeEach(()=>{f.activity=Array.from({length:10},(_,i)=>exchange(`row-${i}`));f.callouts=[];f.selected=null;f.selectedCallout=null;f.allowed=['2'];f.assigned=[];f.reviewed=null;f.coverageAllowed=false;f.operation=null;vi.clearAllMocks();});
+beforeEach(()=>{f.activity=Array.from({length:10},(_,i)=>exchange(`row-${i}`));f.callouts=[];f.selected=null;f.selectedCallout=null;f.allowed=['2'];f.assigned=[];f.reviewed=null;f.coverageAllowed=false;f.operation=null;rs.clearAllMocks();});
 async function html(requestId?:string){return renderToStaticMarkup(await ExchangePage({searchParams:Promise.resolve({tab:'requests',requestId})}));}
 it.each(['OPEN','EMPLOYEE_PENDING','MANAGER_PENDING'] as const)('ordinary employee %s request status stays neutral',async status=>{
  f.activity=[{...exchange('pending'),status}];
@@ -46,9 +47,9 @@ it('selected own callout beyond ordinary six is included without expanding defau
  expect(await html()).not.toContain('id="request-callout-7"');expect(await html('callout-7')).toContain('id="request-callout-7"');
 });
 
-vi.mock("@/lib/data/workspaces",()=>({getWorkspace:async()=>({timeZone:"America/Puerto_Rico"})}));
+rs.mock("@/lib/data/workspaces",()=>({getWorkspace:async()=>({timeZone:"America/Puerto_Rico"})}));
 
-vi.mock("@/lib/business-time",()=>import("../../../lib/business-time"));
+
 
 it('forged URL flags cannot claim a persisted success',async()=>{
  const result=renderToStaticMarkup(await ExchangePage({searchParams:Promise.resolve({offered:'1',claimed:'1',calloutSubmitted:'1'})}));
@@ -63,18 +64,18 @@ it('effective expired lifecycle never offers cancellation',async()=>{
  expect(await html()).not.toContain('>Cancel<');
 });
 
-vi.mock('@/components/shift-change-form',()=>import('../../../components/shift-change-form'));
-vi.mock('@/components/shift-slot',()=>import('../../../components/shift-slot'));
-vi.mock('@/components/shift-change-history',()=>import('../../../components/shift-change-history'));
-vi.mock('@/components/shift-change-form-state',()=>import('../../../components/shift-change-form-state'));
-vi.mock('@/lib/data/shift-change-views',()=>({readShiftChangeHistoryView:async()=>[],readShiftChangeOperationView:vi.fn(async()=>f.operation)}));
-vi.mock('@/lib/data/shift-change-snapshot',()=>({readShiftChangeTerms:async()=>f.reviewed}));
-vi.mock('@/lib/data/shift-changes',()=>({readShiftChangeAvailability:vi.fn(async()=>({allowed:f.coverageAllowed,notice:f.coverageNotice}))}));
-vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));
+
+
+
+
+rs.mock('@/lib/data/shift-change-views',()=>({readShiftChangeHistoryView:async()=>[],readShiftChangeOperationView:rs.fn(async()=>f.operation)}));
+rs.mock('@/lib/data/shift-change-snapshot',()=>({readShiftChangeTerms:async()=>f.reviewed}));
+rs.mock('@/lib/data/shift-changes',()=>({readShiftChangeAvailability:rs.fn(async()=>({allowed:f.coverageAllowed,notice:f.coverageNotice}))}));
+rs.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));
 
 import {reconcileShiftChangeAction} from '@/app/app/exchange/actions';
 import {readShiftChangeOperationView} from '@/lib/data/shift-change-views';
-vi.mock('@/lib/workspace-presentation/service', async importOriginal => ({ ...(await importOriginal<typeof import('@/lib/workspace-presentation/service')>()), readActivePresentation: async () => ({ style: undefined, tokens: null, logoAssetId: null, revision: 0, words: 'standard' as const, modules: (await import('@/lib/workspace-presentation/modules')).ALL_MODULES_ON }) })); // no saved settings: every module on
+rs.mock('@/lib/workspace-presentation/service',  () => ({ ...(rstestOriginal0), readActivePresentation: async () => ({ style: undefined, tokens: null, logoAssetId: null, revision: 0, words: 'standard' as const, modules: (await import('@/lib/workspace-presentation/modules')).ALL_MODULES_ON }) })); // no saved settings: every module on
 function assignedReview(){
  const shift={...exchange('source').sourceShift,date:'2035-10-05',timeZone:'America/Puerto_Rico',assignmentEpisodeId:'episode-current',termsRevision:1,positionId:'cashier',positionName:'Cashier',isDesignatedLead:true};f.assigned=[shift];
  f.reviewed={source:{timeZone:shift.timeZone,termsRevision:shift.termsRevision,shiftId:shift.id,scheduleId:shift.scheduleId,employeeId:shift.employeeId,locationId:shift.locationId,weekStart:shift.weekStart,date:shift.date,startTime:shift.startTime,endTime:shift.endTime,positionId:shift.positionId,isDesignatedLead:shift.isDesignatedLead,assignmentEpisodeId:'episode-current'},sourceTermsFingerprint:'v1:current',target:null,targetTermsFingerprint:null};

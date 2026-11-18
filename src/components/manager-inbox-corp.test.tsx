@@ -1,12 +1,12 @@
 import {createElement, type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect, it, vi} from 'vitest';
+import {expect, it, rs} from '@rstest/core';
 import type {ActionCenter, ActionItem} from '../lib/action-center/project';
 import {reviewFacts} from '../lib/action-center/review-facts';
 import type {Today, TodayShift} from '../lib/today/project';
 import {onlyB} from './owner-b/test-support';
 
-vi.mock('next/link', () => ({default: ({children, prefetch: _prefetch, ...props}: ComponentProps<'a'> & {prefetch?: boolean}) => createElement('a', props, children)}));
+rs.mock('next/link', () => ({default: ({children, prefetch: _prefetch, ...props}: ComponentProps<'a'> & {prefetch?: boolean}) => createElement('a', props, children)}));
 const {ThingsToDoPage} = await import('./manager-inbox-corp');
 
 const item = (id: string, type: ActionItem['type'], category: ActionItem['category'], priority: ActionItem['priority'] = 'REVIEW', extra: Partial<ActionItem> = {}): ActionItem =>

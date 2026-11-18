@@ -1,5 +1,5 @@
-import {expect,it,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
+import {expect,it,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
 import {projectActionRequestFact,withActionRequestFacts} from './action-request-facts.server';
 import type {ActionItem} from '../action-center/project';
 import type {SessionMutationProof} from '../shift-changes/types';

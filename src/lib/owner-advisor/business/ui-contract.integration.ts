@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import { randomUUID } from 'node:crypto';
 import type { SqlExecutor } from '@/lib/notifications/types';
 import { companyAccessFixture } from '@/test/integration/company-access-fixture';
@@ -12,8 +12,8 @@ const env = { NEVORA_OWNER_ADVISOR_ENABLED: 'true', NEVORA_OWNER_ADVISOR_BUSINES
 const signal = () => new AbortController().signal;
 const call = (value?: unknown, settings: Record<string, string | undefined> = env, ex = f.db.executor) =>
   businessSourceService(f.owner, ex, settings, signal(), value);
-beforeEach(async () => { f = await companyAccessFixture(); vi.spyOn(globalThis, 'fetch').mockRejectedValue(Error('No external requests')); });
-afterEach(async () => { vi.restoreAllMocks(); await f?.db.dispose(); });
+beforeEach(async () => { f = await companyAccessFixture(); rs.spyOn(globalThis, 'fetch').mockRejectedValue(Error('No external requests')); });
+afterEach(async () => { rs.restoreAllMocks(); await f?.db.dispose(); });
 async function draft() {
   return call({ op: 'stage_source_version', requestId: randomUUID(), format: 'JSON', input: fictionalBusinessInput() });
 }

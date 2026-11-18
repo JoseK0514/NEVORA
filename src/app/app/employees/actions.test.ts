@@ -1,21 +1,22 @@
-import {beforeEach,it,expect,vi} from 'vitest';
+import * as rstestOriginal0 from "@/lib/company-access/operational-scope.server" with { rstest: 'importActual' };
+import {beforeEach,it,expect,rs} from '@rstest/core';
 import type {EmployeeCoreAccessResult} from '@/lib/company-access/model';
-const m=vi.hoisted(()=>({role:'MANAGER',create:vi.fn(),core:vi.fn(),scheduling:vi.fn(),refresh:vi.fn(),sessionFails:false}));
-vi.mock('next/cache',()=>({revalidatePath:m.refresh}));
-vi.mock('@/lib/auth/permissions',()=>({MANAGER_ROLES:['OWNER','MANAGER'],requireRoles:async(roles:string[])=>{if(!roles.includes(m.role))throw Error('denied');return {id:'actor',role:m.role};}}));
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>{if(m.sessionFails)throw Error('No session');return {employee:{id:'actor',role:m.role},sessionTokenHash:'a'.repeat(64)};}}));
-vi.mock('@/lib/data/employees',()=>({saveEmployeeSchedulingProfile:m.scheduling}));
-vi.mock('@/lib/company-access/employee-profile.server',()=>({createEmployeeWithAccess:m.create,saveEmployeeCoreAccessProfile:m.core}));
-vi.mock('@/lib/shift-changes/policy-form',()=>({parseOperationalProfileForm:vi.fn()}));
-vi.mock('@/lib/data/shift-change-policy',()=>({saveOperationalRuleProfile:vi.fn()}));
-vi.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({})}));
+const m=rs.hoisted(()=>({role:'MANAGER',create:rs.fn(),core:rs.fn(),scheduling:rs.fn(),refresh:rs.fn(),sessionFails:false}));
+rs.mock('next/cache',()=>({revalidatePath:m.refresh}));
+rs.mock('@/lib/auth/permissions',()=>({MANAGER_ROLES:['OWNER','MANAGER'],requireRoles:async(roles:string[])=>{if(!roles.includes(m.role))throw Error('denied');return {id:'actor',role:m.role};}}));
+rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>{if(m.sessionFails)throw Error('No session');return {employee:{id:'actor',role:m.role},sessionTokenHash:'a'.repeat(64)};}}));
+rs.mock('@/lib/data/employees',()=>({saveEmployeeSchedulingProfile:m.scheduling}));
+rs.mock('@/lib/company-access/employee-profile.server',()=>({createEmployeeWithAccess:m.create,saveEmployeeCoreAccessProfile:m.core}));
+rs.mock('@/lib/shift-changes/policy-form',()=>({parseOperationalProfileForm:rs.fn()}));
+rs.mock('@/lib/data/shift-change-policy',()=>({saveOperationalRuleProfile:rs.fn()}));
+rs.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({})}));
 import {createEmployeeFormAction,createEmployeeAction,saveEmployeeCoreProfileAction,saveEmployeeSchedulingProfileAction} from './actions';
 const receipt={operationId:'00000000-0000-4000-8000-000000000001',employeeId:'WORKER',updatedAt:'2026-10-05 12:00:00.123456+00',role:'EMPLOYEE',active:true,roleGeneration:'1',scopeRevision:0,scopeState:'UNASSIGNED',scope:null} as const;
 const saved:EmployeeCoreAccessResult={state:'saved',receipt};
 const profile={firstName:'Sam',lastName:'Rivera',phone:'7875550101',email:'sam@example.invalid',role:'EMPLOYEE',primaryLocationId:'west',active:true};
 const command={operationId:receipt.operationId,employeeId:'worker',expectedEmployeeUpdatedAt:'2026-10-05 12:00:00+00',profile};
 function form(value:unknown){const data=new FormData();data.set('command',JSON.stringify(value));return data;}
-beforeEach(()=>{vi.resetAllMocks();m.role='MANAGER';m.sessionFails=false;m.core.mockResolvedValue(saved);m.create.mockResolvedValue(saved);m.scheduling.mockResolvedValue({updatedAt:receipt.updatedAt});});
+beforeEach(()=>{rs.resetAllMocks();m.role='MANAGER';m.sessionFails=false;m.core.mockResolvedValue(saved);m.create.mockResolvedValue(saved);m.scheduling.mockResolvedValue({updatedAt:receipt.updatedAt});});
 it('creation sends qualifications and the complete command once with current cookie proof',async()=>{
  const value={operationId:receipt.operationId,employee:{id:'sam',...profile,active:undefined,eligibleLocationIds:['west'],positionIds:['cashier']}};
  expect(await createEmployeeFormAction(form(value))).toEqual(saved);
@@ -67,4 +68,4 @@ it('missing session never invokes either writer and service exceptions never cla
 
 // Unit-only admission I/O; real Company/current-scope behavior and rollback are
 // exercised in company-access-configuration.integration.ts.
-vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'w',name:'Fictional',active:true,timeZone:'America/New_York',createdAt:'',updatedAt:'version'}})}));
+rs.mock('@/lib/company-access/operational-scope.server', ()=>({...rstestOriginal0,assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'w',name:'Fictional',active:true,timeZone:'America/New_York',createdAt:'',updatedAt:'version'}})}));

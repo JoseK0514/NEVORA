@@ -1,26 +1,27 @@
-import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
+import * as rstestOriginal0 from "../../lib/data/notification-transactions" with { rstest: 'importActual' };
+import { beforeEach, afterEach, describe, expect, it, rs } from '@rstest/core';
 import { createHash } from "node:crypto";
 import type { PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON } from "@simplewebauthn/server";
 import { createDisposableFoundationDatabase } from "./local-postgres";
 import { fictionalAuthenticator } from "./passkey-authenticator.test-support";
 import type { PasskeyMetadata } from "../../lib/auth/passkeys/types";
 
-const state = vi.hoisted(() => ({ values: new Map<string, string>(), attributes: new Map<string, Record<string, unknown>>() }));
+const state = rs.hoisted(() => ({ values: new Map<string, string>(), attributes: new Map<string, Record<string, unknown>>() }));
 let db: Awaited<ReturnType<typeof createDisposableFoundationDatabase>>;
-vi.mock("next/headers", () => ({ cookies: async () => ({
+rs.mock("next/headers", () => ({ cookies: async () => ({
   get: (key: string) => state.values.has(key) ? { value: state.values.get(key)! } : undefined,
   set: (key: string, value: string, attributes: Record<string, unknown>) => { state.values.set(key, value); state.attributes.set(key, attributes); },
   delete: (key: string) => state.values.delete(key),
 }) }));
-vi.mock("@/lib/db",()=>{
+rs.mock("@/lib/db",()=>{
  // Preserve lazy construction and execute the real ordered SQL session batch.
  const statement=(text:string,values:readonly unknown[]=[],options?:{fetchOptions?:{signal?:AbortSignal}})=>({statement:{text,values},then:(yes:(rows:unknown[])=>unknown,no:(error:unknown)=>unknown)=>db.executor.query({text,values},options?.fetchOptions?.signal).then(yes,no)});
  return {getDb:()=>({query:statement,transaction:(queries:{statement:{text:string;values:readonly unknown[]}}[],options?:{fetchOptions?:{signal?:AbortSignal}})=>db.executor.transaction(queries.map(q=>q.statement),options?.fetchOptions?.signal)}),queryRows:(rows:unknown)=>rows};
 });
-vi.mock("../../lib/data/notification-transactions", async original => ({
-  ...await original<typeof import("../../lib/data/notification-transactions")>(), neonNotificationExecutor: () => db.executor,
+rs.mock("../../lib/data/notification-transactions",  () => ({
+  ...rstestOriginal0, neonNotificationExecutor: () => db.executor,
 }));
-vi.mock("../../lib/notifications/logout", () => ({
+rs.mock("../../lib/notifications/logout", () => ({
   prepareInstallationForLogin: async () => ({ state: "complete" }), createLogoutDeps: () => ({}), terminatePortalSession: async () => ({}),
 }));
 import { POST as loginOptions } from "../../app/api/auth/passkey/login/options/route";
@@ -38,7 +39,7 @@ const request = (path: string, body: unknown = {}, headers: Record<string, strin
 });
 describe("passkey JSON route contract", () => {
   beforeEach(async () => {
-    vi.stubEnv("NEXT_PUBLIC_NEVORA_PASSKEYS", "on"); vi.stubEnv("NODE_ENV", "test");
+    rs.stubEnv("NEXT_PUBLIC_NEVORA_PASSKEYS", "on"); rs.stubEnv("NODE_ENV", "test");
     state.values.clear(); state.attributes.clear();
     db = await createDisposableFoundationDatabase({ mode: "current-runtime" });
     try {
@@ -48,7 +49,7 @@ describe("passkey JSON route contract", () => {
       state.values.set("fuel_session", token);
     } catch (error) { await db.dispose(); throw error; }
   });
-  afterEach(async () => { await db?.dispose(); vi.unstubAllEnvs(); });
+  afterEach(async () => { await db?.dispose(); rs.unstubAllEnvs(); });
   it("binds own mobile metadata to a finite current-session lease without changing the legacy shape", async () => {
     const proof = await requireSessionMutationProof();
     const authority = employeeViewAuthority(proof, 'passkeys');
@@ -93,7 +94,7 @@ describe("passkey JSON route contract", () => {
     expect(deleted.status).toBe(204); expect(await deleted.text()).toBe("");
   });
   it.each(["login/options", "login/verify", "register/options", "register/verify"])("uses the feature-off JSON error for %s", async path => {
-    vi.stubEnv("NEXT_PUBLIC_NEVORA_PASSKEYS", "off");
+    rs.stubEnv("NEXT_PUBLIC_NEVORA_PASSKEYS", "off");
     const action = path === "login/options" ? loginOptions : path === "login/verify" ? loginVerify : path === "register/options" ? registerOptions : registerVerify;
     const response = await action(request("/api/auth/passkey/" + path));
     expect(response.status).toBe(404); expect(await response.json()).toEqual({ error: "not_supported" });

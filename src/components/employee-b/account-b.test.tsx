@@ -1,6 +1,6 @@
 import {renderToStaticMarkup} from 'react-dom/server';
-import {describe, expect, it, vi} from 'vitest';
-vi.mock('@/app/login/actions', () => ({logout: vi.fn()}));
+import {describe, expect, it, rs} from '@rstest/core';
+rs.mock('@/app/login/actions', () => ({logout: rs.fn()}));
 import {EmployeeDocumentB, EmployeeHelpB, EmployeeMoreB} from './account-b';
 import {EmployeeNotificationsB, EmployeeUpdateB, EmployeeUpdatesB, type NotificationsBList, type UpdatesBList} from './messages-b';
 import {POLICY_DOCUMENTS, PRIVACY, SUPPORT, TERMS} from '../../lib/legal/policies';

@@ -1,19 +1,19 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import ClockerPage from './[location]/page';
 import type { Location } from '../../lib/domain';
 
-const state = vi.hoisted(() => ({ failed: false, locations: [] as Location[] }));
-vi.mock('@/lib/clocker/pin-crypto.server', () => ({ readPinKey: () => { throw Error('PIN not configured'); } }));
-vi.mock('@/lib/data/locations', () => ({
+const state = rs.hoisted(() => ({ failed: false, locations: [] as Location[] }));
+rs.mock('@/lib/clocker/pin-crypto.server', () => ({ readPinKey: () => { throw Error('PIN not configured'); } }));
+rs.mock('@/lib/data/locations', () => ({
   findActiveLocationByClockerKey: async (key: string) => {
     if (state.failed) throw Error('Location configuration is unavailable.');
     return state.locations.find(location => location.active && location.clockerKey === key) ?? null;
   },
 }));
-vi.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({id:'north',name:'Northside Services',timeZone:'Asia/Tokyo',active:true,createdAt:'2030-10-07T00:00:00Z',updatedAt:'2030-10-07T00:00:00Z'}) }));
-vi.mock('@/components/clocker-setup', () => import('../../components/clocker-setup'));
-vi.mock('next/navigation', () => ({ notFound: () => { throw Error('NOT_FOUND'); } }));
+rs.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({id:'north',name:'Northside Services',timeZone:'Asia/Tokyo',active:true,createdAt:'2030-10-07T00:00:00Z',updatedAt:'2030-10-07T00:00:00Z'}) }));
+
+rs.mock('next/navigation', () => ({ notFound: () => { throw Error('NOT_FOUND'); } }));
 beforeEach(() => {
   state.failed = false;
   state.locations = [{id:'main',workspaceId:'north',name:'Main Office',shortName:'Main',clockerKey:'main-office',active:true},

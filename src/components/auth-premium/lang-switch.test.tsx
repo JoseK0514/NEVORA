@@ -1,5 +1,5 @@
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {LangSwitch} from './lang-switch';
 
 it('does not offer enabled language actions before the client can handle a click',()=>{

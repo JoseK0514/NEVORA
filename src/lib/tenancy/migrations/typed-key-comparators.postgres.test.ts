@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, rs } from '@rstest/core';
 import { existsSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { createHash, randomBytes } from 'node:crypto';
@@ -115,7 +115,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 complete typed key comparator ob
     if (!client) throw Error('Owned client unavailable');
     const expectedFenceGeneration = await unarmedFence(); sqlPairs = []; referenceSnapshot = undefined;
     const native = client.query.bind(client); let beforeCommitCalls = 0, rollbackCalls = 0, collectorFaultTriggered = false;
-    const spy = vi.spyOn(client, 'query');
+    const spy = rs.spyOn(client, 'query');
     spy.mockImplementation((async (...args: unknown[]) => {
       const query = args[0], text = typeof query === 'string' ? query : query && typeof query === 'object' ? (query as { text?: unknown }).text : undefined;
       if (typeof text === 'string' && text.trim().toUpperCase() === 'ROLLBACK') rollbackCalls++;

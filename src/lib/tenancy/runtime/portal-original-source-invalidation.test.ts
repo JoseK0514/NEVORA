@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
-vi.mock('server-only', () => ({}));
+import { describe, expect, it, rs } from '@rstest/core';
+rs.mock('server-only', () => ({}));
 import { INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from './catalog-fence.server';
 import { compilePortalOriginalSourceInvalidation, isPortalOriginalSourceInvalidationComponent } from './portal-original-source-invalidation.server';
 

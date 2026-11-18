@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {resourceIdentity,resourceMatches,classifyProviderFailure} from './model';
 const key=Buffer.alloc(32,4).toString('base64url');
 const operation={operationId:'170837ce-471d-4c6f-a322-aa73ce9863d6',workspaceId:'270837ce-471d-4c6f-a322-aa73ce9863d6',environment:'test' as const,accountRef:'fictional-org',region:'aws-us-east-1',createdAt:'2026-11-07T12:00:00.000Z'};

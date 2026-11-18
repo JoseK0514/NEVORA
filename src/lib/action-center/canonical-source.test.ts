@@ -1,5 +1,5 @@
 // SOURCE PREPARATION ONLY. None of these proposed cases has been executed.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { makeAttendanceSource, makeHistoricalShift, makeRecordedEntry } from '@/test/fixtures/attendance-exceptions';
 import { projectAttendance } from '../attendance/project';
 import { parseManagerTimeCorrections } from '../time-corrections/read-model';

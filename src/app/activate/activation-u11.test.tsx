@@ -1,6 +1,6 @@
 // U11 (Nov 17, 2026): every activation state in English and Spanish. The security behaviour of the invitation (the
 // fragment custody, the exact result envelope) is covered by activation-invitation.test.tsx and is not touched here.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import { ActivationInvitationView, type ActivationPhase } from "./activation-invitation";
 import { ACCESS_COPY } from "@/components/access-recovery/copy";

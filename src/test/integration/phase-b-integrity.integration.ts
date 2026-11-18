@@ -1,16 +1,17 @@
+import * as rstestOriginal0 from "@/lib/data/notification-transactions" with { rstest: 'importActual' };
 import {getShiftForManagement} from '../../lib/data/schedules';
 import { createHash,randomUUID } from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import { Client } from 'pg';
-import { describe, expect, it, vi } from 'vitest';
-vi.mock('server-only',()=>({}));
+import { describe, expect, it, rs } from '@rstest/core';
+rs.mock('server-only',()=>({}));
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 
 
 // Adapt only transport and request context. All authorization and business SQL
 // below is the real repository/action implementation on an owned database.
-const context = vi.hoisted(() => ({ executor: null as SqlExecutor | null, cookies: new Map<string, string>(), cookieWrites: 0 }));
-vi.mock('@/lib/db', () => {
+const context = rs.hoisted(() => ({ executor: null as SqlExecutor | null, cookies: new Map<string, string>(), cookieWrites: 0 }));
+rs.mock('@/lib/db', () => {
   // Match Neon's lazy statement contract: assembling a transaction starts no
   // independent queries. Both the extracted default executor and explicit
   // fixture executor execute the real ordered PostgreSQL batch below.
@@ -20,14 +21,14 @@ vi.mock('@/lib/db', () => {
   });
   return {getDb:()=>tagged,queryRows:(rows:unknown)=>rows};
 });
-vi.mock('next/headers', () => ({ cookies: async () => ({
+rs.mock('next/headers', () => ({ cookies: async () => ({
   get: (name: string) => context.cookies.has(name) ? { value: context.cookies.get(name)! } : undefined,
   set: (name: string, value: string) => { context.cookieWrites++; context.cookies.set(name, value); },
   delete: (name: string) => context.cookies.delete(name),
 }) }));
-vi.mock('@/lib/data/notification-transactions', async (original) => ({ ...await original<Record<string, unknown>>(), neonNotificationExecutor: () => context.executor! }));
-vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
-vi.mock('next/navigation', () => ({ redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));
+rs.mock('@/lib/data/notification-transactions',  () => ({ ...rstestOriginal0, neonNotificationExecutor: () => context.executor! }));
+rs.mock('next/cache', () => ({ revalidatePath: rs.fn() }));
+rs.mock('next/navigation', () => ({ redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));
 
 import { createDisposableFoundationDatabase } from './local-postgres';
 import { fixtureProof } from './shift-change-api';

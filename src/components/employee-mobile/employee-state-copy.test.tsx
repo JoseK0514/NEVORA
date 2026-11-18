@@ -1,12 +1,12 @@
-import {beforeEach,describe,expect,it,vi} from 'vitest';
+import {beforeEach,describe,expect,it,rs} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
-const fixture=vi.hoisted(()=>({mobile:true,state:{snapshot:null as null|{state:'unavailable';reason:string},paused:false,refreshing:false},origin:null as null|{source:'/app/notifications'|'/app/updates';id:string;target:string}}));
-vi.mock('next/navigation',()=>({useRouter:()=>({push:()=>{}})}));
+const fixture=rs.hoisted(()=>({mobile:true,state:{snapshot:null as null|{state:'unavailable';reason:string},paused:false,refreshing:false},origin:null as null|{source:'/app/notifications'|'/app/updates';id:string;target:string}}));
+rs.mock('next/navigation',()=>({useRouter:()=>({push:()=>{}})}));
 // The message pages take the phone presentation wherever an Employee sees Direction B (a phone, or since Nov 8, 2026 the
 // Employee desktop), so the wrapper reads useEmployeeBScreen; `mobile` stands for that presentation here.
-vi.mock('./use-mobile',()=>({useEmployeeMobile:()=>fixture.mobile,useEmployeeBScreen:()=>fixture.mobile}));
-vi.mock('./use-messages',()=>({useMessages:()=>({state:fixture.state,read:null,allowed:()=>false,current:()=>null,refresh:()=>{}})}));
-vi.mock('./message-session',()=>({useMessageSession:()=>({origin:fixture.origin,lists:{notifications:{search:'',filter:'all',cursors:[]},updates:{search:'',filter:'all',cursors:[]}},state:{pending:false,hasUnknown:false},operationHref:null,setOrigin:()=>{}})}));
+rs.mock('./use-mobile',()=>({useEmployeeMobile:()=>fixture.mobile,useEmployeeBScreen:()=>fixture.mobile}));
+rs.mock('./use-messages',()=>({useMessages:()=>({state:fixture.state,read:null,allowed:()=>false,current:()=>null,refresh:()=>{}})}));
+rs.mock('./message-session',()=>({useMessageSession:()=>({origin:fixture.origin,lists:{notifications:{search:'',filter:'all',cursors:[]},updates:{search:'',filter:'all',cursors:[]}},state:{pending:false,hasUnknown:false},operationHref:null,setOrigin:()=>{}})}));
 import {ResponsiveEmployeeMessages} from './messages';
 import {HoursFrame} from './hours-frame';
 import {PlanningFrame} from './planning-frame';

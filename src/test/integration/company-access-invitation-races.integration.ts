@@ -1,8 +1,8 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {Client} from 'pg';
 import {randomUUID} from 'node:crypto';
 import {companyAccessFixture} from './company-access-fixture';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 import {issueOrRevokeInvitation,readInvitationStatus} from '../../lib/auth/invitations/service.server';
 
 type Fixture=Awaited<ReturnType<typeof companyAccessFixture>>;

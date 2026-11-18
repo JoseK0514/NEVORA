@@ -1,13 +1,13 @@
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {isAbsolute,relative,resolve,join} from 'node:path';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 import {reviewedAttentionInput} from './attention-api';
 import { fixtureProof } from './shift-change-api';
 import { publishScheduleWithRevision, reviewTimeOffRequest, setAvailabilityDeadline } from './management-api';
 import { configureFictionalShiftChanges } from './shift-change-api';
 import { notificationPolicyFor as fixturePolicyFor } from '../../lib/notifications/policy';
 const fixtureNotificationPolicy=fixturePolicyFor('America/Puerto_Rico');
-import { beforeAll, afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, afterAll, beforeEach, describe, expect, it, rs } from '@rstest/core';
 import { createECDH, createHash, randomUUID } from 'node:crypto';
 import { Client } from 'pg';
 import { createDisposableNotificationDatabase } from './local-postgres';
@@ -32,8 +32,8 @@ import type { NotificationIntent, SqlExecutor, InstallationProof } from '../../l
 
 // Substitute the SQL transport only. Tagged statements remain lazy until the
 // original production transaction submits its exact ordered batch to PostgreSQL.
-const transport = vi.hoisted(() => ({ executor: null as SqlExecutor | null }));
-vi.mock('../../lib/db', () => {
+const transport = rs.hoisted(() => ({ executor: null as SqlExecutor | null }));
+rs.mock('../../lib/db', () => {
   const statement = (text: string, values: readonly unknown[] = []) => ({ statement: { text, values }, then: (yes: (rows: unknown[]) => unknown, no: (error: unknown) => unknown) => transport.executor!.query({ text, values }).then(yes, no) });
   const tagged = Object.assign((strings: TemplateStringsArray, ...values: unknown[]) => statement(strings.reduce((text, part, index) => text + (index ? '$' + index : '') + part, ''), values), {
     query: statement,
@@ -132,7 +132,7 @@ describe('actual ordered publication and request SQL', () => {
       await holder.query('BEGIN');await holder.query(change);
       // Attach the rejection handler immediately while observing the actual wait.
       pending=publish().then(value=>({value}),error=>({error}));
-      await vi.waitFor(async()=>{expect(await sql("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND pid<>pg_backend_pid()")).not.toHaveLength(0);},{timeout:3000,interval:20});
+      await rs.waitFor(async()=>{expect(await sql("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND pid<>pg_backend_pid()")).not.toHaveLength(0);},{timeout:3000,interval:20});
       await holder.query('COMMIT');
       expect(await pending).toHaveProperty('error');
       expect((await sql("SELECT status FROM schedules WHERE id='QA-s1'"))[0].status).toBe('DRAFT');
@@ -601,7 +601,7 @@ describe('real SQL worker recovery with a no-network sender', () => {
     expect(jar.has('fuel_session')).toBe(false);
     expect(await sql('SELECT 1 FROM employee_sessions WHERE token_hash=$1', [sessionA])).toHaveLength(0);
     expect((await sql('SELECT status FROM push_subscriptions WHERE id=$1', [before.id]))[0].status).toBe('active');
-    const send = vi.fn(async () => ({ kind: 'accepted' as const })); deps.sender = { send };
+    const send = rs.fn(async () => ({ kind: 'accepted' as const })); deps.sender = { send };
     await runDispatch({ mode: 'all', deps });
     const [after] = await sql('SELECT status,generation,encrypted_material,session_hash FROM push_subscriptions WHERE id=$1', [before.id]);
     expect(after).toEqual({ status: 'detached', generation: expect.any(String), encrypted_material: null, session_hash: sessionA });
@@ -641,7 +641,7 @@ describe('real SQL worker recovery with a no-network sender', () => {
       expectedGeneration: String(before.generation), expiresAt: null });
     try {
       await locked;
-      const send = vi.fn(async () => ({ kind: 'accepted' as const })); deps.sender = { send };
+      const send = rs.fn(async () => ({ kind: 'accepted' as const })); deps.sender = { send };
       // Retry mode runs cleanup even without a new-intent scan. The locked row is
       // skipped instead of waiting on or detaching its now-current association.
       await runDispatch({ mode: 'retry', deps });
@@ -722,7 +722,7 @@ describe('original shift review concurrency',()=>{
   try{
    await holder.query('BEGIN');await holder.query("UPDATE shifts SET notes='Concurrent fictional edit' WHERE id='QA-sh1'");
    pending=edit(version).then(value=>({value}),error=>({error}));
-   await vi.waitFor(async()=>expect(await sql("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock'")).not.toHaveLength(0),{timeout:3000,interval:20});
+   await rs.waitFor(async()=>expect(await sql("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock'")).not.toHaveLength(0),{timeout:3000,interval:20});
    await holder.query('COMMIT');expect(await pending).toMatchObject({error:{code:'SHIFT_REVIEW_CONFLICT'}});
   }finally{await holder.query('ROLLBACK');await holder.end();await pending;}
   const fresh=await review();expect(await edit(fresh)).toBe(true);
@@ -749,7 +749,7 @@ it.each(['update','delete'] as const)('original review %s fence pins the shift u
   pending=(kind==='delete'?reviewedDeleteShift('QA-sh1',proof,ex,version):reviewedUpdateShift({proof,actorEmployeeId:'QA-M',shiftId:'QA-sh1',expectedReviewVersion:version,employeeId:'QA-E',date:'2030-10-11',startTime:'09:00',endTime:'17:00',notes:'Manager reviewed note'},ex)).then(value=>({value}),error=>({error}));
   await Promise.race([guarded,pending.then(()=>{throw Error('Review fence not reached');})]);
   raw=sql("UPDATE shifts SET notes='Concurrent writer after manager' WHERE id='QA-sh1'");
-  await vi.waitFor(async()=>expect(await sql("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE 'UPDATE shifts SET notes=%'")).not.toHaveLength(0),{timeout:1500,interval:20});
+  await rs.waitFor(async()=>expect(await sql("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE 'UPDATE shifts SET notes=%'")).not.toHaveLength(0),{timeout:1500,interval:20});
   release();expect(await pending).toMatchObject({value:true});await raw;
  }finally{release();await pending;await raw;await client.end();}
 });

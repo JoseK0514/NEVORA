@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { SigPendingLabel } from "./sig-button";
 
 // Phase 1 (inspection Oct 24): the spinner was always rendered and only hidden, so its infinite rotation ran on every

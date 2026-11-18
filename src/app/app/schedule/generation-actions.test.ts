@@ -1,27 +1,28 @@
+import * as rstestOriginal0 from "@/lib/company-access/operational-scope.server" with { rstest: 'importActual' };
 import { managementProof } from '../../../test/fixtures/management';
 import type { UserRole } from '../../../lib/domain';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { GenerationConflictError, GenerationPermissionError, GenerationScopeError, GenerationTargetNotDraftError } from '../../../lib/data/generation-guards';
-const f = vi.hoisted(() => ({ role:'MANAGER', generate:vi.fn(), clear:vi.fn(), revalidate:vi.fn(), publish:vi.fn(), provider:vi.fn() }));
-vi.mock('@/lib/auth/session',()=>({requireSession:async()=>managementProof('authenticated-manager',f.role as UserRole).employee,requireSessionMutationProof:async()=>managementProof('authenticated-manager',f.role as UserRole)}));
-vi.mock('next/navigation',()=>({redirect:(destination:string)=>{throw Object.assign(new Error('redirect'),{destination});}}));
-vi.mock('next/cache',()=>({revalidatePath:f.revalidate}));
-vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({id:'authenticated-workspace',active:true})}));
-vi.mock('@/lib/data/employees',()=>({listLocations:async()=>[{id:'north',shortName:'North'}]}));
-vi.mock('@/lib/data/positions',()=>({listPositions:async()=>[{id:'cashier',name:'Cashier'}]}));
-vi.mock('@/lib/data/schedule-generation',()=>({generateWeekDraft:f.generate}));
-vi.mock('@/lib/data/generation-exclusions',()=>({clearGenerationExclusion:f.clear}));
-vi.mock('@/lib/data/publication-revisions',()=>({publishScheduleWithRevision:f.publish}));
-vi.mock('@/lib/notifications/provider',()=>({send:f.provider}));
-vi.mock('@/lib/data/generation-guards',()=>import('../../../lib/data/generation-guards'));
-vi.mock('@/lib/auth/permissions',()=>import('../../../lib/auth/permissions'));
-vi.mock('@/lib/date-utils',()=>import('../../../lib/date-utils'));
-vi.mock('@/lib/scheduling/validate-shift',()=>import('../../../lib/scheduling/validate-shift'));
+const f = rs.hoisted(() => ({ role:'MANAGER', generate:rs.fn(), clear:rs.fn(), revalidate:rs.fn(), publish:rs.fn(), provider:rs.fn() }));
+rs.mock('@/lib/auth/session',()=>({requireSession:async()=>managementProof('authenticated-manager',f.role as UserRole).employee,requireSessionMutationProof:async()=>managementProof('authenticated-manager',f.role as UserRole)}));
+rs.mock('next/navigation',()=>({redirect:(destination:string)=>{throw Object.assign(new Error('redirect'),{destination});}}));
+rs.mock('next/cache',()=>({revalidatePath:f.revalidate}));
+rs.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({id:'authenticated-workspace',active:true})}));
+rs.mock('@/lib/data/employees',()=>({listLocations:async()=>[{id:'north',shortName:'North'}]}));
+rs.mock('@/lib/data/positions',()=>({listPositions:async()=>[{id:'cashier',name:'Cashier'}]}));
+rs.mock('@/lib/data/schedule-generation',()=>({generateWeekDraft:f.generate}));
+rs.mock('@/lib/data/generation-exclusions',()=>({clearGenerationExclusion:f.clear}));
+rs.mock('@/lib/data/publication-revisions',()=>({publishScheduleWithRevision:f.publish}));
+rs.mock('@/lib/notifications/provider',()=>({send:f.provider}));
+
+
+
+
 import { generateWeekAction, clearGenerationExclusionAction } from './generation-actions';
 const idle={status:'idle' as const,message:''};
 function form(patch:Record<string,string|undefined>={}) {const d=new FormData(); Object.entries({weekStart:'2026-10-05',mode:'BUILD_WEEK',scope:'SELECTED',locationId:'north',...patch}).forEach(([k,v])=>d.set(k,v!));return d;}
 function result(patch:Record<string,unknown>={}) {return {status:'COMPLETE',changed:true,weekStart:'2026-10-05',mode:'BUILD_WEEK',locationIds:['north'],summary:{added:2,removed:0,preserved:1,createdSchedules:0,changedScheduleIds:['internal'],coverage:{requiredMinutes:480,coveredMinutes:480,percentage:100,unavailable:false}},gaps:[],explanations:[],warnings:[],excludedLocations:[],metrics:{},...patch};}
-beforeEach(()=>{vi.clearAllMocks();f.role='MANAGER';f.generate.mockResolvedValue(result());f.clear.mockResolvedValue({status:'cleared'});});
+beforeEach(()=>{rs.clearAllMocks();f.role='MANAGER';f.generate.mockResolvedValue(result());f.clear.mockResolvedValue({status:'cleared'});});
 it.each(['OWNER','MANAGER'])('permits authenticated %s and derives both identities',async role=>{f.role=role;expect((await generateWeekAction(idle,form())).status).toBe('success');expect(f.generate).toHaveBeenCalledWith({proof:managementProof('authenticated-manager',f.role as UserRole),workspaceId:'authenticated-workspace',actorEmployeeId:'authenticated-manager',weekStart:'2026-10-05',mode:'BUILD_WEEK',locationScope:{kind:'SELECTED',locationIds:['north']}});expect(f.revalidate).toHaveBeenCalledWith('/app/schedule');expect(f.publish).not.toHaveBeenCalled();expect(f.provider).not.toHaveBeenCalled();});
 it.each(['EMPLOYEE','LEAD'])('rejects %s through the real server role helper',async role=>{f.role=role;await expect(generateWeekAction(idle,form())).rejects.toMatchObject({destination:'/app/restricted'});expect(f.generate).not.toHaveBeenCalled();});
 it.each([{actorEmployeeId:'forged'},{workspaceId:'forged'},{weekStart:'2026-10-06'},{weekStart:'2026-02-30'},{scope:'UNKNOWN'},{scope:'ALL',locationId:'north'},{locationId:'foreign'},{mode:'PUBLISH'},{maxNodes:'999999'}])('rejects forged or invalid input %j before service',async patch=>{expect((await generateWeekAction(idle,form(patch))).status).toBe('error');expect(f.generate).not.toHaveBeenCalled();});
@@ -119,4 +120,4 @@ it('uses Owner guidance for inactive configuration without inaccessible Manager 
 
 // Unit-only admission I/O; current authority and transactional rollback use real
 // SQL in company-access-global-scheduling.integration.ts.
-vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOriginalOperationalAccess:async(_proof:unknown,original:{authority:string})=>{expect(original.authority).toBe('f'.repeat(64));},assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},authority:'f'.repeat(64),workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));
+rs.mock('@/lib/company-access/operational-scope.server', original=>({...rstestOriginal0,assertOriginalOperationalAccess:async(_proof:unknown,original:{authority:string})=>{expect(original.authority).toBe('f'.repeat(64));},assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},authority:'f'.repeat(64),workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));

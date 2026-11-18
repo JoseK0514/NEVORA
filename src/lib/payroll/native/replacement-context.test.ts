@@ -1,5 +1,5 @@
-import { expect, it, vi } from 'vitest';
-vi.mock('server-only', () => ({}));
+import { expect, it, rs } from '@rstest/core';
+rs.mock('server-only', () => ({}));
 import reproduction from './nqaf001-reproduction.test-support.json';
 import { projectRecordedSourceCapture, type RecordedSourceRequest } from './recorded-source.server';
 

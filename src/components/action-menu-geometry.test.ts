@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { actionMenuGeometry } from "./action-menu-geometry";
 
 const trigger = { left: 31, right: 251, top: 57.828125, bottom: 101.828125 };

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { parseAnswer } from "./public-response";
 
 // Fictional IDs only. The forms are the backend's own: reviewHref(id) in weekly-tool.server.ts and

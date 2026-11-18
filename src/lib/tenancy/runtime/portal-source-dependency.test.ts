@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 
 // Source regression only. Native dependency admission and every runtime/domain
 // privilege/current-proof/callsite gate require their own root-owned evidence.

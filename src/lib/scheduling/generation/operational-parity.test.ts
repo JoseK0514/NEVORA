@@ -1,4 +1,4 @@
-import { it, expect } from 'vitest';
+import { it, expect } from '@rstest/core';
 import { automaticWeek, automaticAssignment } from '../../../test/fixtures/automatic-week';
 import { fictionalProfile, configured } from '../../../test/fixtures/shift-changes';
 import { planWeek } from './planner';

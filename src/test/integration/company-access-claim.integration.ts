@@ -1,4 +1,5 @@
-import {it,expect,vi} from 'vitest';
+import * as rstestOriginal0 from "../../lib/data/notification-transactions" with { rstest: 'importActual' };
+import {it,expect,rs} from '@rstest/core';
 import {randomBytes,randomUUID} from 'node:crypto';
 import {createServer} from 'node:http';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
@@ -7,9 +8,9 @@ import {issued,ownedPassword} from './company-access-claim.test-support';
 import * as passwords from '../../lib/auth/password';
 import { issueOrRevokeInvitation,invitationProofDigest,invitationEmailFingerprint } from '../../lib/auth/invitations/service.server';
 import {requestPasswordRecovery} from '../../lib/auth/recovery.server';
-const context=vi.hoisted(()=>({executor:null as SqlExecutor|null}));
-vi.mock('server-only',()=>({}));
-vi.mock('../../lib/data/notification-transactions',async importOriginal=>({...await importOriginal<typeof import('../../lib/data/notification-transactions')>(),neonNotificationExecutor:()=>{if(!context.executor)throw Error('No owned executor');return context.executor;}}));
+const context=rs.hoisted(()=>({executor:null as SqlExecutor|null}));
+rs.mock('server-only',()=>({}));
+rs.mock('../../lib/data/notification-transactions', ()=>({...rstestOriginal0,neonNotificationExecutor:()=>{if(!context.executor)throw Error('No owned executor');return context.executor;}}));
 import {claimInvitation,clearTerminalInvitationDigests} from '../../lib/auth/invitations/claim.server';
 import {activateEmployeeCredential} from '../../lib/data/employees';
 import {POST} from '../../app/api/auth/activate/route';
@@ -28,7 +29,7 @@ it('live registered-email possession creates one hashed credential, consumes onc
  }finally{await f.db.dispose();}
 });
 it.each(['revoke','reissue','contact','inactive','credential','issuer_role_cycle','issuer_inactive','workspace_inactive'] as const)('unusable %s proof is generic invalid before counters or password derivation',async kind=>{
- const f=await companyAccessFixture(),hash=vi.spyOn(passwords,'hashPassword');try{
+ const f=await companyAccessFixture(),hash=rs.spyOn(passwords,'hashPassword');try{
   const invite=await issued(f);
   if(kind==='revoke')expect((await issueOrRevokeInvitation(f.owner,'target',{action:'REVOKE',operationId:randomUUID(),invitationId:invite.receipt.invitationId,expectedInvitationRevision:invite.receipt.revision},null,f.db.executor)).state).toBe('saved');
   if(kind==='reissue')await issued(f);
@@ -52,7 +53,7 @@ it('legacy ID+phone helper cannot initialize credentials and credentialed recove
  }finally{context.executor=null;await f.db.dispose();}
 });
 it('strict bounded public JSON rejects identity/phone/query/transport overrides without allocation or identity disclosure',async()=>{
- const f=await companyAccessFixture();context.executor=f.db.executor;const hash=vi.spyOn(passwords,'hashPassword');try{
+ const f=await companyAccessFixture();context.executor=f.db.executor;const hash=rs.spyOn(passwords,'hashPassword');try{
   const proof=randomBytes(32).toString('base64url');
   const cases=[
    req({employeeId:'target',phone:'555003',password:ownedPassword}),
@@ -86,7 +87,7 @@ it('expired custody is invalid and terminal digests clear only after the 24-hour
  }finally{await f.db.dispose();}
 });
 it('unknown proof rejects after one bounded custody read; a recognized proof still rechecks revocation before password work',async()=>{
- const f=await companyAccessFixture(),hash=vi.spyOn(passwords,'hashPassword');try{
+ const f=await companyAccessFixture(),hash=rs.spyOn(passwords,'hashPassword');try{
   const queries:string[]=[];
   const observed:SqlExecutor={...f.db.executor,async query<T>(statement:SqlStatement,signal?:AbortSignal){queries.push(statement.text);return f.db.executor.query<T>(statement,signal);}};
   expect(await claimInvitation(randomBytes(32).toString('base64url'),ownedPassword,observed)).toEqual({state:'invalid'});
@@ -116,7 +117,7 @@ it('5000 unknown actual loopback HTTP claims allocate no counters or hash work a
    response.writeHead(result.status,Object.fromEntries(result.headers));response.end(Buffer.from(await result.arrayBuffer()));
   }catch{response.writeHead(503,{'Cache-Control':'no-store'});response.end('{"state":"unavailable"}');}
  });
- const hash=vi.spyOn(passwords,'hashPassword');try{
+ const hash=rs.spyOn(passwords,'hashPassword');try{
   await new Promise<void>(resolve=>server.listen(0,'127.0.0.1',resolve));const address=server.address();if(!address||typeof address==='string')throw Error('Owned loopback');url='http://127.0.0.1:'+address.port;
   const valid=await issued(f),before=await f.q('SELECT * FROM company_invitation_claim_counters');
   for(let n=0;n<5000;n+=25){

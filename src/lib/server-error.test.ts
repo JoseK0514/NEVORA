@@ -1,11 +1,11 @@
-import {afterEach, expect, it, vi} from 'vitest';
+import {afterEach, expect, it, rs} from '@rstest/core';
 import {reportServerError} from './server-error';
 
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => rs.restoreAllMocks());
 const reference = 'c34ed09a-1129-455c-9b60-3018cfce2f40';
 
 it('logs only bounded diagnostic metadata and preserves the framework digest', () => {
-  const sink = vi.spyOn(console, 'error').mockImplementation(() => {});
+  const sink = rs.spyOn(console, 'error').mockImplementation(() => {});
   const error = Object.assign(new TypeError('password=fictional-secret'), {
     digest: '123456789', body: {token: 'private-token'}, sql: 'SELECT private',
     cause: Object.assign(new Error('private SQL details'), {code: '23505'}),
@@ -21,7 +21,7 @@ it('logs only bounded diagnostic metadata and preserves the framework digest', (
 });
 
 it('replaces invalid request metadata and never serializes an arbitrary thrown value', () => {
-  const sink = vi.spyOn(console, 'error').mockImplementation(() => {});
+  const sink = rs.spyOn(console, 'error').mockImplementation(() => {});
   reportServerError({name: 'private-name', digest: 'token-secret', code: 'secret',
     toJSON() {throw Error('must not serialize');}}, {route: '/activate?proof=secret', requestId: 'secret\r\nheader'});
   const event = JSON.parse(sink.mock.calls[0][0]);
@@ -30,8 +30,8 @@ it('replaces invalid request metadata and never serializes an arbitrary thrown v
 });
 
 it('does not execute error getters and stops at cyclic causes', () => {
-  const sink = vi.spyOn(console, 'error').mockImplementation(() => {});
-  const getter = vi.fn(() => {throw Error('private getter');});
+  const sink = rs.spyOn(console, 'error').mockImplementation(() => {});
+  const getter = rs.fn(() => {throw Error('private getter');});
   const error = {cause: undefined as unknown}; error.cause = error;
   Object.defineProperties(error, {digest: {get: getter}, code: {get: getter}, name: {get: getter}});
   expect(() => reportServerError(error, {route: '/api/example'})).not.toThrow();
@@ -40,13 +40,13 @@ it('does not execute error getters and stops at cyclic causes', () => {
 });
 
 it('cannot turn logging failures or hostile thrown objects into a second request failure', () => {
-  vi.spyOn(console, 'error').mockImplementation(() => {throw Error('sink unavailable');});
+  rs.spyOn(console, 'error').mockImplementation(() => {throw Error('sink unavailable');});
   const hostile = new Proxy({}, {getOwnPropertyDescriptor() {throw Error('denied');}, getPrototypeOf() {throw Error('denied');}});
   expect(() => reportServerError(hostile, {route: '/api/example'})).not.toThrow();
 });
 
 it('keeps simultaneous handled requests correlated separately without altering domain bodies',async()=>{
- const sink=vi.spyOn(console,'error').mockImplementation(()=>{});
+ const sink=rs.spyOn(console,'error').mockImplementation(()=>{});
  const {reportHandledServerError,withServerErrorDiagnostics}=await import('./server-error');
  const responses=await Promise.all(['/api/first','/api/second'].map(route=>withServerErrorDiagnostics(route,async()=>{
   await Promise.resolve();reportHandledServerError(new Error('private'),'/app/fallback');
@@ -66,7 +66,7 @@ it('leaves successful and expected-refusal responses without diagnostic IDs',asy
  for(const status of [200,400,403,409])expect((await withServerErrorDiagnostics('/api/example',async()=>Response.json({state:'expected'},{status}))).headers.get('X-Nevora-Request-Id')).toBeNull();
 });
 it('binds each interleaved response to its own event and leaves later requests clean',async()=>{
- const sink=vi.spyOn(console,'error').mockImplementation(()=>{});
+ const sink=rs.spyOn(console,'error').mockImplementation(()=>{});
  const {reportHandledServerError,withServerErrorDiagnostics}=await import('./server-error');
  const responses=await Promise.all(Array.from({length:24},async(_,index)=>{
   let reported:string|undefined;

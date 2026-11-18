@@ -1,5 +1,5 @@
 import { fictionalProfile } from "@/test/fixtures/shift-changes";
-import { it, expect, beforeEach, afterEach, vi } from "vitest";
+import { it, expect, beforeEach, afterEach, rs } from '@rstest/core';
 import { companyAccessFixture } from "@/test/integration/company-access-fixture";
 import { advisorService } from "./service.server";
 import { AdvisorStore } from "./store.server";
@@ -44,7 +44,7 @@ const command = () => ({
 });
 const signal = () => new AbortController().signal;
 it("denies manager and employee, and all missing config with zero provider side effects", async () => {
-  const fetch = vi.fn(async () => answer());
+  const fetch = rs.fn(async () => answer());
   await expect(
     advisorService(f.manager, f.db.executor, env, signal(), command(), fetch),
   ).rejects.toThrow();
@@ -71,7 +71,7 @@ it("denies manager and employee, and all missing config with zero provider side 
 });
 it("runs typed tools with real data, persists answer once, replays without another charge", async () => {
   let n = 0;
-  const fetch = vi.fn(async () =>
+  const fetch = rs.fn(async () =>
     ++n === 1
       ? new Response(
           JSON.stringify({
@@ -123,7 +123,7 @@ it("runs typed tools with real data, persists answer once, replays without anoth
 it.each(["demote", "logout"])(
   "discards provider output after %s and does not store private history",
   async (change) => {
-    const fetch = vi.fn(async () => {
+    const fetch = rs.fn(async () => {
       await f.q(
         change === "demote"
           ? "UPDATE employees SET role='MANAGER' WHERE id='owner'"
@@ -176,7 +176,7 @@ it("published staffing reads publication snapshots, suppresses private text and 
   expect(JSON.stringify(coverage)).not.toMatch(/SECRET|"55500\d"|example\.invalid/);
 });
 it("reports fresh DB-clock remaining session life after a provider wait", async () => {
-  const fetch = vi.fn(async () => {
+  const fetch = rs.fn(async () => {
     await f.q(
       "UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '2 seconds' WHERE employee_id='owner'",
     );
@@ -196,7 +196,7 @@ it("reports fresh DB-clock remaining session life after a provider wait", async 
 it("cancelled provider attempts remain failed and cannot silently charge again", async () => {
   const c = command(),
     controller = new AbortController(),
-    fetch = vi.fn(async () => {
+    fetch = rs.fn(async () => {
       controller.abort();
       return answer();
     });
@@ -276,7 +276,7 @@ it("fences authority changed while a coverage tool is waiting", async () => {
       return result;
     },
   };
-  const fetch = vi.fn(
+  const fetch = rs.fn(
     async () =>
       new Response(
         JSON.stringify({

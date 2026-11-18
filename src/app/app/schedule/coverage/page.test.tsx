@@ -1,27 +1,28 @@
+import * as rstestOriginal0 from "@/lib/data/coverage-repair.server" with { rstest: 'importActual' };
 import { createElement, type ComponentProps } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { managementProof, schedulingSourceFixture } from '../../../../test/fixtures/management';
 import { assignmentFacts } from '../../../../lib/data/assignment-facts.test-support';
 import { deriveCoverageRepair, createCoverageRepairReview, assertCoverageRepairReview } from '../../../../lib/data/coverage-repair.server';
 import type { GenerationSource } from '../../../../lib/data/generation-guards';
 import { buildManagerActionItems } from '../../../../lib/assistance/manager-actions';
 import type { CoverageRepairLocator } from '../../../../lib/scheduling/coverage-repair';
-const m = vi.hoisted(() => ({ source: undefined as GenerationSource | undefined, role: 'MANAGER', calls: [] as Record<string, unknown>[],denied:false,companyLoads:vi.fn() }));
-vi.mock('next/link', () => ({ default: ({ children, ...props }: ComponentProps<'a'>) => createElement('a', props, children), useLinkStatus:()=>({pending:false}) }));
-vi.mock('next/navigation', () => ({ redirect: (destination: string) => { throw { destination }; } }));
-vi.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['MANAGER','OWNER'], requireRoles: async () => { if (m.role !== 'MANAGER') throw { destination: '/app' }; return { id: 'M' }; } }));
-vi.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => managementProof('M') }));
+const m = rs.hoisted(() => ({ source: undefined as GenerationSource | undefined, role: 'MANAGER', calls: [] as Record<string, unknown>[],denied:false,companyLoads:rs.fn() }));
+rs.mock('next/link', () => ({ default: ({ children, ...props }: ComponentProps<'a'>) => createElement('a', props, children), useLinkStatus:()=>({pending:false}) }));
+rs.mock('next/navigation', () => ({ redirect: (destination: string) => { throw { destination }; } }));
+rs.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['MANAGER','OWNER'], requireRoles: async () => { if (m.role !== 'MANAGER') throw { destination: '/app' }; return { id: 'M' }; } }));
+rs.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => managementProof('M') }));
 // Page/coverage composition only. Current authorization is a mocked server
 // boundary; production Frame lifetime is exercised by the mounted browser suite.
-vi.mock('@/lib/company-access/operational-scope.server',()=>({
+rs.mock('@/lib/company-access/operational-scope.server',()=>({
  readOperationalAuthority:async()=>({state:'ready',authority:'fixture',observedAt:'2030-10-07T12:00:00Z',validForMs:15000,scope:{mode:'COMPANY'},locations:[]}),
  withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>{if(m.denied)return {state:'unavailable',reason:'access_denied'};m.companyLoads();return {state:'ready',data:await load(),authority:'fixture',observedAt:'2030-10-07T12:00:00Z',validForMs:15000};},
 }));
-vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:()=>{throw Error('Unexpected restricted editor in Company coverage fixture');}}));
-vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
-vi.mock('@/lib/data/coverage-repair.server', async original => {
-  const actual = await original<typeof import('../../../../lib/data/coverage-repair.server')>();
+rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:()=>{throw Error('Unexpected restricted editor in Company coverage fixture');}}));
+rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+rs.mock('@/lib/data/coverage-repair.server',  () => {
+  const actual = rstestOriginal0;
   return { ...actual, readCoverageRepair: async (locator: CoverageRepairLocator, proof: ReturnType<typeof managementProof>, refresh: boolean) => {
     const result = actual.deriveCoverageRepair(m.source!, locator, refresh);
     return { ...result, candidates: result.candidates.map(c => ({ ...c, review: actual.createCoverageRepairReview(m.source!, result.locator, c.employeeId, proof) })) };
@@ -30,12 +31,12 @@ vi.mock('@/lib/data/coverage-repair.server', async original => {
     return { locator: review.locator, employeeId: review.employeeId, employeeName: c.employeeName, locationName: review.result.location.shortName, positionName: review.result.position?.name, isDesignatedLead: review.result.designatedLead };
   } };
 });
-vi.mock('@/app/app/schedule/actions', () => ({ createShiftAction: vi.fn() }));
-vi.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({ timeZone: 'America/Puerto_Rico' }) }));
-vi.mock('@/lib/data/employees', () => ({ listEmployees: async () => m.source!.employees.map(e => ({ id: e.id, firstName: e.first_name, lastName: e.last_name, role: e.role, active: e.active, positionIds: m.source!.employee_positions.filter(p => p.employee_id === e.id).map(p => p.position_id) })), listLocations: async () => [{ id: 'loc-1', shortName: 'Fictional South' }] }));
-vi.mock('@/lib/data/positions', () => ({ listPositions: async () => assignmentFacts().positions }));
-vi.mock('@/lib/data/hour-fairness', () => ({ listHourFairness: async () => [] }));
-vi.mock('@/lib/data/schedules', () => ({ getShiftValidationContext: async (input: Record<string, unknown>) => {
+rs.mock('@/app/app/schedule/actions', () => ({ createShiftAction: rs.fn() }));
+rs.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({ timeZone: 'America/Puerto_Rico' }) }));
+rs.mock('@/lib/data/employees', () => ({ listEmployees: async () => m.source!.employees.map(e => ({ id: e.id, firstName: e.first_name, lastName: e.last_name, role: e.role, active: e.active, positionIds: m.source!.employee_positions.filter(p => p.employee_id === e.id).map(p => p.position_id) })), listLocations: async () => [{ id: 'loc-1', shortName: 'Fictional South' }] }));
+rs.mock('@/lib/data/positions', () => ({ listPositions: async () => assignmentFacts().positions }));
+rs.mock('@/lib/data/hour-fairness', () => ({ listHourFairness: async () => [] }));
+rs.mock('@/lib/data/schedules', () => ({ getShiftValidationContext: async (input: Record<string, unknown>) => {
   m.calls.push(input); const e = m.source!.employees.find(e => e.id === input.employeeId)!;
   return { workspace: { id: 'test-workspace', active: true, timeZone: 'America/Puerto_Rico' }, location: { id: 'loc-1', workspaceId: 'test-workspace', active: true }, position: assignmentFacts().positions.find(p => p.id === input.positionId),
     employee: { active: true, role: e.role, eligibleLocationIds: ['loc-1'], positionIds: m.source!.employee_positions.filter(p => p.employee_id === e.id).map(p => p.position_id), maximumWeeklyHours: 40 }, existingShifts: [], availability: [{ dayOfWeek: 1, startTime: '00:00', endTime: '24:00' }], weeklyAvailability: [], approvedTimeOff: [] };

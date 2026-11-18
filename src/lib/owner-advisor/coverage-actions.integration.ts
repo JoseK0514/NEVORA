@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, it } from "vitest";
+import { afterEach, beforeEach, expect, it } from '@rstest/core';
 import { randomUUID } from "node:crypto";
 import { companyAccessFixture } from "@/test/integration/company-access-fixture";
 import { fictionalProfile } from "@/test/fixtures/shift-changes";

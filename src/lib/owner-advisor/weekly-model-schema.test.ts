@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { decisionTool, weeklyDecisionTool } from './decision';
 const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 function schemas(value: unknown, visit: (value: Record<string, unknown>) => void) {

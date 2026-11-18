@@ -1,11 +1,11 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {randomBytes} from 'node:crypto';
 import {companyAccessFixture} from './company-access-fixture';
 import {issued,ownedPassword,type ClaimFixture} from './company-access-claim.test-support';
 import {claimCounterClock} from './company-access-claim-clock.test-support';
 import * as passwords from '../../lib/auth/password';
 import {claimInvitation} from '../../lib/auth/invitations/claim.server';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 async function counterFixture(){
  const f=await companyAccessFixture();
  try{const clock=await claimCounterClock(f.db.executor);f.db.executor=clock.executor;return {...f,clock};}
@@ -17,7 +17,7 @@ async function another(f:ClaimFixture,id:string){
 async function until(predicate:()=>boolean){const end=Date.now()+4000;while(!predicate()&&Date.now()<end)await new Promise(r=>setTimeout(r,5));expect(predicate()).toBe(true);}
 it('four live password derivations have zero queued waiters; unknown proofs stay cheap and aborted work releases its slot after settling',async()=>{
  const f=await companyAccessFixture(),original=passwords.hashPassword,gates:(()=>void)[]=[],pending:Promise<unknown>[]=[];
- const hash=vi.spyOn(passwords,'hashPassword').mockImplementation(async value=>{await new Promise<void>(resolve=>gates.push(resolve));return original(value);});
+ const hash=rs.spyOn(passwords,'hashPassword').mockImplementation(async value=>{await new Promise<void>(resolve=>gates.push(resolve));return original(value);});
  try{
   const invitations=[await issued(f)];for(let i=1;i<5;i++)invitations.push(await another(f,'slot-'+i));
   const abort=new AbortController();
@@ -35,7 +35,7 @@ it('four live password derivations have zero queued waiters; unknown proofs stay
  }finally{for(const release of gates)release();await Promise.allSettled(pending);hash.mockRestore();await f.db.dispose();}
 });
 it('hash and SQL failures release work slots and never claim a credential commit',async()=>{
- const f=await companyAccessFixture(),hash=vi.spyOn(passwords,'hashPassword');try{
+ const f=await companyAccessFixture(),hash=rs.spyOn(passwords,'hashPassword');try{
   const invite=await issued(f);hash.mockRejectedValueOnce(Error('Owned hash failure'));
   expect(await claimInvitation(invite.proof,ownedPassword,f.db.executor)).toEqual({state:'unavailable'});
   const actual=f.db.executor,failed={...actual,async transaction(statements:Parameters<typeof actual.transaction>[0]){
@@ -48,7 +48,7 @@ it('hash and SQL failures release work slots and never claim a credential commit
 });
 it('near-limit concurrent admission saturates at ten and permits only the two remaining derivations',async()=>{
  const f=await counterFixture(),original=passwords.hashPassword,gates:(()=>void)[]=[],pending:Promise<unknown>[]=[];
- const hash=vi.spyOn(passwords,'hashPassword').mockImplementation(async value=>{await new Promise<void>(resolve=>gates.push(resolve));return original(value);});
+ const hash=rs.spyOn(passwords,'hashPassword').mockImplementation(async value=>{await new Promise<void>(resolve=>gates.push(resolve));return original(value);});
  try{
   const invite=await issued(f);
   await f.q("INSERT INTO company_invitation_claim_counters VALUES('workspace-fuel',$1,date_bin(interval '15 minutes',clock_timestamp(),timestamptz '2000-01-01'),8)",[invite.receipt.invitationId]);
@@ -61,7 +61,7 @@ it('near-limit concurrent admission saturates at ten and permits only the two re
  }finally{for(const release of gates)release();await Promise.allSettled(pending);hash.mockRestore();await f.db.dispose();}
 });
 it('exhausted live proof pressure cannot consume a fresh invitation budget or derive passwords',async()=>{
- const f=await counterFixture(),hash=vi.spyOn(passwords,'hashPassword');try{
+ const f=await counterFixture(),hash=rs.spyOn(passwords,'hashPassword');try{
   const exhausted=await issued(f),fresh=await another(f,'fresh-budget');
   await f.q("INSERT INTO company_invitation_claim_counters VALUES('workspace-fuel',$1,date_bin(interval '15 minutes',clock_timestamp(),timestamptz '2000-01-01'),10)",[exhausted.receipt.invitationId]);
   for(let n=0;n<100;n++)expect(await claimInvitation(exhausted.proof,ownedPassword,f.db.executor)).toEqual({state:'invalid'});
@@ -83,7 +83,7 @@ it('admission bounds its known invitation to 97 historic buckets and preserves o
  }finally{await f.db.dispose();}
 });
 it('a real SQL bucket rollover grants only the new bucket budget and retains the exhausted previous bucket',async()=>{
- const f=await counterFixture(),hash=vi.spyOn(passwords,'hashPassword');try{
+ const f=await counterFixture(),hash=rs.spyOn(passwords,'hashPassword');try{
   const invite=await issued(f);
   await f.q("INSERT INTO company_invitation_claim_counters VALUES('workspace-fuel',$1,date_bin(interval '15 minutes',clock_timestamp(),timestamptz '2000-01-01'),10)",[invite.receipt.invitationId]);
   const before=await f.q('SELECT * FROM company_invitation_claim_counters');

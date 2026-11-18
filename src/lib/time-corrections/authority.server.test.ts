@@ -1,7 +1,7 @@
-import {beforeEach,expect,it,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
-const current=vi.hoisted(()=>vi.fn());
-vi.mock('../auth/session',()=>({requireSessionMutationProof:current}));
+import {beforeEach,expect,it,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
+const current=rs.hoisted(()=>rs.fn());
+rs.mock('../auth/session',()=>({requireSessionMutationProof:current}));
 import {correctionAuthority,matchesCorrectionAuthority} from './authority.server';
 const proof={employee:{id:'A',role:'EMPLOYEE' as const,firstName:'A',lastName:'QA',primaryLocationId:'loc-1'},sessionTokenHash:'d'.repeat(64)};
 beforeEach(()=>{current.mockReset();current.mockResolvedValue(proof);});

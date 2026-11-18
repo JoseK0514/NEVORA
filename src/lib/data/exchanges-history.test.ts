@@ -1,12 +1,13 @@
-vi.mock('./sql-session-contract',()=>import('../../test/fixtures/business-sql-session'));
-import { expect, it, vi } from "vitest";
+import * as rstestOriginal0 from "../../test/fixtures/business-sql-session" with { rstest: 'importActual' };
+rs.mock('./sql-session-contract',()=>rstestOriginal0);
+import { expect, it, rs } from '@rstest/core';
 import { listTeamExchangeActivity } from "./exchanges";
 import {readShiftChangeHistoryView} from "./shift-change-views";
 import type {SessionMutationProof} from "../shift-changes/types";
-const history=vi.hoisted(()=>vi.fn());
-vi.mock("./shift-change-history",()=>({readShiftChangeHistory:history}));
-const query = vi.hoisted(() => vi.fn(async (_sql: string) => []));
-vi.mock("@/lib/db", () => ({ getDb: () => ({ query }), queryRows: (rows: unknown) => rows }));
+const history=rs.hoisted(()=>rs.fn());
+rs.mock("./shift-change-history",()=>({readShiftChangeHistory:history}));
+const query = rs.hoisted(() => rs.fn(async (_sql: string) => []));
+rs.mock("@/lib/db", () => ({ getDb: () => ({ query }), queryRows: (rows: unknown) => rows }));
 it("filters completed team outcomes before applying the history limit, while preserving the existing unfiltered reader", async () => {
   await listTeamExchangeActivity(true);
   const completed = String(query.mock.calls[0][0]);

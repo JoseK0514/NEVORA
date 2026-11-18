@@ -1,11 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, rs } from '@rstest/core';
 
 // Fictional SDK metadata exercises the real parser/private issuer. No native
 // helper, database/current-proof/RLS/Neon or business authority is established.
-vi.mock('server-only', () => ({}));
-const database = vi.hoisted(() => ({ query: vi.fn(), transaction: vi.fn() }));
-const runtime = vi.hoisted(() => vi.fn(() => database));
-vi.mock('../db', () => ({ getTenantRuntimeDb: runtime }));
+rs.mock('server-only', () => ({}));
+const database = rs.hoisted(() => ({ query: rs.fn(), transaction: rs.fn() }));
+const runtime = rs.hoisted(() => rs.fn(() => database));
+rs.mock('../db', () => ({ getTenantRuntimeDb: runtime }));
 import { getTenantProofFacts, resolvePortalProof } from './resolve.server';
 import { createTenantExecutor } from './executor.server';
 import { workspaceSnapshot } from './query-contract';
@@ -64,12 +64,12 @@ function scopeOf(proof: TenantProof): unknown {
   return descriptor?.value;
 }
 beforeEach(() => {
-  vi.useFakeTimers(); vi.setSystemTime(NOW);
+  rs.useFakeTimers(); rs.setSystemTime(NOW);
   runtime.mockClear(); database.query.mockReset(); database.transaction.mockReset();
   database.query.mockImplementation((text, values) => ({ text, values,
     then() { throw Error('resolver query awaited outside transaction'); } }));
 });
-afterEach(() => { vi.useRealTimers(); });
+afterEach(() => { rs.useRealTimers(); });
 
 describe('explicit administrative scope is private, role-bound resolver metadata', () => {
   const padded = ['位置-β', ' location-a ', 'loc-e\u0301'];

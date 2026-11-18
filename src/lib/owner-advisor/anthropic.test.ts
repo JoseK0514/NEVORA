@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, rs } from '@rstest/core';
 import { readConfig, type ProviderConfig } from "./config.server";
 import { investigate } from "./loop.server";
 import type { ToolCall, ToolResult } from "./contracts";
@@ -21,11 +21,11 @@ const turn = (content: unknown[] = [text()], stop_reason = "end_turn") => ({
   id: "msg_fictional", type: "message", role: "assistant", model: "claude-sonnet-5-5", content, stop_reason, stop_sequence: null, usage,
 });
 const dependencies = () => ({
-  signal: new AbortController().signal, check: vi.fn(async () => {}),
-  tool: vi.fn(async (_call: ToolCall): Promise<ToolResult> => ({ observedAt: "2026-11-15T12:00:00Z", sources: [{ label: "Today", href: "/app", observedAt: "2026-11-15T12:00:00Z" }], partial: false, data: { scheduled: 2 } })),
+  signal: new AbortController().signal, check: rs.fn(async () => {}),
+  tool: rs.fn(async (_call: ToolCall): Promise<ToolResult> => ({ observedAt: "2026-11-15T12:00:00Z", sources: [{ label: "Today", href: "/app", observedAt: "2026-11-15T12:00:00Z" }], partial: false, data: { scheduled: 2 } })),
 });
-beforeEach(() => vi.spyOn(Date, "now").mockReturnValue(Date.parse("2026-11-15T12:00:00Z")));
-afterEach(() => { vi.restoreAllMocks(); vi.useRealTimers(); });
+beforeEach(() => rs.spyOn(Date, "now").mockReturnValue(Date.parse("2026-11-15T12:00:00Z")));
+afterEach(() => { rs.restoreAllMocks(); rs.useRealTimers(); });
 
 describe("direct Anthropic Owner adapter", () => {
   it("requires the selected protocol, supported model, key, approval and future credit cutoff", () => {
@@ -40,8 +40,8 @@ describe("direct Anthropic Owner adapter", () => {
   });
 
   it("sends native authentication and preserves Spanish history, current reads and source ownership", async () => {
-    const log = vi.spyOn(console, "info").mockImplementation(() => {});
-    const fetch = vi.fn(async (_url: string, _init: RequestInit) => Response.json(turn()));
+    const log = rs.spyOn(console, "info").mockImplementation(() => {});
+    const fetch = rs.fn(async (_url: string, _init: RequestInit) => Response.json(turn()));
     const result = await investigate(config, [{ role: "user", content: "English first." }, { role: "assistant", content: "Historical answer." }], "", "Continúa en español.", { ...dependencies(), fetch });
     expect(result.text).toBe("Dos turnos registrados; consulta la fuente.");
     expect(result.sources).toEqual([{ label: "Today", href: "/app", observedAt: "2026-11-15T12:00:00Z" }]);
@@ -63,10 +63,10 @@ describe("direct Anthropic Owner adapter", () => {
   });
 
   it("preserves signed thinking and parallel tool results with a stable prefix", async () => {
-    vi.spyOn(console, "info").mockImplementation(() => {});
+    rs.spyOn(console, "info").mockImplementation(() => {});
     const blocks = [{ type: "thinking", thinking: "", signature: "opaque-fixture-signature" }, text("I will inspect recorded facts."), call("read-1"), call("read-2", "coverage_investigation")];
     const outputs = [turn(blocks, "tool_use"), turn()];
-    const fetch = vi.fn(async (_url: string, _init: RequestInit) => Response.json(outputs.shift()));
+    const fetch = rs.fn(async (_url: string, _init: RequestInit) => Response.json(outputs.shift()));
     const d = dependencies();
     await investigate(config, [], "", "Compare coverage.", { ...d, fetch });
     const first = JSON.parse(String(fetch.mock.calls[0][1].body)), next = JSON.parse(String(fetch.mock.calls[1][1].body));
@@ -81,9 +81,9 @@ describe("direct Anthropic Owner adapter", () => {
   });
 
   it("appends current review allowance after a rejected decision without changing signed instructions", async () => {
-    vi.spyOn(console, "info").mockImplementation(() => {});
+    rs.spyOn(console, "info").mockImplementation(() => {});
     const outputs = [turn([call("review-1", "review_decision", {})], "tool_use"), turn()];
-    const fetch = vi.fn(async (_url: string, _init: RequestInit) => Response.json(outputs.shift()));
+    const fetch = rs.fn(async (_url: string, _init: RequestInit) => Response.json(outputs.shift()));
     await expect(investigate(config, [], "", "Inspect.", { ...dependencies(), fetch })).rejects.toThrow("provider_failed");
     const first = JSON.parse(String(fetch.mock.calls[0][1].body)), next = JSON.parse(String(fetch.mock.calls[1][1].body));
     expect(next.system).toBe(first.system);
@@ -95,38 +95,38 @@ describe("direct Anthropic Owner adapter", () => {
     turn([text()], "max_tokens"), turn([text()], "refusal"), turn([{ type: "server_tool_use", id: "forged" }], "tool_use"),
     turn([call("bad")], "end_turn"), { ...turn(), role: "user" }, { ...turn(), model: "different-model" },
   ])("rejects an invalid or unauthorized turn before any model-requested read %#", async wire => {
-    vi.spyOn(console, "info").mockImplementation(() => {});
+    rs.spyOn(console, "info").mockImplementation(() => {});
     const d = dependencies();
-    const fetch = vi.fn(async () => Response.json(wire));
+    const fetch = rs.fn(async () => Response.json(wire));
     await expect(investigate(config, [], "", "Inspect.", { ...d, fetch })).rejects.toThrow();
     expect(d.tool).toHaveBeenCalledTimes(1);
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 
   it.each([429, 500, 529])("returns a safe failure and never retries or falls back after HTTP %i", async status => {
-    const fetch = vi.fn(async () => new Response('PRIVATE_UPSTREAM_DETAIL', { status }));
+    const fetch = rs.fn(async () => new Response('PRIVATE_UPSTREAM_DETAIL', { status }));
     await expect(investigate(config, [], "", "Inspect.", { ...dependencies(), fetch })).rejects.toMatchObject({ message: "provider_failed", providerStatus: status });
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 
   it("rechecks credit expiry before every provider dispatch", async () => {
-    vi.spyOn(console, "info").mockImplementation(() => {});
-    vi.mocked(Date.now).mockReturnValue(Date.parse("2026-11-17T23:59:59Z"));
-    const fetch = vi.fn(async () => { vi.mocked(Date.now).mockReturnValue(Date.parse("2026-11-18T00:00:01Z")); return Response.json(turn([call("read-1")], "tool_use")); });
+    rs.spyOn(console, "info").mockImplementation(() => {});
+    rs.mocked(Date.now).mockReturnValue(Date.parse("2026-11-17T23:59:59Z"));
+    const fetch = rs.fn(async () => { rs.mocked(Date.now).mockReturnValue(Date.parse("2026-11-18T00:00:01Z")); return Response.json(turn([call("read-1")], "tool_use")); });
     await expect(investigate(config, [], "", "Inspect.", { ...dependencies(), fetch })).rejects.toThrow("unavailable");
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 
   it("rejects a later configured cutoff even before the verified grant expires", async () => {
-    const fetch = vi.fn(async () => Response.json(turn()));
+    const fetch = rs.fn(async () => Response.json(turn()));
     await expect(investigate({ ...config, creditExpiresAt: "2030-01-01T00:00:00Z" }, [], "", "Inspect.", { ...dependencies(), fetch })).rejects.toThrow("unavailable");
     expect(fetch).not.toHaveBeenCalled();
   });
 
   it("rejects a reused native tool identity before executing that second read", async () => {
-    vi.spyOn(console, "info").mockImplementation(() => {});
+    rs.spyOn(console, "info").mockImplementation(() => {});
     const outputs = [turn([call("same-id")], "tool_use"), turn([call("same-id")], "tool_use"), turn()];
-    const fetch = vi.fn(async () => Response.json(outputs.shift()));
+    const fetch = rs.fn(async () => Response.json(outputs.shift()));
     const d = dependencies();
     await expect(investigate(config, [], "", "Inspect.", { ...d, fetch })).rejects.toThrow("provider_failed");
     expect(d.tool).toHaveBeenCalledTimes(2); // Mandatory briefing and first admitted read.
@@ -134,14 +134,14 @@ describe("direct Anthropic Owner adapter", () => {
   });
 
   it("bounds UTF8 request bytes before native dispatch", async () => {
-    const fetch = vi.fn(async () => Response.json(turn()));
+    const fetch = rs.fn(async () => Response.json(turn()));
     await expect(investigate(config, [{ role: "user", content: "😀".repeat(66000) }], "", "Inspect.", { ...dependencies(), fetch })).rejects.toThrow("limit");
     expect(fetch).not.toHaveBeenCalled();
   });
 
   it("cancels an uncooperative native transport when the caller cancels", async () => {
     const controller = new AbortController();
-    const fetch = vi.fn(() => { queueMicrotask(() => controller.abort()); return new Promise<Response>(() => {}); });
+    const fetch = rs.fn(() => { queueMicrotask(() => controller.abort()); return new Promise<Response>(() => {}); });
     await expect(investigate(config, [], "", "Inspect.", { ...dependencies(), signal: controller.signal, fetch })).rejects.toThrow("cancelled");
     expect(fetch).toHaveBeenCalledTimes(1);
   });

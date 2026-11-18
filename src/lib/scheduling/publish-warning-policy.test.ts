@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import type { PublishWarningSnapshot, PublishWarningCommand, PublishWarningReviewRecord, PublishOperationRecord } from './publish-warning-policy';
 import { buildPublishReadiness } from './publish-readiness';
 import { validateShift, type ValidateShiftInput } from './validate-shift';

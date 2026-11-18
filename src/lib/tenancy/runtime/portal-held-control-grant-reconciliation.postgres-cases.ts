@@ -3,7 +3,7 @@
 // No standalone runner, env/URL discovery, resource creation or SQL on import.
 // These calls test a private native comparison; they never invoke resolve_portal
 // or issue a proof/grant. All DDL/DML below is fictional QA within owned rollback.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import type { Client } from 'pg';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';

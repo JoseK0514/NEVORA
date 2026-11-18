@@ -1,4 +1,4 @@
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 import {reviewedAttentionInput} from './attention-api';
 import { deleteGeneratedDraftShift, publishScheduleWithRevision, insertShift, updateShift, setAvailabilityDeadline, reviewTimeOffRequest } from './management-api';
 import { createHash } from 'node:crypto';
@@ -8,7 +8,7 @@ import { managementProof } from '../fixtures/management';
 import { generateWeekAction, clearGenerationExclusionAction } from '../../app/app/schedule/generation-actions';
 
 import { getScheduleGenerationReview } from '../../lib/data/schedule-generation-review';
-import { afterAll, beforeAll, beforeEach, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, expect, it, rs } from '@rstest/core';
 import { createDisposableGenerationDatabase } from './local-postgres';
 import { generateWeekDraft, readGenerationSnapshot } from '../../lib/data/schedule-generation';
 import { listCapturedShiftPositions } from '../../lib/data/publication-revisions';
@@ -22,17 +22,17 @@ import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 
 // Replace only the Neon transport for APIs without an executor parameter. Exact
 // production tagged statements and transaction batches still execute in PostgreSQL.
-const transport = vi.hoisted(() => ({ executor: null as SqlExecutor | null }));
-vi.mock('../../lib/db', () => {
+const transport = rs.hoisted(() => ({ executor: null as SqlExecutor | null }));
+rs.mock('../../lib/db', () => {
   const statement = (text: string, values: readonly unknown[] = []) => ({statement:{text,values},then:(yes:(rows:unknown[])=>unknown,no:(error:unknown)=>unknown)=>transport.executor!.query({text,values}).then(yes,no)});
   const tagged = Object.assign((strings:TemplateStringsArray,...values:unknown[])=>statement(strings.reduce((text,part,index)=>text+(index?'$'+index:'')+part,''),values), {
     query:statement, transaction:(queries:{statement:SqlStatement}[])=>transport.executor!.transaction(queries.map(q=>q.statement)),
   });
   return {getDb:()=>tagged,queryRows:(result:unknown)=>Array.isArray(result)?result:[]};
 });
-vi.mock('next/headers',()=>({cookies:async()=>({get:(name:string)=>name==='fuel_session'?{value:'fictional-task6-session'}:undefined})}));
-vi.mock('next/navigation',()=>({redirect:(destination:string)=>{throw new Error(`redirect:${destination}`);}}));
-vi.mock('next/cache',()=>({revalidatePath:()=>{}}));
+rs.mock('next/headers',()=>({cookies:async()=>({get:(name:string)=>name==='fuel_session'?{value:'fictional-task6-session'}:undefined})}));
+rs.mock('next/navigation',()=>({redirect:(destination:string)=>{throw new Error(`redirect:${destination}`);}}));
+rs.mock('next/cache',()=>({revalidatePath:()=>{}}));
 let database: Awaited<ReturnType<typeof createDisposableGenerationDatabase>>;
 const q = (text:string,values:readonly unknown[] = []) => database.executor.query<Record<string,unknown>>({text,values});
 const request = {proof:managementProof('owner','OWNER'),workspaceId:'atelier',actorEmployeeId:'owner',weekStart:'2030-10-07',mode:'BUILD_WEEK' as const,locationScope:{kind:'ALL' as const}};

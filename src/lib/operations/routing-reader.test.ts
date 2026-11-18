@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {Client} from 'pg';
 import {readWorkerRoutingConfig} from '../workspace-routing/config.server';
 import {workerControlRole} from './routing-reader';

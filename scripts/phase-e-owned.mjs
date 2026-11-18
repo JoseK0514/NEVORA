@@ -547,7 +547,7 @@ export function verifyRequiredJobs(jobs) {
   for (const job of REQUIRED_JOBS) if (jobs?.[job]?.result !== 'success') throw Error('Required Phase E/D CI job did not pass: ' + job);
 }
 function sqlCommand(suite, evidence) {
-  return [process.execPath, 'node_modules/vitest/vitest.mjs', 'run', '--config', 'vitest.phase-e-integration.config.mts', SQL_SUITES[suite], '--reporter=default', '--reporter=json', '--outputFile', join(evidence, 'sql-' + suite + '.json')];
+  return [process.execPath, 'scripts/run-rstest.mjs', 'run', '--config', 'vitest.phase-e-integration.config.mts', SQL_SUITES[suite], '--reporter=default', '--reporter=json', '--outputFile', join(evidence, 'sql-' + suite + '.json')];
 }
 export function verifySqlExecution(report, source, suite) {
   report = releaseTestReport(report, source);

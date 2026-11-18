@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {evaluateNotificationSource} from '../data/notification-state';
 import {DEFAULT_NOTIFICATION_POLICY} from '../notifications/policy';
 import type {SourceSnapshot} from '../notifications/types';

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { NativeReview } from './native-review';
 import { nativeCapabilities, nativeRun } from './native-ui-fixture.test-support';

@@ -46,13 +46,13 @@ export function useReminders({targets, authority, transport = reminderRequest, m
   // The people and their sources as the page has them now.
   const content = authority ? JSON.stringify([authority, targets.map(target => [target.employeeId, target.source])]) : '';
   const keys = useMemo(() => new Map(authority ? targets.map(target => [target.employeeId, reminderKey(authority, target)]) : []),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- `content` is the content of targets and authority.
+    // eslint-disable-next-line hooks-preserved/exhaustive-deps -- `content` is the content of targets and authority.
     [content]);
   useEffect(() => {
     if (!authority) return;
     const adopted = store.adopt(targets, authority, mintId);
     return () => store.release(adopted.values());
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- `content` is the content of targets and authority.
+    // eslint-disable-next-line hooks-preserved/exhaustive-deps -- `content` is the content of targets and authority.
   }, [content, store]);
 
   // Read eligibility for everyone on the page who is waiting on it, one at a time.
@@ -90,6 +90,6 @@ export function useReminders({targets, authority, transport = reminderRequest, m
     const state = (employeeId: string) => { const key = keys.get(employeeId); return key ? store.get(key) : undefined; };
     const eligible = authority ? targets.filter(target => canSend(state(target.employeeId))) : [];
     return {state, targets, offline, eligible, want, recheck, send, sendMany, lookup};
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- `version` is the store's content; `content` is the targets'.
+    // eslint-disable-next-line hooks-preserved/exhaustive-deps -- `version` is the store's content; `content` is the targets'.
   }, [version, content, keys, store, offline, want, recheck, send, sendMany, lookup]);
 }

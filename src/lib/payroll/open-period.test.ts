@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { openPeriod } from "./calendar";
 
 it("finds the weekly and biweekly period that contains today, with its payday", () => {

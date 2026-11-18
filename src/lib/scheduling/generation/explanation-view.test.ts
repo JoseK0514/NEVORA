@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { automaticWeek, automaticAssignment } from '../../../test/fixtures/automatic-week';
 import { fictionalProfile, configured } from '../../../test/fixtures/shift-changes';
 import { planWeek } from './planner';

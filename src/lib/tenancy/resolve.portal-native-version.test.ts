@@ -1,11 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, rs } from '@rstest/core';
 
 // Fictional SDK rows exercise the actual metadata parser and private issuer.
 // They prove no native role/helper/current-proof/RLS/Neon or database authority.
-vi.mock('server-only', () => ({}));
-const database = vi.hoisted(() => ({ query: vi.fn(), transaction: vi.fn() }));
-const runtime = vi.hoisted(() => vi.fn(() => database));
-vi.mock('../db', () => ({ getTenantRuntimeDb: runtime }));
+rs.mock('server-only', () => ({}));
+const database = rs.hoisted(() => ({ query: rs.fn(), transaction: rs.fn() }));
+const runtime = rs.hoisted(() => rs.fn(() => database));
+rs.mock('../db', () => ({ getTenantRuntimeDb: runtime }));
 import { getTenantProofFacts, resolvePortalProof } from './resolve.server';
 import { RUNTIME_CATALOG_SHARED_FENCE_SQL } from './runtime/catalog-fence.server';
 
@@ -42,12 +42,12 @@ async function resolve(row: unknown) {
   return result;
 }
 beforeEach(() => {
-  vi.useFakeTimers(); vi.setSystemTime(NOW);
+  rs.useFakeTimers(); rs.setSystemTime(NOW);
   runtime.mockClear(); database.query.mockReset(); database.transaction.mockReset();
   database.query.mockImplementation((text, values) => ({ text, values,
     then() { throw Error('resolver query awaited outside transaction'); } }));
 });
-afterEach(() => { vi.useRealTimers(); });
+afterEach(() => { rs.useRealTimers(); });
 
 describe.each(fields)('portal positive native-int8 %s', field => {
   it.each(['1', ABOVE_JS_SAFE, MAX_INT8])('preserves canonical primitive text %s without rounding or coercion', async value => {

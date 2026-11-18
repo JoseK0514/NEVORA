@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {parseCalendarStatus,parseCalendarResult} from './contract';
 const authority='a'.repeat(64),operationId='11111111-1111-4111-8111-111111111111',id='22222222-2222-4222-8222-222222222222',generation='33333333-3333-4333-8333-333333333333';
 const status={state:'none',id:null,generation:null,issuedAt:null,allowedLocationIds:[],authority,observedAt:'2026-10-27T12:00:00Z',validForMs:45000,canIssue:true};

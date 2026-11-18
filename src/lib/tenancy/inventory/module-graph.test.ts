@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import ts from 'typescript';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, rs } from '@rstest/core';
 import { buildModuleDependencyGraph, type ModuleSourceBlob } from './module-graph';
 
 const blob = (path: string, text: string): ModuleSourceBlob => ({ path, text, sha256: createHash('sha256').update(text,'utf8').digest('hex') });
@@ -176,7 +176,7 @@ describe('supplied-source static module dependency graph', () => {
   it('never executes analyzed code or uses TypeScript ambient system filesystem hooks', () => {
     const state=globalThis as unknown as Record<string,unknown>;const before=state.__fictionalModuleGraphExecution;
     const fail=()=>{throw new Error('ambient host access prohibited');};
-    const spies=[vi.spyOn(ts.sys,'fileExists').mockImplementation(fail),vi.spyOn(ts.sys,'readFile').mockImplementation(fail),vi.spyOn(ts.sys,'getCurrentDirectory').mockImplementation(fail)];
+    const spies=[rs.spyOn(ts.sys,'fileExists').mockImplementation(fail),rs.spyOn(ts.sys,'readFile').mockImplementation(fail),rs.spyOn(ts.sys,'getCurrentDirectory').mockImplementation(fail)];
     try {
       const result=graph([blob('src/a.ts',"globalThis.__fictionalModuleGraphExecution = true; import './b'; throw new Error('never execute');"),blob('src/b.ts','export {};')]);
       expect(result.edges[0].resolution).toBe('RESOLVED_CANDIDATE');expect(state.__fictionalModuleGraphExecution).toBe(before);

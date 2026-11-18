@@ -1,5 +1,5 @@
 import {projectConfig} from './vitest.shared.mts';
-import {defineConfig} from 'vitest/config';
+import {defineConfig} from './vitest.shared.mts';
 // This suite explicitly requests the exchange disposable fixture. Keep its
 // prefix separate from the foundation Company Access runner, without weakening
 // the fixture's refusal of an existing/wrong-mode database.

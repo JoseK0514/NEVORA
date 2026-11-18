@@ -1,10 +1,10 @@
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, expect, it, rs } from '@rstest/core';
 import { runInNewContext } from 'node:vm';
 import { readThemeChoice, writeThemeChoice, THEME_KEY, THEME_SCRIPT } from './theme';
 
 // Review B1 (NV-067, Nov 10, 2026): Direction B is light only. A device that saved Dark or System earlier must load
 // Light, and the stored choice is cleared; the old dark/system behaviour these tests covered is retired.
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => rs.unstubAllGlobals());
 
 function bootstrap(stored: string | null, darkDevice: boolean, blocked = false) {
   const attrs: Record<string, string> = {}, removed: string[] = [];
@@ -26,8 +26,8 @@ it('still loads Light when storage is blocked', () => {
 });
 it('reads Light and a write applies Light', () => {
   const attrs: Record<string, string> = {}, removed: string[] = [];
-  vi.stubGlobal('window', { localStorage: { removeItem: (key: string) => removed.push(key) } });
-  vi.stubGlobal('document', { documentElement: { setAttribute: (key: string, value: string) => { attrs[key] = value; } } });
+  rs.stubGlobal('window', { localStorage: { removeItem: (key: string) => removed.push(key) } });
+  rs.stubGlobal('document', { documentElement: { setAttribute: (key: string, value: string) => { attrs[key] = value; } } });
   expect(readThemeChoice()).toBe('light');
   writeThemeChoice('dark');
   expect(attrs['data-theme']).toBe('light');

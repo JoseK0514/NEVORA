@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {communicationFixtureUrl} from './integration/employee-mobile-communications-fixtures';
 const source='postgresql://nevora_test@127.0.0.1:45678/nevora_exchange_test_c1_abcdef123456';
 it('derives only each required disposable namespace within the same owned loopback cluster',()=>{

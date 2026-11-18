@@ -1,8 +1,8 @@
-import {afterEach, expect, it, vi} from 'vitest';
+import {afterEach, expect, it, rs} from '@rstest/core';
 import {generateKeyPairSync} from 'node:crypto';
-const forbidden = vi.hoisted(() => vi.fn(() => {throw Error('Real network forbidden in native provider config tests');}));
-vi.mock('node:https', () => ({request: forbidden}));
-vi.mock('node:http2', () => ({connect: forbidden}));
+const forbidden = rs.hoisted(() => rs.fn(() => {throw Error('Real network forbidden in native provider config tests');}));
+rs.mock('node:https', () => ({request: forbidden}));
+rs.mock('node:http2', () => ({connect: forbidden}));
 afterEach(() => expect(forbidden).not.toHaveBeenCalled());
 async function api() {const m = await import('./config').catch(() => ({})); expect(m).toHaveProperty('readNativeProviderConfig'); return m as typeof import('./config');}
 const ec = generateKeyPairSync('ec', {namedCurve: 'prime256v1'}), rsa = generateKeyPairSync('rsa', {modulusLength: 2048});

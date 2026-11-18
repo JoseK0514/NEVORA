@@ -17,7 +17,7 @@ export function PlanningFrame({title,sub,back,backLabel='Requests',selection,sta
  useEffect(()=>{if(!ready||focused.current===selection)return;focused.current=selection;const id=window.location.hash.slice(1);
   const twin=()=>bTitleId?document.getElementById(bTitleId):heading.current?.closest('.c-page')?.querySelector<HTMLElement>(':scope > .b-screen h1')??null;
   if(id)focusShown(document.getElementById(id),b?document.getElementById('b-'+id):null);else focusShown(heading.current,b?twin():null);
- // eslint-disable-next-line react-hooks/exhaustive-deps -- focus moves once per selection, as before; `b` is the screen, not a trigger.
+ // eslint-disable-next-line hooks-preserved/exhaustive-deps -- focus moves once per selection, as before; `b` is the screen, not a trigger.
  },[ready,selection]);
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
  // Review F2 (NV-148): the state names the page's own subject, not "planning" (the two planning pages).

@@ -1,4 +1,4 @@
-import { it, expect } from 'vitest';
+import { it, expect } from '@rstest/core';
 import { fictionalTerms } from '../../test/fixtures/shift-changes';
 import { materialShiftTerms, shiftTermsFingerprint, sameShiftTerms, calloutReleasesShift } from './terms';
 it('material fingerprint excludes labels and changes on episode/owner/time/position/Lead/break terms', () => { const a = fictionalTerms(); expect(sameShiftTerms(a, { ...a, label: 'Changed' } as typeof a)).toBe(true); for (const patch of [{ assignmentEpisodeId: 'new' }, { employeeId: 'new' }, { endTime: '17:00' }, { positionId: 'cashier' }, { isDesignatedLead: true }, { scheduledBreaks: { status: 'KNOWN' as const, breaks: [] } }])

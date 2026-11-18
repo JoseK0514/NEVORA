@@ -1,19 +1,19 @@
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, expect, it, rs } from '@rstest/core';
 import { PunchCamera, type CameraEnvironment } from './camera';
 
 function fixture() {
-  const stop = vi.fn();
+  const stop = rs.fn();
   const stream = { getTracks: () => [{ stop }], getVideoTracks: () => [{ readyState: 'live' }] } as unknown as MediaStream;
   const video = { srcObject: null, playsInline: false, muted: false, autoplay: false, readyState: 2,
-    videoWidth: 1280, videoHeight: 720, play: vi.fn(async () => undefined), pause: vi.fn() } as unknown as HTMLVideoElement;
-  const drawImage = vi.fn();
+    videoWidth: 1280, videoHeight: 720, play: rs.fn(async () => undefined), pause: rs.fn() } as unknown as HTMLVideoElement;
+  const drawImage = rs.fn();
   const canvas = { width: 0, height: 0, getContext: () => ({ drawImage }),
     toBlob: (callback: BlobCallback) => callback(new Blob([new Uint8Array([255, 216, 255, 217])], { type: 'image/jpeg' })) } as unknown as HTMLCanvasElement;
-  const media = vi.fn(async () => stream);
+  const media = rs.fn(async () => stream);
   const env: CameraEnvironment = { secureContext: true, getUserMedia: media, createCanvas: () => canvas };
   return { stop, stream, video, drawImage, canvas, media, env, camera: new PunchCamera(env) };
 }
-afterEach(() => vi.useRealTimers());
+afterEach(() => rs.useRealTimers());
 
 it('requests only video with preferred front camera and inline muted playback', async () => {
   const f = fixture(); await f.camera.open(f.video, new AbortController().signal, 1000);
@@ -39,11 +39,11 @@ it('stops a late permission grant after cancellation instead of attaching it', a
   expect(f.stop).toHaveBeenCalledOnce(); expect(f.video.srcObject).toBeNull();
 });
 it('times out an ignored permission prompt and stops a later granted stream', async () => {
-  vi.useFakeTimers(); const f = fixture(); let resolve!: (s: MediaStream) => void;
+  rs.useFakeTimers(); const f = fixture(); let resolve!: (s: MediaStream) => void;
   f.env.getUserMedia = () => new Promise(r => { resolve = r; });
   const result = new PunchCamera(f.env).open(f.video, new AbortController().signal, 40);
   const check = expect(result).rejects.toMatchObject({ code: 'CAMERA_TIMEOUT' });
-  await vi.advanceTimersByTimeAsync(40); await check; resolve(f.stream); await Promise.resolve();
+  await rs.advanceTimersByTimeAsync(40); await check; resolve(f.stream); await Promise.resolve();
   expect(f.stop).toHaveBeenCalledOnce();
 });
 it('maps permission denial without leaking provider error details', async () => {
@@ -75,7 +75,7 @@ it('does not install video listeners after playback resolves for a closed camera
   const f = fixture(); let resolve!: () => void;
   f.video.play = () => new Promise(r => { resolve = r; });
   Object.defineProperty(f.video, 'readyState', { value: 0 });
-  f.video.addEventListener = vi.fn();
+  f.video.addEventListener = rs.fn();
   const promise = f.camera.open(f.video, new AbortController().signal, 1000);
   await Promise.resolve(); await Promise.resolve(); f.camera.close();
   await expect(promise).rejects.toMatchObject({ code: 'CANCELLED' }); resolve(); await Promise.resolve();

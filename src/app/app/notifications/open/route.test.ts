@@ -1,6 +1,6 @@
-import { expect, it, vi } from 'vitest';
-vi.mock('@/lib/db', () => import('../../../../lib/db')); // Resolve the existing repository alias to its real module in Vitest.
-vi.mock('../../../../lib/auth/session', () => ({ getSession: async () => null }));
+import { expect, it, rs } from '@rstest/core';
+ // Resolve the existing repository alias to its real module in Vitest.
+rs.mock('../../../../lib/auth/session', () => ({ getSession: async () => null }));
 import type { NotificationIntent, NotificationStateRepository, RecipientAccess } from '../../../../lib/notifications/types';
 async function api() { const m = await import('../../../../lib/notifications/open').catch(() => ({})); expect(m).toHaveProperty('createNotificationOpenHandler'); return m as typeof import('../../../../lib/notifications/open'); }
 const now = new Date('2026-10-02T12:00:00Z');
@@ -26,7 +26,7 @@ it('source_storage_failure_is_generic_and_does_not_expose_details', async () => 
 it('production_route_adapter_keeps_signed_out_return_without_app_layout_redirect', async () => { const { GET } = await import('./route'); const r = await GET(request()); expect(r.status).toBe(303); expect(r.headers.get('location')).toBe('/login?returnTo=%2Fapp%2Fnotifications%2Fopen%3FnotificationId%3Dfictional'); });
 
 it('safe rooted redirect resolves on the browser origin despite a divergent internal request origin',async()=>{
- const m=await api(),state=repo(),mutate=vi.fn();Object.assign(state,{markRead:mutate,acknowledge:mutate});
+ const m=await api(),state=repo(),mutate=rs.fn();Object.assign(state,{markRead:mutate,acknowledge:mutate});
  const response=await m.createNotificationOpenHandler({session:async()=>session,state,environment:'test',clock:()=>now})(new Request('http://localhost:43210/app/notifications/open?notificationId=fictional'));
  const location=response.headers.get('location');expect(response.status).toBe(303);expect(location).toBe('/app/requests?tab=my&requestId=request#request-request');
  expect(new URL(location!,'http://127.0.0.1:43210').href).toBe('http://127.0.0.1:43210/app/requests?tab=my&requestId=request#request-request');expect(mutate).not.toHaveBeenCalled();

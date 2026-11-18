@@ -1,4 +1,4 @@
-import { it, expect } from "vitest";
+import { it, expect } from '@rstest/core';
 import { duePeriod } from "./schedule";
 it("reuses saved weekly and monthly dates without preparing an unfinished period", () => {
   expect(

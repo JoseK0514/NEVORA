@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {planManagerReminder} from './plan';
 const now=new Date('2026-11-11T02:00:00Z');
 it('defers both reminder types to Puerto Rico quiet end with a stable daily identity',()=>{

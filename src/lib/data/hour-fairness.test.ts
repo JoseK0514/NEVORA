@@ -1,7 +1,8 @@
-vi.mock('./sql-session-contract',()=>import('../../test/fixtures/business-sql-session'));
-import { expect, it, vi } from "vitest";
-const query = vi.hoisted(() => vi.fn());
-vi.mock("@/lib/db", () => ({
+import * as rstestOriginal0 from "../../test/fixtures/business-sql-session" with { rstest: 'importActual' };
+rs.mock('./sql-session-contract',()=>rstestOriginal0);
+import { expect, it, rs } from '@rstest/core';
+const query = rs.hoisted(() => rs.fn());
+rs.mock("@/lib/db", () => ({
   getDb: () => ({ query }),
   queryRows: (value: unknown) => value,
 }));

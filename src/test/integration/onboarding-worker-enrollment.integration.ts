@@ -1,4 +1,4 @@
-import {beforeAll,expect,it} from 'vitest';
+import {beforeAll,expect,it} from '@rstest/core';
 import {generateKeyPairSync,randomBytes,randomUUID} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import {Client,Pool} from 'pg';

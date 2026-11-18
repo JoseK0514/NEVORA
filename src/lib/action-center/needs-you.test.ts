@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {isOwnReview, needsYou, needsYouDetail, needsYouSentence} from './needs-you';
 import type {ActionItem} from './project';
 import type {TodayShift} from '../today/project';

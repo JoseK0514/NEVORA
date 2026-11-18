@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { prIncomeWithholding, fica2026, sinotContribution } from "./pr-2026";
 const certificate = () => ({ personal: "INDIVIDUAL_FULL" as const, fullDependents: 0, halfDependents: 0, deductionAllowances: 0, veteran: false, additionalMethod: "FIXED" as const, additionalBasisPoints: null, wageDollarRounding: "NONE" as const, additionalMinor: "0" });
 describe("published PR payroll-period tables, not annual tax brackets", () => {

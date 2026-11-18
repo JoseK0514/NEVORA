@@ -1,12 +1,12 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, rs } from '@rstest/core';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { runInNewContext } from 'node:vm';
 import { types as nodeTypes } from 'node:util';
 import { transpileModule, ScriptTarget } from 'typescript';
-vi.mock('server-only', () => ({}));
-const db = vi.hoisted(() => ({ query: vi.fn(), transaction: vi.fn() }));
-vi.mock('../db', () => ({ getDb: vi.fn(()=>{throw Error('legacy proof transport forbidden');}), getTenantRuntimeDb: vi.fn(() => db) }));
+rs.mock('server-only', () => ({}));
+const db = rs.hoisted(() => ({ query: rs.fn(), transaction: rs.fn() }));
+rs.mock('../db', () => ({ getDb: rs.fn(()=>{throw Error('legacy proof transport forbidden');}), getTenantRuntimeDb: rs.fn(() => db) }));
 import { getTenantRuntimeDb } from '../db';
 import { RUNTIME_CATALOG_SHARED_FENCE_SQL } from './runtime/catalog-fence.server';
 import { resolvePortalProof } from './resolve.server';
@@ -37,8 +37,8 @@ async function proof(workspaceId = 'tenant-a') {
 const workspaceRows = (id = 'tenant-a') => [{ id, name: 'Fictional', time_zone: 'UTC', active: true }];
 const guardedResults = (rows: unknown[][]) => [[{ catalog_fence: '' }], [{ guard: 1 }], [{ context: 'ignored-internal' }], [{ guard: 1 }], ...rows, [{ guard: 1 }], [{ guard: 1 }]];
 beforeEach(() => {
-  vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-09T12:00:00Z'));
-  db.query.mockReset(); db.transaction.mockReset(); vi.mocked(getTenantRuntimeDb).mockClear();
+  rs.useFakeTimers(); rs.setSystemTime(new Date('2026-10-09T12:00:00Z'));
+  db.query.mockReset(); db.transaction.mockReset(); rs.mocked(getTenantRuntimeDb).mockClear();
 });
 
 describe('tenant executor noninteractive transaction boundary', () => {
@@ -235,7 +235,7 @@ describe('tenant executor noninteractive transaction boundary', () => {
   });
   it('rejects a proof that expires while waiting before returning data', async () => {
     const p = await proof();
-    db.transaction.mockImplementation(async () => { vi.setSystemTime(new Date('2026-10-09T12:01:00Z')); return guardedResults([workspaceRows()]); });
+    db.transaction.mockImplementation(async () => { rs.setSystemTime(new Date('2026-10-09T12:01:00Z')); return guardedResults([workspaceRows()]); });
     await expect(e!.createTenantExecutor(p).query(c!.workspaceSnapshot(p))).rejects.toThrow('tenant_proof_denied');
   });
 });

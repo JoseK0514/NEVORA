@@ -1,9 +1,9 @@
-import {expect,it,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
-const state=vi.hoisted(()=>({rows:[] as unknown[][],fail:null as Error|null}));
-vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({id:'workspace-fictional',updatedAt:'2030-01-01',timeZone:'America/Puerto_Rico'}),workspaceReadGuard:()=>[]}));
-vi.mock('@/lib/data/management-session',()=>({assertManagementProof:()=>{},managementSessionStatements:()=>[],isManagementAuthorizationError:()=>false}));
-vi.mock('@/lib/data/sql-executor',()=>({neonNotificationExecutor:()=>executor}));
+import {expect,it,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
+const state=rs.hoisted(()=>({rows:[] as unknown[][],fail:null as Error|null}));
+rs.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({id:'workspace-fictional',updatedAt:'2030-01-01',timeZone:'America/Puerto_Rico'}),workspaceReadGuard:()=>[]}));
+rs.mock('@/lib/data/management-session',()=>({assertManagementProof:()=>{},managementSessionStatements:()=>[],isManagementAuthorizationError:()=>false}));
+rs.mock('@/lib/data/sql-executor',()=>({neonNotificationExecutor:()=>executor}));
 const executor={query:async()=>[],transaction:async()=>{if(state.fail)throw state.fail;return state.rows;}};
 import {assertOperationalAccess,OperationalAuthorizationError,OperationalUnavailableError,isOperationalAuthorizationError} from './operational-scope.server';
 const proof={employee:{id:'owner-fictional',role:'OWNER' as const,firstName:'QA',lastName:'Owner',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};

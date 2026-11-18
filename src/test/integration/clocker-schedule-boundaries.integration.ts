@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { Temporal } from '@js-temporal/polyfill';
-import { afterEach, beforeEach, expect, it } from 'vitest';
+import { afterEach, beforeEach, expect, it } from '@rstest/core';
 import { createPunchFixture } from './clocker-punch-fixture';
 import { prepareScheduleCapture, captureScheduleContext } from '../../lib/clocker/schedule-candidates';
 import { ClockerPunchService } from '../../lib/clocker/punches.server';

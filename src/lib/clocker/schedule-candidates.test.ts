@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { captureScheduleContext, prepareScheduleCapture, type PublishedScheduleSource } from './schedule-candidates';
 const scope={employeeId:'worker',locationId:'loc-1',workspaceId:'workspace',timeZone:'America/Puerto_Rico'};
 const source=():PublishedScheduleSource=>({anchorDate:'2030-10-07',publication:{

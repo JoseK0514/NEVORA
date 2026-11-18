@@ -1,7 +1,8 @@
-import {beforeEach,describe,expect,it,vi} from 'vitest';
-const f=vi.hoisted(()=>({session:{id:'M',role:'MANAGER'} as {id:string;role:string}|null,create:vi.fn()}));
-vi.mock('@/lib/auth/session',()=>({getSession:async()=>f.session,requireSessionMutationProof:async()=>({employee:f.session,sessionTokenHash:'a'.repeat(64)})}));
-vi.mock('@/lib/payroll-export/service',async()=>{const actual=await vi.importActual<typeof import('@/lib/payroll-export/service')>('@/lib/payroll-export/service');return {...actual,createPayrollExport:f.create};});
+import * as rstestOriginal0 from "@/lib/payroll-export/service" with { rstest: 'importActual' };
+import {beforeEach,describe,expect,it,rs} from '@rstest/core';
+const f=rs.hoisted(()=>({session:{id:'M',role:'MANAGER'} as {id:string;role:string}|null,create:rs.fn()}));
+rs.mock('@/lib/auth/session',()=>({getSession:async()=>f.session,requireSessionMutationProof:async()=>({employee:f.session,sessionTokenHash:'a'.repeat(64)})}));
+rs.mock('@/lib/payroll-export/service',()=>{const actual=rstestOriginal0;return {...actual,createPayrollExport:f.create};});
 import {POST} from './route';
 import {decimalHours} from '@/lib/payroll-export/model';
 import {PayrollExportReviewError} from '@/lib/payroll-export/errors';

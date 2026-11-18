@@ -1,4 +1,4 @@
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it} from '@rstest/core';
 import {csvCell,reportCsv} from './csv';
 import {projectReports} from './project';
 const report=projectReports({workspaceId:'W',timeZone:'America/Puerto_Rico',observedAt:'2026-10-01T00:00:00Z',period:{startDate:'2026-09-21',endDate:'2026-09-27'},cards:[],schedules:[],requests:[],changes:[],publications:[],attendanceSources:[],publishedWeeks:[]});

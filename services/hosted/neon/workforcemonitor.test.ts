@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {createScheduledHandler} from './handlers';
 import {INERT_HOST_CAPABILITIES,deploymentCapabilitiesAllowed} from './capabilities';
 import {sourceFixture} from './test-source';

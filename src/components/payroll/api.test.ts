@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { parsePayrollImport, readRuns, readSettings, readStatements, readReceipt, readPortalStatements } from './api';
 import { nativeCapabilities, nativeRun, statement } from './native-ui-fixture.test-support';
 

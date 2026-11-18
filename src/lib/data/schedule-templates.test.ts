@@ -1,4 +1,5 @@
-import {describe,expect,it,vi} from 'vitest';
+import * as rstestOriginal0 from "@/lib/company-access/operational-scope.server" with { rstest: 'importActual' };
+import {describe,expect,it,rs} from '@rstest/core';
 import {listTemplateShifts} from './schedule-templates';
 import {managementProof} from '../../test/fixtures/management';
 import type {SqlExecutor} from '../notifications/types';
@@ -13,4 +14,4 @@ describe('applying an active schedule template',()=>{
 
 // Unit-only admission I/O; current authority and transactional rollback use real
 // SQL in company-access-global-scheduling.integration.ts.
-vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));
+rs.mock('@/lib/company-access/operational-scope.server', ()=>({...rstestOriginal0,assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));

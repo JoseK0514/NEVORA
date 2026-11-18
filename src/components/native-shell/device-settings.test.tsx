@@ -1,4 +1,4 @@
-import { it, expect } from 'vitest';
+import { it, expect } from '@rstest/core';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { NativeDeviceSettingsView } from './device-settings';
 const actions = { onEnable() { }, onRefresh() { }, onReview() { }, onKeep() { }, onTurnOff() { } };

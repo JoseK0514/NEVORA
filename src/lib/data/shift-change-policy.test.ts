@@ -1,4 +1,4 @@
-import { expect,it } from 'vitest';
+import { expect,it } from '@rstest/core';
 import { saveShiftChangePolicy, saveOperationalRuleProfile } from './shift-change-policy';
 import type { SqlExecutor } from '../notifications/types';
 import type { PolicyWrite } from '../shift-changes/types';

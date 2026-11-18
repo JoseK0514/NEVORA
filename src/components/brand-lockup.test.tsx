@@ -1,10 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 import { BrandLockup } from './brand-lockup';
 import { BrandWordmark } from './brand-mark';
 
-vi.mock('next/image', () => ({ default: () => null }));
+rs.mock('next/image', () => ({ default: () => null }));
 
 it.each(['compact', 'standard', 'large'] as const)('keeps %s brand identity in one icon and aligned text primitive', variant => {
   const html = renderToStaticMarkup(<BrandLockup variant={variant} />);

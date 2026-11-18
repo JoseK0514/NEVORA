@@ -1,19 +1,19 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 
-const session = vi.hoisted(() => ({ role: "OWNER" as string, proof: true, scope: null as null | { mode: "COMPANY" } | { mode: "LOCATIONS"; locationIds: string[] }, path: "/app/settings" }));
-vi.mock("@/lib/auth/session", () => ({
+const session = rs.hoisted(() => ({ role: "OWNER" as string, proof: true, scope: null as null | { mode: "COMPANY" } | { mode: "LOCATIONS"; locationIds: string[] }, path: "/app/settings" }));
+rs.mock("@/lib/auth/session", () => ({
   requireSession: async () => ({ id: "X", role: session.role }),
   readSessionMutationProof: async () => session.proof ? { employee: { id: "X", role: session.role } } : null,
 }));
-const team = vi.hoisted(() => ({ list: [] as { firstName: string; lastName: string; role: string; active: boolean }[] }));
-vi.mock("@/lib/data/employees", () => ({ listEmployees: async () => team.list }));
+const team = rs.hoisted(() => ({ list: [] as { firstName: string; lastName: string; role: string; active: boolean }[] }));
+rs.mock("@/lib/data/employees", () => ({ listEmployees: async () => team.list }));
 // What the shell already reads for this person: their operational scope and the workspace's words and features.
-vi.mock("@/lib/company-access/operational-scope.server", () => ({
+rs.mock("@/lib/company-access/operational-scope.server", () => ({
   readOperationalAuthority: async () => session.scope ? { state: "ready", role: "MANAGER", scope: session.scope } : { state: "unavailable", reason: "access_denied" },
 }));
-vi.mock("@/lib/workspace-presentation/current.server", () => ({ currentBrand: async () => ({ words: "retail", modules: undefined }) }));
-vi.mock("next/navigation", () => ({ usePathname: () => session.path }));
+rs.mock("@/lib/workspace-presentation/current.server", () => ({ currentBrand: async () => ({ words: "retail", modules: undefined }) }));
+rs.mock("next/navigation", () => ({ usePathname: () => session.path }));
 import SettingsLayout from "./layout";
 import { closedSettingsSubject } from "./closed-line";
 

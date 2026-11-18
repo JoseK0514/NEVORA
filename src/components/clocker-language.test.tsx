@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { ClockerLanguageToggle, ClockerPresentation } from './clocker-language';
 
 // Direction B (Nov 8, 2026): the Signature look's Spanish second lines (CLOCKER_ES and <Es>) were retired with it. The kiosk

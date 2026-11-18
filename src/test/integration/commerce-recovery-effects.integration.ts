@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {execFileSync} from 'node:child_process';
 import {build} from 'esbuild';
 import {createRequire} from 'node:module';

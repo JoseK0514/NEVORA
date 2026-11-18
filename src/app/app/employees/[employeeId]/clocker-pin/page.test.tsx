@@ -1,17 +1,17 @@
 import { createElement, type ComponentProps } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, rs } from '@rstest/core';
 
-const m = vi.hoisted(() => ({ role: 'OWNER', targetRole: 'EMPLOYEE', active: true, version: 0, unavailable: false, denied: false, missing: false, read: vi.fn(), profile:vi.fn() }));
-vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>m.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load()}}));
-vi.mock('next/link', () => ({ default: ({ href, children, ...props }: ComponentProps<'a'>) => createElement('a', { href, ...props }, children) }));
-vi.mock('next/navigation', () => ({ notFound: () => { throw Error('notFound'); } }));
-vi.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['OWNER', 'MANAGER'], requireRoles: async (roles:string[]) => {if(!roles.includes(m.role))throw Error('role_denied');return {role:m.role};} }));
-vi.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => ({ employee: { id: 'actor' }, sessionTokenHash: 'proof' }) }));
-vi.mock('@/lib/data/employees', () => ({ getEmployeeManagementProfile: m.profile }));
-vi.mock('@/lib/clocker/pin-crypto.server', () => ({ readPinKey: () => { if (m.unavailable) throw Error('private infrastructure error'); return Buffer.alloc(32); } }));
-vi.mock('@/lib/clocker/pins.server', () => ({ readEmployeeClockerPin: m.read }));
-vi.mock('./actions', () => ({ saveClockerPinAction: vi.fn(),checkClockerPinSaveAction:vi.fn() }));
+const m = rs.hoisted(() => ({ role: 'OWNER', targetRole: 'EMPLOYEE', active: true, version: 0, unavailable: false, denied: false, missing: false, read: rs.fn(), profile:rs.fn() }));
+rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>m.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load()}}));
+rs.mock('next/link', () => ({ default: ({ href, children, ...props }: ComponentProps<'a'>) => createElement('a', { href, ...props }, children) }));
+rs.mock('next/navigation', () => ({ notFound: () => { throw Error('notFound'); } }));
+rs.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['OWNER', 'MANAGER'], requireRoles: async (roles:string[]) => {if(!roles.includes(m.role))throw Error('role_denied');return {role:m.role};} }));
+rs.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => ({ employee: { id: 'actor' }, sessionTokenHash: 'proof' }) }));
+rs.mock('@/lib/data/employees', () => ({ getEmployeeManagementProfile: m.profile }));
+rs.mock('@/lib/clocker/pin-crypto.server', () => ({ readPinKey: () => { if (m.unavailable) throw Error('private infrastructure error'); return Buffer.alloc(32); } }));
+rs.mock('@/lib/clocker/pins.server', () => ({ readEmployeeClockerPin: m.read }));
+rs.mock('./actions', () => ({ saveClockerPinAction: rs.fn(),checkClockerPinSaveAction:rs.fn() }));
 import EmployeeClockerPinPage from './page';
 
 beforeEach(() => {
@@ -73,5 +73,5 @@ it('withholds company PIN and profile reads when current scope denies the page',
 });
 
 // This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
-vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 it('keeps Save unavailable until complete PIN input is present',async()=>{const html=await render();expect(html).toMatch(/<button[^>]*form="clocker-pin-form"[^>]*disabled=""/);});

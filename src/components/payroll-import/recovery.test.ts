@@ -1,5 +1,5 @@
 // U01: one write whose answer may not arrive. The contract's own fixtures feed the classifiers.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import fixtures from "../../../docs/handoffs/2026-11-16-backend-phase2-finance-fixtures.json";
 import { IDLE, classifyExportAnswer, classifyPayrollAnswer, classifyReceiptLook, holdsCustody, sendGuard, writeReducer, type WriteState } from "./recovery";
 
