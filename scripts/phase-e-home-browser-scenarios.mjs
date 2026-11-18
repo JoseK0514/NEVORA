@@ -1,4 +1,4 @@
-import {waitForPortalReady} from './browser-render-readiness.mjs';
+import {waitForPortalReady,waitForControlPaint} from './browser-render-readiness.mjs';
 import {measureRenderedContrast} from './browser-contrast.mjs';
 import {fulfillHeldResponse} from './browser-held-response.mjs';
 import {safeLoginServerRequests,safeEvaluationFailure} from './release-browser-diagnostics.mjs';
@@ -356,7 +356,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='keyboard';await page.locator('h1:visible').click();const link=assignments().first(),tab=nativeTab;let reached=false;
  for(let i=0;i<55;i++){await page.keyboard.press(tab);if(await link.evaluate(e=>e===document.activeElement)){reached=true;break;}}
  assert(reached);assert(await link.evaluate(e=>e.matches(':focus-visible')));details.linkTarget=await link.evaluate(measurePointerTarget,44);assert(details.linkTarget.meetsMinimum,'Shift details must retain a real44px pointer target: '+JSON.stringify(details.linkTarget));
- const measureContrast=()=>link.evaluate(measureRenderedContrast);details.linkContrast={focus:await measureContrast()};await link.evaluate(e=>e.blur());await page.mouse.move(0,0);details.linkContrast.normal=await measureContrast();await link.hover();details.linkContrast.hover=await measureContrast();await page.mouse.down();details.linkContrast.pressed=await measureContrast();await page.mouse.move(0,0);await page.mouse.up();for(const value of Object.values(details.linkContrast))assert(value.ratio>=4.5);await link.focus();
+ const measureContrast=async()=>{await waitForControlPaint(link);return link.evaluate(measureRenderedContrast);};details.linkContrast={focus:await measureContrast()};await link.evaluate(e=>e.blur());await page.mouse.move(0,0);details.linkContrast.normal=await measureContrast();await link.hover();details.linkContrast.hover=await measureContrast();await page.mouse.down();details.linkContrast.pressed=await measureContrast();await page.mouse.move(0,0);await page.mouse.up();for(const value of Object.values(details.linkContrast))assert(value.ratio>=4.5);await link.focus();
  // Re-anchored clock recovery: Home has no clock panel, so its keyboard route to recorded time is the Time tab.
  // Phones: the tab bar follows main (forward Tab). Wider layouts: the sidebar precedes main (reverse Tab).
  const myTime=navLink('/app/my-time');const timeKey=await page.locator('.mobile-nav').isVisible()?tab:nativeBackTab;await page.locator('h1:visible').click();let clockFocus=false;
