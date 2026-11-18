@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-18",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "d870808498b870f868cdac36be544c95a67abdad",
-  "applicationHash": "1cc8499de030cd9a42a0830b8007a4d84e4e7b0286df4d4a944769fddf19bf3e",
+  "sourceSha": "a1286d6fa1d734ec5a63d28a1059af0c4e17f3db",
+  "applicationHash": "11d647ac21798e21ad77ec32b0faa47c37d1938f75be95b8512d72193ecc2cde",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "0cd9232190da48d0e815aac9cbfe8df1ad69be5fe97f153ed58c7626fde85fec"
@@ -155,7 +155,7 @@
         },
         {
           "path": "src/lib/owner-advisor/business/service.server.ts",
-          "sha256": "fac479453318942f259adc4c9affc3e965414efc180265d9aa04553169c40155"
+          "sha256": "a8fae13caa3fb7156c57d7b57cc726d47da281bd4a352a649970b25875a9a150"
         },
         {
           "path": "src/lib/owner-advisor/business/fence.server.ts",
@@ -204,7 +204,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "9b0ae25f57288ad7cd90c673150f5580241279cb53d9184e75dc0fa99d2aa930",
+        "sha256": "75b5bd20edc8a9395394a8379b656d582ac94258e5de5f215a3cbf87a10a220f",
         "pageCount": 6
       }
     },
@@ -327,7 +327,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "bfde7d852e3450b28fa16e61b8e4aed12e86d795ce54f1f0507dc805de4a51d1",
+        "sha256": "7c0138e00c5acffaec1575a22f18e45fb908bb68bdb2d905964c4f30a31d809e",
         "pageCount": 4
       }
     },
@@ -446,7 +446,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "cdb0b2ae42bd0785c0cb751b3dd593818043d8d34f9b092b20e1910141d20b38",
+        "sha256": "b41544ef8ec26f535f41ddf3a8951ff2c7c104c1329eef6f9baaf1e60cb54ee8",
         "pageCount": 3
       }
     },
@@ -568,7 +568,7 @@
         },
         {
           "path": "src/lib/owner-advisor/business/service.server.ts",
-          "sha256": "fac479453318942f259adc4c9affc3e965414efc180265d9aa04553169c40155"
+          "sha256": "a8fae13caa3fb7156c57d7b57cc726d47da281bd4a352a649970b25875a9a150"
         },
         {
           "path": "src/lib/owner-advisor/business/fence.server.ts",
@@ -616,12 +616,12 @@
         },
         {
           "path": "src/lib/owner-advisor/business/ui-contract.integration.ts",
-          "sha256": "320a5df6e4e02a45da52c3c298b79ce0a549a153aa780ce562e63ab7fdd9b2d8"
+          "sha256": "c2f93311af25ea0a55d66f772701f410af46c9f3bbf1b97daf0c32d961094b78"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "b5b1edb7f0f05d20df1154728deff54b04d176d4896e52f3362d85cfe765c0f6",
+        "sha256": "c41f38d67c08528d7b1abcb1d3f50b60069c55c7285fb135d5bda57b6812c519",
         "pageCount": 4
       }
     },
@@ -630,7 +630,7 @@
       "title": "NEVORA web developer guide",
       "markdown": {
         "path": "docs/guides/web/developer.md",
-        "sha256": "b235203ba28cbce8a7981d4d393e3e485f3736ca1e444f0b349809cd4f2d69e5"
+        "sha256": "f57131c74aab915d87b2013934193e5770283ada8d26981da8f0cb43f8440945"
       },
       "evidence": [
         {
@@ -807,7 +807,7 @@
         },
         {
           "path": "src/lib/owner-advisor/business/service.server.ts",
-          "sha256": "fac479453318942f259adc4c9affc3e965414efc180265d9aa04553169c40155"
+          "sha256": "a8fae13caa3fb7156c57d7b57cc726d47da281bd4a352a649970b25875a9a150"
         },
         {
           "path": "src/lib/owner-advisor/business/fence.server.ts",
@@ -884,7 +884,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "c436fbf1014d7abeca1991e4ace8c9dd91e7c26de0ee7746070e95c4ea2306d7",
+        "sha256": "93ff9ff91d80c19249648ffd758baa6072c9254d159df26e4bc643cdd85a01b9",
         "pageCount": 7
       }
     },
@@ -1026,7 +1026,7 @@
         },
         {
           "path": "src/lib/owner-advisor/business/service.server.ts",
-          "sha256": "fac479453318942f259adc4c9affc3e965414efc180265d9aa04553169c40155"
+          "sha256": "a8fae13caa3fb7156c57d7b57cc726d47da281bd4a352a649970b25875a9a150"
         },
         {
           "path": "src/lib/owner-advisor/business/fence.server.ts",
@@ -1067,7 +1067,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "6fcc560c8f2e5c25d83c5329fa55e4542f35c73573fd1ed9dda7bd2e2f6593ab",
+        "sha256": "0ad8099bb999d45aab72221bb515687f9ac9b6146b58925d7233339970b2b8fc",
         "pageCount": 6
       }
     }
