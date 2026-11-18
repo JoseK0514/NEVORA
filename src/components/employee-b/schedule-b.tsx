@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import type {ReactNode} from 'react';
-import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
+import {CalendarCheckIcon} from '@phosphor-icons/react/dist/ssr/CalendarCheck';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {ClockCounterClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ClockCounterClockwise';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
+import {UserCheckIcon} from '@phosphor-icons/react/dist/ssr/UserCheck';
 import {BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BStack} from '../owner-b/b-kit';
 import {BDoneArrival} from '../owner-b/b-arrival';
 import {BCardNote, BDay, Dotted, Range} from './parts';
@@ -103,7 +104,9 @@ export function ScheduleB(props: ScheduleBProps) {
   const {sub, confirm, celebration, changes, swap, error, receipt, open, unavailable, list, unpublished, weekCard, leadNote, done} = props;
   return <BScreen>
     <BHero title="Schedule" titleId="b-schedule-title" sub={sub}
-      right={<BButtonLink href="/app/availability" kind="glass" label="Availability"><CalendarBlankIcon size={16} weight="bold" aria-hidden="true"/>Availability</BButtonLink>}>
+      // Final review C (row 4): one glyph per concept. Availability is UserCheck, the navigation's (it pairs with Can't
+      // work's UserMinus); CalendarBlank stays the Schedule's own glyph.
+      right={<BButtonLink href="/app/availability" kind="glass" label="Availability"><UserCheckIcon size={16} weight="bold" aria-hidden="true"/>Availability</BButtonLink>}>
       <Week {...props}/>
     </BHero>
     <BStack>
@@ -116,7 +119,9 @@ export function ScheduleB(props: ScheduleBProps) {
       </BCard> : null}
       {confirm ? <BCard id="b-my-review" label={confirm.title}>
         <div className="b-row es-confirm" role="group" aria-labelledby="b-my-review-title">
-          <BIcon tone="teal"><CalendarBlankIcon weight="bold"/></BIcon>
+          {/* Final review C (rows 4, 5): the manager asked for this, so it waits on you: the amber circle, as Home's and
+            * Notifications' same task, with the glyph for confirming a schedule (CalendarCheck) on every screen. */}
+          <BIcon tone="amber"><CalendarCheckIcon weight="bold"/></BIcon>
           <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt" id="b-my-review-title">{confirm.title}</span></span>
             {confirm.detailShort ? <><span className="b-row__s eb-phone">{confirm.detailShort}</span><span className="b-row__s eb-desk">{confirm.detail}</span></> : <span className="b-row__s">{confirm.detail}</span>}</span>
           <span className="es-confirm__act">{confirm.control}</span>

@@ -166,7 +166,9 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
   // Quiet (v4, approved Oct 23): who you are, three detail rows, then Notifications (its choices fold under it), this phone's
   // alerts, Privacy and terms, and Sign out in red.
   const onCount = shown ? shown.alerts.filter(topic => overrides[topic.id] ?? topic.on).length : null;
-  const changeLine = `${identity.changedBy || 'An Owner'} can change this.`;
+  // Final review B #24: a locked value's reason line has no closing period, as Company profile's ("Locked while you have
+  // shifts") and the field errors.
+  const changeLine = `${identity.changedBy || 'An Owner'} can change this`;
   const access = managerAccess(shown ? shown.locations : null, identity.locationsWord);
   return <>
     <div className="q-who"><span className="q-av q-av--lg" aria-hidden="true">{identity.name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase()}</span>

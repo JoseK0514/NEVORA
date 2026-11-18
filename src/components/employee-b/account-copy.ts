@@ -37,6 +37,8 @@ const words = {
     toAcknowledge: 'To acknowledge', otherUpdates: 'Other updates',
     // Phase 8 (review C, row 18): the same notice sent more than once, folded into one row.
     folded: (n: number) => `${n} notifications`,
+    // Phase 9 (spec 2.3): Help's safety note carries the title Support's note has.
+    privateTitle: 'Keep private details out of email',
   },
   es: {
     schedulePublished: 'Horario publicado', scheduleUpdated: 'Horario actualizado', scheduleConfirm: 'Confirme su horario',
@@ -61,6 +63,7 @@ const words = {
     alertsSub: 'Active o desactive las alertas',
     toAcknowledge: 'Por confirmar', otherUpdates: 'Otros avisos',
     folded: (n: number) => `${n} notificaciones`,
+    privateTitle: 'No envíe datos privados por correo',
   },
 } satisfies Record<AccountLang, Record<string, unknown>>;
 

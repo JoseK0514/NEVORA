@@ -75,7 +75,8 @@ describe("the policy pages' words", () => {
     expect([...es.keys()].sort()).toEqual([...en.keys()].sort());
     for (const [key, value] of es) { expect(value.trim(), key).not.toBe(""); expect(value, key).not.toBe(en.get(key)); }
     expect(POLICY_COPY.en.englishOnly).toBeNull();
-    expect(POLICY_COPY.es.englishOnly?.before).toContain("solo en inglés");
+    expect(POLICY_COPY.es.englishOnly?.title).toBe("Este documento está solo en inglés");
+    expect(POLICY_COPY.es.englishOnly?.before).toBe("Si necesitas ayuda para entenderlo, escribe a ");
     for (const value of [...en.values(), ...es.values()]) expect(value).not.toMatch(/[!—]|\(en inglés\)/);
   });
 });

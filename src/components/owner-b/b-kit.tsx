@@ -1,16 +1,21 @@
 import "./owner-b.css";
 import Link from "next/link";
+import { isValidElement } from "react";
 import type { ReactNode, CSSProperties, Ref } from "react";
 import { BOffline } from "./b-offline";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
+import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { WifiSlashIcon } from "@phosphor-icons/react/dist/ssr/WifiSlash";
-import { PauseIcon } from "@phosphor-icons/react/dist/ssr/Pause";
 import { LockSimpleIcon } from "@phosphor-icons/react/dist/ssr/LockSimple";
 import { TrayIcon } from "@phosphor-icons/react/dist/ssr/Tray";
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
+import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
+import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
+import { HourglassMediumIcon } from "@phosphor-icons/react/dist/ssr/HourglassMedium";
+import { QuestionIcon } from "@phosphor-icons/react/dist/ssr/Question";
 import { faceTint } from "@/lib/face-tint";
 import { keepWhole } from "@/lib/keep-whole";
 
@@ -110,7 +115,8 @@ export function BRow({ lead, title, chip, sub, end, trail, href, onClick, chevro
       {extra ?? null}
     </span>
     {end ? <span className="b-row__end">{end}</span> : null}
-    {showChev ? <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" /> : null}
+    {/* Phase 9: the row chevron is the inline glyph size (16px) in the field edge (owner-b.css), on every row. */}
+    {showChev ? <CaretRightIcon className="b-chev" size={16} weight="bold" aria-hidden="true" /> : null}
   </>;
   const cls = actions ? "b-row b-row--wrap" : "b-row";
   // A row with its own buttons keeps them outside the row's link, so each control is its own target.
@@ -125,10 +131,86 @@ export function BRow({ lead, title, chip, sub, end, trail, href, onClick, chevro
 }
 
 export type BTone = "grey" | "amber" | "red" | "green" | "teal";
-export function BChip({ tone = "grey", children, label }: { tone?: BTone; children: ReactNode; label?: string }) {
+
+/* Phase 9 (Nov 18, 2026): one status label (owner-b.css, "One status label").
+ * - BChip: an exception that needs someone. 22px, 12/16 600, tabular figures, never wraps, a 1px edge in its own ink at
+ *   16% (a system edge in High Contrast). `dot` marks a live state (someone is, or should be, on the clock right now);
+ *   `icon` is only for a red ("stop") or green ("check") chip that stands alone outside a row (a card header, the band, a
+ *   week's state line), so the two colours colour-blind readers confuse are told apart by shape. On the band (BHero) a
+ *   chip is solid white with its tone's ink and no edge.
+ * - BStatusText: the expected state ("Clocked in", "Off today", "In progress"), quiet grey text where a chip would sit,
+ *   with an optional live dot.
+ * - BCount: the one inline count (a card title, a filter, "At least 7"). BCard's `count` draws the same pill. */
+const liveDot = (tone: BTone) => <span className="b-ldot" data-tone={tone} aria-hidden="true" />;
+export function BChip({ tone = "grey", children, label, dot, icon }: { tone?: BTone; children: ReactNode; label?: string;
+  /** A live state: a 6px dot in the tone's solid colour before the words. */
+  dot?: boolean;
+  /** A standalone red or green chip: "stop" draws WarningCircle (red), "check" draws Check (green), 12px. */
+  icon?: "check" | "stop" }) {
   // Review B1 (NV-111): aria-label on a plain span is ignored, so a longer meaning is screen-reader text.
-  return label ? <span className={`b-chip b-chip--${tone}`}><span aria-hidden="true">{children}</span><span className="b-sr">{label}</span></span>
-    : <span className={`b-chip b-chip--${tone}`}>{children}</span>;
+  const words = label ? <><span aria-hidden="true">{children}</span><span className="b-sr">{label}</span></> : children;
+  if (!dot && !icon) return <span className={`b-chip b-chip--${tone}`}>{words}</span>;
+  const glyph = icon === "check" ? <CheckIcon weight="bold" aria-hidden="true" /> : icon === "stop" ? <WarningCircleIcon weight="bold" aria-hidden="true" /> : null;
+  return <span className={`b-chip b-chip--${tone}`} data-dot={dot ? "" : undefined} data-icon={icon}>{dot ? liveDot(tone) : glyph}{words}</span>;
+}
+/** The normal state, said quietly: 13.5/18 500 grey, tabular, one line, at the row's end. `dot` is the live dot. */
+export function BStatusText({ children, dot, label }: { children: ReactNode; dot?: BTone; label?: string }) {
+  return <span className="b-status" data-dot={dot}>{dot ? liveDot(dot) : null}{label ? <><span aria-hidden="true">{children}</span><span className="b-sr">{label}</span></> : children}</span>;
+}
+/** The one inline count: 20px, 12/16 700 tabular, teal on teal-50 (amber for "For you"); inside a segmented control
+ * it follows the control (the label's colour at 16%, teal on the white thumb). `label` says what is counted. */
+export function BCount({ children, label, tone }: { children: ReactNode; label?: string; tone?: "amber" }) {
+  return <span className="b-count" data-tone={tone}>{label ? <><span aria-hidden="true">{children}</span><span className="b-sr">{label}</span></> : children}</span>;
+}
+
+/* Phase 9: one glyph per meaning (spec 2.2). Notes, notices and state cards draw these, bold, so a meaning always has the
+ * same shape: the triangle is amber's "check", the circle red's "stop". */
+export type BMeaning = "info" | "privacy" | "wait" | "check" | "unknown" | "offline" | "stop" | "done" | "locked" | "empty";
+export function BGlyph({ meaning }: { meaning: BMeaning }) {
+  switch (meaning) {
+    case "info": return <InfoIcon weight="bold" aria-hidden="true" />;
+    case "privacy": return <ShieldCheckIcon weight="bold" aria-hidden="true" />;
+    case "wait": return <HourglassMediumIcon weight="bold" aria-hidden="true" />;
+    case "check": return <WarningIcon weight="bold" aria-hidden="true" />;
+    case "unknown": return <QuestionIcon weight="bold" aria-hidden="true" />;
+    case "offline": return <WifiSlashIcon weight="bold" aria-hidden="true" />;
+    case "stop": return <WarningCircleIcon weight="bold" aria-hidden="true" />;
+    case "done": return <CheckIcon weight="bold" aria-hidden="true" />;
+    case "locked": return <LockSimpleIcon weight="bold" aria-hidden="true" />;
+    case "empty": return <TrayIcon weight="bold" aria-hidden="true" />;
+  }
+}
+const CALLOUT_MEANING: Record<BTone, BMeaning> = { teal: "info", amber: "check", red: "stop", green: "done", grey: "locked" };
+
+/** An email address that wraps whole: a break opportunity only after "@" (owner-b.css keeps `overflow-wrap:
+ * break-word`), so "support@" ends a line and "thevelani.com" starts the next, never "support@theve-". */
+export function BEmail({ address }: { address: string }) {
+  const at = address.indexOf("@");
+  return at < 0 ? <>{address}</> : <>{address.slice(0, at + 1)}<wbr />{address.slice(at + 1)}</>;
+}
+
+export type BCalloutAction = { label: ReactNode; href?: string; onClick?: () => void; aria?: string };
+/** Phase 9: the one note inside a white card (spec 2.2): a tint with a 1px edge in its tone, an 18px bare glyph on the
+ * first line's capitals, an optional 600 ink title, a 14.5/20 ink2 body, at most one quiet teal action. Tones: teal
+ * information, amber wait or check, red stop, green done (server confirmed only), grey locked or set by someone else.
+ * `icon` picks the meaning's glyph when it is not the tone's first one (teal "privacy", amber "wait", "unknown",
+ * "offline"). A link in the body is teal with an underline; pass an email through BEmail. On the canvas use a notice
+ * card instead, and on the band never a tinted box. `role` only when the note appears after an action. */
+export function BCallout({ tone, icon, title, children, action, id, role, heading }: { tone: BTone; icon?: BMeaning; title?: ReactNode; children?: ReactNode;
+  action?: BCalloutAction | ReactNode; id?: string; role?: "status" | "alert";
+  /** The note is what its card is about: its title is the card's heading (same look). */
+  heading?: "h2" | "h3" }) {
+  const act = action === undefined || action === null || action === false ? null
+    : isValidElement(action) || typeof action !== "object" || !("label" in (action as object)) ? <div className="b-callout__act">{action as ReactNode}</div>
+    : (() => { const a = action as BCalloutAction; return a.href
+      ? <Link className="b-callout__a" href={a.href} aria-label={a.aria}>{a.label}</Link>
+      : <button type="button" className="b-callout__a" aria-label={a.aria} onClick={a.onClick}>{a.label}</button>; })();
+  return <div className="b-callout" data-tone={tone} id={id} role={role}>
+    <span className="b-callout__ic" aria-hidden="true"><BGlyph meaning={icon ?? CALLOUT_MEANING[tone]} /></span>
+    {title ? heading === "h2" ? <h2 className="b-callout__t">{title}</h2> : heading === "h3" ? <h3 className="b-callout__t">{title}</h3> : <p className="b-callout__t">{title}</p> : null}
+    {children !== undefined && children !== null && children !== false ? <div className="b-callout__b">{children}</div> : null}
+    {act}
+  </div>;
 }
 
 /* Faces: initials on one of six soft tints, picked from the name so a person keeps their colour on every screen. */
@@ -146,9 +228,12 @@ export function BFaces({ names, size = 32 }: { names: string[]; size?: number })
   return <span className="b-faces" aria-hidden="true">{names.slice(0, 2).map(name => <BAvatar key={name} name={name} size={size} />)}</span>;
 }
 
-/** A round 36px icon on a soft tint (things, not people). */
-export function BIcon({ tone = "teal", children }: { tone?: BTone; children: ReactNode }) {
-  return <span className={`b-ico b-ico--${tone}`} aria-hidden="true">{children}</span>;
+/** A round 36px icon on a soft tint (things, not people). Phase 9: the glyph is half its circle, so `size` picks one of
+ * the six round containers: 32 (glyph 16: add rows, account rows), 36 (18: a row's lead, the default), 40 (20: glass
+ * controls on a phone's band), 44 (20: call and message), 48 (22: a state card), 56 (28: a finish). The tint says what
+ * the row means: teal opens or informs, amber waits on you, red stops, green is done, grey has nothing to do now. */
+export function BIcon({ tone = "teal", children, size }: { tone?: BTone; children: ReactNode; size?: 32 | 36 | 40 | 44 | 48 | 56 }) {
+  return <span className={`b-ico b-ico--${tone}`} data-size={size && size !== 36 ? size : undefined} aria-hidden="true">{children}</span>;
 }
 
 type BtnKind = "teal" | "ghost" | "quiet" | "white" | "glass" | "danger";
@@ -183,9 +268,11 @@ export function BInk({ children, label }: { children: ReactNode; label: string }
   return <section className="b-ink" aria-label={label}>{children}</section>;
 }
 
-/** A quiet 13px line under the cards. */
-export function BNote({ children }: { children: ReactNode }) {
-  return <p className="b-note">{children}</p>;
+/** A quiet 13.5/18 grey line that qualifies a card, on the card's text edge. Phase 9: put it inside the BCard, after its
+ * content, and it is that card's footer (12px above, 16px below, the card's 18px inset, 22px from 768px); left under a
+ * card on the canvas it keeps the card's text edge as before. */
+export function BNote({ children, id }: { children: ReactNode; id?: string }) {
+  return <p className="b-note" id={id}>{children}</p>;
 }
 
 /** One row of chips that filter the list under it. */
@@ -217,6 +304,21 @@ export function BWhen({ text }: { text: string }) {
   return <><span className="b-when-s">{keepWhole(short)}</span><span className="b-when-f">{full}</span></>;
 }
 
+/** Premium pass FA (final verification A #10, B #8): a line of facts joined by "·" ("Tue, Nov 24 · 12:00 PM – 8:00 PM ·
+ * Calle Loíza") that wraps only between facts and never leaves a dot at the start or the end of a line. Each fact is one
+ * unit (a time range or "Payday Fri, Nov 6" moves whole); every fact after the first carries its dot in a 13px slot that
+ * is cut off when the fact starts a line (b-foundation.css, .b-segs). Empty facts are dropped. The text between facts is
+ * still " · " for a screen reader and a copy (visually hidden; the drawn dot is the slot's). */
+export function BSegs({ parts, className }: { parts: ReactNode[]; className?: string }) {
+  const shown = parts.filter(part => part !== null && part !== undefined && part !== false && part !== "");
+  return <span className={className ? `b-segs ${className}` : "b-segs"}>{shown.map((part, index) => <span key={index} className="b-segs__i">
+    {index ? <span className="b-sr"> · </span> : null}{typeof part === "string" ? keepWhole(part) : part}</span>)}</span>;
+}
+/** The same for a sentence already joined with " · " (a server-formatted line). */
+export function BSegsText({ text, className }: { text: string; className?: string }) {
+  return <BSegs parts={text.split(/[\s\u00a0]+·[\s\u00a0]+/)} className={className} />;
+}
+
 /** "Good morning/afternoon/evening" in the workspace's zone. */
 export function partOfDay(timeZone?: string, now = new Date()) {
   let hour = now.getHours();
@@ -230,7 +332,9 @@ export type BStateKind = "failed" | "offline" | "paused" | "locked" | "loading" 
 const STATE_LOOK: Record<BStateKind, { tone: BTone; icon: ReactNode }> = {
   failed: { tone: "red", icon: <WarningCircleIcon weight="bold" /> },
   offline: { tone: "amber", icon: <WifiSlashIcon weight="bold" /> },
-  paused: { tone: "amber", icon: <PauseIcon weight="bold" /> },
+  // Premium pass FA (final verification A #12): paused waits, so it is the wait glyph (HourglassMedium); Pause's two bars
+  // read as a media control and were outside the one-glyph-per-meaning set.
+  paused: { tone: "amber", icon: <HourglassMediumIcon weight="bold" /> },
   locked: { tone: "grey", icon: <LockSimpleIcon weight="bold" /> },
   loading: { tone: "grey", icon: <BSpin /> },
   // Review B5 (NV-254): nothing here yet; pass the page's own glyph as `icon`. Nov 14 inspection (SY-023): without one the

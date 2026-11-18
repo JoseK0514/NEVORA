@@ -5,7 +5,7 @@ import { QuietList, QuietRow, QuietSection } from './quiet/quiet';
 import Link from 'next/link';
 import {createContext, useContext, useId, type ReactNode} from 'react';
 import type {SetupProgress} from '@/lib/today/project';
-import {CaretRightIcon, CheckCircleIcon, CircleIcon, SquaresFourIcon} from '@phosphor-icons/react/ssr';
+import {CaretRightIcon, CheckIcon, CircleIcon, SquaresFourIcon} from '@phosphor-icons/react/ssr';
 import {lower} from '@/lib/workspace-presentation/words';
 import {hasSetupGaps, setupDoneCount, type SetupSteps} from '@/lib/action-center/setup';
 import {usePresentation} from './presentation-context';
@@ -24,9 +24,10 @@ function StepLink({href, label, describedBy}: {href: string; label: string; desc
   </Link>;
 }
 
+/* Phase 9: a done step carries the one done mark's bold check (no filled circle); an open step keeps its bold ring. */
 function Step({done, title, children}: {done: boolean; title: string; children?: ReactNode}) {
   return <li className="owner-setup-step" data-state={done ? 'done' : 'open'}>
-    {done ? <CheckCircleIcon className="owner-setup-mark" size={20} weight="fill" aria-hidden="true"/> : <CircleIcon className="owner-setup-mark" size={20} weight="bold" aria-hidden="true"/>}
+    {done ? <CheckIcon className="owner-setup-mark" size={20} weight="bold" aria-hidden="true"/> : <CircleIcon className="owner-setup-mark" size={20} weight="bold" aria-hidden="true"/>}
     {done ? <p className="owner-setup-done-row"><strong>{title}</strong><span className="owner-setup-done">Done</span></p> : <div className="owner-setup-open">{children}</div>}
   </li>;
 }
@@ -77,7 +78,7 @@ export function OwnerSetupRow({steps, locationCount}: {steps: SetupSteps | null;
   return <section className="nv-card cm-setup" aria-label="Finish setting up">
     <ul className="nv-rows">
       <li><Link className="nv-row" href={next.href} data-leading="true">
-        <span className="nv-tile" data-tone="accent" aria-hidden="true"><SquaresFourIcon size={18} weight="fill"/></span>
+        <span className="nv-tile" data-tone="accent" aria-hidden="true"><SquaresFourIcon size={18} weight="bold"/></span>
         <span className="nv-row__text"><span className="nv-row__title">Finish setting up</span><span className="nv-row__meta">{`Next: ${next.label}`}</span></span>
         <span className="nv-row__trail">{`${done} of 2`}</span>
         <CaretRightIcon className="nv-row__chev" size={18} weight="bold" aria-hidden="true"/>

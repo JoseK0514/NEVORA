@@ -8,11 +8,15 @@ import {useClockerCopy,useClockerIntlLocale,useClockerPresentation} from './cloc
 import styles from './clocker.module.css';
 
 /** What the band's tablet status says while the card shows a blocked state (Nov 10 review, NV-049). Presentation only: the
- * PIN gate and the punch panel report it; the band shows it in place of "Tablet connected" with the amber dot.
+ * PIN gate and the punch panel report it; the band shows it in place of "Tablet connected" with the card's tone.
  * Phase 8: one verb for setting up a tablet ("connect"), "Can't reach NEVORA" when the tablet is online but NEVORA did not
  * answer (never "No connection" then), and no system word for blocked browser storage. */
 export type TabletHealth = 'reconnect' | 'offline' | 'unreached' | 'paused' | 'storage';
 const healthLabels: Record<TabletHealth, string> = { reconnect: 'Reconnect needed', offline: 'No connection', unreached: 'Can’t reach NEVORA', paused: 'Paused: too many attempts', storage: 'Can’t save punches' };
+/* Premium pass (Nov 18, 2026): one colour per state. An outage that stops every punch (no connection, NEVORA not reached,
+ * a tablet to set up again, punches that can't be saved) is red on the card, so the band's dot is the stop tone too; a
+ * pause is a wait (amber), as are the setup checks. */
+const healthTones: Record<TabletHealth, 'attn' | 'stop'> = { reconnect: 'stop', offline: 'stop', unreached: 'stop', paused: 'attn', storage: 'stop' };
 type HealthReport = (source: 'gate' | 'panel', health: TabletHealth | null) => void;
 const TabletHealthChannel = createContext<HealthReport | null>(null);
 /** Reports this screen's tablet health to the band while it is shown, and clears it when the screen goes. */
@@ -28,7 +32,8 @@ export function ClockerShell({ locationLabel, timeZone, deviceName, status, chil
   /** Company brand (B1): kiosk accent tokens and an optional logo; without a logo the band names the workspace. */
   brand?: { style?: Record<string, string>; logoUrl?: string | null };
   workspaceName?: string;
-  status: 'checking' | 'connected' | 'setup' | 'unconfirmed'; children: ReactNode;
+  /** 'offline': the setup screen's own "No connection" (the browser reports the network gone). */
+  status: 'checking' | 'connected' | 'setup' | 'unconfirmed' | 'offline'; children: ReactNode;
 }) {
   const t=useClockerCopy(),{locale}=useClockerPresentation(),intl=useClockerIntlLocale();
   const [now, setNow] = useState<Date | null>(null);
@@ -45,7 +50,8 @@ export function ClockerShell({ locationLabel, timeZone, deviceName, status, chil
   const date = now ? new Intl.DateTimeFormat(intl, { timeZone, weekday: 'long', month: 'long', day: 'numeric' }).format(now) : t('Loading location time');
   // A blocked PIN or clock screen speaks for the tablet; otherwise the setup check does.
   const blocked = status === 'connected' ? health.gate ?? health.panel : null;
-  const statusLabel = blocked ? healthLabels[blocked] : status === 'connected' ? 'Tablet connected' : status === 'checking' ? 'Checking setup' : status === 'unconfirmed' ? 'Setup not confirmed' : 'Setup required';
+  const statusLabel = blocked ? healthLabels[blocked] : status === 'connected' ? 'Tablet connected' : status === 'checking' ? 'Checking setup' : status === 'unconfirmed' ? 'Setup not confirmed' : status === 'offline' ? 'No connection' : 'Setup required';
+  const tone = blocked ? healthTones[blocked] : status === 'connected' ? 'ok' : status === 'offline' ? 'stop' : 'attn';
   const zone = timeZone.split('/').at(-1)?.replaceAll('_', ' ') ?? timeZone;
 
   return <main lang={locale} data-clocker-kiosk="" className={styles.page} style={brand?.style as CSSProperties | undefined}>
@@ -71,7 +77,7 @@ export function ClockerShell({ locationLabel, timeZone, deviceName, status, chil
           </div>
         </div>
         <footer className={styles.foot}>
-          <span className={`${styles.status} ${styles.glass}`} data-tone={status === 'connected' && !blocked ? 'ok' : 'attn'}><span className={styles.dot} aria-hidden="true"/><span className={styles.statusLabel}>{t(statusLabel)}</span>
+          <span className={`${styles.status} ${styles.glass}`} data-tone={tone}><span className={styles.dot} aria-hidden="true"/><span className={styles.statusLabel}>{t(statusLabel)}</span>
             {/* Phase 8: the time zone and the tablet's name are two pieces, so a long Spanish line never splits the name. In
              * landscape the name takes its own line; in portrait the pill draws even separators between the three. */}
             <span className={styles.zone}>{t('{zone} time',{zone})}</span>{deviceName ? <span className={styles.device}>{deviceName}</span> : null}</span>

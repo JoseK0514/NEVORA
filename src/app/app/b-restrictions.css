@@ -148,3 +148,26 @@
 @layer nv-b {
   html body .app-shell[data-nv-b] .rs .rs-legacy > .rs-link { margin-left: calc(-1 * var(--b-space-2)) !important; }
 }
+
+/* ---------- Premium pass FA (Nov 18, 2026): final verification A #2, #13 and B #3 ----------
+ * Every pill on this screen is a decision (a state card's, a request's or the review's), so it is drawn on the ladder's
+ * 44px at every width, 14.5/20 at 600. The quiet one is the white pill with the grey tone's edge: the grey fill is the
+ * disabled pair's, and a quiet choice must never read as switched off. The management "Not confirmed yet" state is the
+ * kit's note (amber, the Question glyph); its two decisions stack full width on phones with the filled one first, and sit
+ * on the card's right edge from 768px with the filled one last. */
+@layer nv-b {
+  html body .app-shell[data-nv-b] .rs .b-btn.rs-act:not(#fa-rs1):not(#fa-rs2) { box-sizing: border-box !important; height: auto !important; min-height: var(--b-btn-h) !important; padding: 0 18px !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; font-weight: 600 !important; }
+  html body .app-shell[data-nv-b] .rs .b-btn.b-btn--quiet.rs-act:not(:disabled, [aria-disabled="true"]):not(#fa-rs1):not(#fa-rs2) { background: #FFFFFF !important; color: var(--b-ink) !important; box-shadow: inset 0 0 0 1px var(--b-quiet-edge) !important; }
+  html body .app-shell[data-nv-b] .rs .rs-legacy > .b-callout:not(#fa-rs1):not(#fa-rs2) { align-self: stretch !important; }
+  /* The note sits on the card's inset at its top too (it was 4px under the card's edge). */
+  html body .app-shell[data-nv-b] .rs .rs-legacy:has(> .b-callout):not(#fa-rs1):not(#fa-rs2) { padding-top: var(--b-inset) !important; }
+  @media (min-width: 768px) { html body .app-shell[data-nv-b] .rs .rs-legacy:has(> .b-callout):not(#fa-rs1):not(#fa-rs2) { padding-top: var(--b-inset-wide) !important; } }
+  html body .app-shell[data-nv-b] .rs .rs-legacy .b-callout .rs-legacy__p:not(#fa-rs1):not(#fa-rs2) { max-width: 64ch !important; font: inherit !important; color: inherit !important; }
+  html body .app-shell[data-nv-b] .rs .rs-legacy .b-callout h2.b-callout__t:not(#fa-rs1):not(#fa-rs2) { margin: 0 !important; padding: 0 !important; font: inherit !important; font-weight: 600 !important; letter-spacing: 0 !important; color: var(--b-ink) !important; }
+  html body .app-shell[data-nv-b] .rs .rs-legacy .b-callout .b-callout__act > .rs-link:not(#fa-rs1):not(#fa-rs2) { min-height: var(--b-btn-h) !important; margin: 0 !important; padding: 0 6px !important; text-decoration: none !important; }
+  html body .app-shell[data-nv-b] .rs .rs-legacy__acts:not(#fa-rs1):not(#fa-rs2) { flex-direction: row-reverse !important; justify-content: flex-start !important; }
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b] .rs .rs-legacy__acts:not(#fa-rs1):not(#fa-rs2) { flex-direction: column !important; align-items: stretch !important; }
+    html body .app-shell[data-nv-b] .rs .rs-legacy__acts > .b-btn.rs-act:not(#fa-rs1):not(#fa-rs2) { width: 100% !important; }
+  }
+}

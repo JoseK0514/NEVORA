@@ -1,6 +1,6 @@
 import {renderToStaticMarkup} from 'react-dom/server';
 import {describe, expect, it} from 'vitest';
-import {Range, shiftEndedWhileOpen} from './parts';
+import {Dotted, Range, shiftEndedWhileOpen, shiftUnderway, sinceSpan, wallMinutesSince} from './parts';
 import {keepWhole} from '@/lib/keep-whole';
 import {compactRange} from '../owner-b/b-kit';
 
@@ -32,4 +32,21 @@ describe('shiftEndedWhileOpen: Home’s and Time’s one rule for an open punch 
     expect(shiftEndedWhileOpen({shifts, today, zone, observedAt: '2026-11-18T02:20:00Z', clockInAt: '2026-11-16T13:02:00Z'})).toBeNull();
     expect(shiftEndedWhileOpen({shifts: [...shifts, {date: today, startTime: '23:00', endTime: '23:30'}], today, zone, observedAt: '2026-11-18T02:20:00Z', clockInAt: '2026-11-17T13:02:00Z'})).toBeNull();
   });
+});
+
+it('Phase 9: a live state says how long it has lasted, from today’s wall times in the workspace zone', () => {
+  const zone = 'America/Puerto_Rico', observedAt = '2026-11-17T22:19:00Z'; // 6:19 PM
+  const shifts = [{date: '2026-11-17', startTime: '09:00', endTime: '17:00'}, {date: '2026-11-17', startTime: '18:00', endTime: '22:00'}];
+  expect(wallMinutesSince({date: '2026-11-17', time: '17:00', zone, observedAt})).toBe(79);
+  expect(sinceSpan(79)).toBe('1 h');expect(sinceSpan(19)).toBe('19 min');expect(sinceSpan(-3)).toBe('0 min');expect(sinceSpan(5 * 60 + 40)).toBe('5 h');
+  // The 6 PM shift is under way; the 9 AM one has ended; nothing is under way before 9 AM.
+  expect(shiftUnderway({shifts, today: '2026-11-17', zone, observedAt})).toEqual(shifts[1]);
+  expect(shiftUnderway({shifts, today: '2026-11-17', zone, observedAt: '2026-11-17T12:30:00Z'})).toBeNull();
+  expect(shiftUnderway({shifts, today: '2026-11-18', zone, observedAt})).toBeNull();
+});
+
+it('Phase 9: Dotted splits a line that was kept whole at its dots, so a time moves to the next line whole', () => {
+  const html = renderToStaticMarkup(<Dotted text={keepWhole('Thu, Dec 3 · 9:00 AM – 12:00 PM')}/>);
+  expect(html.match(/class="eb-dots__p"/g)).toHaveLength(2);
+  expect(html).toContain('<span class="b-sr">, </span>9:00');
 });

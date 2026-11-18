@@ -104,4 +104,10 @@
   @media (max-width: 767px) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-requests > li .q-acts:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e)::after { content: none !important; }
   }
+
+  /* ---------- Premium pass FA (Nov 18, 2026): final verification A #21 (one row title) ---------- */
+  /* A list row's title is 600 on every Owner and Manager list, as on Things to do, Team and Home: Shift requests, Time off
+   * requests, Notifications, Updates and Prepare payroll drew their names and periods at 500. The account deletion's consent
+   * sentence is a checkbox label, not a row title, and keeps its weight (final regression review #6). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page :is(.q-row:not(.q-deletion__check), .q-request, .q-requests > li) .q-rt > b:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-page.c-pay .c-row__title--b:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { font-weight: 600 !important; }
 }

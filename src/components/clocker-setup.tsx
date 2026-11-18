@@ -166,11 +166,12 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
   const punchNote = <div className={styles.note} data-tone="amber"><ClockerIcon name="warning" size={20}/><p><strong>{t("Timekeeping is not available yet.")}</strong>{t("Punching in isn’t turned on yet. Don’t use this tablet to record time.")} {t("Ask your Owner to contact NEVORA support.")}</p></div>;
   return <ClockerShell locationLabel={locationLabel} timeZone={timeZone} brand={brand} workspaceName={workspaceName}
     deviceName={state.state === 'connected' ? state.deviceName : undefined}
-    status={uncertain ? 'unconfirmed' : pending ? 'checking' : connected ? 'connected' : 'setup'}>
+    status={uncertain ? offline ? 'offline' : 'unconfirmed' : pending ? 'checking' : connected ? 'connected' : 'setup'}>
     {linkedGate ? <ClockerPinGate locationKey={locationKey} timeZone={timeZone} punchEnabled={punchEnabled} />
     : <div className={`${styles.content} ${setup.root}`} data-align="center" aria-busy={pending} data-clocker-setup={view} data-refused={fieldError ? '' : undefined}>
       {view === 'uncertain' ? <>
-        <span className={styles.ring} data-tone={offline ? 'red' : 'amber'}><ClockerIcon name={offline ? 'offline' : 'refresh'} size={28}/></span>
+        {/* Premium pass (decision 2): a setup that can't be confirmed is the amber Question; no connection is red. */}
+        <span className={styles.ring} data-tone={offline ? 'red' : 'amber'}><ClockerIcon name={offline ? 'offline' : 'unknown'} size={28}/></span>
         <h1 ref={heading} tabIndex={-1} className={styles.title}>{t(offline ? 'No connection' : 'Setup not confirmed')}</h1>
       </> : view === 'welcome' ? <>
         <span className={styles.ring} data-tone="green"><ClockerIcon name="check" size={28}/></span>
@@ -193,8 +194,8 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
         <p className={styles.lead}>{placeBefore}{place}{placeAfter} {keep(t('Tap Connect tablet to finish. The code works one time.'))}</p>
         <form onSubmit={connect} className={styles.form}>
           <fieldset disabled={pending}>
-            {feedback && !uncertain ? <p role="alert" className={`${styles.msg} ${setup.center}`}><ClockerIcon name={feedback.offline ? 'offline' : 'warning'} size={18}/><span><ClockerText text={feedback.message}/></span></p> : null}
-            <button className={styles.btn} data-kind="primary" data-busy={connecting ? '' : undefined} type="submit">{pending ? <span className={styles.spin} aria-hidden="true"/> : null}{t(connecting ? 'Connecting…' : pending ? 'Checking setup…' : 'Connect tablet')}{!pending ? <ClockerIcon name="arrow" size={20}/> : null}</button>
+            {feedback && !uncertain ? <p role="alert" className={`${styles.msg} ${setup.center}`}><ClockerIcon name={feedback.offline ? 'offline' : 'stop'} size={18}/><span><ClockerText text={feedback.message}/></span></p> : null}
+            <button className={styles.btn} data-kind="primary" data-busy={pending ? '' : undefined} type="submit">{pending ? <span className={styles.spin} aria-hidden="true"/> : null}{t(connecting ? 'Connecting…' : pending ? 'Checking setup…' : 'Connect tablet')}{!pending ? <ClockerIcon name="arrow" size={20}/> : null}</button>
           </fieldset>
         </form>
         <div className={styles.links}><button className={styles.link} type="button" disabled={pending} onClick={typeInstead}>{t('Type a code instead')}</button></div>
@@ -203,7 +204,7 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
         <h1 ref={heading} tabIndex={-1} className={styles.title}>{t("Set up this tablet")}</h1>
         <p className={`${styles.lead} ${setup.lead}`}>{placeBefore}{place}{placeAfter}</p>
         <ol className={setup.steps} aria-label={t('How to set it up')}>
-          <li><span className={setup.n} aria-hidden="true">1</span><span>{t('On another device, the Owner opens Settings → Clocker tablets.')}</span></li>
+          <li><span className={setup.n} aria-hidden="true">1</span><span>{t('On another device, the Owner opens Settings → Clocker tablets.')}</span></li>
           <li><span className={setup.n} aria-hidden="true">2</span><span>{t('The Owner adds this tablet and gets its setup code.')}</span></li>
           <li><span className={setup.n} aria-hidden="true">3</span><span>{t('Point this tablet’s camera at the code, or type the code below.')}</span></li>
         </ol>
@@ -211,16 +212,16 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
           <fieldset disabled={pending}>
             <label data-clocker-setup-field className={`${styles.field} ${setup.field}`}>{t("Setup code")}<textarea ref={input} name="enrollmentToken" rows={2} required maxLength={4096} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false}
               aria-invalid={fieldError ? true : undefined} aria-describedby={fieldError ? 'clocker-setup-error clocker-setup-help' : 'clocker-setup-help'} /></label>
-            {fieldError ? <p id="clocker-setup-error" role="alert" className={styles.msg}><ClockerIcon name={feedback?.offline ? 'offline' : 'warning'} size={18}/><span><ClockerText text={error}/></span></p> : null}
-            <button className={`${styles.btn} ${setup.go}`} data-kind="primary" data-busy={connecting ? '' : undefined} type="submit">{pending ? <span className={styles.spin} aria-hidden="true"/> : null}{t(connecting ? 'Connecting…' : pending ? 'Checking setup…' : 'Connect tablet')}{!pending ? <ClockerIcon name="arrow" size={20}/> : null}</button>
+            {fieldError ? <p id="clocker-setup-error" role="alert" className={styles.msg}><ClockerIcon name={feedback?.offline ? 'offline' : 'stop'} size={18}/><span><ClockerText text={error}/></span></p> : null}
+            <button className={`${styles.btn} ${setup.go}`} data-kind="primary" data-busy={pending ? '' : undefined} type="submit">{pending ? <span className={styles.spin} aria-hidden="true"/> : null}{t(connecting ? 'Connecting…' : pending ? 'Checking setup…' : 'Connect tablet')}{!pending ? <ClockerIcon name="arrow" size={20}/> : null}</button>
           </fieldset>
         </form>
       </>}
       {/* The busy state shows in the button; this line is for screen readers only (Nov 10 review, NV-298). */}
       <p role="status" className={styles.sr}>{connecting ? t('Connecting this tablet…') : pending ? t("Checking this tablet…") : ''}</p>
       {/* A definite answer about a connected tablet sits under the card's content with Check setup. */}
-      {feedback && !uncertain && view === 'connected' ? <><p role="alert" className={styles.msg}><ClockerIcon name="warning" size={18}/><span><ClockerText text={feedback.message}/></span></p>
-        <div className={styles.links}><button className={styles.link} type="button" disabled={pending} onClick={check}><ClockerIcon name="refresh" size={18}/>{t("Check setup")}</button></div></> : null}
+      {feedback && !uncertain && view === 'connected' ? <><p role="alert" className={styles.msg}><ClockerIcon name="stop" size={18}/><span><ClockerText text={feedback.message}/></span></p>
+        <div className={styles.links}><button className={styles.link} type="button" disabled={pending} onClick={check}>{t("Check setup")}</button></div></> : null}
       {uncertain ? <><p role="alert" className={styles.smsg}><ClockerText text={feedback?.message ?? ''}/></p>
         <div className={styles.stack}><button className={styles.btn} data-kind="primary" data-busy={pending ? '' : undefined} type="button" disabled={pending} onClick={check}>{pending ? <span className={styles.spin} aria-hidden="true"/> : null}{t(pending ? 'Checking setup…' : 'Check setup')}</button></div></> : null}
       {view === 'type' ? <div className={`${styles.meta} ${setup.meta}`}><p id="clocker-setup-help">{t("Use the tablet’s setup code here, not an employee PIN. Allow cookies in this browser.")}</p><ClockerLanguageToggle/></div>

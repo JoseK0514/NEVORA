@@ -82,7 +82,9 @@ describe("one footer (row 6)", () => {
   });
   it("draws the dots only where the line fits, and the links on 44px rows on phones", () => {
     expect(footCss).toMatch(/@media \(max-width: 767px\) \{[^}]*\}[^@]*\.so-foot__dot \{ display: none; \}/);
-    expect(footCss).toMatch(/\.so-foot__item \{ display: inline-flex; align-items: center; min-height: 44px; \}/);
+    expect(footCss).toMatch(/\.so-foot__item \{ display: inline-flex; align-items: center; min-height: 44px; margin: 0 calc\(var\(--b-space-20, 20px\) \/ 2\); \}/);
+    // Premium pass FD: the rows balance (two and two), so no link stands alone on a last row.
+    expect(footCss).toMatch(/\.so-foot__links \{ display: block; max-width: 100%; text-align: center; text-wrap: balance; \}/);
   });
 });
 

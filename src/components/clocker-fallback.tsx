@@ -77,7 +77,7 @@ function ErrorBody({ retry }: { retry: () => void }) {
     <h1 ref={heading} tabIndex={-1} className={styles.title}>{t('No connection')}</h1>
     <p role="alert" className={styles.smsg}>{t('This tablet is offline, so nothing can be recorded right now.')}</p>
     <p className={styles.blockedHint}>{t('Tell a manager so your time gets recorded.')}</p>
-    <div className={styles.stack}><button type="button" className={styles.btn} data-kind="primary" onClick={retry}><ClockerIcon name="refresh" size={20} />{t('Check connection')}</button></div>
+    <div className={styles.stack}><button type="button" className={styles.btn} data-kind="primary" onClick={retry}>{t('Check connection')}</button></div>
     <p className={styles.clears}>{t('This tablet checks again by itself when the connection returns.')}</p>
     <div className={styles.meta} data-align="center"><ClockerLanguageToggle /></div>
   </Frame>;

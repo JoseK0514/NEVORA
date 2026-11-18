@@ -95,11 +95,14 @@ describe("public policy pages", () => {
     expect(es).not.toMatch(/Effective|VELANI LLC<\/p>|Privacy Policy<\/h1>|Terms of Use<\/h1>/);
     expect(es).toMatch(/<p class="q-sr">(Cómo NEVORA maneja|Las reglas para usar NEVORA)/);
     expect(doc(en).match(/<h2 class="pl-sec__h"/g)).toHaveLength(count);
-    // English: no note. Spanish: one note at the top, with the help address.
-    expect(en).not.toContain("pl-note");
-    expect(es.match(/class="pl-note"/g)).toHaveLength(1);
-    expect(es).toContain("Este documento está disponible solo en inglés por ahora. Si necesitas ayuda para entenderlo, escribe a ");
-    expect(es.indexOf("pl-note")).toBeLessThan(es.indexOf("<article"));
+    // English: no note. Spanish: one note at the top, with the help address. Phase 9: the kit's teal callout, the fact as
+    // its one-line title, the help path as its body and the address as its one link, which wraps only after "@".
+    expect(en).not.toContain("b-callout");
+    expect(es.match(/class="b-callout"/g)).toHaveLength(1);
+    expect(es).toContain('<div class="b-callout" data-tone="teal"><span class="b-callout__ic" aria-hidden="true"><svg');
+    expect(es).toContain('<p class="b-callout__t">Este documento está solo en inglés</p>');
+    expect(es).toContain('<div class="b-callout__b">Si necesitas ayuda para entenderlo, escribe a <a href="mailto:support@thevelani.com">support@<wbr/>thevelani.com</a>.</div>');
+    expect(es.indexOf("b-callout")).toBeLessThan(es.indexOf("<article"));
     // The page around it: language pill, back link, contents label, the open control and the closing links.
     expect(en).toMatch(/<button type="button" class="q-auth__lang" lang="es"[^>]*>Español<\/button>/);
     expect(es).toMatch(/<main class="q-page q-auth q-doc"[^>]*lang="es"/);
@@ -119,6 +122,14 @@ describe("public policy pages", () => {
     expect(toc.match(/<a href="#legal-/g)).toHaveLength(count + (title === "Privacy Policy" ? 1 : 0));
     // The list is the document's own English headings; in Spanish "Preguntas" is the Spanish section after it, not an entry.
     if (title === "Privacy Policy") { expect(toc).toContain('<a href="#legal-questions">Questions</a>'); expect(en).toContain('id="legal-questions"'); expect(es).not.toContain('<a href="#legal-questions">'); expect(es).toContain('id="legal-questions-title">Preguntas</h2>'); }
+  });
+
+  it("Support's safety note is a titled callout at the top of the Email support card (Phase 9)", async () => {
+    const html = await render(SupportPage);
+    const card = html.slice(html.indexOf('<div class="q-doc__card">'), html.indexOf('<p class="q-help q-doc__promise">'));
+    expect(card).toMatch(/^<div class="q-doc__card"><div class="b-callout" data-tone="teal"><span class="b-callout__ic" aria-hidden="true"><svg[^>]*>[\s\S]*?<\/svg><\/span><p class="b-callout__t">Keep private details out of email<\/p><div class="b-callout__b">Never email passwords, codes, bank\u00a0details or pay documents.<\/div><\/div><ul class="q-list"><li><a class="q-row" href="mailto:support@thevelani.com">/);
+    expect(html).not.toContain("q-doc__note");
+    expect(html.match(/class="b-callout"/g)).toHaveLength(1);
   });
 
   it("Support's group headings are real headings that label their groups (PB-033)", async () => {
@@ -153,7 +164,7 @@ describe("public policy pages", () => {
       expect(html).toContain('href="mailto:support@thevelani.com"');
       expect(html).not.toContain("CONFIRM_");
     }
-    for (const text of ['<h1 id="legal-title">Ayuda</h1>', "Preguntas frecuentes", "dos días laborables", "Nunca envíes por correo contraseñas, códigos, datos bancarios ni documentos de pago.", '<span aria-current="page">Ayuda</span>', 'href="/account-deletion">Eliminar cuenta</a>', String(POLICY_FACTS.BUSINESS_CONTACT_DETAILS)]) expect(support).toContain(text);
+    for (const text of ['<h1 id="legal-title">Ayuda</h1>', "Preguntas frecuentes", "dos días laborables", "Datos privados fuera del correo", "Nunca envíes por correo contraseñas, códigos, datos\u00a0bancarios ni documentos de pago.", '<span aria-current="page">Ayuda</span>', 'href="/account-deletion">Eliminar cuenta</a>', String(POLICY_FACTS.BUSINESS_CONTACT_DETAILS)]) expect(support).toContain(text);
     expect(support).not.toMatch(/We aim to respond|Common questions|>Sign in</);
     for (const text of ['<h1 id="legal-title">Elimina tu cuenta de NEVORA</h1>', ">Iniciar solicitud de eliminación</a>", 'href="/login?returnTo=%2Fapp%2Faccount%2Fdelete"', "30 días calendario", "DEL-7KQ2M9XA", '<span aria-current="page">Eliminar cuenta</span>', 'href="/support">Ayuda</a>']) expect(deletion).toContain(text);
     expect(deletion).not.toMatch(/Start deletion request|What happens next/);

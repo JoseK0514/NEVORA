@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
+import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 
 /** Inline validation for every portal form, built on native constraints
  * (required, pattern, min/max, type). Errors appear under the field once the
@@ -47,6 +48,9 @@ function message(field: Field) {
   }
   if (v.typeMismatch && field instanceof HTMLInputElement && field.type === "email") return "Enter an email like name@example.com";
   if (v.tooShort && "minLength" in field) return `Use at least ${field.minLength} characters`;
+  // Review 30 (D03): a field may word its own floor ("Enter a date in 1900 or later"); a date's raw minimum reads as
+  // "Use 1900-01-01 or more" while the field shows mm/dd/yyyy.
+  if (v.rangeUnderflow && field.dataset.underflow) return field.dataset.underflow;
   if (v.rangeUnderflow && field instanceof HTMLInputElement) return `Use ${field.min} or more`;
   if (v.rangeOverflow && field instanceof HTMLInputElement) return `Use ${field.max} or less`;
   if (v.patternMismatch && field.title) return field.title;
@@ -81,12 +85,43 @@ function show(field: Field, announce = true) {
   // …and a message that appears when the person leaves the field, or changes while they type, is announced (role="alert").
   if (announce) node.setAttribute("role", "alert"); else node.removeAttribute("role");
   // Review F2 (NV-112): every message leads with the 16px bold warning glyph (Phosphor WarningCircle), so an error never
-  // relies on its red colour alone.
+  // relies on its red colour alone. Final verification F (F08): the glyph has its own column and the words theirs, so a
+  // second line starts under the words, not under the glyph; the words are 500 (spec 3.3) and the glyph and the gap are
+  // in em, so they grow with the text. Written on the elements: the stylesheets of every era style the paragraph only.
   const text = message(field);
   if (node.textContent !== text || !node.querySelector("svg")) {
-    node.replaceChildren(warningGlyph(), document.createTextNode(text));
+    node.replaceChildren(errorLine(text));
   }
   field.setAttribute("aria-invalid", "true");
+}
+
+/** The message's one line: the glyph, then the words, in a row that the paragraph's own look (display, font, colour)
+ * cannot undo. A form that renders its own message uses FieldErrorLine, the same line in React. */
+function errorLine(text: string) {
+  const row = document.createElement("span");
+  row.className = "field-error__row";
+  row.setAttribute("style", ERROR_ROW_STYLE);
+  const words = document.createElement("span");
+  words.className = "field-error__text";
+  words.setAttribute("style", ERROR_TEXT_STYLE);
+  words.textContent = text;
+  row.append(warningGlyph(), words);
+  return row;
+}
+
+/** The field error's row, glyph and words (F08), shared with forms that render the message themselves (FieldErrorLine). */
+const ERROR_ROW = { display: "flex", alignItems: "flex-start", gap: ".4em" } as const;
+const ERROR_TEXT = { minWidth: 0, fontWeight: 500, textWrap: "pretty" } as const;
+const ERROR_GLYPH = { display: "block", flex: "none", width: "1.1875em", height: "1.1875em", marginTop: "calc((1lh - 1.1875em) / 2)" } as const;
+const cssText = (style: Record<string, string | number>) => Object.entries(style).map(([key, value]) => `${key.replace(/[A-Z]/g, c => `-${c.toLowerCase()}`)}:${value}`).join(";");
+const ERROR_ROW_STYLE = cssText(ERROR_ROW), ERROR_TEXT_STYLE = cssText(ERROR_TEXT), ERROR_GLYPH_STYLE = cssText(ERROR_GLYPH);
+
+/** The same message line for a form that renders its own `p.field-error` (Shift matching): the glyph, then the words. */
+export function FieldErrorLine({ children }: { children: ReactNode }) {
+  return <span className="field-error__row" style={ERROR_ROW}>
+    <WarningCircleIcon size={16} weight="bold" aria-hidden="true" focusable="false" style={ERROR_GLYPH} />
+    <span className="field-error__text" style={ERROR_TEXT}>{children}</span>
+  </span>;
 }
 
 const SVG = "http://www.w3.org/2000/svg";
@@ -94,7 +129,7 @@ function warningGlyph() {
   const svg = document.createElementNS(SVG, "svg");
   svg.setAttribute("viewBox", "0 0 256 256"); svg.setAttribute("width", "16"); svg.setAttribute("height", "16");
   svg.setAttribute("fill", "currentColor"); svg.setAttribute("aria-hidden", "true"); svg.setAttribute("focusable", "false");
-  svg.setAttribute("style", "display:inline-block;flex:none;vertical-align:-3px;margin-right:6px");
+  svg.setAttribute("style", ERROR_GLYPH_STYLE);
   const path = document.createElementNS(SVG, "path");
   path.setAttribute("d", "M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20Zm0,192a84,84,0,1,1,84-84A84.09,84.09,0,0,1,128,212Zm-12-80V80a12,12,0,0,1,24,0v52a12,12,0,0,1-24,0Zm28,40a16,16,0,1,1-16-16A16,16,0,0,1,144,172Z");
   svg.append(path);
@@ -111,15 +146,39 @@ function clear(field: Field) {
   delete field.dataset.errorId;
 }
 
+/** Final verification F (F13): focus lands on a field whose message is under it; when the field or its message is outside
+ * the window (or under the phone's tab bar), the field is brought to the middle of the window so both are read. */
+export function revealField(field: HTMLElement) {
+  const message = field.dataset.errorId ? document.getElementById(field.dataset.errorId) : null;
+  const top = field.getBoundingClientRect().top, bottom = (message ?? field).getBoundingClientRect().bottom;
+  const height = window.visualViewport?.height ?? window.innerHeight;
+  if (top < 64 || bottom > height - 72) field.scrollIntoView({ block: "center" });
+}
+
 export function FormValidation() {
   useEffect(() => {
     let firstInvalid: Field | null = null;
+    // Final verification F (F06): a message shown while a pointer is pressed (leaving a field by pressing Next) pushed the
+    // button down under the pointer, so the press never became a click and Next did nothing. While a pointer is down the
+    // message waits; when the press ends (its click has run, so Next's own check has already said it), it shows.
+    let pressed = false, waiting: Field[] = [], safety: ReturnType<typeof setTimeout> | undefined;
+    const flush = () => {
+      pressed = false; clearTimeout(safety);
+      const fields = waiting; waiting = [];
+      for (const field of fields) {
+        if (!field.isConnected || !isField(field) || field === document.activeElement) continue;
+        if (field.validity.valid) clear(field); else if (!field.dataset.errorId) show(field);
+      }
+    };
+    const onPointerDown = () => { pressed = true; clearTimeout(safety); safety = setTimeout(flush, 1500); };
+    const onPressEnd = () => { if (pressed) setTimeout(flush, 0); };
     const onBlur = (event: FocusEvent) => {
       const field = event.target;
       if (!isField(field)) return;
       // A checkbox or radio always has a value, so "untouched" can't be read from it: it's checked on change and submit only.
       if (field instanceof HTMLInputElement && (field.type === "checkbox" || field.type === "radio") && !field.dataset.errorId) return;
       if (!field.value && !field.dataset.errorId && field.validity.valueMissing) return; // don't nag an untouched empty field
+      if (pressed && !field.validity.valid && !field.dataset.errorId) { if (!waiting.includes(field)) waiting.push(field); return; }
       // validity.valid, not checkValidity(): checkValidity() fires "invalid", which moved focus back into the field (Wave C focus trap).
       if (field.validity.valid) clear(field); else show(field);
     };
@@ -137,14 +196,26 @@ export function FormValidation() {
         firstInvalid = field;
         // After every invalid event of this submission has fired (microtasks
         // would run between them), focus the first problem in document order.
-        setTimeout(() => { firstInvalid?.focus(); firstInvalid = null; }, 0);
+        setTimeout(() => {
+          const field = firstInvalid; firstInvalid = null;
+          if (!field) return;
+          field.focus({ preventScroll: true });
+          revealField(field);
+        }, 0);
       }
     };
+    document.addEventListener("pointerdown", onPointerDown, true);
+    document.addEventListener("click", onPressEnd, true);
+    document.addEventListener("pointercancel", onPressEnd, true);
     document.addEventListener("focusout", onBlur);
     document.addEventListener("input", onInput);
     document.addEventListener("change", onInput);
     document.addEventListener("invalid", onInvalid, true);
     return () => {
+      clearTimeout(safety);
+      document.removeEventListener("pointerdown", onPointerDown, true);
+      document.removeEventListener("click", onPressEnd, true);
+      document.removeEventListener("pointercancel", onPressEnd, true);
       document.removeEventListener("focusout", onBlur);
       document.removeEventListener("input", onInput);
       document.removeEventListener("change", onInput);

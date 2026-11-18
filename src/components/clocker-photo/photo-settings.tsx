@@ -7,6 +7,7 @@ import {photoSettingsDraft,photoSettingsUpdate,verifySavedPhotoPolicy,type Photo
 import {readPhotoPolicy} from '@/lib/clocker/photo-client/session';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {CorpCard} from '../corp/corp';
+import {BCallout} from '../owner-b/b-kit';
 import {ReturnToNext} from '../team/return-to-next';
 import {clockerOwnerCopy,type ClockerOwnerLang} from '../clocker-owner-copy';
 
@@ -67,8 +68,9 @@ export function ClockerPhotoSettings({initialPolicy,saveAction,readAction,childr
   return <CorpCard as="div" ariaLabel={t.photosTitle}>
     <div className="c-photos__state">
       <p className="ck-photos__what">{t.photosWhat}</p>
-      <span className="c-photos__state-title">{t.photosUnavailableTitle}</span>
-      <span className="c-photos__state-body">{t.photosUnavailableBody}</span>
+      {/* Phase 9 (spec 2.2): that photos aren't on yet is information about this card, so it is the kit's teal note (Info,
+        * a 600 title over the 400 line, a hairline edge), not a bold line floating between the sentence and the switch. */}
+      <BCallout tone="teal" title={t.photosUnavailableTitle}>{t.photosUnavailableBody}</BCallout>
     </div>
     <form id="photo-policy-form" onSubmit={save} className="c-photos__form" aria-busy={pending} aria-labelledby="photo-settings-title">
       <h2 className="c-sr" id="photo-settings-title">{t.photosTitle}</h2>

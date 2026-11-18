@@ -1,10 +1,9 @@
 import Link from 'next/link';
 import type {CSSProperties, ReactNode} from 'react';
-import {CalendarCheckIcon} from '@phosphor-icons/react/dist/ssr/CalendarCheck';
+import {UserCheckIcon} from '@phosphor-icons/react/dist/ssr/UserCheck';
 import {BellIcon} from '@phosphor-icons/react/dist/ssr/Bell';
-import {MegaphoneSimpleIcon} from '@phosphor-icons/react/dist/ssr/MegaphoneSimple';
+import {MegaphoneIcon} from '@phosphor-icons/react/dist/ssr/Megaphone';
 import {CalendarPlusIcon} from '@phosphor-icons/react/dist/ssr/CalendarPlus';
-import {LifebuoyIcon} from '@phosphor-icons/react/dist/ssr/Lifebuoy';
 import {ShieldCheckIcon} from '@phosphor-icons/react/dist/ssr/ShieldCheck';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
@@ -14,9 +13,8 @@ import {QuestionIcon} from '@phosphor-icons/react/dist/ssr/Question';
 import {FlagIcon} from '@phosphor-icons/react/dist/ssr/Flag';
 import {ScalesIcon} from '@phosphor-icons/react/dist/ssr/Scales';
 import {TrashIcon} from '@phosphor-icons/react/dist/ssr/Trash';
-import {LockSimpleIcon} from '@phosphor-icons/react/dist/ssr/LockSimple';
 import {SignOutIcon} from '@phosphor-icons/react/dist/ssr/SignOut';
-import {BButtonLink, BCard, BHero, BIcon, BList, BRow, BScreen, BStack, initialsOf} from '../owner-b/b-kit';
+import {BButtonLink, BCallout, BCard, BHero, BIcon, BList, BRow, BScreen, BStack, initialsOf} from '../owner-b/b-kit';
 import {PortalSignout} from '../portal-signout';
 import {BlockView, shortTitle} from '../legal/legal-document';
 import type {Block, PolicyDocument} from '../../lib/legal/policies';
@@ -52,15 +50,16 @@ export function EmployeeMoreB({name, place, availability, has, count}: {
     <BStack>
       <BCard title="Your work" id="b-more-work">
         <BList>
-          {has.availability ? <BRow href="/app/availability" lead={grey(<CalendarCheckIcon weight="bold" />)} title="Availability" sub={availability ?? undefined} /> : null}
+          {/* Final review C (row 4): Availability is UserCheck, the navigation's glyph, on every Employee screen. */}
+          {has.availability ? <BRow href="/app/availability" lead={grey(<UserCheckIcon weight="bold" />)} title="Availability" sub={availability ?? undefined} /> : null}
           {has.notifications ? <BRow href="/app/notifications" lead={grey(<BellIcon weight="bold" />)} title="Notifications" chip={count} sub="Schedule, request and pay notices" /> : null}
-          {has.updates ? <BRow href="/app/updates" lead={grey(<MegaphoneSimpleIcon weight="bold" />)} title="Updates" sub={accountCopy().updatesSub} /> : null}
+          {has.updates ? <BRow href="/app/updates" lead={grey(<MegaphoneIcon weight="bold" />)} title="Updates" sub={accountCopy().updatesSub} /> : null}
           <BRow href="/app/profile/calendar" lead={grey(<CalendarPlusIcon weight="bold" />)} title="Add shifts to your calendar" sub="Apple, Google or Outlook" />
         </BList>
       </BCard>
       <BCard title="Help and legal" id="b-more-help">
         <BList>
-          <BRow href="/app/help" lead={grey(<LifebuoyIcon weight="bold" />)} title="Help" sub="Answers and how to reach support" />
+          <BRow href="/app/help" lead={grey(<QuestionIcon weight="bold" />)} title="Help" sub="Answers and how to reach support" />
           <BRow href="/privacy" lead={grey(<ShieldCheckIcon weight="bold" />)} title="Privacy and terms" sub="Privacy policy and terms of use" />
         </BList>
       </BCard>
@@ -96,7 +95,8 @@ export function EmployeeHelpB({email, response, signIn, work, report, legal}: {
         </BList>
         {/* Review B6 (NV-286): one line on when we reply (the full hours are on Support), then the warning as its own note. */}
         {response ? <p className="eb-help-note">{firstSentence(response)}{response.trim() !== firstSentence(response) ? <> <Link className="eb-help-note__a" href="/app/profile/support">Support hours</Link></> : null}</p> : null}
-        <div className="eb-tint eb-help-warn"><BIcon tone="grey"><LockSimpleIcon weight="bold" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">Never email passwords, codes, bank details or pay documents.</span></span></div>
+        {/* Phase 9 (spec 2.3, 2.4): the safety note is the kit's teal callout with ShieldCheck, titled as Support's is. */}
+        <BCallout tone="teal" icon="privacy" title={accountCopy().privateTitle}>Never email passwords, codes, bank details or pay documents.</BCallout>
       </BCard>
       {signIn || work || report.length ? <BCard title="Common questions" id="b-help-questions">
         <ul className="b-list" aria-label="Common questions">

@@ -2,7 +2,10 @@ import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
 import {AccessJourneyProvider} from "@/components/mobile-access/journey";
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import { cookies } from "next/headers";
 import {DocumentAppearanceScripts} from "./document-appearance-scripts";
+import { readAuthLang } from "../lib/auth-lang.server";
+import { SESSION_COOKIE } from "../lib/auth/session-cookie";
 import { WebAnalytics } from "../components/web-analytics";
 import { NUVORA_BRAND } from "../lib/brand";
 import { readFeatureFlags } from "../lib/feature-flags";
@@ -33,10 +36,20 @@ const TEXT_SCALE_SCRIPT = `(function(){var d=document.documentElement;function s
  * scripts run before paint to align server markup with device/user appearance.
  * Authentication belongs to app/app/layout.tsx, not this public document root.
  */
+/** Review 30 (D37): the document's language. Signed out, the pages speak the sign-in language (the nv-lang choice, else the
+ * browser's), so a Spanish page's title is read with Spanish rules; signed in, the app is English until a stored language
+ * is decided (DESIGN.MD), so a session keeps "en". The Clocker sets its own from the tablet's choice once it starts.
+ * Outside a request (tests, static rendering) it is English. */
+async function documentLang(): Promise<"en" | "es"> {
+  try { if ((await cookies()).has(SESSION_COOKIE)) return "en"; } catch { return "en"; }
+  return readAuthLang();
+}
+
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   if(process.env.NODE_ENV!=='production')await (await import('../lib/dev/inspection.server')).forceInspectionError('global');
+  const lang = await documentLang();
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <head>
         {/* P3-ST-20: loading placeholders grow with the reader's text size like the pages they stand in for. This tells CSS the
             text scale (root font size ÷ 16) and its nearest measured step (100, 125, 150 or 200%) before first paint, and again whenever the text size changes. Nothing else. */}

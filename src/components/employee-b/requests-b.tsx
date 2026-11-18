@@ -7,8 +7,8 @@ import {ClipboardTextIcon} from '@phosphor-icons/react/dist/ssr/ClipboardText';
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
-import {ProhibitIcon} from '@phosphor-icons/react/dist/ssr/Prohibit';
-import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
+import {UserMinusIcon} from '@phosphor-icons/react/dist/ssr/UserMinus';
+import {CalendarMinusIcon} from '@phosphor-icons/react/dist/ssr/CalendarMinus';
 import {BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BRow, BScreen, BSeg, BStack, BState, type BLiveItem, type BStateKind, type BTone} from '../owner-b/b-kit';
 import {Dotted} from './parts';
 import {accountCopy} from './account-copy';
@@ -29,9 +29,10 @@ export const bTone = (tone: string): BTone => tone === 'teal' ? 'green' : tone =
 export const bPillText = (text: string) => text === 'Waiting on teammate' ? 'With teammate' : text;
 
 export type BRequestKind = 'timeOff' | 'shift' | 'callout';
-/** What a request is, as a grey icon: Sun for time off, ArrowsLeftRight for a swap, cover or pickup, Prohibit for can't work. */
+/** What a request is, as a grey icon (teal where the row opens, EM-017). Phase 9 (spec 3.6): the navigation's glyph per
+ * concept: CalendarMinus for time off, ArrowsLeftRight for a swap, cover or pickup, UserMinus for can't work. */
 export function RequestTypeIcon({kind}: {kind: BRequestKind}) {
-  const Icon = kind === 'timeOff' ? SunIcon : kind === 'callout' ? ProhibitIcon : ArrowsLeftRightIcon;
+  const Icon = kind === 'timeOff' ? CalendarMinusIcon : kind === 'callout' ? UserMinusIcon : ArrowsLeftRightIcon;
   return <BIcon tone="grey"><Icon weight="bold"/></BIcon>;
 }
 
@@ -65,7 +66,7 @@ export function OpenShiftsEmptyB() {
   const alerts = !!device && device.state !== 'unavailable';
   return <><BEmpty icon={<CalendarBlankIcon weight="bold"/>} title="No open shifts right now" sub="When a teammate offers a shift you can work, it shows here."/>
     {/* Review B2 (NV-158): "device", since it shows on computers too. */}
-    {alerts ? <Link className="es-empty-state__a" href="/app/profile/device-alerts">Get alerts on this device<CaretRightIcon size={15} weight="bold" aria-hidden="true"/></Link> : null}</>;
+    {alerts ? <Link className="es-empty-state__a" href="/app/profile/device-alerts">Get alerts on this device<CaretRightIcon size={16} weight="bold" aria-hidden="true"/></Link> : null}</>;
 }
 
 /** A plain paragraph inside a card (a notice, a reason). */
@@ -105,7 +106,7 @@ export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forMa
     {/* Desktop: Request time off is the band's white action and the band counts what's waiting (eb-desk); the phone keeps
       * its full-width button (eb-phone). */}
     <BHero title="Requests" titleId="b-requests-title" sub={sub}
-      right={newHref ? <span className="eb-desk"><BButtonLink href={newHref} kind="white"><PlusIcon size={17} weight="bold" aria-hidden="true"/>Request time off</BButtonLink></span> : undefined}>
+      right={newHref ? <span className="eb-desk"><BButtonLink href={newHref} kind="white"><PlusIcon size={16} weight="bold" aria-hidden="true"/>Request time off</BButtonLink></span> : undefined}>
       {newHref ? <div className="b-hpad eb-phone"><BButtonLink href={newHref} kind="white" full><PlusIcon size={18} weight="bold" aria-hidden="true"/>Request time off</BButtonLink></div> : null}
       {figures.length ? <div className="eb-desk"><BLive label="Your requests at a glance" items={figures}/></div> : null}
     </BHero>

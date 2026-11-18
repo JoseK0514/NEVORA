@@ -56,9 +56,8 @@
 :is(#c-root, html) .be .be-publish { display: flex; flex-direction: column; gap: var(--b-space-16); }
 :is(#c-root, html) .be .be-para { margin: 0; font-size: var(--b-fs-body); line-height: var(--b-lh-body); color: var(--b-ink2); max-width: 64ch; }
 :is(#c-root, html) .be .be-fine { margin: calc(var(--b-space-8) * -1) 0 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); max-width: 64ch; }
-:is(#c-root, html) .be .be-callout { display: flex; gap: var(--b-space-12); margin: 0; padding: var(--b-space-12) var(--b-space-16); border-radius: var(--b-radius-small); background: var(--b-amber-50);
-  font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); }
-:is(#c-root, html) .be .be-callout > svg { flex: none; width: 18px; height: 18px; margin-top: 1px; color: var(--b-amber); }
+/* Phase 9: the note is the kit's callout (BCallout, owner-b.css); the column's gap spaces it. */
+:is(#c-root, html) .be .be-publish > .b-callout:not(#be-p6) { margin: 0; }
 :is(#c-root, html) .be .be-digest { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-variant-numeric: tabular-nums; letter-spacing: 0.01em; word-break: break-all; color: var(--b-grey); }
 :is(#c-root, html) .be .be-extrow { text-decoration: none; }
 :is(#c-root, html) .be .be-notes { display: flex; flex-direction: column; gap: var(--b-space-8); margin: 0; padding-left: 20px; list-style: disc; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); }
@@ -158,4 +157,4 @@
 @media (min-width: 768px) { :is(#c-root, html) .be .be-results { gap: var(--b-space-20); margin-top: var(--b-space-20); } }
 :is(#c-root, html) .be .be-results:empty { display: none; }
 :is(#c-root, html) .be .be-results .c-section > .c-card + .c-card { margin-top: var(--b-space-12); }
-:is(#c-root, html) .be .be-callout--page { margin: 0; }
+:is(#c-root, html) .be .be-notice { margin: 0; }

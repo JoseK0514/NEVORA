@@ -13,15 +13,20 @@ describe('Shift matching', () => {
   it('labels the field and says what it does, that paid time is unchanged and that 0 is strict', () => {
     const html = render();
     expect(html).toContain('<label class="c-field__label" for="clocker-grace-minutes">Early clock-in grace</label>');
-    expect(html).toContain('Punches up to this many minutes before a shift start count toward that shift. Paid time still starts at the actual punch. 0 keeps strict matching.');
-    expect(html).toContain('Clock-ins already recorded keep how they were matched.');
+    // Review 30 (D26): "0" stays with "keeps" and "Clock-ins" never breaks at its hyphen; the words are unchanged.
+    const text = html.replace(/<[^>]+>/g, '').replace(/\u00a0/g, ' ');
+    expect(text).toContain('Punches up to this many minutes before a shift start count toward that shift. Paid time still starts at the actual punch. 0 keeps strict matching.');
+    expect(html).toContain('0\u00a0keeps strict matching.');
+    expect(text).toContain('Clock-ins already recorded keep how they were matched.');
+    expect(html).toContain('<span class="c-grace__whole">Clock-ins</span>');
   });
-  it('is a whole-minute field from 0 to 30 tied to its help, with the default 0 and one Save', () => {
+  it('is a whole-minute field from 0 to 30 tied to its help, with the default 0 and no Save until it changes', () => {
     const html = render();
     expect(html).toMatch(/<input[^>]*id="clocker-grace-minutes"[^>]*type="number"[^>]*min="0"[^>]*max="30"[^>]*step="1"/);
     const input = html.match(/<input[^>]*id="clocker-grace-minutes"[^>]*>/)?.[0] ?? '';
     for (const attribute of ['inputMode="numeric"', 'value="0"', 'aria-describedby="clocker-grace-help"', 'name="earlyClockInGraceMinutes"']) expect(input).toContain(attribute);
-    expect(html.match(/<button type="submit"/g)).toHaveLength(1);
+    // Review 30 (D22): Save appears after a change, as on the other Settings forms.
+    expect(html).not.toContain('<button type="submit"');
     expect(html).not.toContain('aria-invalid');
   });
   it('shows the saved value', () => {
@@ -31,7 +36,7 @@ describe('Shift matching', () => {
     const html = render(10, 'es');
     expect(englishIn(html)).toEqual([]);
     expect(html).toContain('Margen de entrada anticipada');
-    expect(html).toContain('0 mantiene la asociación estricta.');
+    expect(html).toContain('0\u00a0mantiene la asociación estricta.');
   });
   it.each(['0', '1', '10', '29', '30'])('accepts %s minutes', draft => expect(graceDraftValid(draft)).toBe(true));
   it.each(['', '-1', '31', '100', '1.5', '1e1', '010', '+5', ' 5', 'ten'])('refuses %j before saving', draft => expect(graceDraftValid(draft)).toBe(false));

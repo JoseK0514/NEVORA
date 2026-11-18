@@ -82,10 +82,12 @@
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-shift { gap: 0 !important; padding-top: var(--b-space-4) !important; padding-bottom: 0 !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-shift__time { font-size: var(--b-fs-display) !important; line-height: var(--b-lh-display) !important; letter-spacing: -.025em !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-shift__where { margin-top: var(--b-space-2) !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-shift .eb-tint { margin-top: 14px !important; padding: var(--b-space-12) var(--b-gutter) !important; border-radius: var(--b-radius-field) !important; background: var(--b-canvas) !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-shift .eb-tint { margin-top: 14px !important; }
+    /* Phase 9: a clock state is the kit's callout, 14px under the shift's line as the tint was. */
+    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-shift > .b-callout { margin-top: 14px !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-shift__bar { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: var(--b-space-16) !important; margin: 18px -22px 0 !important; padding: 14px var(--b-inset-wide) !important; box-shadow: inset 0 1px 0 var(--b-line) !important; background: #FBFCFC !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-shift__when { font-size: var(--b-fs-meta) !important; color: var(--b-grey) !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-shift__bar .b-btn:not(#e-none):not(#e-none2) { width: auto !important; min-height: 38px !important; height: 38px !important; padding: 0 var(--b-space-16) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-body-sm) !important; font-weight: 600 !important; background: var(--b-quiet) !important; color: var(--b-ink) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-shift__bar .b-btn:not(#e-none):not(#e-none2) { width: auto !important; min-height: var(--b-btn-h) !important; height: var(--b-btn-h) !important; padding: 0 18px !important; line-height: var(--b-lh-body-sm) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-body-sm) !important; font-weight: 600 !important; background: var(--b-quiet) !important; color: var(--b-ink) !important; }
 
     /* ---------- Schedule: the week stepper on glass, the seven-day card, then Coming up beside the actions ---------- */
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-hero .b-week { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: 44px !important; margin: var(--b-space-20) 0 0 !important; padding: 0 var(--b-space-4) !important; border-radius: var(--b-radius-pill) !important; }
@@ -116,7 +118,9 @@
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wsh--now b { color: var(--b-on-band) !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wsh--off { background: none !important; box-shadow: inset 0 0 0 1px var(--b-line) !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wsh .b-chip { align-self: flex-start !important; margin-top: var(--b-space-4) !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wsh--now .b-chip { background: rgb(255 255 255 / .18) !important; color: var(--b-on-band) !important; }
+    /* Phase 9 (spec 3.1): on today's teal block a chip is the band's form, solid white with its tone's ink ("Now" teal,
+     * "Shift lead" grey) and no edge (the 18% white glass chip measured 4.02:1). */
+    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wsh--now .b-chip { background: #FFFFFF !important; box-shadow: none !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wd.is-on:not(.is-today) .eb-wsh { outline: 2px solid var(--b-teal) !important; outline-offset: 2px !important; }
     @media (hover: hover) { html body .app-shell[data-nv-b][data-employee-mobile] .b-screen a.eb-wsh:hover { filter: brightness(.97) !important; } }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wkc__foot { display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: var(--b-space-8) var(--b-space-16) !important; padding: 14px var(--b-inset-wide) !important; box-shadow: inset 0 1px 0 var(--b-line) !important; background: #FBFCFC !important; }
@@ -188,7 +192,6 @@
     html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__k { font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; color: var(--b-on-band-2) !important; margin-bottom: var(--b-space-2) !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__v { margin: 0 !important; font-size: 40px !important; line-height: 46px !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__row { margin-top: 18px !important; gap: 10px !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__row .b-chip { height: 30px !important; padding: 0 var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important; background: rgb(111 224 207 / .16) !important; color: #A8F0E4 !important; font-size: var(--b-fs-meta) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__row .b-btn:not(#e-none):not(#e-none2) { min-height: 42px !important; height: 42px !important; padding: 0 var(--b-space-16) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-body) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen:not(.b-screen--back) .b-stack:has(> #b-pay-last):not(#e-none):not(#e-none2) { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; align-items: start !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen:not(.b-screen--back) .b-stack:has(> #b-pay-last) > :not(.b-card) { grid-column: 1 / -1 !important; }
@@ -463,10 +466,9 @@
   /* ---------- Review B6 (Nov 10, 2026): Employee, Lead and tablets ---------- */
   @media (min-width: 768px) {
     /* NV-295: "Clock in on the Main Office tablet" is information, so it is a plain line with its icon, not a filled block
-     * that reads as a button. A clock state (green clocked in, amber not yet) keeps its status tint. */
+     * that reads as a button. Phase 9 (spec 1.4): your own clock state is that line's quiet second line with the live dot,
+     * so it has no status tint of its own (a punch left open after the shift is the kit's amber callout). */
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-shift .eb-tint:not([data-tone]) { padding: 0 !important; border-radius: 0 !important; background: none !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-shift .eb-tint[data-tone="green"] { background: var(--b-green-50) !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-shift .eb-tint[data-tone="amber"] { background: var(--b-amber-50) !important; }
     /* NV-287: a second list in one card (Things to do's two desktop rows) keeps the inset divider rows use. */
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-list + .b-list > .b-li:first-child { box-shadow: none !important; background: linear-gradient(var(--b-line), var(--b-line)) 22px 0 / calc(100% - 44px) 1px no-repeat !important; }
   }
@@ -485,7 +487,7 @@
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wd > .eb-wsh:last-child { flex: 1 0 auto !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-wsh__chips:not(#e-none) { display: flex !important; flex-wrap: wrap !important; gap: var(--b-space-4) !important; margin-top: auto !important; padding-top: 6px !important; overflow: visible !important; white-space: normal !important; text-overflow: clip !important; text-wrap: wrap !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wsh .eb-wsh__chips .b-chip { margin: 0 !important; background: #FFFFFF !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wsh--now .eb-wsh__chips .b-chip { background: rgb(255 255 255 / .18) !important; color: var(--b-on-band) !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wsh--now .eb-wsh__chips .b-chip { background: #FFFFFF !important; box-shadow: none !important; }
     /* A Lead who leads every shift: the week card's header says so once. */
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wkc .b-card__meta { font-size: 14px !important; color: var(--b-grey) !important; }
   }
@@ -731,11 +733,12 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen--back .b-stack > .b-card:only-child:has(> .b-statecard:is([data-kind="failed"], [data-kind="locked"], [data-kind="paused"])):not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) { max-width: var(--b-frame-form) !important; }
     /* A kept form or card on a pushed page is one 812px card (Request time off, Swap shift, Offer for cover, Can't work this
      * shift, Withdraw request). Request time off: its field block stops at 560px (From and To 272px each, 16px apart), and Send request
-     * is a 48px pill that ends on the field block's right edge. */
+     * is a pill that ends on the field block's right edge: final review C (row 8), the ladder's 44px step at 14.5/20 600, as
+     * Create calendar link and a state card's action are (it was 48px at 15.5px). */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page:has(> .b-screen--back) > .b-keep:not(.eb-fix, .c-avail, .eb-delete-keep, .c-help__how):not(#e-none) { max-width: var(--b-frame-read) !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .c-page > form.tof-form.b-keep > * { max-width: var(--b-frame-form) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > form.tof-form.b-keep .tof-row:not(#e-none) { column-gap: var(--b-space-16) !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > form.tof-form.b-keep .tof-foot > .c-btn:not(#e-none) { flex: none !important; width: auto !important; height: 48px !important; min-height: 48px !important; padding: 0 var(--b-space-24) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-body) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > form.tof-form.b-keep .tof-foot > .c-btn:not(#e-none) { flex: none !important; width: auto !important; height: var(--b-btn-h) !important; min-height: var(--b-btn-h) !important; padding: 0 18px !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; font-weight: 600 !important; }
     /* …and its Reason field shows the field ring on keyboard focus (it drew none here; found while checking focus). */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > form.tof-form.b-keep textarea.c-in:focus-visible:not(#e-none) { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; }
     /* Swap shift, Offer for cover, Can't work this shift, Withdraw request: the same field block; the form's send is the 48px

@@ -2,7 +2,6 @@
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {useEffect,useRef,useState} from 'react';
-import {BellSimpleIcon} from '@phosphor-icons/react/dist/ssr/BellSimple';
 import {BellIcon} from '@phosphor-icons/react/dist/ssr/Bell';
 import {createPrivateSnapshotController,type PrivatePanelState} from '../lib/private-snapshot-client';
 import {parseEmployeeView,type EmployeeViewSnapshot} from '../lib/employee-view';
@@ -43,9 +42,9 @@ export function NotificationBell({authority}:{authority:string}) {
  const state={refreshing};
  const label=ready?`Notifications, ${partial?'at least ':''}${count} unread in your recent inbox`:state.refreshing?'Notifications, checking updates':'Notifications, current count unavailable';
  return <Link href="/app/notifications" className="portal-notification-bell" aria-current={pathname==='/app/notifications'?'page':undefined} aria-label={label} title={label} data-state={ready?'ready':state.refreshing?'loading':'unavailable'}>
-  <BellSimpleIcon className="nb-simple" size={22} weight="bold" aria-hidden="true" focusable="false"/>
-  {/* Direction B phones draw the bold bell on the teal hero (owner-b-shell.css); everywhere else it stays hidden. */}
-  <BellIcon className="nb-bold" size={22} weight="bold" aria-hidden="true" focusable="false"/>
+  {/* Phase 9 (Nov 18, 2026): one bell, Phosphor Bell bold at the 20px control size, at every width (desktop drew
+    * BellSimple and phones Bell). */}
+  <BellIcon size={20} weight="bold" aria-hidden="true" focusable="false"/>
   {typeof count==='number'&&count>0?<span className="portal-notification-count" aria-hidden="true">{count}{partial?'+':''}</span>:!ready&&!state.refreshing?<span className="portal-notification-unavailable" aria-hidden="true">—</span>:null}
  </Link>;
 }

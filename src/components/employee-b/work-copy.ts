@@ -45,6 +45,8 @@ const words = {
     cantWorkShort: 'Can’t work',
     leadShort: 'Lead',
     moreEarlierStatements: 'More earlier statements',
+    // Phase 9 (spec 1.4): your own clock state on Time once a shift has started with no punch, with how long.
+    notClockedInFor: (span: string) => `Not clocked in · ${span}`,
   },
   es: {
     hours: 'Horas',
@@ -78,6 +80,7 @@ const words = {
     cantWorkShort: 'No puedo ir',
     leadShort: 'Líder',
     moreEarlierStatements: 'Más comprobantes anteriores',
+    notClockedInFor: (span: string) => `Sin registrar entrada · ${span}`,
   },
 } as const;
 export type WorkCopy = {[K in keyof typeof words.en]: (typeof words.en)[K] extends (...args: infer A) => string ? (...args: A) => string : string};

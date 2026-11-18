@@ -128,7 +128,7 @@
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-row__detail, .q-rt span, .q-rt small) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; }
 
     /* Pills become chips; buttons become the mock's pills. */
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .c-pill { height: 22px !important; padding: 0 var(--b-space-8) !important; border-radius: var(--b-radius-pill) !important; font-size: 12px !important; font-weight: 600 !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .c-pill:not(.b-status) { height: var(--b-chip-h) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-count) !important; line-height: 16px !important; font-weight: 600 !important; }
     /* Round 5 (Nov 7): a primary button is a pill whether or not it can be pressed (disabled ones were 5–8px rectangles);
      * only the soft shadow waits for it to be enabled. */
     /* Nov 14 inspection (SY-015): the red secondary is a pill too (it kept the corporate 8px corners); b-foundation.css
@@ -207,7 +207,7 @@
     }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.q-seg, .c-seg):not(.q-page > .q-nav + .q-hd + *, .c-page > .c-nav--phone + * + .c-seg, .c-page > .c-nav--phone + .c-seg, .q-page > .q-hd + section > .q-seg:first-child) > :is(a, button) { border-radius: var(--b-seg-item-r) !important; font-weight: 600 !important; }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .c-seg[data-slide]::before { border-radius: var(--b-radius-small) !important; }
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .q-seg > :is([aria-pressed="true"], [aria-selected="true"], [aria-current="page"]) { background: #FFFFFF !important; box-shadow: 0 1px 3px rgb(16 24 32 / 0.14) !important; color: var(--b-ink) !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .q-seg > :is([aria-pressed="true"], [aria-selected="true"], [aria-current="page"]) { background: #FFFFFF !important; box-shadow: var(--b-shadow-thumb) !important; color: var(--b-ink) !important; }
 
     /* Buttons: pills everywhere; secondary grey visible on the canvas too; disabled never glows. */
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.wc-btn, .button) { border-radius: var(--b-radius-pill) !important; }
@@ -397,8 +397,9 @@
     /* Round 5 (Nov 7) P18: a card header looks like the B card's: no hairline under it, its count a teal pill. */
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) :is(.c-page, .q-page):not(:has(> .b-screen)) .c-card__head { box-shadow: none !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) :is(.c-page, .q-page):not(:has(> .b-screen)) .c-card__head span.c-count.c-count, html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-corrections-count {
-      display: inline-grid !important; min-width: 24px !important; height: 22px !important; margin-left: var(--b-space-8) !important; padding: 0 var(--b-space-8) !important; border-radius: var(--b-radius-pill) !important;
-      background: var(--b-teal-50) !important; color: var(--b-teal) !important; font-size: var(--b-fs-caption) !important; line-height: 22px !important; font-weight: 700 !important; }
+      /* Phase 9 (spec 1.3): the one inline count, 20px, 12/16 700 tabular, teal on teal-50 (it was 22px at 12.5). */
+      display: inline-grid !important; box-sizing: border-box !important; min-width: var(--b-count-h) !important; height: var(--b-count-h) !important; margin-left: var(--b-space-8) !important; padding: 0 6px !important; border-radius: var(--b-radius-pill) !important;
+      background: var(--b-teal-50) !important; color: var(--b-teal) !important; font-size: var(--b-fs-count) !important; line-height: 16px !important; font-weight: 700 !important; font-variant-numeric: tabular-nums !important; }
 
     /* Round 5 (Nov 7) P12: Scheduling rules has one inset divider between every rule (the first two sit in their save form,
      * the third follows it); a long value wraps beside the title instead of squeezing it. */
@@ -439,7 +440,7 @@
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx :is(.manager-corrections-notice, .manager-corrections-empty) { padding-left: var(--b-inset) !important; padding-right: var(--b-inset) !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-row { padding: 14px var(--b-inset) var(--b-space-16) !important; box-shadow: none !important; background: linear-gradient(var(--b-line), var(--b-line)) 18px 0 / calc(100% - 18px) 1px no-repeat !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-row:first-child { background: none !important; }
-    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-topline > span { display: inline-flex !important; align-items: center !important; height: 22px !important; padding: 0 var(--b-space-8) !important; border-radius: var(--b-radius-pill) !important; background: var(--b-amber-50) !important; color: var(--b-amber) !important; font-size: 12px !important; line-height: 1 !important; font-weight: 600 !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-topline > span { display: inline-flex !important; align-items: center !important; height: var(--b-chip-h) !important; padding: 0 var(--b-chip-px) !important; border-radius: var(--b-radius-pill) !important; background: var(--b-amber-50) !important; color: var(--b-amber) !important; font-size: var(--b-fs-count) !important; line-height: 16px !important; font-weight: 600 !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-actions button { height: 40px !important; border-radius: var(--b-radius-pill) !important; border: 0 !important; background: #E6EBEA !important; color: var(--b-ink) !important; box-shadow: none !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-actions button.primary { background: var(--b-teal) !important; color: #FFFFFF !important; box-shadow: var(--b-elev-glow) !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-actions button:disabled { box-shadow: none !important; }

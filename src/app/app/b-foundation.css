@@ -209,7 +209,7 @@
   :is(#c-root, html) body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn, .nv-btn):not(:disabled, [aria-disabled="true"]):active { scale: var(--b-press-scale); }
 }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.c-btn, .q-btn, .q-bs, .wc-btn):is(:disabled, [aria-disabled="true"]) {
-  opacity: 1; background: var(--b-disabled-bg); color: var(--b-disabled-ink); box-shadow: none; scale: 1; transform: none; cursor: not-allowed;
+  opacity: 1; background: var(--b-disabled-bg); color: var(--b-disabled-ink); border-color: transparent; box-shadow: none; scale: 1; transform: none; cursor: not-allowed;
 }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.c-page, .q-page, .b-screen) select:not([multiple]) {
   min-height: 48px; border-radius: var(--b-radius-field); font-size: 16px; color: var(--b-ink);
@@ -277,13 +277,16 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
 :is(#c-root, html) body .app-shell[data-nv-b] .c-help__a a { display: inline-block; padding-block: 11px; margin-block: -11px; font-size: inherit; }
 @media (prefers-reduced-motion: reduce) { :is(#c-root, html) body .app-shell[data-nv-b] .c-help__q > summary .c-chev--down { transition: none; } }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-offline[data-held]::before { content: ""; flex: none; display: inline-block; width: 8px; height: 8px; margin-right: var(--b-space-8); border-radius: 4px; background: var(--b-amber-solid); vertical-align: 1px; }
-:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 14px; align-items: start; padding: var(--b-space-16); text-align: left; }
+:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 14px; align-items: start; padding: var(--b-space-20) var(--b-inset); text-align: left; }
+/* Phase 9: a state card takes its card's inset (20px 18px on a phone, 24px 22px from 768px), so its circle and words start
+ * on the card's text edge, as the rows do; it was 16px all round. */
+@media (min-width: 768px) { :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard { padding: var(--b-space-24) var(--b-inset-wide); } }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard > .b-ico { width: 48px; height: 48px; }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard > .b-ico svg { width: 22px; height: 22px; }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__main { display: grid; gap: var(--b-space-4); justify-items: start; min-width: 0; }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__t { margin: var(--b-space-2) 0 0; font: 600 16px/22px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--b-ink); }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__s { margin: 0; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); }
-:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__main > .b-btn { margin-top: 10px; min-height: 44px; }
+:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__main > .b-btn { margin-top: 10px; min-height: var(--b-btn-h); padding: 0 18px; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-spin { display: block; width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid currentColor; border-right-color: transparent; }
 @media (prefers-reduced-motion: no-preference) { :is(#c-root, html) body .app-shell[data-nv-b] .b-spin { animation: b-spin var(--b-dur-spin, 800ms) linear infinite; } }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint[data-tone="green"] { background: var(--b-green-50); }
@@ -382,7 +385,7 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
      * from the content's 16px top margin to 16px past the filter. */
     html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins { position: relative !important; padding-top: 0 !important; }
     html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins::before { content: "" !important; position: absolute !important; top: -16px !important; left: 0 !important; right: 0 !important; height: 150px !important; z-index: 0 !important; background: #08504C !important; pointer-events: none !important; }
-    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search { margin: 0 !important; height: 46px !important; min-height: 46px !important; padding: 0 var(--b-gutter) !important; border: 0 !important; border-radius: var(--b-radius-field) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; color: var(--b-on-band) !important; }
+    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search { margin: 0 !important; height: var(--b-seg-h) !important; min-height: var(--b-seg-h) !important; padding: 0 var(--b-gutter) !important; border: 0 !important; border-radius: var(--b-radius-field) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; color: var(--b-on-band) !important; }
     html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] { margin: var(--b-space-12) 0 0 !important; padding: var(--b-seg-pad) !important; border: 0 !important; border-radius: var(--b-seg-r) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
     html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg + * { margin-top: var(--b-space-40) !important; }
   }
@@ -407,7 +410,7 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
   html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search:focus-within { outline: 2px solid var(--b-focus-on-band) !important; outline-offset: 2px !important; }
   html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] > button { background: transparent !important; box-shadow: none !important; color: var(--b-on-band) !important; font-weight: 600 !important; }
   html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg > button .c-pins__count { color: inherit !important; opacity: .86; }
-  html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] > button[aria-pressed="true"] { background: #FFFFFF !important; color: #0B3B38 !important; box-shadow: 0 2px 6px rgb(0 0 0 / .18) !important; }
+  html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] > button[aria-pressed="true"] { background: #FFFFFF !important; color: #0B3B38 !important; box-shadow: var(--b-shadow-thumb) !important; }
   html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg > button:focus-visible { outline: 2px solid var(--b-focus-on-band) !important; outline-offset: 2px !important; }
   html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg[data-slide]::before, html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg > button::before { display: none !important; }
   /* NV-265: on phones the form band's Save / Next pill (36px drawn) gets a 44px target. Nov 14 inspection (BR-11): so do the
@@ -503,7 +506,7 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
   }
 
   /* NV-102 (Jose: "Save at the bottom of the card"): on tablets and desktop a single-card settings tool's Save is a
-   * right-aligned 48px pill in that card's footer, under one inset divider; nothing floats on the canvas under a card, and
+   * right-aligned 44px pill in that card's footer, under one inset divider; nothing floats on the canvas under a card, and
    * the band keeps no second Save. .wc-savecard is the one card (the blocks inside it lose their own card look),
    * .wc-savefoot its footer. Phones keep their own placement: there both wrappers are display: contents, and a footer
    * marked --wide (whose phone Save is in the top bar) is hidden. */
@@ -530,20 +533,18 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
       display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: flex-end !important; gap: var(--b-space-12) !important;
       margin: 0 !important; padding: 14px var(--b-inset-wide) 18px !important; border: 0 !important; background: linear-gradient(var(--b-line), var(--b-line)) 22px 0 / calc(100% - 22px) 1px no-repeat !important;
     }
-    /* One footer button: a 48px pill sized to its label, never a bar; also in the footers that already sat in their card
+    /* One footer button: a 44px pill (Phase 9 ladder) sized to its label, never a bar; also in the footers that already sat in their card
      * (Punch photos, Clocker tablets), so no footer stretches to 726px on a tablet. */
     html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page) :is(.wc-savecard .wc-savefoot, .wc-page .c-card__foot, .c-photos__foot) > :is(button, a):is(.q-btn, .c-btn, .wc-btn) {
-      flex: none !important; width: auto !important; min-width: 96px !important; height: 48px !important; min-height: 48px !important; margin: 0 !important;
-      padding: 0 var(--b-space-24) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-body) !important; line-height: 20px !important;
+      flex: none !important; width: auto !important; min-width: 96px !important; height: var(--b-btn-h) !important; min-height: var(--b-btn-h) !important; margin: 0 !important;
+      padding: 0 var(--b-space-20) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important;
     }
-    /* Employee single-card forms (TB-031, EM-038): Send request and Create or Copy calendar link were full-width bars (734px
-     * on a 900px tablet, 1042px on desktop); they are right-aligned 48px pills at the card's foot. */
+    /* Employee single-card forms (TB-031, EM-038): Send request was a full-width bar (734px on a 900px tablet, 1042px on
+     * desktop); it is a right-aligned 48px pill at the card's foot. Premium pass FA: the calendar link's button follows the
+     * Employee sheet's own rule (FC), so its 48px rule left the kit. */
     html body .app-shell[data-nv-b] .c-page > .tof-form.b-keep .tof-foot { display: flex !important; flex-direction: row !important; justify-content: flex-end !important; }
     html body .app-shell[data-nv-b] .c-page > .tof-form.b-keep .tof-foot > .c-btn {
       flex: none !important; width: auto !important; min-width: 96px !important; height: 48px !important; min-height: 48px !important; padding: 0 var(--b-space-24) !important; border-radius: var(--b-radius-pill) !important;
-    }
-    html body .app-shell[data-nv-b] .b-screen section.b-card[aria-labelledby="b-calendar-heading"] .eb-body > .b-btn--full {
-      display: flex !important; width: fit-content !important; min-width: 96px !important; min-height: 48px !important; margin-left: auto !important; padding: 0 var(--b-space-24) !important;
     }
   }
 }
@@ -626,13 +627,13 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
     html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters):not(:has(> :nth-child(3))) > :is(a, button) { font-size: var(--b-seg-fs) !important; letter-spacing: 0 !important; }
   }
   /* The count pill: the label's colour at 16% behind it; teal on the white thumb; amber stays amber (For you). */
-  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.c-count, .eb-segn, .c-pins__count, b) {
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) {
     display: inline-grid !important; place-items: center !important; box-sizing: border-box !important; min-width: var(--b-seg-count-h) !important; height: var(--b-seg-count-h) !important;
     margin: 0 0 0 var(--b-seg-count-gap) !important; padding: 0 var(--b-seg-count-px) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-seg-count-fs) !important; font-weight: 700 !important;
     line-height: 1 !important; letter-spacing: 0 !important; opacity: 1 !important; color: inherit !important; background: color-mix(in srgb, currentColor 16%, transparent) !important;
   }
-  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is([aria-pressed="true"], [aria-current="page"], [aria-selected="true"]) :is(.c-count, .eb-segn, .c-pins__count, b) { background: var(--b-teal-50) !important; color: var(--b-teal) !important; }
-  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) .eb-segn--amber { background: var(--b-amber-50) !important; color: var(--b-amber) !important; }
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is([aria-pressed="true"], [aria-current="page"], [aria-selected="true"]) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) { background: var(--b-teal-50) !important; color: var(--b-teal) !important; }
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.eb-segn--amber, .b-count[data-tone="amber"]) { background: var(--b-amber-50) !important; color: var(--b-amber) !important; }
   /* Narrow phones (320–359px): a track of three or more items without a sliding thumb (Insights' periods, Things to do's
    * filters, Pick up and swap) gives each item its label's width plus an equal share of what is left, so a long label isn't
    * clipped or pressed to its thumb's edge while a short one has room to spare (equal columns clipped "This week" by 4px at
@@ -647,7 +648,7 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
     background: var(--b-quiet) !important; box-shadow: inset 0 0 0 1px #E3E6E7 !important;
   }
   html body .app-shell[data-nv-b] .b-filters > button { flex: none !important; padding: 0 var(--b-gutter) !important; background: transparent !important; box-shadow: none !important; color: var(--b-grey-on-fill) !important; }
-  html body .app-shell[data-nv-b] .b-filters > button[aria-pressed="true"] { background: #FFFFFF !important; color: var(--b-ink) !important; box-shadow: 0 1px 3px rgb(16 40 38 / 0.14) !important; }
+  html body .app-shell[data-nv-b] .b-filters > button[aria-pressed="true"] { background: #FFFFFF !important; color: var(--b-ink) !important; box-shadow: var(--b-shadow-thumb) !important; }
   @media (min-width: 768px) {
     html body .app-shell[data-nv-b] .b-filters { max-width: calc(100% - 44px) !important; margin: var(--b-space-16) var(--b-inset-wide) var(--b-space-8) !important; -webkit-mask-image: none !important; mask-image: none !important; }
     html body .app-shell[data-nv-b] .b-filters > button { padding: 0 var(--b-seg-item-px) !important; }
@@ -703,7 +704,7 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
     background: var(--b-teal-50) !important; color: var(--b-teal) !important; box-shadow: none !important;
     font: 600 var(--b-fs-body-sm)/var(--b-lh-body-sm) Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: 0 !important; text-decoration: none !important;
   }
-  html body .app-shell[data-nv-b] .nv-btn[data-block="true"] { min-height: 48px !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; }
+  html body .app-shell[data-nv-b] .nv-btn[data-block="true"] { min-height: var(--b-btn-h-full) !important; font-size: 16px !important; line-height: 22px !important; }
   html body .app-shell[data-nv-b] .nv-btn[data-kind="primary"] { background: var(--b-teal) !important; color: #FFFFFF !important; }
   html body .app-shell[data-nv-b] .nv-btn[data-kind="primary"]:not(:disabled, [aria-disabled="true"]) { box-shadow: var(--b-elev-glow) !important; }
   html body .app-shell[data-nv-b] .nv-btn[data-kind="danger"] { background: var(--b-red) !important; color: #FFFFFF !important; }
@@ -731,6 +732,10 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-rowact.b-rowact--quiet:not(#b-ra1):not(#b-ra2):not(#b-ra3) { border-color: transparent !important; background: transparent !important; color: var(--b-ink2) !important; box-shadow: none !important; text-decoration: none !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-rowact:is(:disabled, [aria-disabled="true"]):not([aria-busy="true"]):not(#b-ra1):not(#b-ra2):not(#b-ra3) { opacity: 1 !important; background: var(--b-disabled-bg) !important; color: var(--b-disabled-ink) !important; box-shadow: none !important; cursor: not-allowed !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-rowact:focus-visible:not(#b-ra1):not(#b-ra2):not(#b-ra3) { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; }
+  /* Phase 9 (decision 3, B1): a row action is the ladder's regular step at every width, 44px drawn and 14.5/20 600 (Owner
+   * desktop rows drew 40px at 13/500 and 13/600). Width and side padding stay with each page (a decision pair keeps its
+   * 96px minimum). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-rowact:not(#b-ra1):not(#b-ra2):not(#b-ra3) { box-sizing: border-box !important; height: auto !important; min-height: var(--b-btn-h) !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; font-weight: 600 !important; letter-spacing: 0 !important; }
 
   /* SY-008, RA-14: the bell's coral dot is 2.1:1 on the band, so its 2px ring is white (5.8:1 on the band, 4.5:1 on the
    * bell's glass): the mark is found by its ring, and coral stays its colour. The Owner's rings are set where the dot is
@@ -848,4 +853,112 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
       background: var(--b-coral) !important; box-shadow: 0 0 0 2px var(--b-on-band) !important; font-size: 0 !important; line-height: 0 !important; color: transparent !important; overflow: hidden !important; transform: none !important; translate: none !important;
     }
   }
+}
+
+/* ---------- Phase 9 (Nov 18, 2026): one button ladder, one field, one checkbox, one error line, one toast ----------
+ * The kit's sizes are in owner-b.css; these are the rules the older button and field classes share. The !important
+ * declarations are in nv-b (B8); the normal ones follow it. Values: src/app/b-tokens.css. */
+@layer nv-b {
+  /* One disabled pair for every button class (four pairs drew before: #EDEEEF and #F5F6F6 fills, #A7ACB1 and #6B7075 ink,
+   * a border on one). A busy button keeps its look (Phase 7). */
+  html body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn):is(:disabled, [aria-disabled="true"]):not([aria-busy="true"]) {
+    opacity: 1 !important; background-color: var(--b-disabled-bg) !important; background-image: none !important; color: var(--b-disabled-ink) !important; border-color: transparent !important; box-shadow: none !important; cursor: not-allowed !important;
+  }
+  /* One weight: 600 on the older kits' buttons (secondary pills drew 500 on phones). The white pill on a band keeps its
+   * approved 700, so band rows and sheet headers are left to their own rules. */
+  html body .app-shell[data-nv-b] :is(.c-btn, .q-btn, .q-bs, .wc-btn):not(:is(header.c-title, .c-formhead, .q-nav, .c-nav, .q-hd, .b-hero, .c-shift__head) *, .c-shift__save) { font-weight: 600 !important; }
+
+  /* One inline count (spec 1.3): 20px at every width. The desktop rule that drew the kit's count at 24px
+   * (owner-b-desktop.css, "b-pill") is the same strength and loads before this sheet. */
+  html body .app-shell[data-nv-b] .b-screen :is(.b-pill, .b-count) { height: var(--b-count-h) !important; }
+
+  /* One field (spec 4.5): 16px text, so a tap never zooms the page on iOS (15, 15.5 and 17px drew), and the placeholder
+   * in the token grey (the browser's #757575, #6B7075 and #6A7176 drew). Fields on the band and the search fields keep
+   * their own look. Edges, focus and invalid are F4's, above. */
+  html body .app-shell[data-nv-b] :is(.c-page, .q-page, dialog) :is(input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="range"], [type="color"], [type="file"], [type="submit"], [type="button"], [type="reset"], [type="image"], [type="search"]), select, textarea):not(:is(header.c-title, .b-hero, .q-hd, .q-nav, .b-search, .q-search, form.c-team-search, .c-pins__search, .command-finder, label[class*="earch"]) *) { font-size: 16px !important; letter-spacing: 0 !important; }
+  html body .app-shell[data-nv-b] :is(.c-page, .q-page, dialog) :is(input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="range"], [type="color"], [type="file"], [type="submit"], [type="button"], [type="reset"], [type="image"], [type="search"]), textarea):not(:is(header.c-title, .b-hero, .q-hd, .q-nav, .b-search, .q-search, form.c-team-search, .c-pins__search, .command-finder, label[class*="earch"]) *)::placeholder { color: var(--b-grey) !important; opacity: 1 !important; }
+  /* …48px tall: the number fields drew 44px and a date-and-time field 50px. */
+  html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page, dialog) input:is([type="number"], [type="datetime-local"], [type="date"], [type="time"]):not(:is(header.c-title, .b-hero, .q-hd, .q-nav, .b-search, .q-search, form.c-team-search, .c-pins__search, .command-finder, label[class*="earch"], .tof-pick, .q-input-row, .c-pay__date, [class*="Half"]) *) { box-sizing: border-box !important; height: 48px !important; min-height: 48px !important; }
+
+  /* One checkbox (spec 4.7): 20px, 6px corners, a 1.5px field edge on white; checked is teal with a 14px bold white
+   * check; mixed is a bold dash; disabled is the disabled pair inside the quiet edge (so the box keeps its shape); focus is the one teal ring. Its 44px target is its label
+   * row, as before. Switches and the boxes drawn by their own components are left alone; a box laid invisibly over a
+   * bigger control keeps its size. */
+  html body .app-shell[data-nv-b] input[type="checkbox"]:not(.q-tog, .c-switch, .av-switch-track, .q-tc-box, .q-deletion__box, .c-check__box, [role="switch"], [class*="switch"], [class*="Switch"], [class*="tog"], :is(.av-switch, .av-filter, .em-delete-check, [class*="avSwitch"]) *) {
+    -webkit-appearance: none !important; appearance: none !important; box-sizing: border-box !important; flex: none !important; display: inline-block !important; vertical-align: middle;
+    width: 20px !important; height: 20px !important; min-width: 20px !important; min-height: 20px !important; padding: 0 !important;
+    border: 1.5px solid var(--b-field-edge) !important; border-radius: 6px !important; background: #FFFFFF none center / 14px 14px no-repeat !important; box-shadow: none !important; cursor: pointer;
+  }
+  html body .app-shell[data-nv-b] input[type="checkbox"]:not(.q-tog, .c-switch, .av-switch-track, .q-tc-box, .q-deletion__box, .c-check__box, [role="switch"], [class*="switch"], [class*="Switch"], [class*="tog"], :is(.av-switch, .av-filter, .em-delete-check, [class*="avSwitch"]) *):is(:checked, :indeterminate) { border-color: var(--b-teal) !important; background-color: var(--b-teal) !important; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23FFFFFF' d='M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") !important; }
+  html body .app-shell[data-nv-b] input[type="checkbox"]:not(.q-tog, .c-switch, .av-switch-track, .q-tc-box, .q-deletion__box, .c-check__box, [role="switch"], [class*="switch"], [class*="Switch"], [class*="tog"], :is(.av-switch, .av-filter, .em-delete-check, [class*="avSwitch"]) *):indeterminate { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23FFFFFF' d='M228,128a12,12,0,0,1-12,12H40a12,12,0,0,1,0-24H216A12,12,0,0,1,228,128Z'/%3E%3C/svg%3E") !important; }
+  html body .app-shell[data-nv-b] input[type="checkbox"]:not(.q-tog, .c-switch, .av-switch-track, .q-tc-box, .q-deletion__box, .c-check__box, [role="switch"], [class*="switch"], [class*="Switch"], [class*="tog"], :is(.av-switch, .av-filter, .em-delete-check, [class*="avSwitch"]) *):disabled { border-color: var(--b-quiet-edge) !important; background-color: var(--b-disabled-bg) !important; cursor: not-allowed !important; }
+  html body .app-shell[data-nv-b] input[type="checkbox"]:not(.q-tog, .c-switch, .av-switch-track, .q-tc-box, .q-deletion__box, .c-check__box, [role="switch"], [class*="switch"], [class*="Switch"], [class*="tog"], :is(.av-switch, .av-filter, .em-delete-check, [class*="avSwitch"]) *):disabled:is(:checked, :indeterminate) { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%238C9397' d='M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") !important; }
+  html body .app-shell[data-nv-b] input[type="checkbox"]:not(.q-tog, .c-switch, .av-switch-track, .q-tc-box, .q-deletion__box, .c-check__box, [role="switch"], [class*="switch"], [class*="Switch"], [class*="tog"], :is(.av-switch, .av-filter, .em-delete-check, [class*="avSwitch"]) *):focus-visible { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; }
+  @media (forced-colors: active) {
+    html body .app-shell[data-nv-b] input[type="checkbox"]:not(.q-tog, .c-switch, .av-switch-track, .q-tc-box, .q-deletion__box, .c-check__box, [role="switch"], [class*="switch"], [class*="Switch"], [class*="tog"], :is(.av-switch, .av-filter, .em-delete-check, [class*="avSwitch"]) *) { -webkit-appearance: auto !important; appearance: auto !important; background: none !important; border: 0 !important; }
+  }
+
+  /* One error line under a field (spec 2.1, DESIGN Phase 3): red 13.5/18 500, its glyph 16px on the first line's capitals
+   * (the in-app forms drew 18px). The words and the WarningCircle glyph are the forms' own. */
+  html body .app-shell[data-nv-b] :is(.c-page, .q-page, .b-screen, dialog) :is(.q-fl__error, .q-error, .wb-error, .c-error, .c-field__error, .form-error, .q-auth__invalid):not(.q-auth__alert, .c-page.c-sched > p) { color: var(--b-red) !important; font-weight: 500 !important; }
+  html body .app-shell[data-nv-b] :is(.c-page, .q-page, .b-screen, dialog) :is(.q-fl__error, .q-error, .wb-error, .c-error, .c-field__error, .form-error, .q-auth__invalid):not(.q-auth__alert, .c-page.c-sched > p) > svg:first-child { flex: none !important; width: var(--b-ic-inline) !important; height: var(--b-ic-inline) !important; margin-top: 1px !important; }
+
+  /* The toast (spec 2.6): Direction B's surface. White, the menu's 16px corners, the popover elevation and a transparent
+   * edge (High Contrast draws it), 14.5/20 500 ink; the done mark (a bold check in a 28px green-50 circle) for a result,
+   * the information glyph in teal-50 for a note; a 36px round close with a 44px target. It replaces the dark masthead
+   * surface with 8px corners (portal-premium.css) and the older white one (portal-motion.css). Its motion is Phase 7's
+   * (b-motion.css): nothing here moves. A page's success line shown as a toast takes the same surface and mark. */
+  html body .app-shell[data-nv-b] .nevora-toast,
+  html body .app-shell.nevora-portal[data-nv-b] .page-frame .form-success[role="status"]:not(form *):not([popover] *):not(dialog *) {
+    gap: var(--b-space-12) !important; padding: 10px var(--b-space-8) 10px var(--b-space-12) !important; border: 1px solid transparent !important; border-radius: var(--b-radius-menu) !important;
+    background-color: #FFFFFF !important; color: var(--b-ink) !important; box-shadow: var(--b-elev-2) !important;
+    font: 500 var(--b-fs-body-sm)/var(--b-lh-body-sm) Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: 0 !important; text-wrap: pretty;
+  }
+  html body .app-shell[data-nv-b] .nevora-toast { grid-template-columns: 28px minmax(0, 1fr) auto !important; }
+  html body .app-shell[data-nv-b] .nevora-toast > .nevora-toast__ic { display: grid !important; place-items: center !important; width: 28px !important; height: 28px !important; border-radius: 50% !important; background: var(--b-green-50) !important; color: var(--b-green) !important; }
+  html body .app-shell[data-nv-b] .nevora-toast[data-tone="info"] > .nevora-toast__ic { background: var(--b-teal-50) !important; color: var(--b-teal) !important; }
+  html body .app-shell[data-nv-b] .nevora-toast > .nevora-toast__ic > svg { width: var(--b-ic-inline) !important; height: var(--b-ic-inline) !important; color: inherit !important; }
+  html body .app-shell[data-nv-b] .nevora-toast > button {
+    position: relative !important; display: grid !important; place-items: center !important; width: 36px !important; height: 36px !important; min-width: 36px !important; min-height: 36px !important; margin: 0 !important; padding: 0 !important;
+    border: 0 !important; border-radius: 50% !important; background: transparent !important; color: var(--b-grey) !important;
+  }
+  html body .app-shell[data-nv-b] .nevora-toast > button::after { content: "" !important; position: absolute !important; inset: -4px !important; }
+  html body .app-shell[data-nv-b] .nevora-toast > button > svg { width: var(--b-ic-inline) !important; height: var(--b-ic-inline) !important; }
+  @media (hover: hover) { html body .app-shell[data-nv-b] .nevora-toast > button:hover { background: var(--b-quiet) !important; color: var(--b-ink) !important; } }
+  html body .app-shell[data-nv-b] .nevora-toast > button:focus-visible { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; }
+  html body .app-shell.nevora-portal[data-nv-b] .page-frame .form-success[role="status"]:not(form *):not([popover] *):not(dialog *) {
+    padding-left: 52px !important; padding-right: var(--b-space-16) !important; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Ccircle cx='14' cy='14' r='14' fill='%23E7F4EC'/%3E%3Cpath fill='%231D6B45' transform='translate(6 6) scale(0.0625)' d='M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") !important; background-repeat: no-repeat !important; background-size: 28px 28px !important; background-position: 12px center !important;
+  }
+}
+/* Switches (spec 4.6, no visible change): the off track is the field edge everywhere (#8C9397 drew in one rule) and the
+ * knob casts the one thumb shadow. */
+:is(#c-root, html) body .app-shell[data-nv-b] .c-switch:not(:checked, [aria-checked="true"]) { background-color: var(--b-field-edge); }
+:is(#c-root, html) body .app-shell[data-nv-b] :is(.c-switch, .q-tog)::after { box-shadow: var(--b-shadow-thumb); }
+
+/* ---------- Premium pass FA (Nov 18, 2026): one line of facts (BSegs, final verification A #10 and B #8) ----------
+ * Facts joined by "·" wrap only between facts, each fact whole, and no line starts or ends with a dot: the line starts
+ * 13px left of its text edge and that strip is cut off, so the dot slot of a fact that starts a line is never drawn. In
+ * the layer because the older eras set nowrap and an ellipsis on a row's first detail span. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .b-segs:not(#fa-s1):not(#fa-s2):not(#fa-s3) { display: inline-flex !important; flex-wrap: wrap !important; align-items: baseline !important; box-sizing: border-box !important; min-width: 0 !important; max-width: calc(100% + 13px) !important; margin: 0 0 0 -13px !important; padding: 0 !important; clip-path: inset(-16px -16px -16px 13px) !important; overflow: visible !important; white-space: normal !important; text-overflow: clip !important; vertical-align: top !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .b-segs > .b-segs__i:not(#fa-s1):not(#fa-s2):not(#fa-s3) { position: relative !important; min-width: 0 !important; overflow: visible !important; white-space: normal !important; text-overflow: clip !important; overflow-wrap: break-word !important; }
+  /* Every fact keeps its 13px slot as padding, so a fact long enough to wrap inside itself starts its second line on the
+   * text edge too (the slot is the part that is cut off); the dot sits in the slot of the fact's first line. */
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .b-segs > .b-segs__i:not(#fa-s1):not(#fa-s2):not(#fa-s3) { padding-left: 13px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .b-segs > .b-segs__i + .b-segs__i:not(#fa-s1):not(#fa-s2):not(#fa-s3)::before { content: "·"; content: "·" / ""; position: absolute; left: 0; top: 0; width: 13px; text-align: center; font-variant-numeric: normal; }
+}
+/* Premium pass FA (final verification A #8, B #11): Inter's tabular figures carry a tabular hyphen and dash, so a chip's
+ * words ("Missing clock-out", inside a table cell that is tabular) read "clock - out". A chip without the live dot holds
+ * words, not a figure that ticks: its figures are proportional. The live chips keep tabular figures (spec 3.1). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .b-chip:not([data-dot]):not(#fa-s1):not(#fa-s2):not(#fa-s3) { font-variant-numeric: normal !important; font-feature-settings: normal !important; }
+}
+/* Premium pass FA (final verification A #10, B #6): a unit that never splits (a time range beside a row's button). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .b-keep:not(#fa-s1):not(#fa-s2):not(#fa-s3) { white-space: nowrap !important; }
+}
+/* Premium pass FA (final verification A #14): every list row's chevron is the kit's, in the field edge (3.5:1 on white); the
+ * Quiet lists painted theirs #A7ACB1 (2.2:1). A disclosure's own caret keeps its grey. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .q-chev:not(summary .q-chev):not(#fa-s1):not(#fa-s2):not(#fa-s3) { color: var(--b-field-edge) !important; }
 }

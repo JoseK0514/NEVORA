@@ -15,8 +15,8 @@ import { Temporal } from "@js-temporal/polyfill";
 import { readReports } from "@/lib/reports/service";
 import type { SessionMutationProof } from "@/lib/shift-changes/types";
 import { ChartBarIcon } from "@phosphor-icons/react/dist/ssr/ChartBar";
-import { MegaphoneSimpleIcon } from "@phosphor-icons/react/dist/ssr/MegaphoneSimple";
-import { WalletIcon } from "@phosphor-icons/react/dist/ssr/Wallet";
+import { MegaphoneIcon } from "@phosphor-icons/react/dist/ssr/Megaphone";
+import { ReceiptIcon } from "@phosphor-icons/react/dist/ssr/Receipt";
 import { SparkleIcon } from "@phosphor-icons/react/dist/ssr/Sparkle";
 import { GearSixIcon } from "@phosphor-icons/react/dist/ssr/GearSix";
 import { SlidersHorizontalIcon } from "@phosphor-icons/react/dist/ssr/SlidersHorizontal";
@@ -116,8 +116,8 @@ export default async function MorePage() {
   const owner = session.role === "OWNER";
   // Review B1 (NV-099): every navigation row leads with its Phosphor bold icon (a tinted circle, as Team and Timecards rows
   // do) and ends with its chevron; a row may end in a grey value before the chevron ("24 h this week").
-  const rowIcons: Record<string, ReactNode> = { "/app/reports": <ChartBarIcon weight="bold" />, "/app/updates": <MegaphoneSimpleIcon weight="bold" />,
-    "/app/my-pay": <WalletIcon weight="bold" />, "/app/ai-manager": <SparkleIcon weight="bold" />, "/app/settings": <GearSixIcon weight="bold" />,
+  const rowIcons: Record<string, ReactNode> = { "/app/reports": <ChartBarIcon weight="bold" />, "/app/updates": <MegaphoneIcon weight="bold" />,
+    "/app/my-pay": <ReceiptIcon weight="bold" />, "/app/ai-manager": <SparkleIcon weight="bold" />, "/app/settings": <GearSixIcon weight="bold" />,
     "/app/schedule/settings": <SlidersHorizontalIcon weight="bold" />, "/app/help": <QuestionIcon weight="bold" />, "/app/billing": <CreditCardIcon weight="bold" /> };
   const row = (href: string, title: string, value?: ReactNode) =>
     <li key={href}><CorpRow href={href} title={title} value={value} valueTone="soft" icon={rowIcons[href]} one chevron /></li>;

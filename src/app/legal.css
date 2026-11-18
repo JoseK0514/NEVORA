@@ -9,10 +9,10 @@
 :is(#q-root, html) main.q-doc .pl-card { min-width: 0; padding: var(--b-space-8) var(--b-inset) var(--b-space-12); border-radius: var(--b-radius-card); background: #FFFFFF; box-shadow: var(--b-elev-1); }
 :is(#q-root, html) main.q-doc .pl-toc { display: none; }
 
-/* One note above a document that is not translated (teal: information). */
-:is(#q-root, html) main.q-doc .pl-note { display: flex; align-items: flex-start; gap: 10px; margin: 10px 0 var(--b-space-4); padding: var(--b-space-12) var(--b-gutter); border-radius: var(--b-radius-field); background: var(--b-teal-50); color: #0B4F4B; font-size: var(--b-fs-body); line-height: var(--b-lh-body); }
-:is(#q-root, html) main.q-doc .pl-note > svg { flex: none; margin-top: 1px; color: var(--b-teal); }
-:is(#q-root, html) main.q-doc .pl-note a { color: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+/* One note above a document that is not translated: the kit's teal callout (BCallout, Phase 9). It sits as far from the
+ * card's top as from its sides (8px padding + 12px = the 20px phone and tablet edge; 28px on a desktop) and 12px above
+ * "Open all", so that control groups with the sections it opens rather than with the note. */
+:is(#q-root, html) :is(#q-root, body) main.q-doc .pl-card > .b-callout { margin: var(--b-space-12) 0 var(--b-space-12); }
 
 /* ---------- sections ---------- */
 /* "Open all": a quiet text button at the top right of the card, phones and tablets only. */
@@ -66,7 +66,7 @@
   :is(#q-root, html) main.q-doc .pl-toc a { display: block; padding: 12px; border-radius: var(--b-radius-small); font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); font-weight: 500; color: var(--b-ink2); text-decoration: none; }
   :is(#q-root, html) main.q-doc .pl-toc a:hover { background: var(--b-canvas); }
   :is(#q-root, html) main.q-doc .pl-toc a:focus-visible { outline-offset: -2px; }
-  :is(#q-root, html) main.q-doc .pl-note { margin: var(--b-space-12) 0 0; }
+  :is(#q-root, html) :is(#q-root, body) main.q-doc .pl-card > .b-callout { margin: var(--b-space-16) 0 0; }
   /* Until the page's script swaps the buttons for plain headings they already read as plain ones. */
   :is(#q-root, html) main.q-doc .pl-all { display: none; }
   :is(#q-root, html) main.q-doc .pl-sec { border-top: 0; scroll-margin-top: var(--b-space-24); }

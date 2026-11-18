@@ -14,9 +14,10 @@ import ck from '../clocker.module.css';
 /* Phase 8 (#15): the photo step names its action in sentence case, one phrase per action ("Photo for clock out"). */
 const photoTitles:Record<PunchAction,string>={CLOCK_IN:'Photo for clock in',CLOCK_OUT:'Photo for clock out',START_BREAK:'Photo for break start',END_BREAK:'Photo for break end'};
 const titles:Record<PhotoPhase,string>={setup_required:'Photo capture is unavailable',ready:'Photo for clock in',camera_starting:'Opening the camera…',camera_live:'Ready for your photo?',photo_review:'Use this photo?',camera_error:'The camera needs attention',intent_unavailable:'This tablet can’t save punches',punch_sending:'Checking your time…',punch_unknown:'Check your last punch',punch_retry_allowed:'Check your last punch',photo_saving:'Saving your punch photo…',photo_unknown:'Time recorded. Check the photo.',complete:'Time recorded',expired:'Enter your PIN again',cancelled:'Camera closed'};
-/* Direction B (Nov 8, 2026): the same 64px status rings as the rest of the kiosk. */
-const rings:Partial<Record<PhotoPhase,[ClockerIconName,'teal'|'amber'|'red'|'green']>>={setup_required:['stop','red'],ready:['camera','teal'],camera_error:['warning','red'],intent_unavailable:['stop','red'],
- punch_sending:['wait','teal'],photo_saving:['wait','teal'],punch_unknown:['refresh','amber'],punch_retry_allowed:['refresh','amber'],photo_unknown:['refresh','amber'],expired:['lock','amber'],cancelled:['info','teal']};
+/* Direction B (Nov 8, 2026): the same 64px status rings as the rest of the kiosk. Premium pass (Nov 18, 2026): one glyph per
+ * meaning, as on the main path: red stop is WarningCircle, not confirmed is the amber Question (decision 2). */
+const rings:Partial<Record<PhotoPhase,[ClockerIconName,'teal'|'amber'|'red'|'green']>>={setup_required:['stop','red'],ready:['camera','teal'],camera_error:['stop','red'],intent_unavailable:['stop','red'],
+ punch_sending:['wait','teal'],photo_saving:['wait','teal'],punch_unknown:['unknown','amber'],punch_retry_allowed:['unknown','amber'],photo_unknown:['unknown','amber'],expired:['lock','amber'],cancelled:['info','teal']};
 /** snapshot: the clock state the person acted on, so the photo path's receipt carries the same facts as the normal one. */
 export type PunchPhotoFlowProps={context:PhotoSessionContext;bindings:PhotoBindings;timeZone:string;firstName?:string;snapshot?:PunchSnapshot;onExit(result:PhotoSessionView):void};
 /* Kiosk wording for photo results (Nov 10 review, NV-047): no audit words ("photo exception") and no storage note.
@@ -74,7 +75,8 @@ function ActivePhotoFlow({session,timeZone,firstName,snapshot,onExit}:{session:P
   {state.phase==='camera_live'?<p className={styles.description}>{t('Face the camera. Take a photo when you are ready.')}</p>:null}
   {state.phase==='photo_review'?<p className={styles.description}>{t('The camera is off. Use this photo to record your time.')}</p>:null}
   {state.phase==='camera_error'?<p role="alert" className={styles.notice}>{t(error)}</p>:null}
-  {['punch_unknown','punch_retry_allowed'].includes(state.phase)?<p role="alert" className={styles.notice}>{keep(t('Your punch is not confirmed yet. Tap Check if it saved before doing anything else.'))}</p>:null}
+  {/* After the check (#27) the sentence names the filled button, as on the main path: the same punch is sent, never twice. */}
+  {['punch_unknown','punch_retry_allowed'].includes(state.phase)?<p role="alert" className={styles.notice}>{keep(t(state.phase==='punch_retry_allowed'?'Your last punch still isn’t confirmed. Tap Send it again. It won’t record twice.':'Your punch is not confirmed yet. Tap Check if it saved before doing anything else.'))}</p>:null}
   {state.phase==='intent_unavailable'?<p role="alert" className={styles.notice}>{t('No punch was sent. Ask a manager to check this tablet.')}</p>:null}
   {state.phase==='photo_unknown'||state.phase==='complete'&&!receipt?<p role="status" className={styles.notice}>{t(kiosk(photoResultMessage(state)))}</p>:null}
   {['expired','cancelled'].includes(state.phase)?<p className={styles.description}>{t('The camera and private preview have been cleared.')}{' '}{t(state.receipt?'Your recorded time is preserved.':'Enter your PIN again to check a punch that isn’t confirmed.')}</p>:null}
@@ -83,15 +85,17 @@ function ActivePhotoFlow({session,timeZone,firstName,snapshot,onExit}:{session:P
   <div className={styles.actions}>
    {state.phase==='ready'&&state.requiresPhoto||state.phase==='camera_error'?<button type="button" className={styles.primary} onClick={()=>{if(video.current)void session.open(video.current);}}>{t('Open camera')}</button>:null}
    {state.phase==='camera_live'?<button type="button" className={styles.primary} onClick={()=>void session.capture()}>{t('Take photo')}</button>:null}
-   {state.phase==='photo_review'?<><button type="button" className={styles.primary} onClick={()=>void session.submit()}>{t('Use photo & continue')}</button><button type="button" className={styles.secondary} onClick={()=>{if(video.current)void session.open(video.current);}}>{t('Retake photo')}</button></>:null}
+   {state.phase==='photo_review'?<><button type="button" className={styles.primary} onClick={()=>void session.submit()}>{t('Use this photo')}</button><button type="button" className={styles.secondary} onClick={()=>{if(video.current)void session.open(video.current);}}>{t('Retake photo')}</button></>:null}
    {state.fallbackAllowed&&['ready','setup_required','camera_live','photo_review','camera_error'].includes(state.phase)?<button type="button" className={styles.secondary} onClick={()=>void session.submitWithoutPhoto()}>{t('Continue without photo')}</button>:null}
-   {['punch_unknown','punch_retry_allowed'].includes(state.phase)?<button type="button" className={styles.primary} onClick={()=>void session.checkPunch()}>{t('Check if it saved')}</button>:null}
-   {state.phase==='punch_retry_allowed'?<button type="button" className={styles.secondary} onClick={()=>void session.submit()}>{t('Send it again')}</button>:null}
+   {/* Premium pass (#27), as on the main path (Phase 8, #5): before the check, Check if it saved is the one action; once
+     * the check found nothing, Send it again is the filled button and Check if it saved the quiet one. */}
+   {state.phase==='punch_retry_allowed'?<button type="button" className={styles.primary} onClick={()=>void session.submit()}>{t('Send it again')}</button>:null}
+   {['punch_unknown','punch_retry_allowed'].includes(state.phase)?<button type="button" className={state.phase==='punch_retry_allowed'?styles.quiet:styles.primary} onClick={()=>void session.checkPunch()}>{t('Check if it saved')}</button>:null}
    {state.phase==='intent_unavailable'?<button type="button" className={styles.primary} onClick={()=>void session.submit()}>{t('Try again')}</button>:null}
-   {state.phase==='photo_unknown'?<button type="button" className={styles.primary} onClick={()=>void session.checkPhoto()}>{t('Check photo status')}</button>:null}
-   {state.phase==='photo_unknown'&&state.photoStatus?.state==='pending'&&state.previewUrl?<button type="button" className={styles.secondary} onClick={()=>void session.retryPhoto()}>{t('Retry saving same photo')}</button>:null}
+   {state.phase==='photo_unknown'?<button type="button" className={styles.primary} onClick={()=>void session.checkPhoto()}>{t('Check if the photo saved')}</button>:null}
+   {state.phase==='photo_unknown'&&state.photoStatus?.state==='pending'&&state.previewUrl?<button type="button" className={styles.secondary} onClick={()=>void session.retryPhoto()}>{t('Send the photo again')}</button>:null}
    {receipt?<button type="button" className={styles.secondary} onClick={exit}>{t('Done')}</button>
-   :<button type="button" className={styles.quiet} onClick={exit}>{t(state.receipt||['expired','cancelled','complete'].includes(state.phase)?'Return to PIN':'Cancel')}</button>}
+   :<button type="button" className={styles.quiet} onClick={exit}>{t(state.receipt||['expired','cancelled','complete'].includes(state.phase)?'Done':'Cancel')}</button>}
   </div>
  </section>;
 }

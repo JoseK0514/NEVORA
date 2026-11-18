@@ -1,13 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise";
 import { CalendarXIcon } from "@phosphor-icons/react/dist/ssr/CalendarX";
 import { QuestionIcon } from "@phosphor-icons/react/dist/ssr/Question";
 import { HourglassMediumIcon } from "@phosphor-icons/react/dist/ssr/HourglassMedium";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
+import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { CorpCard, CorpNav, CorpPage, CorpTitle } from "@/components/corp/corp";
-import { BCard, BChip, BHero, BNote, BScreen, BStack, BState } from "@/components/owner-b/b-kit";
+import { BCallout, BCard, BChip, BHero, BNote, BScreen, BStack, BState } from "@/components/owner-b/b-kit";
 import { timeZoneLabel } from "@/lib/time-zone-label";
 import { createRestrictionsClient, newOperationId, type RestrictionRequest, type RestrictionsClient, type RestrictionsCommand, type RestrictionsScope, type RestrictionsSnapshot, type CommandOutcome } from "@/lib/scheduling/restrictions-client";
 import {
@@ -64,7 +64,9 @@ function Card({ kit, id, title, aside, label, children }: { kit: Kit; id?: strin
 }
 type ActKind = "teal" | "ghost" | "quiet" | "text";
 function Act({ kind, children, onClick, disabled, busy, label, id }: { kind: ActKind; children: ReactNode; onClick?: () => void; disabled?: boolean; busy?: boolean; label?: string; id?: string }) {
-  const cls = kind === "text" ? "b-btn b-btn--quiet b-rowact b-rowact--quiet" : `b-btn b-btn--${kind}`;
+  // Premium pass FA: every pill here is a decision, so it is drawn on the ladder's 44px (rs-act, b-restrictions.css) at
+  // every width, and the quiet one is the white edged pill (the grey fill is the disabled one's).
+  const cls = kind === "text" ? "b-btn b-btn--quiet b-rowact b-rowact--quiet" : `b-btn b-btn--${kind} rs-act`;
   return <button type="button" id={id} className={cls} aria-label={label} aria-busy={busy || undefined} disabled={disabled || busy} onClick={onClick}>{children}</button>;
 }
 
@@ -245,7 +247,7 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
       : <BState alert kind="paused" icon={<QuestionIcon weight="bold" />} title={status === "still_unknown" ? t.stillUnknownTitle : t.unknownTitle} line={status === "still_unknown" ? t.stillUnknownBody : t.unknownBody}
         action={{ label: status === "checking" ? t.checking : t.checkNow, onClick: () => void check(), busy: status === "checking" }} />;
   } else if (issue) {
-    attention = issue.kind === "conflict" ? <BState alert kind="paused" icon={<ArrowsClockwiseIcon weight="bold" />} title={t.conflictTitle} line={issue.decision ? t.conflictDecisionBody : t.conflictBody}>
+    attention = issue.kind === "conflict" ? <BState alert kind="paused" icon={<WarningIcon weight="bold" />} title={t.conflictTitle} line={issue.decision ? t.conflictDecisionBody : t.conflictBody}>
         <span className="rs-acts">{!issue.decision && draft ? <Act kind="ghost" onClick={() => { if (snapshot) setDraft({ ...draft, week: firstAdmissible(draft.week, snapshot.earliestWeek) }); setIssue(null); setStep("edit"); }}>{t.reviewAgain}</Act> : null}
           <Act kind="text" onClick={() => { setIssue(null); if (!issue.decision) setDraft(null); }}>{!issue.decision && draft ? t.discard : t.close}</Act></span></BState>
       : issue.kind === "locked" ? <BState alert kind="paused" icon={<CalendarXIcon weight="bold" />} title={t.lockedTitle} line={issue.next ? t.lockedBody(dayText(issue.asked, t), dayText(issue.next, t)) : t.lockedBodyUnknown(dayText(issue.asked, t))}>
@@ -359,13 +361,18 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
       {landedCard}
       {snapshot!.legacyUnconfirmed ? (management
         // Phase 8 (a.md #23, b.md #31): the heading says the state ("Not confirmed yet"), so no chip says it again.
-        ? <Card kit={kit} id="rs-now" title={t.legacyTitleManagement}>
+        // Premium pass FA (fin A #13, B #3): the state is the kit's "not confirmed" note (amber, the Question glyph, its
+        // title the card's heading), then the two decisions at 44px: the filled one first (a full-width stack on phones,
+        // the filled one on the right from 768px).
+        ? <Card kit={kit} id="rs-now" label={t.legacyTitleManagement}>
           <div className="rs-legacy">
-            <p className="rs-legacy__p">{t.legacyBodyManagement(firstName)}</p>
-            {availabilityHref ? <Link className="rs-link" href={availabilityHref}>{t.legacyHours}</Link> : null}
+            <BCallout tone="amber" icon="unknown" title={t.legacyTitleManagement} heading="h2"
+              action={availabilityHref ? <Link className="rs-link" href={availabilityHref}>{t.legacyHours}</Link> : undefined}>
+              <p className="rs-legacy__p">{t.legacyBodyManagement(firstName)}</p>
+            </BCallout>
             <div className="rs-legacy__acts">
-              <Act kind="quiet" disabled={busy} onClick={() => { if (!snapshot) return; setIssue(null); setProblems([]); setDraft({ kind: "SET", plan: openPlan(), week: snapshot.earliestWeek, note: "" }); setStep("review"); }}>{t.legacyOpen}</Act>
               <Act kind={mainKind} id="rs-main-action" disabled={busy} onClick={() => startEdit(openPlan())}>{t.legacySet}</Act>
+              <Act kind="quiet" disabled={busy} onClick={() => { if (!snapshot) return; setIssue(null); setProblems([]); setDraft({ kind: "SET", plan: openPlan(), week: snapshot.earliestWeek, note: "" }); setStep("review"); }}>{t.legacyOpen}</Act>
             </div>
           </div>
         </Card>

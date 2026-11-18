@@ -6,6 +6,9 @@ import { SUPPORT_EMAIL, type Block } from "@/lib/legal/policies";
  * Jose's review. Screen names inside the app stay as the app shows them. */
 const en = {
   metaTitle: "Support · NEVORA", title: "Support", back: "Sign in", contact: "Contact", emailSupport: "Email support",
+  /* Phase 9 (Nov 18, 2026): the safety note is a titled callout in the Email support card. Its sentence is the support
+   policy's, unchanged; the title is new and on Jose's list. */
+  safetyTitle: "Keep private details out of email",
   safety: "Never email passwords, codes, bank details or pay documents.",
   common: "Common questions", cantSignIn: "I can’t sign in", work: "Shift, time off or pay",
   report: "Report a problem", mail: "Mailing address",
@@ -13,6 +16,7 @@ const en = {
 export type SupportCopy = typeof en;
 const es: SupportCopy = {
   metaTitle: "Ayuda · NEVORA", title: "Ayuda", back: "Iniciar sesión", contact: "Contacto", emailSupport: "Escríbenos por correo",
+  safetyTitle: "Datos privados fuera del correo",
   safety: "Nunca envíes por correo contraseñas, códigos, datos bancarios ni documentos de pago.",
   common: "Preguntas frecuentes", cantSignIn: "No puedo iniciar sesión", work: "Turnos, días libres o pago",
   report: "Reportar un problema", mail: "Correo postal",

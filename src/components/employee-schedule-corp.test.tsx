@@ -49,3 +49,10 @@ it('S5/S12: the shift panel is titled "Tomorrow, Nov 2" with its details on one 
   expect(sheet.replace(/[  ]/g, ' ')).toContain('Barista · Condado · 8 h');
   expect(sheet).not.toContain('c-sheet__facts');expect(sheet.slice(0, sheet.indexOf('c-sheet__actions'))).not.toContain('c-pill');
 });
+
+it('Phase 9 (spec 1.4): a shift row says its time fact as quiet text beside the time, not as a teal chip', () => {
+  const output = html({weekStart: '2026-11-02', shifts: [shift('m', '2026-11-02'), shift('n', '2026-11-04')]});
+  const agenda = output.slice(output.indexOf('id="b-my-agenda"'), output.indexOf('</section>', output.indexOf('id="b-my-agenda"')));
+  expect(agenda).toMatch(/<span class="b-row__tt">[^<]*<\/span><span class="b-status">Tomorrow<\/span><\/span>/);
+  expect(agenda).not.toContain('b-chip--teal');
+});

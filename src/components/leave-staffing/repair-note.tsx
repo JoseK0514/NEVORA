@@ -2,7 +2,7 @@
 import {createContext,useContext,useEffect,useMemo,useRef,type ReactNode} from 'react';
 import Link from 'next/link';
 import {CalendarXIcon} from '@phosphor-icons/react/dist/ssr/CalendarX';
-import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
+import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {WarningIcon} from '@phosphor-icons/react/dist/ssr/Warning';
 import {useLeaveStaffing,useStaffingAuthority} from './use-leave-staffing';
 import {conflictShift,minutesText} from '@/lib/time-off-staffing/present';
@@ -58,7 +58,7 @@ export function LeaveRepairNote({variant}:{variant:'b'|'corp'}){
  else if(state.status==='paused'){tone='grey';title='Repair check paused';body='It checks again when you come back.';}
  else if(state.status==='expired'){icon=<WarningIcon weight="bold"/>;title='This check expired';body='Check again to see whether this shift still needs a replacement.';action=<button type="button" className={variant==='b'?'b-btn b-btn--quiet':'c-btn c-btn--secondary'} onClick={refresh}>Check again</button>;}
  else if(state.status==='unavailable'){icon=<WarningIcon weight="bold"/>;title=state.denied?'Your access changed':'Couldn’t check this repair';body=state.denied?'Reload the page to see the schedule with your current access.':'This doesn’t mean it’s fixed. Try again.';action=state.denied?null:<button type="button" className={variant==='b'?'b-btn b-btn--quiet':'c-btn c-btn--secondary'} onClick={refresh}>Try again</button>;}
- else if(!item){tone='green';icon=<CheckCircleIcon weight="bold"/>;title='This shift no longer needs a replacement';body='A published schedule changed it, or the time off changed. Nothing else to do here.';}
+ else if(!item){tone='green';icon=<CheckIcon weight="bold"/>;title='This shift no longer needs a replacement';body='A published schedule changed it, or the time off changed. Nothing else to do here.';}
  else{
   title=`Fill ${person}’${/s$/i.test(person!)?'':'s'} shift`;
   body=<>

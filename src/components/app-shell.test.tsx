@@ -449,7 +449,8 @@ it('keeps every Phase 3 shell rule scoped to Owner and Manager shells',()=>{
 // data-more-below, which the shell sets in the browser); the entries and their order are unchanged.
 it.each(['OWNER','MANAGER','EMPLOYEE'] as const)('gives the %s sidebar its scroll cues around the entries, outside the accessibility tree',role=>{
  const {sidebar}=shell(role,'/app');
- expect(sidebar).toMatch(/^[^>]*><span class="sidebar-more sidebar-more--top" aria-hidden="true"><\/span><div class="sidebar-nav-group"/);
+ // Phase 9: the head carries a caret (pointing up) as the foot does (pointing down).
+ expect(sidebar).toMatch(/^[^>]*><span class="sidebar-more sidebar-more--top" aria-hidden="true"><svg[^>]*>[\s\S]*?<\/svg><\/span><div class="sidebar-nav-group"/);
  expect(sidebar).toMatch(/<span class="sidebar-more sidebar-more--bottom" aria-hidden="true"><svg[^>]*>[\s\S]*<\/svg><\/span>$/);
  expect(sidebar).not.toContain('data-more-');
  expect(sidebar.indexOf('sidebar-more--top')).toBeLessThan(sidebar.indexOf('class="nav-link'));

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import {useEffect, useRef, type ReactNode} from 'react';
-import {CalendarCheckIcon} from '@phosphor-icons/react/dist/ssr/CalendarCheck';
+import {UserCheckIcon} from '@phosphor-icons/react/dist/ssr/UserCheck';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
@@ -93,8 +93,9 @@ export function OpenShiftsB({state, enabled, failed, refreshing, onRefresh, resu
           {unconfirmed.length ? <BCard id="b-open-unconfirmed" title="We couldn’t check these shifts"><BList>{unconfirmed.map(row => <BRow key={row.id} title={keepWhole(`${dayB(row.date)} · ${formatTime(row.startTime)}`)}
             sub={row.notice ? `${row.location} · ${row.notice}` : row.location}/>)}</BList></BCard> : null}
           {refused.length ? <WhyNot refused={refused}/> : null}
-          {/* Desktop: the way to more shifts sits beside them (eb-desk). */}
-          <div className="eb-desk eb-moreshifts"><BCard label={workCopy().yourAvailability}><BList><BRow href="/app/availability" lead={<BIcon tone="grey"><CalendarCheckIcon weight="bold"/></BIcon>} title={workCopy().yourAvailability} sub={workCopy().availabilitySub}/></BList></BCard></div>
+          {/* Desktop: the way to more shifts sits beside them (eb-desk). Final review C (row 4): Availability's glyph is the
+            * navigation's UserCheck on every Employee screen. */}
+          <div className="eb-desk eb-moreshifts"><BCard label={workCopy().yourAvailability}><BList><BRow href="/app/availability" lead={<BIcon tone="grey"><UserCheckIcon weight="bold"/></BIcon>} title={workCopy().yourAvailability} sub={workCopy().availabilitySub}/></BList></BCard></div>
         </>}
       </>)}
     </BStack>

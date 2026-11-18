@@ -15,8 +15,10 @@ type PolicyCopy = {
   summary: Record<"privacy" | "terms", string>;
   /** The line under the title: when the document took effect. `{date}` is the policy's own date, in this language. */
   effective: string;
-  /** Shown above a document that is not translated. English needs none. */
-  englishOnly: { before: string; after: string } | null;
+  /** Shown above a document that is not translated. English needs none. Phase 9 (Nov 18, 2026): the fact is the note's
+   * one-line title; the help path is its body, with the support address as the note's one link between `before` and
+   * `after`. */
+  englishOnly: { title: string; before: string; after: string } | null;
 };
 
 const en: PolicyCopy = {
@@ -36,7 +38,7 @@ const es: PolicyCopy = {
   metaTitle: { privacy: "Política de privacidad · NEVORA", terms: "Términos de uso · NEVORA" },
   summary: { privacy: "Cómo NEVORA maneja la información cuando lo usas en la web o en sus aplicaciones.", terms: "Las reglas para usar NEVORA." },
   effective: "Vigente desde el {date}",
-  englishOnly: { before: "Este documento está disponible solo en inglés por ahora. Si necesitas ayuda para entenderlo, escribe a ", after: "." },
+  englishOnly: { title: "Este documento está solo en inglés", before: "Si necesitas ayuda para entenderlo, escribe a ", after: "." },
 };
 
 export const POLICY_COPY: Record<AuthLang, PolicyCopy> = { en, es };

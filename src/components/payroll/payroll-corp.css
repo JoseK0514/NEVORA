@@ -299,7 +299,7 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 :is(#c-root, html) .c-pay .c-pay__stmt .c-row__detail > span { white-space: normal; text-wrap: pretty; }
 :is(#c-root, html) .c-pay .c-pay__stmt-actions { grid-area: act; display: flex; align-items: center; gap: 8px; margin-right: -8px; }
 :is(#c-root, html) .c-pay .c-row.c-pay__stmt .c-pay__stmt-view { min-width: 44px; min-height: 44px; margin: 0; padding: 0 4px; justify-content: center; }
-:is(#c-root, html) .c-pay .c-pay__icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 8px; color: var(--c-ink2); transition: background-color 120ms ease-out; }
+:is(#c-root, html) .c-pay .c-pay__icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; color: var(--c-ink2); transition: background-color 120ms ease-out; }
 :is(#c-root, html) .c-pay .c-pay__icon-btn .c-ic { width: 20px; height: 20px; }
 :is(#c-root, html) .c-pay .c-pay__icon-btn:active { background: var(--c-neutral-bg); }
 @media (hover: hover) { :is(#c-root, html) .c-pay .c-pay__icon-btn:hover { background: #F7F8F8; color: var(--c-ink); } }

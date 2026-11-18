@@ -37,14 +37,15 @@ it('keeps a confirmed recipient ID visible until explicit normal sign-in',()=>{c
 it.each([['en','This link has expired or was already used.','Ask your Owner or manager to send a new invitation.','Already set up? Sign in'],['es','Este enlace venció o ya se usó.','Pide al dueño o a tu gerente que te envíe una invitación nueva.','¿Ya configuraste tu cuenta? Inicia sesión']] as const)('an expired, used or unreadable link has its own message and one next step, in %s (PB-007)',(lang,message,next,signIn)=>{
  const invalid=renderToStaticMarkup(<ActivationInvitationView phase="invalid" lang={lang} loginHref="/login?activated=1" onSubmit={()=>{}}/>);
  for(const text of [message,next,signIn,'href="/login"'])expect(invalid).toContain(text);
- expect(invalid).toMatch(/role="status"><svg[^>]*aria-hidden="true"/);
+ // Premium pass FD: what happened and what to do are the line under the title, announced once; no amber banner.
+ expect(invalid).toContain(`<p class="activation-invitation-state" role="status">${message} ${next}</p>`);
  // Not the "no link" screen: it never says to open the invitation link again.
  const missing=renderToStaticMarkup(<ActivationInvitationView phase="missing" lang={lang} loginHref="/login" onSubmit={()=>{}}/>);
  expect(missing).not.toContain(message);expect(invalid).not.toContain(lang==='en'?'Open the invitation link in your email.':'Abre el enlace de invitación en tu correo.');
 });
 it('says only what is true before the server has checked the invitation (PB-002)',()=>{
  const named=renderToStaticMarkup(<ActivationInvitationView phase="ready" workspaceName="Northside Services" loginHref="/login" onSubmit={()=>{}}/>);
- expect(named).toContain('Choose a password to join Northside Services.');
+ expect(named).toContain('Choose a password to join <span class="q-whole">Northside Services</span>.');
  const unnamed=renderToStaticMarkup(<ActivationInvitationView phase="ready" lang="es" loginHref="/login" onSubmit={()=>{}}/>);
  expect(unnamed).toContain('Elige una contraseña para terminar de configurar tu cuenta.');
  for(const html of [named,unnamed])expect(html).not.toMatch(/verified|verificada/i);

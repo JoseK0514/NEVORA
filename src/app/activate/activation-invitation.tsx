@@ -4,7 +4,6 @@ import {useMobilePresentation} from '@/components/mobile-access/use-mobile-prese
 import Link from 'next/link';
 import {AUTH_COPY,type AuthCopy,type AuthLang} from '@/lib/auth-copy';
 import {AuthValidation} from '@/components/auth-premium/auth-validation';
-import {WarningIcon} from "@phosphor-icons/react/dist/ssr/Warning";
 import {MobileActivationView} from '@/components/mobile-access/activation-view';
 import {useAccessJourney} from '@/components/mobile-access/journey';
 import {useLayoutEffect,useRef,useState,type FormEvent,type RefObject} from 'react';
@@ -14,7 +13,6 @@ import {ActivationSubmit} from './activation-submit';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {CopySimpleIcon} from '@phosphor-icons/react/dist/ssr/CopySimple';
 import {isPublicAccountProof} from '@/lib/auth/public-proof';
-import {WifiSlashIcon} from '@phosphor-icons/react/dist/ssr/WifiSlash';
 import {KeyIcon} from '@phosphor-icons/react/dist/ssr/Key';
 import {IdentificationCardIcon} from '@phosphor-icons/react/dist/ssr/IdentificationCard';
 import {FingerprintIcon} from '@phosphor-icons/react/dist/ssr/Fingerprint';
@@ -24,6 +22,10 @@ import {AccessSteps} from '@/components/access-recovery/access-steps';
 import {SupportReference} from '@/components/access-recovery/support-reference';
 import {supportReferenceOf} from '@/components/access-recovery/support-reference-seam';
 import {passkeysFlagOn} from '@/lib/passkeys/client';
+import {MOBILE_ACCESS_COPY} from '@/components/mobile-access/copy';
+import {BCallout} from '@/components/owner-b/b-kit';
+import {noteParts} from '@/components/auth-premium/note-parts';
+import {Whole} from '@/components/auth-premium/whole';
 
 export type ActivationPhase='checking'|'missing'|'ready'|'pending'|'invalid'|'unavailable'|'outcome_unknown'|'activated';
 /** Scrub first. Never retain a query string, encoded/ambiguous proof or history state. */
@@ -135,7 +137,7 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
  // is a text link under the card.
  const chip=workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null;
  if(phase==='activated'&&employeeId)return <>
-  <div className="q-hd"><h1>{u.doneTitle}</h1><p>{u.doneSub}</p></div>
+  <div className="q-hd"><span className="q-auth__mark q-auth__mark--done q-auth__mark--head" aria-hidden="true"><CheckIcon size={28} weight="bold"/></span><h1>{u.doneTitle}</h1><p>{u.doneSub}</p></div>
   <div className="activation-success q-card" role="status" ref={successRef} tabIndex={-1}>
    <AccessSteps journey="activation" current={3} lang={lang}/>
    <span className="q-auth__mark q-auth__mark--done" aria-hidden="true"><CheckIcon size={28} weight="bold"/></span>
@@ -150,17 +152,24 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
  </>;
  // Phase 8 (Nov 17, 2026): without an invitation the card says where the link is, so the band carries the title alone
  // (it used to say the same thing twice, in the band and in the card).
- const sub=phase==='checking'?`${a.opening} · ${workspace}`:canSubmit?(workspaceName?a.choose.replace('{workspace}',workspaceName):a.chooseNoWorkspace)
+ // Premium pass FD (Nov 18, 2026): the notes are the kit's callout (amber offline, red stop, amber "not confirmed"),
+ // word for word. An expired or used invitation has one design at every width, the phone's: "You need a new invitation",
+ // what happened and what to do as the line under the title, why and how long a link lasts, then the one button. The
+ // workplace's name never splits across lines.
+ const [chooseBefore,chooseAfter]=a.choose.split('{workspace}');
+ const sub=phase==='checking'?`${a.opening} · ${workspace}`:canSubmit?(workspaceName?<>{chooseBefore}<Whole>{workspaceName}</Whole>{chooseAfter}</>:a.chooseNoWorkspace)
   :phase==='outcome_unknown'?a.notConfirmed:null;
+ const expired=phase==='invalid',offlineNote=noteParts(u.offline),unavailableNote=noteParts(a.unavailable),unknownNote=noteParts(u.unknownFirst);
  return <>
-  <div className="q-hd"><h1>{phase==='outcome_unknown'?u.unknownTitle:t.activateTitle}</h1>{canSubmit||phase==='checking'?null:chip}{sub&&phase!=='outcome_unknown'?<p role={phase==='checking'?'status':undefined}>{sub}</p>:null}</div>
+  <div className="q-hd"><h1>{phase==='outcome_unknown'?u.unknownTitle:expired?MOBILE_ACCESS_COPY[lang].inviteInvalidTitle:t.activateTitle}</h1>{canSubmit||phase==='checking'?null:chip}
+   {expired?<p className="activation-invitation-state" role="status">{a.invalid} {a.invalidNext}</p>:sub&&phase!=='outcome_unknown'?<p role={phase==='checking'?'status':undefined}>{sub}</p>:null}</div>
   <p className="q-sr" id="activation-intro">{a.intro}</p>
   {phase==='missing'?<span className="q-sr activation-invitation-state" role="status">{a.missing}</span>:null}
   {canSubmit&&<form ref={formRef} className="q-auth__form activation-form" onSubmit={onSubmit} aria-busy={phase==='pending'} aria-describedby="activation-intro">
    <AuthValidation/>
    <AccessSteps journey="activation" current={2} lang={lang}/>
-   {offline?<p id="activation-offline" className="q-auth__alert q-auth__alert--wait" role="alert" tabIndex={-1}><WifiSlashIcon size={20} weight="bold" aria-hidden="true"/><span>{u.offline}</span></p>:null}
-   {phase==='unavailable'&&!mismatch&&!offline?<><p id="activation-error" className="q-error q-auth__alert" role="alert"><WarningIcon size={20} weight="bold" aria-hidden="true"/><span>{a.unavailable}</span></p><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
+   {offline?<div id="activation-offline" className="ar-note" role="alert" tabIndex={-1}><BCallout tone="amber" icon="offline" title={offlineNote.title??undefined}>{offlineNote.body}</BCallout></div>:null}
+   {phase==='unavailable'&&!mismatch&&!offline?<><div id="activation-error" className="ar-note" role="alert"><BCallout tone="red" title={unavailableNote.title??undefined}>{unavailableNote.body}</BCallout></div><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
    <fieldset className="q-auth__fields" disabled={phase==='pending'}>
     <ActivationPasswords quiet lang={lang} mismatch={mismatch} errorId={error?'activation-error':undefined}/>
    </fieldset>
@@ -174,13 +183,12 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
   </form>}
   {!canSubmit&&phase!=='checking'?<div className="q-card q-auth__card">
    {phase==='outcome_unknown'?null:<AccessSteps journey="activation" current={1} lang={lang}/>}
-   {phase==='invalid'?<p className="q-auth__alert q-auth__alert--wait activation-invitation-state" role="status"><WarningIcon size={20} weight="bold" aria-hidden="true"/><span>{a.invalid}</span></p>:null}
-   {phase==='outcome_unknown'?<><p className="q-auth__alert q-auth__alert--wait activation-invitation-state" role="alert"><WarningIcon size={20} weight="bold" aria-hidden="true"/><span>{u.unknownFirst}</span></p>
+   {phase==='outcome_unknown'?<><div className="ar-note activation-invitation-state" role="alert"><BCallout tone="amber" icon="unknown" title={unknownNote.title??undefined}>{unknownNote.body}</BCallout></div>
     <Link href={signInHref} className="q-btn">{t.trySigningIn}</Link>
     <p className="q-auth__note">{a.unknown}</p><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
-   {mobileAccess&&phase!=='outcome_unknown'?<Link href="/access-help/invitation" className="q-btn">{a.inviteHelp}</Link>:null}
-   {phase==='invalid'?<><p className="q-auth__note">{u.invalidWhy} {u.invalidActive}</p><p className="q-auth__note">{a.invalidNext}</p></>
+   {expired?<p className="q-auth__note">{u.invalidWhy} {u.invalidActive}</p>
     :phase==='missing'?<><p className="q-auth__note">{u.missingHow}</p><p className="q-auth__note">{t.quiet.noInvitation}</p></>:null}
+   {mobileAccess&&phase!=='outcome_unknown'?<Link href="/access-help/invitation" className="q-btn">{a.inviteHelp}</Link>:null}
   </div>:null}
   <noscript><p className="q-help q-auth__alert">{a.noScript}</p></noscript>
   {phase!=='outcome_unknown'?<nav className="q-auth__links" aria-label={t.accountHelp}><Link href={signInHref}>{t.alreadyActivated}</Link></nav>

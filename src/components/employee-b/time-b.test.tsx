@@ -45,11 +45,26 @@ describe('Time tab (e-time)',()=>{
   const data=ready({observedAt:'2026-10-28T02:19:00Z',current:late,today:{entries:[late],recordedSeconds:47_820,breakSeconds:0}});
   const shifts=[{date:'2026-10-27',startTime:'09:00',endTime:'17:00'}];
   const b=onlyB(renderToStaticMarkup(<HoursBContext.Provider value={{head:timeHead,authority:'fictional-view',shifts}}><div className="c-page"><CorpTimeTab data={data}/></div></HoursBContext.Provider>)),plain=text(b);
-  expect(b).toContain('<span class="b-chip b-chip--amber">Clocked in</span>');expect(b).toContain('b-ico b-ico--amber');
+  // Phase 9 (spec 1.4, 2.2): your own state is the quiet "Clocked in" with the amber live dot, and the amber callout (a
+  // title over its lines, no circle in a tint) says the shift has ended.
+  expect(b).toContain('<span class="b-status" data-dot="amber"><span class="b-ldot" data-tone="amber" aria-hidden="true"></span>Clocked in</span>');expect(b).not.toContain('b-chip--amber');
+  expect(b).toContain('<div class="b-callout" data-tone="amber" role="status">');expect(b).not.toContain('b-ico b-ico--amber');
+  expect(b).toMatch(/<p class="b-callout__t">Still clocked in since 9:02\sAM<\/p>/);
   expect(plain).toContain('Still clocked in since 9:02 AM');expect(plain).toContain('Your 9 AM – 5 PM shift has ended. Clock out on the Condado tablet.');
-  // Without today's shifts the card stays as it was (teal), never guessing that a shift ended.
+  // Without today's shifts the card says Clocked in (green live dot), never guessing that a shift ended.
   const plainB=onlyB(inPage(timeHead,<CorpTimeTab data={data}/>));
-  expect(plainB).toContain('<span class="b-chip b-chip--teal">Clocked in</span>');expect(text(plainB)).not.toContain('Still clocked in');
+  expect(plainB).toContain('<span class="b-status" data-dot="green"><span class="b-ldot" data-tone="green" aria-hidden="true"></span>Clocked in</span>');expect(text(plainB)).not.toContain('Still clocked in');expect(plainB).not.toContain('b-callout');
+ });
+ it('Phase 9 (spec 1.4): your own clock state is quiet words, with the amber live dot and the minutes once a shift has started',()=>{
+  // 9:30 AM in Puerto Rico; today's shift runs 9:00 to 5:00 and there is no punch.
+  const data=ready();
+  const under=onlyB(renderToStaticMarkup(<HoursBContext.Provider value={{head:timeHead,authority:'fictional-view',shifts:[{date:'2026-10-27',startTime:'09:00',endTime:'17:00'}]}}><div className="c-page"><CorpTimeTab data={data}/></div></HoursBContext.Provider>));
+  expect(under).toContain('<span class="b-status" data-dot="amber"><span class="b-ldot" data-tone="amber" aria-hidden="true"></span>Not clocked in · 30 min</span>');expect(under).not.toContain('b-chip');
+  // Before the shift starts (or with no shift today) it is the quiet grey words without a dot.
+  const before=onlyB(renderToStaticMarkup(<HoursBContext.Provider value={{head:timeHead,authority:'fictional-view',shifts:[{date:'2026-10-27',startTime:'14:00',endTime:'22:00'}]}}><div className="c-page"><CorpTimeTab data={data}/></div></HoursBContext.Provider>));
+  expect(before).toContain('<span class="b-status">Not clocked in</span>');expect(before).not.toContain('b-chip--amber');
+  // The week under way says "In progress" as quiet text in its header.
+  expect(before).toContain('<span class="b-status">In progress</span>');expect(before).not.toContain('b-chip--teal');
  });
  it('says where and since when while on the clock; a cut read shows dashes, not short totals',()=>{
   const on=text(onlyB(inPage(timeHead,<CorpTimeTab data={ready({current:open,today:{entries:[open],recordedSeconds:5520,breakSeconds:0}})}/>)));

@@ -18,9 +18,9 @@ const en = {
   activation: {
     /** What the person is setting, under the two password fields. */
     factsLabel: "What you are setting up",
-    passwordFact: "This password is for NEVORA on the web and in the app. Your time clock PIN stays the same",
-    idFact: "Your Employee ID is what you type to sign in. We show it next, and your Owner or manager can tell you",
-    passkeyFact: "After you sign in, you can add a passkey in Profile",
+    passwordFact: "This password is for NEVORA on the web and in the app. Your time clock PIN stays the same.",
+    idFact: "Your Employee ID is what you type to sign in. We show it next, and your Owner or manager can tell you.",
+    passkeyFact: "After you sign in, you can add a passkey in Profile.",
     doneTitle: "You’re set",
     doneSub: "Sign in with your Employee ID and your new password.",
     doneNext: "Next: sign in. Your Employee ID is already filled in for you.",
@@ -163,9 +163,9 @@ const es: AccessCopy = {
   },
   activation: {
     factsLabel: "Lo que estás configurando",
-    passwordFact: "Esta contraseña es para NEVORA en la web y en la aplicación. Tu PIN del reloj de asistencia sigue igual",
-    idFact: "Tu ID de empleado es lo que escribes para iniciar sesión. Te lo mostramos enseguida, y tu gerente o el dueño te lo puede decir",
-    passkeyFact: "Después de iniciar sesión puedes agregar una llave de acceso en tu perfil",
+    passwordFact: "Esta contraseña es para NEVORA en la web y en la aplicación. Tu PIN del reloj de asistencia sigue igual.",
+    idFact: "Tu ID de empleado es lo que escribes para iniciar sesión. Te lo mostramos enseguida, y tu gerente o el dueño te lo puede decir.",
+    passkeyFact: "Después de iniciar sesión puedes agregar una llave de acceso en tu perfil.",
     doneTitle: "Todo listo",
     doneSub: "Inicia sesión con tu ID de empleado y tu contraseña nueva.",
     doneNext: "Ahora: inicia sesión. Tu ID de empleado ya está escrito.",

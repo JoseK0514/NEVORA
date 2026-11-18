@@ -16,7 +16,7 @@ import {createClockerPhotoTransport} from '../lib/clocker/photo-client/transport
 import {readPhotoConfiguration,type PhotoSessionContext,type PhotoBindings} from '../lib/clocker/photo-client/session';
 import { ClockerIcon, type ClockerIconName } from './clocker-icon';
 import {ClockerText,useClockerCopy,useClockerIntlLocale,useClockerKeepNames,useClockerPresentation} from './clocker-language';
-import {CLOCKER_PUNCH_ERRORS,clockerOthersSavedText,clockerPunchErrorKey,clockerUnconfirmedText} from './clocker-copy';
+import {CLOCKER_PUNCH_ERRORS,clockerOthersSavedText,clockerPunchErrorKey,clockerText,clockerUnconfirmedText} from './clocker-copy';
 import {useClockerOnline,useWhenBackOnline} from './clocker-online';
 import {FACE_TINTS} from '../lib/face-tint';
 import {ClockerReceipt,receiptFacts,receiptTitles,shortTime} from './clocker-receipt';
@@ -78,7 +78,8 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
   /* The stable code picks the kiosk's sentence; the server's English sentence is never shown (Phase 6, item 1). No
    * sentence (null) means the result is simply not confirmed: the screen then names the action and its time. */
   const coded=error instanceof PunchRequestError?clockerPunchErrorKey(error.code):null;
-  setMessage(coded??(hasPending?null:'We couldn’t load your time, so nothing was recorded. Tell a manager if you need your time recorded now.'));
+  // Premium pass (#18): the title already says the time couldn't be loaded, so the line says only what that means.
+  setMessage(coded??(hasPending?null:'Nothing was recorded. Tell a manager if you need your time recorded now.'));
  }
  useEffect(()=>{
   let current=true;alive.current=true;
@@ -203,19 +204,30 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
  const actions=lead?[lead,...allowed.filter(action=>action!==lead)]:allowed;
  const status=entry?.status==='ON_BREAK'?'On Break':entry?'Clocked In':'Off Clock';
  const cancelLabel=entry?.status==='ON_BREAK'?'Stay on break':'Stay clocked in';
- const title=mode==='review-current'?'Your earlier punch wasn’t recorded':mode==='success'&&receipt?receiptTitles[receipt.action]:mode==='confirm-out'?'Clock out?':mode==='select-break'?'Choose a break':mode==='sending'?'Recording…'
+ const title=mode==='review-current'?'Your earlier punch wasn’t recorded':mode==='success'&&receipt?receiptTitles[receipt.action]:mode==='confirm-out'?'Clock out?':mode==='select-break'?'Choose a break':mode==='sending'?(view?.firstName&&sendingAction?recording[sendingAction]:'Recording…')
   :mode==='recovery'||mode==='retry'?'Check your last punch':mode==='other-person'?'Someone else’s punch is waiting'
   :mode==='auth'?'Enter your PIN again':mode==='loading'?'Checking your clock…':mode==='storage'?message===STORAGE_SAVE?'This tablet can’t save punches':'This tablet can’t read its saved punches'
-  :mode==='unavailable'?(online?'We couldn’t load your time':'No connection'):t('Hi, {name}.',{name:view?.firstName??''});
+  :mode==='unavailable'?(online?'We couldn’t load your time':'No connection'):'Hi, {name}.';
  const waiting=mode==='loading'||mode==='sending';
  const since=entry?(entry.status==='ON_BREAK'?pause!.breakStartAt:entry.clockInAt):null;
- // Direction B: one 64px ring per state (red stop, amber wait or check, green done, teal information).
- const ring:[ClockerIconName,'teal'|'amber'|'red']|null=mode==='confirm-out'?['clock-out','amber']:mode==='auth'?['lock','amber']:mode==='unavailable'?['stop','red']
-  :mode==='storage'?['warning','amber']:['recovery','retry','review-current','other-person'].includes(mode)?['refresh','amber']:waiting?['wait','teal']:null;
+ // Direction B: one 64px ring per state (red stop, amber wait or check, green done, teal information). Premium pass (Nov 18,
+ // 2026, decision 2): a punch that isn't confirmed is the amber Question, never the circular arrow, which is only Refresh and
+ // Try again. A tablet that can't keep punches stops the person (red), and no connection is the Wi-Fi glyph only when the
+ // browser says the network is gone.
+ const ring:[ClockerIconName,'teal'|'amber'|'red']|null=mode==='confirm-out'?['clock-out','amber']:mode==='auth'?['lock','amber']:mode==='unavailable'?[online?'stop':'offline','red']
+  :mode==='storage'?['stop','red']:['recovery','retry','review-current','other-person'].includes(mode)?['unknown','amber']:waiting?['wait','teal']:null;
  const left=mode==='ready'||mode==='select-break';
  const first=view?.firstName??'';
  const tint=kioskTint(first);
- const face=(size?:'sm')=>first?<span className={styles.face} data-size={size} style={{background:tint[0],color:tint[1]}} aria-hidden="true">{first.slice(0,1).toUpperCase()}</span>:null;
+ const face=()=>first?<span className={styles.face} style={{background:tint[0],color:tint[1]}} aria-hidden="true">{first.slice(0,1).toUpperCase()}</span>:null;
+ /* A break row's second line (premium pass, #19): its kind only when the Owner's name for it doesn't already say it
+  * ("Meal break" no longer sits over "Meal · …"), then the suggested length. */
+ const breakSub=(type:{name:string;category:string;targetMinutes:number|null})=>{
+  const kind=type.category==='REST'?'Rest':type.category==='MEAL'?'Meal':'Other';
+  const named=kind!=='Other'&&[kind,clockerText('es',kind)].some(word=>type.name.toLocaleLowerCase().includes(word.toLocaleLowerCase()));
+  const parts=[named?null:t(kind),type.targetMinutes!==null?t('Suggested: {minutes} min',{minutes:type.targetMinutes}):null].filter(Boolean);
+  return parts.join(' · ');
+ };
  // Saved-action help stays off the two decision screens (Nov 10 review, NV-302). Phase 8: the link opens the help as its
  // own card state; Back returns to this screen.
  const helpAvailable=references.length>0&&Boolean(view)&&(!pending||pending.subject===view?.subject)&&!waiting&&!['success','select-break','confirm-out','auth','other-person'].includes(mode);
@@ -223,13 +235,18 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
  if(helpAvailable&&helpFor===mode)return <div className={styles.content} data-clocker-state={mode} data-clocker-help="" data-align="center">
   <ClockerRecoveryHelp references={references} otherCount={otherCount} commandId={helpCommand} request={review} onBack={()=>setHelpFor(null)} headingRef={heading}/>
  </div>;
- /* Leaving (Nov 10 review, NV-184, NV-305): beside the state's own actions it is a text link in the same stack; when it is
-  * the only way on, it is the primary button. The receipt keeps its grey Done. */
+ /* Leaving (Nov 10 review, NV-184, NV-305): beside the state's own actions it is a quiet link; when it is the only way on,
+  * it is the primary button. The receipt keeps its grey Done. Premium pass (#7): sign-in starts at the Employee ID (Jose,
+  * Nov 11), so the label is no longer "Return to PIN": "Done", the kiosk's one word for leaving a private screen, and
+  * "Start over" where the person has to sign in again to go on (Enter your PIN again). (#26) Beside a state's actions the
+  * link shares one row with "Something didn't save?", as Refresh does on the clock screen. */
  const withActions=['recovery','retry','unavailable','review-current'].includes(mode);
+ const leaveLabel=mode==='auth'?'Start over':'Done';
  const leave=waiting||['ready','confirm-out','select-break'].includes(mode)?null:mode==='success'
   ?<button tabIndex={0} className={styles.btn} data-kind="secondary" type="button" onClick={onDone}>{t('Done')}</button>
-  :withActions?<button tabIndex={0} className={styles.link} type="button" onClick={onDone}>{t('Return to PIN')}</button>
-  :<button tabIndex={0} className={styles.btn} data-kind="primary" type="button" onClick={onDone}>{t('Return to PIN')}</button>;
+  :withActions?<button tabIndex={0} className={styles.link} type="button" onClick={onDone}>{t(leaveLabel)}</button>
+  :<button tabIndex={0} className={styles.btn} data-kind="primary" type="button" onClick={onDone}>{t(leaveLabel)}</button>;
+ const footLinks=withActions?<div className={styles.links} data-clocker-foot="">{leave}{helpLink(true)}</div>:null;
  // On the ready screens a notice is an information box with its icon (NV-300).
  /* Not confirmed (Phase 6, RA-6 and MK-8): which action, when it was pressed, and that the tablet kept it. Never "failed"
   * and never "saved": the result is unknown until the check comes back. */
@@ -242,8 +259,8 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
  return <div className={styles.content} aria-busy={waiting} data-clocker-state={mode} data-align={left?'start':'center'}>
   {mode==='success'?<span className={styles.check}><ClockerIcon name="check" size={52}/></span>
    :ring?<span className={styles.ring} data-tone={ring[1]==='teal'?undefined:ring[1]}><ClockerIcon name={ring[0]} size={28}/></span>:null}
-  {mode==='ready'?<div className={styles.who}>{face()}<h1 ref={heading} tabIndex={-1} className={styles.title}>{title}</h1></div>
-   :<h1 ref={heading} tabIndex={-1} className={styles.title}>{t(title)}</h1>}
+  {mode==='ready'?<div className={styles.who}>{face()}<h1 ref={heading} tabIndex={-1} className={styles.title}>{t(title,{name:first})}</h1></div>
+   :<h1 ref={heading} tabIndex={-1} className={styles.title}>{t(title,{first,name:first})}</h1>}
   {mode==='ready'&&view?<>
    <div className={styles.strow}>
     <p data-clocker-status className={styles.chip} data-state={entry?.status==='ON_BREAK'?'break':entry?'on':'off'}>{t(shown[status])}</p>
@@ -252,15 +269,17 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
    </div>
    {pause?.type?<p className={styles.breakContext}><strong>{pause.type.name}</strong>{pause.type.targetMinutes!==null?' · '+t('Suggested: {minutes} min',{minutes:pause.type.targetMinutes}):''}</p>:null}
    {notice}
-   {!online?<div role="status" data-clocker-notice data-clocker-offline="" className={styles.note} data-tone="amber"><ClockerIcon name="offline" size={20}/><p>{t('No connection. Wait for it to return before you clock in or out, or tell a manager.')}</p></div>:null}
+   {!online?<div role="status" data-clocker-notice data-clocker-offline="" className={styles.note} data-tone="red"><ClockerIcon name="offline" size={20}/><p>{t('No connection. Wait for it to return before you clock in or out, or tell a manager.')}</p></div>:null}
    {entry?.status==='CLOCKED_IN'&&!view.breakTypes.length&&!view.atOtherLocation?<div data-clocker-notice className={styles.note}><ClockerIcon name="info" size={20}/><p>{t(view.breaksOff?'Breaks aren’t recorded on the Clocker here.':'There are no breaks to choose here yet. Ask your Owner to add one.')}</p></div>:null}
-   {!actions.length?<div className={styles.other}><span className={styles.ring} data-tone="amber"><ClockerIcon name="building" size={28}/></span><p data-clocker-notice className={styles.smsg}>{t(view.commerceRestriction==='paused'&&!view.atOtherLocation?"New clock-ins are paused for this workplace. Your Owner can restore access. Ask a manager to record your time.":"This shift was started at another location. Use that location’s registered Clocker to continue.")}</p></div>:null}
-   {actions.length?<div className={styles.acts}>{actions.map((action,i)=><button tabIndex={0} data-clocker-action key={action} type="button" className={styles.act} data-kind={i===0?'primary':'secondary'} aria-label={t(labels[action])} onClick={()=>action==='CLOCK_OUT'?setMode('confirm-out'):action==='START_BREAK'?setMode('select-break'):act(action)}>
+   {!actions.length?<div className={styles.other}><span className={styles.ring} data-tone="amber"><ClockerIcon name="building" size={28}/></span><p data-clocker-notice className={styles.smsg}>{t(view.commerceRestriction==='paused'&&!view.atOtherLocation?"New clock-ins are paused for this workplace. Your Owner can restore access. Ask a manager to record your time.":"This shift was started at another location. Use the connected tablet at that location.")}</p></div>:null}
+   {/* Premium pass (#6): while the tablet is offline the note asks the person to wait, so no action is drawn as the filled
+     * next step; Done is. The actions stay where they were and behave as before. */}
+   {actions.length?<div className={styles.acts}>{actions.map((action,i)=><button tabIndex={0} data-clocker-action key={action} type="button" className={styles.act} data-kind={i===0&&online?'primary':'secondary'} aria-label={t(labels[action])} onClick={()=>action==='CLOCK_OUT'?setMode('confirm-out'):action==='START_BREAK'?setMode('select-break'):act(action)}>
     <span className={styles.actIcon}><ClockerIcon name={actionIcons[action]} size={28}/></span>
     <span className={styles.actText}>{t(labels[action])}</span>
     <ClockerIcon name="arrow" size={22}/></button>)}</div>:null}
    <div className={styles.panelFoot}>
-    <button tabIndex={0} className={styles.btn} data-kind="secondary" type="button" onClick={onDone}>{t("Done")}</button>
+    <button tabIndex={0} className={styles.btn} data-kind={online?'secondary':'primary'} type="button" onClick={onDone}>{t("Done")}</button>
     <div className={styles.links}>
      <button tabIndex={0} className={styles.link} type="button" onClick={()=>void refresh()}><ClockerIcon name="refresh" size={18}/>{t("Refresh")}</button>
      {helpLink(true)}
@@ -272,7 +291,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
    <p className={styles.lead}>{keep(t("Your break doesn’t end on its own. Tap End break when you’re back."))}</p>
    <div className={styles.acts}>{view.breakTypes.map(type=><button tabIndex={0} key={type.id} className={styles.act} data-kind="secondary" type="button" aria-label={t('Start {name}',{name:type.name})} onClick={()=>act('START_BREAK',type)}>
     <span className={styles.actIcon}><ClockerIcon name={breakIcon(type.category)} size={28}/></span>
-    <span className={styles.actText}>{type.name}<small>{t(type.category==='REST'?'Rest':type.category==='MEAL'?'Meal':'Other')}{type.targetMinutes!==null?' · '+t('Suggested: {minutes} min',{minutes:type.targetMinutes}):''}</small></span>
+    <span className={styles.actText}>{type.name}{breakSub(type)?<small>{breakSub(type)}</small>:null}</span>
     <ClockerIcon name="arrow" size={22}/>
    </button>)}</div>
    <div className={styles.stack}><button tabIndex={0} type="button" className={styles.btn} data-kind="secondary" onClick={()=>setMode('ready')}>{t("Back")}</button></div>
@@ -287,7 +306,6 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
    <p className={styles.clears}>{t("This screen clears after 30 seconds.")}</p>
   </>:null}
   {mode==='success'&&receipt?<ClockerReceipt action={receipt.action} performedAt={receipt.performedAt} commandId={receipt.commandId} timeZone={timeZone} locale={locale} firstName={first} facts={receiptFacts(receipt,view?.snapshot,timeZone,locale)}/>:null}
-  {mode==='sending'&&first&&sendingAction?<p className={styles.doing}>{face('sm')}<span>{t(recording[sendingAction],{first})}</span></p>:null}
   {waiting?<><span className={styles.progress} aria-hidden="true"><i/></span><p role="status" className={styles.smsg}>{t(mode==='sending'?'Keep this screen open while it saves.':'Getting your latest time.')}</p></>:null}
   {mode==='other-person'?<p role="alert" data-clocker-notice className={styles.smsg}>{t("The person before you has a punch that isn’t confirmed on this tablet. Ask them to enter their PIN again. Nothing was recorded for you.")}</p>:null}
   {mode!=='ready'&&mode!=='recovery'&&mode!=='retry'?notice:null}
@@ -298,18 +316,18 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
    {mode==='recovery'?<p>{t('This tablet kept your punch and won’t record it twice.')}</p>:null}
    {others?<p data-clocker-others-saved="" data-quiet="">{others}</p>:null}
   </div>:null}
-  {(mode==='recovery'||mode==='unavailable')&&!online?<p role="status" data-clocker-offline="" className={styles.msg} data-tone="amber"><ClockerIcon name="offline" size={18}/><span>{t('No connection. This tablet checks again by itself when it returns.')}</span></p>:null}
+  {(mode==='recovery'||mode==='unavailable')&&!online?<p role="status" data-clocker-offline="" className={styles.msg}><ClockerIcon name="offline" size={18}/><span>{t('No connection. This tablet checks again by itself when it returns.')}</span></p>:null}
   {mode==='storage'?<p className={styles.smsg}>{t("Don’t clear this browser’s data while a punch isn’t confirmed.")}</p>:null}
-  {mode==='review-current'?<div className={styles.stack}><button type="button" className={styles.btn} data-kind="primary" onClick={()=>void reviewCurrent()}>{t('See current status')}</button>{leave}</div>:null}
+  {mode==='review-current'?<div className={styles.stack}><button type="button" className={styles.btn} data-kind="primary" onClick={()=>void reviewCurrent()}>{t('See current status')}</button></div>:null}
   {/* Phase 8 (#5): once the check found nothing, the screen's one filled button is Send it again, the button its sentence
    * names; Check if it saved stays as a quiet link. Before the check, Check if it saved is the one action. */}
   {mode==='recovery'||mode==='retry'?<div className={styles.stack}>
    {mode==='retry'&&pending&&view?<button tabIndex={0} className={styles.btn} data-kind="primary" type="button" onClick={()=>void send(pending,view)}>{t("Send it again")}</button>:null}
    <button tabIndex={0} className={mode==='retry'&&pending&&view?styles.link:styles.btn} data-kind={mode==='retry'&&pending&&view?undefined:'primary'} type="button" onClick={()=>void refresh()}>{t("Check if it saved")}</button>
-   {leave}
   </div>:null}
-  {mode==='unavailable'?<div className={styles.stack}><button tabIndex={0} className={styles.btn} data-kind="primary" type="button" onClick={()=>void refresh()}>{t("Try again")}</button>{leave}</div>:null}
+  {mode==='unavailable'?<div className={styles.stack}><button tabIndex={0} className={styles.btn} data-kind="primary" type="button" onClick={()=>void refresh()}>{t("Try again")}</button></div>:null}
+  {footLinks}
   {leave&&!withActions?<div className={styles.stack}>{leave}</div>:null}
-  {mode!=='ready'?helpLink(false):null}
+  {mode!=='ready'&&!withActions?helpLink(false):null}
  </div>;
 }

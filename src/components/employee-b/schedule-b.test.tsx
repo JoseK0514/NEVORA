@@ -62,3 +62,15 @@ it('Phase 4: a day block prints the compact range in two whole halves, so no das
   expect(html).toContain('<b><span class="eb-nb">9\u00a0AM</span> <span class="eb-nb">–\u00a05\u00a0PM</span></b>');
 });
 
+
+it('Final review C (rows 4, 5): Confirm this week waits on you (amber) with the confirm glyph; Availability is UserCheck', async () => {
+  const {CalendarCheckIcon} = await import('@phosphor-icons/react/dist/ssr/CalendarCheck');
+  const {CalendarBlankIcon} = await import('@phosphor-icons/react/dist/ssr/CalendarBlank');
+  const {UserCheckIcon} = await import('@phosphor-icons/react/dist/ssr/UserCheck');
+  const html = draw(), row = html.slice(html.indexOf('es-confirm'), html.indexOf('es-confirm__act'));
+  expect(row).toContain('<span class="b-ico b-ico--amber" aria-hidden="true">');
+  expect(row).toContain(renderToStaticMarkup(<CalendarCheckIcon weight="bold"/>));
+  const band = html.slice(html.indexOf('href="/app/availability"'), html.indexOf('Availability</a>'));
+  expect(band).toContain(renderToStaticMarkup(<UserCheckIcon size={16} weight="bold" aria-hidden="true"/>));
+  expect(band).not.toContain(renderToStaticMarkup(<CalendarBlankIcon size={16} weight="bold" aria-hidden="true"/>));
+});

@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useId, useRef, useState, useTransition, type FormEvent, type ReactNode } from "react";
 import { unstable_rethrow, useRouter } from "next/navigation";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
-import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import type { ConfigurationResult } from "@/components/configuration-form";
 import type { PolicyWriteResult } from "@/lib/shift-changes/types";
 
@@ -46,6 +46,12 @@ const plainMessages: Record<string, string> = {
   "Only an active Owner can save this policy.": "Only an owner can save this policy.",
 };
 const plain = (message: string) => plainMessages[message] ?? message;
+
+/** Phase 9 (spec 3.3): a saved line carries the app's one done mark, small: a bold green check in a 28px green-50 circle
+ * (premium-wave-a.css, "Saved lines"), never a filled circle. Decorative; the words say what was saved. */
+function SavedMark() {
+  return <span className="wb-saved__mark" aria-hidden="true"><CheckIcon weight="bold" /></span>;
+}
 
 type Submit = { label: string; pendingLabel: string; ariaLabel?: string; className: string; kind?: "primary" | "secondary" | "danger"; icon?: ReactNode };
 
@@ -124,7 +130,7 @@ export function RulesSaveForm({ action, children, bar }: {
     <fieldset aria-disabled={pending || undefined} className="configuration-fields">{children}</fieldset>
     {bar ? <div className="nv-actionbar wb-savebar" role="group" aria-label="Staffing and weekly hours">
       {result === "saved"
-        ? <p className="wb-saved" role="status"><CheckCircleIcon size={18} weight="fill" aria-hidden="true" /><span>Scheduling rules saved.</span></p>
+        ? <p className="wb-saved" role="status"><SavedMark /><span>Scheduling rules saved.</span></p>
         : result
           ? <p className="wb-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden="true" /><span>{result}</span></p>
           : <p className="wb-note">Staffing and weekly hours save together and apply right away.</p>}
@@ -158,7 +164,7 @@ export function InlineConfigForm({ action, children, submit, successText, classN
   return <form onSubmit={send} className={className ? `wb-form wb-auto wb-config ${className}` : "wb-form wb-auto wb-config"} aria-busy={pending || undefined}>
     <fieldset aria-disabled={pending || undefined} className="configuration-fields">{children}</fieldset>
     <div className="wb-actions"><button className="nv-btn" data-kind={submit.kind} type="submit" aria-disabled={pending || undefined} aria-busy={pending || undefined}>{pending ? submit.pendingLabel : submit.label}</button></div>
-    {result === "saved" ? <p className="wb-saved" role="status"><CheckCircleIcon size={18} weight="fill" aria-hidden="true" /><span>{successText}</span></p>
+    {result === "saved" ? <p className="wb-saved" role="status"><SavedMark /><span>{successText}</span></p>
       : result ? <p className="wb-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden="true" /><span>{result}</span></p> : null}
   </form>;
 }
@@ -220,7 +226,7 @@ export function PolicyForm({ revision, action, saveLabel, children }: {
     <input type="hidden" name="expectedRevision" value={currentRevision} />
     <PolicyOrder.Provider value={{ error: orderError, id: orderId }}><fieldset className="configuration-fields wb-form" aria-disabled={pending || undefined}>{children}</fieldset></PolicyOrder.Provider>
     <div className="wb-actions"><button type="submit" className="nv-btn" data-kind="primary" aria-disabled={pending || undefined} aria-busy={pending || undefined}>{pending ? "Saving…" : saveLabel}</button></div>
-    {message?.tone === "saved" ? <p className="wb-saved" role="status"><CheckCircleIcon size={18} weight="fill" aria-hidden="true" /><span>{message.text}</span></p>
+    {message?.tone === "saved" ? <p className="wb-saved" role="status"><SavedMark /><span>{message.text}</span></p>
       : message ? <><p className="wb-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden="true" /><span>{message.text}</span></p>{message.tone === "conflict" ? <div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" onClick={() => window.location.reload()}>Reload current policy</button></div> : null}</> : null}
   </form>;
 }

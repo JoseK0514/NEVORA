@@ -237,9 +237,9 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     const out = phone({ week: payrollWeek, payrollStatus: overdue });
     const notice = out.slice(out.indexOf('aria-label="Pay periods with no payroll"'), out.indexOf('class="b-ink"'));
     expect(notice).toContain("b-ico b-ico--red");
-    expect(notice).toMatch(/>Oct 12\s–\s18 has no payroll</);
+    expect(notice).toMatch(/>Oct 12–18 has no payroll</);
     expect(notice).toMatch(/>Scheduled payday was Fri,\sOct\s23</);
-    expect(notice).toMatch(/href="\/app\/payroll\/prepare#unpaid-2026-10-12" class="b-btn b-btn--teal b-btn--full"[^>]*>Prepare Oct 12\s–\s18</);
+    expect(notice).toMatch(/href="\/app\/payroll\/prepare#unpaid-2026-10-12" class="b-btn b-btn--teal b-btn--full"[^>]*>Prepare Oct 12–18</);
     // The notice sits before the payday tile, whose own button steps back to glass.
     expect(out.indexOf("has no payroll")).toBeLessThan(out.indexOf('class="b-ink"'));
     expect(out).toContain('<a href="/app/payroll" class="b-btn b-btn--glass b-btn--full" aria-label="Prepare payroll">');
@@ -270,7 +270,8 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     // Not open yet: the day approval opens leads, and the button is the quiet glass pill, never the white one.
     const closed = phone({ timecards: [card("c3", "2026-10-26", "2026-11-01")], timecardsReady: true, businessDay: "2026-10-30" });
     expect(closed).toContain('<div class="b-ink__big">Opens Mon, Nov 2</div>');
-    expect(closed).toContain('<span class="b-ink__due b-ink__due--ok">In 3 days</span>');
+    // Phase 9 (spec 3.1): when approval opens is a time fact, grey header text, not a chip.
+    expect(closed).toContain('<span class="b-ink__due b-ink__due--when">In 3 days</span>');
     expect(closed).toContain('<a href="/app/timecards" class="b-btn b-btn--glass b-btn--full" aria-label="See this week’s hours">');
     expect(closed).not.toContain("b-btn--white");
     // The Owner's Payday leaves the reviewer's own card out of its count too.
@@ -282,10 +283,12 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     const card = out.slice(out.indexOf('id="b-home-on"'), out.indexOf('class="b-home-col b-home-col--b"'));
     expect(card).toContain('<a href="/app?view=attendance" class="b-card__a" aria-label="See everyone working today">See everyone</a>');
     expect(card.match(/<li class="b-li">/g)).toHaveLength(3);
-    // Phase 8 (a.md #11): the live word is Team's, "Clocked in".
-    expect(card).toContain('<span class="b-chip b-chip--green">Clocked in</span>');
-    expect(card).toContain('<span class="b-chip b-chip--amber">Clocked in late</span>');
-    expect(card).toContain('<span class="b-chip b-chip--amber">Not clocked in</span>');
+    // Phase 8 (a.md #11): the live word is Team's, "Clocked in". Phase 9 (spec 1.2): the normal state is quiet grey words
+    // with the green live dot; only the exceptions are amber chips, with the live dot, and "Not clocked in" says how long.
+    expect(card).toContain('<span class="b-status" data-dot="green"><span class="b-ldot" data-tone="green" aria-hidden="true"></span>Clocked in</span>');
+    expect(card).not.toContain('b-chip--green');
+    expect(card).toContain('<span class="b-chip b-chip--amber" data-dot=""><span class="b-ldot" data-tone="amber" aria-hidden="true"></span>Clocked in late</span>');
+    expect(card).toMatch(/<span class="b-chip b-chip--amber" data-dot=""><span class="b-ldot" data-tone="amber" aria-hidden="true"><\/span>Not clocked in( · [^<]+)?<\/span>/);
     expect(card).toMatch(/9:00\sAM\s–\s5:00\sPM/);
     expect(card).not.toMatch(/Person b|Person c/);
     // Nobody on: the card says so and names the next start; it never lists a shift that hasn't begun.
@@ -307,7 +310,7 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(card).toContain("Person unscheduled");
     expect(card).toMatch(/Clocked in 9:02\sAM/);
     expect(card).toContain("Condado");
-    expect(card).toContain('b-chip--green">Clocked in');
+    expect(card).toContain('data-dot="green"><span class="b-ldot" data-tone="green" aria-hidden="true"></span>Clocked in</span>');
     expect(card).not.toContain("Nobody is working right now");
     expect(card).not.toContain("5:00 PM");
     const retired=phone({today:today([]),monitor:null});

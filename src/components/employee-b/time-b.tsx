@@ -10,9 +10,9 @@ import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {ClockCounterClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ClockCounterClockwise';
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import {WarningIcon} from '@phosphor-icons/react/dist/ssr/Warning';
-import {BButton,BButtonLink,BCard,BChip,BHero,BIcon,BList,BLive,BNote,BRow,BScreen,BSeg,BStack,BState,compactRange,type BStateKind} from '../owner-b/b-kit';
+import {BButton,BButtonLink,BCallout,BCard,BChip,BHero,BIcon,BList,BLive,BNote,BRow,BScreen,BSeg,BStack,BState,BStatusText,compactRange,type BStateKind} from '../owner-b/b-kit';
 import {momentsCopy} from '../owner-b/moments-copy';
-import {BAddRow,BCardNote,BDay,BValue,Range,shiftEndedWhileOpen,wallTime,type WallShift} from './parts';
+import {BAddRow,BCardNote,BDay,BValue,Range,shiftEndedWhileOpen,shiftUnderway,sinceSpan,wallMinutesSince,wallTime,type WallShift} from './parts';
 import {workCopy} from './work-copy';
 import {useHours} from '../employee-mobile/use-hours';
 import {addDays,weekStartFor} from '@/lib/date-utils';
@@ -77,6 +77,12 @@ function Dur({value}:{value:number}){
 }
 const M=momentsCopy(),W=workCopy();
 const chip=(status:{word:string;tone:StatusTone})=><BChip tone={status.tone}>{status.word}</BChip>;
+/** Phase 9 (spec 1.1, 1.4): a state that stands alone in a card's header. A week still under way ("In progress") is the
+ * expected state, so it is quiet grey text; a green or red chip there carries its glyph (Check, WarningCircle), so the two
+ * colours colour-blind readers confuse differ by shape; Declined is grey (a decision isn't an error). */
+const headChip=(status:{word:string;tone:StatusTone})=>status.tone==='teal'&&status.word==='In progress'?<BStatusText>{status.word}</BStatusText>
+ :status.word==='Declined'?<BChip tone="grey">{status.word}</BChip>
+ :<BChip tone={status.tone} icon={status.tone==='green'?'check':status.tone==='red'?'stop':undefined}>{status.word}</BChip>;
 
 /* ---------- Time tab ---------- */
 
@@ -85,17 +91,27 @@ export function TimeTabB({data}:{data:Ready}){
  const figure=(value:number)=>m.partial?'—':<Dur value={value}/>;
  // Phase 8 (review C, row 10): today's shift has ended and the punch is still open: amber, with Home's words.
  const overrun=current&&context?.shifts?shiftEndedWhileOpen({shifts:context.shifts,today:data.date,zone,observedAt:data.observedAt,clockInAt:current.clockInAt}):null;
- const status=current?m.onBreak?<BChip tone="amber">On break</BChip>:<BChip tone={overrun?'amber':'teal'}>Clocked in</BChip>:<BChip>Not clocked in</BChip>;
+ // Phase 9 (spec 1.4): your own clock state is quiet grey words, with the live dot while you are or should be on the
+ // clock: green Clocked in, amber On break, amber Clocked in for a punch left open after the shift ended (the amber
+ // callout below says why), amber "Not clocked in · 12 min" once a shift has started with no punch. Before a shift starts
+ // it is "Not clocked in" without a dot.
+ const underway=!current&&context?.shifts?shiftUnderway({shifts:context.shifts,today:data.date,zone,observedAt:data.observedAt}):null;
+ const since=(shift:WallShift,time:string)=>sinceSpan(wallMinutesSince({date:shift.date,time,zone,observedAt:data.observedAt}));
+ const status=current?m.onBreak?<BStatusText dot="amber">On break</BStatusText>:<BStatusText dot={overrun?'amber':'green'}>Clocked in</BStatusText>
+  :underway?<BStatusText dot="amber">{W.notClockedInFor(since(underway,underway.startTime))}</BStatusText>:<BStatusText>Not clocked in</BStatusText>;
  const headline=overrun&&current?W.stillClockedIn(clockAt(current.clockInAt,zone)):current?m.onBreak&&m.openBreak?`On break since ${clockAt(m.openBreak.startAt,zone)}`:`Clocked in at ${clockAt(current.clockInAt,zone)}`:`Clock in on ${m.tablet}`;
  const line=current?m.onBreak?`${current.locationName} · clocked in at ${clockAt(current.clockInAt,zone)}`:`${current.locationName} · ${boardDuration(current.elapsedSeconds)} so far`:'Take breaks and clock out there too';
  const hint=overrun&&current?W.shiftEnded(compactRange(`${wallTime(overrun.startTime)} – ${wallTime(overrun.endTime)}`),current.locationName):current?m.onBreak?'End your break on your location’s tablet.':'Take breaks and clock out on your location’s tablet.':null;
  return <HoursBScreen hero={m.week.length?<BLive label="This week at a glance" items={[{label:'This week',value:figure(m.worked)},{label:'Breaks',value:figure(m.breaks)}]}/>:null}>
   <BCard title="Right now" id="b-hours-now" chip={status}>
-   <div className={overrun?'b-notice eb-now eb-now--late':'b-notice eb-now'} role={overrun?'status':undefined}><BIcon tone={overrun?'amber':'teal'}><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
+   {/* Phase 9 (spec 2.2): a punch left open after the shift ended is the kit's amber callout (Warning glyph, a hairline,
+     * the 600 title over its lines), as on Home; every other state keeps the plain notice with the teal clock. */}
+   {overrun&&current?<BCallout tone="amber" role="status" title={keepWhole(headline)}><p>{keepWhole(line)}</p>{hint?<p>{hint}</p>:null}</BCallout>
+    :<div className="b-notice eb-now"><BIcon tone="teal"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
     <span className="b-notice__t">{keepWhole(headline)}</span><span className="b-notice__s">{keepWhole(line)}</span>{hint?<span className="b-notice__s">{hint}</span>:null}
-   </span></div>
+   </span></div>}
   </BCard>
-  <BCard title={<span><span className="eb-wide">This week · </span><span className="eb-nowrap">{rangeLabel(m.weekStart,m.weekEnd)}</span></span>} id="b-hours-week" chip={<BChip tone="teal">In progress</BChip>}>
+  <BCard title={<span><span className="eb-wide">This week · </span><span className="eb-nowrap">{rangeLabel(m.weekStart,m.weekEnd)}</span></span>} id="b-hours-week" chip={<BStatusText>In progress</BStatusText>}>
    <BList label="This week’s time">
     {m.week.map(entry=>{const date=dateKey(entry.clockInAt,zone),range=clockRange(entry.clockInAt,entry.clockOutAt,zone);
      return <BRow key={entry.id} href={entryHref(entry.id)} lead={<BDay date={date} today={date===data.date}/>} title={<span id={'b-hours-entry-'+entry.id}><Range text={keepWhole(range)}/></span>}
@@ -124,7 +140,7 @@ function LastWeekB({authority,date}:{authority:string;date:string}){
  if(!item||!card||!card.entries.length)return <BCard title="Last week" id="b-hours-last"><BList><BRow title={range} sub="No hours recorded"/></BList></BCard>;
  // Last week is over: an open period reads as not approved yet.
  const status=item.state==='DRAFT'?{word:'Not approved yet',tone:'grey' as const}:cardStatus(item.state,card.issues),total=seconds(card.recordedNanoseconds);
- return <BCard title="Last week" id="b-hours-last" chip={chip(status)}><BList>
+ return <BCard title="Last week" id="b-hours-last" chip={headChip(status)}><BList>
   <BRow href={cardsHref(period)} title={range} sub={shiftCount(card.entries.length)} end={<BValue><Dur value={total}/></BValue>} label={`Last week, ${range}, ${status.word}, ${shiftCount(card.entries.length)}, ${boardDuration(total)}`}/>
  </BList></BCard>;
 }
@@ -134,7 +150,9 @@ function LastWeekB({authority,date}:{authority:string;date:string}){
 export type DayPunch={key:string;title:string;detail?:string;value:string;soft?:boolean};
 export function DayB({total,running,status,line,punches,location,fix,notes}:{total:number|null;running:boolean;status:{word:string;tone:StatusTone};line:string;punches:DayPunch[];location:string;fix:string|null;notes:string[]}){
  return <HoursBScreen>
-  <BCard title="Hours" id="b-hours-day" chip={chip(status)}>
+  {/* Phase 9 (spec 1.4): an entry still running is your own clock state, quiet words with the live dot (green Clocked in,
+    * amber On break). */}
+  <BCard title="Hours" id="b-hours-day" chip={running&&status.tone!=='grey'?<BStatusText dot={status.tone==='teal'?'green':status.tone}>{status.word}</BStatusText>:headChip(status)}>
    <div className="eb-sum"><p className="eb-sum__big">{total===null?'In progress':<><Dur value={total}/>{running?<span className="eb-sum__so"> so far</span>:null}</>}</p><p className="eb-sum__line">{line}</p></div>
   </BCard>
   <BCard title="Punches" id="b-hours-punches">
@@ -159,10 +177,11 @@ function WeekRowB({period,state}:{period:Period;state:WeekState|undefined}){
  const item=data.cards[0],card=item?.card;
  // The week under way says so (as on Time), with nothing recorded yet; a past week with none says it recorded none.
  if(!item||!card||!card.entries.length){const open=!!item&&!!card&&cardStatus(item.state,card.issues).open;
-  return <BRow title={range} chip={open?<BChip tone="teal">In progress</BChip>:undefined} sub={open?'No hours yet':'No hours recorded'}/>;}
+  return <BRow title={range} sub={open?'No hours yet':'No hours recorded'}/>;}
  const status=cardStatus(item.state,card.issues),count=shiftCount(card.entries.length),total=seconds(card.recordedNanoseconds);
- // A closed week says its state in grey; the week under way and one that needs attention carry a chip.
- return <BRow href={cardsHref(period)} title={range} chip={status.open||status.flag?chip(status):undefined} sub={status.open?`${count} so far`:status.flag?count:`${count} · ${status.word}`}
+ // A closed week says its state in grey; one that needs attention carries a chip. Phase 9 (spec 1.4): the week under way is
+ // the expected state, so its sub-line ("3 shifts so far") says it and no teal chip does.
+ return <BRow href={cardsHref(period)} title={range} chip={status.flag?chip(status):undefined} sub={status.open?`${count} so far`:status.flag?count:`${count} · ${status.word}`}
   end={<BValue><Dur value={total}/></BValue>} label={`${range}, ${status.word}, ${count}, ${boardDuration(total)}`}/>;
 }
 /** The chosen week (?start&end): its total and its days. */
@@ -170,7 +189,7 @@ function ChosenWeekB({data,period}:{data:Extract<TimecardsResult,{state:'ready'}
  const item=data.cards[0],card=item?.card,range=rangeLabel(period.startDate,period.endDate);
  if(!item||!card)return <BCard title={range} id="b-hours-timecard"><p className="eb-quiet">No hours this week</p></BCard>;
  const entries=[...card.entries].sort((a,b)=>a.startAt.localeCompare(b.startAt)),notes=card.issues.map(issue=>issueText[issue]).filter((text):text is string=>!!text);
- return <BCard title={rangeLabel(card.startDate,card.endDate)} id="b-hours-timecard" chip={entries.length?chip(cardStatus(item.state as CardState,card.issues)):undefined}>
+ return <BCard title={rangeLabel(card.startDate,card.endDate)} id="b-hours-timecard" chip={entries.length?headChip(cardStatus(item.state as CardState,card.issues)):undefined}>
   {entries.length?<>
    <div className="eb-sum"><p className="eb-sum__big"><Dur value={seconds(card.recordedNanoseconds)}/></p><p className="eb-sum__line">Hours · includes {boardDuration(seconds(card.breakNanoseconds))} of breaks</p>
     {notes.map(note=><p className="eb-sum__line eb-sum__line--warn" key={note}>{note}</p>)}</div>
@@ -203,11 +222,11 @@ export function PastTimecardsB({data,period,today,chosen,weeks,earlier,earlierCo
 
 /* ---------- Your correction requests ---------- */
 
-const correctionChip=(status:PublicCorrectionItem['status'])=>chip(correctionStatus(status));
+const correctionChip=(status:PublicCorrectionItem['status'],head?:boolean)=>{const look=correctionStatus(status);return head?headChip(look):chip(look.word==='Declined'?{...look,tone:'grey'}:look);};
 export function CorrectionsB({snapshot,decided}:{snapshot:Extract<EmployeeTimeCorrections,{state:'ready'}>;decided:boolean}){
  const zone=snapshot.timeZone,rows=snapshot.requests.filter(r=>decided?r.status!=='PENDING':r.status==='PENDING');
  // Desktop: Fix a missed punch is the band's white action (the card's own row is the phone's).
- return <HoursBScreen right={<span className="eb-desk"><BButtonLink href="/app/my-time?view=corrections&edit=new" kind="white"><PencilSimpleIcon size={17} weight="bold" aria-hidden="true"/>Fix a missed punch</BButtonLink></span>} hero={<BSeg label="Correction requests" items={[{key:'waiting',label:'Waiting',href:'/app/my-time?view=corrections',current:!decided},{key:'decided',label:'Decided',href:'/app/my-time?view=corrections&filter=decided',current:decided}]}/>}>
+ return <HoursBScreen right={<span className="eb-desk"><BButtonLink href="/app/my-time?view=corrections&edit=new" kind="white"><PencilSimpleIcon size={16} weight="bold" aria-hidden="true"/>Fix a missed punch</BButtonLink></span>} hero={<BSeg label="Correction requests" items={[{key:'waiting',label:'Waiting',href:'/app/my-time?view=corrections',current:!decided},{key:'decided',label:'Decided',href:'/app/my-time?view=corrections&filter=decided',current:decided}]}/>}>
   <BCard label={decided?'Decisions':'Waiting for review'}>
    <BList label={decided?'Decisions':'Waiting for review'}>
     {rows.map(r=>{const day=dateKey(r.proposedStartAt,zone),times=clockRange(r.proposedStartAt,r.proposedEndAt,zone),word=correctionStatus(r.status).word;
@@ -228,7 +247,7 @@ export function CorrectionsB({snapshot,decided}:{snapshot:Extract<EmployeeTimeCo
 export function CorrectionDetailB({item,decision,zone}:{item:PublicCorrectionItem;decision:HoursDecision|undefined;zone:string}){
  const context=item.context,now=context.state==='confirmed'&&context.sourceKind==='ADJUSTMENT'?interval(context.startAt,context.endAt,zone):null;
  return <HoursBScreen>
-  <BCard title={item.kind==='BREAK_BOUNDARY'&&item.breakName?`Break · ${item.breakName}`:kindLabel[item.kind]} id="b-hours-correction" chip={correctionChip(item.status)}>
+  <BCard title={item.kind==='BREAK_BOUNDARY'&&item.breakName?`Break · ${item.breakName}`:kindLabel[item.kind]} id="b-hours-correction" chip={correctionChip(item.status,true)}>
    <BList label="Times">
     <BRow title="Recorded" sub={item.originalStartAt&&item.originalEndAt?keepWhole(interval(item.originalStartAt,item.originalEndAt,zone)):'No punches recorded'}/>
     <BRow title="You asked for" sub={keepWhole(interval(item.proposedStartAt,item.proposedEndAt,zone))}/>

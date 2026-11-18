@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useActionState, useCallback, useEffect, useRef, useState } from "react";
-import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { requestAccountDeletion, type DeletionFormState } from "@/app/app/account/delete/actions";
 import { logout } from "@/app/login/actions";
 import { useFieldErrors } from "@/app/app/settings/wave-c-form";
@@ -14,6 +13,7 @@ import { EyeIcon } from "@phosphor-icons/react/dist/ssr/Eye";
 import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
+import { BDoneMark, BGlyph, BIcon, type BMeaning, type BTone } from "./owner-b/b-kit";
 import { EmployeeDeletionView, type DeletionView } from "./employee-mobile/deletion";
 import { shown as onScreen } from "./employee-b/account-host";
 import { LastOwnerCard } from "./access-recovery/last-owner-card";
@@ -93,7 +93,7 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
     return <>{header}
       <section className="q-deletion" aria-labelledby="deletion-done-title">
         <div className="q-deletion__done" ref={outcome} tabIndex={-1} role="status" aria-labelledby="deletion-done-title">
-          <CheckCircleIcon className="q-ic q-deletion__done-icon" weight="fill" aria-hidden="true" />
+          <BDoneMark />
           <h2 id="deletion-done-title">{state.kind === "received" ? "Your deletion request has been received." : "A deletion request is already in progress."}</h2>
           <p>Reference <strong className="ad-reference">{state.reference}</strong></p>
         </div>
@@ -129,6 +129,8 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
   }
 
   const passwordError = state.kind === "wrong_password" ? "That password isn’t right. Try again." : errors.password;
+  const look: { tone: BTone; meaning: BMeaning } = state.kind === "failed" ? { tone: "red", meaning: "stop" } : state.kind === "unavailable" ? { tone: "grey", meaning: "locked" }
+    : state.kind === "busy" ? { tone: "amber", meaning: "wait" } : { tone: "amber", meaning: "unknown" };
   const checking = retry && state.kind !== "failed";
   return <>{header}
     <form action={action} noValidate className="q-deletion" aria-label="Delete your NEVORA account" aria-busy={pending}
@@ -164,10 +166,14 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
         </QuietList>
       </QuietGroup>
       {state.kind === "failed" || state.kind === "unavailable" || state.kind === "uncertain" || state.kind === "busy" || (checking && state.kind === "wrong_password") ? <div className="q-deletion__alert" ref={outcome} tabIndex={-1} role="alert">
-        <p className="q-error"><b>{state.kind === "failed" ? "We could not submit your request. Please try again." : state.kind === "unavailable" ? "Account deletion isn’t available right now" : state.kind === "busy" ? "Too many tries" : "We couldn’t confirm your request"}</b></p>
-        <p className="q-help">{state.kind === "failed" ? "Nothing was saved and you’re still signed in." : state.kind === "unavailable" ? <>Email <a className="q-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> and we’ll help you.</>
+        {/* Phase 9 (spec 2.2): the outcome stands on the canvas between the groups, so it is the kit's notice card: the
+          * meaning's glyph in its 36px circle (red stop, grey locked, amber wait, amber "not confirmed"), the sentence as a 600
+          * title and the next step under it. The words are unchanged. */}
+        <div className="b-card q-deletion__note" data-kind={state.kind}><div className="b-notice"><BIcon tone={look.tone}><BGlyph meaning={look.meaning} /></BIcon>
+          <span className="b-notice__tx"><span className="b-notice__t">{state.kind === "failed" ? "We could not submit your request. Please try again." : state.kind === "unavailable" ? "Account deletion isn’t available right now" : state.kind === "busy" ? "Too many tries" : "We couldn’t confirm your request"}</span>
+          <span className="b-notice__s">{state.kind === "failed" ? "Nothing was saved and you’re still signed in." : state.kind === "unavailable" ? <>Email <a className="q-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> and we’ll help you.</>
           : state.kind === "busy" ? (checking ? "Wait about 15 minutes, then check again. We still haven’t confirmed whether your request was saved." : "Wait about 15 minutes, then try again. Nothing was sent.")
-          : <>Your request may have been saved. Check your request to find out; if it wasn’t saved, it’s sent again. You can also email <a className="q-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.</>}</p>
+          : <>Your request may have been saved. Check your request to find out; if it wasn’t saved, it’s sent again. You can also email <a className="q-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.</>}</span></span></div></div>
         {/* U11: the Support reference of this one reply, when the action carries one (none today). */}
         <SupportReference reference={supportReferenceOfState(state)} lang={lang} id="deletion-reference" />
       </div> : null}

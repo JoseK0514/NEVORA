@@ -6,6 +6,12 @@ import { ActivationInvitationView, type ActivationPhase } from "./activation-inv
 import { ACCESS_COPY } from "@/components/access-recovery/copy";
 import { AUTH_COPY } from "@/lib/auth-copy";
 import { FieldError } from "@/components/auth-premium/auth-validation";
+import { noteParts } from "@/components/auth-premium/note-parts";
+import { BGlyph } from "@/components/owner-b/b-kit";
+import { MOBILE_ACCESS_COPY } from "@/components/mobile-access/copy";
+
+const saysNote = (html: string, message: string) => { const { title, body } = noteParts(message); if (title) expect(html).toContain(`<p class="b-callout__t">${title}</p>`); if (body) expect(html).toContain(body); };
+const glyph = (meaning: Parameters<typeof BGlyph>[0]["meaning"]) => renderToStaticMarkup(<BGlyph meaning={meaning} />);
 
 const REFERENCE = "3f2b1c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d";
 type Props = Partial<Parameters<typeof ActivationInvitationView>[0]>;
@@ -33,7 +39,10 @@ describe.each(["en", "es"] as const)("activation in %s", lang => {
 
   it("create password: step 2, whose account, what is being set and what Employee ID is", () => {
     const html = view("ready", lang);
-    for (const text of [step(lang, 2), ACCESS_COPY[lang].steps.activation[1], t.activation.choose.replace("{workspace}", "Northside Café"), u.passwordFact, u.idFact, t.activateAccount]) expect(html).toContain(text);
+    for (const text of [step(lang, 2), ACCESS_COPY[lang].steps.activation[1], u.passwordFact, u.idFact, t.activateAccount]) expect(html).toContain(text);
+    // The workplace's name moves to the next line whole (premium pass FD); the words around it are the line's own.
+    const [before, after] = t.activation.choose.split("{workspace}");
+    expect(html).toContain(`${before}<span class="q-whole">Northside Café</span>${after}`);
     expect(html).toContain(`<ul class="ar-facts" aria-label="${u.factsLabel}">`);
     // A passkey is mentioned only where this build offers one.
     expect(html).not.toContain(u.passkeyFact);
@@ -61,15 +70,17 @@ describe.each(["en", "es"] as const)("activation in %s", lang => {
 
   it("offline: nothing was sent, the form and the invitation stay, and it is a wait, not a failure", () => {
     const html = view("ready", lang, { offline: true });
-    expect(html).toMatch(new RegExp(`<p id="activation-offline" class="q-auth__alert q-auth__alert--wait" role="alert" tabindex="-1"><svg[^>]*>.*?</svg><span>${u.offline}</span></p>`));
+    expect(html).toContain(`<div id="activation-offline" class="ar-note" role="alert" tabindex="-1"><div class="b-callout" data-tone="amber"><span class="b-callout__ic" aria-hidden="true">${glyph("offline")}</span>`);
+    saysNote(html, u.offline);
     expect(html).toContain('type="submit"');
-    expect(html).not.toContain(t.activation.unavailable);
-    expect(html).not.toContain("q-error q-auth__alert");
+    expect(html).not.toContain(noteParts(t.activation.unavailable).body ?? t.activation.unavailable);
+    expect(html).not.toContain('data-tone="red"');
   });
 
   it("unavailable: says the invitation was not confirmed, keeps the form, and shows a Support reference only when there is one", () => {
     const html = view("unavailable", lang);
-    expect(html).toContain(t.activation.unavailable);
+    saysNote(html, t.activation.unavailable);
+    expect(html).toContain(`<div id="activation-error" class="ar-note" role="alert"><div class="b-callout" data-tone="red"><span class="b-callout__ic" aria-hidden="true">${glyph("stop")}</span>`);
     expect(html).toContain('type="submit"');
     expect(html).not.toContain("ar-ref");
     const withReference = view("unavailable", lang, { supportReference: REFERENCE });
@@ -80,6 +91,10 @@ describe.each(["en", "es"] as const)("activation in %s", lang => {
   it("expired, used twice or already active: why, what to do if you already activated, and the one next step", () => {
     const html = view("invalid", lang);
     for (const text of [t.activation.invalid, u.invalidWhy, u.invalidActive, t.activation.invalidNext, t.alreadyActivated]) expect(html).toContain(text);
+    // One design at every width (premium pass FD): the phone's title, what happened and what to do under it, no banner.
+    expect(html).toContain(`<h1>${MOBILE_ACCESS_COPY[lang].inviteInvalidTitle}</h1>`);
+    expect(html).toContain(`<p class="activation-invitation-state" role="status">${t.activation.invalid} ${t.activation.invalidNext}</p>`);
+    expect(html).not.toContain("b-callout");
     expect(html).not.toContain("<form");
     expect(html).not.toContain(u.missingHow);
   });
@@ -87,10 +102,12 @@ describe.each(["en", "es"] as const)("activation in %s", lang => {
   it("result not confirmed: never failed and never done; sign in first, then ask the Owner", () => {
     const html = view("outcome_unknown", lang, { supportReference: REFERENCE });
     expect(html).toMatch(new RegExp(`<h1>${u.unknownTitle}</h1>`));
-    for (const text of [u.unknownFirst, t.trySigningIn, t.activation.unknown, REFERENCE]) expect(html).toContain(text);
+    for (const text of [t.trySigningIn, t.activation.unknown, REFERENCE]) expect(html).toContain(text);
+    saysNote(html, u.unknownFirst);
+    expect(html).toContain(`<div class="b-callout" data-tone="amber"><span class="b-callout__ic" aria-hidden="true">${glyph("unknown")}</span>`);
     expect(html).toMatch(/<a class="q-btn" href="\/login">/);
     expect(html).not.toContain('type="submit"');
-    for (const wrong of [u.doneTitle, t.activation.activatedTitle, t.activation.unavailable, t.activation.invalid]) expect(html).not.toContain(wrong);
+    for (const wrong of [u.doneTitle, t.activation.activatedTitle, noteParts(t.activation.unavailable).body ?? "", t.activation.invalid]) expect(html).not.toContain(wrong);
   });
 
   it("done: You’re set, the ID to keep, and the next step", () => {

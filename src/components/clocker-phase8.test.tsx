@@ -15,7 +15,9 @@ const help=(lang:'en'|'es',state:ClockerReviewRequest['state']='idle',id:string|
 
 it.each(['en','es'] as const)('shows saved-punch help as its own card in %s: the references only behind Reference, a quiet ask and Back',lang=>{
  const html=help(lang);
- expect(html).toContain(lang==='en'?'Ask your Owner to check':'Pide al dueño que lo revise');
+ // Premium pass (#8): the title names the fact, not the button's words (two references here, so the plural).
+ expect(html).toContain(lang==='en'?'Your punches are kept on this tablet':'Tus marcaciones están guardadas en esta tableta');
+ expect(html).not.toContain(lang==='en'?'Ask your Owner to check':'Pide al dueño que lo revise');
  // Every reference sits inside the one disclosure; nothing raw in the body and no "Show N more".
  const [body,disclosure='']=html.split('<details');
  expect(body).not.toContain('40d6ec2f');expect(disclosure).toContain('40d6ec2f-676f-447c-bba8-3b3fb78d71ce');expect(disclosure).toContain('9b1f0c2e');
@@ -29,7 +31,12 @@ it.each(['en','es'] as const)('shows saved-punch help as its own card in %s: the
 });
 it('keeps one request: its reference joins the disclosure, and the status says what happened',()=>{
  const sent=help('en','saved','5f0c0000-aaaa-4bbb-8ccc-000000000001',0);
- expect(sent).toContain('Request sent');expect(sent).toContain('Your Owner will see it under Clocker recovery.');
+ // Premium pass (#8): once saved, the result stands in the button's place, a teal information line with no done mark.
+ expect(sent).toContain('Request sent. Your Owner will see it under Clocker recovery.');expect(sent).toContain('data-tone="teal"');
+ expect(sent).not.toMatch(/>(Ask Owner to check|Request sent|Ask again)<\/button>/);expect(sent).not.toContain('disabled');
+ expect(help('es','saved','5f0c').replace(/<[^>]+>/g,'')).toContain('Solicitud enviada. El dueño la verá en Clocker recovery.');
+ // The Owner's pages name the place "Clocker recovery" in both languages, so the Spanish sentence does too (#10).
+ expect(Object.values(CLOCKER_COPY).join(' ')).not.toContain('Recuperación de Clocker');
  expect(sent.split('<details')[1]).toContain('5f0c0000-aaaa-4bbb-8ccc-000000000001');expect(sent.split('<details')[0]).not.toContain('5f0c0000');
  expect(help('en','unknown','5f0c').replace(/ /g,' ')).toContain('We couldn’t confirm the request. Ask again; it won’t send twice.');
  expect(help('en','idle',null,0)).not.toContain('data-clocker-others-saved');
@@ -57,7 +64,7 @@ it('keeps the error screen’s band clock when the date formatter itself is what
  expect(clockerFallbackClock(at,'es')).toEqual({time:'1:05',period:'p. m.',date:null});
 });
 it('has a Spanish line for every new Phase 8 phrase',()=>{
- for(const key of ['Ask your Owner to check','This tablet needs to be set up again','Can’t reach NEVORA','Can’t save punches','Keep my place','Stay clocked in','Clocked in for','under 1 min','The time clock hit a problem',
+ for(const key of ['Your punch is kept on this tablet','Start over','This tablet needs to be set up again','Can’t reach NEVORA','Can’t save punches','Keep my place','Stay clocked in','Clocked in for','under 1 min','The time clock hit a problem',
   'This time clock is paused','Tell a manager','Tell a manager now.','Your earlier punch wasn’t recorded','This tablet can’t read its saved punches','Photo for clock out','Cancel','Saved at {time}. This screen clears in 8 seconds.'])
   {expect(CLOCKER_COPY[key],key).toBeTruthy();expect(CLOCKER_COPY[key]).not.toBe(key);}
  // The Owner is the one who sets a tablet up again; nothing tells staff a manager can.

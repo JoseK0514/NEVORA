@@ -3,6 +3,8 @@ import "./whos-working-corp.css";
 import { useEffect, useState, type ReactNode } from "react";
 import { CaretDownIcon } from "@phosphor-icons/react/ssr";
 import { CorpAvatar, CorpBody, CorpButton, CorpCard, CorpNav, CorpPage, CorpRow, CorpTitle } from "./corp/corp";
+import { BChip, BCount, BSegs } from "./owner-b/b-kit";
+import { AttendanceReviewProvider, openPastLimitEntries, sinceLabel, useSharedAttendanceReview } from "./manager-attendance-review";
 import { useClockMonitor } from "./clean/use-clock-monitor";
 import { useToday } from "./manager-today";
 import type { ClockMonitor } from "@/lib/time-clock";
@@ -27,14 +29,30 @@ const headed = (title: string, n: number) => <>{title}<span className="c-count c
 const REVIEW_FRAGMENT = /^#(?:review$|attendance-.)/;
 const CORRECTION_FRAGMENT = /^#correction-./;
 
+/** The label the attendance review gives an entry open past the review limit (manager-attendance-review.tsx). */
+const NO_CLOCK_OUT = "No clock-out after 12 hours";
+
 export function WhosWorkingCorp({ children, homeHref = "/app" }: { children?: ReactNode; homeHref?: string }) {
-  const { monitor, refreshing } = useClockMonitor();
-  const { snapshot: today, refresh } = useToday();
-  return <WhosWorkingView monitor={monitor} today={today} refreshing={refreshing} onRetry={refresh} homeHref={homeHref}>{children}</WhosWorkingView>;
+  // Review 30 (D29): one attendance review read for the page, so the rows and the folded "Clock-ins to check" row show what
+  // it flags, and the review (children) shows the same read when it is opened.
+  return <AttendanceReviewProvider><WhosWorkingLive homeHref={homeHref}>{children}</WhosWorkingLive></AttendanceReviewProvider>;
 }
 
-export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, homeHref = "/app", children }: {
+function WhosWorkingLive({ children, homeHref }: { children?: ReactNode; homeHref: string }) {
+  const { monitor, refreshing } = useClockMonitor();
+  const { snapshot: today, refresh } = useToday();
+  const shared = useSharedAttendanceReview();
+  const review = shared?.state.review?.state === "ready" && !shared.state.paused ? shared.state.review : null;
+  return <WhosWorkingView monitor={monitor} today={today} refreshing={refreshing} onRetry={refresh} homeHref={homeHref}
+    toCheck={review ? review.signalCount : null} openPastLimit={openPastLimitEntries(review)}>{children}</WhosWorkingView>;
+}
+
+export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, homeHref = "/app", children, toCheck = null, openPastLimit = new Set() }: {
   monitor: ClockMonitor | null; today: Today | null; refreshing?: boolean; onRetry?: () => void; homeHref?: string; children?: ReactNode;
+  /** Review 30 (D29): how many clock-ins the attendance review flags, when its read is ready. */
+  toCheck?: number | null;
+  /** The time entries the review flags as open past 12 hours with no clock-out. */
+  openPastLimit?: ReadonlySet<string>;
 }) {
   const [all, setAll] = useState(false);
   // Closing F1 (NV-240): time corrections live under Time (Time corrections), so the row here is only the flagged clock-ins
@@ -60,9 +78,12 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
   const none = day ? day.missed.filter(shift => shift.status === "no_punches") : [];
   const places = new Set([...people.map(person => person.locationId), ...(day?.shifts ?? []).map(shift => shift.locationId)]).size > 1;
   const dateLine = day ? new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(new Date(`${day.today}T12:00:00Z`)) : "Today";
+  // Review 30 (D29): a clock-in from an earlier day says its day ("In since 9:59 PM yesterday"), never only a time.
+  const todayDate = day?.today ?? (ready ? new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(ready.observedAt)) : null);
+  const since = (iso: string) => (todayDate ? sinceLabel(iso, timeZone, todayDate) : null) ?? clock(iso, timeZone);
+  const flagged = openPastLimit.size;
   // Nov 1 upscale: the time of the last read sits on the Clocked in card ("Updated 2:37 PM"), so the subtitle is the day.
   const sub = dateLine;
-  const where = (name: string) => places ? ` · ${name}` : "";
   // A7: a single-column page, capped at the kit's narrow width on desktop.
   return <CorpPage className="c-who c-page--narrow" labelledBy="who-title">
     <CorpNav back={{ href: homeHref, label: "Home" }} title="Who’s working" phoneOnly />
@@ -72,8 +93,11 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
     <CorpCard id="who-in" label={ready ? headed("Clocked in", people.length) : "Clocked in"} aside={ready ? <span className="c-meta c-num">{`Updated ${clock(ready.observedAt, timeZone)}`}</span> : undefined}>
       {!ready ? <CorpBody><p className="c-who__state" aria-busy={refreshing || undefined}>{monitor?.state === "unavailable" ? "Clock-ins aren’t available right now." : "Checking who’s clocked in…"}</p></CorpBody>
         : people.length ? <ul className="c-rows" aria-label="Clocked in now">{shown.map(person => <li key={person.timeEntryId}>
-          <CorpRow href={`/app/employees/${encodeURIComponent(person.employeeId)}`} bold title={person.employeeName} avatar={<CorpAvatar name={person.employeeName} initials={initials(person.employeeName)} />}
-            detail={`${person.state === "ON_BREAK" && person.breakStartAt ? `On break since ${clock(person.breakStartAt, timeZone)}` : `In since ${clock(person.clockInAt, timeZone)}`}${where(person.locationName)}`}
+          <CorpRow href={`/app/employees/${encodeURIComponent(person.employeeId)}`} bold avatar={<CorpAvatar name={person.employeeName} initials={initials(person.employeeName)} />}
+            title={openPastLimit.has(person.timeEntryId) ? <><span className="c-who__name">{person.employeeName}</span><BChip tone="red">{NO_CLOCK_OUT}</BChip></> : person.employeeName}
+            /* Final verification F (F25): the time and the place are the kit's facts line: each stays whole where it fits
+              ("In since 11:09 AM" no longer leaves "In since" alone at 320), and no line starts or ends with the dot. */
+            detail={<BSegs parts={[person.state === "ON_BREAK" && person.breakStartAt ? `On break since ${since(person.breakStartAt)}` : `In since ${since(person.clockInAt)}`, places ? person.locationName : null]} />}
             chevron />
         </li>)}</ul> : <div className="c-empty c-empty--card"><b className="c-empty__title">No one is clocked in right now</b><span className="c-empty__body">They show up here when they clock in.</span></div>}
       {ready && !all && people.length > SHOWN ? <button type="button" className="c-who__more" onClick={() => setAll(true)}>{`Show ${people.length - SHOWN} more`}</button> : null}
@@ -84,15 +108,20 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
     </CorpBody></CorpCard> : null}
     {late.length ? <CorpCard id="who-late" label={headed(ATTENDANCE_WORDS.notClockedIn, late.length)}><ul className="c-rows" aria-label={ATTENDANCE_WORDS.notClockedIn}>{late.map(shift => <li key={shift.id}>
       <CorpRow href={`/app/employees/${encodeURIComponent(shift.employeeId)}`} bold title={shift.employeeName} avatar={<CorpAvatar name={shift.employeeName} initials={initials(shift.employeeName)} />}
-        detail={`Due ${clock(shift.startAt, timeZone)}${where(shift.locationName)}`} value={day ? lateBy(shift.startAt, day.observedAt) : undefined} valueTone="amber" chevron />
+        detail={<BSegs parts={[`Due\u00a0${clock(shift.startAt, timeZone)}`, places ? shift.locationName : null]} />} value={day ? lateBy(shift.startAt, day.observedAt) : undefined} valueTone="amber" chevron />
     </li>)}</ul></CorpCard> : null}
     {none.length ? <CorpCard id="who-none" label={headed("Missed clock-ins", none.length)}><ul className="c-rows" aria-label="Shifts that ended with no clock-in">{none.map(shift => <li key={shift.id}>
       <CorpRow href={`/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`} bold title={shift.employeeName} avatar={<CorpAvatar name={shift.employeeName} initials={initials(shift.employeeName)} />}
-        detail={`${clock(shift.startAt, timeZone)} – ${clock(shift.endAt, timeZone)}${where(shift.locationName)}`} chevron />
+        detail={<BSegs parts={[`${clock(shift.startAt, timeZone)} – ${clock(shift.endAt, timeZone)}`, places ? shift.locationName : null]} />} chevron />
     </li>)}</ul></CorpCard> : null}
     {children ? <CorpCard as="div" ariaLabel="Review">
-      <CorpRow onClick={() => setReviewOpen(open => !open)} bold title="Clock-ins to check" detail="Times that don’t match the schedule or breaks" chevron={false}
-        trail={<CaretDownIcon className={reviewOpen ? "c-chev c-who__caret c-who__caret--open" : "c-chev c-who__caret"} weight="bold" aria-hidden="true" />} label={`Clock-ins to check, ${reviewOpen ? "expanded" : "collapsed"}`} />
+      {/* Review 30 (D29): the folded row says how many clock-ins wait, and a punch open past 12 hours shows its red chip
+        here too, so it is seen without opening the review. */}
+      <CorpRow onClick={() => setReviewOpen(open => !open)} bold chevron={false}
+        title={<><span className="c-who__name">Clock-ins to check</span>{toCheck ? <BCount>{toCheck}</BCount> : null}{flagged ? <BChip tone="red">{flagged === 1 ? NO_CLOCK_OUT : `${flagged} with ${NO_CLOCK_OUT.charAt(0).toLowerCase()}${NO_CLOCK_OUT.slice(1)}`}</BChip> : null}</>}
+        detail="Times that don’t match the schedule or breaks"
+        trail={<CaretDownIcon className={reviewOpen ? "c-chev c-who__caret c-who__caret--open" : "c-chev c-who__caret"} weight="bold" aria-hidden="true" />}
+        label={`Clock-ins to check${toCheck ? `, ${toCheck} to review` : ""}${flagged ? `, ${flagged} with no clock-out after 12 hours` : ""}, ${reviewOpen ? "expanded" : "collapsed"}`} />
     </CorpCard> : null}
     {children && reviewOpen ? <div className="c-who__review" id="review">{children}</div> : null}
   </CorpPage>;

@@ -18,7 +18,7 @@ import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {ExportIcon} from '@phosphor-icons/react/dist/ssr/Export';
 import {ArrowRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowRight';
-import {ArrowsClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
+import {ArrowClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
@@ -532,12 +532,13 @@ export function Reports({initialPeriod,today,christmasBonus=true}:{initialPeriod
   <div className="wb-insights c-ins__body" data-report-entrance=""><CorpReportsView report={report} state={state}/></div>
   {/* Christmas bonus hours: a yearly report of its own (Oct 1 to Sep 30), so it opens as a page, not a period here.
       Puerto Rico workspaces only; the page enforces the same rule. */}
-  {christmasBonus?<CorpCard id="ins-more" as="div" ariaLabel="Yearly reports"><CorpRows label="Yearly reports">
+  {/* Review 30 (D10): the card says what it is ("Yearly reports"), so the row no longer reads as part of the period. */}
+  {christmasBonus?<CorpCard id="ins-more" label="Yearly reports"><CorpRows label="Yearly reports">
    <li><CorpRow href="/app/reports/christmas-bonus" bold title="Christmas bonus hours" detail="Who reached the Puerto Rico hours threshold" chevron/></li>
   </CorpRows></CorpCard>:null}
   {/* Print only. The report refreshes itself; its old Refresh footer stays with the printable report, out of view. */}
   <div className="c-ins-print"><ReportsView report={report} state={state} onThisWeek={presets&&mode!=='now'?()=>choose('now'):undefined}/>
-   <p className="cm-page-foot"><span>{keepWhole(rangeText(period))}{report?<> · {timeZoneLabel(report.timeZone)}</>:null}</span><button type="button" className="cm-refresh" aria-label="Refresh" aria-busy={busy||undefined} onClick={()=>reloadRef.current()}><ArrowsClockwiseIcon size={16} weight="bold" aria-hidden="true"/>Refresh</button></p>
+   <p className="cm-page-foot"><span>{keepWhole(rangeText(period))}{report?<> · {timeZoneLabel(report.timeZone)}</>:null}</span><button type="button" className="cm-refresh" aria-label="Refresh" aria-busy={busy||undefined} onClick={()=>reloadRef.current()}><ArrowClockwiseIcon size={16} weight="bold" aria-hidden="true"/>Refresh</button></p>
   </div>
  </CorpPage>;
  return page;

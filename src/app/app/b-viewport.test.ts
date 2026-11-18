@@ -10,7 +10,7 @@ const B_SHEETS = [
   'app/app/b-foundation.css', 'components/owner-b/owner-b.css', 'components/employee-b/employee-b.css',
   'components/employee-b/account.css', 'components/employee-b/requests.css', 'components/employee-b/schedule.css',
   'components/employee-b/time.css', 'components/employee-b/pay.css',
-  'app/app/owner-b-home.css', 'app/app/owner-b-schedule.css', 'app/app/owner-b-time-pay.css', 'app/app/owner-b-requests.css', 'app/app/owner-b-settings.css', 'app/app/b-restrictions.css', 'app/app/b-payroll-import.css', 'app/app/b-reminders.css', 'app/app/b-review-details.css', 'app/app/employee-b-work.css', 'app/app/employee-b-account.css', 'app/app/b-motion.css', 'app/app/b-moments.css', 'app/app/b-shimmer.css',
+  'app/app/owner-b-home.css', 'app/app/owner-b-schedule.css', 'app/app/owner-b-time-pay.css', 'app/app/owner-b-requests.css', 'app/app/owner-b-settings.css', 'app/app/b-restrictions.css', 'app/app/b-payroll-import.css', 'app/app/b-reminders.css', 'app/app/b-review-details.css', 'app/app/b-thirty-day.css', 'app/app/employee-b-work.css', 'app/app/employee-b-account.css', 'app/app/b-motion.css', 'app/app/b-moments.css', 'app/app/b-shimmer.css',
   'components/clocker-owner-b.css',
 ];
 const css = (path: string) => readFileSync(join(root, path), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');

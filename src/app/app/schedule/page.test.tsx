@@ -193,7 +193,7 @@ it('Corporate: the week card names the week and its state, open shifts offer Fin
  vi.useFakeTimers({toFake:['Date']});vi.setSystemTime(new Date('2026-10-04T12:00:00Z'));
  const output=(await html()).replace(/ /g,' ');
  // Release 1 (board G-O-Schedule): the week card says the week and how much of it the team can see.
- expect(output).toContain('class="c-sched-week__label">Oct 5 – 11<');
+ expect(output).toContain('class="c-sched-week__label">Oct 5–11<');
  expect(output).toContain('>1 of 2 published</span>');
  expect(output).toContain('West Office isn’t planned');
  expect(output).toContain('aria-label="Plan West Office"');

@@ -3,11 +3,11 @@
 import {createContext, useContext, type ReactNode} from 'react';
 import {CalendarCheckIcon} from '@phosphor-icons/react/dist/ssr/CalendarCheck';
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
-import {MegaphoneSimpleIcon} from '@phosphor-icons/react/dist/ssr/MegaphoneSimple';
+import {MegaphoneIcon} from '@phosphor-icons/react/dist/ssr/Megaphone';
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
-import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
+import {CalendarMinusIcon} from '@phosphor-icons/react/dist/ssr/CalendarMinus';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
-import {BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BNote, BRow, BScreen, BStack, BState, compactRange, type BLiveItem} from '../owner-b/b-kit';
+import {BButtonLink, BCallout, BCard, BChip, BHero, BIcon, BList, BLive, BNote, BRow, BScreen, BStack, BState, BStatusText, compactRange, type BLiveItem} from '../owner-b/b-kit';
 import {HOME_SOURCES} from '../../lib/employee-home/project';
 import type {AttentionItem, HomeSnapshot, PublishedAssignment} from '../../lib/employee-home/types';
 import {homePublishedNames, unpublishedNote} from '../../lib/publication-note';
@@ -18,7 +18,7 @@ import {workCopy} from './work-copy';
 import {useHours} from '../employee-mobile/use-hours';
 import {boardDuration, compactDuration} from '../employee-mobile/hours-model';
 import {businessDate, clock, dayWord, fmt, isComplete, sourceDestinations, sourceNames, todoTitle, weekRange, type HomeWeek} from '../employee-home-quiet';
-import {BCardNote, BDay, Dotted, Range, shiftEndedWhileOpen, wallTime} from './parts';
+import {BCardNote, BDay, Dotted, Range, shiftEndedWhileOpen, sinceSpan, wallTime} from './parts';
 import './employee-b.css';
 import {reviewCopy} from '../review-details/copy';
 import type {HomeTaskTotal} from '../../lib/action-center/review-routing';
@@ -47,6 +47,9 @@ const dateKey = (at: string, zone: string) => new Intl.DateTimeFormat('en-CA', {
 const minutesOf = (time: string) => { const [h, m] = time.split(':').map(Number); return h * 60 + m; };
 /** "24" or "24.5": hours with at most one decimal. */
 const hoursNumber = (minutes: number) => { const h = Math.round(minutes / 6) / 10; return Number.isInteger(h) ? String(h) : h.toFixed(1); };
+/** Final review C (row 9): a place name of two or three short words ("Main Office") never splits across lines in the
+ * clock line; a longer one keeps its spaces, so it can still wrap on a narrow phone. */
+export const placeWhole = (place: string) => place.length <= 20 ? place.replace(/ /g, ' ') : place;
 
 /** Minutes worked this week from the Time tab's own records read (breaks included, as on Time); null while unknown. */
 export function workedMinutes(data: Ready): number | null {
@@ -92,7 +95,7 @@ function Figures({week, payday, worked, onShift, nextShift}: {week: HomeWeek | n
 /** Hours worked come from the Time tab's own private read; without it the figures show scheduled hours. */
 /** Time's records for Home, read once: the hero's hours and the shift card's clock state (review B2, NV-039) share it.
  * undefined: Home has no live hours (the preview); null: not read yet or unavailable. */
-const HoursRead = createContext<Ready | null | undefined>(undefined);
+export const HoursRead = createContext<Ready | null | undefined>(undefined);
 function HoursProvider({authority, children}: {authority: string; children: ReactNode}) {
   const panel = useHours(authority, 'records', 'overview', null);
   const data = panel.read?.view === 'records' && panel.read.data.state === 'ready' ? panel.read.data as Ready : null;
@@ -145,8 +148,10 @@ function ShiftCard({snapshot, lead, heroShows, week}: {snapshot: HomeSnapshot; l
   // Review B6 (NV-161, Jose approved): a Lead's hero already says "On shift now" with the range, so the card is "Your
   // shift", without the "Until" chip or the sentence (the Shift lead chip stays).
   const echo = !!(now && heroShows);
+  // Phase 9 (spec 1.4): a time fact ("Until 5 PM", "Tomorrow", "Starts in 2 h") is not a state, so it is the header's
+  // quiet meta, not a teal chip.
   return <BCard id="b-home-shift" title={echo ? 'Your shift' : now ? 'On shift now' : today ? 'Today’s shift' : 'Next shift'}
-    chip={echo ? undefined : now ? <BChip tone="teal">Until {clock(now.endAt, zone)}</BChip> : <BChip tone="teal">{startsIn(shift, snapshot)}</BChip>}>
+    meta={echo ? undefined : now ? `Until ${clock(now.endAt, zone)}` : startsIn(shift, snapshot)}>
     <div className="eb-shift">
       {/* Phase 8 (review C, row 14): each time stays whole; where the line is too short the range breaks before its dash
         * (the Employee screens' one rule, parts.tsx Range). */}
@@ -156,15 +161,18 @@ function ShiftCard({snapshot, lead, heroShows, week}: {snapshot: HomeSnapshot; l
         * the On shift now card). */}
       {shift.designatedLead && lead ? <p className="eb-leadline"><BChip tone="teal">Shift lead</BChip></p> : null}
       {/* Review B2 (NV-039): the instruction follows Time's clock state, so Home never sends someone who is clocked in back
-        to the tablet to clock in. */}
-      {clockIn && overrun ? <div className="eb-tint" data-tone="amber" role="status"><BIcon tone="amber"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
-        <span className="b-notice__t">{t.stillClockedIn(clock(clockIn.clockInAt, zone))}</span><span className="b-notice__s">{t.shiftEnded(compactRange(`${wallTime(overrun.startTime)} – ${wallTime(overrun.endTime)}`), clockIn.locationName)}</span></span></div>
-        : clockIn ? <div className="eb-tint" data-tone="green"><BIcon tone="green"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
-        <span className="b-notice__t">{clockIn.state === 'ON_BREAK' ? 'On break' : `Clocked in at ${clock(clockIn.clockInAt, zone)}`}</span><span className="b-notice__s">Breaks and clock out on the {shift.locationLabel} tablet</span></span></div>
-        : now && hours ? <div className="eb-tint" data-tone="amber"><BIcon tone="amber"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
-        <span className="b-notice__t">Not clocked in yet</span><span className="b-notice__s">Clock in on the {shift.locationLabel} tablet</span></span></div>
+        to the tablet to clock in. Phase 9 (spec 1.4, 2.2): a punch left open after the shift ended is the kit's amber
+        callout (Warning glyph, a hairline, the 600 title over its line). Otherwise the line is always where to clock (the
+        plain information line, NV-295). Final review C (row 9): one treatment at every width, no panel (a tint inside the
+        card's white drew a tint inside a tint on phones). The live fact leads in ink at 600 with its dot (green Clocked in,
+        amber On break, amber "Not clocked in · 12 min", Time's words from work-copy), and the standing instruction is the
+        grey line under it, so the line reads in the order that matters. A short place name stays whole. */}
+      {clockIn && overrun ? <BCallout tone="amber" role="status" title={t.stillClockedIn(clock(clockIn.clockInAt, zone))}>{t.shiftEnded(compactRange(`${wallTime(overrun.startTime)} – ${wallTime(overrun.endTime)}`), clockIn.locationName)}</BCallout>
         : <div className="eb-tint"><BIcon tone="teal"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
-        <span className="b-notice__t">Clock in on the {shift.locationLabel} tablet</span><span className="b-notice__s">Take breaks and clock out there too</span></span></div>}
+        {clockIn ? <><span className="b-notice__t eb-state">{clockIn.state === 'ON_BREAK'
+            ? <BStatusText dot="amber">On break</BStatusText> : <BStatusText dot="green">Clocked in at {clock(clockIn.clockInAt, zone)}</BStatusText>}</span><span className="b-notice__s">Breaks and clock out on the {placeWhole(shift.locationLabel)} tablet</span></>
+          : now && hours ? <><span className="b-notice__t eb-state"><BStatusText dot="amber">{t.notClockedInFor(sinceSpan(Math.round((Date.parse(snapshot.observedAt) - Date.parse(now.startAt)) / 60_000)))}</BStatusText></span><span className="b-notice__s">Clock in on the {placeWhole(shift.locationLabel)} tablet</span></>
+          : <><span className="b-notice__t">Clock in on the {placeWhole(shift.locationLabel)} tablet</span><span className="b-notice__s">Take breaks and clock out there too</span></>}</span></div>}
       {/* On desktop the button sits in the card's footer beside the shift's length (eb-desk is desktop only). Phase 8 (review
         * C, row 30): the day is already in the line under the time, so the footer doesn't say it again. */}
       <div className="eb-shift__bar"><span className="eb-desk eb-shift__when">{lengthOf(shift) ?? ''}</span>
@@ -209,11 +217,14 @@ function ComingUp({week, snapshot, lead, note}: {week: HomeWeek; snapshot: HomeS
 }
 
 function TodoIcon({item}: {item: AttentionItem}) {
-  const Icon = item.ref.kind === 'SCHEDULE' ? CalendarCheckIcon : item.ref.kind === 'TIME_OFF' ? SunIcon : item.ref.kind === 'EXCHANGE' ? ArrowsLeftRightIcon
-    : item.ref.kind === 'COMMUNICATION' ? MegaphoneSimpleIcon : ClockIcon;
-  // Phase 4 (EM-008, EM-017): every to-do opens something, so every lead is the teal circle; the amber chip alone says
-  // "required".
-  return <BIcon tone="teal"><Icon weight="bold"/></BIcon>;
+  // Phase 9 (spec 3.6): one glyph per concept, the navigation's: CalendarMinus for time off, Megaphone for Updates.
+  // Final review C (row 4): CalendarCheck is confirming your schedule and PencilSimple is fixing your time, on every
+  // Employee screen (Schedule's Confirm this week, Notifications, Time's correction rows).
+  const Icon = item.ref.kind === 'SCHEDULE' ? CalendarCheckIcon : item.ref.kind === 'TIME_OFF' ? CalendarMinusIcon : item.ref.kind === 'EXCHANGE' ? ArrowsLeftRightIcon
+    : item.ref.kind === 'COMMUNICATION' ? MegaphoneIcon : item.ref.kind === 'TIME_CORRECTION' ? PencilSimpleIcon : ClockIcon;
+  // Phase 4 (EM-008, EM-017): every to-do opens something, so its lead is the teal circle. Phase 9 (spec 3.2): one that
+  // waits on you (required) is the amber circle, as the same notice is in Notifications.
+  return <BIcon tone={item.required ? 'amber' : 'teal'}><Icon weight="bold"/></BIcon>;
 }
 
 /** Phase 4 (EM-002): the rows Home shows, in the server's order (HomeTaskSummary ranking v1; nothing is re-ranked here).

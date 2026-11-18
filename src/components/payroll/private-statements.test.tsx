@@ -44,7 +44,8 @@ describe('private employee statement presentation', () => {
     const html = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional-owner" view="history" />);
     // Round 2 (R9): "Pay statements", and a correction row says so on its second line (its reason is on Payroll details).
     expect(html).toContain('Pay statements');
-    expect(html).toMatch(/Payday <span class="c-num">Fri, Oct 16<\/span>\u00a0· Correction/);
+    // Premium pass: one facts line (BSegs); "Payday" keeps its date and the dot belongs to the next fact.
+    expect(html).toContain('Payday\u00a0<span class="c-num">Fri,\u00a0Oct\u00a016</span></span></span><span class="b-segs__i"><span class="b-sr"> · </span>Correction');
     expect(html).toContain(statement.viewUrl);
   });
   it('distinguishes empty own history from a failed private read', () => {

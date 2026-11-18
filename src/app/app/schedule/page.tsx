@@ -32,6 +32,7 @@ import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { DotsThreeIcon } from "@phosphor-icons/react/dist/ssr/DotsThree";
+import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
 import { BButtonLink, BState } from "@/components/owner-b/b-kit";
 import { momentsCopy } from "@/components/owner-b/moments-copy";
@@ -69,7 +70,9 @@ function compactWeekRange(weekStart: string) {
   const end = addDays(weekStart, 6);
   const month = (date: string) => new Intl.DateTimeFormat("en-US", { month: "short", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
   const day = (date: string) => Number(date.slice(8));
-  return `${month(weekStart)} ${day(weekStart)} – ${month(end) === month(weekStart) ? "" : `${month(end)} `}${day(end)}`;
+  // Premium pass FA (final verification A #8): a range within a month is closed up ("Nov 16–22"), as Payroll and Home
+  // write a pay period; across months it keeps the spaced dash ("Nov 30 – Dec 6").
+  return month(end) === month(weekStart) ? `${month(weekStart)} ${day(weekStart)}–${day(end)}` : `${month(weekStart)} ${day(weekStart)} – ${month(end)} ${day(end)}`;
 }
 
 function validWeek(value?: string) {
@@ -324,7 +327,8 @@ export default async function SchedulePage({
     : changes && !counts.drafts ? <span className="c-meta c-sched-weekstate" data-tone="amber"><span className="c-sched-state__lead">Published · </span>{`${changes} ${changes === 1 ? "change" : "changes"}`}</span>
     : counts.drafts ? <span className="c-meta c-sched-weekstate" data-tone="amber">{`${counts.drafts === inView.length ? "Draft" : `${counts.drafts} ${counts.drafts === 1 ? "draft" : "drafts"}`}${changesText}`}</span>
     // Review B6 (NV-088): Published is the done state, so it is green.
-    : counts.published === inView.length ? <span className="c-meta c-sched-weekstate" data-tone="green">Published</span>
+    // Phase 9 (spec 1.1): a green state standing alone on the band carries the 12px Check, so it never rests on colour.
+    : counts.published === inView.length ? <span className="c-meta c-sched-weekstate" data-tone="green"><CheckIcon className="c-sched-weekstate__ic" weight="bold" aria-hidden="true" />Published</span>
     : counts.published ? <span className="c-meta c-sched-weekstate">{`${counts.published} of ${inView.length} published`}</span>
     : <span className="c-meta c-sched-weekstate">Not started</span>;
   const todayLong = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`));

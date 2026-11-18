@@ -31,3 +31,18 @@
   :is(#c-root, html) .app-shell[data-nv-b] .cov--glass .cov__line { display: block; }
   :is(#c-root, html) .app-shell[data-nv-b] .cov--glass :is(.cov__list, .cov__none-line) { display: none; }
 }
+/* Premium pass FA (Nov 18, 2026; final verification A #11, B #7): on a phone's band the "What this measures" control ends
+ * the staffing line (it sat alone on a third line); opened, its sentence takes the card's width under the line. */
+@media (max-width: 767px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .cov--glass { grid-template-columns: minmax(0, 1fr) auto; column-gap: 8px; align-items: center; }
+  :is(#c-root, html) .app-shell[data-nv-b] .cov--glass > :not(.cov__line, .b-explain) { grid-column: 1 / -1; }
+  :is(#c-root, html) .app-shell[data-nv-b] .cov--glass > .cov__line { grid-column: 1; }
+  :is(#c-root, html) .app-shell[data-nv-b] .cov--glass > .b-explain:not([open]) { grid-column: 2; justify-self: end; }
+  :is(#c-root, html) .app-shell[data-nv-b] .cov--glass > .b-explain[open] { grid-column: 1 / -1; }
+}
+/* Premium pass FA (coordinator note): on the band's glass week card the "Covered this week" label is white like the
+ * figures beside it (78% white read 4.1:1 on the glass); its 600 weight and smaller size keep it the label. */
+:is(#c-root, html) .app-shell[data-nv-b] .cov--glass .cov__k { color: var(--b-on-band); }
+@media (max-width: 767px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .cov--glass > .cov__line { min-width: 0; white-space: normal; }
+}

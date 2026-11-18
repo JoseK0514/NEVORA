@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {OwnLeaveNote} from '../leave-staffing/own-leave-note';
 import type {ReactNode} from 'react';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
-import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
+import {CalendarMinusIcon} from '@phosphor-icons/react/dist/ssr/CalendarMinus';
 import {BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack, BState} from '../owner-b/b-kit';
 import {BCardNote, Dotted} from './parts';
 import {BEmpty, BStateCard, BText, FormMark, bTone} from './requests-b';
@@ -48,7 +48,7 @@ function TimeOffHero({page, filter, tabs, waiting}: {page: TimeOffPage; filter: 
   if (page === 'new') return <BHero back={{href: listHref(filter), label: 'Cancel', close: true}} title="Request time off" titleId="b-timeoff-title"/>;
   // Review B1 (NV-164): Request time off is the band's white action at every width, so it stays even when the list fails.
   return <BHero back={{href: '/app/requests/hub', label: 'Requests'}} title="Time off" titleId="b-timeoff-title"
-    right={page === 'list' ? <BButtonLink href="/app/requests?tab=new" kind="white"><PlusIcon size={17} weight="bold" aria-hidden="true"/>Request time off</BButtonLink> : undefined}>
+    right={page === 'list' ? <BButtonLink href="/app/requests?tab=new" kind="white"><PlusIcon size={16} weight="bold" aria-hidden="true"/>Request time off</BButtonLink> : undefined}>
     {page === 'list' && tabs ? <BSeg label="Time-off requests" items={[
       {key: 'waiting', label: waiting ? <>Waiting<span className="eb-segn"><span className="b-sr">, </span>{waiting}</span></> : 'Waiting', href: '/app/requests', current: filter !== 'decided'},
       {key: 'decided', label: 'Decided', href: '/app/requests?filter=decided', current: filter === 'decided'},
@@ -59,7 +59,7 @@ function TimeOffHero({page, filter, tabs, waiting}: {page: TimeOffPage; filter: 
 function TimeOffRowB({request, filter}: {request: TimeOffView; filter: string}) {
   const pill = timeOffPill(request.status);
   return <BRow href={`/app/requests?requestId=${encodeURIComponent(request.id)}${filter === 'decided' ? '&filter=decided' : ''}`}
-    lead={<BIcon tone="grey"><SunIcon weight="bold"/></BIcon>} title={keepWhole(timeOffRange(request))} sub={<Dotted text={timeOffSpan(request)}/>}
+    lead={<BIcon tone="grey"><CalendarMinusIcon weight="bold"/></BIcon>} title={keepWhole(timeOffRange(request))} sub={<Dotted text={timeOffSpan(request)}/>}
     // Phase 4 (EM-023): every row ends with its state before the chevron, so "did it go through?" is answered on the row:
     // amber Waiting, green Approved, grey Declined or Withdrawn. (Review B1, NV-280, had left the Waiting tab's rows bare.)
     end={<BChip tone={bTone(pill.tone)}>{pill.text}</BChip>} chevron label={`${timeOffDates(request)}, ${timeOffLength(request)}, ${pill.text}`}/>;
@@ -99,7 +99,7 @@ export function TimeOffB({page, filter, state, enabled, earlier, requests, reque
   const stack = state ?? (enabled === false ? <BCard><BText status>Your workplace doesn’t use time off in NEVORA.</BText></BCard> : page === 'new' ? null : <>
     {earlier ? <BCard><div className="eb-status"><p className="b-state">An earlier time-off submission still needs to be checked.</p><Link className="b-link" href="/app/requests?tab=new">Return to my submission</Link></div></BCard> : null}
     {page === 'list' ? <BCard label={filter === 'decided' ? 'Decided requests' : 'Waiting requests'}>
-      {requests.length ? null : <BEmpty icon={<SunIcon weight="bold"/>} title={filter === 'decided' ? 'No decisions yet' : 'Nothing waiting right now'}
+      {requests.length ? null : <BEmpty icon={<CalendarMinusIcon weight="bold"/>} title={filter === 'decided' ? 'No decisions yet' : 'Nothing waiting right now'}
         sub={filter === 'decided' ? 'Approved, declined and withdrawn requests will appear here.' : 'When you send a request, you can follow its status here.'}/>}
       <BList>
         {/* Review B2 (NV-140): waiting soonest first; decided most recently decided first. */}

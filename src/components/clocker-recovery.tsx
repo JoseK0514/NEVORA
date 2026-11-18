@@ -1,5 +1,5 @@
 'use client';
-import {useCallback,useRef,useState,type Ref} from 'react';
+import {useCallback,useEffect,useRef,useState,type Ref} from 'react';
 import type {JournalReference} from '../lib/clocker/recovery-journal';
 import {useClockerCopy,useClockerPresentation} from './clocker-language';
 import {clockerOthersSavedText} from './clocker-copy';
@@ -40,23 +40,34 @@ export function ClockerRecoveryLink({onOpen}:{onOpen:()=>void}){
 }
 
 /** The help as its own card state: what is kept, one quiet request to the Owner, the reference behind a disclosure, and
- * Back. Other people's saved punches are a count only. */
+ * Back. Other people's saved punches are a count only.
+ * Premium pass (Nov 18, 2026, #8): the title names the fact ("Your punch is kept on this tablet"), not the button's words.
+ * Once the request is saved the button goes and its result stands in its place, a teal information line with no done mark
+ * (the Owner has not checked anything yet); focus moves to Back, the way on. Sending and "not confirmed" keep the button. */
 export function ClockerRecoveryHelp({references,otherCount=0,commandId,request,onBack,headingRef}:{references:JournalReference[];otherCount?:number;commandId:string|null;request:ClockerReviewRequest;onBack:()=>void;headingRef?:Ref<HTMLHeadingElement>}){
  const t=useClockerCopy(),{locale}=useClockerPresentation();
+ const back=useRef<HTMLButtonElement>(null);
  const others=clockerOthersSavedText(locale,otherCount);
  const ordered=commandId?[...references.filter(r=>r.commandId===commandId),...references.filter(r=>r.commandId!==commandId)]:references;
  const codes=ordered.flatMap(r=>r.commandId?[r.commandId]:[]),unreadable=ordered.some(r=>!r.commandId);
- const status=request.state==='sending'?'Sending the request.':request.state==='saved'?'Your Owner will see it under Clocker recovery.':request.state==='unknown'?'We couldn’t confirm the request. Ask again; it won’t send twice.':null;
+ const many=references.length>1,sent=request.state==='saved';
+ // The button that had focus is gone once the request is saved: hand focus to Back rather than to the page.
+ useEffect(()=>{if(sent&&(document.activeElement===document.body||!document.activeElement?.isConnected))back.current?.focus({preventScroll:true});},[sent]);
  return <>
   <span className={styles.ring}><ClockerIcon name="info" size={28}/></span>
-  <h1 ref={headingRef} tabIndex={-1} className={styles.title}>{t('Ask your Owner to check')}</h1>
-  <p className={styles.smsg}>{t('Something of yours is saved on this tablet for checking. You can leave this screen; it stays saved.')}</p>
+  <h1 ref={headingRef} tabIndex={-1} className={styles.title}>{t(many?'Your punches are kept on this tablet':'Your punch is kept on this tablet')}</h1>
+  <p className={styles.smsg}>{t(many?'Your Owner can check them. You can leave this screen.':'Your Owner can check it. You can leave this screen.')}</p>
   {unreadable?<p className={styles.smsg}>{t('One saved punch can’t be read. Ask your manager to check it.')}</p>:null}
   {others?<p data-clocker-others-saved="" className={styles.quietLine}>{others} {t('Each person can check their own after their PIN.')}</p>:null}
   <div className={styles.stack}>
-   <button type="button" className={styles.btn} data-kind="secondary" disabled={request.state==='sending'||request.state==='saved'} onClick={()=>void request.ask()}>{t(request.state==='sending'?'Asking…':request.state==='saved'?'Request sent':request.state==='unknown'?'Ask again':'Ask Owner to check')}</button>
-   <p role="status" className={styles.quietLine}>{status?t(status):''}</p>
-   <button type="button" className={styles.link} onClick={onBack}>{t('Back')}</button>
+   {sent?null:<button type="button" className={styles.btn} data-kind="secondary" disabled={request.state==='sending'} onClick={()=>void request.ask()}>{t(request.state==='sending'?'Asking…':request.state==='unknown'?'Ask again':'Ask Owner to check')}</button>}
+   {/* One live line for the request's result, in place from the start so every change is announced. */}
+   <p role="status" className={sent||request.state==='unknown'?styles.msg:styles.quietLine} data-tone={sent?'teal':request.state==='unknown'?'amber':undefined} data-clocker-request={request.state}>
+    {sent?<><ClockerIcon name="info" size={18}/><span>{t('Request sent. Your Owner will see it under Clocker recovery.')}</span></>
+     :request.state==='unknown'?<><ClockerIcon name="unknown" size={18}/><span>{t('We couldn’t confirm the request. Ask again; it won’t send twice.')}</span></>
+     :request.state==='sending'?t('Sending the request.'):''}
+   </p>
+   <button ref={back} type="button" className={styles.link} onClick={onBack}>{t('Back')}</button>
   </div>
   {/* Last, so opening it never pushes Back out of view: the codes for the Owner, one per line in one block. */}
   {codes.length||request.id?<details className={styles.reference}><summary>{t('Reference')}<ClockerIcon name="caret" size={16}/></summary>

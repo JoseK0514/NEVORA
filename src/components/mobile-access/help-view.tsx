@@ -8,6 +8,7 @@ import {CopySimpleIcon} from '@phosphor-icons/react/dist/ssr/CopySimple';
 import {IdentificationCardIcon} from '@phosphor-icons/react/dist/ssr/IdentificationCard';
 import {LockKeyIcon} from '@phosphor-icons/react/dist/ssr/LockKey';
 import {QuestionIcon} from '@phosphor-icons/react/dist/ssr/Question';
+import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {UsersThreeIcon} from '@phosphor-icons/react/dist/ssr/UsersThree';
 import {LifebuoyIcon} from '@phosphor-icons/react/dist/ssr/Lifebuoy';
 import {LinkBreakIcon} from '@phosphor-icons/react/dist/ssr/LinkBreak';
@@ -16,6 +17,7 @@ import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import {UserMinusIcon} from '@phosphor-icons/react/dist/ssr/UserMinus';
 import type {AuthLang} from '@/lib/auth-copy';
 import {MOBILE_ACCESS_COPY,type MobileAccessCopy} from './copy';
+import {AccessOutside} from './chrome';
 
 /** supportEmail is the separately gated general Support intake; ownerEmail is the sole-Owner path, always offered. */
 type Props={topic:string;lang:AuthLang;from:string;supportEmail:string|null;ownerEmail:string};
@@ -62,11 +64,15 @@ export function AccessHelpView({topic,lang,from,supportEmail,ownerEmail}:Props) 
   {href:href('id'),title:t.helpId,sub:t.helpIdSub,icon:IdentificationCardIcon},
   {href:'/forgot-access',title:t.helpPassword,sub:t.helpPasswordSub,icon:LockKeyIcon},
   {href:href('invitation'),title:t.helpInvite,sub:t.helpInviteSub,icon:EnvelopeSimpleIcon},
-  {href:href('email'),title:t.helpEmail,sub:t.helpEmailSub,icon:QuestionIcon},
+  // Premium pass FD (Nov 18, 2026): the Question glyph means "not confirmed" (spec 3.2), so this row takes Info.
+  {href:href('email'),title:t.helpEmail,sub:t.helpEmailSub,icon:InfoIcon},
   {href:href('left'),title:t.helpLeft,sub:t.helpLeftSub,icon:UserMinusIcon},
  ];
  if(topic==='')return <><Header title={t.helpTitle} sub={t.helpSub}/><nav className="ma-choices" aria-label={t.helpTitle}>{choices.map(({href:to,title,sub,icon:Icon})=><Link className="ma-choice" key={to} href={to}><ChoiceIcon icon={Icon}/><span><b>{title}</b><small>{sub}</small></span><CaretRightIcon size={18} weight="bold" aria-hidden="true"/></Link>)}</nav>{more}</>;
- if(topic==='id')return <><Header title={t.helpIdTitle}/><div className="ma-copy"><p>{t.idHelpBody}</p><p>{t.helpIdNext}</p></div><div className="ma-actions">{action('/login',t.signIn,true)}{action('/activate',t.activateAccount)}</div></>;
+ // Premium pass FD (Nov 18, 2026): the card holds the explanation and its one filled button; setting up an account is
+ // the text link centred under the card, as on Sign in and Welcome (PB-015).
+ if(topic==='id')return <><div className="ma-card ma-sheet"><Header title={t.helpIdTitle}/><div className="ma-copy"><p>{t.idHelpBody}</p><p>{t.helpIdNext}</p></div><div className="ma-actions">{action('/login',t.signIn,true)}</div></div>
+  <AccessOutside><nav className="q-auth__links" aria-label={t.helpIdTitle}><Link href="/activate">{t.activateAccount}</Link></nav></AccessOutside></>;
  if(topic==='email')return <><Header title={t.helpEmailTitle} sub={t.helpEmailIntro}/><div className="ma-copy"><h2>{t.helpEmployeeTitle}</h2><p>{t.helpEmployeeBody}</p><h2>{t.helpPrivilegedTitle}</h2><p>{t.helpPrivilegedBody}</p>{action(href('owner'),t.ownerEntry)}</div><div className="ma-actions">{action('/reset-access',t.haveCode,true)}</div>{more}</>;
  if(topic==='owner')return <><Header title={t.ownerTitle} sub={t.ownerSub}/><nav className="ma-choices" aria-label={t.ownerTitle}><Link className="ma-choice" href="/forgot-access"><ChoiceIcon icon={EnvelopeSimpleIcon}/><span><b>{t.ownerEmailChoice}</b><small>{t.ownerEmailSub}</small></span><CaretRightIcon size={18} weight="bold" aria-hidden="true"/></Link><Link className="ma-choice" href={href('owner-other')}><ChoiceIcon icon={UsersThreeIcon}/><span><b>{t.ownerOtherChoice}</b><small>{t.ownerOtherSub}</small></span><CaretRightIcon size={18} weight="bold" aria-hidden="true"/></Link><Link className="ma-choice" href={href('owner-contact')}><ChoiceIcon icon={LifebuoyIcon}/><span><b>{t.ownerSoleChoice}</b><small>{t.ownerSoleSub}</small></span><CaretRightIcon size={18} weight="bold" aria-hidden="true"/></Link></nav></>;
  if(topic==='owner-other')return <><Header title={t.ownerOtherTitle}/><div className="ma-copy"><p>{t.ownerOtherBody}</p><p>{t.ownerOtherNote}</p></div><div className="ma-actions">{action('/reset-access',t.ownerUseCode,true)}</div>{more}</>;

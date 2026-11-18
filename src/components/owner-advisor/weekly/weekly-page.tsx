@@ -7,8 +7,9 @@ import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
+import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpNav, CorpPage, CorpPill, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
-import { BState, compactRange } from "@/components/owner-b/b-kit";
+import { BCallout, BState, compactRange } from "@/components/owner-b/b-kit";
 import { toast } from "@/components/toaster";
 import "@/components/team/team-forms.css";
 import {
@@ -380,7 +381,7 @@ function PlanForm({ week, setWeek, currentWeek, mode, setMode, scopeKind, setSco
               <span className="c-check__text">{location.name}</span>
             </label>)}
           </div> : null}
-          {tried && missing ? <p className="c-error" id="wk-places-error" role="alert"><WarningIcon weight="bold" className="wk-error__ic" aria-hidden="true" />Choose at least one location</p> : null}
+          {tried && missing ? <p className="c-error" id="wk-places-error" role="alert"><WarningCircleIcon weight="bold" className="wk-error__ic" aria-hidden="true" />Choose at least one location</p> : null}
         </fieldset>
         <div className="wk-submit">
           <CorpButton type="submit" kind="primary" size="md" disabled={busy}>{busy ? "Comparing…" : "Compare options"}</CorpButton>
@@ -573,8 +574,8 @@ function FullPlan({ plan, readReceiptId, baseline, locations, timeZone, now, ack
           <p className="wk-para">Saves {plan.added} {plan.added === 1 ? "shift" : "shifts"}{plan.removed ? ` and replaces ${plan.removed}` : ""} as a draft. Not published, no one notified.</p>
           <label className="wk-ack"><input type="checkbox" checked={acknowledged} disabled={busy || approvalLocked} onChange={event => setAcknowledged(event.target.checked)} />
             <span>I reviewed all proposed changes and remaining gaps</span></label>
-        </> : <p className="wk-note"><WarningIcon weight="bold" aria-hidden="true" /><span>{!weeklyEnabled ? "Weekly planning is off." : expired ? "Expired. Compare again."
-          : `Can’t be saved${reasons.length ? `: ${reasons.join(", ").toLowerCase()}` : ""}`}</span></p>}
+        </> : <BCallout tone="amber">{!weeklyEnabled ? "Weekly planning is off." : expired ? "Expired. Compare again."
+          : `Can’t be saved${reasons.length ? `: ${reasons.join(", ").toLowerCase()}` : ""}`}</BCallout>}
         <div className="wk-acts wk-acts--end">
           {weeklyEnabled ? <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={busy} onClick={() => onDecline(plan.id)}>Decline</CorpButton> : null}
           {canSave ? <CorpButton kind="primary" size="md" disabled={!acknowledged || busy || approvalLocked} onClick={() => onApprove(plan, readReceiptId!)}>{busy ? "Saving…" : "Save as draft"}</CorpButton>

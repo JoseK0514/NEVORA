@@ -12,10 +12,12 @@ const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
 const month = (date: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'short' }).format(utcDay(date));
 const day = (date: string) => Number(date.slice(8, 10));
 
-/** A pay period: "Oct 12 – 18", "Sep 28 – Oct 4", and both years only when the period crosses a year. */
+/** A pay period: "Oct 12–18" (closed up within a month, as My pay and Home's payday tile write it), "Sep 28 – Oct 4"
+ * (spaced across months), and both years only when the period crosses a year. Premium pass FA (final verification A
+ * #8): one shape for one range; "Oct 12 – 18" read as two formats beside "Nov 9–15". */
 export function periodRange(start: string, end: string) {
   if (start.slice(0, 4) !== end.slice(0, 4)) return `${month(start)} ${day(start)}, ${start.slice(0, 4)}${RANGE_DASH}${month(end)} ${day(end)}, ${end.slice(0, 4)}`;
-  if (start.slice(0, 7) === end.slice(0, 7)) return `${month(start)} ${day(start)}${RANGE_DASH}${day(end)}`;
+  if (start.slice(0, 7) === end.slice(0, 7)) return `${month(start)} ${day(start)}–${day(end)}`;
   return `${month(start)} ${day(start)}${RANGE_DASH}${month(end)} ${day(end)}`;
 }
 

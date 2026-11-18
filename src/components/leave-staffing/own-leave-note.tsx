@@ -1,12 +1,11 @@
 'use client';
 import {useMemo} from 'react';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
-import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import {useLeaveStaffing} from './use-leave-staffing';
 import {weeksFor} from '@/lib/time-off-staffing/client';
 import {dayText,rangeText} from '@/lib/time-off-staffing/present';
 import {Dotted} from '../employee-b/parts';
-import {BCard,BList,BRow,BIcon} from '../owner-b/b-kit';
+import {BCard,BList,BRow,BIcon,BDoneMark} from '../owner-b/b-kit';
 import './leave-staffing.css';
 
 /* An Employee's or Lead's own time-off request (Nov 9, 2026): when it overlaps their published shifts, say so calmly and
@@ -27,7 +26,7 @@ export function OwnLeaveNote({request}:{request:{id:string;status:string;startDa
  if(!items.length)return null;
  const approved=items.every(item=>item.employeeInstruction==='approved_leave');
  return <BCard id="b-timeoff-shifts" title="Your shifts during this time off">
-  {approved?<div className="ls-own"><BIcon tone="green"><CheckCircleIcon weight="bold"/></BIcon><span><b>Your time off is approved</b><span>You don’t need to come in for these hours.</span></span></div>:null}
+  {approved?<div className="ls-own"><BDoneMark still/><span><b>Your time off is approved</b><span>You don’t need to come in for these hours.</span></span></div>:null}
   <BList label="Published shifts during this time off">{items.map(item=><BRow key={item.id} lead={<BIcon tone="grey"><InfoIcon weight="bold"/></BIcon>} title={dayText(item.date)}
    sub={<Dotted text={`${rangeText(item.startTime,item.endTime)} · ${item.locationName} · ${approved?'Still on the published schedule':'On the published schedule'}`}/>}/>)}</BList>
   <p className="ls-own__note">{approved

@@ -20,11 +20,14 @@ import { employeeInitials } from "@/lib/employee-display";
 import { requireSessionMutationProof } from "@/lib/auth/session";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listPositions } from "@/lib/data/positions";
+import { getWorkspace } from "@/lib/data/workspaces";
+import { christmasBonusApplies } from "@/lib/reports/christmas-bonus";
 import { readOperationalRuleProfileView } from "@/lib/data/shift-change-views";
 import { employeeRoleLabel } from "@/lib/employee-display";
 import Link from "next/link";
-import { CORP_NO_VALUE, CorpAvatar, CorpBody, CorpButtonLink, CorpCard, CorpMeta, CorpNav, CorpNote, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
+import { CORP_NO_VALUE, CorpAvatar, CorpBody, CorpButtonLink, CorpCard, CorpMeta, CorpNav, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
 import { TeamLivePill, TeamLiveProvider } from "@/components/team-live";
+import { BCallout, BSegs } from "@/components/owner-b/b-kit";
 import { ChatTextIcon } from "@phosphor-icons/react/dist/ssr/ChatText";
 import { PhoneIcon } from "@phosphor-icons/react/dist/ssr/Phone";
 import "@/components/team/team-forms.css";
@@ -40,7 +43,7 @@ export default async function EmployeeProfilePage({
   params, searchParams,
 }: {
   params: Promise<{ employeeId: string }>;
-  searchParams?: Promise<{ edit?: string; view?: string }>;
+  searchParams?: Promise<{ edit?: string; view?: string; from?: string; year?: string }>;
 }) {
   await requireRoles(MANAGER_ROLES);
   const { employeeId } = await params;
@@ -53,7 +56,7 @@ export default async function EmployeeProfilePage({
   const source=await withOperationalCompany(proof,async()=>{
     // Employment dates (birth date included) are read only for the edit sheet, never for the overview or Access pages.
     const profile=await readOperationalEmployeeProfile(proof,employeeId,undefined,{employmentDates:editing==='core'});
-    if(profile.state==='unavailable')return {profile,positions:[],operational:null,profileUnavailable:false,invitation:null,pin:null,hours:null};
+    if(profile.state==='unavailable')return {profile,positions:[],operational:null,profileUnavailable:false,invitation:null,pin:null,hours:null,bonusApplies:true};
     const positions=await listPositions({includeInactive:true});
     let operational=null,profileUnavailable=false;
     try{operational=await readOperationalRuleProfileView(proof,profile.data.profile.id);}catch{profileUnavailable=true;}
@@ -62,10 +65,13 @@ export default async function EmployeeProfilePage({
     // Nov 14, 2026 inspection (BR-3): the person's hours, for the overview only, through the existing protected read. A read
     // that fails or is refused leaves the card out; it never takes the page down.
     let hours:PersonHours|null=null;if(!editing&&!accessView&&profile.data.profile.active){try{const read=await readOperationalEmployeeHours(proof,employeeId);if(read.state==='ready')hours=read.data;}catch{}}
-    return {profile,positions,operational,profileUnavailable,invitation,pin,hours};
+    // Review 30 (D38): the edit sheet's hire date line names Christmas bonus hours only in a Puerto Rico workspace. A
+    // failed read keeps today's line; it never takes the sheet down.
+    let bonusApplies=true;if(editing==='core'&&profile.data.employmentDates){try{bonusApplies=christmasBonusApplies((await getWorkspace()).timeZone);}catch{}}
+    return {profile,positions,operational,profileUnavailable,invitation,pin,hours,bonusApplies};
   });
   if(source.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={source.reason}/>;
-  const {profile,positions,operational,profileUnavailable,invitation,pin,hours}=source.data;
+  const {profile,positions,operational,profileUnavailable,invitation,pin,hours,bonusApplies}=source.data;
   if(profile.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={profile.reason}/>;
   const {profile:employee,locations,ownerScope,employmentDates}=profile.data;
   const primaryLocation = locations.find(
@@ -124,9 +130,12 @@ export default async function EmployeeProfilePage({
             {/* Phase 8 (a.md #3): the phone layer starts the line 13px left of the text column and gives that room back to
               * the line's first element; a bare text node has none, so the first letter was clipped ("alle Loíza"). */}
             <span className="c-row__title c-row__title--b"><span>{place ?? roleLabel}</span></span>
-            {positionList.length ? <span className="c-person__chips">{positionList.map(position => <span key={position} className="c-person__chip">{position}</span>)}</span> : null}
+            {/* Premium pass FA (final verification A #1, #29): positions are facts, so they are one grey line under the place
+              * ("Front counter · Kitchen · Barista · Baker", wrapping whole between positions), not chips; and the state
+              * follows the phone on its line, after a "·" (a chip or a live dot needs none), at every width. */}
+            {positionList.length ? <span className="c-person__roles"><BSegs parts={positionList} /></span> : null}
             <span className="c-row__detail"><span className="c-person__bits"><span className="c-person__bit">{employee.phone ? phoneDisplay(employee.phone) : "No phone number"}</span></span>
-              {employee.active ? <TeamLivePill employeeId={employee.id} /> : <CorpMeta>Inactive</CorpMeta>}</span>
+              <span className="c-person__state">{employee.active ? <TeamLivePill employeeId={employee.id} /> : <CorpMeta>Inactive</CorpMeta>}</span></span>
           </span>
           {dial ? <a className="c-person__act" href={`tel:${dial}`} aria-label={`Call ${name}`}><PhoneIcon weight="bold" className="c-ic" aria-hidden="true" /></a> : null}
           {dial ? <a className="c-person__act" href={`sms:${dial}`} aria-label={`Message ${name}`}><ChatTextIcon weight="bold" className="c-ic" aria-hidden="true" /></a> : null}
@@ -224,15 +233,23 @@ export default async function EmployeeProfilePage({
     <SheetField label="Positions" value={positionNames} placeholder="None yet" href={`${base}?edit=positions`} />
     <SheetField label="Hours and rules" value={profileUnavailable ? "Unavailable" : operational ? "Set" : "Not set"} href={`${base}?edit=rules`} />
   </>;
+  // Review 30 (D21): "Add hire date" on Christmas bonus hours opens this sheet with from=bonus (and the report's year). The
+  // hire date takes focus, Cancel goes back to the report, and the saved state's next step returns there.
+  const bonusYear = /^\d{4}$/.test(query.year ?? "") ? query.year : null;
+  const fromBonus = query.from === "bonus" ? { href: `/app/reports/christmas-bonus${bonusYear ? `?year=${bonusYear}` : ""}`, label: "Back to Christmas bonus hours", focusHire: true } : undefined;
   return (<ScopedReadFrame observation={scopedObservation(source)}>
     <CorpPage className="c-sheetpage c-editemp" labelledBy="person-edit-title">
       <SheetMarker />
       {canManageCore ? (
-        <EmployeeCoreProfileForm employee={employee} locations={locations} actorId={actor.id} actorRole={actor.role} ownerScope={ownerScope} action={saveEmployeeCoreProfileAction} cancelHref={base} more={more} employmentDates={employmentDates} />
+        <EmployeeCoreProfileForm employee={employee} locations={locations} actorId={actor.id} actorRole={actor.role} ownerScope={ownerScope} action={saveEmployeeCoreProfileAction} cancelHref={fromBonus?.href ?? base} more={more} employmentDates={employmentDates} bonusApplies={bonusApplies} returnTo={fromBonus} />
       ) : (<>
         <FormHead titleId="person-edit-title" title="Edit employee" left={<FormHeadLink href={base}>Cancel</FormHeadLink>} />
-        <CorpNote>Only an Owner can change another Owner. Positions and hours stay available here.</CorpNote>
-        <div className="c-teamform">{more}</div>
+        {/* Final verification F (F05): a Manager editing an Owner sees the sheet's one card, as the Owner's form is: the
+          lock note as its first item (grey, set by someone else; same words) and the two pickers at the form's 560 block. */}
+        <section className="c-card c-teamform-lock" aria-label="What you can change">
+          <BCallout tone="grey" icon="locked" title="Only an Owner can change another Owner">Positions and hours stay available here.</BCallout>
+          <div className="c-teamform">{more}</div>
+        </section>
       </>)}
     </CorpPage>
   </ScopedReadFrame>);

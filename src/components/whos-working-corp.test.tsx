@@ -21,10 +21,12 @@ it("lists who is clocked in (earliest first), who isn't in yet with how late, an
   expect(out).not.toContain(">Live<");
   expect(out).not.toContain("c-pill");
   expect(out.indexOf("Person a")).toBeLessThan(out.indexOf("Person b"));
-  expect(out).toContain("On break since 8:10 AM");
-  expect(out).toContain("In since 7:58 AM");
+  // keepWhole holds each time together with no-break spaces; compare the words.
+  const words = out.replace(/[\u00a0\u202f]/g, " ");
+  expect(words).toContain("On break since 8:10 AM");
+  expect(words).toContain("In since 7:58 AM");
   expect(out).toContain('>Not clocked in<span class="c-count c-num">1</span><');
-  expect(out).toContain("Due 8:00 AM");
+  expect(words).toContain("Due 8:00 AM");
   expect(out).toContain("c-row__value--amber\">24 min<");
   expect(out).toContain('>Missed clock-ins<span class="c-count c-num">1</span><');
   expect(out).toContain('href="/app/timecards#timecard-d"');
@@ -43,4 +45,18 @@ it("shows five, then Show N more", () => {
   const out = html({ monitor: monitor(["a", "b", "c", "d", "e", "f", "g"].map((id, i) => person(id, `2026-10-30T1${i}:00:00Z`))) });
   expect(out.match(/c-row c-row--/g)?.length ?? out.match(/class="c-row"/g)?.length).toBe(5);
   expect(out).toContain(">Show 2 more<");
+});
+
+// Review 30 (D29): a punch from an earlier day says its day; a punch the attendance review flags as open past 12 hours
+// carries the red chip on its row, and the folded "Clock-ins to check" row shows the count and the chip.
+it("says the day of an earlier clock-in and shows the 12-hour flag with the count to check", () => {
+  const out = renderToStaticMarkup(createElement(WhosWorkingView, { monitor: monitor([person("m", "2026-10-30T03:26:00Z"), person("v", "2026-10-26T14:58:00Z"), person("s", "2026-10-30T11:00:00Z")]),
+    today: today([]), toCheck: 2, openPastLimit: new Set(["t-m"]) }, createElement("p", null, "review"))).replace(/[\u00a0\u202f]/g, " ");
+  expect(out).toContain("In since 11:26 PM yesterday");
+  expect(out).toContain("In since Mon 10:58 AM");
+  expect(out).toContain("In since 7:00 AM");
+  expect(out).toContain('<span class="c-who__name">Person m</span><span class="b-chip b-chip--red">No clock-out after 12 hours</span>');
+  expect(out).not.toContain('<span class="c-who__name">Person s</span>');
+  expect(out).toMatch(/Clock-ins to check<\/span><span class="b-count">2<\/span><span class="b-chip b-chip--red">No clock-out after 12 hours<\/span>/);
+  expect(out).toContain('aria-label="Clock-ins to check, 2 to review, 1 with no clock-out after 12 hours, collapsed"');
 });

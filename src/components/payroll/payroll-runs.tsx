@@ -22,11 +22,11 @@ import { PayrollTabs, type PayrollTab } from './payroll-tabs';
 import { flagProblems, formKeys } from './form-keys';
 import { payDay, periodRange } from './payroll-format';
 import { Num, PayGroup } from './pay-group';
-import { BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BRow, BScreen, BStack, BState } from '../owner-b/b-kit';
-import { GearIcon } from '@phosphor-icons/react/dist/ssr/Gear';
+import { BButtonLink, BCard, BChip, BGlyph, BHero, BIcon, BList, BLive, BRow, BScreen, BSegs, BStack, BState } from '../owner-b/b-kit';
+import { GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
+import { ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock';
 import { ReceiptIcon } from '@phosphor-icons/react/dist/ssr/Receipt';
-import { UploadSimpleIcon } from '@phosphor-icons/react/dist/ssr/UploadSimple';
-import { WarningIcon } from '@phosphor-icons/react/dist/ssr/Warning';
+import { DownloadSimpleIcon } from '@phosphor-icons/react/dist/ssr/DownloadSimple';
 import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown';
 import { ListChecksIcon } from '@phosphor-icons/react/dist/ssr/ListChecks';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
@@ -182,8 +182,9 @@ function UnpaidNotice({ data, oldest, href }: { data: PayrollRunsResponse; oldes
   const range = quietRange(oldest.period.startDate, oldest.period.endDate);
   const title = count === 1 ? `${range} has no payroll` : count !== null && count > 1 ? `${count} pay periods have no payroll` : 'Some pay periods have no payroll';
   return <section className="c-card c-pay__unpaid" aria-labelledby="payroll-unpaid-title">
-    {/* OW-018: as on the phone, the red is the icon's; the title is ink. */}
-    <BIcon tone="red"><WarningIcon weight="bold" /></BIcon>
+    {/* OW-018: as on the phone, the red is the icon's; the title is ink. Phase 9 (spec 2.2): it stops payroll, so it is the
+      * circle (WarningCircle); the triangle is amber's "check". */}
+    <BIcon tone="red"><BGlyph meaning="stop" /></BIcon>
     <div className="c-pay__unpaid-text">
       <h2 id="payroll-unpaid-title" className="c-pay__unpaid-title">{title}</h2>
       <p className="c-pay__unpaid-body">{count === 1 ? <>Scheduled payday was <Num>{quietDay(oldest.payday)}</Num>.</> : <>Oldest is <Num>{range}</Num>. Scheduled payday was <Num>{quietDay(oldest.payday)}</Num>.</>}</p>
@@ -212,14 +213,14 @@ function RunRow({ item, replaced = false }: { item: PayrollRun; replaced?: boole
   // Closing F1 (NV-082): a payroll a correction replaced says so (a grey "Replaced" chip, "Replaced by a correction"; Phase 8, a.md #47: the words the statements use) and is
   // listed right under its correction (byCorrection), indented.
   if (replaced) return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" weight="bold" />}
-    title={<><Num>{quietRange(item.period.startDate, item.period.endDate)}</Num> <CorpPill tone="neutral">Replaced</CorpPill></>}
-    detail={<>Replaced by a correction · Payday <Num>{quietDay(item.payday)}</Num></>}
+    title={<>{quietRange(item.period.startDate, item.period.endDate)} <CorpPill tone="neutral">Replaced</CorpPill></>}
+    detail={<BSegs parts={['Replaced by a correction', `Payday ${quietDay(item.payday)}`.replace(/ /g, '\u00a0')]} />}
     value={item.totals ? <NetAmount minor={item.totals.netMinor} /> : undefined} valueTone="ink" chevron />;
   // Round 5 (Nov 7, 2026): drawn like Payroll's Recent payrolls: the receipt icon, a "Correction" pill instead of words in
   // the title, the amount bold. A status that needs the Owner still wins the pill.
   return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" weight="bold" />}
-    title={<><Num>{quietRange(item.period.startDate, item.period.endDate)}</Num>{approved && item.correctionOf ? <> <CorpPill tone="neutral">Correction</CorpPill></> : null}</>}
-    detail={<>Payday <Num>{quietDay(item.payday)}</Num>{approved ? ' · Approved' : ''}</>}
+    title={<>{quietRange(item.period.startDate, item.period.endDate)}{approved && item.correctionOf ? <> <CorpPill tone="neutral">Correction</CorpPill></> : null}</>}
+    detail={<BSegs parts={[`Payday ${quietDay(item.payday)}`.replace(/ /g, '\u00a0'), approved ? 'Approved' : null]} />}
     value={item.totals ? <NetAmount minor={item.totals.netMinor} /> : undefined} valueTone="ink"
     trail={!approved ? <CorpPill tone={statusTone[item.status]}>{statusLabels[item.status]}</CorpPill> : undefined} chevron />;
 }
@@ -310,12 +311,17 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
     {bStep(3, 'Approve payroll', native ? 'Statements are shared with your team automatically' : 'Then share pay statements')}
   </>;
   const bScreen = <BScreen ink>
-    <BHero title="Payroll" titleId="b-payroll-title" sub={sub || undefined} right={canEditSettings ? <BButtonLink href="/app/settings/payroll" kind="glass" label="Payroll settings"><GearIcon size={16} weight="bold" aria-hidden="true" />Settings</BButtonLink> : undefined}>
+    <BHero title="Payroll" titleId="b-payroll-title" sub={sub || undefined} right={canEditSettings ? <BButtonLink href="/app/settings/payroll" kind="glass" label="Payroll settings"><GearSixIcon size={16} weight="bold" aria-hidden="true" />Settings</BButtonLink> : undefined}>
       <p className="b-sub c-pay__scope c-pay__scope--hero">{SCOPE_LINE}</p>
       {current ? <div className="b-hpad">
-        <div className="b-hkicker"><span>{`Up next · ${frequency}`}</span>{/* Closing F1 (NV-024): one payday chip rule, as on Home: amber while this payroll still waits (not approved), green once it is. */}
-          {paydayChip ? <span className={open?.status === 'APPROVED' ? 'b-chip b-chip--ok' : 'b-chip b-chip--due'}>{paydayChip}</span> : null}</div>
-        <p className="b-hbig c-num">{quietRange(current.period.startDate, current.period.endDate)}</p>
+        <div className="b-hkicker">{/* Premium pass FA (final verification A #6, spec 3.1): how far
+          * away the scheduled payday is is a time fact, so it is grey header text on the kicker's line, as Home's payday tile
+          * says it; only a payday that passed is an exception and keeps the amber chip. Final regression review #4: the
+          * kicker and the time fact are one facts line (BSegs), so they never run together without the dot. */}
+          {paydayChip && days !== null && days < 0
+            ? <><span>{`Up next · ${frequency}`}</span><span className="b-chip b-chip--due">{paydayChip}</span></>
+            : <BSegs parts={['Up next', frequency, paydayChip ? <span key="when" className="b-hkicker__when">{paydayChip}</span> : null]} />}</div>
+        <p className="b-hbig">{quietRange(current.period.startDate, current.period.endDate)}</p>
       </div> : null}
       {/* Phase 8 (a.md #28): honest figures. People shows once the payroll knows them and Net pay once it holds amounts;
         * a tile is never a bare dash. */}
@@ -328,7 +334,7 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
     <BStack>
       <Feedback operation={operation} />
       {state ?? <>
-        {data && oldest ? <BCard label="Pay periods with no payroll"><div className="b-notice"><BIcon tone="red"><WarningIcon weight="bold" /></BIcon>
+        {data && oldest ? <BCard label="Pay periods with no payroll"><div className="b-notice"><BIcon tone="red"><BGlyph meaning="stop" /></BIcon>
           <span className="b-notice__tx"><span className="b-notice__t">{data.backlog && !data.backlog.overflow && data.backlog.missingCount !== null && data.backlog.missingCount > 1 ? `${data.backlog.missingCount} pay periods have no payroll` : `${quietRange(oldest.period.startDate, oldest.period.endDate)} has no payroll`}</span>
             <span className="b-notice__s">{data.backlog && !data.backlog.overflow && data.backlog.missingCount === 1 ? `Scheduled payday was ${quietDay(oldest.payday)}` : `Oldest is ${quietRange(oldest.period.startDate, oldest.period.endDate).replace(/ /g, '\u00a0').replace(/\u2009/g, '\u202f').replace(/–/g, '–\u2060')}, scheduled payday ${quietDay(oldest.payday).replace(/ /g, '\u00a0').replace(/\u2009/g, '\u202f')}`}</span></span>
           {/* Review B5 (NV-081): the overdue period is the page's one filled action; the current period's steps back. */}
@@ -341,7 +347,8 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
             {/* The period's timecards read as one more line of the steps (same circle, text column and divider), above the
               * card's action, so it doesn't trail after the button. */}
             {timecards ? <Link className="b-step b-step--link" href={timecards.href} aria-label={`Timecards, ${timecards.line}`}>
-              <span className="b-step__n" aria-hidden="true"><ListChecksIcon weight="bold" /></span>
+              {/* Phase 9 (spec 3.6): timecards are the Clock everywhere (the sidebar's Time). */}
+              <span className="b-step__n" aria-hidden="true"><ClockIcon weight="bold" /></span>
               <span className="b-step__tx"><span className="b-step__t">Timecards</span><span className="b-step__s">{keepWhole(timecards.line)}</span></span>
               <CaretRightIcon className="b-step__chev" size={18} weight="bold" aria-hidden="true" />
             </Link> : null}
@@ -358,15 +365,19 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
           {past.length ? <BList label="Past periods">{byCorrection(past).slice(0, 3).map(({ item, replaced }) => {
             const approved = item.status === 'APPROVED';
             // Closing F1 (NV-082): a replaced payroll follows its correction with a grey "Replaced" chip.
-            return <BRow key={item.id} href={reviewHref(item.id)} lead={<BIcon tone={replaced ? 'grey' : approved ? 'green' : 'grey'}><ReceiptIcon weight="bold" /></BIcon>}
-              title={<span className={replaced ? 'c-num c-pay__was' : 'c-num'}>{quietRange(item.period.startDate, item.period.endDate)}</span>} chip={replaced ? <BChip>Replaced</BChip> : item.correctionOf ? <BChip>Correction</BChip> : approved ? undefined : <BChip tone="amber">{statusLabels[item.status]}</BChip>}
-              sub={replaced ? <>Replaced by a correction · Payday <span className="c-num">{quietDay(item.payday)}</span></> : <>Payday <span className="c-num">{quietDay(item.payday)}</span></>}
-              end={item.totals ? <><b className="c-num">{formatPayrollMoney(item.totals.netMinor)}</b><span>{approved ? 'Net · Approved' : 'Net'}</span></> : undefined} chevron={!item.totals} />;
+            // Premium pass FA (final verification A #30): one payroll row, the one Payroll history draws: a row that opens leads
+            // with the teal circle, "Approved" is the last fact of its line, and the amount is "Net".
+            return <BRow key={item.id} href={reviewHref(item.id)} lead={<BIcon tone="teal"><ReceiptIcon weight="bold" /></BIcon>}
+              title={<span className={replaced ? 'c-pay__was' : undefined}>{quietRange(item.period.startDate, item.period.endDate)}</span>} chip={replaced ? <BChip>Replaced</BChip> : item.correctionOf ? <BChip>Correction</BChip> : approved ? undefined : <BChip tone="amber">{statusLabels[item.status]}</BChip>}
+              /* Premium pass FA (final verification A #10): "Payday Fri, Nov 6" is one unit and never splits. */
+              sub={<BSegs parts={[replaced ? 'Replaced by a correction' : null, `Payday ${quietDay(item.payday)}`.replace(/ /g, '\u00a0'), approved && !replaced ? 'Approved' : null]} />}
+              end={item.totals ? <><b className="c-num">{formatPayrollMoney(item.totals.netMinor)}</b><span>Net</span></> : undefined} chevron={!item.totals} />;
           })}</BList> : <p className="b-state">No past payrolls yet. Approved payrolls appear here.</p>}
         </BCard>
         <BCard label="Payroll tools"><BList label="Payroll tools">
           {/* Phase 8 (a.md #14, #22): a row that opens leads with the teal-50 circle, and Time exports says what Timecards says. */}
-          <BRow href={exportsHref} lead={<BIcon tone="teal"><UploadSimpleIcon weight="bold" /></BIcon>} title="Time exports" sub="Download hours for payroll" />
+          {/* Premium pass FA (final verification B #9): a download is the down arrow, as its words say (it drew the upload arrow). */}
+          <BRow href={exportsHref} lead={<BIcon tone="teal"><DownloadSimpleIcon weight="bold" /></BIcon>} title="Time exports" sub="Download hours for payroll" />
           <BRow href={paidHref} lead={<BIcon tone="teal"><ListChecksIcon weight="bold" /></BIcon>} title={payrollImportCopy.en.exp.entry.title} sub={payrollImportCopy.en.exp.entry.line} />
         </BList></BCard>
       </>}
@@ -725,7 +736,7 @@ function Backlog({ data, operation, lead, today }: { data: PayrollRunsResponse; 
       return <li key={key(item)} id={unpaidHash(item)}>
         <button type="button" className="c-row" aria-expanded={open} aria-controls={id} disabled={locked} onClick={() => { setSelected(open ? null : key(item)); setAcknowledged(false); }}>
           {/* Phase 8 (a.md #15): the payday comes from the pay schedule, and a passed one says so (Payroll's own words). */}
-          <span className="c-row__main"><span className="c-row__title c-row__title--b"><Num>{range}</Num></span><span className="c-row__detail"><span>{item.payday < today ? 'Scheduled payday was ' : 'Scheduled payday '}<Num>{quietDay(item.payday)}</Num></span></span></span>
+          <span className="c-row__main"><span className="c-row__title c-row__title--b">{range}</span><span className="c-row__detail"><span>{item.payday < today ? 'Scheduled payday was ' : 'Scheduled payday '}<Num>{quietDay(item.payday)}</Num></span></span></span>
           {item.state === 'AMBIGUOUS_TRANSITION' ? <CorpPill tone="neutral">Check dates</CorpPill> : null}
           {/* Closing F1 (NV-081): a closed period shows a quiet "Prepare" pill (the open one's Prepare payroll is the filled
             action) and every row a CaretDown that turns when it is open; no "Close" text link. */}

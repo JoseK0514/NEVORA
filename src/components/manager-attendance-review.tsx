@@ -6,7 +6,9 @@ import Link from 'next/link';
 import { offlineListener } from "@/lib/offline-hold";
 import {ConfiguredAttendancePolicies} from './configured-attendance-policies';
 import {usePrivateFragmentFocus} from './private-fragment-focus';
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { CorpAvatar } from './corp/corp';
+import { BCallout, BChip, BCount, BSegs, BState, type BTone } from './owner-b/b-kit';
 import {
   createAttendanceReviewController,
   fetchAttendanceReview,
@@ -51,6 +53,43 @@ function checkedAt(at: string, zone: string) {
   }).format(new Date(at));
 }
 
+/** Review 30 (D31): the review limit in hours, as the label says (OPEN_ENTRY_REVIEW_LIMIT_HOURS; the component test keeps
+ * them in step). */
+const OPEN_LIMIT_HOURS = 12;
+const HOUR_NS = BigInt(3_600_000_000_000), MINUTE_NS = BigInt(60_000_000_000);
+const CHIP_TONES: Record<'critical' | 'attention' | 'neutral', BTone> = { critical: 'red', attention: 'amber', neutral: 'grey' };
+
+/** "10:22 PM", "10:22 PM yesterday", "Tue 10:22 PM" or "Nov 12, 10:22 AM": a clock-in time, with its day when it isn't
+ * today in the business time zone. */
+export function sinceLabel(at: string, zone: string, today: string) {
+  const when = new Date(at);
+  if (!Number.isFinite(when.getTime())) return null;
+  const day = new Intl.DateTimeFormat('en-CA', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(when);
+  const time = checkedAt(at, zone);
+  if (day === today) return time;
+  const daysBefore = Math.round((Date.parse(`${today}T12:00:00Z`) - Date.parse(`${day}T12:00:00Z`)) / 86_400_000);
+  if (daysBefore === 1) return `${time} yesterday`;
+  if (daysBefore > 1 && daysBefore < 7) return `${new Intl.DateTimeFormat('en-US', { timeZone: zone, weekday: 'short' }).format(when)} ${time}`;
+  return `${new Intl.DateTimeFormat('en-US', { timeZone: zone, month: 'short', day: 'numeric' }).format(when)}, ${time}`;
+}
+
+/** Review 30 (D31): the long-open flag says how long the punch has been open and since when ("Open 13 h 20 min, since
+ * 10:22 PM yesterday"). The engine's evidence holds the time past the limit and the limit's moment, so the time open is
+ * that difference plus the limit, and the clock-in is the limit's moment less the limit. Nothing is closed or changed. */
+function openForLabel(item: Observation, zone: string | null, today: string | null) {
+  try {
+    const past = item.evidence.differenceNanoseconds ? BigInt(item.evidence.differenceNanoseconds) : null;
+    if (past === null || past < BigInt(0)) return null;
+    const open = Number((past + BigInt(OPEN_LIMIT_HOURS) * HOUR_NS) / MINUTE_NS);
+    if (!Number.isSafeInteger(open)) return null;
+    const limit = item.evidence.expectedAt ? Date.parse(item.evidence.expectedAt) : NaN;
+    const since = zone && today && Number.isFinite(limit) ? sinceLabel(new Date(limit - OPEN_LIMIT_HOURS * 3_600_000).toISOString(), zone, today) : null;
+    return `Open ${durationSentence(open)}${since ? `, since ${since}` : ''}`;
+  } catch {
+    return null;
+  }
+}
+
 function differenceLabel(value?: string) {
   if (!value) return null;
   try {
@@ -63,7 +102,8 @@ function differenceLabel(value?: string) {
   }
 }
 
-function observationDetail(item: Observation) {
+function observationDetail(item: Observation, zone: string | null = null, today: string | null = null) {
+  if (item.kind === 'OPEN_PAST_LIMIT') { const open = openForLabel(item, zone, today); if (open) return open; }
   const delta = differenceLabel(item.evidence.differenceNanoseconds);
   if (delta) return delta;
   if (item.kind === 'SCHEDULE_UNMATCHED') return 'This clock-in doesn’t match a scheduled shift.';
@@ -79,6 +119,12 @@ function initials(name: string) {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())
     .join('');
+}
+
+/** The entries flagged as open past the review limit (OPEN_PAST_LIMIT), by time entry, from a ready review. */
+export function openPastLimitEntries(review: AttendancePanelState['review']): Set<string> {
+  if (review?.state !== 'ready') return new Set();
+  return new Set(review.groups.filter(group => group.observations.some(item => item.kind === 'OPEN_PAST_LIMIT')).map(group => group.entryId));
 }
 
 function groupRows(
@@ -109,139 +155,107 @@ export function AttendanceReviewSurface({
   const denied = review?.state === 'unavailable' && review.reason === 'access_denied';
   const unavailable = review?.state === 'unavailable' && !denied;
   const rows = ready ? groupRows(ready.groups, ready.labels) : [];
-  // Busy only while the first read is in flight: desktop hides the footer (and Refresh) while busy.
+  const plural = (n: number, one: string, many: string) => `${n}\u00a0${n === 1 ? one : many}`;
 
-
+  // Review 30 (D31): the panel is one Direction B card. Its title carries the count to review; one quiet line says who is
+  // affected and how many corrections wait; a limited comparison is the kit's amber "not confirmed" note; each person is a
+  // row with their avatar, name and place and, per flag, the kit's chip (red stops you, amber checks) and one grey fact; the
+  // footer says when it was updated, with a quiet Refresh. No eyebrow, no bordered stat boxes. Same reads, states and words.
   return (
-    <section className="attendance-review" aria-labelledby="attendance-review-title" data-attendance-state={paused ? "paused" : denied ? "unauthorized" : ready ? "ready" : unavailable ? "unavailable" : "loading"}>
-      <ConfiguredAttendancePolicies />
-      <header className="attendance-review-header">
-        <div>
-          <p>Today</p>
-          <h2 id="attendance-review-title">Today’s clock-ins</h2>
-          <span>Clock-ins and breaks that may need a look.</span>
+    <section className="attendance-review c-arev" aria-labelledby="attendance-review-title" data-attendance-state={paused ? "paused" : denied ? "unauthorized" : ready ? "ready" : unavailable ? "unavailable" : "loading"}>
+      <div className="c-card c-arev__card">
+        <div className="c-card__head">
+          <h2 className="c-card__label" id="attendance-review-title">Today’s clock-ins{ready ? <BCount label={`${ready.signalCount} to review`}>{ready.signalCount}</BCount> : null}</h2>
         </div>
-        {/* The summary row is there while loading too ("–" for each count), so nothing moves when the numbers arrive.
-            It is busy only while loading: the desktop layout hides the footer while busy, and a failed, paused or
-            signed-out review needs its footer (Refresh, Sign in). */}
-        <div className="attendance-review-summary" aria-label="Attendance exception summary" aria-busy={ready || unavailable || denied || paused ? undefined : true}>
-          <span>
-            <strong>{ready ? ready.signalCount : '–'}</strong>
-            {' to review'}
-          </span>
-          <span>
-            <strong>{ready ? ready.affectedEmployeeCount : '–'}</strong>
-            {ready?.affectedEmployeeCount === 1 ? ' person affected' : ' people affected'}
-          </span>
-          <span>
-            <strong>{ready ? ready.pendingCorrectionCount : '–'}</strong>
-            {ready?.pendingCorrectionCount === 1 ? ' correction' : ' corrections'}
-          </span>
-        </div>
-      </header>
+        {/* The summary line is there while loading too ("–" for each count), so nothing moves when the numbers arrive.
+            It is busy only while loading: a failed, paused or signed-out review keeps its footer (Refresh, Sign in). */}
+        <p className="c-arev__summary" aria-label="Attendance exception summary" aria-busy={ready || unavailable || denied || paused ? undefined : true}>
+          {/* Final verification F (F26): the title's count already says how many to review, so the line says who is affected and
+            what the corrections are, as the kit's facts line (no line starts or ends with the dot). */}
+          {ready ? <BSegs parts={[plural(ready.affectedEmployeeCount, 'person affected', 'people affected'), `${plural(ready.pendingCorrectionCount, 'time correction', 'time corrections')} waiting`]} />
+            : <BSegs parts={['–\u00a0people affected', '–\u00a0time corrections waiting']} />}
+        </p>
 
-      {ready?.coverage.state === 'limited' ? (
-        <div className="attendance-review-limited" role="status">
-          <strong>Some comparisons are limited</strong>
-          <span>
+        {ready?.coverage.state === 'limited' ? (
+          <BCallout tone="amber" icon="unknown" title="Some comparisons are limited">
             {ready.coverage.limitations.length} recorded item{ready.coverage.limitations.length === 1 ? '' : 's'} could not be fully compared with saved schedule or break context.
-          </span>
-        </div>
-      ) : null}
+          </BCallout>
+        ) : null}
 
-      {ready ? (
-        rows.length ? (
-          <div className="attendance-review-list">
-            {rows.map((group) => (
-              <article className="attendance-review-row" key={group.entryId} tabIndex={-1} id={`attendance-${group.entryId}`}>
-                <div className="attendance-review-person">
-                  <span className="attendance-review-avatar" aria-hidden="true">
-                    {initials(group.employeeName)}
-                  </span>
-                  <div>
-                    <strong>{group.employeeName}</strong>
-                    <small>{group.locationName}</small>
-                  </div>
-                </div>
-                <div className="attendance-review-signals">
-                  {group.observations.map((item) => (
-                    <div className="attendance-review-signal" key={item.id}>
-                      <span className={`attendance-review-badge ${KIND_TONES[item.kind]}`}>
-                        {KIND_LABELS[item.kind]}
+        {ready ? (
+          rows.length ? (
+            <ul className="c-rows c-arev__list" aria-label="Clock-ins to review">
+              {rows.map((group) => (
+                <li key={group.entryId}>
+                  <article className="c-row c-arev__row" tabIndex={-1} id={`attendance-${group.entryId}`} aria-labelledby={`attendance-${group.entryId}-name`}>
+                    <CorpAvatar name={group.employeeName} initials={initials(group.employeeName)} />
+                    <span className="c-row__main">
+                      <span className="c-row__title c-row__title--b" id={`attendance-${group.entryId}-name`}>{group.employeeName}</span>
+                      <span className="c-row__detail"><span>{group.locationName}</span></span>
+                      <span className="c-arev__signals">
+                        {group.observations.map((item) => (
+                          <span className="c-arev__signal" key={item.id}>
+                            <BChip tone={CHIP_TONES[KIND_TONES[item.kind]]}>{KIND_LABELS[item.kind]}</BChip>
+                            <span className="c-arev__fact">{keepWhole(observationDetail(item, ready.timeZone, ready.scope.localDate))}</span>
+                          </span>
+                        ))}
                       </span>
-                      <small>{observationDetail(item)}</small>
-                    </div>
-                  ))}
-                </div>
-              </article>
-            ))}
-          </div>
+                    </span>
+                  </article>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="c-arev__state"><BState kind="done" title="Nothing to review" line="No clock-ins need a look right now." /></div>
+          )
         ) : (
-          <div className="attendance-review-empty" role="status">
-            <span className="attendance-review-empty-mark" aria-hidden="true">✓</span>
-            <strong>Nothing to review</strong>
-            <small>No clock-ins need a look right now.</small>
+          <div className="c-arev__state">
+            <BState kind={paused ? (online ? 'paused' : 'offline') : denied ? 'locked' : unavailable ? 'failed' : 'loading'}
+              title={paused ? (online ? 'Attendance paused' : 'You’re offline') : denied ? 'Sign in again' : unavailable ? 'Attendance unavailable' : 'Loading attendance'}
+              line={/* TC-48: plain words, short enough for one line at 320 in every state (ST-23). */
+                paused ? (online ? 'Updates when you’re back.' : 'Updates when you reconnect.') : denied ? 'Manager or Owner access is needed.' : unavailable ? 'The latest records didn’t load.' : 'Checking today’s clock records.'} />
           </div>
-        )
-      ) : (
-        <div className="attendance-review-empty" role="status">
-          <strong>
-            {paused
-              ? (online ? 'Attendance paused' : 'You’re offline')
-              : denied
-                ? 'Sign in again'
-                : unavailable
-                  ? 'Attendance unavailable'
-                  : 'Loading attendance'}
-          </strong>
-          <small>
-            {/* TC-48: plain words, short enough for one line at 320 in every state (ST-23). */}
-            {paused
-              ? (online ? 'Updates when you’re back.' : 'Updates when you reconnect.')
-              : denied
-                ? 'Manager or Owner access is needed.'
-                : unavailable
-                  ? 'The latest records didn’t load.'
-                  : 'Checking today’s clock records.'}
-          </small>
-        </div>
-      )}
+        )}
 
-      <footer className="attendance-review-footer">
-        <div>
-          {/* ST-16: always two lines, so the footer keeps its height from loading to ready.
-              TC-48: each state says what is true now; the dot is green live, grey checking, a coral ring when it can't update. */}
-          <small data-state={ready ? 'live' : unavailable || denied || paused ? 'stale' : 'checking'}>
+        {/* Final verification F (F02): what the review compares opens in place, inside this card, above its footer. */}
+        <ConfiguredAttendancePolicies />
+
+        <div className="c-card__foot c-arev__foot">
+          {/* ST-16: the footer keeps its height from loading to ready. TC-48: each state says what is true now. */}
+          <p className="c-arev__updated" data-state={ready ? 'live' : unavailable || denied || paused ? 'stale' : 'checking'}>
             {ready ? <>Updated <time dateTime={ready.observedAt}>{keepWhole(checkedAt(ready.observedAt, ready.timeZone))}</time></>
               : paused ? (online ? 'Paused.' : 'Offline.')
                 : denied ? 'No access.'
                   : unavailable ? 'Couldn’t update.'
                     : 'Checking…'}
             {/* TC-50: offline, paused and no access say what to do in the main block; the footer keeps just the state word. */}
-            {ready && !online ? <span>Offline.</span> : ready || !(unavailable || denied || paused) ? <span>Updates every 30s.</span> : unavailable ? <span>Try Refresh.</span> : null}
-          </small>
+            {ready && !online ? <span> · Offline.</span> : ready || !(unavailable || denied || paused) ? <span> · Updates every 30 seconds.</span> : unavailable ? <span> · Try Refresh.</span> : null}
+          </p>
+          {denied ? (
+            <Link className="b-btn b-btn--ghost c-arev__refresh" href="/login">Sign in</Link>
+          ) : (
+            <button
+              className="b-btn b-btn--quiet c-arev__refresh"
+              type="button"
+              // IS-58: busy is aria-disabled, so keyboard focus stays on Refresh while it works.
+              onClick={() => { if (!refreshing) onRefresh(); }}
+              aria-disabled={refreshing || undefined}
+              disabled={paused || !online}
+              aria-label={refreshing ? "Refreshing attendance review" : "Refresh attendance review"}
+            >
+              {refreshing ? 'Refreshing…' : 'Refresh'}
+            </button>
+          )}
         </div>
-        {denied ? (
-          <Link className="attendance-review-refresh" href="/login">Sign in</Link>
-        ) : (
-          <button
-            className="attendance-review-refresh"
-            type="button"
-            // IS-58: busy is aria-disabled, so keyboard focus stays on Refresh while it works.
-            onClick={() => { if (!refreshing) onRefresh(); }}
-            aria-disabled={refreshing || undefined}
-            disabled={paused || !online}
-            aria-label={refreshing ? "Refreshing attendance review" : "Refresh attendance review"}
-          >
-            {refreshing ? 'Refreshing…' : 'Refresh'}
-          </button>
-        )}
-      </footer>
+      </div>
     </section>
   );
 }
 
-export function ManagerAttendanceReview() {
+/** One review read for a page: the controller that reads, refreshes, pauses offline and stops when hidden. Review 30
+ * (D29): Who's working holds it, so its rows and its collapsed "Clock-ins to check" row show the flags the review
+ * carries while the review itself stays folded. */
+export function useAttendanceReviewController() {
   const [state, setState] = useState<AttendancePanelState>({
     review: null,
     refreshing: true,
@@ -294,12 +308,26 @@ export function ManagerAttendanceReview() {
     };
   }, []);
 
-  return (
-    <AttendanceReviewSurface
-      state={state}
-      onRefresh={() => controller.current?.refresh()}
-    />
-  );
+  return { state, refresh: () => controller.current?.refresh() };
+}
+
+type SharedReview = ReturnType<typeof useAttendanceReviewController>;
+const AttendanceReviewContext = createContext<SharedReview | null>(null);
+/** Shares one review read with everything under it (Who's working's rows and the review panel). */
+export function AttendanceReviewProvider({ children }: { children: ReactNode }) {
+  const shared = useAttendanceReviewController();
+  return <AttendanceReviewContext.Provider value={shared}>{children}</AttendanceReviewContext.Provider>;
+}
+export function useSharedAttendanceReview() { return useContext(AttendanceReviewContext); }
+
+function OwnAttendanceReview() {
+  const { state, refresh } = useAttendanceReviewController();
+  return <AttendanceReviewSurface state={state} onRefresh={refresh} />;
+}
+
+export function ManagerAttendanceReview() {
+  const shared = useContext(AttendanceReviewContext);
+  return shared ? <AttendanceReviewSurface state={shared.state} onRefresh={shared.refresh} /> : <OwnAttendanceReview />;
 }
 
 function subscribeOnline(change: () => void) {

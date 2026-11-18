@@ -114,13 +114,15 @@ export function sidebarActiveHref(role: UserRole, path: string | null | undefine
 }
 
 /** Clean Manager (v3): the occasional tools that used to sit on Home. They keep their addresses (Home's views and the two
- * recovery pages); only their place in the navigation is new. Owners and Managers only. */
+ * recovery pages); only their place in the navigation is new. Owners and Managers only.
+ * Phase 9 (Nov 18, 2026): each glyph names its own page and no other entry's: Who's working is the people on now
+ * (UsersThree; Team keeps Users), Hours this week the timer, Help someone sign in the key (Profile keeps the face). */
 const TEAM_TOOLS: NavigationItem[] = [
-  { href: "/app?view=attendance", label: "Who’s working", icon: "hours" },
-  { href: "/app?view=team", label: "Hours this week", icon: "employees" },
+  { href: "/app?view=attendance", label: "Who’s working", icon: "team" },
+  { href: "/app?view=team", label: "Hours this week", icon: "hours" },
   { href: "/app?view=activity", label: "Activity", icon: "calendar" },
   { href: "/app/clocker-recovery", label: "Clocker recovery", icon: "refresh" },
-  { href: "/app/account-recovery", label: "Help someone sign in", icon: "employee" },
+  { href: "/app/account-recovery", label: "Help someone sign in", icon: "key" },
 ];
 /** Release 1 ("don't overwhelm"): the team tools left the desktop sidebar. Each opens from the place the boards put it
  * (Who's working on Home, Hours this week and Help someone sign in on Team, Activity from Schedule), and that place's
@@ -214,8 +216,9 @@ export function navigationForRole(role: UserRole, payroll?: PayrollCapabilities,
   const context:NavContext = 'state' in input ? {operational:input} : input;
   const modules = context.modules ?? ALL_MODULES_ON;
   // B7 wording (NV-119): the people page is "Team" everywhere (its H1 and tab); the vocabulary preset stays in sentences.
-  // Development (Nov 15): an Owner with billing enabled also gets Plan and billing.
-  return [...baseNavigation(role, payroll, context.operational, context.ownerAdvisorEnabled),...(role==='OWNER'&&context.billingEnabled?[{href:'/app/billing',label:'Plan and billing',icon:'settings' as NavIconName}]:[])]
+  // Development (Nov 15): an Owner with billing enabled also gets Plan and billing (Phase 9: the card, as on More; the gear
+  // is Settings).
+  return [...baseNavigation(role, payroll, context.operational, context.ownerAdvisorEnabled),...(role==='OWNER'&&context.billingEnabled?[{href:'/app/billing',label:'Plan and billing',icon:'billing' as NavIconName}]:[])]
     .filter(item => pathEnabled(item.href, modules));
 }
 

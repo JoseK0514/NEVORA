@@ -53,8 +53,9 @@ const MANAGEMENT: Entry[] = [
   [/^\/app\/employees\/.+/, detail],
   // Team: Home's two columns from 1024px (People, then the Team tools rail), one column on tablets.
   ["/app/employees", { sub: true, strip: true, action: true, band: "strip", frame: "rail-desktop", cards: [{ rows: 8, avatar: true }, { rail: true, rows: 5 }] }],
-  // Christmas bonus hours (opened from Insights): back row, title and the bonus year line, the notice, then people.
-  ["/app/reports/christmas-bonus", { ...detail, title: "Christmas bonus hours", cards: [{ lines: 3 }, { head: true, stats: 3 }, { head: true, rows: 5, avatar: true }] }],
+  // Christmas bonus hours (opened from Insights): back row, title and the bonus year line with the year pill, then the
+  // three cards the page has (Review 30, D20): the note and the two dates, the four counts, then people (no avatars).
+  ["/app/reports/christmas-bonus", { ...detail, action: true, title: "Christmas bonus hours", cards: [{ lines: 3, rows: 2 }, { head: true, stats: 4 }, { head: true, rows: 5 }] }],
   ["/app/reports", { title: "Insights", band: "short", frame: "wide", lift: false, cards: [{ head: true, stats: 3 }, { head: true, lines: 3 }] }],
   ["/app/updates/compose", titled],
   [/^\/app\/updates\/.+/, form],

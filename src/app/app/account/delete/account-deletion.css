@@ -8,25 +8,41 @@
 :is(#q-root, html) .q-deletion__check::after { display: none; }
 :is(#q-root, html) .q-deletion__alert { margin-top: 16px; }
 :is(#q-root, html) .q-deletion__alert .q-help { margin-top: 4px; }
+/* Phase 9: an outcome is the kit's notice card (owner-b.css), a card of its own between the groups: the page's 16px card
+ * gutter on phones, and the 20px gap between cards from 768px. The wrapper keeps the focus target. */
+:is(#q-root, html) .q-deletion__alert > .q-deletion__note { margin: 0; }
+/* The space above is padding: as the form's first div, the wrapper's top margin is zeroed on phones (owner-b-pages.css). */
+:is(#q-root, html) .q-deletion__alert:has(> .q-deletion__note) { margin: 0 var(--b-space-16); padding-top: var(--b-space-12); }
+@media (min-width: 768px) { :is(#q-root, html) .q-deletion__alert:has(> .q-deletion__note) { margin: 0 0 var(--b-space-20); padding-top: var(--b-space-20); } }
+:is(#q-root, html) .q-deletion__alert:focus { outline: none; }
 :is(#q-root, html) .q-deletion .q-btn.q-deletion__confirm:not(:disabled) { background: var(--q-red); }
 :is(#q-root, html) .q-deletion .q-btn.q-deletion__keep { margin-top: 12px; }
 :is(#q-root, html) .q-deletion__done { margin: 24px 20px 0; }
 :is(#q-root, html) .q-deletion__done:focus { outline: none; }
 :is(#q-root, html) .q-deletion__done-icon { width: 32px; height: 32px; color: var(--q-teal); }
+/* Phase 9: the request is received (the server confirmed it), so the receipt carries the app's one done mark (BDoneMark):
+ * a green-50 circle with a bold green check, at the inline result's 48px with a 22px check. */
+:is(#q-root, html) .q-deletion__done .b-donemark { width: 48px; height: 48px; }
+:is(#q-root, html) .q-deletion__done .b-donemark > svg { width: var(--b-ic-state); height: var(--b-ic-state); }
 :is(#q-root, html) .q-deletion__done h2 { margin: 12px 0 0; font-size: 20px; line-height: 25px; font-weight: 600; letter-spacing: -.4px; }
 :is(#q-root, html) .q-deletion__done p { margin: 4px 0 0; font-size: 15px; line-height: 20px; color: var(--q-grey); }
 :is(#q-root, html) .ad-reference { font-family: ui-monospace, "SF Mono", monospace; letter-spacing: .04em; color: var(--q-ink); }
 :is(#q-root, html) .q-delete .legal-unresolved { padding: 0 4px; border-radius: 4px; background: #FDF0C4; color: #6B4E00; font-family: ui-monospace, monospace; font-size: .875em; overflow-wrap: anywhere; }
 :is(#q-root, html) .q-deletion a.q-link { color: var(--q-teal); }
 
-/* Review B6 (NV-143): one Delete account flow for every role. Consent is a checkbox (a switch reads as an instant setting),
- * drawn like the Employee's (1.5px grey ring, 7px corners, teal when checked) in a 48px row; "Your access ends now" is
- * red-tinted; the confirm button is a red pill when it can be pressed and the disabled pair when it can't. */
+/* Review B6 (NV-143): one Delete account flow for every role. Consent is a checkbox (a switch reads as an instant setting)
+ * in a 48px row; "Your access ends now" is red-tinted; the confirm button is a red pill when it can be pressed and the
+ * disabled pair when it can't.
+ * Phase 9 (spec 4.7): the box is the app's one checkbox (b-foundation.css): 20px, 6px corners, a 1.5px field edge on white;
+ * checked is teal with a 14px bold white check; focus the one teal ring; disabled the disabled pair inside the quiet edge.
+ * It keeps its own class because the label row around it is its 48px target. */
 :is(#q-root, html) .q-deletion__check { min-height: 48px; align-items: center; }
-:is(#q-root, html) .q-deletion__box { flex: none; display: grid; place-items: center; width: 24px; height: 24px; margin: 0; border: 1.5px solid #9AA3A8; border-radius: 7px; background: #FFFFFF; -webkit-appearance: none; appearance: none; cursor: pointer; }
-:is(#q-root, html) .q-deletion__box:checked { border-color: #0B6E69; background: #0B6E69 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23FFFFFF' d='M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") center / 14px no-repeat; }
-:is(#q-root, html) .q-deletion__box:focus-visible { outline: 2px solid #0B6E69; outline-offset: 2px; }
-:is(#q-root, html) .q-deletion__box:disabled { opacity: 1; border-color: #C9CED1; cursor: default; }
+:is(#q-root, html) .q-deletion__box { box-sizing: border-box; flex: none; display: inline-block; width: 20px; height: 20px; min-width: 20px; min-height: 20px; margin: 0; padding: 0; border: 1.5px solid var(--b-field-edge); border-radius: 6px; background: #FFFFFF none center / 14px 14px no-repeat; -webkit-appearance: none; appearance: none; cursor: pointer; }
+:is(#q-root, html) .q-deletion__box:checked { border-color: var(--b-teal); background-color: var(--b-teal); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23FFFFFF' d='M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E"); }
+:is(#q-root, html) .q-deletion__box:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); }
+:is(#q-root, html) .q-deletion__box:disabled { opacity: 1; border-color: var(--b-quiet-edge); background-color: var(--b-disabled-bg); cursor: not-allowed; }
+:is(#q-root, html) .q-deletion__box:disabled:checked { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%238C9397' d='M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E"); }
+@media (forced-colors: active) { :is(#q-root, html) .q-deletion__box { -webkit-appearance: auto; appearance: auto; background: none; border: 0; } }
 :is(#q-root, html) .q-av.q-av--red { background: #FDECEA; color: #B42318; }
 :is(#q-root, html) .q-deletion .q-btn.q-deletion__confirm { border-radius: 999px; }
 :is(#q-root, html) .q-deletion .q-btn.q-deletion__confirm:disabled { background: #F0F2F3; color: #8C9397; opacity: 1; }
@@ -35,16 +51,22 @@
  * follows the Employee's flow. "Your access ends now" is red-tinted; Delete my account is a red pill that works from the
  * start and Keep my account a white pill with a hairline ring; "This can't be undone." sits under the red one. From 768px
  * the groups are single cards (no list card inside them), the field block, the consent line and the two buttons share the
- * 560px block, and the buttons end on its right edge. On a phone the tab bar steps aside, as on every form. The B8 rule:
+ * 560px block, and the buttons end on its right edge. On a phone the tab bar steps aside, as on every form.
+ * Final review B #5 (the button ladder): on a phone the two buttons are full-width pills at the ladder's full step, 52px at
+ * 16/22; from 768px they are the form footer's 44px at 14.5/20, as Check code and Add tablet. The B8 rule:
  * !important only inside nv-b; media queries only the aliases in src/lib/b-viewport.ts. */
 @layer nv-b {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-av.q-av--red { background: var(--b-red-50) !important; color: var(--b-red) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__check { flex-direction: row-reverse !important; justify-content: flex-end !important; gap: var(--b-space-12) !important; }
+  /* Final review B #13: the box sits on the consent's first line (centred on its 22px line), not on the middle of two or
+   * three lines. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__check { align-items: flex-start !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__check > .q-deletion__box { margin-top: 1px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__check b { text-wrap: pretty !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__check-error { margin: var(--b-space-8) 0 0 !important; padding: 0 0 0 calc(var(--b-space-16) + var(--b-inset) + 37px) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__check-error { margin: var(--b-space-8) 0 0 !important; padding: 0 0 0 calc(var(--b-space-16) + var(--b-inset) + 33px) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__acts { display: flex !important; flex-direction: column !important; gap: var(--b-space-12) !important; margin: var(--b-space-20) 0 0 !important; padding: 0 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__go { display: grid !important; justify-items: stretch !important; gap: var(--b-space-8) !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__acts .q-btn { box-sizing: border-box !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 100% !important; min-height: 48px !important; height: 48px !important; margin: 0 !important; padding: 0 var(--b-space-24) !important; border: 0 !important; border-radius: var(--b-radius-pill) !important; font: 600 var(--b-fs-body)/var(--b-lh-body) Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: 0 !important; text-decoration: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__acts .q-btn { box-sizing: border-box !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 100% !important; min-height: var(--b-btn-h-full) !important; height: var(--b-btn-h-full) !important; margin: 0 !important; padding: 0 var(--b-space-24) !important; border: 0 !important; border-radius: var(--b-radius-pill) !important; font: 600 16px/22px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: 0 !important; text-decoration: none !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__acts .q-btn.q-deletion__confirm { background: var(--b-red) !important; color: #FFFFFF !important; box-shadow: none !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__acts .q-btn.q-deletion__confirm:disabled { background: var(--b-disabled-bg) !important; color: var(--b-disabled-ink) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__acts .q-btn.q-deletion__keep { background: #FFFFFF !important; color: var(--b-ink) !important; box-shadow: inset 0 0 0 1px var(--b-line) !important; }
@@ -63,9 +85,15 @@
         /* Each piece keeps the card's 22px text inset on both sides, so the block's 560px are the field's own width. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) #deletion-confirm :is(.q-deletion__field, .q-list, .q-deletion__check-error, .q-deletion__acts) { box-sizing: border-box !important; max-width: calc(var(--b-frame-form) + 2 * var(--b-inset-wide)) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) #deletion-confirm .q-deletion__check { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) #deletion-confirm .q-deletion__check-error { padding-left: calc(var(--b-inset-wide) + 36px) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) #deletion-confirm .q-deletion__check-error { padding-left: calc(var(--b-inset-wide) + 32px) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__acts { flex-direction: row-reverse !important; justify-content: flex-start !important; align-items: flex-start !important; margin-bottom: var(--b-space-20) !important; padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__go { justify-items: center !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__acts .q-btn { width: auto !important; }
+    /* Final review B #23: "Your job and your workplace" is a note under the cards, so it starts on the cards' text edge (as
+     * Clocker PINs' and Clocker tablets' notes do) at the notes' 13.5/18, and its heading reads as one (600, ink 2) over
+     * its two sentences. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) #deletion-workplace > :is(.q-grp, .q-help) { padding-left: 23px !important; padding-right: 23px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) #deletion-workplace > .q-grp > h2 { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 600 !important; color: var(--b-ink2) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) #deletion-workplace > .q-help { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; text-wrap: pretty !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__acts .q-btn { width: auto !important; min-height: var(--b-btn-h) !important; height: var(--b-btn-h) !important; padding: 0 var(--b-space-20) !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; }
   }
 }

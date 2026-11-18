@@ -3,7 +3,7 @@
 /* Import pay from another payroll system: what each of the five steps shows. Presentation only: import-flow.tsx holds the
  * work and makes the requests. Every sentence comes from copy.ts, so the same views render in English and Spanish. */
 import { useEffect, useId, useRef, useState, type DragEvent, type KeyboardEvent } from "react";
-import { BButton, BButtonLink, BChip, BState } from "@/components/owner-b/b-kit";
+import { BButton, BButtonLink, BChip, BGlyph, BState } from "@/components/owner-b/b-kit";
 import type { PayrollImportCopy } from "./copy";
 import { AMOUNT_FIELDS, CSV_HEADERS, DISPOSITIONS, EXAMPLE_ROWS, centsFromInput, inputFromCents, lockedReason, searchPeople, type AmountField, type AmountReview, type Disposition, type FileProblem, type FileRow, type ImportDraft, type ImportPlan, type ImportSource, type MatchReview, type RosterPerson, type SourceChange } from "./import-model";
 import { DoneCard, ErrorText, ROW_GO, StepHeading, absMoney, money, shortKey, signedMoney, type Lang } from "./flow-kit";
@@ -291,7 +291,8 @@ export function ResultStep({ copy, headingId, write, correction, people, periodL
     const checking = write.phase === "checking", seen = write.phase === "unknown" ? write.seen : "nothing";
     return <>
       <StepHeading id={headingId}>{title}</StepHeading>
-      <BState kind={offline ? "offline" : "paused"} alert title={r.unknownTitle} line={r.unknownLine}>
+      {/* Phase 9 (spec 2.5): a result that is not known yet draws the Question glyph (amber), the one "not confirmed" mark. */}
+      <BState kind={offline ? "offline" : "paused"} icon={offline ? undefined : <BGlyph meaning="unknown" />} alert title={r.unknownTitle} line={r.unknownLine}>
         {seen === "no_receipt" ? <p className="b-statecard__s">{r.noReceipt}</p> : seen === "check_failed" ? <p className="b-statecard__s">{r.checkFailed}</p> : null}
         <p className="b-statecard__s">{r.neverChanged} {copy.common.stay}</p>
         <p className="pim-receipt"><span>{copy.common.receipt}</span> <code title={write.custody.key}>{shortKey(write.custody.key)}</code></p>

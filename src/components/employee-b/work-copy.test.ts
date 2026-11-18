@@ -23,4 +23,6 @@ it('follows the copy rules: sentence case, no exclamation marks, no em dashes, n
   expect(WORK_COPY.en.shiftEnded('9 AM – 5 PM', 'Main Office')).toBe('Your 9 AM – 5 PM shift has ended. Clock out on the Main Office tablet.');
   expect(WORK_COPY.es.shiftEnded('9 AM – 5 PM', 'Main Office')).toBe('Tu turno de 9 AM – 5 PM terminó. Registra tu salida en la tableta de Main Office.');
   expect(WORK_COPY.en.leadAll(3)).toBe('You lead all 3');expect(WORK_COPY.es.leadAll(3)).toBe('Lideras los 3');
+  // Phase 9: your own clock state once a shift has started with no punch, with how long.
+  expect(WORK_COPY.en.notClockedInFor('12 min')).toBe('Not clocked in · 12 min');expect(WORK_COPY.es.notClockedInFor('12 min')).toBe('Sin registrar entrada · 12 min');
 });

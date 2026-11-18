@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowsClockwiseIcon, CalendarCheckIcon, ClockIcon, HourglassMediumIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
+import { ArrowClockwiseIcon, CalendarCheckIcon, ClockIcon, HourglassMediumIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { createPrivateSnapshotController } from "@/lib/private-snapshot-client";
 import { parseToday, STATUS_TEXT, START_GRACE_MINUTES, type Today, type TodayShift } from "@/lib/today/project";
 import { offlineListener } from "@/lib/offline-hold";
@@ -46,7 +46,7 @@ export function TodayTilesSurface({ snapshot, refreshing = false, onRetry }: { s
   </section>;
   if (snapshot.state !== "ready") return <section className="today-tiles today-tiles-unavailable" aria-label="Today">
     <p role="status">Today&rsquo;s numbers aren&rsquo;t available right now.</p>
-    <button type="button" className="button secondary" onClick={onRetry} disabled={refreshing}><ArrowsClockwiseIcon size={18} weight="bold" aria-hidden="true" />Try again</button>
+    <button type="button" className="button secondary" onClick={onRetry} disabled={refreshing}><ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true" />Try again</button>
   </section>;
   const { counts, timeZone, observedAt } = snapshot;
   const tiles = [

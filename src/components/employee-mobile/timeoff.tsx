@@ -8,8 +8,7 @@ import {PlanningFeedback,usePlanningOperation} from './planning-feedback';
 import {TimeOffListRow,TimeOffRequestCard,timeOffDates,timeOffDay} from './timeoff-parts';
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
-import {HourglassIcon} from '@phosphor-icons/react/dist/ssr/Hourglass';
-import {BIcon,BState} from '../owner-b/b-kit';
+import {BCallout,BState} from '../owner-b/b-kit';
 import {momentsCopy} from '../owner-b/moments-copy';
 import {TimeOffB,TimeOffStateB} from '../employee-b/timeoff-b';
 import {parsePlanningCommand,type PlanningRequest,type PlanningCommand} from '@/lib/employee-planning';
@@ -97,8 +96,9 @@ export function EmployeeTimeOff({authority,selection,filter}:{authority:string;s
     </fieldset>
     {errorFor('note')?<p id={errorId+'-note'} className="c-error" role="alert">{errorFor('note')?.message}</p>:null}
     <p className="c-note tof-approve">Your manager needs to approve this request. Keep your scheduled shifts until it is approved.</p>
-    {/* Direction B (phones): the same words as a soft notice; hidden elsewhere. */}
-    <div className="eb-tof-approve"><BIcon tone="grey"><HourglassIcon weight="bold"/></BIcon><span><b>Your manager approves it</b><span>Keep your scheduled shifts until it is approved.</span></span></div>
+    {/* Direction B (phones): the same words as the kit's callout (Phase 9, spec 2.2: the HourglassMedium wait glyph, no
+      * circle in a tint), teal because it is information about what happens next, not a warning; hidden elsewhere. */}
+    <div className="eb-tof-approve"><BCallout tone="teal" icon="wait" title="Your manager approves it">Keep your scheduled shifts until it is approved.</BCallout></div>
     <PlanningFeedback operation={operation} onRetry={retry}/>
     {/* Upscale M2: Send is pinned in the sheet's footer (hairline above, safe area below). */}
     <div className="tof-foot"><button className="c-btn c-btn--full" type="submit" disabled={locked||!read.enabled}>{pending?'Sending…':'Send request'}</button></div></form>

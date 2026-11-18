@@ -1,6 +1,6 @@
 'use client';
 
-import {createContext,useContext,useSyncExternalStore,type ReactNode} from 'react';
+import {createContext,useContext,useEffect,useSyncExternalStore,type ReactNode} from 'react';
 import {CLOCKER_BUTTON_NAMES,clockerHasText,clockerKeepNames,clockerText,type ClockerLocale} from './clocker-copy';
 import { ClockerIcon } from './clocker-icon';
 import styles from './clocker.module.css';
@@ -35,6 +35,8 @@ const Presentation=createContext({locale:'en' as ClockerLocale});
  * browser's Accept-Language on a first visit, so a Spanish tablet starts in Spanish); else the browser's first language. */
 export function ClockerPresentation({initialLocale,children}:{initialLocale?:ClockerLocale;children:ReactNode}){
  const locale=useSyncExternalStore(localeSubscribe,()=>localeSnapshot(initialLocale??browserLocale()),()=>initialLocale??'en');
+ // Review 30 (D37): the document speaks the tablet's language too, so the page title is read with the kiosk's rules.
+ useEffect(()=>{document.documentElement.lang=locale;},[locale]);
  return <Presentation.Provider value={{locale}}>{children}</Presentation.Provider>;
 }
 export function useClockerPresentation(){return useContext(Presentation);}

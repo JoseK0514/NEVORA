@@ -229,7 +229,8 @@ const en = {
   graceLabel: 'Early clock-in grace',
   graceUnit: 'minutes',
   graceHelp: 'Punches up to this many minutes before a shift start count toward that shift. Paid time still starts at the actual punch. 0 keeps strict matching.',
-  graceInvalid: 'Enter a whole number of minutes from 0 to 30.',
+  // Review 30 (D24): a field error has no closing period.
+  graceInvalid: 'Enter a whole number of minutes from 0 to 30',
   graceNote: 'A change applies to clock-ins after you save. Clock-ins already recorded keep how they were matched.',
   graceSave: 'Save',
   graceSaved: 'Saved. Clock-ins from now on use this grace.',
@@ -237,6 +238,10 @@ const en = {
   graceReload: 'Reload setting',
   graceReloaded: 'Saved setting loaded. A change you hadn’t saved was replaced.',
   graceReloadFailed: 'Couldn’t load the saved setting. Your change is still here.',
+  // Review 30 (D23): the results are chosen by the server's code; its own sentence is not drawn.
+  graceChanged: 'Shift matching was changed somewhere else. Reload the setting to see the saved value before you try again.',
+  graceOwnerOnly: 'Only an Owner can change shift matching.',
+  graceRefused: 'This change wasn’t saved. Reload the setting before you try again.',
   graceLoadFailedTitle: 'Couldn’t load shift matching',
   graceLoadFailedBody: 'The setting couldn’t be read. Nothing was changed.',
 
@@ -506,7 +511,7 @@ const es: ClockerOwnerCopy = {
   graceLabel: 'Margen de entrada anticipada',
   graceUnit: 'minutos',
   graceHelp: 'Las marcaciones hechas hasta esta cantidad de minutos antes del inicio de un turno cuentan para ese turno. El tiempo pagado sigue empezando en la marcación real. 0 mantiene la asociación estricta.',
-  graceInvalid: 'Escriba un número entero de minutos de 0 a 30.',
+  graceInvalid: 'Escriba un número entero de minutos de 0 a 30',
   graceNote: 'Un cambio aplica a las entradas después de guardar. Las entradas ya registradas conservan cómo se asociaron.',
   graceSave: 'Guardar',
   graceSaved: 'Guardado. Las entradas de ahora en adelante usan este margen.',
@@ -514,6 +519,9 @@ const es: ClockerOwnerCopy = {
   graceReload: 'Volver a cargar la configuración',
   graceReloaded: 'Se cargó la configuración guardada. El cambio sin guardar se reemplazó.',
   graceReloadFailed: 'No se pudo cargar la configuración guardada. Su cambio sigue aquí.',
+  graceChanged: 'La asociación con turnos se cambió en otro lugar. Vuelva a cargar la configuración para ver el valor guardado antes de intentarlo de nuevo.',
+  graceOwnerOnly: 'Solo un dueño puede cambiar la asociación con turnos.',
+  graceRefused: 'Este cambio no se guardó. Vuelva a cargar la configuración antes de intentarlo de nuevo.',
   graceLoadFailedTitle: 'No se pudo cargar la asociación con turnos',
   graceLoadFailedBody: 'No se pudo leer la configuración. No se cambió nada.',
 

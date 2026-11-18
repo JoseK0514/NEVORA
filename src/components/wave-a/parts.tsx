@@ -1,34 +1,26 @@
 import type { ReactNode } from "react";
-import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
-import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
-import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
+import { BCallout, type BTone } from "@/components/owner-b/b-kit";
 import { OfflineNotice } from "./offline-notice";
 
 /* Wave A building blocks on top of the kit (Phase 3.5). Presentation only: callers pass
  * already-authorized, already-formatted data. Styles live in src/app/app/premium-wave-a.css. */
 
-const noticeGlyph = { urgent: WarningCircleIcon, done: CheckCircleIcon, info: InfoIcon, review: WarningCircleIcon } as const;
+/** Phase 9 (spec 2.2, 2.4): a Wave A notice sits on the page's white panel, so it is the kit's one note (BCallout,
+ * owner-b.css): a tint with a hairline edge in its tone, the meaning's bold glyph (red WarningCircle stops, green Check
+ * is done, teal Info informs, amber Warning asks for a check), a 600 ink title over an ink2 body. */
+const noticeTone = { urgent: "red", done: "green", info: "teal", review: "amber" } as const satisfies Record<string, BTone>;
 
 /** A sentence that reports something: an error (urgent), a result (done) or a fact to know (info, review).
  * Icon plus words, never colour alone. Errors are alerts; the rest are polite statuses unless `quiet`. */
 export function Notice({ tone = "info", title, children, quiet = false, id }: {
-  tone?: keyof typeof noticeGlyph;
+  tone?: keyof typeof noticeTone;
   title?: ReactNode;
   children?: ReactNode;
   quiet?: boolean;
   id?: string;
 }) {
-  const Glyph = noticeGlyph[tone];
   const role = quiet ? undefined : tone === "urgent" ? "alert" : "status";
-  return (
-    <div className="wa-notice" data-tone={tone} role={role} id={id}>
-      <Glyph className="wa-notice__icon" size={20} weight="fill" aria-hidden="true" />
-      <div className="wa-notice__text">
-        {title ? <p className="wa-notice__title">{title}</p> : null}
-        {children ? <p className="wa-notice__body">{children}</p> : null}
-      </div>
-    </div>
-  );
+  return <BCallout tone={noticeTone[tone]} title={title} id={id} role={role}>{children}</BCallout>;
 }
 
 /** Label above the field, help under it (form pattern). `children` is the control itself. */

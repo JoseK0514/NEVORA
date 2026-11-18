@@ -152,7 +152,10 @@ it('renders the paused page with the tablet’s own language switch and no sign-
 it.each(['en','es'] as const)('renders the Clocker’s own not-found page in %s: who can fix it, one legal line, no sign-in',lang=>{
  const html=renderToStaticMarkup(<ClockerNotFoundBody initialLocale={lang} legal={{en:<p className="q-legal">EN LEGAL</p>,es:<p className="q-legal">ES LEGAL</p>}}/>);
  expect(html).toContain(`lang="${lang}"`);expect(html).toContain('data-clocker-not-found=""');expect(html).toContain('nf-card');
- expect(html).toContain(lang==='en'?'This time clock link doesn’t work':'El enlace de este reloj de asistencia no funciona');
+ // Premium pass (#23): one Spanish name for the product, "registro de tiempo", as on every other kiosk screen; (#22) the band
+ // names the place, not "Error 404".
+ expect(html).toContain(lang==='en'?'This time clock link doesn’t work':'El enlace de este registro de tiempo no funciona');
+ expect(html).not.toContain('404');expect(html).toContain(lang==='en'?'>Time clock</p>':'>Registro de tiempo</p>');
  // Phase 8 (#1): staff tell a manager; only the Owner sets a tablet up again (Settings is Owner only).
  expect(html).toContain(lang==='en'?'<strong>Tell a manager</strong> Your Owner sets this tablet up again in':'<strong>Avísale a un gerente</strong> El dueño vuelve a configurar esta tableta en');
  expect(html).not.toMatch(/manager or Owner|gerente o el dueño/);

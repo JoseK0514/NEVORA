@@ -81,11 +81,11 @@
      * Approve do under a time off request, so the names and the shift keep the row's width. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen :is(#b-todo-swaps, #b-todo-cant-work) .b-row:has(> .b-row__trail):not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { flex-wrap: wrap !important; row-gap: var(--b-space-8) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen :is(#b-todo-swaps, #b-todo-cant-work) .b-row > .b-row__trail:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { flex-basis: 100% !important; justify-content: flex-end !important; padding-left: 0 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen :is(#b-todo-swaps, #b-todo-cant-work) .b-row > .b-row__trail > .b-btn:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { min-width: 96px !important; min-height: 40px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen :is(#b-todo-swaps, #b-todo-cant-work) .b-row > .b-row__trail > .b-btn:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { min-width: 96px !important; min-height: var(--b-btn-h) !important; }
   }
   @media (max-width: 359px) {
-    /* A row's pill keeps its 36px height on the narrowest phones (it was 34px there); its hit area is 44px. */
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:is(.c-todo, .c-home) > .b-screen .b-row__trail > .b-btn:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { min-height: 36px !important; }
+    /* Phase 9: a row's pill is the row-action height (44px) on the narrowest phones too, as at every other width. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:is(.c-todo, .c-home) > .b-screen .b-row__trail > .b-btn:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { min-height: var(--b-btn-h) !important; }
   }
   @media (min-width: 768px) {
     /* OW-012: the row's positive pill (Approve, Review, Find cover, Fill) has one width, so the buttons before it share an edge. */
@@ -99,7 +99,7 @@
   /* ---------- Phase 8 (Nov 17, 2026): the final review's Home, Things to do and Team rows ---------- */
   /* a.md #5: what Payroll says in red leads Home's right column; its Prepare sits under the words, on the text's edge. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-paygo:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { display: flex !important; margin: 0 !important; padding: 0 var(--b-space-16) var(--b-space-16) var(--b-space-64) !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-paygo > .b-btn:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { min-height: 44px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-paygo > .b-btn:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { min-height: var(--b-btn-h-full) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink > .b-btn--glass:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { color: #FFFFFF !important; }
   /* a.md #16: on narrow phones the three tiles keep their labels on one line, so each status dot moves beside its figure
    * (the label row has no room for it at 320px); the dots keep their colours and nothing is said by the dot alone. */
@@ -133,4 +133,92 @@
   }
   /* a.md #27: the setup card's line never leaves one word alone ("targets" at 320px). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-setup :is(p, span):not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { text-wrap: pretty !important; }
+
+  /* ---------- Phase 9 (Nov 18, 2026, spec 3.1): time facts are meta, not chips ---------- */
+  /* The payday tile's "In 9 days" (and when timecard approval opens) is grey header text beside the kicker, on its line. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink .b-ink__due--when:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { padding: 0 !important; border-radius: 0 !important; background: none !important; color: var(--b-on-band-2) !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 500 !important; letter-spacing: 0 !important; font-variant-numeric: tabular-nums !important; }
+
+  /* ---------- Phase 9 follow-up (Nov 18, 2026): a status on a phone row's name line ---------- */
+  /* A status sits on the name's line when it fits and wraps under the name when it doesn't (the title line's flex-wrap);
+   * the name and its time are never squeezed. The live dot made an exception chip 12px wider, so on Team at 390 "Carlos
+   * Vega" and "James Ortiz" lost their one-line rows by 8px where nothing was squeezed. On a phone the row's avatar ring
+   * already marks the live state (amber: late or not clocked in), so a chip on the name's line leaves the dot out and keeps
+   * the chip's look; the tablet and desktop chips at a row's end keep it, and so does the quiet "● Clocked in". */
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:is(.c-home, .c-todo, .c-team) .b-row__t > .b-chip[data-dot]:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { padding-left: var(--b-chip-px) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:is(.c-home, .c-todo, .c-team) .b-row__t > .b-chip[data-dot] > .b-ldot:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { display: none !important; }
+  }
+
+  /* ---------- Premium pass FA (Nov 18, 2026): final verification A #1 and #29, a person's header ---------- */
+  /* The state follows the phone on its line at every width ("555-0199 · Off today"): never pushed to the card's right
+   * edge, never glued to the number. A quiet state takes a "·"; a chip or a live dot already separates itself. The line
+   * starts 13px left of the text column and that strip is cut off, so a state that wraps starts on the text edge with no
+   * dot. Positions are one grey line of facts under the place (BSegs). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-person .c-person__who .c-row__detail:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: flex !important; flex-wrap: wrap !important; justify-content: flex-start !important; align-items: center !important; column-gap: 0 !important; row-gap: var(--b-space-2) !important; margin-left: -13px !important; clip-path: inset(-16px -16px -16px 13px) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-person .c-person__who .c-person__bits > :first-child:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { padding-left: 13px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-person .c-person__who .c-person__state:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: inline-flex !important; flex: none !important; align-items: center !important; min-width: 0 !important; margin: 0 !important; padding-left: 13px !important; white-space: nowrap !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-person .c-person__who .c-person__state:has(> :is(.b-status:not([data-dot]), .c-meta)):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { padding-left: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-person .c-person__who .c-person__state:has(> :is(.b-status:not([data-dot]), .c-meta)):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6)::before { content: "·"; content: "·" / ""; display: inline-block; width: 13px; text-align: center; color: var(--b-grey); }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-person .c-person__who .c-person__state > :is(.b-status, .c-meta):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { margin: 0 !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-person .c-person__who .c-person__state > .c-meta:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6)::before { content: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-person .c-person__who .c-person__roles:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: block !important; margin: var(--b-space-2) 0 0 !important; padding: 0 !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 500 !important; color: var(--b-grey) !important; }
+  /* At 320px the two 44px circles leave the text a 100px column: they move under the text, on its edge. */
+  @media (max-width: 359px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-person .c-person__who:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { flex-wrap: wrap !important; row-gap: var(--b-space-12) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-person .c-person__who > .c-row__main:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { flex: 1 1 calc(100% - 48px) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-person .c-person__who > .c-row__main + .c-person__act:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { margin-left: 48px !important; }
+  }
+
+  /* ---------- Premium pass FA (Nov 18, 2026): final verification A #5, #19, #22, #26, #27 and B #17, #25 (Home) ---------- */
+  /* A #26: the payday tile's kicker is sentence case, as every other label in the Owner app ("Scheduled payday"). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink .b-ink__k:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { text-transform: none !important; letter-spacing: 0 !important; }
+  /* A #22, B #25: "See 1 more" is a teal action to everyone working today, on the card's inset (the avatars' edge). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on > a.b-on-more:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: inline-flex !important; align-items: center !important; min-height: var(--b-btn-h) !important; margin: 0 0 var(--b-space-4) !important; padding: 0 var(--b-inset) !important; color: var(--b-teal) !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; font-weight: 600 !important; text-decoration: none !important; border-radius: var(--b-radius-small) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on > a.b-on-more:focus-visible:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: calc(-1 * var(--b-focus-width)) !important; }
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on > a.b-on-more:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { padding: 0 var(--b-inset-wide) !important; }
+  }
+  /* A #27: on phones the band's three tiles keep an equal 12px inset at both ends; the labels take the caption size, so
+   * "Not clocked in" no longer runs into the next tile's divider. */
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live__i > .b-live__a:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live__i:not(:has(> .b-live__a)):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { padding-left: var(--b-space-12) !important; padding-right: var(--b-space-12) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live__l:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { font-size: var(--b-fs-caption) !important; line-height: var(--b-lh-caption) !important; }
+  }
+  /* B #17: This week's figures, staffing line and bars share the card's 22px inset with its title from 768px. */
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-week :is(.b-kv, .b-cov, .b-days-cap, .b-days-v, .b-days, .b-days-l):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+  }
+  /* A #5: the "has no payroll" card. Phones: the full-width 52px button with equal 16px sides. Tablets: one row, the
+   * notice and a 44px pill at the right, as Payroll draws its alert. The desktop rail is narrow: the 44px pill sits under
+   * the words, on their edge, its own width (it was a 682px pill 17px off the right edge). */
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-card > .b-home-paygo:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { padding: 0 var(--b-space-16) var(--b-space-16) !important; }
+  }
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-card > .b-home-paygo > .b-btn:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: inline-flex !important; width: auto !important; min-height: var(--b-btn-h) !important; padding: 0 18px !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; }
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-card:has(> .b-home-paygo):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: flex !important; align-items: center !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-card:has(> .b-home-paygo) > .b-notice:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { flex: 1 1 auto !important; min-width: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-card > .b-home-paygo:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { flex: none !important; padding: 0 var(--b-inset-wide) 0 0 !important; }
+  }
+  /* B #27: in Shift requests and Can't work the lead sits on the name's line, as Time off's faces do, not in the middle of a
+   * four-line block. */
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen :is(#b-todo-swaps, #b-todo-cant-work) .b-row__hit > :first-child:not(.b-row__tx):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen :is(#b-todo-swaps, #b-todo-cant-work) .b-row > :first-child:not(.b-row__tx, .b-row__hit):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { align-self: flex-start !important; }
+  }
+
+  /* A #28, B #15: Team's four filters need about 400px in one row and a phone's card gives them 326 (256 at 320), so the
+   * row was cut mid-word under a fade. On phones they are two rows of two equal pills in the same quiet track, every label
+   * and count whole and nothing to scroll; from 768px they stay one row. Final regression review #5: 4px sides, so at 320
+   * "Not clocked in 3" keeps air inside its half (8px left the words 1px from the pill's edge). */
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: var(--b-space-8) var(--b-space-4) !important; width: auto !important; max-width: none !important; height: auto !important; min-height: 0 !important; padding: var(--b-seg-pad) !important; overflow: visible !important; border-radius: var(--b-radius-field) !important; -webkit-mask-image: none !important; mask-image: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters > button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { justify-content: center !important; min-width: 0 !important; padding-left: var(--b-space-4) !important; padding-right: var(--b-space-4) !important; white-space: nowrap !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters > button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6)::after { inset: -4px 0 !important; }
+  }
+  /* B #19: a person's face in a list row is the one 36px lead (Team, Timecards and Availability drew 32px). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) :is(.c-page, .q-page) :is(.c-row, .c-tc-person) > .c-av:not(.c-av--l):not(.c-sched-av--open):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { width: 36px !important; height: 36px !important; border-radius: 18px !important; }
+  /* Final regression review #7: Availability draws its faces as the quiet list's .q-av (32px); they take the same 36px lead. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) #availability-people .q-row--av > .q-av:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { flex: none !important; width: 36px !important; height: 36px !important; border-radius: 18px !important; }
 }

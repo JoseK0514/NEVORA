@@ -3,7 +3,7 @@ import "@/components/auth-premium/auth-b.css";
 import "@/components/quiet/quiet.css";
 import "@/app/legal.css";
 import { notFound } from "next/navigation";
-import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
+import { BCallout, BEmail } from "@/components/owner-b/b-kit";
 import { AuthBackNav, DocBrand } from "@/components/auth-premium/auth-back-nav";
 import { AUTH_COPY, type AuthLang } from "@/lib/auth-copy";
 import { readAuthLang } from "@/lib/auth-lang.server";
@@ -43,7 +43,10 @@ export function PolicyFrame({ lang, title, sub, summary, summaryLang, current, c
  * Phase 8 (Nov 17, 2026): the title, the tab, the date line and the screen reader's summary are in the page's language
  * and the title and the tab agree ("Política de privacidad"). The contents list names the document's own English
  * headings and is marked `lang="en"`; "Questions" is listed there in English only, because in Spanish it is a Spanish
- * section after the document, not one of its headings. */
+ * section after the document, not one of its headings.
+ * Phase 9 (Nov 18, 2026): the Spanish note is the kit's teal callout (BCallout): the fact as a one-line title, the help
+ * path as its body, the support address as its one teal link (BEmail: it wraps only after "@"), a 1px teal edge, and
+ * 12px between it and "Abrir todo". The document itself is unchanged. */
 export async function QuietLegalDocumentPage({ doc }: { doc: PolicyDocument }) {
   if (!policiesVisible()) notFound();
   const lang = await readAuthLang(), t = POLICY_COPY[lang];
@@ -62,7 +65,7 @@ export async function QuietLegalDocumentPage({ doc }: { doc: PolicyDocument }) {
           <ul lang="en">{sections.map(section => <li key={section.id}><a href={`#${section.id}`}>{section.heading}</a></li>)}
             {questions && lang === "en" ? <li><a href="#legal-questions">{t.questions}</a></li> : null}</ul></nav>
         <div className="pl-card">
-          {t.englishOnly ? <p className="pl-note"><InfoIcon size={20} weight="bold" aria-hidden="true" /><span>{t.englishOnly.before}<a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>{t.englishOnly.after}</span></p> : null}
+          {t.englishOnly ? <BCallout tone="teal" title={t.englishOnly.title}>{t.englishOnly.before}<a href={`mailto:${SUPPORT_EMAIL}`}><BEmail address={SUPPORT_EMAIL} /></a>{t.englishOnly.after}</BCallout> : null}
           <article lang="en" aria-labelledby="legal-title"><PolicySections sections={sections} labels={{ openAll: t.openAll, closeAll: t.closeAll }} /></article>
           {questions ? <section className="pl-sec pl-questions" id="legal-questions" aria-labelledby="legal-questions-title">
             <h2 className="pl-sec__h" id="legal-questions-title">{t.questions}</h2>

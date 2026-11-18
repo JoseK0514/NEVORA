@@ -14,7 +14,7 @@ import {CorrectionComparison,PriorCorrectionDecisions} from './time-correction-c
 import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import {useManagerCorrectionRecovery} from './manager-correction-recovery';
 import {CorpTitle} from './corp/corp';
-import {BState} from './owner-b/b-kit';
+import {BSegs,BState} from './owner-b/b-kit';
 import Link from 'next/link';
 import {timeZoneLabel} from '@/lib/time-zone-label';
 export type CorrectionQueueConnection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
@@ -95,10 +95,11 @@ export function ManagerTimeCorrectionsSurface({
           <div className="manager-correction-topline">
             <div>
               <strong>{item.employeeName}</strong>
-              <small>{item.locationName} · {requestLabel(item)}</small>
+              {/* Premium pass FA (final verification A #10): the facts wrap whole, never leaving a "·" at a line's end. */}
+              <small><BSegs parts={[item.locationName,requestLabel(item)]}/></small>
             </div>
-            {/* OW-014: "Waiting" is the product's word for a request that needs a decision. */}
-            <span>Waiting</span>
+            {/* Premium pass FA (final verification A #20): every request on this page waits for a decision and the band says
+              * how many ("4 waiting"), so a "Waiting" chip on every card was the normal state drawn as an exception. */}
           </div>
           {/* Review B6 (NV-080): Recorded and Asked for, the change in bold with how much it moves; Current effective only
             * when it differs; one line for the zone and what approving does; the reason as a labelled quote. */}

@@ -61,7 +61,8 @@ it('says a manager summary\'s count was what it gathered when sent, with its sco
  const html=renderToStaticMarkup(NotificationInbox({state:{paused:false,refreshing:false,snapshot:{state:'ready',kind:'notifications',coverage:'complete',items:[one('s1',22,'2026-11-15T14:00:00Z')],observedAt:'2026-11-15T14:05:00Z',validForMs:60000} as never},onRetry:()=>{},onMarkRead}));
  // Not "22 waiting" beside a badge of 11: the count is the summary's, said in the past, and the line names what it gathered.
  expect(html).toContain('<b>22 items were waiting</b>');
- expect(html).toContain('Open shifts, requests or missing availability · ');
+ // Final regression review #2: the scope and the time are one facts line (BSegs), the dot belongs to the time.
+ expect(html).toContain('<span class="b-segs__i">Open shifts, requests or missing availability</span><span class="b-segs__i"><span class="b-sr"> · </span><time');
  expect(html).not.toContain('22 waiting');
  expect(html).not.toContain('<b>Things to do are waiting for you</b>');
 });

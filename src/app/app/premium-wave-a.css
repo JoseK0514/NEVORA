@@ -66,26 +66,14 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
   & .wa-card-body { display: flex; flex-direction: column; gap: var(--nv-s-4); padding: 0 var(--nv-s-5) var(--nv-s-5); }
   & .wa-text { margin: 0; font: var(--nv-t-body); color: var(--nv-ink); text-wrap: pretty; }
 
-  /* Notices: icon plus words, never colour alone. */
-  & .wa-notice, & .wa-form > :is(.form-error, .form-success) {
+  /* Notices (Phase 9): the Notice component is the kit's callout (BCallout, owner-b.css; its spacing is set at the end of
+   * this sheet); only ConfigurationForm's own result lines are drawn here: icon plus words, never colour alone. */
+  & .wa-form > :is(.form-error, .form-success) {
     display: flex; align-items: flex-start; gap: var(--nv-s-3); margin: 0; padding: var(--nv-s-4) var(--nv-s-5);
     border: 0; border-radius: var(--nv-r-card); background: var(--nv-canvas); box-shadow: var(--nv-e1); color: var(--nv-ink);
   }
-  /* AL-WA-6, AL-WA-7: the icon centres on the first line: the title's (row role) or, without a title, the body's (callout). */
-  & .wa-notice__icon { flex: none; margin-top: calc((1.375rem - 20px) / 2); }
-  & .wa-notice:not(:has(.wa-notice__title)) .wa-notice__icon { margin-top: calc((1.25rem - 20px) / 2); }
-  & .wa-notice[data-tone="info"] .wa-notice__icon { color: var(--nv-accent); }
-  & .wa-notice[data-tone="review"] { background: var(--nv-review-fill); box-shadow: none; }
-  & .wa-notice[data-tone="review"] .wa-notice__icon { color: var(--nv-review-mark); }
-  & .wa-notice[data-tone="urgent"], & .wa-form > .form-error { background: var(--nv-urgent-fill); box-shadow: none; color: var(--nv-urgent-ink); }
-  & .wa-notice[data-tone="urgent"] .wa-notice__icon { color: var(--nv-urgent-ink); }
-  & .wa-notice[data-tone="done"], & .wa-form > .form-success { background: var(--nv-done-fill); box-shadow: none; color: var(--nv-done-ink); }
-  & .wa-notice[data-tone="done"] .wa-notice__icon { color: var(--nv-done-ink); }
-  & .wa-notice__text { min-width: 0; }
-  & .wa-notice__title { margin: 0; font: var(--nv-t-row); font-weight: 600; color: inherit; }
-  & .wa-notice__body { margin: 0; font: var(--nv-t-callout); color: inherit; text-wrap: pretty; }
-  & .wa-notice__title + .wa-notice__body { margin-top: 2px; }
-  & .wa-notice[data-tone="info"] .wa-notice__body { color: var(--nv-muted); }
+  & .wa-form > .form-error { background: var(--nv-urgent-fill); box-shadow: none; color: var(--nv-urgent-ink); }
+  & .wa-form > .form-success { background: var(--nv-done-fill); box-shadow: none; color: var(--nv-done-ink); }
   /* ConfigurationForm's own result lines get the same look; the glyph is Phosphor's, drawn as a mask. */
   & .wa-form > :is(.form-error, .form-success) { font: var(--nv-t-callout); font-weight: 500; }
   & .wa-form > :is(.form-error, .form-success)::before {
@@ -387,3 +375,22 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .w
 
 /* A form's own result line inside a card keeps the card's 20px inset. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .nv-card .wa-form > :is(.form-error, .form-success, a.swap-button, button.button) { margin: 0 var(--nv-s-5) var(--nv-s-5); width: auto; }
+
+/* ---------- Phase 9 (Nov 18, 2026): the older kits' notes and saved lines, on the one vocabulary ----------
+ * Wave A's Notice is the kit's callout (on the white page panel); Wave C's is the kit's notice card (b-kit `b-card` +
+ * `b-notice`, owner-b.css), because it stands on the canvas under the form's card. Wave B's saved line (wave-b-forms.tsx, used on
+ * Scheduling rules and the trade and coverage policies) carries the app's one done mark, small: a bold 16px green check
+ * in a 28px green-50 circle, centred on the line, as the toast draws it. The !important declarations are inside nv-b
+ * (B8) so they outrank premium-wave-b.css's long selectors without a longer one here. */
+/* Wave C's Notice (wave-c-kit.tsx) is the same notice card; its one action sits under the words. */
+html body .app-shell[data-nv-b] .wc-note .wc-note__act { display: flex; flex-wrap: wrap; gap: var(--b-space-8); margin-top: var(--b-space-8); }
+/* It is a card of its own under the form's card: the page's card gutter on phones and the gap between cards. */
+html body .app-shell[data-nv-b] .wc-feedback > .wc-note { margin: var(--b-space-12) var(--b-space-16) 0; }
+@media (min-width: 768px) { html body .app-shell[data-nv-b] .wc-feedback > .wc-note { margin: var(--b-space-16) 0 0; } }
+@layer nv-b {
+  /* A Wave A notice is spaced by its column's gap, as the old notice was, not by the callout's own 12px. */
+  html body .app-shell[data-nv-b] .wa-page .b-callout { margin: 0 !important; }
+  html body .app-shell[data-nv-b] .wb-saved:has(> .wb-saved__mark) { display: flex !important; align-items: center !important; gap: var(--b-space-8) !important; }
+  html body .app-shell[data-nv-b] .wb-saved > .wb-saved__mark { display: grid !important; place-items: center !important; flex: none !important; width: 28px !important; height: 28px !important; margin: 0 !important; border-radius: 50% !important; background: var(--b-green-50) !important; color: var(--b-green) !important; }
+  html body .app-shell[data-nv-b] .wb-saved > .wb-saved__mark > svg { display: block !important; width: var(--b-ic-inline) !important; height: var(--b-ic-inline) !important; margin: 0 !important; }
+}

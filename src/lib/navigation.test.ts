@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { activeMobileTab, activeNavigationHref, mobileMoreForRole, mobileTabsForRole, navigationForRole, sectionTabsFor } from "./navigation";
+import { activeMobileTab, activeNavigationHref, mobileMoreForRole, mobileTabsForRole, navigationForRole, sectionTabsFor, teamToolsForRole } from "./navigation";
 import type { PayrollCapabilities } from './payroll/contracts';
 
 const payroll: PayrollCapabilities = { enabled: true, canConfigure: false, canReview: false, canApprove: false, internalCalculatorAvailable: false, bankCompatibility: 'UNVERIFIED' };
@@ -158,5 +158,20 @@ describe('More sheet groups (MG3)', () => {
     expect(withTools.find(group => group.label === 'Team tools')?.items.map(item => item.label)).toEqual(['Who’s working', 'Hours this week', 'Activity', 'Help someone sign in']);
     expect(teamToolsForRole('EMPLOYEE')).toEqual([]);
     expect(teamToolsForRole('LEAD')).toEqual([]);
+  });
+  // Phase 9 (Nov 18, 2026): one glyph per concept. Every place an Owner or Manager can reach has its own glyph (AI manager
+  // shares Insights' chart until the Rondo AI task gives it its own), a tab draws its sidebar entry's glyph, and a pay
+  // statement is the receipt for every role.
+  it('gives each place one glyph of its own, the same on the tab bar and in the sidebar', () => {
+    const review = { ...payroll, canReview: true };
+    for (const [role, context] of [['OWNER', { billingEnabled: true, ownerAdvisorEnabled: true }], ['MANAGER', { operational: company }]] as const) {
+      const items = [...navigationForRole(role, review, context), ...teamToolsForRole(role, { operational: company })];
+      const byIcon = new Map<string, string[]>();
+      for (const item of items) if (item.href !== '/app/ai-manager') byIcon.set(item.icon, [...(byIcon.get(item.icon) ?? []), item.href]);
+      expect([...byIcon.values()].filter(hrefs => hrefs.length > 1), role).toEqual([]);
+      for (const tab of mobileTabsForRole(role, review, context)) expect(tab.icon, tab.href).toBe(items.find(item => item.href === tab.href)?.icon);
+    }
+    expect(navigationForRole('OWNER', review, { billingEnabled: true }).find(item => item.href === '/app/billing')?.icon).toBe('billing');
+    for (const role of ['OWNER', 'MANAGER', 'EMPLOYEE', 'LEAD'] as const) expect(navigationForRole(role, review, { operational: company }).find(item => item.href === '/app/my-pay')?.icon, role).toBe('statement');
   });
 });

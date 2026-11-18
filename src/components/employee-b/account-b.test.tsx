@@ -68,7 +68,7 @@ describe('Notifications', () => {
     expect(html).toContain('aria-label="Confirm your schedule, 2 notifications, 1 unread, action needed, 2:10 PM"');
   });
   // Phase 4 (EM-005): the title is the outcome and the sub-line is what it is about, from the event type and subject the list sends.
-  it('a decision leads with its state and says its dates; a schedule says its week and shifts; a swap says who asked', () => {
+  it('a decision leads with its state and says its dates; a schedule says its week and shifts; a swap says who asked', async () => {
     const facts = [
       {id: 'a', label: 'Time off approved', eventType: 'TIME_OFF_APPROVED', outcome: 'APPROVED', subject: {kind: 'requestDate' as const, startDate: '2026-11-30', endDate: '2026-12-02'}, at: '2026-11-05T18:10:00Z', href: '/app/requests', reviewState: 'unread' as const, actionState: 'none' as const},
       {id: 'b', label: 'Time off declined', eventType: 'TIME_OFF_DENIED', outcome: 'DENIED', subject: {kind: 'requestDate' as const, startDate: '2026-12-05', endDate: '2026-12-05'}, at: '2026-11-05T17:10:00Z', href: '/app/requests', reviewState: 'read' as const, actionState: 'none' as const},
@@ -79,6 +79,22 @@ describe('Notifications', () => {
     for (const value of ['Time off approved', 'Nov 30 – Dec 2', 'Time off declined', 'Sat, Dec 5', 'Schedule published', 'Week of Nov 9', '2 shifts', 'Swap request waiting for you', 'Sat, Nov 28', 'From Ana Colon']) expect(plain).toContain(value);
     expect(html).toContain('aria-label="Time off approved, Nov 30 – Dec 2, unread, 2:10 PM"');expect(html).toContain('aria-label="Schedule published, Week of Nov 9, 2 shifts, 12:10 PM"');
     expect(html.match(/b-ico b-ico--green/g)).toHaveLength(1);expect(html.match(/eb-notif--declined/g)).toHaveLength(1);expect(plain).not.toContain('Action needed');
+    // Final review C (row 16): a declined time off keeps its kind's glyph (CalendarMinus) in the grey circle; no x.
+    const {CalendarMinusIcon} = await import('@phosphor-icons/react/dist/ssr/CalendarMinus');
+    const {XIcon} = await import('@phosphor-icons/react/dist/ssr/X');
+    const declined = html.slice(html.indexOf('id="b-message-b"'), html.indexOf('</a>', html.indexOf('id="b-message-b"')));
+    expect(declined).toContain('<span class="b-ico b-ico--grey" aria-hidden="true">' + renderToStaticMarkup(<CalendarMinusIcon weight="bold" />));
+    expect(html).not.toContain(renderToStaticMarkup(<XIcon weight="bold" />));
+  });
+  it('final review C (row 4): confirming your schedule is CalendarCheck and Availability is UserCheck, as on Home and More', async () => {
+    const {CalendarCheckIcon} = await import('@phosphor-icons/react/dist/ssr/CalendarCheck');
+    const {UserCheckIcon} = await import('@phosphor-icons/react/dist/ssr/UserCheck');
+    const html = renderToStaticMarkup(<EmployeeNotificationsB list={list({items: [items[0], {...items[2], id: 'av', label: 'Availability', eventType: 'AVAILABILITY_REMINDER'}]})} />);
+    expect(html).toContain('<span class="b-ico b-ico--amber" aria-hidden="true">' + renderToStaticMarkup(<CalendarCheckIcon weight="bold" />));
+    const availability = html.slice(html.indexOf('id="b-message-av"'), html.indexOf('</a>', html.indexOf('id="b-message-av"')));
+    expect(availability).toContain(renderToStaticMarkup(<UserCheckIcon weight="bold" />));
+    const more = renderToStaticMarkup(<EmployeeMoreB name="James Ortiz" place="Main Office" availability="Usual week" count={null} has={{availability: true, notifications: true, updates: true}} />);
+    expect(more.slice(more.indexOf('href="/app/availability"'))).toContain(renderToStaticMarkup(<UserCheckIcon weight="bold" />));
   });
   it('the Unread view, the empty states and the opening spinner', () => {
     expect(text(renderToStaticMarkup(<EmployeeNotificationsB list={list({tab: 'unread'})} />))).not.toContain('Pay statement shared');
@@ -105,6 +121,8 @@ describe('Updates', () => {
     // Review B6 (NV-166): Write an update is the band's action at every width (white on desktop, glass on the phone), not a
     // row under the read items.
     expect(plain.indexOf('Write an update')).toBeLessThan(plain.indexOf('To acknowledge'));expect(html).not.toContain('class="b-add"');
+    // Final review C (row 5): the update that waits for you leads with the amber circle; the read-only rows don't.
+    expect(html).toContain('<div class="b-row eb-upd__head"><span class="b-ico b-ico--amber" aria-hidden="true">');
     // Phase 4 (EM-021): one glass pill at every width; (EM-033) a preview has no line breaks; an unread row's word is for its label only.
     expect(html.match(/href="\/app\/updates\/compose"/g)).toHaveLength(1);expect(html).toContain('class="b-btn b-btn--glass eb-write"');expect(html).not.toContain('b-btn--white');
     const breaks = renderToStaticMarkup(<EmployeeUpdatesB list={list({items: [update({body: 'First line.\nSecond line.\n\nThird.'}), update({id: 'u3', title: 'Unread one', acknowledgement: 'NONE'})]})} />);
@@ -131,6 +149,10 @@ describe('Help and the policy pages', () => {
     expect(html).toContain('href="mailto:support@thevelani.com"');expect(html.match(/<details class="eb-q">/g)).toHaveLength(3);expect(plain).not.toContain('Your manager can reset it');
     for (const href of ['/app/profile/privacy', '/app/profile/terms', '/app/profile/account-deletion']) expect(html).toContain(`href="${href}"`);
     expect(renderToStaticMarkup(<EmployeeHelpB email="support@thevelani.com" response={null} signIn={null} work={null} report={[]} legal={false} />)).not.toContain('Privacy and terms');
+    // Phase 9 (spec 2.3, 2.4): the safety note is the kit's teal callout with a title, its sentence unchanged; no circle in a tint.
+    expect(html).toContain('<div class="b-callout" data-tone="teal"><span class="b-callout__ic" aria-hidden="true">');
+    expect(html).toContain('<p class="b-callout__t">Keep private details out of email</p><div class="b-callout__b">Never email passwords, codes, bank details or pay documents.</div>');
+    expect(html).not.toContain('eb-help-warn');
   });
   it('a policy page: the first section open, the rest in one list that opens in place, the links without separators', () => {
     const html = renderToStaticMarkup(<EmployeeDocumentB doc={PRIVACY} sub="Effective October 20, 2026 · VELANI LLC" back="/app/profile#profile-privacy" documents={POLICY_DOCUMENTS} />), plain = text(html);

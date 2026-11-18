@@ -7,6 +7,7 @@ vi.mock('./clocker-motion',()=>({useClockerMotion:()=>({current:null})}));
 vi.mock('./clocker-language',()=>({useClockerCopy:()=>((key:string)=>key),useClockerKeepNames:()=>((text:string)=>text),useClockerPresentation:()=>({v2:true,locale:'en'}),useClockerIntlLocale:()=>'en-US',useClockerSpanish:()=>false,Es:()=>null,ClockerText:()=>null}));
 import {ClockerPunchPanel} from './clocker-punch-panel';
 import {ClockerRecoveryHelp,ClockerRecoveryLink} from './clocker-recovery';
+import {ClockerIcon} from './clocker-icon';
 function find(value:unknown,type:unknown):unknown{
  if(Array.isArray(value))return value.map(item=>find(item,type)).find(Boolean);
  if(!value||typeof value!=='object'||!('type'in value)||!('props'in value))return;
@@ -81,4 +82,37 @@ it('makes Send it again the filled button on the retry screen and Check if it sa
  const retry=buttons(render('retry'));
  expect(retry.find(button=>button.kind==='primary')?.label).toBe('Send it again');expect(retry.find(button=>button.label==='Check if it saved')?.kind).toBeUndefined();
  expect(buttons(render('recovery')).find(button=>button.kind==='primary')?.label).toBe('Check if it saved');
+});
+
+/* Premium pass (Nov 18, 2026): one glyph and one colour per meaning on the clock screen's states. */
+const allButtons=(value:unknown,out:{kind?:string;label:string;className?:string}[]=[]):{kind?:string;label:string;className?:string}[]=>{
+ if(Array.isArray(value)){for(const item of value)allButtons(item,out);return out;}
+ if(value&&typeof value==='object'&&'props'in value){const node=value as {type:unknown;props:{children?:unknown;'data-kind'?:string;className?:string}};
+  if(node.type==='button')out.push({kind:node.props['data-kind'],label:texts(node.props.children).join(''),className:node.props.className});else allButtons(node.props.children,out);}
+ return out;};
+const ringOf=(mode:string)=>{const icon=find(render(mode),ClockerIcon) as {props:{name:string}}|undefined;return icon?.props.name;};
+it('draws not confirmed as the amber Question and a stop as the red WarningCircle (decision 2)',()=>{
+ hooks.online=true;
+ for(const mode of ['recovery','retry','review-current','other-person'])expect(ringOf(mode),mode).toBe('unknown');
+ expect(ringOf('unavailable')).toBe('stop');expect(ringOf('storage')).toBe('stop');
+ hooks.online=false;expect(ringOf('unavailable')).toBe('offline');hooks.online=true;
+ // The circular arrow is never a state's ring.
+ for(const mode of ['recovery','retry','review-current','other-person','unavailable','storage','auth'])expect(ringOf(mode),mode).not.toBe('refresh');
+});
+it('leaves with Done beside a state’s actions, and Start over to sign in again; never Return to PIN',()=>{
+ hooks.online=true;
+ for(const mode of ['recovery','retry','unavailable','review-current']){const leave=allButtons(render(mode)).find(button=>button.label==='Done');expect(leave,mode).toBeTruthy();expect(leave?.kind,mode).toBeUndefined();}
+ expect(allButtons(render('auth')).find(button=>button.kind==='primary')?.label).toBe('Start over');
+ expect(allButtons(render('storage')).find(button=>button.kind==='primary')?.label).toBe('Done');
+ for(const mode of ['recovery','retry','unavailable','review-current','auth','storage','other-person'])expect(texts(render(mode)).join(' | '),mode).not.toContain('Return to PIN');
+});
+it('offers no filled action under the offline note on the clock screen; Done is the way on',()=>{
+ hooks.online=false;
+ const ready=render('ready'),buttons=allButtons(ready);
+ expect(buttons.find(button=>button.label==='Clock in')?.kind).toBe('secondary');expect(buttons.find(button=>button.label==='Done')?.kind).toBe('primary');
+ expect(buttons.filter(button=>button.kind==='primary')).toHaveLength(1);
+ const note=(function walk(value:unknown):{props:Record<string,unknown>}|undefined{if(Array.isArray(value))return value.map(walk).find(Boolean);if(!value||typeof value!=='object'||!('props'in value))return;const node=value as {props:Record<string,unknown>};return 'data-clocker-offline' in node.props?node:walk(node.props.children);})(ready);
+ expect(note?.props['data-tone']).toBe('red');
+ hooks.online=true;
+ const online=allButtons(render('ready'));expect(online.find(button=>button.label==='Clock in')?.kind).toBe('primary');expect(online.find(button=>button.label==='Done')?.kind).toBe('secondary');
 });

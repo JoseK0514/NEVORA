@@ -6,13 +6,12 @@ import {KeyIcon} from '@phosphor-icons/react/dist/ssr/Key';
 import {TrashIcon} from '@phosphor-icons/react/dist/ssr/Trash';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
-import {LockSimpleIcon} from '@phosphor-icons/react/dist/ssr/LockSimple';
 import {BellIcon} from '@phosphor-icons/react/dist/ssr/Bell';
 import {CalendarPlusIcon} from '@phosphor-icons/react/dist/ssr/CalendarPlus';
 import {SignOutIcon} from '@phosphor-icons/react/dist/ssr/SignOut';
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {BriefcaseIcon} from '@phosphor-icons/react/dist/ssr/Briefcase';
-import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BScreen, BStack} from '../owner-b/b-kit';
+import {BButton, BButtonLink, BCallout, BCard, BChip, BHero, BIcon, BScreen, BStack, BStatusText} from '../owner-b/b-kit';
 import {BCardNote} from './parts';
 import {accountCopy} from './account-copy';
 import type {PrivatePanelState} from '../../lib/private-snapshot-client';
@@ -117,7 +116,9 @@ type CalendarBProps = Omit<CalendarClientState, 'pendingKind'> & {pendingKind?: 
 export function EmployeeCalendarB({status, url, paused, busy, notice, pendingKind, onCommand, onCopy, onRetry, confirmation, open, onOpen, onAsk, onCancel, onConfirm, feedbackRef, confirmRef, resetRef, revokeRef}: CalendarBProps) {
   const available = !paused && status && 'authority' in status, active = available && status.state === 'active', unknown = !!pendingKind;
   const currentUrl = active ? url : null, confirmationCurrent = active && !busy && !unknown && confirmation && confirmation.generation === status.generation;
-  const chip = !available ? null : active ? <BChip tone="teal">Active</BChip> : <BChip>{status.state === 'revoked' ? 'Turned off' : 'Off'}</BChip>;
+  // Final review C (row 16): a link that is off is the normal state, so it is quiet grey words, not a chip (a chip marks
+  // what needs a look; "Active" stays the teal chip).
+  const chip = !available ? null : active ? <BChip tone="teal">Active</BChip> : <BStatusText>{status.state === 'revoked' ? 'Turned off' : 'Off'}</BStatusText>;
   return <BScreen back>
     <BHero back={{href: '/app/more', label: 'More'}} title="Add to calendar" titleId="b-calendar-title" sub="Keep your shifts in the calendar you already use" />
     <BStack>
@@ -129,7 +130,8 @@ export function EmployeeCalendarB({status, url, paused, busy, notice, pendingKin
             {status.state === 'unauthorized' ? <BButtonLink href="/login" kind="teal" full>Sign in</BButtonLink> : <BButton kind="quiet" full onClick={onRetry}>Try again</BButton>}
           </> : <>
             <p className="eb-para">Your calendar app picks up schedule changes the next time it refreshes, which can take a while.</p>
-            <div className="eb-tint"><BIcon tone="amber"><LockSimpleIcon weight="bold" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">Keep the link to yourself</span><span className="b-notice__s">Anyone with it can see your shift times and locations.</span></span></div>
+            {/* Phase 9 (spec 2.2): privacy information is the kit's teal callout with ShieldCheck (no circle in a tint). */}
+            <BCallout tone="teal" icon="privacy" title="Keep the link to yourself">Anyone with it can see your shift times and locations.</BCallout>
             {unknown ? <p className="eb-para">Your previous request still needs to be checked before you can change this link.</p>
               : active ? currentUrl ? <div className="eb-in">
                 <label className="eb-label" htmlFor="b-calendar-link">Your private calendar link</label>
@@ -147,7 +149,7 @@ export function EmployeeCalendarB({status, url, paused, busy, notice, pendingKin
         </div>
       </section>
       <div ref={feedbackRef} tabIndex={-1} className={notice && !paused ? 'eb-feedback' : 'eb-feedback eb-feedback--empty'}>
-        {notice && !paused ? <p className="b-note eb-callout" role="status">{notice}</p> : null}
+        {notice && !paused ? <BCallout tone="teal" role="status">{notice}</BCallout> : null}
         {unknown && !paused && !busy && available ? <BButton kind="quiet" full onClick={onRetry}>Retry original request</BButton> : null}
       </div>
       {available && !busy ? <>
@@ -189,7 +191,7 @@ type AlertsBProps = {snapshot: DeviceSnapshot | null; paused: boolean; enabled: 
 export function EmployeeAlertsB({confirmationRef, feedbackRef, turnOffRef, ending, ...p}: AlertsBProps) {
   const s = p.snapshot, allowed = p.enabled && !p.paused && !s?.accessChanged, state = allowed ? s?.state : null, busy = state === 'loading' || state === 'pending', cleanup = !!s?.cleanupPending;
   const title = !p.enabled ? 'Your workplace hasn’t turned on device alerts' : p.paused ? 'Device settings paused' : s?.accessChanged ? 'Your access changed' : !s ? 'Checking this device…' : cleanup ? 'Alerts may still be on' : state === 'enabled' ? 'Alerts are on' : state === 'denied' ? 'Permission is blocked' : state === 'revoked' ? 'Device access changed' : state === 'install' ? 'Open from your Home Screen' : state === 'unavailable' ? 'Alerts are unavailable' : state === 'error' ? 'Setup needs a check' : busy ? 'Checking this device…' : 'Alerts are off';
-  const chip = !p.enabled ? <BChip>Unavailable</BChip> : !allowed || !s || busy ? null : cleanup ? <BChip tone="amber">Check</BChip> : state === 'enabled' ? <BChip tone="teal">On</BChip> : state === 'denied' ? <BChip tone="red">Blocked</BChip> : state === 'error' || state === 'revoked' ? <BChip tone="amber">Check</BChip> : <BChip>Off</BChip>;
+  const chip = !p.enabled ? <BChip>Unavailable</BChip> : !allowed || !s || busy ? null : cleanup ? <BChip tone="amber">Check</BChip> : state === 'enabled' ? <BChip tone="teal">On</BChip> : state === 'denied' ? <BChip tone="red">Blocked</BChip> : state === 'error' || state === 'revoked' ? <BChip tone="amber">Check</BChip> : <BStatusText>Off</BStatusText>;
   const settled = allowed && s && !busy && !p.confirm;
   const primary = settled && (state === 'ready' || state === 'dismissed') ? <BButton kind="teal" big full onClick={p.onEnable}>{state === 'dismissed' ? 'Review setup' : 'Turn on alerts'}</BButton>
     : settled && state === 'install' && p.canInstall ? <BButton kind="teal" big full onClick={p.onInstall}>Add to Home Screen</BButton> : null;
@@ -224,8 +226,10 @@ export function EmployeeAlertsB({confirmationRef, feedbackRef, turnOffRef, endin
           <div className="eb-body"><p className="eb-para">NEVORA will try to stop alerts for this account in this browser. We’ll check the result before confirming they’re off.</p><p className="eb-para">Your browser permission, other devices, and notifications in NEVORA stay the same. An alert already queued by your device may still appear.</p>
             <div className="eb-btns"><BButton kind="quiet" onClick={p.onKeep}>Keep current setup</BButton><button type="button" className="b-btn eb-btn-danger" onClick={p.onTurnOff}>Turn off alerts</button></div></div>
         </div> : null}
-        <div ref={feedbackRef} tabIndex={-1} className="eb-feedback">{allowed && s?.message ? <p className="b-note eb-callout" role="status">{cleanup ? DEVICE_TURN_OFF_PENDING_MESSAGE : state === 'error' ? 'Setup could not finish. Check again before starting a new request. You can ask your manager for help.' : s.message}</p> : null}
-          {allowed && p.installMessage ? <p className="b-note eb-callout" role="status">{p.installMessage}</p> : null}</div>
+        <div ref={feedbackRef} tabIndex={-1} className="eb-feedback">{/* Phase 9 (spec 2.2): the note's tone follows the card's chip: amber
+          * where it says Check (setup could not finish, turn-off pending), teal information otherwise. */}
+          {allowed && s?.message ? <BCallout tone={cleanup || state === 'error' ? 'amber' : 'teal'} role="status">{cleanup ? DEVICE_TURN_OFF_PENDING_MESSAGE : state === 'error' ? 'Setup could not finish. Check again before starting a new request. You can ask your manager for help.' : s.message}</BCallout> : null}
+          {allowed && p.installMessage ? <BCallout tone="teal" role="status">{p.installMessage}</BCallout> : null}</div>
       </>}
     </BStack>
   </BScreen>;

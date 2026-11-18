@@ -2,12 +2,14 @@
    grey #3F464B / #6A7176, Inter, Phosphor bold icons in tinted circles (teal information, amber check, red stop, green
    done), pills, 48px targets. No new colours or type. */
 
-:is(#c-root, html) .app-shell[data-nv-b] .ls-ring { flex: none; display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #F0F2F3; color: #3F464B; }
-:is(#c-root, html) .app-shell[data-nv-b] .ls-ring svg { width: 20px; height: 20px; }
-:is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=amber] { background: #FDF3E4; color: #8A4B00; }
-:is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=red] { background: #FDECEA; color: #B42318; }
+/* Phase 9 (spec 2.1, 3.2): the notice glyph rule. An 18px bold glyph in a 36px circle tinted by meaning (teal informs,
+ * amber asks for a check, red stops, green is done, grey has nothing to do), in the tokens' values. */
+:is(#c-root, html) .app-shell[data-nv-b] .ls-ring { flex: none; display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--b-quiet); color: var(--b-ink2); }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-ring svg { width: var(--b-ic-lead); height: var(--b-ic-lead); }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=amber] { background: var(--b-amber-50); color: var(--b-amber); }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=red] { background: var(--b-red-50); color: var(--b-red); }
 :is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=green] { background: var(--b-green-50); color: var(--b-green); }
-:is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=teal] { background: #E8F3F1; color: #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=teal] { background: var(--b-teal-50); color: var(--b-teal); }
 
 /* The request's page: published shifts before Approve (a corporate card, which the Owner/Manager Direction B layer draws). */
 :is(#c-root, html) .app-shell[data-nv-b] .ls-check__body { display: grid; gap: 12px; padding: 14px 16px 16px; }
@@ -26,7 +28,7 @@
 /* Things to do (phone): the schedule line under a waiting time off row. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-leave-note { display: flex; align-items: center; gap: 6px; margin-top: 2px; font-size: 13.5px; line-height: 18px; color: #6A7176; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-leave-note[data-tone=amber] { color: #8A4B00; font-weight: 600; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-leave-note svg { flex: none; width: 15px; height: 15px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-leave-note svg { flex: none; width: var(--b-ic-inline); height: var(--b-ic-inline); }
 
 /* The schedule opened from a staffing repair: one card, the ring, what happened, who fixes it, Open the shift. */
 :is(#c-root, html) .app-shell[data-nv-b] .ls-repair, :is(#c-root, html) .app-shell[data-nv-b] .b-notes > .ls-repair { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: 12px 14px; padding: 16px 18px; border-radius: 22px; background: #FFFFFF; color: #111517;
@@ -55,16 +57,20 @@
 :is(#c-root, html) .app-shell[data-nv-b] .cm-grid__row--repair > :first-child { box-shadow: inset 3px 0 0 var(--b-amber); }
 
 /* X-Nevora-Failure: one notice for the page, above the tab bar on phones, at the bottom right on desktop. */
-:is(#c-root, html) .ls-failure { position: fixed; z-index: 60; left: 12px; right: 12px; bottom: calc(88px + env(safe-area-inset-bottom)); display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
+/* Phase 9: the reason's glyph leads in the notice's 36px ring (the notice glyph rule); the words and buttons follow it on
+ * the ring's text edge. */
+:is(#c-root, html) .ls-failure { position: fixed; z-index: 60; left: 12px; right: 12px; bottom: calc(88px + env(safe-area-inset-bottom)); display: grid; grid-template-columns: 36px minmax(0, 1fr); align-items: center; gap: 12px 12px;
   padding: 14px 16px; border-radius: 22px; background: #FFFFFF; color: #111517; font-family: Inter, "Inter Fallback", -apple-system, sans-serif;
   box-shadow: 0 0 0 1px rgb(16 40 38 / .06), 0 2px 4px rgb(16 40 38 / .08), 0 24px 48px -16px rgb(16 40 38 / .32); }
 :is(#c-root, html) .ls-failure:focus { outline: none; }
 :is(#c-root, html) .ls-failure:focus-visible { outline: 2px solid #0B6E69; outline-offset: 3px; }
-:is(#c-root, html) .ls-failure__tx { display: grid; gap: 2px; flex: 1 1 220px; font-size: 14.5px; line-height: 20px; color: #3F464B; }
+:is(#c-root, html) .ls-failure__tx { display: grid; gap: 2px; min-width: 0; font-size: 14.5px; line-height: 20px; color: #3F464B; }
+:is(#c-root, html) .ls-failure > .ls-ring { align-self: start; }
 :is(#c-root, html) .ls-failure__tx b { font-size: 15.5px; line-height: 21px; color: #111517; }
-:is(#c-root, html) .ls-failure__acts { display: flex; gap: 8px; }
+:is(#c-root, html) .ls-failure__acts { grid-column: 2; display: flex; flex-wrap: wrap; gap: 8px; }
 :is(#c-root, html) .app-shell[data-nv-b] .ls-failure__acts > * { min-height: 48px; padding: 0 18px; border: 0; }
-@media (min-width: 768px) { .ls-failure { left: auto; right: 24px; bottom: 24px; width: min(420px, calc(100vw - 48px)); } }
+/* Phase 9: the desktop placement carries the base rule's weight; before, the id in :is() kept the notice full width. */
+@media (min-width: 768px) { :is(#c-root, html) .ls-failure { left: auto; right: 24px; bottom: 24px; width: min(420px, calc(100vw - 48px)); } }
 /* Phase 7 (Nov 17, 2026): the notice enters like a toast (opacity and 8px, the entrance token); ls-rise is retired. */
 @media (prefers-reduced-motion: no-preference) {
   .ls-failure { transition: opacity var(--b-dur-enter) var(--b-ease-out), transform var(--b-dur-enter) var(--b-ease-out); }

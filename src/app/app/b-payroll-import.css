@@ -14,7 +14,7 @@
    * and state cards keep a reading width. Same selector weight as that rule, later in the same layer. */
   @media (min-width: 768px) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) main.page-frame .c-sheetpage > form.c-teamform.pim[data-wide] > :not(fieldset.configuration-fields):not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4) { max-width: none !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) main.page-frame .c-sheetpage > form.c-teamform.pim[data-wide] > :is(.b-statecard, .pim-p, .pim-attest):not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4) { max-width: var(--b-frame-form) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) main.page-frame .c-sheetpage > form.c-teamform.pim[data-wide] > :is(.b-statecard, .pim-p, .b-callout):not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4) { max-width: var(--b-frame-form) !important; }
   }
   /* At 320px the phone header's Back sits beside the centred step line: the dots give their room to the words. */
   @media (max-width: 359px) {
@@ -152,7 +152,6 @@
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-person[open] > .pim-person__sum .pim-person__caret { rotate: 180deg; }
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-person[open] > .pim-person__sum { margin-bottom: var(--b-space-4); }
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-person { display: block; }
-:is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-attest { margin: 0; padding: var(--b-space-12) var(--b-space-16); border-radius: var(--b-radius-small); background: var(--b-teal-50); font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); }
 
 /* Batches: a number, the batch and its people, its state, and one row action. */
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-batch { grid-template-columns: 36px minmax(0, 1fr); align-items: start; }
@@ -247,3 +246,15 @@
 }
 /* Phase 8 (a.md #27): a state's title and line never leave one word alone on the last line ("first" at 320px). */
 :is(#c-root, html) body .app-shell[data-nv-b] .pim :is(.b-statecard__t, .b-statecard__s) { text-wrap: pretty; }
+
+/* Premium pass FA (Nov 18, 2026; final verification A #12): before a step starts, the payroll flows' way out names where it
+ * goes ("‹ Time exports"). On a phone that name and the centred title shared one line and ran into each other, so the
+ * head becomes a pushed page's: the back link on its own row, the title under it on the text edge. */
+@layer nv-b {
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheetpage.c-pim > .c-formhead:has(> .c-formhead__l > a.c-formhead__back):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { grid-template-columns: minmax(0, 1fr) !important; row-gap: var(--b-space-8) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheetpage.c-pim > .c-formhead:has(> .c-formhead__l > a.c-formhead__back) > .c-formhead__l:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { grid-column: 1 !important; grid-row: 1 !important; justify-self: start !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheetpage.c-pim > .c-formhead:has(> .c-formhead__l > a.c-formhead__back) > .c-formhead__t:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { grid-column: 1 !important; grid-row: 2 !important; justify-self: start !important; align-items: flex-start !important; text-align: left !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheetpage.c-pim > .c-formhead:has(> .c-formhead__l > a.c-formhead__back) > .c-nav__right:empty:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: none !important; }
+  }
+}

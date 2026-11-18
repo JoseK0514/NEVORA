@@ -15,10 +15,31 @@
   }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .ck-stack > .b-card:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { margin: 0 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .ck-stack .b-list:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { margin: 0 !important; padding: 0 !important; list-style: none !important; }
-  /* Clocker PINs: the list starts 24px under the band's search and tabs (16px on a phone). */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .ck-pins > .ck-stack:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { margin-top: var(--b-space-16) !important; }
+  /* Clocker PINs (final review B #1, #29): the band's search and filter sit on the band with band under them, as the strip
+   * on Notifications and Availability does, and the people card starts under the band.
+   * Phones: the band runs 22px past the filter and the card starts 16px under the band (it sat 6px under). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .ck-pins > .ck-stack:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { margin-top: 26px !important; }
   @media (min-width: 768px) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .ck-pins > .ck-stack:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { margin-top: var(--b-space-24) !important; }
+    /* From 768px: the strip is 20px under the title block (188 under a back link), the band ends 32px under the strip
+     * (264), and the card starts 24px under the band (288), as on Notifications. The strip sat on the band's last pixel:
+     * the content kept the frame's 52px gap above it, which pushed the strip to 220 while the band still ended at 264. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.ck-owner > .wc-content:has(> .c-pins > .c-pins__search):not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6):not(#ck7) { margin-top: var(--b-space-20) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .ck-pins > .ck-stack:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { margin-top: 56px !important; }
+  }
+  @media (max-width: 359px) {
+    /* Final review B #29: on a narrow phone a person's one action stays on their name's line and the position and
+     * location run under both, so each row is 82px, not 112px with Set PIN on a line of its own (the kit moves a row's
+     * button under its words below 360px). The row's own boxes step aside (display: contents) so the name, the line
+     * under it and the action share one grid; the face stays centred on the row, the name centred on the action. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .ck-pins .b-row:has(> .b-row__trail .b-btn):not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { display: grid !important; grid-template-columns: calc(36px + var(--b-space-4)) minmax(0, 1fr) auto !important; grid-template-rows: auto auto !important; column-gap: var(--b-space-8) !important; row-gap: 0 !important; align-items: center !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .ck-pins .b-row:has(> .b-row__trail .b-btn) > .b-row__hit:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .ck-pins .b-row:has(> .b-row__trail .b-btn) > .b-row__hit > .b-row__tx:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { display: contents !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .ck-pins .b-row:has(> .b-row__trail .b-btn) .b-av:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { grid-column: 1 !important; grid-row: 1 / span 2 !important; justify-self: start !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .ck-pins .b-row:has(> .b-row__trail .b-btn) .b-row__t:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { grid-column: 2 !important; grid-row: 1 !important; min-width: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .ck-pins .b-row:has(> .b-row__trail .b-btn) .b-row__s:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { grid-column: 2 / span 2 !important; grid-row: 2 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .ck-pins .b-row:has(> .b-row__trail .b-btn) > .b-row__trail:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { grid-column: 3 !important; grid-row: 1 !important; flex-basis: auto !important; padding-left: 0 !important; }
+    /* The face keeps its 12px to the name (the 40px first column and the 8px gap); the name keeps 8px to the action and
+     * the pill keeps its 44px with 12px sides, so a name such as Gabriela Santos stays on one line beside it. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .ck-pins .b-row:has(> .b-row__trail .b-btn) > .b-row__trail .b-btn:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { padding: 0 var(--b-space-12) !important; }
   }
   /* The Settings frame insets loose paragraphs; inside these cards a sentence lines up with its heading and fields. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner :is(.ck-form__p, .ck-form__h, .ck-ref, .ck-ticket__s, .ck-ticket__note, .ck-code__h, .ck-ticket__said, .ck-step, .ck-notice):not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { margin-left: 0 !important; margin-right: 0 !important; padding-left: 0 !important; padding-right: 0 !important; }
@@ -66,7 +87,8 @@
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-foot { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: var(--b-space-8) var(--b-space-12); margin-top: var(--b-space-4); padding: var(--b-space-12) var(--b-inset) var(--b-space-16); border-top: 1px solid var(--b-line); }
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-foot > .b-btn { min-height: 44px; padding: 0 var(--b-space-20); font-size: var(--b-fs-body-sm); font-weight: 600; }
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-acts { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: var(--b-space-4) var(--b-space-8); }
-:is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-acts > .b-btn { min-height: 36px; font-size: var(--b-fs-body-sm); font-weight: 600; white-space: nowrap; }
+/* Phase 9 (decision 3): a row's own buttons are drawn 44px at every width (they drew 36px, 40px on phones). */
+:is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-acts > .b-btn { min-height: var(--b-btn-h); font-size: var(--b-fs-body-sm); font-weight: 600; white-space: nowrap; }
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-notice { margin: 0; padding: 10px var(--b-gutter); border-radius: var(--b-radius-field); background: var(--b-quiet); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-ink2); }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.ck-owner, dialog.q-sheet) .ck-step { margin: 0 0 var(--b-space-4); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 600; color: var(--b-grey); font-variant-numeric: tabular-nums; }
 :is(#c-root, html) body .app-shell[data-nv-b] dialog.q-sheet .ck-step--sheet { margin: var(--b-space-4) 0 0; text-align: left; }
@@ -118,8 +140,9 @@
   :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner:is(.ck-tablets, .ck-recovery) .ck-acts { justify-content: flex-start; }
   /* A quiet action that leads the line starts at the words' left edge (its pill has no fill to show the inset). */
   :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner:is(.ck-tablets, .ck-recovery) .ck-acts > .ck-text:first-child { margin-left: calc(-1 * var(--b-gutter)); }
-  :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-acts > .b-btn { min-height: 40px; }
-  :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-foot > .b-btn { flex: 1 1 100%; min-height: 48px; }
+  /* Phase 9 (spec 3.5): a full-width primary is the ladder's full step, 52px (it drew 48px), with the full step's 16/22
+   * label (final review B #5: one full-width primary on every page). */
+  :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-foot > .b-btn { flex: 1 1 100%; min-height: var(--b-btn-h-full); font-size: 16px; line-height: 22px; }
   :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-ticket__acts > .b-btn { flex: 1 1 calc(50% - var(--b-space-8)); }
   :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-ticket__acts > .ck-ticket__done { margin-left: 0; flex-basis: 100%; }
 }
@@ -132,7 +155,7 @@
 
 /* ---------- Punch photos: what the setting does, each switch's state in words, and why a switch is off ---------- */
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-photos__what { margin: 0 0 var(--b-space-12); padding: 0; max-width: 68ch; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); text-wrap: pretty; }
-:is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-photos__why { margin: 0; padding: 0 var(--b-space-16) var(--b-space-8); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
+:is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-photos__why { margin: 0; padding: 0 var(--b-space-16) var(--b-space-8); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); text-wrap: pretty; }
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-switch__state { flex: none; min-width: 2.25em; margin-right: var(--b-space-4); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 600; color: var(--b-grey); text-align: right; }
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-switch__state[data-on] { color: var(--b-teal); }
 
@@ -181,6 +204,7 @@
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-results:not(:has(.b-card)) { display: none; }
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .b-statecard .b-btn { align-self: flex-start; }
 @media (max-width: 767px) {
-  :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-form__foot > .b-btn { flex: 1 1 100%; min-height: 48px; }
+  /* Final review B #5: a full-width primary on a phone is the ladder's full step, 52px (Check code drew 48px). */
+  :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-form__foot > .b-btn { flex: 1 1 100%; min-height: var(--b-btn-h-full); font-size: 16px; line-height: 22px; }
   :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-pinbox { grid-template-columns: repeat(4, minmax(48px, 64px)); }
 }

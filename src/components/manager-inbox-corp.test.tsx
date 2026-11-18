@@ -238,7 +238,7 @@ it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count i
     {...card('c4', 'Elena Ruiz', '2026-10-05', '2026-10-11', 'Oct 5 – 11',true), title: 'Your timecard needs another reviewer'},
     item('CALLOUT:k1', 'CALLOUT', 'requests', 'REVIEW', {title: 'Callout', detail: 'Luis Torres is waiting for review.', request: {startDate: '2026-10-20', endDate: '2026-10-20', partialDay: {start: '09:00', end: '17:00'}, lengthText: '8 h', locationName: 'Condado', reviewHref: '/app/exchange?tab=requests&requestId=k1'}} as Partial<ActionItem>)])})).replace(/\u00a0/g, ' ');
   // The correction's title is the person; the line under it says what they asked for and the day it was sent.
-  expect(html).toMatch(/<span class="b-row__tt">James Ortiz<\/span><\/span><span class="b-row__s">Time correction · sent Oct 10</);
+  expect(html).toMatch(/<span class="b-row__tt">James Ortiz<\/span><\/span><span class="b-row__s"><span class="b-segs"><span class="b-segs__i">Time correction<\/span><span class="b-segs__i"><span class="b-sr"> · <\/span>sent Oct 10</);
   expect(html).not.toContain('Recorded time correction');
   expect(html).not.toContain('asked for a time correction');
   // A swap names both people in its title; a can't-work request's title is the person (Phase 8, a.md #13), over the
@@ -247,27 +247,31 @@ it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count i
   expect(html).toContain('with James Ortiz"');
   expect(html).toContain('>Luis Torres<');
   expect(html).not.toContain('can’t work Tue');
-  expect(html.replace(/\u2060/g, '')).toContain('>Tue, Oct 20 · 9:00 AM – 5:00 PM · Condado<');
+  expect(html.replace(/\u2060/g, '').replace(/<[^>]+>/g, '')).toContain('Tue, Oct 20 · 9:00 AM – 5:00 PM · Condado');
   // Both end with the tinted Review pill, as time off does.
   expect(html.match(/class="b-btn b-btn--ghost"[^>]*>Review</g)).toHaveLength(2);
   // One glyph and tone per kind: swaps, can't work, corrections and timecards that can be approved wait on you (amber,
   // Phase 8 a.md #43); not open is grey.
   expect(html.match(/b-ico b-ico--amber/g)).toHaveLength(4);
-  expect(html.match(/b-ico b-ico--teal/g)).toBeNull();
+  // Phase 9 (spec 3.2): only the four shortcut rows under the list are teal; they open pages.
+  expect(html.match(/b-ico b-ico--teal/g)).toHaveLength(4);
+  expect(html.slice(html.indexOf('id="b-todo-more"')).match(/b-ico b-ico--teal/g)).toHaveLength(4);
   // Timecards whose period has ended can be approved: the reviewer's own card is left out and the line says so.
-  expect(html).toContain('1 of 2 timecards · Avery');
+  expect(html.replace(/<[^>]+>/g, '')).toContain('1 of 2 timecards · Avery');
   expect(html).not.toContain('Elena');
-  expect(html).toMatch(/Oct 5 – 11<\/span><span class="b-chip b-chip--grey">Pay period ended</);
+  // Phase 9 (spec 3.1): the period's state is the expected one, so it is quiet grey words, not a grey chip.
+  expect(html).toMatch(/Oct 5 – 11<\/span><span class="b-status">Pay period ended</);
   expect(html).toMatch(/id="b-todo-waiting-timecards-h">Timecards to approve<span class="b-pill">1</);
   // A period still open is one closed card at the bottom (Jose, Nov 15, 2026: "Pay period still open"): its line says the
   // day approval opens, the row says how many and whose; no count pill, no "waiting" suffix.
   expect(html).toMatch(/id="b-todo-closed-timecards-h">Pay period still open<\/h2><\/div><p class="b-card__note">You can approve these from Mon, Oct 19.<\/p>/);
-  expect(html).toContain('>2 timecards · Blair, Casey<');
+  expect(html.replace(/<[^>]+>/g, '')).toContain('2 timecards · Blair, Casey');
   expect(html).not.toContain('Not open yet');
   expect(html).not.toContain('· waiting');
   expect(html.indexOf('b-todo-closed-timecards')).toBeGreaterThan(html.indexOf('b-todo-waiting-timecards'));
   // The band counts the two requests and the correction; the tabs add up to it; the timecards to approve are named after it.
-  expect(html).toContain('<p class="b-sub">3 things need you · 1 timecard to approve<span');
+  // Final regression review: the band's line is the kit's facts line (BSegs); the dot belongs to the second fact.
+  expect(html).toContain('<p class="b-sub"><span class="b-segs"><span class="b-segs__i">3 things need you</span><span class="b-segs__i"><span class="b-sr"> · </span>1 timecard to approve</span></span><span');
   expect(html).toContain('aria-label="All, 3"');
   expect(html).toContain('aria-label="Time, 1"');
   expect(html).toContain('aria-label="Requests, 2"');

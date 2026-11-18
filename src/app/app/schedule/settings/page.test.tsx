@@ -303,7 +303,7 @@ vi.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()
 vi.mock('@/components/shift-change-policy-fields',()=>import('../../../../components/shift-change-policy-fields'));
 vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));
 
-it('does not load global scheduling rules after a current-source denial (presentation boundary)',async()=>{access.denied=true;vi.mocked(listLocationStaffingSettings).mockClear();vi.mocked(listLocations).mockClear();const html=renderToStaticMarkup(await ScheduleSettingsPage({searchParams:Promise.resolve({})}));expect(html).toContain('Scheduling rules unavailable');expect(listLocationStaffingSettings).not.toHaveBeenCalled();expect(listLocations).not.toHaveBeenCalled();});
+it('does not load global scheduling rules after a current-source denial (presentation boundary)',async()=>{access.denied=true;vi.mocked(listLocationStaffingSettings).mockClear();vi.mocked(listLocations).mockClear();const html=renderToStaticMarkup(await ScheduleSettingsPage({searchParams:Promise.resolve({})}));expect(html).toContain('<h1>Scheduling rules</h1>');expect(listLocationStaffingSettings).not.toHaveBeenCalled();expect(listLocations).not.toHaveBeenCalled();});
 
 // This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
 vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
@@ -313,7 +313,7 @@ it('does not read the workspace or availability deadline after current-source de
   vi.mocked(getWorkspace).mockClear();
   vi.mocked(getWeekSettings).mockClear();
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({week: "2030-10-07"})}));
-  expect(html).toContain('Scheduling rules unavailable');
+  expect(html).toContain('<h1>Scheduling rules</h1>');
   expect(html).not.toContain('name="availabilityDeadline"');
   expect(getWorkspace).not.toHaveBeenCalled();
   expect(getWeekSettings).not.toHaveBeenCalled();
