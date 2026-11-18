@@ -597,6 +597,44 @@ item names the lines it supersedes; line numbers are from the file before this s
   NEVORA.", a "What's next" card after approval, and "Scheduled payday" in place of "Payday" or "Next payday" wherever
   NEVORA shows a date from the pay schedule. The pay statement PDF text near line 1347 ("You take home") is unchanged
   and waits for Jose's and counsel's wording; see PY-2 in the inspection.
+- **Premium pass (built Nov 18, 2026; see `docs/product/premium-pass-2026-11-18/README.md` and its `spec.md`).** Jose
+  asked for every warning, status label and icon to be more premium, changing only what is clearly an upscale. The kit
+  (`src/components/owner-b/b-kit.tsx`, `owner-b.css`, `src/app/b-tokens.css`, `src/app/app/b-foundation.css`) carries
+  each building block once; a page uses it and nothing parallel to it.
+  - *Status labels.* In a list the normal state is quiet grey text (`BStatusText`, with a 6px green dot for someone on
+    the clock): "Clocked in", "On break", "Off today". Only an exception is a chip (`BChip`): 22px, 12/16 at 600, a 1px
+    edge in its tone's ink. "Clocked in late · 9 min", "Not clocked in · 35 min", "Missed". "Working" is retired. Time
+    facts ("Tomorrow", "Starts in 2 h", "In 9 days") are grey meta beside the title. One count (`BCount`): a 20px pill
+    that never breaks. On phones a status drops under the name and its sub-line.
+  - *Facts lines.* Facts joined by a middle dot use `BSegs`: each fact stays whole and no line starts or ends on the dot.
+  - *Notes.* Every tinted note is `BCallout`: a 600 title line, the body in ink2, an 18px glyph on the title's line, a
+    1px edge that survives High Contrast, at most one teal link. An email wraps only after "@" (`BEmail`). The Spanish
+    Privacy note at 390 is the reference.
+  - *One glyph per meaning.* WarningCircle (red, stops you), Warning (amber, check), HourglassMedium (wait), Info (teal),
+    ShieldCheck (privacy), Question (not confirmed, on the Clocker too), Check (done), LockSimple (locked). Time off is
+    CalendarMinus, Can't work UserMinus, timecards Clock, My pay Receipt, Help Question, the bell one Bell. Sizes: 12
+    chip, 16 inline, 18 lead, 20 control, 22 in a 48px state circle, 24 tab, 28 finish. The nine duotone icons stay.
+  - *Field errors.* One line on every signed-in form: a 16px WarningCircle in its own column, the words in red at 500,
+    a second line starting under the words, glyph and gap in em so they grow with the text (`form-validation.tsx`, and
+    `FieldErrorLine` for a form that draws its own message). A message that would appear while a pointer is pressed
+    waits until the press ends, so it never pushes the button away from the pointer. Signed-out forms keep
+    `auth-validation.tsx` with the same look.
+  - *Button heights* (`--b-btn-h*`). 36 in card headers; 44 for row actions, state cards and form and sheet footers,
+    drawn 44 on every width; 40 on phone bands and 48 on the band from 768; 52 for a full-width primary and the one red
+    destructive confirm. Square buttons became pills; one disabled look. Still 42 and listed for Jose: the band's
+    q-nav pills and the shift cancel in `owner-b-desktop.css`.
+  - *Closed pages.* Every closed page has one tinted step. Without a page that does the job for this person, the step
+    is "Return to Home".
+  - *Glass.* The band's glass tiles are 8% white inside the signed-in shell, so white words on them read at least
+    4.9:1. The Clocker band pills read at least 4.96:1.
+  - *Clocker.* One tone per outage (the ring, the band dot and the screen); every state screen has one layout, the icon
+    ring above the title on white. "Return to PIN" is "Done" / "Listo", or "Start over" / "Empezar de nuevo" on "Enter
+    your PIN again". The lockout keeps its Pause glyph (Nov 10 review) until Jose decides.
+  - *30-day phase screens* (employment dates, Christmas bonus hours, Shift matching, the 12-hour flag, the Privacy
+    layout): reviewed and fixed to the same standard; their type is in rem so 200% text scales with it. See
+    `docs/product/premium-pass-2026-11-18/30-day/README.md` and `final/fixes/ff.md`.
+  - Supersedes any older chip, note, glyph, error or button size in this file that differs from the list above. Section
+    2 of the spec lists what the pages drew before the pass.
 
 ## Previous direction (October 20, 2026; superseded)
 

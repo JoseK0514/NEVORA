@@ -172,6 +172,12 @@ None blocks integration. Each report has its full list.
   `e79ccdff`) are on the local branch.
 - Phase 8 (final verification: five reviews, six fix packages, full re-capture) is
   `ba762c0fea7fc14e1de357fadd8b61e76fa09775`: [phase-8](../../product/review-2026-11-14/fixes/phase-8/README.md).
+- The premium pass (status labels, notes, icons and building blocks, plus the 30-day phase screens' UI QA) is
+  `3f0b5a9d584734fe1cbf62769cd03fc82617b9a0`, built on `8fa01c95`; guides rebuilt from it in `d174bfdf`:
+  [premium pass](../../product/premium-pass-2026-11-18/README.md). Its "For Codex" list includes the Owner's
+  Notifications read that fails with the rich fictional workspace in the evening (the starting tree fails the same way),
+  F01 (a punch open since an earlier day is not flagged after 12 hours), F26 to F28, and the "registered" Clocker
+  sentences.
 - Rondo AI on Development and Manager access: [request to Codex](../2026-11-18-claude-to-codex-rondo-ai-activation-and-manager-access.md).
 - The Support reference is switched on (`5cc1c838` and before, by the backend session), so the U11 note above is
   out of date.
