@@ -1,4 +1,5 @@
 "use client";
+import {MIN_PASSWORD_CHARACTERS,passwordLength} from '@/lib/auth/password-requirements';
 
 import { useEffect, useRef, useState } from "react";
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
@@ -23,7 +24,7 @@ export function ActivationPasswords({ mismatch = false, errorId, quiet = false, 
     form?.addEventListener("reset", clear);
     return () => form?.removeEventListener("reset", clear);
   }, []);
-  const length: Rule = password.length >= 8 ? "ok" : "idle";
+  const length: Rule = passwordLength(password) >= MIN_PASSWORD_CHARACTERS ? "ok" : "idle";
   const differs = mismatch && confirm !== password;
   const match: Rule = differs ? "bad" : confirm && confirm === password ? "ok" : "idle";
   const describedBy = ["activation-rules", differs || !mismatch ? errorId : undefined].filter(Boolean).join(" ");
@@ -40,21 +41,21 @@ export function ActivationPasswords({ mismatch = false, errorId, quiet = false, 
       <div className="act-card" ref={group}>
         <div className="ap-field">
           <label className="ap-label" htmlFor="activation-password">Create password</label>
-          <PasswordInput id="activation-password" name="password" minLength={8} placeholder="Choose your password" autoComplete="new-password" required
+          <PasswordInput id="activation-password" name="password" minLength={MIN_PASSWORD_CHARACTERS} placeholder="Choose your password" autoComplete="new-password" required
             aria-describedby={describedBy} controls={["activation-password", "activation-confirm-password"]}
             showLabel="Show passwords" hideLabel="Hide passwords" onInput={event => setPassword(event.currentTarget.value)} />
         </div>
         <div className="ap-field" data-invalid={differs ? "" : undefined}>
           <label className="ap-label" htmlFor="activation-confirm-password">Confirm password</label>
           <div className="ap-box">
-            <input id="activation-confirm-password" className="ap-input" name="confirmPassword" type="password" minLength={8}
+            <input id="activation-confirm-password" className="ap-input" name="confirmPassword" type="password" minLength={MIN_PASSWORD_CHARACTERS}
               placeholder="Re-enter your password" autoComplete="new-password" required aria-invalid={differs || undefined}
               aria-describedby={describedBy} onInput={event => setConfirm(event.currentTarget.value)} />
           </div>
         </div>
       </div>
       <ul className="act-rules" id="activation-rules">
-        <li data-state={length}>{dot(length)}<span id="activation-password-hint">At least 8 characters.</span></li>
+        <li data-state={length}>{dot(length)}<span id="activation-password-hint">{t.atLeast15}</span></li>
         <li data-state={match}>{dot(match)}{differs
           ? <span id={errorId} role="alert">Enter the same password in both fields.</span>
           : <span>Passwords match</span>}</li>

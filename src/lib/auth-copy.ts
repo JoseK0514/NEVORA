@@ -107,7 +107,7 @@ const en = {
   recoveryCode: "Reset code",
   recoveryCodeHint: "Paste the code from your email or from your manager.",
   newPassword: "New password",
-  atLeast8: "At least 8 characters",
+  atLeast15: "At least 15 characters",
   confirmNewPassword: "Confirm new password",
   resetPassword: "Save new password",
   resettingPassword: "Saving new password…",
@@ -141,7 +141,7 @@ const en = {
   needEmployeeDetailsBody: "Your workplace sets up your employee record first. Ask your manager or Owner for your Employee ID and to confirm the phone number on file.",
   alreadyActivated: "Already activated? Sign in",
   activationNotFound: "We could not activate that account. Check the Employee ID and phone number, or the account may already be activated.",
-  activationInvalid: "Enter your Employee ID and phone number, and choose a matching password of at least 8 characters.",
+  activationInvalid: "Enter your Employee ID and phone number, and choose a matching password of at least 15 characters.",
   privacy: "Privacy",
   terms: "Terms",
   support: "Support",
@@ -174,7 +174,7 @@ const en = {
   invalid: {
     employeeId: "Enter your Employee ID", password: "Enter your password", email: "Enter your email",
     emailFormat: "Enter an email address like name@example.com", code: "Paste your reset code",
-    codeShort: "Paste the complete reset code", newPassword: "Create a password of at least 8 characters",
+    codeShort: "Paste the complete reset code", newPassword: "Create a password of at least 15 characters",
     confirm: "Type the password again",
   },
   notFound: {
@@ -271,7 +271,7 @@ const es: AuthCopy = {
   recoveryCode: "Código de restablecimiento",
   recoveryCodeHint: "Pega el código de tu correo o el que te dio tu gerente.",
   newPassword: "Contraseña nueva",
-  atLeast8: "Al menos 8 caracteres",
+  atLeast15: "Al menos 15 caracteres",
   confirmNewPassword: "Confirma la contraseña nueva",
   resetPassword: "Guardar contraseña nueva",
   resettingPassword: "Guardando contraseña nueva…",
@@ -303,7 +303,7 @@ const es: AuthCopy = {
   needEmployeeDetailsBody: "Tu lugar de trabajo crea primero tu registro de empleado. Pide a tu gerente o al dueño tu ID de empleado y que confirmen el número de teléfono que tienen.",
   alreadyActivated: "¿Ya activaste tu cuenta? Inicia sesión",
   activationNotFound: "No pudimos activar esa cuenta. Revisa el ID de empleado y el número de teléfono, o puede que la cuenta ya esté activada.",
-  activationInvalid: "Escribe tu ID de empleado y tu número de teléfono, y elige una contraseña de al menos 8 caracteres que coincida en los dos campos.",
+  activationInvalid: "Escribe tu ID de empleado y tu número de teléfono, y elige una contraseña de al menos 15 caracteres que coincida en los dos campos.",
   privacy: "Privacidad",
   terms: "Términos",
   support: "Ayuda",
@@ -332,7 +332,7 @@ const es: AuthCopy = {
   invalid: {
     employeeId: "Escribe tu ID de empleado", password: "Escribe tu contraseña", email: "Escribe tu correo",
     emailFormat: "Escribe un correo como nombre@ejemplo.com", code: "Pega tu código",
-    codeShort: "Pega el código completo", newPassword: "Crea una contraseña de al menos 8 caracteres",
+    codeShort: "Pega el código completo", newPassword: "Crea una contraseña de al menos 15 caracteres",
     confirm: "Vuelve a escribir la contraseña",
   },
   notFound: {

@@ -12,6 +12,7 @@ import {FingerprintIcon} from '@phosphor-icons/react/dist/ssr/Fingerprint';
 import {UserSwitchIcon} from '@phosphor-icons/react/dist/ssr/UserSwitch';
 import {AuthValidation} from '@/components/auth-premium/auth-validation';
 import {ActivationSubmit} from '@/app/activate/activation-submit';
+import {passwordRejectionMessage,type PasswordRejection} from '@/lib/auth/password-requirements';
 import type {ActivationPhase} from '@/app/activate/activation-invitation';
 import {AUTH_COPY,type AuthLang} from '@/lib/auth-copy';
 import {ACCESS_COPY} from '@/components/access-recovery/copy';
@@ -27,7 +28,7 @@ import {AccessCard,AccessOutside} from './chrome';
  * person is setting, the next step under every refusal, an offline attempt that sends nothing, an unknown result that is
  * never shown as failed or as done, the one field error style, who else is signed in on this device, the Support
  * reference, and "You're set" with the Employee ID carried to Sign in. The invitation flow is unchanged. */
-export function MobileActivationView({phase,mismatch=false,employeeId,loginHref,workspaceName,onSubmit,formRef,successRef,lang,offline=false,supportReference=null,otherSession=null,passkeys=false}:{phase:ActivationPhase;mismatch?:boolean;employeeId?:string|null;loginHref:string;workspaceName?:string|null;onSubmit:(event:FormEvent<HTMLFormElement>)=>void;formRef?:RefObject<HTMLFormElement|null>;successRef?:RefObject<HTMLDivElement|null>;lang:AuthLang;offline?:boolean;supportReference?:string|null;otherSession?:string|true|null;passkeys?:boolean}) {
+export function MobileActivationView({phase,passwordReason,mismatch=false,employeeId,loginHref,workspaceName,onSubmit,formRef,successRef,lang,offline=false,supportReference=null,otherSession=null,passkeys=false}:{phase:ActivationPhase;passwordReason?:PasswordRejection;mismatch?:boolean;employeeId?:string|null;loginHref:string;workspaceName?:string|null;onSubmit:(event:FormEvent<HTMLFormElement>)=>void;formRef?:RefObject<HTMLFormElement|null>;successRef?:RefObject<HTMLDivElement|null>;lang:AuthLang;offline?:boolean;supportReference?:string|null;otherSession?:string|true|null;passkeys?:boolean}) {
  const t=MOBILE_ACCESS_COPY[lang],u=ACCESS_COPY[lang].activation,chip=workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null,journey=useAccessJourney(),input=useRef<HTMLInputElement>(null),version=useRef({generation:0}),[copyStatus,setCopyStatus]=useState('');
  useEffect(()=>{const lifetime=version.current;lifetime.generation++;return()=>{lifetime.generation++;};},[employeeId,lang]);
  const canSubmit=['ready','pending','unavailable'].includes(phase),signInHref=loginHref.replace('?activated=1&','?').replace('?activated=1','');
@@ -49,7 +50,8 @@ export function MobileActivationView({phase,mismatch=false,employeeId,loginHref,
   <div className="q-hd"><h1>{title}</h1>{canSubmit||phase==='checking'?null:chip}<p role={phase==='checking'?'status':unknown?'alert':undefined}>{sub}</p></div>
   {canSubmit?<form ref={formRef} className="q-auth__form activation-form" onSubmit={onSubmit} aria-busy={phase==='pending'}><AuthValidation/>
    {offline?<p id="activation-offline" className="q-auth__alert q-auth__alert--wait" role="alert" tabIndex={-1}><WifiSlashIcon size={20} weight="bold" aria-hidden="true"/><span>{u.offline}</span></p>:null}
-   {phase==='unavailable'&&!mismatch&&!offline?<><p id="activation-unavailable" className="q-auth__alert" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{t.inviteUnavailable}</span></p><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
+   {passwordReason&&!mismatch?<p id="activation-error" className="q-error q-auth__alert" role="alert">{passwordRejectionMessage(lang,passwordReason)}</p>:null}
+   {phase==='unavailable'&&!passwordReason&&!mismatch&&!offline?<><p id="activation-unavailable" className="q-auth__alert" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{t.inviteUnavailable}</span></p><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
    <fieldset className="q-auth__fields" disabled={phase==='pending'}><AccessPasswordPair prefix="activation" lang={lang} mismatch={mismatch} newLabel={t.createPassword}/></fieldset>
    <ul className="ar-facts" aria-label={u.factsLabel}>
     <li><KeyIcon size={16} weight="bold" aria-hidden="true"/><span>{u.passwordFact}</span></li>

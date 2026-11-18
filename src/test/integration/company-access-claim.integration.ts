@@ -140,3 +140,14 @@ it('5000 unknown actual loopback HTTP claims allocate no counters or hash work a
   expect(await f.q('SELECT count(*)::integer AS count FROM company_invitation_claim_counters')).toEqual([{count:2}]);
  }finally{server.closeAllConnections();await new Promise<void>(resolve=>server.close(()=>resolve()));hash.mockRestore();context.executor=null;await f.db.dispose();}
 },120000);
+
+it.each([['twelve chars','too_short'],['qwertyuiopasdfgh','breached'],['NorthHarborFoods2026!','company_name']] as const)('PB-026 refuses %s without consuming an invitation',async(password,passwordReason)=>{
+ const f=await companyAccessFixture();try{
+  await f.q("UPDATE workspaces SET name='North Harbor Foods',updated_at=clock_timestamp() WHERE singleton");
+  const invite=await issued(f);
+  expect(await claimInvitation(invite.proof,password,f.db.executor)).toEqual({state:'invalid',passwordReason});
+  expect(await f.q("SELECT employee_id FROM employee_credentials WHERE employee_id='target'")).toEqual([]);
+  expect((await f.q('SELECT consumed_at FROM company_invitations WHERE id=$1',[invite.receipt.invitationId]))[0].consumed_at).toBeNull();
+  expect(await claimInvitation(invite.proof,'quiet meadows under winter skies',f.db.executor)).toEqual({state:'activated',employeeId:'target'});
+ }finally{await f.db.dispose();}
+});
