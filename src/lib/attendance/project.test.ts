@@ -9,7 +9,7 @@ import {
   makeRecordedEntry,
 } from "@/test/fixtures/attendance-exceptions";
 import type { AttendanceSource, RecordedEntry } from "./types";
-import { projectAttendance } from "./project";
+import { OPEN_ENTRY_REVIEW_LIMIT_HOURS, projectAttendance } from "./project";
 
 function matchedContext(
   entry: RecordedEntry,
@@ -987,4 +987,211 @@ describe("D1.1 final author-review regressions", () => {
 it('orders valid non-BMP identifiers by Unicode code point rather than UTF-16 units',()=>{
  const records=['\ue000','😀'].map(id=>makeRecordedEntry({id,employeeId:id,scheduleContext:{version:1,status:'UNMATCHED',timeZone:'America/Puerto_Rico',capturedAt:'2030-10-07T12:00:00Z',candidateCount:0,reviewedRevisionIds:[],reason:'NO_MATCH',match:null}}));
  expect(ready(makeAttendanceSource({entries:records})).groups.map(group=>group.entryId)).toEqual(['\ue000','😀']);
+});
+
+describe("open entry review limit without a matched scheduled end", () => {
+  const LIMIT_NANOSECONDS = BigInt(OPEN_ENTRY_REVIEW_LIMIT_HOURS) * BigInt(3_600_000_000_000);
+
+  function unmatchedContext(entry: RecordedEntry) {
+    return {
+      version: 1,
+      status: "UNMATCHED",
+      timeZone: "America/Puerto_Rico",
+      capturedAt: entry.clockInAt,
+      candidateCount: 0,
+      reviewedRevisionIds: ["revision-1"],
+      reason: "NO_MATCH",
+      match: null,
+    };
+  }
+
+  function ambiguousContext(entry: RecordedEntry) {
+    return {
+      version: 1,
+      status: "AMBIGUOUS",
+      timeZone: "America/Puerto_Rico",
+      capturedAt: entry.clockInAt,
+      candidateCount: 2,
+      reviewedRevisionIds: ["revision-1"],
+      reason: "OVERLAPPING_SHIFTS",
+      match: null,
+    };
+  }
+
+  /** Open entry from 2030-10-07T03:24Z (11:24 PM the previous local evening). */
+  function openEntry(state: "unmatched" | "ambiguous" | "not_captured" | "reference_missing") {
+    const entry = makeRecordedEntry({ clockInAt: "2030-10-07T03:24:00Z" });
+    if (state === "unmatched") entry.scheduleContext = unmatchedContext(entry);
+    if (state === "ambiguous") entry.scheduleContext = ambiguousContext(entry);
+    if (state === "reference_missing") entry.scheduleContext = matchedContext(entry);
+    return entry;
+  }
+
+  const atLimit = "2030-10-07T15:24:00Z";
+  const pastLimit = "2030-10-07T15:24:00.000000001Z";
+
+  it("documents the limit as twelve whole hours", () => {
+    expect(OPEN_ENTRY_REVIEW_LIMIT_HOURS).toBe(12);
+  });
+
+  it.each([
+    ["unmatched", ["SCHEDULE_UNMATCHED"]],
+    ["ambiguous", ["SCHEDULE_AMBIGUOUS"]],
+    ["not_captured", []],
+    ["reference_missing", []],
+  ] as const)("does not flag a %s open entry at exactly 12:00:00", (state, expected) => {
+    expect(kinds(makeAttendanceSource({ observedAt: atLimit, entries: [openEntry(state)] })))
+      .toEqual(expected);
+  });
+
+  it.each([
+    ["unmatched", ["SCHEDULE_UNMATCHED", "OPEN_PAST_LIMIT"], null],
+    ["ambiguous", ["SCHEDULE_AMBIGUOUS", "OPEN_PAST_LIMIT"], null],
+    ["not_captured", ["OPEN_PAST_LIMIT"], "schedule_not_captured"],
+    ["reference_missing", ["OPEN_PAST_LIMIT"], "schedule_reference_missing"],
+  ] as const)(
+    "flags a %s open entry at 12:00:00 plus 1 ns with exact evidence",
+    (state, expected, limitation) => {
+      const result = ready(makeAttendanceSource({ observedAt: pastLimit, entries: [openEntry(state)] }));
+      expect(result.groups).toHaveLength(1);
+      expect(result.groups[0].observations.map((item) => item.kind)).toEqual(expected);
+      expect(result.groups[0].observations.at(-1)).toEqual({
+        id: JSON.stringify([1, "workspace-test", "entry-1", "OPEN_PAST_LIMIT", null]),
+        kind: "OPEN_PAST_LIMIT",
+        breakId: null,
+        message: "No clock-out recorded · open more than 12 hours.",
+        evidence: {
+          recordedAt: pastLimit,
+          expectedAt: "2030-10-07T15:24:00Z",
+          differenceNanoseconds: "1",
+        },
+      });
+      if (limitation) {
+        expect(result.coverage.limitations).toContainEqual({
+          entryId: "entry-1",
+          breakId: null,
+          reason: limitation,
+        });
+      }
+    },
+  );
+
+  it("surfaces the November case: an 11:24 PM unscheduled clock-in still open the next afternoon", () => {
+    const result = ready(makeAttendanceSource({ entries: [openEntry("unmatched")] }));
+    const flag = result.groups[0].observations.find((item) => item.kind === "OPEN_PAST_LIMIT");
+    expect(flag?.evidence).toEqual({
+      recordedAt: "2030-10-07T16:00:00Z",
+      expectedAt: "2030-10-07T15:24:00Z",
+      differenceNanoseconds: "2160000000000",
+    });
+    expect(result).toMatchObject({ recordCount: 1, signalCount: 2, affectedEmployeeCount: 1 });
+  });
+
+  it("keeps exact nanosecond arithmetic for fractional clock-ins and multi-day open entries", () => {
+    const entry = makeRecordedEntry({ clockInAt: "2030-10-04T12:00:00.123456789Z" });
+    entry.scheduleContext = unmatchedContext(entry);
+    const observedAt = "2030-10-07T16:00:00Z";
+    const flag = ready(makeAttendanceSource({ observedAt, entries: [entry] }))
+      .groups[0].observations.find((item) => item.kind === "OPEN_PAST_LIMIT");
+    // Epoch nanoseconds of observedAt and clockInAt; 64 h minus 0.123456789 s beyond the limit.
+    const expected =
+      BigInt("1917619200000000000") - BigInt("1917345600123456789") - LIMIT_NANOSECONDS;
+    expect(flag?.evidence).toEqual({
+      recordedAt: observedAt,
+      expectedAt: "2030-10-05T00:00:00.123456789Z",
+      differenceNanoseconds: expected.toString(),
+    });
+    expect(expected.toString()).toBe("230399876543211");
+  });
+
+  it("keeps a matched open entry on OPEN_AFTER_SCHEDULE_END only, never adding a duplicate limit flag", () => {
+    const entry = makeRecordedEntry();
+    entry.scheduleContext = matchedContext(entry);
+    const pastEnd = ready(makeAttendanceSource({
+      observedAt: "2030-10-08T01:00:00Z",
+      entries: [entry],
+      publications: [makeHistoricalShift()],
+    }));
+    expect(pastEnd.groups[0].observations.map((item) => item.kind)).toEqual(["OPEN_AFTER_SCHEDULE_END"]);
+    expect(pastEnd.groups[0].observations[0].evidence).toMatchObject({
+      expectedAt: "2030-10-07T20:00:00Z",
+      differenceNanoseconds: "18000000000000",
+    });
+
+    // A long matched shift whose end has not passed stays silent even beyond 12 hours.
+    const beforeEnd = ready(makeAttendanceSource({
+      observedAt: "2030-10-08T00:00:00.000000001Z",
+      entries: [entry],
+      publications: [makeHistoricalShift({ endTime: "24:00" })],
+    }));
+    expect(beforeEnd.groups).toEqual([]);
+    expect(beforeEnd.coverage.state).toBe("complete");
+  });
+
+  it("does not flag a closed entry however long it ran", () => {
+    const entry = makeRecordedEntry({
+      clockInAt: "2030-10-06T20:00:00Z",
+      clockOutAt: "2030-10-07T15:00:00Z",
+      status: "CLOCKED_OUT",
+    });
+    entry.scheduleContext = unmatchedContext(entry);
+    expect(kinds(makeAttendanceSource({ entries: [entry] }))).toEqual(["SCHEDULE_UNMATCHED"]);
+    expect(kinds(makeAttendanceSource({ entries: [{ ...entry, scheduleContext: null }] }))).toEqual([]);
+  });
+
+  it("suppresses the limit flag on contradictory history like other derived timing", () => {
+    const first = makeRecordedEntry({ id: "open-a", clockInAt: "2030-10-07T01:00:00Z" });
+    const second = makeRecordedEntry({ id: "open-b", locationId: "location-2", clockInAt: "2030-10-07T02:00:00Z" });
+    first.scheduleContext = unmatchedContext(first);
+    second.scheduleContext = unmatchedContext(second);
+    const result = ready(makeAttendanceSource({ entries: [first, second] }));
+    expect(result.groups.map((group) => group.observations.map((item) => item.kind))).toEqual([
+      ["TIME_HISTORY_INCONSISTENT"],
+      ["TIME_HISTORY_INCONSISTENT"],
+    ]);
+  });
+
+  it("keeps the flag identity stable across refreshes and leaves the recorded entry untouched", () => {
+    const source = makeAttendanceSource({ observedAt: pastLimit, entries: [openEntry("not_captured")] });
+    const frozen = structuredClone(source);
+    const first = ready(source);
+    const later = ready({ ...source, observedAt: "2030-10-08T02:00:00Z" });
+    expect(source).toEqual(frozen);
+    expect(source.entries[0]).toMatchObject({ clockOutAt: null, status: "CLOCKED_IN" });
+    expect(later.groups[0].observations[0].id).toBe(first.groups[0].observations[0].id);
+    expect(later.groups[0].observations[0].evidence.differenceNanoseconds).toBe("38160000000000");
+  });
+
+  it("orders the limit flag after schedule and open-after-end signals and before break signals", () => {
+    const recordedBreak = makeRecordedBreak({
+      startAt: "2030-10-07T15:00:00Z",
+      breakTypeId: "rest",
+      breakTypeSnapshot: { id: "rest", version: 1, name: "Rest", category: "REST", targetMinutes: 15 },
+    });
+    const entry = makeRecordedEntry({
+      clockInAt: "2030-10-07T03:00:00Z",
+      status: "ON_BREAK",
+      breaks: [recordedBreak],
+    });
+    entry.scheduleContext = unmatchedContext(entry);
+    expect(kinds(makeAttendanceSource({ entries: [entry] }))).toEqual([
+      "SCHEDULE_UNMATCHED",
+      "OPEN_PAST_LIMIT",
+      "BREAK_TARGET_EXCEEDED",
+    ]);
+  });
+
+  it("compares before constructing the limit instant at the edge of the supported range", () => {
+    const entry = makeRecordedEntry({ clockInAt: "+275760-09-12T13:00:00Z" });
+    const source = makeAttendanceSource({ timeZone: "UTC", observedAt: "+275760-09-13T00:00:00Z", entries: [entry] });
+    expect(() => projectAttendance(source)).not.toThrow();
+    expect(ready(source).groups).toEqual([]);
+
+    const longOpen = makeRecordedEntry({ clockInAt: "+275760-09-12T00:00:00Z" });
+    expect(ready({ ...source, entries: [longOpen] }).groups[0].observations[0].evidence).toEqual({
+      recordedAt: "+275760-09-13T00:00:00Z",
+      expectedAt: "+275760-09-12T12:00:00Z",
+      differenceNanoseconds: "43200000000000",
+    });
+  });
 });

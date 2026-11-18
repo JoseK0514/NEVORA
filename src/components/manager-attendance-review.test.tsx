@@ -1,6 +1,7 @@
 import { createElement, type ComponentProps } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
+import { OPEN_ENTRY_REVIEW_LIMIT_HOURS } from '@/lib/attendance/project';
 import type { Observation } from '@/lib/attendance/types';
 import { AttendanceReviewSurface } from './manager-attendance-review';
 
@@ -156,7 +157,10 @@ it('labels a long open unscheduled entry as a critical missing clock-out with th
   const html = renderToStaticMarkup(
     <AttendanceReviewSurface state={{ ...state, review }} onRefresh={() => {}} />,
   );
-  expect(html).toContain('<span class="attendance-review-badge critical">No clock-out after 12 hours</span>');
+  // The client label is plain copy; keep it in step with the engine's documented review threshold.
+  expect(html).toContain(
+    `<span class="attendance-review-badge critical">No clock-out after ${OPEN_ENTRY_REVIEW_LIMIT_HOURS} hours</span>`,
+  );
   expect(html).toContain('36 min');
   expect(html).toContain('<strong>1</strong> to review');
   expect(html).not.toMatch(/\b(late|absent|unpaid|closed)\b/i);
