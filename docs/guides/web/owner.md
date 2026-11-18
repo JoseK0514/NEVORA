@@ -55,6 +55,14 @@ Use **Refresh invitation** for current state. If an action is unconfirmed, use
 access conflicts, reload the current employee and review the current assignment.
 An earlier receipt records an action; it does not prove access is unchanged now.
 
+**Employment dates** are optional on the add and edit forms: hire date,
+termination date and date of birth. In Puerto Rico the hire date decides which
+wage rules apply (people hired before January 26, 2017 follow the earlier
+rules), and the date of birth supports minors' hour limits. Only you and
+company-wide Managers see or edit them, and they never appear on schedules, the
+kiosk, exports or employee screens. A termination date is a record only: it
+never deactivates anyone.
+
 Deactivate or change access through the employee's current form. Payroll review
 and approval grants are separate from management scope. A Lead has personal
 self-service access; neither the Lead role nor a shift's designated-lead marker
@@ -130,6 +138,15 @@ approve or reject it. Follow current-source and finalized-period restrictions.
 **Insights** uses a selected reporting period. Verify that period and the
 underlying records before drawing conclusions. **Time exports** exports time
 data; it is distinct from payroll approval or sending money.
+
+In a Puerto Rico workspace, **Insights → Christmas bonus hours** shows each
+person's hours on finalized timecards for a bonus year (October 1 to
+September 30) against 700 hours (hired before January 26, 2017) or 1,350 hours
+(hired on or after). A person is **Reached**, **Check breaks** (reached only if
+breaks count), **Not confirmed** (short, with time not yet finalized), **Not
+reached**, or needs a hire date. It shows no money and doesn't decide
+eligibility; confirm with your payroll provider or counsel before paying between
+November 15 and December 15 (exemption filings are due December 1).
 
 When payroll is enabled:
 

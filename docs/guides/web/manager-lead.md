@@ -42,6 +42,12 @@ assignments remain Owner controls. **Help someone sign in** supports authorized
 assisted recovery; the person keeps their password and private verification
 material.
 
+Company-wide Managers can also record optional employment dates (hire,
+termination and date of birth) on the forms of people they may edit, but not on
+an Owner. A termination date never deactivates anyone. In a Puerto Rico
+workspace, **Insights → Christmas bonus hours** shows hours against the bonus
+thresholds; it shows no money and doesn't decide eligibility.
+
 Review actual punches and correction requests in **Time** / **Timecards**.
 Use **Insights** and **Time exports** only for the period you intend. Planned
 shifts do not establish recorded attendance or final pay. Owner-only company

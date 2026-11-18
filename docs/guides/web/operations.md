@@ -135,6 +135,18 @@ When an incident occurs:
    established. Observe fresh ticks and inspect remaining failed work. A code
    rollback cannot unsend a message or reverse a completed business mutation.
 
+The application answers `GET /healthz` (and `HEAD`) with `{"status":"ok"}` and
+`Cache-Control: no-store`. It reads no session, database, configuration or
+workspace, so frequent polling cannot keep a scale-to-zero database awake, and
+it sits outside the proxy matcher. It is a liveness target only; it does not
+prove database, worker or provider health.
+
+Public-page Web Analytics is off unless `NEVORA_WEB_ANALYTICS_ENABLED` is
+exactly `true`. When on, it counts only allowlisted public pages with query
+strings and fragments removed; portal, kiosk and API paths are never reported.
+Turning it on also needs Web Analytics enabled on the Vercel project, counsel's
+review of the updated privacy processor list and a new policy effective date.
+
 Private worker health is not public uptime coverage. Public monitoring acceptance
 still needs an approved public target, safe expected response, check interval and
 failure/recovery criteria, independent execution, actual alert destination and

@@ -44,7 +44,11 @@
         "src/lib/owner-advisor/business/fence.server.ts",
         "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
         "docs/handoffs/2026-11-16-rondo-development-integration.md",
-        "docs/qa/rondo-development-integration-20261116/index.json"
+        "docs/qa/rondo-development-integration-20261116/index.json",
+        "src/lib/employment-dates.ts",
+        "src/components/employment-date-fields.tsx",
+        "src/app/app/reports/christmas-bonus/page.tsx",
+        "src/lib/reports/christmas-bonus.ts"
       ]
     },
     {
@@ -74,7 +78,10 @@
         "src/components/period-close-history.tsx",
         "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
         "docs/handoffs/2026-11-16-backend-phase5-development-publication.json",
-        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json"
+        "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
+        "src/lib/employment-dates.ts",
+        "src/lib/company-access/employee-profile.server.ts",
+        "src/app/app/reports/christmas-bonus/page.tsx"
       ]
     },
     {
@@ -195,7 +202,12 @@
         "src/lib/owner-advisor/business/fence.server.ts",
         "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
         "docs/handoffs/2026-11-16-rondo-development-integration.md",
-        "docs/qa/rondo-development-integration-20261116/index.json"
+        "docs/qa/rondo-development-integration-20261116/index.json",
+        "db/migrations/0068_employee_employment_dates.sql",
+        "src/lib/employment-dates.privacy.test.ts",
+        "src/lib/reports/christmas-bonus.ts",
+        "src/app/healthz/route.ts",
+        "src/lib/analytics/redact.ts"
       ]
     },
     {
@@ -239,7 +251,10 @@
         "src/lib/owner-advisor/business/fence.server.ts",
         "docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md",
         "docs/handoffs/2026-11-16-rondo-development-integration.md",
-        "docs/qa/rondo-development-integration-20261116/index.json"
+        "docs/qa/rondo-development-integration-20261116/index.json",
+        "src/app/healthz/route.ts",
+        "src/lib/analytics/redact.ts",
+        "src/lib/feature-flags.ts"
       ]
     }
   ]
