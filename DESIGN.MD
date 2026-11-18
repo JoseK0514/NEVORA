@@ -527,6 +527,43 @@ item names the lines it supersedes; line numbers are from the file before this s
     them in person."
   - Supersedes the kiosk labels in the Clocker bullet below where they differ ("Check action status", "Retry same
     action"), and 48px kiosk targets.
+- **Motion, success and loading (Phase 7, built Nov 17, 2026; see
+  `docs/product/review-2026-11-14/fixes/phase-7/README.md`).** Transform and opacity only, the `--b-dur-*` tokens,
+  everything behind `prefers-reduced-motion: no-preference`. Sheets: `b-motion.css`, `b-moments.css`,
+  `b-shimmer.css`, loaded last. The Clocker keeps its own motion.
+  - *Sheets and dialogs.* On phones a sheet rises from the bottom edge while its scrim fades. From 768px a dialog
+    fades and rises 8px; a panel on the right edge fades and comes 12px from that edge. Enter 300ms, exit 150ms. A
+    phone sheet is fixed to the window, whatever the scroll position behind it.
+  - *Menus and popovers.* Opacity, 4px and a 0.98 scale from the corner nearest the trigger. Enter and exit 150ms.
+  - *Toasts and the offline pill.* Opacity and 8px (toast) or 4px (pill). Enter 300ms, exit 150ms. A replaced toast
+    leaves at once.
+  - *An exit never waits.* In Chromium a closing sheet is already closed: focus is back on its opener and the page
+    takes a tap while the sheet leaves. WebKit and Firefox hold the sheet for the 150ms. The timing helper is
+    `src/components/kit/overlay-exit.ts`. A dragged sheet leaves from where it was let go.
+  - *Press.* Rows, tappable cards, tabs and text links tint at once (4% ink on white; 8% of the control's own text
+    colour on the band and on tabs). Compact controls scale to 0.96. Nothing full-width scales. Enter and Space show
+    the same (`src/components/kit/press-feedback.tsx`). Under reduced motion a button tints in place of the scale.
+  - *Reduced motion.* Overlays open and close at once. Every stylesheet that moves anything has a reduced-motion
+    rule; `src/app/app/b-reduced-motion.test.ts` fails when one does not.
+  - *Success.* One pattern, the kit's done state (`BState kind="done"`): a green-50 circle with a bold green check
+    (48px inline, 56px with a 28px check for a page finish, 36px in a row) that settles once in 300ms and is still
+    when the state was already true on load. An inline result replaces the form or row it came from: a title that
+    names what is now true, one line with the next fact, at most one tinted next step and a quiet second way on. A
+    page finish is centred with one filled button. Strings in `src/components/owner-b/moments-copy.ts`.
+  - *Truth.* The mark shows only after the server confirmed. "Sent" is not "approved", "queued" is not "delivered",
+    "saved" is not "paid". A queue receipt, a closed request and an unknown result never carry it.
+  - *Said once.* `role="status"`, or focus on the result's title when the screen changed under the person, not both.
+    A focused title draws no ring. A result drawn inline sends no toast.
+  - *Payroll and money* use the same mark and layout and nothing more. A celebrated moment is the same mark with
+    one ring; the gate in `src/lib/celebrations.ts` is unchanged. Supersedes the twelve-particle "Moment".
+  - *Shimmer.* One light band crosses every placeholder block on one clock, 1.6s a pass, starting after 300ms of
+    loading, transform only. Static under reduced motion. The shared placeholder carries it; a page never asks.
+  - *Hand-over.* When a page replaces its placeholder nothing moves; only card contents fade in over 150ms on kit
+    screens. A placeholder that no longer matches its page is a bug.
+  - *Spinner.* One ring in the text colour (20px in a state card, 16px beside words), one keyframe (`b-spin`). Never
+    alone: words sit beside it. `BButton busy` keeps the button's width and sets `aria-busy`.
+  - Supersedes the 360ms and 240ms sheet timings and the 420px desktop slide (R8), the fades kept under reduced
+    motion (NV-251, NV-329), and Phase 2's "loading is static".
 - **States and menus.** The state card's empty kind is grey with a tray glyph; the warning glyph is for failures.
   Menu items have 10px corners inside the 16px menu (supersedes 8px near 1891).
 - **Motion.** The press scale runs only under `prefers-reduced-motion: no-preference`.

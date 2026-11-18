@@ -788,7 +788,7 @@
     "status": "partly",
     "remainder": "The 1.2s hold and automatic advance to the next timecard is not built; it moves focus on its own. Jose to choose.",
     "by": "Claude",
-    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Green success block and a tinted Finalize period pill.",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Green success block and a tinted Finalize period pill. Phase 7 (Nov 17, 2026): the approved result uses the shared success mark; nothing advances on a timer.",
     "inCodexHandoff": false
   },
   {
@@ -1335,9 +1335,9 @@
     "id": "SY-022",
     "severity": "High",
     "status": "partly",
-    "remainder": "Empty state glyph fixed; the nine state patterns are not yet merged.",
+    "remainder": "Phase 7 made done and loading one pattern each (the kit's done state with one mark; one shimmer and one spinner). The remaining state patterns are not all merged.",
     "by": "Round 1 (Nov 15, 2026)",
-    "note": "Uncommitted, waiting for Jose.",
+    "note": "Round 1 (Nov 15, 2026): empty state glyph. Phase 7 (Nov 17, 2026): done and loading.",
     "inCodexHandoff": false
   },
   {

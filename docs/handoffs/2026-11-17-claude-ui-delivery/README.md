@@ -166,6 +166,8 @@ None blocks integration. Each report has its full list.
   `3f9687dc1742aab774ac9c6ee1bfbaed4e3cadf4`, built on `5b5fe4bd`:
   [phase-6](../../product/review-2026-11-14/fixes/phase-6/README.md). It lists its own checks, Codex items (the setup
   code hand-off for review, punch replies with no code, scripts that press the old kiosk names) and decisions for Jose.
+- Phase 7 (motion, one success pattern, loading) is `3278e7d16e289d03f5c34710f8575fb5c1b7f3bc`, built on `21aa6fec`:
+  [phase-7](../../product/review-2026-11-14/fixes/phase-7/README.md).
 - The Support reference is switched on (`5cc1c838` and before, by the backend session), so the U11 note above is
   out of date.
 
