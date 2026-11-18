@@ -8,7 +8,7 @@ export async function mountedJournalBundle(){
  const negative=process.env.CLOCKER_JOURNAL_SCOPE_NEGATIVE_CONTROL==='1';
  const bundle=await build({
   stdin:{contents:`import React from 'react';import{createRoot}from'react-dom/client';import{ClockerPinGate}from'./src/components/clocker-pin-gate';import{ClockerPresentation}from'./src/components/clocker-language';
-   createRoot(document.getElementById('root')).render(<ClockerPresentation v2><ClockerPinGate locationKey="mounted-identity" timeZone="UTC" punchEnabled/></ClockerPresentation>);`,resolveDir:process.cwd(),loader:'tsx'},
+   createRoot(document.getElementById('root')).render(<ClockerPresentation><ClockerPinGate locationKey="mounted-identity" timeZone="UTC" punchEnabled/></ClockerPresentation>);`,resolveDir:process.cwd(),loader:'tsx'},
   bundle:true,write:false,outdir:resolve('.journal-mounted-fixture'),platform:'browser',format:'iife',jsx:'automatic',loader:{'.module.css':'local-css','.ttf':'dataurl'},
   define:{'process.env.NODE_ENV':'"development"','process.env':'{}'},
   plugins:[{name:'fictional-next-image-boundary',setup(builder){
@@ -40,7 +40,7 @@ export async function runMountedJournalTransition(context,origin,engine,evidence
   const reply=(json,status=200)=>request.fulfill({status,json});
   if(request.request().url().endsWith('/pin')){
    if(body.action==='clear'){identity=null;return reply({state:'idle'});}
-   if(body.action==='verify'){assert(['1111','2222'].includes(body.pin));identity=body.pin==='1111'?'A':'B';}
+   if(body.action==='verify'){assert(['1111','2222'].includes(body.pin));assert.equal(body.employeeId,body.pin==='1111'?'mounted-a':'mounted-b');identity=body.pin==='1111'?'A':'B';}
    return reply(identity?{state:'verified',firstName:identity==='A'?'Avery':'Blair',expiresAt:new Date(Date.now()+120000).toISOString()}:{state:'idle'});
   }
   assert.equal(body.operation,'state','Privacy transitions must not replay a punch or request another person receipt');
@@ -50,15 +50,15 @@ export async function runMountedJournalTransition(context,origin,engine,evidence
  await context.route('**/api/clocker/mounted-identity/*',route);
  const state=()=>page.evaluate(()=>({pin:document.querySelector('[data-clocker-pin]')?.getAttribute('data-clocker-pin'),panel:document.querySelector('[data-clocker-state]')?.getAttribute('data-clocker-state'),text:document.querySelector('main').textContent,codes:[...document.querySelectorAll('code')].map(e=>e.textContent),actions:[...document.querySelectorAll('button[data-clocker-action]')].map(e=>e.getAttribute('aria-label'))}));
  const noA=value=>{assert(!value.text.includes(a.command.commandId),'A pending reference must be absent from another identity DOM');assert(!value.text.includes(aHistory.command.commandId),'A resolved-history reference must be absent from another identity DOM');};
- const pin=async digits=>{await page.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await page.waitForFunction(()=>!document.querySelector('input[name=pin]').disabled);await page.getByLabel('Employee PIN',{exact:true}).fill(digits);await page.getByRole('button',{name:'Continue',exact:true}).click();};
+ const pin=async digits=>{await page.getByRole('heading',{name:'Enter your Employee ID',exact:true}).waitFor();await page.getByLabel('Employee ID',{exact:true}).fill(digits==='1111'?'mounted-a':'mounted-b');await page.getByRole('button',{name:'Continue',exact:true}).click();await page.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await page.waitForFunction(()=>!document.querySelector('input[name=pin]').disabled);await page.getByLabel('Employee PIN',{exact:true}).fill(digits);await page.getByRole('button',{name:'Continue',exact:true}).click();};
  const showReferences=async()=>{await page.getByRole('button',{name:'Something didn’t save?',exact:true}).click();const more=page.getByRole('button',{name:/^Show [0-9]+ more$/});if(await more.isVisible())await more.click();};
  try{
-  await page.goto(origin+'/mounted');await page.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();
+  await page.goto(origin+'/mounted');await page.getByRole('heading',{name:'Enter your Employee ID',exact:true}).waitFor();
   await page.evaluate(async({location,a,aHistory,bHistory})=>{const store=await ClockerJournal.openClockerJournal();try{await store.saveExact(location,aHistory);await store.resolveExact(location,aHistory,'recorded');await store.saveExact(location,bHistory);await store.resolveExact(location,bHistory,'reviewed-context');await store.saveExact(location,a);}finally{store.close();}},{location,a,aHistory,bHistory});
   await pin('1111');await page.getByRole('button',{name:'Check if it saved',exact:true}).waitFor();await showReferences();
   const aView=await state();assert.deepEqual(aView.codes.sort(),[a.command.commandId,aHistory.command.commandId].sort());assert.deepEqual(aView.actions,[]);assert(!aView.text.includes(bHistory.command.commandId),'A sees only its own pending/history');
   result.observations.push({phase:'A verified: actual panel reads pending and resolved history',...aView});
-  await page.getByRole('button',{name:'Return to PIN',exact:true}).click();await page.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Return to PIN',exact:true}).click();await page.getByRole('heading',{name:'Enter your Employee ID',exact:true}).waitFor();
   const unverified=await state();assert.equal(unverified.pin,'entry');assert.equal(unverified.panel,undefined);assert.deepEqual(unverified.codes,[]);assert.deepEqual(unverified.actions,[]);noA(unverified);
   result.observations.push({phase:'A → unverified: private panel unmounts and identifiers/actions clear',...unverified});
   await pin('2222');await page.getByRole('button',{name:'Clock in',exact:true}).waitFor();await showReferences();
