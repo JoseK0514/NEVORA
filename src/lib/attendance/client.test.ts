@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { ALL_OBSERVATION_KINDS } from '@/test/fixtures/attendance-exceptions';
 import {
   createAttendanceReviewController,
   parseAttendanceReview,
@@ -75,6 +76,45 @@ describe('D1.3 attendance private response parser', () => {
       pendingCorrectionCount: 2,
       scope: { kind: 'TODAY_AND_OPEN', localDate: '2030-10-07' },
     });
+  });
+
+  it.each(ALL_OBSERVATION_KINDS)('accepts the %s engine observation kind', (kind) => {
+    const value = ready();
+    const group = value.groups[0];
+    const parsed = parseAttendanceReview({
+      ...value,
+      groups: [{ ...group, observations: [{ ...group.observations[0], kind }] }],
+    });
+    expect(parsed).toMatchObject({ state: 'ready', groups: [{ observations: [{ kind }] }] });
+  });
+
+  it('keeps the open-entry review limit flag and its exact evidence', () => {
+    const value = ready();
+    const flag = {
+      id: 'signal-open',
+      kind: 'OPEN_PAST_LIMIT',
+      breakId: null,
+      message: 'No clock-out recorded · open more than 12 hours.',
+      evidence: {
+        recordedAt: '2030-10-07T16:00:00Z',
+        expectedAt: '2030-10-07T15:24:00Z',
+        differenceNanoseconds: '2160000000000',
+      },
+    };
+    const parsed = parseAttendanceReview({
+      ...value,
+      groups: [{ ...value.groups[0], observations: [flag] }],
+    });
+    expect(parsed).toMatchObject({ state: 'ready', signalCount: 1, groups: [{ observations: [flag] }] });
+  });
+
+  it('fails closed for an observation kind the engine does not produce', () => {
+    const value = ready();
+    const group = value.groups[0];
+    expect(() => parseAttendanceReview({
+      ...value,
+      groups: [{ ...group, observations: [{ ...group.observations[0], kind: 'OPEN_TOO_LONG' }] }],
+    })).toThrow('Invalid attendance review');
   });
 
   it('fails closed when aggregate counts do not match the authorized groups', () => {

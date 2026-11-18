@@ -1,6 +1,7 @@
 import { createElement, type ComponentProps } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
+import type { Observation } from '@/lib/attendance/types';
 import { AttendanceReviewSurface } from './manager-attendance-review';
 
 vi.mock('next/link', () => ({
@@ -140,4 +141,23 @@ it('marks the summary busy only while loading, so desktop keeps Refresh after a 
   ] as const) {
     expect(render(state)).not.toContain('aria-busy');
   }
+});
+
+it('labels a long open unscheduled entry as a critical missing clock-out with the time past the limit', () => {
+  const state = readyState();
+  const flag: Observation = {
+    id: 'signal-open',
+    kind: 'OPEN_PAST_LIMIT',
+    breakId: null,
+    message: 'No clock-out recorded · open more than 12 hours.',
+    evidence: { differenceNanoseconds: '2160000000000' },
+  };
+  const review = { ...state.review, groups: [{ ...state.review.groups[0], observations: [flag] }] };
+  const html = renderToStaticMarkup(
+    <AttendanceReviewSurface state={{ ...state, review }} onRefresh={() => {}} />,
+  );
+  expect(html).toContain('<span class="attendance-review-badge critical">No clock-out after 12 hours</span>');
+  expect(html).toContain('36 min');
+  expect(html).toContain('<strong>1</strong> to review');
+  expect(html).not.toMatch(/\b(late|absent|unpaid|closed)\b/i);
 });

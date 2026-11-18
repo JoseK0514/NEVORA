@@ -25,6 +25,7 @@ const KIND_LABELS: Record<ObservationKind, string> = {
   CLOCK_IN_AFTER_SCHEDULE_START: 'Clock-in after scheduled start',
   CLOCK_OUT_BEFORE_SCHEDULE_END: 'Clock-out before scheduled end',
   OPEN_AFTER_SCHEDULE_END: 'No clock-out after scheduled end',
+  OPEN_PAST_LIMIT: 'No clock-out after 12 hours',
   BREAK_TARGET_EXCEEDED: 'Break exceeded saved target',
 };
 
@@ -35,6 +36,7 @@ const KIND_TONES: Record<ObservationKind, 'critical' | 'attention' | 'neutral'> 
   CLOCK_IN_AFTER_SCHEDULE_START: 'attention',
   CLOCK_OUT_BEFORE_SCHEDULE_END: 'attention',
   OPEN_AFTER_SCHEDULE_END: 'critical',
+  OPEN_PAST_LIMIT: 'critical',
   BREAK_TARGET_EXCEEDED: 'attention',
 };
 
