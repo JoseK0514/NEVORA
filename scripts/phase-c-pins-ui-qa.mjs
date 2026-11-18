@@ -65,7 +65,7 @@ try{
   await goto(p,'/app/employees/C2-EMPLOYEE/clocker-pin');await save(p,'0246');
   assert.equal(await p.getByLabel('New PIN',{exact:true}).inputValue(),'');
   assert.equal(await p.getByLabel('Confirm PIN',{exact:true}).inputValue(),'');checked(engine+': secure PIN setup clears the inputs');
-  await goto(p,'/app/settings/clocker');await p.getByRole('button',{name:'Add tablet',exact:true}).click();
+  await goto(p,'/app/settings/clocker');await p.getByRole('button',{name:/^Add (?:a )?tablet$/}).click();
   const d=p.getByRole('dialog');await d.getByLabel('Tablet name',{exact:true}).fill(engine+' PIN tablet');await d.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await d.getByRole('button',{name:'Get setup code',exact:true}).click();await d.waitFor({state:'hidden'});
   const code=await await showClockerSetupCode(p).inputValue();
   const tablet=await context(browser,{width:1024,height:768});const t=await tablet.newPage();await t.clock.install();t.setDefaultTimeout(15000);t.on('pageerror',e=>errors.push(e.message));

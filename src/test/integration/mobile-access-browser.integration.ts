@@ -162,6 +162,7 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
  const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
  const {readAccountEmailSet,decodeAccountEmail}=await import('./account-email-smtp.test-support');
  const {passwordRejectionMessage}=await import('../../lib/auth/password-requirements');
+ const {ACCESS_COPY}=await import('../../components/access-recovery/copy');
  const smtp=await createOwnedSmtp();
  const app=await createOwnedNextApp(evidence,{mobileAccessEnabled:true,recoverySmtpPort:smtp.port,invitationSmtpPort:smtp.port,pinDevTypeReferences:true}).catch(async e=>{await smtp.close();throw e;});
  const origin=app.url,q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
@@ -201,7 +202,7 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
     await page.goto(origin+'/activate#proof='+proof);await page.locator('#activation-password').fill('qwertyuiopasdfgh');await page.locator('#activation-confirm-password').fill('qwertyuiopasdfgh');await page.locator('button[type="submit"]').click();
     await expect.poll(()=>page.locator('#activation-error,#activation-policy-error').innerText()).toBe(passwordRejectionMessage(lang,'breached'));
     expect(await page.locator('#activation-password').getAttribute('minlength')).toBe('15');
-    await page.locator('#activation-confirm-password').fill('different fictional phrase');await page.locator('button[type="submit"]').click();expect(await page.locator('#activation-error').count()).toBe(1);expect(await page.locator('#activation-error').innerText()).not.toContain(passwordRejectionMessage(lang,'breached'));
+    await page.locator('#activation-confirm-password').fill('different fictional phrase');await page.locator('button[type="submit"]').click();const mismatch=page.locator('#activation-error,#activation-confirm-password-error');await expect.poll(()=>mismatch.count()).toBe(1);expect(await mismatch.innerText()).toBe(ACCESS_COPY[lang].activation.mismatch);expect(await page.locator('#activation-confirm-password').getAttribute('aria-describedby')).toContain(await mismatch.getAttribute('id'));expect(await page.locator('form').innerText()).not.toContain(passwordRejectionMessage(lang,'breached'));
     await page.locator('#activation-confirm-password').fill('qwertyuiopasdfgh');
     await page.setViewportSize({width:lang==='en'?1440:320,height:1000});await page.screenshot({path:evidence+'/'+engine+'-activation-'+lang+'.png',fullPage:true});
    }
