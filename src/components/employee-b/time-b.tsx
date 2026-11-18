@@ -11,6 +11,7 @@ import {ClockCounterClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ClockCou
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import {WarningIcon} from '@phosphor-icons/react/dist/ssr/Warning';
 import {BButton,BButtonLink,BCard,BChip,BHero,BIcon,BList,BLive,BNote,BRow,BScreen,BSeg,BStack,BState,type BStateKind} from '../owner-b/b-kit';
+import {momentsCopy} from '../owner-b/moments-copy';
 import {BAddRow,BCardNote,BDay,BValue} from './parts';
 import {useHours} from '../employee-mobile/use-hours';
 import {addDays,weekStartFor} from '@/lib/date-utils';
@@ -72,6 +73,7 @@ export function HoursRecoveryB({href}:{href:string}){
 function Dur({value}:{value:number}){
  return <><span aria-hidden="true">{compactDuration(value)}</span><span className="b-sr">{boardDuration(value)}</span></>;
 }
+const M=momentsCopy();
 const chip=(status:{word:string;tone:StatusTone})=><BChip tone={status.tone}>{status.word}</BChip>;
 
 /* ---------- Time tab ---------- */
@@ -250,11 +252,11 @@ export function CorrectionDetailB({item,decision,zone}:{item:PublicCorrectionIte
 /* ---------- Fix my time: the receipts (the form itself is the corporate one, restyled in time.css) ---------- */
 
 export function FixRecordedB({requestId,onReset,heading}:{requestId:string;onReset:()=>void;heading:Ref<HTMLHeadingElement>}){
- return <HoursBScreen sub={null} backLabel="Close"><BCard label="Submission result"><div className="eb-status">
-  <h2 className="eb-receipt" ref={heading} tabIndex={-1}>Correction request sent</h2><p className="b-state">Your manager reviews it. Open it to check its status.</p>
-  <BButtonLink href={'/app/my-time?view=corrections&requestId='+requestId} kind="teal" full>View my request</BButtonLink>
-  <BButton kind="quiet" full onClick={onReset}>Request another correction</BButton>
- </div></BCard></HoursBScreen>;
+ // Phase 7 (moments): the end of the correction flow is the shared page finish. The heading takes focus, so it is what is read.
+ return <HoursBScreen sub={null} backLabel="Close"><BCard label="Submission result">
+  <BState kind="done" size="finish" heading titleRef={heading} title={M.correctionSent} line={M.correctionLine} action={{label:M.viewRequest,href:'/app/my-time?view=corrections&requestId='+requestId}}
+   quiet={<button className="b-done__quiet" type="button" onClick={onReset}>{M.anotherCorrection}</button>}/>
+ </BCard></HoursBScreen>;
 }
 export function FixPendingB({pending,onRetry}:{pending:boolean;onRetry:()=>void}){
  return <HoursBScreen sub={null}><BCard label="Submission status"><div className="eb-status">

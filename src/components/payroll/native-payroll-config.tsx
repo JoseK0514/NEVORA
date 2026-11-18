@@ -17,7 +17,7 @@ function draftFor(employeeId:string,data:NativeProfilesResponse):NativeDraft {co
 export function NativePayrollConfig({settings,sources,recoveryScope}:{settings:PayrollSettingsResponse|null;sources:NativeConfigurationSources|null;recoveryScope:string}) {
  const resource=usePayrollResource('/api/payroll/native-profiles',readNativeProfiles);
  const history=usePayrollResource('/api/payroll/runs',readRuns);
- const operation=usePayrollOperation('/api/payroll/native-profiles',resource.reload,`${recoveryScope}:native-profiles`);
+ const operation=usePayrollOperation('/api/payroll/native-profiles',resource.reload,`${recoveryScope}:native-profiles`,false);
  const [draft,setDraft]=useState<NativeDraft|null>(null);const [reset,setReset]=useState(0);const [resetConfirm,setResetConfirm]=useState(false);const [openingReset,setOpeningReset]=useState(0);const [openingChoice,setOpeningChoice]=useState<string|null>(null);
  const data=!resource.loading&&!resource.error&&settings?.capabilities.canConfigure?resource.data:null;
  if(!settings?.capabilities.canConfigure)return null;

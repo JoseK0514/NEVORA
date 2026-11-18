@@ -3,11 +3,11 @@ import type {ReactNode} from 'react';
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
-import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {ClockCounterClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ClockCounterClockwise';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BStack} from '../owner-b/b-kit';
+import {BDoneArrival} from '../owner-b/b-arrival';
 import {BCardNote, BDay, Dotted} from './parts';
 import {ExchangeHeroB, OpenShiftsEmptyB} from './requests-b';
 import {workCopy} from './work-copy';
@@ -47,7 +47,7 @@ export type ScheduleBProps = {
   /** A Lead who leads every shift this week: "You lead all 7 shifts", said once (review B6, NV-289). */
   leadNote?: string | null;
   /** The week is confirmed: a green card where Confirm was (review B6, NV-152). */
-  done?: {title: string; detail: string; /** Phones: the line without the week's dates (the strip above shows them). */ detailShort?: string} | null;
+  done?: {title: string; detail: string; /** Names this week's confirmation ("week:2026-11-16"), for BDoneArrival. */ occurrence: string; /** Phones: the line without the week's dates (the strip above shows them). */ detailShort?: string} | null;
 };
 export type WeekCardShift = {key: string; time: string; position: string | null; place: string; kind: 'past' | 'now' | 'up'; chip: ReactNode; label: string; lead?: boolean;
   /** The chip is "Tomorrow" (a tablet's narrow day leaves it out: the next column is tomorrow). */
@@ -106,9 +106,10 @@ export function ScheduleB(props: ScheduleBProps) {
     </BHero>
     <BStack>
       {weekCard ? <WeekCard days={weekCard.days} summary={weekCard.summary} leadNote={leadNote}/> : null}
-      {celebration}
+      {/* Phase 7 (moments): the confirmed week is the shared done mark in the row where Confirm was. The mark settles only
+        * when the confirmation arrived on this visit (BDoneArrival); the celebration is that mark's one ring. */}
       {done && !confirm ? <BCard id="b-my-review" label={done.title}>
-        <BList><BRow lead={<BIcon tone="green"><CheckIcon weight="bold"/></BIcon>} title={<span role="status">{done.title}</span>}
+        <BList><BRow lead={<BDoneArrival occurrence={done.occurrence} focusId="week-done">{celebration}</BDoneArrival>} title={<span role="status" tabIndex={-1} data-b-arrival="week-done" className="b-done__t">{done.title}</span>}
           sub={done.detailShort ? <><span className="eb-phone">{done.detailShort}</span><span className="eb-desk">{done.detail}</span></> : done.detail}/></BList>
       </BCard> : null}
       {confirm ? <BCard id="b-my-review" label={confirm.title}>

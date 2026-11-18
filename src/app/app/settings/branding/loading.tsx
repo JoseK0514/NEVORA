@@ -1,5 +1,7 @@
-import { SettingsLoading } from "../wave-c-loading";
+import { RouteSkeleton } from "@/components/route-skeleton";
 
+/** Phase 7 (package C): the page's own placeholder in the Direction B frame (its shape is this address's entry in
+ * b-loading.tsx). The older Settings placeholder drew no band on a phone and ended its band 46px low on desktop. */
 export default function Loading() {
-  return <SettingsLoading title="Branding" summary="Your color and logo across NEVORA. Layout, text sizes and status colors stay the same." label="branding" cards={[3, 2, 4]} />;
+  return <RouteSkeleton label="Branding" shape="list" />;
 }

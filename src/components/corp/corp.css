@@ -659,3 +659,7 @@
 
 /* Review B1 (NV-228): the off track is #8C9397 (3.12:1 on white, it was 1.43:1), and the switch takes a 44px hit area. */
 :is(#c-root, html) .c-switch::before { content: ""; position: absolute; inset: -7px -2px; }
+/* Phase 7 (Nov 17, 2026; RA-21): this movement had no reduced-motion rule. */
+@media (prefers-reduced-motion: reduce) {
+  [data-c-slide="x"]::after { transition: none; }
+}

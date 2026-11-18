@@ -65,5 +65,8 @@
 :is(#c-root, html) .ls-failure__acts { display: flex; gap: 8px; }
 :is(#c-root, html) .app-shell[data-nv-b] .ls-failure__acts > * { min-height: 48px; padding: 0 18px; border: 0; }
 @media (min-width: 768px) { .ls-failure { left: auto; right: 24px; bottom: 24px; width: min(420px, calc(100vw - 48px)); } }
-@media (prefers-reduced-motion: no-preference) { .ls-failure { animation: ls-rise 180ms ease-out; } }
-@keyframes ls-rise { from { opacity: 0; transform: translateY(8px); } }
+/* Phase 7 (Nov 17, 2026): the notice enters like a toast (opacity and 8px, the entrance token); ls-rise is retired. */
+@media (prefers-reduced-motion: no-preference) {
+  .ls-failure { transition: opacity var(--b-dur-enter) var(--b-ease-out), transform var(--b-dur-enter) var(--b-ease-out); }
+  @starting-style { .ls-failure { opacity: 0; transform: translateY(8px); } }
+}

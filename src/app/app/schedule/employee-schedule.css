@@ -143,3 +143,7 @@ html body .app-shell.nevora-portal .page-frame .my-schedule-footer h2 { margin: 
 .my-week-note { display:flex; align-items:flex-start; gap:8px; margin:14px 0 0; padding:10px 12px; border-radius:10px; background:var(--g-inset, #f4f5f6); color:var(--g-ink, #111827); font-size:calc(14 * var(--type-unit, 1px)); line-height:1.5; }
 .my-week-note > svg { flex:none; margin-top:2px; color:var(--g-muted, #5f6368); }
 @media (max-width:760px) { .my-week-note { font-size:0.9375rem; } }
+/* Phase 7 (Nov 17, 2026; RA-21): these fades had no reduced-motion rule. */
+@media (prefers-reduced-motion: reduce) {
+  .my-schedule-row { transition: none; }
+}

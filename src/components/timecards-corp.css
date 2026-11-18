@@ -168,3 +168,7 @@
 /* Closing F1 (NV-029): the panel confirms an approval at once (green, with a check), above where the action was. */
 :is(#c-root, html) .c-tc-sheet .c-tc-sheet__done { display: flex; align-items: center; gap: 8px; margin: 0; padding: 12px 16px; border-radius: 14px; background: #E7F4EC; color: #1D6B45; font-size: 15px; line-height: 20px; font-weight: 600; }
 :is(#c-root, html) .c-tc-sheet .c-tc-sheet__done > svg { flex: none; width: 18px; height: 18px; }
+/* Phase 7 (Nov 17, 2026; UI-7, RA-21): reduced motion. The feedback above still shows; it no longer fades. */
+@media (prefers-reduced-motion: reduce) {
+  :is(#c-root, html) .c-tc-desk .c-tc-tabs button { transition: none; }
+}

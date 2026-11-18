@@ -1,5 +1,7 @@
-import { SettingsLoading } from "../wave-c-loading";
+import { RouteSkeleton } from "@/components/route-skeleton";
 
+/** Phase 7 (package C): the page's own placeholder in the Direction B frame (its shape is this address's entry in
+ * b-loading.tsx). The older Settings placeholder drew no band on a phone and ended its band 46px low on desktop. */
 export default function Loading() {
-  return <SettingsLoading title="Features and team terms" summary="Turn off what your company doesn’t use, and name your team the way you do." label="features and team terms" cards={[4, 5]} />;
+  return <RouteSkeleton label="Features and team terms" shape="list" />;
 }

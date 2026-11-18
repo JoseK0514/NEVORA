@@ -27,7 +27,8 @@ import type {TimecardIssue} from '@/lib/timecards/project';
 import {CorpAvatar,CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpDuration,CorpEmpty,CorpErrorCard,CorpPage,CorpRow,CorpRows,CorpStats,CorpTime,CorpTitle} from './corp/corp';
 import {QuietSheet,SheetCancel} from './quiet/quiet-sheet';
 import './timecards-corp.css';
-import {BAvatar,BButton,BCard,BChip,BHero,BIcon,BList,BLive,BNote,BRow,BScreen,BSeg,BStack} from './owner-b/b-kit';
+import {BAvatar,BButton,BCard,BChip,BDoneMark,BHero,BIcon,BList,BLive,BNote,BRow,BScreen,BSeg,BStack,BState} from './owner-b/b-kit';
+import {momentsCopy} from './owner-b/moments-copy';
 import {UploadSimpleIcon} from '@phosphor-icons/react/dist/ssr/UploadSimple';
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
@@ -37,6 +38,11 @@ import {announceOfflineHeld,steppedAway} from '@/lib/offline-hold';
 import {dateRangeText,durationRow,durationSentence,durationTotal,minutesFromNanoseconds,timeRangeText} from '@/lib/duration-format';
 import {ownApprover} from './timecards-own';
 
+const M=momentsCopy();
+/** Phase 7 (moments): a set of timecards is done only when the server confirmed every card in it. */
+const batchAllDone=(outcomes:BatchOutcome[])=>outcomes.length>0&&(outcomes.every(outcome=>outcome.status==='approved')||outcomes.every(outcome=>outcome.status==='finalized'));
+/** The shared done state for a whole confirmed set. A set with any other result shows no mark: each card says its own. */
+const batchDone=(outcomes:BatchOutcome[])=>batchAllDone(outcomes)?<div className="b-done-host--flush c-tc-batchdone"><BState kind="done" title={outcomes[0].status==='finalized'?M.batchAllFinalized(outcomes.length):M.batchAllApproved(outcomes.length)} line={M.batchLine}/></div>:null;
 /** "Oct 14–20", or "Sep 28 – Oct 4" across a month. */
 function signatureRange(start:string,end:string){
   const month=(date:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short'}).format(new Date(`${date}T12:00:00Z`));
@@ -519,7 +525,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           {/* Closing F1 (NV-029): the decision is confirmed in the panel at once, in words, while the fresh read runs. */}
           {/* OW-037: the success is a block, not a line: a green circle with a check, the word, and how far the period is. The
             * sentence that names the person stays for screen readers. */}
-          {done?.employeeId===openItem.card.employeeId?<div className="c-tc-sheet__done" role="status"><BIcon tone="green"><CheckIcon weight="bold"/></BIcon>
+          {done?.employeeId===openItem.card.employeeId?<div className="c-tc-sheet__done" role="status"><BDoneMark on="tint"/>
             <span className="c-tc-sheet__donetx"><b aria-hidden="true">{done.action==='finalized'?'Finalized':'Approved'}</b>
               <span className="c-sr">{`${done.name==='This'?'This':`${done.name}’s`} timecard is ${done.action==='finalized'?'finalized':'approved'}.`}</span>
               <span className="c-num">{`${doneCount(done.action)} of ${cards.length} done`}</span></span>
@@ -665,8 +671,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         </div>:null}
         {outcomes?<div className="q-tc-confirm">
           <div className="q-grp"><h2>Per-card results</h2></div>
-          <ul className="q-list">{outcomes.map(outcome=><li key={outcome.command.operationId}><div className="q-row q-row--one"><span className="q-rt"><b>{nameOf(outcome.command.employeeId)}</b></span><span className="q-rv" data-tone={outcome.status}>{outcome.status.replaceAll('-',' ')}</span></div></li>)}</ul>
-          <p className="q-help">Refresh timecards before reviewing another set.</p>
+          {batchDone(outcomes)}
+          <ul className="q-list">{outcomes.map(outcome=><li key={outcome.command.operationId}><div className="q-row q-row--one"><span className="q-rt"><b>{nameOf(outcome.command.employeeId)}</b></span><span className="q-rv" data-tone={outcome.status}>{M.batchWord[outcome.status]}</span></div></li>)}</ul>
+          {batchAllDone(outcomes)?null:<p className="q-help">{M.batchLine}</p>}
         </div>:null}
         {pending?<button type="button" className="q-btn q-btn--sec" disabled={busy} onClick={()=>void act()}>Retry original attempted action</button>:null}
         {outcomes?<button type="button" className="q-btn q-btn--quiet" aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}>Refresh</button>:null}
@@ -784,7 +791,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             <label className="c-tc-dbulk__check"><input type="checkbox" className="c-tc-box" aria-label="Confirm reviewed timecards" checked={confirmed} disabled={busy} onChange={e=>setConfirmed(e.target.checked)}/>I reviewed this exact selected set and its recorded time for {batchAction==='APPROVE'?'approval':'finalization'}.</label>
             <button type="button" className="c-btn c-btn--md" disabled={!confirmed||busy||!!pending} onClick={()=>void submitBatch()}>{batchAction==='APPROVE'?'Approve selected':'Finalize selected'}</button>
           </div>:null}
-          {outcomes?<div className="c-tc-dbulk__step"><h3>Per-card results</h3><ul>{outcomes.map(outcome=><li key={outcome.command.operationId}>{nameOf(outcome.command.employeeId)} · {outcome.status.replaceAll('-',' ')}</li>)}</ul><p>Refresh timecards before reviewing another set.</p></div>:null}
+          {outcomes?<div className="c-tc-dbulk__step"><h3>Per-card results</h3>{batchDone(outcomes)}<ul>{outcomes.map(outcome=><li key={outcome.command.operationId}>{nameOf(outcome.command.employeeId)} · {M.batchWord[outcome.status]}</li>)}</ul>{batchAllDone(outcomes)?null:<p>{M.batchLine}</p>}</div>:null}
           <div className="c-tc-dbulk__foot">
             {pending?<button type="button" className="c-btn c-btn--secondary c-btn--md" disabled={busy} onClick={()=>void act()}>Retry original attempted action</button>:null}
             <button type="button" className="c-link c-tc-refresh" aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}>Refresh</button>

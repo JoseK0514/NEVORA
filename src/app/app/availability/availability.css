@@ -196,6 +196,8 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .availability-page *, .availability-page *::before, .availability-page *::after { transition: none; scroll-behavior: auto; }
+  /* Phase 7 (UI-7): no press travel either. */
+  .availability-page .av-button:active:not(:disabled) { transform: none; }
 }
 
 /* Codex mobile review M5: the usual-week and specific-week descriptions meet the 15px phone floor. */

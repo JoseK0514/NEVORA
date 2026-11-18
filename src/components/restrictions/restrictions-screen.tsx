@@ -8,7 +8,6 @@ import { HourglassMediumIcon } from "@phosphor-icons/react/dist/ssr/HourglassMed
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { CorpCard, CorpNav, CorpPage, CorpTitle } from "@/components/corp/corp";
 import { BCard, BChip, BHero, BNote, BScreen, BStack, BState } from "@/components/owner-b/b-kit";
-import { toast } from "@/components/toaster";
 import { timeZoneLabel } from "@/lib/time-zone-label";
 import { createRestrictionsClient, newOperationId, type RestrictionRequest, type RestrictionsClient, type RestrictionsCommand, type RestrictionsScope, type RestrictionsSnapshot, type CommandOutcome } from "@/lib/scheduling/restrictions-client";
 import {
@@ -89,6 +88,9 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
   const [issue, setIssue] = useState<Issue | null>(initial?.issue ?? null);
   const [problems, setProblems] = useState<PlanProblem[]>([]);
   const [said, setSaid] = useState("");
+  /* Phase 7 (moments): the last command the server confirmed, shown as the shared done state at the top of the view (the
+   * form it came from is gone). It replaces the toast; the live line above the page says it once. */
+  const [landed, setLanded] = useState<{ title: string; checked: boolean } | null>(null);
   const week = useMemo(() => workplaceWeek(props.now ?? new Date(), timeZone), [props.now, timeZone]);
   const shownStep = useRef(step);
   const issueRef = useRef<HTMLDivElement>(null), problemRef = useRef<HTMLParagraphElement>(null);
@@ -146,7 +148,7 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
     setStep("view");
     const message = command.kind === "DECIDE" ? (command.decision === "APPROVE" ? t.approvedToast : t.declinedToast) : command.kind === "SET" ? t.savedToast : t.sentToast;
     setSaid(checked ? `${t.confirmedSaved} ${message}` : message);
-    toast(message);
+    setLanded({ title: message, checked });
     // The first Monday a next version may start moved with this save: read it again rather than work it out here.
     await reload();
   }, [reload, t, week]);
@@ -169,7 +171,7 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
   }, [done, reload, week]);
 
   const send = useCallback(async (command: RestrictionsCommand) => {
-    setIssue(null); setSaid("");
+    setIssue(null); setSaid(""); setLanded(null);
     setCustody({ command, status: "sending" });
     await settle(command, await client.command(employeeId, command));
   }, [client, employeeId, settle]);
@@ -201,7 +203,7 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
     if (!snapshot) return;
     setIssue(null); setProblems([]); setDeciding(null);
     setDraft({ kind: management ? "SET" : "REQUEST", plan: plan ?? (latest ? planFromUnavailable(latest.unavailable) : openPlan()), week: snapshot.earliestWeek, note: "" });
-    setStep("edit");
+    setLanded(null); setStep("edit");
   };
   const toReview = () => {
     if (!draft) return;
@@ -252,6 +254,8 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
       : issue.kind === "denied" ? <BState alert kind="locked" title={t.deniedCommandTitle} line={t.deniedCommandBody}><span className="rs-acts"><Act kind="text" onClick={() => setIssue(null)}>{t.close}</Act></span></BState>
       : <BState alert kind="failed" title={issue.kind === "capacity" ? t.capacityTitle : t.invalidTitle} line={issue.kind === "capacity" ? t.capacityBody : t.invalidBody}><span className="rs-acts"><Act kind="text" onClick={() => setIssue(null)}>{t.close}</Act></span></BState>;
   }
+  const landedCard = landed && !attention ? <div className="rs-landed"><Card kit={kit} label={landed.title}><BState silent kind="done" title={landed.title}>
+    {landed.checked ? <p className="b-done__fact">{t.confirmedSaved}</p> : null}</BState></Card></div> : null;
   const attentionCard = attention ? <div className="rs-issue" ref={issueRef} tabIndex={-1}><Card kit={kit} label={t.unknownTitle}>{attention}</Card></div> : null;
 
   /* ---- Whole-page states ------------------------------------------------------------------------------------------ */
@@ -350,6 +354,7 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
     const main = <div className="rs-main"><Act kind={mainKind} id="rs-main-action" disabled={busy} onClick={() => startEdit()}>{management ? t.changeAgreement : latest ? t.askChange : t.askFirst}</Act></div>;
     body = <>
       {attentionCard}
+      {landedCard}
       {snapshot!.legacyUnconfirmed ? (management
         ? <Card kit={kit} id="rs-now" title={t.legacyTitleManagement} aside={<BChip tone="amber">{t.legacyChip}</BChip>}>
           <div className="rs-legacy">

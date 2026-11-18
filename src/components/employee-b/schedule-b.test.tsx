@@ -46,8 +46,11 @@ it('Phase 4: the phone reads a short reason beside Confirm; the desktop day card
   expect(html).toContain('<h2 id="b-my-agenda-h"><span class="es-narrow">Coming up</span><span class="es-wide">Today</span></h2><span class="b-card__meta es-wide">Tue, Nov 17</span>');
   expect(html).toContain('<p class="b-state es-empty es-wide">Day off today.</p>');
   // A confirmed week: the phone's line leaves the dates to the strip above, so the row keeps one line.
-  const done = draw({confirm: null, done: {title: 'Week confirmed', detail: 'Nov 9 – 15 · Your manager can see you checked it', detailShort: 'Your manager can see you checked it'}});
+  const done = draw({confirm: null, done: {title: 'Week confirmed', occurrence: 'week:2026-11-09', detail: 'Nov 9 – 15 · Your manager can see you checked it', detailShort: 'Your manager can see you checked it'}});
   expect(done).toContain('<span class="eb-phone">Your manager can see you checked it</span><span class="eb-desk">Nov 9 – 15 · Your manager can see you checked it</span>');
+  // Phase 7 (moments): a week that was already confirmed when the page opened shows the shared mark, still.
+  expect(done).toContain('<span class="b-ico b-ico--green b-donemark" data-still="" aria-hidden="true">');
+  expect(done).toContain('<span role="status" tabindex="-1" data-b-arrival="week-done" class="b-done__t">Week confirmed</span>');
   // A chosen day (or no day card) keeps the plain heading.
   expect(draw()).toContain('<h2 id="b-my-agenda-h">This week</h2>');
 });

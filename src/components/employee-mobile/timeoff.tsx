@@ -9,7 +9,8 @@ import {TimeOffListRow,TimeOffRequestCard,timeOffDates,timeOffDay} from './timeo
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {HourglassIcon} from '@phosphor-icons/react/dist/ssr/Hourglass';
-import {BIcon} from '../owner-b/b-kit';
+import {BIcon,BState} from '../owner-b/b-kit';
+import {momentsCopy} from '../owner-b/moments-copy';
 import {TimeOffB,TimeOffStateB} from '../employee-b/timeoff-b';
 import {parsePlanningCommand,type PlanningRequest,type PlanningCommand} from '@/lib/employee-planning';
 import {saveEmployeePlanningAction,checkEmployeePlanningAction} from '@/app/app/employee-planning/actions';
@@ -18,6 +19,7 @@ import {formatTime,isValidIsoDate} from '@/lib/date-utils';
 /* Employee Time off on the phone, on the corporate kit (Release 1, boards E-TimeOffDetail and E-TimeOffSheet): the list
  * (Waiting / Decided), one request, and the request form. Same planning read, commands, validation and receipts. */
 
+const M=momentsCopy();
 type Draft={startDate:string;endDate:string;partial:boolean;startTime:string;endTime:string;note:string};
 const empty:Draft={startDate:'',endDate:'',partial:false,startTime:'09:00',endTime:'12:00',note:''};
 
@@ -62,9 +64,9 @@ export function EmployeeTimeOff({authority,selection,filter}:{authority:string;s
  return <PlanningFrame b={b} bTitleId="b-timeoff-title" title={title} sub="" sheet={isNew} back={isList?'/app/requests/hub':isNew?listHref:'/app/requests/hub'} backLabel="Requests" selection={selection} state={panel.state} ready={!!read} refresh={panel.refresh}>
   {read&&!read.enabled?<p className="c-note" role="status">Time off is turned off for your company.</p>:read?<>
    {!isNew&&(pending||uncertain)?<section className="c-card"><div className="c-card__body tof-feedback"><p>An earlier time-off submission still needs to be checked.</p><Link href="/app/requests?tab=new">Return to my submission</Link></div></section>:null}
-   {isNew?complete?<section className="c-card tof-done b-keep" aria-label="Submission result"><h2 ref={receipt} tabIndex={-1}>Request recorded</h2><p>Your time-off request was recorded. Open it to see its current approval status.</p>
-     <Link className="c-btn c-btn--full" href={'/app/requests?requestId='+operation.result?.requestId}>View my request</Link>
-     <button className="c-btn c-btn--secondary c-btn--full" type="button" onClick={()=>{setOperation(new PlanningOperation());id.current=null;setDraft(empty);}}>Make another request</button></section>
+   {isNew?complete?<section className="c-card tof-done b-keep b-done-host--flush" aria-label="Submission result">
+     <BState kind="done" heading titleRef={receipt} title={M.requestSent} line={M.timeOffLine} action={{label:M.viewRequest,href:'/app/requests?requestId='+operation.result?.requestId}}
+      quiet={<button className="b-done__quiet" type="button" onClick={()=>{setOperation(new PlanningOperation());id.current=null;setDraft(empty);}}>{M.anotherRequest}</button>}/></section>
     :<form ref={form} className="tof-form b-keep" noValidate aria-busy={pending} onSubmit={event=>{
      event.preventDefault();if(locked||!panel.allowed())return;
      id.current??=crypto.randomUUID();const command=parsePlanningCommand({kind:'request',requestId:id.current,startDate:draft.startDate,endDate:draft.partial?draft.startDate:draft.endDate,startTime:draft.partial?draft.startTime:null,endTime:draft.partial?draft.endTime:null,note:draft.note.trim()});

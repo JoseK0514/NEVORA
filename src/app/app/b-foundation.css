@@ -285,7 +285,7 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__s { margin: 0; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__main > .b-btn { margin-top: 10px; min-height: 44px; }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-spin { display: block; width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid currentColor; border-right-color: transparent; }
-@media (prefers-reduced-motion: no-preference) { :is(#c-root, html) body .app-shell[data-nv-b] .b-spin { animation: b-spin 800ms linear infinite; } @keyframes b-spin { to { rotate: 360deg; } } }
+@media (prefers-reduced-motion: no-preference) { :is(#c-root, html) body .app-shell[data-nv-b] .b-spin { animation: b-spin var(--b-spin-dur, 800ms) linear infinite; } }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint[data-tone="green"] { background: var(--b-green-50); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint[data-tone="amber"] { background: var(--b-amber-50); }
 :is(#c-root, html) body .app-shell[data-nv-b] .cm-block.conflict .cm-block__warn { flex: none; color: var(--b-amber); }
@@ -427,13 +427,7 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
     html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week :focus-visible { outline: 2px solid var(--b-focus-on-band) !important; outline-offset: 2px !important; }
   }
   /* NV-251: a right-hand inspector (the timecard panel) leaves the way it came: it fades over 150ms while moving 12px to the
-   * right; reduced motion fades only. quiet-sheet.tsx closes it (and the table re-flows) when the fade ends. */
-  @media (min-width: 768px) {
-    html body .app-shell[data-nv-b] dialog.q-sheet[data-inspector][data-closing] { transform: translateX(12px) !important; opacity: 0 !important; transition: opacity var(--b-dur-exit) var(--b-ease-out), transform var(--b-dur-exit) var(--b-ease-out) !important; }
-  }
-  @media (min-width: 768px) and (prefers-reduced-motion: reduce) {
-    html body .app-shell[data-nv-b] dialog.q-sheet[data-inspector][data-closing] { transform: none !important; transition: opacity var(--b-dur-exit) var(--b-ease-out) !important; }
-  }
+   * right. Phase 7: the rule is the one sheet exit in b-motion.css; reduced motion closes it at once. */
   /* NV-096: on phones Update detail's title and its date line sit in the band under "‹ Updates", like every other pushed
    * page's hero (they were 28px ink on the canvas under an empty bar). */
   @media (max-width: 767px) {

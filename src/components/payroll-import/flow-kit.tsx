@@ -6,8 +6,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { CorpFormFooter } from "@/components/corp/corp";
-import { BIcon, BState } from "@/components/owner-b/b-kit";
-import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { BState } from "@/components/owner-b/b-kit";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { FormHead, FormHeadBack, FormHeadLink } from "@/components/team/team-forms";
 import { formatPayrollMoney, formatSignedPayrollMoney } from "@/components/payroll/money";
@@ -136,12 +135,10 @@ export function StopCard({ kind = "locked", title, line, action, alert, children
   return <BState kind={kind} title={title} line={line} action={action} alert={alert}>{children}</BState>;
 }
 
-/** Done, confirmed by the server: the kit's state card with the green filled check (the kit has no "done" kind). */
+/** Done, confirmed by the server: the shared page finish (Phase 7, `BState kind="done"`), with the same mark and layout
+ * as every other finish and nothing more. The sentences are the flow's own. */
 export function DoneCard({ title, line, children }: { title: string; line?: ReactNode; children?: ReactNode }) {
-  return <div className="b-statecard" data-kind="done" role="status">
-    <BIcon tone="green"><CheckCircleIcon weight="fill" /></BIcon>
-    <div className="b-statecard__main"><p className="b-statecard__t">{title}</p>{line ? <p className="b-statecard__s">{line}</p> : null}{children}</div>
-  </div>;
+  return <BState kind="done" size="finish" title={title} line={line}>{children}</BState>;
 }
 
 /** Puts focus on the step's heading when the step changes (not on first paint). */

@@ -58,6 +58,10 @@ import "./b-review-details.css";
 // Phase 4 (Nov 17, 2026): the Employee and Lead screens, one sheet per group of screens.
 import "./employee-b-work.css";
 import "./employee-b-account.css";
+// Phase 7 (Nov 17, 2026): motion (overlays and press), finishing moments, loading shimmer. Loaded last.
+import "./b-motion.css";
+import "./b-moments.css";
+import "./b-shimmer.css";
 import {communicationAuthority} from "@/lib/communications/service.server";
 import {cookies, headers} from "next/headers";
 import {createHash} from "node:crypto";

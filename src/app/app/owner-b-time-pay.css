@@ -28,9 +28,9 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-desk .c-tc-table tbody tr.c-clickable:hover .c-tc-chev { color: var(--b-ink2) !important; }
   }
 
-  /* OW-037: the saved timecard is a green block (a 36px green circle with a check, the word, how far the period is). */
+  /* OW-037: the saved timecard is a green block (the 36px done mark, the word, how far the period is). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__done { display: flex !important; align-items: center !important; gap: var(--b-space-12) !important; margin: 0 !important; padding: 14px var(--b-space-16) !important; border-radius: var(--b-radius-field) !important; background: var(--b-green-50) !important; color: var(--b-ink) !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__done > .b-ico { background: var(--b-green) !important; color: #FFFFFF !important; }
+  /* Phase 7 (moments): the block's mark is the shared done mark (BDoneMark, white on this tint); its rules are in b-moments.css. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__donetx { display: flex !important; flex-direction: column !important; min-width: 0 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__donetx > b { font-size: var(--b-fs-body) !important; line-height: 20px !important; font-weight: 600 !important; color: var(--b-ink) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__donetx > .c-num { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 400 !important; color: var(--b-grey-on-fill) !important; }

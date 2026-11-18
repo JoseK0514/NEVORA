@@ -18,9 +18,11 @@ import { OpenShiftsB, ScheduleB, type OpenB } from './employee-b/schedule-b';
 import { BChip, compactRange } from './owner-b/b-kit';
 import { BDay, Dotted } from './employee-b/parts';
 import { workCopy } from './employee-b/work-copy';
+import { momentsCopy } from './owner-b/moments-copy';
 import { NotPhone, PhoneOnly } from './employee-b/viewport';
 
 const t = workCopy();
+const M = momentsCopy();
 
 /* An Employee's Schedule on the corporate kit (Release 1, boards G-E-Schedule, E-ShiftDetail and E-OpenShifts). The
  * week card (range, arrows, day strip), the confirmation when the manager asks for one, the week's shifts, then open
@@ -163,7 +165,7 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
       * confirmation are mounted once, in the layout that shows. */}
     <ScheduleB sub={subText} leadNote={allLedNote(props.lead === true, shifts)}
       // Review B6 (NV-152): a confirmed week keeps a green card where Confirm was, so the change is visible in place.
-      done={review && acknowledged ? { title: 'Week confirmed', detail: keepWhole(`${weekRange(weekStart)} · Your manager can see you checked it`), detailShort: 'Your manager can see you checked it' } : null} range={<>{weekRange(weekStart)}<span className="b-sr">, {weekStart.slice(0, 4)}</span></>} confirmed={!!review && !!acknowledged}
+      done={review && acknowledged ? { title: M.weekConfirmed, occurrence: `week:${weekStart}`, detail: keepWhole(`${weekRange(weekStart)} · ${M.weekConfirmedLine}`), detailShort: M.weekConfirmedLine } : null} range={<>{weekRange(weekStart)}<span className="b-sr">, {weekStart.slice(0, 4)}</span></>} confirmed={!!review && !!acknowledged}
       todayHref={weekStart !== currentWeek ? `/app/schedule?week=${currentWeek}` : null} prevHref={`/app/schedule?week=${addDays(weekStart, -7)}${keep}`} nextHref={`/app/schedule?week=${addDays(weekStart, 7)}${keep}`}
       days={dates.map(date => {
         const assigned = shifts.some(shift => shift.date === date);

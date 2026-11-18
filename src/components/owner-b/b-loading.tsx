@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, type ReactNode } from "react";
+import { useLayoutEffect, useSyncExternalStore, type ReactNode } from "react";
 import { BLoadingScreen, type BLoadingShape } from "./b-kit";
 
 /* Phase 2 (package D): which frame a page's loading placeholder keeps. One table for every role, read by the route's
@@ -33,7 +33,8 @@ const MANAGEMENT: Entry[] = [
   ["/app/timecards", { title: "Timecards", sub: true, strip: true, band: "strip", frame: "wide", cards: [{ head: true, rows: 6, avatar: true }] }],
   // Time exports and Payroll settings carry the Payroll tabs: title at 88, band 296, cards 24px under it.
   // U01: the two step-by-step pages are forms in the sheet frame (back row, band 196, one card).
-  ["/app/payroll-export/paid-time", { ...form, title: "Paid time export", cards: [{ head: true, lines: 2 }, { rows: 4 }] }],
+  // Paid time export carries a line under its title, so its band ends at 224 (measured Nov 17: the placeholder ended at 196).
+  ["/app/payroll-export/paid-time", { ...form, title: "Paid time export", sub: true, band: "sub", cards: [{ head: true, lines: 2 }, { rows: 4 }] }],
   ["/app/payroll/import", { ...form, title: "Import pay", cards: [{ head: true, lines: 3 }, { rows: 2 }] }],
   ["/app/payroll-export", { title: "Time exports", sub: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ head: true, lines: 3 }, { rows: 3 }] }],
   [/^\/app\/payroll\/.+/, { back: true, band: "short", frame: "read", lift: false, cards: [{ head: true, lines: 3 }, { rows: 3 }] }],
@@ -99,10 +100,14 @@ const EMPLOYEE: Entry[] = [
   [/^\/app\/profile\/.+/, detail],
   ["/app/profile", { band: "short", frame: "read", lift: false, cards: [{ rows: 2, avatar: true }, { rows: 4 }] }],
   ["/app/account/delete", { ...detail, cards: [{ head: true, lines: 4 }] }],
-  ["/app/more", { title: "More", back: true, strip: true, band: "strip", frame: "pair", lift: false, cards: [{ rows: 4 }, { rows: 4 }] }],
+  // More: the profile tile on the band, then "Your work" (four rows) and "Help and legal" (two), each row with a lead circle.
+  ["/app/more", { title: "More", back: true, strip: true, band: "strip", frame: "pair", lift: false, cards: [{ head: true, rows: 4, avatar: true }, { head: true, rows: 2, avatar: true }] }],
   ["/app/help", { title: "Help", band: "short", frame: "pair", lift: false, cards: [{ rows: 6 }, { rows: 4 }] }],
 ];
 const employeeHome: BLoadingShape = { sub: true, strip: "figures", frame: "rail", cards: [{ head: true, lines: 3 }, { rail: true, head: true, rows: 2 }, { head: true, rows: 3 }] };
+
+/** The whole table, for the test that renders every entry (b-loading-motion.test.tsx). */
+export const B_LOADING_TABLE: { management: Entry[]; employee: Entry[] } = { management: MANAGEMENT, employee: EMPLOYEE };
 
 /** The frame a page's placeholder keeps, by address and by whose shell it is. */
 export function loadingShape(pathname: string, employee: boolean): BLoadingShape {
@@ -119,11 +124,23 @@ const address = () => window.location.pathname;
  * first paint is already the right one. `title` is the title that page showed last time, when known. */
 export function BRouteLoading({ pathname, title }: { pathname?: string; title?: ReactNode }) {
   const here = useSyncExternalStore(never, address, () => null);
+  // Phase 7 (package C): the hand-over. When the page replaces this placeholder, <html> carries data-c-arrived for a
+  // moment: a screen that appears in that moment skips the usual rise and only its cards' contents fade in over
+  // --b-dur-hover (b-shimmer.css; nothing with reduced motion). Before the moment ends, the screens that arrived are
+  // marked data-b-arrived, and the mark stays for as long as they live: a rule that stopped matching would start the rise
+  // late. A tab tap (CorpSkeleton) and the access check both leave through here, and a second placeholder that follows the
+  // first is marked too, so it does not rise again.
+  useLayoutEffect(() => () => {
+    const root = document.documentElement;
+    root.setAttribute("data-c-arrived", "");
+    window.setTimeout(() => { for (const screen of document.querySelectorAll("main.page-frame .b-screen")) screen.setAttribute("data-b-arrived", ""); }, 150);
+    window.setTimeout(() => root.removeAttribute("data-c-arrived"), 250);
+  }, []);
   const path = pathname || here;
   if (!path) return <BLoadingScreen title={title} />;
   const management = loadingShape(path, false), employee = loadingShape(path, true);
   return <>
-    <BLoadingScreen {...management} title={title ?? management.title} shell="management" />
-    <BLoadingScreen {...employee} title={title ?? employee.title} shell="employee" />
+    <BLoadingScreen {...management} title={title ?? management.title} shell="management" route={path} />
+    <BLoadingScreen {...employee} title={title ?? employee.title} shell="employee" route={path} />
   </>;
 }

@@ -11,7 +11,9 @@ import {CALLOUT_REASONS,creationKey,creationPayload,type CreationDraft,type Crea
 import type {RequestSlot} from '@/lib/employee-exchange';
 import type {PrivatePanelState} from '@/lib/private-snapshot-client';
 import type {EmployeeCreationOperation} from './creation-operation';
-import {BHero,BScreen} from '../owner-b/b-kit';
+import {BHero,BScreen,BState} from '../owner-b/b-kit';
+import {momentsCopy} from '../owner-b/moments-copy';
+import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {FormMark} from '../employee-b/requests-b';
 import '../employee-b/requests.css';
 
@@ -19,6 +21,7 @@ import '../employee-b/requests.css';
  * E-CantWorkSheet). Opened from a shift it is a bottom sheet over Schedule (Cancel · title); opened by its URL, the same
  * content under a pushed-page header, as cards on the grey page (upscale S15: no card inside a card). Presentation only: the read, draft, operation, receipt and every state are as before. */
 
+const M=momentsCopy();
 const titles={swap:'Swap shift',cover:'Offer for cover',callout:'Can’t work this shift'};
 const sendLabels={swap:'Send swap request',cover:'Offer shift',callout:'Send to manager'};
 /** The reasons the board offers, in its words; each is one the server accepts. */
@@ -83,11 +86,15 @@ export function CreationView({state,authority,mode,sourceId,draft,operation,onDr
   :!read?status(state.paused?'Your form is paused. Reconnect or return to this page to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current shift and options…':'Your shift couldn’t be checked. Try again.',
    denied?<Link className="c-btn c-btn--secondary c-btn--full" href="/login">Sign in</Link>:<button className="c-btn c-btn--secondary c-btn--full" type="button" disabled={state.paused||state.refreshing} onClick={onRefresh}>{state.refreshing?'Checking…':'Try again'}</button>)
   :!read.enabled?status('Shift requests are turned off for your company.')
-  :resolved&&result&&'requestId'in result?<section className="c-xs-receipt" aria-label="Submission result">
-    <h2 ref={receipt} tabIndex={-1}>Request recorded</h2>
-    <p>{mode==='callout'?'Your report was recorded. Open it to check your manager’s decision.':mode==='swap'?'Your swap request was recorded. Open it to check consent and review.':'Your cover offer was recorded. Open it to check coverage and review.'} Keep your current shift until the request is completed or you are released.</p>
-    <Link className="c-btn c-btn--full" href={'/app/exchange?tab=requests&requestId='+encodeURIComponent(result.requestId)}>View my request</Link>
-    <Link className="c-btn c-btn--secondary c-btn--full" href={back}>Back to my schedule</Link>
+  :resolved&&result&&'requestId'in result?<section className="c-xs-receipt b-done-host--flush" aria-label="Submission result">
+    {/* Phase 7 (moments): the title follows the reply. "pending" is sent, not approved; "completed" is already on the
+      * schedule; "closed" changed nothing, so it is not a success and carries no mark. */}
+    {result.status==='closed'?<BState kind="paused" icon={<InfoIcon weight="bold"/>} heading titleRef={receipt} title={M.changeClosed} line={M.changeClosedLine} action={{label:M.viewRequest,href:'/app/exchange?tab=requests&requestId='+encodeURIComponent(result.requestId)}}/>
+    :<BState kind="done" heading titleRef={receipt}
+      title={result.status==='completed'?M.changeDone:mode==='callout'?M.calloutSent:mode==='swap'?M.swapSent:M.coverSent}
+      line={result.status==='completed'?M.changeDoneLine:mode==='callout'?M.calloutLine:mode==='swap'?M.swapLine:M.coverLine}
+      action={{label:M.viewRequest,href:'/app/exchange?tab=requests&requestId='+encodeURIComponent(result.requestId)}}
+      quiet={<Link className="b-done__quiet" href={back}>{M.backToSchedule}</Link>}/>}
    </section>
   :source?<>
    <ShiftBlock slot={source} label={mode==='swap'?'Your shift':mode==='cover'?'Shift to offer':undefined}/>

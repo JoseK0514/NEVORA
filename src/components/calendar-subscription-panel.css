@@ -38,3 +38,7 @@
   .employee-calendar-secret textarea { font-size: 1rem; }
   .employee-calendar-actions .button { flex: 1 1 auto; justify-content: center; }
 }
+/* Phase 7 (Nov 17, 2026; UI-7, RA-21): reduced motion. The feedback above still shows; it no longer fades. */
+@media (prefers-reduced-motion: reduce) {
+  .employee-calendar .provider-caret { transition: none; }
+}

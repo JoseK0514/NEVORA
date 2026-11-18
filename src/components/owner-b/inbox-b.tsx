@@ -219,9 +219,9 @@ function Decide({ name, approve, reviewHref }: { name: string; approve: boolean;
     <BButton kind="danger" type="submit" name="decision" value="DENIED" label={`Decline time off for ${name}`}>Decline</BButton>
   </span>;
   return <span ref={pair} className="b-decide" aria-busy={pending}>
-    <BButton kind="quiet" onClick={() => setConfirming(true)} disabled={pending} label={pending ? undefined : `Decline time off for ${name}`}>{pending && decision === "DENIED" ? "Declining…" : "Decline"}</BButton>
+    <BButton kind="quiet" onClick={() => setConfirming(true)} disabled={pending} busy={pending && decision === "DENIED"} busyLabel="Declining…" label={pending ? undefined : `Decline time off for ${name}`}>Decline</BButton>
     {/* Approve only once the schedule check came back with no overlap; otherwise its page shows the shifts first. */}
-    {approve ? <BButton kind="ghost" type="submit" name="decision" value="APPROVED" disabled={pending} label={pending ? undefined : `Approve time off for ${name}`}>{pending && decision === "APPROVED" ? "Approving…" : "Approve"}</BButton>
+    {approve ? <BButton kind="ghost" type="submit" name="decision" value="APPROVED" disabled={pending} busy={pending && decision === "APPROVED"} busyLabel="Approving…" label={pending ? undefined : `Approve time off for ${name}`}>Approve</BButton>
       : <BButtonLink href={reviewHref} kind="ghost" label={`Review time off for ${name}`}>Review</BButtonLink>}
     <span className="b-sr" role="status">{pending ? "Saving your decision…" : ""}</span>
   </span>;

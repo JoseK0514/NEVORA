@@ -11,7 +11,6 @@ import {ReceiptIcon} from '@phosphor-icons/react/dist/ssr/Receipt';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
 import {ProhibitIcon} from '@phosphor-icons/react/dist/ssr/Prohibit';
 import {DeviceMobileIcon} from '@phosphor-icons/react/dist/ssr/DeviceMobile';
-import {CircleNotchIcon} from '@phosphor-icons/react/dist/ssr/CircleNotch';
 import {MagnifyingGlassIcon} from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
@@ -129,7 +128,7 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
                 <span className={required || head.object ? 'b-row__s eb-notif__s' : 'b-row__s eb-notif__s eb-notif__s--p'}>{required ? <BChip tone="amber">Action needed</BChip> : null}
                   {head.object ? <span className="eb-notif__o eb-notif__o--w"><Dotted text={head.object}/></span> : null}
                   <span className="eb-notif__o eb-notif__o--p"><Dotted text={head.object ? `${head.object} · ${phoneWhen}` : phoneWhen}/></span></span></span>
-              <span className="b-row__end eb-when">{busy ? <CircleNotchIcon className="eb-spin" size={16} weight="bold" aria-hidden="true" /> : isUnread ? <i className="eb-unread" aria-hidden="true" /> : null}
+              <span className="b-row__end eb-when">{busy ? <span className="eb-spin b-spin b-spin--sm" aria-hidden="true" /> : isUnread ? <i className="eb-unread" aria-hidden="true" /> : null}
                 <span className="eb-when__t">{earlier ? `${shortDate(item.at, zone)}, ${time}` : time}</span></span>
               <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" />
             </Link></li>;

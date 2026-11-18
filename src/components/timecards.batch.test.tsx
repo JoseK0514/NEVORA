@@ -84,7 +84,7 @@ it('requires explicit selection, a rendered reviewed set and fresh confirmation 
 });
 it('shows partial unknown and not-submitted outcomes and retries only the original command',async()=>{
  transport('unknown');await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('Confirm reviewed timecards');click('Approve selected');await flush();
- expect(commands).toHaveLength(1);expect(html()).toContain('outcome unknown');expect(html()).toContain('not submitted');
+ expect(commands).toHaveLength(1);expect(html()).toContain('Not confirmed');expect(html()).toContain('Not sent');
  const original=commands[0];click('Retry original attempted action');await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(original);
 });
 it('refresh clears selection and confirmation, requiring a fresh review',async()=>{
@@ -118,8 +118,8 @@ it('clears private rows and stale outcomes when an original retry receipt arrive
 });
 it.each([{status:'blocked',reason:'unresolved_time',http:409},{status:'conflict',http:409},{status:'unavailable',http:503}])('replaces the original unknown per-card result with a verified $status retry without submitting remaining cards',async({http,...result})=>{
  vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json(ready());commands.push(JSON.parse(String(init?.body)));if(commands.length===1)throw Error('Interrupted initial attempt');return Response.json(result,{status:http});});
- await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('Confirm reviewed timecards');click('Approve selected');await flush();expect(html()).toContain('PRIVATE E1 · outcome unknown');click('Retry original attempted action');await flush();
- expect(commands).toHaveLength(2);expect(commands[1]).toEqual(commands[0]);expect(html()).toContain(`PRIVATE E1 · ${result.status}`);expect(html()).not.toContain('PRIVATE E1 · outcome unknown');expect(html()).toContain('PRIVATE E2 · not submitted');expect(html()).not.toContain('Retry original attempted action');
+ await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('Confirm reviewed timecards');click('Approve selected');await flush();expect(html()).toContain('PRIVATE E1 · Not confirmed');click('Retry original attempted action');await flush();
+ expect(commands).toHaveLength(2);expect(commands[1]).toEqual(commands[0]);expect(html()).toContain(`PRIVATE E1 · ${({blocked:'Blocked',conflict:'Changed. Review it again',unavailable:'Not available'} as Record<string,string>)[result.status]}`);expect(html()).not.toContain('PRIVATE E1 · Not confirmed');expect(html()).toContain('PRIVATE E2 · Not sent');/* Phase 7: a set with any unconfirmed card never shows the success mark. */expect(html()).not.toContain('b-donemark');expect(html()).not.toContain('Retry original attempted action');
 });
 
 it('refreshes a 15-second projection early and preserves selection, confirmation and the original reviewed command',async()=>{
@@ -344,7 +344,7 @@ it('phone: finalization stays its own action with its own wording',async()=>{
 });
 it('phone: a partial unknown result keeps not-submitted cards and retries only the original command',async()=>{
  phoneWindow();transport('unknown');await mountAll();click('Select');check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('Confirm reviewed timecards');click('Approve selected');await flush();
- expect(commands).toHaveLength(1);expect(html()).toContain('outcome unknown');expect(html()).toContain('not submitted');
+ expect(commands).toHaveLength(1);expect(html()).toContain('Not confirmed');expect(html()).toContain('Not sent');
  const original=commands[0];click('Retry original attempted action');await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(original);
 });
 it('resizing desktop → phone mid-review keeps the reviewed set and confirmation; phone → desktop keeps the results',async()=>{

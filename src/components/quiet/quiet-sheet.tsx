@@ -4,10 +4,14 @@ import Link from 'next/link';
 import {usePathname, useRouter} from 'next/navigation';
 import {createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode} from 'react';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
+import {cancelOverlayExit, closeDialogWithExit, overlayExitMs, useExitHold, useExitValue} from '../kit/overlay-exit';
 
 /* v5 "One look" bottom sheet (approved Oct 24, 2026; mockups E03–E05 and E08). A native modal dialog, so focus stays
  * inside, Escape closes and the page behind is inert. It rises over the page with a grabber; drag the top down or
- * tap outside to close. Wide screens get a centred card. Reduced motion: no travel. */
+ * tap outside to close. Wide screens get a centred card. Reduced motion: no travel.
+ * Phase 7 (Nov 17, 2026): one enter and one exit for every sheet (b-motion.css, kit/overlay-exit.ts). Where the engine can
+ * paint a closed dialog the sheet closes at once and leaves over 150ms, so focus is back on its opener and the page takes
+ * a tap while it goes; its content is kept for that exit. Reduced motion: it opens and closes at once. */
 
 const SheetClose = createContext<(() => void) | null>(null);
 
@@ -23,34 +27,36 @@ export function useSheetClose() {
   return useContext(SheetClose);
 }
 
-const reducedMotion = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-
 /** `modal={false}` (Owner Timecards on wide screens, Nov 1 upscale): the same panel opened as a non-modal inspector, so
  * the page behind stays live and unlocked: no scrim, focus stays where it was, Escape still closes it (and its onClose
  * returns focus), and a click outside doesn't close it. Every other sheet is modal, as before. */
 export function QuietSheet({open, onClose, label, labelledBy, children, modal = true}: {open: boolean; onClose: () => void; label?: string; labelledBy?: string; children: ReactNode; modal?: boolean}) {
   const dialog = useRef<HTMLDialogElement>(null);
-  const closing = useRef(false);
+  // The caller's onClose, when it waits for a sheet that stays open for its exit.
+  const closing = useRef<number | undefined>(undefined);
   const drag = useRef<{y: number; t: number; dy: number} | null>(null);
+  // The content the sheet showed, kept while it leaves (a caller often drops it in the same render that closes the sheet).
+  const held = useExitValue(open, children);
 
   const close = useCallback(() => {
     const node = dialog.current;
-    if (!node || closing.current) return;
-    closing.current = true;
-    const done = () => { closing.current = false; node.removeAttribute('data-closing'); node.style.transform = ''; if (node.open) node.close(); onClose(); };
-    // An inspector still cross-fades under reduced motion (opacity only, no travel); every other sheet closes at once.
-    if (reducedMotion() && !node.hasAttribute('data-inspector')) { done(); return; }
-    node.setAttribute('data-closing', '');
+    if (!node || !node.open || node.hasAttribute('data-closing')) return;
+    // A dragged sheet leaves from where the finger let go: the inline offset goes in the same frame the exit starts.
+    node.removeAttribute('data-sheet-dragging');
     node.style.transform = '';
-    // Review F3 (NV-251): a right-hand inspector fades out over 150ms, 12px to the right; the page behind re-flows only after.
-    window.setTimeout(done, node.hasAttribute('data-inspector') ? 150 : 240);
+    // Review F3 (NV-251): a right-hand inspector is not modal, so nothing waits behind it: it stays for its 150ms exit
+    // and the page behind re-flows only after.
+    const closed = closeDialogWithExit(node, node.hasAttribute('data-inspector'));
+    if (closed) onClose();
+    else { window.clearTimeout(closing.current); closing.current = window.setTimeout(onClose, overlayExitMs()); }
   }, [onClose]);
 
   useEffect(() => {
     const node = dialog.current;
     if (!node) return;
+    // Opened again while it was leaving: the exit is forgotten.
+    if (open) cancelOverlayExit(node);
     if (open && !node.open) {
-      node.removeAttribute('data-closing');
       if (modal) { node.removeAttribute('data-inspector'); node.showModal(); node.focus({preventScroll: true}); document.documentElement.setAttribute('data-q-sheet', ''); }
       else {
         // show() runs the dialog focusing steps (Chromium and WebKit both move focus to the panel's first control). A
@@ -64,7 +70,8 @@ export function QuietSheet({open, onClose, label, labelledBy, children, modal = 
         else if (before instanceof HTMLElement && before !== document.body && before.isConnected && !node.contains(before) && document.activeElement !== before) before.focus({preventScroll: true});
       }
     }
-    if (!open && node.open) node.close();
+    // The caller closed it (a save finished, the route changed): the same exit; a close already under way keeps its own.
+    if (!open && node.open && !node.hasAttribute('data-closing')) closeDialogWithExit(node, node.hasAttribute('data-inspector'));
     return () => { if (!document.querySelector('dialog.q-sheet[open]:not([data-inspector])')) document.documentElement.removeAttribute('data-q-sheet'); };
   }, [open, modal]);
 
@@ -94,6 +101,8 @@ export function QuietSheet({open, onClose, label, labelledBy, children, modal = 
       const target = event.target as HTMLElement;
       if (!target.closest('.q-sheet__top') || target.closest('a, button, input, textarea, select, label')) return;
       drag.current = {y: event.clientY, t: performance.now(), dy: 0};
+      // While it is dragged the sheet follows the finger 1:1 (b-motion.css turns its transition off).
+      event.currentTarget.setAttribute('data-sheet-dragging', 'true');
       (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
     }}
     onPointerMove={event => {
@@ -108,14 +117,16 @@ export function QuietSheet({open, onClose, label, labelledBy, children, modal = 
       if (!state) return;
       const node = event.currentTarget as HTMLElement;
       const velocity = state.dy / Math.max(1, performance.now() - state.t);
+      // The transition comes back in the same frame the offset goes, so either way it moves on from the dragged position.
+      node.removeAttribute('data-sheet-dragging');
       if (state.dy > 120 || velocity > 0.5) close();
-      else { node.style.transition = 'transform 200ms cubic-bezier(.23, 1, .32, 1)'; node.style.transform = ''; window.setTimeout(() => { node.style.transition = ''; }, 220); }
+      else node.style.transform = '';
     }}
-    onPointerCancel={event => { drag.current = null; (event.currentTarget as HTMLElement).style.transform = ''; }}>
+    onPointerCancel={event => { drag.current = null; event.currentTarget.removeAttribute('data-sheet-dragging'); (event.currentTarget as HTMLElement).style.transform = ''; }}>
     <SheetClose.Provider value={close}>
       <div className="q-sheet__in">
         <div className="q-sheet__top"><div className="q-sheet__grab" aria-hidden="true"/></div>
-        {children}
+        {held.leaving ? held.value : children}
       </div>
     </SheetClose.Provider>
   </dialog>;
@@ -127,8 +138,10 @@ export function QuietSheet({open, onClose, label, labelledBy, children, modal = 
 export function RouteSheet({label, match, children,restoreShiftFocus=false}: {label: string; /** A pattern string (props from a server layout must serialize). */ match: string; children: ReactNode;restoreShiftFocus?:boolean}) {
   const router = useRouter();
   const pathname = usePathname();
-  if (!new RegExp(match).test(pathname)) return null;
-  return <QuietSheet open label={label} onClose={() => {
+  // The sheet stays mounted for its exit after the address stops being its own (Phase 7).
+  const matched = new RegExp(match).test(pathname), mounted = useExitHold(matched);
+  if (!mounted) return null;
+  return <QuietSheet open={matched} label={label} onClose={() => {
     const url=new URL(window.location.href),source=url.searchParams.get('sourceShiftId')??url.searchParams.get('shiftId');
     const restore=restoreShiftFocus&&document.getElementById('employee-mobile')?.dataset.employeeMobile==='true';
     router.back();

@@ -236,7 +236,7 @@ describe("management side (Owner, Manager)", () => {
     const markup = html({ ...management, initial: { load: ready(IN_EFFECT), step: "review", draft: { kind: "SET", plan, week: "2030-10-21", note: "" }, custody: { command, status: "unknown" } } }), words = text(markup);
     expect(words).toContain("We couldn’t confirm this was saved");
     expect(words).toContain("The reply was lost, so it may or may not be saved. Check before you do anything else. Checking never saves it twice.");
-    expect(markup).toMatch(/class="b-btn b-btn--teal"[^>]*>Check now</);
+    expect(markup).toMatch(/class="b-btn b-btn--teal"[^>]*>(?:<span[^>]*>)*Check now</);
     expect(markup).toContain('data-kind="paused"');
     expect(markup).not.toContain('data-kind="failed"');
     expect(words).not.toMatch(/Agreement saved|couldn’t be saved/);
