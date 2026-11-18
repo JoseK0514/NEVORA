@@ -20,7 +20,7 @@ import { listCapturedShiftPositions } from "@/lib/data/publication-revisions";
 import {ScheduleRouteFeedback, withoutRouteError} from '@/components/company-access/schedule-route-feedback';
 import Link from "next/link";
 
-import { CorpBody, CorpButtonLink, CorpCard, CorpLink, CorpNote, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
+import { CorpButtonLink, CorpCard, CorpNote, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
 import { FocusOnArrival } from "@/components/kit/focus-on-arrival";
 import { ManagerWeeklyRoster, type RosterOpenShift } from "@/components/manager-weekly-roster";
 import { LeaveRepairNote, LeaveRepairProvider } from "@/components/leave-staffing/repair-note";
@@ -34,7 +34,8 @@ import { DotsThreeCircleIcon } from "@phosphor-icons/react/dist/ssr/DotsThreeCir
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { DotsThreeIcon } from "@phosphor-icons/react/dist/ssr/DotsThree";
 import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
-import { BButtonLink } from "@/components/owner-b/b-kit";
+import { BButtonLink, BState } from "@/components/owner-b/b-kit";
+import { momentsCopy } from "@/components/owner-b/moments-copy";
 import "./manager-schedule.css";
 import "./schedule-corp.css";
 import { ScheduleGenerationControls } from "@/components/schedule-generation-controls";
@@ -79,6 +80,8 @@ function validWeek(value?: string) {
 }
 
 export const metadata = { title: "Schedule" };
+
+const M = momentsCopy();
 
 export default async function SchedulePage({
   searchParams,
@@ -345,7 +348,22 @@ export default async function SchedulePage({
   const publishAction = publishLabel ? <CorpButtonLink href={publishHref} size="sm" aria-label={`${publishLabel}, ${formatWeekRange(weekStart)}`}>{publishLabel}</CorpButtonLink> : null;
   const deadlineText = weekSettings?.availabilityDeadline ? new Intl.DateTimeFormat("en-US", { timeZone: workspace.timeZone, weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(weekSettings.availabilityDeadline)) : "Not set";
   // Send an update only where Company updates are on (the same module check More uses).
-  const updatesOn = params.published ? pathEnabled("/app/updates", (await currentPresentation()).modules) : false;
+  /* Phase 7 (moments): "published" in the address is only the way back from the action. The success is drawn from this
+   * page's own read of each location's status, so it never says more than the server holds: a named location must read
+   * PUBLISHED, and "all" counts the locations that do. */
+  const publishedMoment = (() => {
+    if (!params.published || !scheduleStatuses) return null;
+    const week = formatWeekRange(weekStart);
+    if (params.published === "all") {
+      const done = locations.filter(location => statusFor(location.id) === "PUBLISHED").length;
+      if (!done) return null;
+      return done === locations.length ? { title: locations.length === 1 ? M.published(locations[0].shortName) : M.publishedAll, line: M.publishedLine(week) }
+        : { title: M.publishedCount(done, locations.length), line: M.publishedCountLine };
+    }
+    const location = locations.find(item => item.id === params.published);
+    return location && statusFor(location.id) === "PUBLISHED" ? { title: M.published(location.shortName), line: M.publishedLine(week) } : null;
+  })();
+  const updatesOn = publishedMoment ? pathEnabled("/app/updates", (await currentPresentation()).modules) : false;
   // The location list and the "…" menu's rows, shared by the title row and the Direction B phone hero.
   const locationItems = <>
             <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}`} aria-current={selectedLocation === "all" ? "true" : undefined}>All locations</Link>
@@ -409,9 +427,9 @@ export default async function SchedulePage({
     notes: <>
       {repairNote("b")}
       <ScheduleRouteFeedback error={params.error} warning={params.warning} dismissHref={dismissHref}/>
-      {params.published ? <div role="status" className="b-sched-done"><b>{locations.find((location) => location.id === params.published)?.shortName ?? "Schedule"} published.</b>
-        <span>Your team can now see their {formatWeekRange(weekStart)} shifts.</span>
-        {updatesOn ? <BButtonLink href="/app/updates/compose" kind="ghost">Send an update</BButtonLink> : null}</div> : null}
+      {publishedMoment ? <div className="b-sched-done b-done-host--flush"><BState kind="done" title={publishedMoment.title} line={publishedMoment.line}
+        extra={<Celebration kind="SCHEDULE_PUBLISHED" eventKey={`${weekStart}:${params.published}`} confirmed />}
+        action={updatesOn ? { label: M.sendUpdate, href: "/app/updates/compose" } : undefined} /></div> : null}
       {params.changesPublished ? <CorpNote announce>Changes published. Each person with a change can see it in their schedule.</CorpNote> : null}
       {params.updated ? <CorpNote announce>{pending ? "Shift updated. Publish changes when you’re ready to tell your team." : "Shift updated."}</CorpNote> : null}
       {params.deleted ? <CorpNote announce>Shift deleted.</CorpNote> : null}
@@ -441,21 +459,6 @@ export default async function SchedulePage({
           </span>
         </>}
         sub={<><span className="c-sched-sub__long">{todayLong}</span><span className="c-sched-sub__short">{todayShort}</span></>} />
-      {params.published ? (
-        <CorpCard as="div" ariaLabel="Published">
-          <CorpBody>
-            <Celebration kind="SCHEDULE_PUBLISHED" eventKey={`${weekStart}:${params.published}`} confirmed />
-            <div role="status" className="c-sched-done">
-              <h2 id="schedule-published-title">{locations.find((location) => location.id === params.published)?.shortName ?? "Schedule"} published.</h2>
-              <p>Your team can now see their {formatWeekRange(weekStart)} shifts.</p>
-            </div>
-            <div className="c-sched-done__actions">
-              {updatesOn ? <CorpButtonLink href="/app/updates/compose" kind="secondary" size="md">Send an update</CorpButtonLink> : null}
-              <CorpLink href={`/app?week=${encodeURIComponent(weekStart)}`} large>Back to Home</CorpLink>
-            </div>
-          </CorpBody>
-        </CorpCard>
-      ) : null}
       {params.changesPublished ? <CorpNote announce>Changes published. Each person with a change can see it in their schedule.</CorpNote> : null}
       {params.updated ? <CorpNote announce>{pending ? "Shift updated. Publish changes when you’re ready to tell your team." : "Shift updated."}</CorpNote> : null}
       {params.deleted ? <CorpNote announce>Shift deleted.</CorpNote> : null}
@@ -479,6 +482,18 @@ export default async function SchedulePage({
         notices={<>
           {/* Review F3 (NV-090): route errors and warnings sit under the band, above the grid, not inside the band. */}
           <ScheduleRouteFeedback error={params.error} warning={params.warning} dismissHref={dismissHref}/>
+          {/* Phase 7 (moments): the published result is the first card under the band, so the band keeps its week stepper and
+            * its height exactly as on a normal load (it used to sit above the stepper and push it onto the canvas). */}
+          {publishedMoment ? (
+            <CorpCard as="div" ariaLabel="Published">
+              <div className="b-done-host c-sched-done">
+                <BState kind="done" heading title={<span id="schedule-published-title">{publishedMoment.title}</span>} line={publishedMoment.line}
+                  extra={<Celebration kind="SCHEDULE_PUBLISHED" eventKey={`${weekStart}:${params.published}`} confirmed />}
+                  action={updatesOn ? { label: M.sendUpdate, href: "/app/updates/compose" } : undefined}
+                  quiet={<Link className="b-done__quiet" href={`/app?week=${encodeURIComponent(weekStart)}`}>{M.backHome}</Link>} />
+              </div>
+            </CorpCard>
+          ) : null}
           {repairNote("corp")}
           {toPlan.length ? <CorpCard label="Not published yet" ariaLabel="Locations the team can’t see yet">
             <CorpRows label="Locations the team can’t see yet">{toPlan.map(location => {

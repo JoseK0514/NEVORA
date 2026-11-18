@@ -25,6 +25,8 @@ import type { UserRole } from "@/lib/domain";
 import { employeeNavigationGroups, teamToolHolder, teamToolsForRole, activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
 import { SectionTabs } from "./section-tabs";
 import { isPopoverOpen, hidePopover } from "./kit/popover-open";
+import { useExitValue } from "./kit/overlay-exit";
+import { PressFeedback } from "./kit/press-feedback";
 import { CommandFinder } from "./command-finder";
 import { PresentationProvider } from "./presentation-context";
 import { BOfflineContext } from "./owner-b/b-offline";
@@ -349,6 +351,8 @@ function AppShellView({
   const online = useOnline();
   const offlineHeldAt = useOfflineHeldAt(online);
   const offlineLine = online ? null : offlineHeldAt ? `Offline · updated ${clockTime(offlineHeldAt)}` : "You’re offline. Reconnect to see the latest.";
+  // Phase 7: back online, the shell's pill keeps its words for its one exit (150ms, b-motion.css).
+  const offlinePill = useExitValue(offlineLine !== null, offlineLine);
   useEffect(() => {
     if (online) return;
     document.addEventListener("click", blockOfflineActions, true);
@@ -476,7 +480,7 @@ function AppShellView({
         {companyLogo}
         {/* v3: the workspace at the top of the sidebar (desktop only). Upscale B2: one desktop shell, so Employees have it too;
           in the rail it is the 32px initials avatar. */}
-        <p className="cm-org" title={workspaceName}><span className="cm-org__mark" aria-hidden="true">{workspaceName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()}</span><span className="cm-org__name">{workspaceName}</span>{/* A Lead's role line under the workspace (Direction B, Nov 8, 2026); the shell has no location in hand. */}{user.role === "LEAD" ? <span className="cm-org__role">Lead</span> : null}</p>
+        <p className="cm-org" title={workspaceName}><span className="cm-org__mark" aria-hidden="true">{workspaceName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()}</span><span className="cm-org__name">{workspaceName}</span>{/* A Lead's role line under the workspace (Direction B, Nov 8, 2026); the shell has no location in hand. Phase 4 (EM-026): an Employee has the line too, so the card is one height for both. */}{user.role === "LEAD" ? <span className="cm-org__role">Lead</span> : user.role === "EMPLOYEE" ? <span className="cm-org__role">Employee</span> : null}</p>
 
         <button className="sidebar-toggle" type="button" aria-label={railed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!railed} aria-controls="desktop-primary-navigation" onClick={toggleSidebar}><NavIcon name="sidebar" size={20} /></button>
         </div>
@@ -569,7 +573,7 @@ function AppShellView({
         <div className="c-progress" aria-hidden="true"><i /></div>
         {/* Jose (Nov 15, 2026, item 9): a page with a band shows this line inside it, under the title (BOffline); this
           * one stays for pages without a band and is hidden when the band's pill is on the page (owner-b-shell.css). */}
-        {offlineLine ? <div className="c-offline" role="status" data-held={offlineHeldAt ? "" : undefined}>{offlineLine}</div> : null}
+        {offlinePill.value ? <div className="c-offline" role="status" data-held={offlineHeldAt ? "" : undefined} data-leaving={offlinePill.leaving ? "" : undefined}>{offlinePill.value}</div> : null}
 
         <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{/* Review B2 (NV-032): no separate "Management menu unavailable" card above the hero; the page's own state says it once
           and its Try again re-checks the menus too. */}<EmployeeMessageReturn/><BOfflineContext.Provider value={offlineLine}>{children}</BOfflineContext.Provider></PresentationProvider></main>
@@ -615,6 +619,8 @@ function AppShellView({
       </div>
       <SidebarRailTooltip sidebar={sidebarRef} enabled={railed} />
       <SheetGestures />
+      {/* Phase 7: a press from the keyboard shows the same feedback as a tap (b-motion.css). */}
+      <PressFeedback />
       {/* Round 2 (R12): tab lines, the sidebar tint and segment thumbs slide to the current item. */}
       <CorpMotion />
       <Toaster />

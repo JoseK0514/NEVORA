@@ -114,8 +114,12 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-day--past { opacity: 0.55; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-cardnote { padding: 0 var(--b-inset) var(--b-space-16); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); text-wrap: pretty; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-cardnote--center { text-align: center; }
+/* An email address never takes a hyphen: at 200% text it breaks anywhere instead (as the earlier deletion screens did). */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .em-delete-link { overflow-wrap: anywhere; hyphens: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-li + .b-li .b-add, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-li:first-child .b-add { box-shadow: none; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add { width: 100%; padding: 10px var(--b-inset); transition-property: background-color; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add { width: 100%; padding: 10px var(--b-inset); }
+/* Phase 7 (UI-7, RA-21): the tint fades only when motion is allowed. */
+@media (prefers-reduced-motion: no-preference) { :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add { transition-property: background-color; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); } }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add:active { background-color: rgb(16 24 32 / 0.04); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add .b-ico svg { width: 16px; height: 16px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .b-list + .eb-cardnote { padding-top: 0; }

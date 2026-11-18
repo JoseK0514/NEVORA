@@ -30,10 +30,9 @@
 :is(#c-root, html) .c-page .em-notif-row { min-height: 56px; }
 /* Upscale B7: no icon tile; a tapped row stays pressed with a 16px spinner where the dot sits. */
 :is(#c-root, html) .c-page .em-notif-row--busy { background: #F2F3F3; }
-:is(#c-root, html) .c-page .em-notif-spin { flex: none; width: 16px; height: 16px; color: var(--c-grey); animation: em-notif-spin 800ms linear infinite; }
-@keyframes em-notif-spin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-page .em-notif-spin { animation: em-notif-pulse 1.2s ease-in-out infinite; } }
-@keyframes em-notif-pulse { 50% { opacity: .4; } }
+:is(#c-root, html) .c-page .em-notif-spin { flex: none; width: 16px; height: 16px; color: var(--c-grey); }
+/* Phase 7: the one keyframe (b-spin, signature/components.css), only when motion is allowed. It used to pulse under reduced motion. */
+@media (prefers-reduced-motion: no-preference) { :is(#c-root, html) .c-page .em-notif-spin { animation: b-spin 800ms linear infinite; } }
 :is(#c-root, html) .c-page .em-notif-dot { flex: none; width: 8px; height: 8px; border-radius: 4px; background: var(--c-teal); }
 :is(#c-root, html) .c-page .em-message-paging { flex-wrap: wrap; }
 

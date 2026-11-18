@@ -178,7 +178,7 @@ describe("management sees every shift in full before deciding (Codex review, Oct
     // OW-011: a request over a day old carries its age under the dates (phones and tablets show that line).
     expect(named).toContain('<span class="q-rt__line b-req-age">11 d ago</span>');
     vi.mocked(listManagerPendingExchanges).mockResolvedValue([cover]);
-    expect(text(plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" }))))).toContain("Picked up by No one yet");
+    expect(text(plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" }))))).toContain("Result Nobody has picked it up yet");
   });
   it("an “Unable to work” report shows the affected shift with its reason and note", async () => {
     vi.mocked(listManagerPendingExchanges).mockResolvedValue([]);

@@ -174,19 +174,19 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
   for(const engine of ['chromium','webkit']){
    await page.bringToFront();await page.goto(front+'/app/account-recovery?employee=EMP-1');
    await page.getByLabel('How you checked who they are').selectOption('Verified in person; I know this employee.');
-   await page.getByRole('switch',{name:'I confirmed who they are',exact:true}).check();await page.getByRole('button',{name:'Issue recovery code',exact:true}).click();
-   const input=page.getByLabel('Recovery code',{exact:true});await input.waitFor();const recoveryProof=await input.inputValue();expect(recoveryProof.startsWith('nw1_')).toBe(true);expect(recoveryProof.length).toBeGreaterThan(43);
+   await page.getByRole('switch',{name:'I confirmed who they are',exact:true}).check();await page.getByRole('button',{name:'Make reset link',exact:true}).click();
+   await page.getByRole('button',{name:'Show code',exact:true}).click();const input=page.getByLabel('Reset code',{exact:true});await input.waitFor();const recoveryProof=await input.inputValue();expect(recoveryProof.startsWith('nw1_')).toBe(true);expect(recoveryProof.length).toBeGreaterThan(43);
    const resetBrowser=await runtime[engine].launch({headless:true});defer(()=>resetBrowser.close());
    const resetContext=await resetBrowser.newContext({serviceWorkers:'block',proxy:{server:proxy.server}});await watchContext(resetContext,'isolated-reset-'+engine);const resetPage=await resetContext.newPage();resetPage.setDefaultTimeout(15000);
    await resetPage.goto(front+'/reset-access'+(engine==='webkit'?'#proof='+recoveryProof:''));
    if(engine==='chromium')await resetPage.locator('#reset-proof').fill(recoveryProof);
    await expect.poll(async()=>await resetPage.locator('#reset-proof').inputValue()===recoveryProof).toBe(true);expect(new URL(resetPage.url()).hash).toBe('');
    employeePassword='Fictional Step4 recovered '+engine+' password 123!';
-   await resetPage.locator('#reset-password').fill(employeePassword);await resetPage.locator('#reset-confirm-password').fill(employeePassword);await resetPage.getByRole('button',{name:'Reset password',exact:true}).click();
-   await resetPage.getByRole('link',{name:'Sign in with new password',exact:true}).waitFor();
+   await resetPage.locator('#reset-password').fill(employeePassword);await resetPage.locator('#reset-confirm-password').fill(employeePassword);await resetPage.getByRole('button',{name:'Save new password',exact:true}).click();
+   await resetPage.locator('a.q-btn[href="/login"]').waitFor();
    expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='EMP-1'")).rows).toEqual([{n:0}]);
    const replay=await resetPage.evaluate(async(proof:string)=>(await fetch('/api/auth/reset-access',{method:'POST',headers:{'content-type':'application/json','x-nevora-recovery':'1'},body:JSON.stringify({proof,password:'Fictional forbidden replay password 123!'})})).status,recoveryProof);expect(replay).toBe(400);
-   await resetPage.getByRole('link',{name:'Sign in with new password',exact:true}).click();await resetPage.getByLabel('Employee ID',{exact:true}).fill('EMP-1');await resetPage.getByLabel('Password',{exact:true}).fill(employeePassword);await resetPage.getByRole('button',{name:'Sign in',exact:true}).click();await resetPage.waitForURL(front+'/app');
+   await resetPage.locator('a.q-btn[href="/login"]').click();await resetPage.getByLabel('Employee ID',{exact:true}).fill('EMP-1');await resetPage.getByLabel('Password',{exact:true}).fill(employeePassword);await resetPage.getByRole('button',{name:'Sign in',exact:true}).click();await resetPage.waitForURL(front+'/app');
    await resetPage.getByRole('button',{name:/, account menu$/}).click();
    await resetPage.getByRole('button',{name:'Sign out',exact:true}).click();await resetPage.waitForURL((url:URL)=>url.pathname==='/login');
    expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='EMP-1'")).rows).toEqual([{n:0}]);

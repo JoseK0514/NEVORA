@@ -86,3 +86,7 @@
 :is(#c-root, html) .c-ins .c-ins__bar[data-over] { display: flex; }
 :is(#c-root, html) .c-ins .c-ins__bar[data-over] > span { flex: none; border-radius: 3px 0 0 3px; }
 :is(#c-root, html) .c-ins .c-ins__bar[data-over] > .c-ins__bar-over { flex: 1 1 auto; border-radius: 0 3px 3px 0; background: #E9A23B; }
+/* Phase 7 (Nov 17, 2026; UI-7, RA-21): reduced motion. The feedback above still shows; it no longer fades. */
+@media (prefers-reduced-motion: reduce) {
+  :is(#c-root, html) .c-ins .c-ins__tools .cm-insights__button, :is(#c-root, html) .c-ins .c-ins__counted summary { transition: none; }
+}

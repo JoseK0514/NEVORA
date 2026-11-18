@@ -84,24 +84,34 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, light und
    for(const [name,path,ready]of cases){
     // Login already navigated to Home. Let that actual document become ready;
     // an immediate duplicate goto used to tear down its still-hydrating owner.
-    try{if(page.url()!==app.url+path)await page.goto(app.url+path);await page.locator(ready+':visible').first().waitFor();}catch(error){failures.push({engine,name,path,stage:'ready',error:String(error)});continue;}
+    try{if(page.url()!==app.url+path)await page.goto(app.url+path);// Direction B and the hidden corporate copy consume the same typed read.
+    // Require that read AND the rendered B screen for screens with both presentations.
+    if(['home','incoming-response','own-request','notifications','profile','calendar','alerts'].includes(name)){await page.locator(ready).first().waitFor({state:'attached'});await page.locator('main .b-screen:visible').first().waitFor();}
+    else await page.locator(ready).filter({visible:true}).first().waitFor();}catch(error){failures.push({engine,name,path,stage:'ready',error:String(error)});continue;}
     for(const size of [{width:667,height:375},{width:844,height:390},{width:932,height:430}])for(const theme of ['light','dark'])for(const scale of [100,200]){
-     let clearance:unknown;try{
+     let clearance:unknown,targets:unknown;try{
      // Release 1 is light only (Jose): a dark request (stored choice and device preference) must still render the light corporate look.
      await page.setViewportSize(size);await page.emulateMedia({colorScheme:theme as 'light'|'dark'});await page.evaluate(({theme,scale}:any)=>{localStorage.setItem('nv-theme',theme);document.documentElement.dataset.theme=theme;document.documentElement.style.fontSize=scale+'%';document.documentElement.dataset.textStep=String(scale);}, {theme,scale});
-     await page.waitForFunction(()=>matchMedia('(pointer: coarse)').matches&&document.querySelector('#employee-mobile')?.getAttribute('data-employee-mobile-active')==='true');
+     // Current approved Direction B: 667px is phone; 844/932px are the tablet rail even with coarse input.
+     await page.waitForFunction(()=>{const shell=document.querySelector('#employee-mobile');return matchMedia('(pointer: coarse)').matches&&!!shell&&shell.hasAttribute('data-nv-b')&&shell.getAttribute('data-employee-mobile-active')===(matchMedia('(max-width: 767px)').matches?'true':null);});
      await page.evaluate(()=>new Promise<void>(ready=>requestAnimationFrame(()=>requestAnimationFrame(()=>ready()))));
-     const metrics=await page.evaluate(()=>({coarse:matchMedia('(pointer:coarse)').matches,overflow:Math.max(0,document.documentElement.scrollWidth-innerWidth),teal:getComputedStyle(document.querySelector('#employee-mobile')!).getPropertyValue('--em-teal').trim().toLowerCase(),canvas:getComputedStyle(document.querySelector('#employee-mobile')!).getPropertyValue('--em-canvas').trim().toLowerCase(),colorScheme:getComputedStyle(document.querySelector('#employee-mobile')!).colorScheme}));
-     expect(metrics.overflow,name+engine+JSON.stringify(size)+theme+scale).toBeLessThanOrEqual(1);expect(metrics.teal,name+' light teal '+theme).toBe('#0b6e69');expect(['#f5f6f6','#f4f7f6'],name+' light canvas '+theme).toContain(metrics.canvas);expect(metrics.colorScheme,name+' light color-scheme '+theme).toBe('light');
+     const metrics=await page.evaluate(()=>({coarse:matchMedia('(pointer:coarse)').matches,overflow:Math.max(0,document.documentElement.scrollWidth-innerWidth),teal:getComputedStyle(document.querySelector('#employee-mobile')!).getPropertyValue('--b-teal').trim().toLowerCase(),canvas:getComputedStyle(document.querySelector('#employee-mobile')!).getPropertyValue('--b-canvas').trim().toLowerCase(),colorScheme:getComputedStyle(document.querySelector('#employee-mobile')!).colorScheme}));
+     expect(metrics.overflow,name+engine+JSON.stringify(size)+theme+scale).toBeLessThanOrEqual(1);expect(metrics.teal,name+' light teal '+theme).toBe('#0b6e69');expect(metrics.canvas,name+' current Direction B light canvas '+theme).toBe('#f2f5f4');expect(metrics.colorScheme,name+' light color-scheme '+theme).toBe('light');
+     // A resize can swap a presentation mid-render (Schedule's Confirm replaces its preparing twin): judge the settled page.
+     // Finite animations end and two frames pass; nothing about the 44px rule changes, and a target still small then fails.
+     await page.evaluate(()=>Promise.all(document.getAnimations().filter(a=>a.effect?.getTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>undefined))));
+     await page.evaluate(()=>new Promise<void>(ready=>requestAnimationFrame(()=>requestAnimationFrame(()=>ready()))));
      const actions=page.locator('main :is(button,a,input,select,textarea,summary):visible');
      const small=await actions.evaluateAll((elements:HTMLElement[])=>elements.flatMap(el=>{
       if(el.closest('nextjs-portal')||(el.matches('a')&&getComputedStyle(el).display==='inline'&&el.closest('p,li')))return [];
       const target=el.matches('input[type="checkbox"],input[type="radio"]')?el.closest('label')??el:el;
-      const r=target.getBoundingClientRect();return r.height<43.5||r.width<43.5?[{text:el.textContent?.slice(0,60),tag:el.tagName,height:r.height,width:r.width}]:[];
-     }));expect(small,name+engine+theme+scale).toEqual([]);
+      const r=target.getBoundingClientRect();return r.height<43.5||r.width<43.5?[{text:el.textContent?.slice(0,60),className:el.className,tag:el.tagName,height:r.height,width:r.width}]:[];
+     }));targets=small;expect(small,name+engine+theme+scale).toEqual([]);
      const samples: number[]=[];
      for(const label of (await page.locator('main :is(h1,h2,label,.em-request-primary,.em-request-secondary,.em-creation-help,.em-planning-help,.em-hours-help):visible').all()).slice(0,6)){
       if(!await label.isEnabled()||!(await label.innerText()).trim())continue;
+      // Reduced motion still cross-fades a kept form (Review F3, NV-329): measure the settled page, not a frame of the fade.
+      await page.evaluate(()=>Promise.all(document.getAnimations().filter(a=>a.effect?.getTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>undefined))));
       const ratio=(await label.evaluate(measureRenderedContrast)).ratio;samples.push(ratio);expect(ratio,name+' contrast '+engine+theme+scale).toBeGreaterThanOrEqual(4.5);
      }
      if(await actions.count()){
@@ -117,7 +127,7 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, light und
      }
      results.push({engine,name,path,size,theme,scale,contrastSamples:samples,...metrics});
      if(size.width===844&&scale===200)await page.screenshot({path:evidence+'/'+engine+'-'+name+'-'+theme+'-text200.png',fullPage:false,style:'nextjs-portal{visibility:hidden;}'});
-     }catch(error){failures.push({engine,name,path,size,theme,scale,error:String(error),clearance});if(size.width===844&&scale===200)await page.screenshot({path:evidence+'/'+engine+'-'+name+'-'+theme+'-failure.png',fullPage:false});}
+     }catch(error){failures.push({engine,name,path,size,theme,scale,error:String(error),clearance,targets});if(size.width===844&&scale===200)await page.screenshot({path:evidence+'/'+engine+'-'+name+'-'+theme+'-failure.png',fullPage:false});}
     }
     console.log('Landscape checked '+engine+' '+name);
     await page.evaluate(()=>{document.documentElement.style.fontSize='100%';document.documentElement.dataset.textStep='100';});

@@ -22,7 +22,14 @@ const today = (shifts: TodayShift[]): Today => ({ state: "ready", observedAt: "2
 const monitor = (ids: string[]): ClockMonitor => ({ state: "ready", observedAt: "2026-10-30T15:00:00Z", timeZone: "America/Puerto_Rico", validForMs: 60_000,
   employees: ids.map(id => ({ timeEntryId: `t-${id}`, employeeId: id, employeeName: `Person ${id}`, locationId: "main", locationName: "Condado", deviceId: "d1", clockInAt: "2026-10-30T13:02:00Z", state: "ON_FLOOR", elapsedMinutes: 0, breakElapsedMinutes: null, positionName: null, scheduleMatch: "MATCHED" })) });
 const item = (id: string, type: string, priority: "URGENT" | "REVIEW", category: ActionItem["category"], extra: Partial<ActionItem> = {}) =>
-  ({ id, type, priority, category, title: `${type} title`, detail: `${type} detail`, href: `/app/go/${id}`, ...extra }) as ActionItem;
+  ({ id, type, priority, category, title: `${type} title`, detail: `${type} detail`, href: `/app/go/${id}`, ...typedReview(type, extra), ...extra }) as ActionItem;
+/** Phase 4 (U03): every timecard the server sends carries typed review facts (its own period, and whether this person
+ * may review it). A fixture without them would be an older payload, which is never counted. */
+const typedReview = (type: string, extra: Partial<ActionItem>) => {
+  if (type !== "TIMECARD" || extra.review) return {};
+  const url = new URL(extra.href ?? "/app/timecards", "https://nevora.invalid");
+  return { review: reviewFacts(false, false, "TIMECARD", { startDate: url.searchParams.get("start") ?? "2026-10-19", endDate: url.searchParams.get("end") ?? "2026-10-25" }) };
+};
 
 const items = [
   item("gap1", "COVERAGE_GAP", "URGENT", "scheduling", { title: "Position not covered at Condado", detail: "2026-10-30 · 1:00 PM–3:00 PM · Barista: 1 open", dateTime: "2026-10-30T13:00", href: "/app/schedule/coverage?shift=gap1" }),
@@ -231,7 +238,7 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(open).toContain('<span class="b-ink__k">Timecards</span><span class="b-ink__due">Open now</span>');
     expect(open).toMatch(/<div class="b-ink__big">2\sto approve<\/div>/);
     expect(open).toContain("<span>2 of 3 timecards · Pay period ended</span><span>Payday Tue, Nov 3</span>");
-    expect(open).toContain("An Owner approves your timecard");
+    expect(open).toContain("Another reviewer approves your timecard");
     expect(open).toContain('<a href="/app/timecards" class="b-btn b-btn--white b-btn--full" aria-label="Review timecards">');
     expect(open).not.toMatch(/Prepare payroll|Open timecards/);
     // Not open yet: the day approval opens leads, and the button is the quiet glass pill, never the white one.
@@ -255,7 +262,7 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(card).toContain("9:00 AM – 5:00 PM");
     expect(card).not.toMatch(/Person b|Person c/);
     // Nobody on: the card says so and names the next start; it never lists a shift that hasn't begun.
-    expect(phone({ today: today([shift("b", "upcoming")]) })).toContain("Nobody is working right now. Next shift starts 9:00 AM.");
+    expect(phone({ today: today([shift("b", "upcoming")]), monitor: monitor([]) })).toContain("Nobody is working right now. Next shift starts 9:00 AM.");
     // A correction that waits on this person is counted and has its row; their own is not.
     const fix = (id: string, title: string, name: string, own=false) => item(id, "TIME_CORRECTION", "REVIEW", "timekeeping", { title, detail: `${name} · Recorded time correction.`, review:reviewFacts(own,own,'TIME_CORRECTION') });
     const counted = phone({ value: needsYou([fix("f1", "Time correction waiting for review", "James Ortiz"), fix("f2", "Your correction needs another reviewer", "Carmen Ruiz",true)], "2026-10-30", []) });
@@ -263,6 +270,24 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(counted).toMatch(/>1\stime correction</);
     expect(counted).toContain('href="/app/inbox#todo-corrections"');
     expect(counted).not.toContain("Carmen Ruiz");
+  });
+  it("keeps an actually clocked-in person on Home without inventing a scheduled shift", () => {
+    const live=monitor(["unscheduled"]);
+    if(live.state!=="ready")throw Error("Fictional ready monitor expected");
+    live.employees[0].scheduleMatch="UNMATCHED";
+    const out=phone({today:today([]),monitor:live});
+    const card=out.slice(out.indexOf('id="b-home-on"'),out.indexOf('class="b-home-col b-home-col--b"'));
+    expect(card).toContain("Person unscheduled");
+    expect(card).toContain("Clocked in 9:02 AM");
+    expect(card).toContain("Condado");
+    expect(card).toContain('b-chip--green">Working');
+    expect(card).not.toContain("Nobody is working right now");
+    expect(card).not.toContain("5:00 PM");
+    const retired=phone({today:today([]),monitor:null});
+    expect(retired).not.toContain("Person unscheduled");
+    const matched=phone({today:today([shift("a","clocked_in")]),monitor:monitor(["a"])});
+    const matchedCard=matched.slice(matched.indexOf('id="b-home-on"'),matched.indexOf('class="b-home-col b-home-col--b"'));
+    expect(matchedCard.match(/<li class="b-li">/g)).toHaveLength(1);
   });
   it("says coverage as one line with a bar, and nothing about what isn't required (Phase 3, OW-006)", () => {
     const coverage = { state: "ready" as const, staffing: { required: 20160, covered: 11610, percent: 57.6 }, positions: { required: 0, covered: 0, percent: null }, lead: { required: 0, covered: 0, percent: null } };

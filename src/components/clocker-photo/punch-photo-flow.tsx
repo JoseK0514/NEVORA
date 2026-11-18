@@ -11,13 +11,16 @@ import {ClockerIcon,type ClockerIconName} from '../clocker-icon';
 import {ClockerReceipt,clockTime,receiptTitles} from '../clocker-receipt';
 import ck from '../clocker.module.css';
 const actionNames={CLOCK_IN:'Clock in',CLOCK_OUT:'Clock out',START_BREAK:'Start break',END_BREAK:'End break'};
-const titles:Record<PhotoPhase,string>={setup_required:'Photo capture is unavailable',ready:'Photo for {action}',camera_starting:'Opening the camera…',camera_live:'Ready for your photo?',photo_review:'Use this photo?',camera_error:'The camera needs attention',intent_unavailable:'This tablet can’t save punches',punch_sending:'Checking your time…',punch_unknown:'Check your clock action',punch_retry_allowed:'Check your clock action',photo_saving:'Saving your punch photo…',photo_unknown:'Time recorded. Check the photo.',complete:'Time recorded',expired:'Enter your PIN again',cancelled:'Camera closed'};
+const titles:Record<PhotoPhase,string>={setup_required:'Photo capture is unavailable',ready:'Photo for {action}',camera_starting:'Opening the camera…',camera_live:'Ready for your photo?',photo_review:'Use this photo?',camera_error:'The camera needs attention',intent_unavailable:'This tablet can’t save punches',punch_sending:'Checking your time…',punch_unknown:'Check your last punch',punch_retry_allowed:'Check your last punch',photo_saving:'Saving your punch photo…',photo_unknown:'Time recorded. Check the photo.',complete:'Time recorded',expired:'Enter your PIN again',cancelled:'Camera closed'};
 /* Direction B (Nov 8, 2026): the same 64px status rings as the rest of the kiosk. */
 const rings:Partial<Record<PhotoPhase,[ClockerIconName,'teal'|'amber'|'red'|'green']>>={setup_required:['stop','red'],ready:['camera','teal'],camera_error:['warning','red'],intent_unavailable:['stop','red'],
  punch_sending:['wait','teal'],photo_saving:['wait','teal'],punch_unknown:['refresh','amber'],punch_retry_allowed:['refresh','amber'],photo_unknown:['refresh','amber'],expired:['lock','amber'],cancelled:['info','teal']};
 export type PunchPhotoFlowProps={context:PhotoSessionContext;bindings:PhotoBindings;timeZone:string;firstName?:string;onExit(result:PhotoSessionView):void};
-/* Kiosk wording for two photo results (Nov 10 review, NV-047): no audit words ("photo exception") and no storage note. */
-const kioskWords:Record<string,string>={'Your time is recorded. The photo was not saved; a photo exception is recorded.':'Your time is recorded. No photo was saved; your manager can see that.'};
+/* Kiosk wording for photo results (Nov 10 review, NV-047): no audit words ("photo exception") and no storage note.
+ * Phase 6 (Nov 17, 2026): the two "unconfirmed" results in the kiosk's plain words, with the button's current name. */
+const kioskWords:Record<string,string>={'Your time is recorded. The photo was not saved; a photo exception is recorded.':'Your time is recorded. No photo was saved; your manager can see that.',
+ 'The clock result is unconfirmed. Check the original action before trying another punch.':'Your punch is not confirmed yet. Tap Check if it saved before doing anything else.',
+ 'Your time is recorded. The photo result is unconfirmed. Checking the photo will not repeat your clock action.':'Your time is recorded. The photo is not confirmed yet; checking it will not record your time twice.'};
 const kiosk=(text:string)=>kioskWords[text]??text.replace(/ Photos are not queued in browser storage\.$/,'');
 export function ClockerPunchPhotoFlow(props:PunchPhotoFlowProps){
  const key=`${props.context.intent.subject}:${JSON.stringify(props.context.intent.command)}:${props.context.proofExpiresAt}:${props.context.screenExpiresAt}`;
@@ -26,7 +29,7 @@ export function ClockerPunchPhotoFlow(props:PunchPhotoFlowProps){
 function PunchPhotoFlowSession({context,bindings,timeZone,firstName='',onExit}:PunchPhotoFlowProps){
  const t=useClockerCopy(),initial=useRef({context,bindings});const [session,setSession]=useState<PunchPhotoSession|null>(null);
  useEffect(()=>{const current=new PunchPhotoSession(initial.current.context,initial.current.bindings);setSession(current);return()=>current.dispose();},[]);
- return session?<ActivePhotoFlow session={session} timeZone={timeZone} firstName={firstName} onExit={onExit}/>:<section className={styles.flow}><p role="status">{t('Preparing your clock action…')}</p></section>;
+ return session?<ActivePhotoFlow session={session} timeZone={timeZone} firstName={firstName} onExit={onExit}/>:<section className={styles.flow}><p role="status">{t('Getting ready…')}</p></section>;
 }
 function ActivePhotoFlow({session,timeZone,firstName,onExit}:{session:PunchPhotoSession;timeZone:string;firstName:string;onExit:(result:PhotoSessionView)=>void}){
  const t=useClockerCopy(),{locale}=useClockerPresentation(),state=useSyncExternalStore(session.subscribe,session.getSnapshot,session.getSnapshot);
@@ -60,17 +63,17 @@ function ActivePhotoFlow({session,timeZone,firstName,onExit}:{session:PunchPhoto
   {state.requiresPhoto&&['ready','setup_required','camera_error'].includes(state.phase)?<ClockerPhotoNotice caret policy={state.policy} notice={state.notice}/>:null}
   <div className={styles.cameraFrame} hidden={!camera&&!state.previewUrl}>
    <video ref={video} playsInline muted autoPlay className={styles.video} hidden={!camera} aria-label={t('Live camera preview')}/>
-   {state.previewUrl?<Image src={state.previewUrl} alt={t('Temporary photo for this clock action')} width={640} height={640} unoptimized className={styles.preview}/>:null}
+   {state.previewUrl?<Image src={state.previewUrl} alt={t('Photo preview')} width={640} height={640} unoptimized className={styles.preview}/>:null}
    {camera?<div className={styles.guide} aria-hidden="true"/>:null}
    {state.phase==='camera_starting'?<span className={styles.cameraStatus} role="status">{t('Allow camera access in Safari')}</span>:null}
   </div>
   {state.phase==='camera_live'?<p className={styles.description}>{t('Face the camera. Take a photo when you are ready.')}</p>:null}
-  {state.phase==='photo_review'?<p className={styles.description}>{t('The camera is off. Confirm the photo to record your clock action.')}</p>:null}
+  {state.phase==='photo_review'?<p className={styles.description}>{t('The camera is off. Use this photo to record your time.')}</p>:null}
   {state.phase==='camera_error'?<p role="alert" className={styles.notice}>{t(error)}</p>:null}
-  {['punch_unknown','punch_retry_allowed'].includes(state.phase)?<p role="alert" className={styles.notice}>{t('The clock result is unconfirmed. Check the original action before continuing.')}</p>:null}
-  {state.phase==='intent_unavailable'?<p role="alert" className={styles.notice}>{t('The recovery record could not be saved. No new request was sent. Allow browser storage or ask your Owner for help.')}</p>:null}
+  {['punch_unknown','punch_retry_allowed'].includes(state.phase)?<p role="alert" className={styles.notice}>{t('Your punch is not confirmed yet. Tap Check if it saved before doing anything else.')}</p>:null}
+  {state.phase==='intent_unavailable'?<p role="alert" className={styles.notice}>{t('This tablet can’t save punches right now. No punch was sent. Ask your manager to check the tablet.')}</p>:null}
   {state.phase==='photo_unknown'||state.phase==='complete'&&!receipt?<p role="status" className={styles.notice}>{t(kiosk(photoResultMessage(state)))}</p>:null}
-  {['expired','cancelled'].includes(state.phase)?<p className={styles.description}>{t('The camera and private preview have been cleared.')}{' '}{t(state.receipt?'Your recorded time is preserved.':'Check any unconfirmed clock action after entering your PIN again.')}</p>:null}
+  {['expired','cancelled'].includes(state.phase)?<p className={styles.description}>{t('The camera and private preview have been cleared.')}{' '}{t(state.receipt?'Your recorded time is preserved.':'Enter your PIN again to check a punch that isn’t confirmed.')}</p>:null}
   {state.receipt&&!receipt?<p className={styles.description}>{t('Time recorded at {time}',{time:clockTime(state.receipt.performedAt,timeZone,intl)})}</p>:null}
   {offline?<p role="status" className={styles.notice}>{t(kiosk(offlinePhotoMessage(state)))}</p>:null}
   <div className={styles.actions}>
@@ -78,9 +81,9 @@ function ActivePhotoFlow({session,timeZone,firstName,onExit}:{session:PunchPhoto
    {state.phase==='camera_live'?<button type="button" className={styles.primary} onClick={()=>void session.capture()}>{t('Take photo')}</button>:null}
    {state.phase==='photo_review'?<><button type="button" className={styles.primary} onClick={()=>void session.submit()}>{t('Use photo & continue')}</button><button type="button" className={styles.secondary} onClick={()=>{if(video.current)void session.open(video.current);}}>{t('Retake photo')}</button></>:null}
    {state.fallbackAllowed&&['ready','setup_required','camera_live','photo_review','camera_error'].includes(state.phase)?<button type="button" className={styles.secondary} onClick={()=>void session.submitWithoutPhoto()}>{t('Continue without photo')}</button>:null}
-   {['punch_unknown','punch_retry_allowed'].includes(state.phase)?<button type="button" className={styles.primary} onClick={()=>void session.checkPunch()}>{t('Check original action')}</button>:null}
-   {state.phase==='punch_retry_allowed'?<button type="button" className={styles.secondary} onClick={()=>void session.submit()}>{t('Retry same clock action')}</button>:null}
-   {state.phase==='intent_unavailable'?<button type="button" className={styles.primary} onClick={()=>void session.submit()}>{t('Try saving recovery record')}</button>:null}
+   {['punch_unknown','punch_retry_allowed'].includes(state.phase)?<button type="button" className={styles.primary} onClick={()=>void session.checkPunch()}>{t('Check if it saved')}</button>:null}
+   {state.phase==='punch_retry_allowed'?<button type="button" className={styles.secondary} onClick={()=>void session.submit()}>{t('Send it again')}</button>:null}
+   {state.phase==='intent_unavailable'?<button type="button" className={styles.primary} onClick={()=>void session.submit()}>{t('Try again')}</button>:null}
    {state.phase==='photo_unknown'?<button type="button" className={styles.primary} onClick={()=>void session.checkPhoto()}>{t('Check photo status')}</button>:null}
    {state.phase==='photo_unknown'&&state.photoStatus?.state==='pending'&&state.previewUrl?<button type="button" className={styles.secondary} onClick={()=>void session.retryPhoto()}>{t('Retry saving same photo')}</button>:null}
    {receipt?<button type="button" className={styles.secondary} onClick={exit}>{t('Done')}</button>

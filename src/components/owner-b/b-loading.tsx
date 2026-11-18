@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, type ReactNode } from "react";
+import { useLayoutEffect, useSyncExternalStore, type ReactNode } from "react";
 import { BLoadingScreen, type BLoadingShape } from "./b-kit";
 
 /* Phase 2 (package D): which frame a page's loading placeholder keeps. One table for every role, read by the route's
@@ -32,15 +32,25 @@ const MANAGEMENT: Entry[] = [
   ["/app/timecards/corrections", { ...detail, title: "Time corrections", cards: [{ rows: 4, avatar: true }] }],
   ["/app/timecards", { title: "Timecards", sub: true, strip: true, band: "strip", frame: "wide", cards: [{ head: true, rows: 6, avatar: true }] }],
   // Time exports and Payroll settings carry the Payroll tabs: title at 88, band 296, cards 24px under it.
+  // U01: the two step-by-step pages are forms in the sheet frame (back row, band 196, one card).
+  // Paid time export carries a line under its title, so its band ends at 224 (measured Nov 17: the placeholder ended at 196).
+  ["/app/payroll-export/paid-time", { ...form, title: "Paid time export", sub: true, band: "sub", cards: [{ head: true, lines: 2 }, { rows: 4 }] }],
+  ["/app/payroll/import", { ...form, title: "Import pay", cards: [{ head: true, lines: 3 }, { rows: 2 }] }],
   ["/app/payroll-export", { title: "Time exports", sub: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ head: true, lines: 3 }, { rows: 3 }] }],
   [/^\/app\/payroll\/.+/, { back: true, band: "short", frame: "read", lift: false, cards: [{ head: true, lines: 3 }, { rows: 3 }] }],
   // Payroll: a title, its scope line and the tabs, on the strip rung (the frequency line is hidden from 768px).
   ["/app/payroll", { title: "Payroll", sub: true, strip: true, band: "strip", frame: "rail-desktop", cards: [{ head: true, rows: 3 }, { rail: true, head: true, lines: 3 }] }],
   ["/app/employees/new", { ...detail, cards: [{ head: true, lines: 4 }] }],
   ["/app/employees/import", form],
+  // Scheduling restrictions (U02): back row, title and the person's name (band 224), then the week card and one more.
+  [/^\/app\/employees\/[^/]+\/restrictions$/, { ...detail, title: "When they can be scheduled", cards: [{ head: true, rows: 7 }, { head: true, lines: 2 }] }],
+  // One person's Clocker PIN (Phase 6): back row, the title and the person's name (band 224), one form card.
+  [/^\/app\/employees\/[^/]+\/clocker-pin$/, { ...detail, title: "Clocker PIN", cards: [{ head: true, lines: 4 }] }],
   [/^\/app\/employees\/.+/, detail],
   // Team: Home's two columns from 1024px (People, then the Team tools rail), one column on tablets.
   ["/app/employees", { sub: true, strip: true, action: true, band: "strip", frame: "rail-desktop", cards: [{ rows: 8, avatar: true }, { rail: true, rows: 5 }] }],
+  // Christmas bonus hours (opened from Insights): back row, title and the bonus year line, the notice, then people.
+  ["/app/reports/christmas-bonus", { ...detail, title: "Christmas bonus hours", cards: [{ lines: 3 }, { head: true, stats: 3 }, { head: true, rows: 5, avatar: true }] }],
   ["/app/reports", { title: "Insights", band: "short", frame: "wide", lift: false, cards: [{ head: true, stats: 3 }, { head: true, lines: 3 }] }],
   ["/app/updates/compose", titled],
   [/^\/app\/updates\/.+/, form],
@@ -50,9 +60,19 @@ const MANAGEMENT: Entry[] = [
   ["/app/exchange", { back: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ rows: 4, avatar: true }] }],
   ["/app/availability", { back: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ rows: 5, avatar: true }] }],
   ["/app/settings/payroll", { title: "Payroll settings", sub: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ head: true, lines: 4 }] }],
+  // The Owner's Clocker settings (Phase 6). Tablets: a title and one line (band 224), the tablets card with a lead slot per
+  // row. PINs: search and tabs on the band (296), people rows. Photos: one card of switch rows. Review: photo rows.
+  ["/app/settings/clocker/photos/review", { ...detail, title: "Photo review", cards: [{ head: true, rows: 4 }] }],
+  ["/app/settings/clocker/photos", { ...detail, title: "Punch photos", cards: [{ lines: 2, rows: 5 }] }],
+  // Shift matching: one card with the grace field, its help and a note.
+  ["/app/settings/clocker/matching", { ...detail, title: "Shift matching", cards: [{ lines: 3 }] }],
+  ["/app/settings/clocker/pins", { title: "Clocker PINs", back: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ head: true, rows: 6, avatar: true }] }],
+  ["/app/settings/clocker", { ...detail, title: "Clocker tablets", cards: [{ head: true, rows: 2, avatar: true }] }],
   [/^\/app\/settings\/.+/, form],
   ["/app/settings", { title: "Settings", band: "short", frame: "pair", lift: false, cards: [{ rows: 3 }, { rows: 4 }] }],
   ["/app/account-recovery", detail],
+  // Clocker recovery (Phase 6): back row, title and one line (band 224); help requests, the code form, the Timecards row.
+  ["/app/clocker-recovery", { ...detail, title: "Clocker recovery", cards: [{ head: true, rows: 2, avatar: true }, { head: true, lines: 3 }, { rows: 1, avatar: true }] }],
   ["/app/more", { title: "More", back: true, band: "short", frame: "read", lift: false, cards: [{ rows: 5 }] }],
   ["/app/help", { title: "Help", back: true, band: "short", frame: "read", lift: false, cards: [{ rows: 6 }] }],
   ["/app/my-pay", { back: true, band: "short", frame: "read", lift: false, cards: [{ head: true, lines: 3 }, { head: true, rows: 2 }] }],
@@ -73,6 +93,8 @@ const EMPLOYEE: Entry[] = [
   // Swap shift, Offer for cover and Can't work are forms: back row, band 196.
   [/^\/app\/exchange\/.+/, form],
   ["/app/exchange", { title: "Pick up and swap", back: true, strip: true, band: "strip", frame: "pair", lift: false, cards: [{ rows: 3 }, { rows: 3 }] }],
+  // Scheduling restrictions (U02): the Employee's own agreement, opened from Availability.
+  ["/app/availability/agreement", { title: "Agreed times", back: true, sub: true, band: "sub", frame: "read", lift: false, cards: [{ head: true, rows: 7 }, { head: true, lines: 2 }] }],
   ["/app/availability", { title: "Availability", back: true, sub: true, band: "sub", frame: "wide", lift: false, cards: [{ rows: 7 }] }],
   // Notifications and Updates are sidebar pages: title at 88, a strip, band 296, the first card lifted 52px over it.
   ["/app/notifications", { title: "Notifications", strip: true, band: "strip", frame: "read", cards: [{ rows: 5 }] }],
@@ -82,10 +104,14 @@ const EMPLOYEE: Entry[] = [
   [/^\/app\/profile\/.+/, detail],
   ["/app/profile", { band: "short", frame: "read", lift: false, cards: [{ rows: 2, avatar: true }, { rows: 4 }] }],
   ["/app/account/delete", { ...detail, cards: [{ head: true, lines: 4 }] }],
-  ["/app/more", { title: "More", back: true, strip: true, band: "strip", frame: "pair", lift: false, cards: [{ rows: 4 }, { rows: 4 }] }],
+  // More: the profile tile on the band, then "Your work" (four rows) and "Help and legal" (two), each row with a lead circle.
+  ["/app/more", { title: "More", back: true, strip: true, band: "strip", frame: "pair", lift: false, cards: [{ head: true, rows: 4, avatar: true }, { head: true, rows: 2, avatar: true }] }],
   ["/app/help", { title: "Help", band: "short", frame: "pair", lift: false, cards: [{ rows: 6 }, { rows: 4 }] }],
 ];
 const employeeHome: BLoadingShape = { sub: true, strip: "figures", frame: "rail", cards: [{ head: true, lines: 3 }, { rail: true, head: true, rows: 2 }, { head: true, rows: 3 }] };
+
+/** The whole table, for the test that renders every entry (b-loading-motion.test.tsx). */
+export const B_LOADING_TABLE: { management: Entry[]; employee: Entry[] } = { management: MANAGEMENT, employee: EMPLOYEE };
 
 /** The frame a page's placeholder keeps, by address and by whose shell it is. */
 export function loadingShape(pathname: string, employee: boolean): BLoadingShape {
@@ -102,11 +128,23 @@ const address = () => window.location.pathname;
  * first paint is already the right one. `title` is the title that page showed last time, when known. */
 export function BRouteLoading({ pathname, title }: { pathname?: string; title?: ReactNode }) {
   const here = useSyncExternalStore(never, address, () => null);
+  // Phase 7 (package C): the hand-over. When the page replaces this placeholder, <html> carries data-c-arrived for a
+  // moment: a screen that appears in that moment skips the usual rise and only its cards' contents fade in over
+  // --b-dur-hover (b-shimmer.css; nothing with reduced motion). Before the moment ends, the screens that arrived are
+  // marked data-b-arrived, and the mark stays for as long as they live: a rule that stopped matching would start the rise
+  // late. A tab tap (CorpSkeleton) and the access check both leave through here, and a second placeholder that follows the
+  // first is marked too, so it does not rise again.
+  useLayoutEffect(() => () => {
+    const root = document.documentElement;
+    root.setAttribute("data-c-arrived", "");
+    window.setTimeout(() => { for (const screen of document.querySelectorAll("main.page-frame .b-screen")) screen.setAttribute("data-b-arrived", ""); }, 150);
+    window.setTimeout(() => root.removeAttribute("data-c-arrived"), 250);
+  }, []);
   const path = pathname || here;
   if (!path) return <BLoadingScreen title={title} />;
   const management = loadingShape(path, false), employee = loadingShape(path, true);
   return <>
-    <BLoadingScreen {...management} title={title ?? management.title} shell="management" />
-    <BLoadingScreen {...employee} title={title ?? employee.title} shell="employee" />
+    <BLoadingScreen {...management} title={title ?? management.title} shell="management" route={path} />
+    <BLoadingScreen {...employee} title={title ?? employee.title} shell="employee" route={path} />
   </>;
 }

@@ -2,7 +2,8 @@
  * presentation: a teal band with the wordmark, the workspace (or the company logo), the live clock as its large figure,
  * the location and date, and the tablet status; the task is one lifted white card. Light only. Inter (the kiosk's own
  * bundled copy). Phosphor bold icons; every headline status icon is a 64px ring: red stop, amber wait or check, green done,
- * teal information. Touch targets 48px+; keypad keys 76px (landscape) to 96px (portrait). A company brand (B1) may set the
+ * teal information. Touch targets 56px+ (Phase 6, Nov 17, 2026; they were 48px+); keypad keys 56px (a small landscape
+ * tablet) to 96px (portrait). A company brand (B1) may set the
  * four --clocker-* accent tokens; the band stays NEVORA teal. */
 @font-face { font-family: 'Nevora Clocker'; src: url('/fonts/clocker/inter-variable.ttf') format('truetype'); font-weight: 100 900; font-display: swap; }
 
@@ -113,7 +114,7 @@
 }
 /* Phones (someone may open the link on one): a compact band and a full-width card. */
 @media (max-width: 599px) {
-  .page { --ck-btn: 52px; --ck-keyh: 56px; }
+  .page { --ck-btn: 56px; --ck-keyh: 56px; }
   .band { flex: 0 0 auto; padding: max(18px, env(safe-area-inset-top)) var(--b-space-20) 60px; }
   .when { padding-top: var(--b-space-12); }
   .under { margin-top: 10px; }
@@ -130,9 +131,11 @@
   .task { margin-top: -44px; padding: 0 max(14px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); }
   .card { padding: var(--b-space-24) var(--b-space-20) var(--b-space-20); }
 }
-/* Short landscape screens keep the clock and card in view. */
-@media (orientation: landscape) and (max-height: 700px) and (min-width: 700px) {
-  .page { --ck-keyh: 64px; --ck-btn: 52px; }
+/* Short landscape screens keep the clock and card in view. Phase 6: this starts just under 768px (it was 700px), because
+ * the PIN step is exactly as tall as a 768px screen: a tablet whose browser or status bar takes any of that height had to
+ * scroll to reach Continue. At 768px and taller nothing changes. */
+@media (orientation: landscape) and (max-height: 767px) and (min-width: 700px) {
+  .page { --ck-keyh: 64px; --ck-btn: 56px; }
   .clock { font-size: clamp(3.5rem, calc((100cqi - 88px) / 2.7), 6rem); }
   .card { padding: 22px 26px var(--b-space-20); }
 }
@@ -140,6 +143,8 @@
  * clock (Nov 10 review, NV-185). */
 @media (orientation: landscape) and (min-width: 700px) {
   .band { position: sticky; top: 0; align-self: flex-start; height: 100dvh; }
+  /* The 56px language switch and back arrow (Phase 6) add 8px to the PIN step; the task area gives them back. */
+  .task { padding-top: max(24px, env(safe-area-inset-top)); padding-bottom: max(24px, env(safe-area-inset-bottom)); }
 }
 
 /* ---------- card content ---------- */
@@ -175,7 +180,7 @@
 .note[data-tone=amber] { background: var(--ck-amber-wash); color: var(--ck-amber-ink); }
 .note[data-tone=amber] > svg { color: var(--ck-amber); }
 .note p { margin: 0; }
-.note strong { display: block; margin-bottom: var(--b-space-2); font-weight: 700; }
+.note strong { display: block; margin-bottom: var(--b-space-2); font-weight: 700; text-wrap: balance; }
 
 /* Buttons: 56px pills (64px in portrait), press scale .96, hover only on hover-capable screens. */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: var(--ck-btn); padding: var(--b-space-12) var(--b-space-24); border: 0; border-radius: var(--b-radius-pill);
@@ -195,7 +200,7 @@
 }
 .stack { display: grid; gap: var(--b-space-12); width: 100%; margin-top: 22px; }
 .links { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0 var(--b-space-24); margin-top: 10px; }
-.link { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 48px; padding: 0 6px; border: 0; border-radius: var(--b-radius-pill); background: transparent; color: var(--ck-focus);
+.link { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 56px; padding: 0 6px; border: 0; border-radius: var(--b-radius-pill); background: transparent; color: var(--ck-focus);
   font-size: var(--b-fs-body); font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; }
 .link:disabled { color: var(--ck-grey); cursor: not-allowed; }
 /* Leaving beside a state's own actions: a text link in the same stack, so every gap is 12px (NV-184). */
@@ -209,8 +214,14 @@
 @keyframes ckSpin { to { transform: rotate(360deg); } }
 
 /* Language switch (the existing English/Spanish choice, remembered per tablet). */
-.lang { display: inline-flex; align-items: center; gap: 7px; min-height: 48px; padding: 0 var(--b-space-16); border: 0; border-radius: var(--b-radius-pill); background: var(--ck-soft); color: var(--ck-focus); font-size: .9375rem; font-weight: 600; cursor: pointer; white-space: nowrap; flex: none; transition: transform var(--b-dur-press) var(--b-ease-out); }
+.lang { display: inline-flex; align-items: center; gap: 7px; min-height: 56px; padding: 0 var(--b-space-16); border: 0; border-radius: var(--b-radius-pill); background: var(--ck-soft); color: var(--ck-focus); font-size: .9375rem; font-weight: 600; cursor: pointer; white-space: nowrap; flex: none; transition: transform var(--b-dur-press) var(--b-ease-out); }
 .lang:active { transform: scale(var(--b-press-scale)); }
+/* The same switch on a page outside the kiosk frame (the paused page and the Clocker's not-found page): a white pill that
+ * reads on the teal band and on the canvas, with a ring that shows on both. It reads only the shared tokens. */
+.langSolid { display: inline-flex; align-items: center; gap: 7px; flex: none; min-height: 56px; padding: 0 var(--b-space-16); border: 0; border-radius: var(--b-radius-pill); background: #FFFFFF; color: var(--b-ink);
+  box-shadow: 0 0 0 1px rgb(var(--b-shadow-rgb) / .08), 0 1px 2px rgb(var(--b-shadow-rgb) / .06); font: inherit; font-size: .9375rem; line-height: 1.25; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.langSolid svg { display: block; flex: none; color: var(--b-teal); }
+.langSolid.langSolid:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 2px; box-shadow: 0 0 0 6px var(--b-focus); }
 
 /* ---------- setup ---------- */
 .field { display: grid; gap: var(--b-space-8); margin-top: var(--b-space-20); font-size: .875rem; font-weight: 600; color: var(--ck-ink2); text-align: left; }
@@ -256,8 +267,8 @@
  * tablet's keyboard. IDs compare in capitals, so the field shows capitals. On the PIN step a back arrow beside the heading
  * returns to it; the arrow is placed over the heading's row, so the keypad keeps its place. */
 .head { position: relative; width: 100%; }
-.head[data-back] .title { padding: 0 52px; }
-.back { position: absolute; left: -6px; top: 50%; width: 48px; height: 48px; margin-top: -24px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ck-ink2); cursor: pointer; }
+.head[data-back] .title { padding: 0 56px; }
+.back { position: absolute; left: -8px; top: 50%; width: 56px; height: 56px; margin-top: -28px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ck-ink2); cursor: pointer; }
 .back:active:not(:disabled) { background: var(--ck-key); }
 @media (hover: hover) { .back:hover:not(:disabled) { background: var(--ck-key); } }
 .back:disabled { color: var(--ck-grey); cursor: not-allowed; }
@@ -273,7 +284,7 @@
 .blocked .btn { margin-top: 18px; }
 .blocked .btn[data-kind=secondary] { background: #FFFFFF; box-shadow: inset 0 0 0 1.5px var(--ck-line); }
 /* The blocked state's instruction (who can fix it), under its message (NV-051). */
-.blockedHint { margin: var(--b-space-8) auto 0; max-width: 36ch; font-size: .9375rem; line-height: 1.45; color: var(--ck-ink2); text-wrap: pretty; }
+.blockedHint { margin: var(--b-space-8) auto 0; max-width: 42ch; font-size: .9375rem; line-height: 1.45; color: var(--ck-ink2); text-wrap: balance; }
 .blocked .clears { margin-top: var(--b-space-12); }
 
 /* The privacy reminder: a dark pill over the bottom of the task area. */
@@ -281,7 +292,7 @@
   padding: 10px 10px 10px var(--b-space-16); border-radius: var(--b-radius-card); background: var(--b-ink); color: #FFFFFF; box-shadow: 0 18px 40px -16px rgb(0 0 0 / .5); text-align: left; }
 .privacy p { flex: 1 1 auto; min-width: 9ch; margin: 0; font-size: .9375rem; font-weight: 600; line-height: 1.35; }
 .privacy .count { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; flex: none; font-size: .9375rem; font-weight: 700; font-variant-numeric: tabular-nums; box-shadow: inset 0 0 0 3px #FFC46B; }
-.privacy .btn { width: auto; min-height: 48px; padding: 0 var(--b-inset); font-size: .9375rem; background: #FFFFFF; color: #0B3B38; flex: none; }
+.privacy .btn { width: auto; min-height: 56px; padding: 0 var(--b-inset); font-size: .9375rem; background: #FFFFFF; color: #0B3B38; flex: none; }
 
 /* ---------- the clock-state screen ---------- */
 .who { display: flex; align-items: center; gap: 14px; }
@@ -322,6 +333,8 @@
 .facts > div { padding: 14px var(--b-inset); min-width: 0; }
 .facts > div + div { box-shadow: inset 1px 0 0 var(--ck-line); }
 .facts dt { font-size: var(--b-fs-meta); color: var(--ck-grey); }
+/* One fact alone takes the row (a break with no suggested length on the receipt). */
+.facts > div:only-child { grid-column: 1 / -1; text-align: center; }
 .facts dd { margin: var(--b-space-2) 0 0; font-size: var(--b-fs-title); font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 
 /* ---------- recorded ---------- */
@@ -338,7 +351,7 @@
 .countdown > i { display: block; height: 100%; border-radius: 3px; background: var(--ck-green-fill); transform-origin: left; animation: ckClear 8s linear forwards; }
 @keyframes ckClear { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 .reference { margin-top: 10px; text-align: center; }
-.reference summary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; padding: 0 var(--b-space-8); color: var(--ck-focus); font-size: .9375rem; font-weight: 600; cursor: pointer; list-style: none; }
+.reference summary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 56px; padding: 0 var(--b-space-8); color: var(--ck-focus); font-size: .9375rem; font-weight: 600; cursor: pointer; list-style: none; }
 .reference summary::-webkit-details-marker { display: none; }
 .reference[open] summary svg { transform: rotate(180deg); }
 .reference code { display: block; margin: 0 auto; padding: 10px var(--b-space-12); max-width: 100%; border-radius: var(--b-radius-small); background: var(--ck-canvas); font-size: .8125rem; overflow-wrap: anywhere; }
@@ -357,7 +370,36 @@
 .handoffPanel ul { list-style: none; margin: var(--b-space-12) 0 0; padding: 0; display: grid; gap: 10px; }
 .handoffPanel li { display: grid; gap: var(--b-space-8); }
 .handoffPanel code { display: block; padding: 10px var(--b-space-12); border-radius: var(--b-radius-small); background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--ck-line); font-size: .75rem; overflow-wrap: anywhere; }
-.handoffPanel .btn { min-height: 48px; font-size: .9375rem; }
+.handoffPanel .btn { min-height: 56px; font-size: .9375rem; }
+/* The screen's one filled button is its own main action; asking the Owner is the quiet second (Phase 6). */
+.handoffPanel .btn[data-kind=secondary] { background: #FFFFFF; box-shadow: inset 0 0 0 1.5px var(--ck-line); }
+.handoffPanel .btn[data-kind=secondary]:disabled { color: var(--ck-grey); }
+
+/* ---------- Windows High Contrast (forced colours; RA-17, Phase 6) ----------
+ * Forced colours drop every shadow and repaint every fill, and the kiosk draws its edges, its PIN dots, its rings and
+ * its bars with exactly those. Here each control gets a real border, each field its edge, the dots and bars a system
+ * colour, and focus a system-coloured outline, so the screen reads and the focused control is always marked. */
+@media (forced-colors: active) {
+  .btn, .key, .act, .lang, .langSolid, .back { border: 2px solid ButtonText; }
+  .link, .reference summary { text-decoration: underline; text-underline-offset: 4px; }
+  .btn:disabled, .key:disabled, .act:disabled, .back:disabled { border-color: GrayText; color: GrayText; }
+  .btn[data-kind=primary]:not(:disabled), .act[data-kind=primary]:not(:disabled) { border-width: 3px; }
+  .pin, .idEntry input, .field textarea { border: 2px solid CanvasText; }
+  .pin[data-error=true] { border-style: dashed; }
+  .pin:focus-within, .idEntry input:focus-visible, .field textarea:focus { outline: 3px solid Highlight; outline-offset: 2px; }
+  .slots > span { border: 2px solid CanvasText; forced-color-adjust: none; background: Canvas; box-shadow: none; }
+  .slots > span[data-filled=true] { background: CanvasText; }
+  .card, .blocked, .other, .note, .facts, .handoffPanel, .privacy, .status, .workspace, .location, .companyLogo, .chip { border: 1px solid CanvasText; }
+  .ring, .check, .face, .actIcon { border: 2px solid CanvasText; }
+  .band { border-right: 1px solid CanvasText; border-bottom: 1px solid CanvasText; }
+  .dot { forced-color-adjust: none; background: CanvasText; box-shadow: none; }
+  .status .dot { background: CanvasText; }
+  /* The amber dot is hollow, so the two states differ without colour; the label beside it says which. */
+  .status[data-tone=attn] .dot { background: Canvas; border: 2px solid CanvasText; }
+  .countdown, .progress { border: 1px solid CanvasText; }
+  .countdown > i, .progress > i { forced-color-adjust: none; background: Highlight; }
+  .spin { forced-color-adjust: none; border-color: GrayText; border-top-color: Highlight; }
+}
 
 /* ---------- motion: never under reduced motion; the words carry every state ---------- */
 @media (prefers-reduced-motion: reduce) {
@@ -381,6 +423,30 @@
 /* The saved-action link inline in the ready screen's link row; its panel takes the next line. */
 .handoff[data-inline] { display: contents; }
 .links > .handoffPanel, .handoff[data-inline] > .handoffPanel { flex: 1 0 100%; }
+/* A small landscape tablet (800x600; Phase 6): the whole PIN step, with Continue and the language switch, fits the
+ * screen. After the component rules it adjusts, like the phone block below. Keys and buttons hold the 56px floor; only the gaps, the card's padding and the headline give way. */
+@media (orientation: landscape) and (max-height: 640px) and (min-width: 700px) {
+  .page { --ck-keyh: 56px; }
+  .task { padding-top: var(--b-space-8); padding-bottom: var(--b-space-8); }
+  .card { padding: var(--b-space-12) var(--b-space-24) 10px; }
+  .card .title { font-size: 1.375rem; }
+  .pin { height: 52px; margin-top: var(--b-space-8); }
+  .idEntry input { height: 52px; }
+  .pinMsg { min-height: 2.6em; margin-top: var(--b-space-4); font-size: .8125rem; }
+  .keys { gap: 6px; margin-top: var(--b-space-4); }
+  .pinForm .continue { margin-top: var(--b-space-8); }
+  .meta { margin-top: 6px; }
+  .ring { width: 52px; height: 52px; margin-bottom: 10px; }
+  .check { width: 72px; height: 72px; margin: var(--b-space-2) auto 14px; box-shadow: 0 0 0 8px var(--ck-green-wash); }
+  .check svg { width: 40px; height: 40px; }
+  .hero { font-size: 2.75rem; }
+  .acts { gap: 10px; margin-top: var(--b-space-16); }
+  .act { min-height: 72px; }
+  .stack { margin-top: var(--b-space-16); }
+  .facts { margin-top: var(--b-space-12); }
+  .facts > div { padding: 10px var(--b-space-16); }
+  .countdown { margin-top: var(--b-space-12); }
+}
 /* Phones, after the component rules they adjust (Nov 10 review): one left edge in the clock-state card (NV-299), and the
  * privacy reminder stays in view with its button wrapped under the line (NV-053). */
 @media (max-width: 599px) {

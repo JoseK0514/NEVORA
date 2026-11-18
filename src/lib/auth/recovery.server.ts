@@ -7,6 +7,8 @@ import {neonNotificationExecutor} from '../data/notification-transactions';
 import {getWorkspace,workspaceReadGuard} from '../data/workspaces';
 import {assertManagementProof} from '../data/management-session';
 import {hashPassword,verifyPassword} from './password';
+import {loginIdPauseRelease} from './login-limits.server';
+import {reportHandledServerError} from '../server-error';
 import type {ReviewedLoginCredential} from './session-issuance';
 const hash=(value:string)=>createHash('sha256').update(value).digest('hex');
 const safeId=(v:string)=>v.trim().length>0&&v.trim().length<=200&&!/[\u0000-\u001f\u007f]/.test(v);
@@ -91,7 +93,7 @@ export async function issueInitialPasswordReplacement(employeeId:string,reviewed
  }catch{return unavailable;}
 }
 /** Atomic credential replacement + single-use consumption + all portal session
- * revocation. The proof binds the employee and credential revisions at issuance,
+ * revocation + the account's own sign-in pause (per-ID limits only). The proof binds the employee and credential revisions at issuance,
  * so later lifecycle/password changes invalidate it. Push detachment/cancellation
  * commits with the reset; the optional registered-email notice is best effort
  * after commit. Clocker device/PIN proofs and operational records are untouched. */
@@ -124,6 +126,8 @@ export async function resetPasswordWithProof(token:string,password:string,execut
    {text:'UPDATE password_recovery_proofs SET used_at=clock_timestamp() WHERE token_hash=$1',values:[tokenHash]},
    {text:'UPDATE password_recovery_proofs SET retired_at=clock_timestamp() WHERE employee_id=$1 AND token_hash<>$2 AND used_at IS NULL AND retired_at IS NULL',values:[employeeId,tokenHash]},
    {text:'DELETE FROM employee_sessions WHERE employee_id=$1',values:[employeeId]},
+   // The reset proves control of the account, so its own sign-in pause ends with it (Phase 5, PB-030).
+   ...loginIdPauseRelease(employeeId),
    {text:"UPDATE push_subscriptions SET status='detached',generation=gen_random_uuid()::text,encrypted_material=NULL,updated_at=clock_timestamp() WHERE employee_id=$1 AND status='active'",values:[employeeId]},
    {text:"UPDATE push_deliveries SET status='cancelled',lease_token=NULL,lease_expires_at=NULL,updated_at=clock_timestamp() WHERE subscription_id IN (SELECT id FROM push_subscriptions WHERE employee_id=$1) AND status IN ('queued','retry_pending','processing')",values:[employeeId]},
   ];
@@ -133,5 +137,10 @@ export async function resetPasswordWithProof(token:string,password:string,execut
   const email=(results.at(-1)?.[0] as {email:string|null}|undefined)?.email;
   if(email&&delivery?.notifyReset)await delivery.notifyReset(email).catch(()=>undefined);
   return {state:'reset'};
- }catch(error){return {state:error instanceof Error&&error.message.includes('recovery_proof_invalid')?'invalid':'unavailable'};}
+ }catch(error){
+  if(error instanceof Error&&error.message.includes('recovery_proof_invalid'))return {state:'invalid'};
+  // Not a refusal: logged once (sanitized) so the response can carry a Support reference. It may have failed after
+  // COMMIT, so the caller must not say the password was left unchanged.
+  reportHandledServerError(error,'/api/auth/reset-access');return {state:'unavailable'};
+ }
 }

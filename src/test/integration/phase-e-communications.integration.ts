@@ -255,6 +255,24 @@ it('Phase 4 eligibility preserves activation hold without a queue or operation e
   expect(await q('SELECT count(*)::int AS n FROM employee_attention_operations')).toEqual([{n:0}]);
  }finally{await q(restore.sql);}
 });
+it('U10 a reminder pressed under the activation hold answers held, also when the hold starts between the read and the write',async()=>{
+ const c=await managerReminderFixture('AVAILABILITY');
+ const [restore]=await q("SELECT format('COMMENT ON DATABASE %I IS %L',datname,shobj_description(oid,'pg_database')) AS sql FROM pg_database WHERE datname=current_database()") as {sql:string}[];
+ const hold=()=>q("DO $$ BEGIN EXECUTE format('COMMENT ON DATABASE %I IS %L',current_database(),'phase4-held'); END $$");
+ try{
+  await hold();
+  expect(await executeManagerReminder(owner,c,db.executor)).toEqual({status:'held',reason:'activation_held'});
+  await q(restore.sql);
+  // The hold begins after the source read, just before the queue write: the write's own guard refuses it.
+  const racing={...db.executor,transaction:async(statements:Parameters<typeof db.executor.transaction>[0],signal?:AbortSignal)=>{
+   if(statements.some(s=>s.text.includes('manager-reminder-operation:')))await hold();
+   return db.executor.transaction(statements,signal);
+  }};
+  expect(await executeManagerReminder(owner,{...c,operationId:randomUUID()},racing)).toEqual({status:'held',reason:'activation_held'});
+  expect(await q("SELECT count(*)::int AS n FROM notifications WHERE purpose='REMINDER'")).toEqual([{n:0}]);
+  expect(await q('SELECT count(*)::int AS n FROM employee_attention_operations')).toEqual([{n:0}]);
+ }finally{await q(restore.sql);}
+});
 it.each(['AVAILABILITY','COMMUNICATION'] as const)('manager %s reminder: concurrent same and different operations share one daily queue entry',async kind=>{
  const c=await managerReminderFixture(kind);
  const results=await Promise.all([executeManagerReminder(owner,c,db.executor),executeManagerReminder(owner,c,db.executor),executeManagerReminder(owner,{...c,operationId:randomUUID()},db.executor)]);

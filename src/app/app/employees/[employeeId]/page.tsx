@@ -1,3 +1,4 @@
+import {clockerOwnerCopy} from '@/components/clocker-owner-copy';
 import {scopedObservation} from '@/lib/company-access/observation';
 import {readEmployeeClockerPin,type EmployeePinView} from '@/lib/clocker/pins.server';
 
@@ -50,7 +51,8 @@ export default async function EmployeeProfilePage({
   const editing = query.edit === "1" ? "core" : query.edit === "positions" ? "positions" : query.edit === "rules" ? "rules" : null;
   const accessView = !editing && query.view === "access";
   const source=await withOperationalCompany(proof,async()=>{
-    const profile=await readOperationalEmployeeProfile(proof,employeeId);
+    // Employment dates (birth date included) are read only for the edit sheet, never for the overview or Access pages.
+    const profile=await readOperationalEmployeeProfile(proof,employeeId,undefined,{employmentDates:editing==='core'});
     if(profile.state==='unavailable')return {profile,positions:[],operational:null,profileUnavailable:false,invitation:null,pin:null,hours:null};
     const positions=await listPositions({includeInactive:true});
     let operational=null,profileUnavailable=false;
@@ -65,7 +67,7 @@ export default async function EmployeeProfilePage({
   if(source.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={source.reason}/>;
   const {profile,positions,operational,profileUnavailable,invitation,pin,hours}=source.data;
   if(profile.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={profile.reason}/>;
-  const {profile:employee,locations,ownerScope}=profile.data;
+  const {profile:employee,locations,ownerScope,employmentDates}=profile.data;
   const primaryLocation = locations.find(
     (location) => location.id === employee.primaryLocationId,
   );
@@ -139,6 +141,8 @@ export default async function EmployeeProfilePage({
           <li><CorpRow href={shiftsHref} title="Shifts" label={`Shifts for ${name}`} chevron /></li>
           <li><CorpRow href={`/app/timecards#timecard-${encodeURIComponent(employee.id)}`} title="Timecards" label={`Timecards for ${name}`} chevron /></li>
           <li><CorpRow href={`/app/availability?employeeId=${encodeURIComponent(employee.id)}`} title="Availability" label={`Availability for ${name}`} chevron /></li>
+          {/* Scheduling restrictions (U02): the times agreed with this person, kept apart from the availability they send. */}
+          <li><CorpRow href={`${base}/restrictions`} title="When they can be scheduled" label={`When ${name} can be scheduled`} chevron /></li>
         </CorpRows>
       </CorpCard>
       <CorpCard as="div" ariaLabel="Access and sign-in">
@@ -159,7 +163,10 @@ export default async function EmployeeProfilePage({
       <CorpCard id="person-access" label="Access">
         <CorpRows label="Access">
           <li>{canManageCore ? <CorpRow href={`${base}?edit=1`} title="Role" value={roleLabel} valueTone="soft" label={`Role, ${roleLabel}. Change it in Edit employee`} chevron /> : <CorpRow title="Role" value={roleLabel} valueTone="soft" />}</li>
-          {pinShown ? <li><CorpRow href={`${base}/clocker-pin`} title="Clocker PIN" value={pinValue} valueTone="soft" chevron /></li> : null}
+          {/* Phase 6: without a PIN the row says so and what it means, and opens the form that sets one. */}
+          {pinShown ? <li>{pin && !pin.configured
+            ? <CorpRow href={`${base}/clocker-pin`} title={clockerOwnerCopy.en.personPinNone} detail={clockerOwnerCopy.en.personPinNoneSub} value={clockerOwnerCopy.en.setPin} valueTone="teal" label={clockerOwnerCopy.en.setPinFor(name)} chevron />
+            : <CorpRow href={`${base}/clocker-pin`} title={clockerOwnerCopy.en.personPinSet} value={pinValue} valueTone="soft" label={pin?.configured ? clockerOwnerCopy.en.resetPinFor(name) : undefined} chevron />}</li> : null}
           <li><CorpRow title="Account" value={accountValue} valueTone="soft" /></li>
           {/* Review B6 (NV-092): the employee ID lives here, not in the person's first line. */}
           <li><CorpRow title="Employee ID" value={employee.id} valueTone="soft" /></li>
@@ -217,7 +224,7 @@ export default async function EmployeeProfilePage({
     <CorpPage className="c-sheetpage c-editemp" labelledBy="person-edit-title">
       <SheetMarker />
       {canManageCore ? (
-        <EmployeeCoreProfileForm employee={employee} locations={locations} actorId={actor.id} actorRole={actor.role} ownerScope={ownerScope} action={saveEmployeeCoreProfileAction} cancelHref={base} more={more} />
+        <EmployeeCoreProfileForm employee={employee} locations={locations} actorId={actor.id} actorRole={actor.role} ownerScope={ownerScope} action={saveEmployeeCoreProfileAction} cancelHref={base} more={more} employmentDates={employmentDates} />
       ) : (<>
         <FormHead titleId="person-edit-title" title="Edit employee" left={<FormHeadLink href={base}>Cancel</FormHeadLink>} />
         <CorpNote>Only an Owner can change another Owner. Positions and hours stay available here.</CorpNote>

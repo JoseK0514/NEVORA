@@ -11,6 +11,9 @@ import { currentBrand } from '@/lib/workspace-presentation/current.server';
 import { navigationForRole } from '@/lib/navigation';
 import { currentPayPeriod } from '@/lib/payroll/pay-calendar.server';
 import { payrollTabs } from '@/components/payroll/payroll-tabs';
+import { CorpPage } from '@/components/corp/corp';
+import { SheetMarker } from '@/components/team/team-forms';
+import { PayrollImportFlow } from '@/components/payroll-import/import-flow';
 import './payroll-workflow.css';
 
 /** Every Payroll page (Release 1): the same access check, then one view of the payroll workspace. The review pages are
@@ -40,6 +43,12 @@ export async function PayrollRoute({ view, runId = null }: { view: PayrollView; 
   }
   const workspace = await getWorkspace();
   const recoveryScope = payrollRecoveryScope(workspace.id, proof.employee.id);
+  // U01: importing pay from another payroll system is its own step-by-step page, behind the same access check as every
+  // Payroll page above (a Manager without the grant has already been shown the closed-page card).
+  if (view === 'import') return <CorpPage className="c-addemp c-sheetpage c-pim" labelledBy="payroll-import-title">
+    <SheetMarker />
+    <PayrollImportFlow key={`${recoveryScope}:${runId ?? ''}`} runId={runId} recoveryScope={recoveryScope} actorId={proof.employee.id} />
+  </CorpPage>;
   const current = await currentPayPeriod().catch(() => null);
   // Names for the people a review, fix list or Pay history statement refers to by reference (no pay data; the team list
   // the Owner already sees). Pay history uses them to name each statement's employee from its record, never its file name.

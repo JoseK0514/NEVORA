@@ -100,3 +100,15 @@ it('honors company-read denial before loading employee-creation catalogs (presen
 
 // This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
 vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+
+it("offers the three optional employment dates in step 2, none required", async () => {
+  const html = renderToStaticMarkup(await NewEmployeePage({ searchParams: Promise.resolve({}) }));
+  const fields = html.match(/<input[^>]+>/g) ?? [];
+  for (const name of ["hireDate", "terminationDate", "birthDate"]) {
+    const field = fields.find(input => input.includes(`name="${name}"`));
+    expect(field, name).toContain('type="date"');
+    expect(field, name).not.toContain('required=""');
+  }
+  expect(html).toContain("Termination date (optional)");
+  expect(html).toContain("It doesn’t deactivate anyone.");
+});

@@ -1,5 +1,6 @@
-import { SettingsLoading } from "../wave-c-loading";
+import { RouteSkeleton } from "@/components/route-skeleton";
 
+/** Clocker tablets: the page's own placeholder (its frame is the "/app/settings/clocker" entry in b-loading.tsx). */
 export default function Loading() {
-  return <SettingsLoading title="Clocker tablets" summary="A shared tablet at each location, with access you control." label="Clocker tablets" cards={[2, 4]} />;
+  return <RouteSkeleton label="Clocker tablets" shape="list" />;
 }

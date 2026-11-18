@@ -32,6 +32,12 @@ it('keeps business imports and model retrieval independent and explicitly off by
   expect(readFeatureFlags({NEVORA_OWNER_ADVISOR_BUSINESS_RETRIEVAL_ENABLED:'true'})).toMatchObject({ownerAdvisorBusinessImports:false,ownerAdvisorBusinessRetrieval:true});
 });
 
+it('keeps public-page analytics independent and off by default', () => {
+  expect(readFeatureFlags({})).toMatchObject({webAnalytics:false});
+  expect(readFeatureFlags({NEVORA_WEB_ANALYTICS_ENABLED:'true'})).toMatchObject({webAnalytics:true,ownerAdvisor:false,commerce:false});
+  expect(readFeatureFlags({NEVORA_WEB_ANALYTICS_ENABLED:'1'})).toMatchObject({webAnalytics:false});
+});
+
 it('ships an explicit disabled example for every registered opt-in gate', () => {
   const lines = readFileSync('.env.example', 'utf8').split('\n');
   const example = Object.fromEntries(lines.flatMap(line => {

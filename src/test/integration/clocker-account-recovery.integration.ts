@@ -121,3 +121,29 @@ it('a replacement requirement changed after recovery pre-read cannot be cleared 
  expect(await resetPasswordWithProof(p.proof,'Fictional previous password',ex)).toEqual({state:'invalid'});expect(changed).toBe(true);
  expect(await f.q("SELECT must_change_password FROM employee_credentials WHERE employee_id='c34-a'")).toEqual([{must_change_password:true}]);
 });
+it('P5 a reset during the sign-in pause is allowed and lets the person sign in with the new password straight away',async()=>{
+ const {admitLogin,admitLoginAttempt,LOGIN_LIMITS}=await import('../../lib/auth/login-limits.server');
+ const {consumeLoginAttempt}=await import('../../lib/auth/login-limits');
+ const address='198.51.100.41',other='198.51.100.42';
+ // The pause: the per-ID budget is spent (password and passkey limiters), and this address has failures too.
+ for(let i=0;i<LOGIN_LIMITS.perId;i++)expect(await admitLoginAttempt('c34-a',address,f.db.executor)).toBe(true);
+ for(let i=0;i<10;i++)expect(await consumeLoginAttempt('c34-a',f.db.executor)).toBe(true);
+ for(let i=0;i<LOGIN_LIMITS.perId+1;i++)await admitLoginAttempt('c34-b',other,f.db.executor);
+ expect((await admitLogin('C34-A',other,f.db.executor)).admitted).toBe(false);expect(await consumeLoginAttempt('c34-a',f.db.executor)).toBe(false);
+ // Asking for a reset is not blocked by the pause (recovery has its own budget).
+ const send=vi.fn();await requestPasswordRecovery('c34-a','avery@example.invalid',{send},f.db.executor);expect(send).toHaveBeenCalledOnce();
+ expect(await resetPasswordWithProof(send.mock.calls[0][1],'Fictional NEW password',f.db.executor)).toEqual({state:'reset'});
+ // The reset proves control of the account, so its own per-ID pause ends; typed in any case.
+ expect((await admitLogin('c34-A',other,f.db.executor)).admitted).toBe(true);expect(await consumeLoginAttempt('C34-a',f.db.executor)).toBe(true);
+ // Nothing else is released: another person's pause, and the address budget, stay as they were.
+ expect((await admitLogin('c34-b','198.51.100.43',f.db.executor)).admitted).toBe(false);
+ const addressRow=await f.q<{n:number}>("SELECT count(*)::int AS n FROM password_recovery_limits WHERE scope=encode(sha256(convert_to('NEVORA login limit address v1:198.51.100.41','UTF8')),'hex')");expect(addressRow).toEqual([{n:1}]);
+});
+it('P5 a refused or failed reset never ends the sign-in pause',async()=>{
+ const {admitLogin,admitLoginAttempt,LOGIN_LIMITS}=await import('../../lib/auth/login-limits.server');
+ for(let i=0;i<LOGIN_LIMITS.perId;i++)await admitLoginAttempt('c34-a',null,f.db.executor);
+ expect((await resetPasswordWithProof(randomBytes(32).toString('base64url'),'Fictional NEW password',f.db.executor)).state).toBe('invalid');
+ const p=await issued();await f.q("UPDATE password_recovery_proofs SET created_at=clock_timestamp()-interval '16 minutes',expires_at=clock_timestamp()-interval '1 minute' WHERE token_hash=$1",[createHash('sha256').update(p.proof).digest('hex')]);
+ expect((await resetPasswordWithProof(p.proof,'Fictional NEW password',f.db.executor)).state).toBe('invalid');
+ expect((await admitLogin('c34-a',null,f.db.executor)).admitted).toBe(false);
+});

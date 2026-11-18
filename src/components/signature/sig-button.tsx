@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr/CircleNotch";
 import { useLayoutEffect, type ComponentPropsWithRef, type MouseEvent, type ReactNode, type RefObject } from "react";
 
 /* SigButton: the one Signature button. Primary (deep fill), secondary (white with a hairline and a soft lift) and link
@@ -30,9 +29,9 @@ export type SigButtonAsButtonProps = SigButtonOwnProps & Omit<ComponentPropsWith
 export type SigButtonAsLinkProps = SigButtonOwnProps & Omit<ComponentPropsWithRef<typeof Link>, keyof SigButtonOwnProps | "href"> & { href: string };
 export type SigButtonProps = SigButtonAsButtonProps | SigButtonAsLinkProps;
 
-/** The 16px pending spinner. Rotation stops under reduced motion (components.css). */
+/** The 16px pending spinner: the one ring (components.css). It turns only when motion is allowed. */
 export function SigSpinner() {
-  return <CircleNotchIcon className="sig-btn__spin" size={16} weight="bold" aria-hidden="true" focusable="false" />;
+  return <span className="sig-btn__spin" aria-hidden="true" />;
 }
 
 /** Idle label and pending words share one grid cell, so the button keeps the size of the longer one. The hidden cell is

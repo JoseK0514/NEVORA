@@ -156,3 +156,7 @@
   .srChoices:not(#sr), .srReasonGrid:not(#sr), .srNoticeTop:not(#sr), .srRoot :global(.wa-actions):not(#sr) { margin-inline: 0; }
   .srReasons > legend:not(#sr) { margin-inline: 4px; }
 }
+/* Phase 7 (Nov 17, 2026; UI-7, RA-21): reduced motion. The feedback above still shows; it no longer fades. */
+@media (prefers-reduced-motion: reduce) {
+  .srRadio:not(#sr), .srReason:not(#sr) { transition: none; }
+}

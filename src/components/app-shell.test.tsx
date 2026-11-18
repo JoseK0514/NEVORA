@@ -305,7 +305,8 @@ it.each(['EMPLOYEE','OWNER'] as const)('renders the %s shell with both sidebar c
  expect(html).toContain('data-sidebar-desktop="full"');
  expect(html).toContain('data-sidebar-tablet="rail"');
  // Review B5 (NV-110): the tile carries its full name as a title.
- expect(html).toContain('<p class="cm-org" title="Northside Services"><span class="cm-org__mark" aria-hidden="true">NS</span><span class="cm-org__name">Northside Services</span></p>');
+ // Phase 4 (EM-026): an Employee's card carries the role line a Lead's has, so both are one height; an Owner's has none.
+ expect(html).toContain(`<p class="cm-org" title="Northside Services"><span class="cm-org__mark" aria-hidden="true">NS</span><span class="cm-org__name">Northside Services</span>${role==='EMPLOYEE'?'<span class="cm-org__role">Employee</span>':''}</p>`);
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
  expect(sidebar).not.toMatch(/class="nav-link[^"]*"[^>]*title=/);
  // One tooltip element for the rail, outside the sidebar, hidden from assistive technology (it repeats the entry's name).
@@ -317,6 +318,7 @@ it.each(['EMPLOYEE','OWNER'] as const)('renders the %s shell with both sidebar c
 it('gives a Lead the corporate Direction B shell',()=>{
  const {html}=render('LEAD','/app');
  expect(html).toContain('class="cm-org"');
+ expect(html).toContain('<span class="cm-org__role">Lead</span></p>');
  expect(html).not.toContain('class="e5-new"');
  expect(html).toContain('data-nv-b=""');
 });

@@ -93,7 +93,7 @@ describe("the loading placeholder keeps the page's frame", () => {
     expect(css).toContain('.b-screen[data-b-band="own"] { --b-ph-band: calc(var(--b-band-own) - var(--b-title-top)); }');
     expect(css).toMatch(/@media \(min-width: 768px\) and \(max-width: 1023px\) \{\s*[^{]*\[data-b-frame="rail-desktop"\][^{]*\{ display: grid !important; grid-template-columns: minmax\(0, 1fr\) !important; \}/);
   });
-  it("reads the band heights from the frame tokens and never shimmers", () => {
+  it("reads the band heights from the frame tokens; its own rules stay still (the one shimmer is b-shimmer.css, Phase 7)", () => {
     for (const kind of ["short", "sub", "strip"]) expect(css).toContain(`.b-screen[data-b-band="${kind}"] { --b-ph-band: calc(var(--b-band-${kind}) - var(--b-title-top)); }`);
     const block = css.slice(css.indexOf("Phase 2 (package D"));
     expect(block).not.toMatch(/animation|@keyframes|transition/);

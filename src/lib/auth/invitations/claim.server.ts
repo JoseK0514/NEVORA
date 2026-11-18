@@ -1,5 +1,6 @@
 import 'server-only';
 import {randomUUID} from 'node:crypto';
+import {reportHandledServerError} from '@/lib/server-error';
 import type {Workspace} from '@/lib/domain';
 import type {SqlExecutor,SqlStatement} from '@/lib/notifications/types';
 import {neonNotificationExecutor} from '@/lib/data/notification-transactions';
@@ -46,6 +47,9 @@ function failure(error:unknown,commitAttempted:boolean,aborted:boolean):Activati
  const message=error instanceof Error?error.message:'';
  const code=error&&typeof error==='object'&&'code'in error?String(error.code):'';
  if(message.includes('company_access_claim_invalid')||message.includes('company_access_invitation_expired')||message.includes('workspace_version_conflict')||code==='23505')return {state:'invalid'};
+ if(aborted&&!commitAttempted)return {state:'invalid'};
+ // Not a refusal: logged once (sanitized) so the 503 can carry a Support reference.
+ reportHandledServerError(error,'/api/auth/activate');
  if(commitAttempted&&(!/^[0-9A-Z]{5}$/.test(code)||code.startsWith('08')))return {state:'outcome_unknown'};
  return {state:aborted?'invalid':'unavailable'};
 }

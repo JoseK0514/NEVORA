@@ -31,3 +31,7 @@
 :is(#c-root, html) body .c-ehome .ma-onboarding .ma-onboarding-intro { display: flex; gap: 12px; padding: 14px 16px 0; }
 :is(#c-root, html) body .c-ehome .ma-onboarding .ma-onboarding-intro h2 { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
 :is(#c-root, html) .c-ehome .c-ehome__act { color: var(--c-teal); font-size: 15px; line-height: 20px; font-weight: 600; white-space: nowrap; }
+/* Phase 7 (Nov 17, 2026; UI-7, RA-21): reduced motion. The feedback above still shows; it no longer fades. */
+@media (prefers-reduced-motion: reduce) {
+  :is(#c-root, html) .c-ehome a.c-ehome__shift { transition: none; }
+}

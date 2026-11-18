@@ -1226,3 +1226,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 }
 /* Review QA 47/50: anchors opened under the sticky header landed past their heading. */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is([id^="rules-"], .manager-issue-target):not(#cm-anchor) { scroll-margin-top: 76px; }
+/* Phase 7 (Nov 17, 2026; RA-21): this movement had no reduced-motion rule. */
+@media (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .cm-disclosure .inbox-group-caret { transition: none; }
+}

@@ -6,7 +6,7 @@ import type {Employee,Workspace} from '@/lib/domain';
 import type {SqlExecutor} from '@/lib/notifications/types';
 import type {SessionMutationProof} from '@/lib/shift-changes/types';
 import {getWorkspace,workspaceReadGuard} from '@/lib/data/workspaces';
-import {getEmployeeManagementProfile} from '@/lib/data/employees';
+import {getEmployeeEmploymentDates,getEmployeeManagementProfile} from '@/lib/data/employees';
 import {employeeAllowedLocationsSql} from '@/lib/data/employee-schedule';
 import type {CatalogLocation} from '@/lib/data/locations';
 import {neonNotificationExecutor,pendingPublicationChanges,readNotificationWeekState} from '@/lib/data/notification-transactions';
@@ -194,9 +194,13 @@ export async function readOperationalClockMonitor(proof:SessionMutationProof,ex:
  },ex);
 }
 /** Company-only full profile read. Owners additionally receive scope controls
- * only when their separate target-scope read matches the profile's exact version. */
-export async function readOperationalEmployeeProfile(proof:SessionMutationProof,employeeId:string,ex:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<OperationalEmployeeProfileData>>{
- return read(proof,async ctx=>{
+ * only when their separate target-scope read matches the profile's exact version.
+ * `employmentDates` (the edit form only) adds hire, termination and birth dates
+ * when the actor may edit this person's core profile: an Owner, or a Manager for
+ * a non-Owner (the same rule the core profile writer enforces). They must match
+ * the profile's exact version too; otherwise the read reports source_changed. */
+export async function readOperationalEmployeeProfile(proof:SessionMutationProof,employeeId:string,ex:SqlExecutor=neonNotificationExecutor(),options:{employmentDates?:boolean}={}):Promise<OperationalRead<OperationalEmployeeProfileData>>{
+ return read<OperationalEmployeeProfileData>(proof,async ctx=>{
   if(!id(employeeId))return deny();
   const catalog=await locations(ctx),profile=await getEmployeeManagementProfile(employeeId,ex);
   if(!profile||!catalog.some(l=>l.id===profile.primaryLocationId)||profile.eligibleLocationIds.some(id=>!catalog.some(l=>l.id===id)))return deny();
@@ -204,6 +208,11 @@ export async function readOperationalEmployeeProfile(proof:SessionMutationProof,
   if(ctx.view.role==='OWNER'){
    const context=await readOwnerOperationalScope(proof,employeeId,ex);if(context.state!=='ready')throw new ReadFailure(context.reason);
    if(context.data.current.employeeUpdatedAt!==profile.updatedAt)throw new ReadFailure('source_changed');ownerScope=context.data.current;
+  }
+  if(options.employmentDates&&(ctx.view.role==='OWNER'||profile.role!=='OWNER')){
+   const dates=await getEmployeeEmploymentDates(employeeId,ex);
+   if(!dates||dates.updatedAt!==profile.updatedAt)throw new ReadFailure('source_changed');
+   return {data:{profile,locations:catalog,ownerScope,employmentDates:{hireDate:dates.hireDate,terminationDate:dates.terminationDate,birthDate:dates.birthDate}}};
   }
   return {data:{profile,locations:catalog,ownerScope}};
  },ex,true);

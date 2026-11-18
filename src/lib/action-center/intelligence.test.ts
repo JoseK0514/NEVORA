@@ -3,8 +3,10 @@ import { describe, expect, it } from 'vitest';
 import type { ActionFact, ActionIntelligenceInput, SourceKey } from './intelligence';
 import { buildManagerActionItems } from '../assistance/manager-actions';
 import { projectAttendance } from '../attendance/project';
+import type { ObservationKind } from '../attendance/types';
 import { parseManagerTimeCorrections } from '../time-corrections/read-model';
 import { parseTimecardsResponse } from '../timecards/read-model';
+import { ALL_OBSERVATION_KINDS } from '@/test/fixtures/attendance-exceptions';
 
 // The initial RED run reports behavior assertions rather than a missing-module
 // collection error. This test still requires the actual implementation to exist.
@@ -414,6 +416,19 @@ describe('F1 compatibility with current pure source contracts', () => {
     const canonical = buildManagerActionItems({ weekStart: '2026-10-05', availabilityDeadlineSet: true, coverageRulesConfigured: true, coverageGaps: [payload] })[0];
     expect(ready(add(input(), 'scheduling', row)).items[0]).toMatchObject({ title: canonical.title, priority: canonical.priority,
       reason: { code: values.expectedCode, text: canonical.detail }, nextAction: { href: canonical.href }, relevantAt: '2026-10-10T12:00:00Z' });
+  });
+  it.each(ALL_OBSERVATION_KINDS)('accepts the %s attendance observation kind as one review row', kind => {
+    const row = attendance();
+    if (row.kind === 'ATTENDANCE') row.payload.observations = [{ id: 'observation', kind }];
+    const result = ready(add(input(), 'attendance', row));
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0]).toMatchObject({ id: 'ATTENDANCE:entry', type: 'ATTENDANCE', priority: 'REVIEW',
+      reason: { code: 'RECORDED_ATTENDANCE_OBSERVATIONS', text: 'Alex · 1 recorded observations.' } });
+  });
+  it('rejects an attendance observation kind the engine does not produce', () => {
+    const row = attendance();
+    if (row.kind === 'ATTENDANCE') row.payload.observations = [{ id: 'observation', kind: 'OPEN_TOO_LONG' as ObservationKind }];
+    expect(ready(add(input(), 'attendance', row))).toMatchObject({ state: 'partial', allClear: false, items: [] });
   });
   it('accepts actual D1 projection observations without carrying raw messages/evidence', () => {
     const canonical = projectAttendance({ version: 1, workspaceId: 'tenant-a', timeZone: 'America/Puerto_Rico', observedAt: NOW,

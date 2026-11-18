@@ -1,5 +1,7 @@
-import { SettingsLoading } from "../../wave-c-loading";
+import { RouteSkeleton } from "@/components/route-skeleton";
 
+/** Phase 7 (package C): the page's own placeholder in the Direction B frame (its shape is this address's entry in
+ * b-loading.tsx). The older Settings placeholder drew no band on a phone and ended its band 46px low on desktop. */
 export default function Loading() {
-  return <SettingsLoading back={{ href: "/app/settings/locations", label: "Locations" }} eyebrow title={<span className="wc-skeleton__title" />} summary="Names and status your team sees, and this location’s Clocker link." label="the location" cards={[2, 1]} />;
+  return <RouteSkeleton label="Location" shape="list" />;
 }

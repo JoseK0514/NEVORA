@@ -236,3 +236,7 @@ html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-a
   html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item { min-height: 40px !important; }
   html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) { min-width: 280px; }
 }
+/* Phase 7 (Nov 17, 2026; UI-7, RA-21): reduced motion. The feedback above still shows; it no longer fades. */
+@media (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block { transition: none; }
+}

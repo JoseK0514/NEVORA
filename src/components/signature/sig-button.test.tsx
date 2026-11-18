@@ -40,7 +40,7 @@ describe('SigButton', () => {
     expect(html).toContain('Saving…');
     expect(html).toContain('Save usual week');
     expect(html).toContain('sig-btn__spin');
-    expect(html).toMatch(/<svg[^>]*aria-hidden="true"/);
+    expect(html).toContain('<span class="sig-btn__spin" aria-hidden="true"></span>');
     // The idle words are hidden (and so out of the accessible name); the pending cell is shown.
     expect(html).toMatch(/class="sig-btn__idle" style="visibility:hidden"/);
     expect(html).toMatch(/class="sig-btn__busy">/);

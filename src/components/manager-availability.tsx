@@ -12,6 +12,8 @@ import { getUpcomingAvailabilityWeek, getWeekSettings } from "@/lib/data/week-se
 import { weekStartFor } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
 import { readNotificationConfig } from "@/lib/notifications/config";
+import { communicationAuthority } from "@/lib/communications/service.server";
+import { formatWeekRange } from "@/lib/date-utils";
 import { QuietHeader, QuietList, QuietNav, QuietPage, QuietRow, weekLabel } from "./quiet/quiet";
 
 /** Phase 3.5 Wave A: Team availability on the kit. The week in the band, the counts and the deadline in one card,
@@ -22,7 +24,8 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
   await requireRoles(MANAGER_ROLES);
   const validWeek = Boolean(week && /^\d{4}-\d{2}-\d{2}$/.test(week) && Number.isFinite(new Date(`${week}T12:00:00Z`).getTime()) && weekStartFor(week) === week);
   const invalidWeek = Boolean(week && !validWeek);
-  const source=await withOperationalCompany(await requireSessionMutationProof(),async()=>{
+  const proof=await requireSessionMutationProof();
+  const source=await withOperationalCompany(proof,async()=>{
   const upcoming = validWeek ? null : await getUpcomingAvailabilityWeek(currentWeek);
   const selectedWeek = validWeek ? week! : upcoming?.weekStart ?? currentWeek;
   const [settings, statuses, windows, employees, locations] = await Promise.all([
@@ -50,12 +53,19 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
   // Quiet (v4, approved Oct 23): the week and the count under the title, the deadline as one row, then the people.
   const remindersOn = readNotificationConfig(process.env).featureEnabled;
   const deadlineDay = settings?.availabilityDeadline ? new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short", month: "short", day: "numeric" }).format(new Date(settings.availabilityDeadline)) : null;
+  // Reminders (U10): the command needs the session's communication authority (the same value the Updates pages hand
+  // their client), the week and its exact deadline. A week with no deadline, or a closed one, offers no reminder.
+  let authority: string | undefined;
+  try { authority = communicationAuthority(proof); } catch { authority = undefined; }
+  const deadlineAt = settings?.availabilityDeadline ? new Date(settings.availabilityDeadline) : null;
+  const remind = authority && deadlineAt && Number.isFinite(deadlineAt.getTime()) && !locked && (proof.employee.role === "OWNER" || proof.employee.role === "MANAGER")
+    ? { authority, timeZone, actor: proof.employee.role, weekStart: selectedWeek, expectedDeadline: deadlineAt.toISOString(), week: keepWhole(formatWeekRange(selectedWeek).split(/\s+[–-]\s+/)[0]) } : null;
   return (<ScopedReadFrame observation={source}>
     <QuietPage className="q-availability">
       <QuietNav back={{ href: "/app/inbox", label: "Things to do" }} />
       <QuietHeader title="Availability" sub={`${keepWhole(weekLabel(selectedWeek))} · ${statuses.length - notSubmitted} of ${statuses.length} sent`} />
       {/* Closing F1 (NV-261): Not sent / Sent sit right under the title (in the band); the notice and the deadline follow. */}
-      <AvailabilityTeamList employees={reviewEmployees} employeeId={employeeId} before={<>
+      <AvailabilityTeamList employees={reviewEmployees} employeeId={employeeId} remind={remind} needsDeadline={!deadlineAt} before={<>
         {invalidWeek ? <p className="q-error q-first" role="alert">That week isn’t valid, so this is the upcoming week.</p> : null}
         <QuietList style={{ marginTop: 16 }}>
           {/* Phase 3 (MG-016): the row says what a deadline does. The reminder goes out 24 hours before the deadline

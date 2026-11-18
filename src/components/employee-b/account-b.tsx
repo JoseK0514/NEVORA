@@ -15,6 +15,7 @@ import {FlagIcon} from '@phosphor-icons/react/dist/ssr/Flag';
 import {ScalesIcon} from '@phosphor-icons/react/dist/ssr/Scales';
 import {TrashIcon} from '@phosphor-icons/react/dist/ssr/Trash';
 import {LockSimpleIcon} from '@phosphor-icons/react/dist/ssr/LockSimple';
+import {SignOutIcon} from '@phosphor-icons/react/dist/ssr/SignOut';
 import {BButtonLink, BCard, BHero, BIcon, BList, BRow, BScreen, BStack, initialsOf} from '../owner-b/b-kit';
 import {PortalSignout} from '../portal-signout';
 import {BlockView, shortTitle} from '../legal/legal-document';
@@ -62,9 +63,11 @@ export function EmployeeMoreB({name, place, availability, has, count}: {
           <BRow href="/privacy" lead={grey(<ShieldCheckIcon weight="bold" />)} title="Privacy and terms" sub="Privacy policy and terms of use" />
         </BList>
       </BCard>
-      <section className="b-card eb-signout" aria-label="Sign out">
-        <PortalSignout><button type="submit" className="eb-signout__btn">Sign out</button></PortalSignout>
-      </section>
+      {/* Phase 4 (EM-028): Sign out is a control, not a card: a quiet pill with the glyph, under the cards (hugging its
+        * label on tablets and desktop, the column's width on phones), as on the Owner's More. */}
+      <div className="eb-signout">
+        <PortalSignout><button type="submit" className="eb-signout__btn"><SignOutIcon size={18} weight="bold" aria-hidden="true" />Sign out</button></PortalSignout>
+      </div>
     </BStack>
   </BScreen>;
 }

@@ -26,6 +26,7 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    const activeBrowser=await runtime[engine].launch({headless:true});browser=activeBrowser;
    const context=await activeBrowser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});
    // Light is the default since PR36; this journey's theme checks follow the device, which is the explicit System choice.
+   // B2: the theme script now clears this stored choice and fixes Light (Direction B is light only).
    await context.addInitScript(()=>{try{localStorage.setItem('nv-theme','system');}catch{}});
    const page=await context.newPage();
    page.setDefaultTimeout(15000);page.setDefaultNavigationTimeout(30000);
@@ -41,27 +42,34 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    // Viewport captures only: a full-page capture turns touch emulation off in installed Chromium.
    const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,style:'nextjs-portal {visibility:hidden;}',caret:'initial'});captures.push(file);};
    failed=async()=>{await shot('failure');await writeFile(evidence+'/'+engine+'-failure.html',await page.locator('body').innerHTML());await writeFile(evidence+'/'+engine+'-pending.json',JSON.stringify([...pending.values()],null,2));};
-   const dark=async(name:string)=>{await page.emulateMedia({colorScheme:'dark'});await expect.poll(()=>page.locator('html').getAttribute('data-theme')).toBe('dark');await shot(name+'-dark');await page.emulateMedia({colorScheme:'light'});await expect.poll(()=>page.locator('html').getAttribute('data-theme')).toBe('light');};
+   // B2: Direction B is light only (review B1, NV-067, src/lib/theme.ts): a dark device keeps data-theme="light", so the dark captures prove the page stays light.
+   const dark=async(name:string)=>{await page.emulateMedia({colorScheme:'dark'});await expect.poll(()=>page.locator('html').getAttribute('data-theme')).toBe('light');await shot(name+'-dark');await page.emulateMedia({colorScheme:'light'});await expect.poll(()=>page.locator('html').getAttribute('data-theme')).toBe('light');};
    const forwardKey=engine==='webkit'&&process.platform==='darwin'?'Alt+Tab':'Tab';
    const focused=(locator:{evaluate(fn:(el:HTMLElement)=>boolean):Promise<boolean>})=>locator.evaluate((el:HTMLElement)=>document.activeElement===el);
    // Board E-DeleteAccount (Release 1): Employees and Leads get one corporate page on every width; its state is on the page's stack.
-   const state=(kind:string)=>page.locator(`.em-delete [data-deletion-state="${kind}"]`).waitFor();
+   // B2 (Phase 4): the phone screen (EmployeeDeleteB) draws the receipt and the ended outcomes itself and the form's stack,
+   // which still carries data-deletion-state, is then hidden; the state is read from the stack and the visible B2 title.
+   const state=async(kind:string)=>{await page.locator(`.em-delete [data-deletion-state="${kind}"]`).waitFor({state:'attached'});
+    await page.locator(['received','duplicate'].includes(kind)?'.em-delete #b-deletion-done-title':['signed_out','changed'].includes(kind)?'.em-delete #b-deletion-ended-title':`.em-delete [data-deletion-state="${kind}"]`).waitFor();};
    const own=()=>q<{reference:string;status:string}>("SELECT reference,status FROM account_deletion_requests WHERE employee_id=$1",[actor]);
    const sessions=async(id:string)=>(await q<{n:number}>('SELECT count(*)::int n FROM employee_sessions WHERE employee_id=$1',[id]))[0].n;
    const login=async(target:typeof page,id:string)=>{const copy=AUTH_COPY.en;await target.getByLabel(copy.employeeId,{exact:true}).fill(id);await target.getByLabel(copy.password,{exact:true}).fill(TEST_PASSWORD);await target.getByRole('button',{name:copy.signIn,exact:true}).click();await target.waitForURL(app.url+'/app');};
    const matrix=async(name:string,subjects:[string,string][])=>{
     for(const theme of ['light','dark'])for(const width of [320,390,430]){
-     await page.emulateMedia({colorScheme:theme as 'light'|'dark'});await page.setViewportSize({width,height:844});await expect.poll(()=>page.locator('html').getAttribute('data-theme')).toBe(theme);
+     await page.emulateMedia({colorScheme:theme as 'light'|'dark'});await page.setViewportSize({width,height:844});/* B2: light only; under a dark device the page stays light and every check below still runs. */await expect.poll(()=>page.locator('html').getAttribute('data-theme')).toBe('light');
      expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+     // B2: the kept form enters with a short fade (eb-keep-fade under reduced motion); paint is measured once finite animations finish.
+     await page.evaluate(()=>Promise.all(document.getAnimations().filter(a=>a.effect?.getTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>undefined))));
      for(const [subject,selector] of subjects){const measured=await page.locator(selector).first().evaluate(measureRenderedContrast);contrasts.push({engine,theme,width,subject,ratio:measured.ratio});expect(measured.ratio,subject).toBeGreaterThanOrEqual(4.5);}
      const small=await page.locator('.em-delete :is(a,button,summary,label.em-delete-check,input:not([type=hidden]):not([type=checkbox]))').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.checkVisibility({visibilityProperty:true,opacityProperty:true})&&!el.closest('p')&&el.getBoundingClientRect().height<43.5).map(el=>el.outerHTML.slice(0,80)));expect(small).toEqual([]);
-     /* The kit's pushed-page title token (17px) replaces the v5 32px title on a phone. A Lead's v5 shell also shows the wide title (reported), so the first visible title is measured. */expect(await page.locator('.em-delete h1:visible').first().evaluate((el:HTMLElement)=>getComputedStyle(el).fontSize)).toBe('17px');
-     const inset=await page.locator('.em-delete .c-card').evaluateAll((cards:HTMLElement[])=>cards.flatMap(card=>{const box=card.getBoundingClientRect();return [...card.querySelectorAll<HTMLElement>('svg,strong,p,h2,h3,.c-row__title,.em-delete-detail')].filter(el=>{const r=el.getBoundingClientRect();return r.width>0&&(r.left<box.left+15.5||r.right>box.right-15.5);}).map(el=>el.textContent||el.tagName);}));expect(inset).toEqual([]);
+     // B2: the pushed-page title is the Direction B hero's display token (--b-fs-display, 30px), not the corp kit's 17px nav title; the first visible title is measured.
+     expect(await page.locator('.em-delete h1:visible').first().evaluate((el:HTMLElement)=>getComputedStyle(el).fontSize)).toBe('30px');
+     /* B2: the screen's cards are .b-card (the corp .c-card copies are hidden on a phone); their notices and rows are measured too. */const inset=await page.locator('.em-delete :is(.c-card,.b-card)').evaluateAll((cards:HTMLElement[])=>cards.flatMap(card=>{const box=card.getBoundingClientRect();return [...card.querySelectorAll<HTMLElement>('svg,strong,p,h2,h3,.c-row__title,.em-delete-detail,.b-notice__t,.b-notice__s,.b-row__tt')].filter(el=>{/* B2: a padded paragraph (eb-pad) spans its card; its text starts inside the padding, so the content box is measured. */const r=el.getBoundingClientRect(),cs=getComputedStyle(el),left=r.left+parseFloat(cs.paddingLeft),right=r.right-parseFloat(cs.paddingRight);return r.width>0&&(left<box.left+15.5||right>box.right-15.5);}).map(el=>el.textContent||el.tagName);}));expect(inset).toEqual([]);
      await page.evaluate(()=>scrollTo(0,0));await shot(name+'-'+theme+'-'+width+'-top');await page.evaluate(()=>scrollTo(0,document.body.scrollHeight));await shot(name+'-'+theme+'-'+width);
     }
     await page.setViewportSize({width:320,height:844});await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-    /* The page's last action, centred as a person scrolling would (a fixed tab bar can cover an in-view control). */const last=page.locator('.em-delete :is(.em-delete-confirm,form:not(.em-delete-form) button,.c-card a.c-btn)').last();await last.evaluate((el:HTMLElement)=>el.scrollIntoView({block:'center'}));
+    /* The page's last action, centred as a person scrolling would (a fixed tab bar can cover an in-view control). *//* B2: the hidden corp receipt keeps its own Done, so the last visible action is taken. */const last=page.locator('.em-delete :is(.em-delete-confirm,form:not(.em-delete-form) button,.c-card a.c-btn,.b-card a.b-btn):visible').last();await last.evaluate((el:HTMLElement)=>el.scrollIntoView({block:'center'}));
     expect(await last.evaluate((el:HTMLElement)=>{const nav=document.querySelector<HTMLElement>('.mobile-nav');const limit=nav&&getComputedStyle(nav).display!=='none'?nav.getBoundingClientRect().top:innerHeight;return el.getBoundingClientRect().bottom<=limit+1;})).toBe(true);
     expect(await page.locator('.em-delete-link').evaluateAll((els:HTMLElement[])=>els.filter(el=>getComputedStyle(el).hyphens!=='none').length)).toBe(0);
     await shot(name+'-text200');await page.evaluate(()=>{document.documentElement.style.fontSize='';});await page.setViewportSize({width:390,height:844});await page.emulateMedia({colorScheme:'light'});
@@ -69,25 +77,25 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
 
    await page.goto(app.url+'/login');await login(page,actor);await idle();
    stage='open-from-profile';/* An Employee reaches More from the header avatar (corporate shell); a Lead from its More tab. */await page.locator('a[href="/app/more"]:visible').first().click();await page.waitForURL(app.url+'/app/more');await page.locator('a[href="/app/profile"]:visible').first().click();await page.waitForURL(app.url+'/app/profile');
-   await page.locator('a#profile-account-deletion').click();await page.waitForURL(app.url+'/app/account/delete');await state('idle');await idle();
+   /* B2: the visible Profile row is the Direction B screen's. */await page.locator('a#b-profile-account-deletion').click();await page.waitForURL(app.url+'/app/account/delete');await state('idle');await idle();
    const body=await page.locator('.em-delete').innerText();
    for(const text of ['What we delete','keeps','What may be kept','Enter your password to confirm','with your password or a passkey','This can’t be undone.',POLICY_FACTS.DELETION_COMPLETION_PERIOD!])expect(body).toContain(text);
    expect(await page.locator('.em-delete input[name="account"]').inputValue()).toBe(actor);
    expect(body.indexOf('What we delete')).toBeLessThan(body.indexOf('Enter your password to confirm'));
-   /* The retention disclosure moved to the What may be kept page (board); its schedule is there. */await page.getByRole('link',{name:'What may be kept',exact:true}).click();await page.waitForURL(app.url+'/app/profile/account-deletion');const kept=page.locator('details.em-document-section').filter({has:page.locator('summary',{hasText:'What may be kept'})});await kept.locator('summary').click();expect(await kept.innerText()).toContain(POLICY_FACTS.RETENTION_SCHEDULE!.slice(0,60));await page.goBack();await page.waitForURL(app.url+'/app/account/delete');await state('idle');
+   /* The retention disclosure moved to the What may be kept page (board); its schedule is there. */await page.getByRole('link',{name:'What may be kept',exact:true}).click();await page.waitForURL(app.url+'/app/profile/account-deletion');/* B2: the policy page is the Direction B screen; its later sections are rows in #b-doc-sections. */const kept=page.locator('#b-doc-sections details.eb-doc__sec').filter({has:page.locator('summary',{hasText:'What may be kept'})});await kept.locator('summary').click();expect(await kept.innerText()).toContain(POLICY_FACTS.RETENTION_SCHEDULE!.slice(0,60));await page.goBack();await page.waitForURL(app.url+'/app/account/delete');await state('idle');
    record('Profile row opens the deletion review: own account, actual consequences, retention disclosure, password last');
-   await matrix('review',[['title','.em-delete h1:visible'],['consequence','.em-delete-copy p'],['confirm','.em-delete-confirm'],['back','.em-delete .c-nav__back'],['label','.em-delete .c-field__label'],['undone','.em-delete-form > .c-note']]);
+   /* B2: consequences are the screen's notices, back is the hero's link, and "This can’t be undone." sits in the form's Confirm it’s you group. */await matrix('review',[['title','.em-delete h1:visible'],['consequence','#b-deletion-effects .b-notice__s'],['confirm','.em-delete-confirm'],['back','.em-delete .b-back'],['label','.em-delete .c-field__label'],['undone','.em-delete-form .eb-confirm > .c-note']]);
    record('Review light/dark at 320/390/430, sampled contrast, 44px targets, token type, 200% text with actions above navigation');
 
-   /* Board: Keep my account is the page's ‹ Profile back link. */stage='keep-account';await page.locator('.em-delete .c-nav__back').click();await page.waitForURL(app.url+'/app/profile#profile-account-deletion');
-   await expect.poll(()=>focused(page.locator('a#profile-account-deletion'))).toBe(true);
-   await page.locator('a#profile-account-deletion').click();await page.waitForURL(app.url+'/app/account/delete');await state('idle');
+   /* Board: Keep my account is the page's ‹ Profile back link. */stage='keep-account';/* B2: the hero's ‹ Profile link. */await page.locator('.em-delete .b-back').click();await page.waitForURL(app.url+'/app/profile#profile-account-deletion');
+   await expect.poll(()=>focused(page.locator('a#b-profile-account-deletion'))).toBe(true);
+   await page.locator('a#b-profile-account-deletion').click();await page.waitForURL(app.url+'/app/account/delete');await state('idle');
    record('Back to Profile (Keep my account) returns with focus on the exact Delete row');
 
    stage='validation';await page.locator('.em-delete-confirm').click();
    await page.locator('#deletion-password-error').waitFor();await expect.poll(()=>focused(page.locator('#deletion-password'))).toBe(true);
    expect(await page.locator('#deletion-password').getAttribute('aria-describedby')).toBe('deletion-password-help deletion-password-error');
-   const semanticRed=(selector:string)=>page.locator(selector).evaluate((el:HTMLElement)=>{const probe=document.createElement('span');probe.style.color='var(--c-red)';el.parentElement!.append(probe);const red=getComputedStyle(probe).color;probe.remove();return getComputedStyle(el).color===red;});
+   const semanticRed=(selector:string)=>page.locator(selector).evaluate((el:HTMLElement)=>{const probe=document.createElement('span');/* B2: the form's errors use the Direction B red token. */probe.style.color='var(--b-red)';el.parentElement!.append(probe);const red=getComputedStyle(probe).color;probe.remove();return getComputedStyle(el).color===red;});
    expect(await semanticRed('#deletion-password-error')).toBe(true);
    await page.locator('#deletion-password').fill('fictional-wrong-password');await page.keyboard.press('Enter');
    await page.locator('#deletion-understand-error').waitFor();await expect.poll(()=>focused(page.locator('#deletion-understand'))).toBe(true);
@@ -133,18 +141,18 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    record('A reply lost after COMMIT shows an unconfirmed outcome on the same page: no false failure, no invented reference');
 
    stage='recover';expect(await page.locator('#deletion-password').inputValue()).toBe('');await page.locator('#deletion-password').fill(TEST_PASSWORD);await page.getByRole('button',{name:'Check my request',exact:true}).click();await state('received');
-   await expect.poll(()=>focused(page.locator('.em-delete .c-card[aria-labelledby="deletion-done-title"]'))).toBe(true);
-   expect(await page.locator('.em-delete-reference-value').innerText()).toBe(saved.reference);expect((await own()).length).toBe(1);
+   /* B2: the receipt card on screen is the Direction B one. */await expect.poll(()=>focused(page.locator('.em-delete .b-card[aria-labelledby="b-deletion-done-title"]'))).toBe(true);
+   expect(await page.locator('.em-delete .eb-ref__v').innerText()).toBe(saved.reference);expect((await own()).length).toBe(1);
    const receipt=await page.locator('.em-delete').innerText();
    for(const text of ['Your deletion request was received','Changed your mind? Contact support before the request is processed.','Received','You’re signed out everywhere','we’ll email you when it’s done','We’ll never ask for your password'])expect(receipt).toContain(text);
-   expect(await page.locator('.em-delete .c-nav__back').count()).toBe(0);expect(await page.locator('#deletion-password').count()).toBe(0);expect(await page.locator('.em-delete h1:visible').first().innerText()).toBe('Deletion requested');
+   expect(await page.locator('.em-delete :is(.c-nav__back,.b-back)').count()).toBe(0);expect(await page.locator('#deletion-password').count()).toBe(0);expect(await page.locator('.em-delete h1:visible').first().innerText()).toBe('Deletion requested');
    expect(await page.locator('.mobile-nav').evaluate((el:HTMLElement)=>getComputedStyle(el).display)).toBe('none');
-   expect(await page.locator(`a[href="mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Account deletion '+saved.reference)}"]`).count()).toBe(1);
+   /* B2: the hidden corp receipt keeps its own copy of the link; the visible one is counted. */expect(await page.locator(`a[href="mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Account deletion '+saved.reference)}"]:visible`).count()).toBe(1);
    if(engine==='chromium')await context.grantPermissions(['clipboard-read','clipboard-write'],{origin:app.url});
-   await page.getByRole('button',{name:'Copy reference',exact:true}).click();await expect.poll(()=>page.locator('.em-delete-copied').innerText()).toMatch(/^(Reference copied\.|Couldn’t copy\. Write the reference down instead\.)$/);
+   await page.getByRole('button',{name:'Copy reference',exact:true}).click();await expect.poll(()=>page.locator('.em-delete .eb-copied').innerText()).toMatch(/^(Reference copied\.|Couldn’t copy\. Write the reference down instead\.)$/);
    if(engine==='chromium')expect(await page.evaluate(()=>navigator.clipboard.readText())).toBe(saved.reference);
    record('Check my request recovers the committed reference with a counted password check after every session ended');
-   await matrix('receipt',[['title','.em-delete h1:visible'],['status','#deletion-done-title'],['reference','.em-delete-reference-value'],['time','.em-delete-reference-time'],['next','.em-delete-detail'],['done','.em-delete form:not(.em-delete-form) button']]);
+   /* B2: the receipt's status, reference, time, next steps and Done are the Direction B screen's. */await matrix('receipt',[['title','.em-delete h1:visible'],['status','#b-deletion-done-title'],['reference','.em-delete .eb-ref__v'],['time','.em-delete .eb-ref .b-row__s'],['next','#b-deletion-next .b-notice__s'],['done','.em-delete .b-screen form button']]);
    record('Receipt light/dark at 320/390/430, contrast, targets, 200% text with Done above navigation');
 
    stage='done';await page.getByRole('button',{name:'Done',exact:true}).click();await page.waitForURL(app.url+'/login');await idle();
@@ -162,12 +170,12 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
     if(metrics.coarse){
      await other.locator('.em-delete [data-deletion-state="idle"]').waitFor();expect(await other.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
      const small=await other.locator('.em-delete :is(a,button,summary,label.em-delete-check)').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.checkVisibility()&&!el.closest('p')&&el.getBoundingClientRect().height<43.5).length);expect(small).toBe(0);
-     const confirm=other.locator('.em-delete-confirm');await confirm.evaluate((el:HTMLElement)=>el.scrollIntoView({block:'center'}));expect(await confirm.evaluate((el:HTMLElement)=>{const nav=document.querySelector('.mobile-nav');return !nav||el.getBoundingClientRect().bottom<=nav.getBoundingClientRect().top+1;})).toBe(true);
+     const confirm=other.locator('.em-delete-confirm');await confirm.evaluate((el:HTMLElement)=>el.scrollIntoView({block:'center'}));/* B2: a phone held sideways gets the tablet layout (rail, no tab bar): .mobile-nav stays in the DOM with display:none, so its empty box is not the limit; as in the matrix, the viewport is. */expect(await confirm.evaluate((el:HTMLElement)=>{const nav=document.querySelector<HTMLElement>('.mobile-nav');const limit=nav&&getComputedStyle(nav).display!=='none'?nav.getBoundingClientRect().top:innerHeight;return el.getBoundingClientRect().bottom<=limit+1;})).toBe(true);
      const file=engine+'-landscape-coarse.png';await other.screenshot({path:evidence+'/'+file,style:'nextjs-portal {visibility:hidden;}'});captures.push(file);
      record('Genuine coarse landscape ('+metrics.touchPoints+' touch points): deletion review, targets, no overflow, actions above navigation');
      await q('DELETE FROM employee_sessions WHERE employee_id=$1',[landscapeActor]);
      await other.locator('#deletion-password').fill(TEST_PASSWORD);await other.locator('#deletion-understand').check();await other.locator('.em-delete-confirm').click();
-     await other.locator('.em-delete [data-deletion-state="signed_out"]').waitFor();expect(await other.locator('.em-delete').innerText()).toContain('nothing was deleted');expect(await other.locator('a[href="/login"]').count()).toBeGreaterThan(0);
+     /* B2: the ended outcome is the Direction B screen's; the stack keeps the state. */await other.locator('.em-delete [data-deletion-state="signed_out"]').waitFor({state:'attached'});await other.locator('.em-delete #b-deletion-ended-title').waitFor();expect(await other.locator('.em-delete').innerText()).toContain('nothing was deleted');expect(await other.locator('a[href="/login"]').count()).toBeGreaterThan(0);
      const ended=engine+'-landscape-signed-out.png';await other.screenshot({path:evidence+'/'+ended,style:'nextjs-portal {visibility:hidden;}'});captures.push(ended);
      record('A session that ended elsewhere: the password check finds no request and says nothing was deleted, with Sign in');
     }else{

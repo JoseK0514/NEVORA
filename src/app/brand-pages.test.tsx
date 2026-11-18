@@ -38,7 +38,7 @@ it("brands login as NEVORA Workforce with the configured workspace and Velani ow
 // Activation follows development's email-invitation page until it gets its own Signature mock.
 it("brands activation with the workspace and Velani ownership", async () => {
   const html = renderToStaticMarkup(await ActivatePage({ searchParams: Promise.resolve({}) }));
-  expect(html).toContain("Activate account");
+  expect(html).toContain("Set up your account");
   expect(html).toContain("Northside Services");
   expect(html).not.toContain("Fuel Coffee Drive");
   expect(html).toContain("© 2026 VELANI LLC");

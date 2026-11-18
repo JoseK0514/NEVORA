@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
+import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 
 /* Review B4 (Nov 10, 2026, NV-190): the sign-in, recovery, reset and activation forms say what is missing under the field,
  * in the page's language and in Direction B red, instead of the browser's own bubble. Progressive: until this hydrates
@@ -58,7 +59,14 @@ export function AuthValidation() {
   return <span ref={marker} hidden />;
 }
 
-/** The message line under a field; empty (and hidden by CSS) until the field fails a check. */
+/** The message line under a field; empty (and hidden by CSS) until the field fails a check.
+ * U11 (Nov 17, 2026): the one error style of the Phase 3 forms rule (DESIGN.MD): a 16px bold warning glyph, red 13.5/18,
+ * no closing period. The glyph is always in the markup and the line shows only while its text is not empty. */
 export function FieldInvalid({ id }: { id: string }) {
-  return <span className="q-auth__invalid" id={`${id}-invalid`} />;
+  return <span className="q-auth__invalid"><WarningIcon size={16} weight="bold" aria-hidden="true" /><span id={`${id}-invalid`} /></span>;
+}
+
+/** The same line for an error the form itself decided (two passwords that differ): shown at once and announced. */
+export function FieldError({ id, children }: { id?: string; children: ReactNode }) {
+  return <span className="q-auth__invalid" data-on=""><WarningIcon size={16} weight="bold" aria-hidden="true" /><span id={id} role="alert">{children}</span></span>;
 }

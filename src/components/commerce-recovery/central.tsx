@@ -93,7 +93,11 @@ export function CentralBilling({apiOrigin,initialLanguage,returning=false,legal}
  const contact=notice?.contact||refusal==='quote'||refusal==='review';
  // JR-11: the workplace to go back to, from the status on screen or the last one this session showed.
  const known=ready?.status.applicationUrl?{url:ready.status.applicationUrl,name:ready.status.businessName}:home;
- const back=<a className={!ready||subscribed?styles.action:styles.secondary} href={known?known.url+'/app':'/login'}>{known?known.name?t.backTo(known.name):t.backWorkplace:t.backSignIn}</a>;
+ // Phase 5 (Nov 17, 2026): one filled button per state. The way back is that button only when nothing else can be
+ // done here (no status, or the subscription is confirmed); otherwise it is a text link with the page's other
+ // non-payment choices (Refresh status, Close billing), as the links under the sign-in card.
+ const primaryBack=!ready||subscribed;
+ const back=<a className={primaryBack?styles.action:styles.quiet} href={known?known.url+'/app':'/login'}>{known?known.name?t.backTo(known.name):t.backWorkplace:t.backSignIn}</a>;
  const language=<fieldset className={styles.language}><legend className={styles.srOnly}>{t.language}</legend><div className={styles.seg}>{(['en','es'] as const).map(value=><button key={value} type="button" lang={value} disabled={pending||opening} aria-pressed={lang===value} onClick={()=>{if(!client.current?.hasPending())setLang(value);}}>{value==='en'?'English':'Español'}</button>)}</div></fieldset>;
  return <RecoveryFrame lang={lang} language={language} legal={legal?.[lang]}><h1>{t.title}</h1><p>{t.intro}</p>
   <div aria-live="polite" aria-busy={link==='loading'||panel.refreshing}>
@@ -107,9 +111,12 @@ export function CentralBilling({apiOrigin,initialLanguage,returning=false,legal}
    {contact?<a className={subscribed?styles.secondary:styles.action} href={`mailto:${supportEmail}`}>{contactLabel(lang)}</a>:null}
    {ready&&!pending&&!confirming&&ready.status.billingAction!==null?<><button className={subscribed||contact?styles.secondary:styles.action} disabled={opening} type="button" onClick={()=>void financial(manage?'portal':'checkout')}>{opening?t.opening:manage?t.portal:t.checkout}</button>{manage&&ready.status.state==='paid'&&ready.status.plan==='small'?<button className={styles.secondary} type="button" disabled={opening||ready.status.activeEmployees>30} onClick={()=>void financial('team')}>{t.team}</button>:null}{manage&&ready.status.state==='paid'&&ready.status.plan==='team'&&ready.status.activeEmployees<=15?<button className={styles.secondary} type="button" disabled={opening} onClick={()=>void financial('small')}>{t.small}</button>:null}</>:null}
    {pending?<button className={contact?styles.secondary:styles.action} type="button" disabled={opening||!ready} onClick={()=>void financial()}>{opening?t.opening:t.retry}</button>:null}
-   {link==='ready'?<button className={styles.secondary} type="button" disabled={opening||panel.refreshing} onClick={refresh}>{t.refresh}</button>:null}
-   {subscribed?null:back}
-   {link==='ready'?<button className={styles.quiet} type="button" onClick={close}>{t.close}</button>:null}
+   {subscribed?null:primaryBack?back:null}
+   {link==='ready'||!primaryBack?<div className={styles.links}>
+    {link==='ready'?<button className={styles.quiet} type="button" disabled={opening||panel.refreshing} onClick={refresh}>{t.refresh}</button>:null}
+    {primaryBack?null:back}
+    {link==='ready'?<button className={styles.quiet} type="button" onClick={close}>{t.close}</button>:null}
+   </div>:null}
   </div><p className={styles.footer}>{t.change}</p><p className={styles.footer}>{t.note}</p>
  </RecoveryFrame>;
 }

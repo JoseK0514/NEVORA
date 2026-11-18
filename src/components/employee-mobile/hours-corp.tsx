@@ -3,6 +3,8 @@ import Link from 'next/link';
 import {useCallback,useEffect,useId,useRef,useState,useSyncExternalStore,type ReactNode} from 'react';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpField,CorpNote,CorpPill,CorpRow,CorpRows,CorpSegments,CorpStats,CorpTitle} from '../corp/corp';
+import {BState} from '../owner-b/b-kit';
+import {momentsCopy} from '../owner-b/moments-copy';
 import {addDays,weekStartFor} from '@/lib/date-utils';
 import type {EmployeeTimeEntry} from '@/lib/employee-time';
 import type {EmployeeHoursSnapshot,HoursView,HoursDecision,HoursCorrectionPayload} from '@/lib/employee-hours';
@@ -120,6 +122,7 @@ function DayCards({seconds:length,running,status,pill,line,punches,location,fix,
   {notes.map(note=><CorpNote key={note}>{note}</CorpNote>)}
  </>;
 }
+const M=momentsCopy();
 const entryPill=(state:EmployeeTimeEntry['state'])=>state==='CLOCKED_OUT'?<CorpPill>Completed</CorpPill>:state==='ON_BREAK'?<CorpPill tone="amber">On break</CorpPill>:<CorpPill tone="teal" dot>Clocked in</CorpPill>;
 const entryStatus=(state:EmployeeTimeEntry['state']):{word:string;tone:StatusTone}=>state==='CLOCKED_OUT'?{word:'Completed',tone:'grey'}:state==='ON_BREAK'?{word:'On break',tone:'amber'}:{word:'Clocked in',tone:'teal'};
 /** A recorded entry from the Time tab. */
@@ -296,8 +299,8 @@ export function CorpFixTime({snapshot,basis,edit,draft,onDraft,operation,isActiv
   <FixRecordedB requestId={operation.result.requestId} onReset={onReset} heading={receiptB}/>
   <CorpHoursSheetHead cancel={cancel} cancelLabel="Close"/>
   <CorpCard ariaLabel="Submission result"><CorpBody>
-   <h2 className="c-big" ref={receipt} tabIndex={-1}>Correction request sent</h2><span className="c-line2">Your manager reviews it. Open it to check its status.</span>
-   <div className="c-btns c-btns--stack c-hours-actions"><CorpButtonLink href={'/app/my-time?view=corrections&requestId='+operation.result.requestId}>View my request</CorpButtonLink><CorpButton kind="secondary" onClick={onReset}>Request another correction</CorpButton></div>
+   <div className="b-done-host--flush"><BState kind="done" heading titleRef={receipt} title={M.correctionSent} line={M.correctionLine} action={{label:M.viewRequest,href:'/app/my-time?view=corrections&requestId='+operation.result.requestId}}
+    quiet={<button className="b-done__quiet" type="button" onClick={onReset}>{M.anotherCorrection}</button>}/></div>
   </CorpBody></CorpCard>
  </>;
  if(isActive&&(pending||uncertain))return <>

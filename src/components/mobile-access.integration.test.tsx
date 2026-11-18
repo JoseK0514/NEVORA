@@ -61,8 +61,9 @@ it('places optional onboarding below the real Home heading without replacing the
 
 it('keeps the desktop activation presentation during server rendering even with mobile rollout enabled',()=>{
  const html=renderToStaticMarkup(<ActivationInvitationView mobileAccess phase="ready" workspaceName="Configured workplace" loginHref="/login" onSubmit={()=>{}}/>);
- expect(html).toContain('<h1>Activate account</h1>');
- expect(html).toContain('class="q-auth__rules"');
+ expect(html).toContain('<h1>Set up your account</h1>');
+  // Phase 5 (PB-016): each rule is the helper line of its own field (the desktop pair, not the phone card).
+ expect(html).toContain('class="ar-rule" id="activation-password-hint"');expect(html).not.toContain('ma-card');
 });
 
 it('offers receipt review as an in-place action instead of navigating to the same completed page',()=>{

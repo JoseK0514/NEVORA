@@ -3,15 +3,23 @@ import {useMobilePresentation} from '@/components/mobile-access/use-mobile-prese
 
 import Link from 'next/link';
 import {MobileRecoveryReset} from './mobile-access/recovery-views';
-import {useEffect, useRef, useState, type FormEventHandler, type RefCallback} from 'react';
+import {useEffect, useRef, type FormEventHandler, type RefCallback} from 'react';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {AuthValidation, FieldInvalid} from './auth-premium/auth-validation';
-import {PasswordRules} from './auth-premium/password-rules';
 import {RecoverySubmit} from './recovery-submit';
-import {PasswordInput} from './auth-premium/password-input';
 import {AUTH_COPY, authMessage, type AuthLang} from '@/lib/auth-copy';
+import {WifiSlashIcon} from '@phosphor-icons/react/dist/ssr/WifiSlash';
+import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
+import {ACCESS_COPY} from './access-recovery/copy';
+import {AccessSteps} from './access-recovery/access-steps';
+import {recoveryIssue, recoveryNext} from './access-recovery/recovery-guidance';
+import {SupportReference} from './access-recovery/support-reference';
+import {PasswordPair} from './access-recovery/password-pair';
 
-export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef, lang = 'en', mobileAccess=false,linkProof=false,onDifferentCode}: {
+export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef, lang = 'en', mobileAccess=false,linkProof=false,onDifferentCode,supportReference=null,workspaceName=null}: {
+ workspaceName?: string | null;
+ /** U11: the Support reference of the failed reply on screen, or null. */
+ supportReference?: string | null;
  hydrated: boolean;
  busy: boolean;
  done: boolean;
@@ -19,73 +27,70 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
  onSubmit: FormEventHandler<HTMLFormElement>;
  proofRef: RefCallback<HTMLInputElement>;
  lang?: AuthLang;
+ /** The link the person opened supplied a code of the right shape (the server has not checked it yet). */
  mobileAccess?:boolean;linkProof?:boolean;onDifferentCode?:()=>void;
 }) {
- const t = AUTH_COPY[lang];
+ const t = AUTH_COPY[lang], u = ACCESS_COPY[lang].recovery;
+ // U11 (Nov 17, 2026): the last step of the reset. Every refusal says what to do next; a lost reply is "not confirmed",
+ // never failed and never done; two passwords that differ use the one field error style; the finish says what changed
+ // (signed out everywhere) and what did not (the time clock PIN).
+ const issue = recoveryIssue('reset', message), next = recoveryNext(ACCESS_COPY[lang], 'reset', message);
  const feedback = useRef<HTMLDivElement>(null);
- const [password, setPassword] = useState(''), [confirm, setConfirm] = useState('');
  // The outcome is decided on AccountRecovery's English message; only what is shown is translated.
  const mismatch = message === 'Passwords do not match.';
  const invalid = message.startsWith('This recovery code');
  const uncertain = message.startsWith('The reset outcome');
  useEffect(() => {if (message) feedback.current?.focus();}, [message, done]);
 
- // Quiet (v4, approved Oct 23): New password, the code and the two passwords, Reset password, then Need a recovery code?
  const mobile=useMobilePresentation(mobileAccess,'reset-proof reset-password reset-confirm-password');
- if(mobile)return <MobileRecoveryReset {...{hydrated,busy,done,message,onSubmit,proofRef,lang,linkProof,onDifferentCode}}/>;
- // Review B4 (Nov 10, 2026): the code's hint and the password's live checks show on every width, not only in a
- // placeholder (NV-195); the error leads the card above the fields (NV-319); fields name what is missing (NV-190).
- const length = password.length >= 8 ? 'ok' as const : 'idle' as const;
- const match = mismatch && confirm !== password ? 'bad' as const : confirm && confirm === password ? 'ok' as const : 'idle' as const;
+ if(mobile)return <MobileRecoveryReset {...{hydrated,busy,done,message,onSubmit,proofRef,lang,linkProof,onDifferentCode,supportReference,workspaceName}}/>;
+ // Phase 5 (Nov 17, 2026). PB-014, PB-029: the page is "Choose a new password" and its button "Save new password".
+ // PB-013: when the link supplied the code, the code field is hidden and one green line says the link was accepted,
+ // with "Use a different code" beside it; the field shows only when the person must type a code. The field stays in
+ // the form either way, because AccountRecovery fills it and reads it exactly as before. PB-016: the password pair.
+ // PB-017: the finish is the mark, the title, one line and the one filled button.
  return <>
-  <div className="q-hd"><h1>{done ? t.resetDoneTitle : t.quiet.resetTitle}</h1>{done ? null : <p>{t.quiet.resetSub}</p>}</div>
-  {done ? <div className="q-card">
-   <div className="q-auth__receipt" ref={feedback} role="status" tabIndex={-1}>
-    <h2>{t.nextStep}</h2><p>{authMessage(lang, message)}</p>
-   </div>
-   <Link href="/login" className="q-btn">{t.signInWithNewPassword}</Link>
+  <div className="q-hd"><h1>{done ? t.resetDoneTitle : t.quiet.resetTitle}</h1>{workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null}{done ? null : <p>{t.quiet.resetSub}</p>}</div>
+  {done ? <div className="q-card q-auth__card ar-done">
+   <AccessSteps journey="recovery" current={3} lang={lang}/>
+   <span className="q-auth__mark" aria-hidden="true"><CheckIcon size={28} weight="bold"/></span>
+   <div className="q-auth__receipt" ref={feedback} role="status" tabIndex={-1}><p>{t.reset.doneLine}</p></div>
+   <Link href="/login" className="q-btn">{t.signIn}</Link>
+   <p className="q-auth__note ar-next">{u.doneNote}</p>
   </div> : <>
    <noscript><p className="q-help q-auth__alert">{t.resetNoScript}</p></noscript>
    <form className="q-auth__form" onSubmit={onSubmit}>
     <AuthValidation/>
-    {message ? <div id="reset-error" className="q-auth__receipt q-auth__receipt--error" ref={feedback} role="alert" tabIndex={-1}>
-     <h2><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/>{mismatch ? t.checkPasswords : invalid ? t.useNewCode : uncertain ? t.checkSignInFirst : t.resetNotConfirmed}</h2>
-     <p>{authMessage(lang, message)}</p>
+    <AccessSteps journey="recovery" current={3} lang={lang}/>
+    {message && issue === 'offline' ? <div id="reset-error" className="q-auth__alert q-auth__alert--wait" ref={feedback} role="alert" tabIndex={-1}><WifiSlashIcon size={20} weight="bold" aria-hidden="true"/><span>{u.offline}</span></div>
+    : message ? <><div id="reset-error" className={`q-auth__receipt ${uncertain || issue === 'resetUnavailable' ? 'q-auth__receipt--wait' : 'q-auth__receipt--error'}`} ref={feedback} role="alert" tabIndex={-1}>
+     <h2><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/>{mismatch ? t.checkPasswords : invalid ? (linkProof ? t.reset.linkRefusedTitle : t.useNewCode) : uncertain ? t.checkSignInFirst : t.resetNotConfirmed}</h2>
+     <p>{invalid && linkProof ? t.reset.linkRefused : authMessage(lang, message)}</p>
+     {next && !(invalid && linkProof) ? <p>{next}</p> : null}
      {invalid ? <Link className="q-link" href="/forgot-access">{t.requestNewCode}</Link> : null}
-     {uncertain ? <Link className="q-link" href="/login">{t.trySigningIn}</Link> : null}
-    </div> : null}
+     {invalid && linkProof ? <button type="button" className="q-link ar-linkbtn" onClick={onDifferentCode} disabled={!hydrated || busy}>{t.reset.useDifferentCode}</button> : null}
+     {uncertain || issue === 'resetUnavailable' || issue === 'ended' ? <Link className="q-link" href="/login">{t.trySigningIn}</Link> : null}
+    </div><SupportReference reference={supportReference} lang={lang} id="reset-reference"/></> : null}
+    {/* A link the server has refused is no longer "accepted": the refusal above carries both ways on. */}
+    {linkProof && !invalid ? <p className="ar-accepted"><span className="ar-accepted__line" role="status"><CheckIcon size={18} weight="bold" aria-hidden="true"/><span>{t.reset.linkAccepted}</span></span>
+     <button type="button" className="ar-accepted__other" onClick={onDifferentCode} disabled={!hydrated || busy}>{t.reset.useDifferentCode}</button></p> : null}
     <fieldset className="q-auth__fields" disabled={!hydrated || busy}>
-     <div className="q-fl">
+     <div className={`q-fl${linkProof ? ' ar-off' : ''}`}>
       <label htmlFor="reset-proof">{t.recoveryCode}</label>
       <input id="reset-proof" className="q-in" ref={proofRef} name="proof" required minLength={43} maxLength={4096}
-       autoComplete="off" autoCapitalize="none" spellCheck={false} placeholder={t.recoveryCodePlaceholder}
+       autoComplete="one-time-code" autoCorrect="off" autoCapitalize="none" spellCheck={false} enterKeyHint="next"
        aria-describedby={message ? 'reset-proof-hint reset-error reset-proof-invalid' : 'reset-proof-hint reset-proof-invalid'}
        data-msg-required={t.invalid.code} data-msg-invalid={t.invalid.codeShort}/>
       <span className="q-auth__hint" id="reset-proof-hint">{t.recoveryCodeHint}</span>
       <FieldInvalid id="reset-proof"/>
      </div>
-     <div className="q-fl">
-      <label htmlFor="reset-password">{t.newPassword}</label>
-      <PasswordInput quiet id="reset-password" name="password" required minLength={8} maxLength={1024} autoComplete="new-password"
-       placeholder={t.quiet.newPasswordPlaceholder} aria-describedby="reset-rules reset-password-invalid"
-       controls={['reset-password', 'reset-confirm-password']} showLabel={t.showPasswords}
-       data-msg-required={t.invalid.newPassword} data-msg-invalid={t.invalid.newPassword} onInput={event => setPassword(event.currentTarget.value)}/>
-      <FieldInvalid id="reset-password"/>
-     </div>
-     <div className="q-fl">
-      <label htmlFor="reset-confirm-password">{t.quiet.confirmPassword}</label>
-      <input id="reset-confirm-password" className="q-in" name="confirmPassword" type="password" required minLength={8} maxLength={1024}
-       autoComplete="new-password" placeholder={t.quiet.typeAgain} aria-invalid={mismatch || undefined}
-       aria-describedby={message ? 'reset-rules reset-error reset-confirm-password-invalid' : 'reset-rules reset-confirm-password-invalid'}
-       data-msg-required={t.invalid.confirm} data-msg-invalid={t.invalid.confirm} onInput={event => setConfirm(event.currentTarget.value)}/>
-      <FieldInvalid id="reset-confirm-password"/>
-     </div>
-     <PasswordRules id="reset-rules" rules={[{state: length, text: t.atLeast8}, {state: match, text: match === 'bad' ? t.activation.sameInBoth : t.activation.passwordsMatch}]}/>
+     <PasswordPair prefix="reset" lang={lang} mismatch={mismatch} newLabel={t.newPassword} confirmLabel={t.quiet.confirmPassword}/>
     </fieldset>
     <RecoverySubmit hydrated={hydrated} busy={busy} idle={t.resetPassword} pendingText={t.resettingPassword} className="q-btn"/>
    </form>
    <span className="q-sr" role="status">{busy ? t.resettingStatus : ''}</span>
-   <Link href="/forgot-access" className="q-btn q-btn--quiet">{t.needRecoveryCode}</Link>
+   {/* Phase 5 follow-up (PB-015): the other way on is a text link under the card, not a second button in it. */}
+   <nav className="q-auth__links" aria-label={t.accountHelp}><Link href="/forgot-access">{t.needRecoveryCode}</Link></nav>
   </>}
  </>;
 }

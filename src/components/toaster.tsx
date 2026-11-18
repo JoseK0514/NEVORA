@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { CheckCircleIcon, InfoIcon, XIcon } from "@phosphor-icons/react/ssr";
+import { overlayExitMs } from "./kit/overlay-exit";
 
 /** Calm, Sonner-style confirmations without a dependency. Call `toast()` only
  * after the system has confirmed the outcome (a receipt, a redirect flag), never
@@ -34,7 +35,10 @@ function ToastItem({ item, onClose }: { item: Toast; onClose: (id: number) => vo
   const close = () => {
     // Focus inside the toast moves to the page, not to nowhere, when it closes.
     if (self.current?.contains(document.activeElement)) document.getElementById("main-content")?.focus({ preventScroll: true });
-    setLeaving(true); setTimeout(() => onClose(item.id), 180);
+    // Phase 7: the one exit (150ms, b-motion.css); under reduced motion the toast is gone at once.
+    const exit = overlayExitMs();
+    if (!exit) { onClose(item.id); return; }
+    setLeaving(true); setTimeout(() => onClose(item.id), exit);
   };
   const run = () => { if (timer.current || hovered.current || focused.current || document.hidden) return; started.current = Date.now(); timer.current = setTimeout(close, remaining.current); };
   const pause = () => { if (timer.current) { clearTimeout(timer.current); timer.current = null; remaining.current -= Date.now() - started.current; } };

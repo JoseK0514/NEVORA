@@ -459,6 +459,111 @@ item names the lines it supersedes; line numbers are from the file before this s
     notification opens in place and lists each notification, each read on its own. One bell, in the top bar, for every
     role (no Notifications entry in the Employee sidebar or rail). My pay has no back link from 768px. Under "Shift
     lead": "Must be an Owner, Manager or Lead."
+- **Feature screens and Employee screens (built Nov 17, 2026; see `docs/handoffs/2026-11-17-claude-ui-delivery/README.md`).**
+  - *Sheets.* One sheet per feature (`b-restrictions.css`, `b-payroll-import.css`, `b-reminders.css`,
+    `b-review-details.css`) and two for the Employee and Lead app (`employee-b-work.css`, `employee-b-account.css`),
+    loaded after the area sheets. Rondo business keeps its own `owner-advisor/business/business.css`.
+  - *Step flows.* A flow of several steps shows a step line under the title ("Step 2 of 5 · Match people"), one
+    decision per step, Back that never loses work, and one filled button (the step's next action). Focus moves to the
+    step heading on each step and to the reason when a blocked Next is pressed.
+  - *Uncertain results.* "Not confirmed" is amber, never red and never done. It says the result is not known and
+    offers one check that looks up the original request; nothing is sent twice. A queue receipt reads "queued", never
+    "sent" or "delivered". Complete is said only when the server confirms every part.
+  - *Totals.* When a count is not complete it reads "At least N" and "You're all set" is withheld.
+  - *Rows that need a decision* (an unmatched row, an undecided break, a batch that needs a check) keep the white
+    card and take an amber edge; chips inside share one size and one left edge.
+  - *Employee rows.* A row that opens leads with the teal-50 circle and a teal bold glyph; grey is for facts that do
+    not open. A note that qualifies a card is that card's footer (13.5/18 grey, 12px above, 16px below).
+  - *Copy.* New screens keep every string in one module with `en` and `es`. Bilingual surfaces render both; the
+    signed-in app renders English until a stored language is decided.
+- **Signed-out pages (Phase 5, built Nov 17, 2026; see `docs/product/review-2026-11-14/fixes/phase-5/README.md`).**
+  - *Front door.* The bare domain goes to sign-in. The panel carries the wordmark, the headline and three proof rows
+    at its foot; no eyebrow.
+  - *One card rule.* On all six pages the card holds the form and its one filled button. Alternatives are text links
+    24px under the card (`nav.q-auth__links`), never a second button inside it.
+  - *Phone band.* Row 1: wordmark and language pill. Row 2: the back link. Hit areas 48px.
+  - *Rhythm (desktop).* Title to subtitle 8, subtitle to first label 24, label to field 8, field to next label 20,
+    last field to button 24.
+  - *Words.* "Reset" is the one word for getting back in. Titles are imperatives ("Reset your password", "Choose a
+    new password", "Set up your account"); Sign in keeps its greeting.
+  - *Password pair.* Empty placeholders; each rule under its own field; a mismatch shows after leaving the field and
+    is announced once.
+  - *Finish.* A 56px teal-50 circle with a 28px bold check, a short title, one line, one filled button.
+  - *Policy pages.* The language pill on the band. Legal text is not translated without counsel: in Spanish the page
+    chrome is Spanish and one note says the document is in English. The footer no longer says "(en inglés)".
+- **Clocker (Phase 6, built Nov 17, 2026; see `docs/product/review-2026-11-14/fixes/phase-6/README.md`).** The band,
+  the clock, the glow, the card and the keys are unchanged.
+  - *Words for an unknown result.* A punch the kiosk cannot confirm is "not confirmed yet", with the action and the
+    time it was pressed ("Your clock in at 9:02 AM is not confirmed yet."). Never "failed", never "saved", never "not
+    saved". Buttons: "Check if it saved", "Send it again", "See current status", "Ask Owner to check" (quiet).
+  - *Refusals.* Staff screens choose their sentence by the server's code (`clockerPinErrorKey`,
+    `clockerPunchErrorKey` in `clocker-copy.ts`); the server's English sentence is never drawn. A new code needs a
+    sentence in both languages or a test fails. The way out on the kiosk is a manager.
+  - *Offline.* One card on the ID and PIN steps says nothing can be recorded and returns by itself; the clock screen
+    carries a note. The kiosk checks again when the connection returns and every 20 seconds while it shows "No
+    connection". It never sends a punch by itself. No queued punches.
+  - *Receipt.* What and when, the first name on every line, then up to two facts the reply holds (clock-in time and
+    time since; break start and length; break type and suggested length). No pay and no weekly total.
+  - *Other people's saved punches.* A count only: "1 more saved on this tablet." Never a name or a reference.
+  - *Language.* The tablet's choice is kept in its browser (`nevora.clocker.locale`); a tablet with no choice starts
+    in the browser's language. The paused, error and not-found pages follow it.
+  - *Not found.* The 560px card, one VELANI line, who can fix the link, "Try again", no sign-in link.
+  - *Targets and sizes.* Every kiosk control is 56px or more. The short-landscape layout starts at 767px tall; the
+    PIN step fits 800x600.
+  - *High Contrast.* Under forced colours every control has a border, PIN dots are system-coloured and focus is a
+    3px system outline.
+  - *Keypad.* A labelled group; a live line says "2 of 4 digits entered", never the digits.
+  - *Setup code.* The Owner's page shows it as a QR code of the kiosk link with the code in the fragment
+    (`/clocker/<key>#setup=<code>`), never a query string. The tablet reads it once, removes it from the address
+    bar, keeps it in memory only, and connects only after a tap. On the Owner's page it leaves when the card closes
+    or the code expires.
+  - *Kiosk setup screen.* What the tablet will be, three numbered steps, the field, one filled "Connect tablet". A
+    refusal sits under the field. Sheet: `clocker-tablet-setup.module.css` (`clocker-setup.module.css` is a retired
+    name a governance test forbids).
+  - *Owner's Clocker pages* sit in the Settings frame (title 130, band 224, or 296 with search and tabs, one 812
+    column); rules in `src/components/clocker-owner-b.css`, strings in `clocker-owner-copy.ts`. A tablet row: 36px
+    lead, name, an amber chip only for "Not set up", "Code expired" or "Location inactive", then where, state and
+    when in grey; one tinted and one quiet action. After a PIN save the form is gone: "PIN set for Maria Rivera. Tell
+    them in person."
+  - Supersedes the kiosk labels in the Clocker bullet below where they differ ("Check action status", "Retry same
+    action"), and 48px kiosk targets.
+- **Motion, success and loading (Phase 7, built Nov 17, 2026; see
+  `docs/product/review-2026-11-14/fixes/phase-7/README.md`).** Transform and opacity only, the `--b-dur-*` tokens,
+  everything behind `prefers-reduced-motion: no-preference`. Sheets: `b-motion.css`, `b-moments.css`,
+  `b-shimmer.css`, loaded last. The Clocker keeps its own motion.
+  - *Sheets and dialogs.* On phones a sheet rises from the bottom edge while its scrim fades. From 768px a dialog
+    fades and rises 8px; a panel on the right edge fades and comes 12px from that edge. Enter 300ms, exit 150ms. A
+    phone sheet is fixed to the window, whatever the scroll position behind it.
+  - *Menus and popovers.* Opacity, 4px and a 0.98 scale from the corner nearest the trigger. Enter and exit 150ms.
+  - *Toasts and the offline pill.* Opacity and 8px (toast) or 4px (pill). Enter 300ms, exit 150ms. A replaced toast
+    leaves at once.
+  - *An exit never waits.* In Chromium a closing sheet is already closed: focus is back on its opener and the page
+    takes a tap while the sheet leaves. WebKit and Firefox hold the sheet for the 150ms. The timing helper is
+    `src/components/kit/overlay-exit.ts`. A dragged sheet leaves from where it was let go.
+  - *Press.* Rows, tappable cards, tabs and text links tint at once (4% ink on white; 8% of the control's own text
+    colour on the band and on tabs). Compact controls scale to 0.96. Nothing full-width scales. Enter and Space show
+    the same (`src/components/kit/press-feedback.tsx`). Under reduced motion a button tints in place of the scale.
+  - *Reduced motion.* Overlays open and close at once. Every stylesheet that moves anything has a reduced-motion
+    rule; `src/app/app/b-reduced-motion.test.ts` fails when one does not.
+  - *Success.* One pattern, the kit's done state (`BState kind="done"`): a green-50 circle with a bold green check
+    (48px inline, 56px with a 28px check for a page finish, 36px in a row) that settles once in 300ms and is still
+    when the state was already true on load. An inline result replaces the form or row it came from: a title that
+    names what is now true, one line with the next fact, at most one tinted next step and a quiet second way on. A
+    page finish is centred with one filled button. Strings in `src/components/owner-b/moments-copy.ts`.
+  - *Truth.* The mark shows only after the server confirmed. "Sent" is not "approved", "queued" is not "delivered",
+    "saved" is not "paid". A queue receipt, a closed request and an unknown result never carry it.
+  - *Said once.* `role="status"`, or focus on the result's title when the screen changed under the person, not both.
+    A focused title draws no ring. A result drawn inline sends no toast.
+  - *Payroll and money* use the same mark and layout and nothing more. A celebrated moment is the same mark with
+    one ring; the gate in `src/lib/celebrations.ts` is unchanged. Supersedes the twelve-particle "Moment".
+  - *Shimmer.* One light band crosses every placeholder block on one clock, 1.6s a pass, starting after 300ms of
+    loading, transform only. Static under reduced motion. The shared placeholder carries it; a page never asks.
+  - *Hand-over.* When a page replaces its placeholder nothing moves; only card contents fade in over 150ms on kit
+    screens. A placeholder that no longer matches its page is a bug.
+  - *Spinner.* One ring in the text colour (20px in a state card, 16px beside words), one keyframe (`b-spin`). Never
+    alone: words sit beside it. `BButton busy` keeps the button's width and sets `aria-busy`.
+  - Supersedes the 360ms and 240ms sheet timings and the 420px desktop slide (R8), the fades kept under reduced
+    motion (NV-251, NV-329), and Phase 2's "loading is static".
 - **States and menus.** The state card's empty kind is grey with a tray glyph; the warning glyph is for failures.
   Menu items have 10px corners inside the 16px menu (supersedes 8px near 1891).
 - **Motion.** The press scale runs only under `prefers-reduced-motion: no-preference`.

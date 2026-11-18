@@ -172,7 +172,7 @@ it('unknown scoped route codes stay generic and cannot manufacture success or ec
  const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',location:'loc',error:'UNTRUSTED_QUERY_TEXT',warning:'constructor',updated:'untrusted',deleted:'untrusted',published:'loc'})}));
  expect(output).toContain('The schedule could not be updated.');expect(output).toContain('Review the current schedule for any scheduling warnings.');
  expect(output).not.toContain('UNTRUSTED_QUERY_TEXT');expect(output).not.toContain('constructor');expect(output).not.toContain('form-success');
- expect(output).not.toContain('Shift saved');expect(output).not.toContain('Shift updated.');expect(output).not.toContain('Shift deleted.');expect(output).not.toContain('Managed published.');
+ expect(output).not.toContain('Shift saved');expect(output).not.toContain('Shift updated.');expect(output).not.toContain('Shift deleted.');expect(output).not.toContain('Managed published');
 });
 it('preserves the existing Company error and warning messages',async()=>{
  f.role='MANAGER';
@@ -291,7 +291,21 @@ it('7c: Send an update shows on the published receipt only while Company updates
  expect(await page({published:'main'})).toContain('href="/app/updates/compose"');
  presentation.updates=false;
  const held=await page({published:'main'});
- expect(held).toContain('Main Office published.');expect(held).not.toContain('/app/updates/compose');expect(held).not.toContain('Send an update');
+ expect(held).toContain('Main Office published</');expect(held).not.toContain('/app/updates/compose');expect(held).not.toContain('Send an update');
+});
+it('Phase 7: the published result is drawn from the read of each location, never from the address alone',async()=>{
+ twoPublished();
+ const one=await page({published:'main'});
+ expect(one).toContain('data-kind="done" data-size="inline"');expect(one).toContain('b-donemark');
+ // A location the read does not show as published gets no success, whatever the address says.
+ f.statuses=[{locationId:'main',status:'DRAFT'},{locationId:'west',status:'PUBLISHED'}];
+ const forged=await page({published:'main'});
+ expect(forged).not.toContain('b-donemark');expect(forged).not.toContain('Main Office published');
+ // "all" counts what the read holds.
+ const some=await page({published:'all'});
+ expect(some).toContain('1 of 2 locations published');expect(some).toContain('The rest are not published.');
+ f.statuses=[{locationId:'main',status:'PUBLISHED'},{locationId:'west',status:'PUBLISHED'}];
+ expect(await page({published:'all'})).toContain('Schedules published');
 });
 it('7d: with held changes the per-location panel sends the Owner to Build and publish instead of publishing them unseen',async()=>{
  twoPublished();f.statuses=[{locationId:'main',status:'DRAFT'},{locationId:'west',status:'PUBLISHED'}];f.pending=moved();

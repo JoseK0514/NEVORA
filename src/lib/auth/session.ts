@@ -17,7 +17,7 @@ import {subscriptionProtection} from "@/lib/notifications/keyring";
 import { readInstallationProof } from "@/lib/notifications/installation";
 import { neonNotificationExecutor } from '@/lib/data/notification-transactions';
 
-const SESSION_COOKIE = "fuel_session";
+import { SESSION_COOKIE } from "./session-cookie";
 
 export type SessionEmployee = {
   id: string;

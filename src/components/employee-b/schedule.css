@@ -34,7 +34,9 @@
  * nv-b. See DESIGN.MD "CSS layering (review batch B8)". */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__h > span { gap: 6px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__h .b-chip--ok { margin-left: 6px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d { text-decoration: none; transition-property: background-color; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d { text-decoration: none; }
+/* Phase 7 (UI-7, RA-21): the tint fades only when motion is allowed. */
+@media (prefers-reduced-motion: no-preference) { :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d { transition-property: background-color; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); } }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d[aria-current="date"]:not(.is-on) { background: transparent; color: var(--b-on-band); box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.45); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d[aria-current="date"]:not(.is-on) b { color: var(--b-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d[aria-current="date"]:not(.is-on) i.has { background: rgb(255 255 255 / 0.55); }

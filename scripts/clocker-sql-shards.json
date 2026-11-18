@@ -52,6 +52,7 @@
       "src/test/integration/clocker-pin-crypto.integration.ts",
       "src/test/integration/clocker-pins.integration.ts",
       "src/test/integration/clocker-recovery-review.integration.ts",
+      "src/test/integration/clocker-schedule-grace.integration.ts",
       "src/test/integration/clocker-schema.integration.ts",
       "src/test/integration/clocker-timecards.integration.ts"
     ]

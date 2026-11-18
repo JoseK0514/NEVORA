@@ -282,9 +282,6 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-search-form > .nv-btn { min-width: 3rem; min-height: 3rem; padding-block: 0; padding-inline: var(--nv-s-3); }
 @media (max-width: 599px) { html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-wide-only { display: none; } }
 @media (min-width: 600px) { html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-search-form > .nv-btn { min-width: 8.5rem; padding-inline: var(--nv-s-4); } }
-@keyframes wc-spin { to { transform: rotate(360deg); } }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-spin { animation: wc-spin 900ms linear infinite; }
-@media (prefers-reduced-motion: reduce) { html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-spin { animation: none; } }
 
 /* ---------- Editable rows (Positions) ---------- */
 /* Before scripts load the form is guarded (disabled) but keeps its finished look, so nothing changes when it wakes. */
@@ -342,7 +339,8 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
   background: var(--swatch); color: #FFFFFF; cursor: pointer; transition: transform var(--nv-m-press) linear;
 }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--nv-canvas), 0 0 0 4px var(--nv-ink); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swatch:active { transform: scale(.96); }
+/* Phase 7 (UI-7): the swatch scales on press only when motion is allowed. */
+@media (prefers-reduced-motion: no-preference) { html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swatch:active { transform: scale(.96); } }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swatch:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: 5px; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-colour-row { display: flex; align-items: flex-start; gap: var(--nv-s-3); min-width: 0; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-colour-row > .wc-hex { flex: 1 1 auto; max-width: 16rem; }

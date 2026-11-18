@@ -53,6 +53,10 @@
 .quiet { display:inline-flex; align-items:center; justify-content:center; min-height:var(--b-target); padding:0 var(--b-space-12); border:0; border-radius:var(--b-radius-pill); background:none; color:var(--b-teal); font:inherit; font-size:var(--b-fs-body); line-height:1.3; font-weight:600; text-decoration:none; cursor:pointer; }
 .quiet:hover { text-decoration:underline; text-underline-offset:3px; }
 .actions .quiet { align-self:center; }
+/* Phase 5 (Nov 17, 2026): the choices that are not the page's main action (Refresh status, the way back, Close
+ * billing) are text links in one centred row under the buttons, each a 44px target. */
+.links { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:0 var(--b-space-8); margin-top:calc(var(--b-space-4) * -1); }
+.links:first-child { margin-top:0; }
 :is(.action,.secondary,.quiet):disabled { background:var(--b-disabled-bg); color:var(--b-disabled-ink); box-shadow:none; cursor:default; transform:none; }
 .quiet:disabled { background:none; text-decoration:none; }
 .lang:disabled { cursor:default; }

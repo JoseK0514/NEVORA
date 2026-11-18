@@ -60,3 +60,7 @@
 @media (max-width: 1023px) {
   :is(#c-root, html) .app-shell[data-nv-b] #b-home-needs > .b-list > li:nth-child(n+4) { display: none; }
 }
+/* Phase 7 (Nov 17, 2026; UI-7, RA-21): reduced motion. The feedback above still shows; it no longer fades. */
+@media (prefers-reduced-motion: reduce) {
+  :is(#c-root, html) .c-home a.c-home__stat { transition: none; }
+}

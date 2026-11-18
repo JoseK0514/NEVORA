@@ -262,8 +262,11 @@
 /* An invalid field gets the red edge, its label turns red, and its own message sits under it (NV-189, NV-190). */
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-in[aria-invalid="true"]:not(#ab-none) { box-shadow: inset 0 0 0 2px var(--b-red) !important; border-color: var(--b-red) !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-fl:has(> .q-in[aria-invalid="true"], > .q-in__wrap > .q-in[aria-invalid="true"]) > label:not(#ab-none) { color: var(--b-red) !important; }
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__invalid { display: block; margin: 6px 0 0; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--b-red); letter-spacing: 0; text-align: left; }
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__invalid:empty { display: none; }
+/* U11 (Nov 17, 2026): the one field error style of the Phase 3 forms rule: a 16px bold warning glyph, red 13.5/18, no
+ * closing period. The line shows only while its text is not empty. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__invalid { display: flex; align-items: flex-start; gap: 6px; margin: 6px 0 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 500; color: var(--b-red); letter-spacing: 0; text-align: left; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__invalid > svg { flex: none; width: 16px; height: 16px; margin-top: 1px; color: var(--b-red); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__invalid:has(> span:empty) { display: none; }
 
 /* Password rules: grey "not yet", green "done", red "check" (NV-195, NV-312). */
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__rules, .ma-rules):not(#ab-none) { display: flex; flex-direction: column; gap: 6px; padding: 0; list-style: none; font-size: 14px !important; line-height: 20px; color: var(--b-grey) !important; }
@@ -454,3 +457,169 @@
 @media (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
   #mobile-access-page.q-auth .ma-hero { display: none !important; }
 }
+
+/* ---------- U11, access and recovery (Nov 17, 2026) ----------
+ * The sign-in look's part of activation, recovery and passkey guidance. The shared pieces (the steps line, the facts,
+ * the "what happens" list, the Support reference block) are drawn by src/components/access-recovery/access-recovery.css;
+ * these rules only seat them in the sign-in card. Presentation only. */
+/* Under the passkey button: what a passkey is, then the state of the last try. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__what { margin: 10px 0 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); text-align: center; text-wrap: balance; letter-spacing: 0; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note { display: grid; gap: var(--b-space-2); margin: var(--b-space-12) 0 0; padding: 10px var(--b-gutter); border-radius: var(--b-radius-field); background: var(--b-quiet); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-ink2); text-align: left; letter-spacing: 0; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note > b { font-weight: 600; color: var(--b-ink); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note[data-tone="wait"] { background: var(--b-amber-50); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note[data-tone="wait"] > b { color: var(--b-amber); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note[data-tone="stop"] { background: var(--b-red-50); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note[data-tone="stop"] > b { color: var(--b-red); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note > .q-link { justify-self: start; display: inline-flex; align-items: center; min-height: 44px !important; margin: 0 0 -10px; font-size: var(--b-fs-meta) !important; }
+/* A device that can't use a passkey: the note takes the button's place at the card's foot. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey--none .q-passkey__note { margin-top: 0; }
+/* An outcome that is not confirmed is amber (check), never red (failed). */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__receipt--wait:not(#ab-none) { margin: 0 0 18px !important; background: var(--b-amber-50) !important; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__receipt--wait h2 { display: flex; align-items: center; gap: var(--b-space-8); color: var(--b-amber) !important; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__receipt--wait p { color: var(--b-ink2) !important; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__receipt :is(p + p) { margin-top: var(--b-space-8); }
+/* The link inside a refusal keeps a 44px target without adding height to the block. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__receipt:is(.q-auth__receipt--wait, .q-auth__receipt--error) > .q-link { display: inline-flex; align-items: center; min-height: 44px !important; margin: var(--b-space-2) 0 -10px; }
+/* The next step under a refusal, inside its alert. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__alert .ar-alert__next { display: block; margin-top: var(--b-space-4); font-weight: 400; color: var(--b-ink2); }
+/* A state card's main action is the same teal pill as a form's. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__card > .q-btn:not(.q-btn--sec, .q-btn--quiet, .q-btn--link) { width: 100% !important; height: 52px !important; margin: var(--b-space-16) 0 0 !important; border-radius: var(--b-radius-pill) !important; background: var(--b-band-solid) !important; color: var(--b-on-band) !important; font-weight: 700 !important; box-shadow: var(--b-elev-glow) !important; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__card > .q-auth__note { text-align: left; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__card > .q-auth__note + .q-auth__note { margin-top: var(--b-space-8); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__note.ar-next { margin-top: var(--b-space-12); text-align: center; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); }
+/* The steps line leads the card. On the band (phones and tablets) the card's first child is the steps line. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(form, .q-card) > .ar-steps { margin: 0 0 18px; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__form > .ar-before { margin-bottom: 18px; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__form > .ar-ref { margin-bottom: 18px; }
+
+/* ---------- Phase 5 (Nov 17, 2026): the sign-in page as the front door, and the shell every signed-out page shares ----------
+ * docs/product/review-2026-11-11/reviews/review-public.json (PB ids below). Presentation only: forms, actions, messages,
+ * redirects, cookies and limits are unchanged. This sheet keeps its own specificity ladder ("#ab-none" steps), so the
+ * pages' own sheets (mobile Access, access and recovery) keep the precedence they have today. */
+
+/* PB-011, PB-010: the proof rows. On a desktop they are the brand panel's foot; Sign in repeats them under its links
+ * on phones and tablets, where there is no panel. One of the two is displayed, never both. */
+:is(#q-root, html) .q-auth .q-auth__proof { margin: 0; padding: 0; list-style: none; }
+:is(#q-root, html) .q-auth .q-auth__proof li { display: flex; align-items: flex-start; }
+:is(#q-root, html) .q-auth .q-auth__proof li > svg { flex: none; }
+:is(#q-root, html) .q-auth .q-auth__proof :is(a, b) { color: inherit; font-weight: 600; overflow-wrap: anywhere; }
+:is(#q-root, html) .q-auth .q-auth__proof a { text-decoration: underline; text-underline-offset: 3px; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__proof--page { display: grid; gap: 10px; width: fit-content; max-width: 100%; margin: var(--b-space-24) auto 0; padding: var(--b-space-20) var(--b-space-4) 0; border-top: 1px solid var(--b-line); text-align: left; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__proof--page li { gap: 10px; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); letter-spacing: 0; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__proof--page li > svg { width: 18px; height: 18px; color: var(--b-grey); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__proof--page a { padding-block: 14px; color: var(--b-ink2); }
+@media (min-width: 1024px) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__proof--page { display: none; }
+  :is(#q-root, html) .q-auth .q-auth__brand > .q-auth__proof { display: grid; gap: var(--b-space-16); }
+  :is(#q-root, html) .q-auth .q-auth__brand > .q-auth__proof li { gap: var(--b-space-12); font-size: var(--b-fs-body); line-height: var(--b-lh-body); color: var(--b-on-band-2); }
+  :is(#q-root, html) .q-auth .q-auth__brand > .q-auth__proof li > svg { margin-top: 1px; color: var(--b-on-band-2); }
+  :is(#q-root, html) .q-auth .q-auth__brand > .q-auth__proof b { color: var(--b-on-band); }
+}
+
+/* PB-015: the card holds the form and its one filled button. What else a page offers sits 24px under the card as teal
+ * 15px/600 text links, centred, 20px apart, wrapping onto centred rows: a nav.q-auth__links, or a div.q-auth__under
+ * that holds one (Sign in: the links, the Spanish language line, the proof rows), as the column's last child. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__links:not(#ab-none) { column-gap: var(--b-space-20) !important; margin: var(--b-space-24) var(--b-space-16) 0 !important; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__under { display: flex; flex-direction: column; align-items: stretch; margin: var(--b-space-24) var(--b-space-16) 0; text-align: center; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__under > .q-auth__links:not(#ab-none) { margin: 0 !important; }
+/* PB-009 (Spanish only): the app after sign-in is in English for now, said in one grey line before the person signs in. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__langnote { margin: var(--b-space-8) 0 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); letter-spacing: 0; text-wrap: balance; }
+@media (min-width: 1024px) {
+  /* The column is the card, so what sits under it hangs from its foot; it may be a little wider than the card so the
+   * Spanish links stay on one row. The card keeps room for it above the legal line. */
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col > .q-auth__links:not(#ab-none) { left: -56px !important; right: -56px !important; margin: var(--b-space-24) 0 0 !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col > .q-auth__under { position: absolute; top: 100%; left: -56px; right: -56px; margin: var(--b-space-24) 0 0; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col:has(> :is(.q-auth__links, .q-auth__under)):not(#ab-none):not(#ab-none2) { margin-bottom: 104px !important; }
+}
+
+/* PB-012: the helper under a field (Sign in's Employee ID): 13.5px grey, at every width. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__fieldhelp { margin: 6px 0 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); letter-spacing: 0; text-align: left; }
+
+/* PB-031: the passkey button is the outlined 48px pill, its Phosphor glyph first, after a centred "or"; it lines up
+ * with Sign in on every width. A refusal leads with the alert's icon. (U11's words and states are unchanged.) */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__or { display: flex; align-items: center; gap: var(--b-space-12); margin: 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); letter-spacing: 0; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__or::before,
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__or::after { content: ""; flex: 1; height: 1px; background: var(--b-line); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey .q-btn.q-btn--sec:not(#ab-none) { width: 100% !important; height: auto !important; min-height: 48px !important; margin: var(--b-space-12) 0 0 !important; padding-block: 6px; gap: var(--b-space-8); background: #FFFFFF !important; color: var(--b-teal) !important; box-shadow: inset 0 0 0 1px var(--b-teal) !important; }
+@media (hover: hover) { :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey .q-btn.q-btn--sec:not(#ab-none):hover { background: var(--b-teal-50) !important; } }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__label { text-align: center; text-wrap: balance; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__label > svg { display: inline-block; margin-right: var(--b-space-8); vertical-align: -4px; color: currentColor; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note:has(> .q-passkey__icon) { grid-template-columns: 20px minmax(0, 1fr); column-gap: 10px; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note:has(> .q-passkey__icon) > :not(.q-passkey__icon) { grid-column: 2; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note > .q-passkey__icon { grid-column: 1; grid-row: 1; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note[data-tone="wait"] > .q-passkey__icon { color: var(--b-amber); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note[data-tone="stop"] > .q-passkey__icon { color: var(--b-red); }
+
+/* PB-036: the greeting does not change under the reader. Its line is always laid out, so nothing below it moves. The
+ * server's words wait out of sight for a moment (not motion: one step, no travel), so the hour's greeting is the first
+ * one read; without JavaScript they show after that moment. The hour's greeting fades in only when motion is allowed. */
+@keyframes q-auth-greeting-hold { from { visibility: hidden; } to { visibility: visible; } }
+@keyframes q-auth-greeting-in { from { opacity: 0; } to { opacity: 1; } }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-hd h1 { min-height: 1lh; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth [data-greeting="pending"] { animation: q-auth-greeting-hold 0s linear 1.2s both; }
+@media (prefers-reduced-motion: no-preference) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth [data-greeting="ready"] { animation: q-auth-greeting-in var(--b-dur-hover) var(--b-ease-out) both; }
+}
+
+/* PB-032: the language pill and the way back answer on a 48px band; the band starts 16px under the status area. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__lang, .ma-language):not(#ab-none)::after { inset: -6px 0; }
+@media (max-width: 1023px) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__top:not(#ab-none) { padding-top: calc(var(--b-space-16) + env(safe-area-inset-top, 0px)) !important; }
+}
+@media (min-width: 768px) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__nav--rows > .q-auth__back--row:not(#ab-none) { display: none !important; }
+}
+/* PB-021: on a phone a sub-page's band reads as Sign in's: the wordmark at the left and the language at the right, then
+ * the way back on its own 44px row (48px to the touch), then the title. */
+@media (max-width: 767px) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__nav--rows:not(#ab-none) { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: 44px auto; row-gap: var(--b-space-4); height: auto !important; padding: calc(var(--b-space-16) + env(safe-area-inset-top, 0px)) var(--b-space-20) 0 !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__nav--rows > .q-auth__back--bar:not(#ab-none) { display: none !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__nav--rows > .q-auth__navmark:not(#ab-none) { display: flex !important; grid-column: 1; grid-row: 1; justify-self: start; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__nav--rows > .q-auth__lang:not(#ab-none) { grid-column: 2; grid-row: 1; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__nav--rows > .q-auth__back--row:not(#ab-none) { position: relative; grid-column: 1 / -1; grid-row: 2; justify-self: start; min-height: 44px; margin-left: -2px; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__nav--rows > .q-auth__back--row::after { content: ""; position: absolute; inset: -2px -8px; }
+  /* The links wrap onto centred 44px rows with nothing between them. */
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__links:not(#ab-none):not(#ab-none2) { row-gap: 0 !important; }
+  /* PB-018: the legal line stacks as two centred lines, the owner and then the links, and no line starts with a dot.
+   * The page keeps room for both lines under its last content, and the line sits 16px above the home indicator. */
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc):not(#mobile-access-page) { padding-bottom: calc(var(--q-safe-bottom, env(safe-area-inset-bottom, 0px)) + 88px) !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc):not(#mobile-access-page) > .q-auth__foot { bottom: calc(var(--q-safe-bottom, env(safe-area-inset-bottom, 0px)) + var(--b-space-16)) !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__foot .q-legal .q-legal__owner { display: block; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__foot .q-legal .q-legal__lead { display: none; }
+}
+
+/* PB-028: one vertical rhythm on the desktop card. Title to subtitle 8px, subtitle to the card's content 24px, label to
+ * field 8px, field to the next label 20px, last field to the button 24px. */
+@media (min-width: 1024px) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col .q-hd:not(#ab-none):not(#ab-none2) { margin-bottom: var(--b-space-24) !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col .q-hd > p:not(#ab-none):not(#ab-none2) { margin-top: var(--b-space-8) !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col form :is(.q-auth__fields > .q-fl:first-child, .q-auth__fields > div:first-child > .q-fl:first-child, .q-auth__form > .q-fl:first-of-type):not(#ab-none):not(#ab-none2):not(#ab-none3) { margin-top: 0 !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col .q-fl > :is(label, .q-fl__label):not(#ab-none) { margin-bottom: var(--b-space-8) !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col .q-fl + .q-fl:not(#ab-none):not(#ab-none2):not(#ab-none3) { margin-top: var(--b-space-20) !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col form :is(.q-fl, .q-auth__fields) + .q-btn:not(#ab-none):not(#ab-none2):not(#ab-none3) { margin-top: var(--b-space-24) !important; }
+}
+
+/* The legal line's links answer on a full 44px band (they measured 42px), and a wait is amber. The amber note of
+ * review B4 lost to the red one's higher specificity whenever both classes were set, as on "too many attempts"
+ * (PB-030), so it read red with an hourglass. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__foot .q-legal a { padding-block: 14px; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__alert.q-auth__alert--wait:not(#ab-none):not(#ab-none2) { background: var(--b-amber-50) !important; color: var(--b-amber) !important; }
+
+/* Large text and long names (checked at 200% text on a 390px phone): a link under the card wraps inside its row
+ * instead of pushing the page sideways, and the workspace chip grows with a name that wraps instead of spilling. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__links a:not(#ab-none) { white-space: normal !important; text-align: center; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__hd > p:not(#ab-none):not(#ab-none2) { height: auto !important; min-height: 34px; padding-top: var(--b-space-4) !important; padding-bottom: var(--b-space-4) !important; }
+@media (min-width: 1024px) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-auth__hd > p:not(#ab-none):not(#ab-none2) { min-height: 32px; }
+}
+
+/* With mobile Access on (off in production) the page's content sits in one more wrapper, so Sign in's links were
+ * inside the desktop card. The same rule holds there (PB-015): they hang under the card, on one centred row. On its
+ * phones the proof rows keep their gap from the line above. */
+@media (min-width: 1024px) {
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col .ma-outside:has(> .q-auth__links) { position: absolute; top: 100%; left: -56px; right: -56px; margin: var(--b-space-24) 0 0 !important; gap: 0 !important; text-align: center; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col .ma-outside > .q-auth__links:not(#ab-none) { margin: 0 !important; flex-direction: row !important; flex-wrap: wrap !important; justify-content: center !important; column-gap: var(--b-space-20) !important; row-gap: 0 !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col:has(.ma-outside > .q-auth__links) { margin-bottom: 104px !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col .ma-outside > .q-auth__langnote { margin-top: var(--b-space-8) !important; }
+}
+:is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-outside > .q-auth__proof--page { margin-top: var(--b-space-16) !important; }

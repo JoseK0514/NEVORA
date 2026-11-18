@@ -14,7 +14,7 @@ export const metadata = { title: "Help someone sign in" };
 export default async function AccountRecoveryPage({searchParams}:{searchParams?:Promise<{employee?:string;from?:string}>} = {}) {
  const actor=await requireRoles(['OWNER','MANAGER']);
  const access=await withOperationalCompany(await requireSessionMutationProof(),async()=>null);
- if(access.state==='unavailable')return <OperationalUnavailable title="Account recovery unavailable" reason={access.reason}/>;
+ if(access.state==='unavailable')return <OperationalUnavailable title="Help someone sign in is unavailable" reason={access.reason}/>;
  const params=await searchParams;
  // Only a prefill; the server still checks the employee and attestation.
  const employee=params?.employee?.trim().slice(0,200)||undefined;

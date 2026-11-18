@@ -52,8 +52,71 @@ describe("public policy pages", () => {
   it("public Account deletion uses the Quiet legal layout like Privacy (inspection Oct 24)", async () => {
     const html = await render(AccountDeletionPage);
     expect(html).toContain('class="q-page q-auth q-doc"');
-    expect(html).toMatch(/<a (?=[^>]*class="q-btn q-doc__start")(?=[^>]*href="\/login\?returnTo=%2Fapp%2Faccount%2Fdelete")[^>]*>Start deletion request<\/a>/);
     expect(html).not.toContain("employee-login-submit");
+  });
+
+  it.each([["en", "How to delete your account and what happens to your records.", "Start deletion request", "If you can’t sign in"], ["es", "Cómo eliminar tu cuenta y qué pasa con tus registros.", "Iniciar solicitud de eliminación", "Si no puedes iniciar sesión"]] as const)(
+    "Account deletion in %s: the action is an outlined pill in the card, under the how-to, never on the band (PB-024)", async (lang, sub, start, cannot) => {
+    language.lang = lang;
+    const html = await render(AccountDeletionPage);
+    // The band: the title and what the page is for; no action on it.
+    const band = html.slice(html.indexOf('class="q-hd q-doc__hd"'), html.indexOf('class="pl-body"'));
+    expect(band).toContain(`<p>${sub}</p>`);
+    expect(band).not.toMatch(/<a |<button /);
+    expect(html).not.toMatch(/q-doc__action|q-doc__start/);
+    // The card: the how-to is always open with a plain heading, the path for someone who cannot sign in is in it, and the
+    // action closes it.
+    const first = html.slice(html.indexOf('id="legal-section-1"'), html.indexOf('id="legal-section-2"'));
+    expect(first).toMatch(/<h2 class="pl-sec__h" id="legal-section-1-title">[^<]+<\/h2>/);
+    expect(first).not.toContain("hidden");
+    expect(first).toContain(cannot);
+    expect(first).toContain('href="/forgot-access"');
+    expect(first).toContain('href="mailto:support@thevelani.com"');
+    expect(first.indexOf(cannot)).toBeLessThan(first.indexOf("pl-start__btn"));
+    expect(first).toMatch(new RegExp(`<p class="pl-start"><a (?=[^>]*class="pl-start__btn")(?=[^>]*href="/login\\?returnTo=%2Fapp%2Faccount%2Fdelete")[^>]*>${start}</a></p>`));
+    expect(html.match(/pl-start__btn/g)).toHaveLength(1);
+    // Every policy section is still there, each a real heading.
+    expect(html.match(/<h2 class="pl-sec__h"/g)).toHaveLength(5);
+  });
+
+  it.each([["Privacy Policy", PrivacyPage, 12, "In this policy", "En esta política"], ["Terms of Use", TermsPage, 10, "In these terms", "En estos términos"]] as const)(
+    "%s keeps its English text; in Spanish only the page around it changes and one note says so (PB-001, PB-034)", async (title, Page, count, tocEn, tocEs) => {
+    const en = await render(Page);
+    language.lang = "es";
+    const es = await render(Page);
+    // The document is the same in both: the title, every heading and every paragraph, marked as English.
+    const doc = (html: string) => html.slice(html.indexOf('<article lang="en"'), html.indexOf("</article>")).replace(/>Open all<|>Abrir todo</, "><");
+    expect(doc(es)).toBe(doc(en));
+    expect(es).toContain(`<h1 id="legal-title">${title}</h1>`);
+    expect(doc(en).match(/<h2 class="pl-sec__h"/g)).toHaveLength(count);
+    // English: no note. Spanish: one note at the top, with the help address.
+    expect(en).not.toContain("pl-note");
+    expect(es.match(/class="pl-note"/g)).toHaveLength(1);
+    expect(es).toContain("Este documento está disponible solo en inglés por ahora. Si necesitas ayuda para entenderlo, escribe a ");
+    expect(es.indexOf("pl-note")).toBeLessThan(es.indexOf("<article"));
+    // The page around it: language pill, back link, contents label, the open control and the closing links.
+    expect(en).toMatch(/<button type="button" class="q-auth__lang" lang="es"[^>]*>Español<\/button>/);
+    expect(es).toMatch(/<main class="q-page q-auth q-doc"[^>]*lang="es"/);
+    expect(es).toMatch(/<button type="button" class="q-auth__lang" lang="en"[^>]*>English<\/button>/);
+    expect(es).toMatch(/class="q-nav__l q-auth__back"[^>]*>.*?Iniciar sesión<\/a>/);
+    expect(en).toContain(`<h2 id="legal-toc-title">${tocEn}</h2>`);
+    expect(es).toContain(`<h2 id="legal-toc-title">${tocEs}</h2>`);
+    expect(en).toContain(">Open all</button>");
+    expect(es).toContain(">Abrir todo</button>");
+    expect(es).toContain('aria-label="Políticas y ayuda de NEVORA"');
+    expect(es).toContain('href="/support">Ayuda</a>');
+    expect(es).not.toContain("(en inglés)");
+    // The contents list names every section and, on Privacy, Questions (PB-034).
+    const toc = en.slice(en.indexOf('class="pl-toc"'), en.indexOf("</nav>", en.indexOf('class="pl-toc"')));
+    expect(toc.match(/<a href="#legal-/g)).toHaveLength(count + (title === "Privacy Policy" ? 1 : 0));
+    if (title === "Privacy Policy") { expect(toc).toContain('<a href="#legal-questions">Questions</a>'); expect(en).toContain('id="legal-questions"'); expect(es).toContain('<a href="#legal-questions">Preguntas</a>'); }
+  });
+
+  it("Support's group headings are real headings that label their groups (PB-033)", async () => {
+    const html = await render(SupportPage);
+    expect(html).toContain('<h2 class="pl-grp" id="support-common">Common questions</h2><ul class="q-list" aria-labelledby="support-common">');
+    expect(html).toContain('<h2 class="pl-grp">Mail</h2><p class="q-body q-doc__address">');
+    expect(html).not.toContain("q-grp");
   });
 
   it("starts deletion by signing in, never by typing an email address", async () => {
@@ -73,8 +136,9 @@ describe("public policy pages", () => {
     for (const html of [support, deletion]) {
       expect(html).toMatch(/<main class="q-page q-auth q-doc"[^>]*lang="es"/);
       expect(html).toMatch(/<button type="button" class="q-auth__lang" lang="en"[^>]*>English<\/button>/);
-      for (const link of ['href="/privacy">Privacidad (en inglés)</a>', 'href="/terms">Términos (en inglés)</a>']) expect(html).toContain(link);
-      expect(html).not.toMatch(/Ayuda \(en inglés\)|Eliminar cuenta \(en inglés\)/);
+      // Phase 5: the closing links no longer carry "(en inglés)"; Privacy and Terms say it themselves, once, at the top.
+      for (const link of ['href="/privacy">Privacidad</a>', 'href="/terms">Términos</a>']) expect(html).toContain(link);
+      expect(html).not.toContain("(en inglés)");
       expect(html).toContain('href="mailto:support@thevelani.com"');
       expect(html).not.toContain("CONFIRM_");
     }
@@ -95,7 +159,7 @@ describe("public policy pages", () => {
 
   it("the sign-in footer names the links in Spanish; the employee Profile draws them as Settings rows", () => {
     const es = renderToStaticMarkup(createElement(BrandLegal, { lang: "es" }));
-    for (const text of ['aria-label="Políticas y ayuda"', /* B7 wording (NV-187): the English-only policies say so */">Privacidad (en inglés)</a>", ">Términos (en inglés)</a>", ">Ayuda</a>", "© 2026 VELANI LLC. Todos los derechos reservados."]) expect(es).toContain(text);
+    for (const text of ['aria-label="Políticas y ayuda"', /* Phase 5 (PB-018): the pages say they are in English, not the footer */">Privacidad</a>", ">Términos</a>", ">Ayuda</a>", "© 2026 VELANI LLC. Todos los derechos reservados."]) expect(es).toContain(text);
     const rows = renderToStaticMarkup(createElement(AccountPrivacyLinks, { variant: "settings", sectionClassName: "sig", headingClassName: "sig-h" }));
     expect(rows).toContain('class="profile-settings account-privacy sig"');
     expect(rows).toContain('<h2 id="account-privacy-title" class="sig-h">Privacy and your account</h2>');

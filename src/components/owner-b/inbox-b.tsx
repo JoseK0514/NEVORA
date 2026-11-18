@@ -18,6 +18,7 @@ import { useLeaveStaffing, type StaffingState } from "@/components/leave-staffin
 import { conflictsFor } from "@/components/leave-staffing/conflict-check";
 import { MAX_STAFFING_WEEKS, weeksFor } from "@/lib/time-off-staffing/client";
 import { conflictShift } from "@/lib/time-off-staffing/present";
+import { reviewCopy } from "@/components/review-details/copy";
 import { BAvatar, BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack, BState, BWhen } from "./b-kit";
 
 /* Direction B, Things to do on a phone (mock screen "Owner · Things to do"). The same groups, rows, links and counts as the
@@ -25,12 +26,15 @@ import { BAvatar, BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow,
  * page as its row; a time off request carries Decline and Approve, which post the same review action as the request's own
  * page and come back here. */
 
-type Row = { key: string; href: string; label: string; title: string; detail?: string; value?: string; person?: string };
+type Row = { key: string; href: string; label: string; title: string; detail?: string; value?: string; person?: string; lines?: string[]; quiet?: boolean };
 type Group = { id: string; title: string; rows: Row[]; count?: number; note?: string };
 type Family = { id: string; title: string; groups: Group[] };
 type Filter = "all" | "card-open" | "review" | "card-requests";
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+const t = reviewCopy();
+/** Phase 4 (U09): a row's further lines (the other shift of a swap, a cover request's result, who reviews it). */
+const subOf = (row: Row): ReactNode => row.lines?.length ? <>{row.detail}{row.lines.map(line => <span key={line} className="b-row__more">{line}</span>)}</> : row.detail;
 const count = (group: Group) => group.count ?? group.rows.length;
 const familyCount = (family: Family) => family.groups.reduce((total, group) => total + count(group), 0);
 const requestIdOf = (item?: ActionItem) => { try { return item?.request ? new URL(item.request.reviewHref, "https://nevora.invalid").searchParams.get("requestId") : null; } catch { return null; } };
@@ -65,7 +69,10 @@ function kindIcon(id: string): { tone: "amber" | "teal" | "grey"; icon: ReactNod
   return { tone: "amber", icon: <ClockIcon weight="bold" /> };
 }
 
-export function InboxB({ ready, families, waiting = [], closed = [], total, connection, statusLine, todayFailed, onRefresh, back, later }: {
+export function InboxB({ ready, families, waiting = [], closed = [], total, exact = true, uncheckedReviews = 0, connection, statusLine, todayFailed, onRefresh, back, later }: {
+  /** Phase 4 (U03): false when the count is a lower bound (clock-ins unread, or review facts missing): the band says
+   * "At least N" and the page never offers all-clear. */
+  exact?: boolean; uncheckedReviews?: number;
   ready: Extract<ActionCenter, { state: "ready" }> | null; families: Family[]; waiting?: Group[];
   /** Phase 3 (MG-005): what can't be decided yet (timecards of a pay period still open): one grey card, no count pill. */
   closed?: Group[]; total: number | null; connection: ActionCenterConnection; statusLine: string;
@@ -84,7 +91,7 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, conn
   // the tabs add up to it. The timecards of a pay period that has ended are approved on Timecards; the band names them
   // after the count, so nothing on the page is outside what the band says.
   const timecards = waiting.filter(group => group.id.endsWith("timecards")).reduce((sum, group) => sum + count(group), 0);
-  const needs = total === null ? null : total === 0 ? "Nothing needs you right now" : `${plural(total, "thing needs", "things need")} you`;
+  const needs = total === null ? null : total === 0 ? exact ? "Nothing needs you right now" : t.notAllChecked : t.needYou(total, exact);
   // Home's rows open a kind here ("/app/inbox#todo-corrections"): the card with that kind comes into view.
   const hasCards = !!ready;
   useEffect(() => {
@@ -116,7 +123,9 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, conn
         : cards.length || waiting.length || closed.length ? <>{cards}{/* Review B2 (NV-002): reviews that wait are listed after today's cards. Phase 3
           (MG-005, OW-014): no "· waiting" suffix; what isn't open yet is one grey card at the bottom with no count pill. */}
           {filter === "all" || filter === "review" ? <>{waiting.map(group => <GroupCard key={group.id} group={group} items={items} staffing={staffing} checked={checked} />)}
-            {closed.map(group => <GroupCard key={group.id} group={group} items={items} staffing={staffing} checked={checked} quiet />)}</> : null}</> : <BCard label="Things to do"><div className="b-notice"><BIcon tone="green"><CheckIcon weight="bold" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">You’re all set</span><span className="b-notice__s">Nothing needs you right now.</span></span></div></BCard>}
+            {closed.map(group => <GroupCard key={group.id} group={group} items={items} staffing={staffing} checked={checked} quiet />)}</> : null}</> : exact ? <BCard label="Things to do"><div className="b-notice"><BIcon tone="green"><CheckIcon weight="bold" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">You’re all set</span><span className="b-notice__s">Nothing needs you right now.</span></span></div></BCard>
+          : <BCard label="Things to do"><div className="b-notice"><BIcon tone="amber"><WarningIcon weight="bold" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">{t.nothingListed}</span><span className="b-notice__s">{t.nothingListedLine}</span></span></div></BCard>}
+      {ready && uncheckedReviews ? <p className="b-note">{t.correctionsUnchecked(uncheckedReviews)}</p> : null}
       {/* Review B5 (NV-250): on desktop the shortcuts stay in reach while the list scrolls (sticky), with one-line sub-lines. */}
       <BCard label="More" id="b-todo-more">
         <BList label="More">
@@ -146,7 +155,8 @@ export function LaterB({ ready, groups, statusLine, onRefresh, connection = "una
 }
 
 function GroupCard({ group, items, staffing, checked, quiet }: { group: Group; items: Map<string, ActionItem>; staffing: StaffingState; checked: Set<string>; quiet?: boolean }) {
-  return <BCard title={group.title} count={quiet ? undefined : count(group)} id={`b-todo-${group.id}`}>
+  // Phase 4 (U03): a card that only lists what another reviewer decides carries no count pill.
+  return <BCard title={group.title} count={quiet || (count(group) === 0 && group.rows.every(row => row.quiet)) ? undefined : count(group)} id={`b-todo-${group.id}`}>
     {group.note ? <p className="b-card__note">{group.note}</p> : null}
     <BList label={group.title}>{group.rows.map((row) => {
       if (group.id === "open") {
@@ -186,8 +196,8 @@ function GroupCard({ group, items, staffing, checked, quiet }: { group: Group; i
       // Phase 3 (MG-012): swaps and can't-work requests are decisions too, so they end with the same tinted Review pill
       // as time off (their page holds Approve and Decline).
       const review = group.id === "swaps" || group.id === "cant-work";
-      return <BRow key={row.key} lead={<BIcon tone={kind.tone}>{kind.icon}</BIcon>} title={row.title}
-        chip={row.value ? <BChip>{row.value}</BChip> : undefined} sub={row.detail} href={row.href} label={row.label}
+      return <BRow key={row.key} lead={<BIcon tone={row.quiet ? "grey" : kind.tone}>{kind.icon}</BIcon>} title={row.title}
+        chip={row.value ? <BChip>{row.value}</BChip> : undefined} sub={subOf(row)} href={row.href} label={row.label}
         trail={review ? <BButtonLink href={row.href} kind="ghost" label={`Review ${row.title}`}>Review</BButtonLink> : undefined} />;
     })}</BList>
   </BCard>;
@@ -209,9 +219,9 @@ function Decide({ name, approve, reviewHref }: { name: string; approve: boolean;
     <BButton kind="danger" type="submit" name="decision" value="DENIED" label={`Decline time off for ${name}`}>Decline</BButton>
   </span>;
   return <span ref={pair} className="b-decide" aria-busy={pending}>
-    <BButton kind="quiet" onClick={() => setConfirming(true)} disabled={pending} label={pending ? undefined : `Decline time off for ${name}`}>{pending && decision === "DENIED" ? "Declining…" : "Decline"}</BButton>
+    <BButton kind="quiet" onClick={() => setConfirming(true)} disabled={pending} busy={pending && decision === "DENIED"} busyLabel="Declining…" label={pending ? undefined : `Decline time off for ${name}`}>Decline</BButton>
     {/* Approve only once the schedule check came back with no overlap; otherwise its page shows the shifts first. */}
-    {approve ? <BButton kind="ghost" type="submit" name="decision" value="APPROVED" disabled={pending} label={pending ? undefined : `Approve time off for ${name}`}>{pending && decision === "APPROVED" ? "Approving…" : "Approve"}</BButton>
+    {approve ? <BButton kind="ghost" type="submit" name="decision" value="APPROVED" disabled={pending} busy={pending && decision === "APPROVED"} busyLabel="Approving…" label={pending ? undefined : `Approve time off for ${name}`}>Approve</BButton>
       : <BButtonLink href={reviewHref} kind="ghost" label={`Review time off for ${name}`}>Review</BButtonLink>}
     <span className="b-sr" role="status">{pending ? "Saving your decision…" : ""}</span>
   </span>;

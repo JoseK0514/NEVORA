@@ -11,18 +11,18 @@ import {ReceiptIcon} from '@phosphor-icons/react/dist/ssr/Receipt';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
 import {ProhibitIcon} from '@phosphor-icons/react/dist/ssr/Prohibit';
 import {DeviceMobileIcon} from '@phosphor-icons/react/dist/ssr/DeviceMobile';
-import {CircleNotchIcon} from '@phosphor-icons/react/dist/ssr/CircleNotch';
 import {MagnifyingGlassIcon} from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
+import {XIcon} from '@phosphor-icons/react/dist/ssr/X';
 import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BScreen, BSeg, BStack, BState, type BStateKind, type BTone} from '../owner-b/b-kit';
 import type {EmployeeNotificationItem} from '../../lib/employee-view';
 import {type NotificationKind} from '../../lib/notification-labels';
-import {notificationCountNote, notificationKindFor, notificationOutcomeNote} from '../../lib/notification-facts';
+import {notificationKindFor} from '../../lib/notification-facts';
 import type {CommunicationRecoveryState} from '../../lib/communications/recovery';
-import {notificationGroup, notificationTitle, type NotificationTab} from '../employee-mobile/notifications-list';
+import {notificationGroup, notificationHeadline, type NotificationTab} from '../employee-mobile/notifications-list';
 import {messageTime, type MessageFilter, type ReadyUpdate} from '../employee-mobile/messages-view';
 import {NoHeaderActions} from './account-host';
 import {Dotted} from './parts';
@@ -109,22 +109,27 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
         {groups.length ? groups.map(group => <BCard key={group.name} title={group.name} id={'b-notifications-' + group.name.toLowerCase()}>
           <ul className="b-list" aria-label={group.name + ' notifications'}>{group.rows.map(item => {
             const isUnread = item.reviewState === 'unread', required = item.actionState === 'required', busy = list.opening === item.id, kind = notificationKindFor(item);
-            // Review B1 (NV-142): every item that needs an action is amber, whatever its kind.
-            const Icon = kind ? KIND_ICON[kind] : BellIcon, tone: BTone = required ? 'amber' : 'grey';
+            // Phase 4 (EM-005): the title is the outcome and the sub-line is what it is about. A decision leads with its
+            // state (green check approved, grey x declined); one that needs you is amber (review B1, NV-142); the rest
+            // carry their kind's icon, teal because the row opens (EM-017, employee-b-account.css).
+            const head = notificationHeadline(item);
+            const Icon = head.decided === 'approved' ? CheckIcon : head.decided === 'declined' ? XIcon : kind ? KIND_ICON[kind] : BellIcon;
+            const tone: BTone = required ? 'amber' : head.decided === 'approved' ? 'green' : 'grey';
             const earlier = group.name === 'Earlier', time = clock(item.at, zone);
-            // Inspection Nov 14 (BR-6, EM-005): the title says what happened; the label stays the row's kind (its icon).
-            const title = notificationTitle(item);
-            // Review B6 (NV-271): an earlier notice's date is on the right, so its sub-line carries only the time.
-            // Backend (Nov 15, 2026): a request's later status and a schedule's shift count, when the list sends them.
-            const facts = [notificationOutcomeNote(item), notificationCountNote(item)].filter((note): note is string => !!note);
-            const sub = [required ? 'Action needed' : null, ...facts, earlier ? time : null].filter(Boolean).join(' · ');
-            return <li className="b-li" key={item.id}><Link id={'b-message-' + item.id} className={`b-row b-row--link eb-notif${busy ? ' eb-notif--busy' : ''}`} href={item.href} prefetch={false}
+            // Phase 4 (EM-009): from 768px one trailing line, the dot then the time (an earlier day leads with its date). On a
+            // phone that column would leave a title 96px at 320, so only the dot trails and the time ends the sub-line, once
+            // ("Week of Nov 23 · 4 shifts · 9:56 AM"; an earlier day shows its date). The row's label says both.
+            const phoneWhen = earlier ? shortDate(item.at, zone) : time;
+            return <li className="b-li" key={item.id}><Link id={'b-message-' + item.id} className={`b-row b-row--link eb-notif${isUnread ? ' eb-notif--unread' : ''}${head.decided === 'declined' ? ' eb-notif--declined' : ''}${busy ? ' eb-notif--busy' : ''}`} href={item.href} prefetch={false}
               onClick={event => list.onOpen(event, item.id, item.href)} aria-busy={busy || undefined}
-              aria-label={`${title}${facts.length ? `, ${facts.join(', ')}` : ''}${isUnread ? ', unread' : ''}${required ? ', action needed' : ''}, ${earlier ? `${longDay(item.at, zone)} · ${time}` : time}`}>
+              aria-label={`${head.title}${head.object ? `, ${head.object.replaceAll(' · ', ', ')}` : ''}${isUnread ? ', unread' : ''}${required ? ', action needed' : ''}, ${earlier ? `${longDay(item.at, zone)} · ${time}` : time}`}>
               <BIcon tone={tone}><Icon weight="bold" /></BIcon>
-              <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{title}</span></span>{sub ? <span className="b-row__s"><Dotted text={sub}/></span> : null}</span>
-              <span className="b-row__end eb-when"><span>{earlier ? shortDate(item.at, zone) : time}</span>
-                {busy ? <CircleNotchIcon className="eb-spin" size={16} weight="bold" aria-hidden="true" /> : isUnread ? <i className="eb-unread" aria-hidden="true" /> : null}</span>
+              <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{head.title}</span></span>
+                <span className={required || head.object ? 'b-row__s eb-notif__s' : 'b-row__s eb-notif__s eb-notif__s--p'}>{required ? <BChip tone="amber">Action needed</BChip> : null}
+                  {head.object ? <span className="eb-notif__o eb-notif__o--w"><Dotted text={head.object}/></span> : null}
+                  <span className="eb-notif__o eb-notif__o--p"><Dotted text={head.object ? `${head.object} · ${phoneWhen}` : phoneWhen}/></span></span></span>
+              <span className="b-row__end eb-when">{busy ? <span className="eb-spin b-spin b-spin--sm" aria-hidden="true" /> : isUnread ? <i className="eb-unread" aria-hidden="true" /> : null}
+                <span className="eb-when__t">{earlier ? `${shortDate(item.at, zone)}, ${time}` : time}</span></span>
               <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" />
             </Link></li>;
           })}</ul>
@@ -155,11 +160,11 @@ export function EmployeeUpdatesB({list, notice, recovery, returnHref, status, pa
   const confirm = matches.filter(row => row.required), earlier = matches.filter(row => !row.required);
   const narrowed = !!list && (!!list.search || list.filter !== 'all');
   return <BScreen back>
-    {/* Write an update is the band's action at every width (review B6, NV-166): the white pill on desktop, a glass pill on
-      * the phone (Schedule's Availability slot), never a row under the read items. The pencil means compose everywhere. */}
+    {/* Write an update is the band's action at every width (review B6, NV-166), never a row under the read items. Phase 4
+      * (EM-021): the glass pill at every width, since writing is a secondary action for an hourly employee and the page's
+      * one filled button is Acknowledge. The pencil means compose everywhere. */}
     <BHero back={{href: '/app/more', label: 'More'}} title="Updates" titleId="b-updates-title"
-      right={list ? <><span className="eb-desk"><Link className="b-btn b-btn--white" href="/app/updates/compose" onClick={list.onCompose}><PencilSimpleIcon size={17} weight="bold" aria-hidden="true" />Write an update</Link></span>
-        <span className="eb-phone"><Link className="b-btn b-btn--glass" href="/app/updates/compose" onClick={list.onCompose}><PencilSimpleIcon size={16} weight="bold" aria-hidden="true" />Write</Link></span></> : undefined}>
+      right={list ? <Link className="b-btn b-btn--glass eb-write" href="/app/updates/compose" onClick={list.onCompose}><PencilSimpleIcon size={16} weight="bold" aria-hidden="true" />Write an update</Link> : undefined}>
       {list ? <div className="eb-tools">
         <label className="b-search b-glass eb-tools__search"><MagnifyingGlassIcon size={19} weight="bold" aria-hidden="true" /><span className="b-sr">Search this page</span>
           <input id="b-updates-search" type="search" maxLength={120} value={list.search} onChange={event => list.onSearch(event.target.value)} autoComplete="off" placeholder="Search update titles" /></label>
@@ -177,7 +182,8 @@ export function EmployeeUpdatesB({list, notice, recovery, returnHref, status, pa
           <ul className="b-list">{confirm.map(({item, at}) => <li className="b-li" key={item.id}><div className="eb-upd">
             <div className="b-row eb-upd__head"><BIcon tone="grey"><MegaphoneSimpleIcon weight="bold" /></BIcon>
               <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.title}</span><BChip tone="amber">Must read</BChip></span><span className="b-row__s"><Dotted text={`${item.authorContext} · ${longDay(at, list.timeZone)}`} /></span></span></div>
-            <p className="eb-upd__body">{item.body}</p>
+            {/* Phase 4 (EM-033): a preview is one paragraph (line breaks become spaces) of at most three lines; the update's own page keeps its paragraphs. */}
+            <p className="eb-upd__body">{item.body.replace(/\s*\n+\s*/g, ' ').trim()}</p>
             <div className="eb-upd__acts">
               <Link id={'b-message-' + item.id} className="b-btn b-btn--quiet b-rowact b-rowact--quiet" href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)} aria-label={`Open ${item.title}`}>Open</Link>
               <BButton kind="ghost" onClick={() => list.onConfirm(item)} disabled={list.busy} label={`Acknowledge ${item.title}`}><CheckIcon size={16} weight="bold" aria-hidden="true" />Acknowledge</BButton>
@@ -186,10 +192,10 @@ export function EmployeeUpdatesB({list, notice, recovery, returnHref, status, pa
         </BCard> : null}
         {earlier.length || !confirm.length ? <BCard title={confirm.length ? 'Earlier' : undefined} label={confirm.length ? undefined : 'Your updates'} id="b-updates-list">
           {earlier.length ? <ul className="b-list" aria-label="Your updates">{earlier.map(({item, unread, status: state, at}) => <li className="b-li" key={item.id}>
-            <Link id={'b-message-' + item.id} className="b-row b-row--link" href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)}
+            <Link id={'b-message-' + item.id} className={unread ? 'b-row b-row--link eb-updrow eb-updrow--unread' : 'b-row b-row--link eb-updrow'} href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)}
               aria-label={`${item.title}, ${state}, ${messageTime(at, list.timeZone)}`}>
               <BIcon tone="grey"><MegaphoneSimpleIcon weight="bold" /></BIcon>
-              <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.title}</span></span><span className="b-row__s"><Dotted text={`${item.authorContext} · ${longDay(at, list.timeZone)} · ${state}`} /></span></span>
+              <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.title}</span></span><span className="b-row__s"><Dotted text={`${item.authorContext} · ${longDay(at, list.timeZone)}${unread ? '' : ` · ${state}`}`} /></span></span>
               {unread ? <span className="b-row__end eb-when"><i className="eb-unread" aria-hidden="true" /></span> : null}
               <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" />
             </Link></li>)}</ul>

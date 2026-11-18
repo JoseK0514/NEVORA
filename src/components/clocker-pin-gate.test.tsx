@@ -49,7 +49,36 @@ it('keeps a wrong entry on the form and a missing tablet registration blocking',
  const denied=await failure(401,{state:'denied',code:'PIN_DENIED',error:'PIN not recognized for this location. Try again or ask your manager.'});
  expect(denied.recover).toBe(false);expect(denied.code).toBe('PIN_DENIED');expect(denied.pause).toBeNull();
  const device=await failure(401,{state:'device_required',code:'DEVICE_REQUIRED',error:'Reconnect this tablet before entering an employee PIN.'});
- expect(device.recover).toBe(true);expect(device.message).toBe('Reconnect this tablet before entering an employee PIN.');
+ expect(device.recover).toBe(true);expect(device.message).toBe('This tablet is no longer set up for this location.');
+ // Phase 6: a code the kiosk has never seen gets the kiosk's general sentence, never the server's words.
  const unknown=await failure(400,{code:'FUTURE_CODE',error:'A message the kiosk has never seen.'});
- expect(unknown.message).toBe('A message the kiosk has never seen.');expect(unknown.recover).toBe(false);
+ expect(unknown.message).toBe('We couldn’t check your PIN. Try again, or ask a manager to record your time.');expect(unknown.recover).toBe(false);
+});
+// Phase 6 (item 1): every refusal reads by its stable code; the server's English sentence never reaches the screen.
+it.each([
+ [401,{state:'denied',code:'PIN_DENIED',error:'Server words A.'},'Employee ID or PIN not recognized. Check both, or ask your manager.'],
+ [503,{state:'unavailable',code:'PIN_UNAVAILABLE',error:'Server words B.'},'We couldn’t reach NEVORA, so your PIN was not checked. Nothing was recorded.'],
+ [403,{code:'ORIGIN_REJECTED',error:'Server words C.'},'This tablet did not open the Clocker from its own link. Ask a manager to open it again.'],
+ [400,{code:'LOCATION_INVALID',error:'Server words D.'},'This tablet’s link is not valid. Ask a manager to set up this tablet again.'],
+ [400,{code:'PIN_INPUT_INVALID',error:'Server words E.'},'Enter exactly four PIN digits.'],
+ // An older server that sends no code: the status decides.
+ [401,{state:'device_required',error:'Server words F.'},'This tablet is no longer set up for this location.'],
+ [401,{error:'Server words G.'},'Employee ID or PIN not recognized. Check both, or ask your manager.'],
+ [503,{error:'Server words H.'},'We couldn’t reach NEVORA, so your PIN was not checked. Nothing was recorded.'],
+ [418,{error:'Server words I.'},'We couldn’t check your PIN. Try again, or ask a manager to record your time.'],
+] as const)('reads a %s refusal by its code, not by the server sentence',async(status,body,sentence)=>{
+ const error=await failure(status,body);
+ expect(error.message).toBe(sentence);expect(error.message).not.toContain('Server words');
+});
+it('never reads the server sentence in the gate, and never offers sign-in',async()=>{
+ const source=await (await import('node:fs/promises')).readFile(new URL('./clocker-pin-gate.tsx',import.meta.url),'utf8');
+ expect(source).not.toMatch(/data\??\.error/);expect(source).not.toContain('clockerErrorText(');expect(source).not.toContain('/login');expect(source).not.toContain('href=');
+});
+// Phase 6 (RA-28): the keypad is a labelled group of real buttons, and the entered count has its own live line.
+it('announces the PIN keypad as a group and keeps a live line for the entered count',async()=>{
+ const source=await (await import('node:fs/promises')).readFile(new URL('./clocker-pin-gate.tsx',import.meta.url),'utf8');
+ expect(source).toContain('role="group" data-clocker-keypad');expect(source).toContain("role=\"status\" data-clocker-pin-count=\"\"");
+ expect(source).toContain("t('{count} of 4 digits entered',{count})");
+ // The line carries a count, never the field's value.
+ expect(source).not.toMatch(/data-clocker-pin-count[^\n]*input\.current/);
 });

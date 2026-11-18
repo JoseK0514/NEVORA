@@ -2,6 +2,7 @@
 import {useCallback,useRef,useState,useSyncExternalStore,useTransition} from 'react';
 import {useRouter} from 'next/navigation';
 import {SigPendingLabel} from './signature/sig-button';
+import {noteArrival} from './owner-b/b-arrival';
 import {acknowledgeScheduleAction} from '@/app/app/schedule/acknowledge-actions';
 import type {AttentionIntent} from '@/lib/data/employee-attention-receipts.server';
 import type {CommandResult} from '@/lib/employee-attention/types';
@@ -29,7 +30,7 @@ export function EmployeeWeeklyConfirmation({weekStart,expectedRevisionId,intent,
  const ready=useSyncExternalStore(subscribe,useCallback(()=>lifecycleReady.current,[]),()=>false);
  const retryable=!result||result.status==='outcome_unknown'||result.status==='unavailable';
  function submit(form:FormData){const current=generation.current;start(async()=>{
-  try{const response=await acknowledgeScheduleAction(form);if(generation.current!==current)return;setResult(response);if(response.status==='committed')router.refresh();}
+  try{const response=await acknowledgeScheduleAction(form);if(generation.current!==current)return;setResult(response);if(response.status==='committed'){noteArrival('week:'+weekStart);router.refresh();}}
   catch{if(generation.current!==current)return;setResult({status:'outcome_unknown',operationId:intent.operationId});}
  });}
  return <div className={quiet?'employee-weekly-confirmation q-weekconf':'employee-weekly-confirmation'}>

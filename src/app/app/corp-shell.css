@@ -730,10 +730,7 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settin
   :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] #portal-account-menu .nevora-action-menu-item:focus-visible { outline: 2px solid #0B6E69 !important; outline-offset: -2px !important; }
   :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] #portal-account-menu form { margin: 0 !important; padding: 0 !important; }
 }
-@media (min-width: 761px) and (prefers-reduced-motion: no-preference) {
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] #portal-account-menu:popover-open { animation: c-account-in 140ms ease-out both; }
-}
-@keyframes c-account-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+/* Phase 7 (Nov 17, 2026): the account menu enters and leaves like every other menu (b-motion.css); c-account-in is retired. */
 
 /* L1 (Owner) and M8 (Employee): a phone turned sideways keeps the phone system. A coarse pointer on a screen 500px tall or
  * less is a phone, whatever its width: the phone header (wordmark with WORKFORCE, bell, avatar) in a 44px row, a 49px tab
@@ -741,3 +738,8 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settin
  * The tablet shell (sidebar, desktop top bar) therefore applies from 768px wide only on screens taller than that. */
 /* Sideways phones 768px wide or more: the tablet frame's page rules step back to the phone's 16px insets, a 12px gap above
  * a tab page's title, and the shell's header on pushed pages too (the page's own "‹ Section" link leads back). */
+/* Phase 7 (Nov 17, 2026; RA-21): these fades had no reduced-motion rule. */
+@media (prefers-reduced-motion: reduce) {
+  :is(#c-root, html) .app-shell[data-nv-corp] .c-page > .c-nav, :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page:not(.q-sheet) > .q-nav,
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .mobile-header .portal-account-menu .nevora-action-menu-trigger { transition: none; }
+}

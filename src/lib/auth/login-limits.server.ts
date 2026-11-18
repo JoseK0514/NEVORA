@@ -53,6 +53,17 @@ export async function releaseLoginAddress(address:string|null,admission:Pick<Log
   {text:`UPDATE password_recovery_limits SET attempts=attempts-1 WHERE scope=$1 AND bucket=$2::bigint AND attempts>1`,values:[key,String(bucket)]}]);
 }
 
+/** Statements that end one account's own sign-in pause, for a transaction that has just proven control of the account
+ * (a successful password reset). Only the per-ID counters go: the password limiter's ID scope and the passkey/password
+ * fallback limiter's `login` subject (login-limits.ts). Address budgets, other accounts and global caps are untouched, so
+ * guessing from one network stays limited. Old guesses were against the replaced password, so nothing they learned
+ * still opens the account. */
+export function loginIdPauseRelease(employeeId:string):SqlStatement[]{
+ const id=employeeId.trim().toUpperCase();
+ return [{text:'DELETE FROM password_recovery_limits WHERE scope=$1',values:[scope('id',id)]},
+  {text:'DELETE FROM auth_login_limits WHERE scope=$1',values:[createHash('sha256').update('login:'+id).digest('hex')]}];
+}
+
 /** The client address as the hosting edge reports it (first x-forwarded-for hop), or null. */
 export function clientAddress(forwardedFor:string|null|undefined):string|null{
  const first=forwardedFor?.split(',')[0]?.trim()??'';

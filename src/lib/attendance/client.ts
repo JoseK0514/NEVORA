@@ -36,6 +36,7 @@ const observationKinds = new Set<ObservationKind>([
   'CLOCK_IN_AFTER_SCHEDULE_START',
   'CLOCK_OUT_BEFORE_SCHEDULE_END',
   'OPEN_AFTER_SCHEDULE_END',
+  'OPEN_PAST_LIMIT',
   'BREAK_TARGET_EXCEEDED',
 ]);
 

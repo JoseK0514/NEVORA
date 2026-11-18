@@ -222,3 +222,7 @@
 html body .app-shell.nevora-portal .page-frame .request-hub a.request-hub-row.request-hub-row { display: grid; justify-content: normal; justify-items: stretch; text-align: left; width: auto; min-height: 64px; margin: 0; padding: 12px 16px; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: var(--g-ink, #111827); font: inherit; }
 @media (hover: hover) { html body .app-shell.nevora-portal .page-frame .request-hub a.request-hub-row.request-hub-row:hover { background: var(--g-inset, #f4f5f6); } }
 html body .app-shell.nevora-portal .page-frame .request-hub .request-hub-group h2 { margin: 0 0 8px 4px; color: var(--design-text-secondary, #5f6368); font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.4; letter-spacing: 0; }
+/* Phase 7 (Nov 17, 2026; RA-21): these fades had no reduced-motion rule. */
+@media (prefers-reduced-motion: reduce) {
+  .request-hub-row { transition: none; }
+}

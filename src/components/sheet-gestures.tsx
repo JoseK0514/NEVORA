@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { overlayExitMs } from "./kit/overlay-exit";
 
 /** Phone sheets (popovers styled with --sheet: 1) can be swiped down to close.
  * Direct manipulation per Apple's fluid-interface guidance and Emil Kowalski's
@@ -34,13 +35,15 @@ function rubberband(overshoot: number, dimension: number, constant = 0.55) {
 
 /** Owner premium (phone-native M4): engines that cannot keep a closing popover in the top layer (WebKit has no
  * `overlay` transition) remove a sheet on the next frame. There, a closing sheet leaves a short-lived, inert copy that
- * finishes the same exit (240ms, from wherever the sheet was, e.g. mid-swipe), with the dimmed page fading back. */
+ * finishes the same exit (Phase 7: 150ms, ease-out, from wherever the sheet was, e.g. mid-swipe), with the dimmed page
+ * fading back. Reduced motion: no copy, the sheet is gone at once. */
 function animateExit(sheet: HTMLElement) {
   if (typeof CSS === "undefined" || CSS.supports("overlay", "auto")) return;
+  const exit = overlayExitMs();
+  if (!exit) return;
   const host = sheet.closest(".app-shell") ?? sheet.parentElement;
   const rect = sheet.getBoundingClientRect();
   if (!host || !rect.height) return;
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const ghost = sheet.cloneNode(true) as HTMLElement;
   ghost.removeAttribute("id"); ghost.removeAttribute("popover"); ghost.removeAttribute("role"); ghost.removeAttribute("aria-modal");
   ghost.querySelectorAll("[id]").forEach(node => node.removeAttribute("id"));
@@ -48,20 +51,16 @@ function animateExit(sheet: HTMLElement) {
   Object.assign(ghost.style, { position: "fixed", top: `${rect.top}px`, left: `${rect.left}px`, right: "auto", bottom: "auto", width: `${rect.width}px`, height: `${rect.height}px`,
     maxHeight: "none", margin: "0", transform: "none", transition: "none", opacity: "1", zIndex: "2147483646", pointerEvents: "none", display: getComputedStyle(sheet).display === "none" ? "block" : getComputedStyle(sheet).display });
   const scrim = document.createElement("div");
-  Object.assign(scrim.style, { position: "fixed", inset: "0", zIndex: "2147483645", background: "rgba(28, 28, 28, .28)", pointerEvents: "none" });
+  Object.assign(scrim.style, { position: "fixed", inset: "0", zIndex: "2147483645", background: "rgba(10, 24, 23, .32)", pointerEvents: "none" });
   scrim.setAttribute("aria-hidden", "true");
   host.append(scrim, ghost);
   const distance = window.innerHeight - rect.top + 32;
-  const duration = reduce ? 120 : Math.max(120, Math.round(240 * Math.min(1, distance / Math.max(1, rect.height + 32))));
-  const easing = "cubic-bezier(.32, .72, 0, 1)";
   const done = () => { ghost.remove(); scrim.remove(); };
   try {
-    const motion = reduce
-      ? ghost.animate([{ opacity: 1 }, { opacity: 0 }], { duration, easing: "ease-out", fill: "forwards" })
-      : ghost.animate([{ transform: "translateY(0)" }, { transform: `translateY(${distance}px)` }], { duration, easing, fill: "forwards" });
-    scrim.animate([{ opacity: 1 }, { opacity: 0 }], { duration, easing: "ease-out", fill: "forwards" });
+    const motion = ghost.animate([{ transform: "translateY(0)" }, { transform: `translateY(${distance}px)` }], { duration: exit, easing: "ease-out", fill: "forwards" });
+    scrim.animate([{ opacity: 1 }, { opacity: 0 }], { duration: exit, easing: "ease-out", fill: "forwards" });
     motion.finished.then(done, done);
-    window.setTimeout(done, duration + 120);
+    window.setTimeout(done, exit + 120);
   } catch { done(); }
 }
 

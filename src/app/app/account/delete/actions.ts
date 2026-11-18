@@ -6,13 +6,20 @@ import { admitLoginAttempt, clientAddress } from "@/lib/auth/login-limits.server
 import { passwordLoginAllowed } from "@/lib/auth/login-limits";
 import { activeDeletionRequest, checkDeletionRequest, submitDeletionRequest, type DeletionRequest } from "@/lib/account-deletion/requests.server";
 import { POLICY_VERSION, policiesVisible } from "@/lib/legal/policies";
+import { reportHandledServerError } from "@/lib/server-error";
 
 /** `uncertain`: the request may or may not be saved; only a later check can say. `signed_out`: no session and no
  * open request for the account the page was showing. `changed`: this browser is now signed in as someone else. */
 export type DeletionFormState =
-  | { kind: "idle" | "wrong_password" | "failed" | "uncertain" | "busy" | "signed_out" | "changed" }
+  | { kind: "idle" | "wrong_password" | "busy" | "signed_out" | "changed" }
+  | { kind: "failed" | "uncertain"; supportReference?: string }
   | { kind: "unavailable"; reason?: "LAST_OWNER" }
   | { kind: "received" | "duplicate"; reference: string; confirmedAt: string };
+
+/** A server action has no response headers, so an unexpected failure's Support reference rides in the returned state
+ * (read by supportReferenceOfState). Logged once, sanitized; refusals (busy, LAST_OWNER, wrong password) carry none. */
+const ROUTE = "/app/account/delete";
+const failure = (kind: "failed" | "uncertain", error: unknown): DeletionFormState => ({ kind, supportReference: reportHandledServerError(error, ROUTE) });
 
 const done = (kind: "received" | "duplicate", request: DeletionRequest): DeletionFormState => ({ kind, reference: request.reference, confirmedAt: request.confirmedAt });
 
@@ -30,16 +37,16 @@ export async function requestAccountDeletion(previous: DeletionFormState, formDa
   // The page sets `retry` once an attempt's outcome is unknown, and keeps it through a mistyped password.
   const retried = formData.get("retry") === "1" || previous.kind === "uncertain" || previous.kind === "busy";
   let proof;
-  try { proof = await readSessionMutationProof(); } catch { return retried ? { kind: "uncertain" } : { kind: "failed" }; }
+  try { proof = await readSessionMutationProof(); } catch (error) { return failure(retried ? "uncertain" : "failed", error); }
   if (proof && proof.employee.id !== account) return { kind: "changed" };
   if (!account) return { kind: "signed_out" };
   try {
     // The same two limits as password sign-in, in the same order.
     if (!(await admitLoginAttempt(account, clientAddress((await headers()).get("x-forwarded-for"))))) return { kind: "busy" };
     if (!(await passwordLoginAllowed(account))) return { kind: "busy" };
-  } catch {
+  } catch (error) {
     // Nothing about the request was sent yet; only an earlier attempt can still be unknown.
-    return retried ? { kind: "uncertain" } : { kind: "failed" };
+    return failure(retried ? "uncertain" : "failed", error);
   }
 
   if (!proof) {
@@ -48,8 +55,8 @@ export async function requestAccountDeletion(previous: DeletionFormState, formDa
       if (check.outcome === "found") return done(retried ? "received" : "duplicate", check.request);
       if (check.outcome === "none") return { kind: "signed_out" };
       return { kind: check.outcome };
-    } catch {
-      return { kind: "uncertain" };
+    } catch (error) {
+      return failure("uncertain", error);
     }
   }
 
@@ -61,9 +68,9 @@ export async function requestAccountDeletion(previous: DeletionFormState, formDa
     if (result.outcome === "failed") return retried ? { kind: "uncertain" } : { kind: "failed" };
     if (result.outcome === "unavailable") return { kind: "unavailable", ...(result.reason ? { reason: result.reason } : {}) };
     return { kind: result.outcome };
-  } catch {
+  } catch (error) {
     // The reply may have been lost after COMMIT. Ask again before saying anything.
     const saved = await activeDeletionRequest(proof.employee.id).catch(() => undefined);
-    return saved ? done("received", saved) : { kind: "uncertain" };
+    return saved ? done("received", saved) : failure("uncertain", error);
   }
 }

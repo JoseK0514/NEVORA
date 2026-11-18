@@ -46,10 +46,14 @@
 /* A text link lines up with the copy around it; the busy cell (spinner + words) must not push it right. */
 .sig-btn--link .sig-btn__label { justify-items: start; }
 .sig-btn .sig-btn__idle, .sig-btn__busy { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-.sig-btn__spin { flex: none; transform-origin: 50% 50%; animation: sig-btn-spin .8s linear infinite; }
+/* Phase 7: the one spinner. A 16px ring in the current text colour with a quarter left open, the same drawing as the
+ * Direction B .b-spin (b-foundation.css, b-shimmer.css). This sheet loads on every page, so the one keyframe lives here
+ * and the signed-out pages share it. It turns only when motion is allowed; with reduced motion the ring is still and the
+ * busy words and aria-busy carry the state. */
+.sig-btn__spin { flex: none; display: inline-block; box-sizing: border-box; width: 16px; height: 16px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; }
 .sig-btn__spin-slot { flex: none; display: inline-block; width: 16px; height: 16px; }
-@keyframes sig-btn-spin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .sig-btn__spin { animation: none; } }
+@keyframes b-spin { to { rotate: 360deg; } }
+@media (prefers-reduced-motion: no-preference) { .sig-btn__spin { animation: b-spin 800ms linear infinite; } }
 @media (forced-colors: active) {
   .sig-btn:not(.sig-btn--link):not(#sig) { border-color: ButtonText; }
 }
@@ -246,7 +250,6 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.mobile-nav .mo
   background: linear-gradient(90deg, var(--sig-track, #EEECE7) 0%, var(--sig-fill-soft) 50%, var(--sig-track, #EEECE7) 100%) 0 0 / 200% 100%;
   /* Phase 1: static; a moving sheen repaints every frame while a page loads. */
 }
-@keyframes sig-sheen { to { background-position: -200% 0; } }
 
 /* Fields: the sign-in card style for every form. One white card; each field a row with a caps label above the
  * control; hairlines between; the focused field gets the ink ring inside the card. */
