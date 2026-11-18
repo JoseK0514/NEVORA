@@ -2071,6 +2071,15 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/app/app/reports/christmas-bonus/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Business data uses shared scoped SQL/applicationSql; auth/device cookie transports use company/incarnation/purpose envelopes. Public presentation reads remain registered-host scoped; caches are per render, private or disabled. Existing domain authorization remains required.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
       "path": "src/app/app/reports/page.tsx",
       "tags": [
         "request-entrypoint"
@@ -2274,6 +2283,24 @@
       "path": "src/app/app/settings/clocker/actions.ts",
       "tags": [
         "server-action"
+      ],
+      "status": "CONVERTED",
+      "reason": "Business data uses shared scoped SQL/applicationSql; auth/device cookie transports use company/incarnation/purpose envelopes. Public presentation reads remain registered-host scoped; caches are per render, private or disabled. Existing domain authorization remains required.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/app/settings/clocker/matching/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "CONVERTED",
+      "reason": "Business data uses shared scoped SQL/applicationSql; auth/device cookie transports use company/incarnation/purpose envelopes. Public presentation reads remain registered-host scoped; caches are per render, private or disabled. Existing domain authorization remains required.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/app/settings/clocker/matching/page.tsx",
+      "tags": [
+        "request-entrypoint"
       ],
       "status": "CONVERTED",
       "reason": "Business data uses shared scoped SQL/applicationSql; auth/device cookie transports use company/incarnation/purpose envelopes. Public presentation reads remain registered-host scoped; caches are per render, private or disabled. Existing domain authorization remains required.",
