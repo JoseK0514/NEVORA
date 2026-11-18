@@ -19,6 +19,8 @@ export function businessFailure(error: unknown): never {
   if (['42P01', '42883'].includes(e?.code ?? '')) throw new AdvisorError('unavailable');
   throw error;
 }
+type BusinessReviewBinding = { contextDigest: string; evidenceRevision: number; revision: number; digest: string;
+  read: Extract<BusinessCommand, { op: 'read_source_version' | 'read_coverage_map' }> };
 export class BusinessStore {
   constructor(readonly advisor: AdvisorStore, readonly env: Record<string, string | undefined>) {}
   get workspaceId() { return this.advisor.original.workspace.id; }
@@ -92,8 +94,38 @@ export class BusinessStore {
     if (!row?.payload) throw new AdvisorError('forbidden'); const input = parseBusinessMap(JSON.parse(row.payload)); if (businessDigest(input) !== row.digest) throw new AdvisorError('conflict');
     return { mapVersionId: row.map_version_id, digest: row.digest, status: row.status, current: row.current, input };
   }
-  async reviewReceipt(id: string, signal: AbortSignal): Promise<BusinessReviewReceipt> {
-    const [row] = await this.guarded<{ id: string; expiresAt: string }>({ text: 'SELECT read_receipt_id AS id, expires_at::text AS "expiresAt" FROM owner_advisor_business_read_receipts WHERE workspace_id=$1 AND owner_id=$2 AND request_id=$3::uuid AND authority=$4 AND session_hash=$5 AND expires_at>clock_timestamp()', values: [this.workspaceId, this.ownerId, uuid(id), this.advisor.original.authority, this.advisor.proof.sessionTokenHash] }, signal);
+  private reviewReceiptRead(id: string, binding?: BusinessReviewBinding): SqlStatement {
+    const values: unknown[] = [this.workspaceId, this.ownerId, uuid(id), this.advisor.original.authority, this.advisor.proof.sessionTokenHash];
+    let current = '';
+    if (binding) {
+      values.push(binding.contextDigest, binding.evidenceRevision, binding.digest, binding.revision);
+      current = ` AND r.context_digest=$6 AND r.evidence_revision=$7 AND r.digest=$8 AND r.revision=$9
+        AND r.evidence_revision=COALESCE((SELECT evidence_revision FROM owner_advisor_business_state WHERE workspace_id=$1),0)`;
+      if (binding.read.op === 'read_source_version') {
+        values.push(uuid(binding.read.sourceId), uuid(binding.read.versionId));
+        current += ` AND r.source_id=$10::uuid AND r.version_id=$11::uuid AND r.map_version_id IS NULL
+          AND EXISTS(SELECT 1 FROM owner_advisor_business_sources s JOIN owner_advisor_business_versions v USING(workspace_id,source_id)
+            WHERE s.workspace_id=r.workspace_id AND s.source_id=r.source_id AND NOT s.deleted AND s.revision=r.revision
+              AND v.version_id=r.version_id AND v.digest=r.digest AND v.payload IS NOT NULL)`;
+      } else {
+        values.push(uuid(binding.read.mapVersionId));
+        current += ` AND r.source_id IS NULL AND r.version_id IS NULL AND r.map_version_id=$10::uuid
+          AND r.revision=COALESCE((SELECT map_revision FROM owner_advisor_business_state WHERE workspace_id=$1),0)
+          AND EXISTS(SELECT 1 FROM owner_advisor_business_maps m WHERE m.workspace_id=r.workspace_id
+            AND m.map_version_id=r.map_version_id AND m.digest=r.digest AND m.payload IS NOT NULL)`;
+      }
+    }
+    return {text: `SELECT r.read_receipt_id AS id,r.expires_at::text AS "expiresAt" FROM owner_advisor_business_read_receipts r
+      WHERE r.workspace_id=$1 AND r.owner_id=$2 AND r.request_id=$3::uuid AND r.authority=$4 AND r.session_hash=$5
+        AND r.expires_at>clock_timestamp()${current}`, values};
+  }
+  /** The same predicate is rechecked inside the final observation transaction, not only when the handle is read. */
+  reviewReceiptGuard(id: string, binding: BusinessReviewBinding): SqlStatement {
+    const statement = this.reviewReceiptRead(id, binding);
+    return {text: `SELECT(CASE WHEN EXISTS(${statement.text}) THEN '1' ELSE 'advisor_business_conflict' END)::integer`, values: statement.values};
+  }
+  async reviewReceipt(id: string, signal: AbortSignal, binding?: BusinessReviewBinding): Promise<BusinessReviewReceipt> {
+    const [row] = await this.guarded<{ id: string; expiresAt: string }>(this.reviewReceiptRead(id, binding), signal);
     if (!row || !Number.isFinite(Date.parse(row.expiresAt))) throw new AdvisorError('conflict');
     return { readReceiptId: row.id, readReceiptExpiresAt: new Date(row.expiresAt).toISOString() };
   }

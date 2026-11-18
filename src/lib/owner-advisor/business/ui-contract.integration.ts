@@ -95,3 +95,31 @@ it('recovers with only the original operation ID and no financial payload when b
   expect(await f.q('SELECT count(*)::int AS n FROM owner_advisor_business_operations')).toEqual([{ n: 1 }]);
 });
 
+
+for(const kind of ['source','map'] as const)for(const change of ['location','draft','final_observation'] as const){
+ it(`${kind} review renewal refuses ${change} drift without replacing its immutable operation or original receipt`,async()=>{
+  const staged=kind==='source'?await draft():await call({op:'stage_coverage_map',requestId:randomUUID(),map:{expectedRevision:0,accounts:[],cells:[]}});
+  const command=kind==='source'?{op:'read_source_version',requestId:randomUUID(),sourceId:staged.receipt!.sourceId,versionId:staged.receipt!.versionId}
+   :{op:'read_coverage_map',requestId:randomUUID(),mapVersionId:staged.receipt!.mapVersionId};
+  const first=await call(command);
+  const original=await f.q('SELECT to_jsonb(r) AS row FROM owner_advisor_business_read_receipts r WHERE request_id=$1::uuid',[command.requestId]);
+  const operation=await f.q('SELECT to_jsonb(o) AS row FROM owner_advisor_business_operations o WHERE request_id=$1::uuid',[command.requestId]);
+  const advanceDraft=async()=>{
+   if(kind==='source'){
+    const input=fictionalBusinessInput();input.source.sourceId=staged.receipt!.sourceId;input.source.expectedRevision=first.receipt!.revision;
+    await call({op:'stage_source_version',requestId:randomUUID(),format:'JSON',input});
+   }else await call({op:'stage_coverage_map',requestId:randomUUID(),map:{expectedRevision:first.receipt!.revision,accounts:[],cells:[]}});
+  };
+  if(change==='location')await f.q("UPDATE locations SET name='Fictional renamed after review' WHERE id='loc-1'");
+  if(change==='draft')await advanceDraft();
+  let changed=false;
+  const ex:SqlExecutor={...f.db.executor,async transaction(statements,incoming){
+   if(change==='final_observation'&&!changed&&statements.some(x=>x.text.startsWith('WITH clock AS MATERIALIZED'))){changed=true;await advanceDraft();}
+   return f.db.executor.transaction(statements,incoming);
+  }};
+  await expect(call(command,env,ex)).rejects.toMatchObject({code:'conflict'});
+  expect(await f.q('SELECT to_jsonb(r) AS row FROM owner_advisor_business_read_receipts r WHERE request_id=$1::uuid',[command.requestId])).toEqual(original);
+  expect(await f.q('SELECT to_jsonb(o) AS row FROM owner_advisor_business_operations o WHERE request_id=$1::uuid',[command.requestId])).toEqual(operation);
+  const fresh=await call({...command,requestId:randomUUID()});expect(fresh.state).toBe('ready');expect(fresh.readReceiptId).not.toBe(first.readReceiptId);
+ });
+}

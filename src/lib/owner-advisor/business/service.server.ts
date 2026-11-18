@@ -156,7 +156,13 @@ export async function businessSourceService(proof: SessionMutationProof, raw: Sq
   }
   const hash = businessDigest(command); await store.reserveOperation(command, hash, signal);
   const receipt = await store.execute(command, hash, signal, { contextDigest, validUntil: context.validUntil, before: [...assertions, ...stable], after: assertions });
-  if (command.op === 'read_source_version' || command.op === 'read_coverage_map') return finish(body('ready', { version: view ?? null, map, receipt, ...await store.reviewReceipt(command.requestId, signal) }), context, [...stable, ...(view ? [versionGuard(store, view)] : [])]);
+  if (command.op === 'read_source_version' || command.op === 'read_coverage_map') {
+    const binding = { read: command, contextDigest, evidenceRevision: snapshot.evidenceRevision, revision: receipt.revision,
+      digest: command.op === 'read_source_version' ? view!.digest : map!.digest };
+    const handle = await store.reviewReceipt(command.requestId, signal, binding);
+    return finish(body('ready', { version: view ?? null, map, receipt, ...handle }), context,
+      [...stable, store.reviewReceiptGuard(command.requestId, binding), ...(view ? [versionGuard(store, view)] : [])]);
+  }
   return finish(body('saved', { receipt }), context);
 }
 export async function readBusinessVersion(proof: SessionMutationProof, raw: SqlExecutor, env: Record<string,string|undefined>, incoming: AbortSignal, sourceId: string, versionId: string): Promise<BusinessVersionView> {
