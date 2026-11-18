@@ -1,6 +1,6 @@
 'use client';
 
-import {useRef,useState,type FormEvent} from 'react';
+import {useEffect,useRef,useState,type FormEvent} from 'react';
 import type {ClockerScheduleGrace} from '@/lib/clocker/schedule-grace.server';
 import {CorpCard} from './corp/corp';
 import {clockerOwnerCopy,type ClockerOwnerLang} from './clocker-owner-copy';
@@ -18,13 +18,24 @@ export function ClockerGraceSettings({initial,saveAction,readAction,lang='en'}:{
   const [setting,setSetting]=useState(initial),[draft,setDraft]=useState(String(initial.earlyClockInGraceMinutes));
   const [pending,setPending]=useState(false),[mustReload,setMustReload]=useState(false),[invalid,setInvalid]=useState(false);
   const [feedback,setFeedback]=useState<{text:string;error:boolean}|null>(null);
-  const busy=useRef(false),input=useRef<HTMLInputElement>(null);
+  const busy=useRef(false),input=useRef<HTMLInputElement>(null),reloadButton=useRef<HTMLButtonElement>(null);
+  // The fieldset is disabled while a save or reload runs, which drops keyboard focus to the page. When it ends, focus
+  // returns to where it was (the field or Save), or to Reload setting when Save stays disabled until a reload.
+  const restore=useRef<HTMLElement|null>(null);
+  useEffect(()=>{
+    if(pending||!restore.current)return;
+    const target=restore.current;restore.current=null;
+    if(document.activeElement&&document.activeElement!==document.body)return;
+    const usable=target.isConnected&&!(target as HTMLButtonElement).disabled;
+    (usable?target:mustReload?reloadButton.current??input.current:input.current)?.focus();
+  },[pending,mustReload]);
+  const holdFocus=()=>{restore.current=document.activeElement instanceof HTMLElement&&document.activeElement!==document.body?document.activeElement:input.current;};
   async function save(event:FormEvent<HTMLFormElement>){
     event.preventDefault();if(busy.current||mustReload)return;
     const value=draft.trim();
     if(!graceDraftValid(value)){setInvalid(true);setFeedback(null);input.current?.focus();return;}
     const form=new FormData();form.set('earlyClockInGraceMinutes',value);form.set('expectedVersion',String(setting.version));
-    busy.current=true;setPending(true);setFeedback(null);
+    busy.current=true;holdFocus();setPending(true);setFeedback(null);
     try{
       const result=await saveAction(form);
       if(result.state!=='available'){setMustReload(true);setFeedback({text:result.message,error:true});return;}
@@ -35,7 +46,7 @@ export function ClockerGraceSettings({initial,saveAction,readAction,lang='en'}:{
     finally{busy.current=false;setPending(false);}
   }
   async function reload(){
-    if(busy.current)return;busy.current=true;setPending(true);setFeedback(null);
+    if(busy.current)return;busy.current=true;holdFocus();setPending(true);setFeedback(null);
     try{
       const result=await readAction();
       if(result.state!=='available'){setFeedback({text:result.message,error:true});return;}
@@ -66,7 +77,7 @@ export function ClockerGraceSettings({initial,saveAction,readAction,lang='en'}:{
     </form>
     {feedback?<p role={feedback.error?'alert':'status'} className={feedback.error?'c-grace__feedback c-grace__feedback--error':'c-grace__feedback'}>{feedback.text}</p>:null}
     <div className="c-card__foot c-grace__foot">
-      {mustReload?<button type="button" className="c-btn c-btn--secondary" disabled={pending} onClick={()=>void reload()}>{t.graceReload}</button>:null}
+      {mustReload?<button ref={reloadButton} type="button" className="c-btn c-btn--secondary" disabled={pending} onClick={()=>void reload()}>{t.graceReload}</button>:null}
       <button type="submit" form="clocker-grace-form" disabled={pending||mustReload} className="c-btn">{pending?t.saving:t.graceSave}</button>
     </div>
   </CorpCard>;
