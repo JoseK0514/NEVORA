@@ -704,6 +704,32 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     expect(provider.requests.find(r=>r.path==='/v1/billing_portal/sessions')!.form.get('configuration')).toBe('bpc_small');
     expect((await store.business(id)).planKey).toBe('team');
   });
+  it('rechecks actual headcount after an accepted downgrade when the team grows before renewal', async () => {
+    enablePlanChanges();
+    provider.counts.set(id, 16);
+    const { subscription } = await subscribed();
+    provider.markPaid(subscription.id);
+    await billing.syncJob({ subscriptionId: subscription.id });
+    provider.counts.set(id, 15);
+    expect(await billing.planChange(await store.business(id), randomUUID(), 'small')).toMatchObject({ plan: 'small', effective: 'period_end' });
+    expect((await store.business(id)).planKey).toBe('team');
+
+    // The old commerce snapshot still fits; the workforce count changes after the offer.
+    await pool.query('UPDATE commerce.businesses SET employee_count=15 WHERE id=$1', [id]);
+    provider.counts.set(id, 16);
+    subscription.items.data[0].price = provider.prices.get('price_small')!;
+    provider.markPaid(subscription.id);
+    await billing.syncJob({ subscriptionId: subscription.id });
+    expect((await store.business(id)).planKey).toBe('small');
+    const token = 'j'.repeat(43);
+    await pool.query("INSERT INTO commerce.tokens(hash,account_id,purpose,expires_at) VALUES($1,$2,'session',$3)", [digest(token), id, new Date(now + 86400000)]);
+    const headcount = rs.fn(async (b: { id: string }) => provider.counts.get(b.id)!);
+    const app = createCommerce({ store, origin: 'https://accounts.example.test', allowedOrigins: [], now: () => now, headcount });
+    const status = await app(new Request('https://accounts.example.test/v1/status', { headers: { authorization: `Bearer ${token}` } }), '127.0.0.1');
+    expect(status.status).toBe(200);
+    expect(await status.json()).toMatchObject({ operational: false, reason: 'employee_limit_exceeded', export: true });
+    expect(headcount).toHaveBeenCalled();
+  });
   it.each([-400,0])('keeps unpaid upgrades and non-positive credit lines from granting paid Team capacity: %s',async lineAmount=>{
     const {subscription}=await subscribed();provider.markPaid(subscription.id);await billing.syncJob({subscriptionId:subscription.id});
     const before=await store.business(id);expect(before.planKey).toBe('small');
