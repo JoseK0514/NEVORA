@@ -126,4 +126,18 @@ BEGIN
  RETURN result;
 END;
 $$;
+-- An isolated workspace bootstrapped before this migration: its APP role reads and saves the setting (the triggers
+-- write the revision as that role). A fresh bootstrap grants every business table. Without an APP role this is a no-op.
+DO $clocker_grace_app_upgrade$
+DECLARE app_role text;
+BEGIN
+ SELECT login_role::text INTO app_role FROM public.onboarding_runtime_roles WHERE kind='APP';
+ IF FOUND THEN
+  IF app_role !~ '^nv_app_[a-f0-9]{24}$' OR NOT EXISTS(SELECT 1 FROM pg_catalog.pg_roles WHERE rolname=app_role)
+  THEN RAISE EXCEPTION 'clocker_grace_app_role_invalid'; END IF;
+  EXECUTE format('GRANT SELECT,INSERT,UPDATE ON public.clocker_schedule_match_policy TO %I',app_role);
+  EXECUTE format('GRANT SELECT,INSERT ON public.clocker_schedule_match_policy_revisions TO %I',app_role);
+ END IF;
+END
+$clocker_grace_app_upgrade$;
 COMMIT;
