@@ -224,6 +224,12 @@ The `nevora-30-day-phase` work adds these contracts; details are in the
   computes no money and is read only for `America/Puerto_Rico` workspaces.
 - `GET /healthz` is liveness only and reads nothing; it is classified in the
   onboarding entrypoint inventory and sits outside the proxy matcher.
+- Migration `0069_clocker_early_grace.sql` adds the Owner's early clock-in grace
+  (`clocker_schedule_match_policy` plus append-only revisions). A shift covers
+  `[start − G, end)`; G = 0 reproduces the previous context exactly. The grace
+  used is read server-side at punch time, kept in the captured context as an
+  optional `earlyGraceMinutes` (still `version: 1`), and checked by the SQL
+  resolver; a missing or unreadable setting means 0, never a blocked punch.
 - `NEVORA_WEB_ANALYTICS_ENABLED` (default false) renders Vercel Web Analytics with
   `src/lib/analytics/redact.ts`, an allowlist of public paths that strips query
   strings and drops every other path.

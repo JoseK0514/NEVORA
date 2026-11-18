@@ -48,7 +48,9 @@
         "src/lib/employment-dates.ts",
         "src/components/employment-date-fields.tsx",
         "src/app/app/reports/christmas-bonus/page.tsx",
-        "src/lib/reports/christmas-bonus.ts"
+        "src/lib/reports/christmas-bonus.ts",
+        "src/app/app/settings/clocker/matching/page.tsx",
+        "src/lib/clocker/schedule-grace.server.ts"
       ]
     },
     {
@@ -207,7 +209,10 @@
         "src/lib/employment-dates.privacy.test.ts",
         "src/lib/reports/christmas-bonus.ts",
         "src/app/healthz/route.ts",
-        "src/lib/analytics/redact.ts"
+        "src/lib/analytics/redact.ts",
+        "db/migrations/0069_clocker_early_grace.sql",
+        "src/lib/clocker/schedule-candidates.ts",
+        "src/lib/clocker/schedule-grace.server.ts"
       ]
     },
     {

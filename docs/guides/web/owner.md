@@ -19,7 +19,7 @@ Settings includes these current destinations:
 | --- | --- |
 | Company | Company profile, locations, branding, features and team terms, company policies |
 | Scheduling | Positions, break types and scheduling rules |
-| Clocker | Clocker tablets, PINs, punch photos and recovery |
+| Clocker | Clocker tablets, PINs, punch photos, shift matching and recovery |
 | Pay | Payroll settings, when payroll is available to this environment |
 
 Confirm the company timezone, active locations and positions before planning.
@@ -120,6 +120,12 @@ corrections. Scheduling records describe planned work; they do not establish
 attendance or hours worked. Employees use their location's enrolled **Clocker**
 to record punches. The personal time view is not a promise of phone clock-in.
 Review Clocker recovery and any photo requirements through the Owner tools.
+
+**Settings → Clocker → Shift matching** sets the **Early clock-in grace**, 0 to
+30 minutes. A punch up to that many minutes before a shift start counts toward
+that shift; paid time still starts at the actual punch. It starts at 0 (strict
+matching), only you can change it, every save is recorded, and punches already
+recorded keep how they were matched.
 
 For another person’s eligible open punch, use **Close open punch** in the
 Timecards inspector. Enter the verified company-local end time, a reason and
