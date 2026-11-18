@@ -238,3 +238,12 @@
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-two { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--b-space-16); padding: 14px var(--b-space-16); border-radius: var(--b-radius-field); background: var(--b-hover); box-shadow: inset 0 0 0 1px var(--b-line); }
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-two > section { display: grid; gap: 6px; align-content: start; }
 @media (min-width: 768px) { :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-two { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--b-space-24); } }
+/* Phase 8 (a.md #9): a page that is only a state (loading failed, no payroll chosen, nothing included yet) is a state card,
+ * at most 560px wide, not the 812px form card around a 560px message. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) main.page-frame .c-sheetpage > form.c-teamform.pim:not([data-wide]):has(> .b-statecard):not(:has(> :not(.b-statecard, .pim-eyebrow))):not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { max-width: var(--b-frame-form) !important; }
+  }
+}
+/* Phase 8 (a.md #27): a state's title and line never leave one word alone on the last line ("first" at 320px). */
+:is(#c-root, html) body .app-shell[data-nv-b] .pim :is(.b-statecard__t, .b-statecard__s) { text-wrap: pretty; }

@@ -100,8 +100,12 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,outcomeRefB
       aria-describedby={invalid==='confirm'?'deletion-understand-error':undefined} aria-invalid={invalid==='confirm'?true:undefined}/>
      <span>I understand my NEVORA account will be deleted and I won’t be able to sign in again.</span></label>
     {invalid==='confirm'?<p className="c-error" id="deletion-understand-error">Check this box to confirm you understand.</p>:null}
+    {/* Phase 8 (review C, row 4): the button and its note are one piece, so on a tablet they end on the 560px block's right
+      * edge together and the note stays centred under the button. */}
+    <div className="eb-delete-go">
     {state.kind!=='unavailable'?<button type="submit" className="c-btn c-btn--danger c-btn--full em-delete-confirm" data-armed={armed?'':undefined} disabled={pending}>{pending?(checking?'Checking…':'Sending request…'):checking?'Check my request':'Delete my account'}</button>:null}
     <p className="c-note c-note--center">This can’t be undone.</p>
+    </div>
     </div>
    </form>}
   </div>

@@ -15,6 +15,7 @@ import { inboxFilter } from "@/lib/action-center/inbox";
 import { LeaveConflictCheck } from "@/components/leave-staffing/conflict-check";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { TimeOffWaitingList } from "@/components/time-off-waiting-list";
+import { RequestFace } from "@/components/request-face";
 
 const tabs = [
   { id: "pending", label: "Waiting", status: "PENDING" },
@@ -185,7 +186,7 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
           aged: sent ? Date.parse(source.observedAt) - Date.parse(sent) >= 86_400_000 : undefined, href: `/app/requests?tab=pending&requestId=${encodeURIComponent(request.id)}` };
       })} /> : <p className="q-empty q-first">You’re all caught up.</p>)
       : requests.length ? <QuietList label={`${selected.label} time off`} style={{ marginTop: 16 }}>{requests.map(request => (
-          <QuietRow key={request.id} avatar={initialsOf(request.employeeName)} title={request.employeeName}
+          <QuietRow key={request.id} avatar={<RequestFace name={request.employeeName} initials={initialsOf(request.employeeName)} />} title={request.employeeName}
             detail={decidedLine(request) ? <>{whenLabel(request)}<span className="q-rt__line">{decidedLine(request)}</span></> : whenLabel(request)}
             // Review B5 (NV-268): a decided request carries its state as a chip (green approved, grey declined).
             value={<CorpPill tone={selected.id === "approved" ? "green" : "neutral"}>{selected.id === "approved" ? "Approved" : "Declined"}</CorpPill>} />

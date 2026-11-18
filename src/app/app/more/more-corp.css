@@ -9,7 +9,8 @@
 :is(#c-root, html) .c-more--employee .c-row--one { min-height: 52px; padding-top: 8px; padding-bottom: 8px; }
 :is(#c-root, html) .c-more--employee .c-row__value .q-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 11px; background: var(--c-teal); color: #FFFFFF; font-size: 12px; line-height: 1; font-weight: 600; }
 :is(#c-root, html) .c-more--employee .c-more__signout .c-btn--secondary { background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; color: var(--c-ink); }
-/* Review F2 (NV-105): the Owner's or Manager's own face is drawn as in the header (a white circle with teal initials, with a
- * hairline on the white card), the same on More and Profile. Other people keep their face tint. */
+/* Phase 8 (review B #40): the Owner's or Manager's own face on More keeps their face tint, as in every list (DESIGN.MD,
+ * Nov 7: a person keeps one face tint on every screen). It was a white circle (review F2, NV-105); white stays for the
+ * faces on the band and in the top bar. */
 @layer nv-b {
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell) .c-more:not(.c-more--employee) .c-row .c-av:not(#nvd-none):not(#nvd-none2) { background: #FFFFFF !important; color: #0B6E69 !important; box-shadow: inset 0 0 0 1px rgb(16 40 38 / 0.14) !important; font-weight: 700 !important; } }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell) .c-more:not(.c-more--employee) .c-row .c-av:not(#nvd-none):not(#nvd-none2) { font-weight: 700 !important; } }

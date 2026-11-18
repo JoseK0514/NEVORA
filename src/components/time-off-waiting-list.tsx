@@ -5,6 +5,7 @@ import { useFormStatus } from "react-dom";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { reviewTimeOffAction } from "@/app/app/requests/actions";
 import { QuietRow } from "@/components/quiet/quiet";
+import { RequestFace } from "@/components/request-face";
 import { useLeaveStaffing } from "@/components/leave-staffing/use-leave-staffing";
 import { conflictsFor } from "@/components/leave-staffing/conflict-check";
 import { MAX_STAFFING_WEEKS, weeksFor } from "@/lib/time-off-staffing/client";
@@ -40,7 +41,8 @@ export function TimeOffWaitingList({ requests }: { requests: WaitingTimeOff[] })
     const note = conflicts?.length ? <span className="b-leave-note" data-tone="amber"><WarningIcon weight="bold" aria-hidden="true" />{`On the schedule: ${conflictShift(conflicts[0])}${conflicts.length > 1 ? ` +${conflicts.length - 1}` : ""}`}</span>
       : conflicts ? null : <span className="b-leave-note">{!checked.has(request.id) ? "Check the schedule on its page" : staffing.status === "loading" ? "Checking the schedule…" : staffing.status === "expired" ? "Schedule check expired" : staffing.status === "paused" ? "Schedule check paused" : "Couldn’t check the schedule"}</span>;
     return <li key={request.id} id={`request-${request.id}`} tabIndex={-1} className="q-request">
-      <QuietRow bare avatar={request.avatar} title={request.employeeName} href={request.href}
+      {/* Phase 8 (a.md #12, #25): the person's own face tint, and no chevron on a row that carries its own buttons (OW-012). */}
+      <QuietRow bare avatar={<RequestFace name={request.employeeName} initials={request.avatar} />} title={request.employeeName} href={request.href} chevron={false}
         detail={<><WholeParts text={request.when} />{request.aged && request.ago ? <span className="q-rt__line b-req-age">{request.ago}</span> : null}</>}
         value={request.ago ? <span className="b-req-ago">{request.ago}</span> : undefined} />
       {note ? <p className="q-acts-note">{note}</p> : null}

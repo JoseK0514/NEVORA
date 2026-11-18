@@ -7,8 +7,9 @@ describe('loading placeholders for the Clocker settings', () => {
   it('Clocker tablets: back row, title and one line on the 224 band, one reading column, rows with a lead slot', () => {
     expect(loadingShape('/app/settings/clocker', false)).toMatchObject({title: 'Clocker tablets', back: true, sub: true, band: 'sub', frame: 'read', lift: false, cards: [{head: true, rows: 2, avatar: true}]});
   });
-  it('Clocker PINs: search and tabs on the 296 band, then people', () => {
-    expect(loadingShape('/app/settings/clocker/pins', false)).toMatchObject({title: 'Clocker PINs', back: true, strip: true, band: 'strip', frame: 'read', lift: false});
+  // Phase 8: the search and tabs sit 20px under the title and the band ends 32px under them (264 with no sub-line).
+  it('Clocker PINs: search and tabs on the 264 band, then people', () => {
+    expect(loadingShape('/app/settings/clocker/pins', false)).toMatchObject({title: 'Clocker PINs', back: true, strip: true, band: 264, frame: 'read', lift: false});
     expect(loadingShape('/app/settings/clocker/pins', false).cards?.[0]).toEqual({head: true, rows: 6, avatar: true});
   });
   it('Punch photos and its review each have their own title', () => {

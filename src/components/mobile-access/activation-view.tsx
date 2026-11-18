@@ -4,7 +4,7 @@ import {useEffect,useRef,useState,type FormEvent,type RefObject} from 'react';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {CopySimpleIcon} from '@phosphor-icons/react/dist/ssr/CopySimple';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
-import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
+import {WarningIcon} from "@phosphor-icons/react/dist/ssr/Warning";
 import {WifiSlashIcon} from '@phosphor-icons/react/dist/ssr/WifiSlash';
 import {KeyIcon} from '@phosphor-icons/react/dist/ssr/Key';
 import {IdentificationCardIcon} from '@phosphor-icons/react/dist/ssr/IdentificationCard';
@@ -43,13 +43,13 @@ export function MobileActivationView({phase,mismatch=false,employeeId,loginHref,
  </div>;
  const unknown=phase==='outcome_unknown';
  const title=canSubmit?t.inviteTitle:phase==='invalid'?t.inviteInvalidTitle:unknown?u.unknownTitle:t.activateTitle;
- const sub=phase==='checking'?(lang==='es'?'Abriendo tu invitación…':'Opening your invitation…'):canSubmit?t.inviteSub.replace('{workplace}',workspaceName??t.workspaceUnavailable):phase==='invalid'?t.inviteInvalidBody:unknown?u.unknownFirst:t.activateSub;
+ const sub=phase==='checking'?(lang==='es'?'Abriendo tu invitación…':'Opening your invitation…'):canSubmit?t.inviteSub.replace('{workplace}',workspaceName??t.workspaceUnavailable):phase==='invalid'?t.inviteInvalidBody:unknown?u.unknownFirst:u.missingHow;
  const help=phase!=='checking'&&!canSubmit;
  return <><AccessCard>{phase==='checking'||unknown?null:<AccessSteps journey="activation" current={canSubmit?2:1} lang={lang}/>}
   <div className="q-hd"><h1>{title}</h1>{canSubmit||phase==='checking'?null:chip}<p role={phase==='checking'?'status':unknown?'alert':undefined}>{sub}</p></div>
   {canSubmit?<form ref={formRef} className="q-auth__form activation-form" onSubmit={onSubmit} aria-busy={phase==='pending'}><AuthValidation/>
    {offline?<p id="activation-offline" className="q-auth__alert q-auth__alert--wait" role="alert" tabIndex={-1}><WifiSlashIcon size={20} weight="bold" aria-hidden="true"/><span>{u.offline}</span></p>:null}
-   {phase==='unavailable'&&!mismatch&&!offline?<><p id="activation-unavailable" className="q-auth__alert" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{t.inviteUnavailable}</span></p><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
+   {phase==='unavailable'&&!mismatch&&!offline?<><p id="activation-unavailable" className="q-auth__alert" role="alert"><WarningIcon size={20} weight="bold" aria-hidden="true"/><span>{t.inviteUnavailable}</span></p><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
    <fieldset className="q-auth__fields" disabled={phase==='pending'}><AccessPasswordPair prefix="activation" lang={lang} mismatch={mismatch} newLabel={t.createPassword}/></fieldset>
    <ul className="ar-facts" aria-label={u.factsLabel}>
     <li><KeyIcon size={16} weight="bold" aria-hidden="true"/><span>{u.passwordFact}</span></li>
@@ -59,11 +59,11 @@ export function MobileActivationView({phase,mismatch=false,employeeId,loginHref,
    {other}
    <ActivationSubmit pending={phase==='pending'} idle={t.activateAccount} busy={t.activating} className="q-btn"/></form>:null}
   {unknown?<><div className="ma-actions"><Link href={signInHref} className="q-btn">{t.trySignIn}</Link></div><p className="ma-note">{t.inviteUnknownBody}</p><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
-  {phase==='invalid'?<p className="ma-note">{u.invalidWhy} {u.invalidActive}</p>:phase==='missing'?<p className="ma-note">{u.missingHow}</p>:null}
+  {phase==='invalid'?<p className="ma-note">{u.invalidWhy} {u.invalidActive}</p>:null}
   {help&&!unknown?<div className="ma-actions"><Link href="/access-help/invitation" className="q-btn">{t.inviteHelp}</Link></div>:null}</AccessCard>
   {/* Phase 5 follow-up (PB-015): one filled button in the card; the other way on is a text link under it. */}
   <AccessOutside><nav className="q-auth__links" aria-label={AUTH_COPY[lang].accountHelp}>{unknown?<Link href="/access-help/invitation">{t.inviteHelp}</Link>:<Link href={signInHref}>{t.alreadyActivated}</Link>}</nav>
   {canSubmit?<details className="ma-details"><summary>{t.inviteAbout}<CaretDownIcon className="ma-caret" size={16} weight="bold" aria-hidden="true"/></summary><p>{t.inviteExpires}</p></details>:null}
-  <noscript><p className="q-help">{lang==='es'?'Activa JavaScript para abrir la invitación segura de tu trabajo.':'Enable JavaScript to open your workplace’s secure invitation.'}</p></noscript></AccessOutside>
+  <noscript><p className="q-help">{lang==='es'?'Activa JavaScript para abrir la invitación segura de tu lugar de trabajo.':'Enable JavaScript to open your workplace’s secure invitation.'}</p></noscript></AccessOutside>
  </>;
 }

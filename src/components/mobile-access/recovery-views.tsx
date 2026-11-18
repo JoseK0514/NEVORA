@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import {useEffect,useRef,type FormEventHandler,type RefCallback} from 'react';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
-import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
+import {WarningIcon} from "@phosphor-icons/react/dist/ssr/Warning";
 import {WifiSlashIcon} from '@phosphor-icons/react/dist/ssr/WifiSlash';
 import {EnvelopeSimpleIcon} from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
@@ -33,7 +33,7 @@ export function MobileRecoveryRequest({hydrated,busy,done,message,onSubmit,lang,
  const issue=recoveryIssue('request',message),next=recoveryNext(ACCESS_COPY[lang],'request',message);
  useEffect(()=>{if(done||message)feedback.current?.focus();},[done,message]);
  return <>
-  <AccessCard><AccessSteps journey="recovery" current={done?2:1} lang={lang}/>
+  <AccessCard><AccessSteps journey="recovery" current={done?2:1} lang={lang} named={!done}/>
   {done?<div className="ma-receipt-mark"><EnvelopeSimpleIcon size={28} weight="bold" aria-hidden="true"/></div>:null}
   <div className="q-hd"><h1>{done?t.received:t.forgotTitle}</h1>{workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null}<p>{done?u.requestedSub:t.forgotSub}</p></div>
   {done?<><div className="ma-receipt" ref={feedback} role="status" tabIndex={-1}>{message?<p>{authMessage(lang,message)}</p>:null}<p>{u.notConfirmed} {a.checkEmail.expires}</p></div>
@@ -41,8 +41,8 @@ export function MobileRecoveryRequest({hydrated,busy,done,message,onSubmit,lang,
    <noscript><p className="q-help">{a.requestNoScript}</p></noscript>
    <form className="q-auth__form" onSubmit={onSubmit} aria-busy={busy}><AuthValidation/>
    {message&&issue==='offline'?<div id="recovery-offline" className="q-auth__alert q-auth__alert--wait" ref={feedback} role="alert" tabIndex={-1}><WifiSlashIcon size={20} weight="bold" aria-hidden="true"/><span>{u.offline}</span></div>
-   :message?<><div id="recovery-error" className="q-auth__alert" ref={feedback} role="alert" tabIndex={-1}><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span><span>{authMessage(lang,message)}</span>{next?<span className="ar-alert__next">{next}</span>:null}</span></div><SupportReference reference={supportReference} lang={lang} id="recovery-reference"/></>
-   :<ol className="ar-before" aria-label={u.beforeLabel}>{u.before.map((line,index)=><li key={line}><span className="ar-before__n" aria-hidden="true">{index+1}</span><span>{line}</span></li>)}</ol>}
+   :message?<><div id="recovery-error" className="q-auth__alert" ref={feedback} role="alert" tabIndex={-1}><WarningIcon size={20} weight="bold" aria-hidden="true"/><span><span>{authMessage(lang,message)}</span>{next?<span className="ar-alert__next">{next}</span>:null}</span></div><SupportReference reference={supportReference} lang={lang} id="recovery-reference"/></>
+   :<p className="ar-intro">{u.intro}</p>}
    <fieldset className="q-auth__fields" disabled={!hydrated||busy}>
     <div className="q-fl"><label htmlFor="recovery-employee-id">{t.employeeId}</label><AccessEmployeeIdInput id="recovery-employee-id" defaultValue={draft?.employeeId} className="q-in" name="employeeId" required maxLength={200} autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="next" placeholder={t.idPlaceholder} aria-describedby="recovery-employee-id-invalid" data-msg-required={v.employeeId}/><FieldInvalid id="recovery-employee-id"/>
      <details id="recovery-id-help" className="ma-details"><summary>{t.idHelp}<Caret/></summary><p>{t.idHelpBody}</p></details></div>
@@ -62,14 +62,14 @@ export function MobileRecoveryReset({hydrated,busy,done,message,onSubmit,proofRe
  const mismatch=message==='Passwords do not match.',invalid=message.startsWith('This recovery code'),uncertain=message.startsWith('The reset outcome');
  const wait=uncertain||issue==='resetUnavailable';
  useEffect(()=>{if(done||message)feedback.current?.focus();},[done,message]);
- return <><AccessCard><AccessSteps journey="recovery" current={3} lang={lang}/>
+ return <><AccessCard><AccessSteps journey="recovery" current={3} lang={lang} named={done}/>
   {done?<div className="ma-receipt-mark ar-done__mark"><CheckIcon size={28} weight="bold" aria-hidden="true"/></div>:null}
   <div className="q-hd"><h1>{done?t.resetDone:t.resetTitle}</h1>{workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null}{done?null:<p>{t.resetSub}</p>}</div>
   {done?<><div ref={feedback} tabIndex={-1} className="ma-receipt ar-done__line" role="status"><p>{a.reset.doneLine}</p></div>
    <div className="ma-actions"><Link className="q-btn" href="/login">{t.signInNew}</Link></div><p className="ma-note ar-next">{u.doneNote}</p></>:<>
    <form className="q-auth__form" onSubmit={onSubmit} aria-busy={busy}><AuthValidation/>
    {message&&issue==='offline'?<div ref={feedback} id="reset-error" className="q-auth__alert q-auth__alert--wait" role="alert" tabIndex={-1}><WifiSlashIcon size={20} weight="bold" aria-hidden="true"/><span>{u.offline}</span></div>
-   :message?<><div ref={feedback} id="reset-error" className={`q-auth__alert${wait?' q-auth__alert--wait':''}`} role="alert" tabIndex={-1}><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><div>
+   :message?<><div ref={feedback} id="reset-error" className={`q-auth__alert${wait?' q-auth__alert--wait':''}`} role="alert" tabIndex={-1}><WarningIcon size={20} weight="bold" aria-hidden="true"/><div>
      <h2>{mismatch?a.checkPasswords:invalid?(linkProof?a.reset.linkRefusedTitle:t.invalidCodeTitle):uncertain?t.resetUnknownTitle:a.resetNotConfirmed}</h2>
      <p>{invalid?(linkProof?a.reset.linkRefused:t.invalidCodeBody):uncertain?t.resetUnknownBody:authMessage(lang,message)}</p>
      {next&&!(invalid&&linkProof)?<p className="ar-alert__next">{next}</p>:null}

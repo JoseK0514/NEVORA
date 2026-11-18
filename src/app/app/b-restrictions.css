@@ -143,3 +143,8 @@
 :is(#c-root, html) .app-shell[data-nv-b] .rs .rs-skel__bar { display: block; height: 12px; border-radius: var(--b-radius-pill); background: var(--b-line); }
 :is(#c-root, html) .app-shell[data-nv-b] .rs .rs-skel__bar--head { width: 32%; height: 14px; }
 :is(#c-root, html) .app-shell[data-nv-b] .rs .rs-skel__bar--day { flex: none; width: 88px; }
+/* Phase 8 (a.md #23): "See the hours they entered" starts on the paragraph's edge; its 2px side padding stays for the
+ * focus ring and moves outside the text column. */
+@layer nv-b {
+  html body .app-shell[data-nv-b] .rs .rs-legacy > .rs-link { margin-left: calc(-1 * var(--b-space-2)) !important; }
+}

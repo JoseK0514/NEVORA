@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import type {MouseEvent, ReactNode} from 'react';
+import {Fragment, useState, type MouseEvent, type ReactNode} from 'react';
 import {BellIcon} from '@phosphor-icons/react/dist/ssr/Bell';
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import {CalendarCheckIcon} from '@phosphor-icons/react/dist/ssr/CalendarCheck';
@@ -26,6 +26,7 @@ import {notificationGroup, notificationHeadline, type NotificationTab} from '../
 import {messageTime, type MessageFilter, type ReadyUpdate} from '../employee-mobile/messages-view';
 import {NoHeaderActions} from './account-host';
 import {Dotted} from './parts';
+import {accountCopy} from './account-copy';
 import './account.css';
 
 /* Employee phones, Direction B: Notifications, Updates, an update and Write an update (mock e-notifications,
@@ -82,6 +83,40 @@ const clock = (at: string, zone: string) => new Intl.DateTimeFormat('en-US', {ti
 const shortDate = (at: string, zone: string) => new Intl.DateTimeFormat('en-US', {timeZone: zone, month: 'short', day: 'numeric'}).format(new Date(at));
 const longDay = (at: string, zone: string) => new Intl.DateTimeFormat('en-US', {timeZone: zone, weekday: 'short', month: 'short', day: 'numeric'}).format(new Date(at));
 
+/** Phase 8 (review C, row 18): the same notice sent more than once (the same title and the same object, such as two
+ * reminders to confirm one week) is one row that opens in place and lists each one, each opened and read on its own
+ * (DESIGN.MD Phase 3, "a folded notification opens in place"). Order is kept: a fold sits where its newest notice was. */
+function folds(items: EmployeeNotificationItem[]) {
+  const out: {key: string; items: EmployeeNotificationItem[]}[] = [], byKey = new Map<string, {key: string; items: EmployeeNotificationItem[]}>();
+  for (const item of items) {
+    const head = notificationHeadline(item), key = `${notificationKindFor(item) ?? ''}|${head.title}|${head.object ?? ''}|${head.decided ?? ''}`;
+    const fold = byKey.get(key);
+    if (fold) fold.items.push(item); else { const next = {key, items: [item]}; byKey.set(key, next); out.push(next); }
+  }
+  return out;
+}
+const A = accountCopy();
+function FoldRow({id, items, zone, earlier, open, onToggle}: {id: string; items: EmployeeNotificationItem[]; zone: string; earlier: boolean; open: boolean; onToggle: () => void}) {
+  const first = items[0], head = notificationHeadline(first), kind = notificationKindFor(first);
+  const unread = items.filter(item => item.reviewState === 'unread').length, required = items.some(item => item.actionState === 'required');
+  const Icon = head.decided === 'approved' ? CheckIcon : head.decided === 'declined' ? XIcon : kind ? KIND_ICON[kind] : BellIcon;
+  const tone: BTone = required ? 'amber' : head.decided === 'approved' ? 'green' : 'grey';
+  const time = clock(first.at, zone), when = earlier ? `${shortDate(first.at, zone)}, ${time}` : time, phoneWhen = earlier ? shortDate(first.at, zone) : time;
+  const object = [head.object, A.folded(items.length)].filter(Boolean).join(' · ');
+  return <li className="b-li">
+    <button type="button" className={`b-row b-row--link eb-notif eb-fold${unread ? ' eb-notif--unread' : ''}`} id={id} aria-expanded={open} onClick={onToggle}
+      aria-label={`${head.title}, ${object.replaceAll(' · ', ', ')}${unread ? `, ${unread} ${A.unread}` : ''}${required ? ', action needed' : ''}, ${earlier ? `${longDay(first.at, zone)} · ${time}` : time}`}>
+      <BIcon tone={tone}><Icon weight="bold" /></BIcon>
+      <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{head.title}</span></span>
+        <span className="b-row__s eb-notif__s">{required ? <BChip tone="amber">{A.actionNeeded}</BChip> : null}
+          <span className="eb-notif__o eb-notif__o--w"><Dotted text={object}/></span>
+          <span className="eb-notif__o eb-notif__o--p"><Dotted text={`${object} · ${phoneWhen}`}/></span></span></span>
+      <span className="b-row__end eb-when">{unread ? <i className="eb-unread" aria-hidden="true" /> : null}<span className="eb-when__t">{when}</span></span>
+      <CaretDownIcon className="b-chev eb-fold__caret" size={18} weight="bold" aria-hidden="true" />
+    </button>
+  </li>;
+}
+
 export type NotificationsBList = {items: EmployeeNotificationItem[]; partial: boolean; tab: NotificationTab; onTab: (tab: NotificationTab) => void; timeZone: string; onOpen: Open; opening: string | null; more: boolean; now?: Date};
 
 /** Notifications (board E-Notifications): All and Unread on glass, then the notices grouped by day, one row per notice
@@ -91,6 +126,34 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
   const unread = list ? list.items.filter(item => item.reviewState === 'unread').length : 0;
   const shown = list ? list.tab === 'unread' ? list.items.filter(item => item.reviewState === 'unread') : list.items : [];
   const groups = (['Today', 'Yesterday', 'Earlier'] as const).map(name => ({name, rows: shown.filter(item => notificationGroup(item.at, zone, at) === name)})).filter(group => group.rows.length);
+  const [opened, setOpened] = useState<Record<string, boolean>>({});
+  // One row per notification (Phase 4, EM-005 and EM-009).
+  const notificationRow = (item: EmployeeNotificationItem, group: string, inFold = false) => {
+    const isUnread = item.reviewState === 'unread', required = item.actionState === 'required', busy = list?.opening === item.id, kind = notificationKindFor(item);
+    // Phase 4 (EM-005): the title is the outcome and the sub-line is what it is about. A decision leads with its
+    // state (green check approved, grey x declined); one that needs you is amber (review B1, NV-142); the rest
+    // carry their kind's icon, teal because the row opens (EM-017, employee-b-account.css).
+    const head = notificationHeadline(item);
+    const Icon = head.decided === 'approved' ? CheckIcon : head.decided === 'declined' ? XIcon : kind ? KIND_ICON[kind] : BellIcon;
+    const tone: BTone = required ? 'amber' : head.decided === 'approved' ? 'green' : 'grey';
+    const earlier = group === 'Earlier', time = clock(item.at, zone);
+    // Phase 4 (EM-009): from 768px one trailing line, the dot then the time (an earlier day leads with its date). On a
+    // phone that column would leave a title 96px at 320, so only the dot trails and the time ends the sub-line, once
+    // ("Week of Nov 23 · 4 shifts · 9:56 AM"; an earlier day shows its date). The row's label says both.
+    const phoneWhen = earlier ? shortDate(item.at, zone) : time;
+    return <li className={inFold ? 'b-li eb-fold__item' : 'b-li'} key={item.id}><Link id={'b-message-' + item.id} className={`b-row b-row--link eb-notif${isUnread ? ' eb-notif--unread' : ''}${head.decided === 'declined' ? ' eb-notif--declined' : ''}${busy ? ' eb-notif--busy' : ''}`} href={item.href} prefetch={false}
+      onClick={event => list?.onOpen(event, item.id, item.href)} aria-busy={busy || undefined}
+      aria-label={`${head.title}${head.object ? `, ${head.object.replaceAll(' · ', ', ')}` : ''}${isUnread ? ', unread' : ''}${required ? ', action needed' : ''}, ${earlier ? `${longDay(item.at, zone)} · ${time}` : time}`}>
+      <BIcon tone={tone}><Icon weight="bold" /></BIcon>
+      <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{head.title}</span></span>
+        <span className={required || head.object ? 'b-row__s eb-notif__s' : 'b-row__s eb-notif__s eb-notif__s--p'}>{required ? <BChip tone="amber">Action needed</BChip> : null}
+          {head.object ? <span className="eb-notif__o eb-notif__o--w"><Dotted text={head.object}/></span> : null}
+          <span className="eb-notif__o eb-notif__o--p"><Dotted text={head.object ? `${head.object} · ${phoneWhen}` : phoneWhen}/></span></span></span>
+      <span className="b-row__end eb-when">{busy ? <span className="eb-spin b-spin b-spin--sm" aria-hidden="true" /> : isUnread ? <i className="eb-unread" aria-hidden="true" /> : null}
+        <span className="eb-when__t">{earlier ? `${shortDate(item.at, zone)}, ${time}` : time}</span></span>
+      <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" />
+    </Link></li>;
+  };
   return <BScreen back>
     <NoHeaderActions />
     <BHero back={{href: '/app', label: 'Home'}} title="Notifications" titleId="b-notifications-title"
@@ -107,32 +170,10 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
       {status ? <BStatusCard status={status} /> : list ? <>
         {list.partial ? <p className="b-note" role="status">Some current notices couldn’t be checked. Refresh before relying on this list.</p> : null}
         {groups.length ? groups.map(group => <BCard key={group.name} title={group.name} id={'b-notifications-' + group.name.toLowerCase()}>
-          <ul className="b-list" aria-label={group.name + ' notifications'}>{group.rows.map(item => {
-            const isUnread = item.reviewState === 'unread', required = item.actionState === 'required', busy = list.opening === item.id, kind = notificationKindFor(item);
-            // Phase 4 (EM-005): the title is the outcome and the sub-line is what it is about. A decision leads with its
-            // state (green check approved, grey x declined); one that needs you is amber (review B1, NV-142); the rest
-            // carry their kind's icon, teal because the row opens (EM-017, employee-b-account.css).
-            const head = notificationHeadline(item);
-            const Icon = head.decided === 'approved' ? CheckIcon : head.decided === 'declined' ? XIcon : kind ? KIND_ICON[kind] : BellIcon;
-            const tone: BTone = required ? 'amber' : head.decided === 'approved' ? 'green' : 'grey';
-            const earlier = group.name === 'Earlier', time = clock(item.at, zone);
-            // Phase 4 (EM-009): from 768px one trailing line, the dot then the time (an earlier day leads with its date). On a
-            // phone that column would leave a title 96px at 320, so only the dot trails and the time ends the sub-line, once
-            // ("Week of Nov 23 · 4 shifts · 9:56 AM"; an earlier day shows its date). The row's label says both.
-            const phoneWhen = earlier ? shortDate(item.at, zone) : time;
-            return <li className="b-li" key={item.id}><Link id={'b-message-' + item.id} className={`b-row b-row--link eb-notif${isUnread ? ' eb-notif--unread' : ''}${head.decided === 'declined' ? ' eb-notif--declined' : ''}${busy ? ' eb-notif--busy' : ''}`} href={item.href} prefetch={false}
-              onClick={event => list.onOpen(event, item.id, item.href)} aria-busy={busy || undefined}
-              aria-label={`${head.title}${head.object ? `, ${head.object.replaceAll(' · ', ', ')}` : ''}${isUnread ? ', unread' : ''}${required ? ', action needed' : ''}, ${earlier ? `${longDay(item.at, zone)} · ${time}` : time}`}>
-              <BIcon tone={tone}><Icon weight="bold" /></BIcon>
-              <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{head.title}</span></span>
-                <span className={required || head.object ? 'b-row__s eb-notif__s' : 'b-row__s eb-notif__s eb-notif__s--p'}>{required ? <BChip tone="amber">Action needed</BChip> : null}
-                  {head.object ? <span className="eb-notif__o eb-notif__o--w"><Dotted text={head.object}/></span> : null}
-                  <span className="eb-notif__o eb-notif__o--p"><Dotted text={head.object ? `${head.object} · ${phoneWhen}` : phoneWhen}/></span></span></span>
-              <span className="b-row__end eb-when">{busy ? <span className="eb-spin b-spin b-spin--sm" aria-hidden="true" /> : isUnread ? <i className="eb-unread" aria-hidden="true" /> : null}
-                <span className="eb-when__t">{earlier ? `${shortDate(item.at, zone)}, ${time}` : time}</span></span>
-              <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" />
-            </Link></li>;
-          })}</ul>
+          {/* Phase 8 (review C, row 18): an open fold lists its notices as indented rows right under it, in this list. */}
+          <ul className="b-list" aria-label={group.name + ' notifications'}>{folds(group.rows).map(fold => fold.items.length === 1 ? notificationRow(fold.items[0], group.name)
+            : <Fragment key={fold.key}><FoldRow id={`b-fold-${group.name.toLowerCase()}-${fold.items[0].id}`} items={fold.items} zone={zone} earlier={group.name === 'Earlier'} open={!!opened[fold.key]}
+                onToggle={() => setOpened(current => ({...current, [fold.key]: !current[fold.key]}))}/>{opened[fold.key] ? fold.items.map(item => notificationRow(item, group.name, true)) : null}</Fragment>)}</ul>
         </BCard>) : <BCard><div className="eb-empty"><BIcon tone="grey"><BellIcon weight="bold" /></BIcon><b>{list.tab === 'unread' ? 'You’re all caught up' : list.partial ? 'Nothing confirmed on this page' : 'No current notifications'}</b>
           <span>{list.tab === 'unread' ? 'No unread notifications.' : list.partial ? 'Some notices couldn’t be checked. Refresh to check again.' : 'New schedule, request and pay notices will show here.'}{list.more ? ' Older items may be on another page.' : ''}</span></div></BCard>}
       </> : null}
@@ -178,19 +219,21 @@ export function EmployeeUpdatesB({list, notice, recovery, returnHref, status, pa
       {returnHref ? <BReturnCard href={returnHref} /> : null}
       {status ? <BStatusCard status={status} /> : notice ? <BStatusCard status={notice} /> : list ? <>
         {list.partial && matches.length ? <p className="b-note" role="status">Some current updates couldn’t be checked. Refresh before relying on this list.</p> : null}
-        {confirm.length ? <BCard title="To confirm" id="b-updates-confirm">
+        {confirm.length ? <BCard title={A.toAcknowledge} id="b-updates-confirm">
           <ul className="b-list">{confirm.map(({item, at}) => <li className="b-li" key={item.id}><div className="eb-upd">
             <div className="b-row eb-upd__head"><BIcon tone="grey"><MegaphoneSimpleIcon weight="bold" /></BIcon>
-              <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.title}</span><BChip tone="amber">Must read</BChip></span><span className="b-row__s"><Dotted text={`${item.authorContext} · ${longDay(at, list.timeZone)}`} /></span></span></div>
+              <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.title}</span><BChip tone="amber">{A.actionNeeded}</BChip></span><span className="b-row__s"><Dotted text={`${item.authorContext} · ${longDay(at, list.timeZone)}`} /></span></span></div>
             {/* Phase 4 (EM-033): a preview is one paragraph (line breaks become spaces) of at most three lines; the update's own page keeps its paragraphs. */}
-            <p className="eb-upd__body">{item.body.replace(/\s*\n+\s*/g, ' ').trim()}</p>
+            {/* Phase 8 (review C, row 32): a hyphenated word ("back-of-house") keeps its hyphens unbreakable here, so the preview's
+              * "…" never lands right after a hyphen. */}
+            <p className="eb-upd__body">{item.body.replace(/\s*\n+\s*/g, ' ').trim().replace(/(\w)-(?=\w)/g, '$1\u2011')}</p>
             <div className="eb-upd__acts">
               <Link id={'b-message-' + item.id} className="b-btn b-btn--quiet b-rowact b-rowact--quiet" href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)} aria-label={`Open ${item.title}`}>Open</Link>
               <BButton kind="ghost" onClick={() => list.onConfirm(item)} disabled={list.busy} label={`Acknowledge ${item.title}`}><CheckIcon size={16} weight="bold" aria-hidden="true" />Acknowledge</BButton>
             </div>
           </div></li>)}</ul>
         </BCard> : null}
-        {earlier.length || !confirm.length ? <BCard title={confirm.length ? 'Earlier' : undefined} label={confirm.length ? undefined : 'Your updates'} id="b-updates-list">
+        {earlier.length || !confirm.length ? <BCard title={confirm.length ? A.otherUpdates : undefined} label={confirm.length ? undefined : 'Your updates'} id="b-updates-list">
           {earlier.length ? <ul className="b-list" aria-label="Your updates">{earlier.map(({item, unread, status: state, at}) => <li className="b-li" key={item.id}>
             <Link id={'b-message-' + item.id} className={unread ? 'b-row b-row--link eb-updrow eb-updrow--unread' : 'b-row b-row--link eb-updrow'} href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)}
               aria-label={`${item.title}, ${state}, ${messageTime(at, list.timeZone)}`}>
@@ -227,7 +270,7 @@ export function EmployeeUpdateB({back, item, busy, onAction, withdraw, onWithdra
       {returnHref ? <BReturnCard href={returnHref} /> : null}
       {status ? <BStatusCard status={status} /> : notice ? <BStatusCard status={notice} /> : item ? <>
         <article className="b-card eb-update" aria-label="Update content" data-update-revision={item.revisionId}>
-          <div className="eb-update__head"><h2>{item.title}</h2>{required ? <BChip tone="amber">Must read</BChip> : null}</div>
+          <div className="eb-update__head"><h2>{item.title}</h2>{required ? <BChip tone="amber">{A.actionNeeded}</BChip> : null}</div>
           <p className="eb-update__meta">{item.authorContext} · {messageTime(item.publishedAt, item.timeZone)}{item.editedAt ? ' · Edited ' + messageTime(item.editedAt, item.timeZone) : ''}</p>
           {item.sentCount !== undefined ? <p className="eb-update__meta">Original audience: {item.sentCount} {item.sentCount === 1 ? 'recipient' : 'recipients'}</p> : null}
           <p className="eb-update__body">{item.body}</p>

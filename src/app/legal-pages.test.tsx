@@ -29,7 +29,7 @@ describe("public policy pages", () => {
     const html = await render(Page);
     expect(html).toContain(`<h1 id="legal-title">${title}</h1>`);
     expect(html).toContain('href="mailto:support@thevelani.com"');
-    // Quiet (v4): the operator is named under the title ("Effective … · VELANI LLC").
+    // Phase 8: the operator is the first line of the footer every signed-out page shares.
     expect(html).toContain("VELANI LLC");
     for (const href of ["/privacy", "/terms", "/support", "/account-deletion"]) expect(html).toMatch(new RegExp(`href="${href}"|aria-current="page"`));
     // Every fact is confirmed, so no draft marker is left.
@@ -79,15 +79,21 @@ describe("public policy pages", () => {
     expect(html.match(/<h2 class="pl-sec__h"/g)).toHaveLength(5);
   });
 
-  it.each([["Privacy Policy", PrivacyPage, 12, "In this policy", "En esta política"], ["Terms of Use", TermsPage, 10, "In these terms", "En estos términos"]] as const)(
-    "%s keeps its English text; in Spanish only the page around it changes and one note says so (PB-001, PB-034)", async (title, Page, count, tocEn, tocEs) => {
+  it.each([["Privacy Policy", PrivacyPage, 12, "In this policy", "En esta política", "Política de privacidad"], ["Terms of Use", TermsPage, 10, "In these terms", "En estos términos", "Términos de uso"]] as const)(
+    "%s keeps its English text; in Spanish only the page around it changes and one note says so (PB-001, PB-034)", async (title, Page, count, tocEn, tocEs, titleEs) => {
     const en = await render(Page);
     language.lang = "es";
     const es = await render(Page);
     // The document is the same in both: the title, every heading and every paragraph, marked as English.
     const doc = (html: string) => html.slice(html.indexOf('<article lang="en"'), html.indexOf("</article>")).replace(/>Open all<|>Abrir todo</, "><");
     expect(doc(es)).toBe(doc(en));
-    expect(es).toContain(`<h1 id="legal-title">${title}</h1>`);
+    // Phase 8: on a Spanish page the title, the date line and the summary are Spanish; the date never splits.
+    expect(en).toContain(`<h1 id="legal-title">${title}</h1>`);
+    expect(es).toContain(`<h1 id="legal-title">${titleEs}</h1>`);
+    expect(en).toContain("<p>Effective October\u00A020,\u00A02026</p>");
+    expect(es).toContain("<p>Vigente desde el 20\u00A0de\u00A0octubre\u00A0de\u00A02026</p>");
+    expect(es).not.toMatch(/Effective|VELANI LLC<\/p>|Privacy Policy<\/h1>|Terms of Use<\/h1>/);
+    expect(es).toMatch(/<p class="q-sr">(Cómo NEVORA maneja|Las reglas para usar NEVORA)/);
     expect(doc(en).match(/<h2 class="pl-sec__h"/g)).toHaveLength(count);
     // English: no note. Spanish: one note at the top, with the help address.
     expect(en).not.toContain("pl-note");
@@ -98,24 +104,29 @@ describe("public policy pages", () => {
     expect(en).toMatch(/<button type="button" class="q-auth__lang" lang="es"[^>]*>Español<\/button>/);
     expect(es).toMatch(/<main class="q-page q-auth q-doc"[^>]*lang="es"/);
     expect(es).toMatch(/<button type="button" class="q-auth__lang" lang="en"[^>]*>English<\/button>/);
-    expect(es).toMatch(/class="q-nav__l q-auth__back"[^>]*>.*?Iniciar sesión<\/a>/);
+    expect(es).toMatch(/class="q-nav__l q-auth__back q-auth__back--row"[^>]*>.*?Iniciar sesión<\/a>/);
+    expect(es.match(/class="q-nav__l q-auth__back/g)).toHaveLength(1);
     expect(en).toContain(`<h2 id="legal-toc-title">${tocEn}</h2>`);
     expect(es).toContain(`<h2 id="legal-toc-title">${tocEs}</h2>`);
     expect(en).toContain(">Open all</button>");
     expect(es).toContain(">Abrir todo</button>");
-    expect(es).toContain('aria-label="Políticas y ayuda de NEVORA"');
+    expect(es).toContain('<nav class="so-foot__links" aria-label="Políticas y ayuda">');
+    expect(es.match(/class="so-foot"/g)).toHaveLength(1);
     expect(es).toContain('href="/support">Ayuda</a>');
     expect(es).not.toContain("(en inglés)");
     // The contents list names every section and, on Privacy, Questions (PB-034).
     const toc = en.slice(en.indexOf('class="pl-toc"'), en.indexOf("</nav>", en.indexOf('class="pl-toc"')));
     expect(toc.match(/<a href="#legal-/g)).toHaveLength(count + (title === "Privacy Policy" ? 1 : 0));
-    if (title === "Privacy Policy") { expect(toc).toContain('<a href="#legal-questions">Questions</a>'); expect(en).toContain('id="legal-questions"'); expect(es).toContain('<a href="#legal-questions">Preguntas</a>'); }
+    // The list is the document's own English headings; in Spanish "Preguntas" is the Spanish section after it, not an entry.
+    if (title === "Privacy Policy") { expect(toc).toContain('<a href="#legal-questions">Questions</a>'); expect(en).toContain('id="legal-questions"'); expect(es).not.toContain('<a href="#legal-questions">'); expect(es).toContain('id="legal-questions-title">Preguntas</h2>'); }
   });
 
   it("Support's group headings are real headings that label their groups (PB-033)", async () => {
     const html = await render(SupportPage);
     expect(html).toContain('<h2 class="pl-grp" id="support-common">Common questions</h2><ul class="q-list" aria-labelledby="support-common">');
-    expect(html).toContain('<h2 class="pl-grp">Mail</h2><p class="q-body q-doc__address">');
+    expect(html).toContain('<h2 class="pl-grp">Mailing address</h2><p class="q-body q-doc__address">');
+    // Every common question is one line: none carries a sub-line (Phase 8).
+    expect(html).not.toContain('Ask your manager</i>');
     expect(html).not.toContain("q-grp");
   });
 
@@ -172,9 +183,13 @@ describe("Delete my account", () => {
   const account = { name: "Fictional Person", role: "Employee", employeeId: "FICTIONAL-E1" };
   it("reviews the account and effects, then asks for the password before the destructive action", () => {
     const html = renderToStaticMarkup(createElement(AccountDeletionForm, { account, period: null, retention: null, existing: null }));
-    for (const text of ["Fictional Person", "FICTIONAL-E1", "Your access ends now.", "What is removed", "What may be kept", "Read the full details", "Confirm deletion request", "Keep my account"]) expect(html).toContain(text);
+    for (const text of ["Fictional Person", "FICTIONAL-E1", "<b>Your access ends now</b>", "What is removed", "What may be kept", "Read the full details", "Delete my account", "This can’t be undone.", "Keep my account"]) expect(html).toContain(text);
     expect(html).toMatch(/<input[^>]*type="password"[^>]*autoComplete="current-password"|<input[^>]*autoComplete="current-password"[^>]*type="password"/);
-    expect(html).toMatch(/<button type="submit"[^>]*disabled=""/);
+    // Phase 8 (review B, row 4; DESIGN.MD B6): a working red pill from the start; the consent box is checked in the page
+    // before anything is sent, so the button is never drawn disabled at rest.
+    expect(html).toContain('<button type="submit" class="q-btn q-deletion__confirm">Delete my account</button>');
+    expect(html).toContain('id="deletion-understand"');expect(html).not.toContain('placeholder="Password"');
+    expect(html.match(/<h1[ >]/g)).toHaveLength(1);
     expect(html).toContain("[CONFIRM_DELETION_COMPLETION_PERIOD]");
   });
 
@@ -193,6 +208,6 @@ describe("Delete my account", () => {
     expect(html).toContain("A deletion request is already in progress.");
     expect(html).toContain("DEL-7KQ2M9XA");
     expect(html).toContain("Confirmed period");
-    expect(html).not.toContain("Confirm deletion request");
+    expect(html).not.toContain("q-deletion__confirm");
   });
 });

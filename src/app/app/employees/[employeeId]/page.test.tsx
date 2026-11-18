@@ -106,6 +106,16 @@ it('shows the person’s hours, opens their own availability and their location�
   expect(await overview()).toContain('<span class="c-title__sub">No email, can’t sign in</span>');
 });
 
+it('says a scheduled figure is not available, and why, when the schedule read was incomplete (Phase 8, a.md #31)', async () => {
+  m.hours.mockReset().mockResolvedValue({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'COMPANY',locationIds:[]},
+    data:{employeeId:'worker',today:'2026-10-14',weekStart:'2026-10-12',timeZone:'America/Puerto_Rico',scheduledTodayMinutes:null,scheduledWeekMinutes:null,workedWeekMinutes:null,workedBasis:'EFFECTIVE_ELAPSED_INCLUDING_BREAKS'}});
+  const html = renderToStaticMarkup(await EmployeeProfilePage({ params: Promise.resolve({ employeeId: "worker" }) }));
+  expect(html).toMatch(/Scheduled today<\/span><span class="c-row__detail"><span>The whole schedule couldn’t be read<\/span><\/span><\/span><span class="c-row__value c-row__value--soft">Not available</);
+  expect(html).toMatch(/Scheduled this week<\/span><span class="c-row__detail"><span>The whole schedule couldn’t be read<\/span><\/span><\/span><span class="c-row__value c-row__value--soft">Not available</);
+  // The place is the title's own element, so the phone layer's 13px pull never clips its first letter (a.md #3).
+  expect(html).toMatch(/<span class="c-row__title c-row__title--b"><span>[^<]+<\/span><\/span>/);
+});
+
 it('keeps the person page when the hours read fails or is refused, and reads hours for the overview only', async () => {
   m.hours.mockRejectedValue(new Error('read failed'));
   const failed = renderToStaticMarkup(await EmployeeProfilePage({ params: Promise.resolve({ employeeId: "worker" }) }));

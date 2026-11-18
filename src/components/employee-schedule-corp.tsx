@@ -222,7 +222,7 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
             // Review B6 (NV-044, NV-169): a range breaks only after its dash ("8:00 AM –" / "4:00 PM") on a narrow day.
             // Review F2 (NV-169): the same time format as Coming up and the list beside it (one format per page).
             // Phase 4 (EM-014): the compact range ("9 AM – 5 PM") keeps one line in a day block; no dash is left hanging.
-            return { key: shift.id, time: compactRange(hours(shift)), tomorrow: !shift.isCalloutApproved && !startsIn(shift, today, observedAt, timeZone) && when(shift, today) === 'Tomorrow', position: shift.positionName ?? null, place: keepWhole(`${nameOf(shift.locationId) || 'Location unavailable'} · ${hoursLabel(shiftMinutes(shift))}`),
+            return { key: shift.id, time: compactRange(hours(shift)), tomorrow: !shift.isCalloutApproved && !startsIn(shift, today, observedAt, timeZone) && when(shift, today) === 'Tomorrow', position: shift.positionName ?? null, place: `${keepWhole(nameOf(shift.locationId) || 'Location unavailable')} · ${keepWhole(hoursLabel(shiftMinutes(shift)))}`,
               kind, chip: leads && !shift.isCalloutApproved && !startsIn(shift, today, observedAt, timeZone) && when(shift, today) !== 'Tomorrow' ? null : chip,
               label: props.lead === true && shift.isDesignatedLead === true ? `${rowLabel(shift)}, shift lead` : rowLabel(shift), lead: leads };
           }) })) }} />

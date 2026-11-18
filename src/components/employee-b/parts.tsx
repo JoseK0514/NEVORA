@@ -37,6 +37,37 @@ export function Dotted({text}: {text: string}) {
       {part === 'Shift lead' ? <><span className="eb-lead-l">Shift lead</span><span className="eb-lead-s">{workCopy().leadShort}</span></> : part}</span>)}</span></span>;
 }
 
+/** Phase 8 (review C, rows 14 and 24): one rule for a time range on the Employee and Lead screens. Each half stays whole
+ * and, where the line is too short for the range, it breaks before the dash ("9:02 AM" over "– now"), never after it,
+ * as the Schedule's day blocks already did (EM-014). `text` is a range as the kit writes it ("9:00 AM – 5:00 PM", also
+ * after keepWhole or compactRange); anything else is drawn as it is. Screen readers hear the dash between the halves. */
+export function Range({text}: {text: string}) {
+  // A compact range written without spaces ("12–8 PM") is one token and stays whole.
+  const halves = text.split(/[\s\u00a0]+–[\s\u00a0]+/);
+  if (halves.length !== 2 || !halves[0] || !halves[1]) return <>{text}</>;
+  return <><span className="eb-nb">{halves[0]}</span> <span className="eb-nb">{`–\u00a0${halves[1]}`}</span></>;
+}
+
+/** "2026-11-17 22:20": an instant as the wall clock reads it in `zone`. */
+function wallAt(at: string, zone: string) {
+  const parts = new Intl.DateTimeFormat('en-US', {timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23'}).formatToParts(new Date(at));
+  const part = (type: string) => parts.find(item => item.type === type)?.value ?? '00';
+  return `${part('year')}-${part('month')}-${part('day')} ${part('hour')}:${part('minute')}`;
+}
+export type WallShift = {date: string; startTime: string; endTime: string};
+/** Today's published shift that has already ended while the person is still clocked in since before its end (the Nov 14
+ * inspection's rule on Home: an open punch hours past the shift read as normal). Phase 8 (review C, row 10): shared, so
+ * Time's Right now says what Home says. A later shift today that has not started is the next shift's business. No rule
+ * about how long is too long. */
+export function shiftEndedWhileOpen({shifts, today, zone, observedAt, clockInAt}: {shifts: readonly WallShift[]; today: string; zone: string; observedAt: string; clockInAt: string}): WallShift | null {
+  const nowWall = wallAt(observedAt, zone), inWall = wallAt(clockInAt, zone);
+  if (inWall.slice(0, 10) !== today) return null;
+  const ended = shifts.filter(shift => shift.date === today && shift.endTime > shift.startTime && `${shift.date} ${shift.endTime}` <= nowWall && inWall < `${shift.date} ${shift.endTime}`)
+    .sort((a, b) => b.endTime.localeCompare(a.endTime))[0];
+  const later = shifts.some(shift => shift.date === today && `${shift.date} ${shift.startTime}` > nowWall);
+  return ended && !later ? {date: ended.date, startTime: ended.startTime, endTime: ended.endTime} : null;
+}
+
 /** A quiet line inside a card, under its rows (a hint, or what a list means). */
 export function BCardNote({children, center}: {children: ReactNode; center?: boolean}) {
   return <p className={center ? 'eb-cardnote eb-cardnote--center' : 'eb-cardnote'}>{children}</p>;

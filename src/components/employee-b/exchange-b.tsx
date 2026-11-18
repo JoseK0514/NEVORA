@@ -15,6 +15,7 @@ import type {OpenEmployeeShift} from '@/lib/employee-requests';
 import type {EmployeeRequestDetail, HistorySlot, RequestSlot, RequestSummary} from '@/lib/employee-exchange';
 import {addDays, formatTime} from '@/lib/date-utils';
 import {keepWhole} from '@/lib/keep-whole';
+import {workCopy} from './work-copy';
 
 /* Pick up and swap on the Employee phone, Direction B: Open shifts, For you and My requests as one place with three tabs
  * on glass (back to Schedule), and a request's own page. Presentation only: the reads, the Pick up operation, the
@@ -54,7 +55,7 @@ function WhyNot({refused}: {refused: OpenEmployeeShift[]}) {
   return <BCard label="Why other shifts aren’t available">
     <details className="eb-why">
       <summary className="b-row"><BIcon tone="grey"><InfoIcon weight="bold"/></BIcon>
-        <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Why other shifts aren’t available</span></span><span className="b-row__s">{`${refused.length} ${refused.length === 1 ? 'shift' : 'shifts'} · date, location and the reason for each`}</span></span>
+        <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Why other shifts aren’t available</span></span><span className="b-row__s">{/* Phase 8 (review C, row 23): what the list holds, not how it is drawn. */}{workCopy().cantTake(refused.length)}</span></span>
         <CaretDownIcon className="b-chev eb-why__chev" size={18} weight="bold" aria-hidden="true"/></summary>
       <ul className="eb-why__list">{refused.map(row => <li key={row.id}><strong>{keepWhole(`${dayB(row.date)} · ${formatTime(row.startTime)}`)}</strong><span>{row.location}</span>{row.notice ? <p>{row.notice}</p> : null}</li>)}</ul>
     </details>
@@ -93,7 +94,7 @@ export function OpenShiftsB({state, enabled, failed, refreshing, onRefresh, resu
             sub={row.notice ? `${row.location} · ${row.notice}` : row.location}/>)}</BList></BCard> : null}
           {refused.length ? <WhyNot refused={refused}/> : null}
           {/* Desktop: the way to more shifts sits beside them (eb-desk). */}
-          <div className="eb-desk eb-moreshifts"><BCard label="Want more shifts?"><BList><BRow href="/app/availability" lead={<BIcon tone="grey"><CalendarCheckIcon weight="bold"/></BIcon>} title="Want more shifts?" sub="Update when you can work"/></BList></BCard></div>
+          <div className="eb-desk eb-moreshifts"><BCard label={workCopy().yourAvailability}><BList><BRow href="/app/availability" lead={<BIcon tone="grey"><CalendarCheckIcon weight="bold"/></BIcon>} title={workCopy().yourAvailability} sub={workCopy().availabilitySub}/></BList></BCard></div>
         </>}
       </>)}
     </BStack>

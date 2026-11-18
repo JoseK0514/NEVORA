@@ -66,7 +66,9 @@
 .ar-inline { display: flex; align-items: flex-start; gap: var(--b-space-8); margin: var(--b-space-16) 0 0; padding: 10px var(--b-gutter); border-radius: var(--b-radius-field); background: var(--b-teal-50); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-ink2); letter-spacing: 0; text-align: left; }
 .ar-inline > svg { flex: none; margin-top: 1px; color: var(--b-teal); }
 
-/* "What happens" before a person starts: numbered, in order. */
+/* "What happens" before a person starts: numbered, in order (the helper's assisted reset). The signed-out request
+ * says it in one short paragraph under its step line (Phase 8). */
+.ar-intro { margin: 0; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); letter-spacing: 0; text-align: left; text-wrap: pretty; }
 .ar-before { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
 .ar-before > li { display: flex; align-items: flex-start; gap: 10px; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); letter-spacing: 0; text-align: left; }
 .ar-before__n { flex: none; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--b-teal-50); color: var(--b-teal); font-size: var(--b-fs-count); line-height: 1; font-weight: 700; font-variant-numeric: tabular-nums; }

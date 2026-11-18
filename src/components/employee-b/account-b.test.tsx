@@ -43,7 +43,7 @@ describe('Notifications', () => {
   it('All and Unread on glass, grouped by day, a grey icon per kind (amber for one that needs you), time and a teal dot', () => {
     const html = renderToStaticMarkup(<EmployeeNotificationsB list={list()} settingsHref="/app/profile/device-alerts" />), plain = text(html);
     // Inspection Nov 14 (BR-6, EM-005): each title says what happened, not the category's name.
-    for (const value of ['Notifications', 'All', 'Unread 2', 'Today', 'Yesterday', 'Earlier', 'Confirm your schedule', 'Action needed', 'Team update to acknowledge', 'Pay statement shared', 'Settings']) expect(plain).toContain(value);
+    for (const value of ['Notifications', 'All', 'Unread 2', 'Today', 'Yesterday', 'Earlier', 'Confirm your schedule', 'Action needed', 'Acknowledge the team update', 'Pay statement shared', 'Settings']) expect(plain).toContain(value);
     for (const gone of ['Schedule update', 'Pay statement update']) expect(plain).not.toContain(gone);expect(plain).not.toMatch(/Team update(?! to acknowledge)/);
     expect(html).toContain('aria-label="Confirm your schedule, unread, action needed, 2:10 PM"');
     expect(html).toContain('href="/app/profile/device-alerts"');expect(html).toContain('class="eb-noacts"');
@@ -56,6 +56,16 @@ describe('Notifications', () => {
     expect(html).toContain('id="b-message-n1"');expect(html).toContain('href="/app/schedule"');expect(plain).toContain('Oct 30');
     expect(plain.indexOf('Today')).toBeLessThan(plain.indexOf('Yesterday'));expect(plain.indexOf('Yesterday')).toBeLessThan(plain.indexOf('Earlier'));
     const unique = ids(html);expect(new Set(unique).size).toBe(unique.length);
+  });
+  // Phase 8 (review C, row 18): the same reminder sent twice is one row that opens in place, each notice read on its own.
+  it('folds the same notice sent more than once into one row that opens in place', () => {
+    const again = [items[0], {...items[0], id: 'n1b', at: '2026-11-05T17:10:00Z', reviewState: 'read' as const}, items[2]];
+    const html = renderToStaticMarkup(<EmployeeNotificationsB list={list({items: again})} />), plain = text(html);
+    expect(html.match(/<button type="button" class="b-row b-row--link eb-notif eb-fold eb-notif--unread" id="b-fold-today-n1" aria-expanded="false"/g)).toHaveLength(1);
+    expect(plain).toContain('Confirm your schedule');expect(plain).toContain('2 notifications');
+    // Closed, neither notice is a separate row yet; the Earlier one is unchanged.
+    expect(html).not.toContain('id="b-message-n1"');expect(html).not.toContain('id="b-message-n1b"');expect(html).toContain('id="b-message-n3"');
+    expect(html).toContain('aria-label="Confirm your schedule, 2 notifications, 1 unread, action needed, 2:10 PM"');
   });
   // Phase 4 (EM-005): the title is the outcome and the sub-line is what it is about, from the event type and subject the list sends.
   it('a decision leads with its state and says its dates; a schedule says its week and shifts; a swap says who asked', () => {
@@ -86,15 +96,15 @@ const update = (patch: Partial<ReadyUpdate> = {}): ReadyUpdate => ({state: 'read
 describe('Updates', () => {
   const list = (patch: Partial<UpdatesBList> = {}): UpdatesBList => ({items: [update(), update({id: 'u2', title: 'Break room rules', acknowledgement: 'NONE', ownReadAt: '2026-10-29T12:00:00Z', publishedAt: '2026-10-28T12:00:00Z'})],
     partial: false, search: '', filter: 'all', timeZone: 'America/Puerto_Rico', onSearch: noop, onFilter: noop, onOpen: noop, more: false, busy: false, onConfirm: noop, onCompose: noop, ...patch});
-  it('search and Show on glass, To confirm with Open and Confirm, Earlier rows, Write an update at the foot', () => {
+  it('search and Show on glass, To acknowledge with Open and Acknowledge, Other updates rows, Write an update at the foot', () => {
     const html = renderToStaticMarkup(<EmployeeUpdatesB list={list()} />), plain = text(html);
-    for (const value of ['Updates', 'To confirm', 'Holiday hours', 'Must read', /* B6 (NV-157): a Dotted line */'Management', 'Wed, Nov 4', 'Fictional store hours for the week.', 'Open', /* B7 wording (NV-284): one verb */'Acknowledge', 'Earlier', 'Break room rules', 'Write an update']) expect(plain).toContain(value);
+    for (const value of ['Updates', 'To acknowledge', 'Holiday hours', 'Action needed', /* B6 (NV-157): a Dotted line */'Management', 'Wed, Nov 4', 'Fictional store hours for the week.', 'Open', /* B7 wording (NV-284): one verb */'Acknowledge', 'Other updates', 'Break room rules', 'Write an update']) expect(plain).toContain(value);
     expect(html).toContain('placeholder="Search update titles"');expect(html).toMatch(/<select id="b-updates-filter"/);expect(html).toContain('href="/app/updates/compose"');expect(html).toContain('href="/app/more"');
     expect(html).toContain('href="/app/updates/u1"');expect(html).toContain('href="/app/updates/u2"');
-    expect(plain.indexOf('To confirm')).toBeLessThan(plain.indexOf('Earlier'));
+    expect(plain.indexOf('To acknowledge')).toBeLessThan(plain.indexOf('Other updates'));
     // Review B6 (NV-166): Write an update is the band's action at every width (white on desktop, glass on the phone), not a
     // row under the read items.
-    expect(plain.indexOf('Write an update')).toBeLessThan(plain.indexOf('To confirm'));expect(html).not.toContain('class="b-add"');
+    expect(plain.indexOf('Write an update')).toBeLessThan(plain.indexOf('To acknowledge'));expect(html).not.toContain('class="b-add"');
     // Phase 4 (EM-021): one glass pill at every width; (EM-033) a preview has no line breaks; an unread row's word is for its label only.
     expect(html.match(/href="\/app\/updates\/compose"/g)).toHaveLength(1);expect(html).toContain('class="b-btn b-btn--glass eb-write"');expect(html).not.toContain('b-btn--white');
     const breaks = renderToStaticMarkup(<EmployeeUpdatesB list={list({items: [update({body: 'First line.\nSecond line.\n\nThird.'}), update({id: 'u3', title: 'Unread one', acknowledgement: 'NONE'})]})} />);
@@ -108,7 +118,7 @@ describe('Updates', () => {
   });
   it('an update: its text, Acknowledge for a required one, and Withdraw reviewed first', () => {
     const html = renderToStaticMarkup(<EmployeeUpdateB back={{href: '/app/updates', label: 'Updates'}} item={update({canWithdraw: true})} busy={false} onAction={noop} withdraw={false} onWithdraw={noop} />), plain = text(html);
-    for (const value of ['Team update', 'Holiday hours', 'Must read', 'Your acknowledgement is required.', 'Acknowledge update', 'Withdraw update']) expect(plain).toContain(value);
+    for (const value of ['Team update', 'Holiday hours', 'Action needed', 'Your acknowledgement is required.', 'Acknowledge update', 'Withdraw update']) expect(plain).toContain(value);
     expect(plain).not.toContain('Mark as read');
     expect(text(renderToStaticMarkup(<EmployeeUpdateB back={{href: '/app/updates', label: 'Updates'}} item={update({canWithdraw: true})} busy={false} onAction={noop} withdraw onWithdraw={noop} />))).toContain('Confirm withdrawal');
   });

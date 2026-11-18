@@ -1,4 +1,5 @@
 import type {ReactNode} from 'react';
+import {formatTime} from '@/lib/date-utils';
 import {CorpButtonLink, CorpCard, CorpLink, CorpPage, CorpRow, CorpRows, CorpTitle} from './corp/corp';
 import './employee-requests-corp.css';
 
@@ -15,13 +16,14 @@ export const requestDay = (date: string) => new Intl.DateTimeFormat('en-US', {ti
 const monthDay = (date: string) => new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', month: 'short', day: 'numeric'}).format(utcDay(date));
 
 /** A time-off request's dates and length, the same words on phone and desktop: "Fri, Nov 13 · All day",
- * "Nov 11 – 12 · 2 days", "Oct 30 – Nov 2 · 4 days" or "Fri, Nov 13 · Part of day". */
+ * "Nov 11 – 12 · 2 days", "Oct 30 – Nov 2 · 4 days" or "Fri, Nov 13 · 9:00 AM – 1:00 PM". Phase 8 (review C, row 35): part
+ * of a day shows its hours, as Time off does. */
 export function timeOffDetail(request: {startDate: string; endDate: string; startTime?: string | null; endTime?: string | null}) {
   const sameMonth = request.startDate.slice(0, 7) === request.endDate.slice(0, 7);
   const range = request.startDate === request.endDate ? requestDay(request.startDate)
     : `${monthDay(request.startDate)} – ${sameMonth ? Number(request.endDate.slice(8)) : monthDay(request.endDate)}`;
   const days = Math.round((utcDay(request.endDate).getTime() - utcDay(request.startDate).getTime()) / 86_400_000) + 1;
-  return `${range} · ${request.startTime && request.endTime ? 'Part of day' : days === 1 ? 'All day' : `${days} days`}`;
+  return `${range} · ${request.startTime && request.endTime ? `${formatTime(request.startTime)} – ${formatTime(request.endTime)}` : days === 1 ? 'All day' : `${days} days`}`;
 }
 
 /** One vocabulary for a time-off request's pill, the same as on Time off. */
@@ -33,7 +35,8 @@ export function timeOffPill(status: string): {tone: Tone; text: string} {
 /** A shift request's pill (swap, cover, pickup or Can't work). */
 export function shiftPill(status: string, callout: boolean): {tone: Tone; text: string} {
   if (status === 'EMPLOYEE_PENDING') return {tone: 'amber', text: 'Waiting on teammate'};
-  if (status === 'MANAGER_PENDING' || status === 'PENDING') return {tone: 'amber', text: 'Needs approval'};
+  // Phase 8 (review C, row 16): one word for waiting on the manager, as on time off.
+  if (status === 'MANAGER_PENDING' || status === 'PENDING') return {tone: 'amber', text: 'Waiting'};
   if (status === 'OPEN') return {tone: 'amber', text: 'Waiting for cover'};
   if (status === 'APPROVED') return {tone: 'teal', text: callout ? 'Approved' : 'Completed'};
   if (status === 'DENIED') return {tone: 'red', text: 'Declined'};
@@ -45,7 +48,7 @@ export function shiftPill(status: string, callout: boolean): {tone: Tone; text: 
 export const waitingStatus = (status: string) => ['PENDING', 'EMPLOYEE_PENDING', 'MANAGER_PENDING', 'OPEN'].includes(status);
 
 /** Statuses that wait on the manager (said once, by the Waiting card's label). */
-const managerWaits = new Set(['Waiting', 'Needs approval']);
+const managerWaits = new Set(['Waiting']);
 /** A row waits on the manager (the Waiting card then says "Waiting for your manager"). */
 export const waitsOnManager = (pill: {text: string}) => managerWaits.has(pill.text);
 

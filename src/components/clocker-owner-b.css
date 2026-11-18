@@ -33,6 +33,33 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .ck-owner .b-btn.ck-text:not(#ck1):not(#ck2):not(#ck3) { background: transparent !important; color: var(--b-teal) !important; box-shadow: none !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .ck-owner .b-btn.ck-text:is(:disabled, [aria-disabled="true"]):not(#ck1):not(#ck2):not(#ck3) { color: var(--b-disabled-ink) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .ck-owner :is(.b-btn, .ck-pinbox input, .ck-code__v, .ck-search input, .ck-seg button, .ck-switch input):focus-visible:not(#ck1):not(#ck2):not(#ck3) { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; }
+
+  /* ---------- Phase 8 (review B #5, #6): Punch photos ---------- */
+  /* The label over the four moments is a row of its own: its divider runs the card's width like the blocks around it (a
+   * legend shrinks to its words, so the line stopped under them). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .c-photos legend.c-photos__label:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { box-sizing: border-box !important; width: 100% !important; }
+  /* While punch photos are off a moment is off and disabled, in the switch's own shape: the disabled pair (#F0F2F3 track,
+   * a #8C9397 edge, the knob on the left) and a grey label at every width. It was the on switch in greyscale. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .c-photos__events[data-off] .c-switch:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { opacity: 1 !important; filter: none !important; background: var(--b-disabled-bg) !important; box-shadow: inset 0 0 0 1px var(--b-disabled-ink) !important; cursor: not-allowed !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .c-photos__events[data-off] .c-switch:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6)::after { transform: none !important; background: #FFFFFF !important; box-shadow: 0 0 0 1px var(--b-disabled-ink) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .c-photos__events[data-off] :is(.c-row__title, .c-photos__switch):not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { color: var(--b-disabled-ink) !important; cursor: not-allowed !important; }
+  /* Review B #37: from 768px the Clocker pages share the rest of Settings' measures: cards 20px apart, the card's words,
+   * rows, forms and footers on the 22px inset, and one inset divider between rows (tablets' ran edge to edge). */
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .ck-stack:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6):not(#ck7) { gap: var(--b-space-20) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .b-card :is(.b-card__h, .b-row, .ck-form, .ck-foot, .ck-ticket):not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .b-card > .b-statecard:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .b-card .b-list > .b-li + .b-li:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { border-top: 0 !important; box-shadow: none !important; background: linear-gradient(var(--b-line), var(--b-line)) var(--b-inset-wide) 0 / calc(100% - var(--b-inset-wide)) 1px no-repeat !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .b-card .b-list > .b-li > :is(.b-row, .b-row__hit, a, div):not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { border-top: 0 !important; box-shadow: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .b-card > .ck-foot:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { border-top: 0 !important; background: linear-gradient(var(--b-line), var(--b-line)) var(--b-inset-wide) 0 / calc(100% - var(--b-inset-wide)) 1px no-repeat !important; }
+  }
+  /* The result line under the card's rows starts on the rows' text edge, with the card's breathing room under it. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .c-photos .c-card > .c-photos__feedback:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { margin: 0 !important; padding: var(--b-space-12) var(--b-inset) var(--b-space-16) !important; }
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .c-photos .c-card > .c-photos__feedback:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+  }
+  /* "Saved" takes focus when the Save that was pressed goes away with the change: it reads once and draws no ring. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.ck-owner .c-photos__feedback[tabindex]:focus:not(#ck1):not(#ck2):not(#ck3) { outline: none !important; }
 }
 
 /* ---------- shared pieces ---------- */
@@ -61,7 +88,7 @@
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-ticket__t { margin: 0; font-size: var(--b-fs-title); line-height: var(--b-lh-title); font-weight: 700; letter-spacing: -0.01em; color: var(--b-ink); text-wrap: balance; }
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-ticket__t:focus { outline: none; }
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-ticket__t:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: 4px; border-radius: 6px; }
-:is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-ticket__s { margin: var(--b-space-4) 0 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); font-variant-numeric: tabular-nums; }
+:is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-ticket__s { margin: var(--b-space-4) 0 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); font-variant-numeric: tabular-nums; text-wrap: pretty; }
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-ticket__body { display: grid; gap: var(--b-space-20); margin-top: var(--b-space-16); justify-items: center; }
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-qr { display: grid; place-items: center; width: min(100%, 248px); aspect-ratio: 1; padding: var(--b-space-8); border-radius: var(--b-radius-field); background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-line); }
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-qr > svg { display: block; width: 100%; height: 100%; }
@@ -95,6 +122,12 @@
   :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-foot > .b-btn { flex: 1 1 100%; min-height: 48px; }
   :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-ticket__acts > .b-btn { flex: 1 1 calc(50% - var(--b-space-8)); }
   :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-ticket__acts > .ck-ticket__done { margin-left: 0; flex-basis: 100%; }
+}
+@media (max-width: 359px) {
+  /* Phase 8 (review B #10): on a narrow phone a row's two actions stack, each starting at the words' left edge, so a quiet
+   * action that wrapped under a tinted one no longer sits 14px further in. */
+  :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner:is(.ck-tablets, .ck-recovery) .ck-acts { flex-direction: column; align-items: flex-start; }
+  :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner:is(.ck-tablets, .ck-recovery) .ck-acts > .ck-text { margin-left: calc(-1 * var(--b-gutter)); }
 }
 
 /* ---------- Punch photos: what the setting does, each switch's state in words, and why a switch is off ---------- */

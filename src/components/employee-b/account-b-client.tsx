@@ -34,7 +34,8 @@ const Chev = () => <CaretRightIcon className="b-chev" size={18} weight="bold" ar
 
 /** A read-only field: a small grey label over its value, and an optional grey line saying what the value is for. */
 function Field({label, value, help}: {label: string; value: string; help?: string}) {
-  return <li className="b-li"><div className="b-row eb-field"><span className="b-row__tx"><span className="b-row__s">{label}</span><span className="b-row__t">{value}</span>{help ? <span className="b-row__s">{help}</span> : null}</span></div></li>;
+  // Phase 8 (review C, row 13): the hint belongs to the value; from 768px it sits under the value, not in the label column.
+  return <li className="b-li"><div className="b-row eb-field"><span className="b-row__tx"><span className="b-row__s">{label}</span><span className="b-row__t">{value}</span>{help ? <span className="b-row__s eb-field__help">{help}</span> : null}</span></div></li>;
 }
 
 /** Profile and settings (board E-Profile): Personal info as label-over-value rows, Display with the language switch,
@@ -84,7 +85,7 @@ export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, endi
           <li className="b-li"><Link className="b-row b-row--link" href="/app/profile/calendar"><BIcon tone="grey"><CalendarPlusIcon weight="bold" /></BIcon>
             <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Add to calendar</span></span><span className="b-row__s">Apple, Google or Outlook</span></span><Chev /></Link></li>
           <li className="b-li"><Link className="b-row b-row--link" href="/app/profile/device-alerts"><BIcon tone="grey"><BellIcon weight="bold" /></BIcon>
-            <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Alerts on this device</span></span><span className="b-row__s">Settings for this browser</span></span><Chev /></Link></li>
+            <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Alerts on this device</span></span><span className="b-row__s">{copy.alertsSub}</span></span><Chev /></Link></li>
         </ul></BCard></div>
         {/* Review B6 (NV-293): "Security" when it holds passkeys; "Account" when deletion is all it holds. */}
         {passkeys || policies ? <BCard title={passkeys ? 'Security' : 'Account'} id="b-profile-security">

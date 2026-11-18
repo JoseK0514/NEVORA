@@ -7,7 +7,7 @@ import { ACCESS_COPY } from "@/components/access-recovery/copy";
 import { SigSpinner } from "@/components/signature/sig-button";
 import { FingerprintIcon } from "@phosphor-icons/react/dist/ssr/Fingerprint";
 import { ScanSmileyIcon } from "@phosphor-icons/react/dist/ssr/ScanSmiley";
-import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
+import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { HourglassMediumIcon } from "@phosphor-icons/react/dist/ssr/HourglassMedium";
 import { isPhoneLike, markPasswordSignIn, passkeysAvailable, passkeysFlagOn, signInWithPasskey, type PasskeyError } from "@/lib/passkeys/client";
 
@@ -84,7 +84,7 @@ export function PasskeySignInView({ t, lang = "en", phone, busy, error, cancelle
       <span className="q-sr" role="status" aria-live="polite">{busy ? (phone ? t.passkeyBusyPhone : t.passkeyBusyDesktop) : ""}</span>
       {cancelled && !busy && !error ? <p className="q-passkey__note" role="status"><span>{a.cancelledSignIn}</span></p> : null}
       {error === "not_found" ? <div className="q-passkey__note" id="passkey-error" role="alert" data-tone="wait"><b>{a.stale}</b><span>{a.staleNext}</span><Link className="q-link" href="/forgot-access">{a.forgot}</Link><HourglassMediumIcon className="q-passkey__icon" size={20} weight="bold" aria-hidden="true" /></div>
-        : error ? <div className="q-passkey__note" id="passkey-error" role="alert" data-tone={error === "rate_limited" ? "wait" : "stop"}><b>{message(error)}</b>{error === "account_disabled" ? null : <><span>{a.backBody}</span><Link className="q-link" href="/forgot-access">{a.forgot}</Link></>}{error === "rate_limited" ? <HourglassMediumIcon className="q-passkey__icon" size={20} weight="bold" aria-hidden="true" /> : <WarningCircleIcon className="q-passkey__icon" size={20} weight="bold" aria-hidden="true" />}</div> : null}
+        : error ? <div className="q-passkey__note" id="passkey-error" role="alert" data-tone={error === "rate_limited" ? "wait" : "stop"}><b>{message(error)}</b>{error === "account_disabled" ? null : <><span>{a.backBody}</span><Link className="q-link" href="/forgot-access">{a.forgot}</Link></>}{error === "rate_limited" ? <HourglassMediumIcon className="q-passkey__icon" size={20} weight="bold" aria-hidden="true" /> : <WarningIcon className="q-passkey__icon" size={20} weight="bold" aria-hidden="true" />}</div> : null}
     </div>
   );
 }

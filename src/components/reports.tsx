@@ -287,7 +287,11 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
  // the printed report uses). The figure slot keeps the kit's grey dash: words there would wrap at figure size.
  // Phase 4 (U09): cover requests are a history of what was seen in the period. None seen is said as such, and older
  // changes that could not be read mean there may be more; neither is a full staffing figure.
- const reasons=[lateKnown?null:'Some clock-ins couldn’t be compared with the schedule.',cover.observedCoverageRequests?null:t.coverNoneSeen,cover.unclassifiedEvents?t.coverUnread(cover.unclassifiedEvents):null].filter((line):line is string=>!!line);
+ // Phase 8 (a.md #32, b.md #30): the line names how many clock-ins could not be compared (the read lists each one), or
+ // whose clock-ins could not be read, instead of "some".
+ const unmatched=new Set(report.attendance.limitations.map(item=>item.entryId)).size,unread=report.attendance.unavailableEmployeeIds.length;
+ const lateReason=lateKnown?null:unmatched?`${plural(unmatched,'clock\u2011in','clock\u2011ins')} couldn’t be compared with the schedule.`:unread?`${plural(unread,'person’s','people’s')} clock\u2011ins couldn’t be read.`:'Some clock-ins couldn’t be compared with the schedule.';
+ const reasons=[lateReason,cover.observedCoverageRequests?null:t.coverNoneSeen,cover.unclassifiedEvents?t.coverUnread(cover.unclassifiedEvents):null].filter((line):line is string=>!!line);
  const days=wholeWeek(recordedByDay(report),report.period);
  // Phase 4 (U09, OW-026): the published schedule's time per day, behind each day's recorded bar. Sparse: a day in the
  // period with no row has no published schedule (no bar, and the line under the chart names it); never a zero.
@@ -317,7 +321,8 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
     {label:'Time off',value:offDays?plural(offDays,'day','days'):'0'},
    ]}/>
    {reasons.length?<p className="c-ins__reason">{reasons.join(' ')}</p>:null}
-   <div className="c-ins__explain"><Explain text={t.coverSeenExplain} label={t.explain}/></div>
+   {/* Phase 8 (a.md #32): the explanation is for the cover figure, so it shows only beside it (one explainer per card). */}
+   {cover.observedCoverageRequests?<div className="c-ins__explain"><Explain text={t.coverSeenExplain} label={t.explain}/></div>:null}
   </CorpCard>
   {/* R13: the period's total is said once, in Hours worked; this card shows how it falls across the days. */}
   <CorpCard id="ins-days" label="Hours by day">
@@ -339,13 +344,13 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
     {noPlan.length?<p className="c-ins__reason">{`${t.noPublishedSchedule}: ${named(noPlan)}`}</p>:null}
     {unconfirmed.length?<p className="c-ins__reason">{`${t.scheduleUnconfirmed}: ${named(unconfirmed)}`}</p>:null}
     {report.scheduledByDay?.state==='unpublished'?<p className="c-ins__reason">{t.scheduleIncomplete}</p>:null}
-    <div className="c-ins__explain"><Explain text={t.scheduledExplain} label={t.explain}/></div>
    </div>:null}</>
     :days&&days.some(day=>(day.minutes??0)>0)?<div className="c-empty c-empty--card"><b className="c-empty__title">Not enough data yet</b><span className="c-empty__body">The chart appears once two days have recorded time.</span></div>
     :<div className="c-empty c-empty--card"><b className="c-empty__title">No recorded time in this period</b><span className="c-empty__body">Hours appear here as people clock in and out.</span></div>}
    <details className="c-ins__counted">
     <summary>How we count<CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true"/></summary>
-    <ul>{HOW_WE_COUNT.map(d=><li key={d}>{d}</li>)}</ul>
+    {/* Phase 8 (a.md #32): one explainer for this card; what the light bars are is the first thing it says. */}
+    <ul>{[...(plan?[t.scheduledExplain]:[]),...HOW_WE_COUNT].map(d=><li key={d}>{d}</li>)}</ul>
     <p>As of <time dateTime={report.observedAt}>{observedLabel(report.observedAt,report.timeZone)}</time> · {timeZoneLabel(report.timeZone)}</p>
    </details>
   </CorpCard>

@@ -70,15 +70,23 @@
 .flow.flow > * + * { margin-top: 14px; }
 .flow.flow h1 { font-size: 1.875rem; line-height: 1.2; font-weight: 700; letter-spacing: -.03em; text-wrap: balance; }
 .flow.flow > .ring + h1 { margin-top: 0; }
+/* The photo path's receipt keeps the normal receipt's own spacing (Phase 8, #31), not the step's 14px rhythm. */
+.flow.flow > .receipt { margin-top: 0; }
 .ring { width: 64px; height: 64px; margin: 0 auto 14px; border-radius: 50%; display: grid; place-items: center; background: #E8F3F1; color: #0B6E69; box-shadow: inset 0 0 0 3px #B9DCD7; }
 .ring[data-tone=amber] { background: #FDF3E4; color: #8A4B00; box-shadow: inset 0 0 0 3px #F3D3A0; }
 .ring[data-tone=red] { background: #FDECEA; color: #B42318; box-shadow: inset 0 0 0 3px #F4B7B0; }
 .ring[data-tone=green] { background: #E7F4EC; color: #1D6B45; box-shadow: inset 0 0 0 3px #B3DDC3; }
 .flow.flow .description { font-size: 1rem; line-height: 1.45; color: #3F464B; text-align: center; }
 .flow.flow .notice { padding: 14px 16px; border-radius: 16px; background: #F2F5F4; color: #3F464B; font-size: .9375rem; line-height: 1.45; }
-.flow.flow .photoNotice details { border: 0; border-radius: 16px; background: #F2F5F4; }
-.flow.flow .photoNotice summary { min-height: 56px; padding: 13px 16px; color: #0B6E69; font-size: .9375rem; font-weight: 600;
-  list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+/* Phase 8 (#15): the notice's two disclosures are the kiosk's caret links (as Reference on the receipt), side by side and
+ * centred, not grey bars. An open one takes the row and reads in the kiosk's soft box under its link. */
+.flow.flow .photoNotice { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 var(--b-space-24); text-align: center; }
+.flow.flow .photoNotice > .description { flex: 1 0 100%; margin-bottom: var(--b-space-4); }
+.flow.flow .photoNotice details { border: 0; border-radius: 0; background: none; }
+.flow.flow .photoNotice details[open] { flex: 1 0 100%; }
+.flow.flow .photoNotice summary { min-height: 56px; padding: 0 var(--b-space-8); color: #0B6E69; font-size: .9375rem; font-weight: 600;
+  list-style: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.flow.flow .photoNotice details > .notice { margin-top: var(--b-space-4); border-radius: var(--b-radius-field); text-align: left; }
 /* The kiosk's disclosure: a trailing Phosphor caret that turns when open, as on Action reference (Nov 10 review, NV-306). */
 .flow.flow .photoNotice summary::-webkit-details-marker { display: none; }
 .flow.flow .photoNotice summary > svg { transition: transform 160ms ease; }

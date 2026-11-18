@@ -86,15 +86,18 @@ it('counts other people’s saved punches in the singular and the plural, in bot
 it('names the action that is not confirmed, with its time when the tablet knows it',()=>{
  expect(clockerUnconfirmedText('en','CLOCK_IN','9:02 AM')).toBe('Your clock in at 9:02 AM is not confirmed yet.');
  expect(clockerUnconfirmedText('en','END_BREAK',null)).toBe('Your break end is not confirmed yet.');
- expect(clockerUnconfirmedText('es','CLOCK_OUT','5:30 p. m.')).toBe('Tu salida (5:30 p. m.) aún no está confirmada.');
+ expect(clockerUnconfirmedText('es','CLOCK_OUT','5:30 p. m.')).toBe('Tu salida de las 5:30 p. m. aún no está confirmada.');
+ // Phase 8 (#34): no brackets, and "de la 1:05".
+ expect(clockerUnconfirmedText('es','CLOCK_IN','1:05 p. m.')).toBe('Tu entrada de la 1:05 p. m. aún no está confirmada.');
+ expect(clockerUnconfirmedText('es','CLOCK_IN','11:05 a. m.')).toBe('Tu entrada de las 11:05 a. m. aún no está confirmada.');
  expect(clockerUnconfirmedText('es','START_BREAK',null)).toBe('El inicio de tu descanso aún no está confirmado.');
  for(const action of ['CLOCK_IN','CLOCK_OUT','START_BREAK','END_BREAK'])for(const time of ['9:02 AM',null])
   expect(clockerUnconfirmedText('en',action,time)).not.toMatch(/failed|not saved|is saved|recorded/i);
 });
 it('shows the kiosk error screen with a no-connection wording set in both languages and no link',()=>{
  const en=renderToStaticMarkup(<ClockerErrorScreen retry={()=>{}}/>);
- expect(en).toContain('Something went wrong');expect(en).not.toContain('<a ');
- for(const key of ['This tablet is offline, so nothing can be recorded right now.','Tell a manager so your time gets recorded.','This screen comes back by itself when the connection returns.','No connection. This tablet checks again by itself when it returns.','This tablet checks again by itself.'])
+ expect(en).toContain('The time clock hit a problem');expect(en).not.toContain('<a ');
+ for(const key of ['This tablet is offline, so nothing can be recorded right now.','Tell a manager so your time gets recorded.','This tablet checks again by itself when the connection returns.','No connection. This tablet checks again by itself when it returns.','This tablet checks again by itself.'])
   expect(clockerText('es',key),key).not.toBe(key);
 });
 
@@ -103,7 +106,7 @@ const at='2026-11-17T21:30:00Z',zone='America/Puerto_Rico';
 const entry={id:'te-1',locationId:'loc-1',clockInAt:'2026-11-17T13:04:00Z',status:'CLOCKED_IN' as const,version:2};
 it('adds the next useful fact from what the reply and the screen already hold',()=>{
  const out=receiptFacts({action:'CLOCK_OUT',performedAt:at,timeEntryId:'te-1',breakEntryId:null},{revision:4,entry,break:null},zone);
- expect(out).toEqual([{label:'Clocked in at',value:'9:04 AM',dateTime:entry.clockInAt},{label:'Since clock-in',value:'8 h 26 min',translate:false}]);
+ expect(out).toEqual([{label:'Clocked in at',value:'9:04 AM',dateTime:entry.clockInAt},{label:'Clocked in for',value:'8 h 26 min',translate:false}]);
  const pause={id:'br-1',breakStartAt:'2026-11-17T21:18:20Z',version:1,type:null};
  expect(receiptFacts({action:'END_BREAK',performedAt:at,timeEntryId:'te-1',breakEntryId:'br-1'},{revision:5,entry:{...entry,status:'ON_BREAK'},break:pause},zone))
   .toEqual([{label:'Break started at',value:'5:18 PM',dateTime:pause.breakStartAt},{label:'Break length',value:'11 min',translate:false}]);
@@ -121,8 +124,8 @@ it.each([['en','en-US'],['es','es-PR']] as const)('renders every receipt complet
  const facts=receiptFacts({action:'CLOCK_OUT',performedAt:at,timeEntryId:'te-1',breakEntryId:null},{revision:4,entry,break:null},zone,intl);
  const out=renderToStaticMarkup(<ClockerPresentation initialLocale={lang}><ClockerReceipt action="CLOCK_OUT" performedAt={at} commandId="c1" timeZone={zone} locale={intl} firstName="Ana" facts={facts}/></ClockerPresentation>);
  expect(out).toContain(lang==='en'?'See you next time, Ana.':'Hasta la próxima, Ana.');
- expect(out).toContain(lang==='en'?'Clocked in at':'Entrada');expect(out).toContain(lang==='en'?'Since clock-in':'Desde la entrada');expect(out).toContain('8 h 26 min');
- expect(out).toContain('data-clocker-receipt-facts');expect(out).toMatch(/role="status"/);expect(out).toContain(lang==='en'?'This screen clears in 8 seconds.':'Esta pantalla se borra en 8 segundos.');
+ expect(out).toContain(lang==='en'?'Clocked in at':'Entrada');expect(out).toContain(lang==='en'?'Clocked in for':'Tiempo en turno');expect(out).toContain('8 h 26 min');
+ expect(out).toContain('data-clocker-receipt-facts');expect(out).toMatch(/role="status"/);expect(out).toContain(lang==='en'?'This screen clears in 8 seconds.':'Se borra en 8 segundos.');
  const start=renderToStaticMarkup(<ClockerPresentation initialLocale={lang}><ClockerReceipt action="START_BREAK" performedAt={at} timeZone={zone} locale={intl} firstName="Ana"
   facts={receiptFacts({action:'START_BREAK',performedAt:at,timeEntryId:'te-1',breakEntryId:'br-2',breakType:{id:'bt-1',version:1,name:'Rest break',category:'REST',targetMinutes:10}},null,zone,intl)}/></ClockerPresentation>);
  expect(start).toContain(lang==='en'?'Enjoy your break, Ana.':'Disfruta tu descanso, Ana.');expect(start).toContain(lang==='en'?'Suggested length':'Duración sugerida');expect(start).toContain('10 min');
@@ -150,7 +153,9 @@ it.each(['en','es'] as const)('renders the Clocker’s own not-found page in %s:
  const html=renderToStaticMarkup(<ClockerNotFoundBody initialLocale={lang} legal={{en:<p className="q-legal">EN LEGAL</p>,es:<p className="q-legal">ES LEGAL</p>}}/>);
  expect(html).toContain(`lang="${lang}"`);expect(html).toContain('data-clocker-not-found=""');expect(html).toContain('nf-card');
  expect(html).toContain(lang==='en'?'This time clock link doesn’t work':'El enlace de este reloj de asistencia no funciona');
- expect(html).toContain(lang==='en'?'A manager or Owner can fix it':'Un gerente o el dueño puede arreglarlo');
+ // Phase 8 (#1): staff tell a manager; only the Owner sets a tablet up again (Settings is Owner only).
+ expect(html).toContain(lang==='en'?'<strong>Tell a manager</strong> Your Owner sets this tablet up again in':'<strong>Avísale a un gerente</strong> El dueño vuelve a configurar esta tableta en');
+ expect(html).not.toMatch(/manager or Owner|gerente o el dueño/);
  expect(html).toContain(lang==='en'?'Until then, ask a manager to record your time.':'Mientras tanto, pide a un gerente que registre tu tiempo.');
  expect(html).toContain(lang==='en'?'EN LEGAL':'ES LEGAL');expect(html).not.toContain(lang==='en'?'ES LEGAL':'EN LEGAL');
  expect(html.match(/q-legal/g)).toHaveLength(1);expect(html).not.toContain('login-brand');expect(html).not.toContain('brand-legal');

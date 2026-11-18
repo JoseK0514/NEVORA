@@ -48,6 +48,10 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
   const forget = () => { typed.current = ""; if (passwordRef.current) passwordRef.current.value = ""; };
   const bindPassword = useCallback((input: HTMLInputElement | null) => { passwordRef.current = input; if (input && typed.current && !input.value) input.value = typed.current; }, []);
   const [retry, setRetry] = useState(false);
+  // Phase 8 (review B, row 4): Delete my account is a working button from the start; pressed without the box checked it
+  // says so under the box and moves focus there (the Employee screen's rule, B6). Nothing is sent until both are done.
+  const [unchecked, setUnchecked] = useState(false);
+  const checkRef = useRef<HTMLInputElement | null>(null);
   const [state, action, pending] = useActionState<DeletionFormState, FormData>(async (previous, formData) => {
     let next: DeletionFormState;
     try { next = await requestAccountDeletion(previous, formData); } catch { next = { kind: "uncertain" }; }
@@ -128,7 +132,10 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
   const checking = retry && state.kind !== "failed";
   return <>{header}
     <form action={action} noValidate className="q-deletion" aria-label="Delete your NEVORA account" aria-busy={pending}
-      onSubmit={event => { if (!event.currentTarget.checkValidity()) event.preventDefault(); }} {...handlers}>
+      onSubmit={event => {
+        if (!event.currentTarget.checkValidity()) { event.preventDefault(); return; }
+        if (!confirmed) { event.preventDefault(); setUnchecked(true); requestAnimationFrame(() => checkRef.current?.focus()); }
+      }} {...handlers}>
       <input type="hidden" name="account" value={account.employeeId} />
       <input type="hidden" name="retry" value={retry ? "1" : "0"} />
       <QuietGroup id="deletion-account" label="Your account">
@@ -143,34 +150,17 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
         <QuietList>
           {/* Review B6 (NV-143): the same flow for every role: "access ends" is red-tinted, consent is a checkbox. */}
           <li><div className="q-row q-row--av q-deletion__fact"><span className="q-av q-av--red" aria-hidden="true"><SignOutIcon weight="bold" className="q-ic" /></span>
-            <span className="q-rt"><b>Your access ends now.</b><i>You’re signed out on every device and can’t sign in again. Calendar feed links stop working.</i></span></div></li>
+            <span className="q-rt"><b>Your access ends now</b><i>You’re signed out on every device and can’t sign in again. Calendar feed links stop working.</i></span></div></li>
           <li><div className="q-row q-row--av q-deletion__fact"><span className="q-av" aria-hidden="true"><TrashIcon weight="bold" className="q-ic" /></span>
             <span className="q-rt"><b>What is removed</b><i>Your profile, sign-in details, notification subscriptions, calendar links and the content you contributed, within {period ?? unresolved("DELETION_COMPLETION_PERIOD")}.</i></span></div></li>
           <SheetRow sheetTitle="What may be kept" avatar={<ShieldCheckIcon weight="bold" className="q-ic" />} title="What may be kept"
             detail="Some attendance, payroll, security or dispute records your employer or we must keep. They’re restricted and never used to restore your account.">
-            <div className="q-hd"><h1>What may be kept</h1></div>
+            <div className="q-hd"><h2 className="q-deletion__sheet-h">What may be kept</h2></div>
             <div className="q-body q-deletion__effects">
               <p>Some attendance, payroll, security or dispute records your employer or we must keep: {retention ?? unresolved("RETENTION_SCHEDULE")} They’re restricted and never used to restore your account.</p>
               <p><Link className="q-link" href="/account-deletion">Read the full details</Link></p>
             </div>
           </SheetRow>
-        </QuietList>
-      </QuietGroup>
-      <QuietGroup id="deletion-confirm" label="Confirm it’s you">
-        <div className="q-fl q-deletion__field">
-          <label htmlFor="deletion-password">Password</label>
-          <div className="q-in__wrap">
-            <input ref={bindPassword} className="q-in" id="deletion-password" name="password" type={shown ? "text" : "password"} required autoComplete="current-password" disabled={pending} placeholder="Password"
-              onChange={event => { typed.current = event.target.value; }}
-              aria-describedby={passwordError ? "deletion-password-help deletion-password-error" : "deletion-password-help"} aria-invalid={passwordError ? true : undefined} />
-            <button type="button" className="q-in__eye" onClick={() => setShown(value => !value)} aria-pressed={shown} aria-label={shown ? "Hide password" : "Show password"}>{shown ? <EyeSlashIcon weight="bold" className="q-ic" aria-hidden="true" /> : <EyeIcon weight="bold" className="q-ic" aria-hidden="true" />}</button>
-          </div>
-          <p className="q-fl__help" id="deletion-password-help">Enter the password you use to sign in.</p>
-          {passwordError ? <p className="q-fl__error" id="deletion-password-error">{passwordError}</p> : null}
-        </div>
-        <QuietList>
-          <li><label className="q-row q-deletion__check"><span className="q-rt"><b>I understand my NEVORA account will be deleted and I won’t be able to sign in again.</b></span>
-            <input type="checkbox" className="q-deletion__box" checked={confirmed} onChange={event => setConfirmed(event.target.checked)} disabled={pending} /></label></li>
         </QuietList>
       </QuietGroup>
       {state.kind === "failed" || state.kind === "unavailable" || state.kind === "uncertain" || state.kind === "busy" || (checking && state.kind === "wrong_password") ? <div className="q-deletion__alert" ref={outcome} tabIndex={-1} role="alert">
@@ -181,9 +171,37 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
         {/* U11: the Support reference of this one reply, when the action carries one (none today). */}
         <SupportReference reference={supportReferenceOfState(state)} lang={lang} id="deletion-reference" />
       </div> : null}
-      <button type="submit" className="q-btn q-deletion__confirm" disabled={pending || !confirmed}>{pending ? (checking ? "Checking…" : "Sending request…") : checking ? "Check my request" : "Confirm deletion request"}</button>
-      <Link className="q-btn q-btn--quiet q-deletion__keep" href="/app/profile" aria-disabled={pending || undefined} tabIndex={pending ? -1 : undefined}
-        onClick={event => { if (pending) event.preventDefault(); }}>Keep my account</Link>
+      <QuietGroup id="deletion-confirm" label="Confirm it’s you">
+        <div className="q-fl q-deletion__field">
+          <label htmlFor="deletion-password">Password</label>
+          <div className="q-in__wrap">
+            <input ref={bindPassword} className="q-in" id="deletion-password" name="password" type={shown ? "text" : "password"} required autoComplete="current-password" disabled={pending}
+              onChange={event => { typed.current = event.target.value; }}
+              aria-describedby={passwordError ? "deletion-password-help deletion-password-error" : "deletion-password-help"} aria-invalid={passwordError ? true : undefined} />
+            <button type="button" className="q-in__eye" onClick={() => setShown(value => !value)} aria-pressed={shown} aria-label={shown ? "Hide password" : "Show password"}>{shown ? <EyeSlashIcon weight="bold" className="q-ic" aria-hidden="true" /> : <EyeIcon weight="bold" className="q-ic" aria-hidden="true" />}</button>
+          </div>
+          <p className="q-fl__help" id="deletion-password-help">Enter the password you use to sign in.</p>
+          {passwordError ? <p className="q-fl__error" id="deletion-password-error">{passwordError}</p> : null}
+        </div>
+        <QuietList>
+          <li><label className="q-row q-deletion__check" htmlFor="deletion-understand"><span className="q-rt"><b>I understand my NEVORA account will be deleted and I won’t be able to sign in again.</b></span>
+            <input ref={checkRef} id="deletion-understand" type="checkbox" className="q-deletion__box" checked={confirmed} disabled={pending}
+              onChange={event => { setConfirmed(event.target.checked); if (event.target.checked) setUnchecked(false); }}
+              aria-describedby={unchecked ? "deletion-understand-error" : undefined} aria-invalid={unchecked || undefined} /></label></li>
+        </QuietList>
+        {unchecked ? <p className="q-fl__error q-deletion__check-error" id="deletion-understand-error">Check this box to confirm you understand.</p> : null}
+        {/* Phase 8 (review B, rows 4 and 16; DESIGN.MD B6): the same flow as the Employee's. Delete my account is a red pill
+          * that works from the start (it says what is missing), Keep my account the quiet pill beside it, and "This can't be
+          * undone." sits under the red one. From 768px both end on the 560px field block's right edge. */}
+        <div className="q-deletion__acts">
+          <div className="q-deletion__go">
+            <button type="submit" className="q-btn q-deletion__confirm" disabled={pending}>{pending ? (checking ? "Checking…" : "Sending request…") : checking ? "Check my request" : "Delete my account"}</button>
+            <p className="q-deletion__final">This can’t be undone.</p>
+          </div>
+          <Link className="q-btn q-btn--quiet q-deletion__keep" href="/app/profile" aria-disabled={pending || undefined} tabIndex={pending ? -1 : undefined}
+            onClick={event => { if (pending) event.preventDefault(); }}>Keep my account</Link>
+        </div>
+      </QuietGroup>
     </form>
     {workplace}
   </>;

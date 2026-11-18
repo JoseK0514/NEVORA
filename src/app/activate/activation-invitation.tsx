@@ -4,7 +4,7 @@ import {useMobilePresentation} from '@/components/mobile-access/use-mobile-prese
 import Link from 'next/link';
 import {AUTH_COPY,type AuthCopy,type AuthLang} from '@/lib/auth-copy';
 import {AuthValidation} from '@/components/auth-premium/auth-validation';
-import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
+import {WarningIcon} from "@phosphor-icons/react/dist/ssr/Warning";
 import {MobileActivationView} from '@/components/mobile-access/activation-view';
 import {useAccessJourney} from '@/components/mobile-access/journey';
 import {useLayoutEffect,useRef,useState,type FormEvent,type RefObject} from 'react';
@@ -148,8 +148,10 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
    <p className="q-auth__note ar-next">{u.doneNext}</p>
   </div>
  </>;
+ // Phase 8 (Nov 17, 2026): without an invitation the card says where the link is, so the band carries the title alone
+ // (it used to say the same thing twice, in the band and in the card).
  const sub=phase==='checking'?`${a.opening} · ${workspace}`:canSubmit?(workspaceName?a.choose.replace('{workspace}',workspaceName):a.chooseNoWorkspace)
-  :phase==='outcome_unknown'?a.notConfirmed:phase==='invalid'?null:t.quiet.activateSub;
+  :phase==='outcome_unknown'?a.notConfirmed:null;
  return <>
   <div className="q-hd"><h1>{phase==='outcome_unknown'?u.unknownTitle:t.activateTitle}</h1>{canSubmit||phase==='checking'?null:chip}{sub&&phase!=='outcome_unknown'?<p role={phase==='checking'?'status':undefined}>{sub}</p>:null}</div>
   <p className="q-sr" id="activation-intro">{a.intro}</p>
@@ -158,7 +160,7 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
    <AuthValidation/>
    <AccessSteps journey="activation" current={2} lang={lang}/>
    {offline?<p id="activation-offline" className="q-auth__alert q-auth__alert--wait" role="alert" tabIndex={-1}><WifiSlashIcon size={20} weight="bold" aria-hidden="true"/><span>{u.offline}</span></p>:null}
-   {phase==='unavailable'&&!mismatch&&!offline?<><p id="activation-error" className="q-error q-auth__alert" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{a.unavailable}</span></p><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
+   {phase==='unavailable'&&!mismatch&&!offline?<><p id="activation-error" className="q-error q-auth__alert" role="alert"><WarningIcon size={20} weight="bold" aria-hidden="true"/><span>{a.unavailable}</span></p><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
    <fieldset className="q-auth__fields" disabled={phase==='pending'}>
     <ActivationPasswords quiet lang={lang} mismatch={mismatch} errorId={error?'activation-error':undefined}/>
    </fieldset>
@@ -172,8 +174,8 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
   </form>}
   {!canSubmit&&phase!=='checking'?<div className="q-card q-auth__card">
    {phase==='outcome_unknown'?null:<AccessSteps journey="activation" current={1} lang={lang}/>}
-   {phase==='invalid'?<p className="q-auth__alert q-auth__alert--wait activation-invitation-state" role="status"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{a.invalid}</span></p>:null}
-   {phase==='outcome_unknown'?<><p className="q-auth__alert q-auth__alert--wait activation-invitation-state" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{u.unknownFirst}</span></p>
+   {phase==='invalid'?<p className="q-auth__alert q-auth__alert--wait activation-invitation-state" role="status"><WarningIcon size={20} weight="bold" aria-hidden="true"/><span>{a.invalid}</span></p>:null}
+   {phase==='outcome_unknown'?<><p className="q-auth__alert q-auth__alert--wait activation-invitation-state" role="alert"><WarningIcon size={20} weight="bold" aria-hidden="true"/><span>{u.unknownFirst}</span></p>
     <Link href={signInHref} className="q-btn">{t.trySigningIn}</Link>
     <p className="q-auth__note">{a.unknown}</p><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
    {mobileAccess&&phase!=='outcome_unknown'?<Link href="/access-help/invitation" className="q-btn">{a.inviteHelp}</Link>:null}

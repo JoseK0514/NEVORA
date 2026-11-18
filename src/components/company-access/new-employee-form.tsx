@@ -29,7 +29,7 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
  return <>
   {/* Closing F1 (NV-257): two dots show where the form is (the words stay); on tablets and desktop step 1 goes back to
     "‹ Team" above the title like every pushed page (the phone sheet keeps Cancel). */}
-  <FormHead titleId="new-employee-title" title="Add employee" back={{href:'/app/employees',label:'Team'}} step={<><span className="c-formhead__dots" aria-hidden="true"><i data-on=""/><i data-on={step===2?'':undefined}/></span>{`Step ${step} of 2`}</>}
+  <FormHead titleId="new-employee-title" title="Add employee" back={{href:'/app/employees',label:'Team'}} step={<><span className="c-formhead__dots" aria-hidden="true"><i data-on=""/><i data-on={step===2?'':undefined}/></span>{`Step ${step} of 2 · ${step===1?'Their details':'Where they work'}`/* Phase 8 (a.md #42): the step line names the step. */}</>}
    left={step===1?<FormHeadLink href="/app/employees">Cancel</FormHeadLink>:<FormHeadBack onClick={()=>setStep(1)}>Back</FormHeadBack>}
    right={step===1?<button type="button" onClick={next} disabled={blocked}>Next</button>:<button type="submit" form="new-employee-form" disabled={blocked}>Add</button>}/>
   <EmployeeAccessForm id="new-employee-form" action={action} build={(fields,id)=>createCommandFromForm(fields,actorRole,scope,id)} className="c-teamform">
@@ -50,7 +50,7 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
       {actorRole==="OWNER"?<option value="OWNER">Owner</option>:null}
      </select></CorpField>
      <CorpField label="Location" htmlFor="new-location"><select id="new-location" className="c-in" name="primaryLocationId" required data-missing="Choose a location" value={primary} onChange={event=>setPrimary(event.target.value)}>
-      <option value="" disabled>Choose</option>
+      <option value="" disabled>Choose a location</option>
       {activeLocations.map(location=><option key={location.id} value={location.id}>{location.shortName}</option>)}
      </select></CorpField>
     </div>

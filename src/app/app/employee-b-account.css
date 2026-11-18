@@ -159,4 +159,26 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile][data-sidebar-desktop="full"] aside.sidebar .cm-org > .cm-org__name:not(#h-none):not(#h-none2):not(#h-none3):not(#h-none4):not(#h-none5):not(#h-none6) { display: -webkit-box !important; -webkit-box-orient: vertical !important; -webkit-line-clamp: 2 !important; overflow: hidden !important; white-space: normal !important; text-overflow: clip !important; overflow-wrap: anywhere !important; font: 600 var(--b-fs-meta)/17px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile][data-sidebar-desktop="full"] aside.sidebar .sidebar-help-link:not(#h-none):not(#h-none2):not(#h-none3):not(#h-none4):not(#h-none5):not(#h-none6) { box-sizing: border-box !important; height: 40px !important; min-height: 40px !important; margin-left: 0 !important; margin-right: 0 !important; padding: 0 var(--b-space-12) !important; gap: var(--b-space-12) !important; border-radius: var(--b-radius-field) !important; }
   }
+
+  /* ---------- Phase 8 (Nov 17, 2026): the final review's fixes (review C) ---------- */
+  /* C32: an update's preview breaks between words only (it ended on "back-…"). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-upd__body:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { overflow-wrap: break-word !important; word-break: normal !important; hyphens: none !important; }
+  /* C18: a folded notification (the same reminder sent more than once) opens in place under its row. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-fold:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { width: 100% !important; border: 0 !important; background: none !important; text-align: left !important; font: inherit !important; cursor: pointer !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-fold > .eb-fold__caret:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { flex: none !important; color: var(--b-field-edge) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-fold[aria-expanded="true"] > .eb-fold__caret:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { rotate: 180deg !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-fold:focus-visible:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: calc(-1 * var(--b-focus-width)) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-fold__item > .b-row:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { padding-left: calc(var(--b-inset) + 36px + var(--b-space-12)) !important; }
+  /* C28: a row with no actions under it keeps no empty slot, so its pill ends on the row's text edge like the chevrons. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-row > .b-row__acts:empty:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { display: none !important; }
+  @media (prefers-reduced-motion: no-preference) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-fold > .eb-fold__caret:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { transition: rotate var(--b-dur-hover) var(--b-ease-out) !important; }
+  }
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-fold__item > .b-row:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { padding-left: calc(var(--b-inset-wide) + 36px + var(--b-space-12)) !important; }
+    /* C13: the Employee ID's hint sits under its value, in the value column. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-field .eb-field__help:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { grid-column: 2 !important; margin-top: var(--b-space-2) !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; }
+    /* C6: Availability is one card: the week's rows and the footer under them, with no card drawn inside it. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .c-avail--phone > .c-avail__form > .c-card:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { margin: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+  }
 }

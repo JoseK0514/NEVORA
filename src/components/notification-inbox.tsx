@@ -41,6 +41,23 @@ const filters:{value:NotificationFilter;label:string}[]=[{value:'all',label:'All
  * older snapshot without one keeps the device's. */
 const whenLong=(at:string,timeZone?:string)=>new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric',hour:'numeric',minute:'2-digit',...(timeZone?{timeZone}:{})}).format(new Date(at));
 
+/** Phase 8 (a.md #29, b.md #25): a manager summary carries the count of what it gathered when it was sent: open shifts
+ * ahead, requests and availability not sent in. That is a wider scope, at an earlier time, than Things to do's count
+ * (what can be decided today), so the row says it in the past and names the scope instead of "22 waiting" beside a badge
+ * of 11. Each row's title is its own count, so three summaries no longer share one title. Other rows read as before. */
+const SUMMARY_EVENTS=['MANAGER_REVIEW','COVERAGE_ATTENTION'];
+const SUMMARY_SCOPE='Open shifts, requests or missing availability';
+function summaryCount(item:EmployeeNotificationItem){return SUMMARY_EVENTS.includes(item.eventType??'')&&Number.isSafeInteger(item.count)&&(item.count??-1)>=0?item.count as number:null;}
+const summaryWords=(n:number)=>`${n} ${n===1?'item was':'items were'} waiting`;
+function rowText(item:EmployeeNotificationItem):{title:string;detail:string|null}{
+ const n=summaryCount(item);
+ return n===null?notificationTitle(item):{title:summaryWords(n),detail:SUMMARY_SCOPE};
+}
+function rowFacts(item:EmployeeNotificationItem){
+ const n=summaryCount(item);
+ return [notificationName(item),notificationOutcomeNote(item),n===null?notificationCountNote(item):summaryWords(n)].filter((fact):fact is string=>!!fact).join(' · ');
+}
+
 export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;onMarkRead?:(id:string)=>Promise<void>;
  /** v5 (mockup E14): an Employee's or Lead's Notifications in the Quiet list, without Mark read (management only). */
  quiet?:boolean}){
@@ -83,7 +100,7 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
   // the icon keeps its text under the group's text at every width (the kit sets the row's padding and icon size).
   const heldRow=(item:EmployeeNotificationItem)=>{
    const review=item.reviewState??'unavailable',text=notificationTitle(item);
-   const facts=[notificationName(item),notificationOutcomeNote(item),notificationCountNote(item)].filter((fact):fact is string=>!!fact).join(' · ');
+   const facts=rowFacts(item);
    return <Link className="q-row q-row--av q-notif-heldrow" data-unread={review==='unread'||undefined} href={item.href} prefetch={false} aria-label={`${[text.title,facts||null].filter(Boolean).join(', ')}, ${reviewLabels[review]}, ${whenLong(item.at,zone)}`}
     onClick={()=>{if(review==='unread')void markRead(item.id);}}>
     <span className="q-av q-notif-spacer" aria-hidden="true"/>
@@ -93,7 +110,7 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
    </Link>;
   };
   const oneRow=(item:EmployeeNotificationItem)=>{
-   const Icon=icons[notificationPresentation(item.label,item.eventType).icon],review=item.reviewState??'unavailable',text=notificationTitle(item);
+   const Icon=icons[notificationPresentation(item.label,item.eventType).icon],review=item.reviewState??'unavailable',text=rowText(item);
    return <Link className="q-row q-row--av" data-unread={review==='unread'||undefined} href={item.href} prefetch={false} aria-label={`${[text.title,text.detail].filter(Boolean).join(', ')}, ${reviewLabels[review]}, ${whenLong(item.at,zone)}`}
     onClick={()=>{if(review==='unread')void markRead(item.id);}}>
     <span className="q-av" aria-hidden="true"><Icon weight="bold" className="q-ic" aria-hidden="true"/></span>

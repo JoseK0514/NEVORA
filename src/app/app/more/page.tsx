@@ -24,6 +24,7 @@ import { QuestionIcon } from "@phosphor-icons/react/dist/ssr/Question";
 import { CreditCardIcon } from "@phosphor-icons/react/dist/ssr/CreditCard";
 import { CorpAvatar, CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
 import { PortalSignout } from "@/components/portal-signout";
+import { Dotted } from "@/components/employee-b/parts";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { pathEnabled } from "@/lib/workspace-presentation/modules";
 import { commerceEnabled } from "@/lib/commerce/access";
@@ -126,7 +127,8 @@ export default async function MorePage() {
   const billing = owner && commerceEnabled();
   const name = `${session.firstName} ${session.lastName}`;
   const company = workspace.name;
-  // Review F2 (NV-105): "you" is drawn as in the header (white circle, teal initials, more-corp.css), as on Profile.
+  // Phase 8 (B #19, #40): "you" keeps your face tint, as in every list (DESIGN.MD Nov 7: one face tint on every screen;
+  // white stays for the band and the top bar), and "Owner · Northside Café & Bakery" wraps between its parts only.
   // Owner premium A9 (structure-experience 2.5): one clean list, opened from the header avatar. You, then Insights and
   // Updates, then Settings (every business setting lives there, once) and Help, then Sign out as a quiet red row. More is
   // an ordinary pushed page: "‹ Home" on a phone, no Done. Only destinations the role has. Notifications is the bell.
@@ -136,8 +138,8 @@ export default async function MorePage() {
     {/* Review Nov 11 (OW-032, TB-016): on tablets and desktop the groups read as one card, 560px at most, with Sign out as a
       quiet pill under it (owner-b-settings.css, by the Sign out section's id); phones keep their separate cards. */}
     <CorpSection ariaLabel="You"><CorpCard as="div">
-      <CorpRows label="You"><li><CorpRow href="/app/profile" bold title={name} detail={`${owner ? "Owner" : "Manager"} · ${company}`}
-        label={`Your profile, ${name}`} avatar={<CorpAvatar initials={initialsOf(name)} />} chevron /></li></CorpRows>
+      <CorpRows label="You"><li><CorpRow href="/app/profile" bold title={name} detail={<Dotted text={`${owner ? "Owner" : "Manager"} · ${company}`} />}
+        label={`Your profile, ${name}`} avatar={<CorpAvatar initials={initialsOf(name)} name={name} />} chevron /></li></CorpRows>
     </CorpCard></CorpSection>
     {/* Owner premium R5: each group is a section, 32px from the next (12px inside one); More's groups need no visible label. */}
     {has("/app/reports") || has("/app/updates") || has("/app/my-pay") || has("/app/ai-manager") ? <CorpSection ariaLabel="Work"><CorpCard as="div">

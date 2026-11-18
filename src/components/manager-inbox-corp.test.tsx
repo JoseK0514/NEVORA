@@ -54,7 +54,7 @@ it('splits Shifts into Open shifts and Missed clock-ins, keeps three cards at mo
   expect(html).toContain(count('Not clocked in', 1));
   expect(html).not.toContain('Missed clock-ins');
   expect(html).toContain(count('Time off', 1));
-  expect(html).toContain(count('Shift swaps', 1));
+  expect(html).toContain(count('Shift requests', 1));
   expect(html).not.toMatch(/\(\d+\)</);
   expect(html).not.toContain('c-badge');
   const order = ['todo-card-open', 'todo-open', 'todo-review', 'todo-not-clocked-in', 'todo-card-requests', 'todo-time-off', 'todo-swaps', 'todo-more'].map(id => html.indexOf(`id="${id}"`));
@@ -222,10 +222,11 @@ it('Direction B (phones): glass filters with counts, Find cover on each open shi
   expect(html).not.toContain('b-btn--teal');
   // Jose's attendance words (Nov 11, 2026): a running shift is "Not clocked in", with how long ago it started.
   expect(html).toContain('id="b-todo-not-clocked-in-h">Not clocked in<span class="b-pill">1</span>');
-  expect(html).toContain('>Started 2 h 30 min ago<');
+  // Phase 8 (a.md #11): the chip reads as Team's does.
+  expect(html).toContain('>Not clocked in · 2 h 30 min<');
   expect(html).not.toContain('Missed clock-ins');
   // AR-9: Availability sits with the request lists.
-  expect(html).toMatch(/href="\/app\/availability"[^>]*>.*Availability.*Who can work, and when/);
+  expect(html).toMatch(/href="\/app\/availability"[^>]*>.*Availability.*Who can work and when/);
 });
 
 it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count is what can be decided today, and what is not open is one closed card', () => {
@@ -240,16 +241,19 @@ it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count i
   expect(html).toMatch(/<span class="b-row__tt">James Ortiz<\/span><\/span><span class="b-row__s">Time correction · sent Oct 10</);
   expect(html).not.toContain('Recorded time correction');
   expect(html).not.toContain('asked for a time correction');
-  // A swap names both people in its title; a can't-work request says the day, over the shift's time and place.
+  // A swap names both people in its title; a can't-work request's title is the person (Phase 8, a.md #13), over the
+  // day, the shift's time and its place.
   expect(html).toContain('>Ana Colon ⇄ James Ortiz<');
   expect(html).toContain('with James Ortiz"');
-  expect(html).toContain('>Luis Torres can’t work Tue, Oct 20<');
-  expect(html).toContain('>9:00 AM – 5:00 PM · Condado<');
+  expect(html).toContain('>Luis Torres<');
+  expect(html).not.toContain('can’t work Tue');
+  expect(html.replace(/\u2060/g, '')).toContain('>Tue, Oct 20 · 9:00 AM – 5:00 PM · Condado<');
   // Both end with the tinted Review pill, as time off does.
   expect(html.match(/class="b-btn b-btn--ghost"[^>]*>Review</g)).toHaveLength(2);
-  // One glyph and tone per kind: swaps, can't work and corrections wait on you (amber); timecards are teal; not open is grey.
-  expect(html.match(/b-ico b-ico--amber/g)).toHaveLength(3);
-  expect(html.match(/b-ico b-ico--teal/g)).toHaveLength(1);
+  // One glyph and tone per kind: swaps, can't work, corrections and timecards that can be approved wait on you (amber,
+  // Phase 8 a.md #43); not open is grey.
+  expect(html.match(/b-ico b-ico--amber/g)).toHaveLength(4);
+  expect(html.match(/b-ico b-ico--teal/g)).toBeNull();
   // Timecards whose period has ended can be approved: the reviewer's own card is left out and the line says so.
   expect(html).toContain('1 of 2 timecards · Avery');
   expect(html).not.toContain('Elena');

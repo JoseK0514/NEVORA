@@ -26,13 +26,13 @@ const text = (html: string) => html.replace(/<[^>]+>/g, " ");
 describe.each(["en", "es"] as const)("forgot password in %s", lang => {
   const t = AUTH_COPY[lang], u = ACCESS_COPY[lang].recovery;
 
-  it("before you start: step 1 and what will happen, in order", () => {
+  it("before you start: step 1, then what will happen in one short paragraph, before the fields", () => {
     const html = request(lang);
     expect(html).toContain(step(lang, 1));
-    expect(html).toContain(`<ol class="ar-before" aria-label="${u.beforeLabel}">`);
-    const at = u.before.map(line => html.indexOf(line));
-    expect(at.every(index => index > 0)).toBe(true);
-    expect([...at].sort((a, b) => a - b)).toEqual(at);
+    // Phase 8: the step line names the three steps, so what happens is one paragraph, not a list of the same steps.
+    expect(html).toContain(`<p class="ar-intro">${u.intro}</p>`);
+    expect(html).not.toContain("ar-before");
+    expect(html.indexOf(u.intro)).toBeLessThan(html.indexOf('id="recovery-employee-id"'));
     expect(html).toContain(t.requestRecovery);
   });
 

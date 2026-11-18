@@ -5,17 +5,15 @@ import {expect,it,vi} from 'vitest';
 vi.mock('@/components/mobile-access/config.server',()=>({mobileAccessEnabled:()=>false}));
 vi.mock('@/lib/legal/policies',async original=>({...(await original<typeof import('@/lib/legal/policies')>()),policiesVisible:()=>true}));
 import {AUTH_COPY} from '@/lib/auth-copy';
-import {QuietLegal} from '@/components/brand-legal';
 import {AuthBackNav} from './auth-back-nav';
 import {QuietAuthShell} from './auth-shell';
-import {DocPolicyLinks} from './doc-links';
+import {SignedOutFooter} from './signed-out-footer';
 import {Greeting,greetingFor} from './greeting';
 import {PasskeySignInView} from './passkey-slot';
 import {PasswordInput} from './password-input';
 
 /* Phase 5 (Nov 17, 2026): the shell every signed-out page shares (review-public PB-015, PB-018, PB-021, PB-031, PB-032,
  * PB-036, PB-037). Markup and styles only. */
-const text=(html:string)=>html.replace(/<[^>]+>/g,'');
 const css=readFileSync(join(__dirname,'auth-b.css'),'utf8');
 
 it.each(['en','es'] as const)('a sub-page keeps the wordmark and the language switch, with one way back per width, in %s (PB-021)',lang=>{
@@ -32,14 +30,11 @@ it.each(['en','es'] as const)('a sub-page keeps the wordmark and the language sw
  expect(renderToStaticMarkup(<AuthBackNav href="/login" label="Sign in"/>).match(/<a /g)).toHaveLength(1);
 });
 
-it.each([['en','© 2026 VELANI LLC · Privacy · Terms · Support'],['es','© 2026 VELANI LLC · Privacidad · Términos · Ayuda']] as const)('the legal line reads the same and can stack without a leading dot, in %s (PB-018)',(lang,line)=>{
- const html=renderToStaticMarkup(<QuietLegal lang={lang}/>);
- expect(text(html).replace(/\s+/g,' ')).toContain(line);
+it.each([['en','© 2026 VELANI LLC · Privacy · Terms · Support'],['es','© 2026 VELANI LLC · Privacidad · Términos · Ayuda']] as const)('the legal line reads the same, with no "(en inglés)", in %s (PB-018; Phase 8: SignedOutFooter)',(lang,line)=>{
+ const html=renderToStaticMarkup(<SignedOutFooter lang={lang}/>);
+ expect(html.replace(/<span class="so-foot__dot" aria-hidden="true">·<\/span>/g,' · ').replace(/<[^>]+>/g,'')).toContain(line);
  expect(html).not.toContain('(en inglés)');
- expect(html).toContain('<span class="q-legal__item q-legal__owner">© 2026 VELANI LLC</span>');
- expect(html).toMatch(/<span class="q-legal__links"><span class="q-legal__item"><span class="q-legal__lead">· <\/span><a href="\/privacy">/);
- expect(css).toMatch(/\.q-legal \.q-legal__owner \{ display: block; \}/);expect(css).toMatch(/\.q-legal \.q-legal__lead \{ display: none; \}/);
- expect(renderToStaticMarkup(<DocPolicyLinks lang="es" current="support"/>)).not.toContain('(en inglés)');
+ expect(html).toContain('<span class="so-foot__owner">© 2026 VELANI LLC</span>');
 });
 
 it.each(['en','es'] as const)('the passkey button follows a centred "or", leads with its glyph, and a refusal leads with the alert icon, in %s (PB-031)',lang=>{

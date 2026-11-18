@@ -21,8 +21,9 @@ vi.mock('react', async original => {
 });
 vi.mock('./clocker-language', async original => {
   const real = await original<typeof import('./clocker-language')>();
-  const {clockerText} = await import('./clocker-copy');
-  return {...real, useClockerCopy: () => hooks.on ? (key: string, params?: Record<string, string | number>) => clockerText(hooks.locale, key, params) : real.useClockerCopy()};
+  const {CLOCKER_BUTTON_NAMES, clockerKeepNames, clockerText} = await import('./clocker-copy');
+  return {...real, useClockerCopy: () => hooks.on ? (key: string, params?: Record<string, string | number>) => clockerText(hooks.locale, key, params) : real.useClockerCopy(),
+    useClockerKeepNames: () => hooks.on ? (sentence: string) => clockerKeepNames(sentence, CLOCKER_BUTTON_NAMES.map(name => clockerText(hooks.locale, name))) : real.useClockerKeepNames()};
 });
 import {ClockerSetup, SETUP_WELCOME_MS} from './clocker-setup';
 import {ClockerPinGate} from './clocker-pin-gate';
@@ -46,7 +47,8 @@ describe('first paint (no hooks driven)', () => {
   it('English: what this tablet will be, the three steps, the code field and one filled button', () => {
     const html = renderToStaticMarkup(<ClockerSetup {...props} />);
     expect(html).toContain('Set up this tablet');
-    expect(html).toContain('This tablet will be the time clock for Calle Loíza.');
+    // Phase 8 (#20): the location reads as one name, its words kept on one line.
+    expect(html).toContain('This tablet will be the time clock for <strong>Calle\u00a0Loíza</strong>.');
     expect(html.match(/<li>/g)).toHaveLength(3);
     expect(html).toContain('Point this tablet’s camera at the code, or type the code below.');
     expect(html).toMatch(/<textarea[^>]*name="enrollmentToken"/);
@@ -57,18 +59,21 @@ describe('first paint (no hooks driven)', () => {
   });
   it('Spanish: the same screen with no English sentence left in it', () => {
     const html = renderToStaticMarkup(<ClockerSetup {...props} initialLocale="es" />);
-    for (const line of ['Configura esta tableta', 'Esta tableta será el registro de tiempo de Calle Loíza.', 'El dueño añade esta tableta y obtiene su código de configuración.', 'Código de configuración', 'Revisando configuración…'])
+    for (const line of ['Configura esta tableta', 'Esta tableta será el registro de tiempo de <strong>Calle\u00a0Loíza</strong>.', 'El dueño añade esta tableta y obtiene su código de configuración.', 'Código de configuración', 'Revisando configuración…'])
       expect(html).toContain(line);
     for (const english of ['Set up this tablet', 'Setup code', 'time clock for', 'Connect tablet', 'How to set it up', 'One-time setup']) expect(html).not.toContain(english);
     expect(html).toContain('lang="es"');
   });
   it('every sentence the screen can say has its Spanish line', () => {
     for (const key of ['Setup code received', 'Type a code instead', 'Connecting…', 'Setup not confirmed', 'No connection', 'This tablet is connected to {location}', 'Open the time clock',
-      'This tablet is offline. Connect it to Wi-Fi, then try again.', 'That link doesn’t have a complete setup code. Type the code from Owner Settings.', 'Enter the complete setup code from Owner Settings.',
+      'This tablet is offline. Connect it to Wi-Fi, then try again.', 'That link doesn’t have a complete setup code. Type the code from Owner Settings.', 'Enter the whole setup code the Owner sees in Settings\u00a0→\u00a0Clocker\u00a0tablets.',
       'This setup code is expired, already used, or for another location. Ask the Owner for a new code.', 'New tablet setup is paused. Use an already registered tablet to finish an existing shift.', 'Allow cookies, then start tablet setup again.']) {
       expect(CLOCKER_COPY[key], key).toBeTruthy(); expect(CLOCKER_COPY[key]).not.toBe(key);
     }
-    expect(clockerText('es', 'This tablet is connected to {location}', {location: 'Calle Loíza'})).toBe('Esta tableta quedó registrada en Calle Loíza');
+    expect(clockerText('es', 'This tablet is connected to {location}', {location: 'Calle Loíza'})).toBe('Esta tableta quedó conectada a Calle Loíza');
+    // Phase 8 (#14): one verb for the tablet in each language, on the button, the band and the answers.
+    expect(clockerText('es', 'Connect tablet')).toBe('Conectar tableta'); expect(clockerText('es', 'Tablet connected')).toBe('Tableta conectada');
+    expect(Object.values(CLOCKER_COPY).join(' ')).not.toMatch(/Registrar tableta|Tableta registrada|registrarla/);
   });
 });
 
@@ -227,7 +232,7 @@ describe('the setup code from the Owner’s link, and each answer', () => {
   it('Spanish: received, connected, refused and not confirmed carry no English sentence', async () => {
     hooks.locale = 'es';
     await mount(); expect(words()).toContain('Código de configuración recibido'); expect(words()).toContain('Escribir un código');
-    await connect(); expect(words()).toContain('Esta tableta quedó registrada en Calle Loíza'); expect(words()).toContain('Abrir el registro de tiempo');
+    await connect(); expect(words()).toContain('Esta tableta quedó conectada a Calle Loíza'); expect(words()).toContain('Abrir el registro de tiempo');
     expect(words()).not.toMatch(/Setup|Connect|is ready|time clock|signed out/i);
     hooks.states = []; hooks.refs = []; location.hash = `#setup=${code}`; sent.length = 0;
     answers.redeem = {status: 409, body: {code: 'ENROLLMENT_INVALID', error: 'x'}};

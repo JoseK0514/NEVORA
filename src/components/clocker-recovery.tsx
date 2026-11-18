@@ -1,31 +1,67 @@
 'use client';
-import {useRef,useState} from 'react';
+import {useCallback,useRef,useState,type Ref} from 'react';
 import type {JournalReference} from '../lib/clocker/recovery-journal';
 import {useClockerCopy,useClockerPresentation} from './clocker-language';
 import {clockerOthersSavedText} from './clocker-copy';
 import styles from './clocker.module.css';
 import {ClockerIcon} from './clocker-icon';
 /** Opaque references are assistance evidence, never permission to replay time. */
-/** Direction B: a small teal link ("Something didn’t save?") that opens the saved references below it. Inline, it sits
- * in the ready screen's link row beside Refresh; otherwise under the state's actions.
- * Nov 10 review (NV-185): the panel scrolls inside itself, so opening it never stretches the page or moves the band's
- * clock; the current person's reference leads and their others wait behind "Show N more"; a locked kiosk has no app
- * to paste into, so there is no Copy reference. Ask Owner to review and its request are unchanged.
- * Nov 14 inspection: other people's saved punches on this tablet show as a count only (otherCount), never a reference.
- * Phase 6 (Nov 17, 2026): plain words ("Ask Owner to check", "Request sent"), the count in the singular and the plural
- * ("1 more saved on this tablet."), and 56px targets. The request, its reference and its retry are unchanged. */
-export function ClockerRecoveryHandoff({references,otherCount=0,locationKey,commandId,inline=false}:{references:JournalReference[];otherCount?:number;locationKey:string;commandId:string|null;inline?:boolean}){
- const requestId=useRef<string|null>(null);const [displayId,setDisplayId]=useState<string|null>(null),[requestState,setRequestState]=useState<'idle'|'sending'|'saved'|'unknown'>('idle');
- const t=useClockerCopy(),{locale}=useClockerPresentation(),[open,setOpen]=useState(false),[all,setAll]=useState(false);
+/* Saved-punch help. History: a small teal link ("Something didn’t save?") under a screen's actions, or inline beside
+ * Refresh on the clock screen (Direction B, Nov 8); no Copy reference on a locked kiosk (NV-185); other people's saved
+ * punches as a count only (Nov 14); plain words and 56px targets (Phase 6).
+ * Phase 8 (Nov 17, 2026): the help is its own card state. The link opens it in place of the screen it was on, so it fits a
+ * 1024x768, 768x1024 or 800x600 tablet without scrolling, with Back always in view. The person's saved references sit
+ * behind one "Reference" disclosure, as on the receipt, never as raw codes in the body. The request to the Owner, its
+ * reference and its retry are unchanged: one request id per saved punch, reused for every retry. */
+
+export type ClockerReviewRequest={state:'idle'|'sending'|'saved'|'unknown';id:string|null;ask:()=>Promise<void>};
+/** The "Ask Owner to check" request for one saved punch (or the tablet when the punch has no reference). It lives with the
+ * clock screen, not inside the help, so closing and opening the help never mints a second request id. */
+export function useClockerReviewRequest(locationKey:string,commandId:string|null):ClockerReviewRequest{
+ const ids=useRef(new Map<string,string>()),sending=useRef(false);
+ const [request,setRequest]=useState<{key:string;id:string;state:'sending'|'saved'|'unknown'}|null>(null);
+ const key=commandId??'tablet-assistance';
+ const current=request&&request.key===key?request:null;
+ const ask=useCallback(async()=>{
+  if(sending.current||current?.state==='saved')return;
+  let id=ids.current.get(key);if(!id){id=crypto.randomUUID();ids.current.set(key,id);}
+  sending.current=true;setRequest({key,id,state:'sending'});
+  try{const response=await fetch(`/api/clocker/${encodeURIComponent(locationKey)}/review`,{method:'POST',credentials:'same-origin',cache:'no-store',signal:AbortSignal.timeout(12000),headers:{'content-type':'application/json','x-nevora-clocker':'1'},body:JSON.stringify({requestId:id,commandId})});const data:unknown=await response.json();if(!response.ok||!data||typeof data!=='object'||!('state'in data)||data.state!=='saved'||!('requestId'in data)||data.requestId!==id)throw Error();setRequest({key,id,state:'saved'});}
+  catch{setRequest({key,id,state:'unknown'});}
+  finally{sending.current=false;}
+ },[current?.state,key,locationKey,commandId]);
+ return {state:current?.state??'idle',id:current?.id??null,ask};
+}
+
+/** The link that opens the help. */
+export function ClockerRecoveryLink({onOpen}:{onOpen:()=>void}){
+ const t=useClockerCopy();
+ return <button type="button" className={styles.link} data-clocker-help-link="" onClick={onOpen}><ClockerIcon name="info" size={18}/>{t('Something didn’t save?')}</button>;
+}
+
+/** The help as its own card state: what is kept, one quiet request to the Owner, the reference behind a disclosure, and
+ * Back. Other people's saved punches are a count only. */
+export function ClockerRecoveryHelp({references,otherCount=0,commandId,request,onBack,headingRef}:{references:JournalReference[];otherCount?:number;commandId:string|null;request:ClockerReviewRequest;onBack:()=>void;headingRef?:Ref<HTMLHeadingElement>}){
+ const t=useClockerCopy(),{locale}=useClockerPresentation();
  const others=clockerOthersSavedText(locale,otherCount);
- async function requestReview(){
-  if(requestState==='sending'||requestState==='saved')return;const id=requestId.current??(requestId.current=crypto.randomUUID());setDisplayId(id);setRequestState('sending');
-  try{const response=await fetch(`/api/clocker/${encodeURIComponent(locationKey)}/review`,{method:'POST',credentials:'same-origin',cache:'no-store',signal:AbortSignal.timeout(12000),headers:{'content-type':'application/json','x-nevora-clocker':'1'},body:JSON.stringify({requestId:id,commandId})});const data:unknown=await response.json();if(!response.ok||!data||typeof data!=='object'||!('state'in data)||data.state!=='saved'||!('requestId'in data)||data.requestId!==id)throw Error();setRequestState('saved');}catch{setRequestState('unknown');}
- }
  const ordered=commandId?[...references.filter(r=>r.commandId===commandId),...references.filter(r=>r.commandId!==commandId)]:references;
- const shown=all?ordered:ordered.slice(0,1),more=ordered.length-shown.length;
- return <aside className={styles.handoff} data-inline={inline||undefined}>
-  <button type="button" className={styles.link} aria-expanded={open} onClick={()=>setOpen(value=>!value)}>{t(open?'Hide help':'Something didn’t save?')}<ClockerIcon name="caret" size={16}/></button>
-  {open?<div data-clocker-notice className={styles.handoffPanel}><p>{t('Something of yours is saved on this tablet for checking. Ask your Owner to check it. You can leave this screen; it stays saved.')}</p><button type="button" className={styles.btn} data-kind="secondary" disabled={requestState==='sending'||requestState==='saved'} onClick={()=>void requestReview()}>{t(requestState==='sending'?'Asking…':requestState==='saved'?'Request sent':requestState==='unknown'?'Ask again':'Ask Owner to check')}</button>{displayId?<p role="status">{t(requestState==='sending'?'Sending the request.':requestState==='saved'?'Your Owner will see it under Clocker recovery.':'We couldn’t confirm the request. Ask again; it won’t send twice.')} {t('Request reference')}: <code>{displayId}</code></p>:null}<ul>{shown.map((r,i)=><li key={r.commandId??i}>{r.commandId?<code>{r.commandId}</code>:<p>{t('One saved punch can’t be read. Ask your manager to check it.')}</p>}</li>)}</ul>{more>0||all&&ordered.length>1?<button type="button" className={styles.link} aria-expanded={all} onClick={()=>setAll(value=>!value)}>{all?t('Show fewer'):t('Show {count} more',{count:more})}</button>:null}{others?<p data-clocker-others-saved="">{others} {t('Each person can check their own after their PIN.')}</p>:null}<button type="button" className={styles.link} onClick={()=>setOpen(false)}>{t('Dismiss')}</button></div>:null}
- </aside>;
+ const codes=ordered.flatMap(r=>r.commandId?[r.commandId]:[]),unreadable=ordered.some(r=>!r.commandId);
+ const status=request.state==='sending'?'Sending the request.':request.state==='saved'?'Your Owner will see it under Clocker recovery.':request.state==='unknown'?'We couldn’t confirm the request. Ask again; it won’t send twice.':null;
+ return <>
+  <span className={styles.ring}><ClockerIcon name="info" size={28}/></span>
+  <h1 ref={headingRef} tabIndex={-1} className={styles.title}>{t('Ask your Owner to check')}</h1>
+  <p className={styles.smsg}>{t('Something of yours is saved on this tablet for checking. You can leave this screen; it stays saved.')}</p>
+  {unreadable?<p className={styles.smsg}>{t('One saved punch can’t be read. Ask your manager to check it.')}</p>:null}
+  {others?<p data-clocker-others-saved="" className={styles.quietLine}>{others} {t('Each person can check their own after their PIN.')}</p>:null}
+  <div className={styles.stack}>
+   <button type="button" className={styles.btn} data-kind="secondary" disabled={request.state==='sending'||request.state==='saved'} onClick={()=>void request.ask()}>{t(request.state==='sending'?'Asking…':request.state==='saved'?'Request sent':request.state==='unknown'?'Ask again':'Ask Owner to check')}</button>
+   <p role="status" className={styles.quietLine}>{status?t(status):''}</p>
+   <button type="button" className={styles.link} onClick={onBack}>{t('Back')}</button>
+  </div>
+  {/* Last, so opening it never pushes Back out of view: the codes for the Owner, one per line in one block. */}
+  {codes.length||request.id?<details className={styles.reference}><summary>{t('Reference')}<ClockerIcon name="caret" size={16}/></summary>
+   {codes.length?<code>{codes.map(code=><span key={code}>{code}</span>)}</code>:null}
+   {request.id?<><span className={styles.refLabel}>{t('Request reference')}</span><code>{request.id}</code></>:null}
+  </details>:null}
+ </>;
 }

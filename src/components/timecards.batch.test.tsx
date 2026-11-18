@@ -418,7 +418,8 @@ it('BR-1: a person’s time is a row figure and the week’s total a sentence, f
  // The kit's CorpDuration wraps each unit, so the cell's text is read without its markup.
  const text=rendered.replace(/<[^>]+>/g,'').replace(/\s+/g,' ');
  expect(text).toContain('PRIVATE E18 h 06');expect(text).toContain('PRIVATE E22 h—');expect(text).not.toContain('2 h 00');
- expect(text).toContain('Total10 h 6 min');expect(text).toContain('10 h 6 min recorded');
+ // Phase 8 (a.md #38): the period total in the table is whole hours; the note under it keeps the exact figure.
+ expect(text).toContain('Total10 h');expect(text).not.toContain('Total10 h 6 min');expect(text).toContain('10 h 6 min recorded');
 });
 it('BR-2: says the two steps where they are taken, and names the button for a card with hours',async()=>{
  vi.stubGlobal('fetch',async()=>Response.json({...ready(),cards:[worked('E1',240),card('E2'),card('OWNER')]}));

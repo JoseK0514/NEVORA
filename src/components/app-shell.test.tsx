@@ -444,3 +444,14 @@ it('keeps every Phase 3 shell rule scoped to Owner and Manager shells',()=>{
  expect(block).toContain('@media (min-width: 768px) and (pointer: coarse)');
  expect(css).not.toMatch(/\.b-tab-badge \{[^}]*var\(--b-red\)/);
 });
+// Phase 8 (Nov 17, 2026): a sidebar or rail that holds more than a short window says so. The list carries one cue at each
+// edge, hidden from assistive technology and drawn only when the list scrolls (b-foundation.css reads data-more-above and
+// data-more-below, which the shell sets in the browser); the entries and their order are unchanged.
+it.each(['OWNER','MANAGER','EMPLOYEE'] as const)('gives the %s sidebar its scroll cues around the entries, outside the accessibility tree',role=>{
+ const {sidebar}=shell(role,'/app');
+ expect(sidebar).toMatch(/^[^>]*><span class="sidebar-more sidebar-more--top" aria-hidden="true"><\/span><div class="sidebar-nav-group"/);
+ expect(sidebar).toMatch(/<span class="sidebar-more sidebar-more--bottom" aria-hidden="true"><svg[^>]*>[\s\S]*<\/svg><\/span>$/);
+ expect(sidebar).not.toContain('data-more-');
+ expect(sidebar.indexOf('sidebar-more--top')).toBeLessThan(sidebar.indexOf('class="nav-link'));
+ expect(sidebar.lastIndexOf('class="nav-link')).toBeLessThan(sidebar.indexOf('sidebar-more--bottom'));
+});

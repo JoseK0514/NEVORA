@@ -37,13 +37,17 @@ export function TeamB({ people, inactive, total, query, filtered, people_word, p
   const off = people.filter(person => state(person.id) === "off").length;
   const shown = people.filter(person => filter === "all" || (filter === "working" ? ["working", "break"].includes(state(person.id) ?? "") : filter === "late" ? state(person.id) === "late" : state(person.id) === "off"));
   const lowerPeople = people_word.toLowerCase();
-  const sub = `${total} ${total === 1 ? person_word : lowerPeople}${live.ready ? late ? ` · ${late} not clocked in` : working ? ` · ${working} working now` : " · No one working now" : ""}`;
+  // Phase 8 (a.md #30): the band says one fact at every width, the one desktop's subtitle says (TeamWorkingNow).
+  const sub = `${total} ${total === 1 ? person_word : lowerPeople}${live.ready ? working ? ` · ${working} working now` : " · No one working now" : ""}`;
   const row = (person: TeamBPerson) => {
     const now = person.active ? state(person.id) : null;
-    const chip = !person.active ? <BChip>Inactive</BChip> : now === "working" ? <BChip tone="green">{clockedInText(live, person.id)}</BChip> : now === "break" ? <BChip tone="teal">On break</BChip>
-      : now === "late" ? <BChip tone="amber">{notClockedInText(live.late.get(person.id) ?? 0)}</BChip> : now === "off" ? <BChip>Off today</BChip> : undefined;
-    return <BRow key={person.id} href={person.href} label={person.label} lead={<BAvatar name={person.name} size={40} ring={now === "late" ? "late" : now === "working" || now === "break" ? "on" : undefined} />}
-      title={person.name} chip={chip} sub={person.detail} />;
+    // Phase 8 (a.md #11, #45; b.md #24): a late arrival is amber, as on Home; "Off today" is the normal state, so it is
+    // grey words on the line under the name, not a chip.
+    const lateIn = now === "working" && live.clockedInLate.has(person.id);
+    const chip = !person.active ? <BChip>Inactive</BChip> : now === "working" ? <BChip tone={lateIn ? "amber" : "green"}>{clockedInText(live, person.id)}</BChip> : now === "break" ? <BChip tone="teal">On break</BChip>
+      : now === "late" ? <BChip tone="amber">{notClockedInText(live.late.get(person.id) ?? 0)}</BChip> : undefined;
+    return <BRow key={person.id} href={person.href} label={person.label} lead={<BAvatar name={person.name} size={40} ring={now === "late" || lateIn ? "late" : now === "working" || now === "break" ? "on" : undefined} />}
+      title={person.name} chip={chip} sub={now === "off" ? <>{person.detail}{person.detail ? " · " : ""}Off today</> : person.detail} />;
   };
   const icon = (name: TeamBToolIcon) => name === "hours" ? <ChartBarIcon weight="bold" /> : name === "availability" ? <CalendarCheckIcon weight="bold" />
     : name === "import" ? <UploadSimpleIcon weight="bold" /> : name === "key" ? <KeyIcon weight="bold" /> : <UserMinusIcon weight="bold" />;
@@ -54,7 +58,7 @@ export function TeamB({ people, inactive, total, query, filtered, people_word, p
           it was a 1px control. Search still applies as you type, and Enter still submits. */}
         <button type="submit" name="status" value={status} className="b-search__go" data-apply="" tabIndex={-1}><MagnifyingGlassIcon size={19} weight="bold" aria-hidden="true" /><span className="b-sr">Apply search</span></button>
         {searchHidden}
-        <label className="b-search__in"><span className="b-sr">{`Search ${lowerPeople}`}</span><EmployeeSearchInput query={query} placeholder="Search by name or position" /></label>
+        <label className="b-search__in"><span className="b-sr">{`Search ${lowerPeople}`}</span><EmployeeSearchInput query={query} placeholder="Search people" /></label>
       </EmployeeDirectoryFilters>
     </BHero>
     <BStack>

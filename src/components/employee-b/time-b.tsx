@@ -10,9 +10,10 @@ import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {ClockCounterClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ClockCounterClockwise';
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import {WarningIcon} from '@phosphor-icons/react/dist/ssr/Warning';
-import {BButton,BButtonLink,BCard,BChip,BHero,BIcon,BList,BLive,BNote,BRow,BScreen,BSeg,BStack,BState,type BStateKind} from '../owner-b/b-kit';
+import {BButton,BButtonLink,BCard,BChip,BHero,BIcon,BList,BLive,BNote,BRow,BScreen,BSeg,BStack,BState,compactRange,type BStateKind} from '../owner-b/b-kit';
 import {momentsCopy} from '../owner-b/moments-copy';
-import {BAddRow,BCardNote,BDay,BValue} from './parts';
+import {BAddRow,BCardNote,BDay,BValue,Range,shiftEndedWhileOpen,wallTime,type WallShift} from './parts';
+import {workCopy} from './work-copy';
 import {useHours} from '../employee-mobile/use-hours';
 import {addDays,weekStartFor} from '@/lib/date-utils';
 import {keepWhole} from '@/lib/keep-whole';
@@ -29,7 +30,8 @@ import {EARLIER_MAX,boardDuration,cardStatus,cardsHref,clockAt,clockRange,compac
  * it (the corporate views on their own) nothing renders here. */
 
 export type HoursBHead={title:string;sub?:string;back?:{href:string;label:string;close?:boolean};right?:ReactNode};
-export type HoursBContextValue={head:HoursBHead;authority:string;/** A notice every Time page shows first (an earlier fix to check). */notice?:ReactNode};
+export type HoursBContextValue={head:HoursBHead;authority:string;/** A notice every Time page shows first (an earlier fix to check). */notice?:ReactNode;
+ /** Phase 8 (review C, row 10): today's published shifts, so Right now can say a shift has ended (Home's rule). */shifts?:readonly WallShift[]|null};
 export const HoursBContext=createContext<HoursBContextValue|null>(null);
 /** The hero title's id: the page moves focus to it on a phone, as it does to the corporate title elsewhere. */
 export const B_TITLE_ID='b-hours-title';
@@ -73,7 +75,7 @@ export function HoursRecoveryB({href}:{href:string}){
 function Dur({value}:{value:number}){
  return <><span aria-hidden="true">{compactDuration(value)}</span><span className="b-sr">{boardDuration(value)}</span></>;
 }
-const M=momentsCopy();
+const M=momentsCopy(),W=workCopy();
 const chip=(status:{word:string;tone:StatusTone})=><BChip tone={status.tone}>{status.word}</BChip>;
 
 /* ---------- Time tab ---------- */
@@ -81,20 +83,22 @@ const chip=(status:{word:string;tone:StatusTone})=><BChip tone={status.tone}>{st
 export function TimeTabB({data}:{data:Ready}){
  const context=useContext(HoursBContext),m=timeWeek(data),zone=m.zone,current=m.current;
  const figure=(value:number)=>m.partial?'—':<Dur value={value}/>;
- const status=current?m.onBreak?<BChip tone="amber">On break</BChip>:<BChip tone="teal">Clocked in</BChip>:<BChip>Not clocked in</BChip>;
- const headline=current?m.onBreak&&m.openBreak?`On break since ${clockAt(m.openBreak.startAt,zone)}`:`Clocked in at ${clockAt(current.clockInAt,zone)}`:`Clock in on ${m.tablet}`;
+ // Phase 8 (review C, row 10): today's shift has ended and the punch is still open: amber, with Home's words.
+ const overrun=current&&context?.shifts?shiftEndedWhileOpen({shifts:context.shifts,today:data.date,zone,observedAt:data.observedAt,clockInAt:current.clockInAt}):null;
+ const status=current?m.onBreak?<BChip tone="amber">On break</BChip>:<BChip tone={overrun?'amber':'teal'}>Clocked in</BChip>:<BChip>Not clocked in</BChip>;
+ const headline=overrun&&current?W.stillClockedIn(clockAt(current.clockInAt,zone)):current?m.onBreak&&m.openBreak?`On break since ${clockAt(m.openBreak.startAt,zone)}`:`Clocked in at ${clockAt(current.clockInAt,zone)}`:`Clock in on ${m.tablet}`;
  const line=current?m.onBreak?`${current.locationName} · clocked in at ${clockAt(current.clockInAt,zone)}`:`${current.locationName} · ${boardDuration(current.elapsedSeconds)} so far`:'Take breaks and clock out there too';
- const hint=current?m.onBreak?'End your break on your location’s tablet.':'Take breaks and clock out on your location’s tablet.':null;
+ const hint=overrun&&current?W.shiftEnded(compactRange(`${wallTime(overrun.startTime)} – ${wallTime(overrun.endTime)}`),current.locationName):current?m.onBreak?'End your break on your location’s tablet.':'Take breaks and clock out on your location’s tablet.':null;
  return <HoursBScreen hero={m.week.length?<BLive label="This week at a glance" items={[{label:'This week',value:figure(m.worked)},{label:'Breaks',value:figure(m.breaks)}]}/>:null}>
   <BCard title="Right now" id="b-hours-now" chip={status}>
-   <div className="b-notice eb-now"><BIcon tone="teal"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
+   <div className={overrun?'b-notice eb-now eb-now--late':'b-notice eb-now'} role={overrun?'status':undefined}><BIcon tone={overrun?'amber':'teal'}><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
     <span className="b-notice__t">{keepWhole(headline)}</span><span className="b-notice__s">{keepWhole(line)}</span>{hint?<span className="b-notice__s">{hint}</span>:null}
    </span></div>
   </BCard>
   <BCard title={<span><span className="eb-wide">This week · </span><span className="eb-nowrap">{rangeLabel(m.weekStart,m.weekEnd)}</span></span>} id="b-hours-week" chip={<BChip tone="teal">In progress</BChip>}>
    <BList label="This week’s time">
     {m.week.map(entry=>{const date=dateKey(entry.clockInAt,zone),range=clockRange(entry.clockInAt,entry.clockOutAt,zone);
-     return <BRow key={entry.id} href={entryHref(entry.id)} lead={<BDay date={date} today={date===data.date}/>} title={<span id={'b-hours-entry-'+entry.id}>{keepWhole(range)}</span>}
+     return <BRow key={entry.id} href={entryHref(entry.id)} lead={<BDay date={date} today={date===data.date}/>} title={<span id={'b-hours-entry-'+entry.id}><Range text={keepWhole(range)}/></span>}
       sub={entry.breakSeconds?`${boardDuration(entry.breakSeconds)} break`:undefined} end={<BValue><span className={entry.clockOutAt?undefined:'eb-teal'}><Dur value={entry.elapsedSeconds}/></span></BValue>}
       label={`${dayLong(date)}, ${range}, ${boardDuration(entry.elapsedSeconds)}${entry.breakSeconds?`, ${boardDuration(entry.breakSeconds)} break`:''}`}/>;})}
     {m.week.length?null:<li className="b-li"><p className="eb-quiet">No time recorded yet this week</p></li>}
@@ -106,7 +110,7 @@ export function TimeTabB({data}:{data:Ready}){
   {/* The corrections sit under last week (the right column on desktop). Review F2 (NV-135): phones show them too, so
     * both widths hold the same content. */}
   <div className="eb-corrections"><BCard label="Your correction requests"><BList>
-   <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your correction requests" sub="Sent to your manager for review"/>
+   <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your correction requests" sub={W.correctionsSub}/>
   </BList></BCard></div>
  </HoursBScreen>;
 }
@@ -171,7 +175,7 @@ function ChosenWeekB({data,period}:{data:Extract<TimecardsResult,{state:'ready'}
    <div className="eb-sum"><p className="eb-sum__big"><Dur value={seconds(card.recordedNanoseconds)}/></p><p className="eb-sum__line">Hours · includes {boardDuration(seconds(card.breakNanoseconds))} of breaks</p>
     {notes.map(note=><p className="eb-sum__line eb-sum__line--warn" key={note}>{note}</p>)}</div>
    <BList label="Days">{entries.map(entry=>{const length=span(entry.startAt,entry.endAt),date=dateKey(entry.startAt,card.timeZone),times=clockRange(entry.startAt,entry.endAt,card.timeZone);
-    return <BRow key={entry.id} href={cardsHref(period)+'&entry='+encodeURIComponent(entry.id)} lead={<BDay date={date}/>} title={<span id={'b-hours-card-entry-'+entry.id}>{keepWhole(times)}</span>}
+    return <BRow key={entry.id} href={cardsHref(period)+'&entry='+encodeURIComponent(entry.id)} lead={<BDay date={date}/>} title={<span id={'b-hours-card-entry-'+entry.id}><Range text={keepWhole(times)}/></span>}
      end={length===null?<span className="eb-val eb-val--teal">In progress</span>:<BValue><Dur value={length}/></BValue>} label={`${dayLong(date)}, ${times}, ${length===null?'in progress':boardDuration(length)}`}/>;})}</BList>
   </>:<p className="eb-quiet">No hours this week</p>}
  </BCard>;
@@ -192,7 +196,7 @@ export function PastTimecardsB({data,period,today,chosen,weeks,earlier,earlierCo
    </BList>
   </BCard>
   <BCard label="Your correction requests"><BList>
-   <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your correction requests" sub="Sent to your manager for review"/>
+   <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your correction requests" sub={W.correctionsSub}/>
   </BList></BCard>
  </HoursBScreen>;
 }

@@ -1,6 +1,6 @@
 
 import { DEFAULT_WORDS, lower, type WordSlots } from "@/lib/workspace-presentation/words";
-import { MagnifyingGlass, Plus } from "@phosphor-icons/react/dist/ssr";
+import { CalendarCheck, ChartBar, Key, MagnifyingGlass, Plus, UploadSimple, UserMinus } from "@phosphor-icons/react/dist/ssr";
 import type { Employee, Location, Position } from "@/lib/domain";
 import { employeeInitials, employeeRoleLabel } from "@/lib/employee-display";
 import { formatPhoneNumber } from "@/lib/phone";
@@ -65,7 +65,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
   // Nov 14, 2026 inspection: Availability is one tap from Team (AR-9), and an Owner can import a staff list.
   const bTools = [
     { href: "/app?view=team", title: "Hours this week", detail: "Scheduled hours for each person", icon: "hours" as const },
-    { href: "/app/availability", title: "Availability", detail: "Who can work, and when", icon: "availability" as const },
+    { href: "/app/availability", title: "Availability", detail: "Who can work and when", icon: "availability" as const },
     ...(canImport ? [{ href: "/app/employees/import", title: "Import a staff list", detail: "Add many people at once", icon: "import" as const }] : []),
     ...(recovery ? [{ href: "/app/account-recovery", title: "Help someone sign in", detail: clockerRecovery ? "Reset a password or Clocker PIN" : "Reset a password or sign-in", icon: "key" as const }] : []),
     ...(!all && inactiveCount ? [{ href: "/app/employees?all=1#team-inactive", title: "Inactive people", detail: `${inactiveCount} no longer active`, icon: "inactive" as const }] : []),
@@ -87,7 +87,8 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
         <label className="c-in c-team-search__field">
           <span className="c-sr">Search {people}</span>
           <MagnifyingGlass weight="bold" className="c-ic" aria-hidden="true" />
-          <EmployeeSearchInput query={filters.query} placeholder="Search by name or position" />
+          {/* Phase 8 (a.md #30): one placeholder at every width (it was cut to "Search by name or pos" on phones). */}
+          <EmployeeSearchInput query={filters.query} placeholder="Search people" />
         </label>
       </EmployeeDirectoryFilters>
       <p className="c-sr" role="status" aria-live="polite" aria-atomic="true">{filtered ? `${visibleEmployees.length} of ${employees.length} ${employees.length === 1 ? person : people}` : ""}</p>
@@ -107,12 +108,13 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
       {inactive.length && (all || !active.length) ? <CorpSection id="team-inactive" label={`Inactive (${inactive.length})`}><CorpCard as="div"><CorpRows label={`Inactive ${people}`}>{inactive.map(row)}</CorpRows></CorpCard></CorpSection> : null}
       <CorpCard as="div" ariaLabel="Team tools">
         <CorpRows label="Team tools">
-          <li><CorpRow href="/app?view=team" bold title="Hours this week" detail="Scheduled hours for each person" chevron /></li>
-          <li><CorpRow href="/app/availability" bold title="Availability" detail="Who can work, and when" chevron /></li>
-          {canImport ? <li><CorpRow href="/app/employees/import" bold title="Import a staff list" detail="Add many people at once" chevron /></li> : null}
+          {/* Phase 8 (a.md #39): each tool leads with its circle, as on the phone and in Things to do's rail. */}
+          <li><CorpRow href="/app?view=team" bold icon={<ChartBar className="c-ic" weight="bold" />} title="Hours this week" detail="Scheduled hours for each person" chevron /></li>
+          <li><CorpRow href="/app/availability" bold icon={<CalendarCheck className="c-ic" weight="bold" />} title="Availability" detail="Who can work and when" chevron /></li>
+          {canImport ? <li><CorpRow href="/app/employees/import" bold icon={<UploadSimple className="c-ic" weight="bold" />} title="Import a staff list" detail="Add many people at once" chevron /></li> : null}
           {/* Board G-O-Team: one row for both ways back in. Its page resets a password and, for an Owner, links to Employee PINs. */}
-          {recovery ? <li><CorpRow href="/app/account-recovery" bold title="Help someone sign in" detail={clockerRecovery ? "Reset a password or Clocker PIN" : "Reset a password or sign-in"} chevron /></li> : null}
-          {!all && employees.some(employee => !employee.active) ? <li><CorpRow href="/app/employees?all=1#team-inactive" bold title="Inactive people" detail={`${employees.filter(employee => !employee.active).length} no longer active`} chevron /></li> : null}
+          {recovery ? <li><CorpRow href="/app/account-recovery" bold icon={<Key className="c-ic" weight="bold" />} title="Help someone sign in" detail={clockerRecovery ? "Reset a password or Clocker PIN" : "Reset a password or sign-in"} chevron /></li> : null}
+          {!all && employees.some(employee => !employee.active) ? <li><CorpRow href="/app/employees?all=1#team-inactive" bold icon={<UserMinus className="c-ic" weight="bold" />} title="Inactive people" detail={`${employees.filter(employee => !employee.active).length} no longer active`} chevron /></li> : null}
         </CorpRows>
       </CorpCard>
     </CorpPage>

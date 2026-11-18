@@ -11,7 +11,9 @@ import styles from './not-found.module.css';
 /* The Clocker's own 404 (Phase 6, Nov 17, 2026): the public 404's band and its 560px state card, in the language chosen on
  * this tablet (the kiosk's saved choice; a tablet with none keeps the language the page was served in). It says who can
  * fix the link and what staff do meanwhile. A shared tablet never offers a personal sign-in, so the "Go to sign in" link
- * is gone; the one action reloads the link. The footer is the one legal line, passed in from the server for each language. */
+ * is gone; the one action reloads the link. The footer is the one legal line, passed in from the server for each language.
+ * Phase 8 (Nov 17, 2026): staff tell a manager, and the Owner sets the tablet up again (only an Owner can open Settings);
+ * the footer's links meet the kiosk's 56px floor in this page's own module, not in the shared public 404 sheet. */
 function Body({ legal }: { legal: Record<ClockerLocale, ReactNode> }) {
   const t = useClockerCopy(), { locale } = useClockerPresentation();
   return <main className="nf-page" lang={locale} data-clocker-not-found="">
@@ -22,11 +24,11 @@ function Body({ legal }: { legal: Record<ClockerLocale, ReactNode> }) {
     </header>
     <section className="nf-sheet" aria-labelledby="not-found-title">
       <div className="nf-card">
-        <p className={`not-found-hint ${styles.lead}`}><DeviceTabletIcon size={20} weight="bold" aria-hidden="true" /><span><strong>{t('A manager or Owner can fix it')}</strong> {t('They set up this tablet again with the current link, in Settings under Clocker tablets.')}</span></p>
+        <p className={`not-found-hint ${styles.lead}`}><DeviceTabletIcon size={20} weight="bold" aria-hidden="true" /><span><strong>{t('Tell a manager')}</strong> {t('Your Owner sets this tablet up again in Settings → Clocker tablets.')}</span></p>
         <p className={`not-found-text ${styles.meanwhile}`}>{t('Until then, ask a manager to record your time.')}</p>
         <button type="button" className={`nf-cta ${styles.retry}`} onClick={() => window.location.reload()}>{t('Try again')}</button>
       </div>
-      <footer className="nf-foot">{legal[locale]}</footer>
+      <footer className={`nf-foot ${styles.foot}`}>{legal[locale]}</footer>
     </section>
   </main>;
 }

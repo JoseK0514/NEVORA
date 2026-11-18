@@ -85,7 +85,9 @@
 .status[data-tone=ok] .dot { background: #7EF0C7; box-shadow: 0 0 0 3px rgb(126 240 199 / .25); }
 .status[data-tone=attn] .dot { background: #FFC46B; box-shadow: 0 0 0 3px rgb(255 196 107 / .25); }
 .statusLabel { font-size: var(--b-fs-body-sm); font-weight: 600; }
-.zone { grid-column: 2; font-size: .8125rem; color: var(--b-on-band); overflow-wrap: anywhere; }
+.zone, .device { grid-column: 2; font-size: .8125rem; color: var(--b-on-band); overflow-wrap: anywhere; }
+/* Phase 8 (#9): in landscape the tablet's name takes its own line under the time zone, so a long Spanish zone line never
+ * splits the name. */
 .powered { font-size: .8125rem; color: var(--b-on-band); }
 
 .task { position: relative; flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center;
@@ -106,7 +108,8 @@
   .date { font-size: 1.125rem; }
   .foot { margin-top: 14px; flex-direction: row; justify-content: flex-end; }
   .status { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: var(--b-space-8) var(--b-space-16); border-radius: var(--b-radius-pill); }
-  .zone::before { content: "· "; }
+  /* Phase 8 (#25): every separator has the same 10px on each side (the flex gap before, the margin after). */
+  .zone::before, .device::before { content: "·"; margin-inline-end: 10px; }
   .powered { display: none; }
   .task { flex: 0 0 auto; align-items: flex-end; margin-top: -64px; z-index: 1;
     padding: 0 max(32px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(32px, env(safe-area-inset-left)); }
@@ -127,7 +130,7 @@
   .clock { font-size: 4rem; }
   .clock > span { font-size: var(--b-fs-title); }
   .date { font-size: 1rem; }
-  .zone { display: none; }
+  .zone, .device { display: none; }
   .task { margin-top: -44px; padding: 0 max(14px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); }
   .card { padding: var(--b-space-24) var(--b-space-20) var(--b-space-20); }
 }
@@ -168,18 +171,21 @@
 .content[data-align=center] > .ring { margin-inline: auto; }
 
 /* Messages under a field or heading, with a clear icon. */
-.msg { display: flex; align-items: flex-start; gap: var(--b-space-8); margin: 10px 0 0; font-size: .9375rem; line-height: 1.4; font-weight: 600; color: var(--ck-red); text-align: left; overflow-wrap: anywhere; }
+.msg { display: flex; align-items: flex-start; gap: var(--b-space-8); margin: 10px 0 0; font-size: .9375rem; line-height: 1.4; font-weight: 600; color: var(--ck-red); text-align: left; overflow-wrap: anywhere; text-wrap: pretty; }
 .msg > svg { margin-top: 1px; }
 .msg[data-tone=amber] { color: var(--ck-amber); }
 .msg[data-tone=teal] { color: var(--ck-focus); font-weight: 500; }
 .msg[data-tone=grey] { color: var(--ck-grey); font-weight: 500; }
-.content[data-align=center] > .msg { justify-content: center; text-align: center; }
+/* Phase 8 (#12): a centred message is one centred paragraph whose icon leads its first line, so on two lines the icon still
+ * belongs to the text (it floated beside a centred block before). */
+.content[data-align=center] > .msg, .pinMsg { display: block; text-align: center; }
+.content[data-align=center] > .msg > svg, .pinMsg > svg { display: inline-block; margin: 0 6px 0 0; vertical-align: -3px; }
 /* In-context notices on the ready screens (soft box, information). */
 .note { display: flex; gap: var(--b-space-12); align-items: flex-start; margin: var(--b-space-16) 0 0; padding: 14px var(--b-space-16); border-radius: var(--b-radius-field); background: var(--ck-canvas); color: var(--ck-ink2); font-size: .9375rem; line-height: 1.45; text-align: left; overflow-wrap: anywhere; }
 .note > svg { margin-top: 1px; color: var(--ck-grey); }
 .note[data-tone=amber] { background: var(--ck-amber-wash); color: var(--ck-amber-ink); }
 .note[data-tone=amber] > svg { color: var(--ck-amber); }
-.note p { margin: 0; }
+.note p { margin: 0; text-wrap: pretty; }
 .note strong { display: block; margin-bottom: var(--b-space-2); font-weight: 700; text-wrap: balance; }
 
 /* Buttons: 56px pills (64px in portrait), press scale .96, hover only on hover-capable screens. */
@@ -201,11 +207,11 @@
 .stack { display: grid; gap: var(--b-space-12); width: 100%; margin-top: 22px; }
 .links { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0 var(--b-space-24); margin-top: 10px; }
 .link { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 56px; padding: 0 6px; border: 0; border-radius: var(--b-radius-pill); background: transparent; color: var(--ck-focus);
-  font-size: var(--b-fs-body); font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; }
+  font-size: var(--b-fs-body); font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; min-width: 56px; }
 .link:disabled { color: var(--ck-grey); cursor: not-allowed; }
 /* Leaving beside a state's own actions: a text link in the same stack, so every gap is 12px (NV-184). */
 .stack > .link { justify-self: center; }
-.clears { margin: var(--b-space-4) 0 0; font-size: var(--b-fs-meta); line-height: 1.35; color: var(--ck-grey); text-align: center; }
+.clears { margin: var(--b-space-4) 0 0; font-size: var(--b-fs-meta); line-height: 1.35; color: var(--ck-grey); text-align: center; text-wrap: balance; }
 .busy { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 14px 0 0; font-size: .875rem; color: var(--ck-grey); }
 .spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #D5DADC; border-top-color: var(--ck-focus); animation: ckSpin .9s linear infinite; }
 /* Continue while the PIN is checked: the busy state sits where the user pressed (NV-179). */
@@ -230,12 +236,12 @@
 /* The ring is a shadow, which forced colours drop; the transparent outline is what Windows High Contrast paints (RA-17). */
 .field textarea:focus { outline: 2px solid transparent; outline-offset: 2px; box-shadow: inset 0 0 0 2px var(--ck-focus); }
 .field textarea[aria-invalid=true] { box-shadow: inset 0 0 0 2px var(--ck-red); }
-.hint { margin: var(--b-space-8) 0 0; font-size: var(--b-fs-meta); line-height: 1.4; font-weight: 400; color: var(--ck-grey); text-align: left; }
+.hint { margin: var(--b-space-8) 0 0; font-size: var(--b-fs-meta); line-height: 1.4; font-weight: 400; color: var(--ck-grey); text-align: left; text-wrap: pretty; }
 .form { width: 100%; margin: 0; }
 .form fieldset { display: grid; gap: 0; border: 0; padding: 0; margin: 0; min-width: 0; }
 .form .btn { margin-top: 18px; }
 .meta { display: flex; align-items: center; justify-content: space-between; gap: var(--b-space-12); width: 100%; margin-top: 14px; }
-.meta p { margin: 0; font-size: var(--b-fs-meta); line-height: 1.4; color: var(--ck-grey); max-width: 26ch; text-align: left; }
+.meta p { margin: 0; font-size: var(--b-fs-meta); line-height: 1.4; color: var(--ck-grey); max-width: 26ch; text-align: left; text-wrap: pretty; }
 .meta[data-align=center] { justify-content: center; }
 
 /* ---------- PIN ---------- */
@@ -253,7 +259,7 @@
 .pin[data-shake=b] { animation: ckShakeB 220ms ease-in-out 1; }
 @keyframes ckShakeA { 0%, 100% { transform: none; } 20% { transform: translateX(-8px); } 40% { transform: translateX(7px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
 @keyframes ckShakeB { 0%, 100% { transform: none; } 20% { transform: translateX(-8px); } 40% { transform: translateX(7px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
-.pinMsg { justify-content: center; min-height: 2.8em; margin-top: var(--b-space-8); text-align: center; }
+.pinMsg { min-height: 2.8em; margin-top: var(--b-space-8); }
 .keys { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--b-space-12); width: 100%; margin-top: var(--b-space-16); }
 .key { display: grid; place-items: center; height: var(--ck-keyh); padding: 0; border: 0; border-radius: var(--b-radius-card); background: var(--ck-key); color: var(--ck-ink); box-shadow: inset 0 0 0 1px var(--ck-field);
   font-size: var(--b-fs-display); line-height: 1; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; cursor: pointer; transition: background-color 90ms ease, box-shadow 90ms ease; }
@@ -345,8 +351,10 @@
 @keyframes ckDraw { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
 .hero { margin: 6px 0 0; font-size: 3.5rem; line-height: 1.05; font-weight: 700; letter-spacing: -.04em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .bye { margin: var(--b-space-8) 0 0; font-size: 1.125rem; font-weight: 600; color: var(--ck-green); }
-.saved { margin: var(--b-space-12) 0 0; font-size: var(--b-fs-body-sm); line-height: 1.45; color: var(--ck-ink2); overflow-wrap: anywhere; text-wrap: pretty; }
+.saved { margin: var(--b-space-12) 0 0; font-size: var(--b-fs-body-sm); line-height: 1.45; color: var(--ck-ink2); overflow-wrap: anywhere; text-wrap: balance; }
 .saved time { font-weight: 600; color: var(--ck-ink); }
+/* Phase 8 (#11): the clear line is one piece, so a two-line saved line breaks between its two sentences. */
+.clearsIn { display: inline-block; }
 .countdown { display: block; width: 70%; height: 6px; margin: 18px auto 0; border-radius: 3px; background: var(--ck-green-wash); overflow: hidden; }
 .countdown > i { display: block; height: 100%; border-radius: 3px; background: var(--ck-green-fill); transform-origin: left; animation: ckClear 8s linear forwards; }
 @keyframes ckClear { from { transform: scaleX(1); } to { transform: scaleX(0); } }
@@ -355,6 +363,8 @@
 .reference summary::-webkit-details-marker { display: none; }
 .reference[open] summary svg { transform: rotate(180deg); }
 .reference code { display: block; margin: 0 auto; padding: 10px var(--b-space-12); max-width: 100%; border-radius: var(--b-radius-small); background: var(--ck-canvas); font-size: .8125rem; overflow-wrap: anywhere; }
+.reference code > span { display: block; }
+.refLabel { display: block; margin: 10px 0 6px; font-size: var(--b-fs-meta); color: var(--ck-grey); }
 
 /* ---------- recording ---------- */
 .doing { display: flex; align-items: center; justify-content: center; gap: var(--b-space-12); margin-top: var(--b-space-12); font-size: var(--b-fs-title); font-weight: 700; overflow-wrap: anywhere; }
@@ -362,18 +372,24 @@
 .progress > i { display: block; width: 38%; height: 100%; border-radius: 4px; background: var(--ck-focus); animation: ckRun 1.3s ease-in-out infinite; }
 @keyframes ckRun { from { transform: translateX(-105%); } to { transform: translateX(265%); } }
 
-/* ---------- saved-action help (handoff) ---------- */
+/* ---------- saved-punch help ----------
+ * Phase 8 (Nov 17, 2026): the link opens the help as its own card state (clocker-recovery.tsx), so nothing scrolls inside
+ * the card and Back is always in view. Asking the Owner stays the quiet button (Phase 6); the references sit behind the
+ * receipt's Reference disclosure. */
 .handoff { width: 100%; margin-top: var(--b-space-8); text-align: center; }
-.handoffPanel { margin-top: var(--b-space-8); padding: var(--b-space-16); border-radius: var(--b-radius-field); background: var(--ck-canvas); font-size: .9375rem; line-height: 1.45; color: var(--ck-ink2); text-align: left;
-  max-height: 40dvh; overflow-y: auto; overscroll-behavior: contain; }
-.handoffPanel p { margin: 0 0 10px; overflow-wrap: anywhere; }
-.handoffPanel ul { list-style: none; margin: var(--b-space-12) 0 0; padding: 0; display: grid; gap: 10px; }
-.handoffPanel li { display: grid; gap: var(--b-space-8); }
-.handoffPanel code { display: block; padding: 10px var(--b-space-12); border-radius: var(--b-radius-small); background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--ck-line); font-size: .75rem; overflow-wrap: anywhere; }
-.handoffPanel .btn { min-height: 56px; font-size: .9375rem; }
-/* The screen's one filled button is its own main action; asking the Owner is the quiet second (Phase 6). */
-.handoffPanel .btn[data-kind=secondary] { background: #FFFFFF; box-shadow: inset 0 0 0 1.5px var(--ck-line); }
-.handoffPanel .btn[data-kind=secondary]:disabled { color: var(--ck-grey); }
+.quietLine { margin: var(--b-space-8) auto 0; max-width: 40ch; font-size: .9375rem; line-height: 1.45; color: var(--ck-grey); text-align: center; text-wrap: balance; }
+.stack > .quietLine { margin: 0 auto; }
+/* An empty live line keeps its place in the stack for what it will say, without adding a gap. */
+.stack > .quietLine:empty { margin-top: calc(-1 * var(--b-space-12)); }
+.reference summary + .refLabel { margin-top: 0; }
+/* Check your last punch (#33): one measure and one size for every line; what to do now is ink, the count is grey. */
+.said { display: grid; gap: 6px; width: 100%; max-width: 40ch; margin: 10px auto 0; font-size: 1rem; line-height: 1.45; color: var(--ck-ink2); text-align: center; }
+.said p { margin: 0; max-width: none; text-wrap: pretty; overflow-wrap: anywhere; }
+.said > div { display: grid; gap: 6px; }
+.said [data-strong] { color: var(--ck-ink); font-weight: 600; }
+.said [data-quiet] { color: var(--ck-grey); font-size: .9375rem; }
+/* The paused page's action meets the kiosk floor (the billing pages' own action is 52px). */
+.pausedAction.pausedAction { min-height: 56px; }
 
 /* ---------- Windows High Contrast (forced colours; RA-17, Phase 6) ----------
  * Forced colours drop every shadow and repaint every fill, and the kiosk draws its edges, its PIN dots, its rings and
@@ -389,11 +405,14 @@
   .pin:focus-within, .idEntry input:focus-visible, .field textarea:focus { outline: 3px solid Highlight; outline-offset: 2px; }
   .slots > span { border: 2px solid CanvasText; forced-color-adjust: none; background: Canvas; box-shadow: none; }
   .slots > span[data-filled=true] { background: CanvasText; }
-  .card, .blocked, .other, .note, .facts, .handoffPanel, .privacy, .status, .workspace, .location, .companyLogo, .chip { border: 1px solid CanvasText; }
+  .card, .blocked, .other, .note, .facts, .privacy, .status, .workspace, .location, .companyLogo, .chip { border: 1px solid CanvasText; }
+  /* The state chip's dot is drawn in the system text colour, so "Clocked in" keeps its dot (#24). */
+  .chip::before { forced-color-adjust: none; background: CanvasText; }
   .ring, .check, .face, .actIcon { border: 2px solid CanvasText; }
   .band { border-right: 1px solid CanvasText; border-bottom: 1px solid CanvasText; }
   .dot { forced-color-adjust: none; background: CanvasText; box-shadow: none; }
-  .status .dot { background: CanvasText; }
+  /* The connected dot is system-coloured too, not its green (Phase 8, with #24). */
+  .status[data-tone=ok] .dot { background: CanvasText; box-shadow: none; }
   /* The amber dot is hollow, so the two states differ without colour; the label beside it says which. */
   .status[data-tone=attn] .dot { background: Canvas; border: 2px solid CanvasText; }
   .countdown, .progress { border: 1px solid CanvasText; }
@@ -420,9 +439,6 @@
 .content:has(> .privacy) .clears { visibility: hidden; }
 /* The privacy pill never covers a receipt. */
 .content:has([data-clocker-state=success]) > .privacy { display: none; }
-/* The saved-action link inline in the ready screen's link row; its panel takes the next line. */
-.handoff[data-inline] { display: contents; }
-.links > .handoffPanel, .handoff[data-inline] > .handoffPanel { flex: 1 0 100%; }
 /* A small landscape tablet (800x600; Phase 6): the whole PIN step, with Continue and the language switch, fits the
  * screen. After the component rules it adjusts, like the phone block below. Keys and buttons hold the 56px floor; only the gaps, the card's padding and the headline give way. */
 @media (orientation: landscape) and (max-height: 640px) and (min-width: 700px) {
@@ -437,7 +453,7 @@
   .pinForm .continue { margin-top: var(--b-space-8); }
   .meta { margin-top: 6px; }
   .ring { width: 52px; height: 52px; margin-bottom: 10px; }
-  .check { width: 72px; height: 72px; margin: var(--b-space-2) auto 14px; box-shadow: 0 0 0 8px var(--ck-green-wash); }
+  .check { width: 72px; height: 72px; margin: var(--b-space-12) auto 14px; box-shadow: 0 0 0 8px var(--ck-green-wash); }
   .check svg { width: 40px; height: 40px; }
   .hero { font-size: 2.75rem; }
   .acts { gap: 10px; margin-top: var(--b-space-16); }

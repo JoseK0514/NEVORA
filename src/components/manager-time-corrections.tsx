@@ -14,6 +14,8 @@ import {CorrectionComparison,PriorCorrectionDecisions} from './time-correction-c
 import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import {useManagerCorrectionRecovery} from './manager-correction-recovery';
 import {CorpTitle} from './corp/corp';
+import {BState} from './owner-b/b-kit';
+import Link from 'next/link';
 import {timeZoneLabel} from '@/lib/time-zone-label';
 export type CorrectionQueueConnection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
 const changedEvent='nevora:time-correction-changed';
@@ -111,7 +113,8 @@ export function ManagerTimeCorrectionsSurface({
             <button className="primary b-rowact b-rowact--go" type="button" aria-label={`Approve correction for ${item.employeeName}`} disabled={item.isSelf||busyId!==null||retry!==null} onClick={()=>onDecision(item,'APPROVE')}>Approve</button>
           </div>
         </article>)}
-      </div>:<div className="manager-corrections-empty" role="status"><span aria-hidden="true">✓</span><strong>Nothing to fix</strong><small>When someone asks to fix a time, it shows up here.</small></div>}
+      </div>:<div className="manager-corrections-state">{/* Phase 8 (a.md #10): the kit's empty state (grey tray, one line, one way on), left-aligned at a state card's width. */}
+        <BState kind="empty" title="Nothing to fix" line="When someone asks to fix a time, it shows up here." quiet={<Link className="b-link" href="/app/timecards">Go to Timecards</Link>}/></div>}
   </section></>;
 }
 

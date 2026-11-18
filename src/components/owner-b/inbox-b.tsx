@@ -19,6 +19,8 @@ import { conflictsFor } from "@/components/leave-staffing/conflict-check";
 import { MAX_STAFFING_WEEKS, weeksFor } from "@/lib/time-off-staffing/client";
 import { conflictShift } from "@/lib/time-off-staffing/present";
 import { reviewCopy } from "@/components/review-details/copy";
+import { ATTENDANCE_WORDS } from "@/lib/action-center/present";
+import { keepWhole } from "@/lib/keep-whole";
 import { BAvatar, BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack, BState, BWhen } from "./b-kit";
 
 /* Direction B, Things to do on a phone (mock screen "Owner · Things to do"). The same groups, rows, links and counts as the
@@ -33,8 +35,14 @@ type Filter = "all" | "card-open" | "review" | "card-requests";
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 const t = reviewCopy();
+/** Phase 8 (b.md #26, a.md #27): a time range ("12:00 PM – 8:00 PM"), a date ("Tue, Nov 24") and a time never split, and
+ * no line starts with " · " (keepWhole); the words between them still wrap, so a long line folds between its parts. */
+const S = "[\\s\\u00a0\\u2009\\u202f]*";
+const RANGE = new RegExp(`(\\d{1,2}(?::\\d{2})?)${S}([AP]M)${S}–${S}(\\d{1,2}(?::\\d{2})?)${S}([AP]M)`, "g");
+// The word joiner after the dash: an en dash allows a break after it even before a no-break space.
+const keepParts = (text?: string) => text === undefined ? text : keepWhole(text).replace(RANGE, "$1\u00a0$2\u00a0–\u2060\u00a0$3\u00a0$4");
 /** Phase 4 (U09): a row's further lines (the other shift of a swap, a cover request's result, who reviews it). */
-const subOf = (row: Row): ReactNode => row.lines?.length ? <>{row.detail}{row.lines.map(line => <span key={line} className="b-row__more">{line}</span>)}</> : row.detail;
+const subOf = (row: Row): ReactNode => row.lines?.length ? <>{keepParts(row.detail)}{row.lines.map(line => <span key={line} className="b-row__more">{keepParts(line)}</span>)}</> : keepParts(row.detail);
 const count = (group: Group) => group.count ?? group.rows.length;
 const familyCount = (family: Family) => family.groups.reduce((total, group) => total + count(group), 0);
 const requestIdOf = (item?: ActionItem) => { try { return item?.request ? new URL(item.request.reviewHref, "https://nevora.invalid").searchParams.get("requestId") : null; } catch { return null; } };
@@ -62,7 +70,8 @@ function kindIcon(id: string): { tone: "amber" | "teal" | "grey"; icon: ReactNod
   if (id === "cant-work") return { tone: "amber", icon: <UserMinusIcon weight="bold" /> };
   if (id.endsWith("corrections")) return { tone: "amber", icon: <ClockCounterClockwiseIcon weight="bold" /> };
   if (id === "closed-timecards") return { tone: "grey", icon: <ListChecksIcon weight="bold" /> };
-  if (id.endsWith("timecards")) return { tone: "teal", icon: <ListChecksIcon weight="bold" /> };
+  // Phase 8 (a.md #43): timecards whose period ended wait on you, so they are amber like every other decision.
+  if (id.endsWith("timecards")) return { tone: "amber", icon: <ListChecksIcon weight="bold" /> };
   if (id === "time-off" || id === "requests") return { tone: "amber", icon: <SunIcon weight="bold" /> };
   if (id === "plan") return { tone: "grey", icon: <CalendarBlankIcon weight="bold" /> };
   if (id === "earlier") return { tone: "grey", icon: <CheckIcon weight="bold" /> };
@@ -106,7 +115,8 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, exac
   for (const family of shown) for (const group of family.groups) cards.push(<GroupCard key={group.id} group={group} items={items} staffing={staffing} checked={checked} />);
   return <BScreen back={back}>
     <BHero back={back ? { href: "/app", label: "Home" } : undefined} title="Things to do" titleId="b-todo-title"
-      sub={needs === null ? undefined : <>{timecards ? `${needs} · ${plural(timecards, "timecard", "timecards").replace(" ", "\u00a0")} to approve` : needs}<span role="status" className="b-sr">{statusLine}</span></>}>
+      // Phase 8 (a.md #27): each fact on the band stays whole, so the line breaks only at " · " (never "to approve" alone).
+      sub={needs === null ? undefined : <>{timecards ? `${needs}\u00a0· ${`${plural(timecards, "timecard", "timecards")} to approve`.replace(/ /g, "\u00a0")}` : needs}<span role="status" className="b-sr">{statusLine}</span></>}>
       {families.length ? <BSeg label="Show" items={[
         // Review F5 (NV-103): each count is the segmented control's count pill; the name still reads "All, 13".
         { key: "all", label: total === null ? "All" : <>All<span className="c-count c-num">{total}</span></>, aria: total === null ? undefined : `All, ${total}`, current: filter === "all", onSelect: () => setFilter("all") },
@@ -132,7 +142,7 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, exac
           <BRow lead={<BIcon tone="grey"><SunIcon weight="bold" /></BIcon>} title="Time off requests" sub="Waiting and decided" href="/app/requests" />
           <BRow lead={<BIcon tone="grey"><ArrowsLeftRightIcon weight="bold" /></BIcon>} title="Shift requests" sub="Swaps and covers" href="/app/exchange" />
           {/* Nov 14, 2026 inspection (AR-9): who can work is one tap from the requests it helps decide. */}
-          <BRow lead={<BIcon tone="grey"><CalendarCheckIcon weight="bold" /></BIcon>} title="Availability" sub="Who can work, and when" href="/app/availability" />
+          <BRow lead={<BIcon tone="grey"><CalendarCheckIcon weight="bold" /></BIcon>} title="Availability" sub="Who can work and when" href="/app/availability" />
           <BRow lead={<BIcon tone="grey"><CheckIcon weight="bold" /></BIcon>} title="Later and done" sub={laterLine(later)} href="/app/inbox?view=more" label={`Later and done: ${laterLine(later).toLowerCase()}`} />
         </BList>
       </BCard>
@@ -173,10 +183,10 @@ function GroupCard({ group, items, staffing, checked, quiet }: { group: Group; i
       if (group.id === "repair") return <BRow key={row.key} lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={row.title}
         chip={row.value ? <BChip tone="amber">{row.value}</BChip> : <BChip tone="amber">Approved time off</BChip>} sub={row.detail} href={row.href} label={row.label}
         trail={<BButtonLink href={row.href} kind="ghost" label={`Fill shift: ${row.title}`}>Fill</BButtonLink>} />;
-      // Jose's attendance words (Nov 11, 2026): a shift in progress with no punch is "Not clocked in" (its chip says how
-      // long ago it started); "Missed" is only a shift that ended with no punch.
+      // Jose's attendance words (Nov 11, 2026): a shift in progress with no punch is "Not clocked in"; "Missed" is only a
+      // shift that ended with no punch. Phase 8 (a.md #11): the chip reads as Team's does ("Not clocked in · 49 min").
       if (group.id === "missed" || group.id === "not-clocked-in") return <BRow key={row.key} lead={<BAvatar name={row.title} ring="late" />} title={row.title}
-        chip={row.value ? <BChip tone="amber">{`Started ${row.value} ago`}</BChip> : undefined} sub={row.detail} href={row.href} label={row.label} />;
+        chip={row.value ? <BChip tone="amber">{`${ATTENDANCE_WORDS.notClockedIn} · ${row.value}`}</BChip> : undefined} sub={keepParts(row.detail)} href={row.href} label={row.label} />;
       const item = items.get(row.key);
       const requestId = group.id === "time-off" ? requestIdOf(item) : null;
       if (requestId) {
@@ -186,7 +196,7 @@ function GroupCard({ group, items, staffing, checked, quiet }: { group: Group; i
         const note = conflicts?.length ? <span className="b-leave-note" data-tone="amber"><WarningIcon weight="bold" aria-hidden="true" />{`On the schedule: ${conflictShift(conflicts[0])}${conflicts.length > 1 ? ` +${conflicts.length - 1}` : ""}`}</span>
           : conflicts ? null : <span className="b-leave-note">{!checked.has(requestId) ? "Check the schedule on its page" : staffing.status === "loading" ? "Checking the schedule…" : staffing.status === "expired" ? "Schedule check expired" : staffing.status === "paused" ? "Schedule check paused" : "Couldn’t check the schedule"}</span>;
         // Phase 3 (OW-012): a row with buttons has no chevron (the row itself opens the request); the buttons end the row.
-        return <BRow key={row.key} lead={<BAvatar name={row.title} />} title={row.title} sub={<>{row.detail}{note}</>} href={reviewHref} label={row.label} chevron={false}
+        return <BRow key={row.key} lead={<BAvatar name={row.title} />} title={row.title} sub={<>{keepParts(row.detail)}{note}</>} href={reviewHref} label={row.label} chevron={false}
           actions={<form action={reviewTimeOffAction}>
             <input type="hidden" name="requestId" value={requestId} /><input type="hidden" name="returnTo" value="inbox" /><input type="hidden" name="returnFilter" value="all" />
             <Decide name={row.title} approve={clear} reviewHref={reviewHref} />

@@ -128,7 +128,9 @@ describe("PB-016 and PB-037: the password pair", () => {
       expect(first).toContain(`<span class="ar-rule" id="${prefix}-password-hint" data-state="idle"><span class="ar-rule__mark" aria-hidden="true"><span class="ar-rule__dot"></span></span><span>${t.atLeast8}</span></span>`);
       expect(first).not.toContain(t.activation.passwordsMatch);
       expect(second).toContain(`<span class="ar-rule" id="${prefix}-confirm-password-hint" data-state="idle">`);
-      expect(second).toContain(t.activation.passwordsMatch);
+      // Phase 8: before the two match, the second rule is a requirement, never the statement that they match.
+      expect(second).toContain(t.activation.sameAsNew);
+      expect(second).not.toContain(t.activation.passwordsMatch);
       expect(second).not.toContain(t.atLeast8);
       expect(html).toMatch(new RegExp(`<input id="${prefix}-password"[^>]*aria-describedby="${prefix}-password-hint ${prefix}-password-invalid"`));
       expect(html).toMatch(new RegExp(`<input id="${prefix}-confirm-password"[^>]*aria-describedby="${prefix}-confirm-password-hint ${prefix}-confirm-password-invalid"`));
@@ -138,10 +140,11 @@ describe("PB-016 and PB-037: the password pair", () => {
       expect(html.match(/spellCheck="false"/g)).toHaveLength(2);
       expect(html).toMatch(new RegExp(`id="${prefix}-password"[^>]*enterKeyHint="next"`));
       expect(html).toMatch(new RegExp(`id="${prefix}-confirm-password"[^>]*enterKeyHint="go"`));
-      expect(html.match(new RegExp(`<button type="button" class="q-in__eye" aria-pressed="false" aria-controls="${prefix}-password ${prefix}-confirm-password" aria-label="${t.showPasswords}">`, "g"))).toHaveLength(2);
+      expect(html.match(new RegExp(`<button type="button" class="q-in__eye" aria-pressed="false" aria-controls="${prefix}-password ${prefix}-confirm-password" aria-label="${t.showPassword}">`, "g"))).toHaveLength(2);
       // Neither line ends in a full stop, and the rules are not a live region: nothing is read out on every key.
       expect(t.atLeast8).not.toMatch(/\.$/);
       expect(t.activation.passwordsMatch).not.toMatch(/\.$/);
+      expect(t.activation.sameAsNew).not.toMatch(/\.$/);
       expect(html).not.toMatch(/class="ar-rule"[^>]*aria-live/);
       expect(html).toContain('<span class="ar-sr" role="status" aria-live="polite"></span>');
     }
@@ -185,12 +188,12 @@ describe("the phone pages (mobile access) carry the same guidance", () => {
   it.each(LANGS)("request in %s: the step, what happens, the helper, and a refusal with its next step", lang => {
     const t = MOBILE_ACCESS_COPY[lang], u = ACCESS_COPY[lang].recovery, a = AUTH_COPY[lang];
     const html = phoneRequest(lang);
-    for (const line of [step(lang, 1), t.forgotTitle, t.forgotSub, ...u.before, a.recoveryEmailHint, t.requestRecovery, t.haveCode]) expect(html).toContain(line);
+    for (const line of [step(lang, 1), t.forgotTitle, t.forgotSub, u.intro, a.recoveryEmailHint, t.requestRecovery, t.haveCode]) expect(html).toContain(line);
     const refused = phoneRequest(lang, { message: UNAVAILABLE, supportReference: REFERENCE });
     expect(refused).toContain(authMessage(lang, UNAVAILABLE));
     expect(refused).toContain(`<span class="ar-alert__next">${u.next.requestFailed}</span>`);
     expect(refused).toContain(REFERENCE);
-    expect(refused).not.toContain("ar-before");
+    expect(refused).not.toContain("ar-intro");
     const offline = phoneRequest(lang, { message: OFFLINE_MESSAGE, supportReference: REFERENCE });
     expect(offline).toMatch(new RegExp(`id="recovery-offline" class="q-auth__alert q-auth__alert--wait" role="alert" tabindex="-1"><svg[^>]*>.*?</svg><span>${u.offline}</span>`));
     expect(offline).not.toContain(REFERENCE);

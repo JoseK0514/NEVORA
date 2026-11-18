@@ -81,9 +81,14 @@ describe('Unpaid periods first (A6, round 2 R3)', () => {
     expect(html).not.toContain('c-pay__unpaid');
     expect(html).not.toContain('Start with the oldest');
     expect(html).toContain('Periods with no payroll');
-    // One filled button on the page (the oldest period's); the current week's Prepare payroll is a teal text action.
-    const buttons = html.match(/<button[^>]*>Prepare payroll</g) ?? [];
+    // One filled button on the page (the oldest period's); the current week's Prepare is a teal text action. Phase 8
+    // (a.md #35): each Prepare says its period ("Prepare Sep 21 – 27"), as Payroll's own button does.
+    const buttons = html.match(/<button[^>]*>Prepare [A-Z][a-z]{2} \d/g) ?? [];
     expect(buttons.length).toBe(2);
+    expect(html).toContain(thin('>Prepare Sep 21 – 27<'));
+    expect(html).toContain(thin('>Prepare Oct 5 – 11<'));
+    // Phase 8 (a.md #15): a period's payday comes from the pay schedule, and a passed one says so.
+    expect(html).toContain('Scheduled payday was <span class="c-num">');
     expect(buttons.filter(button => /class="c-btn[ "]/.test(button))).toHaveLength(1);
     expect(buttons.find(button => /class="c-btn[ "]/.test(button))).toContain(thin('aria-label="Prepare payroll for Sep 21 – 27"'));
     expect(buttons.find(button => button.includes('c-pay__quiet-go'))).toContain(thin('aria-label="Prepare payroll for Oct 5 – 11"'));
@@ -99,7 +104,8 @@ describe('One status for the open period (R7)', () => {
     expect(html).not.toContain('Not prepared yet');
     // Nov 1 upscale: the row says the period and the payday, nothing else.
     expect(html).not.toContain('Prepare by payday');
-    expect(html).toMatch(/ · Payday <span class="c-num">[A-Z][a-z]{2}, Oct 16<\/span>/);
+    // Phase 8 (a.md #15): a date from the pay schedule is the "Scheduled payday".
+    expect(html).toMatch(/ · Scheduled payday <span class="c-num">[A-Z][a-z]{2}, Oct 16<\/span>/);
   });
   it('names Payroll history once, as the Recent payrolls link', () => {
     const html = home();
@@ -125,10 +131,12 @@ describe('Pay history (A11, round 2 R9)', () => {
     // One date format: "Oct 5 – 11", never "Oct 5 – Oct 11".
     expect(html).not.toContain('Oct 5 – Oct 11');
     // The correction comes before the statement it replaces.
-    expect(html.indexOf('· Correction</span>')).toBeLessThan(html.indexOf('Replaced by a correction'));
-    // One teal action per row (View); Download is a neutral icon button.
+    const statements = html.slice(html.indexOf('id="payroll-statements"'));
+    expect(statements.indexOf('· Correction</span>')).toBeLessThan(statements.indexOf('Replaced by a correction'));
+    // One teal action per row (View); Download is a labelled neutral pill (Phase 8, a.md #21), as DocumentRow draws it.
     expect(html.match(/c-pay__stmt-view/g)?.length).toBe(2);
-    expect(html.match(/c-pay__icon-btn/g)?.length).toBe(2);
+    expect(html.match(/c-pay__download"[^>]*>(?:<svg[\s\S]*?<\/svg>)Download</g)?.length).toBe(2);
+    expect(html).not.toContain('c-pay__icon-btn');
     // Two payroll rows for one week differ at a glance: the correction carries a "Correction" pill (Round 5, as on Payroll).
     expect(html).toMatch(new RegExp(thin('Oct 5 – 11') + '</span>[\\s\\S]*?>Correction<'));
   });
@@ -183,7 +191,12 @@ describe('Direction B phone screen (Payroll)', () => {
     expect(html).toContain('<h1 id="b-payroll-title" tabindex="-1">Payroll</h1>');
     expect(html).toContain('Up next · Weekly payroll');
     expect(html).toMatch(/class="b-step b-step--now"><span class="b-step__n" aria-hidden="true">1<\/span>/);
-    expect(html).toMatch(/class="b-btn b-btn--teal b-btn--full b-btn--big"[^>]*href="\/app\/payroll\/prepare"[^>]*>Prepare payroll<\/a>/);
+    // Phase 8 (a.md #35): before a draft exists the action names its period.
+    expect(html).toMatch(/class="b-btn b-btn--teal b-btn--full b-btn--big"[^>]*href="\/app\/payroll\/prepare"[^>]*>Prepare Oct 5 – 11<\/a>/);
+    // Phase 8 (a.md #28): no tile is a bare dash before the payroll holds amounts.
+    expect(html).toContain('>Scheduled payday</span>');
+    expect(html).not.toContain('>Gross</span>');
+    expect(html).not.toMatch(/b-live__v">—</);
     expect(html).toContain('<a class="b-card__a" href="/app/payroll/history">Payroll history</a>');
   });
 });
@@ -221,8 +234,8 @@ describe('Payroll scope and hand-offs (Nov 14 inspection)', () => {
     boundary.data = { ...boundary.data!, missingPeriods: [missing], backlog } as unknown as PayrollRunsResponse;
     const html = onlyB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="home" current={current} />));
     expect(html.match(/class="b-btn[ "]/g)).toHaveLength(1);
-    expect(html).toMatch(/class="b-btn b-btn--teal"[^>]*href="\/app\/payroll\/prepare#unpaid-2026-09-21"[^>]*>Prepare</);
-    expect(html).toMatch(/<a class="b-link c-pay__steplink"[^>]*href="\/app\/payroll\/prepare"[^>]*>Prepare payroll<\/a>/);
+    expect(html).toMatch(/class="b-btn b-btn--teal"[^>]*href="\/app\/payroll\/prepare#unpaid-2026-09-21"[^>]*>Prepare Sep 21\u2009–\u200927</);
+    expect(html).toMatch(/<a class="b-link c-pay__steplink"[^>]*href="\/app\/payroll\/prepare"[^>]*>Prepare Oct 5\u2009–\u200911<\/a>/);
   });
   it('tells the Owner what is still theirs once a payroll is approved, on Payroll and on Payroll details (PY-3)', () => {
     boundary.data!.runs = [nativeRun({ status: 'APPROVED', approvedAt: '2026-10-12T16:00:00Z' })];
@@ -322,7 +335,8 @@ it('the phone steps card lists Timecards as a step line before its action, and a
   const card = phone.slice(phone.indexOf('id="b-payroll-steps"'));
   expect(card).toMatch(/<a class="b-step b-step--link"[^>]*href="\/app\/timecards\?start=2026-11-09&amp;end=2026-11-15"/);
   expect(card.replace(/[\u00a0\u2009\u202f]/g, ' ')).toContain('aria-label="Timecards, Can be approved from Mon, Nov 16"');
-  expect(card.indexOf('b-step--link')).toBeLessThan(card.indexOf('Prepare payroll</a>'));
+  expect(card.indexOf('b-step--link')).toBeLessThan(card.search(/>Prepare [A-Z][a-z]{2} \d+\u2009–\u2009\d+<\/a>/));
+  expect(card.search(/>Prepare [A-Z][a-z]{2} \d+\u2009–\u2009\d+<\/a>/)).toBeGreaterThan(0);
   const original = nativeRun({ id: 'run-original', status: 'APPROVED' });
   boundary.data = { ...boundary.data, runs: [original, nativeRun({ id: 'run-c', correctionOf: 'run-original', correctionDelta: { totalNetMinor: '500', employees: [{ employeeId: 'E1', previousNetMinor: '100', netMinor: '100', deltaNetMinor: '0' }] } })] };
   const html = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="review" runId="run-c" />).replace(/\u00a0/g, ' ');

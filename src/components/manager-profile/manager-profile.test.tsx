@@ -48,7 +48,9 @@ describe('management profile contract', () => {
 describe('Owner and Manager Profile', () => {
   it('shows what today’s reads know at once, and says it is checking the rest', () => {
     const html = render(owner, null);
-    for (const text of ['Fictional Owner', 'Owner · Northside QA Workforce', 'Puerto Rico', 'Checking…']) expect(html).toContain(text);
+    for (const text of ['Fictional Owner', 'Puerto Rico', 'Checking…']) expect(html).toContain(text);
+    // Phase 8: the role and the company are two whole parts of one line (it broke inside "Northside Café / & Bakery").
+    expect(html).toContain('Owner</span><span class="eb-dots__p"><span class="eb-dots__sep" aria-hidden="true">·</span><span class="b-sr">, </span>Northside QA Workforce</span>');
     expect(html).not.toContain('role="switch"');
     // The read may still list the payroll topic (switched off); the page leaves it out without payroll.
     expect(render({ ...owner, payrollAlerts: false }, parseManagerProfile(fixture('owner'))).match(/role="switch"/g)).toHaveLength(4);

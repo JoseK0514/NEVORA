@@ -26,7 +26,8 @@ const { ScheduleCoverageLine } = await import("../schedule-coverage-line");
 const { CoverageFigures } = await import("../coverage-minutes/coverage-minutes");
 
 const t = reviewCopy();
-const text = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/[   ]/g, " ").replace(/\s+/g, " ").trim();
+// Phase 8: a word joiner keeps a range's dash with its end time; it is not read, so the text drops it.
+const text = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/[   ]/g, " ").replace(/\u2060/g, "").replace(/\s+/g, " ").trim();
 const zone = "America/Puerto_Rico";
 const shift = (id: string, status: TodayShift["status"], extra: Partial<TodayShift> = {}): TodayShift => ({ id, employeeId: id, employeeName: `Person ${id}`, locationId: "main", locationName: "Condado", positionName: "Barista",
   startAt: "2026-10-30T13:00:00Z", endAt: "2026-10-30T21:00:00Z", status, firstClockInAt: null, late: false, ...extra });
@@ -197,7 +198,7 @@ describe("U09: lateness on Home's On now", () => {
     expect(on).toContain("Person a 9:00 AM – 5:00 PM Clocked in late · 12 min");
     expect(on).toContain("Person b 9:00 AM – 5:00 PM Clocked in late PC Person c");
     expect(on).toContain("Person c 9:00 AM – 5:00 PM Clocked in late PD Person d");
-    expect(on).toContain("Person d 9:00 AM – 5:00 PM Working");
+    expect(on).toContain("Person d 9:00 AM – 5:00 PM Clocked in"); // Phase 8 (a.md #11): Team's live word
     // Nothing is worked out from the clock here: b arrived 9 minutes late, and no "9 min" appears.
     expect(on).not.toContain("9 min");
   });
@@ -300,7 +301,7 @@ describe("U09: Reports, scheduled against recorded by day", () => {
     expect(seen).toContain("Cover requests filled 1 of 3 seen");
     expect(seen).toContain(t.coverSeenExplain);
     const noneSeen = text(view(projectReports(source([], undefined, []))));
-    expect(noneSeen).toContain("No cover requests were seen this period.");
+    expect(noneSeen).toContain("No one asked for cover this period.");
     expect(noneSeen).not.toContain("Cover requests filled 0");
     const unread = text(view(projectReports(source([], undefined, [{ ...change("C9", "X9", "CREATED"), kind: "UNKNOWN" }]))));
     expect(unread).toContain("1 older shift change could not be read, so there may be more.");

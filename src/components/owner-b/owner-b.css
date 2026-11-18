@@ -165,7 +165,11 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-card__meta { font-size: 14px; color: var(--b-grey); white-space: nowrap; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-pill { display: inline-grid; place-items: center; min-width: 24px; height: 22px; padding: 0 var(--b-space-8); border-radius: var(--b-radius-pill); background: var(--b-teal-50); color: var(--b-teal); font-size: var(--b-fs-caption); font-weight: 700; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-card__body { padding: var(--b-space-4) var(--b-inset) var(--b-space-16); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-note { padding: var(--b-space-2) 6px; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
+/* Phase 8 (Nov 17, 2026): a note that qualifies a card is that card's footer, so it starts on the card's text edge: the
+ * card's inset plus its 1px edge (19px on a phone, 23px from 768px). It started 6px in and lined up with nothing. */
+:is(#c-root, html) .app-shell[data-nv-b] { --b-note-x: calc(var(--b-inset) + 1px); }
+@media (min-width: 768px) { :is(#c-root, html) .app-shell[data-nv-b] { --b-note-x: calc(var(--b-inset-wide) + 1px); } }
+:is(#c-root, html) .app-shell[data-nv-b] .b-note { padding: var(--b-space-2) var(--b-note-x); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-state { padding: 6px var(--b-inset) var(--b-space-16); font-size: 14px; color: var(--b-grey); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-li + .b-li { box-shadow: inset 0 1px 0 var(--b-line); }
 :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row, .b-row__hit) { display: flex; align-items: center; gap: var(--b-space-12); min-width: 0; }

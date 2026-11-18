@@ -24,8 +24,9 @@ export default async function SettingsLayout({ children }: { children: ReactNode
       const rules = await readSessionMutationProof()
         .then(async proof => !!proof && navigationForRole("MANAGER", undefined, { operational: await readOperationalAuthority(proof), modules: brand?.modules })
           .some(item => item.href === "/app/schedule/settings")).catch(() => false);
+      // Phase 8 (B #22): a name never breaks across two lines ("ask Jose" / "Natal."); "or" between two names still may.
       return <OwnerOnlyNotice state title="Settings" reason="Settings are for Owners"
-        line={<ClosedSettingsLine owner={ownerNames(owners)} rules={rules} locations={brand ? wordPreset(brand.words).en.locations : undefined} />}
+        line={<ClosedSettingsLine owner={ownerNames(owners.map(name => name.replace(/ /g, "\u00A0")))} rules={rules} locations={brand ? wordPreset(brand.words).en.locations : undefined} />}
         next={rules ? { href: "/app/schedule/settings", label: "Open Scheduling rules" } : undefined} />;
     }
     return <OwnerOnlyNotice title="Settings" reason="Settings are for Owners" help="Ask an Owner if you need a change here." ownersCan="change a setting for you" owners={owners} />;

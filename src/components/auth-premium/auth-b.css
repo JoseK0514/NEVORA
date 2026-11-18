@@ -449,7 +449,7 @@
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__alert.q-auth__alert--info > svg { color: var(--b-teal); }
 /* Receipts (PB-003, PB-004): the done mark, a 56px teal-wash circle with a bold check or envelope, leads the card on
  * every width; a receipt's lines keep a gap. */
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__mark { display: grid; place-items: center; width: 56px; height: 56px; margin: 0; border-radius: 50%; background: #E3F1EF; color: var(--b-teal); }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__mark { display: grid; place-items: center; width: 56px; height: 56px; margin: 0; border-radius: 50%; background: var(--b-teal-50); color: var(--b-teal); }
 /* A finish (a check) is done, and done is green in every part of the product: the app's success mark and the Clocker's
  * receipt use the same green (decided Nov 17, 2026). The envelope ("check your email") stays teal: it is information. */
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__mark.q-auth__mark--done { background: var(--b-green-50); color: var(--b-green); }
@@ -492,7 +492,7 @@
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__note.ar-next { margin-top: var(--b-space-12); text-align: center; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); }
 /* The steps line leads the card. On the band (phones and tablets) the card's first child is the steps line. */
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(form, .q-card) > .ar-steps { margin: 0 0 18px; }
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__form > .ar-before { margin-bottom: 18px; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__form > :is(.ar-before, .ar-intro) { margin-bottom: 18px; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__form > .ar-ref { margin-bottom: 18px; }
 
 /* ---------- Phase 5 (Nov 17, 2026): the sign-in page as the front door, and the shell every signed-out page shares ----------
@@ -500,19 +500,12 @@
  * redirects, cookies and limits are unchanged. This sheet keeps its own specificity ladder ("#ab-none" steps), so the
  * pages' own sheets (mobile Access, access and recovery) keep the precedence they have today. */
 
-/* PB-011, PB-010: the proof rows. On a desktop they are the brand panel's foot; Sign in repeats them under its links
- * on phones and tablets, where there is no panel. One of the two is displayed, never both. */
+/* PB-011, PB-010: the proof rows, the desktop brand panel's foot (phones and tablets keep the form and its links). */
 :is(#q-root, html) .q-auth .q-auth__proof { margin: 0; padding: 0; list-style: none; }
 :is(#q-root, html) .q-auth .q-auth__proof li { display: flex; align-items: flex-start; }
 :is(#q-root, html) .q-auth .q-auth__proof li > svg { flex: none; }
-:is(#q-root, html) .q-auth .q-auth__proof :is(a, b) { color: inherit; font-weight: 600; overflow-wrap: anywhere; }
-:is(#q-root, html) .q-auth .q-auth__proof a { text-decoration: underline; text-underline-offset: 3px; }
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__proof--page { display: grid; gap: 10px; width: fit-content; max-width: 100%; margin: var(--b-space-24) auto 0; padding: var(--b-space-20) var(--b-space-4) 0; border-top: 1px solid var(--b-line); text-align: left; }
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__proof--page li { gap: 10px; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); letter-spacing: 0; }
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__proof--page li > svg { width: 18px; height: 18px; color: var(--b-grey); }
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__proof--page a { padding-block: 14px; color: var(--b-ink2); }
+:is(#q-root, html) .q-auth .q-auth__proof b { color: inherit; font-weight: 600; overflow-wrap: anywhere; }
 @media (min-width: 1024px) {
-  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__proof--page { display: none; }
   :is(#q-root, html) .q-auth .q-auth__brand > .q-auth__proof { display: grid; gap: var(--b-space-16); }
   :is(#q-root, html) .q-auth .q-auth__brand > .q-auth__proof li { gap: var(--b-space-12); font-size: var(--b-fs-body); line-height: var(--b-lh-body); color: var(--b-on-band-2); }
   :is(#q-root, html) .q-auth .q-auth__brand > .q-auth__proof li > svg { margin-top: 1px; color: var(--b-on-band-2); }
@@ -521,7 +514,7 @@
 
 /* PB-015: the card holds the form and its one filled button. What else a page offers sits 24px under the card as teal
  * 15px/600 text links, centred, 20px apart, wrapping onto centred rows: a nav.q-auth__links, or a div.q-auth__under
- * that holds one (Sign in: the links, the Spanish language line, the proof rows), as the column's last child. */
+ * that holds one (Sign in: the links and the Spanish language line), as the column's last child. */
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__links:not(#ab-none) { column-gap: var(--b-space-20) !important; margin: var(--b-space-24) var(--b-space-16) 0 !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__under { display: flex; flex-direction: column; align-items: stretch; margin: var(--b-space-24) var(--b-space-16) 0; text-align: center; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__under > .q-auth__links:not(#ab-none) { margin: 0 !important; }
@@ -617,15 +610,13 @@
 }
 
 /* With mobile Access on (off in production) the page's content sits in one more wrapper, so Sign in's links were
- * inside the desktop card. The same rule holds there (PB-015): they hang under the card, on one centred row. On its
- * phones the proof rows keep their gap from the line above. */
+ * inside the desktop card. The same rule holds there (PB-015): they hang under the card, on one centred row. */
 @media (min-width: 1024px) {
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col .ma-outside:has(> .q-auth__links) { position: absolute; top: 100%; left: -56px; right: -56px; margin: var(--b-space-24) 0 0 !important; gap: 0 !important; text-align: center; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col .ma-outside > .q-auth__links:not(#ab-none) { margin: 0 !important; flex-direction: row !important; flex-wrap: wrap !important; justify-content: center !important; column-gap: var(--b-space-20) !important; row-gap: 0 !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col:has(.ma-outside > .q-auth__links) { margin-bottom: 104px !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col .ma-outside > .q-auth__langnote { margin-top: var(--b-space-8) !important; }
 }
-:is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-outside > .q-auth__proof--page { margin-top: var(--b-space-16) !important; }
 
 /* Welcome in short touch landscape: the illustration (.ma-hero) is not drawn there, so the band keeps its own 56px under
  * the header row, as on every other access page; the card's 40px rise lands on the band, never on the wordmark and the
@@ -637,3 +628,93 @@
 /* Reset finish (Phase 5 follow-up, Nov 17, 2026): one way on, the filled Sign in button. The frame's Sign in back link is
  * hidden once the password is updated, at every width and with mobile Access. */
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:has(:is(.ar-done, .ar-done__mark)) :is(.q-auth__back, .ma-back) { display: none !important; }
+
+/* ---------- Phase 8 (Nov 17, 2026): one header, one edge, one footer on every signed-out page ----------
+ * Review D of the final verification ($S/p8review/d.md rows 3, 5 to 9, 13, 14, 16, 18, 20, 21, 24). Presentation only.
+ * The "#p8" steps sit above every step of this sheet's ladder, so these rules win wherever they apply.
+ * - One band header on phones and tablets: the 104px wordmark and the language pill on a 44px row 16px under the status
+ *   area, the way back on its own row, then the title; everything on the card's text edge (the 16px gutter plus the
+ *   card's 20px), on Sign in and its sub-pages as on the policy pages and the 404 (rows 5, 14, 20).
+ * - The way back never wraps (row 3). The footer is SignedOutFooter's (row 6). */
+@media (max-width: 1023px) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) :is(.q-auth__top, .q-auth__col > .q-hd, .q-auth__col > div > .q-hd, .q-auth__col > form > .q-hd):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { padding-left: 36px !important; padding-right: 36px !important; }
+  /* Tablets read as phones: the wordmark and the language on the first row, the way back on the second. */
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__nav--rows:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: 44px auto; row-gap: var(--b-space-4); height: auto !important; padding: calc(var(--b-space-16) + env(safe-area-inset-top, 0px)) 36px 0 !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__nav--rows > .q-auth__back--bar:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { display: none !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__nav--rows > .q-auth__navmark:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { display: flex !important; grid-column: 1; grid-row: 1; justify-self: start; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__nav--rows > .q-auth__lang:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { grid-column: 2; grid-row: 1; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__nav--rows > .q-auth__back--row:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { display: inline-flex !important; position: relative; grid-column: 1 / -1; grid-row: 2; justify-self: start; min-height: 44px; margin-left: -2px; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__nav--rows, .q-auth__nav--back) > .q-auth__back--row::after { content: ""; position: absolute; inset: -2px -8px; }
+  /* Mobile Access phones: its header and the greeting on the band share the same edge. */
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .q-auth__col > .ma-only:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { padding-left: 20px !important; padding-right: 20px !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content > .q-auth__hd:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { padding-left: 36px !important; padding-right: 36px !important; }
+  /* Policy pages: the same 16px row under the status area; the reading card's content on the band's edge (20px). */
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .q-doc__top:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { padding: calc(var(--b-space-16) + env(safe-area-inset-top, 0px)) 20px var(--b-space-4) !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .q-list .q-row:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { padding: 0 20px !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .q-list .q-row:not(#p8a):not(#p8b):not(#p8c):not(#p8d)::after { left: 20px !important; right: 20px !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .q-doc__body:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { padding: 0 20px var(--b-space-16) !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc :is(.q-doc__promise, .q-doc__address, .pl-grp):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { margin-left: 20px !important; margin-right: 20px !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .pl-card:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { padding-left: 20px !important; padding-right: 20px !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .q-doc__note:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { padding-left: 20px !important; padding-right: 20px !important; }
+}
+/* One wordmark: 104px on every band (the policy pages drew it at 112px). */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .q-doc__top .brand-wordmark:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { width: 104px !important; }
+/* The way back: one row, never wrapped. On the policy pages it is the same single row at every width. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__back:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { white-space: nowrap; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__nav--back:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { display: flex; align-items: center; height: auto !important; min-height: 44px !important; padding: 0 20px !important; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__nav--back > .q-auth__back--row:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { display: inline-flex !important; position: relative; min-height: 44px; margin-left: -2px; }
+
+/* Desktop policy pages: the band's text on the reading column's 28px edge, the edge of the support rows, the reading
+ * card and the contents list (they were 20, 28, 32 and 22). */
+@media (min-width: 1024px) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .q-doc__top:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { padding: var(--b-space-16) 28px var(--b-space-4) !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .q-auth__nav--back:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { padding-left: 28px !important; padding-right: 28px !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .q-auth__col > .q-hd:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { padding-left: 28px !important; padding-right: 28px !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .pl-card:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { padding-left: 28px !important; padding-right: 28px !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .pl-toc h2:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { padding-left: 28px !important; padding-right: 28px !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .pl-toc ul:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { padding-left: var(--b-space-16) !important; padding-right: var(--b-space-16) !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .q-doc__note:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { padding-left: 28px !important; padding-right: 28px !important; }
+}
+/* The first card overlaps the band by 40px on every signed-out page, as Sign in's does on phones (rows 15). */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc :is(.pl-body, .q-doc__list):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { margin-top: 0 !important; }
+
+/* Support's safety note spans the column like the cards (row 9; one sentence, so no measure of its own). Policy text
+ * reads at about 70 characters a line: the old 68ch measured 90 to 95 in Inter (row 21). */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .q-doc__note:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { max-width: none !important; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc :is(.q-doc__promise, .q-doc__body :is(p, li), .pl-sec__body :is(p, ul)):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { max-width: 36em !important; }
+
+/* No line ends on one word: paragraphs, notes and list items wrap "pretty"; headings keep "balance" (rows 7, 8). */
+/* (Low specificity on purpose: a centred line that asks for "balance" keeps it.) */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :where(p, li, .q-auth__hint, .ar-rule > span) { text-wrap: pretty; }
+:is(#q-root, html) .q-auth__support { text-wrap: pretty; }
+
+/* A focused field draws one ring, the 2px outline 2px out; its own edge stays the resting one (row 16). */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-in:focus:not([aria-invalid="true"]):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { box-shadow: inset 0 0 0 1px #D5DADC !important; }
+
+/* Desktop: what sits under the card keeps to the card's width; Spanish links wrap onto a second centred row instead
+ * of hanging past its edges (row 18). The card keeps room under it for that second row, the Spanish line and the
+ * footer, which sits at the page's foot (74px) over the column's bottom margin: 24 + 92 + 16 + 74 for two rows of
+ * links, plus the Spanish line on Sign in, plus the open answer of "Can't use your email?". In the layer, because the
+ * recovery sheet's own reserve lives there. */
+@media (min-width: 1024px) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col > :is(.q-auth__links, .q-auth__under):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { left: 0 !important; right: 0 !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col .ma-outside:has(> .q-auth__links):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { left: 0 !important; right: 0 !important; }
+  @layer nv-b {
+    :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col:has(.q-auth__links > :nth-child(3)):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { margin-bottom: 208px !important; }
+    :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col:has(.q-auth__langnote):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { margin-bottom: 256px !important; }
+    :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col:has(.ar-under__more:not([hidden])):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { margin-bottom: 304px !important; }
+  }
+}
+
+/* Marks (row 24): one teal-50 for information, one 56px circle, centred at the head of its card on every width: the
+ * "check your email" envelope (teal), the reset and setup finishes (green). */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__card, .activation-success) > .q-auth__mark:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { margin: var(--b-space-4) auto 0 !important; }
+:is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-receipt-mark:not(#p8a):not(#p8b):not(#p8c):not(#p8d) { margin-left: auto !important; margin-right: auto !important; border-radius: 50% !important; background: var(--b-teal-50) !important; }
+/* Phones: the footer is two lines now (the owner, then the links on a 44px row), so the page keeps room for both under
+ * its last link (the reserve was 88px for 36px of footer). */
+@media (max-width: 767px) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc):not(#mobile-access-page):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { padding-bottom: calc(var(--q-safe-bottom, env(safe-area-inset-bottom, 0px)) + 112px) !important; }
+}
+/* A finish has one way on, its filled button: the frame's way back leaves on the reset finish and the setup finish
+ * alike. (One step above the header rules of this block, which show the back row on phones and tablets.) */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:has(:is(.ar-done, .ar-done__mark, .activation-success)) :is(.q-auth__back, .ma-back):not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { display: none !important; }

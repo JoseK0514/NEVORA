@@ -4,7 +4,7 @@ import {useMobilePresentation} from '@/components/mobile-access/use-mobile-prese
 import Link from 'next/link';
 import {MobileRecoveryReset} from './mobile-access/recovery-views';
 import {useEffect, useRef, type FormEventHandler, type RefCallback} from 'react';
-import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
+import {WarningIcon} from "@phosphor-icons/react/dist/ssr/Warning";
 import {AuthValidation, FieldInvalid} from './auth-premium/auth-validation';
 import {RecoverySubmit} from './recovery-submit';
 import {AUTH_COPY, authMessage, type AuthLang} from '@/lib/auth-copy';
@@ -61,10 +61,10 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
    <noscript><p className="q-help q-auth__alert">{t.resetNoScript}</p></noscript>
    <form className="q-auth__form" onSubmit={onSubmit}>
     <AuthValidation/>
-    <AccessSteps journey="recovery" current={3} lang={lang}/>
+    <AccessSteps journey="recovery" current={3} lang={lang} named={false}/>
     {message && issue === 'offline' ? <div id="reset-error" className="q-auth__alert q-auth__alert--wait" ref={feedback} role="alert" tabIndex={-1}><WifiSlashIcon size={20} weight="bold" aria-hidden="true"/><span>{u.offline}</span></div>
     : message ? <><div id="reset-error" className={`q-auth__receipt ${uncertain || issue === 'resetUnavailable' ? 'q-auth__receipt--wait' : 'q-auth__receipt--error'}`} ref={feedback} role="alert" tabIndex={-1}>
-     <h2><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/>{mismatch ? t.checkPasswords : invalid ? (linkProof ? t.reset.linkRefusedTitle : t.useNewCode) : uncertain ? t.checkSignInFirst : t.resetNotConfirmed}</h2>
+     <h2><WarningIcon size={20} weight="bold" aria-hidden="true"/>{mismatch ? t.checkPasswords : invalid ? (linkProof ? t.reset.linkRefusedTitle : t.useNewCode) : uncertain ? t.checkSignInFirst : t.resetNotConfirmed}</h2>
      <p>{invalid && linkProof ? t.reset.linkRefused : authMessage(lang, message)}</p>
      {next && !(invalid && linkProof) ? <p>{next}</p> : null}
      {invalid ? <Link className="q-link" href="/forgot-access">{t.requestNewCode}</Link> : null}

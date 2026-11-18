@@ -61,7 +61,9 @@ function requestDetail(item: ActionItem, fallback: string) {
   const dates = facts.startDate === facts.endDate ? dayText(facts.startDate) : `${dayText(facts.startDate)} – ${dayText(facts.endDate)}`;
   // Backend (Nov 15, 2026): a cover request says so (a swap's title already shows both people with ⇄).
   const cover = item.type === "EXCHANGE" && item.request?.exchangeKind === "COVERAGE" ? "Cover request · " : "";
-  return `${cover}${dates} · ${facts.partialDay ? `${hhmm(facts.partialDay.start)} – ${hhmm(facts.partialDay.end)}` : "All day"}`;
+  // Phase 8 (a.md #14): several whole days read as Time off requests says them ("3 days"); one day is "All day".
+  const days = Math.round((Date.parse(`${facts.endDate}T12:00:00Z`) - Date.parse(`${facts.startDate}T12:00:00Z`)) / 86_400_000) + 1;
+  return `${cover}${dates} · ${facts.partialDay ? `${hhmm(facts.partialDay.start)} – ${hhmm(facts.partialDay.end)}` : days > 1 ? `${days} days` : "All day"}`;
 }
 
 function itemRow(item: ActionItem, timeZone: string, calm = false): Row {
@@ -69,16 +71,18 @@ function itemRow(item: ActionItem, timeZone: string, calm = false): Row {
   const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, actionCenterNavigation(item).label, timeZone);
   const request = item.category === "requests";
   // Nov 14, 2026 inspection (BR-7): a shift request names both people when the read carries the other one. Phase 3
-  // (MG-012): the two names are joined by the swap sign, and a can't-work row says the day in its title ("James Ortiz
-  // can’t work Fri, Nov 20") over the shift's time and place.
+  // (MG-012): the two names are joined by the swap sign.
   const other = request ? item.request?.counterpartName : undefined;
   const who = request ? shown.person ?? shown.title : shown.title;
   const facts = request ? item.request : undefined;
   const callout = item.type === "CALLOUT" && facts && shown.person ? facts : null;
   // Phase 4 (U09): only a swap joins two names; a cover request is the requester's, and who picked it up is its result.
   const covering = item.type === "EXCHANGE" && item.request?.exchangeKind === "COVERAGE";
-  const title = callout ? `${who} can’t work ${facts!.startDate === facts!.endDate ? dayText(facts!.startDate) : `${dayText(facts!.startDate)} – ${dayText(facts!.endDate)}`}` : other && !covering ? `${who} ⇄ ${other}` : who;
-  const base = callout ? [callout.partialDay ? `${hhmm(callout.partialDay.start)} – ${hhmm(callout.partialDay.end)}` : "All day", callout.locationName].join(" · ")
+  // Phase 8 (a.md #13, b.md #44): a can't-work row's title is the person, like every other row; the card already says
+  // "Can't work", so the line under it is the day, the shift's time and its place.
+  const title = other && !covering ? `${who} ⇄ ${other}` : who;
+  const base = callout ? [callout.startDate === callout.endDate ? dayText(callout.startDate) : `${dayText(callout.startDate)} – ${dayText(callout.endDate)}`,
+    callout.partialDay ? `${hhmm(callout.partialDay.start)} – ${hhmm(callout.partialDay.end)}` : "All day", callout.locationName].join(" · ")
     : request ? requestDetail(item, shown.detail) : shown.detail;
   // Phase 4 (U09): the facts now carry both shifts of a swap and a cover request's status. A swap shows each shift on
   // its own line (date, time, place); a second shift the server withholds, or one the read doesn't carry, says so and
@@ -227,7 +231,8 @@ export function groupThingsToDo(snapshot: Extract<ActionCenter, { state: "ready"
   ];
   const asked: Group[] = [
     { id: "time-off", title: "Time off", rows: of(["TIME_OFF"], requests).map(item => itemRow(item, timeZone)) },
-    { id: "swaps", title: "Shift swaps", rows: of(["EXCHANGE"], requests).map(item => itemRow(item, timeZone)) },
+    // Phase 8 (a.md #14): the card holds swaps and cover requests, so it carries the page's name for both.
+    { id: "swaps", title: "Shift requests", rows: of(["EXCHANGE"], requests).map(item => itemRow(item, timeZone)) },
     { id: "cant-work", title: "Can’t work", rows: of(["CALLOUT"], requests).map(item => itemRow(item, timeZone)) },
     { id: "requests", title: "Other requests", rows: requests.filter(item => !known.includes(item.type)).map(item => itemRow(item, timeZone)) },
   ];

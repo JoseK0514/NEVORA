@@ -43,6 +43,7 @@ import {
 } from "@/lib/data/exchanges";
 import {readShiftChangeOperationView} from '@/lib/data/shift-change-views';
 import "../requests/owner-lists.css";
+import { workCopy } from "@/components/employee-b/work-copy";
 
 const ERROR_MESSAGES: Record<string, string> = {
   INVALID_SHIFT: "That shift is no longer available for exchange.",
@@ -222,7 +223,7 @@ export default async function ExchangePage({
             <div className="q-grp"><h2 id="sr-blocked">Not open to you yet</h2></div>
             <ul className="q-list">{blocked.map(shift => <QuietRow key={shift.id} title={<><span className="nv-sr">{marketplaceDate(shift.date)}, </span>{keepWhole(`${marketplaceDate(shift.date)} · ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`)}</>}
               detail={<span aria-label="Why you can’t pick this up">{(shift.reasons ?? []).join(" · ")}</span>} />)}</ul>
-            {session.role === "EMPLOYEE" || session.role === "LEAD" ? <ul className="q-list" style={{ marginTop: 16 }}><QuietRow href="/app/availability" title="Want more shifts?" detail="Update when you can work" /></ul> : null}
+            {session.role === "EMPLOYEE" || session.role === "LEAD" ? <ul className="q-list" style={{ marginTop: 16 }}><QuietRow href="/app/availability" title={workCopy().yourAvailability} detail={workCopy().availabilitySub} /></ul> : null}
           </section> : null}
         </> : view === "foryou" ? (incoming.length ? <ul className="q-list" style={{ marginTop: 16 }} aria-label="Swaps waiting for your answer">{incoming.map(exchange => (
           <SheetRow key={exchange.id} anchor={`request-${exchange.id}`} sheetTitle="Swap request" title={`${marketplaceDisplayName(exchange.requestedByName)} wants to swap`}

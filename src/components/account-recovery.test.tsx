@@ -34,7 +34,7 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
   expect(html.match(/minLength="8"/g)).toHaveLength(2);
   expect(html.match(/maxLength="1024"/g)).toHaveLength(2);
   expect(html).toContain('aria-controls="reset-password reset-confirm-password"');
-  expect(html).toContain('aria-label="Show passwords"');
+  expect(html).toContain('aria-label="Show password"');
   expect(html).toContain('Enable JavaScript to reset your password');
   expect(html).toContain('href="/forgot-access"');
   expect(html).not.toContain('href="/reset-access"');

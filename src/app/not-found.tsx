@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { BrandWordmark } from '@/components/brand-mark';
-import { QuietLegal } from '@/components/brand-legal';
+import { SignedOutFooter } from '@/components/auth-premium/signed-out-footer';
 import { LangSwitch } from '@/components/auth-premium/lang-switch';
 import { AUTH_COPY } from '@/lib/auth-copy';
 import { readAuthLang } from '@/lib/auth-lang.server';
@@ -30,8 +30,8 @@ export default async function NotFound() {
         <NotFoundHint title={words.hintTitle} body={words.hintBody}/>
         <Link href="/login" className="nf-cta">{words.cta}</Link>
       </div>
-      {/* Phase 5 (PB-035): one VELANI line, the sign-in pages' legal line. */}
-      <footer className="nf-foot"><QuietLegal lang={lang}/></footer>
+      {/* Phase 5 (PB-035): one VELANI line. Phase 8: the footer every signed-out page shares. */}
+      <footer className="nf-foot"><SignedOutFooter lang={lang}/></footer>
     </section>
   </main>;
 }

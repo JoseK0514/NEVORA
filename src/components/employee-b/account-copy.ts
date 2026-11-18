@@ -14,7 +14,7 @@ const words = {
     swapForYou: 'Swap request waiting for you', coverForYou: 'Cover request waiting for you', requestForYou: 'Shift request waiting for you',
     requestClosed: 'Shift request closed', requestUpdated: 'Shift request updated',
     availabilityDue: 'Send your availability', availabilitySent: 'Availability sent', availabilityReminder: 'Availability reminder',
-    updateToAcknowledge: 'Team update to acknowledge', updateShared: 'New team update',
+    updateToAcknowledge: 'Acknowledge the team update', updateShared: 'New team update',
     // Payroll scope: a statement is shared, never "paid".
     payStatementShared: 'Pay statement shared',
     weekOf: (day: string) => `Week of ${day}`, from: (name: string) => `From ${name}`,
@@ -30,6 +30,13 @@ const words = {
     roleEmployee: 'Employee', roleLead: 'Lead',
     // Page not found
     openSchedule: 'Open Schedule',
+    // Phase 8 (review C, copy table): More's Updates row and Profile's alerts row say what they are for.
+    updatesSub: 'Messages for your team',
+    alertsSub: 'Turn alerts on or off',
+    // Phase 8 (review C, row 19): one verb for an update that needs you.
+    toAcknowledge: 'To acknowledge', otherUpdates: 'Other updates',
+    // Phase 8 (review C, row 18): the same notice sent more than once, folded into one row.
+    folded: (n: number) => `${n} notifications`,
   },
   es: {
     schedulePublished: 'Horario publicado', scheduleUpdated: 'Horario actualizado', scheduleConfirm: 'Confirme su horario',
@@ -39,7 +46,7 @@ const words = {
     swapForYou: 'Solicitud de cambio en espera de su respuesta', coverForYou: 'Solicitud de cobertura en espera de su respuesta', requestForYou: 'Solicitud de turno en espera de su respuesta',
     requestClosed: 'Solicitud de turno cerrada', requestUpdated: 'Solicitud de turno actualizada',
     availabilityDue: 'Envíe su disponibilidad', availabilitySent: 'Disponibilidad enviada', availabilityReminder: 'Recordatorio de disponibilidad',
-    updateToAcknowledge: 'Aviso del equipo por confirmar', updateShared: 'Nuevo aviso del equipo',
+    updateToAcknowledge: 'Confirme el aviso del equipo', updateShared: 'Nuevo aviso del equipo',
     payStatementShared: 'Comprobante de pago compartido',
     weekOf: (day: string) => `Semana del ${day}`, from: (name: string) => `De ${name}`,
     shifts: (n: number) => n === 0 ? 'Sin turnos para usted' : `${n} ${n === 1 ? 'turno' : 'turnos'}`,
@@ -50,6 +57,10 @@ const words = {
     personalNote: 'Su gerente mantiene estos datos al día.', deleteTitle: 'Eliminar mi cuenta', deleteSub: 'Termina su acceso a este espacio de trabajo', signOut: 'Cerrar sesión',
     roleEmployee: 'Empleado', roleLead: 'Líder',
     openSchedule: 'Abrir Horario',
+    updatesSub: 'Mensajes para su equipo',
+    alertsSub: 'Active o desactive las alertas',
+    toAcknowledge: 'Por confirmar', otherUpdates: 'Otros avisos',
+    folded: (n: number) => `${n} notificaciones`,
   },
 } satisfies Record<AccountLang, Record<string, unknown>>;
 

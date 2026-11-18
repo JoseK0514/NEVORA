@@ -129,7 +129,7 @@
   :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-seg:has(> :nth-child(3)) > * { font-size: var(--b-fs-meta); letter-spacing: -0.01em; padding: 0 var(--b-space-4); }
 }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .es-empty-state__a { display: flex; justify-content: center; margin: -8px 0 10px; }
-:is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-note { padding: var(--b-space-2) var(--b-inset); }
+:is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-note { padding: var(--b-space-2) var(--b-note-x, var(--b-inset)); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen { margin-top: 0 !important; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen.b-screen.b-screen.b-screen.b-screen { margin-top: 0 !important; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty .b-ico { width: 48px; height: 48px; margin-bottom: var(--b-space-4); border-radius: var(--b-radius-pill); }

@@ -386,14 +386,19 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
     html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] { margin: var(--b-space-12) 0 0 !important; padding: var(--b-seg-pad) !important; border: 0 !important; border-radius: var(--b-seg-r) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
     html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg + * { margin-top: var(--b-space-40) !important; }
   }
+  /* Phase 8 (Nov 17, 2026): from 768px the search and the filter share one row at every width: the search takes what the
+   * filter leaves (at most 520px) and the filter keeps its labels, 12px apart, both 44px tall. The row sits 20px under
+   * the title block, the band ends 32px under it and the people card starts 24px under the band. In a flex row that
+   * wrapped, the filter fell under the search with no gap and hung off the band's edge under about 760px of content. */
   @media (min-width: 768px) {
     /* (id steps: it orders after owner-b-desktop.css's band rule, which has them) */
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page > .q-hd:has(~ .wc-content > .c-pins > .c-pins__search) { border-image-outset: 240px 100vw 130px 100vw !important; }
-    html body .app-shell[data-nv-b] .q-page > .wc-content:has(> .c-pins > .c-pins__search) { margin-top: 52px !important; }
-    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins { display: flex !important; flex-flow: row wrap !important; align-items: flex-start !important; column-gap: var(--b-space-12) !important; row-gap: var(--b-space-12) !important; padding: 0 !important; }
-    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > * { flex: 1 1 100% !important; min-width: 0 !important; }
-    html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search { flex: 0 1 520px !important; height: 46px !important; min-height: 46px !important; margin: 0 !important; padding: 0 var(--b-space-16) !important; border: 0 !important; border-radius: var(--b-radius-pill) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; color: var(--b-on-band) !important; }
-    html body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] { flex: none !important; width: auto !important; height: var(--b-seg-h) !important; margin: 0 0 36px var(--b-space-12) !important; padding: var(--b-seg-pad) !important; border: 0 !important; border-radius: var(--b-seg-r) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page > .q-hd:has(~ .wc-content > .c-pins > .c-pins__search) { border-image-outset: 240px 100vw 96px 100vw !important; }
+    html body .app-shell[data-nv-b] .q-page > .wc-content:has(> .c-pins > .c-pins__search) { margin-top: var(--b-space-20) !important; }
+    :is(#c-root, html) body .app-shell[data-nv-b] .q-page > .wc-content > .c-page.c-embed.c-pins { display: grid !important; grid-template-columns: minmax(0, 520px) auto minmax(0, 1fr) !important; align-items: center !important; column-gap: var(--b-space-12) !important; row-gap: 0 !important; padding: 0 !important; }
+    :is(#c-root, html) body .app-shell[data-nv-b] .q-page > .wc-content > .c-page.c-embed.c-pins > * { grid-column: 1 / -1 !important; min-width: 0 !important; }
+    :is(#c-root, html) body .app-shell[data-nv-b] .q-page > .wc-content > .c-page.c-embed.c-pins > .c-pins__search { grid-column: 1 !important; grid-row: 1 !important; box-sizing: border-box !important; width: 100% !important; height: var(--b-seg-h) !important; min-height: var(--b-seg-h) !important; margin: 0 !important; padding: 0 var(--b-space-16) !important; border: 0 !important; border-radius: var(--b-radius-pill) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; color: var(--b-on-band) !important; }
+    :is(#c-root, html) body .app-shell[data-nv-b] .q-page.wc-page > .wc-content > .c-page.c-embed.c-pins > .c-seg.c-pins__seg[role="group"] { grid-column: 2 !important; grid-row: 1 !important; flex: none !important; width: auto !important; height: var(--b-seg-h) !important; margin: 0 !important; padding: var(--b-seg-pad) !important; border: 0 !important; border-radius: var(--b-seg-r) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; }
+    :is(#c-root, html) body .app-shell[data-nv-b] .q-page > .wc-content > .c-page.c-embed.c-pins > .c-pins__seg + * { margin-top: 56px !important; }
     html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__seg > button { height: var(--b-seg-item-h) !important; min-height: var(--b-seg-item-h) !important; padding: 0 var(--b-seg-item-px) !important; border-radius: var(--b-seg-item-r) !important; }
   }
   html body .app-shell[data-nv-b] .q-page > .wc-content > .c-pins > .c-pins__search :is(.c-ic, input) { color: var(--b-on-band) !important; }
@@ -576,8 +581,8 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
     }
     html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar #desktop-primary-navigation .nav-link.active { background: transparent !important; }
     html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar #desktop-primary-navigation .nav-link > .c-nav-pending { display: none !important; }
-    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar .sidebar-help-link { width: 72px !important; min-height: 56px !important; gap: var(--b-space-2) !important; border-radius: var(--b-radius-field) !important; font-size: 10.5px !important; line-height: 13px !important; }
-    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar :is(#desktop-primary-navigation .nav-link .nav-icon, .sidebar-help-link > svg) { box-sizing: content-box !important; flex: none !important; width: 20px !important; height: 20px !important; padding: 5px 18px !important; border-radius: var(--b-radius-pill) !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar .sidebar-help-link { width: 72px !important; min-height: var(--bs-rail-entry, 56px) !important; gap: var(--b-space-2) !important; border-radius: var(--b-radius-field) !important; font-size: 10.5px !important; line-height: 13px !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar :is(#desktop-primary-navigation .nav-link .nav-icon, .sidebar-help-link > svg) { box-sizing: content-box !important; flex: none !important; width: 20px !important; height: 20px !important; padding: var(--bs-rail-pill-py, 5px) 18px !important; border-radius: var(--b-radius-pill) !important; }
     html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar :is(#desktop-primary-navigation .nav-link.active .nav-icon, .sidebar-help-link[aria-current="page"] > svg) { background: var(--b-teal-50) !important; }
     html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar .sidebar-help-link[aria-current="page"] { background: transparent !important; }
     html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar :is(#desktop-primary-navigation .nav-link, .sidebar-help-link) .nav-label {
@@ -748,4 +753,99 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
 @media (forced-colors: active) {
   html body .app-shell[data-nv-b] :is(.c-page, .q-page, .b-screen) select:not([multiple]),
   html body .app-shell[data-nv-b] :is(.b-search, .c-team-search__field, .c-pins__search, .b-glass, .b-btn--glass, .b-seg > [aria-current="page"], .b-seg > [aria-pressed="true"], .b-filters > [aria-pressed="true"]) { outline: 1px solid ButtonText; outline-offset: -1px; }
+}
+
+/* ---------- Phase 8 (Nov 17, 2026): short windows (src/lib/b-viewport.ts B_WIDE_SHORT) ----------
+ * A phone held sideways (844×390, 932×430) or a desktop window 500px tall or less keeps the tablet layout, but the band
+ * and the rail turn compact so the page keeps the screen: the band carries the title and one line or its strip, and the
+ * first card shows on the first screen. The approved desktop and tablet frame is unchanged at normal heights: every value
+ * below is either a frame token on the shell or a private hook (--bs-*) whose fallback is the normal value.
+ *
+ * The band: the title starts 12px under the top bar (76, or 118 under a back link), so the ladder becomes 150 (a title
+ * alone), 190 (a back link, a title and a line), 258 (a strip, the first card still lifting 52px) and 276 (figures). A
+ * line under a title that also carries a strip, a greeting over Home's title and the short line under each figure are
+ * kept for screen readers and drawn only at normal heights; Payroll's scope sentence stays (its tabs and its two sibling
+ * pages keep the sentence's room, as they do at every height). Home's title is the page title's size, and the figures
+ * are one label and one value. */
+@media (min-width: 768px) and (max-height: 500px) {
+  html body .app-shell[data-nv-b] {
+    --b-title-top: 76px; --b-title-top-back: 118px;
+    --b-band-short: 150px; --b-band-sub: 190px; --b-band-strip: 258px; --b-band-figures: 276px;
+    --bs-frame-top: var(--b-space-12); --bs-pay-head: 63px;
+    --bs-big-fs: 32px; --bs-big-lh: 38px; --bs-live-gap: var(--b-space-16); --bs-tile-pad: 10px var(--b-space-16);
+    --bs-fig-fs: 22px; --bs-fig-lh: 28px; --bs-figtitle-h: 38px; --bs-live-h: 0px;
+    --bs-rail-entry: 48px; --bs-rail-pill-py: 3px;
+  }
+}
+@layer nv-b {
+  @media (min-width: 768px) and (max-height: 500px) {
+    :is(#c-root, html) body .app-shell[data-nv-b] :is(
+      .c-page:is(.c-sched, .c-tc, .c-team) > header.c-title .c-title__sub,
+      .q-page > .q-hd:has(+ :is(nav.c-seg, .c-seg, .updates-inbox, section[data-private-view="notifications"])) > p,
+      .q-page > .q-hd:has(~ .wc-content > .c-pins > .c-pins__search) > p,
+      .b-screen .b-hero:has(> :is(.b-seg, .eb-tools, .b-week, .eb-id)) .b-title__text > .b-sub,
+      .b-screen .b-hero .b-title--big .b-eyebrow,
+      .b-screen .b-hero .b-live__m) {
+      position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important;
+      overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important;
+    }
+    /* Home's date over its figures (drawn for sight only, aria-hidden) steps aside with the greeting. */
+    :is(#c-root, html) body .app-shell[data-nv-b] .b-screen .b-hero > .b-hrow:has(> .b-date) { display: none !important; }
+  }
+
+  /* The rail on a short tablet window (768 to 1023px wide): every entry keeps its icon, its label and a 48px target, in a
+   * tighter rhythm (48px entries, the workspace tile 12px from the top, Help 4px from the foot). The list still holds more
+   * than the window, so it scrolls: a fade over the cut entry and a caret say there is more (app-shell.tsx marks the edge
+   * that has more), and the current page is scrolled clear of the fade on load, on a new page and on a resize. */
+  @media (min-width: 768px) and (max-width: 1023px) and (max-height: 500px) {
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar { padding-bottom: var(--b-space-4) !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar .cm-org { margin-top: var(--b-space-12) !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar .sidebar-nav { margin-top: var(--b-space-8) !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar .sidebar-nav-group { gap: 0 !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar .sidebar-nav-group + .sidebar-nav-group { margin-top: var(--b-space-4) !important; padding-top: 5px !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar :is(#desktop-primary-navigation .nav-link, .sidebar-help-link) { padding-top: 3px !important; padding-bottom: 3px !important; }
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar .sidebar-help-link { margin-top: var(--b-space-4) !important; }
+  }
+  /* A sidebar or rail that scrolls says so, at every height from 768px: the edge with more entries fades into the rail's
+   * own white, and the bottom edge carries a grey caret. Nothing changes while the list fits. */
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b] aside.sidebar #desktop-primary-navigation { scroll-padding-block: 40px !important; }
+    html body .app-shell[data-nv-b] aside.sidebar #desktop-primary-navigation > .sidebar-more { display: none !important; }
+    html body .app-shell[data-nv-b] aside.sidebar #desktop-primary-navigation:is([data-more-above], [data-more-below]) > .sidebar-more {
+      position: sticky !important; z-index: 6 !important; display: grid !important; place-items: center !important; flex: none !important; align-self: stretch !important;
+      width: auto !important; height: 36px !important; margin: 0 !important; pointer-events: none !important; color: var(--b-grey) !important;
+    }
+    html body .app-shell[data-nv-b] aside.sidebar #desktop-primary-navigation[data-more-above] > .sidebar-more--top { top: 0 !important; height: 28px !important; margin-bottom: -28px !important; background: linear-gradient(to top, rgb(251 252 252 / 0), #FBFCFC 12px) !important; }
+    html body .app-shell[data-nv-b] aside.sidebar #desktop-primary-navigation[data-more-below] > .sidebar-more--bottom { bottom: 0 !important; margin-top: -36px !important; place-items: end center !important; padding-bottom: 3px !important; background: linear-gradient(to bottom, rgb(251 252 252 / 0), #FBFCFC 16px) !important; }
+    html body .app-shell[data-nv-b] aside.sidebar #desktop-primary-navigation:not([data-more-above]) > .sidebar-more--top,
+    html body .app-shell[data-nv-b] aside.sidebar #desktop-primary-navigation:not([data-more-below]) > .sidebar-more--bottom { display: none !important; }
+    html body .app-shell[data-nv-b] aside.sidebar #desktop-primary-navigation > .sidebar-more svg { width: 16px !important; height: 16px !important; }
+  }
+  /* Delete account on a phone hides the tab bar, the bell and the avatar (DESIGN.MD B6), for every role: the Owner's and
+   * Manager's form showed the tab bar, the Employee's form the bell and the avatar on its band. */
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b]:has(.q-page.q-delete, .c-page.em-delete) .mobile-nav { display: none !important; }
+    html body .app-shell[data-nv-b]:has(.q-page.q-delete, .c-page.em-delete) .mobile-header .mobile-header-actions { visibility: hidden !important; }
+  }
+  /* An Owner's or Manager's pushed Direction B screen on a phone (a closed page, Later and done) shows its way back and
+   * its name only, as every other pushed page does (they hide the shell's header); the bell and the avatar sat beside the
+   * back link. A page that asks for a tab page's header (the signed-in 404, QA D16) keeps it. */
+  @media (max-width: 767px) {
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:not([data-employee-mobile]):not([data-corp-root]):has(.c-page > .b-screen--back) .mobile-header .mobile-header-actions { visibility: hidden !important; }
+  }
+  /* Updates on an Owner's or Manager's phone: its list starts 16px under the band like Notifications' (the list's own 16px
+   * top margin put it 32px under). */
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page > .q-hd + section > .cm-updates-hold > .updates-list:first-child { margin-top: 0 !important; }
+  }
+  /* The bell's unread mark on an Owner's or Manager's phone band is the coral dot ringed in white, as on tablets, desktop
+   * and the Employee's phone (DESIGN.MD B1: "a coral dot at every width"). The dot's rule in owner-b-shell.css sat outside
+   * this layer and lost to corp-shell.css, so phones drew a teal numbered badge. The number stays in the bell's label. */
+  @media (max-width: 767px) {
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:not([data-employee-mobile]):has(.c-page > .b-screen) .mobile-header .portal-notification-count {
+      position: absolute !important; top: 11px !important; right: 12px !important; left: auto !important; bottom: auto !important; display: block !important; box-sizing: border-box !important;
+      width: 8px !important; height: 8px !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 4px !important;
+      background: var(--b-coral) !important; box-shadow: 0 0 0 2px var(--b-on-band) !important; font-size: 0 !important; line-height: 0 !important; color: transparent !important; overflow: hidden !important; transform: none !important; translate: none !important;
+    }
+  }
 }

@@ -2,7 +2,7 @@
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {describe, expect, it} from 'vitest';
-import {B_DESKTOP, B_PHONE, B_TABLET, B_WIDE} from '@/lib/b-viewport';
+import {B_DESKTOP, B_PHONE, B_SHORT, B_TABLET, B_WIDE, B_WIDE_SHORT} from '@/lib/b-viewport';
 
 const root = join(__dirname, '..', '..');
 const B_SHEETS = [
@@ -15,6 +15,9 @@ const B_SHEETS = [
 ];
 const css = (path: string) => readFileSync(join(root, path), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
 const viewportFeatures = (query: string) => query.match(/\((?:min|max)-width:\s*\d+px\)/g) ?? [];
+/** Evaluates an "and" list of min/max width and height features for one window size. */
+const matchMediaQuery = (query: string, width: number, height: number) => [...query.matchAll(/\((min|max)-(width|height):\s*(\d+)px\)/g)]
+  .every(([, bound, axis, value]) => { const size = axis === 'width' ? width : height; return bound === 'min' ? size >= Number(value) : size <= Number(value); });
 
 describe('Direction B viewport alias (NV-274)', () => {
   it('defines a phone held sideways as wide, not as a phone', () => {
@@ -23,10 +26,24 @@ describe('Direction B viewport alias (NV-274)', () => {
     expect(B_TABLET).toBe(`${B_WIDE} and (max-width: 1023px)`);
     expect(B_DESKTOP).toBe('(min-width: 1024px)');
   });
-  it.each(B_SHEETS)('%s asks only the alias breakpoints, never height or orientation', path => {
+  it('defines a short window as a refinement of wide screens only (Phase 8)', () => {
+    expect(B_SHORT).toBe('(max-height: 500px)');
+    expect(B_WIDE_SHORT).toBe(`${B_WIDE} and ${B_SHORT}`);
+    expect(matchMediaQuery(B_WIDE_SHORT, 844, 390)).toBe(true);
+    expect(matchMediaQuery(B_WIDE_SHORT, 932, 430)).toBe(true);
+    expect(matchMediaQuery(B_WIDE_SHORT, 1440, 900)).toBe(false);
+    expect(matchMediaQuery(B_WIDE_SHORT, 768, 1024)).toBe(false);
+    expect(matchMediaQuery(B_WIDE_SHORT, 390, 844)).toBe(false);
+  });
+  it.each(B_SHEETS)('%s asks only the alias breakpoints, never orientation, and height only as the short-window alias', path => {
     const queries = [...css(path).matchAll(/@media([^{]+)\{/g)].map(match => match[1].trim());
     for (const query of queries) {
-      expect(query, query).not.toMatch(/height|orientation/);
+      expect(query, query).not.toMatch(/orientation|min-height/);
+      // The one height feature is B_SHORT, and only on top of B_WIDE: a phone never turns compact.
+      for (const height of query.match(/\([^()]*height[^()]*\)/g) ?? []) {
+        expect(height.replace(/\s+/g, ' '), query).toBe(B_SHORT);
+        expect(query, query).toContain(B_WIDE);
+      }
       for (const feature of viewportFeatures(query)) expect(['(max-width: 767px)', '(min-width: 768px)', '(max-width: 1023px)', '(min-width: 1024px)', '(max-width: 359px)', '(max-width: 819px)', '(max-width: 1279px)', '(min-width: 1280px)'], query).toContain(feature.replace(/\s+/g, ' '));
     }
   });

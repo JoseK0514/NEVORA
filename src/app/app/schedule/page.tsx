@@ -30,7 +30,6 @@ import { assignedHours, type RosterEmployee } from "@/lib/scheduling/manager-ros
 
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
-import { DotsThreeCircleIcon } from "@phosphor-icons/react/dist/ssr/DotsThreeCircle";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { DotsThreeIcon } from "@phosphor-icons/react/dist/ssr/DotsThree";
 import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
@@ -379,7 +378,7 @@ export default async function SchedulePage({
                 <Link className="nevora-action-menu-item" href={publishHref}><strong>Build and publish</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
                 {/* Review Nov 14 (AR-9): team Availability had no menu entry for an Owner or Manager; it opens here, on the
                   week being planned, before the week is built. */}
-                <Link className="nevora-action-menu-item" href={`/app/availability?week=${weekStart}`} aria-label="Availability: who can work, and when"><strong>Availability</strong><span className="c-menu-value">Who can work, and when</span><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
+                <Link className="nevora-action-menu-item" href={`/app/availability?week=${weekStart}`} aria-label="Availability: who can work and when"><strong>Availability</strong><span className="c-menu-value">Who can work and when</span><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
                 <ScheduleCopyForm actorId={session.id} className="nevora-action-menu-item c-sched-menu-copy" label={<strong>Copy previous week</strong>} command={{operationId:randomUUID(),kind:"PREVIOUS_WEEK",weekStart}} />
                 <Link className="nevora-action-menu-item" href={`/app/schedule/templates?week=${weekStart}`}><strong>Week templates</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
                 <PrintScheduleButton />
@@ -451,7 +450,7 @@ export default async function SchedulePage({
             {/* Nov 1 upscale: "Schedule options" is two grouped lists, This week and Settings, one line per row. The week's
               "Today" link (on the week card, only when you're off this week) replaces Go to this week. The availability
               deadline is a row that opens its form in Scheduling rules (no inline date box or browser button). */}
-            <ActionMenu id="schedule-more-actions" label="More" title="Schedule options" ariaLabel="More schedule actions" triggerClassName="c-icon-btn c-sched-more" triggerContent={<DotsThreeCircleIcon weight="bold" className="c-ic" aria-hidden="true" />}>
+            <ActionMenu id="schedule-more-actions" label="More" title="Schedule options" ariaLabel="More schedule actions" triggerClassName="c-icon-btn c-sched-more" triggerContent={<DotsThreeIcon weight="bold" className="c-ic" aria-hidden="true" />}>
               {moreItems}
             </ActionMenu>
             {/* Review B2 (NV-013): with nothing to publish, the title's action is Add shift (Publish when something waits). */}
@@ -495,7 +494,8 @@ export default async function SchedulePage({
             </CorpCard>
           ) : null}
           {repairNote("corp")}
-          {toPlan.length ? <CorpCard label="Not published yet" ariaLabel="Locations the team can’t see yet">
+          {/* Phase 8 (a.md #33): one location says it once ("Condado isn’t published"); the heading names several. */}
+          {toPlan.length ? <CorpCard label={toPlan.length > 1 ? "Not published yet" : undefined} ariaLabel="Locations the team can’t see yet">
             <CorpRows label="Locations the team can’t see yet">{toPlan.map(location => {
               const drafted = statusFor(location.id) === "DRAFT";
               return <li key={location.id}><CorpRow href={planHref(location.id)} bold title={drafted ? `${location.shortName} isn’t published` : `${location.shortName} isn’t planned`}

@@ -49,8 +49,8 @@
 /* Support (PB-033): a group heading belongs to the group under it. */
 :is(#q-root, html) main.q-doc .pl-grp { margin: var(--b-space-32) var(--b-inset) var(--b-space-12); font: 600 var(--b-fs-body)/1.25rem Inter, "Inter Fallback", sans-serif; letter-spacing: -.005em; color: var(--b-ink2); }
 
-/* The operator's line under the closing links, as the sign-in pages' legal line. */
-:is(#q-root, html) main.q-doc .pl-operator { margin: 0 var(--b-space-20); font-size: 13px; line-height: 18px; color: var(--b-grey); text-align: center; }
+/* The footer every signed-out page shares (SignedOutFooter, Phase 8), 32px under the last card. */
+:is(#q-root, html) main.q-doc .q-doc__foot { margin: var(--b-space-32) 0 0; }
 
 @media (prefers-reduced-motion: no-preference) {
   :is(#q-root, html) main.q-doc .pl-sec__caret { transition: transform var(--b-dur-hover) var(--b-ease-out); }
@@ -87,8 +87,4 @@
   }
   /* PB-033: 12px between a group heading and its group, whatever the group is (a list, the address). */
   :is(#q-root, html) main.q-doc .pl-grp + :is(.q-list, .q-doc__address) { margin-top: 0 !important; }
-  /* The closing links end the page with the operator's line right under them. */
-  :is(#q-root, html) main.q-doc .q-doc__links { margin-bottom: var(--b-space-4) !important; }
-  /* Each closing link's tap band is a full 44px (it measured 42). */
-  :is(#q-root, html) main.q-doc .q-doc__links a { padding-block: 14px !important; }
 }

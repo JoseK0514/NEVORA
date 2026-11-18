@@ -14,6 +14,7 @@ import { currentPayPeriod } from "@/lib/payroll/pay-calendar.server";
 import { payrollFeatureEnabled, readPayrollCapabilities } from "@/lib/payroll/service";
 import { currentBrand } from "@/lib/workspace-presentation/current.server";
 import { mobileTabsForRole } from "@/lib/navigation";
+import {readEmployeeWeeklyReview} from '@/lib/data/employee-weekly-review.server';
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. Inspection Nov 14 (AR-15): an Employee or Lead
  * reads the name on their tab and heading ("Time"); an Owner or Manager keeps "My time", the title of the notice they see.
@@ -51,6 +52,10 @@ export default async function MyTimePage({searchParams}:{searchParams:Promise<{v
   // Corporate (Release 1): an Employee's Time is its own tab; a Lead's Hours still sits under Pay.
   const parent=session.role==='LEAD'&&mobileTabsForRole(session.role,payroll,{modules:brand.modules}).some(tab=>tab.href==='/app/my-pay')?{href:'/app/my-pay',label:'Pay'}:null;
   // Corporate (Release 1): an Employee sees the kit page on every screen, so the older desktop panel isn't rendered.
+  // Phase 8 (review C, row 10): Time's Right now says what Home says when today's shift has ended and the punch is still
+  // open. It reads today's published shifts through the same own-schedule read Home uses (read only); a failed read leaves
+  // Right now as it was.
+  const todayShifts=corporate&&view==='records'&&!params.entry?await readEmployeeWeeklyReview(proof,weekStartFor(today)).then(review=>review.state==='unavailable'?null:review.shifts.filter(shift=>shift.date===today).map(({date,startTime,endTime})=>({date,startTime,endTime}))).catch(()=>null):null;
   const panel=corporate?null:<EmployeeTimePanel key={authority} authority={authority} corporate={corporate} signature={{todayLabel,payLine:scheduledPayLine}} />;
-  return <ResponsiveEmployeeHours today={today} corporate={corporate} tabTitle={corporate?'Time':'Hours'} authority={employeeViewAuthority(proof,'hours')} parent={parent} view={view} period={period} entryId={hoursRecordId(params.entry)?params.entry:null} requestId={hoursRequestId(params.requestId)?params.requestId:null} edit={params.edit&&params.edit.length<=500?params.edit:null} filter={params.filter==='decided'?'decided':'waiting'} fromCards={params.from==='cards'} chosen={!!(params.start&&params.end)}>{panel}</ResponsiveEmployeeHours>;
+  return <ResponsiveEmployeeHours today={today} corporate={corporate} tabTitle={corporate?'Time':'Hours'} authority={employeeViewAuthority(proof,'hours')} parent={parent} view={view} period={period} entryId={hoursRecordId(params.entry)?params.entry:null} requestId={hoursRequestId(params.requestId)?params.requestId:null} edit={params.edit&&params.edit.length<=500?params.edit:null} filter={params.filter==='decided'?'decided':'waiting'} fromCards={params.from==='cards'} chosen={!!(params.start&&params.end)} todayShifts={todayShifts}>{panel}</ResponsiveEmployeeHours>;
 }

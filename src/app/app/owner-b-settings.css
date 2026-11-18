@@ -83,9 +83,10 @@
     /* OW-030: on phones the group labels of Settings, Help, Features and Payroll settings sit on the canvas too. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame :is(.c-settings > .c-section > .c-section__label, .c-help > .c-section > .c-section__label, .wc-main > section > .q-grp > h2, .c-pset .c-sec-label > h2):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; letter-spacing: 0 !important; color: var(--b-grey-on-fill) !important; }
     /* MG-013: on a phone an address sits under its label with the row's whole width, so it is not broken in two; the
-     * Access row keeps its value beside the label and gives its sentence the whole width under them. */
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-email:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; row-gap: var(--b-space-2) !important; align-content: center !important; min-height: 64px !important; padding-top: 10px !important; padding-bottom: 10px !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-email > .q-rv:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { max-width: none !important; justify-self: start !important; justify-items: start !important; text-align: left !important; }
+     * Access row keeps its value beside the label and gives its sentence the whole width under them. Phase 8 (B #33): a
+     * locked address (a Manager's) is laid out as the locked Phone above it is. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-email:not(.pmp-fixed):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; row-gap: var(--b-space-2) !important; align-content: center !important; min-height: 64px !important; padding-top: 10px !important; padding-bottom: 10px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-email:not(.pmp-fixed) > .q-rv:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { max-width: none !important; justify-self: start !important; justify-items: start !important; text-align: left !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-access:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: grid !important; grid-template-columns: auto minmax(0, 1fr) !important; column-gap: var(--b-space-12) !important; row-gap: var(--b-space-2) !important; align-items: baseline !important; align-content: center !important; padding-top: 10px !important; padding-bottom: 10px !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-access > .q-rt:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: contents !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-access > .q-rt > b:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { grid-column: 1 !important; grid-row: 1 !important; }
@@ -137,5 +138,79 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-settings:has(> #settings-pay) > #settings-clocker:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { grid-column: 2 !important; grid-row: 3 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-settings:has(> #settings-pay) > #settings-scheduling:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { grid-column: 2 !important; grid-row: 4 / span 2 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-settings:has(> #settings-pay) > #settings-pay:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { grid-column: 1 !important; grid-row: 5 !important; }
+  }
+
+  /* ========== Phase 8 (Nov 17, 2026): review B, the Settings and account pages (numbers are review B's rows) ========== */
+
+  /* B #22, #23: the sentence on a closed page and on the not-found page never leaves one word alone on its last line. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:is(.cm-owner-only, .c-notfound) .b-statecard__s:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { text-wrap: pretty !important; }
+
+  /* B #38: a feature that can't be turned off shows one lock, cut into its switch; the second one after the title goes. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] li[data-locked] .wc-switch-row .q-rt > b:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6)::after { content: none !important; display: none !important; }
+
+  /* B #32: Help's contact note is the Contact card's footer at every width (it floated on the canvas on a phone), grey
+   * 13.5/18, at most 68 characters a line. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-help #help-contact .c-card > .c-help__note:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { box-sizing: content-box !important; max-width: 68ch !important; margin: 0 !important; padding: var(--b-space-4) var(--b-inset) var(--b-space-16) !important; font: 400 var(--b-fs-meta)/var(--b-lh-meta) Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: 0 !important; color: var(--b-grey) !important; background: none !important; border: 0 !important; box-shadow: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-help #help-contact .c-card > .c-help__note > span:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { font: inherit !important; color: inherit !important; }
+
+  /* B #33: a Manager's locked Email reads like their locked Phone (value and lock on the right, who can change it under
+   * them), as Company profile's locked values do. The lock is the 16px bold glyph beside the value. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-fixed .pmp-fixed__value:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: inline-flex !important; align-items: center !important; justify-content: flex-end !important; gap: 6px !important; min-width: 0 !important; max-width: 100% !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-fixed .pmp-fixed__text:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: block !important; min-width: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-fixed .pmp-fixed__lock:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { flex: none !important; width: 16px !important; height: 16px !important; color: var(--b-grey) !important; }
+
+  /* B #20: My pay with no statements yet: the kit's empty state card inside the Statements card, on the rows' inset. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-mypay #mypay-statements > .b-statecard:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding: var(--b-space-4) var(--b-inset) var(--b-space-20) !important; }
+
+  @media (max-width: 767px) {
+    /* B #3: Help someone sign in. "How this works" is a card like the ones above it: 16px in from the screen's edges, its
+     * words 19px inside (it ran edge to edge). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.wc-recovery .wc-content > .ar-how:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { box-sizing: border-box !important; width: auto !important; margin: var(--b-space-20) var(--b-space-16) 0 !important; padding: var(--b-inset) !important; }
+  }
+
+  @media (max-width: 359px) {
+    /* Closed pages and not-found: when the quiet link wraps under the tinted pill, its words start on the pill's edge (they
+     * sat 8px further in). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:is(.cm-owner-only, .c-notfound) .b-closed-actions:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { flex-direction: column !important; align-items: flex-start !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:is(.cm-owner-only, .c-notfound) .b-closed-actions > .b-closed-also:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { margin-left: calc(-1 * var(--b-space-8)) !important; }
+
+    /* B #13: "How you checked" moves its answer under the label, so the whole answer shows ("In person, photo ID" was cut
+     * to "In perso…"). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.wc-recovery .q-select-row:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { flex-wrap: wrap !important; row-gap: 0 !important; padding-top: 10px !important; padding-bottom: 6px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.wc-recovery .q-select-row > .q-rt:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { flex: 1 0 100% !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.wc-recovery .q-select-row > .q-select-row__control:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { flex: 1 1 0 !important; max-width: none !important; height: 40px !important; text-align: left !important; text-align-last: left !important; }
+
+    /* B #18, #19: on a narrow phone a chip, or a value in words ("Weekly", "138 h this week"), moves under its row's title
+     * ("Clocker tablets" beside "1 not set up" split the title in two). A short count ("2") stays beside its title. The lead
+     * circle and the chevron stay centred on the row. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-settings .c-row:has(> .c-row__icon):has(> .c-row__trail), .c-page.c-settings #settings-pay .c-row:has(> .c-row__icon):has(> .c-row__value), .c-page.c-more .c-row:has(> .c-row__icon):has(> .c-row__value)):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: grid !important; grid-template-columns: auto minmax(0, 1fr) auto !important; column-gap: var(--b-space-12) !important; row-gap: var(--b-space-2) !important; align-items: center !important; align-content: center !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-settings .c-row:has(> .c-row__icon):has(> .c-row__trail), .c-page.c-settings #settings-pay .c-row:has(> .c-row__icon):has(> .c-row__value), .c-page.c-more .c-row:has(> .c-row__icon):has(> .c-row__value)) > .c-row__icon:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { grid-column: 1 !important; grid-row: 1 / span 2 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-settings .c-row:has(> .c-row__icon):has(> .c-row__trail), .c-page.c-settings #settings-pay .c-row:has(> .c-row__icon):has(> .c-row__value), .c-page.c-more .c-row:has(> .c-row__icon):has(> .c-row__value)) > .c-row__main:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { grid-column: 2 !important; grid-row: 1 !important; align-self: end !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-settings .c-row:has(> .c-row__icon):has(> .c-row__trail), .c-page.c-settings #settings-pay .c-row:has(> .c-row__icon):has(> .c-row__value), .c-page.c-more .c-row:has(> .c-row__icon):has(> .c-row__value)) > :is(.c-row__value, .c-row__trail):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { grid-column: 2 !important; grid-row: 2 !important; justify-self: start !important; align-self: start !important; max-width: none !important; margin: 0 !important; text-align: left !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-settings .c-row:has(> .c-row__icon):has(> .c-row__trail), .c-page.c-settings #settings-pay .c-row:has(> .c-row__icon):has(> .c-row__value), .c-page.c-more .c-row:has(> .c-row__icon):has(> .c-row__value)) > .c-row__value:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-settings .c-row:has(> .c-row__icon):has(> .c-row__trail), .c-page.c-settings #settings-pay .c-row:has(> .c-row__icon):has(> .c-row__value), .c-page.c-more .c-row:has(> .c-row__icon):has(> .c-row__value)) > .c-chev:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { grid-column: 3 !important; grid-row: 1 / span 2 !important; }
+
+    /* B #33: on a narrow phone a Manager's locked Phone and Email each stack, label then value and lock, then who can change
+     * it, so a long address is never squeezed beside its label. Both rows read the same. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-fixed:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; row-gap: var(--b-space-2) !important; align-content: center !important; padding-top: 10px !important; padding-bottom: 10px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-fixed > .q-rv:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { max-width: none !important; justify-self: start !important; justify-items: start !important; text-align: left !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-fixed .pmp-fixed__value:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { justify-content: flex-start !important; }
+
+    /* B #35: Payroll settings keeps a value on one line ("Started" / "Mon, Oct 19" split); a long title wraps instead, as
+     * "Pay statement language" already does. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pset .c-pset__item > summary.c-row > .c-row__value:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { white-space: nowrap !important; max-width: none !important; }
+  }
+
+  @media (min-width: 768px) {
+    /* B #14: Help someone sign in. The hint keeps 16px above the footer's divider (it touched it). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.wc-recovery .wc-savecard p.q-help:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { margin-bottom: var(--b-space-16) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-mypay #mypay-statements > .b-statecard:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding: var(--b-space-4) var(--b-inset-wide) 22px !important; }
+    /* B #36: in a save card (Company profile, Help someone sign in, a location) the row dividers and the footer's divider
+     * stop where the 560px field block and its button stop (they ran 22px past them). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) main.page-frame :is(.c-page, .q-page) .wc-savecard :is(.q-fl + .q-list, .q-list > li + li, .wc-savefoot):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { background-size: calc(100% - 2 * var(--b-inset-wide)) 1px !important; }
+    /* Help someone sign in: "How this works" reads at the form block's width (its note ran about 125 characters a line). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.wc-recovery .ar-how > :is(.ar-before, .ar-how__note):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { max-width: var(--b-frame-form) !important; }
+    /* B #32: on tablets and desktop the note sits on the rows' 22px inset. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-help #help-contact .c-card > .c-help__note:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding: var(--b-space-4) var(--b-inset-wide) 18px !important; }
   }
 }

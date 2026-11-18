@@ -22,6 +22,7 @@ import {BlockView, shortTitle} from '../legal/legal-document';
 import type {Block, PolicyDocument} from '../../lib/legal/policies';
 import {NoHeaderActions} from './account-host';
 import {Dotted} from './parts';
+import {accountCopy} from './account-copy';
 import './account.css';
 
 /* Employee phones, Direction B, the Account group (Jose approved the mock "Employee mobile, Direction B", Nov 6, 2026):
@@ -53,7 +54,7 @@ export function EmployeeMoreB({name, place, availability, has, count}: {
         <BList>
           {has.availability ? <BRow href="/app/availability" lead={grey(<CalendarCheckIcon weight="bold" />)} title="Availability" sub={availability ?? undefined} /> : null}
           {has.notifications ? <BRow href="/app/notifications" lead={grey(<BellIcon weight="bold" />)} title="Notifications" chip={count} sub="Schedule, request and pay notices" /> : null}
-          {has.updates ? <BRow href="/app/updates" lead={grey(<MegaphoneSimpleIcon weight="bold" />)} title="Updates" sub="Current messages shared with you" /> : null}
+          {has.updates ? <BRow href="/app/updates" lead={grey(<MegaphoneSimpleIcon weight="bold" />)} title="Updates" sub={accountCopy().updatesSub} /> : null}
           <BRow href="/app/profile/calendar" lead={grey(<CalendarPlusIcon weight="bold" />)} title="Add shifts to your calendar" sub="Apple, Google or Outlook" />
         </BList>
       </BCard>

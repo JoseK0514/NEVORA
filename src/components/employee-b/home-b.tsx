@@ -18,7 +18,7 @@ import {workCopy} from './work-copy';
 import {useHours} from '../employee-mobile/use-hours';
 import {boardDuration, compactDuration} from '../employee-mobile/hours-model';
 import {businessDate, clock, dayWord, fmt, isComplete, sourceDestinations, sourceNames, todoTitle, weekRange, type HomeWeek} from '../employee-home-quiet';
-import {BCardNote, BDay, Dotted, wallTime} from './parts';
+import {BCardNote, BDay, Dotted, Range, shiftEndedWhileOpen, wallTime} from './parts';
 import './employee-b.css';
 import {reviewCopy} from '../review-details/copy';
 import type {HomeTaskTotal} from '../../lib/action-center/review-routing';
@@ -41,7 +41,6 @@ const t = workCopy();
 type Ready = Extract<EmployeeTime, {state: 'ready'}>;
 const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
 const shortDay = (date: string) => fmt('UTC', {weekday: 'short', month: 'short', day: 'numeric'}).format(utcDay(date));
-const longDay = (date: string) => fmt('UTC', {weekday: 'long', month: 'short', day: 'numeric'}).format(utcDay(date));
 /** "8 h" or "7.5 h": the shift's length from its own start and end. */
 const lengthOf = (shift: PublishedAssignment) => { const minutes = Math.round((Date.parse(shift.endAt) - Date.parse(shift.startAt)) / 60_000); return minutes > 0 ? `${hoursNumber(minutes)} h` : null; };
 const dateKey = (at: string, zone: string) => new Intl.DateTimeFormat('en-CA', {timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit'}).format(new Date(at));
@@ -78,7 +77,10 @@ function Figures({week, payday, worked, onShift, nextShift}: {week: HomeWeek | n
     : nextShift ? [{label: nextShift.label, value: nextShift.value, meta: nextShift.line ?? undefined, href: '#b-home-shift-h', aria: nextShift.aria}] : [];
   // Phase 4 (EM-007): the figure and its caption read as one sentence ("17 h of 56 h", "worked this week"). Worked time
   // reads as the Time tab writes it ("43 h 34"); the scheduled total stays in hours.
-  if (worked !== null && scheduled) items.push({label: t.hours, value: compactDuration(worked * 60), small: `\u00a0${t.ofHours(hoursNumber(scheduled))}`, meta: t.workedThisWeek, href: '/app/my-time', aria: `Hours, ${boardDuration(worked * 60)} worked of ${hoursNumber(scheduled)} scheduled this week`});
+  // Phase 8 (review C, row 11): under 360px the figure stands alone and "of 56 h this week" is the line under it, so the
+  // figure clears the tile's divider (employee-b-work.css shows one of the two lines).
+  if (worked !== null && scheduled) items.push({label: t.hours, value: compactDuration(worked * 60), small: `\u00a0${t.ofHours(hoursNumber(scheduled))}`,
+    meta: <><span className="eb-of-w">{t.workedThisWeek}</span><span className="eb-of-n">{t.ofHoursThisWeek(hoursNumber(scheduled))}</span></>, href: '/app/my-time', aria: `Hours, ${boardDuration(worked * 60)} worked of ${hoursNumber(scheduled)} scheduled this week`});
   else if (worked !== null) items.push({label: t.hours, value: compactDuration(worked * 60), meta: t.workedThisWeek, href: '/app/my-time', aria: `Hours, ${boardDuration(worked * 60)} worked this week`});
   else if (scheduled !== null) items.push({label: t.hours, value: `${hoursNumber(scheduled)} h`, meta: t.scheduledThisWeek, href: '/app/schedule', aria: `Hours, ${hoursNumber(scheduled)} scheduled this week`});
   // Phase 4 (EM-007): one format for the date at every width ("Fri, Nov 20"), as on Pay, and how far off it is.
@@ -115,7 +117,7 @@ function TeamCard({place}: {place?: string}) {
       * footer at every width. */}
     <BList><BRow href="/app/updates/compose" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Message today’s team" sub="Everyone on shift today"
       label="Message today’s team, everyone on shift today"/></BList>
-    <BCardNote>Your message goes to today’s published team. Reading it is optional for them.</BCardNote>
+    <BCardNote>{t.teamNote}</BCardNote>
   </BCard>;
 }
 
@@ -123,13 +125,9 @@ function TeamCard({place}: {place?: string}) {
  * open punch hours past the shift read as normal). From the two reads Home already has; no rule about how long is too long. */
 export function endedShiftStillOpen(week: HomeWeek | null, snapshot: HomeSnapshot, clockInAt: string | null): {startTime: string; endTime: string} | null {
   if (!week || !clockInAt || snapshot.currentShift) return null;
-  const zone = snapshot.timeZone, nowWall = wallNow(snapshot.observedAt, zone), inWall = wallNow(clockInAt, zone);
-  if (inWall.slice(0, 10) !== week.today) return null;
-  const ended = week.shifts.filter(shift => shift.date === week.today && shift.endTime > shift.startTime && `${shift.date} ${shift.endTime}` <= nowWall && inWall < `${shift.date} ${shift.endTime}`)
-    .sort((a, b) => b.endTime.localeCompare(a.endTime))[0];
-  // A later shift today that has not started is the next shift's business ("Clocked in" for it reads as early).
-  const later = week.shifts.some(shift => shift.date === week.today && `${shift.date} ${shift.startTime}` > nowWall);
-  return ended && !later ? {startTime: ended.startTime, endTime: ended.endTime} : null;
+  // Phase 8 (review C, row 10): the rule lives in parts.tsx so Time's Right now says the same.
+  const ended = shiftEndedWhileOpen({shifts: week.shifts, today: week.today, zone: snapshot.timeZone, observedAt: snapshot.observedAt, clockInAt});
+  return ended ? {startTime: ended.startTime, endTime: ended.endTime} : null;
 }
 
 function ShiftCard({snapshot, lead, heroShows, week}: {snapshot: HomeSnapshot; lead?: boolean; heroShows?: boolean; week?: HomeWeek | null}) {
@@ -150,10 +148,13 @@ function ShiftCard({snapshot, lead, heroShows, week}: {snapshot: HomeSnapshot; l
   return <BCard id="b-home-shift" title={echo ? 'Your shift' : now ? 'On shift now' : today ? 'Today’s shift' : 'Next shift'}
     chip={echo ? undefined : now ? <BChip tone="teal">Until {clock(now.endAt, zone)}</BChip> : <BChip tone="teal">{startsIn(shift, snapshot)}</BChip>}>
     <div className="eb-shift">
-      {/* Review B6 (NV-069): each time stays whole; the range breaks only after its dash. */}
-      <p className="eb-shift__time"><time dateTime={shift.startAt}>{keepWhole(clock(shift.startAt, zone))}</time><span aria-hidden="true"> – </span><span className="b-sr"> to </span><time dateTime={shift.endAt}>{keepWhole(clock(shift.endAt, zone))}</time></p>
+      {/* Phase 8 (review C, row 14): each time stays whole; where the line is too short the range breaks before its dash
+        * (the Employee screens' one rule, parts.tsx Range). */}
+      <p className="eb-shift__time"><time dateTime={shift.startAt} className="eb-nb">{keepWhole(clock(shift.startAt, zone))}</time> <span className="eb-nb"><span aria-hidden="true">{'–\u00a0'}</span><span className="b-sr"> to </span><time dateTime={shift.endAt}>{keepWhole(clock(shift.endAt, zone))}</time></span></p>
       <p className="eb-shift__where"><Dotted text={[today ? null : shortDay(shift.date), where, !today && ends !== shift.date ? `ends ${shortDay(ends)}` : null].filter(Boolean).join(' · ')}/></p>
-      {shift.designatedLead && lead ? <p className="eb-leadline"><BChip tone="teal">Shift lead</BChip>{echo ? null : now || today ? 'You’re shift lead today' : 'You’re shift lead'}</p> : null}
+      {/* Phase 8 (review C, row 15): the Shift lead chip says it once; no sentence repeats it (as review B6 decided for
+        * the On shift now card). */}
+      {shift.designatedLead && lead ? <p className="eb-leadline"><BChip tone="teal">Shift lead</BChip></p> : null}
       {/* Review B2 (NV-039): the instruction follows Time's clock state, so Home never sends someone who is clocked in back
         to the tablet to clock in. */}
       {clockIn && overrun ? <div className="eb-tint" data-tone="amber" role="status"><BIcon tone="amber"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
@@ -164,8 +165,9 @@ function ShiftCard({snapshot, lead, heroShows, week}: {snapshot: HomeSnapshot; l
         <span className="b-notice__t">Not clocked in yet</span><span className="b-notice__s">Clock in on the {shift.locationLabel} tablet</span></span></div>
         : <div className="eb-tint"><BIcon tone="teal"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
         <span className="b-notice__t">Clock in on the {shift.locationLabel} tablet</span><span className="b-notice__s">Take breaks and clock out there too</span></span></div>}
-      {/* On desktop the button sits in the card's footer beside the day and length (eb-desk is desktop only). */}
-      <div className="eb-shift__bar"><span className="eb-desk eb-shift__when">{keepWhole([longDay(shift.date), lengthOf(shift)].filter(Boolean).join(' · '))}</span>
+      {/* On desktop the button sits in the card's footer beside the shift's length (eb-desk is desktop only). Phase 8 (review
+        * C, row 30): the day is already in the line under the time, so the footer doesn't say it again. */}
+      <div className="eb-shift__bar"><span className="eb-desk eb-shift__when">{lengthOf(shift) ?? ''}</span>
         <BButtonLink href={href} kind="quiet" full label={`Shift details, ${shortDay(shift.date)}`}>Shift details</BButtonLink></div>
     </div>
   </BCard>;
@@ -196,7 +198,7 @@ function ComingUp({week, snapshot, lead, note}: {week: HomeWeek; snapshot: HomeS
     <BList>{shownRows.map(shift => {
       const at = utcDay(shift.date);
       const href = `/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}${shift.id ? `&shift=${encodeURIComponent(shift.id)}` : ''}`;
-      return <BRow key={`${shift.date}-${shift.startTime}`} href={href} lead={<BDay date={shift.date}/>} title={keepWhole(`${wallTime(shift.startTime)} – ${wallTime(shift.endTime)}`)}
+      return <BRow key={`${shift.date}-${shift.startTime}`} href={href} lead={<BDay date={shift.date}/>} title={<Range text={keepWhole(`${wallTime(shift.startTime)} – ${wallTime(shift.endTime)}`)}/>}
         // Review B6 (NV-163): "Shift lead" leads the sub-line, as on Schedule, so it never competes with a chip.
         sub={lead && shift.lead && !allLed || shift.where ? <Dotted text={[lead && shift.lead && !allLed ? 'Shift lead' : null, shift.where].filter(Boolean).join(' · ')}/> : undefined}
         label={keepWhole(`${fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(at)}, ${wallTime(shift.startTime)} to ${wallTime(shift.endTime)}${shift.where ? `, ${shift.where}` : ''}${lead && shift.lead ? ', shift lead' : ''}`)}/>;

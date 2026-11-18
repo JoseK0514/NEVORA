@@ -150,9 +150,10 @@ export function PayrollImportFlow({ lang = "en", runId, recoveryScope, actorId }
     ? <StopCard kind={offline ? "offline" : "failed"} alert title={offline ? copy.common.offlineTitle : copy.common.loadFailedTitle} line={offline ? copy.common.offlineLine : copy.common.loadFailedLine} action={{ label: copy.common.tryAgain, onClick: () => { setLoaded({ state: "loading" }); void load(); } }} />
     : <StopCard title={loaded.why === "denied" ? copy.common.deniedTitle : copy.common.signedOutTitle} line={loaded.why === "denied" ? copy.common.deniedLine : copy.common.signedOutLine} action={loaded.why === "denied" ? { label: copy.imp.hold.missing.action, href: "/app/payroll" } : { label: copy.common.signIn, href: "/login" }} />);
   const custody = holdsCustody(work.write) || work.write.phase === "saved";
-  const hold = custody ? null : !run ? { ...copy.imp.hold.missing, href: "/app/payroll" } : run.sourceAuthority === "NATIVE_RECORDED_TIME" ? { ...copy.imp.hold.native, href: back.href }
+  const hold = custody ? null : !runId ? { ...copy.imp.hold.noRun, href: "/app/payroll" } : !run ? { ...copy.imp.hold.missing, href: "/app/payroll" } : run.sourceAuthority === "NATIVE_RECORDED_TIME" ? { ...copy.imp.hold.native, href: back.href }
     : !roster.length ? { ...copy.imp.hold.noTeam, href: "/app/employees" } : roster.length > PEOPLE_MAX ? { ...copy.imp.hold.tooManyPeople, href: "/app/payroll" } : otherPending ? { ...copy.imp.hold.pending, href: back.href } : null;
-  if (hold) return frame(0, null, <StopCard kind="locked" title={hold.title} line={hold.line} action={{ label: hold.action, href: hold.href }} />);
+  // Phase 8 (a.md #9): nothing chosen yet is the empty kind (the tray), not a lock.
+  if (hold) return frame(0, null, <StopCard kind={!runId ? "empty" : "locked"} title={hold.title} line={hold.line} action={{ label: hold.action, href: hold.href }} />);
 
   const step = work.step, a = copy.imp.add;
   const sourceBad = { sourceName: !validSourceText(work.source.sourceName), sourceReference: !validSourceText(work.source.sourceReference) };

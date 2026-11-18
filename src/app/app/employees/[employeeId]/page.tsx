@@ -96,8 +96,10 @@ export default async function EmployeeProfilePage({
     : invitation.invitation?.state === "EXPIRED" ? "Invitation expired" : "Not invited yet";
   const signInOpen = signIn && signIn !== "Sign-in active" ? signIn : null;
   const pinOpen = pinShown && pin && !pin.configured ? "No Clocker PIN yet" : null;
-  // The person's hours as figures; one the read couldn't work out is the kit's grey dash.
+  // The person's hours as figures. Phase 8 (a.md #31): the scheduled figures are null when the schedule read was not
+  // complete, so a dash would read as "none"; the row says the figure isn't available and why. Worked time keeps the dash.
   const minutes = (value: number | null) => value === null ? CORP_NO_VALUE : durationSentence(value, "0 h");
+  const scheduled = (value: number | null) => value === null ? { value: "Not available", detail: "The whole schedule couldn’t be read" } : { value: minutes(value) };
   // AR-10: Shifts opens the schedule at this person's location (the schedule has no one-person view), and Availability
   // opens this person's availability.
   const shiftsHref = primaryLocation?.active ? `/app/schedule?location=${encodeURIComponent(primaryLocation.id)}` : "/app/schedule";
@@ -118,7 +120,9 @@ export default async function EmployeeProfilePage({
               would start a line; the text reads the same as before ("Kitchen · Calle Loíza", "555-0199 · ID 7"). */}
             {/* Review B6 (NV-092): where they work leads; positions are chips under it; the employee ID moves to Access and
               * sign-in (internals stay out of the most-read line). */}
-            <span className="c-row__title c-row__title--b">{place ?? roleLabel}</span>
+            {/* Phase 8 (a.md #3): the phone layer starts the line 13px left of the text column and gives that room back to
+              * the line's first element; a bare text node has none, so the first letter was clipped ("alle Loíza"). */}
+            <span className="c-row__title c-row__title--b"><span>{place ?? roleLabel}</span></span>
             {positionList.length ? <span className="c-person__chips">{positionList.map(position => <span key={position} className="c-person__chip">{position}</span>)}</span> : null}
             <span className="c-row__detail"><span className="c-person__bits"><span className="c-person__bit">{employee.phone ? phoneDisplay(employee.phone) : "No phone number"}</span></span>
               {employee.active ? <TeamLivePill employeeId={employee.id} /> : <CorpMeta>Inactive</CorpMeta>}</span>
@@ -129,8 +133,8 @@ export default async function EmployeeProfilePage({
       </CorpCard>
       {hours ? <CorpCard id="person-hours" label="Hours">
         <CorpRows label="Hours">
-          <li><CorpRow title="Scheduled today" value={minutes(hours.scheduledTodayMinutes)} valueTone="soft" /></li>
-          <li><CorpRow title="Scheduled this week" value={minutes(hours.scheduledWeekMinutes)} valueTone="soft" /></li>
+          <li><CorpRow title="Scheduled today" {...scheduled(hours.scheduledTodayMinutes)} valueTone="soft" /></li>
+          <li><CorpRow title="Scheduled this week" {...scheduled(hours.scheduledWeekMinutes)} valueTone="soft" /></li>
           {/* Worked time is time on the clock with breaks in it, so the row never says "paid". */}
           <li><CorpRow title="Clocked this week" detail="Includes breaks" value={minutes(hours.workedWeekMinutes)} valueTone="soft" /></li>
         </CorpRows>

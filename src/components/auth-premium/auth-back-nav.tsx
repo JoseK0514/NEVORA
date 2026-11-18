@@ -10,10 +10,13 @@ import { LangSwitch } from "./lang-switch";
  * Phase 5 (Nov 17, 2026, PB-021): on a phone the band reads as on Sign in, the wordmark at the left and the language
  * at the right, with the way back on a row of its own under them. That row is a second link so the keyboard order
  * matches what is seen at every width; auth-b.css shows exactly one of the two (the other is `display: none`, so it is
- * neither focusable nor announced). */
+ * neither focusable nor announced).
+ * Phase 8 (Nov 17, 2026): every signed-out page has one way back and one header. Phones and tablets read alike (the
+ * wordmark and the language on the first row, the way back on its own row), and the policy pages, whose first row is
+ * DocBrand, draw the same back row (`q-auth__back--row`) at every width; it never wraps. */
 export function AuthBackNav({ href, label, lang, t }: { href: string; label: string; lang?: AuthLang; t?: AuthCopy }) {
   const back = (row: boolean) => <Link className={`q-nav__l q-auth__back${row ? " q-auth__back--row" : " q-auth__back--bar"}`} href={href}><CaretLeftIcon size={16} weight="bold" aria-hidden="true" />{label}</Link>;
-  if (!lang || !t) return <div className="q-nav q-auth__nav"><Link className="q-nav__l q-auth__back" href={href}><CaretLeftIcon size={16} weight="bold" aria-hidden="true" />{label}</Link><span /><span /></div>;
+  if (!lang || !t) return <div className="q-nav q-auth__nav q-auth__nav--back">{back(true)}</div>;
   return <div className="q-nav q-auth__nav q-auth__nav--rows">
     {back(false)}
     <span className="q-auth__wordmark q-auth__navmark"><BrandWordmark /></span>

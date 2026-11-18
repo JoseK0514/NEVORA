@@ -351,12 +351,15 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
         </div>}
       </li>;
     };
+    // Phase 8 (review C, row 7): an Employee's note on the agreement is that card's footer, on its text edge (EM-018).
+    const separateNote = management ? null : <p className="eb-cardnote rs-separate">{t.separateEmployee}</p>;
     const main = <div className="rs-main"><Act kind={mainKind} id="rs-main-action" disabled={busy} onClick={() => startEdit()}>{management ? t.changeAgreement : latest ? t.askChange : t.askFirst}</Act></div>;
     body = <>
       {attentionCard}
       {landedCard}
       {snapshot!.legacyUnconfirmed ? (management
-        ? <Card kit={kit} id="rs-now" title={t.legacyTitleManagement} aside={<BChip tone="amber">{t.legacyChip}</BChip>}>
+        // Phase 8 (a.md #23, b.md #31): the heading says the state ("Not confirmed yet"), so no chip says it again.
+        ? <Card kit={kit} id="rs-now" title={t.legacyTitleManagement}>
           <div className="rs-legacy">
             <p className="rs-legacy__p">{t.legacyBodyManagement(firstName)}</p>
             {availabilityHref ? <Link className="rs-link" href={availabilityHref}>{t.legacyHours}</Link> : null}
@@ -366,7 +369,10 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
             </div>
           </div>
         </Card>
-        : <Card kit={kit} id="rs-now" title={t.legacyTitleEmployee} aside={<BChip tone="amber">{t.legacyChip}</BChip>}>
+        // Phase 8 (review C, row 7): the Employee's empty state is one designed state. Its title says nothing is agreed, so
+        // no chip repeats it ("Not confirmed" is the word for an uncertain result), and its line already says the schedule
+        // follows the availability they send, so the separate note is left out here.
+        : <Card kit={kit} id="rs-now" title={t.legacyTitleEmployee}>
           <div className="rs-legacy"><p className="rs-legacy__p">{t.legacyBodyEmployee}</p></div>{main}
         </Card>)
         : current ? <Card kit={kit} id="rs-now" title={t.now} aside={<span className="rs-meta">{t.since(dayText(current.effectiveWeek, t))}</span>}>
@@ -374,10 +380,10 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
             : <WeekView allowed={allowedByDay(current.unavailable)} t={t} label={weekLabel} />}
           {noteLine(current.reason)}
           <p className="rs-zone">{t.zone(timeZoneLabel(timeZone))}</p>
-          {main}
+          {main}{separateNote}
         </Card>
         : <Card kit={kit} id="rs-now" title={t.notYetTitle}>
-          <div className="rs-legacy"><p className="rs-legacy__p">{t.notYetBody(dayText(ahead[0]?.effectiveWeek ?? week, t))}</p></div>{main}
+          <div className="rs-legacy"><p className="rs-legacy__p">{t.notYetBody(dayText(ahead[0]?.effectiveWeek ?? week, t))}</p></div>{main}{separateNote}
         </Card>}
       {waiting.length ? <Card kit={kit} id="rs-requests" title={management ? t.requestsManagement : t.requestsEmployee}><ul className="rs-reqs">{waiting.map(requestRow)}</ul></Card> : null}
       {ahead.length ? <Card kit={kit} id="rs-later" title={t.later}><ul className="rs-reqs">{ahead.map((version, index) => { const prior = index ? ahead[index - 1] : current; return <li key={version.id} className="rs-req">
@@ -396,7 +402,9 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
           {request.decision ? noteLine(request.decision.reason) : null}
         </li>;
       })}</ul></Card> : null}
-      <BNote>{management ? t.separateManagement : t.separateEmployee}</BNote>
+      {/* Phase 8 (review C, row 7): for an Employee the note is the agreement card's footer (above); the management
+        * screens keep their note under the cards. */}
+      {management ? <BNote>{t.separateManagement}</BNote> : null}
     </>;
   }
 

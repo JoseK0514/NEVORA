@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, type ReactNode } from "react";
-import { CorpPill } from "./corp/corp";
+import { CorpMeta, CorpPill } from "./corp/corp";
 import { useToday } from "./manager-today";
 import { useClockMonitor } from "./clean/use-clock-monitor";
 import { ATTENDANCE_WORDS } from "@/lib/action-center/present";
@@ -55,16 +55,18 @@ export const notClockedInText = (minutes: number) => minutes > 0 ? `${ATTENDANCE
 /** "Clocked in late" for someone on the clock who arrived after their start; otherwise "Clocked in". */
 export const clockedInText = (live: Live, id: string) => live.clockedInLate.has(id) ? lateText({ late: true, lateMinutes: live.clockedInLate.get(id) }, ATTENDANCE_WORDS.late, reviewCopy()) : "Clocked in";
 
-/** One person's live chip, the phone Team's words on every width (closing F1, NV-071/NV-091): a green "Clocked in" (or
- * "Clocked in late") with the live dot, teal "On break", amber "Not clocked in · 12 min", grey "Off today"; nothing until
- * the reads are ready, and nothing for someone whose shift starts later today. */
+/** One person's live chip, the phone Team's words on every width (closing F1, NV-071/NV-091): a green "Clocked in" with the
+ * live dot, an amber "Clocked in late", teal "On break", amber "Not clocked in · 12 min", grey words "Off today"; nothing
+ * until the reads are ready, and nothing for someone whose shift starts later today. */
+/** Phase 8 (a.md #11, #45; b.md #24): a late arrival is amber, as on Home ("Clocked in late" waits for a check; lateness
+ * is never green), and "Off today" is the normal state, so it is plain grey words, not a chip. */
 export function TeamLivePill({ employeeId }: { employeeId: string }) {
   const live = useContext(TeamLiveContext);
   const state = teamStateOf(live, employeeId);
-  if (state === "working") return <CorpPill tone="green" dot>{clockedInText(live, employeeId)}</CorpPill>;
+  if (state === "working") return live.clockedInLate.has(employeeId) ? <CorpPill tone="amber">{clockedInText(live, employeeId)}</CorpPill> : <CorpPill tone="green" dot>{clockedInText(live, employeeId)}</CorpPill>;
   if (state === "break") return <CorpPill tone="teal">On break</CorpPill>;
   if (state === "late") return <CorpPill tone="amber">{notClockedInText(live.late.get(employeeId) ?? 0)}</CorpPill>;
-  if (state === "off") return <CorpPill tone="neutral">Off today</CorpPill>;
+  if (state === "off") return <CorpMeta>Off today</CorpMeta>;
   return null;
 }
 

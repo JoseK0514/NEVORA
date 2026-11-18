@@ -29,7 +29,9 @@
     /* ---------- the band: the hero, under the flat top bar ---------- */
     /* A pushed page's way back is a quiet link above the title (Phase 2: 32px tall with 10px under it, so the title starts at
      * --b-title-top-back). */
-    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-back { position: relative !important; top: auto !important; display: inline-flex !important; align-items: center !important; gap: 6px !important; height: 32px !important; min-height: 32px !important; margin: 0 0 10px -6px !important; padding: 0 var(--b-space-12) 0 6px !important; border-radius: var(--b-radius-pill) !important; color: var(--b-on-band-2) !important; font-size: var(--b-fs-body-sm) !important; font-weight: 600 !important; }
+    /* Phase 8 (Nov 17, 2026): left too (the phone's floating link sits 14px in), so the way back starts on the title's edge
+     * as the Owner's does; it stood 14px to the right of it. */
+    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-back { position: relative !important; top: auto !important; left: auto !important; display: inline-flex !important; align-items: center !important; gap: 6px !important; height: 32px !important; min-height: 32px !important; margin: 0 0 10px -6px !important; padding: 0 var(--b-space-12) 0 6px !important; border-radius: var(--b-radius-pill) !important; color: var(--b-on-band-2) !important; font-size: var(--b-fs-body-sm) !important; font-weight: 600 !important; }
     /* Preserve the compact painted link with the kit's 44px native target. */
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-back::after { content: ""; position: absolute; inset: -6px 0; }
     @media (hover: hover) { html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-back:hover { background: rgb(255 255 255 / .1) !important; } }
@@ -53,7 +55,7 @@
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen :is(.b-row, .b-add) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-row__s { line-height: 19px !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen :is(.eb-cardnote, .eb-shift, .eb-status, .b-route-state) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-note { padding: 0 var(--b-space-4) !important; margin-top: -6px !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-note { padding: 0 var(--b-note-x) !important; margin-top: -6px !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; }
     /* Lists inside the cards: one inset divider. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-list > .b-li + .b-li:not(#e-none) { box-shadow: none !important; background: linear-gradient(var(--b-line), var(--b-line)) 22px 0 / calc(100% - 44px) 1px no-repeat !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-list > .b-li > :is(.b-row, .b-row__hit, a, div) { box-shadow: none !important; }
@@ -697,8 +699,8 @@
      * a 46px title and three-line figures), and the others' titles and figures sit on the same lines: the title block is
      * 67px tall (88 to 155), the figures run 179 to 283, and the first card lifts 52px over the band at 311. */
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen:not(.b-screen--back) .b-hero.b-hero.b-hero.b-hero.b-hero:has(> :is(.b-live, .eb-desk, .ep-next)) { min-height: calc(var(--b-band-figures) - var(--b-title-top)) !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen:not(.b-screen--back) .b-hero:has(> .b-live, > .eb-desk > .b-live) > .b-title:not(.b-title--big) { min-height: 67px !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(.b-screen--back) .b-hero .b-live:not(#e-none):not(#e-none2) { min-height: 104px !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen:not(.b-screen--back) .b-hero:has(> .b-live, > .eb-desk > .b-live) > .b-title:not(.b-title--big) { min-height: var(--bs-figtitle-h, 67px) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(.b-screen--back) .b-hero .b-live:not(#e-none):not(#e-none2) { min-height: var(--bs-live-h, 104px) !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen:not(.b-screen--back) .b-hero .b-live__i:has(> .b-live__a) { display: grid !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(.b-screen--back) .b-hero :is(.b-live__i > .b-live__a, .b-live__i:not(:has(> .b-live__a))):not(#e-none):not(#e-none2) { justify-content: center !important; }
     /* Pay has no figure strip: its next payday block ends on the strips' bottom line (283), 28px over the first card. */

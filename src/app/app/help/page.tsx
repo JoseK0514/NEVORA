@@ -113,8 +113,10 @@ export default async function HelpPage() {
         <CorpRows label="Contact">
           <li><CorpRow href={`mailto:${SUPPORT_EMAIL}`} native title="Email support" detail={SUPPORT_EMAIL} chevron label={`Email support, ${SUPPORT_EMAIL}`} /></li>
         </CorpRows>
+        {/* Phase 8 (B #32): the note that qualifies Email support is the card's footer at every width (it floated on the
+          canvas on a phone); its words are the support policy's and are unchanged. */}
+        <p className="c-note c-help__note"><span>{response ? `${response} ` : ""}Never email passwords, codes, bank details or pay documents.</span></p>
       </CorpCard>
-      <p className="c-note c-help__note"><span>{response ? `${response} ` : ""}Never email passwords, codes, bank details or pay documents.</span></p>
     </CorpSection>
     {jobs.length ? <CorpSection id="help-how" label="How to">
       <CorpCard as="div">

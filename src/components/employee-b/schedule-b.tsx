@@ -8,7 +8,7 @@ import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BStack} from '../owner-b/b-kit';
 import {BDoneArrival} from '../owner-b/b-arrival';
-import {BCardNote, BDay, Dotted} from './parts';
+import {BCardNote, BDay, Dotted, Range} from './parts';
 import {ExchangeHeroB, OpenShiftsEmptyB} from './requests-b';
 import {workCopy} from './work-copy';
 import './schedule.css';
@@ -64,8 +64,10 @@ function WeekCard({days, summary, leadNote}: {days: WeekCardDay[]; summary: Reac
       <span className="eb-wd__h" aria-hidden="true"><span>{day.short}</span><b>{day.day}</b></span>
       {/* One stop per shift (a day off is one stop too), each opening that day. */}
       {day.shifts.length ? day.shifts.map(shift => <Link key={shift.key} className={`eb-wsh eb-wsh--${shift.kind}`} href={day.href} scroll={false} aria-label={shift.label}>
-        {/* Phase 4 (EM-014): each half of the range stays whole; if the block is too narrow the line breaks before the dash. */}
-        <b>{shift.time.includes(' – ') ? <><span className="eb-wsh__t">{shift.time.split(' – ')[0]}</span> <span className="eb-wsh__t">– {shift.time.split(' – ')[1]}</span></> : <span className="eb-wsh__t">{shift.time}</span>}</b>{shift.position ? <span className="eb-wsh__l">{shift.position}</span> : null}<span className="eb-wsh__l">{shift.place}</span>
+        {/* Phase 4 (EM-014): each half of the range stays whole; if the block is too narrow the line breaks before the dash.
+          * Phase 8 (review C, row 24): the Employee screens' one range helper, and the place line wraps between whole
+          * segments, never leaving a "·" at a line's end. */}
+        <b><Range text={shift.time}/></b>{shift.position ? <span className="eb-wsh__l">{shift.position}</span> : null}<span className="eb-wsh__l"><Dotted text={shift.place}/></span>
         {/* Review B6 (NV-146): the status chip and a Lead's marker share one row at the block's foot ("Lead" where a
           * tablet's day is narrow). */}
         {shift.chip || shift.lead ? <span className={shift.tomorrow ? 'eb-wsh__chips eb-wsh__chips--tomorrow' : 'eb-wsh__chips'}>{shift.chip}
@@ -124,11 +126,12 @@ export function ScheduleB(props: ScheduleBProps) {
         * column. On a phone it joins the Confirm row above it as one card of 64px rows; from tablets up it has its own
         * heading and, on desktop, sits beside the day card. Confirm stays the screen's one filled pill (EM-004). */}
       {open || changes ? <section className="b-card es-tw" aria-labelledby="b-this-week-h">
-        <div className="b-card__h es-tw__h"><h2 id="b-this-week-h">{t.thisWeek}</h2></div>
+        {/* Phase 8 (review C, row 9): the card says what it holds; its open shifts can be next week's. */}
+        <div className="b-card__h es-tw__h"><h2 id="b-this-week-h">{open && changes ? t.openAndChanges : open ? t.openShifts : t.scheduleChanges}</h2></div>
         <ul className="b-list">
           {open ? open.count ? <BRow href={open.href} label={open.label} lead={<BIcon tone="teal"><PlusIcon weight="bold"/></BIcon>} title={`${open.count} open ${open.count === 1 ? 'shift' : 'shifts'} to pick up`} sub={open.detail}/>
             // Review B2 (NV-275): none to pick up is a fact, not a row to open (grey: it doesn't open, EM-017).
-            : open.count === 0 ? <BRow lead={<BIcon tone="grey"><PlusIcon weight="bold"/></BIcon>} title="No open shifts right now" sub={open.detail}/>
+            : open.count === 0 ? <BRow lead={<BIcon tone="grey"><PlusIcon weight="bold"/></BIcon>} title={t.noOpenShifts}/>
             : <BRow href={open.href} label={open.label} lead={<BIcon tone="teal"><PlusIcon weight="bold"/></BIcon>} title="Open shifts" sub={open.detail}/> : null}
           {changes ? <li className="b-li"><div className="es-chg"><BIcon tone="teal"><ClockCounterClockwiseIcon weight="bold"/></BIcon>{changes}</div></li> : null}
         </ul>

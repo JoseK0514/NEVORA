@@ -40,6 +40,17 @@ describe('Time tab (e-time)',()=>{
   // Last week is its own private read: hidden until it arrives.
   expect(plain).not.toContain('Last week');
  });
+ it('Phase 8 (review C, row 10): a shift that ended with the punch still open is amber, in Home’s words',()=>{
+  const late:EmployeeTimeEntry={...open,clockInAt:'2026-10-27T13:02:00Z',elapsedSeconds:47_820};
+  const data=ready({observedAt:'2026-10-28T02:19:00Z',current:late,today:{entries:[late],recordedSeconds:47_820,breakSeconds:0}});
+  const shifts=[{date:'2026-10-27',startTime:'09:00',endTime:'17:00'}];
+  const b=onlyB(renderToStaticMarkup(<HoursBContext.Provider value={{head:timeHead,authority:'fictional-view',shifts}}><div className="c-page"><CorpTimeTab data={data}/></div></HoursBContext.Provider>)),plain=text(b);
+  expect(b).toContain('<span class="b-chip b-chip--amber">Clocked in</span>');expect(b).toContain('b-ico b-ico--amber');
+  expect(plain).toContain('Still clocked in since 9:02 AM');expect(plain).toContain('Your 9 AM – 5 PM shift has ended. Clock out on the Condado tablet.');
+  // Without today's shifts the card stays as it was (teal), never guessing that a shift ended.
+  const plainB=onlyB(inPage(timeHead,<CorpTimeTab data={data}/>));
+  expect(plainB).toContain('<span class="b-chip b-chip--teal">Clocked in</span>');expect(text(plainB)).not.toContain('Still clocked in');
+ });
  it('says where and since when while on the clock; a cut read shows dashes, not short totals',()=>{
   const on=text(onlyB(inPage(timeHead,<CorpTimeTab data={ready({current:open,today:{entries:[open],recordedSeconds:5520,breakSeconds:0}})}/>)));
   // B7 wording (NV-119/NV-035): "Clocked in" status, "correction request" naming.
@@ -72,7 +83,7 @@ describe('Past timecards (e-timecards)',()=>{
   const list=plain.slice(plain.indexOf('Weeks'));
   const order=['Oct 26 – Nov 1','Oct 19 – 25','Oct 12 – 18','Sep 21 – 27','Show earlier weeks','Your correction requests'].map(range=>list.indexOf(range));
   expect(order.every(at=>at>=0)).toBe(true);expect([...order].sort((a,b)=>a-b)).toEqual(order);
-  expect(plain).toContain('Loading…');expect(plain).toContain('Sent to your manager for review');expect(list).not.toContain('Tue 20');
+  expect(plain).toContain('Loading…');expect(plain).toContain('Waiting and decided');expect(list).not.toContain('Tue 20');
   // The corporate page keeps its chosen week in full.
   expect(text(withoutB(html))).toContain('Tue 20');
  });

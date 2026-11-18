@@ -12,6 +12,7 @@ import { LockSimpleIcon } from "@phosphor-icons/react/dist/ssr/LockSimple";
 import { TrayIcon } from "@phosphor-icons/react/dist/ssr/Tray";
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { faceTint } from "@/lib/face-tint";
+import { keepWhole } from "@/lib/keep-whole";
 
 /* Direction B (Jose approved Nov 5, 2026; mock "NEVORA mobile, Direction B"): the Owner and Manager phone screens. Each page
  * renders one `BScreen` as the first child of its CorpPage; on a phone under the shell's data-nv-b it replaces the page's
@@ -208,9 +209,12 @@ export function compactRange(text: string) {
 /** Jose (Nov 15, 2026, item 5): a time range is short on a phone ("3–4:30 PM") and full from 768px ("3:00 PM – 4:30 PM").
  * Both forms are rendered and the B sheets show one (b-foundation.css), so nothing shifts after hydration. */
 export function BWhen({ text }: { text: string }) {
+  // Phase 8 (b.md #26, #39): the full form always has the spaced en dash ("11:30 PM – 12:00 AM", never "PM–12"), and
+  // both forms keep each time whole and break only after the dash, so no line starts with "– 12 AM" or ends "5:00".
+  const full = keepWhole(text.replace(/([AP]M)[\s   ]*–[\s   ]*(?=\d)/g, "$1 – "));
   const short = compactRange(text);
-  if (short === text) return <>{text}</>;
-  return <><span className="b-when-s">{short}</span><span className="b-when-f">{text}</span></>;
+  if (short === text) return <>{full}</>;
+  return <><span className="b-when-s">{keepWhole(short)}</span><span className="b-when-f">{full}</span></>;
 }
 
 /** "Good morning/afternoon/evening" in the workspace's zone. */

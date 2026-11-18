@@ -1,14 +1,21 @@
 'use client';
 
-import {useRef,useState,type FormEvent,type ReactNode} from 'react';
+import {useEffect,useRef,useState,type FormEvent,type ReactNode} from 'react';
 import {PHOTO_ACTIONS,type PhotoPolicy,type PhotoPolicyUpdate} from '@/lib/clocker/photo-server/contracts';
 import type {PhotoSettingsActionResult} from '@/lib/clocker/photo-server/settings-types';
-import {photoSettingsDraft,photoSettingsUpdate,verifySavedPhotoPolicy} from '@/lib/clocker/photo-client/settings';
+import {photoSettingsDraft,photoSettingsUpdate,verifySavedPhotoPolicy,type PhotoSettingsDraft} from '@/lib/clocker/photo-client/settings';
 import {readPhotoPolicy} from '@/lib/clocker/photo-client/session';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {CorpCard} from '../corp/corp';
 import {ReturnToNext} from '../team/return-to-next';
 import {clockerOwnerCopy,type ClockerOwnerLang} from '../clocker-owner-copy';
+
+/** Phase 8 (B #7): Save shows only once the form differs from what is saved, as on the other Settings forms. */
+export function photoSettingsChanged(draft:PhotoSettingsDraft,policy:PhotoPolicy):boolean {
+  const saved=photoSettingsDraft(policy);
+  return draft.enabled!==saved.enabled||draft.retentionDays.trim()!==saved.retentionDays
+    ||PHOTO_ACTIONS.some(action=>draft.events.includes(action)!==saved.events.includes(action));
+}
 
 export function ClockerPhotoSettings({initialPolicy,saveAction,readAction,children,lang='en'}:{initialPolicy:PhotoPolicy;lang?:ClockerOwnerLang;
   saveAction:(policy:PhotoPolicyUpdate)=>Promise<PhotoSettingsActionResult>;readAction:()=>Promise<PhotoSettingsActionResult>;
@@ -16,10 +23,17 @@ export function ClockerPhotoSettings({initialPolicy,saveAction,readAction,childr
   const t=clockerOwnerCopy[lang];
   const labels={CLOCK_IN:t.momentClockIn,START_BREAK:t.momentStartBreak,END_BREAK:t.momentEndBreak,CLOCK_OUT:t.momentClockOut};
   const [policy,setPolicy]=useState(initialPolicy),[draft,setDraft]=useState(()=>photoSettingsDraft(initialPolicy));
-  const [pending,setPending]=useState(false),[feedback,setFeedback]=useState<{text:string;error:boolean}|null>(null);
+  // `focus`: the button that was pressed leaves with the change it saved, so the result line takes focus (and is then read
+  // once, without a live region).
+  const [pending,setPending]=useState(false),[feedback,setFeedback]=useState<{text:string;error:boolean;focus?:boolean}|null>(null);
   const busy=useRef(false);const [mustReload,setMustReload]=useState(false);
+  const foot=useRef<HTMLDivElement>(null),said=useRef<HTMLParagraphElement>(null);
+  const changed=photoSettingsChanged(draft,policy);
+  useEffect(()=>{if(feedback?.focus)said.current?.focus();},[feedback]);
+  const fromFoot=()=>!!foot.current&&foot.current.contains(document.activeElement);
   async function save(event:FormEvent<HTMLFormElement>){
     event.preventDefault();if(busy.current||mustReload)return;
+    const pressed=fromFoot();
     let request:PhotoPolicyUpdate;
     try{request=photoSettingsUpdate(draft,policy.version);}
     catch(error){setFeedback({text:error instanceof Error?error.message:t.photosCheck,error:true});return;}
@@ -28,23 +42,23 @@ export function ClockerPhotoSettings({initialPolicy,saveAction,readAction,childr
       const result=await saveAction(request);
       if(result.state!=='available'){setMustReload(true);setFeedback({text:result.message,error:true});return;}
       const saved=verifySavedPhotoPolicy(result.policy,request);setPolicy(saved);setDraft(photoSettingsDraft(saved));
-      setFeedback({text:t.photosSaved,error:false});
+      setFeedback({text:t.photosSaved,error:false,focus:pressed});
     }catch{setMustReload(true);setFeedback({text:t.photosNotConfirmed,error:true});}
     finally{busy.current=false;setPending(false);}
   }
   async function reload(){
-    if(busy.current)return;busy.current=true;setPending(true);setFeedback(null);
+    if(busy.current)return;const pressed=fromFoot();busy.current=true;setPending(true);setFeedback(null);
     try{
       const result=await readAction();
       if(result.state!=='available'){setMustReload(true);setFeedback({text:result.message,error:true});return;}
       const current=readPhotoPolicy(result.policy);setMustReload(false);setPolicy(current);setDraft(photoSettingsDraft(current));
-      setFeedback({text:t.photosReloaded,error:false});
+      setFeedback({text:t.photosReloaded,error:false,focus:pressed});
     }catch{setMustReload(true);setFeedback({text:t.photosReloadFailed,error:true});}
     finally{busy.current=false;setPending(false);}
   }
   // Owner premium R13 (round 2): while photo capture is unavailable the page is one card. It says so first, then the same
   // draft and fields, then `children` (help for your team and review, each outside this form so no form nests), and one
-  // Save. Reload shows only when a save couldn't be confirmed, the one time it's needed. Same reads, fields and actions.
+  // Save, shown once something changed (Phase 8). Reload shows only when a save couldn't be confirmed, the one time it's needed. Same reads, fields and actions.
   // Phase 6: the card opens with what the setting does, in one sentence; each switch says its state in words (On, Off)
   // beside it, so the state never rests on the switch's colour; and while punch photos are off, the four moments are
   // disabled and a line under their heading says why.
@@ -65,13 +79,14 @@ export function ClockerPhotoSettings({initialPolicy,saveAction,readAction,childr
           {state(draft.enabled)}<input id="photo-enabled" type="checkbox" role="switch" className="c-switch" checked={draft.enabled} onChange={e=>setDraft({...draft,enabled:e.target.checked})}/>
         </label>
         {/* Review B5 (NV-083): while punch photos are off, the moments read as off too (disabled, the disabled look); the
-          choices are kept and come back when photos are turned on. */}
+          choices are kept and come back when photos are turned on. Phase 8 (B #6): a disabled moment is drawn and announced
+          off, since no photo is taken at it; the kept choice lives in the draft, not in the switch. */}
         <fieldset className="c-photos__events" disabled={!draft.enabled} data-off={!draft.enabled || undefined}>
         <legend className="c-photos__label" id="photo-events">{t.photosMoments}</legend>
         {draft.enabled?null:<p className="ck-photos__why" id="photo-events-why">{t.photosMomentsOff}</p>}
         <ul className="c-rows" aria-labelledby="photo-events" aria-describedby={draft.enabled?undefined:'photo-events-why'}>{PHOTO_ACTIONS.map(action=><li key={action}><label className="c-row c-row--one c-photos__switch" htmlFor={`photo-event-${action}`}>
           <span className="c-row__main"><span className="c-row__title">{labels[action]}</span></span>
-          {state(draft.events.includes(action),!draft.enabled)}<input id={`photo-event-${action}`} type="checkbox" role="switch" className="c-switch" aria-describedby={draft.enabled?undefined:'photo-events-why'} checked={draft.events.includes(action)} onChange={e=>setDraft({...draft,events:e.target.checked?[...draft.events,action]:draft.events.filter(value=>value!==action)})}/>
+          {state(draft.events.includes(action),!draft.enabled)}<input id={`photo-event-${action}`} type="checkbox" role="switch" className="c-switch" aria-describedby={draft.enabled?undefined:'photo-events-why'} checked={draft.enabled&&draft.events.includes(action)} onChange={e=>setDraft({...draft,events:e.target.checked?[...draft.events,action]:draft.events.filter(value=>value!==action)})}/>
         </label></li>)}</ul>
         </fieldset>
         <div className="c-field c-photos__keep"><label className="c-field__label" htmlFor="photo-retention-days">{t.photosKeep}</label>
@@ -83,10 +98,10 @@ export function ClockerPhotoSettings({initialPolicy,saveAction,readAction,childr
       <ReturnToNext/>
     </form>
     {children}
-    {feedback?<p role={feedback.error?'alert':'status'} className={feedback.error?'c-photos__feedback c-photos__feedback--error':'c-photos__feedback'}>{feedback.text}</p>:null}
-    <div className="c-card__foot c-photos__foot">
+    {feedback?<p ref={said} tabIndex={feedback.focus?-1:undefined} role={feedback.focus?undefined:feedback.error?'alert':'status'} className={feedback.error?'c-photos__feedback c-photos__feedback--error':'c-photos__feedback'}>{feedback.text}</p>:null}
+    {changed||mustReload||pending?<div className="c-card__foot c-photos__foot" ref={foot}>
       {mustReload?<button type="button" className="c-btn c-btn--secondary" disabled={pending} onClick={()=>void reload()}>{t.photosReload}</button>:null}
       <button type="submit" form="photo-policy-form" disabled={pending||mustReload} className="c-btn">{pending?t.saving:t.photosSave}</button>
-    </div>
+    </div>:null}
   </CorpCard>;
 }

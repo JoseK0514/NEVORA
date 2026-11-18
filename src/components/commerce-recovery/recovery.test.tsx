@@ -29,7 +29,7 @@ it('keeps the public tablet recovery screen free of private status and arbitrary
  expect(html).toContain('Access could not be checked');expect(html).toContain('Open billing on your own device.');expect(html).not.toContain('/login');expect(html).not.toContain('Try Clocker again');expect(html).not.toContain('evil.invalid');expect(html).not.toContain('must-not-echo');expect(state.session).not.toHaveBeenCalled();
 });
 it('uses Spanish copy without exposing a billing-status payload on the tablet',async()=>{
- state.lang='es';const html=renderToStaticMarkup(await PausedPage({searchParams:Promise.resolve({from:'/clocker/main'})}));expect(html).toContain('Intentar el Clocker de nuevo');expect(html).toContain('href="/clocker/main"');expect(html).not.toContain('Active employees');
+ state.lang='es';const html=renderToStaticMarkup(await PausedPage({searchParams:Promise.resolve({from:'/clocker/main'})}));expect(html).toContain('>Intentar de nuevo</a>');expect(html).toContain('href="/clocker/main"');expect(html).not.toContain('Active employees');
 });
 it('unmounts retained operational shell and sheets on recovery entry, preserving them on ordinary routes',()=>{
  const render=()=>renderToStaticMarkup(<CommerceRecoveryBoundary enabled shell={<aside>OPERATIONAL POLLERS AND SHEET</aside>}><h1>BILLING</h1></CommerceRecoveryBoundary>);

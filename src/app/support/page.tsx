@@ -43,7 +43,7 @@ export default async function Page() {
       <h2 className="pl-grp" id="support-common">{t.common}</h2>
       <ul className="q-list" aria-labelledby="support-common">
         {answers.signIn ? question(t.cantSignIn, null, answers.signIn) : null}
-        {answers.work ? question(t.work, t.workDetail, answers.work) : null}
+        {answers.work ? question(t.work, null, answers.work) : null}
         {question(t.report, null, answers.report)}
       </ul>
       <h2 className="pl-grp">{t.mail}</h2>

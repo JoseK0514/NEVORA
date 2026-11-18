@@ -54,3 +54,14 @@ it('reads days and times in the workplace zone the snapshot carries (backend, No
  // 14:00 UTC is 4:00 AM the next day at UTC+14.
  expect(renderToStaticMarkup(zoned())).toContain('Monday, November 16 at 4:00');
 });
+
+it('says a manager summary\'s count was what it gathered when sent, with its scope (Phase 8, a.md #29, b.md #25)',()=>{
+ const one=(id:string,count:number,at:string):EmployeeNotificationItem=>({...summary(id,at,'unread'),eventType:'MANAGER_REVIEW',count} as EmployeeNotificationItem);
+ host.cursor=0;
+ const html=renderToStaticMarkup(NotificationInbox({state:{paused:false,refreshing:false,snapshot:{state:'ready',kind:'notifications',coverage:'complete',items:[one('s1',22,'2026-11-15T14:00:00Z')],observedAt:'2026-11-15T14:05:00Z',validForMs:60000} as never},onRetry:()=>{},onMarkRead}));
+ // Not "22 waiting" beside a badge of 11: the count is the summary's, said in the past, and the line names what it gathered.
+ expect(html).toContain('<b>22 items were waiting</b>');
+ expect(html).toContain('Open shifts, requests or missing availability · ');
+ expect(html).not.toContain('22 waiting');
+ expect(html).not.toContain('<b>Things to do are waiting for you</b>');
+});

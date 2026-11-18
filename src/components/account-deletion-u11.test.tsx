@@ -28,7 +28,7 @@ describe("deleting the last Owner", () => {
     expect(html).not.toContain('role="alert"');
     // Nothing to submit again from here: the retry is deliberate, from the form, after another Owner can sign in.
     expect(html).not.toContain('name="password"');
-    expect(html).not.toContain("Confirm deletion request");
+    expect(html).not.toContain("q-deletion__confirm");
     expect(html).not.toContain("Account deletion isn’t available right now");
     // No request exists, so no deletion reference is shown; the enum never reaches the screen.
     expect(html).not.toMatch(/DEL-|LAST_OWNER/);

@@ -45,7 +45,7 @@ it.each(['en','es'] as const)('Employee ID has its helper at every width and the
 
 it('only the Spanish page says the app is in English for now (PB-009)',async()=>{
  const note=AUTH_COPY.es.appLanguageNote;
- expect(note).toBe('Por ahora, la aplicación está en inglés después de iniciar sesión.');
+ expect(note).toBe('Por ahora, la aplicación se muestra en inglés después de iniciar sesión.');
  expect(await page('es')).toContain(`<p class="q-auth__langnote">${note}</p>`);
  expect(await page('en')).not.toContain('q-auth__langnote');
 });

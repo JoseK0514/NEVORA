@@ -8,7 +8,7 @@ import {RecoverySubmit} from './recovery-submit';
 import {AUTH_COPY,authMessage,type AuthLang} from '@/lib/auth-copy';
 import {AuthValidation,FieldInvalid} from '@/components/auth-premium/auth-validation';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
-import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
+import {WarningIcon} from "@phosphor-icons/react/dist/ssr/Warning";
 import {EnvelopeSimpleIcon} from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
 import {WifiSlashIcon} from '@phosphor-icons/react/dist/ssr/WifiSlash';
 import {ACCESS_COPY} from './access-recovery/copy';
@@ -55,7 +55,7 @@ export function RecoveryRequest({hydrated,busy,done,message,onSubmit,lang='en',m
  return <>
   <div className="q-hd"><h1 id="recovery-title">{done?t.checkEmail.title:t.forgotTitle}</h1>{workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null}<p>{done?u.requestedSub:t.quiet.forgotSub}</p></div>
   {done?<div className="q-card q-auth__card">
-   <AccessSteps journey="recovery" current={2} lang={lang}/>
+   <AccessSteps journey="recovery" current={2} lang={lang} named={false}/>
    <span className="q-auth__mark" aria-hidden="true"><EnvelopeSimpleIcon size={28} weight="bold"/></span>
    <div className="q-auth__receipt" ref={feedback} role="status" tabIndex={-1} aria-labelledby="recovery-title">
     {message?<p>{authMessage(lang,message)}</p>:null}<p>{u.notConfirmed} {t.checkEmail.expires}</p>
@@ -69,8 +69,8 @@ export function RecoveryRequest({hydrated,busy,done,message,onSubmit,lang='en',m
     <AuthValidation/>
     <AccessSteps journey="recovery" current={1} lang={lang}/>
     {message&&issue==='offline'?<div id="recovery-offline" className="q-auth__alert q-auth__alert--wait" ref={feedback} role="alert" tabIndex={-1}><WifiSlashIcon size={20} weight="bold" aria-hidden="true"/><span>{u.offline}</span></div>
-    :message?<><div id="recovery-error" className="q-error q-auth__alert" ref={feedback} role="alert" tabIndex={-1}><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span><span>{authMessage(lang,message)}</span>{next?<span className="ar-alert__next">{next}</span>:null}</span></div><SupportReference reference={supportReference} lang={lang} id="recovery-reference"/></>
-    :<ol className="ar-before" aria-label={u.beforeLabel}>{u.before.map((line,index)=><li key={line}><span className="ar-before__n" aria-hidden="true">{index+1}</span><span>{line}</span></li>)}</ol>}
+    :message?<><div id="recovery-error" className="q-error q-auth__alert" ref={feedback} role="alert" tabIndex={-1}><WarningIcon size={20} weight="bold" aria-hidden="true"/><span><span>{authMessage(lang,message)}</span>{next?<span className="ar-alert__next">{next}</span>:null}</span></div><SupportReference reference={supportReference} lang={lang} id="recovery-reference"/></>
+    :<p className="ar-intro">{u.intro}</p>}
     <fieldset className="q-auth__fields" disabled={!hydrated||busy}>
      <div className="q-fl">
       <label htmlFor="recovery-employee-id">{t.employeeId}</label>

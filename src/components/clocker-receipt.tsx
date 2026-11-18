@@ -3,7 +3,8 @@
 import { useState, type ReactNode } from 'react';
 import { durationSentence } from '../lib/duration-format';
 import type { PunchAction, PunchReceipt, PunchSnapshot } from '../lib/clocker/punch-types';
-import { useClockerCopy } from './clocker-language';
+import { useClockerCopy, useClockerPresentation } from './clocker-language';
+import { clockerSpanishHour } from './clocker-copy';
 import { ClockerIcon } from './clocker-icon';
 import styles from './clocker.module.css';
 
@@ -26,17 +27,18 @@ export function receiptFacts(receipt: Pick<PunchReceipt, 'action' | 'performedAt
   const at = Date.parse(receipt.performedAt);
   const length = (from: string): ReceiptFact['value'] | null => {
     const minutes = Math.floor((at - Date.parse(from)) / 60000);
-    return Number.isFinite(minutes) && minutes >= 0 ? minutes < 1 ? 'under a minute' : durationSentence(minutes) : null;
+    // "under 1 min" (Phase 8): a fact cell holds one short value in both languages ("menos de 1 min").
+    return Number.isFinite(minutes) && minutes >= 0 ? minutes < 1 ? 'under 1 min' : durationSentence(minutes) : null;
   };
   if (receipt.action === 'CLOCK_OUT' && before?.entry && before.entry.id === receipt.timeEntryId) {
     const since = length(before.entry.clockInAt);
     return [{ label: 'Clocked in at', value: shortTime(before.entry.clockInAt, timeZone, at, locale), dateTime: before.entry.clockInAt },
-      ...(since ? [{ label: 'Since clock-in', value: since, translate: since === 'under a minute' }] : [])];
+      ...(since ? [{ label: 'Clocked in for', value: since, translate: since === 'under 1 min' }] : [])];
   }
   if (receipt.action === 'END_BREAK' && before?.break && before.break.id === receipt.breakEntryId) {
     const took = length(before.break.breakStartAt);
     return [{ label: 'Break started at', value: shortTime(before.break.breakStartAt, timeZone, at, locale), dateTime: before.break.breakStartAt },
-      ...(took ? [{ label: 'Break length', value: took, translate: took === 'under a minute' }] : [])];
+      ...(took ? [{ label: 'Break length', value: took, translate: took === 'under 1 min' }] : [])];
   }
   if (receipt.action === 'START_BREAK' && receipt.breakType) {
     return [{ label: 'Break type', value: receipt.breakType.name },
@@ -66,21 +68,25 @@ export function ClockerReceipt({ action, performedAt, commandId, timeZone, local
   /** Notes between the approved line and "Saved …" (the photo outcome). */
   children?: ReactNode;
 }) {
-  const t = useClockerCopy();
+  const t = useClockerCopy(), { locale: language } = useClockerPresentation();
   const [now] = useState(() => Date.now());
   const recordedAt = new Intl.DateTimeFormat(locale, { timeZone, hour: 'numeric', minute: '2-digit', hour12: true }).format(new Date(performedAt));
   // One sentence with a placeholder (NV-173). The date shows only when it isn't today (NV-303). Spanish times end in
-  // "p. m.", so the sentence doesn't add a second full stop.
-  const savedAt = shortTime(performedAt, timeZone, now, locale);
-  const [before, after = ''] = t('Saved {time}. This screen clears in 8 seconds.', { time: '\u0000' }).split('\u0000');
+  // "p. m.", so the sentence doesn't add a second full stop. Phase 8: "Saved at 10:30 PM." as approved, and in Spanish
+  // "Guardado a las 10:30 p. m." ("a la 1:05"), with "Se borra en 8 segundos." short enough to keep the line whole.
+  const savedAt = shortTime(performedAt, timeZone, now, locale), dated = savedAt !== recordedAt;
+  const sentence = t(dated ? 'Saved {time}. This screen clears in 8 seconds.' : 'Saved at {time}. This screen clears in 8 seconds.', { time: '\u0000' });
+  const [before, after = ''] = (language === 'es' && !dated ? clockerSpanishHour(sentence.replace('\u0000', savedAt)).replace(savedAt, '\u0000') : sentence).split('\u0000');
   const rest = savedAt.endsWith('.') && after.startsWith('.') ? after.slice(1) : after;
+  // The second sentence stays whole (Phase 8, #11): two lines break between the sentences, never inside the second.
+  const [, lead = '', clears = ''] = /^([.\s]*)([\s\S]*)$/.exec(rest) ?? [];
   return <>
     <p className={styles.hero}><time dateTime={performedAt}>{recordedAt}</time></p>
     {firstName || action === 'START_BREAK' || action === 'END_BREAK' ? <p className={styles.bye}>{t(firstName ? namedGoodbyes[action] ?? goodbyes[action] : goodbyes[action], { first: firstName })}</p> : null}
     {facts.length ? <dl className={styles.facts} data-clocker-receipt-facts="">{facts.map(fact => <div key={fact.label}><dt>{t(fact.label)}</dt>
       <dd>{fact.dateTime ? <time dateTime={fact.dateTime}>{fact.value}</time> : fact.translate ? t(fact.value, fact.params) : fact.value}</dd></div>)}</dl> : null}
     {children}
-    <p role="status" className={styles.saved}>{before}<time dateTime={performedAt}>{savedAt}</time>{rest}</p>
+    <p role="status" className={styles.saved}>{before}<time dateTime={performedAt}>{savedAt}</time>{lead}{clears ? <span className={styles.clearsIn}>{clears}</span> : null}</p>
     <span className={styles.countdown} aria-hidden="true"><i/></span>
     {commandId ? <details className={styles.reference}><summary>{t('Reference')}<ClockerIcon name="caret" size={16}/></summary><code>{commandId}</code></details> : null}
   </>;

@@ -18,6 +18,10 @@ const fallback: BLoadingShape = { band: "short", frame: "read", lift: false, car
 /* Follow-up (Nov 15): the frames below are the settled ones from packages A (Owner, Manager) and B (Employee, Lead):
  * title top 88 without a back row and 130 with one, the band rung, the content width and whether the first card lifts. */
 const titled: BLoadingShape = { band: "short", frame: "read", lift: false, cards: [{ head: true, lines: 4 }] };
+/* Phase 8 (Nov 17, 2026): the placeholders follow the frame fixes. A strip under a title with no sub-line ends its band at
+ * 264 under a back link (Notifications, Time off requests, Shift requests, Clocker PINs) and at 270 on Updates, which has
+ * no back row from 768px and lifts its list; Time exports and Payroll settings lift their first card like Payroll; Paid
+ * time export has no step line, so its band is the short one. */
 const MANAGEMENT: Entry[] = [
   ["/app/inbox", { title: "Things to do", strip: true, band: "strip", frame: "rail", cards: [{ rows: 4, avatar: true }, { rows: 3, avatar: true }] }],
   ["/app/schedule/templates", { ...form, title: "Week templates", cards: [{ rows: 3 }] }],
@@ -34,9 +38,9 @@ const MANAGEMENT: Entry[] = [
   // Time exports and Payroll settings carry the Payroll tabs: title at 88, band 296, cards 24px under it.
   // U01: the two step-by-step pages are forms in the sheet frame (back row, band 196, one card).
   // Paid time export carries a line under its title, so its band ends at 224 (measured Nov 17: the placeholder ended at 196).
-  ["/app/payroll-export/paid-time", { ...form, title: "Paid time export", sub: true, band: "sub", cards: [{ head: true, lines: 2 }, { rows: 4 }] }],
+  ["/app/payroll-export/paid-time", { ...form, title: "Paid time export", cards: [{ head: true, lines: 2 }, { rows: 4 }] }],
   ["/app/payroll/import", { ...form, title: "Import pay", cards: [{ head: true, lines: 3 }, { rows: 2 }] }],
-  ["/app/payroll-export", { title: "Time exports", sub: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ head: true, lines: 3 }, { rows: 3 }] }],
+  ["/app/payroll-export", { title: "Time exports", sub: true, strip: true, band: "strip", frame: "read", cards: [{ head: true, lines: 3 }, { rows: 3 }] }],
   [/^\/app\/payroll\/.+/, { back: true, band: "short", frame: "read", lift: false, cards: [{ head: true, lines: 3 }, { rows: 3 }] }],
   // Payroll: a title, its scope line and the tabs, on the strip rung (the frequency line is hidden from 768px).
   ["/app/payroll", { title: "Payroll", sub: true, strip: true, band: "strip", frame: "rail-desktop", cards: [{ head: true, rows: 3 }, { rail: true, head: true, lines: 3 }] }],
@@ -52,17 +56,17 @@ const MANAGEMENT: Entry[] = [
   ["/app/reports", { title: "Insights", band: "short", frame: "wide", lift: false, cards: [{ head: true, stats: 3 }, { head: true, lines: 3 }] }],
   ["/app/updates/compose", titled],
   [/^\/app\/updates\/.+/, form],
-  ["/app/updates", { title: "Updates", back: true, strip: true, action: true, band: "strip", frame: "read", lift: false, cards: [{ rows: 3 }] }],
-  ["/app/notifications", { title: "Notifications", back: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ rows: 4 }] }],
-  ["/app/requests", { back: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ rows: 4, avatar: true }] }],
-  ["/app/exchange", { back: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ rows: 4, avatar: true }] }],
+  ["/app/updates", { title: "Updates", strip: true, action: true, band: 270, frame: "read", cards: [{ rows: 3 }] }],
+  ["/app/notifications", { title: "Notifications", back: true, strip: true, band: 264, frame: "read", lift: false, cards: [{ rows: 4 }] }],
+  ["/app/requests", { back: true, strip: true, band: 264, frame: "read", lift: false, cards: [{ rows: 4, avatar: true }] }],
+  ["/app/exchange", { back: true, strip: true, band: 264, frame: "read", lift: false, cards: [{ rows: 4, avatar: true }] }],
   ["/app/availability", { back: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ rows: 5, avatar: true }] }],
-  ["/app/settings/payroll", { title: "Payroll settings", sub: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ head: true, lines: 4 }] }],
+  ["/app/settings/payroll", { title: "Payroll settings", sub: true, strip: true, band: "strip", frame: "read", cards: [{ head: true, lines: 4 }] }],
   // The Owner's Clocker settings (Phase 6). Tablets: a title and one line (band 224), the tablets card with a lead slot per
   // row. PINs: search and tabs on the band (296), people rows. Photos: one card of switch rows. Review: photo rows.
   ["/app/settings/clocker/photos/review", { ...detail, title: "Photo review", cards: [{ head: true, rows: 4 }] }],
   ["/app/settings/clocker/photos", { ...detail, title: "Punch photos", cards: [{ lines: 2, rows: 5 }] }],
-  ["/app/settings/clocker/pins", { title: "Clocker PINs", back: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ head: true, rows: 6, avatar: true }] }],
+  ["/app/settings/clocker/pins", { title: "Clocker PINs", back: true, strip: true, band: 264, frame: "read", lift: false, cards: [{ head: true, rows: 6, avatar: true }] }],
   ["/app/settings/clocker", { ...detail, title: "Clocker tablets", cards: [{ head: true, rows: 2, avatar: true }] }],
   [/^\/app\/settings\/.+/, form],
   ["/app/settings", { title: "Settings", band: "short", frame: "pair", lift: false, cards: [{ rows: 3 }, { rows: 4 }] }],

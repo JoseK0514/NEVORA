@@ -3,19 +3,22 @@ import Image from 'next/image';
 import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {PunchPhotoSession,type PhotoBindings,type PhotoSessionContext,type PhotoSessionView,type PhotoPhase} from '@/lib/clocker/photo-client/session';
 import {photoResultMessage,offlinePhotoMessage} from '@/lib/clocker/photo-client/result-copy';
-import {useClockerCopy,useClockerPresentation} from '../clocker-language';
+import {useClockerCopy,useClockerKeepNames,useClockerPresentation} from '../clocker-language';
 import {CLOCKER_RECEIPT_CLEAR_MS} from '../clocker-privacy';
 import {ClockerPhotoNotice} from './photo-notice';
 import styles from './photo.module.css';
 import {ClockerIcon,type ClockerIconName} from '../clocker-icon';
-import {ClockerReceipt,clockTime,receiptTitles} from '../clocker-receipt';
+import {ClockerReceipt,clockTime,receiptFacts,receiptTitles} from '../clocker-receipt';
+import type {PunchAction,PunchSnapshot} from '@/lib/clocker/punch-types';
 import ck from '../clocker.module.css';
-const actionNames={CLOCK_IN:'Clock in',CLOCK_OUT:'Clock out',START_BREAK:'Start break',END_BREAK:'End break'};
-const titles:Record<PhotoPhase,string>={setup_required:'Photo capture is unavailable',ready:'Photo for {action}',camera_starting:'Opening the camera…',camera_live:'Ready for your photo?',photo_review:'Use this photo?',camera_error:'The camera needs attention',intent_unavailable:'This tablet can’t save punches',punch_sending:'Checking your time…',punch_unknown:'Check your last punch',punch_retry_allowed:'Check your last punch',photo_saving:'Saving your punch photo…',photo_unknown:'Time recorded. Check the photo.',complete:'Time recorded',expired:'Enter your PIN again',cancelled:'Camera closed'};
+/* Phase 8 (#15): the photo step names its action in sentence case, one phrase per action ("Photo for clock out"). */
+const photoTitles:Record<PunchAction,string>={CLOCK_IN:'Photo for clock in',CLOCK_OUT:'Photo for clock out',START_BREAK:'Photo for break start',END_BREAK:'Photo for break end'};
+const titles:Record<PhotoPhase,string>={setup_required:'Photo capture is unavailable',ready:'Photo for clock in',camera_starting:'Opening the camera…',camera_live:'Ready for your photo?',photo_review:'Use this photo?',camera_error:'The camera needs attention',intent_unavailable:'This tablet can’t save punches',punch_sending:'Checking your time…',punch_unknown:'Check your last punch',punch_retry_allowed:'Check your last punch',photo_saving:'Saving your punch photo…',photo_unknown:'Time recorded. Check the photo.',complete:'Time recorded',expired:'Enter your PIN again',cancelled:'Camera closed'};
 /* Direction B (Nov 8, 2026): the same 64px status rings as the rest of the kiosk. */
 const rings:Partial<Record<PhotoPhase,[ClockerIconName,'teal'|'amber'|'red'|'green']>>={setup_required:['stop','red'],ready:['camera','teal'],camera_error:['warning','red'],intent_unavailable:['stop','red'],
  punch_sending:['wait','teal'],photo_saving:['wait','teal'],punch_unknown:['refresh','amber'],punch_retry_allowed:['refresh','amber'],photo_unknown:['refresh','amber'],expired:['lock','amber'],cancelled:['info','teal']};
-export type PunchPhotoFlowProps={context:PhotoSessionContext;bindings:PhotoBindings;timeZone:string;firstName?:string;onExit(result:PhotoSessionView):void};
+/** snapshot: the clock state the person acted on, so the photo path's receipt carries the same facts as the normal one. */
+export type PunchPhotoFlowProps={context:PhotoSessionContext;bindings:PhotoBindings;timeZone:string;firstName?:string;snapshot?:PunchSnapshot;onExit(result:PhotoSessionView):void};
 /* Kiosk wording for photo results (Nov 10 review, NV-047): no audit words ("photo exception") and no storage note.
  * Phase 6 (Nov 17, 2026): the two "unconfirmed" results in the kiosk's plain words, with the button's current name. */
 const kioskWords:Record<string,string>={'Your time is recorded. The photo was not saved; a photo exception is recorded.':'Your time is recorded. No photo was saved; your manager can see that.',
@@ -26,13 +29,13 @@ export function ClockerPunchPhotoFlow(props:PunchPhotoFlowProps){
  const key=`${props.context.intent.subject}:${JSON.stringify(props.context.intent.command)}:${props.context.proofExpiresAt}:${props.context.screenExpiresAt}`;
  return <PunchPhotoFlowSession key={key} {...props}/>;
 }
-function PunchPhotoFlowSession({context,bindings,timeZone,firstName='',onExit}:PunchPhotoFlowProps){
+function PunchPhotoFlowSession({context,bindings,timeZone,firstName='',snapshot,onExit}:PunchPhotoFlowProps){
  const t=useClockerCopy(),initial=useRef({context,bindings});const [session,setSession]=useState<PunchPhotoSession|null>(null);
  useEffect(()=>{const current=new PunchPhotoSession(initial.current.context,initial.current.bindings);setSession(current);return()=>current.dispose();},[]);
- return session?<ActivePhotoFlow session={session} timeZone={timeZone} firstName={firstName} onExit={onExit}/>:<section className={styles.flow}><p role="status">{t('Getting ready…')}</p></section>;
+ return session?<ActivePhotoFlow session={session} timeZone={timeZone} firstName={firstName} snapshot={snapshot} onExit={onExit}/>:<section className={styles.flow}><p role="status">{t('Getting ready…')}</p></section>;
 }
-function ActivePhotoFlow({session,timeZone,firstName,onExit}:{session:PunchPhotoSession;timeZone:string;firstName:string;onExit:(result:PhotoSessionView)=>void}){
- const t=useClockerCopy(),{locale}=useClockerPresentation(),state=useSyncExternalStore(session.subscribe,session.getSnapshot,session.getSnapshot);
+function ActivePhotoFlow({session,timeZone,firstName,snapshot,onExit}:{session:PunchPhotoSession;timeZone:string;firstName:string;snapshot?:PunchSnapshot;onExit:(result:PhotoSessionView)=>void}){
+ const t=useClockerCopy(),keep=useClockerKeepNames(),{locale}=useClockerPresentation(),state=useSyncExternalStore(session.subscribe,session.getSnapshot,session.getSnapshot);
  const video=useRef<HTMLVideoElement>(null),heading=useRef<HTMLHeadingElement>(null),exitRef=useRef(onExit);
  useEffect(()=>{exitRef.current=onExit;},[onExit]);
  const [offline,setOffline]=useState(false),camera=['camera_starting','camera_live'].includes(state.phase),busy=['camera_starting','punch_sending','photo_saving'].includes(state.phase);
@@ -50,16 +53,17 @@ function ActivePhotoFlow({session,timeZone,firstName,onExit}:{session:PunchPhoto
  const intl=locale==='es'?'es-PR':'en-US';
  /* The photo path's receipt is the normal receipt (Nov 10 review, NV-054): the filled check, "Clock out recorded", the hero
   * time, the approved line, "Saved …" and the eight-second bar (the same CLOCKER_RECEIPT_CLEAR_MS exit). A missing photo
-  * is an amber note the employee can act on; Done leaves, as on the normal receipt. */
+  * is an amber note the employee can act on; Done leaves, as on the normal receipt. Phase 8 (#31): the same facts and
+  * Reference as the normal receipt, from the same reply and the state the person acted on. */
  const receipt=state.phase==='complete'&&state.receipt?state.receipt:null;
  const missing=state.photoStatus?.state==='missing';
  return <section className={styles.flow} aria-busy={busy} aria-labelledby="clocker-photo-title">
   {receipt?<span className={ck.check}><ClockerIcon name="check" size={52}/></span>
    :rings[state.phase]?<span className={styles.ring} data-tone={rings[state.phase]![1]}><ClockerIcon name={rings[state.phase]![0]} size={28}/></span>:null}
-  <h1 id="clocker-photo-title" ref={heading} tabIndex={-1}>{receipt?t(receiptTitles[state.action]):t(titles[state.phase],{action:t(actionNames[state.action])})}</h1>
-  {receipt?<ClockerReceipt action={state.action} performedAt={receipt.performedAt} timeZone={timeZone} locale={intl} firstName={firstName}>
+  <h1 id="clocker-photo-title" ref={heading} tabIndex={-1}>{receipt?t(receiptTitles[state.action]):t(state.phase==='ready'?photoTitles[state.action]:titles[state.phase])}</h1>
+  {receipt?<div className={styles.receipt}><ClockerReceipt action={state.action} performedAt={receipt.performedAt} commandId={receipt.commandId} timeZone={timeZone} locale={intl} firstName={firstName} facts={receiptFacts(receipt,snapshot,timeZone,intl)}>
    <div className={ck.note} data-tone={missing?'amber':undefined}><ClockerIcon name={missing?'warning':'info'} size={20}/><p>{t(kiosk(photoResultMessage(state)))}</p></div>
-  </ClockerReceipt>:null}
+  </ClockerReceipt></div>:null}
   {state.requiresPhoto&&['ready','setup_required','camera_error'].includes(state.phase)?<ClockerPhotoNotice caret policy={state.policy} notice={state.notice}/>:null}
   <div className={styles.cameraFrame} hidden={!camera&&!state.previewUrl}>
    <video ref={video} playsInline muted autoPlay className={styles.video} hidden={!camera} aria-label={t('Live camera preview')}/>
@@ -70,8 +74,8 @@ function ActivePhotoFlow({session,timeZone,firstName,onExit}:{session:PunchPhoto
   {state.phase==='camera_live'?<p className={styles.description}>{t('Face the camera. Take a photo when you are ready.')}</p>:null}
   {state.phase==='photo_review'?<p className={styles.description}>{t('The camera is off. Use this photo to record your time.')}</p>:null}
   {state.phase==='camera_error'?<p role="alert" className={styles.notice}>{t(error)}</p>:null}
-  {['punch_unknown','punch_retry_allowed'].includes(state.phase)?<p role="alert" className={styles.notice}>{t('Your punch is not confirmed yet. Tap Check if it saved before doing anything else.')}</p>:null}
-  {state.phase==='intent_unavailable'?<p role="alert" className={styles.notice}>{t('This tablet can’t save punches right now. No punch was sent. Ask your manager to check the tablet.')}</p>:null}
+  {['punch_unknown','punch_retry_allowed'].includes(state.phase)?<p role="alert" className={styles.notice}>{keep(t('Your punch is not confirmed yet. Tap Check if it saved before doing anything else.'))}</p>:null}
+  {state.phase==='intent_unavailable'?<p role="alert" className={styles.notice}>{t('No punch was sent. Ask a manager to check this tablet.')}</p>:null}
   {state.phase==='photo_unknown'||state.phase==='complete'&&!receipt?<p role="status" className={styles.notice}>{t(kiosk(photoResultMessage(state)))}</p>:null}
   {['expired','cancelled'].includes(state.phase)?<p className={styles.description}>{t('The camera and private preview have been cleared.')}{' '}{t(state.receipt?'Your recorded time is preserved.':'Enter your PIN again to check a punch that isn’t confirmed.')}</p>:null}
   {state.receipt&&!receipt?<p className={styles.description}>{t('Time recorded at {time}',{time:clockTime(state.receipt.performedAt,timeZone,intl)})}</p>:null}
@@ -87,7 +91,7 @@ function ActivePhotoFlow({session,timeZone,firstName,onExit}:{session:PunchPhoto
    {state.phase==='photo_unknown'?<button type="button" className={styles.primary} onClick={()=>void session.checkPhoto()}>{t('Check photo status')}</button>:null}
    {state.phase==='photo_unknown'&&state.photoStatus?.state==='pending'&&state.previewUrl?<button type="button" className={styles.secondary} onClick={()=>void session.retryPhoto()}>{t('Retry saving same photo')}</button>:null}
    {receipt?<button type="button" className={styles.secondary} onClick={exit}>{t('Done')}</button>
-   :<button type="button" className={styles.quiet} onClick={exit}>{t(state.receipt||['expired','cancelled','complete'].includes(state.phase)?'Return to PIN':'Cancel & return')}</button>}
+   :<button type="button" className={styles.quiet} onClick={exit}>{t(state.receipt||['expired','cancelled','complete'].includes(state.phase)?'Return to PIN':'Cancel')}</button>}
   </div>
  </section>;
 }

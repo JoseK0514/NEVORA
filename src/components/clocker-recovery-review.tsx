@@ -161,8 +161,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation, lan
           <label className="ck-field__l" htmlFor={inputId}>{t.lookupLabel}</label>
           <input id={inputId} className="ck-input" required value={reference} onChange={event => changeReference(event.target.value)}
             pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
-            maxLength={36} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="go" aria-describedby={invalid ? `${errorId} ${helpId}` : helpId} aria-invalid={invalid ? true : undefined}
-            placeholder={t.lookupPlaceholder}/>
+            maxLength={36} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="go" aria-describedby={invalid ? `${errorId} ${helpId}` : helpId} aria-invalid={invalid ? true : undefined}/>
           {invalid ? <p className="ck-field__e" id={errorId} role="alert"><WarningCircleIcon size={16} weight="bold" aria-hidden="true" />{invalid}</p> : null}
           <p id={helpId} className="ck-form__h">{t.lookupHelp}</p>
         </div>

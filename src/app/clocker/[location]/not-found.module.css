@@ -1,5 +1,13 @@
 /* The Clocker's own 404 (Phase 6, Nov 17, 2026): the public 404's band and 560px card (src/app/not-found.css). The hint
  * leads the card; one line says what staff do meanwhile; the one action reloads the link. No sign-in link. */
 .lead.lead { margin: 0; font-size: 1rem; line-height: 1.5rem; }
-.meanwhile.meanwhile { margin: var(--b-space-16) 0 0; }
+/* Phase 8: the hint's lines balance around the bound menu path, and the meanwhile line leaves no word alone. */
+.lead.lead > span { text-wrap: balance; }
+.meanwhile.meanwhile { margin: var(--b-space-16) 0 0; text-wrap: pretty; }
 .retry.retry { border: 0; border-radius: var(--b-radius-pill); font-family: inherit; cursor: pointer; min-height: 56px; }
+/* Phase 8 (Nov 17, 2026): the legal links under the card are kiosk controls too, so they meet the 56px floor here. The
+ * shared public 404 sheet (src/app/not-found.css) keeps its 13px padding for the public page. The line still reads as one
+ * quiet line: the links grow their hit area, not their type. */
+.foot.foot :global(.q-legal) a { display: inline-flex; align-items: center; justify-content: center; min-width: 56px; min-height: 56px; padding: 0 var(--b-space-8); }
+/* The owner line takes the same 8px before its dot as each link has, so every separator sits evenly. */
+.foot.foot :global(.q-legal__owner) { padding-inline-end: var(--b-space-8); }

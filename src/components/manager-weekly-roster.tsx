@@ -6,12 +6,11 @@ import { ScheduleCoverageLine } from "./schedule-coverage-line";
 import { durationRow, durationTotal } from "@/lib/duration-format";
 import type { CoverageMinutes } from "@/lib/scheduling/coverage-minutes";
 import { REPAIR_DAY_EVENT } from "./leave-staffing/repair-note";
-import { useEffect, useId, useState, type ReactNode } from "react";
+import { useEffect, useId, useState, type CSSProperties, type ReactNode } from "react";
 import { KeepSelectedVisible } from "./kit/keep-selected-visible";
 
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 
-import { Avatar } from "./kit/kit";
 import { QuietGroup, QuietRow, QuietSection } from "./quiet/quiet";
 import { CorpAvatar, CorpCard, CorpTime } from "./corp/corp";
 import { useToday } from "./manager-today";
@@ -23,6 +22,9 @@ import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { addDays, formatDayLabel, formatTime } from "../lib/date-utils";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
+import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
+import { faceTint } from "@/lib/face-tint";
+import { keepWhole } from "@/lib/keep-whole";
 import { compactRange, BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BStack, type BTone } from "./owner-b/b-kit";
 import { absencesOn, fullDayAbsence, type WeeklyApprovedAbsences, assignedMinutes, type RosterEmployee, type RosterShift } from "../lib/scheduling/manager-roster-presentation";
 
@@ -358,7 +360,8 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
     const over = employee.hours ? employee.hours.week > employee.hours.maximum : false;
     return <tr className={repairEmployeeId === employee.id ? "cm-grid__row manager-issue-target cm-grid__row--repair" : "cm-grid__row manager-issue-target"} data-leave-repair={repairEmployeeId === employee.id || undefined} id={`schedule-employee-${employee.id}`} tabIndex={-1} key={employee.id} hidden={hidden || undefined}>
       <th scope="row" className="cm-person">
-        <Avatar initials={initials(employee.name)} />
+        {/* Phase 8 (a.md #12): a person keeps their face tint on the grid too (BAvatar's tint, from the name). */}
+        <GridAvatar name={employee.name} />
         <span className="cm-person__text">
           <span className="cm-person__name" title={employee.name}>{employee.name}</span>
           <span className="cm-person__sub c-num" aria-hidden="true" title={employee.hours ? hoursText(employee.hours) : undefined}>{week}{over && employee.hours ? <em>{` · ${overBy(employee.hours)} over ${employee.hours.maximum} h`}</em> : null}</span>
@@ -501,9 +504,10 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
     <BStack>
       {b.notes ? <div className="b-notes">{b.notes}</div> : null}
       {b.toPlan.length ? <BCard label="Locations the team can’t see yet"><BList label="Locations the team can’t see yet">{b.toPlan.map(row =>
-        <BRow key={row.id} lead={<BIcon tone="amber"><WarningIcon weight="bold" /></BIcon>} title={row.title} sub={row.detail} href={row.href} label={row.label}
+        // Phase 8 (a.md #33): the warning glyph is for failures; a week the team can't see yet is the amber "not seen" glyph.
+        <BRow key={row.id} lead={<BIcon tone="amber"><EyeSlashIcon weight="bold" /></BIcon>} title={row.title} sub={row.detail} href={row.href} label={row.label}
           end={<span className="b-link">{row.action}<CaretRightIcon size={16} weight="bold" aria-hidden="true" /></span>} chevron={false} />)}</BList></BCard> : null}
-      {employees.length ? <BCard id="b-schedule-day" title={corpDayLabel} meta={<span className="c-num">{`${plural(bRows.length, "shift", "shifts")}${corpHours ? ` · ${corpHours}` : ""}`}</span>}>
+      {employees.length ? <BCard id="b-schedule-day" title={keepWhole(corpDayLabel)} meta={<span className="c-num">{`${plural(bRows.length, "shift", "shifts")}${corpHours ? ` · ${corpHours}` : ""}`}</span>}>
         {bRows.length ? <BList label={`Shifts on ${longWeekday(phoneDay)}`}>{(showAll ? bRows : bRows.slice(0, SHOWN_B)).map(row => row.node)}</BList> : <p className="b-state">Nothing scheduled.</p>}
         {!showAll && bRows.length > SHOWN_B ? <button type="button" className="b-add" onClick={() => setMoreDay(phoneDay)}>{`Show ${bRows.length - SHOWN_B} more`}</button> : null}
         {absences.state === "unavailable" || employees.some(employee => !absenceKnown(employee.id)) ? <p className="b-state" role="status">Time off unavailable. Reload before adding shifts.</p> : null}
@@ -534,4 +538,11 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
 function useTodayWhen(enabled: boolean) {
   const { snapshot } = useToday();
   return enabled ? snapshot : null;
+}
+
+/** Phase 8 (a.md #12): the grid's 32px face, in the person's own tint (the same faceTint the kit's BAvatar uses), so a
+ * person reads the same colour on Home, Team, Timecards and here. The grid's sheet sizes it (owner-b-schedule.css). */
+function GridAvatar({ name }: { name: string }) {
+  const [bg, fg] = faceTint(name);
+  return <span className="nv-avatar" data-tint="" style={{ "--av-bg": bg, "--av-fg": fg } as CSSProperties} aria-hidden="true">{initials(name)}</span>;
 }

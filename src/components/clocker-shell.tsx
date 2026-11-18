@@ -8,9 +8,11 @@ import {useClockerCopy,useClockerIntlLocale,useClockerPresentation} from './cloc
 import styles from './clocker.module.css';
 
 /** What the band's tablet status says while the card shows a blocked state (Nov 10 review, NV-049). Presentation only: the
- * PIN gate and the punch panel report it; the band shows it in place of "Tablet registered" with the amber dot. */
-export type TabletHealth = 'reconnect' | 'offline' | 'paused' | 'storage';
-const healthLabels: Record<TabletHealth, string> = { reconnect: 'Reconnect needed', offline: 'No connection', paused: 'Paused: too many attempts', storage: 'Storage blocked' };
+ * PIN gate and the punch panel report it; the band shows it in place of "Tablet connected" with the amber dot.
+ * Phase 8: one verb for setting up a tablet ("connect"), "Can't reach NEVORA" when the tablet is online but NEVORA did not
+ * answer (never "No connection" then), and no system word for blocked browser storage. */
+export type TabletHealth = 'reconnect' | 'offline' | 'unreached' | 'paused' | 'storage';
+const healthLabels: Record<TabletHealth, string> = { reconnect: 'Reconnect needed', offline: 'No connection', unreached: 'Can’t reach NEVORA', paused: 'Paused: too many attempts', storage: 'Can’t save punches' };
 type HealthReport = (source: 'gate' | 'panel', health: TabletHealth | null) => void;
 const TabletHealthChannel = createContext<HealthReport | null>(null);
 /** Reports this screen's tablet health to the band while it is shown, and clears it when the screen goes. */
@@ -43,7 +45,7 @@ export function ClockerShell({ locationLabel, timeZone, deviceName, status, chil
   const date = now ? new Intl.DateTimeFormat(intl, { timeZone, weekday: 'long', month: 'long', day: 'numeric' }).format(now) : t('Loading location time');
   // A blocked PIN or clock screen speaks for the tablet; otherwise the setup check does.
   const blocked = status === 'connected' ? health.gate ?? health.panel : null;
-  const statusLabel = blocked ? healthLabels[blocked] : status === 'connected' ? 'Tablet registered' : status === 'checking' ? 'Checking setup' : status === 'unconfirmed' ? 'Setup needs checking' : 'Setup required';
+  const statusLabel = blocked ? healthLabels[blocked] : status === 'connected' ? 'Tablet connected' : status === 'checking' ? 'Checking setup' : status === 'unconfirmed' ? 'Setup not confirmed' : 'Setup required';
   const zone = timeZone.split('/').at(-1)?.replaceAll('_', ' ') ?? timeZone;
 
   return <main lang={locale} data-clocker-kiosk="" className={styles.page} style={brand?.style as CSSProperties | undefined}>
@@ -70,7 +72,9 @@ export function ClockerShell({ locationLabel, timeZone, deviceName, status, chil
         </div>
         <footer className={styles.foot}>
           <span className={`${styles.status} ${styles.glass}`} data-tone={status === 'connected' && !blocked ? 'ok' : 'attn'}><span className={styles.dot} aria-hidden="true"/><span className={styles.statusLabel}>{t(statusLabel)}</span>
-            <span className={styles.zone}>{t('{zone} time',{zone})}{deviceName ? <>{' · '}{deviceName}</> : null}</span></span>
+            {/* Phase 8: the time zone and the tablet's name are two pieces, so a long Spanish line never splits the name. In
+             * landscape the name takes its own line; in portrait the pill draws even separators between the three. */}
+            <span className={styles.zone}>{t('{zone} time',{zone})}</span>{deviceName ? <span className={styles.device}>{deviceName}</span> : null}</span>
           <span className={styles.powered}>{NUVORA_BRAND.poweredBy}</span>
         </footer>
       </aside>

@@ -11,6 +11,7 @@ import {ProhibitIcon} from '@phosphor-icons/react/dist/ssr/Prohibit';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
 import {BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BRow, BScreen, BSeg, BStack, BState, type BLiveItem, type BStateKind, type BTone} from '../owner-b/b-kit';
 import {Dotted} from './parts';
+import {accountCopy} from './account-copy';
 import {useEmployeeDevice} from '../employee-mobile/device-owner';
 import './employee-b.css';
 import './requests.css';
@@ -97,8 +98,9 @@ export type RequestsHubBProps = {
 
 export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forManager, waitingExtra, extraCount = 0, state, answer, shiftRequests}: RequestsHubBProps) {
   // Review B2 (NV-034): Waiting counts your own requests; a swap that needs your answer has its own card and figure.
-  const figures: BLiveItem[] = waiting ? [{label: 'Waiting', dot: 'warn', value: waiting.length, meta: 'on your manager or a teammate'},
-    ...(typeof answer === 'number' ? [{label: 'Needs your answer', value: answer, meta: answer === 1 ? 'a swap from a teammate' : 'swaps from teammates'}] : [])] : [];
+  // Phase 8 (review C, row 38): amber marks what waits on you (Needs your answer), not what waits on others.
+  const figures: BLiveItem[] = waiting ? [{label: 'Waiting', value: waiting.length, meta: 'on your manager or a teammate'},
+    ...(typeof answer === 'number' ? [{label: 'Needs your answer', dot: answer ? 'warn' as const : undefined, value: answer, meta: answer === 1 ? 'a swap from a teammate' : 'swaps from teammates'}] : [])] : [];
   return <BScreen>
     {/* Desktop: Request time off is the band's white action and the band counts what's waiting (eb-desk); the phone keeps
       * its full-width button (eb-phone). */}
@@ -133,7 +135,8 @@ export function IncomingB({count, onRetry}: {count: number | null; onRetry: () =
   if (count === null) return <div className="eb-inline"><span role="status">Swaps for you couldn’t be checked. <Link className="eb-inline__a" href="/app/exchange?tab=foryou">Open swaps for you</Link></span>
     <button className="eb-inline__b" type="button" onClick={onRetry}>Try again</button></div>;
   return count ? <BList label="Needs your answer"><BRow href="/app/exchange?tab=foryou" lead={<BIcon tone="amber"><ArrowsLeftRightIcon weight="bold"/></BIcon>}
-    title={count === 1 ? 'A teammate requested a swap' : `${count} swaps need your answer`} chip={<BChip tone="amber">Needs your answer</BChip>} sub="Review the shifts before responding"
+    // Phase 8 (review C, row 17): the same words as the notification for it ("Swap request waiting for you").
+    title={count === 1 ? accountCopy().swapForYou : `${count} swaps need your answer`} chip={<BChip tone="amber">Needs your answer</BChip>} sub="Review the shifts before responding"
     trail={<BButtonLink href="/app/exchange?tab=foryou" kind="ghost" label={count === 1 ? 'Review the swap request' : 'Review swap requests'}>Review</BButtonLink>}/></BList> : null;
 }
 

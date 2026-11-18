@@ -219,4 +219,34 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-pub .c-pub__body:not(#sb-n):not(#sb-m) > .c-card + .c-card { margin-top: 0 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-pub .c-pub__body:not(#sb-n):not(#sb-m) > .c-card ~ .c-note { margin-top: 0 !important; padding-top: var(--b-space-12) !important; box-shadow: inset 0 1px 0 var(--b-line) !important; }
   }
+
+  /* ---------- Phase 8 (Nov 17, 2026): the final review's Schedule rows ---------- */
+  /* a.md #12: the grid's faces keep each person's tint (GridAvatar sets it from the name, as BAvatar does). */
+  :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-sched-slot .cm-grid .cm-person .nv-avatar[data-tint]:not(#p8a):not(#p8b) { background: var(--av-bg) !important; color: var(--av-fg) !important; box-shadow: none !important; }
+  /* a.md #6: on narrow phones the week arrows are whole 44px targets (they were 32px wide with a pseudo-element). */
+  @media (max-width: 359px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__arrow:not(#p8a):not(#p8b) { width: 44px !important; height: 44px !important; margin: -4px 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__arrow:not(#p8a):not(#p8b)::after { inset: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__h > span:last-child:not(#p8a):not(#p8b) { gap: 0 !important; }
+  }
+  /* a.md #19: under 820px of card a block keeps its time on one line and its position whole: 4px side padding (3px
+   * inside a draft's 1px dashed edge, so a draft has the same room as a published block) and a 12px time. */
+  @container c-sched (min-width: 560px) and (max-width: 819px) {
+    :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-sched-slot .cm-grid .cm-block:not(#p8a):not(#p8b) { padding-left: var(--b-space-4) !important; padding-right: var(--b-space-4) !important; }
+    :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-sched-slot .cm-grid .cm-block.draft:not(#p8a):not(#p8b) { padding-left: 3px !important; padding-right: 3px !important; }
+    :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-sched-slot .cm-grid .cm-block .c-time:not(#p8a):not(#p8b) { white-space: nowrap !important; font-size: 12px !important; letter-spacing: -0.01em !important; }
+  }
+  /* a.md #24: Add shift's unchosen selects ("Choose someone", "Choose a location", "Choose a time") are grey on phones,
+   * as they are from 768px; a chosen value is ink. */
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-shift-page select:has(> option[value=""][disabled]:checked):not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { color: var(--b-grey) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-shift-page select:has(> option[value=""][disabled]:checked) option:not([value=""]):not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { color: var(--b-ink) !important; }
+  }
+  /* a.md #27: Add shift's help lines never leave one word alone ("Lead." at 320px). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-shift-page :is(.c-field__help, .c-note, .c-shift__lead-text, .c-shift__lead-text > span):not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { text-wrap: pretty !important; }
+  /* A day row's Fill keeps its 36px height on the narrowest phones, as Home's and Things to do's row pills do (its hit
+   * area is 44px). */
+  @media (max-width: 359px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .b-screen .b-row__trail > .b-btn:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { min-height: 36px !important; }
+  }
 }

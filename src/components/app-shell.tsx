@@ -50,6 +50,9 @@ function clockTime(iso: string) {
   return new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(new Date(iso)).replace(" ", "\u202f");
 }
 
+/** How far the sidebar's scroll fades reach (b-foundation.css): the current entry is kept this far from either edge. */
+const SIDEBAR_FADE = 40;
+
 /** Home's views share Home's address; the trail names them as their bands do. */
 const HOME_VIEWS = { attendance: "Who’s working", team: "Hours this week", activity: "Activity" } as const;
 
@@ -273,17 +276,47 @@ function AppShellView({
     ?? (activeItem && currentTab && currentTab.href !== activeItem.href ? currentTab : undefined);
 
   // Keep the current page visible in a sidebar that scrolls on short screens,
-  // clear of the pinned Workspace group.
+  // clear of the pinned Workspace group. Phase 8: clear of the edge fades too (40px), and again when the window changes
+  // size (a phone turned sideways), so the lit entry is always on screen.
+  useEffect(() => {
+    const reveal = () => {
+      const nav = document.getElementById("desktop-primary-navigation");
+      const link = nav?.querySelector<HTMLElement>(".nav-link.active");
+      if (!nav || !link || nav.scrollHeight <= nav.clientHeight) return;
+      const pinned = nav.querySelector<HTMLElement>('[data-group="Workspace"]');
+      const box = nav.getBoundingClientRect(), item = link.getBoundingClientRect();
+      const bottom = box.bottom - (pinned && !pinned.contains(link) ? pinned.offsetHeight : 0);
+      if (item.top < box.top + SIDEBAR_FADE) nav.scrollTop -= box.top + SIDEBAR_FADE - item.top;
+      else if (item.bottom > bottom - SIDEBAR_FADE) nav.scrollTop += item.bottom - bottom + SIDEBAR_FADE;
+    };
+    let frame = 0;
+    const later = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(reveal); };
+    reveal();
+    window.addEventListener("resize", later);
+    return () => { cancelAnimationFrame(frame); window.removeEventListener("resize", later); };
+  }, [sidebarActive]);
+
+  // Phase 8 (Nov 17, 2026): a sidebar or rail that scrolls says so. The list marks the edge that has more entries
+  // (data-more-above, data-more-below); b-foundation.css fades that edge and puts a caret at the foot. A list that fits
+  // carries neither mark.
   useEffect(() => {
     const nav = document.getElementById("desktop-primary-navigation");
-    const link = nav?.querySelector<HTMLElement>(".nav-link.active");
-    if (!nav || !link || nav.scrollHeight <= nav.clientHeight) return;
-    const pinned = nav.querySelector<HTMLElement>('[data-group="Workspace"]');
-    const box = nav.getBoundingClientRect(), item = link.getBoundingClientRect();
-    const bottom = box.bottom - (pinned && !pinned.contains(link) ? pinned.offsetHeight : 0);
-    if (item.top < box.top) nav.scrollTop -= box.top - item.top + 8;
-    else if (item.bottom > bottom) nav.scrollTop += item.bottom - bottom + 8;
-  }, [sidebarActive]);
+    if (!nav) return;
+    let frame = 0;
+    const mark = () => {
+      frame = 0;
+      const more = nav.scrollHeight - nav.clientHeight > 1;
+      nav.toggleAttribute("data-more-above", more && nav.scrollTop > 1);
+      nav.toggleAttribute("data-more-below", more && nav.scrollTop + nav.clientHeight < nav.scrollHeight - 1);
+    };
+    const later = () => { if (!frame) frame = requestAnimationFrame(mark); };
+    mark();
+    nav.addEventListener("scroll", later, { passive: true });
+    window.addEventListener("resize", later);
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(later);
+    observer?.observe(nav);
+    return () => { if (frame) cancelAnimationFrame(frame); nav.removeEventListener("scroll", later); window.removeEventListener("resize", later); observer?.disconnect(); };
+  }, [sidebarItems.length]);
 
   // Phase 7 (IS-3, IS-5): a focused pill in a sideways-scrolling row scrolls into view, and
   // the More sheet closes when keyboard focus moves out of it, so focus never lands behind it.
@@ -485,6 +518,8 @@ function AppShellView({
         <button className="sidebar-toggle" type="button" aria-label={railed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!railed} aria-controls="desktop-primary-navigation" onClick={toggleSidebar}><NavIcon name="sidebar" size={20} /></button>
         </div>
         <nav id="desktop-primary-navigation" className="sidebar-nav" aria-label="Primary navigation">
+          {/* Phase 8: the scroll cues of a list that holds more than the window (drawn only then; b-foundation.css). */}
+          <span className="sidebar-more sidebar-more--top" aria-hidden="true" />
           {navGroups.map((group, index) => <div className="sidebar-nav-group" data-group={group.label || undefined} key={`${index}:${group.label}`}>
           {group.label ? <h2 className="sidebar-group-label">{group.label}</h2> : null}
           {group.items.map((item) => {
@@ -510,6 +545,7 @@ function AppShellView({
               </Link>
             );
           })}</div>)}
+          <span className="sidebar-more sidebar-more--bottom" aria-hidden="true"><CaretDownIcon weight="bold" /></span>
         </nav>
 
         {employee ? <Link href="/app/profile" className="sidebar-profile portal-profile-trigger" aria-label="Your profile">

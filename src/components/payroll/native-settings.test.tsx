@@ -36,3 +36,9 @@ it('waits for fresh Owner access before presenting saved company preferences', (
   expect(html).toContain('Loading payroll settings');
   expect(html).not.toContain('Save company preferences');
 });
+// Phase 8 (review B #35): the band carries the approved scope sentence Payroll shows over the same tabs; no stray currency.
+it('says what payroll does under the title, as Payroll does', () => {
+  const html = renderToStaticMarkup(<PayrollSettings recoveryScope="fictional-owner" />);
+  expect(html).toContain('Calculate pay and share statements. You pay your team outside NEVORA.');
+  expect(html).not.toContain('US dollars');
+});

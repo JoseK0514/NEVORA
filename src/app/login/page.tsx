@@ -5,7 +5,7 @@ import {MOBILE_ACCESS_COPY} from "@/components/mobile-access/copy";
 import {AccessEmployeeIdInput} from "@/components/mobile-access/journey";
 import {AccessCard, AccessOutside} from "@/components/mobile-access/chrome";
 import {CaretDownIcon} from "@phosphor-icons/react/dist/ssr/CaretDown";
-import {WarningCircleIcon} from "@phosphor-icons/react/dist/ssr/WarningCircle";
+import {WarningIcon} from "@phosphor-icons/react/dist/ssr/Warning";
 import {HourglassMediumIcon} from "@phosphor-icons/react/dist/ssr/HourglassMedium";
 import {CheckCircleIcon} from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import {InfoIcon} from "@phosphor-icons/react/dist/ssr/Info";
@@ -73,7 +73,7 @@ export default async function LoginPage({
           {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
           {/* Direction B (Nov 8, 2026): the error and the activated notice read at the top of the form card. Red stops you,
             * amber means wait, green is done; each note leads with its icon. */}
-          {params.error ? <p className={`q-error q-auth__alert${wait ? " q-auth__alert--wait" : ""}`} id="login-error" role="alert">{wait ? <HourglassMediumIcon size={20} weight="bold" aria-hidden="true" /> : <WarningCircleIcon size={20} weight="bold" aria-hidden="true" />}<span>{params.error === "deleting" ? t.loginDeleting : params.error === "replace" ? t.loginReplace : wait ? t.loginBusy : t.loginError}</span></p> : null}
+          {params.error ? <p className={`q-error q-auth__alert${wait ? " q-auth__alert--wait" : ""}`} id="login-error" role="alert">{wait ? <HourglassMediumIcon size={20} weight="bold" aria-hidden="true" /> : <WarningIcon size={20} weight="bold" aria-hidden="true" />}<span>{params.error === "deleting" ? t.loginDeleting : params.error === "replace" ? t.loginReplace : wait ? t.loginBusy : t.loginError}</span></p> : null}
           {params.activated ? <p className="q-help q-auth__alert" role="status"><CheckCircleIcon size={20} weight="bold" aria-hidden="true" /><span>{t.activated}</span></p> : null}
           {ended ? <p className="q-auth__alert q-auth__alert--info" role="status"><InfoIcon size={20} weight="bold" aria-hidden="true" /><span>{returnTo ? t.sessionEndedReturn : t.sessionEnded}</span></p> : null}
           <PasswordSignInMarker />

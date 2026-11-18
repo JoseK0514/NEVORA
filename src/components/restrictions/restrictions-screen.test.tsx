@@ -91,7 +91,8 @@ describe("management side (Owner, Manager)", () => {
   it("an older record that was never confirmed is marked, with the two honest choices and no default", () => {
     const markup = html({ ...management, initial: { load: ready(LEGACY) } }), words = text(markup);
     expect(words).toContain("Not confirmed yet");
-    expect(markup).toContain('<span class="b-chip b-chip--amber">Not confirmed</span>');
+    // Phase 8 (a.md #23): the heading says the state once; no chip repeats it.
+    expect(markup).not.toContain('<span class="b-chip b-chip--amber">Not confirmed</span>');
     expect(words).toContain("No agreement is recorded for Maria. The schedule still follows the hours they entered in Availability. Nothing is confirmed until you choose one of these.");
     expect(markup).toContain('href="/app/availability?employeeId=EMP-1"');
     expect(markup).toMatch(/<button[^>]*class="b-btn b-btn--quiet"[^>]*>No restrictions<\/button>/);
@@ -279,9 +280,11 @@ describe("Employee and Lead side", () => {
     expect(markup).toContain('<div class="b-screen b-screen--back">');
     expect(markup).toContain('href="/app/availability"');
     expect(markup).toContain('<h1 id="rs-title" tabindex="-1">Agreed times</h1>');
-    expect(words).toContain("What you and your manager agreed");
+    expect(words).toContain("When you can be scheduled");
     expect(words).toContain("In effect since Mon, Sep 30");
-    expect(words).toContain("This is what you and your manager agreed. It is different from the availability you send each week, which is a preference.");
+    expect(words).toContain("You and your manager set these times. The availability you send each week is a preference.");
+    // Phase 8 (review C, row 7): the note is the agreement card's footer, not a line on the canvas.
+    expect(markup).toContain('<p class="eb-cardnote rs-separate">You and your manager set these times.');expect(markup).not.toContain('class="b-note"');
     expect(markup).toMatch(/id="rs-main-action"[^>]*>Ask to change it</);
     expect(markup).toContain('aria-label="Times you can be scheduled, by day"');
   });
@@ -291,6 +294,9 @@ describe("Employee and Lead side", () => {
     expect(words).toContain("Your manager has not confirmed an agreement with you. Your schedule still follows the availability you send.");
     expect(words).toContain("Ask for agreed times");
     expect(words).not.toContain("No restrictions");
+    // Phase 8 (review C, row 7): one designed empty state: no "Not confirmed" chip (that word is for an unknown result) and
+    // no note that says something was agreed.
+    expect(words).not.toContain("Not confirmed");expect(words).not.toContain("set these times");
   });
   it("a request they sent shows as Waiting with what they asked, and there is no way to approve", () => {
     const markup = html({ ...own, initial: { load: ready(WAITING) } }), words = text(markup);

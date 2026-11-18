@@ -80,6 +80,19 @@
   /* NV-285, NV-293: the language switch keeps its 34px look with a 44px tap area. */
   /* NV-105: you, on More's glass, as in the header: a white circle with teal initials. */
   /* NV-286: Help's Contact: one reply-time line, then the warning as a tinted note with the lock. */
+  /* Phase 8 (review C, rows 4, 5 and 36). The red button and "This can't be undone." are one piece under the consent line. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .eb-delete-keep .eb-delete-go:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { display: flex !important; flex-direction: column !important; gap: var(--b-space-16) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .eb-delete-keep .em-delete-check > span:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { text-wrap: pretty !important; }
+  @media (max-width: 767px) {
+    /* A form's screen hides the bell and the avatar as well as the tab bar (the shell's rule drew them back). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile]:has(.c-page > .b-screen > .eb-form) .mobile-header .mobile-header-actions:not(#f8a):not(#f8b):not(#f8c):not(#f8d) { display: none !important; }
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    /* On a tablet the confirm card is one column: the button ends on the 560px block's right edge, at its own width, with
+     * the note centred under it. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .eb-delete-keep .eb-delete-go:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { display: grid !important; justify-content: end !important; justify-items: center !important; row-gap: var(--b-space-16) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .b-keep.eb-delete-keep .eb-delete-go > .em-delete-confirm:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { width: auto !important; padding-left: var(--b-space-32) !important; padding-right: var(--b-space-32) !important; }
+  }
   @media (min-width: 768px) {
     /* NV-143 (LN-034, TB-045): on desktop and tablets "Confirm it's you" is the card itself, not a card inside the form's card. */
     html body .app-shell[data-nv-b][data-employee-mobile] .c-page:has(> .b-screen--back) > .b-keep.eb-delete-keep { padding: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
@@ -255,7 +268,7 @@
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-confirm {
   height: 56px; margin-top: var(--b-space-2); border-radius: 18px; font-size: var(--b-fs-title-sm); line-height: var(--b-lh-title-sm); font-weight: 700;
   transition-property: background-color, color, scale; transition-duration: var(--b-dur-press); transition-timing-function: var(--b-ease-out); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-confirm > .c-note--center { margin-top: -6px; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-confirm > .c-note--center, :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-delete-go > .c-note--center { margin-top: -6px; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-outcome { padding: 14px var(--b-space-16); border-radius: var(--b-radius-card); font-size: 14px; line-height: 20px;
   box-shadow: var(--b-elev-1); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-compose > .em-request-body { border-radius: var(--b-radius-card);

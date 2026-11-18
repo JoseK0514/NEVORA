@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type Re
 import { CorpFormFooter } from "@/components/corp/corp";
 import { BState } from "@/components/owner-b/b-kit";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
+import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { FormHead, FormHeadBack, FormHeadLink } from "@/components/team/team-forms";
 import { formatPayrollMoney, formatSignedPayrollMoney } from "@/components/payroll/money";
 import { durationSentence } from "@/lib/duration-format";
@@ -90,7 +91,9 @@ export function useHeld<T>(key: string, initial: () => T): [T, (next: T | ((valu
 export function FlowHead({ copy, title, titleId, back, step, steps, onBack }: { copy: PayrollImportCopy; title: string; titleId: string; back: { href: string; label: string }; step: number; steps: readonly string[]; onBack?: (() => void) | null }) {
   return <FormHead titleId={titleId} title={title} back={back}
     step={step ? <><span className="c-formhead__dots" aria-hidden="true">{steps.map((name, index) => <i key={name} data-on={index < step ? "" : undefined} />)}</span>{copy.common.stepOf(step, steps.length, steps[step - 1])}</> : undefined}
-    left={onBack ? <FormHeadBack onClick={onBack}>{copy.common.back}</FormHeadBack> : <FormHeadLink href={back.href}>{copy.common.cancel}</FormHeadLink>} />;
+    // Phase 8 (a.md #9): before a step starts (loading, a state, nothing to cancel) the way out is "‹ Back", not Cancel.
+    left={onBack ? <FormHeadBack onClick={onBack}>{copy.common.back}</FormHeadBack> : step ? <FormHeadLink href={back.href}>{copy.common.cancel}</FormHeadLink>
+      : <Link className="c-formhead__link c-formhead__back" href={back.href}><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true" />{copy.common.back}</Link>} />;
 }
 
 /** The step's buttons: full-width pills at the end of the card on phones, the card's footer on tablets and desktop (CSS

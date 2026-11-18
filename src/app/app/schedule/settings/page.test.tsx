@@ -72,7 +72,7 @@ it("keeps every rule group and native fragment destination available from sectio
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
   expect(html).toMatch(/<h1[^>]*>Scheduling rules<\/h1>/);
   // Release 1 (board O-ScheduleRules): five rows that open in place, in the board's order, each with what it means.
-  const order = ["Weekly hours targets", "Staffing per location", "Recurring coverage", "Availability deadline", "Trades and coverage"].map(name => html.indexOf(`<b>${name}</b>`));
+  const order = ["Weekly hour targets", "Staffing per location", "Recurring coverage", "Availability deadline", "Shift requests"].map(name => html.indexOf(`<b>${name}</b>`));
   expect(order.every(index => index > 0)).toBe(true);
   expect([...order].sort((a, b) => a - b)).toEqual(order);
   for (const id of ["rules-deadline", "rules-policy"]) {

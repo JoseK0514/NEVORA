@@ -603,7 +603,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     // Nov 1 upscale (review S15): while approval hasn't opened and nothing is approved, the card would only say when it
     // opens, so that line joins the subtitle instead ("Oct 26 – Nov 1 · 9 people · Approval opens Mon, Nov 2").
     const folded=open&&!approvedCount;
-    const subtitle=ready?`${rangeText(period)} · ${cards.length} ${cards.length===1?'person':'people'}${folded&&cards.length?` · Approval opens ${approveFrom(period)}`:''}`:rangeText(period);
+    // Phase 8 (b.md #27): each part stays whole ("Approval opens Mon, Nov 23" never splits); the line breaks only after " · ".
+    const subtitle=(ready?`${rangeText(period)} · ${cards.length} ${cards.length===1?'person':'people'}${folded&&cards.length?` · Approval opens ${approveFrom(period)}`:''}`:rangeText(period)).split(' · ').map(part=>part.replace(/ /g,'\u00a0')).join('\u00a0· ');
     const summary=ready&&cards.length&&!showBulk&&!folded?<CorpCard as="div" ariaLabel="Period overview">
       <div className="c-card__body">
         <div className="c-tc-sum"><b>{summaryTitle}</b>
@@ -726,9 +727,10 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
                 end={hours?<b className="c-num c-tc-hours">{hours}</b>:undefined} chevron/>;
             })}</BList>
           </BCard>:null}
+          {/* Phase 8 (a.md #22): rows that open lead with the teal-50 circle, as they do from 768px. */}
           <BCard label="Time tools"><BList label="Time tools">
-            <BRow href={`/app/payroll-export?start=${period.startDate}&end=${period.endDate}`} lead={<BIcon tone="grey"><UploadSimpleIcon weight="bold"/></BIcon>} title="Time exports" sub={exportsLine}/>
-            <BRow href="/app/timecards/corrections" lead={<BIcon tone="grey"><PencilSimpleIcon weight="bold"/></BIcon>} title="Time corrections" sub="Fixes people asked for"/>
+            <BRow href={`/app/payroll-export?start=${period.startDate}&end=${period.endDate}`} lead={<BIcon tone="teal"><UploadSimpleIcon weight="bold"/></BIcon>} title="Time exports" sub={exportsLine}/>
+            <BRow href="/app/timecards/corrections" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Time corrections" sub="Fixes people asked for"/>
           </BList></BCard>
         </BStack>
       </BScreen>;
@@ -836,7 +838,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             {tab==='all'?<tfoot><tr className="c-tc-total">
               {selecting?<td className="c-tc-check" aria-hidden="true"/>:null}
               <th scope="row" data-col="person">Total</th>{showRole?<td data-col="role"/>:null}
-              <td data-col="recorded" className="c-tc-num"><CorpDuration>{recordedTotal}</CorpDuration></td>
+              {/* Phase 8 (a.md #38, b.md #45): a period total is whole hours ("138 h"); rows keep "8 h 06". */}
+              <td data-col="recorded" className="c-tc-num"><CorpDuration>{recordedWhole}</CorpDuration></td>
               <td data-col="breaks" className="c-tc-num c-tc-muted">{breaksTotal==='0 min'?<><span aria-hidden="true">—</span><span className="c-sr">None</span></>:breaksTotal}</td>
               <td data-col="status"/>
             </tr></tfoot>:null}
