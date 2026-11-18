@@ -103,11 +103,11 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
      state='Profile ready';profileNavigation.push({engine,actor,elapsedMs:Date.now()-started,state,path:new URL(join.url()).pathname});step=previousStep;
     }catch(error){profileNavigation.push({engine,actor,elapsedMs:Date.now()-started,state:'failed after '+state,path:new URL(join.url()).pathname});throw error;}
    }
-   await join.goto(origin+'/activate#proof='+proof);await join.locator('#activation-password').waitFor();await expect.poll(()=>new URL(join.url()).hash).toBe('');
+   step=engine+': activation fragment and retained responsive fields';await join.goto(origin+'/activate#proof='+proof);await join.locator('#activation-password').waitFor();await expect.poll(()=>new URL(join.url()).hash).toBe('');
    expect(await join.locator('main').innerText()).not.toMatch(/Invitation verified|invitación verificada/i);
    await join.locator('#activation-password').fill(TEST_PASSWORD);await join.locator('#activation-confirm-password').fill(TEST_PASSWORD);
    await join.locator('.ma-language').click();await expect.poll(()=>join.locator('#mobile-access-page').getAttribute('lang')).toBe('en');expect(await join.locator('#activation-password').inputValue()).toBe(TEST_PASSWORD);
-   await join.setViewportSize({width:1440,height:900});await expect.poll(()=>join.locator('.q-auth__rules').count()).toBe(1);expect(await join.locator('h1').innerText()).toBe('Activate account');expect(await join.locator('#activation-password').inputValue()).toBe(TEST_PASSWORD);expect(await join.locator('form').count()).toBe(1);
+   await join.setViewportSize({width:1440,height:900});await join.locator('#activation-password-hint').waitFor();expect(await join.locator('#activation-password-hint').innerText()).toContain('15');expect(await join.locator('h1').innerText()).toBe('Set up your account');expect(await join.locator('#activation-password').inputValue()).toBe(TEST_PASSWORD);expect(await join.locator('form').count()).toBe(1);
    await join.setViewportSize({width:390,height:844});await expect.poll(()=>join.locator('.ma-passwords').count()).toBe(1);expect(await join.locator('#activation-confirm-password').inputValue()).toBe(TEST_PASSWORD);
    await join.locator('.ma-language').click();await expect.poll(()=>join.locator('#mobile-access-page').getAttribute('lang')).toBe('es');
    await join.locator('button[type="submit"]').click();await join.locator('#activation-employee-id').waitFor();expect(await join.locator('#activation-employee-id').inputValue()).toBe('MA-'+engine);
@@ -187,13 +187,13 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
    const issue=await context.request.post(origin+'/api/company-access/invitations/'+id,{headers,data:{action:'ISSUE',operationId:randomUUID(),expectedEmployeeVersion:status.employeeVersion,expectedInvitationRevision:status.invitationRevision}});expect(issue.status()).toBe(200);
    const mail=smtp.messages.find((m:{recipient:string})=>m.recipient.includes(engine+'@example.invalid'));if(!mail)throw Error('Owned invitation not captured');
    const proof=/#proof=([A-Za-z0-9_-]{43})/.exec(mail.body.replace(/=\r?\n/g,'').replace(/=3D/g,'='))?.[1];if(!proof)throw Error('Missing owned invitation proof');
-   const short=await context.request.post(origin+'/api/auth/activate',{headers:{Origin:origin,'x-nevora-activation':'1'},data:{proof,password:'short value'}});expect(short.status()).toBe(400);expect(await short.json()).toEqual({state:'invalid',passwordReason:'too_short'});
+   step=engine+' activation policy preflight';const short=await context.request.post(origin+'/api/auth/activate',{headers:{Origin:origin,'x-nevora-activation':'1'},data:{proof,password:'short value'}});expect(short.status()).toBe(400);expect(await short.json()).toEqual({state:'invalid',passwordReason:'too_short'});
    await page.close();await context.clearCookies();page=await context.newPage();page.setDefaultTimeout(20000);page.on('pageerror',(e:Error)=>errors.push(engine+': '+step+': '+e.name+' '+e.message));await context.addCookies([{name:'nv-lang',value:'en',url:origin}]);
    await page.goto(origin+'/activate#proof='+proof);await page.locator('#activation-password').waitFor();expect(new URL(page.url()).hash).toBe('');
    for(const width of [1440,320]){
     await page.setViewportSize({width,height:1000});
     const candidate='a fictional oversized phrase '.repeat(50);
-    for(const selector of ['#activation-password','#activation-confirm-password']){await page.locator(selector).fill('');await page.locator(selector).focus();await page.keyboard.insertText(candidate);expect(await page.locator(selector).inputValue()).toBe(candidate);}
+    for(const selector of ['#activation-password','#activation-confirm-password']){await page.locator(selector).focus();await page.locator(selector).press('ControlOrMeta+A');await page.keyboard.insertText(candidate);expect(await page.locator(selector).inputValue()).toBe(candidate);}
     await page.locator('button[type="submit"]').click();await expect.poll(()=>page.locator('#activation-error,#activation-policy-error').innerText()).toBe(passwordRejectionMessage('en','too_long'));
    }
    for(const lang of ['en','es'] as const){
@@ -216,7 +216,7 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
    await page.goto(origin+'/reset-access#proof='+resetProof);await page.locator('#reset-password').waitFor();
    for(const width of [1440,320]){
     await page.setViewportSize({width,height:1000});const candidate='a fictional oversized phrase '.repeat(50);
-    for(const selector of ['#reset-password','#reset-confirm-password']){await page.locator(selector).fill('');await page.locator(selector).focus();await page.keyboard.insertText(candidate);expect(await page.locator(selector).inputValue()).toBe(candidate);}
+    for(const selector of ['#reset-password','#reset-confirm-password']){await page.locator(selector).focus();await page.locator(selector).press('ControlOrMeta+A');await page.keyboard.insertText(candidate);expect(await page.locator(selector).inputValue()).toBe(candidate);}
     await page.locator('button[type="submit"]').click();await expect.poll(()=>page.locator('#reset-error').innerText()).toContain(passwordRejectionMessage('es','too_long'));
    }
    for(const [candidate,reason] of [['NorthHarborFoods2026!','company_name'],['qwertyuiopasdfgh','breached']] as const){
