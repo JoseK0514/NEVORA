@@ -15,6 +15,9 @@ describe('loading placeholders for the Clocker settings', () => {
     expect(loadingShape('/app/settings/clocker/photos', false)).toMatchObject({title: 'Punch photos', band: 'sub', frame: 'read'});
     expect(loadingShape('/app/settings/clocker/photos/review', false)).toMatchObject({title: 'Photo review', band: 'sub', frame: 'read'});
   });
+  it('Shift matching has its own title, not the tablets page it sits under', () => {
+    expect(loadingShape('/app/settings/clocker/matching', false)).toMatchObject({title: 'Shift matching', band: 'sub', frame: 'read'});
+  });
   it('Clocker recovery: help requests, the code form and the Timecards row', () => {
     expect(loadingShape('/app/clocker-recovery', false)).toMatchObject({title: 'Clocker recovery', back: true, sub: true, band: 'sub', frame: 'read', lift: false});
     expect(loadingShape('/app/clocker-recovery', false).cards).toHaveLength(3);

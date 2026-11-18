@@ -64,6 +64,8 @@ const MANAGEMENT: Entry[] = [
   // row. PINs: search and tabs on the band (296), people rows. Photos: one card of switch rows. Review: photo rows.
   ["/app/settings/clocker/photos/review", { ...detail, title: "Photo review", cards: [{ head: true, rows: 4 }] }],
   ["/app/settings/clocker/photos", { ...detail, title: "Punch photos", cards: [{ lines: 2, rows: 5 }] }],
+  // Shift matching: one card with the grace field, its help and a note.
+  ["/app/settings/clocker/matching", { ...detail, title: "Shift matching", cards: [{ lines: 3 }] }],
   ["/app/settings/clocker/pins", { title: "Clocker PINs", back: true, strip: true, band: "strip", frame: "read", lift: false, cards: [{ head: true, rows: 6, avatar: true }] }],
   ["/app/settings/clocker", { ...detail, title: "Clocker tablets", cards: [{ head: true, rows: 2, avatar: true }] }],
   [/^\/app\/settings\/.+/, form],

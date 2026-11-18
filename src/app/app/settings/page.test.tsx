@@ -31,6 +31,12 @@ it('makes registered Clocker device setup discoverable from Settings',async()=>{
 
 it('makes operational break configuration discoverable',async()=>{expect(renderToStaticMarkup(await SettingsPage())).toContain('href="/app/settings/breaks"');});
 
+it('lists Shift matching with the other Clocker settings',async()=>{
+ const html=renderToStaticMarkup(await SettingsPage());
+ expect(html.match(/<a href="\/app\/settings\/clocker\/matching" class="c-row c-row--one"/g)).toHaveLength(1);
+ expect(html).toContain('<span class="c-row__title">Shift matching</span>');
+});
+
 // Quiet (v4, approved Oct 23): Settings holds the company's own settings as one-line rows. Scheduling rules open
 // from Schedule, the two recovery tools from Team, and Updates from More, so they are not repeated here.
 it('keeps every company setting as exactly one named row',async()=>{
