@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-17",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "1933ee0c35f3018c7a69ee484aca4dda26c75ab9",
-  "applicationHash": "9a1424dee3bf8281cc2ed6555c4ebccc7b85580afdb57adeb56ba8612d5c1386",
+  "sourceSha": "886d986fe5b3d32ba68519c1266f64e2f9a80675",
+  "applicationHash": "f04ace66731e3058c408c5f1b40e68cfabff2aa286143f8fe48aef7ca36122d8",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "1f6a3c14d7ae322345b3c7d2975ae8423265cda5e2cf86da3cdaa662adb31693"
@@ -107,7 +107,7 @@
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
-          "sha256": "73b407c7520bb3566025b9a09d93160fa37e9fb81062153c29300243a3f63701"
+          "sha256": "9fd7c0c028641ebf9e35242e41ddf83710f2bdee36d5e42a2ecaac2451529489"
         },
         {
           "path": "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
@@ -176,7 +176,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "72f3192aaa50b3955d1eb5c0e796b4fdc2f488f157477880fcf888d090355878",
+        "sha256": "e6ab820c52bf0198544f3e11bc6b3a4ed0cefbd3bc1bbedb0b203af8c7935eb0",
         "pageCount": 4
       }
     },
@@ -283,7 +283,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "abb2489a98735f03b82e1563cfeb6457221829c3a2020cc5c20121d3b565d7e5",
+        "sha256": "ac484f11c670181f6f843af2fcfc55d01919df7d0d22a9944dda273477c41234",
         "pageCount": 3
       }
     },
@@ -305,7 +305,7 @@
         },
         {
           "path": "src/app/activate/activation-invitation.tsx",
-          "sha256": "c21a499ff191a5f2e538baa758da4e084b50b13e3dd373c0f8d333ca30cb9704"
+          "sha256": "f52517cb46fbde69f8e006187a57728f4e7b5cfb8ff4da59083f366d635e879b"
         },
         {
           "path": "src/app/app/schedule/page.tsx",
@@ -378,7 +378,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "ef8f93b760e62ca2425200061fc475292ee30eb6badb88995cfaafa44846f1a2",
+        "sha256": "443741e1227358af99320382b536911af4671c7007ee4d4c934c7b158a5187a7",
         "pageCount": 3
       }
     },
@@ -521,7 +521,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "d867cc64e132b9990734718707190115cccfddc4f5878aaef2d7cba2158b727a",
+        "sha256": "2d804bbfc168f15252f7fb10ed83aa6fc75833abc768fdf7a2dff30460adab3e",
         "pageCount": 4
       }
     },
@@ -639,7 +639,7 @@
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
-          "sha256": "73b407c7520bb3566025b9a09d93160fa37e9fb81062153c29300243a3f63701"
+          "sha256": "9fd7c0c028641ebf9e35242e41ddf83710f2bdee36d5e42a2ecaac2451529489"
         },
         {
           "path": "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
@@ -728,7 +728,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "3853c6ec926c2aadd469dac4525466bf50f3c19bcb19701e7257e75892b88a7b",
+        "sha256": "0dfa8c21940b349f3415d8b5256e18a6f0f5f14032c757cc01211b9adef6d5dc",
         "pageCount": 5
       }
     },
@@ -834,7 +834,7 @@
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
-          "sha256": "73b407c7520bb3566025b9a09d93160fa37e9fb81062153c29300243a3f63701"
+          "sha256": "9fd7c0c028641ebf9e35242e41ddf83710f2bdee36d5e42a2ecaac2451529489"
         },
         {
           "path": "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
@@ -891,7 +891,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "d5c095e16ef3669e5fee8d8cbbc7ccc04cc3a6b75aa5bc703254509d4d9ea774",
+        "sha256": "ffdfcfd26676e1c7f663f98c9a488bdfe671b2e4eab8dbeea8726966d9f2ca89",
         "pageCount": 6
       }
     }

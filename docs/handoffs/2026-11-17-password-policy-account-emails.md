@@ -27,9 +27,20 @@ Initial Owner policy context is read only after the existing SQL admission funct
 
 ## Verification
 
-Qualification is still running; final results and review will be appended before delivery. Early failed test runs are retained as evidence, including regression RED runs and test-fixture errors. Test assertions/timeouts and release/source guards are preserved.
+The fresh whole-branch review found five Important issues; three smaller findings were re-graded Important because they affected truthful outcomes, accessible feedback or security-notice evidence. All eight were fixed in one pass, with regression evidence:
 
-Evidence directory: `/Users/josek0514/.codex/visualizations/2026/11/17/01a1e94c-85f6-7150-8838-c78bbe9df886/password-email-qa/`.
+- The actual-tree migration rehearsal source inventory now accepts the one-return setup delegation without any inspector/gate changes (17 checker tests).
+- Password fields retain an oversized paste in full. Both browser layouts refuse it explicitly; server and client count Unicode code points consistently up to 1,024.
+- Valid supplementary-plane company/personal names no longer disable email construction.
+- Initial Owner activation rolls back both credential and receipt if the screened company name/version changes while hashing; restricted-role, replay and lost-ack cases pass.
+- Temporary-password reuse has a dedicated EN/ES reason and the same proof can be retried with a different password.
+- Mail preparation errors are known FAILED outcomes before transport, while uncertain transport outcomes remain UNKNOWN.
+- Mismatch feedback clears stale policy text and does not duplicate accessibility IDs.
+- The browser test decodes the actual SMTP HTML/text alternatives for invitation, reset and change notice; missing-notice/alternative negative controls fail.
+
+Latest focused unit checks: 110 passed. SQL: 24 recovery + 53 invitation/claim/race/route + 17 initial Owner = 94 passed. Browser: two PB cases passed in Chromium and WebKit, including EN/ES, desktop/mobile, native paste, long/absent names, single-use proofs, and all three captured emails; zero recorded page errors. TypeScript, 17 migration-inventory checks, test-project guards and the reproducible 10,908-digest import check pass. The final full-unit/build rerun is still pending and will be recorded below before delivery. Early failed test runs are retained as evidence, including regression RED runs and test-fixture errors. Test assertions/timeouts and release/source guards are preserved.
+
+Evidence directory: `/Users/josek0514/.codex/visualizations/2026/11/17/01a1e94c-85f6-7150-8838-c78bbe9df886/password-email-qa/`. Final browser evidence is in `qualified/`; earlier failed regression/fixture attempts remain separately identified.
 
 ## Next release gate
 
