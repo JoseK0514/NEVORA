@@ -20,6 +20,8 @@ export const FEATURE_FLAGS = Object.freeze({
   clockerPunch: 'NEVORA_CLOCKER_PUNCH_ENABLED',
   // Retained for development's legacy renderer until reviewed UI integration.
   clockerUiV2: 'NEVORA_CLOCKER_UI_V2',
+  // Public-page visit counts only; see src/lib/analytics/redact.ts.
+  webAnalytics: 'NEVORA_WEB_ANALYTICS_ENABLED',
 } as const);
 
 export type FeatureFlags = Readonly<{[K in keyof typeof FEATURE_FLAGS]: boolean}>;

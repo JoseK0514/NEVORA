@@ -3,7 +3,9 @@ import {AccessJourneyProvider} from "@/components/mobile-access/journey";
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import {DocumentAppearanceScripts} from "./document-appearance-scripts";
+import { WebAnalytics } from "../components/web-analytics";
 import { NUVORA_BRAND } from "../lib/brand";
+import { readFeatureFlags } from "../lib/feature-flags";
 import { THEME_SCRIPT } from "../lib/theme";
 import "../components/signature/tokens.css";
 import "./globals.css";
@@ -41,7 +43,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         {/* Appearance: light or dark from the choice in Profile and the device setting, set before first paint. */}
         <DocumentAppearanceScripts textScale={TEXT_SCALE_SCRIPT} theme={THEME_SCRIPT} />
       </head>
-      <body>{mobileAccessEnabled() ? <AccessJourneyProvider>{children}</AccessJourneyProvider> : children}</body>
+      <body>
+        {mobileAccessEnabled() ? <AccessJourneyProvider>{children}</AccessJourneyProvider> : children}
+        {/* Off unless NEVORA_WEB_ANALYTICS_ENABLED is exactly "true"; counts public pages only. */}
+        {readFeatureFlags(process.env).webAnalytics ? <WebAnalytics /> : null}
+      </body>
     </html>
   );
 }
