@@ -23,7 +23,7 @@
 **Files:** Existing source inventory `docs/handoffs/2026-10-21-development-assembly-sources.json`, this plan, `docs/handoffs/2026-11-18-production-backend-completion.md`, existing source paths identified by each imported commit.
 
 - [x] Inspect chat ownership, instructions, package scripts, current Git status and exact remotes; create a managed detached Development workspace.
-- [ ] Record source manifests and preserve original review/evidence. Integrate pushed UI and existing candidate/tooling/password/Rondo changes with explicit file/commit provenance. Reconcile overlaps; preserve Claude's newer presentation and reviewed backend guards.
+- [x] Record source manifests and preserve original review/evidence. Integrate pushed UI and existing candidate/tooling/password/Rondo changes with explicit file/commit provenance. Reconcile overlaps; preserve Claude's newer presentation and reviewed backend guards. The separate live5>4 branch gate remains held.
 - [x] Preserve Next 16.4.6 or a currently compatible genuine patched successor; never downgrade to an affected source. Keep analytics/provider flags off.
 - [x] Install locked dependencies without runtime environment or migration execution. Establish typecheck, lint and focused regression baseline; retain failures.
 
@@ -31,7 +31,7 @@
 
 **Files:** `package.json`, lockfile, `.oxlintrc.json`, `eslint.config.mjs`, `scripts/run-rstest.mjs`, selected project configs, evidence readers, `src/test/integration/readiness-ui-browser.integration.ts` and actual failing runtime/driver modules discovered by reproduction.
 
-- [ ] Reproduce existing management-review failure on the exact owned source; distinguish real browser/runtime defects, obsolete selectors and lifecycle reporting. Never suppress page errors, relax authority/lease assertions or increase deadlines without a justified contract.
+- [x] Reproduce existing management-review failure on the exact owned source; distinguish real browser/runtime defects, obsolete selectors and lifecycle reporting. Never suppress page errors, relax authority/lease assertions or increase deadlines without a justified contract. Frozen local Chromium/WebKit and candidate01 cloud management review pass.
 - [x] Resolve runner/mock/report compatibility using genuine supported dependencies and retained regression cases. Check registry reachability and all required SQL/browser/report controls.
 - [x] Run full and production dependency audits; triage Next advisories against exact candidate/source/deployed versions. No advisory suppression or threshold reduction.
 
@@ -66,7 +66,7 @@
 
 - [ ] Run meaningful full unit, required SQL/API/browser, role/privacy/race/recovery suites, typecheck/lint/format, secret and dependency checks on the final source.
 - [ ] Freeze clean source; run exact-SHA build, rebuild/verify six manuals, production-marker scan and retained artifact-hash restoration check.
-- [ ] Fresh-context whole-change review; reproduce required findings RED, fix, GREEN and rerun affected/full gates. No second reviewer cycle.
+- [x] Fresh-context whole-change review; reproduce required backend findings RED, fix, GREEN and rerun affected/full gates. No second reviewer cycle. Five Important frontend findings remain assigned to Claude under the explicit UI ownership boundary.
 - [ ] Source-bound immutable candidate CI and all protected contexts. Publish Development only through the existing authorized normal release path after required gates; verify actual target-branch workflows. Main/production remain held.
 - [ ] Final report separates implemented, integrated, locally tested, CI-qualified, hosted-tested, provider-tested, independent acceptance and production approval; list remaining concrete external gates without claiming whole production readiness.
 
