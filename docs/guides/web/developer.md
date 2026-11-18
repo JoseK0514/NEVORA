@@ -212,7 +212,7 @@ Posted cash is assigned by posting time, including cross-month occurrences. Cash
 ## 30-day business phase additions
 
 The `nevora-30-day-phase` work adds these contracts; details are in the
-[phase handoff](../../handoffs/2026-11-18-30-day-phase.md).
+phase handoff, `docs/handoffs/2026-11-18-30-day-phase.md`.
 
 - Migration `0068_employee_employment_dates.sql` adds nullable `hire_date`,
   `termination_date` and `birth_date`. They stay out of the shared `Employee`
