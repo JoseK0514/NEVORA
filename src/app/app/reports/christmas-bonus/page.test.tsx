@@ -4,7 +4,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import type {BonusYear} from '@/lib/reports/christmas-bonus';
 import ChristmasBonusPage from './page';
 
-const fixture=vi.hoisted(()=>({role:'MANAGER',denied:false,read:vi.fn(),workspace:vi.fn(),unavailable:false}));
+const fixture=vi.hoisted(()=>({role:'MANAGER',denied:false,read:vi.fn(),workspace:vi.fn(),unavailable:false,timeZone:'America/Puerto_Rico'}));
 vi.mock('@/lib/auth/session',()=>({
  requireSession:async()=>({id:'actor',role:fixture.role}),
  requireSessionMutationProof:async()=>({employee:{id:'actor',role:fixture.role},sessionTokenHash:'a'.repeat(64)}),
@@ -20,7 +20,7 @@ vi.mock('@/components/company-access/scoped-read-frame',()=>({
  ScopedReadFrame:({observation,children,unavailable}:{observation?:{authority:string};children?:React.ReactNode;unavailable?:React.ReactNode})=>
   createElement('section',{'data-authority':observation?.authority},observation?children:unavailable),
 }));
-vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>{fixture.workspace();return {timeZone:'America/Puerto_Rico'};}}));
+vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>{fixture.workspace();return {timeZone:fixture.timeZone};}}));
 vi.mock('@/lib/reports/christmas-bonus.server',()=>({readChristmasBonusReport:async(_proof:unknown,year:BonusYear)=>{
  fixture.read(year);
  if(fixture.unavailable)return {state:'unavailable',reason:'read_failed'};
@@ -34,7 +34,7 @@ vi.mock('@/lib/reports/christmas-bonus.server',()=>({readChristmasBonusReport:as
   summary:{people:3,reached:1,checkBreaks:0,needsHireDate:1,notConfirmed:0,unfinalizedDays:3,peopleWithUnfinalizedDays:1}}};
 }}));
 
-beforeEach(()=>{fixture.role='MANAGER';fixture.denied=false;fixture.unavailable=false;fixture.read.mockClear();fixture.workspace.mockClear();vi.useFakeTimers();vi.setSystemTime(new Date('2026-11-18T16:00:00Z'));});
+beforeEach(()=>{fixture.role='MANAGER';fixture.denied=false;fixture.unavailable=false;fixture.timeZone='America/Puerto_Rico';fixture.read.mockClear();fixture.workspace.mockClear();vi.useFakeTimers();vi.setSystemTime(new Date('2026-11-18T16:00:00Z'));});
 afterEach(()=>vi.useRealTimers());
 
 it.each(['MANAGER','OWNER'])('shows %s the latest completed bonus year inside the current authority frame, with the disclaimer and key dates',async role=>{
@@ -79,4 +79,13 @@ it('withholds the report without current company-wide access, and says when the 
  fixture.denied=false;fixture.unavailable=true;
  const failed=renderToStaticMarkup(await ChristmasBonusPage({searchParams:Promise.resolve({})}));
  expect(failed).toContain('Christmas bonus hours unavailable');expect(failed).not.toContain('Ana Rivera');
+});
+
+it.each(['America/New_York','America/Santo_Domingo','UTC'])('closes the report for a %s workspace and reads nothing',async timeZone=>{
+ fixture.timeZone=timeZone;
+ const html=renderToStaticMarkup(await ChristmasBonusPage({searchParams:Promise.resolve({})}));
+ expect(html).toContain('Christmas bonus hours apply to Puerto Rico workspaces');
+ expect(html).toMatch(/<a [^>]*href="\/app\/reports"[^>]*>/);
+ expect(html).not.toContain('Ana Rivera');
+ expect(fixture.workspace).toHaveBeenCalled();expect(fixture.read).not.toHaveBeenCalled();
 });

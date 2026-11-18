@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { businessDate } from '../business-time';
-import { bonusStatus, bonusYear, bonusYearChoices, christmasBonusThresholdHours, latestCompletedBonusYear, projectChristmasBonusReport, selectBonusYear } from './christmas-bonus';
+import { bonusStatus, bonusYear, bonusYearChoices, christmasBonusApplies, christmasBonusThresholdHours, latestCompletedBonusYear, projectChristmasBonusReport, selectBonusYear } from './christmas-bonus';
 
 const HOUR = BigInt(3_600_000_000_000);
 const zone = 'America/Puerto_Rico';
@@ -134,5 +134,13 @@ describe('Christmas bonus report projection', () => {
   it('never carries birth dates, contact details or money', () => {
     const report = projectChristmasBonusReport(source([{ ...person('E10', '2015-01-01', []), birthDate: '1990-01-01', phone: '7875550100' }]), year);
     expect(JSON.stringify(report)).not.toMatch(/birth|1990-01-01|phone|7875550100|\$|amount/i);
+  });
+});
+
+describe('christmasBonusApplies', () => {
+  it('applies only to the Puerto Rico business time zone', () => {
+    expect(christmasBonusApplies('America/Puerto_Rico')).toBe(true);
+    for (const zone of ['America/New_York', 'America/Santo_Domingo', 'America/St_Thomas', 'UTC', 'america/puerto_rico', ''])
+      expect(christmasBonusApplies(zone)).toBe(false);
   });
 });

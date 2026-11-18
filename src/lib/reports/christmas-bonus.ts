@@ -16,6 +16,12 @@ import { projectTimecard } from '../timecards/project';
  * separately. Recorded days that no finalized timecard covers are reported as
  * unfinalized days instead of being added.
  */
+/** The statutory bonus is Puerto Rico law; other workspaces never see this report. */
+export const PUERTO_RICO_TIME_ZONE = 'America/Puerto_Rico';
+/** Whether a workspace's configured business time zone puts it under the Puerto Rico bonus rules. */
+export function christmasBonusApplies(timeZone: string): boolean {
+  return timeZone === PUERTO_RICO_TIME_ZONE;
+}
 export const BONUS_RULE_CHANGE_DATE = '2017-01-26';
 export const BONUS_HOURS_BEFORE_CHANGE = 700;
 export const BONUS_HOURS_FROM_CHANGE = 1350;

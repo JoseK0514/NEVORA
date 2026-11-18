@@ -31,7 +31,8 @@ function deferred<T>(){let resolve!:(value:T)=>void;const promise=new Promise<T>
 function bodyResponse(body:Promise<unknown>){return {status:200,ok:true,json:()=>body} as Response;}
 function nodes(value:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(value))return value.flatMap(nodes);if(!value||typeof value!=='object'||!('props'in value))return [];const node=value as ReactElement<Record<string,unknown>>;return [node,...nodes(node.props.children as ReactNode),...nodes(node.props.actions as ReactNode)];}
 // Round 2 (R13): the period menu and Export sit in the page title's actions, so the walk follows CorpTitle's actions too.
-function tree(){host.scope='reports';host.frames.reports.cursor=0;return Reports({initialPeriod:period});}
+let christmasBonus:boolean|undefined;
+function tree(){host.scope='reports';host.frames.reports.cursor=0;return Reports({initialPeriod:period,...(christmasBonus===undefined?{}:{christmasBonus})});}
 function commit(scope:'reports'|'view'){for(const slot of host.frames[scope].slots){if(!slot.pending)continue;slot.cleanup?.();const effect=slot.pending;slot.pending=undefined;const cleanup=effect();slot.cleanup=typeof cleanup==='function'?cleanup:undefined;}}
 let focused=true;
 let details:{open:boolean}[],media:EventTarget&{matches:boolean},downloaded:{name:string;blob:Blob}[],urls:Blob[];
@@ -151,4 +152,9 @@ it('links to the yearly Christmas bonus hours report on screen, outside the prin
  expect(output).toMatch(/<a [^>]*href="\/app\/reports\/christmas-bonus"[^>]*>[\s\S]*?Christmas bonus hours/);
  expect(output.indexOf('/app/reports/christmas-bonus')).toBeLessThan(output.indexOf('c-ins-print'));
  event('blur');expect(html()).toContain('/app/reports/christmas-bonus');
+});
+it('hides the Puerto Rico Christmas bonus link when the workspace is elsewhere',async()=>{
+ christmasBonus=false;
+ try{reads();await mount();const output=html();expect(output).not.toContain('/app/reports/christmas-bonus');expect(output).not.toContain('Yearly reports');}
+ finally{christmasBonus=undefined;}
 });
