@@ -25,15 +25,15 @@
 - [x] Inspect chat ownership, instructions, package scripts, current Git status and exact remotes; create a managed detached Development workspace.
 - [ ] Record source manifests and preserve original review/evidence. Integrate pushed UI and existing candidate/tooling/password/Rondo changes with explicit file/commit provenance. Reconcile overlaps; preserve Claude's newer presentation and reviewed backend guards.
 - [x] Preserve Next 16.4.6 or a currently compatible genuine patched successor; never downgrade to an affected source. Keep analytics/provider flags off.
-- [ ] Install locked dependencies without runtime environment or migration execution. Establish typecheck, lint and focused regression baseline; retain failures.
+- [x] Install locked dependencies without runtime environment or migration execution. Establish typecheck, lint and focused regression baseline; retain failures.
 
 ## Task 2 — Security/tooling and failing acceptance repair
 
 **Files:** `package.json`, lockfile, `.oxlintrc.json`, `eslint.config.mjs`, `scripts/run-rstest.mjs`, selected project configs, evidence readers, `src/test/integration/readiness-ui-browser.integration.ts` and actual failing runtime/driver modules discovered by reproduction.
 
 - [ ] Reproduce existing management-review failure on the exact owned source; distinguish real browser/runtime defects, obsolete selectors and lifecycle reporting. Never suppress page errors, relax authority/lease assertions or increase deadlines without a justified contract.
-- [ ] Resolve runner/mock/report compatibility using genuine supported dependencies and retained regression cases. Check registry reachability and all required SQL/browser/report controls.
-- [ ] Run full and production dependency audits; triage Next advisories against exact candidate/source/deployed versions. No advisory suppression or threshold reduction.
+- [x] Resolve runner/mock/report compatibility using genuine supported dependencies and retained regression cases. Check registry reachability and all required SQL/browser/report controls.
+- [x] Run full and production dependency audits; triage Next advisories against exact candidate/source/deployed versions. No advisory suppression or threshold reduction.
 
 ## Task 3 — Account/password/email integration
 
@@ -41,7 +41,7 @@
 
 - [x] Preserve approved 15-character minimum, long passphrases, common/breached and Employee-ID/company checks, exact EN/ES rejection reasons, explicit oversized-input refusal and exact company/credential revision fencing.
 - [x] Preserve operator replacement, last usable Owner, uncertain credential transaction outcomes and session revocation.
-- [ ] Verify actual owned SMTP MIME HTML/plain alternatives, single-use expiry and current recipient/authority. No real inbox sends.
+- [x] Verify actual owned SMTP MIME HTML/plain alternatives, single-use expiry and current recipient/authority. No real inbox sends.
 
 ## Task 4 — Rondo and remaining functional contracts
 
