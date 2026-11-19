@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-19",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "69cfb71a001eed5cfcedd833cf7a9f3022e64eda",
-  "applicationHash": "ae67f40c396139aa937ce9f12a528cb21ff421d0fbd51eb2a9b87c86028dead2",
+  "sourceSha": "879f81bb784e9d31370e5626d9d9ea4cde349a04",
+  "applicationHash": "461cf287e3a8e2585890d88df08942a3b28d8eb89f40808689ec499c387538ec",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "0cd9232190da48d0e815aac9cbfe8df1ad69be5fe97f153ed58c7626fde85fec"
@@ -19,7 +19,7 @@
       "evidence": [
         {
           "path": "src/lib/navigation.ts",
-          "sha256": "557f5f4be93a0b70d34231082cd0400a4fe50e63354037db41491d268af6d76e"
+          "sha256": "6c9ee8cba6a42d1bf9689186a3d954e0759b7c81f5a5622253d82939d72c5e1d"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",
@@ -204,7 +204,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "6d2467c3e588017a57071adb0fbff795f0af7fa4f0bdc9bc211a0979c94ba509",
+        "sha256": "492d7e3a5ff0de21c293b074d120918ee707a67f4ddebd27f136e45c765bae87",
         "pageCount": 6
       }
     },
@@ -222,7 +222,7 @@
         },
         {
           "path": "src/lib/navigation.ts",
-          "sha256": "557f5f4be93a0b70d34231082cd0400a4fe50e63354037db41491d268af6d76e"
+          "sha256": "6c9ee8cba6a42d1bf9689186a3d954e0759b7c81f5a5622253d82939d72c5e1d"
         },
         {
           "path": "src/lib/company-access/model.ts",
@@ -262,7 +262,7 @@
         },
         {
           "path": "src/app/app/ai-manager/page.tsx",
-          "sha256": "26b6c51bdee4e4f260967b245c5ca6f35c701f86db02694fce454ffaca392df6"
+          "sha256": "1e9fae35952e291d0b8406f445c56e9b123d3263d5397e447325ea2fe55c9643"
         },
         {
           "path": "src/components/management-close-form.tsx",
@@ -327,7 +327,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "f965ec277e5fb983cc695703ea08a2a2b82c774bd6941f41531c1ee0835f1465",
+        "sha256": "0ce6db9e2ea248b5a3a11417955a086e0d1084c2835ad6a7b9db98c219347fe9",
         "pageCount": 4
       }
     },
@@ -341,7 +341,7 @@
       "evidence": [
         {
           "path": "src/lib/navigation.ts",
-          "sha256": "557f5f4be93a0b70d34231082cd0400a4fe50e63354037db41491d268af6d76e"
+          "sha256": "6c9ee8cba6a42d1bf9689186a3d954e0759b7c81f5a5622253d82939d72c5e1d"
         },
         {
           "path": "src/app/activate/page.tsx",
@@ -446,7 +446,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "d821f148e05ad6451e2a291ec64ff92ed6233b69bc4918ad14f2496b387da8f9",
+        "sha256": "13c04221d46fad7cbde9975d9db14ccefbcb8ee7833093641f0633599b025076",
         "pageCount": 3
       }
     },
@@ -455,12 +455,12 @@
       "title": "Rondo web guide",
       "markdown": {
         "path": "docs/guides/web/rondo.md",
-        "sha256": "7ad15811e379e7d904e4c6c2249b20d1f63903f6b55528a168abf3a50166edd0"
+        "sha256": "8011c35c110e709874a889df1645df69c68472c9cdcd788eba7fcde60af3ae2a"
       },
       "evidence": [
         {
           "path": "src/app/app/ai-manager/page.tsx",
-          "sha256": "26b6c51bdee4e4f260967b245c5ca6f35c701f86db02694fce454ffaca392df6"
+          "sha256": "1e9fae35952e291d0b8406f445c56e9b123d3263d5397e447325ea2fe55c9643"
         },
         {
           "path": "src/lib/owner-advisor/authority.server.ts",
@@ -476,7 +476,7 @@
         },
         {
           "path": "src/lib/owner-advisor/loop.server.ts",
-          "sha256": "650cdc73ad61027e757d7da4c618fbb6dddd1ece2cf246db1be360c22133a2d2"
+          "sha256": "c57e042a493269cd39193bde63e4b7f06c36eadb2950fb70767ab41b75ac027f"
         },
         {
           "path": "src/lib/owner-advisor/notebook.server.ts",
@@ -492,23 +492,23 @@
         },
         {
           "path": "src/components/owner-advisor/advisor.tsx",
-          "sha256": "5782cabeca7bb2cf4908c5e712ccf974ebc0329ae0328c60b03760be93cffbb5"
+          "sha256": "2cefa25611df52432c0839ce1b97fd09fc9cf39bb0b20390048f3a37b8b8f058"
         },
         {
           "path": "src/components/owner-advisor/notebook-panel.tsx",
-          "sha256": "56518637bc7d50d40c67bf1a28eac6bb1de7a968a4d5ee68de5590293e8d6d0f"
+          "sha256": "0311c842cd4526dfd50533bc1828bc2e7089fa11219ba8a943f159d606aa7aab"
         },
         {
           "path": "src/components/owner-advisor/coverage-actions.tsx",
-          "sha256": "313c9dc79217ab7c3047c486db8137cdaf6837d21a810c314237dd30650cff71"
+          "sha256": "6a1cbdcdbc957eee58606c28bc9e63bb8738f21934f9dfdea49cb1897c28c524"
         },
         {
           "path": "src/components/owner-advisor/coverage-plans.tsx",
-          "sha256": "241c9c08af5bb1b888f3fa1f01f91578bff96de3bfe4c95c6bc13e35204f23f2"
+          "sha256": "a45413d3bfd06aa7009da207a3674dc3f2d31e27075754715a54fd89d4c686a7"
         },
         {
           "path": "src/components/owner-advisor/workflows.tsx",
-          "sha256": "11fe5e237d750256ffd22b1e733292f6e446913734bdcf7455230fe872c0db0e"
+          "sha256": "7779990c50f731b35359082955acd0f8d321f4175dbd6dccd4a7bcc93115a41d"
         },
         {
           "path": "docs/product/rondo-operating-contract.md",
@@ -532,7 +532,7 @@
         },
         {
           "path": "src/components/owner-advisor/knowledge/knowledge-page.tsx",
-          "sha256": "8d0ea9bc0f80697a4486a1f40fc2a5a56f839ced4779e260496acf5c77c860c8"
+          "sha256": "70909d043d8d7986175112f23b7791c3a2b831aee91f54bc8c76cb7fe6341677"
         },
         {
           "path": "src/lib/owner-advisor/company-knowledge.server.ts",
@@ -540,7 +540,7 @@
         },
         {
           "path": "src/lib/owner-advisor/company-knowledge-reader.server.ts",
-          "sha256": "b036211b57e5913ea1e6dda01a713570086b480a9dd6fab233493b974d58b8df"
+          "sha256": "86bc39d8c9f5e6924abf56fa947b33c8221c044cc7d8e8a522d2f3bb1c295f0d"
         },
         {
           "path": "src/app/app/ai-manager/weekly/page.tsx",
@@ -548,7 +548,7 @@
         },
         {
           "path": "src/components/owner-advisor/weekly/weekly-page.tsx",
-          "sha256": "78712dc7c2595f3c1fca0aca99d07d49d1a341ed6df991b6930235038e045cbd"
+          "sha256": "ba50fb01f4641a9275cb090139a78b1c2472fac81d41f674e5e86618f067bfcd"
         },
         {
           "path": "src/lib/owner-advisor/weekly-contracts.ts",
@@ -621,8 +621,8 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "20669f2db55ec8355bc151846d0f9b35444511d175ca6bb54f6b91eadb5c3a78",
-        "pageCount": 4
+        "sha256": "737ecabbfadd7cd62edf5e248ed4aa2a9dcfc4ae8d5a983f00b494ebd1157d19",
+        "pageCount": 5
       }
     },
     {
@@ -884,7 +884,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "63ee6e3cc9b9494d89a56b3a7e55d6f940671e05d88146bafbefa274f82b1377",
+        "sha256": "bce741ac6881295a137a3fa09da0b4fb049db6e5b34087a7b250143cbbc02ac2",
         "pageCount": 7
       }
     },
@@ -1067,7 +1067,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "cd7498d9ca1dfd705fa6140dd99dff78e71ea7cda718df6c9a43009ffbdd7e03",
+        "sha256": "e87fd1395a790c9345f07cf4cacc1d4e6d860297760d3361a15399215fa977dc",
         "pageCount": 6
       }
     }
