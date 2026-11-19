@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, rs } from "@rstest/core";
-import { isOperationId } from "./contracts";
 import {
-  deriveOperationId, locationKey, readActivation, readCurrent, readGrant, readOperation, readRegistration, readVerification,
+  locationKey, readActivation, readCurrent, readGrant, readOperation, readRegistration, readVerification,
   safeActivationUrl, signupRequest, signupStep, suggestSlug, takeFragmentProof, type Transport,
 } from "./signup-client";
 
@@ -34,17 +33,6 @@ describe("takeFragmentProof", () => {
     const h = history();
     expect(takeFragmentProof({ hash: "", pathname: "/p", search: "" }, h)).toEqual({ proof: null, hadFragment: false });
     expect(h.calls).toEqual([]);
-  });
-});
-
-describe("deriveOperationId", () => {
-  it("is a stable UUID per proof and purpose, so the same link replays the same command", async () => {
-    const first = await deriveOperationId(PROOF, "verification");
-    expect(isOperationId(first)).toBe(true);
-    expect(first).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
-    expect(await deriveOperationId(PROOF, "verification")).toBe(first);
-    expect(await deriveOperationId(PROOF, "owner-activation")).not.toBe(first);
-    expect(await deriveOperationId("B".repeat(43), "verification")).not.toBe(first);
   });
 });
 
@@ -97,6 +85,7 @@ describe("result readers", () => {
     expect(readOperation(r(409, { state: "conflict", reason: "slug_unavailable" }))).toEqual({ state: "conflict", reason: "slug_unavailable" });
     expect(readOperation(r(503, { state: "unavailable", reasonCode: "RESOURCE_REVIEW_REQUIRED" }))).toEqual({ state: "unavailable", reasonCode: "RESOURCE_REVIEW_REQUIRED" });
     expect(readOperation(r(401, { state: "unavailable", reasonCode: "ACCESS_DENIED" }))).toEqual({ state: "no_session" });
+    expect(readOperation(r(202, { state: "pending", operationId: id, stage: "QUARANTINED", pollAfterMs: 1000 }))).toEqual({ state: "unavailable", reasonCode: "RESOURCE_REVIEW_REQUIRED" });
   });
   it("grant: follows only the workplace's own HTTPS activation page", () => {
     const url = "https://fictional-north.portal.example/onboarding/activate#proof=" + encodeURIComponent(ENVELOPE);

@@ -37,10 +37,13 @@ export function SignupSteps({ current, c }: { current: 0 | 1 | 2 | 3; c: SignupC
 }
 
 /** An outcome the server has not confirmed: never shown as failed or done. The button replays the identical request. */
-export function NotConfirmed({ copy, busy, onCheck, focusRef }: { copy: SignupCopy["unknown"]; busy: boolean; onCheck: () => void; focusRef?: RefObject<HTMLDivElement | null> }) {
+export function NotConfirmed({ copy, busy, onCheck, focusRef, note: extra = null }: { copy: SignupCopy["unknown"]; busy: boolean; onCheck: () => void; focusRef?: RefObject<HTMLDivElement | null>;
+  /** What the last check found (offline, still unconfirmed), so "Check again" never looks like it did nothing. */
+  note?: { tone: "red" | "amber" | "teal"; text: string } | null }) {
   const note = noteParts(`${copy.title}. ${copy.body}`);
   return <div className="q-card q-auth__card su-card">
     <SignupNote tone="amber" icon="unknown" title={note.title ?? undefined} focusRef={focusRef}>{note.body}</SignupNote>
+    {extra ? <p className="q-auth__note" role="status">{extra.text}</p> : null}
     <button type="button" className="q-btn" onClick={onCheck} disabled={busy} aria-busy={busy || undefined}>{busy ? copy.checking : copy.check}</button>
   </div>;
 }
@@ -53,4 +56,11 @@ export function FieldError({ id, children }: { id: string; children?: ReactNode 
 /** Move focus to the page title after a phase change so keyboard and screen-reader users start at the new step. */
 export function focusTitle() {
   requestAnimationFrame(() => document.querySelector<HTMLElement>("[data-signup-title]")?.focus());
+}
+
+/** While a page still needs its link's proof, keep it where the shared language switch looks before it reloads
+ * (`#reset-proof`, the Set a new password page's field): the switch writes it back to `#proof=` and the page reads it
+ * again, so changing language never loses the link. Rendered only while the proof is held; never focusable. */
+export function KeepProofForLanguage({ proof }: { proof: string | null }) {
+  return proof ? <input type="hidden" id="reset-proof" value={proof} readOnly /> : null;
 }

@@ -12,7 +12,10 @@ import "../login/auth-premium.css";
 import "../login/auth-signature.css";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "NEVORA", robots: { index: false, follow: false } };
+/** The tab names the step in the page's language (WCAG 2.4.2). */
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: `${SIGNUP_COPY[await readAuthLang()].meta.signup} · NEVORA`, robots: { index: false, follow: false } };
+}
 
 /** Signup on the configured signup origin (SCRUM-190). Public signup stays closed unless admission is explicitly open;
  * see readSignupPage for the private staging test. Other hosts get not-found. */

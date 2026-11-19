@@ -7,7 +7,8 @@ type Environment = Readonly<Record<string, string | undefined>>;
 
 /** What the signup page may offer. The registration API stays the real gate: it refuses every address the current
  * admission does not allow, whatever this page shows.
- * - `open`: admission is explicitly open (the only public-signup switch) and mail can be sent.
+ * - `open`: NEVORA_ONBOARDING_ADMISSION_MODE is exactly "open" (the only public-signup switch) and mail can be sent.
+ *   An unset mode, which the API treats as open outside production, shows the closed page here.
  * - `private`: admission is limited to the approved test recipient and this is not production. The form is shown on the
  *   protected staging deployment with a "Private test" line, because the public config deliberately hides policy
  *   versions in this mode and the integration inbox still needs a real form to exercise.
@@ -16,17 +17,18 @@ export type SignupPage =
   | { mode: "open" | "private"; termsVersion: string; privacyVersion: string; portalBaseDomain: string }
   | { mode: "closed" };
 
-export function signupPageMode(config: EnabledConfig | DisabledConfig, senderConfigured: boolean, admission: SignupAdmission): SignupPage {
+export function signupPageMode(config: EnabledConfig | DisabledConfig, senderConfigured: boolean, admission: SignupAdmission, explicitlyOpen: boolean): SignupPage {
   if (!config.enabled || !senderConfigured) return { mode: "closed" };
   const versions = { termsVersion: config.termsVersion, privacyVersion: config.privacyVersion, portalBaseDomain: config.portalBaseDomain };
-  if (admission.mode === "open") return { mode: "open", ...versions };
+  // The API also treats an unset mode as open outside production; the page does not. Open means the operator wrote it.
+  if (admission.mode === "open" && explicitlyOpen) return { mode: "open", ...versions };
   if (admission.mode === "approved_recipient" && config.environment !== "production") return { mode: "private", ...versions };
   return { mode: "closed" };
 }
 
 export function readSignupPage(env: Environment = process.env): SignupPage {
   const config = readOnboardingConfig(env);
-  return signupPageMode(config, config.enabled && verificationDelivery(env, config) !== null, readSignupAdmission(env));
+  return signupPageMode(config, config.enabled && verificationDelivery(env, config) !== null, readSignupAdmission(env), env.NEVORA_ONBOARDING_ADMISSION_MODE === "open");
 }
 
 /** The signup pages belong to the configured signup origin only. A company host (or any other host) that reaches one

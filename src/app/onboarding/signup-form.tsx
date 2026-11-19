@@ -19,7 +19,7 @@ export function SignupForm({ lang, mode, termsVersion, privacyVersion }: { lang:
   const [emailError, setEmailError] = useState<string | null>(null), [agreeError, setAgreeError] = useState(false);
   const [notice, setNotice] = useState<{ tone: "red" | "amber"; text: string } | null>(null);
   const [wait, setWait] = useState(0), [sentTo, setSentTo] = useState("");
-  const command = useRef<RegistrationCommand | null>(null), busy = useRef(false), mounted = useRef(true);
+  const command = useRef<RegistrationCommand | null>(null), busy = useRef(false), mounted = useRef(true), uncertain = useRef(false);
   const unknownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
@@ -32,11 +32,19 @@ export function SignupForm({ lang, mode, termsVersion, privacyVersion }: { lang:
 
   function apply(outcome: RegistrationOutcome) {
     if (outcome.state === "requested") {
-      setWait(Math.ceil(outcome.resendAfterMs / 1000)); setSentTo(command.current?.email ?? ""); setPhase("sent"); focusTitle(); return;
+      uncertain.current = false; setWait(Math.ceil(outcome.resendAfterMs / 1000)); setSentTo(command.current?.email ?? ""); setPhase("sent"); focusTitle(); return;
     }
-    if (outcome.state === "unknown") { setPhase("unknown"); requestAnimationFrame(() => unknownRef.current?.focus()); return; }
+    if (outcome.state === "unknown") {
+      const again = uncertain.current; uncertain.current = true; setPhase("unknown");
+      if (again) setNotice({ tone: "amber", text: t.unknown.stillUnsure }); else requestAnimationFrame(() => unknownRef.current?.focus());
+      return;
+    }
+    if (uncertain.current && (outcome.state === "limited" || (outcome.state === "unavailable" && outcome.reasonCode !== "ONBOARDING_DISABLED"))) {
+      // The first send is still unconfirmed: keep the exact command (the contract replays the original POST).
+      setPhase("unknown"); setNotice({ tone: "amber", text: t.unknown.stillUnsure }); return;
+    }
     // A definite answer retires the command: the next submit is a new request.
-    command.current = null; setPhase("form");
+    command.current = null; uncertain.current = false; setPhase("form");
     if (outcome.state === "invalid") {
       if (outcome.fieldErrors.some(e => e.code === "POLICY_VERSION_CHANGED")) setNotice({ tone: "amber", text: s.policyChanged });
       else { setEmailError(s.emailInvalid); requestAnimationFrame(() => document.getElementById("signup-email")?.focus()); }
@@ -47,7 +55,7 @@ export function SignupForm({ lang, mode, termsVersion, privacyVersion }: { lang:
 
   async function send(next: Phase) {
     if (busy.current || !command.current) return;
-    if (typeof navigator !== "undefined" && navigator.onLine === false) { setNotice({ tone: "amber", text: t.offline }); if (next === "sending") setPhase("form"); return; }
+    if (typeof navigator !== "undefined" && navigator.onLine === false) { setNotice({ tone: "amber", text: t.offline }); if (next === "sending") setPhase("form"); else setPhase("unknown"); return; }
     busy.current = true; setPhase(next); setNotice(null);
     const outcome = readRegistration(await signupRequest("/api/onboarding/registrations", { method: "POST", body: command.current }));
     busy.current = false;
@@ -89,7 +97,7 @@ export function SignupForm({ lang, mode, termsVersion, privacyVersion }: { lang:
 
   if (phase === "unknown" || phase === "checking") return <>
     <SignupHeader title={t.unknown.title} />
-    <NotConfirmed copy={t.unknown} busy={phase === "checking"} onCheck={() => void send("checking")} focusRef={unknownRef} />
+    <NotConfirmed copy={t.unknown} busy={phase === "checking"} onCheck={() => void send("checking")} focusRef={unknownRef} note={notice} />
     <nav className="q-auth__links" aria-label={t.unknown.title}><a href="/onboarding">{s.otherEmail}</a></nav>
   </>;
 

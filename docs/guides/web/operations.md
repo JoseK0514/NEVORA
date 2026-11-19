@@ -67,6 +67,16 @@ Provider acceptance is not inbox receipt. After a lost response, inspect the
 original operation rather than sending a new invitation or resetting a password.
 Existing company access remains independent of whether new signup is open.
 
+The signup pages follow the same gates. On the signup origin, `/onboarding` shows
+its form only for explicitly open admission, or for approved-recipient admission
+outside production, where it is marked as a private test; otherwise it shows
+that signup isn't open. `/onboarding/verify` reads the emailed link's proof,
+removes it from the address bar, and resumes a verified signup from its cookie
+through business details, provisioning progress and the Owner link. The new
+workplace's `/onboarding/activate` sets the initial Owner password. A lost or
+uncertain response repeats the same operation; it never creates a second
+workplace, grant or email. Other hosts answer not found for the signup pages.
+
 ## Workers, enrollment and health
 
 The canonical payroll/notification services own job deduplication, leases,

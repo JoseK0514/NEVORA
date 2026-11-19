@@ -5,8 +5,10 @@ import { isOperationId, isRevision, parseOnboardingSnapshot, validWorkspaceSlug,
  * closeout). Nothing here stores a proof, password or email: proofs live in memory only, and the page scrubs them from
  * the address bar before anything else runs. Every read is closed-shape; anything else is "lost", never a guess. */
 
-/** Read a bearer proof from `#proof=…`, then remove the fragment (keeping the path and query, such as `?lang=es`).
- * Returns null for no proof or a malformed one; the caller decides which of those it is from `hadFragment`. */
+/** Read a bearer proof from `#proof=…`, then remove the fragment (keeping the path and query; the verify page then
+ * reads and removes `?lang` itself). Returns null for no proof or a malformed one; the caller decides which of those it
+ * is from `hadFragment`. Operation IDs for proofs are random per page (crypto.randomUUID), never derived from the proof:
+ * a derived ID would let anyone holding a used link replay its claim and receive the live signup session. */
 export function takeFragmentProof(location: Pick<Location, "hash" | "pathname" | "search">, history: Pick<History, "replaceState">): { proof: string | null; hadFragment: boolean } {
   const fragment = location.hash.slice(1), hadFragment = fragment.length > 0;
   if (hadFragment) history.replaceState(null, "", location.pathname + location.search);
@@ -14,17 +16,6 @@ export function takeFragmentProof(location: Pick<Location, "hash" | "pathname" |
   let candidate: string;
   try { candidate = decodeURIComponent(fragment.slice(6)); } catch { return { proof: null, hadFragment }; }
   return { proof: isPublicAccountProof(candidate) ? candidate : null, hadFragment };
-}
-
-/** A stable operation ID for one proof and purpose: SHA-256 of a domain-separated string, shaped as a UUID. The same
- * email link therefore always replays the same command, so a lost response, a reload or a second click recovers the
- * original receipt instead of being refused as a new claim. It is not an authority: the proof still has to be sent. */
-export async function deriveOperationId(proof: string, purpose: "verification" | "owner-activation"): Promise<string> {
-  const bytes = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`nevora-signup-operation:v1:${purpose}:${proof}`))).slice(0, 16);
-  bytes[6] = (bytes[6] & 0x0f) | 0x40;
-  bytes[8] = (bytes[8] & 0x3f) | 0x80;
-  const hex = [...bytes].map(b => b.toString(16).padStart(2, "0")).join("");
-  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
 export type Transport = { kind: "response"; status: number; body: unknown } | { kind: "lost" };
@@ -114,6 +105,9 @@ export function readOperation(t: Transport): OperationOutcome {
   if (t.kind === "lost" || !record(t.body)) return { state: "unknown", operationId: null };
   const b = t.body;
   if (t.status === 401) return { state: "no_session" };
+  // A replayed create whose operation is quarantined answers pending/QUARANTINED; the read endpoint calls the same
+  // state RESOURCE_REVIEW_REQUIRED. Both mean: stop and ask for a review, never retry or create again.
+  if (b.state === "pending" && b.stage === "QUARANTINED") return { state: "unavailable", reasonCode: "RESOURCE_REVIEW_REQUIRED" };
   if (b.state === "pending" && t.status === 202 && isOperationId(b.operationId) && (PROVISIONING_STAGES as readonly unknown[]).includes(b.stage))
     return { state: "pending", operationId: b.operationId.toLowerCase(), stage: b.stage as ProvisioningStage, pollAfterMs: count(b.pollAfterMs, 600_000) ? Math.max(1000, b.pollAfterMs) : 1000 };
   if (b.state === "outcome_unknown") return { state: "unknown", operationId: isOperationId(b.operationId) ? b.operationId.toLowerCase() : null };

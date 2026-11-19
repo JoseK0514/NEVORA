@@ -1,15 +1,15 @@
 "use client";
-import { useEffect, useRef, useState, type FormEvent, type InputHTMLAttributes, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type InputHTMLAttributes, type ReactNode } from "react";
 import { AUTH_LANG_COOKIE, type AuthLang } from "@/lib/auth-copy";
 import { readableText, validWorkspaceSlug, type WorkspaceCommand, type WorkspacePayload } from "@/lib/onboarding/contracts";
 import { normalizePhoneNumber } from "@/lib/phone";
 import {
-  deriveOperationId, locationKey, readCurrent, readGrant, readOperation, readVerification, signupRequest, signupStep, suggestSlug, takeFragmentProof,
+  locationKey, readCurrent, readGrant, readOperation, readVerification, signupRequest, signupStep, suggestSlug, takeFragmentProof,
   type OperationOutcome, type ProvisioningStage,
 } from "@/lib/onboarding/signup-client";
 import type { OnboardingSnapshot } from "@/lib/onboarding/contracts";
 import { SIGNUP_COPY, fill } from "@/lib/onboarding/signup-copy";
-import { FieldError, NotConfirmed, SignupHeader, SignupNote, SignupSteps, focusTitle } from "@/components/onboarding/signup-ui";
+import { FieldError, KeepProofForLanguage, NotConfirmed, SignupHeader, SignupNote, SignupSteps, focusTitle } from "@/components/onboarding/signup-ui";
 
 type View =
   | "checking" | "invalid" | "missing" | "unavailable" | "unknown-verify" | "session-ended"
@@ -41,13 +41,13 @@ export function VerifyJourney({ lang, portalBaseDomain }: { lang: AuthLang; port
   const [stage, setStage] = useState<ProvisioningStage | null>(null), [trouble, setTrouble] = useState(false);
   const [notice, setNotice] = useState<{ tone: "red" | "amber" | "teal"; text: string } | null>(null);
   const [fields, setFields] = useState<Fields>(() => ({ businessName: "", slug: "", timeZone: defaultZone(), location: "", firstName: "", lastName: "", phone: "", signInId: "" }));
-  const [slugTouched, setSlugTouched] = useState(false);
+  const [slugTouched, setSlugTouched] = useState(false), [heldProof, setHeldProof] = useState<string | null>(null);
   const [errors, setErrors] = useState<Partial<Record<FieldName, string>>>({});
 
   const mounted = useRef(true), started = useRef(false), timer = useRef<ReturnType<typeof setTimeout> | null>(null), failures = useRef(0);
   const verifyBody = useRef<{ schemaVersion: 1; operationId: string; proof: string } | null>(null);
   const version = useRef<string | null>(null), createCommand = useRef<WorkspaceCommand | null>(null), operationId = useRef<string | null>(null);
-  const grantBody = useRef<{ schemaVersion: 1; operationId: string } | null>(null), knownSlug = useRef<string | null>(null);
+  const grantBody = useRef<{ schemaVersion: 1; operationId: string } | null>(null), knownSlug = useRef<string | null>(null), createUncertain = useRef(false);
   const unknownRef = useRef<HTMLDivElement | null>(null);
   // A field to focus after the next render (the fieldset is disabled while sending, so focusing earlier is lost).
   const focusAfterRender = useRef<string | null>(null);
@@ -62,24 +62,27 @@ export function VerifyJourney({ lang, portalBaseDomain }: { lang: AuthLang; port
   const viewRef = useRef<View>("checking");
   useEffect(() => { viewRef.current = view; }, [view]);
 
-  // 1. Scrub, then verify or resume. Runs once; StrictMode's second setup only re-arms `mounted`.
-  useEffect(() => {
+  // 1. Scrub before paint, then verify or resume. Runs once; StrictMode's second setup only re-arms `mounted`.
+  useLayoutEffect(() => {
     mounted.current = true;
     if (started.current) return;
     started.current = true;
-    const params = new URLSearchParams(window.location.search), chosen = params.get("lang");
+    const chosen = new URLSearchParams(window.location.search).get("lang");
+    let taken: { proof: string | null; hadFragment: boolean };
+    try { taken = takeFragmentProof(window.location, window.history); window.history.replaceState(null, "", window.location.pathname); }
+    catch { window.location.replace("/onboarding/verify"); return; }
     if (chosen === "en" || chosen === "es") {
       const secure = window.location.protocol === "https:" ? "; Secure" : "";
       document.cookie = `${AUTH_LANG_COOKIE}=${chosen}; Max-Age=31536000; Path=/; SameSite=Lax${secure}`;
     }
-    let taken: { proof: string | null; hadFragment: boolean };
-    try { taken = takeFragmentProof(window.location, window.history); window.history.replaceState(null, "", window.location.pathname); }
-    catch { window.location.replace("/onboarding/verify"); return; }
     if (taken.proof) {
-      const proof = taken.proof;
-      void deriveOperationId(proof, "verification").then(id => { verifyBody.current = { schemaVersion: 1, operationId: id, proof }; return verify(); });
-    } else if (taken.hadFragment) go("invalid");
-    else void resume();
+      // A random operation ID per page: the link stays one-use (a derived ID would let anyone holding a used link
+      // replay the claim). A lost reply is recovered on this page by replaying this exact body.
+      verifyBody.current = { schemaVersion: 1, operationId: crypto.randomUUID(), proof: taken.proof };
+      const held = taken.proof;
+      queueMicrotask(() => { if (mounted.current) setHeldProof(held); void verify(); });
+    } else if (taken.hadFragment) queueMicrotask(() => go("invalid"));
+    else queueMicrotask(() => void resume());
     // eslint-disable-next-line hooks-preserved/exhaustive-deps -- runs once on arrival: the scrub must happen exactly once
   }, []);
 
@@ -94,15 +97,17 @@ export function VerifyJourney({ lang, portalBaseDomain }: { lang: AuthLang; port
     setBusy(true);
     const outcome = readVerification(await signupRequest("/api/onboarding/verification", { method: "POST", body: verifyBody.current }));
     if (!mounted.current) return;
-    if (outcome.state === "verified") { verifyBody.current = null; route(outcome.snapshot); return; }
+    if (outcome.state === "verified") { verifyBody.current = null; setHeldProof(null); route(outcome.snapshot); return; }
     if (outcome.state === "invalid") {
-      verifyBody.current = null;
+      verifyBody.current = null; setHeldProof(null);
       // A used link with a live signup session (a second click after success) continues instead of stopping.
       const current = readCurrent(await signupRequest("/api/onboarding/registrations/current", { method: "GET" }));
       if (current.state === "ready") route(current.snapshot); else go("invalid");
       return;
     }
+    const again = viewRef.current === "unknown-verify";
     go(outcome.state === "unavailable" ? "unavailable" : "unknown-verify");
+    if (again && outcome.state === "unknown") setNotice({ tone: "amber", text: t.unknown.stillUnsure });
   }
 
   async function resume() {
@@ -131,7 +136,7 @@ export function VerifyJourney({ lang, portalBaseDomain }: { lang: AuthLang; port
       later(outcome.pollAfterMs, () => void poll());
       return;
     }
-    if (outcome.state === "no_session") { go("session-ended"); return; }
+    if (outcome.state === "no_session" || (outcome.state === "unavailable" && outcome.reasonCode === "ACCESS_DENIED")) { go("session-ended"); return; }
     if (outcome.state === "unavailable" && ["RESOURCE_REVIEW_REQUIRED", "PROVISIONING_SOURCE_CHANGED"].includes(outcome.reasonCode)) { go("review"); return; }
     // Unknown, lost or a temporary failure: keep checking with backoff; nothing is created by a read.
     failures.current += 1; setTrouble(failures.current >= 3);
@@ -166,13 +171,29 @@ export function VerifyJourney({ lang, portalBaseDomain }: { lang: AuthLang; port
     if (!createCommand.current || busy) return;
     if (typeof navigator !== "undefined" && navigator.onLine === false) { setNotice({ tone: "amber", text: t.offline }); return; }
     setBusy(true); setNotice(null);
+    if (fromUnknown) {
+      // Contract: on an unknown outcome read the operation first. Only when none exists is the identical command sent again.
+      const read = readOperation(await signupRequest("/api/onboarding/operations/current", { method: "GET" }));
+      if (!mounted.current) return;
+      if (read.state === "pending" || (read.state === "unavailable" && read.reasonCode === "RESOURCE_REVIEW_REQUIRED") || read.state === "no_session") {
+        if (read.state === "pending") { knownSlug.current = createCommand.current.payload.requestedSlug; createCommand.current = null; createUncertain.current = false; }
+        setBusy(false); go(read.state === "pending" ? "progress" : read.state === "no_session" ? "session-ended" : "review");
+        if (read.state === "pending") applyProgress(read);
+        return;
+      }
+    }
     const outcome = readOperation(await signupRequest("/api/onboarding/workspaces", { method: "POST", body: createCommand.current }));
     if (!mounted.current) return;
     setBusy(false);
-    if (outcome.state === "pending") { knownSlug.current = createCommand.current.payload.requestedSlug; createCommand.current = null; go("progress"); applyProgress(outcome); return; }
-    if (outcome.state === "unknown") { if (!fromUnknown) { setView("unknown-create"); requestAnimationFrame(() => unknownRef.current?.focus()); } return; }
+    if (outcome.state === "pending") { knownSlug.current = createCommand.current.payload.requestedSlug; createCommand.current = null; createUncertain.current = false; go("progress"); applyProgress(outcome); return; }
+    if (outcome.state === "unknown") { createUncertain.current = true; if (!fromUnknown) { setView("unknown-create"); requestAnimationFrame(() => unknownRef.current?.focus()); } else setNotice({ tone: "amber", text: t.unknown.stillUnsure }); return; }
     if (outcome.state === "no_session") { go("session-ended"); return; }
-    createCommand.current = null;
+    if (outcome.state === "unavailable" && outcome.reasonCode === "RESOURCE_REVIEW_REQUIRED") { go("review"); return; }
+    if (createUncertain.current && (outcome.state === "limited" || (outcome.state === "unavailable" && !["PROVISIONING_DISABLED", "BUSINESS_ALREADY_RESERVED", "ACCESS_DENIED"].includes(outcome.reasonCode)))) {
+      // A temporary refusal never retires a command whose first send is still unconfirmed.
+      setNotice({ tone: "amber", text: t.unknown.stillUnsure }); return;
+    }
+    createCommand.current = null; createUncertain.current = false;
     if (fromUnknown) setView("business");
     if (outcome.state === "conflict" && outcome.reason === "slug_unavailable") { setErrors(e => ({ ...e, slug: b.addressTaken })); setSlugTouched(true); focusAfterRender.current = "su-slug"; return; }
     if (outcome.state === "conflict") {
@@ -208,7 +229,13 @@ export function VerifyJourney({ lang, portalBaseDomain }: { lang: AuthLang; port
   // retired, and the next Continue asks for a new one.
   async function grant() {
     if (busy && !grantBody.current) return;
-    if (typeof navigator !== "undefined" && navigator.onLine === false) { setNotice({ tone: "amber", text: t.offline }); return; }
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      // Nothing is sent offline. A replay already under way (same operation ID) waits and tries again.
+      setNotice({ tone: "amber", text: t.offline });
+      // grantBody is set only while a grant command is in flight, so this never strands the page on a first press.
+      if (grantBody.current) { setBusy(true); later(3000, () => void grant()); } else setBusy(false);
+      return;
+    }
     grantBody.current ??= { schemaVersion: 1, operationId: crypto.randomUUID() };
     setBusy(true); setNotice(null);
     const outcome = readGrant(await signupRequest("/api/onboarding/bootstrap-grants", { method: "POST", body: grantBody.current }), portalBaseDomain);
@@ -227,13 +254,13 @@ export function VerifyJourney({ lang, portalBaseDomain }: { lang: AuthLang; port
   const noteView = notice ? <SignupNote tone={notice.tone}>{notice.text}</SignupNote> : null;
   const requestNew = <nav className="q-auth__links" aria-label={v.requestNew}><a href="/onboarding">{v.requestNew}</a></nav>;
 
-  if (view === "checking") return <SignupHeader title={v.checkingTitle} sub={<><span className="su-wait" aria-hidden="true" />{v.checkingBody}</>} live />;
+  if (view === "checking") return <SignupHeader title={v.checkingTitle} sub={<><span className="sig-btn__spin su-wait" aria-hidden="true" />{v.checkingBody}</>} live />;
   if (view === "invalid") return <><SignupHeader title={v.invalidTitle} sub={v.invalidBody} /><div className="q-card q-auth__card su-card"><a className="q-btn" href="/onboarding">{v.requestNew}</a></div></>;
   if (view === "missing") return <><SignupHeader title={v.missingTitle} sub={v.missingBody} /><div className="q-card q-auth__card su-card"><a className="q-btn" href="/onboarding">{v.startSignup}</a></div></>;
   if (view === "session-ended") return <><SignupHeader title={v.missingTitle} sub={v.sessionEnded} /><div className="q-card q-auth__card su-card"><a className="q-btn" href="/onboarding">{v.requestNew}</a></div></>;
-  if (view === "unavailable") return <><SignupHeader title={v.checkingTitle} /><div className="q-card q-auth__card su-card"><SignupNote tone="red">{v.unavailable}</SignupNote><button type="button" className="q-btn" onClick={retryUnavailable} disabled={busy}>{v.tryAgain}</button></div>{requestNew}</>;
-  if (view === "unknown-verify") return <><SignupHeader title={t.unknown.title} /><NotConfirmed copy={t.unknown} busy={busy} onCheck={() => void verify()} focusRef={unknownRef} />{requestNew}</>;
-  if (view === "unknown-create") return <><SignupHeader title={t.unknown.title} /><NotConfirmed copy={t.unknown} busy={busy} onCheck={() => void sendCreate(true)} focusRef={unknownRef} /></>;
+  if (view === "unavailable") return <><KeepProofForLanguage proof={heldProof} /><SignupHeader title={v.checkingTitle} /><div className="q-card q-auth__card su-card"><SignupNote tone="red">{v.unavailable}</SignupNote><button type="button" className="q-btn" onClick={retryUnavailable} disabled={busy}>{v.tryAgain}</button></div>{requestNew}</>;
+  if (view === "unknown-verify") return <><KeepProofForLanguage proof={heldProof} /><SignupHeader title={t.unknown.title} /><NotConfirmed copy={t.unknown} busy={busy} onCheck={() => void verify()} focusRef={unknownRef} note={notice} />{requestNew}</>;
+  if (view === "unknown-create") return <><SignupHeader title={t.unknown.title} /><NotConfirmed copy={t.unknown} busy={busy} onCheck={() => void sendCreate(true)} focusRef={unknownRef} note={notice} /></>;
   if (view === "review") return <><SignupHeader title={p.reviewTitle} sub={fill(p.reviewBody, { support: t.support })} /></>;
   if (view === "ready") return <>
     <SignupHeader done title={o.readyTitle} sub={o.readyBody} />
@@ -248,8 +275,8 @@ export function VerifyJourney({ lang, portalBaseDomain }: { lang: AuthLang; port
     </div>
   </>;
   if (view === "progress") return <>
-    <SignupHeader title={p.title} sub={<><span className="su-wait" aria-hidden="true" />{p.body}</>} live />
-    <div className="q-card q-auth__card su-card" aria-busy="true">
+    <SignupHeader title={p.title} sub={<><span className="sig-btn__spin su-wait" aria-hidden="true" />{p.body}</>} live />
+    <div className="q-card q-auth__card su-card">
       <SignupSteps current={1} c={p} />
       {stage === "RECONCILING_RESOURCE" ? <SignupNote tone="teal" icon="wait">{p.reconciling}</SignupNote> : null}
       {trouble ? <SignupNote tone="amber" icon="offline">{p.unavailable}</SignupNote> : null}
@@ -290,5 +317,6 @@ export function VerifyJourney({ lang, portalBaseDomain }: { lang: AuthLang; port
       </fieldset>
       <button type="submit" className="q-btn" disabled={busy} aria-busy={busy || undefined}>{busy ? b.submitting : b.submit}</button>
     </form>
+    {notice?.text === b.policyRequired ? requestNew : null}
   </>;
 }

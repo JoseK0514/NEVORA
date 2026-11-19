@@ -24,6 +24,8 @@ describe("signup copy", () => {
   it("never says a delivered email or a failed uncertain outcome", () => {
     const en = strings(SIGNUP_COPY.en).join("\n");
     expect(en).not.toMatch(/\bdelivered\b|\bfailed\b/i);
+    const es = strings(SIGNUP_COPY.es).join("\n");
+    expect(es).not.toMatch(/\bentregad[oa]s?\b|\bfall[óo]\b|\bfallid[oa]\b/i);
   });
   it("fills known placeholders and keeps unknown ones visible", () => {
     expect(fill("Go to {host} {nope}", { host: "a.example" })).toBe("Go to a.example {nope}");

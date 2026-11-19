@@ -13,6 +13,11 @@ new-company admission defaults closed; provisioning needs its own explicit
 configuration and authorization. A signup page alone does not establish
 availability.
 
+A new business that is admitted to signup confirms its email from the link
+NEVORA sends, enters the business, first location and Owner details, waits while
+the workplace is prepared, then chooses the Owner password on the new
+workplace's own address. Sign in there with the sign-in ID shown at the end.
+
 Settings includes these current destinations:
 
 | Area | What to review |

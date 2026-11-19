@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { AUTH_COPY, isAuthLang } from "@/lib/auth-copy";
 import { readAuthLang } from "@/lib/auth-lang.server";
+import { SIGNUP_COPY } from "@/lib/onboarding/signup-copy";
 import { QuietAuthShell } from "@/components/auth-premium/auth-shell";
 import { onSignupHost, signupPortalDomain } from "@/lib/onboarding/signup-page.server";
 import { VerifyJourney } from "./verify-journey";
@@ -10,7 +11,11 @@ import "../../login/auth-premium.css";
 import "../../login/auth-signature.css";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "NEVORA", robots: { index: false, follow: false }, referrer: "no-referrer" };
+/** The tab names the step in the page's language (WCAG 2.4.2). */
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ lang?: string | string[] }> }): Promise<Metadata> {
+  const requested = (await searchParams).lang, lang = typeof requested === "string" && isAuthLang(requested) ? requested : await readAuthLang();
+  return { title: `${SIGNUP_COPY[lang].meta.verify} · NEVORA`, robots: { index: false, follow: false }, referrer: "no-referrer" };
+}
 
 /** The verification email's destination: `/onboarding/verify?lang=en|es#proof=…` on the signup origin (SCRUM-190).
  * The link's language wins over the saved one for this visit; the page saves it as the sign-in language too. Opening

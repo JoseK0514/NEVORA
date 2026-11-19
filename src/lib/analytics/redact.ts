@@ -16,6 +16,9 @@ const PUBLIC_PATHS = new Set([
   "/support",
   "/account-deletion",
   "/access-help",
+  // Signup funnel on the signup origin (SCRUM-190). Proofs live only in the fragment, which is never reported.
+  "/onboarding",
+  "/onboarding/verify",
 ]);
 const HELP_TOPIC = /^\/access-help\/[a-z0-9-]{1,64}$/;
 

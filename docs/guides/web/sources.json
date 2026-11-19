@@ -51,7 +51,9 @@
         "src/lib/reports/christmas-bonus.ts",
         "src/app/app/settings/clocker/matching/page.tsx",
         "src/lib/clocker/schedule-grace.server.ts",
-        "src/lib/attendance/project.ts"
+        "src/lib/attendance/project.ts",
+        "src/app/onboarding/verify/verify-journey.tsx",
+        "src/app/onboarding/activate/owner-activation.tsx"
       ]
     },
     {
@@ -283,7 +285,10 @@
         "src/lib/analytics/redact.ts",
         "src/lib/feature-flags.ts",
         "src/test/integration/release1-migrations.integration.ts",
-        "scripts/rehearsal/2026-11-18-development-baseline.json"
+        "scripts/rehearsal/2026-11-18-development-baseline.json",
+        "src/app/onboarding/page.tsx",
+        "src/app/onboarding/verify/verify-journey.tsx",
+        "src/lib/onboarding/signup-page.server.ts"
       ]
     }
   ]

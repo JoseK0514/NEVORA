@@ -21,8 +21,8 @@ main.q-auth .su-consent[data-invalid="true"] input { outline: 2px solid var(--q-
 /* The Owner's own details sit in a titled group under the business fields. */
 main.q-auth .su-group { margin: 28px 0 0; padding: 0; border: 0; min-width: 0; }
 main.q-auth .su-group > legend { margin: 0; padding: 0; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--q-ink); }
-main.q-auth .su-pair { display: grid; grid-template-columns: 1fr; }
-@media (min-width: 560px) { main.q-auth .su-pair { grid-template-columns: 1fr 1fr; } main.q-auth .su-pair > .q-fl + .q-fl { margin-top: 24px; margin-left: 0; } }
+/* First and last name stack like every other field: the kit owns field spacing at each width. */
+main.q-auth .su-pair { display: block; }
 
 /* A field error under its field: red, 500, with the field's red edge (quiet.css data-invalid). */
 /* Same look as the signed-out forms' auth-validation line: 16px WarningCircle in its own column, red words at 500, glyph
@@ -44,7 +44,5 @@ main.q-auth .su-steps li[data-state="current"] .su-steps__dot { box-shadow: inse
 /* The sign-in ID after activation is a value to keep: mono, selectable, large enough to read back. */
 main.q-auth .su-id { font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace); letter-spacing: .02em; }
 
-/* Polling shows quiet motion only; reduced motion keeps it still. */
-main.q-auth .su-wait { display: inline-block; width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--q-line); border-top-color: var(--q-teal); animation: su-spin .9s linear infinite; vertical-align: -3px; margin-right: 8px; }
-@keyframes su-spin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { main.q-auth .su-wait { animation: none; border-top-color: var(--q-line); } }
+/* Waiting uses the app's one spinner (sig-btn__spin, which turns only when motion is allowed); this only places it. */
+main.q-auth .su-wait { display: inline-block; vertical-align: -3px; margin-right: 8px; }
