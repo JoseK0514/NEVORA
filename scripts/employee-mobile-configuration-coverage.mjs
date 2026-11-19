@@ -11,6 +11,10 @@ const selected=['device-alerts','phase1','deletion','pay'];
 const fixture='postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000';
 const allowed=(object,keys,label)=>assert(Object.keys(object).every(key=>keys.includes(key)),'Inspect unsupported '+label+' options before claiming coverage');
 const stable=value=>value&&typeof value==='object'&&!Array.isArray(value)?Object.fromEntries(Object.keys(value).sort().map(key=>[key,stable(value[key])])):Array.isArray(value)?value.map(stable):value;
+// The caller's report destination is instrumentation of the outer test run.
+// These configuration objects are inspected only; they emit no report. Keep
+// the strict execution-option guard independent of that inherited destination.
+delete process.env.NEVORA_RSTEST_REPORT_FILE;
 process.env.FUEL_TEST_DATABASE_URL=fixture;
 const rows=[],configurations=[];
 for(const suite of suites){
