@@ -214,7 +214,9 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
    const first='quiet meadows under winter skies';await page.locator('#activation-password').fill(first);await page.locator('#activation-confirm-password').fill(first);await page.locator('button[type="submit"]').click();await page.locator('#activation-employee-id').waitFor();expect(await page.locator('#activation-employee-id').inputValue()).toBe(id);
    step=engine+' reset password policy';
    await context.addCookies([{name:'nv-lang',value:'es',url:origin}]);
-   await page.goto(origin+'/forgot-access');await page.locator('#recovery-employee-id').fill(id);await page.locator('#recovery-email').fill(engine+'@example.invalid');await page.locator('button[type="submit"]').click();
+   await page.goto(origin+'/forgot-access');await page.locator('#recovery-employee-id').fill(id);await page.locator('#recovery-email').fill(engine+'@example.invalid');
+   const [recovery]=await Promise.all([page.waitForResponse(origin+'/api/auth/recovery'),page.locator('button[type="submit"]').click()]);
+   expect(recovery.status()).toBe(202);
    await expect.poll(()=>smtp.messages.filter((m:{recipient:string;body:string})=>m.recipient.includes(engine+'@example.invalid')&&m.body.includes('/reset-access')).length).toBe(1);
    const resetMail=smtp.messages.find((m:{recipient:string;body:string})=>m.recipient.includes(engine+'@example.invalid')&&m.body.includes('/reset-access'))!;
    const resetProof=/#proof=([A-Za-z0-9_-]{43})/.exec(resetMail.body.replace(/=\r?\n/g,'').replace(/=3D/g,'='))?.[1];if(!resetProof)throw Error('Missing owned reset proof');
