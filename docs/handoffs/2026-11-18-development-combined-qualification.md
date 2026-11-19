@@ -15,10 +15,12 @@ This handoff records a locally qualified assembly, not a completed hosted releas
 - Reviewed corrections: `c8cb7a6ad832ec9ae6be3662672a5464f98b2747`.
 - Locally qualified application/test/manual checkpoint:
   `e26d44eaa5545072b33b41e3c3b8e0c74919945a`.
-- Reserved immutable qualification tag:
-  `candidate/backend-completion/20261118-development-combined-01`.
-  The subsequent handoff-only commit is a new exact-source candidate; required
-  cloud checks and final source-bound build must identify that tag's actual SHA.
+- First immutable qualification tag:
+  `candidate/backend-completion/20261118-development-combined-01`, pointing to
+  `17904f5c4fec68499360134ef2fb9eae39513554`. Its required CI failed; preserve
+  that result. The next qualification tag is
+  `candidate/backend-completion/20261118-development-combined-02`; its exact
+  source, build and cloud checks must pass before Development advances.
 - Isolated detached checkout:
   `/Users/josek0514/.codex/worktrees/nevora-development-publish-20261118/NEVORA Development`.
 - Evidence and final release-state receipt:
@@ -127,6 +129,61 @@ Preview source are distinct actions. Preserve SSO protection; use authenticated,
 origin-scoped preview access. Keep real sending, paid providers, live billing,
 Tax and analytics/replay holds. Provider-free guided Rondo may use the existing
 approved Development scope; no paid cap is inferred.
+
+## November 19 cloud qualification corrections
+
+Candidate01 CI run44450161822 and Mobile Access44450161872 remain failed,
+with their reports retained. Subsequent corrections change QA drivers and the
+source-inventory regression only; application, schema, dependency and visual
+source is unchanged from17904f5c4. No assertion or mandatory job was removed.
+
+- Home checks the delivered named publication facts, the plain-text recorded
+  time status, and each canonical notification after actually opening its group.
+- Communications expects the delivered required-action label; Calendar admits
+  the delivered plain status. Both suites pass all14 Chromium/WebKit cells.
+- Navigation awaits Requests' private ready state at every width before the
+  existing full contrast audit. All7 Chromium cells and6 WebKit cells pass;
+  the last cell was stopped by the existing process-ownership guard after an
+  observed Mac PID reuse. Home similarly passes6 cells before that guard stops
+  a reused PID. These are incomplete local runs, not green suites; exact-source
+  cloud qualification remains mandatory. The guard is unchanged.
+- Clocker uses actual cancel, reauthentication, exit and storage-refusal wording;
+  all104 real Chromium/WebKit lifecycle checks pass, including original-command
+  retries, no duplicate writes, stale identity and failed storage.
+- Attendance follows the accessible disclosure/count and renamed list; report
+  expectations retain the real uncomparable clock-in and absence of cover
+  requests. The native attendance rerun passes48 checks across both engines;
+  whole Phase D passes211 checks with zero errors and owned cleanup complete.
+- The mobile password-paste driver awaits the operative responsive layout,
+  enabled field and real native focus before insertion; the complete value must
+  still remain untruncated. The focused three-engine regression passes.
+- Readiness drains intercepted requests before context closure, preserving all
+  page-error assertions; its real native regression passes.
+- Source inventory now expects the approved four-branch state. Recreating the
+  retired password branch and missing/changed archives are still rejected;
+  all20 direct inventory tests pass. Fresh fetched source check passes75 sources.
+
+The394 release-engineering checks pass. The manuals' application inventory also
+includes QA inputs, so the initial PDFs must be rebuilt again after these final
+driver corrections; do not treat the earlier bundle hash as current acceptance.
+The new exact-source build, retained artifact and cloud reports supersede their
+earlier counterparts only after they actually pass.
+
+Protected hosted candidate `dpl_CrPoEY1PgZxrFtykf3uJF8kKQCbR` serves exact17904
+against the separate restricted fictional database, with SSO retained and no
+Development/custom alias assigned. Actual initial Owner/Manager/Employee
+password replacements and Owner scope assignment use real HTTP/SQL boundaries.
+The initial Owner proof demonstrates no pre-replacement session, old-password
+refusal and new-password admission; the hosted payroll capabilities disable the
+internal calculator. Broader settled-page verification is recorded separately:
+early shell-only captures are not functional acceptance, and the mistaken
+`/app/hours` QA path was corrected to navigation's actual `/app/my-time`.
+Current exact-source hosted acceptance must still finish after candidate02.
+
+Manager Rondo's backend contract is included, but its flag stays held until
+Claude's reviewed Manager UI joins the source, as the activation handoff already
+requires. Paid/provider/data-release and business-retrieval holds remain intact.
+No new product decision or production authorization was inferred.
 
 ## Review, rulings and remaining gates
 
