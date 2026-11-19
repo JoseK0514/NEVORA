@@ -63,9 +63,15 @@ export function measureRenderedContrast(element) {
   };
   let backgrounds = [[255,255,255,1]];
   const groups = [];
+  let opaqueBackdrop = false;
   for (const layer of layers.slice().reverse()) {
     // Opacity is applied to the entire painted group, including its text, against the parent's backdrop.
-    if (layer.opacity < 1) groups.push({opacity: layer.opacity, backdrops: backgrounds});
+    if (layer.opacity < 1) {
+      // The default canvas color is insufficient evidence for a translucent group.
+      if (!opaqueBackdrop) throw Error('Unsupported compositing without an opaque backdrop on ' + layer.tag);
+      groups.push({opacity: layer.opacity, backdrops: backgrounds});
+    }
+    if (rgba(layer.color)[3] === 1 && layer.opacity === 1) opaqueBackdrop = true;
     backgrounds = paint(layer, backgrounds);
     for (const overlay of layer.overlays) backgrounds = [ ...backgrounds, ...paint(overlay, backgrounds) ];
     // All sRGB interpolants lie within these channel bounds. Their extreme
