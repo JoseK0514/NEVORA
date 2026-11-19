@@ -56,6 +56,7 @@ const en = {
     address: "Workplace address",
     addressHelp: "Letters, numbers and dashes. Your team signs in at {host}.",
     addressInvalid: "Use lowercase letters, numbers and single dashes, up to 63 characters.",
+    addressExample: "your-business",
     addressTaken: "That address is taken or reserved. Choose another.",
     timeZone: "Time zone",
     zones: {
@@ -201,6 +202,7 @@ const es: SignupCopy = {
     address: "Dirección del espacio de trabajo",
     addressHelp: "Letras, números y guiones. Tu equipo inicia sesión en {host}.",
     addressInvalid: "Usa letras minúsculas, números y guiones sencillos, hasta 63 caracteres.",
+    addressExample: "tu-negocio",
     addressTaken: "Esa dirección está tomada o reservada. Escoge otra.",
     timeZone: "Zona horaria",
     zones: {

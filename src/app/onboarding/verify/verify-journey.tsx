@@ -49,6 +49,9 @@ export function VerifyJourney({ lang, portalBaseDomain }: { lang: AuthLang; port
   const version = useRef<string | null>(null), createCommand = useRef<WorkspaceCommand | null>(null), operationId = useRef<string | null>(null);
   const grantBody = useRef<{ schemaVersion: 1; operationId: string } | null>(null), knownSlug = useRef<string | null>(null);
   const unknownRef = useRef<HTMLDivElement | null>(null);
+  // A field to focus after the next render (the fieldset is disabled while sending, so focusing earlier is lost).
+  const focusAfterRender = useRef<string | null>(null);
+  useEffect(() => { if (focusAfterRender.current && !busy) { document.getElementById(focusAfterRender.current)?.focus(); focusAfterRender.current = null; } });
 
   const host = knownSlug.current && portalBaseDomain ? `${knownSlug.current}.${portalBaseDomain}` : null;
   const clearTimer = () => { if (timer.current) clearTimeout(timer.current); timer.current = null; };
@@ -171,7 +174,7 @@ export function VerifyJourney({ lang, portalBaseDomain }: { lang: AuthLang; port
     if (outcome.state === "no_session") { go("session-ended"); return; }
     createCommand.current = null;
     if (fromUnknown) setView("business");
-    if (outcome.state === "conflict" && outcome.reason === "slug_unavailable") { setErrors(e => ({ ...e, slug: b.addressTaken })); setSlugTouched(true); requestAnimationFrame(() => document.getElementById("su-slug")?.focus()); return; }
+    if (outcome.state === "conflict" && outcome.reason === "slug_unavailable") { setErrors(e => ({ ...e, slug: b.addressTaken })); setSlugTouched(true); focusAfterRender.current = "su-slug"; return; }
     if (outcome.state === "conflict") {
       const current = readCurrent(await signupRequest("/api/onboarding/registrations/current", { method: "GET" }));
       if (!mounted.current) return;
@@ -193,7 +196,7 @@ export function VerifyJourney({ lang, portalBaseDomain }: { lang: AuthLang; port
     setErrors(checked.errors); setNotice(null);
     if (!checked.payload || !version.current) {
       const first = (["businessName", "slug", "location", "firstName", "lastName", "phone", "signInId"] as FieldName[]).find(name => checked.errors[name]);
-      if (first) requestAnimationFrame(() => document.getElementById(`su-${first === "businessName" ? "name" : first === "signInId" ? "id" : first}`)?.focus());
+      if (first) { focusAfterRender.current = `su-${first === "businessName" ? "name" : first === "signInId" ? "id" : first}`; setErrors({ ...checked.errors }); }
       return;
     }
     const same = createCommand.current && JSON.stringify(createCommand.current.payload) === JSON.stringify(checked.payload) && createCommand.current.expectedVersion === version.current;
@@ -262,7 +265,7 @@ export function VerifyJourney({ lang, portalBaseDomain }: { lang: AuthLang; port
   const text = (name: Exclude<FieldName, "timeZone">, id: string, extra: InputHTMLAttributes<HTMLInputElement>, help?: boolean) =>
     <input id={id} className="q-in" value={fields[name]} onChange={event => { if (name === "slug") setSlugTouched(true); set(name, (name === "slug" ? event.target.value.toLowerCase() : event.target.value) as Fields[typeof name]); }}
       aria-invalid={errors[name] ? true : undefined} aria-describedby={describe(name, id, help)} required {...extra} />;
-  const previewHost = portalBaseDomain ? `${fields.slug || "…"}.${portalBaseDomain}` : fields.slug;
+  const previewHost = portalBaseDomain ? `${fields.slug || b.addressExample}.${portalBaseDomain}` : fields.slug || b.addressExample;
   return <>
     <SignupHeader title={b.title} sub={b.sub} />
     <form className="q-auth__form su-form" onSubmit={submitBusiness} noValidate aria-busy={busy || undefined}>

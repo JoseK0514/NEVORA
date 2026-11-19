@@ -49,7 +49,7 @@ describe("deriveOperationId", () => {
 });
 
 describe("signupRequest", () => {
-  afterEach(() => rs.unstubAllGlobals());
+  afterEach(() => { rs.unstubAllGlobals(); });
   it("returns lost for a network failure or a non-JSON reply, never throws", async () => {
     rs.stubGlobal("fetch", async () => { throw new TypeError("offline"); });
     expect(await signupRequest("/api/onboarding/config", { method: "GET" })).toEqual({ kind: "lost" });
