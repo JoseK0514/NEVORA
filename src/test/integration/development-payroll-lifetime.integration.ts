@@ -10,7 +10,7 @@ const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json'))('p
 it.each(['chromium','webkit'])('%s retires payroll drafts and late artifacts while retaining original uncertain custody',async engine=>{
  const root=process.env.NEVORA_ALL_UI_BROWSER_EVIDENCE;if(!root)throw Error('External payroll lifetime evidence required');
  const evidence=resolve(root,'payroll-lifetime-'+engine);await mkdir(evidence,{recursive:true});
- const app=await createOwnedNextApp(evidence,{payrollEnabled:true,pinDevTypeReferences:true}),browser=await runtime[engine].launch({headless:true}),context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block',reducedMotion:'reduce'}),page=await context.newPage();
+ const app=await createOwnedNextApp(evidence,{payrollEnabled:true,pinDevTypeReferences:true}),browser=await runtime[engine].launch({headless:true}),context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block',reducedMotion:'reduce'}),page=await context.newPage(),origin=app.url.replace('127.0.0.1','localhost');
  const checks:{name:string;passed:boolean}[]=[],errors:string[]=[];let complete=false,downloads=0;
  const check=(name:string,passed:boolean)=>checks.push({name,passed});
  try{
@@ -29,11 +29,11 @@ it.each(['chromium','webkit'])('%s retires payroll drafts and late artifacts whi
     return response;
    }) as typeof fetch;
   });
-  const visit=async(path:string)=>{await page.goto(app.url+path,{waitUntil:'domcontentloaded'});};
+  const visit=async(path:string)=>{await page.goto(origin+path,{waitUntil:'domcontentloaded'});};
   const event=(type:string,mode='normal')=>page.evaluate(({type,mode}:{type:string;mode:string})=>{(window as any).__payWire.mode=mode;window.dispatchEvent(new Event(type));},{type,mode});
   const settle=()=>page.evaluate(()=>new Promise<void>(done=>requestAnimationFrame(()=>requestAnimationFrame(()=>done()))));
   const release=()=>page.evaluate(()=>{const wire=(window as any).__payWire;wire.mode='normal';wire.held.splice(0).forEach((done:()=>void)=>done());});
-  await visit('/login');await page.getByLabel('Employee ID',{exact:true}).fill(fixture.ids.owner);await page.getByLabel('Password',{exact:true}).fill(fixture.password);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
+  await visit('/login');await page.getByLabel('Employee ID',{exact:true}).fill(fixture.ids.owner);await page.getByLabel('Password',{exact:true}).fill(fixture.password);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(origin+'/app');
   const importPath='/app/payroll/import?run='+fixture.runId;
   const roster=await q('SELECT id FROM employees ORDER BY id'),csv='employeeId,gross,employeeDeductions,employerContributions,net\r\n'+roster.map(p=>p.id+','+(p.id===fixture.ids.a?'1000,123.40,70,876.60':'0,0,0,0')).join('\r\n')+'\r\n';
   const file=async()=>{await page.locator('input[type="file"]').setInputFiles({name:'private-payroll-draft.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});await page.getByText(/private-payroll-draft.csv/).waitFor();};
@@ -41,7 +41,7 @@ it.each(['chromium','webkit'])('%s retires payroll drafts and late artifacts whi
   await visit(importPath);await page.locator('input[type="file"]').waitFor({state:'attached'});await file();await event('blur');await settle();check('import draft disappears on blur',await hasDraft()===0);
   await event('focus');await page.locator('input[type="file"]').waitFor({state:'attached'});check('fresh import observation does not revive draft',await hasDraft()===0);
   await file();await q("UPDATE employees SET role='EMPLOYEE' WHERE id=$1",[fixture.ids.owner]);await event('online');await page.getByText('Your access to this page ended',{exact:true}).waitFor();
-  await q("UPDATE employees SET role='OWNER' WHERE id=$1",[fixture.ids.owner]);await event('online');await page.locator('input[type="file"]').waitFor({state:'attached'});check('same-actor revoke and regrant cannot revive imported payload',await hasDraft()===0);
+  await q("UPDATE employees SET role='OWNER' WHERE id=$1",[fixture.ids.owner]);await page.locator('a[href="/app"]:visible').first().click();await page.waitForURL(origin+'/app');await page.goBack();await page.locator('input[type="file"]').waitFor({state:'attached'});check('same-actor revoke and regrant cannot revive imported payload',await hasDraft()===0);
   await event('online','hold-read');await page.waitForFunction(()=>(window as any).__payWire.held.length>=2);await event('blur','hold-read');await release();await settle();check('late inner read cannot repopulate retired import',await page.locator('input[type="file"]').count()===0);await event('focus');
   await page.locator('input[type="file"]').waitFor({state:'attached'});await file();await page.getByLabel('Payroll system',{exact:true}).fill('Fictional accountant');await page.getByLabel('Report or reference',{exact:true}).fill('Private original reference');
   await page.getByRole('button',{name:'Match people',exact:true}).click();await page.getByRole('button',{name:'Review amounts',exact:true}).click();await page.getByRole('button',{name:'Check and save',exact:true}).click();
