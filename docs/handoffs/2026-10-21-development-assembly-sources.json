@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-11-19T11:05:33Z",
+  "observedAt": "2026-11-19T17:55:25Z",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -364,9 +364,9 @@
     },
     {
       "branch": "development",
-      "sha": "1e846a358d453d1b418155572ccd24df85b5fa00",
+      "sha": "49cd107299e0957abc8b75bfa4ddb30f49d97cd2",
       "disposition": "target",
-      "reason": "Current development database-rehearsal delivery inspected and included by the sole finisher. Incoming changes follow/hash the shared canonical bootstrap and passkey dependency chain; operations negative fixtures retain strict cleanup/permission assertions. Source-bound documents remain historical evidence. Main and held Claude UI are unchanged; combined acceptance and hosted gates remain open. November 16 readiness integration: this exact current remote base and its protected fixes are retained; Jose assigned combined integration and development delivery to this chat."
+      "reason": "Published Development base for SCRUM-190. The candidate retains the prior combined release and Development's reviewed Rondo integration and accessibility corrections. The six signup commits descend directly from this base."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -488,9 +488,16 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "f9171d7c685b8a780b1d66feab331b10d51558ab",
-      "disposition": "superseded",
-      "reason": "Reviewed and pushed Claude premium UI checkpoint integrated by a real merge into the isolated Development assembly. Backend, password policy and six release corrections retained. Collaboration remains read-only; qualification and hosted acceptance are separate gates. November 19 linear publication: this original head is preserved by immutable qualified assembly candidate/backend-completion/20261118-development-combined-02 at05f2553182b387f20495c19070cfbabd50a987ef, which contains the actual integration ancestry. Its byte-identical tree is republished from Development22107 to obey GitHub required linear history; this record does not claim the original head is an ancestor of that linear delivery. The two active source branches remain active and unchanged; the password source retains its exact approved archive. See2026-11-19-linear-development-publication.md and the exact content-equivalence receipt. No source gate or branch ceiling is relaxed."
+      "sha": "e89784d383b9a30ef4e0af8c868fc797c6f6ddfc",
+      "disposition": "held",
+      "reason": "The reviewed Rondo changes through bc75950a were integrated with Development's knowledge search in 879f81bb and checked on the published base 49cd1072. The later short-screen Clocker, tablet and Schedule layout, and lost time-off decision fixes remain on Collab for their own integration and verification. Earlier checkpoint f9171d7c remains preserved in the qualified combined assembly 05f2553182b387f20495c19070cfbabd50a987ef and its linear publication evidence."
+    },
+    {
+      "branch": "scrum190-signup-ui",
+      "sha": "7c120409f36e0d6e6defc7e40685f0857ba7de23",
+      "disposition": "included",
+      "reason": "Jose authorized Claude's signup source on November 19. The six commits are ancestors of this candidate and add the hosted signup, verification and Owner activation pages against existing APIs. Draft PR #40 records source qualification. The exact archive is required before branch retirement and the three-branch source gate must pass before Development publication.",
+      "archiveRef": "refs/tags/archive/branches/2026-11-19/scrum190-signup-ui"
     },
     {
       "branch": "claude/employee-mobile-phase2-20261027",
