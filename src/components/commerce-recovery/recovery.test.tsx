@@ -27,7 +27,7 @@ it.each(['//evil.invalid','https://evil.invalid','/clocker/main?private=1','/clo
 it.each(['/clocker/main','/clocker/friends-aguada'])('preserves exact safe Clocker return %s',value=>expect(clockerReturnPath(value)).toBe(value));
 it('keeps the public tablet recovery screen free of private status and arbitrary query content',async()=>{
  const html=renderToStaticMarkup(await PausedPage({searchParams:Promise.resolve({reason:'billing_status_unavailable',from:'https://evil.invalid/private',secret:'must-not-echo'})}));
- expect(html).toContain('Access could not be checked');expect(html).toContain('Open billing on your own device.');expect(html).not.toContain('/login');expect(html).not.toContain('Try Clocker again');expect(html).not.toContain('evil.invalid');expect(html).not.toContain('must-not-echo');expect(state.session).not.toHaveBeenCalled();
+ expect(html).toContain('Access could not be checked');expect(html).toContain('Open billing on your own device.');expect(html).not.toContain('/login');expect(html).not.toContain('>Try again</a>');expect(html).not.toContain('evil.invalid');expect(html).not.toContain('must-not-echo');expect(state.session).not.toHaveBeenCalled();
 });
 it('uses Spanish copy without exposing a billing-status payload on the tablet',async()=>{
  state.lang='es';const html=renderToStaticMarkup(await PausedPage({searchParams:Promise.resolve({from:'/clocker/main'})}));expect(html).toContain('>Intentar de nuevo</a>');expect(html).toContain('href="/clocker/main"');expect(html).not.toContain('Active employees');

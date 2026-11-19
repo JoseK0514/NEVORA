@@ -2,6 +2,7 @@ import { afterAll, beforeAll, expect, it } from '@rstest/core';
 import { createRequire } from 'node:module';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { createOwnedNextApp } from './owned-next-app';
 import { seedOwnedApp, TEST_PASSWORD } from './owned-app-fixture';
 import { fictionalProfile } from '../fixtures/shift-changes';
@@ -57,7 +58,13 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
   const origin = app.url.replace('127.0.0.1', 'localhost');
   const browser = await runtime[engine].launch({ headless: true });
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: 'block' });
-  const page = await context.newPage();
+  const { observeBrowserCell } = await import(pathToFileURL(resolve('scripts/phase-e-browser-qa.mjs')).href);
+  const { verifyReloadFetchDiagnostic } = await import(pathToFileURL(resolve('scripts/browser-reload-diagnostic.mjs')).href);
+  const diagnostics = { engine, navigationDiagnostics: [] };
+  const runtimeErrors: unknown[] = [];
+  const controls: Record<string, {verified: boolean}> = {};
+  let observer: ReturnType<typeof observeBrowserCell>;
+  let page: Awaited<ReturnType<typeof context.newPage>>;
   const q = (text: string, values: readonly unknown[] = []) => app.database.executor.query({ text, values });
   const before = await app.database.executor.query<{ n: number }>({ text: 'SELECT count(*)::int n FROM shifts', values: [] });
   const priorCount = before[0].n;
@@ -67,8 +74,6 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
   const pendingRouterReads = new Set<object>(), pendingShellReads = new Set<object>();
   let navigationAttempts = 0;
   type ReadRequest = {url():string;method():string;headers():Record<string,string>};
-  page.on('request', (request: ReadRequest) => {const url=new URL(request.url());if(url.origin!==origin||request.method()!=='GET')return;if(request.headers().rsc==='1')pendingRouterReads.add(request);if(['/api/company-access/operational-authority','/api/notifications'].includes(url.pathname))pendingShellReads.add(request);});
-  for(const event of ['requestfinished','requestfailed'])page.on(event,(request:object)=>{pendingRouterReads.delete(request);pendingShellReads.delete(request);});
   const beforeHardNavigation = async () => {
     navigationAttempts++;
     // The old document can already have emitted networkidle while a later RSC
@@ -81,6 +86,25 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
   };
 
   try {
+    if (engine === 'webkit') {
+      for (const resource of ['notifications', 'authority']) {
+        controls[resource] = await verifyReloadFetchDiagnostic(browser, { resource, bothWitnesses: true });
+      }
+    }
+    const cell = observeBrowserCell(diagnostics, runtimeErrors, {
+      navigationDiagnosticVerified: controls.notifications?.verified === true,
+      reloadDiagnosticVerified: controls.notifications?.verified === true,
+      authorityDiagnosticVerified: controls.authority?.verified === true,
+      navigationReadKinds: ['notification-read', 'authority-read'],
+      requireNotificationGetWitness: true,
+      requireAuthorityGetWitness: true,
+    });
+    observer = cell;
+    await cell.observeContext(context, 'primary');
+    page = await context.newPage();
+  page.on('request', (request: ReadRequest) => {const url=new URL(request.url());if(url.origin!==origin||request.method()!=='GET')return;if(request.headers().rsc==='1')pendingRouterReads.add(request);if(['/api/company-access/operational-authority','/api/notifications'].includes(url.pathname))pendingShellReads.add(request);});
+  for(const event of ['requestfinished','requestfailed'])page.on(event,(request:object)=>{pendingRouterReads.delete(request);pendingShellReads.delete(request);});
+
     await context.route('**/*', async (route: Route) => {
       const req = route.request(), url = new URL(req.url());
       if (['http:', 'https:'].includes(url.protocol) && url.origin !== origin) { external.push(url.origin); await route.abort(); return; }
@@ -95,7 +119,10 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
       }
       await route.continue();
     });
-    page.on('pageerror', (error: Error) => errors.push(engine + ':' + phase + ':' + error.message));
+    page.on('pageerror', (error: Error) => {
+      if (phase === 'lost committed response and reload recovery' && cell.isNavigationDiagnostic(error)) return;
+      errors.push(engine + ':' + phase + ':' + error.message);
+    });
     page.setDefaultTimeout(20000);
     const responseWaitErrors: string[] = [];
     const response = (op: string) => {
@@ -113,8 +140,10 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
     await page.getByLabel('Employee ID', { exact: true }).fill('QAOWNER');
     await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
     await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(origin + '/app');
+    const notificationReadReady = () => page.locator('.portal-notification-bell[data-state="ready"]').first().waitFor({state:'attached'});
     let enteredFromManager = false, navigationControlCompleted = false;
     const openForm = async (steps: number) => {
+      await notificationReadReady();
       if (!enteredFromManager) {
         await page.setViewportSize({ width: 1440, height: 900 });
         await page.locator('#desktop-primary-navigation').getByRole('link', { name: 'AI manager', exact: true }).click();
@@ -209,7 +238,9 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
     const pendingStorage = await page.evaluate(() => JSON.parse(sessionStorage.getItem('nevora.rondo.weekly.pendingApply.v1') ?? 'null'));
     expect(Object.keys(pendingStorage).sort()).toEqual(['acknowledged','authority','readReceiptId','requestId','reviewId','termsDigest']);
     expect(JSON.stringify(pendingStorage)).not.toContain('Fictional');
-    await beforeHardNavigation();const recovered = response('check_week_plan'); await page.reload(); const saved = await result(recovered);
+    await notificationReadReady();
+    await beforeHardNavigation();
+    const recovered = response('check_week_plan'); await page.reload(); const saved = await result(recovered);
     expect(saved.state).toBe('saved'); expect(saved.receipt?.operationId).toBe(pendingStorage.requestId);
     await page.getByRole('heading', { name: 'What was saved', exact: true }).waitFor();
     expect(saved.progress?.state).toBe('draft'); expect(saved.progress?.assignmentsPresent).toBe(4); expect(saved.progress?.publishedAssignments).toBe(0);
@@ -250,9 +281,14 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
     expect(await page.locator('.wk').getByText(/Fictional Avery|Fictional Blair/).count()).toBe(0);
     expect(await page.evaluate(() => sessionStorage.getItem('nevora.rondo.weekly.pendingApply.v1'))).toBeNull();
     checks.push(engine + ': revoked real session clears private review DOM and pending custody');
-    expect(visualFailures).toEqual([]); expect(responseWaitErrors).toEqual([]); expect(external).toEqual([]); expect(errors).toEqual([]); completedEngines++;
+    if (engine === 'webkit') for (const control of Object.values(controls)) expect(control.verified).toBe(true);
+    expect(runtimeErrors).toEqual([]); expect(visualFailures).toEqual([]); expect(responseWaitErrors).toEqual([]); expect(external).toEqual([]); expect(errors).toEqual([]); completedEngines++;
   } catch (error) {
     await writeFile(resolve(evidence, `${engine}-failure.json`), JSON.stringify({ phase, message: String(error), observed }, null, 2));
-    await page.screenshot({ path: resolve(evidence, `${engine}-failed.png`), fullPage: true, timeout: 5000 }).catch(() => {}); throw error;
-  } finally { await context.unrouteAll({behavior:'wait'});await context.close(); await browser.close(); }
+    await page?.screenshot({ path: resolve(evidence, `${engine}-failed.png`), fullPage: true, timeout: 5000 }).catch(() => {}); throw error;
+  } finally {
+    observer?.setPhase('context-close');
+    await context.unrouteAll({behavior:'wait'});await context.close(); await browser.close();
+    await writeFile(resolve(evidence, engine + '-navigation.json'), JSON.stringify({ controls, diagnostics, runtimeErrors }, null, 2));
+  }
 });

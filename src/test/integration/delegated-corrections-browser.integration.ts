@@ -3,7 +3,7 @@ import {createRequire} from 'node:module';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {createOwnedNextApp} from './owned-next-app';
-import {seedOwnedApp,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from './owned-app-fixture';
+import {seedOwnedApp,assignOwnedManagerCompanyAccess,grantOwnedManagerWorkforcePermission,TEST_PASSWORD} from './owned-app-fixture';
 import {hashPassword} from '../../lib/auth/password';
 import {formatBusinessDateTimeInput} from '../../lib/business-time';
 it('creates delegated proposals through real management UI and requires separate review with private same-operation recovery',async()=>{
@@ -13,6 +13,7 @@ it('creates delegated proposals through real management UI and requires separate
  try{
   await seedOwnedApp(app.database.executor);const password=await hashPassword(TEST_PASSWORD);
   await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('R11-MANAGER','Fictional','Manager','r11-manager','MANAGER','loc-1')");await q("INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('R11-MANAGER',$1,false)",[password]);await assignOwnedManagerCompanyAccess(app.database.executor,'R11-MANAGER');
+  await grantOwnedManagerWorkforcePermission(app.database.executor,'R11-MANAGER','loc-1','REVIEW_TIME_EXCEPTION');
   await q("INSERT INTO clocker_devices(id,name,location_id,active) VALUES('ui-r11-retired','Fictional retired tablet','loc-1',false)");
   let n=0;
   for(const [engine,actor,reviewer,width] of [['chromium','QAOWNER','R11-MANAGER',1440],['webkit','R11-MANAGER','QAOWNER',390]] as const){

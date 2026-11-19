@@ -2,7 +2,7 @@ import { newRun, command, readPayrollCapabilities } from "../../lib/payroll/serv
 import type { SqlExecutor } from "../../lib/notifications/types";
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
-import { beforeEach, afterEach, it, expect } from '@rstest/core';
+import { beforeEach, afterEach, it, expect, rs } from "@rstest/core";
 import { createPunchFixture } from "./clocker-punch-fixture";
 import { nativeProfiles, saveNativeProfile } from "../../lib/payroll/native/profiles.server";
 import { input } from "../../lib/payroll/native/fixtures.test-support";
@@ -17,7 +17,7 @@ beforeEach(async () => {
     // Adopt Company Access after the fixture's real employee census is seeded.
     f = await createPunchFixture({ companyAccess: true });
 });
-afterEach(async () => { await f?.db.dispose(); delete process.env.NEVORA_PAYROLL_ENABLED; delete process.env.NEVORA_PAYROLL_CALCULATION_MODE; });
+afterEach(async () => { rs.unstubAllEnvs(); await f?.db.dispose(); delete process.env.NEVORA_PAYROLL_ENABLED; delete process.env.NEVORA_PAYROLL_CALCULATION_MODE; });
 
 it('prepares external amounts by default even when native tables exist, including a 2027 payday',async()=>{
  delete process.env.NEVORA_PAYROLL_CALCULATION_MODE;
@@ -37,8 +37,9 @@ it('blocks native financial profile changes in external mode without blocking Ow
  await expect(saveNativeProfile(proof,{action:'SET_MANAGER_SCOPE',operationId:randomUUID(),reason:'Import review access',expectedRevision:0,employeeId:'c34-b',review:true,approve:false,locationIds:['loc-1']},f.db.executor)).resolves.toMatchObject({action:'SET_MANAGER_SCOPE'});
 });
 
-it('worker preparation defaults to external amounts with native schema installed',async()=>{
- delete process.env.NEVORA_PAYROLL_CALCULATION_MODE;
+it.each(['default','production'])('worker prepares external amounts with native schema installed in %s mode',async mode=>{
+ if(mode==='production') rs.stubEnv('VERCEL_ENV','production');
+ else delete process.env.NEVORA_PAYROLL_CALCULATION_MODE;
  const job=randomUUID(),period={startDate:'2026-12-21',endDate:'2026-12-27'},payday='2027-01-01';
  await f.q("INSERT INTO payroll_jobs(id,workspace_id,kind,business_key,payload) SELECT $1::uuid,id,'PREPARE',$2,$3::jsonb FROM workspaces WHERE singleton",[job,'external-worker-'+job,JSON.stringify({period,payday})]);
  await workerOnce(f.db.executor);
@@ -47,9 +48,11 @@ it('worker preparation defaults to external amounts with native schema installed
  expect(await f.q('SELECT status FROM payroll_jobs WHERE id=$1::uuid',[job])).toEqual([{status:'SUCCEEDED'}]);
 });
 
-it('mode change refuses new native calculations and approval while preserving historical receipts',async()=>{
+it.each(['external','production'])('%s mode refuses new native calculations and approval while preserving historical receipts',async mode=>{
  await nativeFixture();const prepared=await preparedNative();
- process.env.NEVORA_PAYROLL_CALCULATION_MODE='external';
+ if(mode==='production') rs.stubEnv('VERCEL_ENV','production');
+ else process.env.NEVORA_PAYROLL_CALCULATION_MODE='external';
+ expect((await readPayrollCapabilities(proof,f.db.executor)).internalCalculatorAvailable).toBe(false);
  for(const commandBody of [
   {action:'RECALCULATE',operationId:randomUUID(),runId:prepared.payload.id,expectedRevision:prepared.payload.revision},
   {action:'APPROVE',operationId:randomUUID(),runId:prepared.payload.id,expectedRevision:prepared.payload.revision,reviewToken:prepared.payload.reviewToken},
@@ -528,4 +531,79 @@ it('an actually granted Manager completes external preparation, import, approval
  const view=await runs(manager,f.db.executor),approved=view.runs.find(r=>r.id===run.id)!;expect(approved.status).toBe('APPROVED');const pdf=approved.documents.find(d=>d.kind==='EMPLOYEE_STATEMENT'&&d.employeeId==='c34-a')!;expect(pdf).toBeDefined();expect((await document(manager,pdf.id,f.db.executor)).bytes.subarray(0,5).toString()).toBe('%PDF-');
  await saveNativeProfile(proof,{action:'SET_MANAGER_SCOPE',operationId:randomUUID(),reason:'Owned partial-scope denial',expectedRevision:1,employeeId:'c34-b',review:true,approve:true,locationIds:['loc-2']},f.db.executor);
  expect((await runs(manager,f.db.executor)).runs.some(r=>r.id===run.id)).toBe(false);await expect(document(manager,pdf.id,f.db.executor)).rejects.toThrow('DOCUMENT_UNAVAILABLE');
+});
+
+import {employeeWages} from '../../lib/compensation/wages.server';
+import {wageTerms} from '../../lib/compensation/wages';
+
+it('edits wages with both payroll switches off, keeping history, receipts and private facts', async () => {
+  const configurationBefore = configuration();
+  await saveNativeProfile(proof, {action:'SAVE_NATIVE_PROFILE', operationId:randomUUID(), expectedRevision:0,
+    reason:'Fictional initial profile', configuration:configurationBefore}, f.db.executor);
+  delete process.env.NEVORA_PAYROLL_ENABLED;
+  delete process.env.NEVORA_PAYROLL_CALCULATION_MODE;
+  const request = (body:unknown) => employeeWages(proof, body, f.db.executor);
+  const employeeId = configurationBefore.employeeId;
+  const read = {action:'READ_WAGES', employeeId};
+  const original = wageTerms(configurationBefore.wages[0]);
+  const transition = '2026-10-07T00:00:00-04:00';
+  const save = {action:'SAVE_WAGES', employeeId, operationId:randomUUID(), reason:'Fictional rate change',
+    expectedRevision:1, wages:[{...original,effectiveTo:transition}, {...original,id:'W2',effectiveFrom:transition,hourlyRateMinor:'0'}]};
+  expect(await request({...read,employeeId:'c34-b'})).toEqual({employeeId:'c34-b',history:[],nextBeforeRevision:null});
+  const first = await request(save);
+  expect(await request(save)).toEqual(first);
+  await expect(request({...save,reason:'Changed retry'})).rejects.toThrow('OPERATION_CONFLICT');
+  await expect(request({...save,operationId:randomUUID()})).rejects.toThrow('WAGE_REVISION_CONFLICT');
+  await expect(request({...save,operationId:randomUUID(),expectedRevision:2,wages:[original,{...original,id:'W2'}]})).rejects.toThrow('INVALID_INPUT');
+  const result = await request(read);
+  expect(result).toMatchObject({history:[{revision:2,actorId:proof.employee.id,reason:save.reason,wages:save.wages},
+    {revision:1,wages:[original]}]});
+  expect(JSON.stringify(result)).not.toContain('certificateReference');
+  expect(await request({...read,beforeRevision:2})).toMatchObject({history:[{revision:1}]});
+  const [record] = await f.q<{payload:typeof configurationBefore}>('SELECT payload FROM native_payroll_profiles_current WHERE employee_id=$1',[employeeId]);
+  expect(record.payload.tax).toEqual(configurationBefore.tax);
+  expect(record.payload.wages[1].standardContextAttested).toBe(false);
+  await expect(request({...read,employeeId:'absent'})).rejects.toThrow('authorization');
+  await f.q("UPDATE employees SET role='MANAGER' WHERE id='c34-owner'");
+  await expect(request(read)).rejects.toThrow('authorization');
+  await expect(request(save)).rejects.toThrow('authorization');
+});
+
+it('saves a first planning rate without tax or wage-policy attestations and serializes competing writes', async () => {
+  const save = {action:'SAVE_WAGES', employeeId:'c34-b', expectedRevision:0, reason:'Fictional wage',
+    wages:[{id:'first',effectiveFrom:'2026-10-01T04:00:00Z',effectiveTo:null,locationIds:['loc-1'],hourlyRateMinor:'0'}]};
+  const write = () => employeeWages(proof,{...save,operationId:randomUUID()},f.db.executor);
+  const outcomes = await Promise.allSettled([write(),write()]);
+  expect(outcomes.filter(o => o.status === 'fulfilled')).toHaveLength(1);
+  const [row] = await f.q<{payload:Record<string,unknown>}>('SELECT payload FROM native_payroll_profiles_current');
+  expect(row.payload).toMatchObject({revision:1,tax:null,wages:[{hourlyRateMinor:'0',standardContextAttested:false}]});
+  expect(row.payload.wages).not.toHaveProperty('[0].minimumWageCoverage');
+});
+
+import {draftLaborCost} from '../../lib/compensation/labor-cost.server';
+
+it('estimates edits against the scoped saved schedule without persisting them or disclosing rates', async () => {
+  await f.q(`INSERT INTO schedules(id,location_id,week_start,status,created_by)
+    VALUES('cost-week','loc-1','2026-10-05','DRAFT','c34-owner');
+    INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time)
+    VALUES('cost-shift','cost-week','c34-a','2026-10-05','08:00','12:00')`);
+  delete process.env.NEVORA_PAYROLL_ENABLED;
+  delete process.env.NEVORA_PAYROLL_CALCULATION_MODE;
+  const wage = {id:'cost-rate',locationIds:['loc-1'],effectiveFrom:'2026-01-01T00:00:00Z',effectiveTo:null,hourlyRateMinor:'1375'};
+  await employeeWages(proof, {action:'SAVE_WAGES',employeeId:'c34-a',expectedRevision:0,operationId:randomUUID(),
+    reason:'Fictional estimate rate',wages:[wage]},f.db.executor);
+  const request = {weekStart:'2026-10-05',locationId:'loc-1',changes:[]};
+  const preview = (changes:unknown[]) => draftLaborCost(proof,{...request,changes},f.db.executor);
+  const shift = {employeeId:'c34-a',date:request.weekStart,startTime:'08:00',endTime:'14:00'};
+  const result = await preview([{kind:'replace',shiftId:'cost-shift',shift}]);
+  expect(result).toMatchObject({saved:{totalMinor:'5500'},draft:{totalMinor:'8250'},deltaMinor:'2750'});
+  expect(JSON.stringify(result)).not.toMatch(/hourlyRateMinor|c34-a|1375/);
+  expect(await preview([{kind:'add',shift:{...shift,employeeId:'c34-b'}}])).toMatchObject({
+    draft:{totalMinor:null,subtotalMinor:'5500',missingRateShifts:1},deltaMinor:null});
+  expect(await preview([{kind:'remove',shiftId:'cost-shift'}])).toMatchObject({draft:{totalMinor:'0'},deltaMinor:'-5500'});
+  expect(await preview([])).toMatchObject({saved:{totalMinor:'5500'},deltaMinor:'0'});
+  await expect(preview([{kind:'remove',shiftId:'another-location-shift'}])).rejects.toThrow('CONFLICT');
+  await expect(preview([{kind:'add',shift:{...shift,employeeId:'outside'}}])).rejects.toThrow('UNAVAILABLE');
+  await f.q("UPDATE employees SET role='MANAGER' WHERE id='c34-owner'");
+  await expect(preview([])).rejects.toThrow(/authorization|ACCESS_DENIED/);
 });

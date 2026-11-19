@@ -31,11 +31,14 @@ export function minor(v: unknown): bigint {
         throw Error("INVALID_NATIVE_MONEY");
     return BigInt(v);
 }
-export function hourlyRate(v: unknown): Rational {
+export function nonnegativeHourlyRate(v: unknown): Rational {
     if (typeof v !== "string" || !/^(0|[1-9][0-9]{0,8})(\.[0-9]{1,4})?$/.test(v))
         throw Error("INVALID_WAGE_RATE");
     const [whole, decimal = ""] = v.split("."), divisor = BigInt(10) ** BigInt(decimal.length);
-    const r = ratio(BigInt(whole) * divisor + BigInt(decimal || "0"), divisor);
+    return ratio(BigInt(whole) * divisor + BigInt(decimal || "0"), divisor);
+}
+export function hourlyRate(v: unknown): Rational {
+    const r = nonnegativeHourlyRate(v);
     if (r.numerator <= BigInt(0))
         throw Error("INVALID_WAGE_RATE");
     return r;

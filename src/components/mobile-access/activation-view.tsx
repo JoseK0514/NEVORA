@@ -55,9 +55,9 @@ export function MobileActivationView({phase,passwordReason,mismatch=false,employ
  return <><AccessCard>{phase==='checking'||unknown?null:<AccessSteps journey="activation" current={canSubmit?2:1} lang={lang}/>}
   <div className="q-hd"><h1>{title}</h1>{canSubmit||phase==='checking'?null:chip}<p role={phase==='checking'?'status':unknown?'alert':undefined}>{sub}</p></div>
   {canSubmit?<form ref={formRef} className="q-auth__form activation-form" onSubmit={onSubmit} aria-busy={phase==='pending'}><AuthValidation/>
+   {passwordReason&&!mismatch?<div id="activation-policy-error" className="ar-note" role="alert"><BCallout tone="red">{passwordRejectionMessage(lang,passwordReason)}</BCallout></div>:null}
    {offline?<div id="activation-offline" className="ar-note" role="alert" tabIndex={-1}><BCallout tone="amber" icon="offline" title={offlineNote.title??undefined}>{offlineNote.body}</BCallout></div>:null}
-      {passwordReason&&!mismatch?<p id="activation-error" className="q-error q-auth__alert" role="alert">{passwordRejectionMessage(lang,passwordReason)}</p>:null}
-{phase==='unavailable'&&!passwordReason&&!mismatch&&!offline?<><div id="activation-unavailable" className="ar-note" role="alert"><BCallout tone="red" title={unavailableNote.title??undefined}>{unavailableNote.body}</BCallout></div><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
+   {phase==='unavailable'&&!passwordReason&&!mismatch&&!offline?<><div id="activation-unavailable" className="ar-note" role="alert"><BCallout tone="red" title={unavailableNote.title??undefined}>{unavailableNote.body}</BCallout></div><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
    <fieldset className="q-auth__fields" disabled={phase==='pending'}><AccessPasswordPair prefix="activation" lang={lang} mismatch={mismatch} newLabel={t.createPassword}/></fieldset>
    <ul className="ar-facts" aria-label={u.factsLabel}>
     <li><KeyIcon size={16} weight="bold" aria-hidden="true"/><span>{u.passwordFact}</span></li>

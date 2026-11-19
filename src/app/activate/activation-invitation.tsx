@@ -127,7 +127,7 @@ export function ActivationInvitationView({phase,passwordReason,mismatch=false,em
  passkeys?:boolean}) {
  const mobile=useMobilePresentation(mobileAccess,'activation-password activation-confirm-password'),journey=useAccessJourney();
  if(mobile)return <MobileActivationView {...{phase,passwordReason,mismatch,employeeId,loginHref,workspaceName,onSubmit,formRef,successRef,lang,offline,supportReference,otherSession,passkeys}}/>;
- const canSubmit=['ready','pending','unavailable'].includes(phase);const error=mismatch||Boolean(passwordReason)||phase==='unavailable';
+ const canSubmit=['ready','pending','unavailable'].includes(phase);const error=mismatch||phase==='unavailable';
  const signInHref=loginHref.replace('?activated=1&','?').replace('?activated=1','');
  // Review B4 (Nov 10, 2026, NV-055): every word comes from AUTH_COPY, so a Spanish page stays Spanish. NV-196: without a
  // usable invitation the page has one model at every width (the title and line, then one card with the next step and
@@ -174,9 +174,9 @@ export function ActivationInvitationView({phase,passwordReason,mismatch=false,em
   {canSubmit&&<form ref={formRef} className="q-auth__form activation-form" onSubmit={onSubmit} aria-busy={phase==='pending'} aria-describedby="activation-intro">
    <AuthValidation/>
    <AccessSteps journey="activation" current={2} lang={lang}/>
+   {passwordReason&&!mismatch?<div id="activation-policy-error" className="ar-note" role="alert"><BCallout tone="red">{passwordRejectionMessage(lang,passwordReason)}</BCallout></div>:null}
    {offline?<div id="activation-offline" className="ar-note" role="alert" tabIndex={-1}><BCallout tone="amber" icon="offline" title={offlineNote.title??undefined}>{offlineNote.body}</BCallout></div>:null}
-      {passwordReason&&!mismatch?<p id="activation-error" className="q-error q-auth__alert" role="alert">{passwordRejectionMessage(lang,passwordReason)}</p>:null}
-{phase==='unavailable'&&!passwordReason&&!mismatch&&!offline?<><div id="activation-error" className="ar-note" role="alert"><BCallout tone="red" title={unavailableNote.title??undefined}>{unavailableNote.body}</BCallout></div><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
+   {phase==='unavailable'&&!passwordReason&&!mismatch&&!offline?<><div id="activation-error" className="ar-note" role="alert"><BCallout tone="red" title={unavailableNote.title??undefined}>{unavailableNote.body}</BCallout></div><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
    <fieldset className="q-auth__fields" disabled={phase==='pending'}>
     <ActivationPasswords quiet lang={lang} mismatch={mismatch} errorId={error?'activation-error':undefined}/>
    </fieldset>

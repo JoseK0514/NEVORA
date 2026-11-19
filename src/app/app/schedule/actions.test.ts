@@ -8,6 +8,9 @@ const m=rs.hoisted(()=>({
   shifts:[{id:'s',employeeId:'E',locationId:'loc-1',date:'2030-09-30',startTime:'09:00',endTime:'17:00',isDesignatedLead:false}],
 }));
 rs.mock('@/lib/company-access/operational-scope.server',()=>({assertOriginalOperationalAccess:async(_proof:unknown,original:{authority:string})=>{expect(original.authority).toBe('f'.repeat(64));},assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},authority:'f'.repeat(64)}),isOperationalAuthorizationError:()=>false}));
+rs.mock('@/lib/workforce/authority.server', () => ({
+  assertWorkforcePermission: async () => ({ scope:{mode:'COMPANY',locationIds:[]},authority:'f'.repeat(64) }),
+}));
 rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',data:{saveAvailability:'available',shift:{reviewVersion:'a'.repeat(64),id:'s',employeeId:'E',locationId:'loc-1',weekStart:m.existingWeek,date:'2030-10-08'},employeeOptions:[],positionOptions:[]}})}));
 rs.mock('@/lib/data/schedule-copy',()=>({executeScheduleCopy:m.copy}));
 rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>managementProof('M',m.role as 'MANAGER')}));
@@ -15,8 +18,6 @@ rs.mock('@/lib/notifications/provider',()=>({createPushSender:m.provider.mockImp
 rs.mock('next/cache',()=>({revalidatePath:rs.fn()}));
 rs.mock('next/navigation',()=>({redirect:(destination:string)=>{throw {destination};}}));
 rs.mock('@/lib/auth/permissions',()=>({MANAGER_ROLES:['OWNER','MANAGER'],requireRoles:async(roles:string[])=>{if(!roles.includes(m.role))throw {destination:'/app'};return {id:'M',role:m.role};}}));
-
-
 rs.mock('@/lib/scheduling/exchange-validation',()=>({prepareExchangeContext:(context:unknown)=>context}));
 rs.mock('@/lib/scheduling/validate-shift',()=>({validateShift:({candidate}:{candidate:{employeeId:string}})=>({issues:candidate.employeeId==='BLOCKED'?[{severity:'error',code:'INACTIVE_EMPLOYEE'}]:[]})}));
 rs.mock('@/lib/scheduling/schedule-health',()=>({calculateScheduleHealth:rs.fn()}));
@@ -133,7 +134,7 @@ it.each(['https://evil.invalid','//evil.invalid','/app/schedule/settings?next=ev
 
 // Publish changes (Jose, 2026-10-29): one week-level action publishes every held edit.
 it('Publish changes publishes the whole week as the server actor and reports the outcome',async()=>{
- const data=form();data.set('managerId','FORGED');
+ const data=form();data.delete('locationId');data.set('managerId','FORGED');
  await expect(publishScheduleChangesAction(data)).rejects.toMatchObject({destination:'/app/schedule?week=2030-10-07&changesPublished=1'});
  expect(m.publishChanges).toHaveBeenCalledWith({weekStart:'2030-10-07',managerId:'M',proof:managementProof('M')});
  expect(m.publish).not.toHaveBeenCalled();expect(m.provider).not.toHaveBeenCalled();expect(m.send).not.toHaveBeenCalled();
@@ -149,7 +150,7 @@ it('Publish changes keeps the warning review for each published location before 
  rs.mocked(listEmployeeHourTargets).mockResolvedValue([]);rs.mocked(listCoverageWindows).mockResolvedValue([]);
  rs.mocked(calculateScheduleHealth).mockReturnValue({locationCoverage:[],underTargetCount:0,overTargetCount:0,unconfiguredTargetCount:0} as unknown as ReturnType<typeof calculateScheduleHealth>);
  rs.mocked(buildPublishReadiness).mockReturnValue({hasWarnings:true} as ReturnType<typeof buildPublishReadiness>);
- const data=form();data.delete('confirmWarnings');
+ const data=form();data.delete('confirmWarnings');data.delete('locationId');
  await expect(publishScheduleChangesAction(data)).rejects.toMatchObject({destination:'/app/schedule/publish?week=2030-10-07&review=changes#publish-review'}); // Release 1: warnings are reviewed on Build and publish.
  expect(rs.mocked(buildPublishReadiness).mock.calls.map(call=>call[0].locationId)).toEqual(['loc-1']);
  expect(m.publishChanges).not.toHaveBeenCalled();

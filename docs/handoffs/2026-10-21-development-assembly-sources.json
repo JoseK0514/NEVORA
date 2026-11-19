@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-11-19T04:55:14.245073+00:00",
+  "observedAt": "2026-11-19T10:07:13Z",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -364,7 +364,7 @@
     },
     {
       "branch": "development",
-      "sha": "22107a24272f2347bbb59a3da1f54319632772a5",
+      "sha": "321305c72ecde0d13bcff476a01107034e8d671f",
       "disposition": "target",
       "reason": "Current development database-rehearsal delivery inspected and included by the sole finisher. Incoming changes follow/hash the shared canonical bootstrap and passkey dependency chain; operations negative fixtures retain strict cleanup/permission assertions. Source-bound documents remain historical evidence. Main and held Claude UI are unchanged; combined acceptance and hosted gates remain open. November 16 readiness integration: this exact current remote base and its protected fixes are retained; Jose assigned combined integration and development delivery to this chat."
     },
@@ -524,10 +524,11 @@
       "branch": "nevora-30-day-phase",
       "sha": "69aa0970c73c2f93ef330b4252523dddd2aa2f64",
       "disposition": "superseded",
-      "reason": "Jose explicitly authorized this extra branch on November 18, recorded in docs/handoffs/2026-11-18-30-day-phase.md. Exact source is already included through collaboration merge 4e83dfa53; the exception is scoped to this phase, not other branches. November 19 linear publication: this original head is preserved by immutable qualified assembly candidate/backend-completion/20261118-development-combined-02 at05f2553182b387f20495c19070cfbabd50a987ef, which contains the actual integration ancestry. Its byte-identical tree is republished from Development22107 to obey GitHub required linear history; this record does not claim the original head is an ancestor of that linear delivery. The two active source branches remain active and unchanged; the password source retains its exact approved archive. See2026-11-19-linear-development-publication.md and the exact content-equivalence receipt. No source gate or branch ceiling is relaxed."
+      "reason": "Jose explicitly authorized this extra branch on November 18, recorded in docs/handoffs/2026-11-18-30-day-phase.md. Exact source is already included through collaboration merge 4e83dfa53; the exception is scoped to this phase, not other branches. November 19 linear publication: this original head is preserved by immutable qualified assembly candidate/backend-completion/20261118-development-combined-02 at05f2553182b387f20495c19070cfbabd50a987ef, which contains the actual integration ancestry. Its byte-identical tree is republished from Development22107 to obey GitHub required linear history; this record does not claim the original head is an ancestor of that linear delivery. The two active source branches remain active and unchanged; the password source retains its exact approved archive. See2026-11-19-linear-development-publication.md and the exact content-equivalence receipt. No source gate or branch ceiling is relaxed.",
+      "archiveRef": "refs/tags/archive/branches/2026-11-19/nevora-30-day-phase"
     }
   ],
-  "maximumActiveBranches": 4,
+  "maximumActiveBranches": 3,
   "phase5FinalSourceReconciliation": {
     "date": "2026-11-16",
     "previousCollaboration": "40ccc4e4e5b74b48c8fd86ef50c4ec6efe9b4dd1",
@@ -537,7 +538,7 @@
     "review": "phase5-final-source-equivalence-code-review.md; exact handoff/delta inspected read-only",
     "productionChanged": false,
     "observedFailureSource": "76f08e5101a1f34fd9dc30cf68b9246fa92ee198",
-    "branchCeilingReason": "Three normal branches plus Jose\u2019s authorized nevora-30-day-phase exception. Superseded password head archived and retired with explicit approval; no broader exception."
+    "branchCeilingReason": "Three normal branches plus Jose’s authorized nevora-30-day-phase exception. Superseded password head archived and retired with explicit approval; no broader exception."
   },
   "rondoDevelopmentIntegration": {
     "date": "2026-11-16",
@@ -585,8 +586,14 @@
     "priorTooling": "66b86420dec773f01c9fa829d5498fab4507b941",
     "passwordEmails": "6d31d122c078a43297e37a90280f2c657b03b8b6",
     "committedRondo": "99636b3da504595197e7b12b7d7c8f0aab833020",
-    "branchCeilingReason": "Three normal branches plus Jose\u2019s explicitly authorized nevora-30-day-phase exception. The fifth observed password PR branch still exceeds this ceiling; no general exception or remote deletion is inferred. Preserve the open PR and reconcile before publication.",
+    "branchCeilingReason": "Three normal branches plus Jose’s explicitly authorized nevora-30-day-phase exception. The fifth observed password PR branch still exceeds this ceiling; no general exception or remote deletion is inferred. Preserve the open PR and reconcile before publication.",
     "uncommittedGrounding": "Held until Claude-ready checkpoint per Jose; not imported; original finite model evidence retained.",
     "publication": "Candidate only; main and production unchanged."
+  },
+  "temporarySourceIntegration": {
+    "qualifiedInput": "74b66a5468a12334767110611ad1f973f9bfb2a8",
+    "workforceInput": "87741bbe6889d5b25844673329b52c61f1e1f209",
+    "developmentBase": "321305c72ecde0d13bcff476a01107034e8d671f",
+    "provenance": "Both original source tips are preserved in the immutable temporary-sources-74b66a54 candidate. The Development base contains their prior linear delivery. Scheduling/PTO, Setup, Compensation and the remaining recovery and QA changes are reconciled on that base. The 30-day archive is due after verified publication."
   }
 }

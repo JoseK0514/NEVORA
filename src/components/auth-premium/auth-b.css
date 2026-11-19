@@ -470,6 +470,10 @@
 /* Short touch landscape keeps the sign-in action in view. The welcome art is
  * decorative; the shared mobile Access rule already omits it in this posture. */
 @media (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
+  /* The title can overlap the header band. Keep only the header controls above it so the
+   * language button's transparent 44px hit area remains usable at both text sizes. */
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .q-auth__col > .ma-only { z-index: auto; }
+  #mobile-access-page.q-auth .ma-header { position: relative; z-index: 2; }
   #mobile-access-page.q-auth .ma-hero { display: none !important; }
   /* Let the header's expanded44px target clear the following heading without
    * raising the decorative band over the sign-in card. */

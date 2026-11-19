@@ -2,7 +2,7 @@ import {it,expect,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
-import {companyAccessFixture} from './company-access-fixture';
+import {companyAccessFixture,grantFixtureWorkforcePermission} from './company-access-fixture';
 import {readOwnerOperationalScope,assignOperationalScope,readOperationalAuthority} from '../../lib/company-access/operational-scope.server';
 import {readOperationalShiftEditor} from '../../lib/company-access/operational-read.server';
 const ctx=rs.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
@@ -168,7 +168,7 @@ for(const method of ['create','update'] as const)for(const loss of ['STABLE','LO
  }finally{await close(f);}
 });
 for(const loss of ['STABLE','LOCATIONS','REVOKE','REGRANT','REVISION'] as const)it(`publish readiness ${loss} cannot release a stale private warning flag`,async()=>{
- const f=await neutralFixture('create');try{await f.q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('publish-warning','action-a','TARGET','2026-10-12','10:00','11:00')");const before=await business(f),base=f.db.executor;let hit=false;
+ const f=await neutralFixture('create');try{await grantFixtureWorkforcePermission(f,'PUBLISH_SCHEDULE','loc-1');await f.q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('publish-warning','action-a','TARGET','2026-10-12','10:00','11:00')");const before=await business(f),base=f.db.executor;let hit=false;
  ctx.ex=observeReads(base,async(s,rows,contract)=>{
   if(!hit&&s.text.includes('FROM shifts sh')&&s.values[0]==='2026-10-12'){
    requireReadContract(contract);

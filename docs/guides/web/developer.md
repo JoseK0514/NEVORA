@@ -232,6 +232,9 @@ phase handoff, `docs/handoffs/2026-11-18-30-day-phase.md`.
   used is read server-side at punch time, kept in the captured context as an
   optional `earlyGraceMinutes` (still `version: 1`), and checked by the SQL
   resolver; a missing or unreadable setting means 0, never a blocked punch.
+- The canonical bootstrap applies 0070 for scheduling authority and PTO, then
+  0071 for user language preferences. Compensation uses the existing immutable
+  wage profile revisions from 0031.
 - Attendance observation `OPEN_PAST_LIMIT` flags a consistent open entry with an
   unmatched, ambiguous or not-evaluated schedule once it is open strictly more
   than `OPEN_ENTRY_REVIEW_LIMIT_HOURS` (12). It is computed per read, never
