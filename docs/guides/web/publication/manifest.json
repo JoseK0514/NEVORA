@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-19",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "a7ed70155efa8b2683e30c8a92feeafa5b7e9135",
-  "applicationHash": "21bb471690a1acbda194f1bc47badd7f8545d0385475e72d320c6906864ef9cc",
+  "sourceSha": "69cfb71a001eed5cfcedd833cf7a9f3022e64eda",
+  "applicationHash": "ae67f40c396139aa937ce9f12a528cb21ff421d0fbd51eb2a9b87c86028dead2",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "0cd9232190da48d0e815aac9cbfe8df1ad69be5fe97f153ed58c7626fde85fec"
@@ -204,7 +204,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "496d0867bf110d8eedff3accab957ac4d58f05585a86e7e02d2c074e53e0d5ae",
+        "sha256": "6d2467c3e588017a57071adb0fbff795f0af7fa4f0bdc9bc211a0979c94ba509",
         "pageCount": 6
       }
     },
@@ -327,7 +327,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "fb73298e97fc016755ae2d8309b109c5a2d10d4e8ea05efe846ae2b4d2f80f68",
+        "sha256": "f965ec277e5fb983cc695703ea08a2a2b82c774bd6941f41531c1ee0835f1465",
         "pageCount": 4
       }
     },
@@ -349,7 +349,7 @@
         },
         {
           "path": "src/app/activate/activation-invitation.tsx",
-          "sha256": "7a5e9e451ea562eed6438817f21a8ed3dfe42fb90a8e3a88077a0632e719df2c"
+          "sha256": "a7adcf8c5388a30352d9cefe34d4bb36fbde377f21b6c2cbe4c1b427623dcd2b"
         },
         {
           "path": "src/app/app/schedule/page.tsx",
@@ -446,7 +446,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "69ec1450e381abe7af802f6ace34178ae98d6c27ed6004164d63538f4b7149ce",
+        "sha256": "d821f148e05ad6451e2a291ec64ff92ed6233b69bc4918ad14f2496b387da8f9",
         "pageCount": 3
       }
     },
@@ -621,7 +621,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "dc4af56c89836bc867bb8776e938249dcd35d9e6124024e7b5b106517500f927",
+        "sha256": "20669f2db55ec8355bc151846d0f9b35444511d175ca6bb54f6b91eadb5c3a78",
         "pageCount": 4
       }
     },
@@ -630,7 +630,7 @@
       "title": "NEVORA web developer guide",
       "markdown": {
         "path": "docs/guides/web/developer.md",
-        "sha256": "b3b90056834ab5fe707e2eb0d0ea8993d01546fec253bc7f74d4e4d84696d9bb"
+        "sha256": "d70a9f00c93327d2eb42799b08f493a244a3df4dc37beebd9411d374272f1b23"
       },
       "evidence": [
         {
@@ -651,7 +651,7 @@
         },
         {
           "path": "docs/handoffs/2026-10-21-development-assembly-sources.json",
-          "sha256": "8983143a011d0ae97d8439c4f8319050e5bd6b2890dc1141f0b5d482dbe6d429"
+          "sha256": "ea5fb30b5db44f79ba23c91ce55d4ec495a00c57664774122e3af0bad9227305"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",
@@ -691,7 +691,7 @@
         },
         {
           "path": "db/migrations/order.ts",
-          "sha256": "24f6e974bafec8f61a5f49c5121c3a639831098e99dd54a8caf2c01ee067c31f"
+          "sha256": "5d717d078e75b7cdc6ff4fd89544f108a467f17716905bffcfbbe616c4dced55"
         },
         {
           "path": "scripts/release-build.mjs",
@@ -875,7 +875,7 @@
         },
         {
           "path": "src/test/integration/release1-migrations.integration.ts",
-          "sha256": "8e378b2d2ae673b4401b9c0eab9833a1cd3a82aaf7b31ee9b08464ca70fa163d"
+          "sha256": "d3bd11207c08d9ea2f124d463a83af8a4712e53d1e4f6e82dbed0175e52f21ea"
         },
         {
           "path": "scripts/rehearsal/2026-11-18-development-baseline.json",
@@ -884,7 +884,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "7d051d1015e76b02ec20b2edc1f1b01740cca281eda5ad9496faa36437d77af8",
+        "sha256": "63ee6e3cc9b9494d89a56b3a7e55d6f940671e05d88146bafbefa274f82b1377",
         "pageCount": 7
       }
     },
@@ -1058,7 +1058,7 @@
         },
         {
           "path": "src/test/integration/release1-migrations.integration.ts",
-          "sha256": "8e378b2d2ae673b4401b9c0eab9833a1cd3a82aaf7b31ee9b08464ca70fa163d"
+          "sha256": "d3bd11207c08d9ea2f124d463a83af8a4712e53d1e4f6e82dbed0175e52f21ea"
         },
         {
           "path": "scripts/rehearsal/2026-11-18-development-baseline.json",
@@ -1067,7 +1067,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "a8d108a96acdd367950ecd699767fa22ef9511e31c22b9a0fa261fca3706620f",
+        "sha256": "cd7498d9ca1dfd705fa6140dd99dff78e71ea7cda718df6c9a43009ffbdd7e03",
         "pageCount": 6
       }
     }
