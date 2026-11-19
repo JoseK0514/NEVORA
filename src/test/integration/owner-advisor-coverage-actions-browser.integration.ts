@@ -82,15 +82,15 @@ it("reviews exact coverage, blocks stale saves, recovers a real lost reply and v
         await page.evaluate(axe);
         for(const width of [320,390,430,1440]){
           await page.setViewportSize({width,height:844});
-          const layout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth,shortTargets:[...document.querySelectorAll<HTMLElement>(".oa-draft-panel button,.oa-draft-consent")].filter(el=>el.getBoundingClientRect().height<44).map(el=>el.textContent)}));
-          const audit=await page.evaluate("axe.run('.oa-draft-panel',{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}})");
+          const layout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth,shortTargets:[...document.querySelectorAll<HTMLElement>(".oa-draft button,.oa-draft-consent")].filter(el=>el.getBoundingClientRect().height<44).map(el=>el.textContent)}));
+          const audit=await page.evaluate("axe.run('.oa-draft',{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}})");
           await writeFile(resolve(evidence,`${engine}-${width}-audit.json`),JSON.stringify({layout,audit},null,2));await panel.screenshot({path:resolve(evidence,`${engine}-${width}-review.png`)});
           expect(layout.overflow).toBe(false);expect(layout.shortTargets).toEqual([]);expect(audit.violations).toEqual([]);
         }
         await page.setViewportSize({width:390,height:844});
-        await page.evaluate(()=>{const nodes=[...document.querySelectorAll<HTMLElement>(".oa-draft-panel,.oa-draft-panel *")];const sizes=nodes.map(el=>({el,size:parseFloat(getComputedStyle(el).fontSize),line:parseFloat(getComputedStyle(el).lineHeight)}));for(const row of sizes){row.el.dataset.originalStyle=row.el.getAttribute("style")??"";row.el.style.fontSize=`${row.size*2}px`;if(Number.isFinite(row.line))row.el.style.lineHeight=`${row.line*2}px`;}});
+        await page.evaluate(()=>{const nodes=[...document.querySelectorAll<HTMLElement>(".oa-draft,.oa-draft *")];const sizes=nodes.map(el=>({el,size:parseFloat(getComputedStyle(el).fontSize),line:parseFloat(getComputedStyle(el).lineHeight)}));for(const row of sizes){row.el.dataset.originalStyle=row.el.getAttribute("style")??"";row.el.style.fontSize=`${row.size*2}px`;if(Number.isFinite(row.line))row.el.style.lineHeight=`${row.line*2}px`;}});
         expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);await panel.screenshot({path:resolve(evidence,`${engine}-390-text200.png`)});
-        await page.evaluate(()=>document.querySelectorAll<HTMLElement>(".oa-draft-panel,.oa-draft-panel *").forEach(el=>{el.setAttribute("style",el.dataset.originalStyle??"");delete el.dataset.originalStyle;}));
+        await page.evaluate(()=>document.querySelectorAll<HTMLElement>(".oa-draft,.oa-draft *").forEach(el=>{el.setAttribute("style",el.dataset.originalStyle??"");delete el.dataset.originalStyle;}));
         checks.push(engine+": 320/390/430/1440 and 200% review text; real long/untrusted names safely escaped; targets >=44px; zero automated accessibility violations");
         phase="real commit and dropped response";dropNextSave=true;await confirmWithKeyboard();await panel.getByRole("button",{name:"Check original request",exact:true}).waitFor();expect(committedBeforeLoss).toBe(true);
         expect(await q("SELECT count(*)::int n FROM shifts WHERE date=$1",[date])).toEqual([{n:2}]);
