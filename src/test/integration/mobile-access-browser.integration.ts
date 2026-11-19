@@ -107,7 +107,15 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    expect(await join.locator('main').innerText()).not.toMatch(/Invitation verified|invitación verificada/i);
    await join.locator('#activation-password').fill(TEST_PASSWORD);await join.locator('#activation-confirm-password').fill(TEST_PASSWORD);
    await join.locator('.ma-language').click();await expect.poll(()=>join.locator('#mobile-access-page').getAttribute('lang')).toBe('en');expect(await join.locator('#activation-password').inputValue()).toBe(TEST_PASSWORD);
-   await join.setViewportSize({width:1440,height:900});/* Phase 5 (PB-016, DESIGN.MD): each password rule is the helper line of its own field, and the title is Set up your account. */await expect.poll(()=>join.locator('#activation-password-hint, #activation-confirm-password-hint').count()).toBe(2);expect(await join.locator('#activation-password-hint').innerText()).toContain('15');expect(await join.locator('h1').innerText()).toBe('Set up your account');expect(await join.locator('#activation-password').inputValue()).toBe(TEST_PASSWORD);expect(await join.locator('form').count()).toBe(1);
+   await join.setViewportSize({width:1440,height:900});
+   // Both layouts contain the password hints. Wait for the desktop form to replace the mobile form before reading them.
+   await expect.poll(()=>join.locator('.ma-passwords').count()).toBe(0);
+   await join.getByRole('heading',{level:1,name:'Set up your account',exact:true}).waitFor();
+   await expect.poll(()=>join.locator('#activation-password-hint, #activation-confirm-password-hint').count()).toBe(2);
+   expect(await join.locator('#activation-password-hint').innerText()).toContain('15');
+   expect(await join.locator('h1').innerText()).toBe('Set up your account');
+   expect(await join.locator('#activation-password').inputValue()).toBe(TEST_PASSWORD);
+   expect(await join.locator('form').count()).toBe(1);
    await join.setViewportSize({width:390,height:844});await expect.poll(()=>join.locator('.ma-passwords').count()).toBe(1);expect(await join.locator('#activation-confirm-password').inputValue()).toBe(TEST_PASSWORD);
    await join.locator('.ma-language').click();await expect.poll(()=>join.locator('#mobile-access-page').getAttribute('lang')).toBe('es');
    await join.locator('button[type="submit"]').click();await join.locator('#activation-employee-id').waitFor();expect(await join.locator('#activation-employee-id').inputValue()).toBe('MA-'+engine);
