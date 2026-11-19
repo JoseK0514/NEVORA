@@ -21,7 +21,7 @@ it.each(['chromium','webkit'])('%s fences business observations and preserves su
   await seedOwnedApp(app.database.executor);page.setDefaultTimeout(20000);page.on('pageerror',(error:Error)=>errors.push(error.message));
   await context.addInitScript(()=>{
    type Command={op:string;requestId:string;query?:unknown};
-   const wire={mode:'normal',reads:[] as Command[],held:[] as (()=>void)[],offset:0,observations:[] as {requestId:string;handle:string;expires:string}[]};
+   const wire={mode:'normal',catalogReads:0,reads:[] as Command[],held:[] as (()=>void)[],offset:0,observations:[] as {requestId:string;handle:string;expires:string}[]};
    (window as any).__businessWire=wire;const wall=Date.now;Date.now=()=>wall()+wire.offset;
    const native=fetch.bind(window);
    window.fetch=(async(input:RequestInfo|URL,init?:RequestInit)=>{
@@ -29,7 +29,7 @@ it.each(['chromium','webkit'])('%s fences business observations and preserves su
     if(url.pathname!=='/api/owner/advisor/business')return native(input,init);
     const command=init?.body?JSON.parse(String(init.body)) as Command:null,read=!command||['read_source_version','read_coverage_map','query_finance','query_sales'].includes(command.op);
     if(!read)return native(input,init);
-    if(command)wire.reads.push(command);
+    if(command)wire.reads.push(command);else wire.catalogReads++;
     const mode=wire.mode;
     if(mode==='fail-catalog'&&!command)return new Response('{}',{status:503});
     const response=await native(input,{...init,signal:undefined}),body=await response.json();
@@ -49,7 +49,12 @@ it.each(['chromium','webkit'])('%s fences business observations and preserves su
   const wire=async(mode:string,event?:string)=>page.evaluate(({mode,event}:{mode:string;event?:string})=>{(window as any).__businessWire.mode=mode;if(event)window.dispatchEvent(new Event(event));},{mode,event});
   const release=()=>page.evaluate(()=>{const wire=(window as any).__businessWire;wire.mode='normal';wire.held.splice(0).forEach((done:()=>void)=>done());});
   const settle=()=>page.evaluate(()=>new Promise<void>(done=>requestAnimationFrame(()=>requestAnimationFrame(()=>done()))));
-  await visit(library);await privateName().first().waitFor();await wire('hold-catalog','blur');await settle();check('blur clears catalog',await privateName().count()===0);
+  await visit(library);await privateName().first().waitFor();
+  const beforeUnfocused=await page.evaluate(()=>(window as any).__businessWire.catalogReads);
+  await page.evaluate(()=>{Object.defineProperty(document,'hasFocus',{configurable:true,value:()=>false});window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('online'));window.dispatchEvent(new Event('pageshow'));});await settle();
+  check('visible unfocused reconnect/pageshow cannot admit a private catalog read',(await page.evaluate(()=>(window as any).__businessWire.catalogReads))===beforeUnfocused);
+  await page.evaluate(()=>{Reflect.deleteProperty(document,'hasFocus');window.dispatchEvent(new Event('focus'));});await privateName().first().waitFor();
+  await wire('hold-catalog','blur');await settle();check('blur clears catalog',await privateName().count()===0);
   await wire('hold-catalog','online');await page.waitForFunction(()=>(window as any).__businessWire.held.length>0);await wire('hold-catalog','blur');await release();await settle();check('late catalog cannot revive retired generation',await privateName().count()===0);
   await visit(library);await privateName().first().waitFor();await wire('fail-catalog','online');await settle();check('failed catalog refresh clears old private catalog',await privateName().count()===0);
   await visit(library);await privateName().first().waitFor();await page.evaluate(()=>{const wire=(window as any).__businessWire;wire.mode='hold-catalog';wire.offset=-86400000;});

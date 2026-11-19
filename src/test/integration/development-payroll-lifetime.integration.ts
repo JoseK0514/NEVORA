@@ -39,7 +39,11 @@ it.each(['chromium','webkit'])('%s retires payroll drafts and late artifacts whi
   const roster=await q('SELECT id FROM employees ORDER BY id'),csv='employeeId,gross,employeeDeductions,employerContributions,net\r\n'+roster.map(p=>p.id+','+(p.id===fixture.ids.a?'1000,123.40,70,876.60':'0,0,0,0')).join('\r\n')+'\r\n';
   const file=async()=>{await page.locator('input[type="file"]').setInputFiles({name:'private-payroll-draft.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});await page.getByText(/private-payroll-draft.csv/).waitFor();};
   const hasDraft=()=>page.getByText(/private-payroll-draft.csv/).count();
-  await visit(importPath);await page.locator('input[type="file"]').waitFor({state:'attached'});await file();await event('blur');await settle();check('import draft disappears on blur',await hasDraft()===0);
+  await visit(importPath);await page.locator('input[type="file"]').waitFor({state:'attached'});await file();
+  const beforeUnfocused=await page.evaluate(()=>(window as any).__payWire.reads.length);
+  await page.evaluate(()=>{Object.defineProperty(document,'hasFocus',{configurable:true,value:()=>false});window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('online'));window.dispatchEvent(new Event('pageshow'));});await settle();
+  check('visible unfocused reconnect/pageshow cannot admit private payroll reads',(await page.evaluate(()=>(window as any).__payWire.reads.length))===beforeUnfocused);
+  await page.evaluate(()=>{Reflect.deleteProperty(document,'hasFocus');window.dispatchEvent(new Event('focus'));});await page.locator('input[type="file"]').waitFor({state:'attached'});await file();await event('blur');await settle();check('import draft disappears on blur',await hasDraft()===0);
   await event('focus');await page.locator('input[type="file"]').waitFor({state:'attached'});check('fresh import observation does not revive draft',await hasDraft()===0);
   await file();await q("UPDATE employees SET role='EMPLOYEE' WHERE id=$1",[fixture.ids.owner]);await event('online');await page.getByText('Your access to this page ended',{exact:true}).waitFor();
   await q("UPDATE employees SET role='OWNER' WHERE id=$1",[fixture.ids.owner]);await page.locator('a[href="/app"]:visible').first().click();await page.waitForURL(origin+'/app');await page.locator('input[type="file"]').waitFor({state:'detached'});await page.goBack();await page.locator('input[type="file"]').waitFor({state:'attached'});check('same-actor revoke and regrant cannot revive imported payload',await hasDraft()===0);
