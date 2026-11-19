@@ -9,10 +9,10 @@ import {randomUUID} from 'node:crypto';
 import {readTimecards,mutateTimecard} from '../../lib/timecards/service';
 import {classifyExportAnswer} from '../../components/payroll-import/recovery';
 const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json'))('playwright');
-type Wire={armed:boolean;release:(()=>void)|null;calls:string[]};
+type Wire={kind:'batch'|'manifest';armed:boolean;release:(()=>void)|null;calls:string[]};
 declare global{interface Window{__exportRecovery?:Wire}}
 type Reply={status():number;json():Promise<unknown>};
-for(const engine of ['chromium','webkit'])for(const kind of ['batch','manifest'])it(`${engine} gives a corrective exit for a retired ${kind} refused by its real source`,async()=>{
+for(const engine of ['chromium','webkit'])for(const kind of ['batch','manifest'] as const)it(`${engine} gives a corrective exit for a retired ${kind} refused by its real source`,async()=>{
  const root=process.env.NEVORA_ALL_UI_BROWSER_EVIDENCE;if(!root)throw Error('External original-recovery evidence required');
  const evidence=resolve(root,'export-recovery-'+engine+'-'+kind);await mkdir(evidence,{recursive:true});
  const app=await createOwnedNextApp(evidence,{payrollEnabled:true,pinDevTypeReferences:true}),browser=await runtime[engine].launch({headless:true}),context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block',reducedMotion:'reduce'});
@@ -20,21 +20,21 @@ for(const engine of ['chromium','webkit'])for(const kind of ['batch','manifest']
  const observe=()=>{page.setDefaultTimeout(20000);page.on('pageerror',(error:Error)=>errors.push(error.message));};observe();
  try{
   rs.stubEnv('NEVORA_PAYROLL_ENABLED','true');await seedOwnedApp(app.database.executor);const fixture=await seedPayrollFixture(app.database.executor,{breaks:true,automaticPublish:false});
-  await context.addInitScript((kind:string)=>{
-   const wire:Wire={armed:false,release:null,calls:[]};window.__exportRecovery!=wire;const native=fetch.bind(window);
+  await context.addInitScript(()=>{
+   const wire:Wire={kind:'batch',armed:false,release:null,calls:[]};window.__exportRecovery=wire;const native=fetch.bind(window);
    window.fetch=(async(input:RequestInfo|URL,init?:RequestInit)=>{
     const url=new URL(input instanceof Request?input.url:String(input),location.href),body=String(init?.body??'');
-    const match=init?.method==='POST'&&(kind==='batch'?url.pathname==='/api/payroll-export':url.pathname==='/api/period-close'&&JSON.parse(body).action==='MANIFEST');
+    const match=init?.method==='POST'&&(wire.kind==='batch'?url.pathname==='/api/payroll-export':url.pathname==='/api/period-close'&&JSON.parse(body).action==='MANIFEST');
     if(!match)return native(input,init);wire.calls.push(body);
     // The first issued write loses transport before reaching this owned server.
     // The exact replay below does reach the real service after source drift.
     if(wire.armed){wire.armed=false;return new Promise<Response>(done=>{wire.release=()=>done(new Response(JSON.stringify({state:'unavailable'}),{status:503,headers:{'Content-Type':'application/json'}}));});}
     return native(input,init);
    }) as typeof fetch;
-  },kind);
+  });
   await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(fixture.ids.owner);await page.getByLabel('Password',{exact:true}).fill(fixture.password);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
   page=await context.newPage();observe();const period=fixture.period,exportsHref='/app/payroll-export?start='+period.startDate+'&end='+period.endDate;
-  await page.goto(app.url+'/app/payroll-export/paid-time?start='+period.startDate+'&end='+period.endDate);await page.locator('.pim-person').first().waitFor();
+  await page.goto(app.url+'/app/payroll-export/paid-time?start='+period.startDate+'&end='+period.endDate);await page.locator('.pim-person').first().waitFor();await page.evaluate((kind:'batch'|'manifest')=>window.__exportRecovery!.kind=kind,kind);
   const groups=page.locator('.pim-choice');for(let index=0;index<2;index++)await groups.nth(index).getByRole('radio',{name:index===0?'Paid rest':'Unpaid meal',exact:true}).check();
   await page.getByRole('button',{name:'Plan the export',exact:true}).click();await page.getByRole('button',{name:'Go to sending',exact:true}).click();
   if(kind==='manifest'){await page.getByRole('button',{name:'Send batches',exact:true}).click();await page.getByText('Every batch is saved.',{exact:true}).waitFor();await page.getByRole('button',{name:'Go to finish',exact:true}).click();}
