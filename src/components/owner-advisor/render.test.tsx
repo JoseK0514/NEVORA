@@ -61,8 +61,9 @@ it("renders disconnected disabled Ask, escaped historical text and labeled edita
       actions={actions}
     />,
   );
-  expect(html).toContain("Your AI manager isn’t connected yet.");
-  expect(html).toMatch(/disabled="">Ask/);
+  expect(html).toContain("Answers to typed questions are off");
+  expect(html).toContain("They need an AI service that you approve. The checks on this page work without it.");
+  expect(html).toMatch(/<button[^>]*disabled=""[^>]*>Ask</);
   expect(html).toContain("&lt;script&gt;bad&lt;/script&gt;");
   expect(html).not.toContain('href="https://evil');
   expect(html).toContain("Earlier conversation");

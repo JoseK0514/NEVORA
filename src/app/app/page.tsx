@@ -3,7 +3,6 @@ import {scopedObservation} from '@/lib/company-access/observation';
 import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
 import {MobileOnboardingGuide} from "@/components/mobile-access/onboarding-guide";
 import {correctionAuthority} from '@/lib/time-corrections/authority.server';
-import Link from 'next/link';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {BRouteError} from '@/components/owner-b/b-route-error';
@@ -150,6 +149,5 @@ export default async function DashboardPage({
           : null
       }
     />
-    {session.role === "OWNER" && readFeatureFlags(process.env).ownerAdvisor ? <Link className="nv-btn" data-kind="secondary" href="/app/ai-manager">AI manager</Link> : null}
   </ScopedReadFrame></ManagerCorrectionRecoveryBoundary>);
 }

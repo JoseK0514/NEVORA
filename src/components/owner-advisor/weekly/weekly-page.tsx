@@ -271,7 +271,7 @@ export function WeeklyPage({ timeZone, currentWeek, locations, weeklyEnabled, re
     ? <><CorpNav phoneOnly back={{ href: WEEKLY_PATH, label: "Weekly plan" }} title={outcome?.result.state === "saved" ? "Saved" : outcome?.result.state === "declined" ? "Declined" : "Review plan"} titleId="wk-nav-title" />
         <CorpTitle wide id="wk-title" title={outcome?.result.state === "saved" ? "Saved as a draft" : outcome?.result.state === "declined" ? "Plan declined" : "Review the plan"}
           sub={review?.result.review ? settingsText(review.result.review.weekStart, review.result.review.mode, review.result.review.locationScope, locations) : undefined} /></>
-    : <><CorpNav phoneOnly back={{ href: "/app/ai-manager", label: "AI manager" }} title="Weekly plan" titleId="wk-nav-title" />
+    : <><CorpNav phoneOnly back={{ href: "/app/ai-manager", label: "Rondo AI" }} title="Weekly plan" titleId="wk-nav-title" />
         <CorpTitle wide id="wk-title" title="Weekly plan" sub="Compare options for a week" /></>;
 
   if (revoked) return <CorpPage className="c-page--narrow wk" labelledBy="wk-title">{head}

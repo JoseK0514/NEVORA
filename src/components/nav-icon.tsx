@@ -34,6 +34,7 @@ import { SidebarSimpleIcon } from "@phosphor-icons/react/dist/ssr/SidebarSimple"
 import { UsersThreeIcon } from "@phosphor-icons/react/dist/ssr/UsersThree";
 import { CreditCardIcon } from "@phosphor-icons/react/dist/ssr/CreditCard";
 import { KeyIcon } from "@phosphor-icons/react/dist/ssr/Key";
+import { ChatsCircleIcon } from "@phosphor-icons/react/dist/ssr/ChatsCircle";
 
 /* Phase 9 (Nov 18, 2026): one glyph per concept, and the same glyph in the sidebar, the rail, the phone tab bar and More.
  * Payroll is the wallet everywhere (the Owner's tab drew a card), a pay statement is the receipt for every role (an Owner's
@@ -45,6 +46,9 @@ const icons = {
   receipt: ReceiptIcon,
   billing: CreditCardIcon,
   key: KeyIcon,
+  // Rondo AI (Nov 18, 2026): two speech bubbles, a conversation (Jose: nothing that looks AI-generic, so no sparkle).
+  // Messaging a person keeps its single bubble (ChatText); Insights keeps the chart Rondo used to borrow.
+  rondo: ChatsCircleIcon,
   dashboard: HouseIcon,
   schedule: CalendarBlankIcon,
   calendar: CalendarCheckIcon,

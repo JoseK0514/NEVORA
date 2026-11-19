@@ -17,7 +17,7 @@ import type { SessionMutationProof } from "@/lib/shift-changes/types";
 import { ChartBarIcon } from "@phosphor-icons/react/dist/ssr/ChartBar";
 import { MegaphoneIcon } from "@phosphor-icons/react/dist/ssr/Megaphone";
 import { ReceiptIcon } from "@phosphor-icons/react/dist/ssr/Receipt";
-import { SparkleIcon } from "@phosphor-icons/react/dist/ssr/Sparkle";
+import { ChatsCircleIcon } from "@phosphor-icons/react/dist/ssr/ChatsCircle";
 import { GearSixIcon } from "@phosphor-icons/react/dist/ssr/GearSix";
 import { SlidersHorizontalIcon } from "@phosphor-icons/react/dist/ssr/SlidersHorizontal";
 import { QuestionIcon } from "@phosphor-icons/react/dist/ssr/Question";
@@ -110,14 +110,14 @@ export default async function MorePage() {
     getWorkspace(),
   ]);
   const words = wordPreset(brand.words).en;
-  const navigation = navigationForRole(session.role, payroll, { operational, modules: brand.modules, words, ownerAdvisorEnabled: readFeatureFlags(process.env).ownerAdvisor });
+  const navigation = navigationForRole(session.role, payroll, { operational, modules: brand.modules, words, ownerAdvisorEnabled: readFeatureFlags(process.env).ownerAdvisor, managerAdvisorEnabled: readFeatureFlags(process.env).managerAdvisor });
   const has = (href: string) => navigation.some(entry => entry.href === href);
   const label = (href: string, fallback: string) => navigation.find(entry => entry.href === href)?.label ?? fallback;
   const owner = session.role === "OWNER";
   // Review B1 (NV-099): every navigation row leads with its Phosphor bold icon (a tinted circle, as Team and Timecards rows
   // do) and ends with its chevron; a row may end in a grey value before the chevron ("24 h this week").
   const rowIcons: Record<string, ReactNode> = { "/app/reports": <ChartBarIcon weight="bold" />, "/app/updates": <MegaphoneIcon weight="bold" />,
-    "/app/my-pay": <ReceiptIcon weight="bold" />, "/app/ai-manager": <SparkleIcon weight="bold" />, "/app/settings": <GearSixIcon weight="bold" />,
+    "/app/my-pay": <ReceiptIcon weight="bold" />, "/app/ai-manager": <ChatsCircleIcon weight="bold" />, "/app/settings": <GearSixIcon weight="bold" />,
     "/app/schedule/settings": <SlidersHorizontalIcon weight="bold" />, "/app/help": <QuestionIcon weight="bold" />, "/app/billing": <CreditCardIcon weight="bold" /> };
   const row = (href: string, title: string, value?: ReactNode) =>
     <li key={href}><CorpRow href={href} title={title} value={value} valueTone="soft" icon={rowIcons[href]} one chevron /></li>;
@@ -148,7 +148,7 @@ export default async function MorePage() {
         {has("/app/updates") ? row("/app/updates", label("/app/updates", "Updates")) : null}
         {/* Your own pay: on a phone More is the only way to it (desktop has it in the account menu too). */}
         {has("/app/my-pay") ? row("/app/my-pay", "My pay") : null}
-        {has("/app/ai-manager") ? row("/app/ai-manager", label("/app/ai-manager", "AI manager")) : null}
+        {has("/app/ai-manager") ? row("/app/ai-manager", label("/app/ai-manager", "Rondo AI")) : null}
       </CorpRows>
     </CorpCard></CorpSection> : null}
     <CorpSection ariaLabel="Settings and help"><CorpCard as="div">

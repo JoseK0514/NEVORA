@@ -38,8 +38,8 @@ const errors: Record<string, string> = {
   daily_limit:
     "Today’s investigation limit has been reached. Try again tomorrow.",
   forbidden: "Your Owner access ended. Sign in again to continue.",
-  disabled: "AI manager is not available.",
-  unavailable: "Your AI manager isn’t connected yet.",
+  disabled: "Rondo AI is not available.",
+  unavailable: "Rondo AI isn’t connected yet.",
   invalid: "Check your question or priorities and try again.",
   prior_attempt_failed:
     "The earlier investigation failed or has an uncertain result. Review history before starting a new request.",
@@ -47,7 +47,7 @@ const errors: Record<string, string> = {
     "The investigation timed out or was cancelled. Refresh history before starting again.",
   limit: "This investigation reached its limit. Try a narrower question.",
   provider_failed:
-    "The AI manager could not answer. Review history, then try a narrower question.",
+    "Rondo couldn’t answer. Review history, then try a narrower question.",
   conflict:
     "Priorities changed elsewhere. Your edit is preserved. Review the saved priorities before saving again.",
 };

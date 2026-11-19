@@ -37,7 +37,7 @@ const shapes: [string | RegExp, Shape][] = [
   ["/app/more", { label: "More", shape: "list", band: 128, overlap: false }],
   ["/app/help", { label: "help", shape: "list", band: 128, overlap: false }],
   ["/app/billing", { label: "plan and billing", shape: "cards", band: 128, overlap: false }],
-  ["/app/ai-manager", { label: "AI manager", shape: "cards", band: 128, overlap: false }],
+  ["/app/ai-manager", { label: "Rondo AI", shape: "cards", band: 128, overlap: false }],
   ["/app/account/delete", { label: "delete account", shape: "cards", band: 128, overlap: false }],
   ["/app/restricted", { label: "this page", shape: "cards", band: 128, overlap: false }],
   // Wave B: a direct load of one update draws Update detail's shape; its band heights are in premium-wave-b.css.
