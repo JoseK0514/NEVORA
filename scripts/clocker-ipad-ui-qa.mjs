@@ -1,3 +1,4 @@
+import {registerTestTablet, saveClockerPin} from './clocker-browser-setup.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {randomBytes} from 'node:crypto';
@@ -21,11 +22,13 @@ async function context(browser,viewport={width:1024,height:768}){
 async function goto(page,path){const r=await page.goto(app.url+path,{waitUntil:'networkidle'});assert.equal(r.status(),200,'Working route '+path);}
 async function login(c){const p=await c.newPage();await goto(p,'/login');await p.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
  await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign in',exact:true}).click()]);return p;}
-async function savePin(p,id,pin){await goto(p,`/app/employees/${id}/clocker-pin`);await p.getByLabel('New PIN',{exact:true}).fill(pin);await p.getByLabel('Confirm PIN',{exact:true}).fill(pin);const save=p.getByRole('button',{name:'Save',exact:true});assert.equal(await save.getAttribute('form'),'clocker-pin-form');await save.click();await p.getByRole('status').filter({hasText:'PIN saved'}).waitFor();}
+async function savePin(page,id,pin){
+ await goto(page,`/app/employees/${id}/clocker-pin`);
+ await saveClockerPin(page,pin);
+}
 async function enroll(owner,p,name){
- await goto(owner,'/app/settings/clocker');await owner.getByRole('button',{name:'Add tablet',exact:true}).click();
- const d=owner.getByRole('dialog');await d.getByLabel('Tablet name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await d.getByRole('button',{name:'Get setup code',exact:true}).click();await d.waitFor({state:'hidden'});
- const displayedSetup=owner.getByRole('textbox',{name:/^Setup code · expires /});assert.equal(await displayedSetup.getAttribute('readonly'),'');const code=await displayedSetup.inputValue();assert(code);
+ await goto(owner,'/app/settings/clocker');
+ const code=await registerTestTablet(owner,name);
  await goto(p,'/clocker/2');await p.getByRole('heading',{name:'Set up this tablet',exact:true}).waitFor();await p.evaluate(()=>document.fonts.ready);await shot(p,name+'-setup');await p.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await p.getByRole('button',{name:'Connect tablet',exact:true}).click();await idle(p);
 }
 

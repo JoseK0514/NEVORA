@@ -1,3 +1,4 @@
+import {registerTestTablet, saveClockerPin} from './clocker-browser-setup.mjs';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {createRequire} from 'node:module';
@@ -30,17 +31,11 @@ async function login(c){const p=await c.newPage();await goto(p,'/login');await p
  await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign in',exact:true}).click()]);return p;}
 async function savePin(page,id,pin){
  await goto(page,`/app/employees/${id}/clocker-pin`);
- await page.getByLabel('New PIN',{exact:true}).fill(pin);
- await page.getByLabel('Type it again',{exact:true}).fill(pin);
- const save=page.getByRole('button',{name:'Save PIN',exact:true});
- assert.equal(await save.evaluate(button=>button.form?.id),'clocker-pin-form');
- await save.click();
- await page.getByRole('status').filter({hasText:/^PIN set for .+\. Tell them in person\./}).waitFor();
+ await saveClockerPin(page,pin);
 }
 async function enroll(owner,p,name){
- await goto(owner,'/app/settings/clocker');await owner.getByRole('button',{name:'Add tablet',exact:true}).click();
- const d=owner.getByRole('dialog');await d.getByRole('heading',{name:'Add tablet',exact:true}).waitFor();await d.getByLabel('Tablet name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await d.getByRole('button',{name:'Get setup code',exact:true}).click();await d.waitFor({state:'hidden'});
- const displayedSetup=owner.getByRole('textbox',{name:/^Setup code · expires /});assert.equal(await displayedSetup.getAttribute('readonly'),'');const code=await displayedSetup.inputValue();assert(code);
+ await goto(owner,'/app/settings/clocker');
+ const code=await registerTestTablet(owner,name);
  await goto(p,'/clocker/2');await p.getByRole('heading',{name:'Set up this tablet',exact:true}).waitFor();await p.evaluate(()=>document.fonts.ready);await shot(p,name.includes('Second')?'second-tablet-setup':name.split(' ')[0]+'-setup');await p.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await p.getByRole('button',{name:'Connect tablet',exact:true}).click();await idle(p);
 }
 async function editBreak(owner,name,category,minutes){

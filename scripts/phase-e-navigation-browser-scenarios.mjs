@@ -423,7 +423,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
     await form().getByRole('alert').filter({hasText:'Choose an end date on or after the start date.'}).waitFor();await settle();page.off('request',observeInvalid);
     assert.equal(invalidPosts,0,'Invalid dates never reach the server');assert(await form().locator('[name="endDate"]').evaluate(field=>field===document.activeElement&&field.getAttribute('aria-invalid')==='true'));
     assert.deepEqual(await q("SELECT id FROM time_off_requests WHERE employee_id=$1 AND start_date=$2",[actor,scenario.targetDate]),[]);
-    const submitTimeOff=async(day)=>{await openTimeOffForm();await form().locator('[name="startDate"]').fill(day);await form().locator('[name="endDate"]').fill(day);await form().getByRole('button',{name:'Send request',exact:true}).click();await page.getByRole('heading',{name:'Request recorded',exact:true}).waitFor();await actionsSettled();return new URL(await page.getByRole('link',{name:'View my request',exact:true}).getAttribute('href'),app.url).searchParams.get('requestId');};
+    const submitTimeOff=async(day)=>{await openTimeOffForm();await form().locator('[name="startDate"]').fill(day);await form().locator('[name="endDate"]').fill(day);await form().getByRole('button',{name:'Send request',exact:true}).click();await page.getByRole('heading',{name:'Request sent',exact:true}).waitFor();await actionsSettled();return new URL(await page.getByRole('link',{name:'View my request',exact:true}).getAttribute('href'),app.url).searchParams.get('requestId');};
     created=await submitTimeOff(scenario.sourceDate);const pending=await q('SELECT id,employee_id,status FROM time_off_requests WHERE id=$1',[created]);assert.deepEqual(pending,[{id:created,employee_id:actor,status:'PENDING'}]);const intents=await q("SELECT id FROM notifications WHERE source_kind='TIME_OFF' AND source_id=$1 ORDER BY id",[created]);assert(intents.length>0,'Actual canonical notifications outbox exists');
     // Stable-ID replay: the first send commits on the server but its response is lost; the page keeps the original
     // submission, and Check submission status replays that same request ID.
@@ -434,7 +434,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
      const check=page.getByRole('button',{name:'Check submission status',exact:true});await check.waitFor();
      const replayed=await q("SELECT id,status FROM time_off_requests WHERE employee_id=$1 AND start_date=$2",[actor,scenario.targetDate]);assert.equal(replayed.length,1,'The lost response still committed once');
      const replayIntents=await q("SELECT id FROM notifications WHERE source_kind='TIME_OFF' AND source_id=$1 ORDER BY id",[replayed[0].id]);
-     await check.click();await page.getByRole('heading',{name:'Request recorded',exact:true}).waitFor();await actionsSettled();
+     await check.click();await page.getByRole('heading',{name:'Request sent',exact:true}).waitFor();await actionsSettled();
      assert.equal(new URL(await page.getByRole('link',{name:'View my request',exact:true}).getAttribute('href'),app.url).searchParams.get('requestId'),replayed[0].id,'Replay resolves to the original request ID');
      assert.deepEqual(await q("SELECT id,status FROM time_off_requests WHERE employee_id=$1 AND start_date=$2",[actor,scenario.targetDate]),[{id:replayed[0].id,status:'PENDING'}]);
      assert.deepEqual(await q("SELECT id FROM notifications WHERE source_kind='TIME_OFF' AND source_id=$1 ORDER BY id",[replayed[0].id]),replayIntents);

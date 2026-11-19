@@ -48,3 +48,8 @@ test('implicit stops and a middle stop retain the least contrast paint bound',()
 test('stacked translucent image layers remain unsupported',()=>{
  assert.throws(()=>measure({backgroundColor:'rgb(0, 0, 0)',backgroundImage:'linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12)), linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12))'}),/Unsupported background image/);
 });
+
+test('group opacity reduces the contrast of black text against a white backdrop',()=>{
+ const result=measure({backgroundColor:'rgb(255, 255, 255)',opacity:'.5'},{color:'rgb(0, 0, 0)'});
+ assert(result.ratio>3.97&&result.ratio<3.98);
+});

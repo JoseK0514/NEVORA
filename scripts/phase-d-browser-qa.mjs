@@ -1,3 +1,4 @@
+import {registerTestTablet, saveClockerPin} from './clocker-browser-setup.mjs';
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
 import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
 import {observePinReadiness,pinFailureCategory,runPinDiagnosticObservation} from './clocker-pin-readiness-diagnostic.mjs';
@@ -457,12 +458,12 @@ try{
     await op.bringToFront();currentPage=op;
     for(const [id,first,pin] of [['UX5-A-'+engine,'FictionalAlpha',pinA],['UX5-B-'+engine,'FictionalBeta',pinB]]){
       await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,$2,'Recovery QA','555-0500','EMPLOYEE','loc-1')",[id,first]);await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1')",[id]);
-      await op.goto(app.url+'/app/employees/'+id+'/clocker-pin');await op.getByLabel('New PIN',{exact:true}).fill(pin);await op.getByLabel('Confirm PIN',{exact:true}).fill(pin);const savePin=op.getByRole('button',{name:'Save',exact:true});assert.equal(await savePin.getAttribute('form'),'clocker-pin-form');await savePin.click();await op.getByRole('status').filter({hasText:'PIN saved'}).waitFor();await op.waitForLoadState('networkidle');
+      await op.goto(app.url+'/app/employees/'+id+'/clocker-pin');await saveClockerPin(op,pin);await op.waitForLoadState('networkidle');
     }
-    const devicesNavigation=await op.goto(app.url+'/app/settings/clocker',{waitUntil:'domcontentloaded'});assert(devicesNavigation?.ok());await op.getByRole('heading',{name:'Clocker tablets',exact:true}).waitFor();await op.getByRole('button',{name:'Add tablet',exact:true}).click();const dialog=op.getByRole('dialog');await dialog.getByLabel('Tablet name',{exact:true}).fill('UX5 '+engine+' tablet');await dialog.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await dialog.getByRole('button',{name:'Get setup code',exact:true}).click();await dialog.waitFor({state:'hidden'});
+    const devicesNavigation=await op.goto(app.url+'/app/settings/clocker',{waitUntil:'domcontentloaded'});assert(devicesNavigation?.ok());const setupCode=await registerTestTablet(op,'UX5 '+engine+' tablet');
     const clockerEvidence={engine,pinAttempts:[],responses:[]};(report.clockerSetup??=[]).push(clockerEvidence);
     cp.on('response',response=>{if(new URL(response.url()).pathname!=='/api/clocker/2/pin')return;let action;try{action=response.request().postDataJSON()?.action;}catch{}if(clockerEvidence.responses.length===50)clockerEvidence.responses.shift();clockerEvidence.responses.push({action:['clear','verify','status'].includes(action)?action:'other',status:response.status()});});
-    const displayedSetup=op.getByRole('textbox',{name:/^Setup code · expires /});assert.equal(await displayedSetup.getAttribute('readonly'),'');const setupCode=await displayedSetup.inputValue();assert(setupCode);currentPage=cp;await cp.bringToFront();await cp.goto(app.url+'/clocker/2');await cp.getByRole('textbox',{name:'Setup code',exact:true}).fill(setupCode);await cp.getByRole('button',{name:'Connect tablet',exact:true}).click();
+    currentPage=cp;await cp.bringToFront();await cp.goto(app.url+'/clocker/2');await cp.getByRole('textbox',{name:'Setup code',exact:true}).fill(setupCode);await cp.getByRole('button',{name:'Connect tablet',exact:true}).click();
     async function pin(employeeId,value){
       currentPage=cp;pinDiagnostic.phase('readiness','before');await cp.bringToFront();await cp.waitForFunction(()=>document.hasFocus()&&document.visibilityState==='visible'&&navigator.onLine);
       await cp.getByRole('heading',{name:'Enter your Employee ID',exact:true}).waitFor();await cp.waitForFunction(()=>{const i=document.querySelector('input[name=employeeId]');return i&&!i.matches(':disabled');});assert.equal(await cp.getByLabel('Employee ID',{exact:true}).inputValue(),'','Each identity starts from a cleared ID');await cp.getByLabel('Employee ID',{exact:true}).fill(employeeId);await cp.getByRole('button',{name:'Continue',exact:true}).click();
