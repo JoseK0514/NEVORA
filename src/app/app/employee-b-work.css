@@ -37,11 +37,13 @@
   @media (min-width: 768px) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-todo .b-row__trail { min-width: 96px !important; justify-content: flex-end !important; }
   }
-  @media (min-width: 1280px) {
-    /* The amber chip stays on the title's line (the title gives way first). Narrower cards let it wrap under the title. */
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-todo .b-row__t { flex-wrap: nowrap !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-todo .b-row__tt { overflow: hidden !important; white-space: nowrap !important; text-overflow: ellipsis !important; text-wrap: nowrap !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-todo .b-row__t > .b-chip { flex: none !important; }
+  @media (min-width: 768px) {
+    /* EM-008, Phase 8: a to-do's title is never cut. Where the whole title fits beside the amber chip and the Review pill
+     * the row keeps one 72px line (1440); where it doesn't, the chip moves under the title, as on phones, and a title too
+     * long for its column takes a second line (the row grows). The chip itself never wraps. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-todo .b-row__t { flex-wrap: wrap !important; row-gap: var(--b-space-4) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-todo .b-row__tt { overflow: visible !important; white-space: normal !important; text-overflow: clip !important; text-wrap: balance !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-todo .b-row__t > .b-chip { flex: none !important; white-space: nowrap !important; }
   }
   @media (min-width: 1024px) {
     /* An Employee's two columns are near equal (Things to do a little wider), so a to-do's title, its chip and the
@@ -50,8 +52,7 @@
   }
   /* EM-016, EM-018: Today's team's note is a card footer like any other. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-team .eb-cardnote { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; }
-  /* A punch left open after the shift ended (amber means check). */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .eb-shift .eb-tint[data-tone="amber"] { background: var(--b-amber-50) !important; }
+  /* A punch left open after the shift ended is the kit's amber callout (Phase 9), so no tint rule is needed here. */
   @media (min-width: 768px) and (max-width: 1023px) {
     /* TB-006: on a tablet the shift leads across the width; Things to do and Coming up share the row under it and end
      * together. */
@@ -62,12 +63,11 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-stack:has(> :is(#b-home-upcoming, .eb-side)) > #b-home-todo { grid-column: 1 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-stack > :is(#b-home-upcoming, .eb-side) { grid-row: 2 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-stack:has(> #b-home-todo) > :is(#b-home-upcoming, .eb-side) { grid-column: 2 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-stack > .eb-side > .b-card:last-child { flex: 1 0 auto !important; }
     /* The shift card as one band: the time, where to clock in, then Shift details. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-shift .eb-shift { display: grid !important; grid-template-columns: max-content minmax(0, 1fr) auto !important; column-gap: var(--b-space-24) !important; align-items: center !important; padding-bottom: var(--b-space-20) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-shift .eb-shift > :is(.eb-shift__time, .eb-shift__where, .eb-leadline) { grid-column: 1 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-shift .eb-shift > .eb-shift__where { width: 0 !important; min-width: 100% !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-shift .eb-shift > .eb-tint { grid-column: 2 !important; grid-row: 1 / span 3 !important; margin-top: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-shift .eb-shift > :is(.eb-tint, .b-callout) { grid-column: 2 !important; grid-row: 1 / span 3 !important; margin-top: 0 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-shift .eb-shift > .eb-shift__bar { grid-column: 3 !important; grid-row: 1 / span 3 !important; margin: 0 !important; padding: 0 !important; background: none !important; box-shadow: none !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-shift .eb-shift__when { display: none !important; }
   }
@@ -75,11 +75,11 @@
     /* Under 820px the three don't fit one line: where to clock in takes its own line under the time. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-shift .eb-shift { grid-template-columns: minmax(0, 1fr) auto !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-shift .eb-shift > .eb-shift__where { width: auto !important; min-width: 0 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-shift .eb-shift > .eb-tint { grid-column: 1 / -1 !important; grid-row: 4 !important; margin-top: 14px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-shift .eb-shift > :is(.eb-tint, .b-callout) { grid-column: 1 / -1 !important; grid-row: 4 !important; margin-top: 14px !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-shift .eb-shift > .eb-shift__bar { grid-column: 2 !important; }
     /* A to-do's Review pill sits under its words in the narrow column, on their edge, so the title keeps one line. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-todo .b-row:has(> .b-row__trail) { flex-wrap: wrap !important; row-gap: var(--b-space-8) !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-todo .b-row:has(> .b-row__trail) > .b-row__trail { flex-basis: 100% !important; justify-content: flex-start !important; padding-left: var(--b-space-48) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) #b-home-todo .b-row:has(> .b-row__trail) > .b-row__trail { flex-basis: 100% !important; justify-content: flex-start !important; padding-left: var(--eb-text-in) !important; }
   }
 
   /* ---------- Schedule ---------- */
@@ -153,10 +153,21 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .eb-wsh > b { font-size: var(--b-fs-caption) !important; line-height: var(--b-lh-meta) !important; letter-spacing: -.01em !important; }
   }
   @media (min-width: 1280px) {
+    /* Final review C (row 13): the week is a size container, so its blocks can say "Shift lead" where they hold it. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .eb-wk { container: eb-week / inline-size; }
     /* A range with minutes ("9:30 AM – 5:30 PM") is 122px at 14/700; the block gives it the room. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .eb-wsh { padding-right: 6px !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .eb-wsh > b { letter-spacing: -.015em !important; }
   }
+  /* Final review C (row 13): DESIGN.MD (Direction B final round) names the Lead's marker "Shift lead" on desktop and "Lead"
+   * only on a tablet's narrow day. Where every day block is wide enough for a status chip and "Shift lead" on one row
+   * (137px or more: the 1080px card), each block says it in full; narrower blocks keep the short form, so one week still
+   * has one word. */
+  @container eb-week (min-width: 1020px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .eb-wk:has(.eb-wsh__chips > .eb-wsh__lead) .eb-wsh__chips > .eb-wsh__lead > .eb-wsh__lead-l { display: inline !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .eb-wk:has(.eb-wsh__chips > .eb-wsh__lead) .eb-wsh__chips > .eb-wsh__lead > .eb-wsh__lead-s { display: none !important; }
+  }
+
   @media (min-width: 1024px) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .eb-wsh { min-height: 108px !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .eb-wsh .eb-wsh__chips { gap: var(--b-space-4) !important; }
@@ -212,11 +223,47 @@
   /* Coarse input keeps the approved rail and layout, with touch-sized controls across Employee tasks.
    * Native inline prose links retain their inline layout; checkbox/radio labels supply their hit region. */
   @media (pointer: coarse) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] main:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#e-none7) :is(a[href], button, input:not([type="checkbox"], [type="radio"]), select, textarea, summary, label:has(> input:is([type="checkbox"], [type="radio"]))) { min-width: var(--b-target-touch) !important; min-height: var(--b-target-touch) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] main:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#e-none7) :is(a[href]:not(.b-back), button, input:not([type="checkbox"], [type="radio"]), select, textarea, summary, label:has(> input:is([type="checkbox"], [type="radio"]))) { min-width: var(--b-target-touch) !important; min-height: var(--b-target-touch) !important; }
+  }
+
+  /* ---------- Phase 8 (Nov 17, 2026): the final review's fixes (review C) ---------- */
+  /* C2: Things to do's title row never wraps; its count is the kit's one 20px pill, which never wraps ("At least 7",
+   * owner-b.css, Phase 9); on a narrow phone the link drops under the title row instead of squeezing it. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) #b-home-todo > .b-card__h > h2 { white-space: nowrap !important; }
+  @media (max-width: 359px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) #b-home-todo > .b-card__h:has(> .b-card__a) { flex-wrap: wrap !important; row-gap: 0 !important; padding-bottom: var(--b-space-4) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) #b-home-todo > .b-card__h > .b-card__a { flex-basis: 100% !important; margin: -10px 0 -10px -6px !important; }
+    /* C11: the hours figure keeps 12px or more from the tile's divider: "of 56 h" moves to the line under it. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) .b-live__v > small { display: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) .b-live__m > .eb-of-w { display: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) .b-live__m > .eb-of-n { display: inline !important; }
+  }
+  /* C31: the publication sentence never leaves two words alone on its last line. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) :is(#b-home-upcoming, .eb-wkc, #b-my-agenda) > .eb-cardnote { text-wrap: balance !important; }
+  @media (min-width: 1024px) {
+    /* C8: a day with no shift left says so under its title, on the cards' 22px text edge; the empty list takes no room. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-esched > .b-screen:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) #b-my-agenda[data-wide]:has(> .es-empty.es-wide) > .b-list { display: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-esched > .b-screen:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) #b-my-agenda > .b-state.es-empty { margin: 0 !important; padding: var(--b-space-4) var(--b-inset-wide) var(--b-space-20) !important; text-align: left !important; }
+  }
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    /* C24 (EM-014): a day block here is about 90 to 110px inside. It holds the time on one line (12.5px, as on tablets) and
+     * the position in whole words; the place and length are in the day card beside it. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) .eb-wsh { padding-right: var(--b-space-4) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) .eb-wsh > b { font-size: var(--b-fs-caption) !important; line-height: var(--b-lh-meta) !important; letter-spacing: -.01em !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) .eb-wsh > .eb-wsh__l + .eb-wsh__l { display: none !important; }
+  }
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) .eb-wsh > .eb-wsh__l { overflow-wrap: normal !important; word-break: normal !important; hyphens: none !important; text-wrap: balance !important; }
+    /* C25: the statement's button sits on the card's 22px text edge, like the words above it. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) .ep-act { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
   }
 
 }
 
 /* Unlayered: the short and wide-only forms stay hidden wherever one of these pieces is drawn outside the Employee
  * screens' rules above (normal declarations; the layered rules above show the one that applies). */
-.eb-lead-s, .eb-wsh__short, .es-len, .es-wide { display: none; }
+.eb-lead-s, .eb-wsh__short, .es-len, .es-wide, .eb-of-n { display: none; }
+/* Phase 8 (C14, C24): one rule for a time range on the Employee screens: each half stays whole, and where the line is too
+ * short the range breaks before its dash ("9:02 AM" over "– now"), never after it (EM-014's day-block rule, now Home's and
+ * Time's too). The `Range` helper in employee-b/parts.tsx draws the two halves. */
+.eb-nb { white-space: nowrap; }

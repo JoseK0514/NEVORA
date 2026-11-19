@@ -36,7 +36,7 @@ it('honors an explicit timecard period without removing the Company frame',async
 it('withholds the clean team view when Company authority is denied',async()=>{
  fixture.denied=true;
  const html=renderToStaticMarkup(await TimecardsPage({searchParams:Promise.resolve({})}));
- expect(html).toContain('Timecards unavailable');
+ expect(html).toContain('<h1>Timecards</h1>');
  expect(html).not.toContain('cm-timecards');
  expect(html).not.toContain('data-manager');
 });

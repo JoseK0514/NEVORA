@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import type { readAttendancePolicies } from "@/lib/business-improvements/attendance-policy/service";
 type Result = Awaited<ReturnType<typeof readAttendancePolicies>>;
 const names: Record<string, string> = {
@@ -93,9 +94,15 @@ export function ConfiguredAttendancePolicies() {
       document.removeEventListener("visibilitychange", visible);
     };
   }, []);
+  // Final verification F (F02): a quiet disclosure row inside the attendance review's card, above its footer, with a
+  // 16px caret that turns when it opens (details and summary carry the expanded state), never a card of its own.
   return (
-    <details className="panel">
-      <summary>What we compare</summary>
+    <details className="c-arev__compare">
+      <summary className="c-arev__compare-s">
+        <span>What we compare</span>
+        <CaretDownIcon className="c-arev__compare-ic" weight="bold" aria-hidden="true" />
+      </summary>
+      <div className="c-arev__compare-b">
       <p>
         Factual comparisons use configured thresholds and saved source
         revisions. They do not establish absence, disciplinary outcomes,
@@ -142,6 +149,7 @@ export function ConfiguredAttendancePolicies() {
           ))}
         </>
       )}
+      </div>
     </details>
   );
 }

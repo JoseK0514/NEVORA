@@ -52,7 +52,7 @@ it("offers Availability in Team tools to every manager and the staff list import
   // Nov 14, 2026 inspection (AR-9, BR-11). Both layouts (the phone screen and the desktop card) carry the rows.
   const manager = renderToStaticMarkup(await EmployeesPage());
   expect(manager.match(/href="\/app\/availability"/g)).toHaveLength(2);
-  expect(manager).toContain("Who can work, and when");
+  expect(manager).toContain("Who can work and when");
   expect(manager).not.toContain("/app/employees/import");
   expect(manager).toMatch(/<button type="submit"[^>]*class="b-search__go"[^>]*><svg[^>]*aria-hidden="true"[^>]*>.*?<\/svg><span class="b-sr">Apply search<\/span><\/button>/);
   fixture.owner = true;

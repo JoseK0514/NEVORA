@@ -15,7 +15,7 @@ import { shiftBoundaryInstants } from '../lib/business-time';
 import { emptyScheduleLabel } from '../lib/data/employee-schedule';
 import { dayFmt, hasNotEnded, hours, hoursLabel, overnight, shiftMinutes, swappable, weekRange, type EmployeeMyScheduleProps, type OpenShift, type Shift } from './employee-my-schedule';
 import { OpenShiftsB, ScheduleB, type OpenB } from './employee-b/schedule-b';
-import { BChip, compactRange } from './owner-b/b-kit';
+import { BChip, BStatusText, compactRange } from './owner-b/b-kit';
 import { BDay, Dotted } from './employee-b/parts';
 import { workCopy } from './employee-b/work-copy';
 import { momentsCopy } from './owner-b/moments-copy';
@@ -144,9 +144,12 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
   // hides it; when every shift this week is led, the list's header says so once and the rows don't repeat it.
   const allLed = allLedNote(props.lead === true, shifts) !== null;
   const rowDetail = (shift: Shift) => [shift.isDesignatedLead && !allLed ? 'Shift lead' : null, shift.positionName, nameOf(shift.locationId) || 'Location unavailable', overnight(shift) ? `Ends ${dayFmt(addDays(shift.date, 1), { weekday: 'short', month: 'short', day: 'numeric' })}` : null].filter(Boolean).join(' · ');
+  // Phase 9 (spec 1.2, 1.4): a time fact ("Now", "Starts in 2 h", "Tomorrow") is not a state, so it is quiet grey text where
+  // the chip sat, beside the shift's time (under it when the line is too short); "Can’t work · approved" stays a chip.
   const bChip = (shift: Shift) => {
+    if (shift.isCalloutApproved) return <BChip tone="grey">Can’t work · approved</BChip>;
     const soon = startsIn(shift, today, observedAt, timeZone);
-    return shift.isCalloutApproved ? <BChip tone="grey">Can’t work · approved</BChip> : soon ? <BChip tone="teal">{soon}</BChip> : when(shift, today) === 'Tomorrow' ? <BChip tone="teal">Tomorrow</BChip> : undefined;
+    return soon ? <BStatusText>{soon}</BStatusText> : when(shift, today) === 'Tomorrow' ? <BStatusText>Tomorrow</BStatusText> : undefined;
   };
   // Phase 4 (EM-013): on desktop the card beside "This week" shows one day: the chosen day, else today, else (another
   // week) the first day with a shift. The week card above already shows every day, so nothing is listed twice.
@@ -222,7 +225,7 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
             // Review B6 (NV-044, NV-169): a range breaks only after its dash ("8:00 AM –" / "4:00 PM") on a narrow day.
             // Review F2 (NV-169): the same time format as Coming up and the list beside it (one format per page).
             // Phase 4 (EM-014): the compact range ("9 AM – 5 PM") keeps one line in a day block; no dash is left hanging.
-            return { key: shift.id, time: compactRange(hours(shift)), tomorrow: !shift.isCalloutApproved && !startsIn(shift, today, observedAt, timeZone) && when(shift, today) === 'Tomorrow', position: shift.positionName ?? null, place: keepWhole(`${nameOf(shift.locationId) || 'Location unavailable'} · ${hoursLabel(shiftMinutes(shift))}`),
+            return { key: shift.id, time: compactRange(hours(shift)), tomorrow: !shift.isCalloutApproved && !startsIn(shift, today, observedAt, timeZone) && when(shift, today) === 'Tomorrow', position: shift.positionName ?? null, place: `${keepWhole(nameOf(shift.locationId) || 'Location unavailable')} · ${keepWhole(hoursLabel(shiftMinutes(shift)))}`,
               kind, chip: leads && !shift.isCalloutApproved && !startsIn(shift, today, observedAt, timeZone) && when(shift, today) !== 'Tomorrow' ? null : chip,
               label: props.lead === true && shift.isDesignatedLead === true ? `${rowLabel(shift)}, shift lead` : rowLabel(shift), lead: leads };
           }) })) }} />

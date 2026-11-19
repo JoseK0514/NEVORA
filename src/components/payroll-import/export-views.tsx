@@ -4,7 +4,7 @@
  * makes the requests. Every sentence comes from copy.ts. */
 import { memo, useId, useState } from "react";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
-import { BButton, BButtonLink, BChip, BState, type BTone } from "@/components/owner-b/b-kit";
+import { BButton, BButtonLink, BCallout, BChip, BGlyph, BState, type BTone } from "@/components/owner-b/b-kit";
 import type { PayrollImportCopy } from "./copy";
 import { TREATMENTS, batchStatus, type BatchState, type BatchView, type BreakGate, type Decisions, type Finish, type PersonBreaks, type RunStatus, type Treatment } from "./export-model";
 import { DoneCard, ErrorText, ROW_GO, StepHeading, breakWhen, shortKey } from "./flow-kit";
@@ -30,7 +30,8 @@ export function BreaksStep({ copy, headingId, people, decisions, gate, timeZone,
     {!people.length ? <BState kind="empty" title={b.nobodyTitle} line={b.nobodyLine} />
       : !gate.total ? <BState kind="empty" title={b.noneTitle} line={b.noneLine} />
       : <>
-        <p className="pim-attest">{b.attest}</p>
+        {/* Phase 9: the statement a choice makes is the kit's information note (teal, Info glyph, a hairline edge). */}
+        <BCallout tone="teal">{b.attest}</BCallout>
         <div className="pim-sec__h pim-progress" role="status"><span className="pim-meta">{b.progress(gate.decided, gate.total)}</span>{gate.undecided ? <BChip tone="amber">{b.undecided(gate.undecided)}</BChip> : null}</div>
         {locked ? <p className="pim-p">{b.lockedLine}</p> : null}
         {people.map(person => <PersonSection key={person.employeeId} copy={copy} base={base} person={person} open={opened.has(person.employeeId)} locked={!!locked} timeZone={timeZone} onDecide={onDecide}
@@ -147,7 +148,8 @@ export function FinishStep({ copy, headingId, finish, record, periodLabel, expor
   const stopped = record.phase === "refused" || record.phase === "blocked";
   return <>
     <StepHeading id={headingId}>{f.heading}</StepHeading>
-    <BState kind={stopped ? "failed" : "paused"} alert={stopped || record.phase === "unknown"} title={f.incompleteTitle}>
+    {/* Phase 9 (spec 2.5): while the manifest's result is not known, the card draws the Question glyph ("not confirmed"). */}
+    <BState kind={stopped ? "failed" : "paused"} icon={!stopped && (record.phase === "unknown" || record.phase === "checking") ? <BGlyph meaning="unknown" /> : undefined} alert={stopped || record.phase === "unknown"} title={f.incompleteTitle}>
       <ul className="pim-ul" data-pim-error="" tabIndex={-1}>{finish.missing.map((item, index) => <li key={index}>{f.missing(item, finish.batches)}</li>)}</ul>
       {batchesOpen ? null : record.phase === "unknown" || record.phase === "checking" ? <p className="b-statecard__s">{f.unknownLine} {copy.common.stay}</p>
         : record.phase === "blocked" && (record.reason === "denied" || record.reason === "signed_out") ? <p className="b-statecard__s">{record.reason === "denied" ? copy.common.deniedLine : copy.common.signedOutLine}</p>

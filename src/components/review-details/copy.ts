@@ -75,7 +75,7 @@ const en = {
   coverSeen: 'Cover requests filled',
   coverSeenValue: (filled: number, seen: number) => `${filled} of ${seen} seen`,
   coverSeenExplain: 'This counts the cover requests seen in this period and how many were filled. It is a history of what was recorded, not a measure of how well shifts were staffed.',
-  coverNoneSeen: 'No cover requests were seen this period.',
+  coverNoneSeen: 'No one asked for cover this period.',
   coverUnread: (n: number) => n === 1 ? '1 older shift change could not be read, so there may be more.' : `${n} older shift changes could not be read, so there may be more.`,
 };
 
@@ -146,7 +146,7 @@ const es: ReviewCopy = {
   coverSeen: 'Coberturas completadas',
   coverSeenValue: (filled, seen) => `${filled} de ${seen} vistas`,
   coverSeenExplain: 'Cuenta las solicitudes de cobertura vistas en este periodo y cuántas se completaron. Es un historial de lo registrado, no una medida de qué tan bien se cubrieron los turnos.',
-  coverNoneSeen: 'No se vieron solicitudes de cobertura en este periodo.',
+  coverNoneSeen: 'Nadie pidió cobertura en este periodo.',
   coverUnread: n => n === 1 ? 'No se pudo leer 1 cambio de turno anterior, así que puede haber más.' : `No se pudieron leer ${n} cambios de turno anteriores, así que puede haber más.`,
 };
 

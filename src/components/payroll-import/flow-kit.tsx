@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type Re
 import { CorpFormFooter } from "@/components/corp/corp";
 import { BState } from "@/components/owner-b/b-kit";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
+import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { FormHead, FormHeadBack, FormHeadLink } from "@/components/team/team-forms";
 import { formatPayrollMoney, formatSignedPayrollMoney } from "@/components/payroll/money";
 import { durationSentence } from "@/lib/duration-format";
@@ -28,7 +29,9 @@ export function periodText(startDate: string, endDate: string, locale: string) {
   const month = (date: string) => new Intl.DateTimeFormat(locale, { timeZone: "UTC", month: "short" }).format(utcDay(date)), day = (date: string) => Number(date.slice(8, 10));
   const years = startDate.slice(0, 4) !== endDate.slice(0, 4);
   const side = (date: string, withMonth: boolean) => `${withMonth ? `${month(date)} ` : ""}${day(date)}${years ? `, ${date.slice(0, 4)}` : ""}`;
-  return `${side(startDate, true)} – ${side(endDate, years || startDate.slice(0, 7) !== endDate.slice(0, 7))}`;
+  // Premium pass FA (final verification A #8): within a month the range is closed up ("Nov 16–22"), as Payroll writes it.
+  const across = years || startDate.slice(0, 7) !== endDate.slice(0, 7);
+  return across ? `${side(startDate, true)} – ${side(endDate, true)}` : `${side(startDate, true)}–${side(endDate, false)}`;
 }
 /** One day: "Tue, Oct 20". */
 export const dayText = (date: string, locale: string) => new Intl.DateTimeFormat(locale, { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(utcDay(date));
@@ -89,7 +92,10 @@ export function useHeld<T>(key: string, initial: () => T, keep:(value:T)=>T): [T
 export function FlowHead({ copy, title, titleId, back, step, steps, onBack }: { copy: PayrollImportCopy; title: string; titleId: string; back: { href: string; label: string }; step: number; steps: readonly string[]; onBack?: (() => void) | null }) {
   return <FormHead titleId={titleId} title={title} back={back}
     step={step ? <><span className="c-formhead__dots" aria-hidden="true">{steps.map((name, index) => <i key={name} data-on={index < step ? "" : undefined} />)}</span>{copy.common.stepOf(step, steps.length, steps[step - 1])}</> : undefined}
-    left={onBack ? <FormHeadBack onClick={onBack}>{copy.common.back}</FormHeadBack> : <FormHeadLink href={back.href}>{copy.common.cancel}</FormHeadLink>} />;
+    // Phase 8 (a.md #9): before a step starts (loading, a state, nothing to cancel) the way out is a back link, not Cancel.
+    // Premium pass FA (final verification A #12): it names where it goes ("‹ Time exports"), as every other back link does.
+    left={onBack ? <FormHeadBack onClick={onBack}>{copy.common.back}</FormHeadBack> : step ? <FormHeadLink href={back.href}>{copy.common.cancel}</FormHeadLink>
+      : <Link className="c-formhead__link c-formhead__back" href={back.href}><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true" />{back.label}</Link>} />;
 }
 
 /** The step's buttons: full-width pills at the end of the card on phones, the card's footer on tablets and desktop (CSS

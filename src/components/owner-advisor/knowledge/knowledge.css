@@ -64,10 +64,8 @@
 :is(#c-root, html) .kn .kn-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--b-space-8); }
 :is(#c-root, html) .kn .kn-publish { display: flex; flex-direction: column; gap: var(--b-space-16); }
 :is(#c-root, html) .kn .kn-para { margin: 0; font-size: var(--b-fs-body); line-height: var(--b-lh-body); color: var(--b-ink2); max-width: 64ch; }
-:is(#c-root, html) .kn .kn-callout { display: flex; gap: var(--b-space-12); margin: 0; padding: var(--b-space-12) var(--b-space-16); border-radius: var(--b-radius-small); background: var(--b-amber-50);
-  font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); }
-:is(#c-root, html) .kn .kn-callout > svg { flex: none; width: 18px; height: 18px; margin-top: 1px; color: var(--b-amber); }
-:is(#c-root, html) .kn .kn-callout strong { font-weight: 600; color: var(--b-ink); }
+/* Phase 9: the note is the kit's callout (BCallout, owner-b.css); the column's gap spaces it. */
+:is(#c-root, html) .kn .kn-publish > .b-callout:not(#kn-p6) { margin: 0; }
 :is(#c-root, html) .kn .kn-digest { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-variant-numeric: tabular-nums; letter-spacing: 0.01em; word-break: break-all; color: var(--b-grey); }
 :is(#c-root, html) .kn .kn-extrow { text-decoration: none; }
 

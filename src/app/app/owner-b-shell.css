@@ -34,7 +34,7 @@
       border: 0 !important; border-radius: var(--b-radius-pill) !important; color: var(--b-on-band) !important; text-decoration: none !important;
       background: radial-gradient(circle closest-side, rgb(255 255 255 / 0.12) 19px, rgb(255 255 255 / 0.24) 19.5px 20px, transparent 20.5px) !important; box-shadow: none !important;
     }
-    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell svg { position: static !important; width: 21px !important; height: 21px !important; color: var(--b-on-band) !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell svg { position: static !important; width: 20px !important; height: 20px !important; color: var(--b-on-band) !important; }
     html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell::before, html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell::after { content: none !important; display: none !important; }
     /* Unread: a coral dot ringed in white (the count stays in the bell's label). Nov 14 inspection (SY-008, RA-14): the
      * ring was teal; coral alone is 2.1:1 on the band, the white ring 5.8:1. One band (EM-011), so no ink ring either. */
@@ -63,12 +63,7 @@
   /* The badge is a phone piece; the sidebar keeps its own count. */
   @media (max-width: 767px) { .app-shell:not([data-nv-b]) .b-tab-badge { display: none !important; } }
 
-  /* The bell: the outline glyph everywhere; on a Direction B phone screen the bold one (the mock's Phosphor Bell). */
-  .portal-notification-bell .nb-bold { display: none !important; }
-  @media (max-width: 767px) {
-    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell .nb-simple { display: none !important; }
-    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell .nb-bold { display: block !important; }
-  }
+  /* The bell: one glyph, Phosphor Bell bold at 20px, at every width (Phase 9; notification-bell.tsx draws only that one). */
 
   /* ================= Phase 3, package F (Nov 15, 2026): the Owner and Manager shell =================
    * This sheet loads before the other Direction B sheets, so these rules win inside nv-b by specificity (the :not(#p3f)
@@ -108,7 +103,7 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-tablet="full"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .cm-org { height: auto !important; min-height: 56px !important; align-items: center !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-tablet="full"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .cm-org__name {
       display: -webkit-box !important; -webkit-box-orient: vertical !important; -webkit-line-clamp: 2 !important; overflow: hidden !important; white-space: normal !important; text-overflow: clip !important; overflow-wrap: anywhere !important;
-      font: 600 var(--b-fs-meta)/17px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important;
+      font: 600 var(--b-fs-meta)/1.0625rem Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important;
     }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-tablet="full"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .sidebar-nav-group + .sidebar-nav-group:not([data-group]) {
       margin-top: var(--b-space-12) !important; padding-top: var(--b-space-12) !important; background: linear-gradient(var(--b-line), var(--b-line)) top center / calc(100% - 24px) 1px no-repeat !important;
@@ -118,11 +113,23 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-desktop="full"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .cm-org { height: auto !important; min-height: 56px !important; align-items: center !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-desktop="full"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .cm-org__name {
       display: -webkit-box !important; -webkit-box-orient: vertical !important; -webkit-line-clamp: 2 !important; overflow: hidden !important; white-space: normal !important; text-overflow: clip !important; overflow-wrap: anywhere !important;
-      font: 600 var(--b-fs-meta)/17px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important;
+      font: 600 var(--b-fs-meta)/1.0625rem Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important;
     }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-desktop="full"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .sidebar-nav-group + .sidebar-nav-group:not([data-group]) {
       margin-top: var(--b-space-12) !important; padding-top: var(--b-space-12) !important; background: linear-gradient(var(--b-line), var(--b-line)) top center / calc(100% - 24px) 1px no-repeat !important;
     }
+  }
+  /* Final verification F (F10): at twice the default text size the full sidebar's lines never overlap. The workspace name
+   * (above, 17px lines written as 1.0625rem), the entries (40px written as a 2.5rem minimum) and their labels (20px lines
+   * as 1.25rem) keep their sizes at the default text size and grow with the words: "Northside Café & Bakery" and
+   * "Things to do" were drawn on top of each other (rem type on px line heights inside a fixed 40px entry). */
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-tablet="full"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .nav-link { height: auto !important; min-height: 2.5rem !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-tablet="full"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .nav-link .nav-label { line-height: 1.25rem !important; }
+  }
+  @media (min-width: 1280px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-desktop="full"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .nav-link { height: auto !important; min-height: 2.5rem !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-desktop="full"]:not([data-employee-mobile]):not(#p3f):not(#p3f2) aside.sidebar .nav-link .nav-label { line-height: 1.25rem !important; }
   }
   /* TB-010: the shared touch rule for Owner and Manager pages on a touch tablet or touch desktop. Each of these controls
    * keeps its drawn size and gets a hit area at least 44px tall and wide, centred on it: the band's back link (32px), the
@@ -131,7 +138,11 @@
    * request lists (40px). Underline tabs (.c-tabs, .c-tc-tabs), card-header links (.b-card__a) and a card's lone
    * link already measure 44px here (b-foundation.css, owner-b.css), and the segments have their own 44px hit area. */
   @media (min-width: 768px) and (pointer: coarse) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]):not(#p3f):not(#p3f2) main.page-frame :is(.c-nav__back, .q-nav > .q-nav__l, .q-nav > :is(a, button).q-nav__r, nav.c-pay-tabs > a, .c-sched-week__arrow, .c-sched-actions > .c-btn, .c-title__actions > :is(a, button).c-btn, .c-formhead__up, .q-acts > .q-bs) { position: relative !important; }
+    /* Phase 8 (Nov 17, 2026): a control that the frame places absolutely (the band action of a Quiet page with a title,
+     * New update) stays absolute (an absolute box holds its ::after too), and a back link made relative here drops the
+     * phone layer's offsets (top -44px, left 16px), which had moved it under the top bar or 16px off the title's edge. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]):not(#p3f):not(#p3f2) main.page-frame :is(.c-nav__back, .q-nav > .q-nav__l, .q-page:not(:has(> .q-hd), :has(> article > .q-hd), .premium-manager-profile) > .q-nav > :is(a, button).q-nav__r, nav.c-pay-tabs > a, .c-sched-week__arrow, .c-sched-actions > .c-btn, .c-title__actions > :is(a, button).c-btn, .c-formhead__up, .q-acts > .q-bs) { position: relative !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]):not(#p3f):not(#p3f2) main.page-frame :is(.c-nav__back, .q-nav > .q-nav__l, .c-formhead__up) { inset: auto !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]):not(#p3f):not(#p3f2) main.page-frame :is(.c-nav__back, .q-nav > .q-nav__l, .q-nav > :is(a, button).q-nav__r, nav.c-pay-tabs > a, .c-sched-week__arrow, .c-sched-actions > .c-btn, .c-title__actions > :is(a, button).c-btn, .c-formhead__up, .q-acts > .q-bs)::after {
       content: "" !important; display: block !important; position: absolute !important; inset: auto !important; top: 50% !important; left: 50% !important; width: max(100%, 44px) !important; height: max(100%, 44px) !important;
       translate: -50% -50% !important; transform: none !important; border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important;
@@ -149,6 +160,63 @@
     font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 600 !important; color: var(--b-on-band) !important; text-wrap: balance !important;
   }
   html:is(:root, [data-theme]) body .app-shell[data-nv-b][data-nv-b][data-nv-b]:has(.b-hero .b-offline[data-shown]) .c-offline { display: none !important; }
+
+  /* ================= Phase 9, package P4 (Nov 18, 2026): shell and navigation =================
+   * Every role's shell (Employee and Lead included). This sheet loads before the other Direction B sheets, so a rule here
+   * that meets one of theirs inside nv-b repeats [data-nv-b] to win by specificity, not by order.
+   *
+   * The sidebar ink: an entry's glyph draws in --b-ink2, its label's colour (it drew #4A4F54, no token, from the corporate
+   * layer); the current entry stays teal. The sidebar toggle's glyph takes the same ink. */
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b][data-nv-b] aside.sidebar :is(.nav-link .nav-icon, .nav-link .nav-icon svg, .sidebar-toggle svg) { color: var(--b-ink2) !important; }
+    html body .app-shell[data-nv-b][data-nv-b] aside.sidebar .nav-link.active :is(.nav-icon, .nav-icon svg) { color: var(--b-teal) !important; }
+    /* DESIGN.MD: every button is a pill. The sidebar toggle was a square with 12px corners (8px on an Employee's rail);
+     * its hover tint and focus ring are now a 44px circle. */
+    html body .app-shell[data-nv-b][data-nv-b] aside.sidebar .sidebar-toggle { border-radius: var(--b-radius-pill) !important; }
+  }
+  /* Help in an Owner's or Manager's full sidebar is drawn as an entry: the entries' 40px box, inset, glyph-to-label gap and
+   * corner, so its 20px glyph and its label sit on the entries' columns (it sat 10px further in, on its own 12px margin) and
+   * its current state is the entries' box. An Employee's already is (employee-b-account.css, EM-026). The full sidebar is
+   * data-sidebar-tablet="full" up to 1279px and data-sidebar-desktop="full" from 1280px. */
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-tablet="full"]:not([data-employee-mobile]):not(#p4a):not(#p4b) aside.sidebar .sidebar-help-link {
+      box-sizing: border-box !important; height: 40px !important; min-height: 40px !important; margin-left: 0 !important; margin-right: 0 !important; padding: 0 var(--b-space-12) !important;
+      gap: var(--b-space-12) !important; border-radius: var(--b-radius-field) !important;
+    }
+  }
+  @media (min-width: 1280px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-sidebar-desktop="full"]:not([data-employee-mobile]):not(#p4a):not(#p4b) aside.sidebar .sidebar-help-link {
+      box-sizing: border-box !important; height: 40px !important; min-height: 40px !important; margin-left: 0 !important; margin-right: 0 !important; padding: 0 var(--b-space-12) !important;
+      gap: var(--b-space-12) !important; border-radius: var(--b-radius-field) !important;
+    }
+  }
+
+  /* The top bar's initials (tablets and desktop): a white circle with teal initials at 600. The person's own tint was
+   * tried in the premium pass and kept out: on the teal band the white circle reads crisper and matches the phone. */
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b][data-nv-b] header.mobile-header .portal-account-menu .nevora-action-menu > :is(button, summary) .portal-account-avatar {
+      background: #FFFFFF !important; color: var(--b-teal) !important; font-weight: 600 !important;
+    }
+  }
+  /* Help on a touch screen keeps its 44px hit area in the full sidebar (it is drawn as a 40px entry above). */
+  @media (min-width: 1024px) and (pointer: coarse) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:is([data-sidebar-tablet="full"], [data-sidebar-desktop="full"]):not([data-employee-mobile]):not(#p4a):not(#p4b):not(#p4c) aside.sidebar .sidebar-help-link { height: auto !important; min-height: 44px !important; }
+  }
+
+  /* The rail's head and foot (Phase 8's scroll cues) never cut an entry: app-shell.tsx sets --bs-cover-above and
+   * --bs-cover-below to the height that covers the entry an edge cuts, whole, so the list shows whole entries only and no
+   * count badge is drawn half under a fade. The cover is the rail's own white. The foot keeps its grey caret; the head,
+   * whose faded entry was the only sign of more above, draws the same caret pointing up, 3px under its edge. */
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b][data-nv-b] aside.sidebar #desktop-primary-navigation[data-more-above] > .sidebar-more--top {
+      height: var(--bs-cover-above, 28px) !important; margin-bottom: calc(-1 * var(--bs-cover-above, 28px)) !important; background: #FBFCFC !important;
+      place-items: start center !important; padding-top: 3px !important; box-sizing: border-box !important;
+    }
+    html body .app-shell[data-nv-b][data-nv-b] aside.sidebar #desktop-primary-navigation[data-more-below] > .sidebar-more--bottom {
+      height: var(--bs-cover-below, 36px) !important; margin-top: calc(-1 * var(--bs-cover-below, 36px)) !important; background: #FBFCFC !important;
+    }
+  }
+  /* ================= end of Phase 9, package P4 ================= */
 }
 
 /* Unlayered: normal declarations (they keep the cascade they had) and the !important declarations that must stay outside
@@ -165,3 +233,32 @@
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header :is(.brand, .login-brand-lockup):focus-visible { border-radius: 6px; }
 }
 .b-tab-badge { display: none; }
+
+/* ---------- Premium pass FA (Nov 18, 2026): final verification A #2, #4 and C #17 ----------
+ * The button ladder on the bands: a phone band's action (a person's Edit, Updates' New update, Add shift's Save) is drawn
+ * 40px with a 44px hit area (it was 36); Updates' New update is the band's 48px from 768px (it was 42). On a sideways
+ * phone the rail's up caret sits in the middle of the slot its cover leaves, so the cover reads as "more above", not as a
+ * gap in the list. */
+@layer nv-b {
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) :is(.c-nav--phone .c-nav__right > :is(a, button), .q-nav > :is(a, button).q-nav__r, .c-shift__head > .c-shift__save):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { position: relative !important; box-sizing: border-box !important; min-height: 40px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) :is(.c-nav--phone .c-nav__right > :is(a, button), .q-nav > :is(a, button).q-nav__r, .c-shift__head > .c-shift__save):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6)::after { content: "" !important; position: absolute !important; inset: -2px 0 !important; border-radius: var(--b-radius-pill) !important; }
+  }
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) main.page-frame .q-page.premium-updates > .q-nav > .q-nav__r:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { height: var(--b-btn-h-band) !important; min-height: var(--b-btn-h-band) !important; margin-top: -3px !important; }
+    html body .app-shell[data-nv-b][data-nv-b] aside.sidebar #desktop-primary-navigation[data-more-above] > .sidebar-more--top:not(#fa1):not(#fa2) { place-items: center !important; padding-top: 0 !important; }
+  }
+  /* A #3: Add shift's paired fields stack on every phone (at 390 the half-width selects cut "Choose a lo…" and "Choose a ti…";
+   * at 320 they already stacked). */
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-shift-page .c-shift__pair:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; row-gap: var(--b-space-16) !important; }
+    /* Final regression review: Add employee's Role and Location pair stacks the same way (at 390 the half-width Location
+     * select cut "Choose a loca…"). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-field__row:has(#new-location):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: grid !important; grid-auto-flow: row !important; grid-template-columns: minmax(0, 1fr) !important; row-gap: var(--b-space-16) !important; }
+    /* Final regression review: Edit employee's pairs (and Add employee's names) keep two columns while each field has 8rem,
+     * so at 200% text they stack instead of cutting "Employ…" and "Calle Lo…"; a select that is still too narrow ends in
+     * an ellipsis. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) form.c-teamform .c-field__row:not(:has(#new-location)):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: grid !important; grid-auto-flow: row !important; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)) !important; row-gap: var(--b-space-16) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) form.c-teamform select.c-in:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { text-overflow: ellipsis !important; }
+  }
+}

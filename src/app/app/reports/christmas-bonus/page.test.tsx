@@ -41,19 +41,31 @@ it.each(['MANAGER','OWNER'])('shows %s the latest completed bonus year inside th
  fixture.role=role;
  // keepWhole joins dates with no-break spaces; compare the words.
  const html=renderToStaticMarkup(await ChristmasBonusPage({searchParams:Promise.resolve({})})).replace(/[\u00a0\u202f]/g,' ');
+ // D13: each fact is its own unbreakable span; the words are compared without the markup.
+ const text=html.replace(/<[^>]+>/g,'');
  expect(fixture.read).toHaveBeenCalledWith(expect.objectContaining({startDate:'2025-10-01',endDate:'2026-09-30'}));
  expect(html).toContain('<section data-authority="company-fixture">');
- expect(html).toContain('Informational only. Christmas bonus eligibility, amounts and exemptions depend on employer size and Puerto Rico law. Confirm with your payroll provider or counsel before paying.');
+ // Final verification F (F18): the disclaimer's first sentence is its note's title; the words are Jose's, unchanged.
+ expect(html).toContain('<p class="b-callout__t">Informational only</p><div class="b-callout__b">Christmas bonus eligibility, amounts and exemptions depend on employer size and Puerto Rico law. Confirm with your payroll provider or counsel before paying.</div>');
  expect(html).toContain('Nov 15 – Dec 15, 2026');
  expect(html).toContain('Dec 1, 2026');
  expect(html).toContain('Exemption filing deadline');
- expect(html).toMatch(/<option value="2026" selected="">Oct 2025 – Sep 2026<\/option>/);
+ // Review 30 (D11): the year is the band's pill menu: the five years as links, the shown one marked current.
+ expect(html).toMatch(/<a href="\/app\/reports\/christmas-bonus\?year=2026" class="nevora-action-menu-item c-bonus__yearitem" aria-current="true">/);
+ expect(html).toContain('href="/app/reports/christmas-bonus?year=2022"');
  // Each person: name, ID, hire date or the prompt, hours, threshold and whether it is reached; never money.
- expect(html).toContain('812 h of 700 h · Hired Mar 2, 2016 · ID E1');
+ // F07: the facts are the kit's facts line (the dot is drawn between them and read by screen readers).
+ expect(html).toContain('<span class="b-segs c-bonus__facts">');
+ expect(text).toContain('812 h of 700 h · Hired Mar 2, 2016 · ID E1');
  expect(html).toContain('Reached');
- expect(html).toContain('900 h of 1,350 h · Hired Jul 15, 2019 · ID E3 · Inactive');expect(html).toContain('Not reached');
- expect(html).toMatch(/<a [^>]*href="\/app\/employees\/E2\?edit=1"[^>]*>/);expect(html).toContain('Add hire date');expect(html).toContain('1,400 h recorded · No hire date · ID E2 · 3 days not finalized');
- expect(html).toContain('Hours count finalized timecards only. 1 person has recorded time on 3 days that aren’t on a finalized timecard yet.');
+ expect(text).toContain('900 h of 1,350 h · Hired Jul 15, 2019 · ID E3 · Inactive');expect(html).toContain('Not reached');
+ // Review 30 (D21): the row opens the profile on the hire date and comes back to this year; the chip says the state.
+ expect(html).toMatch(/<a [^>]*href="\/app\/employees\/E2\?edit=1&amp;from=bonus&amp;year=2026"[^>]*>/);expect(html).toContain('No hire date');expect(text).toContain('1,400 h recorded · ID E2 · 3 days not finalized');
+ // D12: the unfinalized days are the People card's amber note, with Open Timecards as its action.
+ expect(html).toContain('Hours count finalized timecards only');expect(html).toContain('1 person has recorded time on 3 days that aren’t on a finalized timecard yet.');
+ expect(html).toMatch(/<a href="\/app\/timecards" class="b-callout__a">Open Timecards<\/a>/);
+ // D16: the counts that ask for a decision.
+ for(const label of ['Reached','Check breaks','Not confirmed','No hire date'])expect(html).toContain(`<dt class="c-stat__label">${label}</dt>`);
  expect(html).not.toMatch(/\$\s?\d|USD|bonus amount/i);
 });
 
@@ -78,7 +90,9 @@ it('withholds the report without current company-wide access, and says when the 
  expect(denied).toContain('current company-wide management access');expect(denied).not.toContain('Ana Rivera');expect(fixture.read).not.toHaveBeenCalled();
  fixture.denied=false;fixture.unavailable=true;
  const failed=renderToStaticMarkup(await ChristmasBonusPage({searchParams:Promise.resolve({})}));
- expect(failed).toContain('Christmas bonus hours unavailable');expect(failed).not.toContain('Ana Rivera');
+ // Review 30 (D08): a failed read says so in the kit's failed state, with one Try again and the way back to Insights.
+ expect(failed).toContain('Couldn’t load Christmas bonus hours');expect(failed).toContain('Nothing was changed.');expect(failed).toContain('Try again');
+ expect(failed).toMatch(/href="\/app\/reports"/);expect(failed).not.toContain('Reconnect');expect(failed).not.toContain('Ana Rivera');
 });
 
 it.each(['America/New_York','America/Santo_Domingo','UTC'])('closes the report for a %s workspace and reads nothing',async timeZone=>{

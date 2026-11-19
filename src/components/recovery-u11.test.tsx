@@ -8,6 +8,12 @@ import { AssistedRecovery } from "./assisted-recovery";
 import { ACCESS_COPY, fill } from "./access-recovery/copy";
 import { OFFLINE_MESSAGE } from "./access-recovery/recovery-guidance";
 import { AUTH_COPY, authMessage } from "@/lib/auth-copy";
+import { noteParts } from "./auth-premium/note-parts";
+import { BGlyph } from "./owner-b/b-kit";
+
+/** A message shown as a note (premium pass FD): its short first sentence as the title, the rest as the body, word for word. */
+const saysNote = (html: string, message: string) => { const { title, body } = noteParts(message); if (title) expect(html).toContain(`<p class="b-callout__t">${title}</p>`); if (body) expect(html).toContain(body); };
+const glyph = (meaning: Parameters<typeof BGlyph>[0]["meaning"]) => renderToStaticMarkup(<BGlyph meaning={meaning} />);
 
 const REFERENCE = "3f2b1c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d";
 const ACCEPTED = "If the details match an active account, we’ll email recovery steps. Can’t use that email? Ask your manager or Owner for help.";
@@ -26,13 +32,13 @@ const text = (html: string) => html.replace(/<[^>]+>/g, " ");
 describe.each(["en", "es"] as const)("forgot password in %s", lang => {
   const t = AUTH_COPY[lang], u = ACCESS_COPY[lang].recovery;
 
-  it("before you start: step 1 and what will happen, in order", () => {
+  it("before you start: step 1, then what will happen in one short paragraph, before the fields", () => {
     const html = request(lang);
     expect(html).toContain(step(lang, 1));
-    expect(html).toContain(`<ol class="ar-before" aria-label="${u.beforeLabel}">`);
-    const at = u.before.map(line => html.indexOf(line));
-    expect(at.every(index => index > 0)).toBe(true);
-    expect([...at].sort((a, b) => a - b)).toEqual(at);
+    // Phase 8: the step line names the three steps, so what happens is one paragraph, not a list of the same steps.
+    expect(html).toContain(`<p class="ar-intro">${u.intro}</p>`);
+    expect(html).not.toContain("ar-before");
+    expect(html.indexOf(u.intro)).toBeLessThan(html.indexOf('id="recovery-employee-id"'));
     expect(html).toContain(t.requestRecovery);
   });
 
@@ -40,15 +46,21 @@ describe.each(["en", "es"] as const)("forgot password in %s", lang => {
     const html = request(lang, { done: true, message: ACCEPTED });
     for (const line of [t.checkEmail.title, u.requestedSub, authMessage(lang, ACCEPTED), u.notConfirmed, t.checkEmail.expires, t.checkEmail.nothing, u.askAgain, t.backToSignIn, step(lang, 2)]) expect(html).toContain(line);
     expect(html).toMatch(/class="q-auth__receipt" role="status" tabindex="-1"/);
+    // Premium pass FD: the request's own sentence, then one teal note that this page can't tell whether the email arrived
+    // (inside the announced receipt), what to do next, and the limit as a quiet line. The envelope leads the head.
+    expect(html).toContain(`<div class="b-callout" data-tone="teal"><span class="b-callout__ic" aria-hidden="true">${glyph("info")}</span><div class="b-callout__b">${u.notConfirmed} ${t.checkEmail.expires}</div></div></div>`);
+    expect(html).toContain(`<p class="q-auth__note ar-sent__limit">${u.askAgain}</p>`);
+    expect(html).toMatch(/<div class="q-hd"><span class="q-auth__mark q-auth__mark--head" aria-hidden="true"><svg/);
     expect(text(html)).not.toMatch(/Email sent|was sent to|We sent|has been sent|Correo enviado|Te enviamos el|Ya enviamos/i);
     expect(html).not.toContain("<form");
   });
 
   it.each([[FAILED, "requestFailed"], [UNAVAILABLE, "requestUnavailable"], ["Your access ended. Sign in again.", "ended"]] as const)("refusal %s: what happened, then what to do next", (message, key) => {
     const html = request(lang, { message, supportReference: REFERENCE });
-    expect(html).toContain(authMessage(lang, message));
-    expect(html).toContain(`<span class="ar-alert__next">${u.next[key]}</span>`);
-    expect(html).toContain('id="recovery-error" class="q-error q-auth__alert" role="alert" tabindex="-1"');
+    saysNote(html, authMessage(lang, message));
+    expect(html).toContain(`<p>${u.next[key]}</p>`);
+    // Premium pass FD: the kit's red callout (WarningCircle) in a wrapper that keeps the id, the role and the focus.
+    expect(html).toContain(`id="recovery-error" class="ar-note" role="alert" tabindex="-1"><div class="b-callout" data-tone="red"><span class="b-callout__ic" aria-hidden="true">${glyph("stop")}</span>`);
     // The form stays for another try, and the reference of this one reply shows under the message.
     expect(html).toContain('name="employeeId"');
     expect(html).toContain(REFERENCE);
@@ -57,10 +69,11 @@ describe.each(["en", "es"] as const)("forgot password in %s", lang => {
 
   it("offline: nothing was sent, amber, no Support reference", () => {
     const html = request(lang, { message: OFFLINE_MESSAGE, supportReference: REFERENCE });
-    expect(html).toMatch(new RegExp(`id="recovery-offline" class="q-auth__alert q-auth__alert--wait" role="alert" tabindex="-1"><svg[^>]*>.*?</svg><span>${u.offline}</span>`));
+    expect(html).toContain(`id="recovery-offline" class="ar-note" role="alert" tabindex="-1"><div class="b-callout" data-tone="amber"><span class="b-callout__ic" aria-hidden="true">${glyph("offline")}</span>`);
+    saysNote(html, u.offline);
     expect(html).toContain('aria-describedby="recovery-offline recovery-employee-id-invalid"');
     expect(html).not.toContain('id="recovery-error"');
-    expect(html).not.toContain("q-error q-auth__alert");
+    expect(html).not.toContain('data-tone="red"');
     expect(html).not.toContain(REFERENCE);
   });
 });
@@ -77,21 +90,22 @@ describe.each(["en", "es"] as const)("new password in %s", lang => {
   it("passwords differ: said once at the top with the next step", () => {
     const html = reset(lang, { message: "Passwords do not match." });
     for (const line of [t.checkPasswords, authMessage(lang, "Passwords do not match."), u.next.mismatch]) expect(html).toContain(line);
-    expect(html).toContain("q-auth__receipt--error");
+    expect(html).toContain('<div class="b-callout" data-tone="red">');
   });
 
   it("code expired, used or not valid: red, with a way to ask for a new one", () => {
     const html = reset(lang, { message: INVALID });
     for (const line of [t.useNewCode, authMessage(lang, INVALID), u.next.invalidCode, t.requestNewCode]) expect(html).toContain(line);
-    expect(html).toContain("q-auth__receipt--error");
+    expect(html).toContain(`<div class="b-callout" data-tone="red"><span class="b-callout__ic" aria-hidden="true">${glyph("stop")}</span>`);
     expect(html).toContain('href="/forgot-access"');
   });
 
   it("reply lost: not confirmed is amber, never failed and never done; sign in first", () => {
     const html = reset(lang, { message: UNCERTAIN });
     for (const line of [t.checkSignInFirst, authMessage(lang, UNCERTAIN), t.trySigningIn]) expect(html).toContain(line);
-    expect(html).toContain("q-auth__receipt q-auth__receipt--wait");
-    expect(html).not.toContain("q-auth__receipt--error");
+    // Not confirmed: amber with the Question glyph (spec 3.2), never red.
+    expect(html).toContain(`<div class="b-callout" data-tone="amber"><span class="b-callout__ic" aria-hidden="true">${glyph("unknown")}</span>`);
+    expect(html).not.toContain('data-tone="red"');
     expect(html).not.toContain(t.resetDoneTitle);
     expect(html).toContain('href="/login"');
   });
@@ -99,14 +113,14 @@ describe.each(["en", "es"] as const)("new password in %s", lang => {
   it("server could not confirm (503): amber, hedged, and a Support reference when there is one", () => {
     const html = reset(lang, { message: FAILED, supportReference: REFERENCE });
     for (const line of [t.resetNotConfirmed, u.next.resetUnavailable, REFERENCE]) expect(html).toContain(line);
-    expect(html).toContain("q-auth__receipt--wait");
+    expect(html).toContain(`<div class="b-callout" data-tone="amber"><span class="b-callout__ic" aria-hidden="true">${glyph("unknown")}</span>`);
     expect(text(html)).not.toMatch(/was not changed|no cambió\./);
   });
 
   it("offline: nothing was sent, the code is not spent", () => {
     const html = reset(lang, { message: OFFLINE_MESSAGE });
-    expect(html).toContain(u.offline);
-    expect(html).toContain("q-auth__alert--wait");
+    saysNote(html, u.offline);
+    expect(html).toContain(`<div class="b-callout" data-tone="amber"><span class="b-callout__ic" aria-hidden="true">${glyph("offline")}</span>`);
     expect(html).toContain('name="proof"');
   });
 
@@ -114,7 +128,7 @@ describe.each(["en", "es"] as const)("new password in %s", lang => {
     const html = reset(lang, { done: true, message: RESET });
     for (const line of [t.resetDoneTitle, t.reset.doneLine, u.doneNote, t.signIn]) expect(html).toContain(line);
     expect(html).toMatch(/class="q-auth__receipt" role="status" tabindex="-1"/);
-    expect(html).toMatch(/<span class="q-auth__mark" aria-hidden="true"><svg/);
+    expect(html).toMatch(/<span class="q-auth__mark q-auth__mark--done" aria-hidden="true"><svg/);
     expect(html).not.toContain("<form");
   });
 });

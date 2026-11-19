@@ -1,7 +1,7 @@
 'use client';
 
 import type {Dispatch, SetStateAction} from 'react';
-import {FloppyDiskIcon, PlusIcon, TrashIcon} from '@phosphor-icons/react/ssr';
+import {PlusIcon, TrashIcon} from '@phosphor-icons/react/ssr';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {adpRunColumns, mappingSources, neutralProfile, type ExportProfile} from '@/lib/payroll-export/model';
 import type {TimecardItem} from '@/lib/timecards/read-model';
@@ -62,7 +62,7 @@ export function PayrollExportMapping({draft, setDraft, cards, reviewed, setRevie
       </div>
       <div className={styles.mappingFooter}>
         <label className={styles.reviewCheck}><input type="checkbox" checked={reviewed} onChange={e => setReviewed(e.target.checked)} /><span>I verified the required fields and employee identifiers. I reviewed the recorded-time basis, including breaks, and any selected rounding against my import requirements.</span></label>
-        <button type="button" className={`${styles.button} ${styles.primary}`} disabled={!reviewed} onClick={save}><FloppyDiskIcon size={18} weight="bold" aria-hidden="true" />Save mapping profile</button>
+        <button type="button" className={`${styles.button} ${styles.primary}`} disabled={!reviewed} onClick={save}>Save mapping profile</button>
       </div>
     </fieldset>
   </details>;

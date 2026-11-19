@@ -3,6 +3,7 @@ import {minutesText} from '@/lib/time-off-staffing/present';
 import './coverage-minutes.css';
 import {reviewCopy} from '@/components/review-details/copy';
 import {Explain} from '@/components/review-details/explain';
+import {BSegs} from '@/components/owner-b/b-kit';
 const t=reviewCopy();
 
 /* Coverage from canonical schedule health (Nov 9, 2026): required minutes covered, weighted by how many people,
@@ -36,7 +37,8 @@ export function CoverageFigures({coverage,label='Coverage this week',variant='b'
   {folded.length?<p className="cov__none-line">{`${folded.length===2?'Positions and leads aren’t':folded[0]==='positions'?'Positions aren’t':'Leads aren’t'} required`}</p>:null}
   {/* Closing F1 (NV-126): on a phone's band the tiles become one line ("Staffing 57% · 192 h of 336 h", then Positions and
     Lead only when required), so the day's shifts come up the screen; coverage-minutes.css swaps them under 768px. */}
-  {variant==='glass'?<p className="cov__line c-num">{shown.map(([name,value],index)=>index===0?`${name} ${percentText(value)}${value.required?` · ${detail(value,'')}`:''}`:`${name} ${percentText(value)}`).join(' · ')}</p>:null}
+  {/* Premium pass FA (final verification A #11): the line wraps between its facts, never under the explainer beside it. */}
+  {variant==='glass'?<p className="cov__line c-num"><BSegs parts={shown.flatMap(([name,value],index)=>index===0?[`${name} ${percentText(value)}`,value.required?detail(value,''):null]:[`${name} ${percentText(value)}`])}/></p>:null}
   {/* Phase 4 (U09): what the figures measure, one line, opened from the control beside them. */}
   <Explain text={t.staffingExplain} label={t.explain} compact/>
  </div>;

@@ -4,7 +4,7 @@ import {ClockerOwnerRequests} from './clocker-owner-requests';
 import {useCallback, useEffect, useId, useRef, useState, useSyncExternalStore} from 'react';
 import Link from 'next/link';
 
-import {ClockCounterClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ClockCounterClockwise';
+import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {QuestionIcon} from '@phosphor-icons/react/dist/ssr/Question';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
@@ -161,8 +161,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation, lan
           <label className="ck-field__l" htmlFor={inputId}>{t.lookupLabel}</label>
           <input id={inputId} className="ck-input" required value={reference} onChange={event => changeReference(event.target.value)}
             pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
-            maxLength={36} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="go" aria-describedby={invalid ? `${errorId} ${helpId}` : helpId} aria-invalid={invalid ? true : undefined}
-            placeholder={t.lookupPlaceholder}/>
+            maxLength={36} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="go" aria-describedby={invalid ? `${errorId} ${helpId}` : helpId} aria-invalid={invalid ? true : undefined}/>
           {invalid ? <p className="ck-field__e" id={errorId} role="alert"><WarningCircleIcon size={16} weight="bold" aria-hidden="true" />{invalid}</p> : null}
           <p id={helpId} className="ck-form__h">{t.lookupHelp}</p>
         </div>
@@ -195,7 +194,8 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation, lan
         </div> : null}
     </section>
 
-    <BCard label={t.timecardsTitle}><BList><BRow href="/app/timecards" lead={<BIcon tone="teal"><ClockCounterClockwiseIcon weight="bold" /></BIcon>} title={t.timecardsTitle} sub={t.timecardsSub} /></BList></BCard>
+    {/* Final review B #9: the link to Timecards draws Timecards' own glyph, the Clock (the counter-clockwise clock is Time corrections). */}
+    <BCard label={t.timecardsTitle}><BList><BRow href="/app/timecards" lead={<BIcon tone="teal"><ClockIcon weight="bold" /></BIcon>} title={t.timecardsTitle} sub={t.timecardsSub} /></BList></BCard>
     </div>
   </SettingsFrame>;
   return observation ? <ScopedReadFrame observation={observation}>{content}</ScopedReadFrame> : content;

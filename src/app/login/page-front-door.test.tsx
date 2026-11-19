@@ -45,26 +45,23 @@ it.each(['en','es'] as const)('Employee ID has its helper at every width and the
 
 it('only the Spanish page says the app is in English for now (PB-009)',async()=>{
  const note=AUTH_COPY.es.appLanguageNote;
- expect(note).toBe('Por ahora, la aplicación está en inglés después de iniciar sesión.');
+ expect(note).toBe('Por ahora, la aplicación se muestra en inglés después de iniciar sesión.');
  expect(await page('es')).toContain(`<p class="q-auth__langnote">${note}</p>`);
  expect(await page('en')).not.toContain('q-auth__langnote');
 });
 
-it.each(['en','es'] as const)('the brand panel has no eyebrow and ends with the proof rows; the page repeats them for phones, in %s (PB-011)',async lang=>{
+it.each(['en','es'] as const)('the brand panel has no eyebrow and ends with the proof rows, which are desktop only (phones keep field, field, button), in %s (PB-011)',async lang=>{
  const html=await page(lang),t=AUTH_COPY[lang],panel=html.slice(html.indexOf('<aside'),html.indexOf('</aside>'));
  expect(panel).not.toContain('q-auth__eyebrow');expect(panel).not.toContain('Powered by');expect(text(panel)).not.toContain('NEVORA Workforce');
  expect(html.match(/© 2026 VELANI LLC/g)).toHaveLength(1);
  expect(panel).toContain(`<ul class="q-auth__proof" aria-label="${t.proof.label}">`);
- expect(html).toContain(`<ul class="q-auth__proof q-auth__proof--page" aria-label="${t.proof.label}">`);
- const under=html.slice(html.indexOf('q-auth__proof--page'));
- for(const part of [panel,under]){
-  expect(part).toContain(t.proof.security);expect(part).toContain(t.proof.languages);
-  expect(part.match(/<svg[^>]*aria-hidden="true"/g)!.length).toBeGreaterThanOrEqual(3);
- }
- // In the panel the address is text, so the keyboard reaches the page's own controls first; under the links it is a mail link.
+ expect(html).not.toContain('q-auth__proof--page');expect(html.match(/class="q-auth__proof/g)).toHaveLength(1);
+ expect(panel).toContain(t.proof.security);expect(panel).toContain(t.proof.languages);
+ expect(panel.match(/<svg[^>]*aria-hidden="true"/g)!.length).toBeGreaterThanOrEqual(3);
+ // In the panel the address is text, so the keyboard reaches the page's own controls first.
  expect(panel).toContain(`${t.proof.helpBefore}<b>support@thevelani.com</b>${t.proof.helpAfter}`);expect(panel).not.toContain('<a ');
- expect(under).toContain(`${t.proof.helpBefore}<a href="mailto:support@thevelani.com">support@thevelani.com</a>${t.proof.helpAfter}`);
- // The rows promise nothing the product does not do: the app itself is not said to be in Spanish.
+ // The rows promise nothing the product does not do: the app itself is not said to be in Spanish, and the reply time
+ // is an aim, as on the Support page and in the policy.
  expect(t.proof.languages).toMatch(lang==='en'?/^Sign-in and account help in English and Spanish\.$/:/^Inicio de sesión y ayuda con la cuenta en inglés y español\.$/);
  expect(t.proof.helpAfter).toMatch(lang==='en'?/We aim to reply/:/Nuestra meta es responder/);
 });

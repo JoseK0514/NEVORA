@@ -7,7 +7,7 @@ import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpEmptyRow, CorpField, CorpFormFooter, CorpPill, CorpRow, CorpRows, CorpSection } from "@/components/corp/corp";
-import { BState } from "@/components/owner-b/b-kit";
+import { BGlyph, BIcon, BState } from "@/components/owner-b/b-kit";
 import type {
   BusinessAccount, BusinessApiResult, BusinessCoverageMap, BusinessDomain, BusinessFinanceQuery, BusinessMapCell, BusinessMetricFamily, BusinessQuery, BusinessReadResult, BusinessCommand,
 } from "@/lib/owner-advisor/business/contracts";
@@ -333,7 +333,8 @@ export function FiguresResult({ ctx, result }: { ctx: BusinessCtx; result: Busin
   const zone = catalog.timeZone;
   const partial = !result.completeScope && !result.sourceSubtotal;
   return <>
-    {partial ? <p className="be-callout be-callout--page"><WarningIcon weight="bold" aria-hidden="true" /><span>{t.incomplete}</span></p> : null}
+    {/* Phase 9: a note on the page's canvas is the kit's notice card (amber, the check glyph in its circle). */}
+    {partial ? <div className="b-card be-notice" role="note"><div className="b-notice"><BIcon tone="amber"><BGlyph meaning="check" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">{t.incomplete}</span></span></div></div> : null}
     {groups.map(group => { const from = result.citations.filter(citation => citation.currency === group.currency);
       return <CorpSection key={group.currency} id={`be-fig-${group.currency}`} label={`${t.domain[result.domain]} · ${group.currency}`} aside={<span className="be-meta">{periodText(result.window, zone, ctx.locale)} · {t.checkedAt(clockText(result.observedAt, zone, ctx.locale))}</span>}>
         <CorpCard as="div"><CorpRows label={`${t.domain[result.domain]} · ${group.currency}`}>

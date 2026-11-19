@@ -16,13 +16,16 @@
 .selectFrame { display: block; position: relative; min-width: 0; max-width: 100%; }
 .selectFrame::after { content: ''; position: absolute; width: 6px; height: 6px; right: 17px; top: 18px; border-right: 1.5px solid var(--design-text-secondary); border-bottom: 1.5px solid var(--design-text-secondary); transform: rotate(45deg); pointer-events: none; }
 .root select { appearance: none; -webkit-appearance: none; height: 46px; text-overflow: ellipsis; white-space: nowrap; padding-right: 34px; }
-.button { display: inline-flex; gap: 9px; justify-content: center; align-items: center; min-height: 46px; padding: 11px 16px; border: 1px solid var(--design-border); border-radius: var(--design-radius-control); background: #fff; color: var(--design-text-primary); font: inherit; font-size: calc(13 * var(--type-unit, 1px)); font-weight: 600; line-height: 1.4; cursor: pointer; transition: background .16s ease, border-color .16s ease, box-shadow .16s ease; }
+/* Phase 9 (spec 3.5): every button is a pill on the ladder's regular step (44px, 14.5/20 600, 18px sides): Add column the
+ * tinted kind (teal-50, teal), a column's Remove a round quiet button, and Save mapping profile the secondary look
+ * payroll-corp.css gives it (white with the field ring; Create export is the page's one filled button). Disabled is the one
+ * disabled pair with no edge. payroll-corp.css draws the mapping's buttons with stronger selectors (8px corners, 15px 500,
+ * its own disabled colours), so the shape, the type and the disabled pair are also set in nv-b (B8) at the end. */
+.button { box-sizing: border-box; display: inline-flex; gap: 8px; justify-content: center; align-items: center; min-height: var(--b-btn-h, 44px); padding: 0 18px; border: 0; border-radius: 999px; background: var(--b-teal-50, #E8F3F1); color: var(--b-teal, #0B6E69); font: inherit; font-size: var(--b-fs-body-sm, .90625rem); font-weight: 600; line-height: var(--b-lh-body-sm, 1.25rem); letter-spacing: 0; cursor: pointer; }
 .button svg { flex-shrink: 0; }
-.button:hover:enabled { background: var(--design-background); border-color: #9CA3AF; }
-.primary { background: var(--design-primary); border-color: var(--design-primary); color: #FFFFFF; }
-.primary:hover:enabled { background: var(--design-accent); border-color: var(--design-accent); box-shadow: 0 2px 5px #9F382115; }
+.primary { background: #FFFFFF; color: var(--b-ink, #111517); box-shadow: inset 0 0 0 1px var(--b-field-edge, #838A8F); }
 .root :is(button,input,select,textarea):disabled { cursor: not-allowed; }
-.button:disabled { background: #F3F4F6; border-color: var(--design-surface); color: #6B7280; }
+.button:disabled { background: var(--b-disabled-bg, #F0F2F3); color: var(--b-disabled-ink, #8C9397); box-shadow: none; }
 .root :is(input,select,textarea):disabled { background: #F9FAFB; color: #6B7280; }
 .root :is(input,select,textarea,button,summary,a):focus-visible { outline: 3px solid var(--design-accent-ink); outline-offset: 3px; }
 .toolbar { display: grid; grid-template-columns: minmax(140px,1fr) minmax(140px,1fr) auto auto; gap: 14px; align-items: end; }
@@ -63,7 +66,8 @@
 .totals dd span { font-size: calc(11 * var(--type-unit, 1px)); font-weight: 400; color: #6B7280; letter-spacing: 0; }
 .timeBasis { display: flex; align-items: flex-start; gap: 9px; padding: 13px; margin-bottom: 22px!important; border-radius: 12px; background: var(--design-background); font-size: calc(11 * var(--type-unit, 1px)); line-height: 1.7; color: var(--design-text-secondary); }
 .timeBasis svg { flex-shrink: 0; margin-top: 1px; }
-.note { font-size: calc(12 * var(--type-unit, 1px)); line-height: 1.7; color: var(--design-text-secondary); overflow-wrap: anywhere; }
+/* Phase 9: a note under a heading is field help on the meta role (13.5/18 grey), not 12px. */
+.note { font-size: var(--b-fs-meta, .84375rem); line-height: var(--b-lh-meta, 1.125rem); color: var(--b-grey, #6A7176); overflow-wrap: break-word; text-wrap: pretty; }
 .exportCard > .note { margin-top: 10px; }
 .mappingInfo { margin-top: 8px; font-size: calc(12 * var(--type-unit, 1px)); }
 .mappingInfo summary,.receipt summary { min-height: 44px; cursor: pointer; display: flex; align-items: center; gap: 8px; color: var(--design-text-secondary); }
@@ -102,12 +106,15 @@
 .precisionGrid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; }
 .column { display: grid; grid-template-columns: 28px minmax(0,1fr) minmax(0,1.4fr) 44px; gap: 14px; padding: 16px 0; align-items: end; border-top: 1px solid var(--design-surface); }
 .columnNumber { align-self: end; padding-bottom: 15px; font: calc(11 * var(--type-unit, 1px)) var(--design-font-mono); color: #6B7280; }
-.iconButton { width: 44px; padding: 0; border-radius: 13px; }
+.iconButton { width: 44px; height: 44px; padding: 0; border-radius: 50%; background: transparent; color: var(--b-ink2, #3F464B); }
+.iconButton:disabled { background: transparent; }
+@media (hover: hover) { .iconButton:hover:enabled { background: var(--b-quiet, #F0F2F3); } }
 .constantField { grid-column: 2 / 4; }
 .removeColumn { grid-column: 4; grid-row: 1; }
 .mappingFooter { padding: 24px; display: flex; align-items: center; justify-content: space-between; gap: 26px; }
-.reviewCheck { display: flex!important; align-items: flex-start; gap: 12px!important; min-height: 44px; max-width: 740px; cursor: pointer; font-size: calc(12 * var(--type-unit, 1px))!important; line-height: 1.7; font-weight: 400!important; }
-.reviewCheck input { margin-top: 3px!important; }
+/* Phase 9: the statement beside the box reads on the meta role (13.5/18 ink2), not 12px; its words are unchanged. */
+.reviewCheck { display: flex!important; align-items: flex-start; gap: 12px!important; min-height: 44px; max-width: 740px; cursor: pointer; font-size: var(--b-fs-meta, .84375rem)!important; line-height: var(--b-lh-meta, 1.125rem); font-weight: 400!important; color: var(--b-ink2, #3F464B); text-wrap: pretty; }
+.reviewCheck input { margin-top: -1px!important; }
 .mappingFooter .button { flex-shrink: 0; }
 .stateCard,.empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 48px 24px; }
 .stateIcon { color: var(--design-accent-ink); }
@@ -165,3 +172,8 @@
 
 .root select { overflow:hidden; }
 .selectFrame { overflow:hidden; }
+@layer nv-b {
+  .button { border-radius: var(--b-radius-pill, 999px) !important; font-size: var(--b-fs-body-sm, .90625rem) !important; line-height: var(--b-lh-body-sm, 1.25rem) !important; font-weight: 600 !important; }
+  .button:disabled { background: var(--b-disabled-bg, #F0F2F3) !important; color: var(--b-disabled-ink, #8C9397) !important; box-shadow: none !important; }
+  .iconButton:disabled { background: transparent !important; }
+}

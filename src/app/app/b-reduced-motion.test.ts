@@ -76,7 +76,15 @@ describe('the Phase 7 motion sheet (b-motion.css)', () => {
     const moves = rules(text).filter(([, body]) => motionDeclarations(body).length > 0);
     expect(moves.length).toBeGreaterThan(10);
     for (const [prelude, body, around] of moves) {
-      expect(around.some(at => /prefers-reduced-motion:\s*no-preference/.test(at)), prelude).toBe(true);
+      // Under reduced motion an overlay may only fade in (opacity, Jose's NV-251 and NV-329 decisions, kept Nov 17, 2026).
+      const reduced = around.some(at => /prefers-reduced-motion:\s*reduce/.test(at));
+      expect(reduced || around.some(at => /prefers-reduced-motion:\s*no-preference/.test(at)), prelude).toBe(true);
+      if (reduced) for (const declaration of motionDeclarations(body)) {
+        expect(declaration, prelude).not.toMatch(/\d(ms|s)\b/);
+        const properties = declaration.replace(/var\([^)]*\)|!important|linear/g, '').match(/[a-z-]+/g) ?? [];
+        for (const property of properties.filter(word => !/^(transition|animation)$/.test(word))) expect(['opacity', 'none'], `${prelude}: ${declaration}`).toContain(property);
+      }
+      if (reduced) continue;
       for (const declaration of motionDeclarations(body)) {
         // Durations are tokens; the only properties are opacity and transform (overlay and display keep a closing layer painted).
         expect(declaration, prelude).not.toMatch(/\d(ms|s)\b/);
@@ -85,7 +93,13 @@ describe('the Phase 7 motion sheet (b-motion.css)', () => {
       }
     }
   });
-  it('turns every overlay off under reduced motion', () => {
+  it('under reduced motion an overlay only fades in, and nothing travels or scales', () => {
+    const reduce = rules(text).filter(([, , around]) => around.some(at => /prefers-reduced-motion:\s*reduce/.test(at)));
+    const fades = reduce.filter(([, body]) => /transition: opacity var\(--b-dur-hover\) linear !important/.test(body));
+    expect(fades.some(([prelude]) => /q-sheet/.test(prelude) && /nevora-toast/.test(prelude) && /popover-open/.test(prelude))).toBe(true);
+    for (const [prelude, body] of reduce) expect(body, prelude).not.toMatch(/(?<![\w-])(transform|translate|scale)\s*:(?!\s*none)/);
+  });
+  it('turns off the movement of every overlay under reduced motion', () => {
     const reduce = rules(text).filter(([, , around]) => around.some(at => /prefers-reduced-motion:\s*reduce/.test(at)));
     expect(reduce.some(([prelude, body]) => /q-sheet/.test(prelude) && /nevora-toast/.test(prelude) && /transition: none !important/.test(body) && /animation: none !important/.test(body))).toBe(true);
   });

@@ -19,8 +19,9 @@ it("is branded and sends people to sign in", async () => {
   expect(html).toContain('href="/login"');
   expect(html).toContain("Go to sign in");
   expect(html).not.toContain("Is this a time clock tablet?");
-  // Review B4: the one-line legal footer, not the old lockup.
-  expect(html).toContain('class="q-legal"');
+  // Phase 8: the footer every signed-out page shares, not the old lockup.
+  expect(html).toContain('class="so-foot"');
+  expect(html).toContain('href="/privacy">Privacy</a>');
   expect(html).not.toContain("login-brand-module");
 });
 
@@ -37,5 +38,5 @@ it("tells a tablet with a wrong Clocker link to set up again", async () => {
   route.path = "/clocker/1";
   const html = renderToStaticMarkup(await NotFound());
   expect(html).toContain("Is this a time clock tablet?");
-  expect(html).toContain("Set up this tablet again.");
+  expect(html).toContain("Your Owner sets this tablet up again in Settings → Clocker tablets.");
 });

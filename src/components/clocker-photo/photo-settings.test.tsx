@@ -3,7 +3,8 @@
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {describe, expect, it, rs} from '@rstest/core';
-import {ClockerPhotoSettings} from './photo-settings';
+import {ClockerPhotoSettings,photoSettingsChanged} from './photo-settings';
+import {photoSettingsDraft} from '@/lib/clocker/photo-client/settings';
 import {englishIn} from '../clocker-owner-copy.testkit';
 import type {PhotoPolicy} from '@/lib/clocker/photo-server/contracts';
 
@@ -29,10 +30,25 @@ describe('Punch photos', () => {
     expect(html.match(/<span class="ck-switch__state" aria-hidden="true">Off<\/span>/g)).toHaveLength(2);
     expect(html).not.toContain('photo-events-why'); expect(html).not.toMatch(/<fieldset class="c-photos__events" disabled/);
   });
-  it('keeps one Save and never says photos are being taken while they are unavailable', () => {
+  it('shows no Save until something changed, and never says photos are being taken while they are unavailable', () => {
+    for (const enabled of [true, false]) expect(render(enabled)).not.toContain('type="submit"');
     const html = render(true);
-    expect(html.match(/<button type="submit"/g)).toHaveLength(1);
     expect(html).toContain('Punch photos aren’t available yet'); expect(html).toContain('They start when photos are turned on for your workplace.');
+  });
+  it('a change is any switch or the days differing from what is saved', () => {
+    const saved = policy(false), draft = photoSettingsDraft(saved);
+    expect(photoSettingsChanged(draft, saved)).toBe(false);
+    expect(photoSettingsChanged({...draft, events: ['CLOCK_OUT', 'CLOCK_IN']}, saved)).toBe(false);
+    expect(photoSettingsChanged({...draft, retentionDays: ' 30 '}, saved)).toBe(false);
+    expect(photoSettingsChanged({...draft, enabled: true}, saved)).toBe(true);
+    expect(photoSettingsChanged({...draft, events: ['CLOCK_IN']}, saved)).toBe(true);
+    expect(photoSettingsChanged({...draft, retentionDays: '14'}, saved)).toBe(true);
+  });
+  it('off: every moment switch is drawn and announced off, whatever choice is kept', () => {
+    const moments = render(false).match(/<input id="photo-event-[A-Z_]+"[^>]*>/g) ?? [];
+    expect(moments).toHaveLength(4);
+    for (const input of moments) expect(input).not.toContain('checked');
+    expect((render(true).match(/<input id="photo-event-[A-Z_]+"[^>]*>/g) ?? []).filter(input => input.includes('checked'))).toHaveLength(2);
   });
   it('Spanish leaks no English sentence', () => {
     expect(englishIn(render(false, 'es'))).toEqual([]); expect(englishIn(render(true, 'es'))).toEqual([]);

@@ -158,7 +158,7 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    stage='done';await page.getByRole('button',{name:'Done',exact:true}).click();await page.waitForURL(app.url+'/login');await idle();
    expect((await context.cookies()).some((cookie:{name:string})=>cookie.name==='fuel_session')).toBe(false);
    await page.getByLabel(AUTH_COPY.en.employeeId,{exact:true}).fill(actor);await page.getByLabel(AUTH_COPY.en.password,{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:AUTH_COPY.en.signIn,exact:true}).click();await page.waitForURL(/\/login\?error=deleting/);
-   expect(await page.locator('#login-error').innerText()).toBe(AUTH_COPY.en.loginDeleting);expect(await sessions(actor)).toBe(0);await shot('signin-refused');
+   /* Phase 9: the note's title is the message's first sentence and its body the rest, word for word. */expect((await page.locator('#login-error').innerText()).trim().replace(/\s*\n+\s*/,'. ')).toBe(AUTH_COPY.en.loginDeleting);expect(await sessions(actor)).toBe(0);await shot('signin-refused');
    record('Done removes the dead cookie; the right password still cannot sign in while the request is open');
 
    stage='coarse-landscape';

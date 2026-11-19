@@ -360,8 +360,10 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-rule-list > form:not(:has(> fieldset > details[open])) > .wb-savebar { display: none; }
 :is(#q-root, html) .q-rule-list .wb-savebar { position: static; display: block; margin: 0; padding: 0 20px 20px; border: 0; background: none; box-shadow: none; }
 :is(#q-root, html) .q-rule-list .wb-savebar > p { display: block; margin: 0; font-size: 13px; line-height: 18px; color: var(--q-grey); }
-:is(#q-root, html) .q-rule-list .wb-savebar > p svg { display: none; }
-:is(#q-root, html) .q-rule-list .wb-savebar > .wb-error { color: var(--q-red); }
+:is(#q-root, html) .q-rule-list .wb-savebar > p:not(.wb-error) svg { display: none; }
+/* Phase 9 (premium pass, spec 3.3): a save error keeps its 16px WarningCircle, 6px from red 500 text, on the first line. */
+:is(#q-root, html) .q-rule-list .wb-savebar > .wb-error { display: flex; align-items: flex-start; gap: 6px; font-weight: 500; color: var(--q-red); }
+:is(#q-root, html) .q-rule-list .wb-savebar > .wb-error > svg { flex: none; width: 16px; height: 16px; margin-top: 1px; }
 :is(#q-root, html) .q-rule-list .wb-savebar > .nv-btn { display: flex; align-items: center; justify-content: center; width: 100%; height: 50px; min-height: 0; margin: 12px 0 0; border: 0; border-radius: 12px; background: var(--q-teal-fill); color: #FFFFFF; font: inherit; font-size: 17px; font-weight: 600; box-shadow: none; }
 :is(#q-root, html) .q-rule-list > form > .configuration-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
 

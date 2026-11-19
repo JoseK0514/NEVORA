@@ -41,6 +41,8 @@ const en = {
     reviewBack: "Review payroll",
     hold: {
       missing: { title: "This payroll isn’t available", line: "It may have been replaced by a newer revision.", action: "Go to Payroll" },
+      // Phase 8 (a.md #9): opened with no payroll chosen, the page says so instead of suggesting a newer revision.
+      noRun: { title: "Choose a payroll to import into", line: "Open a payroll from Payroll, then choose Import pay.", action: "Go to Payroll" },
       native: { title: "This payroll doesn’t take imported amounts", line: "It is calculated in NEVORA from recorded time.", action: "Review payroll" },
       noTeam: { title: "There is nobody on the team yet", line: "Add your team before you import their pay.", action: "Open Team" },
       tooManyPeople: { title: "This team is over the import limit", line: "An import covers up to 300 people.", action: "Go to Payroll" },
@@ -317,6 +319,7 @@ const es: PayrollImportCopy = {
     reviewBack: "Revisar nómina",
     hold: {
       missing: { title: "Esta nómina no está disponible", line: "Puede que una revisión más reciente la haya reemplazado.", action: "Ir a Nómina" },
+      noRun: { title: "Elige una nómina para importar", line: "Abre una nómina desde Nómina y elige Importar pagos.", action: "Ir a Nómina" },
       native: { title: "Esta nómina no acepta cantidades importadas", line: "Se calcula en NEVORA con el tiempo registrado.", action: "Revisar nómina" },
       noTeam: { title: "Todavía no hay nadie en el equipo", line: "Añade a tu equipo antes de importar sus pagos.", action: "Abrir Equipo" },
       tooManyPeople: { title: "Este equipo pasa del límite de importación", line: "Una importación cubre hasta 300 personas.", action: "Ir a Nómina" },

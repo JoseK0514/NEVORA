@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { CheckCircleIcon, InfoIcon, XIcon } from "@phosphor-icons/react/ssr";
+import { CheckIcon, InfoIcon, XIcon } from "@phosphor-icons/react/ssr";
 import { overlayExitMs } from "./kit/overlay-exit";
 
 /** Calm, Sonner-style confirmations without a dependency. Call `toast()` only
@@ -49,11 +49,13 @@ function ToastItem({ item, onClose }: { item: Toast; onClose: (id: number) => vo
     return () => { pause(); document.removeEventListener("visibilitychange", visibility); };
     // eslint-disable-next-line hooks-preserved/exhaustive-deps
   }, []);
-  const Icon = item.tone === "success" ? CheckCircleIcon : InfoIcon;
+  // Phase 9 (Nov 18, 2026): the done mark for a result (a bold check in a green-50 circle), the information glyph in
+  // teal-50 for a note; bold, never filled (b-foundation.css draws the circle and Direction B's surface).
+  const Icon = item.tone === "success" ? CheckIcon : InfoIcon;
   return <li ref={self} className="nevora-toast" data-tone={item.tone} data-leaving={leaving || undefined}
     onPointerEnter={() => { hovered.current = true; pause(); }} onPointerLeave={() => { hovered.current = false; run(); }}
     onFocus={() => { focused.current = true; pause(); }} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { focused.current = false; run(); } }}>
-    <Icon size={20} weight="fill" aria-hidden="true" />
+    <span className="nevora-toast__ic" aria-hidden="true"><Icon size={16} weight="bold" /></span>
     <span>{item.message}</span>
     <button type="button" aria-label="Dismiss message" onClick={close}><XIcon size={16} weight="bold" aria-hidden="true" /></button>
   </li>;

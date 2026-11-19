@@ -143,7 +143,7 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
               <span className="c-field__help" id={id("location-help")}>A shift keeps its location. To move it, delete it and add a new one.</span>
             </>
             : <><select id={id("location")} className={location ? "c-in" : "c-in c-shift__empty"} name="locationId" value={location} required onChange={event => { setLocation(event.target.value); }}>
-              <option value="" disabled>Choose</option>
+              <option value="" disabled>Choose a location</option>
               {(props.locations ?? []).map(item => <option key={item.id} value={item.id}>{item.shortName}</option>)}
             </select></>}
         </div>
@@ -172,14 +172,14 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
         <div className="c-field">
           <label className="c-field__label" htmlFor={id("start")}>Start</label>
           <select id={id("start")} className={start ? "c-in c-shift__time" : "c-in c-shift__time c-shift__empty"} name="startTime" value={start} required onChange={event => { const next = event.target.value; setStart(next); if (!end && next) setEnd(eightHoursAfter(next)); }}>
-            <option value="" disabled>Choose</option>
+            <option value="" disabled>Choose a time</option>
             {timeChoices(start).map(item => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </div>
         <div className="c-field">
           <label className="c-field__label" htmlFor={id("end")}>End</label>
           <select id={id("end")} className={end ? "c-in c-shift__time" : "c-in c-shift__time c-shift__empty"} name="endTime" value={end} required aria-describedby={nextDay ? id("next-day") : undefined} onChange={event => { setEnd(event.target.value); }}>
-            <option value="" disabled>Choose</option>
+            <option value="" disabled>Choose a time</option>
             {timeChoices(end).map(item => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </div>

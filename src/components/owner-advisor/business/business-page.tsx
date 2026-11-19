@@ -17,7 +17,7 @@ import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpEmptyRow, CorpField, CorpFormFooter, CorpNav, CorpNote, CorpPage, CorpPill, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
-import { BState } from "@/components/owner-b/b-kit";
+import { BCallout, BState } from "@/components/owner-b/b-kit";
 import { FormHead, FormHeadLink } from "@/components/team/team-forms";
 import "@/components/team/team-forms.css";
 import { toast } from "@/components/toaster";
@@ -547,7 +547,7 @@ export function ReviewContent({ ctx, source, result, eligible, acknowledged, set
           <CorpButton kind="danger" size="md" disabled={working} onClick={onDiscard}>{ctx.busy ? t.discarding : t.discardConfirm}</CorpButton>
         </div>
       </div> : <CorpBody><div className="be-publish">
-        {blocked ? <p className="be-callout"><WarningIcon weight="bold" aria-hidden="true" /><span>{blocked}</span></p> : <>
+        {blocked ? <BCallout tone="amber">{blocked}</BCallout> : <>
           <p className="be-para">{t.publishStarts(period)}{replaces ? ` ${t.publishReplaces}` : ""}</p>
           <label className="be-check"><input type="checkbox" checked={acknowledged} disabled={working} onChange={event => setAcknowledged(event.target.checked)} /><span>{t.acknowledge}</span></label>
           <p className="be-fine">{t.ownClaim}</p>

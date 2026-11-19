@@ -61,7 +61,8 @@ describe("Nov 1 upscale: calm Employee statuses", () => {
     for (const sheet of [kit, employeeBridge]) expect(sheet).not.toMatch(/#EAF0FD|#1D4ED8|--c-blue/i);
     expect(employeeBridge).toMatch(/#employee-mobile\[data-nv-corp\] \.c-pill:is\(\.c-pill--amber, \.c-pill--blue\) \{\s*height:auto; padding:0; gap:0; border-radius:0; background:none; color:#6B7075; font-size:13px; line-height:18px; font-weight:500;/);
     // The pill keeps its words and its class (a page passes the same markup); only its look changes.
-    expect(html(<CorpPill tone="blue">Correction</CorpPill>)).toBe('<span class="c-pill c-pill--blue">Correction</span>');
+    // Phase 9 (spec 1.1): `blue` is the kit's quiet status words (b-status), the class kept.
+    expect(html(<CorpPill tone="blue">Correction</CorpPill>)).toBe('<span class="c-pill c-pill--blue b-status">Correction</span>');
   });
 });
 

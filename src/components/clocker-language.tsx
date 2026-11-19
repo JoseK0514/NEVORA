@@ -1,7 +1,7 @@
 'use client';
 
-import {createContext,useContext,useSyncExternalStore,type ReactNode} from 'react';
-import {clockerHasText,clockerText,type ClockerLocale} from './clocker-copy';
+import {createContext,useContext,useEffect,useSyncExternalStore,type ReactNode} from 'react';
+import {CLOCKER_BUTTON_NAMES,clockerHasText,clockerKeepNames,clockerText,type ClockerLocale} from './clocker-copy';
 import { ClockerIcon } from './clocker-icon';
 import styles from './clocker.module.css';
 
@@ -35,15 +35,20 @@ const Presentation=createContext({locale:'en' as ClockerLocale});
  * browser's Accept-Language on a first visit, so a Spanish tablet starts in Spanish); else the browser's first language. */
 export function ClockerPresentation({initialLocale,children}:{initialLocale?:ClockerLocale;children:ReactNode}){
  const locale=useSyncExternalStore(localeSubscribe,()=>localeSnapshot(initialLocale??browserLocale()),()=>initialLocale??'en');
+ // Review 30 (D37): the document speaks the tablet's language too, so the page title is read with the kiosk's rules.
+ useEffect(()=>{document.documentElement.lang=locale;},[locale]);
  return <Presentation.Provider value={{locale}}>{children}</Presentation.Provider>;
 }
 export function useClockerPresentation(){return useContext(Presentation);}
 export function useClockerCopy(){const {locale}=useClockerPresentation();return (key:string,params?:Record<string,string|number>)=>clockerText(locale,key,params);}
+/** For a sentence that names a kiosk button ("Tap Send it again."): the button's words stay on one line in the tablet's
+ * language, so a wrap never splits the name the eye looks for (Phase 8). */
+export function useClockerKeepNames(){const {locale}=useClockerPresentation();return (sentence:string)=>clockerKeepNames(sentence,CLOCKER_BUTTON_NAMES.map(name=>clockerText(locale,name)));}
 /** A message that may come from the server: in Spanish, a sentence the kiosk has no line for stays in English and is
- * marked as English for screen readers (Nov 10 review, NV-045). */
+ * marked as English for screen readers (Nov 10 review, NV-045). A button named in it keeps its words together. */
 export function ClockerText({text}:{text:string}){
- const {locale}=useClockerPresentation();
- return clockerHasText(locale,text)?<>{clockerText(locale,text)}</>:<span lang="en">{text}</span>;
+ const {locale}=useClockerPresentation(),keep=useClockerKeepNames();
+ return clockerHasText(locale,text)?<>{keep(clockerText(locale,text))}</>:<span lang="en">{text}</span>;
 }
 /** The locale for Intl date and time formatting. */
 export function useClockerIntlLocale(){return useClockerPresentation().locale==='es'?'es-PR':'en-US';}

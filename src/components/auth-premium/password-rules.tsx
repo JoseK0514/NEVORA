@@ -12,8 +12,8 @@ export function RuleIcon({ state }: { state: RuleState }) {
 }
 
 /** One rule as the helper line of the field it describes (the length under "New password", the match under "Confirm").
- * The line is not a live region: its words never change while a person types. The pair announces a rule once, when it
- * becomes true, through its own polite status. */
+ * The line is not a live region: its words change only when the rule becomes true (Phase 8: the match rule reads "Same as
+ * the new password" until it does). The pair announces a rule once, when it becomes true, through its own polite status. */
 export function RuleLine({ id, state, text }: { id: string; state: RuleState; text: string }) {
   return <span className="ar-rule" id={id} data-state={state}><RuleIcon state={state} /><span>{text}</span></span>;
 }

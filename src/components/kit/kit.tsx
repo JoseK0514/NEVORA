@@ -2,7 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
-import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { CircleIcon } from "@phosphor-icons/react/dist/ssr/Circle";
 import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
@@ -19,7 +19,8 @@ export type KitTone = "neutral" | "review" | "done" | "urgent";
 const statusGlyph: Record<KitTone, typeof CircleIcon> = {
   neutral: CircleIcon,
   review: ClockIcon,
-  done: CheckCircleIcon,
+  // Phase 9: the one done mark is a bold check (the kit's done state), not a filled circle.
+  done: CheckIcon,
   urgent: WarningCircleIcon,
 };
 
@@ -225,12 +226,13 @@ export function Tile({ tone = "neutral", children }: { tone?: KitTone; children:
   return <span className="nv-tile" data-tone={tone} aria-hidden="true">{children}</span>;
 }
 
-/** A condition, never an action: "Published", "Draft", "Waiting", "Fix". Glyph plus word. */
+/** A condition, never an action: "Published", "Draft", "Waiting", "Fix". Glyph plus word. Phase 9: the glyph is bold
+ * for every tone (fill is only for a current or filled state). */
 export function Status({ tone, children }: { tone: KitTone; children: ReactNode }) {
   const Glyph = statusGlyph[tone];
   return (
     <span className="nv-status" data-tone={tone}>
-      <Glyph size={14} weight={tone === "neutral" ? "bold" : "fill"} aria-hidden="true" />
+      <Glyph size={14} weight="bold" aria-hidden="true" />
       {children}
     </span>
   );

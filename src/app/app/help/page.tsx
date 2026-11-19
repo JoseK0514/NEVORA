@@ -12,14 +12,14 @@ import { pathEnabled } from "@/lib/workspace-presentation/modules";
 import { POLICY_FACTS, SUPPORT, SUPPORT_EMAIL, policiesVisible, type Block } from "@/lib/legal/policies";
 import { BlockView } from "@/components/legal/legal-document";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
-import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
+import { CalendarCheckIcon } from "@phosphor-icons/react/dist/ssr/CalendarCheck";
 import { CalendarMinusIcon } from "@phosphor-icons/react/dist/ssr/CalendarMinus";
 import { ArrowsLeftRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowsLeftRight";
-import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
+import { PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr/PencilSimple";
 import { ReceiptIcon } from "@phosphor-icons/react/dist/ssr/Receipt";
 import { CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
 import { EmployeeHelpB } from "@/components/employee-b/account-b";
-import { BCard, BIcon, BList, BRow, BScreen } from "@/components/owner-b/b-kit";
+import { BCallout, BCard, BIcon, BList, BRow, BScreen } from "@/components/owner-b/b-kit";
 import "./help.css";
 
 export const metadata: Metadata = { title: "Help" };
@@ -64,11 +64,13 @@ async function howTo(role: UserRole, proof: SessionMutationProof): Promise<HowTo
         ...(has.has("/app/payroll") ? [{ href: "/app/payroll", title: "Prepare payroll" }] : []),
       ];
     }
+    // Final verification (Nov 18, 2026): one glyph per concept, as on the Employee's own pages: confirming a schedule is
+    // CalendarCheck (CalendarBlank is the Schedule tab's), fixing your time is PencilSimple.
     return [
-      { href: "/app/schedule", title: "Confirm your schedule", icon: <CalendarBlankIcon weight="bold" /> },
+      { href: "/app/schedule", title: "Confirm your schedule", icon: <CalendarCheckIcon weight="bold" /> },
       ...(open("/app/requests") ? [{ href: "/app/requests?tab=new", title: "Ask for time off", icon: <CalendarMinusIcon weight="bold" /> }] : []),
       ...(open("/app/exchange") ? [{ href: "/app/exchange", title: "Swap or give away a shift", icon: <ArrowsLeftRightIcon weight="bold" /> }] : []),
-      { href: "/app/my-time", title: "Fix a missed punch", icon: <ClockIcon weight="bold" /> },
+      { href: "/app/my-time", title: "Fix a missed punch", icon: <PencilSimpleIcon weight="bold" /> },
       ...(has.has("/app/my-pay") ? [{ href: "/app/my-pay", title: "See your pay statement", icon: <ReceiptIcon weight="bold" /> }] : []),
     ];
   } catch { return []; }
@@ -113,8 +115,13 @@ export default async function HelpPage() {
         <CorpRows label="Contact">
           <li><CorpRow href={`mailto:${SUPPORT_EMAIL}`} native title="Email support" detail={SUPPORT_EMAIL} chevron label={`Email support, ${SUPPORT_EMAIL}`} /></li>
         </CorpRows>
+        {/* Phase 8 (B #32): the note that qualifies Email support is the card's footer at every width (it floated on the
+          canvas on a phone); its words are the support policy's and are unchanged. */}
+        {response ? <p className="c-note c-help__note"><span>{response}</span></p> : null}
+        {/* Phase 9 (premium pass): the safety sentence is the kit's teal privacy callout, titled as on Support and the
+          Employee's Help. The sentence is the support policy's, unchanged. */}
+        <div className="c-help__safe"><BCallout tone="teal" icon="privacy" title="Keep private details out of email">Never email passwords, codes, bank details or pay documents.</BCallout></div>
       </CorpCard>
-      <p className="c-note c-help__note"><span>{response ? `${response} ` : ""}Never email passwords, codes, bank details or pay documents.</span></p>
     </CorpSection>
     {jobs.length ? <CorpSection id="help-how" label="How to">
       <CorpCard as="div">

@@ -12,6 +12,7 @@ import {HoursCorrectionOperation} from './hours-operation';
 import {CorpFixTime,CorpCorrections,CorpHoursFrame,CorpHoursNav,CorpHoursSheetHead,CorpHoursTitle,CorpHoursUnavailable,CorpPastTimecards,CorpTimeEntry,CorpTimeTab,cardsHref,dateKey,dayMedium,timeSubtitle} from './hours-corp';
 import {timeSubtitleShort} from './hours-model';
 import {HoursBContext,HoursRecoveryB,TimecardsRedirectB,type HoursBHead} from '../employee-b/time-b';
+import type {WallShift} from '../employee-b/parts';
 import {BButtonLink} from '../owner-b/b-kit';
 import {saveEmployeeHoursCorrection} from '@/app/app/employee-hours/actions';
 import type {HoursView,HoursCorrectionPayload} from '@/lib/employee-hours';
@@ -23,7 +24,9 @@ type Props={/** Corporate (Release 1): an Employee's Time tab on the kit. */corp
  /** Past timecards: the week was chosen (?start&end), so its days are listed; otherwise it is one week of the list. */
  chosen?:boolean;
  /** The tab page Hours belongs to when Pay owns it; null when Hours is its own tab. */
- parent:{href:string;label:string}|null};
+ parent:{href:string;label:string}|null;
+ /** Phase 8: today's published shifts (wall times), so Time's Right now can say a shift has ended; null when unknown. */
+ todayShifts?:WallShift[]|null};
 const editEntry=(edit:string|null)=>edit?.startsWith('entry:')?edit.slice(6):edit?.startsWith('break:')?edit.split(':')[1]:null;
 export function ResponsiveEmployeeHours({children,...props}:Props&{children?:ReactNode}){const mobile=useEmployeeMobile();
  // Corporate (Release 1): an Employee's Time is the same kit page on a phone and in the desktop column.
@@ -34,7 +37,7 @@ function MobileTimecardsRedirect({period}:{period:Period}){const router=useRoute
  * open on last week. */
 function CorporateTimecardsRedirect({period}:{period:Period|null}){const router=useRouter(),href=period?'/app/my-time?view=cards&start='+period.startDate+'&end='+period.endDate:'/app/my-time?view=cards';useEffect(()=>{router.replace(href,{scroll:false});},[router,href]);return <div className="c-page" data-nv-page="" data-corp=""><TimecardsRedirectB href={href}/><p className="c-note" role="status"><span>Opening your timecards… <Link className="c-link c-link--l" href={href}>Open Past timecards</Link></span></p></div>;}
 export function ResponsiveEmployeeTimecards({children,period,corporate=false,explicit=false}:{children?:ReactNode;period:Period;corporate?:boolean;explicit?:boolean}){const mobile=useEmployeeMobile();if(corporate)return <CorporateTimecardsRedirect period={explicit?period:null}/>;return mobile?<MobileTimecardsRedirect period={period}/>:<>{children}<div className="em-requests-mobile"><p className="em-request-loading" role="status">Loading your timecards…</p></div></>;}
-function EmployeeHours({authority,view,period,entryId,requestId,edit,filter,fromCards,parent,tabTitle='Hours',corporate=false,today,chosen=true}:Props){
+function EmployeeHours({authority,view,period,entryId,requestId,edit,filter,fromCards,parent,tabTitle='Hours',corporate=false,today,chosen=true,todayShifts=null}:Props){
  const router=useRouter(),targetEntry=editEntry(edit),selection=view==='records'?'overview':view==='cards'?period.startDate+'_'+period.endDate:requestId??(targetEntry?'target:'+targetEntry:'list'),panel=useHours(authority,view,selection,edit),[drafts,setDrafts]=useState<Record<string,HoursDraft>>({}),[operation,setOperation]=useState(()=>new HoursCorrectionOperation()),[activeEdit,setActiveEdit]=useState<string|null>(null),[recoveryHref,setRecoveryHref]=useState<string|null>(null);
  useSyncExternalStore(operation.subscribe,operation.snapshot,operation.snapshot);
  // An access denial ends this page's correction recovery, as the earlier desktop correction panel did: after re-entry the
@@ -69,7 +72,7 @@ function EmployeeHours({authority,view,period,entryId,requestId,edit,filter,from
    :view==='cards'?entryId?{title:cardEntry&&cardsData?dayMedium(dateKey(cardEntry.startAt,cardsData.timeZone)):'Timecard day',back:{href:cardsHref(period)+'#hours-card-entry-'+entryId,label:'Week'}}:{title:'Past timecards',back:{href:'/app/my-time',label:'Time'}}
    :requestId?{title:'Your correction request',back:{href:list+'#hours-request-'+requestId,label:'Back'}}:{title:'Your correction requests',sub:'Sent to your manager for review',back:{href:'/app/my-time',label:'Time'}};
   const recovery=(operation.pending||operation.uncertain)&&activeEdit!==edit&&recoveryHref?recoveryHref:null;
-  return <HoursBContext.Provider value={{head:bHead,authority,notice:recovery&&read?<HoursRecoveryB href={recovery}/>:null}}><CorpHoursFrame contextKey={contextKey} view={view} state={panel.state} ready={!!read} refresh={panel.refresh} head={head} headInside={!!edit} sub={!!edit||!!entryId||!!requestId||view!=='records'}>
+  return <HoursBContext.Provider value={{head:bHead,authority,notice:recovery&&read?<HoursRecoveryB href={recovery}/>:null,shifts:todayShifts}}><CorpHoursFrame contextKey={contextKey} view={view} state={panel.state} ready={!!read} refresh={panel.refresh} head={head} headInside={!!edit} sub={!!edit||!!entryId||!!requestId||view!=='records'}>
    {read?<>
     {(operation.pending||operation.uncertain)&&activeEdit!==edit&&recoveryHref?<div className="c-callout c-hours-stack" role="status"><span>An earlier correction request still needs to be checked. Return to it before starting a new one.</span><div className="c-btns"><Link className="c-btn c-btn--secondary c-btn--sm" href={recoveryHref}>Check your earlier request</Link></div></div>:null}
     {read.view==='records'?read.data.state!=='ready'?<CorpHoursUnavailable message={read.data.reason==='not_configured'?'Recorded time isn’t available for this account.':read.data.reason==='schema_missing'?'Recorded time isn’t available yet.':'Your recorded time couldn’t be checked.'} onRefresh={panel.refresh}/>

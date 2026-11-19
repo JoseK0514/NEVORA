@@ -65,10 +65,10 @@
   {
     "id": "EM-008",
     "severity": "Medium",
-    "status": "partly",
-    "remainder": "Under 1280px a chip wraps below a long title, so that row is taller than 72px.",
+    "status": "fixed",
+    "remainder": "",
     "by": "Claude",
-    "note": "Phase 4 (Nov 17, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Rows are 72px with the chip on the title line from 1280px.",
+    "note": "Phase 4 (Nov 17, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Rows are 72px with the chip on the title line from 1280px. Nov 17 follow-up: rows are 72px wherever the Review pill shares the line (measured 820 to 1440: all 72px; long titles take an ellipsis, chip on the title line). Under 820px the approved layout puts the pill under the words.",
     "inCodexHandoff": false
   },
   {
@@ -119,10 +119,10 @@
   {
     "id": "EM-014",
     "severity": "Medium",
-    "status": "partly",
-    "remainder": "A range with minutes in a narrow day block was not re-verified on one line.",
+    "status": "fixed",
+    "remainder": "",
     "by": "Claude",
-    "note": "Phase 4 (Nov 17, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Whole-hour ranges print on one line.",
+    "note": "Phase 4 (Nov 17, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Whole-hour ranges print on one line. Nov 17 decision: the approved range format stays. Whole hours fit one line from 1280px; a range with minutes that crosses noon (9:30 AM – 5:30 PM) needs about 128px at 14/700, so in day blocks it breaks before the dash with each half whole (measured at 768 to 1440). Shrinking the type or changing the format was rejected to keep the system.",
     "inCodexHandoff": false
   },
   {
@@ -155,10 +155,10 @@
   {
     "id": "EM-018",
     "severity": "Medium",
-    "status": "partly",
-    "remainder": "One sentence for a partly published week: both wordings are Jose's Oct 18 text. Jose to choose.",
+    "status": "fixed",
+    "remainder": "",
     "by": "Claude",
-    "note": "Phase 4 (Nov 17, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. A card's note is its footer everywhere.",
+    "note": "Phase 4 (Nov 17, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. A card's note is its footer everywhere. Nov 17 decision: one sentence, published first, as Schedule says it (Your Main Office shifts are published. West Office hasn't published this week yet.); Home names its current and next shift locations.",
     "inCodexHandoff": false
   },
   {
@@ -785,10 +785,10 @@
   {
     "id": "OW-037",
     "severity": "Low",
-    "status": "partly",
-    "remainder": "The 1.2s hold and automatic advance to the next timecard is not built; it moves focus on its own. Jose to choose.",
+    "status": "fixed",
+    "remainder": "",
     "by": "Claude",
-    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Green success block and a tinted Finalize period pill. Phase 7 (Nov 17, 2026): the approved result uses the shared success mark; nothing advances on a timer.",
+    "note": "Phase 3 (Nov 15, 2026). Built and checked in a browser on fictional data at phone, tablet and desktop widths. Green success block and a tinted Finalize period pill. Phase 7 (Nov 17, 2026): the approved result uses the shared success mark; nothing advances on a timer. Decided Nov 17, 2026 (Jose asked Claude to settle it): no automatic advance; the next timecard opens on \"Next timecard\".",
     "inCodexHandoff": false
   },
   {

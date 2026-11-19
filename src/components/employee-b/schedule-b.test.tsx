@@ -17,7 +17,7 @@ it('Confirm is the one filled pill: open shifts are a row with a chevron in the 
   // Phase 4 (EM-022): the tinted "See open shifts" pill gave way to a plain 64px row that opens the list.
   expect(html).not.toContain('b-btn--ghost');
   expect(html).toContain('<a class="b-row b-row--link" href="/app/schedule?week=2026-11-09&amp;view=open" aria-label="Open shifts, 2 to pick up">');
-  expect(html).toContain('<section class="b-card es-tw" aria-labelledby="b-this-week-h"><div class="b-card__h es-tw__h"><h2 id="b-this-week-h">This week</h2></div>');
+  expect(html).toContain('<section class="b-card es-tw" aria-labelledby="b-this-week-h"><div class="b-card__h es-tw__h"><h2 id="b-this-week-h">Open shifts</h2></div>');
   // Below the band, nothing but the page's own Confirm control is a filled teal pill.
   expect(html.slice(html.indexOf('class="b-stack"'))).not.toContain('b-btn--teal');expect(html).not.toContain('>See</a>');
   // None to pick up stays a fact: a grey circle and no link (EM-017: grey is for facts that don't open).
@@ -59,6 +59,18 @@ it('Phase 4: a day block prints the compact range in two whole halves, so no das
   const day = {date: '2026-11-17', short: 'Tue', day: 17, today: true, selected: true, href: '/app/schedule?week=2026-11-16&day=2026-11-17', label: 'Tuesday, November 17, today',
     shifts: [{key: 's1', time: '9\u00a0AM – 5\u00a0PM', position: 'Barista', place: 'Main Office · 8 h', kind: 'now' as const, chip: null, label: 'Tuesday'}]};
   const html = draw({weekCard: {summary: '', days: [day]}});
-  expect(html).toContain('<b><span class="eb-wsh__t">9\u00a0AM</span> <span class="eb-wsh__t">– 5\u00a0PM</span></b>');
+  expect(html).toContain('<b><span class="eb-nb">9\u00a0AM</span> <span class="eb-nb">–\u00a05\u00a0PM</span></b>');
 });
 
+
+it('Final review C (rows 4, 5): Confirm this week waits on you (amber) with the confirm glyph; Availability is UserCheck', async () => {
+  const {CalendarCheckIcon} = await import('@phosphor-icons/react/dist/ssr/CalendarCheck');
+  const {CalendarBlankIcon} = await import('@phosphor-icons/react/dist/ssr/CalendarBlank');
+  const {UserCheckIcon} = await import('@phosphor-icons/react/dist/ssr/UserCheck');
+  const html = draw(), row = html.slice(html.indexOf('es-confirm'), html.indexOf('es-confirm__act'));
+  expect(row).toContain('<span class="b-ico b-ico--amber" aria-hidden="true">');
+  expect(row).toContain(renderToStaticMarkup(<CalendarCheckIcon weight="bold"/>));
+  const band = html.slice(html.indexOf('href="/app/availability"'), html.indexOf('Availability</a>'));
+  expect(band).toContain(renderToStaticMarkup(<UserCheckIcon size={16} weight="bold" aria-hidden="true"/>));
+  expect(band).not.toContain(renderToStaticMarkup(<CalendarBlankIcon size={16} weight="bold" aria-hidden="true"/>));
+});

@@ -77,8 +77,12 @@ it('renders verified attendance signals with manager-readable names and factual 
   expect(html).toContain('Alex Morgan');
   expect(html).toContain('Northside');
   expect(html).toContain('Clock-in after scheduled start');
-  expect(html).toContain('<strong>1</strong> to review');
-  expect(html).toContain('<strong>1</strong> person');
+  // Review 30 (D31): one quiet summary line, the kit's chip per flag. Final verification F (F26): the count to review is
+  // the title's; the line says who is affected and the time corrections waiting, as the kit's facts line.
+  const words = html.replace(/<[^>]+>/g, '');
+  expect(words).toContain('1\u00a0person affected · 0\u00a0time corrections waiting');
+  expect(html).toContain('<span class="b-sr">1 to review</span>');
+  expect(html).toContain('<span class="b-chip b-chip--amber">Clock-in after scheduled start</span>');
   expect(html).toContain('15 min');
   expect(html).not.toContain('Late');
   expect(html).not.toContain('employee-1');
@@ -144,7 +148,7 @@ it('marks the summary busy only while loading, so desktop keeps Refresh after a 
   }
 });
 
-it('labels a long open unscheduled entry as a critical missing clock-out with the time past the limit', () => {
+it('labels a long open unscheduled entry as a critical missing clock-out with the time it has been open', () => {
   const state = readyState();
   const flag: Observation = {
     id: 'signal-open',
@@ -159,9 +163,27 @@ it('labels a long open unscheduled entry as a critical missing clock-out with th
   );
   // The client label is plain copy; keep it in step with the engine's documented review threshold.
   expect(html).toContain(
-    `<span class="attendance-review-badge critical">No clock-out after ${OPEN_ENTRY_REVIEW_LIMIT_HOURS} hours</span>`,
+    `<span class="b-chip b-chip--red">No clock-out after ${OPEN_ENTRY_REVIEW_LIMIT_HOURS} hours</span>`,
   );
-  expect(html).toContain('36 min');
-  expect(html).toContain('<strong>1</strong> to review');
+  // Review 30 (D31): the figure is how long the punch has been open (the limit plus the 36 min past it), never the time past
+  // the limit alone.
+  expect(html.replace(/[\u00a0\u202f]/g, ' ')).toContain('Open 12 h 36 min');
+  expect(html).toContain('1 to review');
   expect(html).not.toMatch(/\b(late|absent|unpaid|closed)\b/i);
+});
+
+it('says since when a long open punch has been open, with its day when it began before today', () => {
+  const state = readyState();
+  const flag: Observation = {
+    id: 'signal-open-since',
+    kind: 'OPEN_PAST_LIMIT',
+    breakId: null,
+    message: 'No clock-out recorded · open more than 12 hours.',
+    // Clocked in at 10:40 PM the evening before (AST), so the limit passed at 10:40 AM and 1 h 20 min have gone since.
+    evidence: { recordedAt: '2030-10-07T16:00:00Z', expectedAt: '2030-10-07T14:40:00Z', differenceNanoseconds: String(BigInt(80) * BigInt(60_000_000_000)) },
+  };
+  const review = { ...state.review, groups: [{ ...state.review.groups[0], observations: [flag] }] };
+  const html = renderToStaticMarkup(<AttendanceReviewSurface state={{ ...state, review }} onRefresh={() => {}} />).replace(/[\u00a0\u202f]/g, ' ');
+  expect(html).toContain('Open 13 h 20 min, since 10:40 PM yesterday');
+  expect(html).not.toContain('>1 h 20 min<');
 });

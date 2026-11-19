@@ -100,7 +100,7 @@ describe("schedule template workflow presentation", () => {
   });
 });
 
-it('does not load templates or expose copy commands when company source is denied',async()=>{access.denied=true;const output=await html();expect(f.list).not.toHaveBeenCalled();expect(f.copy).not.toHaveBeenCalled();expect(output).toContain('Schedule templates unavailable');});
+it('does not load templates or expose copy commands when company source is denied',async()=>{access.denied=true;const output=await html();expect(f.list).not.toHaveBeenCalled();expect(f.copy).not.toHaveBeenCalled();expect(output).toContain('<h1>Schedule templates</h1>');});
 
 // This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
 rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));

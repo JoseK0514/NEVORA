@@ -6,6 +6,7 @@ import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {CorpButton,CorpButtonLink,CorpCard,CorpNav,CorpNote,CorpPage,CorpRow,CorpRows} from '../corp/corp';
 import {EmployeeRequestsCorp,requestDay,requestsSubtitle,shiftPill,timeOffDetail,timeOffPill,waitingStatus,waitsOnManager,type CorpRequestRow} from '../employee-requests-corp';
+import {accountCopy} from '../employee-b/account-copy';
 import {BStateCard,IncomingB,InlineRetryB,RequestsHubB,RequestsWaitB,bPillText,bTone,type BRequestRow} from '../employee-b/requests-b';
 import {OpenShiftsB,PickupResultB,type OpenRowB} from '../employee-b/exchange-b';
 import {BButton,BButtonLink,BState} from '../owner-b/b-kit';
@@ -36,7 +37,7 @@ const requestRowB=(row:OwnRequest):BRequestRow=>{const corp=requestRow(row);retu
 /** Swaps addressed to you, inside the Waiting card: a row when some need your answer, a retry when they couldn't be checked. */
 export function IncomingRequestSection({count,onRetry}:{count:number|null;onRetry:()=>void}){
  if(count===null)return <div className="c-ereq__inline"><span role="status">Swaps for you couldn’t be checked. <Link className="c-link" href="/app/exchange?tab=foryou">Open swaps for you</Link></span><button className="c-ereq__retry" type="button" onClick={onRetry}>Try again</button></div>;
- return count?<CorpRows label="Needs your answer"><li><CorpRow href="/app/exchange?tab=foryou" bold title={count===1?'A teammate requested a swap':`${count} swaps need your answer`} detail="Review the shifts before responding" chevron/></li></CorpRows>:null;
+ return count?<CorpRows label="Needs your answer"><li><CorpRow href="/app/exchange?tab=foryou" bold title={count===1?accountCopy().swapForYou:`${count} swaps need your answer`} detail="Review the shifts before responding" chevron/></li></CorpRows>:null;
 }
 /** One pickup: its button ("action"), its outcome ("status"), or both stacked. `look="b"` draws the same controls for the
  * Direction B phone screen; its copy passes `effects={false}` so the refresh after a settled pickup runs once (the corporate

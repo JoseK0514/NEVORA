@@ -12,6 +12,11 @@ import { ACCESS_COPY, fill } from "./copy";
 import { AssistedReceipt } from "./assisted-receipt";
 import { PasswordPair } from "./password-pair";
 import { OFFLINE_MESSAGE } from "./recovery-guidance";
+import { noteParts } from "@/components/auth-premium/note-parts";
+import { BGlyph } from "@/components/owner-b/b-kit";
+
+const saysNote = (html: string, message: string) => { const { title, body } = noteParts(message); if (title) expect(html).toContain(`<p class="b-callout__t">${title}</p>`); if (body) expect(html).toContain(body); };
+const glyph = (meaning: Parameters<typeof BGlyph>[0]["meaning"]) => renderToStaticMarkup(<BGlyph meaning={meaning} />);
 
 rs.stubGlobal("React", React);
 
@@ -69,7 +74,7 @@ describe("PB-014 and PB-029: one word, and titles that say what the page lets yo
     for (const lang of LANGS) for (const sentence of SERVER_SENTENCES) expect(authMessage(lang, sentence).trim()).not.toBe("");
     expect(authMessage("en", "A new server message.")).toBe("A new server message.");
     // The outcome is still decided on AccountRecovery's own sentence: an uncertain reply is amber in both languages.
-    for (const lang of LANGS) expect(reset(lang, { message: UNCERTAIN })).toContain("q-auth__receipt q-auth__receipt--wait");
+    for (const lang of LANGS) expect(reset(lang, { message: UNCERTAIN })).toContain(`<div class="b-callout" data-tone="amber"><span class="b-callout__ic" aria-hidden="true">${glyph("unknown")}</span>`);
   });
 
   it.each(LANGS)("the request page in %s: the title, the helper in view, the button and both ways on", lang => {
@@ -83,7 +88,8 @@ describe("PB-014 and PB-029: one word, and titles that say what the page lets yo
 describe("PB-013: the code field only when a code must be typed", () => {
   it.each(LANGS)("a link supplied the code, in %s: one green line with a check, the field out of sight but still in the form", lang => {
     const t = AUTH_COPY[lang], html = reset(lang, { linkProof: true });
-    expect(html).toMatch(new RegExp(`<p class="ar-accepted"><span class="ar-accepted__line" role="status"><svg[^>]*>.*?</svg><span>${t.reset.linkAccepted}</span></span><button type="button" class="ar-accepted__other">${t.reset.useDifferentCode}</button></p>`));
+    // Premium pass FD: the kit's green callout, its check glyph, the line as its title and the other way as its action.
+    expect(html).toContain(`<div class="b-callout" data-tone="green" role="status"><span class="b-callout__ic" aria-hidden="true">${glyph("done")}</span><p class="b-callout__t">${t.reset.linkAccepted}</p><div class="b-callout__act"><button type="button">${t.reset.useDifferentCode}</button></div></div>`);
     // AccountRecovery fills and reads this field exactly as before: same name, same limits.
     expect(html).toMatch(/<div class="q-fl ar-off"><label for="reset-proof">/);
     expect(html).toMatch(/<input id="reset-proof"[^>]*required=""[^>]*minLength="43"[^>]*maxLength="4096"[^>]*name="proof"/);
@@ -94,7 +100,7 @@ describe("PB-013: the code field only when a code must be typed", () => {
     const t = AUTH_COPY[lang], html = reset(lang);
     expect(html).toContain(`<div class="q-fl"><label for="reset-proof">${t.recoveryCode}</label>`);
     expect(html).toContain(`<span class="q-auth__hint" id="reset-proof-hint">${t.recoveryCodeHint}</span>`);
-    expect(html).not.toContain("ar-accepted");
+    expect(html).not.toContain('data-tone="green"');
     expect(html).not.toContain("ar-off");
     // The line under the title no longer repeats the helper.
     expect(t.quiet.resetSub).not.toBe(t.recoveryCodeHint);
@@ -105,15 +111,16 @@ describe("PB-013: the code field only when a code must be typed", () => {
     const t = AUTH_COPY[lang], html = reset(lang, { linkProof: true, message: INVALID });
     for (const line of [t.reset.linkRefusedTitle, t.reset.linkRefused, t.requestNewCode]) expect(html).toContain(line);
     expect(html).toContain('href="/forgot-access"');
-    expect(html).toContain("q-auth__receipt--error");
+    expect(html).toContain('<div class="b-callout" data-tone="red">');
     expect(html).not.toContain(ACCESS_COPY[lang].recovery.next.invalidCode);
-    // A refused link is not shown as accepted at the same time; typing a code is offered inside the refusal.
-    expect(html).not.toContain("ar-accepted");
-    expect(html).toContain(`<button type="button" class="q-link ar-linkbtn">${t.reset.useDifferentCode}</button>`);
+    // A refused link is not shown as accepted at the same time; typing a code is offered inside the refusal, as its
+    // second quiet action.
+    expect(html).not.toContain('data-tone="green"');
+    expect(html).toContain(`<div class="b-callout__act"><a href="/forgot-access">${t.requestNewCode}</a><button type="button">${t.reset.useDifferentCode}</button></div>`);
     expect(html).toContain('class="q-fl ar-off"');
     const phone = phoneReset(lang, { linkProof: true, message: INVALID });
-    expect(phone).not.toContain("ar-accepted");
-    expect(phone).toContain(`<button type="button" class="ma-text">${MOBILE_ACCESS_COPY[lang].useDifferentCode}</button>`);
+    expect(phone).not.toContain('data-tone="green"');
+    expect(phone).toContain(`<button type="button">${MOBILE_ACCESS_COPY[lang].useDifferentCode}</button>`);
   });
 });
 
@@ -128,7 +135,9 @@ describe("PB-016 and PB-037: the password pair", () => {
       expect(first).toContain(`<span class="ar-rule" id="${prefix}-password-hint" data-state="idle"><span class="ar-rule__mark" aria-hidden="true"><span class="ar-rule__dot"></span></span><span>${t.atLeast15}</span></span>`);
       expect(first).not.toContain(t.activation.passwordsMatch);
       expect(second).toContain(`<span class="ar-rule" id="${prefix}-confirm-password-hint" data-state="idle">`);
-      expect(second).toContain(t.activation.passwordsMatch);
+      // Phase 8: before the two match, the second rule is a requirement, never the statement that they match.
+      expect(second).toContain(t.activation.sameAsNew);
+      expect(second).not.toContain(t.activation.passwordsMatch);
       expect(second).not.toContain(t.atLeast15);
       expect(html).toMatch(new RegExp(`<input id="${prefix}-password"[^>]*aria-describedby="${prefix}-password-hint ${prefix}-password-invalid"`));
       expect(html).toMatch(new RegExp(`<input id="${prefix}-confirm-password"[^>]*aria-describedby="${prefix}-confirm-password-hint ${prefix}-confirm-password-invalid"`));
@@ -138,10 +147,11 @@ describe("PB-016 and PB-037: the password pair", () => {
       expect(html.match(/spellCheck="false"/g)).toHaveLength(2);
       expect(html).toMatch(new RegExp(`id="${prefix}-password"[^>]*enterKeyHint="next"`));
       expect(html).toMatch(new RegExp(`id="${prefix}-confirm-password"[^>]*enterKeyHint="go"`));
-      expect(html.match(new RegExp(`<button type="button" class="q-in__eye" aria-pressed="false" aria-controls="${prefix}-password ${prefix}-confirm-password" aria-label="${t.showPasswords}">`, "g"))).toHaveLength(2);
+      expect(html.match(new RegExp(`<button type="button" class="q-in__eye" aria-pressed="false" aria-controls="${prefix}-password ${prefix}-confirm-password" aria-label="${t.showPassword}">`, "g"))).toHaveLength(2);
       // Neither line ends in a full stop, and the rules are not a live region: nothing is read out on every key.
       expect(t.atLeast15).not.toMatch(/\.$/);
       expect(t.activation.passwordsMatch).not.toMatch(/\.$/);
+      expect(t.activation.sameAsNew).not.toMatch(/\.$/);
       expect(html).not.toMatch(/class="ar-rule"[^>]*aria-live/);
       expect(html).toContain('<span class="ar-sr" role="status" aria-live="polite"></span>');
     }
@@ -172,7 +182,7 @@ describe("PB-017: the finish says it once", () => {
   it.each(LANGS)("in %s: the mark, the title, one line, one filled button to sign in", lang => {
     const t = AUTH_COPY[lang], html = reset(lang, { done: true, message: RESET_DONE });
     expect(html).toContain(`<h1>${t.resetDoneTitle}</h1>`);
-    expect(html).toMatch(/<span class="q-auth__mark" aria-hidden="true"><svg[^>]*width="28" height="28"/);
+    expect(html).toMatch(/<span class="q-auth__mark q-auth__mark--done" aria-hidden="true"><svg[^>]*width="28" height="28"/);
     expect(html).toContain(`<div class="q-auth__receipt" role="status" tabindex="-1"><p>${t.reset.doneLine}</p></div>`);
     expect(html).toContain(`<a class="q-btn" href="/login">${t.signIn}</a>`);
     expect(html.match(/class="q-btn"/g)).toHaveLength(1);
@@ -185,21 +195,25 @@ describe("the phone pages (mobile access) carry the same guidance", () => {
   it.each(LANGS)("request in %s: the step, what happens, the helper, and a refusal with its next step", lang => {
     const t = MOBILE_ACCESS_COPY[lang], u = ACCESS_COPY[lang].recovery, a = AUTH_COPY[lang];
     const html = phoneRequest(lang);
-    for (const line of [step(lang, 1), t.forgotTitle, t.forgotSub, ...u.before, a.recoveryEmailHint, t.requestRecovery, t.haveCode]) expect(html).toContain(line);
+    for (const line of [step(lang, 1), t.forgotTitle, t.forgotSub, u.intro, a.recoveryEmailHint, t.requestRecovery, t.haveCode]) expect(html).toContain(line);
     const refused = phoneRequest(lang, { message: UNAVAILABLE, supportReference: REFERENCE });
-    expect(refused).toContain(authMessage(lang, UNAVAILABLE));
-    expect(refused).toContain(`<span class="ar-alert__next">${u.next.requestFailed}</span>`);
+    saysNote(refused, authMessage(lang, UNAVAILABLE));
+    expect(refused).toContain(`<p>${u.next.requestFailed}</p>`);
     expect(refused).toContain(REFERENCE);
-    expect(refused).not.toContain("ar-before");
+    expect(refused).not.toContain("ar-intro");
     const offline = phoneRequest(lang, { message: OFFLINE_MESSAGE, supportReference: REFERENCE });
-    expect(offline).toMatch(new RegExp(`id="recovery-offline" class="q-auth__alert q-auth__alert--wait" role="alert" tabindex="-1"><svg[^>]*>.*?</svg><span>${u.offline}</span>`));
+    expect(offline).toContain(`id="recovery-offline" class="ar-note" role="alert" tabindex="-1"><div class="b-callout" data-tone="amber"><span class="b-callout__ic" aria-hidden="true">${glyph("offline")}</span>`);
+    saysNote(offline, u.offline);
     expect(offline).not.toContain(REFERENCE);
+    // The Employee ID field shows the example, as on Sign in and the desktop form (row 14), not a second label.
+    expect(html).toMatch(new RegExp(`id="recovery-employee-id"[^>]*placeholder="${a.quiet.idPlaceholder}"`));
   });
 
   it.each(LANGS)("asked in %s: an email was asked for, never that it was sent or arrived", lang => {
     const u = ACCESS_COPY[lang].recovery, a = AUTH_COPY[lang];
     const html = phoneRequest(lang, { done: true, message: ACCEPTED });
     for (const line of [step(lang, 2), u.requestedSub, authMessage(lang, ACCEPTED), u.notConfirmed, a.checkEmail.expires, u.askAgain]) expect(html).toContain(line);
+    expect(html).toContain(`<div class="b-callout" data-tone="teal"><span class="b-callout__ic" aria-hidden="true">${glyph("info")}</span><div class="b-callout__b">${u.notConfirmed} ${a.checkEmail.expires}</div></div>`);
     expect(text(html)).not.toMatch(/Email sent|was sent to|We sent|has been sent|Correo enviado|Te enviamos el|Ya enviamos/i);
     expect(html).not.toContain("<form");
   });
@@ -214,11 +228,11 @@ describe("the phone pages (mobile access) carry the same guidance", () => {
     for (const line of [t.invalidCodeTitle, t.invalidCodeBody, u.next.invalidCode, t.requestNew]) expect(refused).toContain(line);
     const lost = phoneReset(lang, { message: UNCERTAIN });
     for (const line of [t.resetUnknownTitle, t.resetUnknownBody, t.trySignIn]) expect(lost).toContain(line);
-    expect(lost).toContain('class="q-auth__alert q-auth__alert--wait"');
+    expect(lost).toContain(`<div class="b-callout" data-tone="amber"><span class="b-callout__ic" aria-hidden="true">${glyph("unknown")}</span>`);
     expect(lost).not.toContain(t.resetDone);
     const unavailable = phoneReset(lang, { message: UNAVAILABLE, supportReference: REFERENCE });
     for (const line of [a.resetNotConfirmed, u.next.resetUnavailable, REFERENCE]) expect(unavailable).toContain(line);
-    expect(phoneReset(lang, { message: OFFLINE_MESSAGE })).toContain(u.offline);
+    saysNote(phoneReset(lang, { message: OFFLINE_MESSAGE }), u.offline);
     const mismatch = phoneReset(lang, { message: "Passwords do not match." });
     for (const line of [a.checkPasswords, u.next.mismatch]) expect(mismatch).toContain(line);
     expect(mismatch).toMatch(/id="reset-confirm-password"[^>]*aria-invalid="true"/);
@@ -234,9 +248,12 @@ describe("the phone pages (mobile access) carry the same guidance", () => {
     for (const line of [step(lang, 2), t.inviteTitle, u.passwordFact, u.idFact, u.passkeyFact, u.otherSession.replace("{name}", "Maria"), t.activateAccount]) expect(ready).toContain(line);
     expect(phoneActivation(lang, "ready")).not.toContain(u.passkeyFact);
     const offline = phoneActivation(lang, "ready", { offline: true });
-    expect(offline).toMatch(new RegExp(`<p id="activation-offline" class="q-auth__alert q-auth__alert--wait" role="alert" tabindex="-1"><svg[^>]*>.*?</svg><span>${u.offline}</span></p>`));
+    expect(offline).toContain(`<div id="activation-offline" class="ar-note" role="alert" tabindex="-1"><div class="b-callout" data-tone="amber"><span class="b-callout__ic" aria-hidden="true">${glyph("offline")}</span>`);
+    saysNote(offline, u.offline);
     const unavailable = phoneActivation(lang, "unavailable", { supportReference: REFERENCE });
-    for (const line of [t.inviteUnavailable, REFERENCE]) expect(unavailable).toContain(line);
+    expect(unavailable).toContain(REFERENCE);
+    saysNote(unavailable, t.inviteUnavailable);
+    expect(unavailable).toContain(`<div id="activation-unavailable" class="ar-note" role="alert"><div class="b-callout" data-tone="red">`);
     const unknown = phoneActivation(lang, "outcome_unknown", { supportReference: REFERENCE });
     for (const line of [u.unknownTitle, u.unknownFirst, t.trySignIn, REFERENCE]) expect(unknown).toContain(line);
     expect(unknown).not.toContain(u.doneTitle);

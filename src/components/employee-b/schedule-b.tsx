@@ -1,14 +1,15 @@
 import Link from 'next/link';
 import type {ReactNode} from 'react';
-import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
+import {CalendarCheckIcon} from '@phosphor-icons/react/dist/ssr/CalendarCheck';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {ClockCounterClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ClockCounterClockwise';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
+import {UserCheckIcon} from '@phosphor-icons/react/dist/ssr/UserCheck';
 import {BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BStack} from '../owner-b/b-kit';
 import {BDoneArrival} from '../owner-b/b-arrival';
-import {BCardNote, BDay, Dotted} from './parts';
+import {BCardNote, BDay, Dotted, Range} from './parts';
 import {ExchangeHeroB, OpenShiftsEmptyB} from './requests-b';
 import {workCopy} from './work-copy';
 import './schedule.css';
@@ -64,8 +65,10 @@ function WeekCard({days, summary, leadNote}: {days: WeekCardDay[]; summary: Reac
       <span className="eb-wd__h" aria-hidden="true"><span>{day.short}</span><b>{day.day}</b></span>
       {/* One stop per shift (a day off is one stop too), each opening that day. */}
       {day.shifts.length ? day.shifts.map(shift => <Link key={shift.key} className={`eb-wsh eb-wsh--${shift.kind}`} href={day.href} scroll={false} aria-label={shift.label}>
-        {/* Phase 4 (EM-014): each half of the range stays whole; if the block is too narrow the line breaks before the dash. */}
-        <b>{shift.time.includes(' – ') ? <><span className="eb-wsh__t">{shift.time.split(' – ')[0]}</span> <span className="eb-wsh__t">– {shift.time.split(' – ')[1]}</span></> : <span className="eb-wsh__t">{shift.time}</span>}</b>{shift.position ? <span className="eb-wsh__l">{shift.position}</span> : null}<span className="eb-wsh__l">{shift.place}</span>
+        {/* Phase 4 (EM-014): each half of the range stays whole; if the block is too narrow the line breaks before the dash.
+          * Phase 8 (review C, row 24): the Employee screens' one range helper, and the place line wraps between whole
+          * segments, never leaving a "·" at a line's end. */}
+        <b><Range text={shift.time}/></b>{shift.position ? <span className="eb-wsh__l">{shift.position}</span> : null}<span className="eb-wsh__l"><Dotted text={shift.place}/></span>
         {/* Review B6 (NV-146): the status chip and a Lead's marker share one row at the block's foot ("Lead" where a
           * tablet's day is narrow). */}
         {shift.chip || shift.lead ? <span className={shift.tomorrow ? 'eb-wsh__chips eb-wsh__chips--tomorrow' : 'eb-wsh__chips'}>{shift.chip}
@@ -101,7 +104,9 @@ export function ScheduleB(props: ScheduleBProps) {
   const {sub, confirm, celebration, changes, swap, error, receipt, open, unavailable, list, unpublished, weekCard, leadNote, done} = props;
   return <BScreen>
     <BHero title="Schedule" titleId="b-schedule-title" sub={sub}
-      right={<BButtonLink href="/app/availability" kind="glass" label="Availability"><CalendarBlankIcon size={16} weight="bold" aria-hidden="true"/>Availability</BButtonLink>}>
+      // Final review C (row 4): one glyph per concept. Availability is UserCheck, the navigation's (it pairs with Can't
+      // work's UserMinus); CalendarBlank stays the Schedule's own glyph.
+      right={<BButtonLink href="/app/availability" kind="glass" label="Availability"><UserCheckIcon size={16} weight="bold" aria-hidden="true"/>Availability</BButtonLink>}>
       <Week {...props}/>
     </BHero>
     <BStack>
@@ -114,7 +119,9 @@ export function ScheduleB(props: ScheduleBProps) {
       </BCard> : null}
       {confirm ? <BCard id="b-my-review" label={confirm.title}>
         <div className="b-row es-confirm" role="group" aria-labelledby="b-my-review-title">
-          <BIcon tone="teal"><CalendarBlankIcon weight="bold"/></BIcon>
+          {/* Final review C (rows 4, 5): the manager asked for this, so it waits on you: the amber circle, as Home's and
+            * Notifications' same task, with the glyph for confirming a schedule (CalendarCheck) on every screen. */}
+          <BIcon tone="amber"><CalendarCheckIcon weight="bold"/></BIcon>
           <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt" id="b-my-review-title">{confirm.title}</span></span>
             {confirm.detailShort ? <><span className="b-row__s eb-phone">{confirm.detailShort}</span><span className="b-row__s eb-desk">{confirm.detail}</span></> : <span className="b-row__s">{confirm.detail}</span>}</span>
           <span className="es-confirm__act">{confirm.control}</span>
@@ -124,11 +131,12 @@ export function ScheduleB(props: ScheduleBProps) {
         * column. On a phone it joins the Confirm row above it as one card of 64px rows; from tablets up it has its own
         * heading and, on desktop, sits beside the day card. Confirm stays the screen's one filled pill (EM-004). */}
       {open || changes ? <section className="b-card es-tw" aria-labelledby="b-this-week-h">
-        <div className="b-card__h es-tw__h"><h2 id="b-this-week-h">{t.thisWeek}</h2></div>
+        {/* Phase 8 (review C, row 9): the card says what it holds; its open shifts can be next week's. */}
+        <div className="b-card__h es-tw__h"><h2 id="b-this-week-h">{open && changes ? t.openAndChanges : open ? t.openShifts : t.scheduleChanges}</h2></div>
         <ul className="b-list">
           {open ? open.count ? <BRow href={open.href} label={open.label} lead={<BIcon tone="teal"><PlusIcon weight="bold"/></BIcon>} title={`${open.count} open ${open.count === 1 ? 'shift' : 'shifts'} to pick up`} sub={open.detail}/>
             // Review B2 (NV-275): none to pick up is a fact, not a row to open (grey: it doesn't open, EM-017).
-            : open.count === 0 ? <BRow lead={<BIcon tone="grey"><PlusIcon weight="bold"/></BIcon>} title="No open shifts right now" sub={open.detail}/>
+            : open.count === 0 ? <BRow lead={<BIcon tone="grey"><PlusIcon weight="bold"/></BIcon>} title={t.noOpenShifts}/>
             : <BRow href={open.href} label={open.label} lead={<BIcon tone="teal"><PlusIcon weight="bold"/></BIcon>} title="Open shifts" sub={open.detail}/> : null}
           {changes ? <li className="b-li"><div className="es-chg"><BIcon tone="teal"><ClockCounterClockwiseIcon weight="bold"/></BIcon>{changes}</div></li> : null}
         </ul>

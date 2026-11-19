@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-11-18T20:52:45.156244+00:00",
+  "observedAt": "2026-11-19T02:27:22.678653+00:00",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "69aa0970c73c2f93ef330b4252523dddd2aa2f64",
+      "sha": "f9171d7c685b8a780b1d66feab331b10d51558ab",
       "disposition": "included",
-      "reason": "November 18 backend completion candidate includes this exact pushed UI and 30-day business checkpoint through a real merge (4e83dfa53); later uncommitted Claude premium work is outside this source. Source ancestry is established; combined acceptance and Development publication require their own evidence."
+      "reason": "Reviewed and pushed Claude premium UI checkpoint integrated by a real merge into the isolated Development assembly. Backend, password policy and six release corrections retained. Collaboration remains read-only; qualification and hosted acceptance are separate gates."
     },
     {
       "branch": "claude/employee-mobile-phase2-20261027",
@@ -517,7 +517,8 @@
       "branch": "codex/nevora-password-emails-20261117",
       "sha": "6d31d122c078a43297e37a90280f2c657b03b8b6",
       "disposition": "included",
-      "reason": "Approved password/email implementation from PR39 included through real merge 6b7dab08c. The open draft PR and its remote source are preserved pending release reconciliation; their existence does not waive the branch ceiling."
+      "reason": "Jose explicitly approved archive and retirement November18. Exact head preserved in verified remote archive via atomic guarded deletion; all11 commits already included. PR39 retained as a closed record by GitHub after head retirement; all local worktrees preserved.",
+      "archiveRef": "refs/tags/archive/branches/2026-11-18/codex/nevora-password-emails-20261117"
     },
     {
       "branch": "nevora-30-day-phase",
@@ -535,7 +536,8 @@
     "disposition": "New delta held; earlier incorporated prefix preserved",
     "review": "phase5-final-source-equivalence-code-review.md; exact handoff/delta inspected read-only",
     "productionChanged": false,
-    "observedFailureSource": "76f08e5101a1f34fd9dc30cf68b9246fa92ee198"
+    "observedFailureSource": "76f08e5101a1f34fd9dc30cf68b9246fa92ee198",
+    "branchCeilingReason": "Three normal branches plus Jose’s authorized nevora-30-day-phase exception. Superseded password head archived and retired with explicit approval; no broader exception."
   },
   "rondoDevelopmentIntegration": {
     "date": "2026-11-16",

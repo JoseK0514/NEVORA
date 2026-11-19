@@ -5,7 +5,7 @@ import type {ReactNode} from 'react';
 import {CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpLink, CorpNote, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle} from './corp/corp';
 import {HOME_SOURCES} from '../lib/employee-home/project';
 import type {HomeSnapshot, PublishedAssignment} from '../lib/employee-home/types';
-import {unpublishedNote} from '../lib/publication-note';
+import {homePublishedNames, unpublishedNote} from '../lib/publication-note';
 import {keepWhole} from '../lib/keep-whole';
 import Link from 'next/link';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
@@ -174,7 +174,7 @@ export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, 
       <CorpTitle title={name ? `Welcome back, ${name}` : 'Home'} sub={<>{date}{workspaceName ? <> · {workspaceName}</> : null}</>}/>
       {snapshot ? <>
         <ShiftCard snapshot={snapshot}/>
-        {snapshot.publicationState === 'partial' ? <CorpNote>{unpublishedNote(snapshot.unpublishedLocations ?? [])}</CorpNote> : null}
+        {snapshot.publicationState === 'partial' ? <CorpNote>{unpublishedNote(snapshot.unpublishedLocations ?? [], homePublishedNames([snapshot.currentShift, snapshot.nextShift], snapshot.unpublishedLocations))}</CorpNote> : null}
       </> : <CorpCard id="home-shift" label="Today’s shift">
         <CorpBody>
           <p className="c-ehome__state" role="status">{waiting}</p>

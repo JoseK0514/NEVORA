@@ -34,7 +34,7 @@ describe("Settings for someone who isn't an Owner (PD9, UX10)", () => {
     session.role = "MANAGER"; session.scope = null; session.path = "/app/settings";
     team.list = [{ firstName: "Jose", lastName: "Natal", role: "OWNER", active: true }, { firstName: "Old", lastName: "Owner", role: "OWNER", active: false }, { firstName: "Elena", lastName: "Ruiz", role: "MANAGER", active: true }];
     const html = await render();
-    expect(html).toContain("Jose Natal can change a setting for you.");
+    expect(html).toContain("Jose\u00A0Natal can change a setting for you.");
     expect(html).not.toContain("Old Owner");
     // Without Scheduling rules in their navigation, no button offers it.
     expect(html).not.toContain("/app/schedule/settings");
@@ -47,7 +47,8 @@ describe("Settings for someone who isn't an Owner (PD9, UX10)", () => {
     const html = await render();
     expect(html).toMatch(/<h1 id="owner-only-title"[^>]*>Settings<\/h1>/);
     expect(html).toContain("Settings are for Owners");
-    expect(html).toContain("You can change scheduling rules. For anything else, ask Jose Natal.");
+    // Phase 8 (B #22): the Owner's name is kept on one line.
+    expect(html).toContain("You can change scheduling rules. For anything else, ask Jose\u00A0Natal.");
     expect(html).toContain('<a class="b-btn b-btn--ghost" href="/app/schedule/settings">Open Scheduling rules</a>');
     expect(html).not.toContain("b-btn--teal");
     expect(html).not.toContain("PRIVATE settings page");
@@ -68,12 +69,12 @@ describe("Settings for someone who isn't an Owner (PD9, UX10)", () => {
     team.list = [{ firstName: "Jose", lastName: "Natal", role: "OWNER", active: true }];
     session.path = "/app/settings/locations/loc-1";
     let html = await render();
-    expect(html).toContain("Stores are part of Settings, which only Owners can change. Ask Jose Natal.");
+    expect(html).toContain("Stores are part of Settings, which only Owners can change. Ask Jose\u00A0Natal.");
     expect(html).toMatch(/<h1 id="owner-only-title"[^>]*>Settings<\/h1>/);
     expect(html).not.toContain("PRIVATE settings page");
     session.path = "/app/settings/workspace";
     html = await render();
-    expect(html).toContain("Company profile is part of Settings, which only Owners can change. Ask Jose Natal.");
+    expect(html).toContain("Company profile is part of Settings, which only Owners can change. Ask Jose\u00A0Natal.");
     team.list = [];
     session.path = "/app/settings/features";
     expect(await render()).toContain("Features and team terms are part of Settings, which only Owners can change. Ask an Owner.");

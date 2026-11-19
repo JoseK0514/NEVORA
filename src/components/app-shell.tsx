@@ -12,7 +12,7 @@ import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { AuthBrand } from "./auth-brand";
 import { PlusIcon } from "@phosphor-icons/react/ssr";
-import { NavIcon, type NavIconName } from "@/components/nav-icon";
+import { NavIcon } from "@/components/nav-icon";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
 import { PortalDeviceSetup,NativePortalDeviceSetup } from "./portal-device-setup";
@@ -44,11 +44,18 @@ import { OFFLINE_HELD_EVENT } from "@/lib/offline-hold";
 import { QuestionIcon } from "@phosphor-icons/react/dist/ssr/Question";
 import { B_TABLET } from "@/lib/b-viewport";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
+import { CaretUpIcon } from "@phosphor-icons/react/dist/ssr/CaretUp";
 
 /** "9:24 PM" in the device's clock, for the offline line. */
 function clockTime(iso: string) {
   return new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(new Date(iso)).replace(" ", "\u202f");
 }
+
+/** How far the sidebar's scroll fades reach (b-foundation.css): the current entry is kept this far from either edge. */
+const SIDEBAR_FADE = 40;
+/** Phase 9: the room each edge of a scrolling sidebar keeps for its caret (16px, 3px off the edge); an entry that reaches
+ * into it is covered whole. */
+const SIDEBAR_CARET = 24;
 
 /** Home's views share Home's address; the trail names them as their bands do. */
 const HOME_VIEWS = { attendance: "Who’s working", team: "Hours this week", activity: "Activity" } as const;
@@ -103,13 +110,6 @@ type AppShellProps = {
   };
 };
 
-
-/** The corporate tab bar's glyphs (boards C-Owner, C-Employee); the sidebar keeps its own. */
-function tabIcon(icon: NavIconName, employee = false): NavIconName {
-  // Direction B (Employee phones, Nov 6, 2026): Pay is a receipt and Requests a clipboard, as in the approved mock.
-  if (employee) return icon;
-  return icon === "payroll" || icon === "receipt" ? "tabPay" : icon === "requests" ? "tabRequests" : icon;
-}
 
 /** Phase 1: the tapped tab lights up at once, before its page arrives (the Quiet shell styles the mark). */
 function TabPending() {
@@ -273,17 +273,66 @@ function AppShellView({
     ?? (activeItem && currentTab && currentTab.href !== activeItem.href ? currentTab : undefined);
 
   // Keep the current page visible in a sidebar that scrolls on short screens,
-  // clear of the pinned Workspace group.
+  // clear of the pinned Workspace group. Phase 8: clear of the edge fades too (40px), and again when the window changes
+  // size (a phone turned sideways), so the lit entry is always on screen.
+  useEffect(() => {
+    const reveal = () => {
+      const nav = document.getElementById("desktop-primary-navigation");
+      const link = nav?.querySelector<HTMLElement>(".nav-link.active");
+      if (!nav || !link || nav.scrollHeight <= nav.clientHeight) return;
+      const pinned = nav.querySelector<HTMLElement>('[data-group="Workspace"]');
+      const box = nav.getBoundingClientRect(), item = link.getBoundingClientRect();
+      const bottom = box.bottom - (pinned && !pinned.contains(link) ? pinned.offsetHeight : 0);
+      if (item.top < box.top + SIDEBAR_FADE) nav.scrollTop -= box.top + SIDEBAR_FADE - item.top;
+      else if (item.bottom > bottom - SIDEBAR_FADE) nav.scrollTop += item.bottom - bottom + SIDEBAR_FADE;
+    };
+    let frame = 0;
+    const later = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(reveal); };
+    reveal();
+    window.addEventListener("resize", later);
+    return () => { cancelAnimationFrame(frame); window.removeEventListener("resize", later); };
+  }, [sidebarActive]);
+
+  // Phase 8 (Nov 17, 2026): a sidebar or rail that scrolls says so. The list marks the edge that has more entries
+  // (data-more-above, data-more-below); b-foundation.css fades that edge and puts a caret at the foot. A list that fits
+  // carries neither mark.
+  // Phase 9 (Nov 18, 2026): no entry is drawn half under a cue. The cue at an edge covers the entry that edge cuts, whole
+  // (--bs-cover-above, --bs-cover-below; owner-b-shell.css), so the list shows whole entries only and a count badge is
+  // never cut in half. Each edge keeps room for its caret (the foot's points down, the head's up: the cover hides the
+  // faded entry that used to say "more above"); an entry that reaches into that room is covered too. A group's heading
+  // counts as an entry (the full sidebar on a short window).
   useEffect(() => {
     const nav = document.getElementById("desktop-primary-navigation");
-    const link = nav?.querySelector<HTMLElement>(".nav-link.active");
-    if (!nav || !link || nav.scrollHeight <= nav.clientHeight) return;
-    const pinned = nav.querySelector<HTMLElement>('[data-group="Workspace"]');
-    const box = nav.getBoundingClientRect(), item = link.getBoundingClientRect();
-    const bottom = box.bottom - (pinned && !pinned.contains(link) ? pinned.offsetHeight : 0);
-    if (item.top < box.top) nav.scrollTop -= box.top - item.top + 8;
-    else if (item.bottom > bottom) nav.scrollTop += item.bottom - bottom + 8;
-  }, [sidebarActive]);
+    if (!nav) return;
+    let frame = 0;
+    const mark = () => {
+      frame = 0;
+      const more = nav.scrollHeight - nav.clientHeight > 1;
+      const above = more && nav.scrollTop > 1, below = more && nav.scrollTop + nav.clientHeight < nav.scrollHeight - 1;
+      nav.toggleAttribute("data-more-above", above);
+      nav.toggleAttribute("data-more-below", below);
+      let coverAbove = SIDEBAR_CARET, coverBelow = SIDEBAR_CARET;
+      if (above || below) {
+        const box = nav.getBoundingClientRect();
+        const top = box.top + nav.clientTop, bottom = top + nav.clientHeight;
+        for (const entry of nav.querySelectorAll<HTMLElement>(".nav-link, .sidebar-group-label")) {
+          const item = entry.getBoundingClientRect();
+          if (!item.height) continue;
+          if (above && item.top < top + SIDEBAR_CARET && item.bottom > top) coverAbove = Math.max(coverAbove, item.bottom - top);
+          if (below && item.bottom > bottom - SIDEBAR_CARET && item.top < bottom) coverBelow = Math.max(coverBelow, bottom - item.top);
+        }
+      }
+      nav.style.setProperty("--bs-cover-above", `${Math.ceil(coverAbove)}px`);
+      nav.style.setProperty("--bs-cover-below", `${Math.ceil(coverBelow)}px`);
+    };
+    const later = () => { if (!frame) frame = requestAnimationFrame(mark); };
+    mark();
+    nav.addEventListener("scroll", later, { passive: true });
+    window.addEventListener("resize", later);
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(later);
+    observer?.observe(nav);
+    return () => { if (frame) cancelAnimationFrame(frame); nav.removeEventListener("scroll", later); window.removeEventListener("resize", later); observer?.disconnect(); };
+  }, [sidebarItems.length]);
 
   // Phase 7 (IS-3, IS-5): a focused pill in a sideways-scrolling row scrolls into view, and
   // the More sheet closes when keyboard focus moves out of it, so focus never lands behind it.
@@ -485,6 +534,8 @@ function AppShellView({
         <button className="sidebar-toggle" type="button" aria-label={railed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!railed} aria-controls="desktop-primary-navigation" onClick={toggleSidebar}><NavIcon name="sidebar" size={20} /></button>
         </div>
         <nav id="desktop-primary-navigation" className="sidebar-nav" aria-label="Primary navigation">
+          {/* Phase 8: the scroll cues of a list that holds more than the window (drawn only then; b-foundation.css). */}
+          <span className="sidebar-more sidebar-more--top" aria-hidden="true"><CaretUpIcon weight="bold" /></span>
           {navGroups.map((group, index) => <div className="sidebar-nav-group" data-group={group.label || undefined} key={`${index}:${group.label}`}>
           {group.label ? <h2 className="sidebar-group-label">{group.label}</h2> : null}
           {group.items.map((item) => {
@@ -500,9 +551,9 @@ function AppShellView({
                 aria-label={item.href === "/app/inbox" && inboxCount ? `Things to do, ${inboxCount}` : item.label}
               >
                 <span className="nav-icon">
-                  {/* Review B2 (NV-043): an Employee's Pay is the phone tab's receipt (FileText read as Requests' clipboard). */}
-                  {/* Phase 3 (TB-001, TB-009): the current entry's glyph is filled, in the sidebar and the rail, as the phone's current tab is. */}
-                  <NavIcon name={employee && item.icon === "statement" ? "receipt" : item.icon} employee={employee} size={20} weight={active ? "fill" : "bold"} />
+                  {/* Phase 3 (TB-001, TB-009): the current entry's glyph is filled, in the sidebar and the rail, as the phone's current tab is.
+                    * Phase 9: one glyph per concept, the tab bar's own (a pay statement is the receipt for every role). */}
+                  <NavIcon name={item.icon} employee={employee} size={20} weight={active ? "fill" : "bold"} />
                 </span>
                 <span className="nav-label">{item.label}</span>
                 <NavPending />
@@ -510,6 +561,7 @@ function AppShellView({
               </Link>
             );
           })}</div>)}
+          <span className="sidebar-more sidebar-more--bottom" aria-hidden="true"><CaretDownIcon weight="bold" /></span>
         </nav>
 
         {employee ? <Link href="/app/profile" className="sidebar-profile portal-profile-trigger" aria-label="Your profile">
@@ -531,8 +583,8 @@ function AppShellView({
           </button>
         </PortalSignout>
 
-        {/* Review B2 (NV-011): a Help link above "Powered by" on tablets and desktop. */}
-        <Link href="/app/help" className="sidebar-help-link" aria-current={pathname === "/app/help" ? "page" : undefined}><QuestionIcon size={18} weight={pathname === "/app/help" ? "fill" : "bold"} aria-hidden="true" /><span className="nav-label">Help</span></Link>
+        {/* Review B2 (NV-011): a Help link above "Powered by" on tablets and desktop. Phase 9: its glyph is the entries' 20px. */}
+        <Link href="/app/help" className="sidebar-help-link" aria-current={pathname === "/app/help" ? "page" : undefined}><QuestionIcon size={20} weight={pathname === "/app/help" ? "fill" : "bold"} aria-hidden="true" /><span className="nav-label">Help</span></Link>
         <div className="sidebar-platform-footer">
           <span>{workspaceName}</span>
           <small>{NUVORA_BRAND.poweredBy}</small>
@@ -605,8 +657,9 @@ function AppShellView({
                     }}
                   >
                     {/* Corporate (boards C-Owner, C-Employee): outline glyphs; the current tab is teal and filled (upscale S1: every
-                      tab, not Home alone). Team is two people, Pay and Payroll a card, Requests a page. A Lead has the Employee's tab bar. */}
-                    <NavIcon name={tabIcon(item.icon, employee)} size={24} weight={active ? "fill" : "bold"} />
+                      tab, not Home alone). A Lead has the Employee's tab bar. Phase 9: each tab draws its sidebar entry's glyph
+                      (Payroll the wallet, not a card), so a place looks the same on a phone and in the rail. */}
+                    <NavIcon name={item.icon} size={24} weight={active ? "fill" : "bold"} />
                     <span>{item.label}</span>
                     {/* Direction B: the count is visible on the tab too (phones, Owner and Manager); the label above reads it. */}
                     {needsYou !== null && !employee ? <span className="b-tab-badge" aria-hidden="true">{needsYou > 99 ? "99+" : needsYou}</span> : null}

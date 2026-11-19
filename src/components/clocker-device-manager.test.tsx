@@ -146,7 +146,7 @@ describe('the issued setup code', () => {
     expect(html).toMatch(/<svg[^>]*role="img"[^>]*aria-label="Setup code for Patio tablet, as a QR code"/);
     expect(html).toMatch(/<path d="M[0-9 Mhvz-]+" fill="#111517"/);
     expect(html).toContain('Step 2 of 2 · On the tablet'); expect(html).toContain('Connect Patio tablet');
-    expect(html).toContain('Good until Nov 17, 4:05 PM. It works one time.');
+    expect(html).toContain('Good until Nov 17, 4:05 PM. It works one time.');
     for (const step of clockerOwnerCopy.en.ticketSteps) expect(html).toContain(step);
     expect(html.match(/<li>/g)).toHaveLength(3);
   });
@@ -165,7 +165,7 @@ describe('the issued setup code', () => {
   });
   it('Spanish leaks no English sentence', () => {
     const html = ticket('es');
-    expect(englishIn(html)).toEqual([]); expect(html).toContain('Registrar Patio tablet'); expect(wordsOf(html)).toContain('Sirve una sola vez.');
+    expect(englishIn(html)).toEqual([]); expect(html).toContain('Conectar Patio tablet'); expect(wordsOf(html)).toContain('Sirve una sola vez.');
   });
 });
 
@@ -251,7 +251,8 @@ describe('the sheet and the code, driven through the component’s handlers', ()
     expect([...sent.keys()].sort()).toEqual(['locationId', 'name', 'operation']); expect(sent.get('operation')).toBe('REGISTER');
     expect(sheet().open).toBe(false);
     expect(ticket()?.props).toMatchObject({ name: 'Deck tablet', place: 'Calle Loíza', clockerKey: 'calle-loiza', code, added: true });
-    expect(toast).toHaveBeenCalledWith('Setup code ready. Finish on the tablet.');
+    // The code is its own card and takes focus: no toast repeats it (Phase 8).
+    expect(toast).not.toHaveBeenCalled();
     expect(draw().some(node => node.props['data-clocker-device'] === 'added')).toBe(true);
   });
 

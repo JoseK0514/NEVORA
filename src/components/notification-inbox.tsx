@@ -10,12 +10,13 @@ import {CalendarMinusIcon} from '@phosphor-icons/react/dist/ssr/CalendarMinus';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
 import {MegaphoneIcon} from '@phosphor-icons/react/dist/ssr/Megaphone';
 import {UserCheckIcon} from '@phosphor-icons/react/dist/ssr/UserCheck';
+import {UserMinusIcon} from '@phosphor-icons/react/dist/ssr/UserMinus';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {ArrowClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
 
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {MagnifyingGlassIcon} from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
-import {ListChecksIcon} from '@phosphor-icons/react/dist/ssr/ListChecks';
+import {TrayIcon} from '@phosphor-icons/react/dist/ssr/Tray';
 import {WalletIcon} from '@phosphor-icons/react/dist/ssr/Wallet';
 import {ReceiptIcon} from '@phosphor-icons/react/dist/ssr/Receipt';
 import {DeviceMobileIcon} from '@phosphor-icons/react/dist/ssr/DeviceMobile';
@@ -28,11 +29,14 @@ import {relativeTimeText} from '../lib/duration-format';
 import styles from './notification-inbox.module.css';
 import './notification-inbox-corp.css';
 import {CorpEmpty} from './corp/corp';
-import {BState} from './owner-b/b-kit';
+import {BSegs,BState} from './owner-b/b-kit';
 import {KeepSelectedVisible} from './kit/keep-selected-visible';
 
 
-const icons={schedule:CalendarBlankIcon,timeOff:CalendarMinusIcon,exchange:ArrowsLeftRightIcon,update:MegaphoneIcon,availability:UserCheckIcon,callout:WarningCircleIcon,device:DeviceMobileIcon,operations:ListChecksIcon,payroll:WalletIcon,statement:ReceiptIcon};
+/* Premium pass FA (final verification A #14): one glyph per meaning. "Things to do are waiting" is Things to do's tray (the
+ * sidebar's glyph; ListChecks drew a checklist), and a can't-work notice is the person stepping out (UserMinus), as on
+ * Things to do; the red WarningCircle is the stop glyph. */
+const icons={schedule:CalendarBlankIcon,timeOff:CalendarMinusIcon,exchange:ArrowsLeftRightIcon,update:MegaphoneIcon,availability:UserCheckIcon,callout:UserMinusIcon,device:DeviceMobileIcon,operations:TrayIcon,payroll:WalletIcon,statement:ReceiptIcon};
 const reviewLabels:Record<NotificationReviewState,string>={unread:'Unread',read:'Read',confirmed:'Confirmed',unavailable:'Review status unavailable'};
 const actionLabels:Record<NotificationActionState,string>={required:'Action required',available:'Action available',complete:'Action complete',none:'No action required',unavailable:'Action status unavailable'};
 const filters:{value:NotificationFilter;label:string}[]=[{value:'all',label:'All'},{value:'unread',label:'Unread'},{value:'required',label:'Needs action'}];
@@ -40,6 +44,24 @@ const filters:{value:NotificationFilter;label:string}[]=[{value:'all',label:'All
 /* RA-16: a row's time and day are the workplace's. The snapshot carries the workplace zone (backend, Nov 15, 2026); an
  * older snapshot without one keeps the device's. */
 const whenLong=(at:string,timeZone?:string)=>new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric',hour:'numeric',minute:'2-digit',...(timeZone?{timeZone}:{})}).format(new Date(at));
+
+/** Phase 8 (a.md #29, b.md #25): a manager summary carries the count of what it gathered when it was sent: open shifts
+ * ahead, requests and availability not sent in. That is a wider scope, at an earlier time, than Things to do's count
+ * (what can be decided today), so the row says it in the past and names the scope instead of "22 waiting" beside a badge
+ * of 11. Each row's title is its own count, so three summaries no longer share one title. Other rows read as before. */
+const SUMMARY_EVENTS=['MANAGER_REVIEW','COVERAGE_ATTENTION'];
+const SUMMARY_SCOPE='Open shifts, requests or missing availability';
+function summaryCount(item:EmployeeNotificationItem){return SUMMARY_EVENTS.includes(item.eventType??'')&&Number.isSafeInteger(item.count)&&(item.count??-1)>=0?item.count as number:null;}
+const summaryWords=(n:number)=>`${n} ${n===1?'item was':'items were'} waiting`;
+function rowText(item:EmployeeNotificationItem):{title:string;detail:string|null}{
+ const n=summaryCount(item);
+ return n===null?notificationTitle(item):{title:summaryWords(n),detail:SUMMARY_SCOPE};
+}
+/** A held row's facts, each whole (premium pass: drawn with BSegs, so no line starts or ends on the middle dot). */
+function rowFacts(item:EmployeeNotificationItem){
+ const n=summaryCount(item);
+ return [notificationName(item),notificationOutcomeNote(item),n===null?notificationCountNote(item):summaryWords(n)].filter((fact):fact is string=>!!fact);
+}
 
 export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;onMarkRead?:(id:string)=>Promise<void>;
  /** v5 (mockup E14): an Employee's or Lead's Notifications in the Quiet list, without Mark read (management only). */
@@ -75,7 +97,9 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
   // Phase 3 (OW-002): for Owners and Managers, repeats of one summary fold into its newest row. Employees keep one row each.
   const rows=onMarkRead?collapseNotifications(sorted):sorted.map(item=>({item,count:1,unreadIds:item.reviewState==='unread'?[item.id]:[],items:[item]}));
   // One notification's row: what it is, then when. Opening it marks that one read (never the others in a fold).
-  const chev=(open?:boolean)=><svg className="q-chev" data-open={open||undefined} viewBox="0 0 256 256" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/></svg>;
+  // Premium pass FA (final verification A #14): the row chevron is the kit's, bold 16px in the field edge (it was a thin
+  // hand-drawn path, paler than every other list's).
+  const chev=(open?:boolean)=><CaretRightIcon className="q-chev q-chev--kit" data-open={open||undefined} size={16} weight="bold" aria-hidden="true"/>;
   // A relative time never breaks inside itself on a narrow phone ("5 h ago", not "5 / h ago").
   const ago=(at:string)=>relativeTimeText(at,undefined,zone).replace(/(\d+) (h|min|d|days?|hours?|minutes?)\b/g,'$1\u00a0$2');
   // A notification inside an opened group: the group's row already names the kind, so each row leads with its own facts
@@ -83,21 +107,21 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
   // the icon keeps its text under the group's text at every width (the kit sets the row's padding and icon size).
   const heldRow=(item:EmployeeNotificationItem)=>{
    const review=item.reviewState??'unavailable',text=notificationTitle(item);
-   const facts=[notificationName(item),notificationOutcomeNote(item),notificationCountNote(item)].filter((fact):fact is string=>!!fact).join(' · ');
+   const factList=rowFacts(item),facts=factList.join(' · ');
    return <Link className="q-row q-row--av q-notif-heldrow" data-unread={review==='unread'||undefined} href={item.href} prefetch={false} aria-label={`${[text.title,facts||null].filter(Boolean).join(', ')}, ${reviewLabels[review]}, ${whenLong(item.at,zone)}`}
     onClick={()=>{if(review==='unread')void markRead(item.id);}}>
     <span className="q-av q-notif-spacer" aria-hidden="true"/>
-    <span className="q-rt">{facts?<><b>{facts}</b><i><time dateTime={item.at}>{ago(item.at)}</time></i></>:<b><time dateTime={item.at}>{ago(item.at)}</time></b>}</span>
+    <span className="q-rt">{facts?<><b><BSegs parts={factList}/></b><i><time dateTime={item.at}>{ago(item.at)}</time></i></>:<b><time dateTime={item.at}>{ago(item.at)}</time></b>}</span>
     {review==='unread'?<span className="q-notif-dot" aria-hidden="true"/>:null}
     {chev()}
    </Link>;
   };
   const oneRow=(item:EmployeeNotificationItem)=>{
-   const Icon=icons[notificationPresentation(item.label,item.eventType).icon],review=item.reviewState??'unavailable',text=notificationTitle(item);
+   const Icon=icons[notificationPresentation(item.label,item.eventType).icon],review=item.reviewState??'unavailable',text=rowText(item);
    return <Link className="q-row q-row--av" data-unread={review==='unread'||undefined} href={item.href} prefetch={false} aria-label={`${[text.title,text.detail].filter(Boolean).join(', ')}, ${reviewLabels[review]}, ${whenLong(item.at,zone)}`}
     onClick={()=>{if(review==='unread')void markRead(item.id);}}>
     <span className="q-av" aria-hidden="true"><Icon weight="bold" className="q-ic" aria-hidden="true"/></span>
-    <span className="q-rt"><b>{text.title}</b><i>{text.detail?<>{text.detail} · </>:null}<time dateTime={item.at}>{ago(item.at)}</time></i></span>
+    <span className="q-rt"><b>{text.title}</b><i><BSegs parts={[text.detail,<time key="at" dateTime={item.at}>{ago(item.at)}</time>]}/></i></span>
     {/* Round 5: unread shows, not only in the label (a teal dot), and the row reads as a link (chevron). */}
     {review==='unread'?<span className="q-notif-dot" aria-hidden="true"/>:null}
     {chev()}

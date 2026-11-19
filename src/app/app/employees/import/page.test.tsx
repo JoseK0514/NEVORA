@@ -67,7 +67,9 @@ describe("/app/employees/import", () => {
   it("shows the unavailable page when the company's information can't be read", async () => {
     m.denied = true;
     const html = await render();
-    expect(html).toContain("Staff list import unavailable");
+    // Review 30 (D09): without company-wide access the page is the closed state under its own name.
+    expect(html).toContain("<h1>Staff list import</h1>");
+    expect(html).toContain("Company-wide access needed");
     expect(html).not.toContain("rimp-list");
   });
 });

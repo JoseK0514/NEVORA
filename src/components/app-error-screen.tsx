@@ -1,6 +1,6 @@
 'use client';
 import { useSyncExternalStore } from 'react';
-import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise";
+import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowClockwise";
 import '@/components/kit/kit.css';
 import './app-error-screen.css';
 import { CardBody, KitStack, Masthead } from '@/components/kit/kit';
@@ -52,7 +52,7 @@ export function AppErrorScreen({reset, digest}: {reset: () => void; digest?: str
         <CardBody>
           <ErrorAdvice digest={digest} className="app-error-screen__text" />
           <div className="app-error-screen__actions">
-            <button type="button" className="nv-btn" data-kind="primary" onClick={() => { reset(); focusAfterRetry('[data-nv-page] [data-nv-band] h1', '.app-error-screen .nv-btn[data-kind="primary"]'); }}><ArrowsClockwiseIcon size={18} weight="bold" aria-hidden="true" />Try again</button>
+            <button type="button" className="nv-btn" data-kind="primary" onClick={() => { reset(); focusAfterRetry('[data-nv-page] [data-nv-band] h1', '.app-error-screen .nv-btn[data-kind="primary"]'); }}><ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true" />Try again</button>
             {/* eslint-disable-next-line next-preserved/no-html-link-for-pages -- the app shell itself may be what failed, so leave it with a full document load */}
             <a className="nv-btn" data-kind="secondary" href="/app">Go to Home</a>
           </div>

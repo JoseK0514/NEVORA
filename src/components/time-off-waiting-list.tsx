@@ -5,6 +5,8 @@ import { useFormStatus } from "react-dom";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { reviewTimeOffAction } from "@/app/app/requests/actions";
 import { QuietRow } from "@/components/quiet/quiet";
+import { RequestFace } from "@/components/request-face";
+import { BSegs } from "@/components/owner-b/b-kit";
 import { useLeaveStaffing } from "@/components/leave-staffing/use-leave-staffing";
 import { conflictsFor } from "@/components/leave-staffing/conflict-check";
 import { MAX_STAFFING_WEEKS, weeksFor } from "@/lib/time-off-staffing/client";
@@ -19,8 +21,9 @@ export type WaitingTimeOff = { id: string; employeeName: string; avatar: string;
 /** OW-011: a row's "when" breaks only between its parts ("Mon, Nov 30 – Wed, Dec 2 ·" then "3 days"). A range never breaks
  * inside itself and no line starts with the separator dot. */
 export function WholeParts({ text }: { text: string }) {
-  const parts = text.split(" · ");
-  return <>{parts.map((part, index) => <span key={index}><span className="b-req-nw">{part}{index < parts.length - 1 ? "\u00a0·" : null}</span>{index < parts.length - 1 ? " " : null}</span>)}</>;
+  // Premium pass FA (final verification A #10): each part stays whole and no line starts or ends with its "·" (the kit's
+  // line of facts; the dot used to end the line: "Tue, Nov 24 ·" over "12:00 PM – 8:00 PM ·").
+  return <BSegs className="b-req-nw-line" parts={text.split(" · ")} />;
 }
 
 /** Phase 3 (OW-013): at 768px and wider a request is the Things to do row (avatar, name and dates, age, then Decline and
@@ -40,7 +43,8 @@ export function TimeOffWaitingList({ requests }: { requests: WaitingTimeOff[] })
     const note = conflicts?.length ? <span className="b-leave-note" data-tone="amber"><WarningIcon weight="bold" aria-hidden="true" />{`On the schedule: ${conflictShift(conflicts[0])}${conflicts.length > 1 ? ` +${conflicts.length - 1}` : ""}`}</span>
       : conflicts ? null : <span className="b-leave-note">{!checked.has(request.id) ? "Check the schedule on its page" : staffing.status === "loading" ? "Checking the schedule…" : staffing.status === "expired" ? "Schedule check expired" : staffing.status === "paused" ? "Schedule check paused" : "Couldn’t check the schedule"}</span>;
     return <li key={request.id} id={`request-${request.id}`} tabIndex={-1} className="q-request">
-      <QuietRow bare avatar={request.avatar} title={request.employeeName} href={request.href}
+      {/* Phase 8 (a.md #12, #25): the person's own face tint, and no chevron on a row that carries its own buttons (OW-012). */}
+      <QuietRow bare avatar={<RequestFace name={request.employeeName} initials={request.avatar} />} title={request.employeeName} href={request.href} chevron={false}
         detail={<><WholeParts text={request.when} />{request.aged && request.ago ? <span className="q-rt__line b-req-age">{request.ago}</span> : null}</>}
         value={request.ago ? <span className="b-req-ago">{request.ago}</span> : undefined} />
       {note ? <p className="q-acts-note">{note}</p> : null}

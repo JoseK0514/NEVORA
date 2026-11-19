@@ -94,8 +94,9 @@ export function PayB(props: PayBProps) {
                 aria-label={`Pay statement (PDF), ${role(item)}, payday ${paydayLong(item.payday)}${item.viewUrl ? ' (opens separately)' : ''}`} onClick={() => onOpenPdf(`b-pay-pdf-${item.id}`)}>
                 <span className="b-ico b-ico--teal" aria-hidden="true"><FileTextIcon weight="bold"/></span><span className="ep-pdf__t">Pay statement (PDF)</span><ArrowSquareOutIcon className="ep-pdf__out" size={18} weight="bold" aria-hidden="true"/></a></li>
             </BList>
+            {/* Phase 9 (spec 3.2): the note qualifies the PDF above it, so it is this card's footer, not a line under it. */}
+            <BNote>Downloaded files may contain personal pay information.</BNote>
           </BCard>
-          <BNote>Downloaded files may contain personal pay information.</BNote>
         </>}
       </BStack>
     </BScreen>;
@@ -150,7 +151,7 @@ export function PayB(props: PayBProps) {
         <p className="ep-status__t" id="b-pay-notice-title">{notice.title}</p><p className="ep-status__s">{notice.body}</p>
       </div> : null}
       {/* Inspection Nov 14 (EM-003): the card says its state ("Statement ready", or Corrected) and ends in one real button. */}
-      {latest ? <BCard id="b-pay-last" title="Last pay statement" chip={tag(latest) ?? <BChip tone="green">Statement ready</BChip>}>
+      {latest ? <BCard id="b-pay-last" title="Last pay statement" chip={tag(latest) ?? <BChip tone="green" icon="check">Statement ready</BChip>}>
         <div className="ep-big"><p className="ep-big__v">{payday(latest.payday)}</p><p className="ep-big__s">For work {period(latest.period.startDate, latest.period.endDate)}</p></div>
         <div className="ep-act"><BButtonLink href={paycheckHref(latest.id)} kind="teal" full label={`View statement, ${paydayLong(latest.payday)}`}><FileTextIcon size={18} weight="bold" aria-hidden="true"/>View statement</BButtonLink></div>
       </BCard> : fallback}

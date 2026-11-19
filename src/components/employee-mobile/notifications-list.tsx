@@ -1,11 +1,11 @@
 'use client';
 import Link from 'next/link';
 import {useState,type MouseEvent,type ReactNode} from 'react';
-import {CircleNotchIcon} from '@phosphor-icons/react/dist/ssr/CircleNotch';
 import type {EmployeeNotificationItem,EmployeeViewSnapshot} from '../../lib/employee-view';
 import type {PrivatePanelState} from '../../lib/private-snapshot-client';
 import {notificationCountNote,notificationKindFor,notificationName,notificationOutcomeNote} from '../../lib/notification-facts';
 import {CorpCard,CorpCount} from '../corp/corp';
+import {BSegs} from '../owner-b/b-kit';
 import {ACCOUNT_LOCALE,accountCopy,type AccountLang} from '../employee-b/account-copy';
 import './account-corp.css';
 
@@ -123,8 +123,8 @@ export function EmployeeNotificationList({items,partial,tab,onTab,timeZone,onOpe
     const facts=[notificationOutcomeNote(item),notificationCountNote(item)].filter((note):note is string=>!!note);
     return <li key={item.id}><Link id={'message-'+item.id} className={`c-row em-notif-row${isUnread?' em-notif-row--unread':''}${busy?' em-notif-row--busy':''}`} href={item.href} prefetch={false} onClick={onOpen?event=>onOpen(event,item.id,item.href):undefined}
      aria-busy={busy||undefined} aria-label={`${title}${facts.length?`, ${facts.join(', ')}`:''}${isUnread?', unread':''}${required?', action needed':''}, ${time}`}>
-     <span className="c-row__main"><span className={isUnread?'c-row__title c-row__title--b':'c-row__title'}>{title}</span><span className="c-row__detail"><span>{required?'Action needed · ':''}{facts.map(note=>`${note} · `).join('')}{time}</span></span></span>
-     {busy?<CircleNotchIcon className="em-notif-spin" weight="bold" aria-hidden="true"/>:isUnread?<span className="em-notif-dot" aria-hidden="true"/>:null}
+     <span className="c-row__main"><span className={isUnread?'c-row__title c-row__title--b':'c-row__title'}>{title}</span><span className="c-row__detail"><BSegs parts={[required?'Action needed':null,...facts,time].flatMap(part=>part?part.split(/[\s\u00a0]+·[\s\u00a0]+/):[])}/></span></span>
+     {busy?<span className="em-notif-spin b-spin b-spin--sm" aria-hidden="true"/>:isUnread?<span className="em-notif-dot" aria-hidden="true"/>:null}
     </Link></li>;})}</ul>
   </CorpCard>):<CorpCard><p className="c-empty"><b>{tab==='unread'?'You’re all caught up':partial?'Nothing confirmed on this page':'No current notifications'}</b>{tab==='unread'?'No unread notifications.':partial?'Some notices couldn’t be checked. Refresh to check again.':'New schedule, request and pay notices will show here.'}{more?' Older items may be on another page.':''}</p></CorpCard>}
  </>;

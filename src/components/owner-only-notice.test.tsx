@@ -42,10 +42,16 @@ describe("the closed-page state screen", () => {
     expect(html).not.toContain("b-btn--teal");
     expect(html).not.toContain("c-btn");
   });
-  it("draws no actions row when the page gives no way on", () => {
-    const bare = renderToStaticMarkup(<OwnerOnlyNotice state title="Settings" reason="Settings are for Owners" line="Ask an Owner if you need a change here." />);
-    expect(bare).not.toContain("b-closed-actions");
-    expect(bare).toContain('href="/app"');
+  // Final verification F (F09): a closed page without a page of its own to offer still has one tinted step, Home (it was a
+  // dead end on desktop, where the band draws no "‹ Home").
+  it("offers Return to Home as the one tinted step when the page gives no way on", () => {
+    const bare = renderToStaticMarkup(<OwnerOnlyNotice state title="Payroll" reason="Payroll is for Owners" line="Owners can give you payroll access." />);
+    expect(bare).toContain('<div class="b-state-actions b-closed-actions"><a href="/app" class="b-btn b-btn--ghost">Return to Home</a></div>');
+    expect(bare).not.toContain("b-btn--teal");
+  });
+  it("names a closed Settings page on the band (Settings itself, outside the router)", () => {
+    const settings = renderToStaticMarkup(<OwnerOnlyNotice state title="Settings" reason="Settings are for Owners" line="Ask an Owner if you need a change here." />);
+    expect(settings).toMatch(/<h1 id="owner-only-title"[^>]*>Settings<\/h1>/);
   });
   it("leaves the notice an Employee sees as it was (two layouts, one filled way on)", () => {
     const employee = renderToStaticMarkup(<OwnerOnlyNotice title="Insights" reason="Insights is for Owners and Managers" help="Your own hours are on Time." next={{ href: "/app/my-time", label: "Open Time" }} />);

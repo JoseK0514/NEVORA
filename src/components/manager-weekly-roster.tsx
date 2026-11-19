@@ -6,24 +6,28 @@ import { ScheduleCoverageLine } from "./schedule-coverage-line";
 import { durationRow, durationTotal } from "@/lib/duration-format";
 import type { CoverageMinutes } from "@/lib/scheduling/coverage-minutes";
 import { REPAIR_DAY_EVENT } from "./leave-staffing/repair-note";
-import { useEffect, useId, useState, type ReactNode } from "react";
+import { useEffect, useId, useState, type CSSProperties, type ReactNode } from "react";
 import { KeepSelectedVisible } from "./kit/keep-selected-visible";
 
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 
-import { Avatar } from "./kit/kit";
 import { QuietGroup, QuietRow, QuietSection } from "./quiet/quiet";
 import { CorpAvatar, CorpCard, CorpTime } from "./corp/corp";
 import { useToday } from "./manager-today";
 import { ATTENDANCE_WORDS } from "../lib/action-center/present";
 import { notClockedInText } from "./team-live";
+import { lateText } from "../lib/action-center/request-details";
+import { reviewCopy } from "./review-details/copy";
 import type { Today, TodayShift } from "../lib/today/project";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
+import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { addDays, formatDayLabel, formatTime } from "../lib/date-utils";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
-import { compactRange, BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BStack, type BTone } from "./owner-b/b-kit";
+import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
+import { faceTint } from "@/lib/face-tint";
+import { compactRange, BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSegs, BStack, BStatusText } from "./owner-b/b-kit";
 import { absencesOn, fullDayAbsence, type WeeklyApprovedAbsences, assignedMinutes, type RosterEmployee, type RosterShift } from "../lib/scheduling/manager-roster-presentation";
 
 /* Manager and Owner Schedule, rebuilt for the clean Manager app (v3, approved Oct 19; spec "Schedule" in
@@ -115,12 +119,14 @@ function DayTime({ start, end }: { start: string; end: string }) {
 
 /** Today's live state for one rostered shift, from the same Today read Home uses (matched by person and start time).
  * `problem`: a missed or late clock-in, which may take the screen's one red. */
-function liveState(shift: RosterShift, employeeId: string, today: Today | null, timeZone: string): { text: string; tone: "teal" | "blue" | "neutral"; problem?: true } | null {
+function liveState(shift: RosterShift, employeeId: string, today: Today | null, timeZone: string): { text: string; tone: "teal" | "blue" | "neutral" | "late"; problem?: true } | null {
   if (today?.state !== "ready" || shift.date !== today.today) return null;
   const hhmm = (iso: string) => new Intl.DateTimeFormat("en-GB", { timeZone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(iso));
   const live: TodayShift | undefined = today.shifts.find(row => row.employeeId === employeeId && hhmm(row.startAt) === shift.startTime.slice(0, 5));
   if (!live) return null;
-  if (live.status === "clocked_in") return { text: "Working", tone: "teal" };
+  // Phase 9 (spec 3.1): one word for someone on the clock, "Clocked in" (it was "Working" here only), and a late arrival
+  // says so in the words Home and Team use ("Clocked in late · 9 min"), so one person reads the same on every page.
+  if (live.status === "clocked_in") return live.late ? { text: lateText(live, ATTENDANCE_WORDS.late, reviewCopy()), tone: "late" } : { text: "Clocked in", tone: "teal" };
   if (live.status === "on_break") return { text: "On break", tone: "blue" };
   if (live.status === "no_punches") return { text: ATTENDANCE_WORDS.missed, tone: "neutral", problem: true };
   if (live.status === "not_clocked_in") {
@@ -300,7 +306,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
     <CorpAvatar name={employee.name} initials={initials(employee.name).toUpperCase()} />
     <span className="c-row__main">
       <span className="c-sched-row__top"><span className="c-row__title c-row__title--b">{employee.name}</span>{statePill(shift, employee.id)}</span>
-      <span className="c-row__detail"><span>{[shift.position || employee.role, !locationId ? shift.location : null].filter(Boolean).join(" · ")}</span></span>
+      <span className="c-row__detail"><BSegs parts={[shift.position || employee.role, !locationId ? shift.location : null]} /></span>
     </span>
   </Link></li>;
   const corpRows = [
@@ -336,7 +342,8 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
     {absences.state === "unavailable" || employees.some(employee => !absenceKnown(employee.id)) ? <p className="c-sched-day__note" role="status">Time off unavailable. Reload before adding shifts.</p> : null}
     {dayAbsences.length ? <ul className="c-rows c-sched-day__off" aria-label={`Approved time off on ${longWeekday(phoneDay)}`}>
       {dayAbsences.map(({employee, rows}) => <li key={employee.id}><div className="c-row">
-        <CorpAvatar initials={initials(employee.name).toUpperCase()} grey />
+        {/* Phase 9 (spec 3.5): a person keeps their own tint on every screen, time off included. */}
+        <CorpAvatar name={employee.name} initials={initials(employee.name).toUpperCase()} />
         <span className="c-row__main"><span className="c-row__title">{employee.name}</span><span className="c-row__detail"><span>{absenceText(rows)}</span></span></span>
       </div></li>)}
     </ul> : null}
@@ -358,7 +365,8 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
     const over = employee.hours ? employee.hours.week > employee.hours.maximum : false;
     return <tr className={repairEmployeeId === employee.id ? "cm-grid__row manager-issue-target cm-grid__row--repair" : "cm-grid__row manager-issue-target"} data-leave-repair={repairEmployeeId === employee.id || undefined} id={`schedule-employee-${employee.id}`} tabIndex={-1} key={employee.id} hidden={hidden || undefined}>
       <th scope="row" className="cm-person">
-        <Avatar initials={initials(employee.name)} />
+        {/* Phase 8 (a.md #12): a person keeps their face tint on the grid too (BAvatar's tint, from the name). */}
+        <GridAvatar name={employee.name} />
         <span className="cm-person__text">
           <span className="cm-person__name" title={employee.name}>{employee.name}</span>
           <span className="cm-person__sub c-num" aria-hidden="true" title={employee.hours ? hoursText(employee.hours) : undefined}>{week}{over && employee.hours ? <em>{` · ${overBy(employee.hours)} over ${employee.hours.maximum} h`}</em> : null}</span>
@@ -456,19 +464,26 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
   </div>;
 
   // ---------- Direction B phone (mock "Owner · Schedule"): the hero with the week on glass, then the day as a card ----------
-  const bLive = (shift: RosterShift, employeeId: string): { chip?: { text: string; tone: BTone }; ring?: "late" | "on" } => {
+  // Phase 9 (spec 3.1): a live state that is the normal one is quiet grey words ("Clocked in" with the green live dot, "On
+  // break"); an exception is an amber chip, with the live dot while the person should be on the clock now
+  // ("Not clocked in · 24 min") and without it once the shift is over ("Missed"). A draft and a change waiting to be
+  // published keep their amber chips.
+  const bLive = (shift: RosterShift, employeeId: string): { state?: ReactNode; text?: string; ring?: "late" | "on" } => {
     const live = liveState(shift, employeeId, todayRead, timeZone);
-    if (live) return live.tone === "teal" ? { chip: { text: live.text, tone: "green" }, ring: "on" } : live.tone === "blue" ? { chip: { text: live.text, tone: "teal" }, ring: "on" } : { chip: { text: live.text, tone: "amber" }, ring: "late" };
-    return shift.status === "DRAFT" ? { chip: { text: "Draft", tone: "amber" } } : corp?.changedShiftIds?.includes(shift.id) ? { chip: { text: "Changed", tone: "amber" } } : {};
+    if (live) return live.tone === "teal" ? { state: <BStatusText dot="green">{live.text}</BStatusText>, text: live.text, ring: "on" }
+      : live.tone === "late" ? { state: <BChip tone="amber" dot>{live.text}</BChip>, text: live.text, ring: "late" }
+      : live.tone === "blue" ? { state: <BStatusText>{live.text}</BStatusText>, text: live.text, ring: "on" }
+      : { state: <BChip tone="amber" dot={live.text !== ATTENDANCE_WORDS.missed}>{live.text}</BChip>, text: live.text, ring: "late" };
+    return shift.status === "DRAFT" ? { state: <BChip tone="amber">Draft</BChip>, text: "Draft" } : corp?.changedShiftIds?.includes(shift.id) ? { state: <BChip tone="amber">Changed</BChip>, text: "Changed" } : {};
   };
   // A day's shifts at one place don't repeat it on every row (the open shifts keep theirs).
   const bPlaces = new Set(dayShifts.map(entry => entry.shift.location)).size;
   const bRows = [
-    ...dayShifts.map(({ shift, employee }) => { const live = repairEmployeeId === employee.id && repairDay === shift.date ? { chip: { text: "Approved time off", tone: "amber" as BTone }, ring: "late" as const } : bLive(shift, employee.id); return { start: shift.startTime, node: <BRow key={`shift-${shift.id}`} href={editHref(shift)} label={`${shiftLabel(shift, employee.name)}${repairEmployeeId === employee.id && repairDay === shift.date ? ", approved leave, needs a replacement" : ""}`}
-      lead={<BAvatar name={employee.name} ring={live.ring} />} title={employee.name} chip={live.chip ? <BChip tone={live.chip.tone}>{live.chip.text}</BChip> : undefined}
-      sub={[range(shift.startTime, shift.endTime) === "All day" ? "All day" : compactRange(`${clock(shift.startTime)} – ${clock(shift.endTime)}`), shift.position || employee.role, !locationId && bPlaces > 1 ? shift.location : null].filter(Boolean).join(" · ")} chevron={false} /> }; }),
+    ...dayShifts.map(({ shift, employee }) => { const live = repairEmployeeId === employee.id && repairDay === shift.date ? { state: <BChip tone="amber">Approved time off</BChip>, ring: "late" as const } : bLive(shift, employee.id); return { start: shift.startTime, node: <BRow key={`shift-${shift.id}`} href={editHref(shift)} label={`${shiftLabel(shift, employee.name)}${repairEmployeeId === employee.id && repairDay === shift.date ? ", approved leave, needs a replacement" : ""}`}
+      lead={<BAvatar name={employee.name} ring={live.ring} />} title={employee.name} chip={live.state}
+      sub={<BSegs parts={[range(shift.startTime, shift.endTime) === "All day" ? "All day" : compactRange(`${clock(shift.startTime)} – ${clock(shift.endTime)}`), shift.position || employee.role, !locationId && bPlaces > 1 ? shift.location : null]} />} chevron={false} /> }; }),
     ...dayOpen.map(open => { const over = ended(open); return { start: open.startTime, node: <BRow key={`open-${open.id}`} lead={<BAvatar open />} title="Open shift"
-      sub={[range(open.startTime, open.endTime) === "All day" ? "All day" : compactRange(`${clock(open.startTime)} – ${clock(open.endTime)}`), open.location].filter(Boolean).join(" · ")}
+      sub={<BSegs parts={[range(open.startTime, open.endTime) === "All day" ? "All day" : compactRange(`${clock(open.startTime)} – ${clock(open.endTime)}`), open.location]} />}
       href={over ? undefined : open.href} label={`Find cover for the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}
       trail={over ? <BChip>Not filled</BChip> : <BButtonLink href={open.href} kind="ghost" label={`Fill the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}`}>Fill</BButtonLink>} /> }; }),
   ].sort((a, b) => a.start.localeCompare(b.start));
@@ -477,7 +492,9 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
     <BHero title="Schedule" titleId="b-schedule-title" sub={b.sub} right={b.actions}>
       <div className="b-hrow">{b.location}</div>
       <div className="b-week b-glass" role="group" aria-label="Week">
-        <div className="b-week__h"><span className="c-num">{corp.weekLabel}{b.weekState ? <span className={`b-chip b-chip--${b.weekState.tone}`}>{b.weekState.text}</span> : null}</span>
+        {/* Premium pass FA (final verification A #11, B #7): the dates and their state are one block, so at 320px "Published"
+          * drops under the dates and the arrows keep the dates' row (they fell to a row of their own). */}
+        <div className="b-week__h"><span className="b-week__label"><span className="b-week__date">{corp.weekLabel}</span>{b.weekState ? <span className={`b-chip b-chip--${b.weekState.tone}`} data-icon={b.weekState.tone === "ok" ? "check" : undefined}>{b.weekState.tone === "ok" ? <CheckIcon weight="bold" aria-hidden="true" /> : null}{b.weekState.text}</span> : null}</span>
           <span>{corp.todayHref ? <a className="b-btn b-btn--glass" href={corp.todayHref} aria-label="Go to this week">Today</a> : null}
             <a className="b-week__arrow" href={corp.previousHref} aria-label="Previous week"><CaretLeftIcon size={18} weight="bold" aria-hidden="true" /></a>
             <a className="b-week__arrow" href={corp.nextHref} aria-label="Next week"><CaretRightIcon size={18} weight="bold" aria-hidden="true" /></a></span></div>
@@ -501,9 +518,11 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
     <BStack>
       {b.notes ? <div className="b-notes">{b.notes}</div> : null}
       {b.toPlan.length ? <BCard label="Locations the team can’t see yet"><BList label="Locations the team can’t see yet">{b.toPlan.map(row =>
-        <BRow key={row.id} lead={<BIcon tone="amber"><WarningIcon weight="bold" /></BIcon>} title={row.title} sub={row.detail} href={row.href} label={row.label}
+        // Phase 8 (a.md #33): the warning glyph is for failures; a week the team can't see yet is the amber "not seen" glyph.
+        <BRow key={row.id} lead={<BIcon tone="amber"><EyeSlashIcon weight="bold" /></BIcon>} title={row.title} sub={row.detail} href={row.href} label={row.label}
           end={<span className="b-link">{row.action}<CaretRightIcon size={16} weight="bold" aria-hidden="true" /></span>} chevron={false} />)}</BList></BCard> : null}
-      {employees.length ? <BCard id="b-schedule-day" title={corpDayLabel} meta={<span className="c-num">{`${plural(bRows.length, "shift", "shifts")}${corpHours ? ` · ${corpHours}` : ""}`}</span>}>
+      {/* Premium pass FA (final verification A #10, B #8): "Today" and the date wrap whole, never "Today ·" over the date. */}
+      {employees.length ? <BCard id="b-schedule-day" title={<BSegs parts={[phoneDay === today ? "Today" : null, corpDayLabel.replace(/^Today · /, "")]} />} meta={<span className="c-num">{`${plural(bRows.length, "shift", "shifts")}${corpHours ? ` · ${corpHours}` : ""}`}</span>}>
         {bRows.length ? <BList label={`Shifts on ${longWeekday(phoneDay)}`}>{(showAll ? bRows : bRows.slice(0, SHOWN_B)).map(row => row.node)}</BList> : <p className="b-state">Nothing scheduled.</p>}
         {!showAll && bRows.length > SHOWN_B ? <button type="button" className="b-add" onClick={() => setMoreDay(phoneDay)}>{`Show ${bRows.length - SHOWN_B} more`}</button> : null}
         {absences.state === "unavailable" || employees.some(employee => !absenceKnown(employee.id)) ? <p className="b-state" role="status">Time off unavailable. Reload before adding shifts.</p> : null}
@@ -534,4 +553,11 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
 function useTodayWhen(enabled: boolean) {
   const { snapshot } = useToday();
   return enabled ? snapshot : null;
+}
+
+/** Phase 8 (a.md #12): the grid's 32px face, in the person's own tint (the same faceTint the kit's BAvatar uses), so a
+ * person reads the same colour on Home, Team, Timecards and here. The grid's sheet sizes it (owner-b-schedule.css). */
+function GridAvatar({ name }: { name: string }) {
+  const [bg, fg] = faceTint(name);
+  return <span className="nv-avatar" data-tint="" style={{ "--av-bg": bg, "--av-fg": fg } as CSSProperties} aria-hidden="true">{initials(name)}</span>;
 }

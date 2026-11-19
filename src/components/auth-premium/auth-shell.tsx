@@ -6,7 +6,6 @@ import "./auth-b.css";
 import "@/components/quiet/quiet.css";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { QuietLegal } from "@/components/brand-legal";
 import { BrandWordmark } from "@/components/brand-mark";
 import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
 import { TranslateIcon } from "@phosphor-icons/react/dist/ssr/Translate";
@@ -14,6 +13,7 @@ import { LifebuoyIcon } from "@phosphor-icons/react/dist/ssr/Lifebuoy";
 import type { AuthCopy, AuthLang } from "@/lib/auth-copy";
 import { LangSwitch } from "./lang-switch";
 import { AuthBackNav } from "./auth-back-nav";
+import { SignedOutFooter } from "./signed-out-footer";
 
 /* The sign-in pages' shell. Review F2 (NV-233): the retired E4 shell (AuthShell, its decorative device and mark, and
  * WorkspaceEyebrow) had no callers and is gone; QuietAuthShell is the one shell. */
@@ -28,16 +28,15 @@ function TwoLines({ text }: { text: string }) {
 const SUPPORT_EMAIL = "support@thevelani.com";
 
 /** The front door's proof rows (Phase 5, Nov 17, 2026, PB-010 and PB-011): the bare domain opens on sign-in, so the
- * page says in three quiet lines that sign-in is protected, which parts read in Spanish, and where help is. On a desktop
- * they are the brand panel's foot (where "Powered by VELANI LLC" repeated the footer); with `page`, Sign in shows the
- * same rows under its links on phones and tablets, where there is no panel. Exactly one of the two is displayed.
- * In the panel the address is text, so the keyboard's first stop on every signed-out page stays the page's own
- * controls; under the links it is a mail link, after the page's actions. */
-export function AuthProof({ t, page = false }: { t: AuthCopy; page?: boolean }) {
-  return <ul className={`q-auth__proof${page ? " q-auth__proof--page" : ""}`} aria-label={t.proof.label}>
+ * page says in three quiet lines that sign-in is protected, which parts read in Spanish, and where help is. They are the
+ * desktop brand panel's foot only (where "Powered by VELANI LLC" repeated the footer); phones and tablets keep the form
+ * and its links (Phase 5 follow-up, Nov 17, 2026). The address is text, so the keyboard's first stop on every signed-out
+ * page stays the page's own controls. */
+export function AuthProof({ t }: { t: AuthCopy }) {
+  return <ul className="q-auth__proof" aria-label={t.proof.label}>
     <li><ShieldCheckIcon size={20} weight="bold" aria-hidden="true" /><span>{t.proof.security}</span></li>
     <li><TranslateIcon size={20} weight="bold" aria-hidden="true" /><span>{t.proof.languages}</span></li>
-    <li><LifebuoyIcon size={20} weight="bold" aria-hidden="true" /><span>{t.proof.helpBefore}{page ? <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> : <b>{SUPPORT_EMAIL}</b>}{t.proof.helpAfter}</span></li>
+    <li><LifebuoyIcon size={20} weight="bold" aria-hidden="true" /><span>{t.proof.helpBefore}<b>{SUPPORT_EMAIL}</b>{t.proof.helpAfter}</span></li>
   </ul>;
 }
 
@@ -68,7 +67,7 @@ export function QuietAuthShell({ lang, t, back, backLabel, helpFrom="login", bra
         {mobile && hero ? <div className="ma-hero">{hero}</div> : null}
         {mobile ? <div id="access-content" tabIndex={-1}>{children}</div> : children}
       </div>
-      <footer className="q-auth__foot">{mobile && footerHelp ? <Link className="ma-footer-help" href={`/access-help?from=${helpFrom}`}>{lang === "es" ? "¿Necesitas ayuda?" : "Need help?"}</Link> : null}<QuietLegal lang={lang} /></footer>
+      <footer className="q-auth__foot">{mobile && footerHelp ? <Link className="ma-footer-help" href={`/access-help?from=${helpFrom}`}>{lang === "es" ? "¿Necesitas ayuda?" : "Need help?"}</Link> : null}<SignedOutFooter lang={lang} /></footer>
     </main>
   );
 }

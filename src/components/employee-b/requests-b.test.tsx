@@ -65,6 +65,10 @@ it('keeps one request form in the page, drawn as the phone screen’s card, and 
   expect(html.match(/<form/g)).toHaveLength(1);expect(html).toContain('class="tof-form b-keep"');expect(b).not.toContain('<form');
   expect(b).toContain('>Request time off</h1>');expect(b).toContain('>Cancel</a>');expect(b).toContain('class="eb-form"');
   expect(html).toMatch(/<textarea[^>]*name="note"[^>]*maxLength="250"/);expect(html).toContain('Your manager approves it');
+  // Phase 9 (spec 2.2): the approval note is the kit's teal callout with the wait glyph (HourglassMedium, a title over its
+  // line), with no circle in a tint.
+  expect(html).toContain('<div class="eb-tof-approve"><div class="b-callout" data-tone="teal"><span class="b-callout__ic" aria-hidden="true">');
+  expect(html).toContain('<p class="b-callout__t">Your manager approves it</p><div class="b-callout__b">Keep your scheduled shifts until it is approved.</div>');
   expect(html).toContain('Your manager needs to approve this request. Keep your scheduled shifts until it is approved.');
   expect(html).toMatch(/<button class="c-btn c-btn--full" type="submit">Send request</);
 });

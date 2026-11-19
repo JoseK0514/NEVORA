@@ -4,17 +4,17 @@ import {useMobilePresentation} from '@/components/mobile-access/use-mobile-prese
 import Link from 'next/link';
 import {MobileRecoveryReset} from './mobile-access/recovery-views';
 import {useEffect, useRef, type FormEventHandler, type RefCallback} from 'react';
-import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {AuthValidation, FieldInvalid} from './auth-premium/auth-validation';
 import {RecoverySubmit} from './recovery-submit';
 import {AUTH_COPY, authMessage, type AuthLang} from '@/lib/auth-copy';
-import {WifiSlashIcon} from '@phosphor-icons/react/dist/ssr/WifiSlash';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {ACCESS_COPY} from './access-recovery/copy';
 import {AccessSteps} from './access-recovery/access-steps';
 import {recoveryIssue, recoveryNext} from './access-recovery/recovery-guidance';
 import {SupportReference} from './access-recovery/support-reference';
 import {PasswordPair} from './access-recovery/password-pair';
+import {BCallout} from './owner-b/b-kit';
+import {noteParts} from './auth-premium/note-parts';
 
 export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef, lang = 'en', mobileAccess=false,linkProof=false,onDifferentCode,supportReference=null,workspaceName=null}: {
  workspaceName?: string | null;
@@ -42,6 +42,11 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
  const uncertain = message.startsWith('The reset outcome');
  useEffect(() => {if (message) feedback.current?.focus();}, [message, done]);
 
+ // Premium pass FD (Nov 18, 2026): every note is the kit's callout. A refusal is red (stop); a reset whose result is not
+ // known (a lost reply, or the service could not confirm it) is amber with the "not confirmed" glyph, never red and never
+ // done; offline is amber with its own glyph. Each keeps its title, sentences and ways on word for word; the ways on are
+ // the callout's quiet actions. The accepted link is a green note with "Use a different code" under it.
+ const notKnown = uncertain || issue === 'resetUnavailable', offline = noteParts(u.offline);
  const mobile=useMobilePresentation(mobileAccess,'reset-proof reset-password reset-confirm-password');
  if(mobile)return <MobileRecoveryReset {...{hydrated,busy,done,message,onSubmit,proofRef,lang,linkProof,onDifferentCode,supportReference,workspaceName}}/>;
  // Phase 5 (Nov 17, 2026). PB-014, PB-029: the page is "Choose a new password" and its button "Save new password".
@@ -50,10 +55,10 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
  // the form either way, because AccountRecovery fills it and reads it exactly as before. PB-016: the password pair.
  // PB-017: the finish is the mark, the title, one line and the one filled button.
  return <>
-  <div className="q-hd"><h1>{done ? t.resetDoneTitle : t.quiet.resetTitle}</h1>{workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null}{done ? null : <p>{t.quiet.resetSub}</p>}</div>
+  <div className="q-hd">{done ? <span className="q-auth__mark q-auth__mark--done q-auth__mark--head" aria-hidden="true"><CheckIcon size={28} weight="bold"/></span> : null}<h1>{done ? t.resetDoneTitle : t.quiet.resetTitle}</h1>{workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null}{done ? null : <p>{t.quiet.resetSub}</p>}</div>
   {done ? <div className="q-card q-auth__card ar-done">
    <AccessSteps journey="recovery" current={3} lang={lang}/>
-   <span className="q-auth__mark" aria-hidden="true"><CheckIcon size={28} weight="bold"/></span>
+   <span className="q-auth__mark q-auth__mark--done" aria-hidden="true"><CheckIcon size={28} weight="bold"/></span>
    <div className="q-auth__receipt" ref={feedback} role="status" tabIndex={-1}><p>{t.reset.doneLine}</p></div>
    <Link href="/login" className="q-btn">{t.signIn}</Link>
    <p className="q-auth__note ar-next">{u.doneNote}</p>
@@ -61,19 +66,19 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
    <noscript><p className="q-help q-auth__alert">{t.resetNoScript}</p></noscript>
    <form className="q-auth__form" onSubmit={onSubmit}>
     <AuthValidation/>
-    <AccessSteps journey="recovery" current={3} lang={lang}/>
-    {message && issue === 'offline' ? <div id="reset-error" className="q-auth__alert q-auth__alert--wait" ref={feedback} role="alert" tabIndex={-1}><WifiSlashIcon size={20} weight="bold" aria-hidden="true"/><span>{u.offline}</span></div>
-    : message ? <><div id="reset-error" className={`q-auth__receipt ${uncertain || issue === 'resetUnavailable' ? 'q-auth__receipt--wait' : 'q-auth__receipt--error'}`} ref={feedback} role="alert" tabIndex={-1}>
-     <h2><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/>{mismatch ? t.checkPasswords : invalid ? (linkProof ? t.reset.linkRefusedTitle : t.useNewCode) : uncertain ? t.checkSignInFirst : t.resetNotConfirmed}</h2>
-     <p>{invalid && linkProof ? t.reset.linkRefused : authMessage(lang, message)}</p>
-     {next && !(invalid && linkProof) ? <p>{next}</p> : null}
-     {invalid ? <Link className="q-link" href="/forgot-access">{t.requestNewCode}</Link> : null}
-     {invalid && linkProof ? <button type="button" className="q-link ar-linkbtn" onClick={onDifferentCode} disabled={!hydrated || busy}>{t.reset.useDifferentCode}</button> : null}
-     {uncertain || issue === 'resetUnavailable' || issue === 'ended' ? <Link className="q-link" href="/login">{t.trySigningIn}</Link> : null}
+    <AccessSteps journey="recovery" current={3} lang={lang} named={false}/>
+    {message && issue === 'offline' ? <div id="reset-error" className="ar-note" ref={feedback} role="alert" tabIndex={-1}><BCallout tone="amber" icon="offline" title={offline.title ?? undefined}>{offline.body}</BCallout></div>
+    : message ? <><div id="reset-error" className="ar-note" ref={feedback} role="alert" tabIndex={-1}>
+     <BCallout tone={notKnown ? 'amber' : 'red'} icon={notKnown ? 'unknown' : 'stop'} title={mismatch ? t.checkPasswords : invalid ? (linkProof ? t.reset.linkRefusedTitle : t.useNewCode) : uncertain ? t.checkSignInFirst : t.resetNotConfirmed}
+      action={invalid ? <><Link href="/forgot-access">{t.requestNewCode}</Link>{linkProof ? <button type="button" onClick={onDifferentCode} disabled={!hydrated || busy}>{t.reset.useDifferentCode}</button> : null}</>
+       : notKnown || issue === 'ended' ? <Link href="/login">{t.trySigningIn}</Link> : null}>
+      <p>{invalid && linkProof ? t.reset.linkRefused : authMessage(lang, message)}</p>
+      {next && !(invalid && linkProof) ? <p>{next}</p> : null}
+     </BCallout>
     </div><SupportReference reference={supportReference} lang={lang} id="reset-reference"/></> : null}
     {/* A link the server has refused is no longer "accepted": the refusal above carries both ways on. */}
-    {linkProof && !invalid ? <p className="ar-accepted"><span className="ar-accepted__line" role="status"><CheckIcon size={18} weight="bold" aria-hidden="true"/><span>{t.reset.linkAccepted}</span></span>
-     <button type="button" className="ar-accepted__other" onClick={onDifferentCode} disabled={!hydrated || busy}>{t.reset.useDifferentCode}</button></p> : null}
+    {linkProof && !invalid && !uncertain ? <BCallout tone="green" role="status" title={t.reset.linkAccepted}
+     action={<button type="button" onClick={onDifferentCode} disabled={!hydrated || busy}>{t.reset.useDifferentCode}</button>}/> : null}
     <fieldset className="q-auth__fields" disabled={!hydrated || busy}>
      <div className={`q-fl${linkProof ? ' ar-off' : ''}`}>
       <label htmlFor="reset-proof">{t.recoveryCode}</label>
@@ -81,8 +86,8 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
        autoComplete="one-time-code" autoCorrect="off" autoCapitalize="none" spellCheck={false} enterKeyHint="next"
        aria-describedby={message ? 'reset-proof-hint reset-error reset-proof-invalid' : 'reset-proof-hint reset-proof-invalid'}
        data-msg-required={t.invalid.code} data-msg-invalid={t.invalid.codeShort}/>
-      <span className="q-auth__hint" id="reset-proof-hint">{t.recoveryCodeHint}</span>
       <FieldInvalid id="reset-proof"/>
+      <span className="q-auth__hint" id="reset-proof-hint">{t.recoveryCodeHint}</span>
      </div>
      <PasswordPair prefix="reset" lang={lang} mismatch={mismatch} newLabel={t.newPassword} confirmLabel={t.quiet.confirmPassword}/>
     </fieldset>

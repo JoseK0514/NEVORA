@@ -14,10 +14,17 @@
 
   /* Narrow phones (320–359px): the Confirm button drops under its words, aligned with the text, so nothing is cut. */
 
-  /* Inspection round 1: the confirmation's button is the kit's 36px teal pill (the corporate button rules carry ids, so this
-   * matches their weight); on narrow phones it drops under the words. Past days in the week strip stay full white, as in the mock. */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action) { min-height: 36px !important; height: 36px !important; padding: 0 var(--b-gutter) !important; border-radius: var(--b-radius-pill) !important; border: 0 !important;
-    background: var(--b-teal) !important; color: #FFFFFF !important; font: 600 14px/1 Inter, "Inter Fallback", sans-serif !important; box-shadow: var(--b-elev-glow) !important; width: auto !important; }
+  /* Inspection round 1: the confirmation's button is the kit's teal pill (the corporate button rules carry ids, so this
+   * matches their weight); on narrow phones it drops under the words. Past days in the week strip stay full white, as in the mock.
+   * Final review C (row 2): it is a row action, so it is the ladder's 44px step drawn at every width (it was 36px on
+   * phones and 40px from 768px): 14/20 with the gutter's sides on phones, 14.5/20 with 18px sides from 768px, as the kit's
+   * row buttons (Pick up, Review). The three ids outrank the desktop layer's 40px Approve pill (owner-b-desktop.css D6)
+   * and stay under the Employee coarse-pointer rule, so a touch screen keeps the 48px floor, as Pick up and Review do. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen:not(#fc1):not(#fc2):not(#fc3) .es-confirm__act :is(.q-bs, .employee-action) { min-height: var(--b-btn-h) !important; height: var(--b-btn-h) !important; padding: 0 var(--b-gutter) !important; border-radius: var(--b-radius-pill) !important; border: 0 !important;
+    background: var(--b-teal) !important; color: #FFFFFF !important; font: 600 14px/20px Inter, "Inter Fallback", sans-serif !important; box-shadow: var(--b-elev-glow) !important; width: auto !important; }
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen:not(#fc1):not(#fc2):not(#fc3) .es-confirm__act :is(.q-bs, .employee-action) { padding: 0 18px !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; }
+  }
   @media (max-width: 359px) {
     html body .app-shell[data-nv-b] .b-screen .es-confirm { flex-wrap: wrap !important; }
     html body .app-shell[data-nv-b] .b-screen .es-confirm .b-row__s { display: block !important; -webkit-line-clamp: unset !important; overflow: visible !important; }
@@ -56,9 +63,13 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act { flex: none; display: flex; align-items: center; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act .employee-weekly-confirmation { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action) {
-  display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 0 var(--b-gutter); border: 0; border-radius: var(--b-radius-pill); background: var(--b-teal); color: #FFFFFF;
-  font: 600 14px/1 Inter, "Inter Fallback", sans-serif; box-shadow: var(--b-elev-glow); cursor: pointer; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action) { min-width: 112px; }
+  display: inline-flex; align-items: center; justify-content: center; min-height: var(--b-btn-h); padding: 0 var(--b-gutter); border: 0; border-radius: var(--b-radius-pill); background: var(--b-teal); color: #FFFFFF;
+  font: 600 14px/20px Inter, "Inter Fallback", sans-serif; box-shadow: var(--b-elev-glow); cursor: pointer; }
+/* Review B6 (NV-152): from 768px the pill keeps its width while it says "Confirming…" (92px of words at 14.5px and 18px
+ * sides). On a phone that minimum pushed the
+ * reason under it onto a second line ("Your manager asked / for it"; final review C, row 2), so a phone draws the pill
+ * at its label's width, as a touch screen already did. */
+@media (min-width: 768px) { :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action) { min-width: 128px; } }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action)[aria-busy="true"] { cursor: progress; box-shadow: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action)[aria-disabled="true"]:not([aria-busy="true"]) { opacity: 0.55; box-shadow: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act p:not(.b-sr) { flex-basis: 100%; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); text-align: right; }
@@ -103,11 +114,8 @@
 @media (max-width: 359px) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .es-confirm { row-gap: 10px; }
 }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p[role="alert"]) { flex-basis: 100%; padding-left: var(--b-space-48); justify-content: flex-start; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p[role="alert"]) { flex-basis: 100%; padding-left: var(--eb-text-in, var(--b-space-48)); justify-content: flex-start; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p[role="alert"]) .employee-weekly-confirmation { align-items: flex-start; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p[role="alert"]) p { text-align: left; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .es-blocked summary { min-height: 36px; }
 
-/* Keep the approved 36px confirmation pill while giving it a native 44px hit band. */
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action) { position: relative; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action)::after { content: ""; position: absolute; inset: -4px 0; }

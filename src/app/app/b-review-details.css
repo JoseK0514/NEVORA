@@ -59,3 +59,11 @@
     :is(#c-root, html) body .app-shell[data-nv-b] .b-explain--compact > summary { width: 36px !important; }
   }
 }
+
+/* Premium pass FA (Nov 18, 2026; final verification A #2, B #16): an explainer is a card-header-size control on the
+ * button ladder: 36px drawn (it was 32), with a 44px hit area around it on every width. */
+@layer nv-b {
+  :is(#c-root, html) body .app-shell[data-nv-b] .b-explain > summary:not(#fa-x1):not(#fa-x2) { position: relative !important; box-sizing: border-box !important; min-height: var(--b-btn-h-compact) !important; }
+  :is(#c-root, html) body .app-shell[data-nv-b] .b-explain--compact > summary:not(#fa-x1):not(#fa-x2) { width: var(--b-btn-h-compact) !important; height: var(--b-btn-h-compact) !important; }
+  :is(#c-root, html) body .app-shell[data-nv-b] .b-explain > summary:not(#fa-x1):not(#fa-x2)::after { content: "" !important; position: absolute !important; inset: -4px !important; border-radius: var(--b-radius-pill) !important; }
+}

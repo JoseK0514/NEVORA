@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
-import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
+import { BCallout } from "@/components/owner-b/b-kit";
 import { BlockView } from "@/components/legal/legal-document";
 import { PolicyFrame } from "@/components/legal/policy-page";
 import { POLICY_FACTS, SUPPORT, SUPPORT_EMAIL, policiesVisible, type Block } from "@/lib/legal/policies";
@@ -14,6 +14,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const section = (heading: string) => SUPPORT.sections.find(item => item.heading === heading);
+/** Premium pass FD (Nov 18, 2026): a two-word name in the safety note never splits across lines ("bank / details"); the
+ * words are the note's own, joined by a no-break space. */
+const keepPairs = (text: string) => text.replace(/\b(bank|datos) (details|bancarios)\b/g, "$1\u00a0$2");
 
 /** Quiet (v4, approved Oct 23): Support on the white sign-in page. Email support, the one safety line, three common
  * questions that open their answers in place, then the mailing address. The response commitment and the address
@@ -36,14 +39,18 @@ export default async function Page() {
       {/* Review B4 (Nov 10, 2026): "Contact" stays as the group's name for assistive technology only (NV-058); the response
         * promise reads at 15px in a 68-character line and the safety line is a teal information note (NV-203).
         * Phase 5 (PB-033): a group heading sits 32px under the group before it and 12px above its own. */}
+      {/* Phase 9 (Nov 18, 2026): the safety note is the kit's teal callout with the privacy glyph (ShieldCheck) and its own
+        * title, at the top of the Email support card it is about: a tinted note lives on white, never on the canvas. */}
       <h2 className="q-sr">{t.contact}</h2>
-      <ul className="q-list q-doc__list"><li><a className="q-row" href={`mailto:${SUPPORT_EMAIL}`}><span className="q-rt"><b>{t.emailSupport}</b><i>{SUPPORT_EMAIL}</i></span><CaretRightIcon className="q-chev" weight="bold" aria-hidden="true" /></a></li></ul>
+      <div className="q-doc__card">
+        <BCallout tone="teal" icon="privacy" title={t.safetyTitle}>{keepPairs(t.safety)}</BCallout>
+        <ul className="q-list"><li><a className="q-row" href={`mailto:${SUPPORT_EMAIL}`}><span className="q-rt"><b>{t.emailSupport}</b><i>{SUPPORT_EMAIL}</i></span><CaretRightIcon className="q-chev" weight="bold" aria-hidden="true" /></a></li></ul>
+      </div>
       <p className="q-help q-doc__promise">{es ? SUPPORT_ES.promise : POLICY_FACTS.SUPPORT_RESPONSE_TIME}</p>
-      <p className="q-doc__note"><InfoIcon size={20} weight="bold" aria-hidden="true" /><span>{t.safety}</span></p>
       <h2 className="pl-grp" id="support-common">{t.common}</h2>
       <ul className="q-list" aria-labelledby="support-common">
         {answers.signIn ? question(t.cantSignIn, null, answers.signIn) : null}
-        {answers.work ? question(t.work, t.workDetail, answers.work) : null}
+        {answers.work ? question(t.work, null, answers.work) : null}
         {question(t.report, null, answers.report)}
       </ul>
       <h2 className="pl-grp">{t.mail}</h2>

@@ -12,7 +12,8 @@ import { QuietHeader, QuietList, QuietPage, QuietRow } from '../quiet/quiet';
 import { useEmployeeMobile } from '../employee-mobile/use-mobile';
 import { EmployeePayView } from '../employee-mobile/pay';
 import { CorpPayView } from '../employee-mobile/pay-corp';
-import { CorpButtonLink, CorpCard, CorpErrorCard, CorpNav, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle } from '../corp/corp';
+import { CorpButtonLink, CorpCard, CorpErrorCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpTitle } from '../corp/corp';
+import { BState } from '../owner-b/b-kit';
 
 /* My pay in the Signature style (phase 1, approved Oct 20, 2026; target:
  * docs/product/specs/employee-style/signature/phase-1/p1c-pay.png). The band carries the next payday from the pay
@@ -88,6 +89,8 @@ export function MyPay({ nextPay = null, statement = null, document = null, corpo
 /** My pay for Owners and Managers. Nov 1 upscale (review M4): on the kit's card pattern, a pushed page ("‹ More", My pay
  * centred on a phone): a Payday card (the next payday and how far away it is), then a Statements card (each statement a
  * row that downloads it, or the kit's empty state). Same statements read, refresh, download links and wording. */
+/** Phase 8 (review B #20): the days to the scheduled payday are plain grey text (the normal state carries no chip), and
+ * no statements yet is the kit's empty state card (the grey tray), with the same words. */
 export function QuietMyPay({ nextPay = null }: { nextPay?: NextPay }) {
   const { data, loading, error, reload } = usePayrollResource('/api/payroll/statements', readStatements);
   const statements = data ? [...data.statements].sort(newestFirst) : [];
@@ -98,7 +101,7 @@ export function QuietMyPay({ nextPay = null }: { nextPay?: NextPay }) {
     <CorpNav back={{ href: '/app/more', label: 'More' }} title="My pay" titleId="mypay-nav-title" phoneOnly />
     <CorpTitle id="mypay-title" title="My pay" wide />
     {payday ? <CorpCard id="mypay-payday" label="Scheduled payday">
-      <CorpRows label="Scheduled payday"><li><CorpRow title={payday} bold detail={nextPay?.period ? `Pay period ${periodLabel(nextPay.period.startDate, nextPay.period.endDate).replace('–', ' – ')}` : undefined} trail={away ? <CorpPill tone="teal">{away}</CorpPill> : undefined} /></li></CorpRows>
+      <CorpRows label="Scheduled payday"><li><CorpRow title={payday} bold detail={nextPay?.period ? `Pay period ${periodLabel(nextPay.period.startDate, nextPay.period.endDate).replace('–', ' – ')}` : undefined} value={away} valueTone="soft" /></li></CorpRows>
     </CorpCard> : null}
     {loading ? <CorpCard id="mypay-statements" label="Statements"><div className="c-empty c-empty--card" role="status"><span className="c-empty__body">Loading…</span></div></CorpCard>
       : error ? <CorpErrorCard title={error === PAYROLL_SIGNED_OUT ? 'Sign in again to see your statements.' : 'Couldn’t load your statements.'} body={null}
@@ -106,6 +109,6 @@ export function QuietMyPay({ nextPay = null }: { nextPay?: NextPay }) {
       : <CorpCard id="mypay-statements" label="Statements">{statements.length
         ? <CorpRows label="Statements">{statements.map(statement => <li key={statement.id}><CorpRow href={documentHref(statement)} native bold
           title={`Payday ${formatDisplayDate(statement.payday)}`} detail={`${periodLabel(statement.period.startDate, statement.period.endDate)} · PDF`} label={`Download ${statement.filename}`} chevron /></li>)}</CorpRows>
-        : <div className="c-empty c-empty--card"><b className="c-empty__title">No statements yet</b><span className="c-empty__body">Only you can see them.</span></div>}</CorpCard>}
+        : <BState silent kind="empty" title="No statements yet" line="Only you can see them." />}</CorpCard>}
   </CorpPage>;
 }

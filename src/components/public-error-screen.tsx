@@ -1,15 +1,15 @@
 'use client';
 import { useSyncExternalStore } from 'react';
 import { usePathname } from 'next/navigation';
-import { ArrowsClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
+import { ArrowClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
 import { BrandWordmark } from '@/components/brand-mark';
 import { AppErrorScreen, errorReference, useOnline } from '@/components/app-error-screen';
 import { SupportReference } from '@/components/access-recovery/support-reference';
 import { supportReferenceOfState } from '@/components/access-recovery/support-reference-seam';
 import { LangSwitch } from '@/components/auth-premium/lang-switch';
+import { SignedOutFooter } from '@/components/auth-premium/signed-out-footer';
 import { focusAfterRetry } from '@/components/kit/focus-after-retry';
 import { AUTH_COPY, AUTH_LANG_COOKIE, isAuthLang, preferredAuthLang, type AuthLang } from '@/lib/auth-copy';
-import { NUVORA_BRAND } from '@/lib/brand';
 import '@/app/not-found.css';
 import './public-error-screen.css';
 
@@ -49,13 +49,13 @@ export function PublicErrorScreen({reset, digest, error}: {reset: () => void; di
         {reference ? <p className="pe-ref">{reference}</p> : null}
         <SupportReference reference={support} lang={lang} id="public-error-reference" />
         <div className="pe-actions">
-          <button type="button" className="nf-cta pe-retry" onClick={() => { reset(); focusAfterRetry('main:not(.pe-page) h1, .q-auth h1', '.pe-page .pe-retry'); }}><ArrowsClockwiseIcon size={18} weight="bold" aria-hidden="true"/>{words.retry}</button>
+          <button type="button" className="nf-cta pe-retry" onClick={() => { reset(); focusAfterRetry('main:not(.pe-page) h1, .q-auth h1', '.pe-page .pe-retry'); }}><ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true"/>{words.retry}</button>
           {/* A plain link: what failed may be the page's own layout, so sign in starts with a full document load. */}
           <a className="nf-cta pe-signin" href="/login">{words.signIn}</a>
         </div>
       </div>
-      {/* Review B4 (Nov 10, 2026, NV-206): the 404's footer without the old lockup and its sub-12px lines. */}
-      <footer className="nf-foot"><small>{NUVORA_BRAND.poweredBy}</small></footer>
+      {/* Phase 8 (Nov 17, 2026): the footer every signed-out page shares, as on the 404. */}
+      <footer className="nf-foot"><SignedOutFooter lang={lang}/></footer>
     </section>
   </main>;
 }

@@ -96,13 +96,20 @@ it("announces a server validation error without rendering untrusted error codes"
   expect(html).not.toContain("<script>invalid</script>");
 });
 
-it('honors company-read denial before loading employee-creation catalogs (presentation boundary)',async()=>{access.denied=true;const html=renderToStaticMarkup(await NewEmployeePage({searchParams:Promise.resolve({})}));expect(html).toContain('Employee creation unavailable');expect(html).toContain('Return to Home');expect(html).not.toContain('new-employee-form');});
+// Review 30 (D09): the closed state names the page ("Employee creation") and keeps Return to Home as its one step.
+it('honors company-read denial before loading employee-creation catalogs (presentation boundary)',async()=>{access.denied=true;const html=renderToStaticMarkup(await NewEmployeePage({searchParams:Promise.resolve({})}));expect(html).toContain('<h1>Employee creation</h1>');expect(html).toContain('Company-wide access needed');expect(html).toContain('Return to Home');expect(html).not.toContain('new-employee-form');});
 
 // This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
 rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 
-it("offers the three optional employment dates in step 2, none required", async () => {
+// Review 30 (D05): the dates are details about the person, so they are on step 1 ("Their details"), after the location.
+it("offers the three optional employment dates on step 1, none required", async () => {
   const html = renderToStaticMarkup(await NewEmployeePage({ searchParams: Promise.resolve({}) }));
+  const stepOne = html.slice(html.indexOf('<div class="c-step">'), html.indexOf('<div class="c-step" hidden'));
+  expect(stepOne).toContain('name="hireDate"');
+  expect(stepOne.indexOf('name="primaryLocationId"')).toBeLessThan(stepOne.indexOf('name="hireDate"'));
+  // D03: the floor is worded for a person, not the date's raw minimum.
+  expect(html).toContain('data-underflow="Enter a date in 1900 or later"');
   const fields = html.match(/<input[^>]+>/g) ?? [];
   for (const name of ["hireDate", "terminationDate", "birthDate"]) {
     const field = fields.find(input => input.includes(`name="${name}"`));

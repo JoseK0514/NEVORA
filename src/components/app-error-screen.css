@@ -13,3 +13,10 @@
 @font-face { font-family: "Inter"; src: url("/fonts/typeface/inter/variable.woff2") format("woff2"), url("/fonts/typeface/inter/variable.ttf") format("truetype"); font-style: normal; font-weight: 100 900; font-display: swap; }
 /* Balance the two-line title so no word is left alone (the in-portal page has the same rule). */
 .app-error-screen .nv-masthead__title { text-wrap: balance; }
+/* Phase 9 (Nov 18, 2026): this screen renders outside the app shell, so the Direction B rules never reached it. It takes the
+ * one teal band the 404 and the public error screen draw (no watermark; the summary in the band's second ink, 4.7:1
+ * where the kit's #CFE3E1 was 4.3:1 on teal), and its two buttons are pills like every other button. */
+.app-error-screen .nv-masthead { background: var(--b-band-solid, #0C726C); }
+.app-error-screen .nv-masthead__mark { display: none; }
+.app-error-screen .nv-masthead__summary { color: var(--b-on-band-2, rgb(255 255 255 / 0.86)); }
+.app-error-screen .nv-btn { border-radius: var(--nv-r-pill, 999px); }

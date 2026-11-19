@@ -25,9 +25,12 @@
     /* ---------- TB-018, OW-034: the week's state is a chip 12px to the right of the week stepper, on its line. One chip
      * size on Schedule: 22px tall, 0 8px, 12/16 600. ---------- */
     :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-roster .c-sched-gridbar > .c-sched-week__nav { overflow: visible !important; }
-    :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-roster .c-sched-gridbar > .c-sched-week__nav > .c-sched-weekstate { position: absolute !important; left: calc(100% + var(--b-space-12)) !important; top: 50% !important; translate: 0 -50% !important; display: inline-flex !important; align-items: center !important; height: 22px !important; margin: 0 !important; padding: 0 var(--b-space-8) !important; border-radius: var(--b-radius-pill) !important; background: var(--b-quiet) !important; color: var(--b-ink2) !important; font: 600 12px/16px Inter, "Inter Fallback", sans-serif !important; letter-spacing: 0 !important; white-space: nowrap !important; }
-    :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-roster .c-sched-gridbar > .c-sched-week__nav > .c-sched-weekstate[data-tone="amber"] { background: var(--b-amber-50) !important; color: var(--b-amber) !important; }
-    :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-roster .c-sched-gridbar > .c-sched-week__nav > .c-sched-weekstate[data-tone="green"] { background: var(--b-green-50) !important; color: var(--b-green) !important; }
+    :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-roster .c-sched-gridbar > .c-sched-week__nav > .c-sched-weekstate { position: absolute !important; left: calc(100% + var(--b-space-12)) !important; top: 50% !important; translate: 0 -50% !important; display: inline-flex !important; align-items: center !important; height: var(--b-chip-h) !important; margin: 0 !important; padding: 0 var(--b-chip-px) !important; border-radius: var(--b-radius-pill) !important; background: #FFFFFF !important; color: var(--b-ink2) !important; font-variant-numeric: tabular-nums !important; font: 600 12px/16px Inter, "Inter Fallback", sans-serif !important; letter-spacing: 0 !important; white-space: nowrap !important; }
+    :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-roster .c-sched-gridbar > .c-sched-week__nav > .c-sched-weekstate[data-tone="amber"] { color: var(--b-amber) !important; }
+    /* Phase 9 (spec 1.1): on the band a state is the solid white chip in its tone's ink (B1, NV-003), as the phone's band
+     * draws it; a green one standing alone carries the 12px Check. */
+    :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-roster .c-sched-gridbar > .c-sched-week__nav > .c-sched-weekstate[data-tone="green"] { padding-left: 6px !important; color: var(--b-green) !important; }
+    :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-roster .c-sched-gridbar > .c-sched-week__nav > .c-sched-weekstate > .c-sched-weekstate__ic { flex: none !important; width: var(--b-ic-chip) !important; height: var(--b-ic-chip) !important; margin-right: var(--b-space-4) !important; }
     :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-roster .c-sched-gridbar > .c-sched-week__nav > .c-sched-weekstate .c-sched-state__lead { display: inline !important; }
 
     /* ---------- OW-027, TB-011: the Open shifts row is one chip per day ("4 open" and a caret) that opens that day's list
@@ -161,7 +164,7 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-rules .q-rule-list .wb-day { display: none !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-rules .q-rule-list .wb-period__copy { display: flex !important; flex-direction: column !important; gap: var(--b-space-2) !important; min-width: 0 !important; margin: 0 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-rules .q-rule-list .wb-period-remove { display: block !important; margin: 0 !important; padding: 0 !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-rules .q-rule-list .wb-remove { appearance: none !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; width: auto !important; min-height: 44px !important; margin: 0 !important; padding: 0 var(--b-space-8) !important; border: 0 !important; border-radius: var(--b-radius-small) !important; background: none !important; box-shadow: none !important; color: var(--b-red) !important; font: 600 var(--b-fs-meta)/var(--b-lh-meta) Inter, "Inter Fallback", sans-serif !important; cursor: pointer !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-rules .q-rule-list .wb-remove { appearance: none !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; width: auto !important; min-height: 44px !important; margin: 0 !important; padding: 0 var(--b-space-12) !important; border: 0 !important; border-radius: var(--b-radius-pill) !important; background: none !important; box-shadow: none !important; color: var(--b-red) !important; font: 600 var(--b-fs-meta)/var(--b-lh-meta) Inter, "Inter Fallback", sans-serif !important; cursor: pointer !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-rules .q-rule-list details.wb-quantities { margin: 0 !important; padding: 0 !important; border: 0 !important; background: none !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-rules .q-rule-list details.wb-quantities > summary { justify-content: flex-start !important; gap: var(--b-space-8) !important; min-height: 44px !important; padding: 0 !important; font: 600 var(--b-fs-meta)/var(--b-lh-meta) Inter, "Inter Fallback", sans-serif !important; color: var(--b-ink2) !important; }
 
@@ -219,4 +222,88 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-pub .c-pub__body:not(#sb-n):not(#sb-m) > .c-card + .c-card { margin-top: 0 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-pub .c-pub__body:not(#sb-n):not(#sb-m) > .c-card ~ .c-note { margin-top: 0 !important; padding-top: var(--b-space-12) !important; box-shadow: inset 0 1px 0 var(--b-line) !important; }
   }
+
+  /* ---------- Phase 8 (Nov 17, 2026): the final review's Schedule rows ---------- */
+  /* a.md #12: the grid's faces keep each person's tint (GridAvatar sets it from the name, as BAvatar does). */
+  :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-sched-slot .cm-grid .cm-person .nv-avatar[data-tint]:not(#p8a):not(#p8b) { background: var(--av-bg) !important; color: var(--av-fg) !important; box-shadow: none !important; }
+  /* a.md #6: on narrow phones the week arrows are whole 44px targets (they were 32px wide with a pseudo-element). */
+  @media (max-width: 359px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__arrow:not(#p8a):not(#p8b) { width: 44px !important; height: 44px !important; margin: -4px 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__arrow:not(#p8a):not(#p8b)::after { inset: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__h > span:last-child:not(#p8a):not(#p8b) { gap: 0 !important; }
+  }
+  /* a.md #19: under 820px of card a block keeps its time on one line and its position whole: 4px side padding (3px
+   * inside a draft's 1px dashed edge, so a draft has the same room as a published block) and a 12px time. */
+  @container c-sched (min-width: 560px) and (max-width: 819px) {
+    :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-sched-slot .cm-grid .cm-block:not(#p8a):not(#p8b) { padding-left: var(--b-space-4) !important; padding-right: var(--b-space-4) !important; }
+    :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-sched-slot .cm-grid .cm-block.draft:not(#p8a):not(#p8b) { padding-left: 3px !important; padding-right: 3px !important; }
+    :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-sched-slot .cm-grid .cm-block .c-time:not(#p8a):not(#p8b) { white-space: nowrap !important; font-size: 12px !important; letter-spacing: -0.01em !important; }
+  }
+  /* a.md #24: Add shift's unchosen selects ("Choose someone", "Choose a location", "Choose a time") are grey on phones,
+   * as they are from 768px; a chosen value is ink. */
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-shift-page select:has(> option[value=""][disabled]:checked):not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { color: var(--b-grey) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-shift-page select:has(> option[value=""][disabled]:checked) option:not([value=""]):not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { color: var(--b-ink) !important; }
+  }
+  /* a.md #27: Add shift's help lines never leave one word alone ("Lead." at 320px). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-shift-page :is(.c-field__help, .c-note, .c-shift__lead-text, .c-shift__lead-text > span):not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { text-wrap: pretty !important; }
+  /* Phase 9: a day row's Fill is the row-action height (44px) on the narrowest phones, as Home's and Things to do's row
+   * pills are. */
+  @media (max-width: 359px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .b-screen .b-row__trail > .b-btn:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { min-height: var(--b-btn-h) !important; }
+  }
+  /* Phase 9 follow-up: a chip on a phone day row's name line leaves the live dot to the avatar's ring, as on Home, Things
+   * to do and Team (owner-b-home.css), so it sits on the name's line whenever the name and the chip fit. */
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .b-screen .b-row__t > .b-chip[data-dot]:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { padding-left: var(--b-chip-px) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .b-screen .b-row__t > .b-chip[data-dot] > .b-ldot:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { display: none !important; }
+  }
+
+  /* ---------- Premium pass FA (Nov 18, 2026): final verification A #2, #9, #11, #23 and B #7, #16, #30 (Schedule) ---------- */
+  /* A #2, B #16: the phone band's week arrows are whole 44px targets at every phone width (they were 36 at 390); on the
+   * tablet and desktop band (the sideways phone included) they are 36px inside the 48px week pill, with a 44px hit area. */
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__arrow:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { width: 44px !important; height: 44px !important; margin: -4px 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__arrow:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6)::after { inset: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__h > span:last-child:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { gap: 0 !important; }
+  }
+  /* A #11, B #7: at 320px "Published" drops under the dates and the arrows keep the dates' row. */
+  @media (max-width: 359px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__h:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { flex-wrap: nowrap !important; align-items: center !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__h > .b-week__label:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { flex-direction: column !important; align-items: flex-start !important; gap: var(--b-space-4) !important; min-width: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__h > .b-week__label > .b-chip:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { margin-left: 0 !important; }
+  }
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .cm-roster .c-sched-week__nav .c-sched-week__arrow:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { position: relative !important; width: 36px !important; height: 36px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .cm-roster .c-sched-week__nav .c-sched-week__arrow:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6)::after { content: "" !important; position: absolute !important; inset: -4px !important; border-radius: var(--b-radius-pill) !important; }
+    /* B #30: the Open shifts row has one count form at every width: the amber 20px count pill beside "Open shifts" (it
+     * read "28 this week" in grey text from 1024px and a pill below). The words stay for screen readers. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .cm-sched-slot .cm-grid tr.cm-grid__open .cm-person__text:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; align-items: center !important; justify-content: flex-start !important; gap: var(--b-space-8) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .cm-grid .sb-opencount:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { flex: none !important; display: inline-flex !important; margin: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .cm-grid .sb-opencount > b:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: inline-grid !important; place-items: center !important; box-sizing: border-box !important; min-width: var(--b-count-h) !important; height: var(--b-count-h) !important; padding: 0 5px !important; border-radius: var(--b-radius-pill) !important; background: var(--b-amber-50) !important; color: var(--b-amber) !important; font: 700 var(--b-fs-count)/16px Inter, "Inter Fallback", sans-serif !important; font-variant-numeric: tabular-nums !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .cm-grid .sb-opencount > span:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; }
+    /* A #23, B #30: "Show 1 unscheduled" starts on the people column's edge (it sat 7 to 13px right of it). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .cm-sched-slot .cm-grid .cm-grid__toggle > td:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { padding-left: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .cm-sched-slot .cm-grid .cm-grid__toggle button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { padding-left: 14px !important; }
+  }
+  /* Coordinator note: the week's "Today" pill on the band is the band's glass (it was a 14% white fill, under 4.5:1). */
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .cm-roster .c-sched-week__nav .c-sched-week__today:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { background: var(--b-glass) !important; }
+  }
+  @media (min-width: 1024px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .cm-sched-slot .cm-grid .cm-grid__toggle button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { padding-left: var(--b-inset-wide) !important; }
+  }
+}
+/* A #9: under 820px of grid card a long time takes two lines, breaking after its dash ("11:30a–" over "7:30p", DESIGN F3);
+ * it ran flush to the block's right edge on one line. */
+@layer nv-b {
+  @container c-sched (min-width: 560px) and (max-width: 819px) {
+    :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-sched-slot .cm-grid .cm-block .c-time:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { white-space: normal !important; overflow-wrap: normal !important; letter-spacing: 0 !important; }
+  }
+}
+
+/* A #8: a block's time is a range with a dash, so its figures are proportional ("8a–4p", not "8a – 4p": Inter's tabular
+ * dash is wide); the people column's hours keep tabular figures. */
+@layer nv-b {
+  :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-sched-slot .cm-grid .cm-block .c-time:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { font-variant-numeric: normal !important; font-feature-settings: normal !important; }
 }

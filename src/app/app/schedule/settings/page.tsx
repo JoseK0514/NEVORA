@@ -119,7 +119,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
         <div className="wc-cardhead" aria-hidden="true"><span>Rules</span></div>
         <RulesSaveForm action={saveScheduleHealthSettingsFormAction} bar={staffing.length > 0 || employees.length > 0}>
           <details className="q-details q-rule" open={open.hours || undefined}>
-            <Summary title="Weekly hours targets" detail="Hours each person aims for" value={hoursValue} />
+            <Summary title="Weekly hour targets" detail="Hours each person aims for" value={hoursValue} />
             <div className="q-rule__body manager-issue-target" id="target-hours" tabIndex={-1}>
               <p className="q-help">Targets keep schedules balanced. Maximums flag extra hours. Leave a target blank to skip it.</p>
               {employees.length ? <RulesHoursList rows={employees.map(employee => ({
@@ -208,7 +208,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
           </div>
         </details>
         <details className="q-details q-rule">
-          <Summary title="Trades and coverage" detail="How swaps and cover are approved" value={policyValue} />
+          <Summary title="Shift requests" detail="Who approves swaps and covers" value={policyValue} />
           <div className="q-rule__body" id="rules-policy" tabIndex={-1}>
             <p className="q-help">How trades and cover are approved, and how far ahead they must be sent.</p>
             {policyUnavailable ? <p className="q-error" role="alert">Couldn’t load this policy. Reload the page to try again.</p> : <ShiftChangePolicyFields policy={policy} canEdit={session.role === "OWNER"} />}

@@ -46,9 +46,10 @@ describe("payroll action feedback", () => {
       { ...idle, message: "This reference remains unconfirmed.", confirmed: "Payroll approved" },
     ]) expect(renderToStaticMarkup(<Feedback operation={operation} />)).not.toContain("b-donemark");
   });
-  it("no toast repeats a result the screen draws inline; a queued share and a screen without the card keep theirs", () => {
+  it("no toast repeats a result the screen draws inline; a screen without the card keeps its toast", () => {
     const hook = readFileSync(join(__dirname, "use-payroll.ts"), "utf8");
-    expect(hook).toContain("if (!inlineResult || !confirmedTitle(next)) toast(confirmedMessage(next));");
+    expect(hook).toContain("if (!inlineResult) toast(confirmedMessage(next));");
+    expect(hook).not.toContain("Pay statements shared");
     expect(hook).toContain("if (!inlineResult) toast('Saved');");
     expect(hook.match(/toast\(/g)).toHaveLength(2);
     // The native pay setup has no Feedback card, so it keeps the toast.

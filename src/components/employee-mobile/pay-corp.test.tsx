@@ -34,7 +34,7 @@ describe('Employee Pay on the kit (G-E-Pay)',()=>{
   const phone=onlyB(html);expect(text(phone).match(/Your employer pays you\. NEVORA shows your pay statement\./g)).toHaveLength(1);
   expect(phone).toContain('aria-label="Earlier statements"');expect(html).not.toMatch(/See all pay|Earlier pay|Next payday/);
   expect(phone).toMatch(/<span class="b-chip b-chip--teal">Corrected<\/span>/);expect(phone).toContain(`<a class="b-btn b-btn--teal b-btn--full" aria-label="View statement, Thursday, January 24, 2030" href="/app/my-pay?paycheck=${ids.correction}">`);
-  expect(onlyB(render({statements:[history[0]]}))).toContain('<span class="b-chip b-chip--green">Statement ready</span>');
+  expect(onlyB(render({statements:[history[0]]}))).toMatch(/<span class="b-chip b-chip--green" data-icon="check"><svg[^>]*>.*?<\/svg>Statement ready<\/span>/);
  });
  it('names the next scheduled payday from the pay schedule without calling it a payment',()=>{
   const plain=text(render({nextPay:{payday:'2030-02-07',daysUntil:3,period:{startDate:'2030-01-20',endDate:'2030-02-02'}}}));

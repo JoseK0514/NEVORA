@@ -117,7 +117,20 @@ Totals: 134 fixed, 24 partly, 12 open (the other session closed PB-014 while thi
 4. **Manuals.** `src/test/manual-publication.test.ts` fails until the guides are rebuilt on the integrated commit.
 5. Nothing in this phase needs a server change to ship.
 
-## For you to decide
+## Decided after the build (Nov 17, 2026)
+
+Jose asked Claude to settle the six that change what people see. Commit: __DECIDE_SHA__.
+
+| Question | Decision | What changed |
+|---|---|---|
+| Auto-advance after approving a timecard (OW-037) | Not built. A timer that moves focus takes the screen from someone mid-thought; "Next timecard" does it in one press. | Tracker: OW-037 fixed by decision. No code. |
+| "Pay statements shared" after publishing | The receipt only confirms the save; the worker shares the statements later. | The toast is gone where the screen draws the result; without the result card it says "Saved". No new payroll sentence; counsel should still see the change. |
+| The mark's colour | Green everywhere: done is green, and the Clocker receipt was already green. | The signed-out finish (password reset, activation, mobile access) is green. "Check your email" keeps its teal envelope: it is information, not done. |
+| Shimmer strength | Kept as built. Quiet suits a work tool. | None. |
+| Reduced motion on overlays | A short fade, nothing that travels. Keeps NV-251 and NV-329 and matches iOS Reduce Motion. | Sheets, dialogs, menus, toasts and the offline pill fade in over 150ms (opacity only) and leave at once. A dragged sheet still follows the finger. The guard test fails if anything moves under reduced motion. |
+| Ten private values | Colour and time become tokens; distances stay private. | `--b-scrim`, `--b-press-tint`, `--b-press-tint-own`, `--b-dur-shimmer`, `--b-delay-shimmer`, `--b-dur-spin` in `b-tokens.css`. Eight older press and scrim literals now read them. |
+
+## For you to decide (as built, before the decisions above)
 
 Each report has its full list. The ones that change what people see:
 

@@ -33,5 +33,5 @@ export function QuietLegal({ lang = "en" }: { lang?: "en" | "es" }) {
   // and on every page without that rule, the line is unchanged.
   return <p className="q-legal"><span className="q-legal__item q-legal__owner">© 2026 VELANI LLC</span>{policiesVisible() ? <>
     {" "}<span className="q-legal__links"><span className="q-legal__item"><span className="q-legal__lead">· </span><Link href="/privacy">{t.privacy}</Link></span>{" "}<span className="q-legal__item">· <Link href="/terms">{t.terms}</Link></span>{" "}<span className="q-legal__item">· <Link href="/support">{t.support}</Link></span></span>
-  </> : null}<span className="q-sr">{` ${NUVORA_BRAND.ownership}`}</span></p>;
+  </> : null}<span className="q-sr" lang="en">{` ${NUVORA_BRAND.ownership}`}</span></p>;
 }

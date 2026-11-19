@@ -543,27 +543,37 @@ item names the lines it supersedes; line numbers are from the file before this s
   - *Press.* Rows, tappable cards, tabs and text links tint at once (4% ink on white; 8% of the control's own text
     colour on the band and on tabs). Compact controls scale to 0.96. Nothing full-width scales. Enter and Space show
     the same (`src/components/kit/press-feedback.tsx`). Under reduced motion a button tints in place of the scale.
-  - *Reduced motion.* Overlays open and close at once. Every stylesheet that moves anything has a reduced-motion
-    rule; `src/app/app/b-reduced-motion.test.ts` fails when one does not.
+  - *Reduced motion.* Nothing travels or scales. An overlay (sheet, dialog, menu, toast, offline pill) fades in over
+    150ms, opacity only, and leaves at once; a dragged sheet still follows the finger. This keeps the fades of NV-251
+    and NV-329 (decided Nov 17, 2026). Every stylesheet that moves anything has a reduced-motion rule;
+    `src/app/app/b-reduced-motion.test.ts` fails when one does not, and fails if anything moves under reduce.
   - *Success.* One pattern, the kit's done state (`BState kind="done"`): a green-50 circle with a bold green check
     (48px inline, 56px with a 28px check for a page finish, 36px in a row) that settles once in 300ms and is still
     when the state was already true on load. An inline result replaces the form or row it came from: a title that
     names what is now true, one line with the next fact, at most one tinted next step and a quiet second way on. A
-    page finish is centred with one filled button. Strings in `src/components/owner-b/moments-copy.ts`.
+    page finish is centred with one filled button. Strings in `src/components/owner-b/moments-copy.ts`. Done is green
+    everywhere: the app's mark, the Clocker receipt and the signed-out finish (`.q-auth__mark--done`, decided Nov 17,
+    2026). A signed-out mark that is information (the "check your email" envelope) stays teal.
   - *Truth.* The mark shows only after the server confirmed. "Sent" is not "approved", "queued" is not "delivered",
     "saved" is not "paid". A queue receipt, a closed request and an unknown result never carry it.
   - *Said once.* `role="status"`, or focus on the result's title when the screen changed under the person, not both.
     A focused title draws no ring. A result drawn inline sends no toast.
   - *Payroll and money* use the same mark and layout and nothing more. A celebrated moment is the same mark with
     one ring; the gate in `src/lib/celebrations.ts` is unchanged. Supersedes the twelve-particle "Moment".
+    Publishing pay statements only queues them, so its result says "Saved" and no toast says they were shared.
+  - *No timer moves the person.* After approving a timecard the next one opens only on "Next timecard" (OW-037,
+    decided Nov 17, 2026: no automatic advance).
   - *Shimmer.* One light band crosses every placeholder block on one clock, 1.6s a pass, starting after 300ms of
     loading, transform only. Static under reduced motion. The shared placeholder carries it; a page never asks.
   - *Hand-over.* When a page replaces its placeholder nothing moves; only card contents fade in over 150ms on kit
     screens. A placeholder that no longer matches its page is a bug.
   - *Spinner.* One ring in the text colour (20px in a state card, 16px beside words), one keyframe (`b-spin`). Never
     alone: words sit beside it. `BButton busy` keeps the button's width and sets `aria-busy`.
-  - Supersedes the 360ms and 240ms sheet timings and the 420px desktop slide (R8), the fades kept under reduced
-    motion (NV-251, NV-329), and Phase 2's "loading is static".
+  - *Tokens.* `--b-scrim`, `--b-press-tint`, `--b-press-tint-own`, `--b-dur-shimmer` (1600ms), `--b-delay-shimmer`
+    (300ms) and `--b-dur-spin` (800ms) live in `src/app/b-tokens.css`. The travel distances (8px rise, 12px side,
+    4px and 0.98 for menus, the shimmer's span) stay private to `b-motion.css` and `b-shimmer.css`.
+  - Supersedes the 360ms and 240ms sheet timings and the 420px desktop slide (R8), and Phase 2's "loading is
+    static".
 - **States and menus.** The state card's empty kind is grey with a tray glyph; the warning glyph is for failures.
   Menu items have 10px corners inside the 16px menu (supersedes 8px near 1891).
 - **Motion.** The press scale runs only under `prefers-reduced-motion: no-preference`.
@@ -587,6 +597,44 @@ item names the lines it supersedes; line numbers are from the file before this s
   NEVORA.", a "What's next" card after approval, and "Scheduled payday" in place of "Payday" or "Next payday" wherever
   NEVORA shows a date from the pay schedule. The pay statement PDF text near line 1347 ("You take home") is unchanged
   and waits for Jose's and counsel's wording; see PY-2 in the inspection.
+- **Premium pass (built Nov 18, 2026; see `docs/product/premium-pass-2026-11-18/README.md` and its `spec.md`).** Jose
+  asked for every warning, status label and icon to be more premium, changing only what is clearly an upscale. The kit
+  (`src/components/owner-b/b-kit.tsx`, `owner-b.css`, `src/app/b-tokens.css`, `src/app/app/b-foundation.css`) carries
+  each building block once; a page uses it and nothing parallel to it.
+  - *Status labels.* In a list the normal state is quiet grey text (`BStatusText`, with a 6px green dot for someone on
+    the clock): "Clocked in", "On break", "Off today". Only an exception is a chip (`BChip`): 22px, 12/16 at 600, a 1px
+    edge in its tone's ink. "Clocked in late · 9 min", "Not clocked in · 35 min", "Missed". "Working" is retired. Time
+    facts ("Tomorrow", "Starts in 2 h", "In 9 days") are grey meta beside the title. One count (`BCount`): a 20px pill
+    that never breaks. On phones a status drops under the name and its sub-line.
+  - *Facts lines.* Facts joined by a middle dot use `BSegs`: each fact stays whole and no line starts or ends on the dot.
+  - *Notes.* Every tinted note is `BCallout`: a 600 title line, the body in ink2, an 18px glyph on the title's line, a
+    1px edge that survives High Contrast, at most one teal link. An email wraps only after "@" (`BEmail`). The Spanish
+    Privacy note at 390 is the reference.
+  - *One glyph per meaning.* WarningCircle (red, stops you), Warning (amber, check), HourglassMedium (wait), Info (teal),
+    ShieldCheck (privacy), Question (not confirmed, on the Clocker too), Check (done), LockSimple (locked). Time off is
+    CalendarMinus, Can't work UserMinus, timecards Clock, My pay Receipt, Help Question, the bell one Bell. Sizes: 12
+    chip, 16 inline, 18 lead, 20 control, 22 in a 48px state circle, 24 tab, 28 finish. The nine duotone icons stay.
+  - *Field errors.* One line on every signed-in form: a 16px WarningCircle in its own column, the words in red at 500,
+    a second line starting under the words, glyph and gap in em so they grow with the text (`form-validation.tsx`, and
+    `FieldErrorLine` for a form that draws its own message). A message that would appear while a pointer is pressed
+    waits until the press ends, so it never pushes the button away from the pointer. Signed-out forms keep
+    `auth-validation.tsx` with the same look.
+  - *Button heights* (`--b-btn-h*`). 36 in card headers; 44 for row actions, state cards and form and sheet footers,
+    drawn 44 on every width; 40 on phone bands and 48 on the band from 768; 52 for a full-width primary and the one red
+    destructive confirm. Square buttons became pills; one disabled look. Still 42 and listed for Jose: the band's
+    q-nav pills and the shift cancel in `owner-b-desktop.css`.
+  - *Closed pages.* Every closed page has one tinted step. Without a page that does the job for this person, the step
+    is "Return to Home".
+  - *Glass.* The band's glass tiles are 8% white inside the signed-in shell, so white words on them read at least
+    4.9:1. The Clocker band pills read at least 4.96:1.
+  - *Clocker.* One tone per outage (the ring, the band dot and the screen); every state screen has one layout, the icon
+    ring above the title on white. "Return to PIN" is "Done" / "Listo", or "Start over" / "Empezar de nuevo" on "Enter
+    your PIN again". The lockout keeps its Pause glyph (Nov 10 review) until Jose decides.
+  - *30-day phase screens* (employment dates, Christmas bonus hours, Shift matching, the 12-hour flag, the Privacy
+    layout): reviewed and fixed to the same standard; their type is in rem so 200% text scales with it. See
+    `docs/product/premium-pass-2026-11-18/30-day/README.md` and `final/fixes/ff.md`.
+  - Supersedes any older chip, note, glyph, error or button size in this file that differs from the list above. Section
+    2 of the spec lists what the pages drew before the pass.
 
 ## Previous direction (October 20, 2026; superseded)
 

@@ -30,9 +30,9 @@ import { assignedHours, type RosterEmployee } from "@/lib/scheduling/manager-ros
 
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
-import { DotsThreeCircleIcon } from "@phosphor-icons/react/dist/ssr/DotsThreeCircle";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { DotsThreeIcon } from "@phosphor-icons/react/dist/ssr/DotsThree";
+import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
 import { BButtonLink, BState } from "@/components/owner-b/b-kit";
 import { momentsCopy } from "@/components/owner-b/moments-copy";
@@ -70,7 +70,9 @@ function compactWeekRange(weekStart: string) {
   const end = addDays(weekStart, 6);
   const month = (date: string) => new Intl.DateTimeFormat("en-US", { month: "short", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
   const day = (date: string) => Number(date.slice(8));
-  return `${month(weekStart)} ${day(weekStart)} – ${month(end) === month(weekStart) ? "" : `${month(end)} `}${day(end)}`;
+  // Premium pass FA (final verification A #8): a range within a month is closed up ("Nov 16–22"), as Payroll and Home
+  // write a pay period; across months it keeps the spaced dash ("Nov 30 – Dec 6").
+  return month(end) === month(weekStart) ? `${month(weekStart)} ${day(weekStart)}–${day(end)}` : `${month(weekStart)} ${day(weekStart)} – ${month(end)} ${day(end)}`;
 }
 
 function validWeek(value?: string) {
@@ -325,7 +327,8 @@ export default async function SchedulePage({
     : changes && !counts.drafts ? <span className="c-meta c-sched-weekstate" data-tone="amber"><span className="c-sched-state__lead">Published · </span>{`${changes} ${changes === 1 ? "change" : "changes"}`}</span>
     : counts.drafts ? <span className="c-meta c-sched-weekstate" data-tone="amber">{`${counts.drafts === inView.length ? "Draft" : `${counts.drafts} ${counts.drafts === 1 ? "draft" : "drafts"}`}${changesText}`}</span>
     // Review B6 (NV-088): Published is the done state, so it is green.
-    : counts.published === inView.length ? <span className="c-meta c-sched-weekstate" data-tone="green">Published</span>
+    // Phase 9 (spec 1.1): a green state standing alone on the band carries the 12px Check, so it never rests on colour.
+    : counts.published === inView.length ? <span className="c-meta c-sched-weekstate" data-tone="green"><CheckIcon className="c-sched-weekstate__ic" weight="bold" aria-hidden="true" />Published</span>
     : counts.published ? <span className="c-meta c-sched-weekstate">{`${counts.published} of ${inView.length} published`}</span>
     : <span className="c-meta c-sched-weekstate">Not started</span>;
   const todayLong = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`));
@@ -379,7 +382,7 @@ export default async function SchedulePage({
                 <Link className="nevora-action-menu-item" href={publishHref}><strong>Build and publish</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
                 {/* Review Nov 14 (AR-9): team Availability had no menu entry for an Owner or Manager; it opens here, on the
                   week being planned, before the week is built. */}
-                <Link className="nevora-action-menu-item" href={`/app/availability?week=${weekStart}`} aria-label="Availability: who can work, and when"><strong>Availability</strong><span className="c-menu-value">Who can work, and when</span><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
+                <Link className="nevora-action-menu-item" href={`/app/availability?week=${weekStart}`} aria-label="Availability: who can work and when"><strong>Availability</strong><span className="c-menu-value">Who can work and when</span><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
                 <ScheduleCopyForm actorId={session.id} className="nevora-action-menu-item c-sched-menu-copy" label={<strong>Copy previous week</strong>} command={{operationId:randomUUID(),kind:"PREVIOUS_WEEK",weekStart}} />
                 <Link className="nevora-action-menu-item" href={`/app/schedule/templates?week=${weekStart}`}><strong>Week templates</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
                 <PrintScheduleButton />
@@ -451,7 +454,7 @@ export default async function SchedulePage({
             {/* Nov 1 upscale: "Schedule options" is two grouped lists, This week and Settings, one line per row. The week's
               "Today" link (on the week card, only when you're off this week) replaces Go to this week. The availability
               deadline is a row that opens its form in Scheduling rules (no inline date box or browser button). */}
-            <ActionMenu id="schedule-more-actions" label="More" title="Schedule options" ariaLabel="More schedule actions" triggerClassName="c-icon-btn c-sched-more" triggerContent={<DotsThreeCircleIcon weight="bold" className="c-ic" aria-hidden="true" />}>
+            <ActionMenu id="schedule-more-actions" label="More" title="Schedule options" ariaLabel="More schedule actions" triggerClassName="c-icon-btn c-sched-more" triggerContent={<DotsThreeIcon weight="bold" className="c-ic" aria-hidden="true" />}>
               {moreItems}
             </ActionMenu>
             {/* Review B2 (NV-013): with nothing to publish, the title's action is Add shift (Publish when something waits). */}
@@ -495,7 +498,8 @@ export default async function SchedulePage({
             </CorpCard>
           ) : null}
           {repairNote("corp")}
-          {toPlan.length ? <CorpCard label="Not published yet" ariaLabel="Locations the team can’t see yet">
+          {/* Phase 8 (a.md #33): one location says it once ("Condado isn’t published"); the heading names several. */}
+          {toPlan.length ? <CorpCard label={toPlan.length > 1 ? "Not published yet" : undefined} ariaLabel="Locations the team can’t see yet">
             <CorpRows label="Locations the team can’t see yet">{toPlan.map(location => {
               const drafted = statusFor(location.id) === "DRAFT";
               return <li key={location.id}><CorpRow href={planHref(location.id)} bold title={drafted ? `${location.shortName} isn’t published` : `${location.shortName} isn’t planned`}

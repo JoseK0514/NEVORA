@@ -11,6 +11,7 @@ import { ButtonLabel, Field, FieldErrors, lockPageScroll, useFieldErrors } from 
 import { CorpButton } from './corp/corp';
 import { QuietSheet } from './quiet/quiet-sheet';
 import { BCard, BChip, BIcon, BList, BNote, BRow, BState } from './owner-b/b-kit';
+import { Dotted } from './employee-b/parts';
 import { encodeQr, qrPath } from './access-recovery/qr';
 import { setupLink } from './clocker-setup-link';
 import { clockerOwnerCopy, clockerOwnerWhen, type ClockerOwnerCopy, type ClockerOwnerLang } from './clocker-owner-copy';
@@ -64,7 +65,8 @@ export function ClockerSetupTicket({ name, place, clockerKey, code, expiresAt, t
   return <div className="ck-ticket">
     {added ? <p className="ck-step">{t.ticketStep}</p> : null}
     <h2 className="ck-ticket__t" id="clocker-code-title" tabIndex={-1}>{t.ticketTitle(name)}</h2>
-    <p className="ck-ticket__s">{t.ticketWhere(place)} · {t.ticketValid(clockerOwnerWhen(expiresAt, timeZone, lang))}</p>
+    {/* Phase 8: the date and time it ends stay on one line ("Nov 18," / "12:15 AM" split on a phone). */}
+    <p className="ck-ticket__s">{t.ticketWhere(place)} · {t.ticketValid(clockerOwnerWhen(expiresAt, timeZone, lang).replace(/ /g, '\u00A0'))}</p>
     <div className="ck-ticket__body">
       <div className="ck-qr">{qr
         ? <svg viewBox={`0 0 ${qr.size + 8} ${qr.size + 8}`} role="img" aria-label={t.qrLabel(name)} shapeRendering="crispEdges"><rect width="100%" height="100%" fill="#FFFFFF" /><path d={qrPath(qr, 4)} fill="#111517" /></svg>
@@ -184,7 +186,9 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
       if (result.setup) setSetup({ ...result.setup, device: result.device, added: selection.operation === 'REGISTER' });
       else if (setup?.device.id === result.device.id && selection.operation === 'REVOKE') setSetup(null);
       else if (setup?.device.id === result.device.id) setSetup({ ...setup, device: result.device });
-      toast(selection.operation === 'RENAME' ? t.nameSaved : selection.operation === 'REVOKE' ? t.tabletRemoved : t.codeReady);
+      // Phase 8: a new setup code is its own card, and focus moves to its title, so no toast says it again (a result drawn
+      // inline sends no toast, Phase 7).
+      if (!result.setup) toast(selection.operation === 'RENAME' ? t.nameSaved : selection.operation === 'REVOKE' ? t.tabletRemoved : t.codeReady);
       busy.current = false;
       if (result.setup) { returnFocus.current = null; setSelection(null); setError(null); }
       else if (!dismissed.current) close();
@@ -208,7 +212,8 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
   const rotate = () => { setError(null); setSelection({ operation: 'ROTATE', device: selection!.device }); };
 
   // One row per tablet: a 36px lead, the name with its exception chip, what and when, then at most one tinted action and
-  // one quiet action. Each button names the tablet for a screen reader.
+  // one quiet action. Each button names the tablet for a screen reader. Phase 8 (B #10): the sub-line wraps between its
+  // parts, never inside one ("Connected · Not" / "used yet").
   const row = (item: ClockerDeviceView) => {
     const active = locationActive(item), line = tabletLine(item, { place: place(item.locationId), locationActive: active, timeZone, lang });
     const go = item.state === 'REVOKED' || !active ? null : needsSetup(item)
@@ -217,7 +222,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
       ? <button type="button" className="b-btn b-btn--quiet ck-text" data-clocker-device={item.id} aria-label={t.setUpAgainFor(item.name)} disabled={!hydrated || !active} onClick={event => open({ operation: 'ROTATE', device: item }, event)}>{t.setUpAgain}</button>
       : <button type="button" className="b-btn b-btn--quiet ck-text" data-clocker-device={item.id} aria-label={t.manageFor(item.name)} disabled={!hydrated} onClick={event => open({ operation: 'RENAME', device: item }, event)}>{t.manage}</button>;
     return <BRow key={item.id} lead={<BIcon tone={line.tone === 'amber' ? 'amber' : item.state === 'ACTIVE' ? 'teal' : 'grey'}><DeviceTabletIcon weight="bold" /></BIcon>}
-      title={item.name} chip={line.chip ? <BChip tone="amber">{line.chip}</BChip> : undefined} sub={line.sub} trail={<span className="ck-acts">{go}{quiet}</span>} />;
+      title={item.name} chip={line.chip ? <BChip tone="amber">{line.chip}</BChip> : undefined} sub={<Dotted text={line.sub} />} trail={<span className="ck-acts">{go}{quiet}</span>} />;
   };
 
   const current = devices.filter(item => item.state !== 'REVOKED');

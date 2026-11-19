@@ -91,11 +91,12 @@ describe("management side (Owner, Manager)", () => {
   it("an older record that was never confirmed is marked, with the two honest choices and no default", () => {
     const markup = html({ ...management, initial: { load: ready(LEGACY) } }), words = text(markup);
     expect(words).toContain("Not confirmed yet");
-    expect(markup).toContain('<span class="b-chip b-chip--amber">Not confirmed</span>');
+    // Phase 8 (a.md #23): the heading says the state once; no chip repeats it.
+    expect(markup).not.toContain('<span class="b-chip b-chip--amber">Not confirmed</span>');
     expect(words).toContain("No agreement is recorded for Maria. The schedule still follows the hours they entered in Availability. Nothing is confirmed until you choose one of these.");
     expect(markup).toContain('href="/app/availability?employeeId=EMP-1"');
-    expect(markup).toMatch(/<button[^>]*class="b-btn b-btn--quiet"[^>]*>No restrictions<\/button>/);
-    expect(markup).toMatch(/<button[^>]*id="rs-main-action"[^>]*class="b-btn b-btn--teal"[^>]*>Set the agreed times<\/button>/);
+    expect(markup).toMatch(/<button[^>]*class="b-btn b-btn--quiet rs-act"[^>]*>No restrictions<\/button>/);
+    expect(markup).toMatch(/<button[^>]*id="rs-main-action"[^>]*class="b-btn b-btn--teal rs-act"[^>]*>Set the agreed times<\/button>/);
     // Nothing is shown as agreed, and exactly one filled teal button is on the screen.
     expect(words).not.toContain("In effect");
     expect(markup.split("b-btn--teal").length - 1).toBe(1);
@@ -141,7 +142,7 @@ describe("management side (Owner, Manager)", () => {
     // Only the day that changes is listed, against what it is now.
     expect(words).toContain("Tuesday Changed Not this day Now: 8:00 AM – 4:00 PM");
     expect(words).toContain("The other days stay as they are.");
-    expect(markup).toMatch(/<button[^>]*class="b-btn b-btn--ghost"[^>]*aria-label="Approve the request Maria sent Oct 12"[^>]*>Approve<\/button>/);
+    expect(markup).toMatch(/<button[^>]*class="b-btn b-btn--ghost rs-act"[^>]*aria-label="Approve the request Maria sent Oct 12"[^>]*>Approve<\/button>/);
     expect(markup).toMatch(/<button[^>]*class="b-btn b-btn--quiet b-rowact b-rowact--quiet"[^>]*aria-label="Decline the request Maria sent Oct 12"[^>]*>Decline<\/button>/);
   });
   it("approving asks for the Monday it starts, offering only admissible ones, and says why", () => {
@@ -188,7 +189,7 @@ describe("management side (Owner, Manager)", () => {
     expect(options).toHaveLength(12);
     expect(options[0]).toBe("2030-10-21");
     expect(words).toContain("The earliest start is Mon, Oct 21. Earlier weeks are already published or closed, or come before the latest agreement. An agreement always starts on a Monday.");
-    expect(markup).toMatch(/class="b-btn b-btn--teal"[^>]*>Review</);
+    expect(markup).toMatch(/class="b-btn b-btn--teal rs-act"[^>]*>Review</);
   });
   it("a draft week from before the current bound is never offered or sent: the picker starts at the bound", () => {
     const markup = html({ ...management, initial: { load: ready(snapshot(IN_EFFECT.document, "2030-11-04")), step: "review", draft: { kind: "SET", plan, week: "2030-10-21", note: "" } } });
@@ -202,7 +203,7 @@ describe("management side (Owner, Manager)", () => {
     expect(words).toContain("Until then, nothing changes.");
     expect(markup.split('<span class="b-chip b-chip--teal">Changed</span>').length - 1).toBe(2);
     expect(words).toContain("Note: Agreed after the holiday rota");
-    expect(markup).toMatch(/class="b-btn b-btn--teal"[^>]*>Save agreement</);
+    expect(markup).toMatch(/class="b-btn b-btn--teal rs-act"[^>]*>Save agreement</);
     expect(words).toContain("Back to edit");
   });
   it("review says a first agreement, and explicit no restrictions, in their own words", () => {
@@ -279,9 +280,11 @@ describe("Employee and Lead side", () => {
     expect(markup).toContain('<div class="b-screen b-screen--back">');
     expect(markup).toContain('href="/app/availability"');
     expect(markup).toContain('<h1 id="rs-title" tabindex="-1">Agreed times</h1>');
-    expect(words).toContain("What you and your manager agreed");
+    expect(words).toContain("When you can be scheduled");
     expect(words).toContain("In effect since Mon, Sep 30");
-    expect(words).toContain("This is what you and your manager agreed. It is different from the availability you send each week, which is a preference.");
+    expect(words).toContain("You and your manager set these times. The availability you send each week is a preference.");
+    // Phase 8 (review C, row 7): the note is the agreement card's footer, not a line on the canvas.
+    expect(markup).toContain('<p class="eb-cardnote rs-separate">You and your manager set these times.');expect(markup).not.toContain('class="b-note"');
     expect(markup).toMatch(/id="rs-main-action"[^>]*>Ask to change it</);
     expect(markup).toContain('aria-label="Times you can be scheduled, by day"');
   });
@@ -291,6 +294,9 @@ describe("Employee and Lead side", () => {
     expect(words).toContain("Your manager has not confirmed an agreement with you. Your schedule still follows the availability you send.");
     expect(words).toContain("Ask for agreed times");
     expect(words).not.toContain("No restrictions");
+    // Phase 8 (review C, row 7): one designed empty state: no "Not confirmed" chip (that word is for an unknown result) and
+    // no note that says something was agreed.
+    expect(words).not.toContain("Not confirmed");expect(words).not.toContain("set these times");
   });
   it("a request they sent shows as Waiting with what they asked, and there is no way to approve", () => {
     const markup = html({ ...own, initial: { load: ready(WAITING) } }), words = text(markup);
@@ -320,7 +326,7 @@ describe("Employee and Lead side", () => {
     const markup = html({ ...own, initial: { load: ready(IN_EFFECT), step: "review", draft: { kind: "REQUEST", plan, week: "2030-10-21", note: "" } } }), words = text(markup);
     expect(words).toContain("You are asking for these times from the week of Mon, Oct 21. Your manager decides. Nothing changes until they approve.");
     expect(words).toContain("2 days change: Saturday and Sunday.");
-    expect(markup).toMatch(/class="b-btn b-btn--teal"[^>]*>Send request</);
+    expect(markup).toMatch(/class="b-btn b-btn--teal rs-act"[^>]*>Send request</);
     expect(words).not.toContain("Save agreement");
   });
   it("loading, error, signed out and unknown are designed for this side too", () => {

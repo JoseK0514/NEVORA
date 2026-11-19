@@ -1,11 +1,19 @@
 import Link from 'next/link';
 import { BrandWordmark } from '@/components/brand-mark';
-import { QuietLegal } from '@/components/brand-legal';
+import { SignedOutFooter } from '@/components/auth-premium/signed-out-footer';
 import { LangSwitch } from '@/components/auth-premium/lang-switch';
 import { AUTH_COPY } from '@/lib/auth-copy';
 import { readAuthLang } from '@/lib/auth-lang.server';
 import { NotFoundHint } from './not-found-hint';
+import type { Metadata } from 'next';
 import './not-found.css';
+
+/** Review 30 (D37): the 404's document title is in the page's language ("Página no encontrada · NEVORA"); it was the
+ * English product name on both. */
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await readAuthLang();
+  return { title: `${AUTH_COPY[lang].notFound.title} · NEVORA` };
+}
 
 /** Any unknown public address, including a tablet with a wrong Clocker key. Direction B (Nov 8, 2026): the teal band
  * with the title and "Error 404", then one reading card and the way back.
@@ -30,8 +38,8 @@ export default async function NotFound() {
         <NotFoundHint title={words.hintTitle} body={words.hintBody}/>
         <Link href="/login" className="nf-cta">{words.cta}</Link>
       </div>
-      {/* Phase 5 (PB-035): one VELANI line, the sign-in pages' legal line. */}
-      <footer className="nf-foot"><QuietLegal lang={lang}/></footer>
+      {/* Phase 5 (PB-035): one VELANI line. Phase 8: the footer every signed-out page shares. */}
+      <footer className="nf-foot"><SignedOutFooter lang={lang}/></footer>
     </section>
   </main>;
 }

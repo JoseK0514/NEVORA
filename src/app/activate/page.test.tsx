@@ -6,5 +6,5 @@ it('renders the approved activation shell and workspace guidance (server-render 
  const html=renderToStaticMarkup(await ActivatePage({searchParams:Promise.resolve({})}));
  expect(html).toMatch(/<h1\b[^>]*>Set up your account<\/h1>/);expect(html).toContain('Fictional workspace');
  expect(html).toContain('Open your email invitation, then choose a password.');
- expect(html).toContain('Opening your invitation');expect(html).toContain('Already activated? Sign in');
+ expect(html).toContain('Opening your invitation');expect(html).toContain('Already set up? Sign in');
 });

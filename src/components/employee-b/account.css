@@ -48,12 +48,18 @@
   html body .app-shell[data-nv-b] .b-screen .eb-lseg button { min-height: 34px !important; height: 34px !important; }
   /* Label-over-value rows are 63px like the mock. */
   /* The search field ends in an ellipsis instead of cutting a word. */
-  /* Delete account: the "I understand" box is drawn like the mock's (1.5px grey ring, 7px corners, teal when checked);
-   * the eye sits centred in the 48px field. */
-  html body .app-shell[data-nv-b] .eb-delete-keep .em-delete-check input { -webkit-appearance: none !important; appearance: none !important; width: 24px !important; height: 24px !important;
-    margin: 1px 0 0 !important; border: 1.5px solid #9AA3A8 !important; border-radius: 7px !important; background: #FFFFFF !important; }
-  html body .app-shell[data-nv-b] .eb-delete-keep .em-delete-check input:checked { border-color: var(--b-teal) !important; background: var(--b-teal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23fff' d='M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") center / 16px no-repeat !important; }
-  html body .app-shell[data-nv-b] .eb-delete-keep .em-delete-check input:focus-visible { outline: 2px solid var(--b-teal) !important; outline-offset: 2px !important; }
+  /* Delete account: the "I understand" box. Final review C (row 11): the kit's one checkbox (spec 3.5): 20px, 6px
+   * corners, a 1.5px field edge on white, teal with a 14px bold white check when checked, the disabled pair while the
+   * request is sent; under forced colours the system box. It was 24px with 7px corners. The eye sits centred in the 48px
+   * field. */
+  html body .app-shell[data-nv-b] .eb-delete-keep .em-delete-check input { -webkit-appearance: none !important; appearance: none !important; box-sizing: border-box !important; width: 20px !important; height: 20px !important; min-width: 20px !important; min-height: 20px !important;
+    margin: calc((var(--b-fs-body) * 1.45 - 20px) / 2) 0 0 !important; padding: 0 !important; border: 1.5px solid var(--b-field-edge) !important; border-radius: 6px !important; background: #FFFFFF !important; }
+  html body .app-shell[data-nv-b] .eb-delete-keep .em-delete-check input:checked { border-color: var(--b-teal) !important; background: var(--b-teal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23fff' d='M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") center / 14px no-repeat !important; }
+  html body .app-shell[data-nv-b] .eb-delete-keep .em-delete-check input:disabled { border-color: var(--b-quiet-edge) !important; background-color: var(--b-disabled-bg) !important; cursor: not-allowed !important; }
+  html body .app-shell[data-nv-b] .eb-delete-keep .em-delete-check input:focus-visible { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; }
+  @media (forced-colors: active) {
+    html body .app-shell[data-nv-b] .eb-delete-keep .em-delete-check input { -webkit-appearance: auto !important; appearance: auto !important; background: none !important; border: 0 !important; }
+  }
   html body .app-shell[data-nv-b] .eb-delete-keep .em-delete-eye { top: 50% !important; transform: translateY(-50%) !important; }
 
   /* Inspection round 2 (Account). */
@@ -80,6 +86,19 @@
   /* NV-285, NV-293: the language switch keeps its 34px look with a 44px tap area. */
   /* NV-105: you, on More's glass, as in the header: a white circle with teal initials. */
   /* NV-286: Help's Contact: one reply-time line, then the warning as a tinted note with the lock. */
+  /* Phase 8 (review C, rows 4, 5 and 36). The red button and "This can't be undone." are one piece under the consent line. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .eb-delete-keep .eb-delete-go:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { display: flex !important; flex-direction: column !important; gap: var(--b-space-16) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .eb-delete-keep .em-delete-check > span:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { text-wrap: pretty !important; }
+  @media (max-width: 767px) {
+    /* A form's screen hides the bell and the avatar as well as the tab bar (the shell's rule drew them back). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile]:has(.c-page > .b-screen > .eb-form) .mobile-header .mobile-header-actions:not(#f8a):not(#f8b):not(#f8c):not(#f8d) { display: none !important; }
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    /* On a tablet the confirm card is one column: the button ends on the 560px block's right edge, at its own width, with
+     * the note centred under it. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .eb-delete-keep .eb-delete-go:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { display: grid !important; justify-content: end !important; justify-items: center !important; row-gap: var(--b-space-16) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .b-keep.eb-delete-keep .eb-delete-go > .em-delete-confirm:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { width: auto !important; padding-left: var(--b-space-32) !important; padding-right: var(--b-space-32) !important; }
+  }
   @media (min-width: 768px) {
     /* NV-143 (LN-034, TB-045): on desktop and tablets "Confirm it's you" is the card itself, not a card inside the form's card. */
     html body .app-shell[data-nv-b][data-employee-mobile] .c-page:has(> .b-screen--back) > .b-keep.eb-delete-keep { padding: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
@@ -102,11 +121,11 @@
   font-size: var(--b-fs-body); font-weight: 600; color: var(--b-on-band); transition-property: background-color; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__link:active { background-color: rgb(255 255 255 / 0.08); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__link:focus-visible { outline: 2px solid var(--b-focus-on-band); outline-offset: -2px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .q-count { display: inline-grid; place-items: center; min-width: 24px; height: 22px; padding: 0 var(--b-space-8); border-radius: var(--b-radius-pill); background: var(--b-teal-50); color: var(--b-teal); font-size: var(--b-fs-caption); font-weight: 700; font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .q-count { display: inline-grid; place-items: center; box-sizing: border-box; min-width: var(--b-count-h); height: var(--b-count-h); padding: 0 6px; border-radius: var(--b-radius-pill); background: var(--b-teal-50); color: var(--b-teal); font-size: var(--b-fs-count); line-height: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-signout form { display: block; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-signout__btn { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 56px; padding: 0 var(--b-inset); color: var(--b-ink); font-size: var(--b-fs-body); font-weight: 600; text-align: center;
   transition-property: background-color; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-signout__btn:active { background-color: rgb(16 24 32 / 0.04); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-signout__btn:active { background-color: var(--b-press-tint); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-signout__btn:focus-visible { outline-offset: -3px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-para { font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); text-wrap: pretty; overflow-wrap: break-word; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pad { padding: var(--b-space-4) var(--b-inset) 14px; }
@@ -131,7 +150,6 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty > span:not(.b-ico) { max-width: 30ch; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); text-wrap: balance; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-feedback { outline: none; display: flex; flex-direction: column; gap: var(--b-space-8); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-feedback:empty, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-feedback--empty { display: none; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-note.eb-callout { padding: var(--b-space-12) var(--b-space-16); border-radius: var(--b-radius-field); background: var(--b-teal-50); color: var(--b-teal); font-size: 14px; line-height: 20px; font-weight: 500; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status .eb-para + .eb-para { margin-top: -4px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-label { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 600; color: var(--b-grey); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-in { display: flex; flex-direction: column; gap: 6px; }
@@ -195,7 +213,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg { display: inline-grid; grid-auto-flow: column; flex: none; padding: 3px; border-radius: var(--b-radius-field); background: var(--b-quiet); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button { display: grid; place-items: center; height: 34px; padding: 0 var(--b-gutter); border-radius: var(--b-radius-small); font-size: 14px; font-weight: 600; color: var(--b-ink2); white-space: nowrap;
   transition-property: background-color, color, box-shadow; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button[aria-pressed="true"] { background: #FFFFFF; color: var(--b-ink); box-shadow: 0 1px 3px rgb(16 40 38 / 0.18); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button[aria-pressed="true"] { background: #FFFFFF; color: var(--b-ink); box-shadow: var(--b-shadow-thumb); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button:focus-visible { outline-offset: -2px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-danger .b-row__t { color: var(--b-red); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-expand { width: 100%; text-align: left; }
@@ -213,7 +231,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.eb-q, .eb-doc__first, .eb-doc__sec) > summary::-webkit-details-marker { display: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.eb-q, .eb-doc__sec) > summary:focus-visible { outline: 2px solid var(--b-teal); outline-offset: -3px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__first > summary:focus-visible { outline: 2px solid var(--b-teal); outline-offset: 2px; border-radius: 6px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.eb-q, .eb-doc__sec) > summary:active { background-color: rgb(16 24 32 / 0.04); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.eb-q, .eb-doc__sec) > summary:active { background-color: var(--b-press-tint); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-q__chev { transition-property: rotate; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-q[open] .eb-q__chev { rotate: 180deg; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-q__a { padding: 0 var(--b-inset) var(--b-space-16) 66px; }
@@ -255,7 +273,7 @@
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-confirm {
   height: 56px; margin-top: var(--b-space-2); border-radius: 18px; font-size: var(--b-fs-title-sm); line-height: var(--b-lh-title-sm); font-weight: 700;
   transition-property: background-color, color, scale; transition-duration: var(--b-dur-press); transition-timing-function: var(--b-ease-out); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-confirm > .c-note--center { margin-top: -6px; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-confirm > .c-note--center, :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-delete-go > .c-note--center { margin-top: -6px; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-outcome { padding: 14px var(--b-space-16); border-radius: var(--b-radius-card); font-size: 14px; line-height: 20px;
   box-shadow: var(--b-elev-1); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-compose > .em-request-body { border-radius: var(--b-radius-card);
@@ -291,7 +309,10 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links > * { margin: -7px 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__tx > span .eb-nowrap { white-space: nowrap; text-wrap: nowrap; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-form { display: none; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check:not(#e-none) { min-height: 48px; padding: var(--b-space-4) 0; align-items: center; }
+/* Final review C (row 11): the box sits on the consent's first line (centred on its 22.5px line box; its top margin is in
+ * the layered rule above) whatever the number of lines, and a one-line consent is still centred in its 48px target: a
+ * two-column grid whose one row is centred. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check:not(#e-none) { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; align-content: center; min-height: 48px; padding: var(--b-space-4) 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button { position: relative; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button::after { content: ""; position: absolute; inset: -6px 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-me { background: #FFFFFF; color: var(--b-teal); font-weight: 700; }
@@ -300,13 +321,8 @@
  * area the same way, without moving the line it sits in. Most of it is under the line, so a link on an answer's first
  * line doesn't take taps from the question above it. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-q__a a { display: inline-block; margin: -6px 0 -17px; padding: 6px 0 17px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-help-contact .eb-help-warn { margin: 0 var(--b-inset) 18px; padding: var(--b-space-12) var(--b-gutter); border-radius: var(--b-radius-field); background: var(--b-quiet); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-help-contact .eb-help-warn .b-notice__t { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 600; color: var(--b-ink2); }
+/* Phase 9: Help's safety note is the kit's callout, the card's last thing (owner-b.css sets its inset and foot). */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-help-contact .eb-help-note { padding-bottom: var(--b-space-12); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-help-contact .eb-help-warn .b-ico { background: #FFFFFF; }
-@media (min-width: 768px) {
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-help-contact .eb-help-warn:not(#e-none) { margin: 0 var(--b-inset-wide) 22px; }
-}
 
 /* Review F2 (NV-144): the policy page's one action, a white pill in the reading card's footer (a hairline, so it reads on white). */
 @media (max-width: 767px), (min-width: 768px) {

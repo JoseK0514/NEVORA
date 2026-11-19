@@ -1,11 +1,10 @@
 /* Employee Pay on the phone, Direction B (dark ink hero). Values are the approved mock's. */
-/* The next payday on the hero: "Scheduled payday · Tomorrow", the date large, then the period chip and See your hours. */
+/* The next payday on the hero: "Scheduled payday · Tomorrow", the date large, then the period and See your hours. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next { padding-top: 18px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__k { font-size: 14px; line-height: 19px; font-weight: 500; color: var(--b-on-band-2); }
 /* Review B6 (NV-154): the date is a 28/34 figure under its label, so the page title "Pay" (30px) leads. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__v { margin: var(--b-space-2) 0 10px; font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -0.03em; color: var(--b-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-space-8); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row .b-chip { height: 24px; padding: 0 var(--b-space-8); border-radius: var(--b-radius-pill); font-size: var(--b-fs-caption); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row .b-btn { min-height: 32px; padding: 0 var(--b-space-12); border-radius: var(--b-radius-pill); font-size: var(--b-fs-meta); }
 /* Inspection Nov 14 (BR-11): See your hours keeps its 32px pill and takes a 44px hit area. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row .b-btn::after { inset: -6px 0; }

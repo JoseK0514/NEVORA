@@ -36,8 +36,8 @@ it("names the week, each location's state and shift count, and publishes every d
   expect(out).toContain("<small>Next week</small><b>Nov 2 – 8</b>");
   expect(out).toContain(">1 draft</span>");
   // Review B1 (NV-071): Published is done, so it reads green.
-  expect(out).toMatch(/Condado<\/span><span class="c-row__detail"><span>2 shifts<\/span><\/span><\/span><span class="c-row__trail"><span class="c-pill c-pill--green">Published/);
-  expect(out).toMatch(/Dorado<\/span><span class="c-row__detail"><span>1 shift<\/span>.*c-pill--amber">Draft/);
+  expect(out).toMatch(/Condado<\/span><span class="c-row__detail"><span>2 shifts<\/span><\/span><\/span><span class="c-row__trail"><span class="c-pill c-pill--green b-chip b-chip--green">Published/);
+  expect(out).toMatch(/Dorado<\/span><span class="c-row__detail"><span>1 shift<\/span>.*c-pill--amber b-chip b-chip--amber">Draft/);
   expect(out).toMatch(/Hato Rey.*Nothing scheduled.*Not started/);
   expect(out).toContain('name="locationId" value="loc-2"');
   expect(out).not.toContain('name="locationId" value="loc-1"');
@@ -77,7 +77,7 @@ it("lists changes to the published week and publishes them once with Publish cha
   expect(out).toContain(">2 changes<");
   expect(out).toContain('>Changes not published<span class="c-count c-num">2</span><');
   expect(out).toContain("Tue, Nov 3 · Time changed · 12:00 PM – 8:00 PM → 2:00 PM – 8:00 PM");
-  expect(out).toMatch(/Sam Ortiz.*Wed, Nov 4 · Added · 8:00 AM – 4:00 PM.*c-pill--amber">Added/);
+  expect(out).toMatch(/Sam Ortiz.*Wed, Nov 4 · Added · 8:00 AM – 4:00 PM.*c-pill--amber b-chip b-chip--amber">Added/);
   expect(out).toContain(">Publish changes<");
   expect(out).toContain("Each person with a change is notified once when you publish.");
   expect(out).not.toContain('name="locationId"');

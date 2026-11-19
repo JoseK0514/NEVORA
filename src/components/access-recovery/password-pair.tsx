@@ -16,6 +16,10 @@ import "./access-recovery.css";
  * passwords that differ are said in red, in the one field error style, only after the person leaves the second field or
  * the form refuses the pair. A rule is announced once, when it becomes true, never on every key.
  * Both fields have the eye, and either one shows or hides both.
+ * Phase 8 (Nov 17, 2026): one eye convention on every signed-out page, Sign in's: the glyph shows what the button does
+ * (an open eye shows the password, a slashed eye hides it), the name is "Show password" and `aria-pressed` carries the
+ * state. The match rule is phrased as a requirement ("Same as the new password") until the two match, so nothing reads
+ * as true before it is.
  * Presentation only: the form still checks the length and compares the two values on submit, exactly as before. */
 export function PasswordPair({ prefix, lang, mismatch = false, newLabel, confirmLabel, errorId, advice, className }: {
   prefix: "activation" | "reset";
@@ -52,8 +56,8 @@ export function PasswordPair({ prefix, lang, mismatch = false, newLabel, confirm
     else if (!nowLong && !nowSame) setSaid("");
     setPassword(nextPassword); setConfirm(nextConfirm);
   }
-  const eye = <button type="button" className="q-in__eye" aria-pressed={visible} aria-controls={`${first} ${second}`} aria-label={t.showPasswords} onClick={() => setVisible(!visible)}>
-    {visible ? <EyeIcon size={20} weight="bold" aria-hidden="true" focusable="false" /> : <EyeSlashIcon size={20} weight="bold" aria-hidden="true" focusable="false" />}
+  const eye = <button type="button" className="q-in__eye" aria-pressed={visible} aria-controls={`${first} ${second}`} aria-label={t.showPassword} onClick={() => setVisible(!visible)}>
+    {visible ? <EyeSlashIcon size={20} weight="bold" aria-hidden="true" focusable="false" /> : <EyeIcon size={20} weight="bold" aria-hidden="true" focusable="false" />}
   </button>;
   return <div ref={group} className={className ? `ar-pair ${className}` : "ar-pair"}>
     <div className="q-fl">
@@ -81,7 +85,7 @@ export function PasswordPair({ prefix, lang, mismatch = false, newLabel, confirm
         {eye}
       </div>
       {differs ? <FieldError id={mismatchId}>{ACCESS_COPY[lang].activation.mismatch}</FieldError>
-        : <RuleLine id={`${second}-hint`} state={same ? "ok" : "idle"} text={t.activation.passwordsMatch} />}
+        : <RuleLine id={`${second}-hint`} state={same ? "ok" : "idle"} text={same ? t.activation.passwordsMatch : t.activation.sameAsNew} />}
       <FieldInvalid id={second} />
     </div>
     <span className="ar-sr" role="status" aria-live="polite">{said}</span>
