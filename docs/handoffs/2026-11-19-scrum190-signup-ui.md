@@ -16,8 +16,9 @@ it before deploying.
 ## Source
 
 - Base: `development` `49cd1072`.
-- Candidate: the commit that contains this file, published as tag
-  `candidate/ui/scrum190-signup-ui-20261119` (see the tag for the exact SHA).
+- Candidate: branch `scrum190-signup-ui` (Jose authorized this extra branch on
+  Nov 19; tags cannot be pushed from this session). It is exactly `49cd1072`
+  plus the SCRUM-190 commits; its head is the commit that contains this file.
   Code commits: `44560645` (screens), `3fd5895e` (browser fixes), `0bd2fb56`
   (review fixes), `859def16` (guides rebuilt from `0bd2fb56`).
 - No backend, schema, API, provider, proxy, CSP or environment-variable change.
