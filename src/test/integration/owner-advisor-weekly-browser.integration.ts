@@ -71,7 +71,12 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
   for(const event of ['requestfinished','requestfailed'])page.on(event,(request:object)=>{pendingRouterReads.delete(request);pendingShellReads.delete(request);});
   const beforeHardNavigation = async () => {
     navigationAttempts++;
+    // The old document can already have emitted networkidle while a later RSC
+    // stream is unfinished. Let that stream finish before it can remount shell
+    // readers, then retire and drain the shell before starting another document.
+    await expect.poll(() => pendingRouterReads.size, {timeout:20000}).toBe(0);
     await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+    await expect.poll(() => pendingShellReads.size, {timeout:20000}).toBe(0);
     await page.waitForLoadState('networkidle');
   };
 
