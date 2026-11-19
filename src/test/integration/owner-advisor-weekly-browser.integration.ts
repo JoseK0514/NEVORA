@@ -17,6 +17,7 @@ const runtimeRequire = createRequire(resolve('tools/ci-browser-runtime/package.j
 const runtime = runtimeRequire('playwright');
 let app: Awaited<ReturnType<typeof createOwnedNextApp>>, evidence: string, monday: string;
 const checks: string[] = [], external: string[] = [], errors: string[] = [];
+const navigationControls: Record<string, unknown>[] = [];
 let completedEngines = 0;
 
 beforeAll(async () => {
@@ -45,7 +46,7 @@ beforeAll(async () => {
 afterAll(async () => {
   if (!app) return;
   await app.close();
-  await writeFile(resolve(evidence, 'report.json'), JSON.stringify({ complete: completedEngines === 2, checks, external, errors,
+  await writeFile(resolve(evidence, 'report.json'), JSON.stringify({ complete: completedEngines === 2, checks, external, errors, navigationControls,
     source: app.sourceHashes, modelConfigured: false, data: 'Fictional owned loopback PostgreSQL only',
     api: 'Actual Next authentication, weekly route, SQL solver and writer; no synthetic API responses',
     fault: 'Actual apply fetched to completion, then reply aborted; first recovery request also aborted' }, null, 2));
@@ -63,6 +64,17 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
   const visualFailures: unknown[] = [];
   let phase = 'login', dropSave = false, dropCheck = false, committedBeforeLoss = false, applyPosts = 0;
   const observed: { op: string; status: number; state?: string }[] = [];
+  const pendingRouterReads = new Set<object>(), pendingShellReads = new Set<object>();
+  let navigationAttempts = 0;
+  type ReadRequest = {url():string;method():string;headers():Record<string,string>};
+  page.on('request', (request: ReadRequest) => {const url=new URL(request.url());if(url.origin!==origin||request.method()!=='GET')return;if(request.headers().rsc==='1')pendingRouterReads.add(request);if(['/api/company-access/operational-authority','/api/notifications'].includes(url.pathname))pendingShellReads.add(request);});
+  for(const event of ['requestfinished','requestfailed'])page.on(event,(request:object)=>{pendingRouterReads.delete(request);pendingShellReads.delete(request);});
+  const beforeHardNavigation = async () => {
+    navigationAttempts++;
+    await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+    await page.waitForLoadState('networkidle');
+  };
+
   try {
     await context.route('**/*', async (route: Route) => {
       const req = route.request(), url = new URL(req.url());
@@ -96,6 +108,24 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
     await page.getByLabel('Employee ID', { exact: true }).fill('QAOWNER');
     await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
     await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(origin + '/app');
+    // An earlier document-idle event cannot prove a later real RSC read ended.
+    // Hold that read and require the navigation barrier to wait for its body.
+    phase='hard navigation read-drain control';await page.waitForLoadState('networkidle');
+    let releaseProbe:()=>void=()=>{},probeArrived:()=>void=()=>{},holdProbe=true;
+    const probeGate=new Promise<void>(resolve=>{releaseProbe=resolve;}),probeSeen=new Promise<void>(resolve=>{probeArrived=resolve;});
+    const probePattern='**/app/ai-manager/weekly?__qa_drain=1';
+    await page.route(probePattern,async(route:{request():{headers():Record<string,string>};continue():Promise<void>})=>{if(holdProbe&&route.request().headers().rsc==='1'){probeArrived();await probeGate;}await route.continue();});
+    let waiting:Promise<void>|undefined,settled=false;
+    try{
+      await page.evaluate(()=>{void fetch('/app/ai-manager/weekly?__qa_drain=1',{cache:'no-store',headers:{RSC:'1'}}).then(response=>response.text()).catch(()=>{});});
+      await runBeforeRecoveryDeadline(()=>probeSeen,performance.now()+20000);await page.waitForLoadState('networkidle');expect(pendingRouterReads.size).toBeGreaterThan(0);
+      waiting=beforeHardNavigation().then(()=>{settled=true;});await expect.poll(()=>navigationAttempts).toBe(1);
+      await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));
+      expect(settled).toBe(false);const heldReads=pendingRouterReads.size;expect(heldReads).toBeGreaterThan(0);
+      holdProbe=false;releaseProbe();await waiting;expect(pendingRouterReads.size).toBe(0);
+      navigationControls.push({engine,previousIdleWithPendingReads:heldReads,navigationWaitedForRealBody:true,remaining:pendingRouterReads.size});
+    }finally{holdProbe=false;releaseProbe();await waiting?.catch(()=>{});await page.unroute(probePattern);}
+    await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));
     let enteredFromManager = false;
     const openForm = async (steps: number) => {
       if (!enteredFromManager) {
@@ -105,7 +135,7 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
         await page.setViewportSize({ width: 390, height: 844 });
         await page.locator('main').getByRole('link', { name: 'Weekly plan', exact: true }).click();
         await page.waitForURL(origin + '/app/ai-manager/weekly'); enteredFromManager = true;
-      } else await page.goto(origin + '/app/ai-manager/weekly');
+      } else {await beforeHardNavigation();await page.goto(origin + '/app/ai-manager/weekly');}
       await page.getByRole('button', { name: 'Compare options', exact: true }).waitFor();
       for (let i = 0; i < steps; i++) await page.getByRole('button', { name: 'Next week', exact: true }).click();
     };
@@ -171,7 +201,7 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
     const pendingStorage = await page.evaluate(() => JSON.parse(sessionStorage.getItem('nevora.rondo.weekly.pendingApply.v1') ?? 'null'));
     expect(Object.keys(pendingStorage).sort()).toEqual(['acknowledged','authority','readReceiptId','requestId','reviewId','termsDigest']);
     expect(JSON.stringify(pendingStorage)).not.toContain('Fictional');
-    const recovered = response('check_week_plan'); await page.reload(); const saved = await result(recovered);
+    await beforeHardNavigation();const recovered = response('check_week_plan'); await page.reload(); const saved = await result(recovered);
     expect(saved.state).toBe('saved'); expect(saved.receipt?.operationId).toBe(pendingStorage.requestId);
     await page.getByRole('heading', { name: 'What was saved', exact: true }).waitFor();
     expect(saved.progress?.state).toBe('draft'); expect(saved.progress?.assignmentsPresent).toBe(4); expect(saved.progress?.publishedAssignments).toBe(0);
@@ -216,5 +246,5 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
   } catch (error) {
     await writeFile(resolve(evidence, `${engine}-failure.json`), JSON.stringify({ phase, message: String(error), observed }, null, 2));
     await page.screenshot({ path: resolve(evidence, `${engine}-failed.png`), fullPage: true, timeout: 5000 }).catch(() => {}); throw error;
-  } finally { await context.close(); await browser.close(); }
+  } finally { await context.unrouteAll({behavior:'wait'});await context.close(); await browser.close(); }
 });
