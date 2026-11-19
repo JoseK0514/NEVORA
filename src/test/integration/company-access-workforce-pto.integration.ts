@@ -198,6 +198,38 @@ it('keeps another location’s held edit private during scoped publication and p
   expect(weekStartFor('2030-10-13')).toBe(week);
 });
 
+it('publishes both ends of a cross-location move as Owner and retains unrelated held edits', async () => {
+  const week = '2030-10-07';
+  await f.q(`INSERT INTO employee_location_eligibility VALUES ('target','loc-2');
+    INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES
+      ('s1','loc-1','2030-10-07','DRAFT','owner'),('s2','loc-2','2030-10-07','DRAFT','owner');
+    INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,notes) VALUES
+      ('move','s1','target','2030-10-08','08:00','09:00','Assignment to move'),
+      ('held','s1','target','2030-10-09','08:00','09:00','Published note')`);
+  const publish = (locationId: string, actor: SessionMutationProof) => publishScheduleWithRevision({
+    locationId,weekStart:week,managerId:actor.employee.id,proof:actor,
+  },f.db.executor);
+  const original = await publish('loc-1',f.owner);
+  await grant('PUBLISH_SCHEDULE','loc-1');
+  await grant('PUBLISH_SCHEDULE','loc-2');
+  await f.q("UPDATE shifts SET schedule_id='s2' WHERE id='move'; UPDATE shifts SET notes='Held note' WHERE id='held'");
+  await expect(publish('loc-1',f.manager)).rejects.toThrow('operational_authorization');
+  await expect(publish('loc-2',f.manager)).rejects.toThrow('operational_authorization');
+  expect(await f.q("SELECT status FROM schedules WHERE id='s2'")).toEqual([{status:'DRAFT'}]);
+  const published = await publish('loc-2',f.owner);
+  const capture = (id: string | undefined) => f.q(
+    'SELECT source_shift_id,location_id,notes FROM schedule_publication_revision_shifts WHERE revision_id=$1 ORDER BY source_shift_id',[id],
+  );
+  expect(await capture(original.revision?.id)).toEqual([
+    {source_shift_id:'held',location_id:'loc-1',notes:'Published note'},
+    {source_shift_id:'move',location_id:'loc-1',notes:'Assignment to move'},
+  ]);
+  expect(await capture(published.revision?.id)).toEqual([
+    {source_shift_id:'held',location_id:'loc-1',notes:'Published note'},
+    {source_shift_id:'move',location_id:'loc-2',notes:'Assignment to move'},
+  ]);
+});
+
 it('scopes time exceptions independently, rejects a delegated requester, and rechecks capability revocation at the write', async () => {
   const now = new Date();
   now.setUTCDate(now.getUTCDate()-3);

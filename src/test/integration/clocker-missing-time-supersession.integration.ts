@@ -5,7 +5,7 @@ import type { SessionMutationProof } from '../../lib/shift-changes/types';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 import { reviewTimeCorrection, submitTimeCorrection, type CorrectionMutationResult } from '../../lib/time-corrections/service';
 import { readEmployeeTimeCorrections } from '../../lib/data/time-corrections.server';
-import { createPunchFixture } from './clocker-punch-fixture';
+import { createPunchFixture, reviewHistoricalTimeCorrection } from './clocker-punch-fixture';
 import { ClockerPunchService } from '../../lib/clocker/punches.server';
 
 let f: Awaited<ReturnType<typeof createPunchFixture>>;
@@ -100,7 +100,9 @@ describe('D2-CODEX-004 missing-time supersession', () => {
     f = await createPunchFixture({ migrationStage: 'pre-break',companyAccess:true });
     for (const name of ['0014_clocker_breaks.sql', '0015_clocker_schedule_context.sql', '0016_time_corrections.sql']) await f.q(await readFile(`db/migrations/${name}`, 'utf8'));
     await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'c34-a',clock_timestamp()+interval '1 day')");
-    const a = await root();
+    const request = pending(await submitTimeCorrection(employee, missing(), f.db.executor));
+    const decision = reviewCommand(request.requestId);
+    const a = approved(await reviewHistoricalTimeCorrection(f, decision));
     const before = await f.q('SELECT to_jsonb(a) AS row FROM time_correction_adjustments a');
     const rawBefore = await rawHistory();
     const correctionHistory = async () => Promise.all(['time_correction_requests','time_correction_events','time_correction_adjustments'].map(table => f.q(`SELECT to_jsonb(t) AS row FROM ${table} t ORDER BY to_jsonb(t)::text`)));
@@ -124,11 +126,11 @@ describe('D2-CODEX-004 missing-time supersession', () => {
     expect(functions[1].definition).toContain('FROM nevora_effective_time_entries');
     expect(functions[1].definition).toContain('p_proposed_start<parent_start OR p_proposed_end>parent_end');
     expect(functions[2].definition).toContain('p_expected_base_revision');
-    expect(await reviewTimeCorrection(owner, { operationId: randomUUID(), requestId: a.requestId, expectedRevision: 2, decision: 'REJECT' }, f.db.executor)).toEqual({ status: 'conflict' });
-    expect(await reviewTimeCorrection(owner, { operationId: a.adjustmentId, requestId: a.requestId, expectedRevision: 1, decision: 'APPROVE' }, f.db.executor)).toEqual(a);
+    await expect(reviewHistoricalTimeCorrection(f, { operationId: randomUUID(), requestId: a.requestId, expectedRevision: 2, decision: 'REJECT' })).rejects.toThrow('nevora_correction_STALE_STATE');
+    expect(await reviewHistoricalTimeCorrection(f, decision)).toEqual(a);
     expect(await f.q('SELECT to_jsonb(a) AS row FROM time_correction_adjustments a')).toEqual(before);
     const b = pending(await submitTimeCorrection(employee, supersede(a), f.db.executor));
-    approved(await review(b.requestId));
+    approved(await reviewHistoricalTimeCorrection(f, reviewCommand(b.requestId)));
     expect(await f.q('SELECT count(*)::int AS n FROM nevora_time_correction_leaf_adjustments')).toEqual([{ n: 1 }]);
   });
 

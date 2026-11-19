@@ -1,10 +1,25 @@
 import { readFile } from 'node:fs/promises';
-import {randomUUID} from 'node:crypto';
+import {createHash,randomUUID} from 'node:crypto';
 import {hashClockerPin,pinFingerprint,pinKeyIdentity} from '../../lib/clocker/pin-crypto.server';
 import { createDisposableFoundationDatabase } from './local-postgres';
 import { registerClockerDevice, redeemClockerEnrollment, authenticateClockerDevice } from '../../lib/clocker/devices.server';
 import { saveBreakType } from '../../lib/clocker/break-types.server';
 import { setEmployeeClockerPin, verifyEmployeeClockerPin, readClockerIdentity } from '../../lib/clocker/pins.server';
+import type { CorrectionMutationResult } from '../../lib/time-corrections/service';
+import { parseCorrectionReviewCommand, type CorrectionReviewCommand } from '../../lib/time-corrections/validation';
+
+/** Use the installed review primitive when exercising pre-workforce schemas. */
+export async function reviewHistoricalTimeCorrection(
+ fixture: Awaited<ReturnType<typeof createPunchFixture>>, input: CorrectionReviewCommand,
+) {
+ const command = parseCorrectionReviewCommand(input);
+ const hash = createHash('sha256').update(JSON.stringify(command)).digest('hex');
+ const [row] = await fixture.q<{result: CorrectionMutationResult}>(
+  'SELECT nevora_review_time_correction($1::uuid,$2::uuid,$3,$4,$5,$6,$7) AS result',
+  [command.operationId,command.requestId,fixture.owner.employeeId,command.expectedRevision,command.decision,command.note??null,hash],
+ );
+ return row.result;
+}
 
 /** Fictional employees and owned loopback PostgreSQL only. */
 export async function createPunchFixture(options:{breaks?:boolean;companyAccess?:boolean;migrationStage?:'current'|'pre-break'|'phase-d2'}={}){

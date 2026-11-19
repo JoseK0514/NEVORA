@@ -96,29 +96,34 @@ export type PendingEditKind = 'CREATE' | 'UPDATE' | 'DELETE' | 'COPY';
  * publishWeekStarts entry) and a week never captured snapshot the whole live
  * week. Every other writer patches the latest revision with only its own
  * published change, so held manual edits keep waiting (Jose, 2026-10-29). */
-type WeekProjection = { latest?: GuardedWeekState['revisions'][number]; previous: PublishedShiftSnapshot[]; current: PublishedShiftSnapshot[]; mode: 'SNAPSHOT' | 'PATCH' };
-function weekProjection(state: GuardedWeekState, batch: WeekMutationBatch, week: string): WeekProjection {
+type WeekProjection = { latest?: GuardedWeekState['revisions'][number]; previous: PublishedShiftSnapshot[]; current: PublishedShiftSnapshot[]; mode: 'SNAPSHOT' | 'PATCH'; movedShiftIds?: Set<string> };
+function weekProjection(state: GuardedWeekState, batch: WeekMutationBatch, week: string, ownerPublication = false): WeekProjection {
     const latest = state.revisions.filter(r => r.weekStart === week).at(-1);
     const previous = latest?.shifts ?? [];
     const live = publishedShifts(batch.afterSchedules, batch.afterShifts, week);
     if (batch.publishWeekStarts?.includes(week) && batch.publicationLocationId) {
         const locationId = batch.publicationLocationId;
-        const moved = new Map<string, PublishedShiftSnapshot>();
-        for (const shift of previous) if (shift.sourceShiftId) moved.set(shift.sourceShiftId, shift);
-        if (live.some(shift => {
-            const before = shift.sourceShiftId ? moved.get(shift.sourceShiftId) : undefined;
-            return before && before.locationId !== shift.locationId && [before.locationId, shift.locationId].includes(locationId);
-        }) || (!latest && state.schedules.some(s => s.weekStart === week && s.locationId !== locationId && s.status === 'PUBLISHED'))) {
+        const captured = new Map(previous.map(shift => [shift.sourceShiftId, shift]));
+        const movedShiftIds = new Set(batch.afterShifts.filter(shift => {
+            const before = captured.get(shift.sourceShiftId);
+            return shift.weekStart === week && before && before.locationId !== shift.locationId &&
+                (before.locationId === locationId || shift.locationId === locationId);
+        }).map(shift => shift.sourceShiftId));
+        const liveIds = new Set(live.map(shift => shift.sourceShiftId));
+        // An Owner publishes both ends of a move together. When the destination
+        // is a draft, publishing that location makes its replacement available.
+        if ((movedShiftIds.size && (!ownerPublication || [...movedShiftIds].some(id => !liveIds.has(id)))) ||
+            (!latest && state.schedules.some(s => s.weekStart === week && s.locationId !== locationId && s.status === 'PUBLISHED'))) {
             throw new OperationalAuthorizationError();
         }
         const current = [
-            ...previous.filter(shift => shift.locationId !== locationId),
-            ...live.filter(shift => shift.locationId === locationId).map(shift => {
-                const captured = shift.sourceShiftId ? moved.get(shift.sourceShiftId) : undefined;
-                return captured && canonicalKey(captured) === canonicalKey(shift) ? captured : shift;
+            ...previous.filter(shift => shift.locationId !== locationId && (!shift.sourceShiftId || !movedShiftIds.has(shift.sourceShiftId))),
+            ...live.filter(shift => shift.locationId === locationId || (shift.sourceShiftId && movedShiftIds.has(shift.sourceShiftId))).map(shift => {
+                const before = captured.get(shift.sourceShiftId);
+                return before && canonicalKey(before) === canonicalKey(shift) ? before : shift;
             }),
         ];
-        return { latest, previous, current, mode: 'PATCH' };
+        return { latest, previous, current, mode: 'PATCH', movedShiftIds };
     }
     if (!latest || batch.publishWeekStarts?.includes(week)) return { latest, previous, current: live, mode: 'SNAPSHOT' };
     return { latest, previous, current: patchPublishedProjection(previous, publishedShifts(state.schedules, state.shifts, week), live), mode: 'PATCH' };
@@ -210,7 +215,7 @@ function operationalWriteFootprint(state:GuardedWeekState,batch:WeekMutationBatc
  // validation. A deferred manual edit writes none, so held edits elsewhere in
  // the week never widen a location-scoped draft edit; any other writer patches
  // only its own change, so only that change can require COMPANY here.
- if(!batch.deferPublication)for(const week of new Set([...state.schedules,...batch.afterSchedules].map(s=>s.weekStart))){
+ if(!company&&!batch.deferPublication)for(const week of new Set([...state.schedules,...batch.afterSchedules].map(s=>s.weekStart))){
   const {latest,previous,current}=weekProjection(state,batch,week);
   if((latest||batch.afterSchedules.some(s=>s.weekStart===week&&s.status==='PUBLISHED'))
    &&JSON.stringify(canonicalShifts(previous))!==JSON.stringify(canonicalShifts(current)))company=true;
@@ -426,6 +431,7 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
  const {state,batch,config}=input;
  const weeks=[...new Set(input.weekStarts)].sort();
  const locationId = input.sourceType === 'PUBLISH' ? input.publicationLocationId : undefined;
+ const ownerPublication = input.sourceType === 'PUBLISH' && input.proof.employee.role === 'OWNER';
  if (batch.publicationLocationId !== locationId || (locationId &&
    (batch.affectedLocationId !== locationId || batch.afterShifts !== state.shifts &&
     JSON.stringify(batch.afterShifts) !== JSON.stringify(state.shifts) ||
@@ -442,7 +448,7 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
         const newlyPublished = new Set<string>();
         if (!batch.deferPublication) for (const week of weeks) {
             if (input.revisionWeekStarts && !input.revisionWeekStarts.includes(week)) continue;
-            const {previous,current} = weekProjection(state,batch,week);
+            const {previous,current} = weekProjection(state,batch,week,ownerPublication);
             for (const next of current) if (next.sourceShiftId && assignmentDiffers(previous.find(s=>s.sourceShiftId===next.sourceShiftId),next)) newlyPublished.add(next.sourceShiftId);
         }
         validatePublicationRestrictions(state,batch,newlyPublished);
@@ -522,11 +528,13 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
         });
         const revisions: PublicationRevision[] = [];
         const revisedLocations = new Set<string>();
+        let crossLocationPublication = false;
         // Held manual edits: live rows plus history, nothing published or sent.
         if (batch.deferPublication) statements.push(...pendingEditStatements(state, batch, weeks, config.workspace!.id, input.actorEmployeeId));
         for (const week of batch.deferPublication ? [] : weeks) {
             if(input.revisionWeekStarts && !input.revisionWeekStarts.includes(week))continue;
-            const {latest,previous,current,mode} = weekProjection(state, batch, week);
+            const {latest,previous,current,mode,movedShiftIds} = weekProjection(state, batch, week, ownerPublication);
+            if (movedShiftIds?.size) crossLocationPublication = true;
             const changedActual = JSON.stringify(canonicalShifts(previous)) !== JSON.stringify(canonicalShifts(current));
             if (input.sourceType === 'MANAGER_MUTATION' && changedActual) {
                 const other = new Map(current.flatMap(shift => shift.sourceShiftId ? [[shift.sourceShiftId, shift] as const] : []));
@@ -570,8 +578,8 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
             }
             if (mode === 'SNAPSHOT' || locationId) statements.push({
                 text: `UPDATE schedule_pending_edits SET published_revision_id=$1,published_at=$2::timestamptz
-                  WHERE week_start=$3::date AND published_revision_id IS NULL AND ($4::text IS NULL OR location_id=$4)`,
-                values:[revision.id,revision.createdAt,week,locationId ?? null]
+                  WHERE week_start=$3::date AND published_revision_id IS NULL AND ($4::text IS NULL OR location_id=$4 OR shift_id=ANY($5::text[]))`,
+                values:[revision.id,revision.createdAt,week,locationId ?? null,[...(movedShiftIds ?? [])]]
             });
             // Reference previous own published facts atomically, including a
             // callout release. No schedule body is copied into calendar state.
@@ -601,7 +609,7 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
  }
  if (input.sourceType === 'PUBLISH') {
   const scope = workforcePermissionStatements(input.proof, config.workspace!, 'PUBLISH_SCHEDULE',
-    locationId ? [locationId] : null, input.publicationAuthority);
+    locationId && !crossLocationPublication ? [locationId] : null, input.publicationAuthority);
   guards.push(...scope);
   statements.push(...scope);
  } else if (input.sourceType === 'MANAGER_MUTATION') {
