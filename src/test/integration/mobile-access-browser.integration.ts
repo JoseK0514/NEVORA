@@ -213,13 +213,23 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
    const resetMail=smtp.messages.find((m:{recipient:string;body:string})=>m.recipient.includes(engine+'@example.invalid')&&m.body.includes('/reset-access'))!;
    const resetProof=/#proof=([A-Za-z0-9_-]{43})/.exec(resetMail.body.replace(/=\r?\n/g,'').replace(/=3D/g,'='))?.[1];if(!resetProof)throw Error('Missing owned reset proof');
    await page.goto(origin+'/reset-access#proof='+resetProof);await page.locator('#reset-password').waitFor();
+   await page.waitForFunction(()=>document.querySelector<HTMLInputElement>('#reset-proof')?.value.length===43&&!location.hash);
    for(const width of [1440,320]){
-    await page.setViewportSize({width,height:1000});const candidate='a fictional oversized phrase '.repeat(50);
+    step=engine+' reset oversized password at '+width;
+    await page.setViewportSize({width,height:1000});
+    await page.locator(width===320?'.ma-card #reset-password':'#reset-password').waitFor();
+    expect((await page.locator('#reset-proof').inputValue())===resetProof).toBe(true);
+    const candidate='a fictional oversized phrase '.repeat(50);
     for(const selector of ['#reset-password','#reset-confirm-password']){await page.locator(selector).fill('');await page.locator(selector).focus();await page.keyboard.insertText(candidate);expect(await page.locator(selector).inputValue()).toBe(candidate);}
     await page.locator('button[type="submit"]').click();await expect.poll(()=>page.locator('#reset-error').innerText()).toContain(passwordRejectionMessage('es','too_long'));
    }
    for(const [candidate,reason] of [['NorthHarborFoods2026!','company_name'],['qwertyuiopasdfgh','breached']] as const){
-    await page.locator('#reset-password').fill(candidate);await page.locator('#reset-confirm-password').fill(candidate);await page.locator('button[type="submit"]').click();await expect.poll(()=>page.locator('#reset-error').innerText()).toContain(passwordRejectionMessage('es',reason));
+    step=engine+' reset '+reason+' refusal';
+    await page.locator('#reset-password').fill(candidate);await page.locator('#reset-confirm-password').fill(candidate);
+    const [refusal]=await Promise.all([page.waitForResponse(origin+'/api/auth/reset-access'),page.locator('button[type="submit"]').click()]);
+    expect(refusal.status()).toBe(400);
+    expect(await refusal.json()).toEqual({state:'invalid',passwordReason:reason});
+    await expect.poll(()=>page.locator('#reset-error').innerText()).toContain(passwordRejectionMessage('es',reason));
     expect(await page.locator('#reset-error').evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);
    }
    await page.screenshot({path:evidence+'/'+engine+'-reset-es.png',fullPage:true});
