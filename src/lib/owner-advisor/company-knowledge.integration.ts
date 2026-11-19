@@ -115,6 +115,34 @@ it('bounds UTF-8 context and citations over repeated EN/ES searches, exposing co
   expect(JSON.stringify(third.data)).not.toContain('Manual ficticio');
 });
 
+it('finds relevant published English and Spanish guidance when extra search words prevent an exact match', async () => {
+  const english = await publish({
+    title: 'Fictional Clocker preview',
+    body: 'Early clock-in grace matches a punch to a shift. The recorded time stays unchanged.',
+  });
+  const spanish = await call(draft(2, {
+    locale: 'es',
+    title: 'Vista previa ficticia de Clocker',
+    body: 'El margen de entrada temprana asocia un ponche con el turno. La hora registrada se conserva.',
+  }));
+  if (!('documentId' in spanish)) throw Error('Expected draft receipt');
+  await call({ op: 'publish', requestId: randomUUID(), expectedRevision: 3, documentId: spanish.documentId,
+    versionId: spanish.versionId, reviewedTextDigest: spanish.textDigest });
+  await call(draft(4, { title: 'Unpublished policy', body: 'Early clock-in grace overtime Monday payroll draft.' }));
+
+  const s = await store(), lease = await readKnowledgeLease(s);
+  const en = await new CompanyKnowledgeReader(s, lease).search('early clock-in grace overtime Monday', 6);
+  const es = await new CompanyKnowledgeReader(s, lease).search('margen de entrada temprana nómina ayer', 6);
+  expect(en.sources.map(source => source.href)).toEqual([
+    `/api/owner/advisor/knowledge/entries/${english.created.documentId}/versions/${english.created.versionId}`,
+  ]);
+  expect(es.sources.map(source => source.href)).toEqual([
+    `/api/owner/advisor/knowledge/entries/${spanish.documentId}/versions/${spanish.versionId}`,
+  ]);
+  const weak = await new CompanyKnowledgeReader(s, lease).search('Clocker unrelated orchid', 6);
+  expect(weak.sources).toEqual([]);
+});
+
 it('bounds retained versions and aggregate text inside the mutation transaction', async () => {
   const first = await call(draft());
   if (!('documentId' in first)) throw Error('Expected receipt');

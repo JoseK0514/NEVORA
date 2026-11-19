@@ -6,7 +6,7 @@ import { type WordSlots } from './workspace-presentation/words';
 
 /** Company choices that shape navigation (B2): modules that are off disappear
  * everywhere, and the vocabulary names the people page. Defaults change nothing. */
-export type NavContext = { billingEnabled?:boolean;ownerAdvisorEnabled?: boolean; modules?: EnabledModules; words?: WordSlots; operational?:OperationalAuthorityView };
+export type NavContext = { billingEnabled?:boolean;ownerAdvisorEnabled?: boolean;managerAdvisorEnabled?: boolean; modules?: EnabledModules; words?: WordSlots; operational?:OperationalAuthorityView };
 import type {OperationalAuthorityView} from './company-access/model';
 
 export type NavigationItem = {
@@ -218,11 +218,16 @@ export function navigationForRole(role: UserRole, payroll?: PayrollCapabilities,
   // B7 wording (NV-119): the people page is "Team" everywhere (its H1 and tab); the vocabulary preset stays in sentences.
   // Development (Nov 15): an Owner with billing enabled also gets Plan and billing (Phase 9: the card, as on More; the gear
   // is Settings).
-  return [...baseNavigation(role, payroll, context.operational, context.ownerAdvisorEnabled),...(role==='OWNER'&&context.billingEnabled?[{href:'/app/billing',label:'Plan and billing',icon:'billing' as NavIconName}]:[])]
+  return [...baseNavigation(role, payroll, context.operational, context.ownerAdvisorEnabled, context.managerAdvisorEnabled),...(role==='OWNER'&&context.billingEnabled?[{href:'/app/billing',label:'Plan and billing',icon:'billing' as NavIconName}]:[])]
     .filter(item => pathEnabled(item.href, modules));
 }
 
-function baseNavigation(role: UserRole, payroll?: PayrollCapabilities, operational?:OperationalAuthorityView, ownerAdvisorEnabled=false): NavigationItem[] {
+/** Rondo AI (Nov 18, 2026): the product's name for the adviser everywhere it is named, with its own glyph. An Owner has it
+ * with the adviser's switch on; a Manager with a current scope has it with both the adviser's and the Manager switch on
+ * (contract docs/handoffs/2026-11-18-rondo-manager-ui-contract.md). The page and the API decide access; this only lists it. */
+const RONDO: NavigationItem = { href: "/app/ai-manager", label: "Rondo AI", icon: "rondo" };
+
+function baseNavigation(role: UserRole, payroll?: PayrollCapabilities, operational?:OperationalAuthorityView, ownerAdvisorEnabled=false, managerAdvisorEnabled=false): NavigationItem[] {
   const finance: NavigationItem[] = payroll?.enabled ? [
     ...(payroll.canReview ? [{ href: '/app/payroll', label: 'Payroll', icon: 'payroll' as const }] : []),
     { href: '/app/my-pay', label: 'My pay', icon: 'statement' },
@@ -234,16 +239,17 @@ function baseNavigation(role: UserRole, payroll?: PayrollCapabilities, operation
   if (role === "OWNER") {
     return [
       ...management,
-      ...(ownerAdvisorEnabled ? [{href:"/app/ai-manager",label:"AI manager",icon:"reports" as const}] : []),
+      ...(ownerAdvisorEnabled ? [RONDO] : []),
       { href: "/app/settings", label: "Settings", icon: "settings" as const },
     ];
   }
 
   if (role === "MANAGER") {
     const scope=operational?.state==='ready'&&operational.role==='MANAGER'?operational.scope:null;
-    if(scope?.mode==='COMPANY')return management;
+    const rondo=ownerAdvisorEnabled&&managerAdvisorEnabled&&(scope?.mode==='COMPANY'||scope?.mode==='LOCATIONS'&&scope.locationIds.length>0)?[RONDO]:[];
+    if(scope?.mode==='COMPANY')return [...management,...rondo];
     const allowed=new Set(['/app','/app/profile',...(scope?.mode==='LOCATIONS'&&scope.locationIds.length?['/app/schedule','/app/employees']:[]),...finance.map(item=>item.href)]);
-    return management.filter(item=>allowed.has(item.href));
+    return [...management.filter(item=>allowed.has(item.href)),...rondo];
   }
 
   return [...employeeNavigation, ...finance];

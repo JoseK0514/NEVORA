@@ -18,7 +18,7 @@ it("renders dated joint evidence, the unchanged baseline, exact people and publi
   plans.alternatives[0].assignments[0].publication = "PUBLISHED"; plans.alternatives[0].publishedTargets = 1;
   const html = renderToStaticMarkup(<WorkflowResults answer={{ text: "Review", sources: [], coveragePlans: plans }} />);
   expect(html).toContain("Day plan comparison"); expect(html).toContain("Current schedule");
-  expect(html).toContain("2026-10-22"); expect(html).toContain("America/Puerto_Rico");
+  expect(html).toContain("Thu, Oct 22"); expect(html).toContain("Puerto Rico time"); expect(html).toMatch(/8:00\sAM\s–\s12:00\sPM/);
   expect(html).toContain("&lt;script&gt;unsafe&lt;/script&gt;"); expect(html).not.toContain("<script>");
   expect(html).toContain("ana"); expect(html).toContain("4 planning hours");
   expect(html).toContain("publication decision"); expect(html).toContain(plans.sourceVersion);
@@ -75,7 +75,7 @@ it("formats plan observation in the named workspace timezone rather than the hos
   try {
     process.env.TZ = "UTC";
     const html = renderToStaticMarkup(<WorkflowResults answer={{ text: "Review", sources: [], coveragePlans: ownerCoveragePlan() }} />);
-    expect(html).toContain("10/30/2026, 8:00:00 AM");
-    expect(html).not.toContain("10/30/2026, 12:00:00 PM");
+    expect(html).toContain('<time dateTime="2026-10-30T12:00:00.000Z">8:00 AM</time>');
+    expect(html).not.toContain('<time dateTime="2026-10-30T12:00:00.000Z">12:00 PM</time>');
   } finally { if (original === undefined) delete process.env.TZ; else process.env.TZ = original; }
 });

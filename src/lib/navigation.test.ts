@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@rstest/core";
-import { activeMobileTab, activeNavigationHref, mobileMoreForRole, mobileTabsForRole, navigationForRole, sectionTabsFor, teamToolsForRole } from "./navigation";
+import { activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, mobileTabsForRole, navigationForRole, sectionTabsFor, teamToolsForRole } from "./navigation";
 import type { PayrollCapabilities } from './payroll/contracts';
 
 const payroll: PayrollCapabilities = { enabled: true, canConfigure: false, canReview: false, canApprove: false, internalCalculatorAvailable: false, bankCompatibility: 'UNVERIFIED' };
@@ -159,19 +159,48 @@ describe('More sheet groups (MG3)', () => {
     expect(teamToolsForRole('EMPLOYEE')).toEqual([]);
     expect(teamToolsForRole('LEAD')).toEqual([]);
   });
-  // Phase 9 (Nov 18, 2026): one glyph per concept. Every place an Owner or Manager can reach has its own glyph (AI manager
-  // shares Insights' chart until the Rondo AI task gives it its own), a tab draws its sidebar entry's glyph, and a pay
-  // statement is the receipt for every role.
+  // Phase 9 (Nov 18, 2026): one glyph per concept. Every place an Owner or Manager can reach has its own glyph (Rondo AI
+  // two speech bubbles, Insights the chart), a tab draws its sidebar entry's glyph, and a pay statement is the receipt for every role.
   it('gives each place one glyph of its own, the same on the tab bar and in the sidebar', () => {
     const review = { ...payroll, canReview: true };
-    for (const [role, context] of [['OWNER', { billingEnabled: true, ownerAdvisorEnabled: true }], ['MANAGER', { operational: company }]] as const) {
+    for (const [role, context] of [['OWNER', { billingEnabled: true, ownerAdvisorEnabled: true }], ['MANAGER', { operational: company, ownerAdvisorEnabled: true, managerAdvisorEnabled: true }]] as const) {
       const items = [...navigationForRole(role, review, context), ...teamToolsForRole(role, { operational: company })];
       const byIcon = new Map<string, string[]>();
-      for (const item of items) if (item.href !== '/app/ai-manager') byIcon.set(item.icon, [...(byIcon.get(item.icon) ?? []), item.href]);
+      for (const item of items) byIcon.set(item.icon, [...(byIcon.get(item.icon) ?? []), item.href]);
       expect([...byIcon.values()].filter(hrefs => hrefs.length > 1), role).toEqual([]);
       for (const tab of mobileTabsForRole(role, review, context)) expect(tab.icon, tab.href).toBe(items.find(item => item.href === tab.href)?.icon);
     }
     expect(navigationForRole('OWNER', review, { billingEnabled: true }).find(item => item.href === '/app/billing')?.icon).toBe('billing');
     for (const role of ['OWNER', 'MANAGER', 'EMPLOYEE', 'LEAD'] as const) expect(navigationForRole(role, review, { operational: company }).find(item => item.href === '/app/my-pay')?.icon, role).toBe('statement');
+  });
+});
+
+// Rondo AI (Nov 18, 2026): its own name and glyph; an Owner has it with the adviser's switch, a Manager with a current scope
+// only when the Manager switch is on too (contract docs/handoffs/2026-11-18-rondo-manager-ui-contract.md).
+describe('Rondo AI in the navigation', () => {
+  const places = {...company, scope: {mode: 'LOCATIONS' as const, locationIds: ['loc-1']}} as never;
+  const none = {...company, scope: null} as never;
+  const rondo = (role: 'OWNER' | 'MANAGER' | 'EMPLOYEE' | 'LEAD', context: Record<string, unknown>) => navigationForRole(role, undefined, context as never).find(item => item.href === '/app/ai-manager');
+  it('names it Rondo AI with its own glyph for an Owner with the adviser on, and leaves it out with it off', () => {
+    expect(rondo('OWNER', { ownerAdvisorEnabled: true })).toEqual({ href: '/app/ai-manager', label: 'Rondo AI', icon: 'rondo' });
+    expect(rondo('OWNER', {})).toBeUndefined();
+  });
+  it('lists it for a Manager with a company or location scope only when both switches are on', () => {
+    for (const operational of [company, places]) {
+      expect(rondo('MANAGER', { operational, ownerAdvisorEnabled: true, managerAdvisorEnabled: true })?.label).toBe('Rondo AI');
+      expect(rondo('MANAGER', { operational, ownerAdvisorEnabled: true })).toBeUndefined();
+      expect(rondo('MANAGER', { operational, managerAdvisorEnabled: true })).toBeUndefined();
+    }
+    expect(rondo('MANAGER', { operational: none, ownerAdvisorEnabled: true, managerAdvisorEnabled: true })).toBeUndefined();
+    expect(rondo('MANAGER', { ownerAdvisorEnabled: true, managerAdvisorEnabled: true })).toBeUndefined();
+  });
+  it('never lists it for an Employee or a Lead', () => {
+    for (const role of ['EMPLOYEE', 'LEAD'] as const) expect(rondo(role, { operational: company, ownerAdvisorEnabled: true, managerAdvisorEnabled: true })).toBeUndefined();
+  });
+  it('puts a Manager’s entry in the second sidebar group and on the phone’s More', () => {
+    const context = { operational: company, ownerAdvisorEnabled: true, managerAdvisorEnabled: true };
+    const groups = managementNavigationGroups(navigationForRole('MANAGER', undefined, context), [], 'MANAGER');
+    expect(groups[1].items[0].href).toBe('/app/ai-manager');
+    expect(mobileMoreForRole('MANAGER', undefined, context).some(item => item.href === '/app/ai-manager')).toBe(true);
   });
 });

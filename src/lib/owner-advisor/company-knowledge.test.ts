@@ -48,6 +48,8 @@ it('returns a true bounded Unicode excerpt with original offsets and honest omis
   expect(result.complete).toBe(false);
   expect(Buffer.from(result.text).toString('utf8')).toBe(result.text);
   expect(knowledgeExcerpt('Complete document.', '', 80)).toMatchObject({ text: 'Complete document.', complete: true });
+  const brief = 'Previous context. '.repeat(20) + 'Clocker en español.';
+  expect(knowledgeExcerpt(brief, 'Clocker', 4096)).toEqual({ text: brief, start: 0, end: brief.length, complete: true });
   expect(knowledgeLimits.sources).toBe(6);
   expect(knowledgeSourceHref(id, id)).toBe(`/api/owner/advisor/knowledge/entries/${id}/versions/${id}`);
 });

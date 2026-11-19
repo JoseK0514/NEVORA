@@ -152,7 +152,7 @@ export function KnowledgePage({ timeZone, view, client: given }: { timeZone: str
   const head = heading(view, entry, load.state === "ready");
 
   if (load.state === "revoked") return <CorpPage className="c-page--narrow kn" labelledBy="kn-title">
-    <CorpNav phoneOnly back={{ href: "/app/ai-manager", label: "AI manager" }} title="Company knowledge" />
+    <CorpNav phoneOnly back={{ href: "/app/ai-manager", label: "Rondo AI" }} title="Company knowledge" />
     <CorpTitle wide id="kn-title" title="Company knowledge" />
     <CorpCard as="div"><BState kind="locked" alert title="Your session ended" line="Sign in again to see company knowledge."
       action={{ label: "Sign in", href: "/login" }} /></CorpCard>
@@ -192,7 +192,7 @@ function heading(view: KnowledgeView, entry: KnowledgeEntry | null, ready: boole
   const addHref = viewHref({ name: "document", documentId: null });
   switch (view.name) {
     case "library": return { node: <>
-      <CorpNav phoneOnly back={{ href: "/app/ai-manager", label: "AI manager" }} title="Company knowledge" titleId="kn-nav-title" right={<Link href={addHref}>Add</Link>} />
+      <CorpNav phoneOnly back={{ href: "/app/ai-manager", label: "Rondo AI" }} title="Company knowledge" titleId="kn-nav-title" right={<Link href={addHref}>Add</Link>} />
       <CorpTitle wide id="kn-title" title="Company knowledge" sub="Only Owners can see this"
         actions={<CorpButtonLink href={addHref} kind="primary" size="md">Add document</CorpButtonLink>} />
     </> };

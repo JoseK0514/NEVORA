@@ -40,13 +40,36 @@ export class CompanyKnowledgeReader {
   async search(query: string, sourceSlots: number): Promise<ToolResult> {
     await this.check();
     const documents = this.lease.activeVersions.filter(v => v.kind === 'document');
-    const rows = documents.length ? await this.store.transaction<{ id: string }>({
+    const values = [this.store.original.workspace.id, documents.map(v => v.versionId), query];
+    const exact = documents.length ? await this.store.transaction<{ id: string }>({
       text: `SELECT id::text FROM owner_advisor_company_knowledge_versions WHERE workspace_id=$1 AND id=ANY($2::uuid[]) AND body IS NOT NULL AND search_vector @@ plainto_tsquery('simple',$3) ORDER BY ts_rank_cd(search_vector,plainto_tsquery('simple',$3)) DESC,document_id,id LIMIT 20`,
-      values: [this.store.original.workspace.id, documents.map(v => v.versionId), query],
+      values,
     }) : [];
+    // Preserve exact matches. Recover from extra query words only within the
+    // current published versions and require multiple substantive terms.
+    const overlap = documents.length && !exact.length ? await this.store.transaction<{ id: string }>({
+      text: `WITH terms AS (
+        SELECT term FROM unnest(tsvector_to_array(to_tsvector('simple',$3))) AS words(term)
+        WHERE length(term)>=3 AND cardinality(ts_lexize('pg_catalog.english_stem',term))>0
+          AND cardinality(ts_lexize('pg_catalog.spanish_stem',term))>0
+        ORDER BY length(term) DESC,term LIMIT 16
+      ), matches AS (
+        SELECT v.document_id,v.id,count(*) AS hits
+        FROM owner_advisor_company_knowledge_versions v CROSS JOIN terms
+        WHERE v.workspace_id=$1 AND v.id=ANY($2::uuid[]) AND v.body IS NOT NULL
+          AND terms.term=ANY(tsvector_to_array(v.search_vector))
+        GROUP BY v.document_id,v.id
+      )
+      SELECT id::text FROM matches
+      WHERE hits>=greatest(2,((SELECT count(*) FROM terms)+2)/3)
+      ORDER BY hits DESC,document_id,id LIMIT 20`,
+      values,
+    }) : [];
+    const rows = exact.length ? exact : overlap;
     const byId = new Map(documents.map(v => [v.versionId, v]));
     // Leave room for a subsequent two-source operational/payroll read.
     const result = await this.collect(rows.map(row => byId.get(row.id)!), query, Math.max(0, sourceSlots - 2));
-    return { ...result, data: { ...(result.data as object), query, matchedDocuments: rows.length } };
+    return { ...result, data: { ...(result.data as object), query, matchedDocuments: rows.length,
+      match: exact.length ? 'exact' : overlap.length ? 'keyword_overlap' : 'none' } };
   }
 }

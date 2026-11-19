@@ -23,7 +23,7 @@ export const snapshot = {
   },
   ...stamp,
 };
-it("discovers AI manager only for an explicitly enabled Owner in desktop and mobile navigation", () => {
+it("discovers Rondo AI only for an explicitly enabled Owner in desktop and mobile navigation", () => {
   expect(
     navigationForRole("OWNER").some((x) => x.href === "/app/ai-manager"),
   ).toBe(false);

@@ -15,7 +15,7 @@ function snapshot(): AdvisorSnapshot {
 const actions = { editQuestion() {}, editPriorities() {}, ask() {}, save() {}, cancel() {}, refresh() {}, reviewConflict() {} };
 afterEach(() => { rs.useRealTimers(); });
 it("shows sourced priority cards and personal review controls without requiring a model connection", () => {
-  const html = renderToStaticMarkup(<AdvisorScreen view={{ ...initialView, snapshot: snapshot() }} actions={actions} />);
+  const html = renderToStaticMarkup(<AdvisorScreen tools={{ weekly: true, knowledge: true, business: true }} view={{ ...initialView, snapshot: snapshot() }} actions={actions} />);
   expect(html).toContain("Needs your attention");
   expect(html).toContain("Track this issue");
   expect(html).toContain("Later · 1 hour");

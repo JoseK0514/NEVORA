@@ -42,7 +42,7 @@ it("persists private goals and tasks through the real Owner app, preserves delib
         await page.getByRole("button", { name: "Sign in", exact: true }).click();
         await page.waitForURL(origin + "/app");
         await page.locator(".app-shell.nevora-portal").waitFor();await page.waitForFunction(() => document.querySelector(".portal-notification-bell")?.getAttribute("data-state") === "ready");
-        await page.locator("main").getByRole("link", { name: "AI manager", exact: true }).click();
+        await page.locator("#desktop-primary-navigation").getByRole("link", { name: "Rondo AI", exact: true }).click();
         await page.waitForURL(origin + "/app/ai-manager");
         await page.getByRole("button", { name: "Add goal", exact: true }).waitFor();
         expect(await page.getByRole("button", { name: "Ask", exact: true }).isDisabled()).toBe(true);

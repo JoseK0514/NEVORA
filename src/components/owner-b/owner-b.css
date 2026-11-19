@@ -148,6 +148,9 @@
 /* Nov 14 inspection (BR-11): the target is at least 44px tall whatever the pill's drawn height (36px here, 32 and 34px
  * where a screen draws it smaller); it was the pill plus 4px each way, so a 32px pill had a 40px target. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: max(100%, 44px); translate: 0 -50%; }
+/* Premium pass follow-up (Nov 18, 2026): a kit button is never drawn with the browser's outset border, on a .b-screen page
+ * (reset above) or on a corporate-kit page (Rondo AI, Weekly plan, the payroll import flows). */
+:is(#c-root, html) .app-shell[data-nv-b] button.b-btn { border: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn--teal { background: var(--b-teal); color: #FFFFFF; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn--ghost { background: var(--b-teal-50); color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn--quiet { background: var(--b-quiet); color: var(--b-ink); }

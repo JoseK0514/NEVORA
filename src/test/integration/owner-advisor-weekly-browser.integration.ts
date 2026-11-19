@@ -146,7 +146,7 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
       await notificationReadReady();
       if (!enteredFromManager) {
         await page.setViewportSize({ width: 1440, height: 900 });
-        await page.locator('#desktop-primary-navigation').getByRole('link', { name: 'AI manager', exact: true }).click();
+        await page.locator('#desktop-primary-navigation').getByRole('link', { name: 'Rondo AI', exact: true }).click();
         await page.waitForURL(origin + '/app/ai-manager');
         await page.setViewportSize({ width: 390, height: 844 });
         await page.locator('main').getByRole('link', { name: 'Weekly plan', exact: true }).click();

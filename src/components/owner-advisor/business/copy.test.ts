@@ -43,7 +43,7 @@ describe("business records copy", () => {
     for (const lang of langs) for (const [path, text] of strings(BUSINESS_COPY[lang])) expect(banned.test(text), `${lang}.${path}: ${text}`).toBe(false);
   });
   it("does not leave an English sentence in the Spanish entries", () => {
-    const same = strings(BUSINESS_COPY.es).filter(([path, text], index) => text === strings(BUSINESS_COPY.en)[index][1] && /[a-z]{4,}/i.test(text) && !/^(Rondo|OK|Euros \(EUR\))$/.test(text) && !path.startsWith("currencyName"));
+    const same = strings(BUSINESS_COPY.es).filter(([path, text], index) => text === strings(BUSINESS_COPY.en)[index][1] && /[a-z]{4,}/i.test(text) && !/^(Rondo|Rondo AI|OK|Euros \(EUR\))$/.test(text) && !path.startsWith("currencyName"));
     expect(same).toEqual([]);
   });
 });

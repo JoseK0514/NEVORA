@@ -12,7 +12,7 @@ type Kind = "BALANCE" | "CASH" | "OBLIGATION" | "RECEIVABLE" | "SALE" | "REFUND"
 type Op = "stage" | "publish" | "discard" | "withdraw" | "delete";
 
 const en = {
-  title: "Business records", titleShort: "Records", sub: "Only Owners can see this", backToAdvisor: "AI manager", add: "Add record", addShort: "Add", addRow: "Add a record",
+  title: "Business records", titleShort: "Records", sub: "Only Owners can see this", backToAdvisor: "Rondo AI", add: "Add record", addShort: "Add", addRow: "Add a record",
   loading: "Loading business records", loadFailed: "Couldn’t load business records", checkConnection: "Check your connection, then try again.", tryAgain: "Try again",
   offline: "You’re offline", offlineLine: "Business records show when you’re back online.",
   sessionEnded: "Your session ended", sessionLine: "Sign in again to see business records.", signIn: "Sign in",
@@ -137,7 +137,7 @@ const en = {
 export type BusinessCopy = typeof en;
 
 const es: BusinessCopy = {
-  title: "Registros del negocio", titleShort: "Registros", sub: "Solo los dueños pueden ver esto", backToAdvisor: "Gerente IA", add: "Añadir registro", addShort: "Añadir", addRow: "Añadir un registro",
+  title: "Registros del negocio", titleShort: "Registros", sub: "Solo los dueños pueden ver esto", backToAdvisor: "Rondo AI", add: "Añadir registro", addShort: "Añadir", addRow: "Añadir un registro",
   loading: "Cargando registros del negocio", loadFailed: "No se pudieron cargar los registros", checkConnection: "Revise su conexión e intente de nuevo.", tryAgain: "Intentar de nuevo",
   offline: "Sin conexión", offlineLine: "Los registros aparecen cuando vuelva la conexión.",
   sessionEnded: "Su sesión terminó", sessionLine: "Inicie sesión de nuevo para ver los registros.", signIn: "Iniciar sesión",
