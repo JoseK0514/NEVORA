@@ -66,6 +66,10 @@ export async function waitForRecordedTimeReady(page, expectedState){
  try{return await ready.jsonValue();}finally{await ready.dispose();}
 }
 
+export function assertNoTimeReadAfterPause(before,paused){
+ assert.equal(paused.requestCount,before.requestCount,'Pagehide clearing must not require a new Home or Time request');
+}
+
 // Actual authenticated persisted Task11 Home journeys with canonical communication sources.
 export async function runScenario({app,browser,context,page,engine,width,evidenceDirectory,axeFile,runtimeErrors:cellRuntimeErrors}){
  const label=`H${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
@@ -429,7 +433,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   // invalidated state. Keep the old response held until that commit is visible.
   await timePaused().waitFor({timeout:15000});assert.equal(await clockedIn().count(),0);
   timeEvidence.pausedCommit={at:Date.now(),clockedInCount:await clockedIn().count(),requestCount:timeEvidence.requests.filter(item=>item.event==='request').length};
-  assert.equal(timeEvidence.pausedCommit.requestCount,timeEvidence.beforeDispatch.requestCount,'Pagehide clearing must not require a new Home or Time request');
+  assertNoTimeReadAfterPause(timeEvidence.beforeDispatch,timeEvidence.pausedCommit);
   time.release();await time.done;assert.equal(time.failure,undefined);timeEvidence.heldOutcome=time.outcome;
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));
   assert.equal(await timePaused().count(),1);assert.equal(await clockedIn().count(),0);

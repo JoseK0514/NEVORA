@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {writeFile} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
-import {waitForFreshHome,waitForRecordedTimeReady,installHomeHeldObserver} from './phase-e-home-browser-scenarios.mjs';
+import {waitForFreshHome,waitForRecordedTimeReady,installHomeHeldObserver,assertNoTimeReadAfterPause} from './phase-e-home-browser-scenarios.mjs';
 import {captureSource,assertSourceUnchanged,externalEvidence} from './phase-e-owned.mjs';
 
 // A scheduling fixture for the actual H06 helper, not product/SQL evidence.
@@ -12,6 +12,10 @@ const evidence=externalEvidence(source,process.env.HOME_READINESS_EVIDENCE_DIR);
 await writeFile(join(evidence,'source-manifest.json'),JSON.stringify(custody,null,2));
 const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json'));
 const playwright=runtime('playwright');assert.equal(runtime('playwright/package.json').version,'1.62.1');
+// Node request notifications can arrive after the browser has already started
+// and aborted the read. The browser's creation boundary determines causality.
+assert.doesNotThrow(()=>assertNoTimeReadAfterPause({requestCount:3,browserRequestCount:4},{requestCount:4,browserRequestCount:4}),'Delayed delivery of a pre-pagehide request is not a new read');
+assert.throws(()=>assertNoTimeReadAfterPause({requestCount:3,browserRequestCount:3},{requestCount:3,browserRequestCount:4}),assert.AssertionError,'A real new browser read must fail even before Node receives its request event');
 const results=[];
 for(const engine of ['chromium','webkit']){
  const browser=await playwright[engine].launch({headless:true});let context;
