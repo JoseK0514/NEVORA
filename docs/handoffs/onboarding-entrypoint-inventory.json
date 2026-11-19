@@ -809,6 +809,24 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/app/api/compensation/labor-cost/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "The workspace-bound schedule reader and shared application executor price the requested location against saved wage intervals. The private same-origin endpoint checks the current Owner session and returns aggregate estimates.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/compensation/wages/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "The private same-origin endpoint uses the current workspace session and host-bound application executor. Owner checks surround reads and writes. Employee and location membership are verified inside the protected transaction.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
       "path": "src/app/api/employee/calendar-subscriptions/route.ts",
       "tags": [
         "request-entrypoint"
