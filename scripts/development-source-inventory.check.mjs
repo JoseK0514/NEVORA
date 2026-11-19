@@ -102,28 +102,26 @@ test('parses exact lightweight archive tags without accepting malformed or dupli
   assert.throws(()=>parseRemoteRefs(`${sha}\trefs/something/main\n`));
 });
 
-test('published policy admits only the three normal heads plus the approved30-day exception and detects recreated or damaged archives',()=>{
+test('published policy validates the three allowed heads and detects recreated or damaged archives',()=>{
   const published=validateInventory(JSON.parse(readFileSync(new URL('../docs/handoffs/2026-10-21-development-assembly-sources.json',import.meta.url),'utf8')));
-  assert.equal(published.maximumActiveBranches,4);
+  assert.equal(published.maximumActiveBranches,3);
   assert.equal(published.assemblyBranch,'claude-codex-collab-nevora');
-  // Only Jose's named phase exception grants the fourth slot. Classifying the
-  // password review source never grants a fifth active slot.
+  // A classified held source records work; it does not grant a fourth active slot.
   // Model the allowed post-reconciliation state separately from today's live inventory.
-  const allowed=new Set(['main','development','claude-codex-collab-nevora','nevora-30-day-phase']);
-  assert.match(published.sources.find(source=>source.branch==='nevora-30-day-phase').reason,/Jose explicitly authorized.*2026-11-18-30-day-phase/);
+  const allowed=new Set(['main','development','claude-codex-collab-nevora']);
   const i={...published,sources:published.sources.filter(source=>source.archiveRef||allowed.has(source.branch))};
   assert.deepEqual(i.sources.filter(source=>!source.archiveRef).map(source=>source.branch).sort(),
-    ['claude-codex-collab-nevora','development','main','nevora-30-day-phase']);
+    ['claude-codex-collab-nevora','development','main']);
   const actual=new Map(i.sources.filter(source=>!source.archiveRef).map(source=>[source.branch,source.sha]));
   const archives=new Map(i.sources.filter(source=>source.archiveRef).map(source=>[source.archiveRef,source.sha]));
   assert.deepEqual(compareSources(i,actual,()=>true,archives),[]);
   const live=new Map(published.sources.filter(source=>!source.archiveRef).map(source=>[source.branch,source.sha]));
   assert.deepEqual(compareSources(published,live,()=>true,archives),[]);
-  for(const name of ['AI-owner','claude/employee-mobile-phase2-20261027','codex/release1-db-rehearsal-20261101','codex/nevora-password-emails-20261117']) {
+  for(const name of ['AI-owner','claude/employee-mobile-phase2-20261027','codex/release1-db-rehearsal-20261101','codex/nevora-password-emails-20261117','nevora-30-day-phase']) {
     const retired=i.sources.find(source=>source.branch===name);
     assert.ok(retired?.archiveRef,`Missing recoverable archive for ${name}`);
     actual.set(name,retired.sha);
-    assert.deepEqual(compareSources(i,actual,()=>true,archives),['Remote branch ceiling exceeded: 5 > 4']);
+    assert.deepEqual(compareSources(i,actual,()=>true,archives),['Remote branch ceiling exceeded: 4 > 3']);
     actual.delete(name);
     const damaged=new Map(archives);damaged.set(retired.archiveRef,next);
     assert.deepEqual(compareSources(i,actual,()=>true,damaged),[`Archive changed: ${name}`]);

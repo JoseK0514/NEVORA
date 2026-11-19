@@ -107,7 +107,15 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    expect(await join.locator('main').innerText()).not.toMatch(/Invitation verified|invitación verificada/i);
    await join.locator('#activation-password').fill(TEST_PASSWORD);await join.locator('#activation-confirm-password').fill(TEST_PASSWORD);
    await join.locator('.ma-language').click();await expect.poll(()=>join.locator('#mobile-access-page').getAttribute('lang')).toBe('en');expect(await join.locator('#activation-password').inputValue()).toBe(TEST_PASSWORD);
-   await join.setViewportSize({width:1440,height:900});/* Phase 5 (PB-016, DESIGN.MD): each password rule is the helper line of its own field, and the title is Set up your account. */await expect.poll(()=>join.locator('#activation-password-hint, #activation-confirm-password-hint').count()).toBe(2);expect(await join.locator('#activation-password-hint').innerText()).toContain('15');expect(await join.locator('h1').innerText()).toBe('Set up your account');expect(await join.locator('#activation-password').inputValue()).toBe(TEST_PASSWORD);expect(await join.locator('form').count()).toBe(1);
+   await join.setViewportSize({width:1440,height:900});
+   // Both layouts contain the password hints. Wait for the desktop form to replace the mobile form before reading them.
+   await expect.poll(()=>join.locator('.ma-passwords').count()).toBe(0);
+   await join.getByRole('heading',{level:1,name:'Set up your account',exact:true}).waitFor();
+   await expect.poll(()=>join.locator('#activation-password-hint, #activation-confirm-password-hint').count()).toBe(2);
+   expect(await join.locator('#activation-password-hint').innerText()).toContain('15');
+   expect(await join.locator('h1').innerText()).toBe('Set up your account');
+   expect(await join.locator('#activation-password').inputValue()).toBe(TEST_PASSWORD);
+   expect(await join.locator('form').count()).toBe(1);
    await join.setViewportSize({width:390,height:844});await expect.poll(()=>join.locator('.ma-passwords').count()).toBe(1);expect(await join.locator('#activation-confirm-password').inputValue()).toBe(TEST_PASSWORD);
    await join.locator('.ma-language').click();await expect.poll(()=>join.locator('#mobile-access-page').getAttribute('lang')).toBe('es');
    await join.locator('button[type="submit"]').click();await join.locator('#activation-employee-id').waitFor();expect(await join.locator('#activation-employee-id').inputValue()).toBe('MA-'+engine);
@@ -127,7 +135,11 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    const nextPassword=' Fictional-reset-'+engine+'! ';secrets.push(nextPassword);await join.locator('#reset-password').fill(nextPassword);await join.locator('#reset-confirm-password').fill(nextPassword);
    await join.setViewportSize({width:1440,height:900});await expect.poll(()=>join.locator('.ma-passwords').count()).toBe(0);expect((await join.locator('#reset-proof').inputValue()).length).toBe(43);expect(await join.locator('#reset-password').inputValue()).toBe(nextPassword);
    await join.setViewportSize({width:390,height:844});await expect.poll(()=>join.locator('.ma-passwords').count()).toBe(1);await join.locator('.ma-language').click();await expect.poll(()=>join.locator('#mobile-access-page').getAttribute('lang')).toBe('en');expect((await join.locator('#reset-proof').inputValue()).length).toBe(43);
-   await join.locator('button[type="submit"]').click();await expect.poll(()=>join.locator('h1').innerText()).toBe('Password updated');
+   await join.locator('.ma-language:not(:disabled)').waitFor();
+   for(const selector of ['#reset-password','#reset-confirm-password'])expect((await join.locator(selector).inputValue())===nextPassword).toBe(true);
+   const [saved]=await Promise.all([join.waitForResponse(origin+'/api/auth/reset-access'),join.locator('button[type="submit"]').click()]);
+   expect(saved.status()).toBe(200);expect(await saved.json()).toEqual({state:'reset'});
+   await join.getByRole('heading',{name:'Password updated',exact:true,level:1}).waitFor();
    const protectedRead=await employee.request.get(origin+'/app',{maxRedirects:0});expect([303,307,308]).toContain(protectedRead.status());expect(protectedRead.headers().location).toMatch(/^\/login/);
    expect((await employee.request.post(origin+'/api/auth/reset-access',{headers:{Origin:origin,'x-nevora-recovery':'1'},data:{proof:resetProof,password:nextPassword}})).status()).toBe(400);
    await join.locator('a.q-btn[href="/login"]').click();await join.locator('#login-employee-id').fill('MA-'+engine);await join.locator('#login-password').fill(nextPassword);await join.locator('button[type="submit"]').click();await join.waitForURL('**/app',{timeout:45000});
@@ -191,7 +203,9 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
    await page.close();await context.clearCookies();page=await context.newPage();page.setDefaultTimeout(20000);page.on('pageerror',(e:Error)=>errors.push(engine+': '+step+': '+e.name+' '+e.message));await context.addCookies([{name:'nv-lang',value:'en',url:origin}]);
    await page.goto(origin+'/activate#proof='+proof);await page.locator('#activation-password').waitFor();expect(new URL(page.url()).hash).toBe('');
    for(const width of [1440,320]){
-    await page.setViewportSize({width,height:1000});await expect.poll(()=>page.locator('.ma-passwords').count()).toBe(width<768?1:0);
+    await page.setViewportSize({width,height:1000});
+    await expect.poll(()=>page.locator('.ma-passwords').count()).toBe(width<768?1:0);
+    await page.locator(width===320?'.ma-card #activation-password':'#activation-password').waitFor();
     const candidate='a fictional oversized phrase '.repeat(50);
     for(const selector of ['#activation-password','#activation-confirm-password']){await expect.poll(()=>page.locator(selector).isEnabled()).toBe(true);await page.locator(selector).focus();await expect.poll(()=>page.locator(selector).evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);await page.locator(selector).press('ControlOrMeta+A');await page.keyboard.insertText(candidate);await expect.poll(()=>page.locator(selector).inputValue()).toBe(candidate);}
     await page.locator('button[type="submit"]').click();await expect.poll(()=>page.locator('#activation-error,#activation-policy-error').innerText()).toBe(passwordRejectionMessage('en','too_long'));
@@ -199,7 +213,12 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
    for(const lang of ['en','es'] as const){
     step=engine+' invitation policy '+lang;await context.addCookies([{name:'nv-lang',value:lang,url:origin}]);await page.goto('about:blank');
     // Reopen in a fresh document: a same-document fragment navigation can race hydration in WebKit.
-    await page.goto(origin+'/activate#proof='+proof);await page.locator('#activation-password').fill('qwertyuiopasdfgh');await page.locator('#activation-confirm-password').fill('qwertyuiopasdfgh');await page.locator('button[type="submit"]').click();
+    await page.goto(origin+'/activate#proof='+proof);
+    await page.locator(lang==='en'?'.ma-card #activation-password':'#activation-password').waitFor();
+    await page.locator('#activation-password').fill('qwertyuiopasdfgh');await page.locator('#activation-confirm-password').fill('qwertyuiopasdfgh');
+    const [refusal]=await Promise.all([page.waitForResponse(origin+'/api/auth/activate'),page.locator('button[type="submit"]').click()]);
+    expect(refusal.status()).toBe(400);
+    expect(await refusal.json()).toEqual({state:'invalid',passwordReason:'breached'});
     await expect.poll(()=>page.locator('#activation-error,#activation-policy-error').innerText()).toBe(passwordRejectionMessage(lang,'breached'));
     expect(await page.locator('#activation-password').getAttribute('minlength')).toBe('15');
     await page.locator('#activation-confirm-password').fill('different fictional phrase');await page.locator('button[type="submit"]').click();const mismatch=page.locator('#activation-error,#activation-confirm-password-error');await expect.poll(()=>mismatch.count()).toBe(1);expect(await mismatch.innerText()).toBe(ACCESS_COPY[lang].activation.mismatch);expect(await page.locator('#activation-confirm-password').getAttribute('aria-describedby')).toContain(await mismatch.getAttribute('id'));expect(await page.locator('form').innerText()).not.toContain(passwordRejectionMessage(lang,'breached'));
@@ -209,24 +228,41 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
    const first='quiet meadows under winter skies';await page.locator('#activation-password').fill(first);await page.locator('#activation-confirm-password').fill(first);await page.locator('button[type="submit"]').click();await page.locator('#activation-employee-id').waitFor();expect(await page.locator('#activation-employee-id').inputValue()).toBe(id);
    step=engine+' reset password policy';
    await context.addCookies([{name:'nv-lang',value:'es',url:origin}]);
-   await page.goto(origin+'/forgot-access');await page.locator('#recovery-employee-id').fill(id);await page.locator('#recovery-email').fill(engine+'@example.invalid');await page.locator('button[type="submit"]').click();
+   await page.goto(origin+'/forgot-access');await page.locator('#recovery-employee-id').fill(id);await page.locator('#recovery-email').fill(engine+'@example.invalid');
+   const [recovery]=await Promise.all([page.waitForResponse(origin+'/api/auth/recovery'),page.locator('button[type="submit"]').click()]);
+   expect(recovery.status()).toBe(202);
    await expect.poll(()=>smtp.messages.filter((m:{recipient:string;body:string})=>m.recipient.includes(engine+'@example.invalid')&&m.body.includes('/reset-access')).length).toBe(1);
    const resetMail=smtp.messages.find((m:{recipient:string;body:string})=>m.recipient.includes(engine+'@example.invalid')&&m.body.includes('/reset-access'))!;
    const resetProof=/#proof=([A-Za-z0-9_-]{43})/.exec(resetMail.body.replace(/=\r?\n/g,'').replace(/=3D/g,'='))?.[1];if(!resetProof)throw Error('Missing owned reset proof');
    await page.goto(origin+'/reset-access#proof='+resetProof);await page.locator('#reset-password').waitFor();
+   await page.waitForFunction(()=>document.querySelector<HTMLInputElement>('#reset-proof')?.value.length===43&&!location.hash);
    for(const width of [1440,320]){
-    await page.setViewportSize({width,height:1000});await expect.poll(()=>page.locator('.ma-passwords').count()).toBe(width<768?1:0);const candidate='a fictional oversized phrase '.repeat(50);
+    step=engine+' reset oversized password at '+width;
+    await page.setViewportSize({width,height:1000});await expect.poll(()=>page.locator('.ma-passwords').count()).toBe(width<768?1:0);
+    expect(await page.locator('#reset-proof').inputValue()).toBe(resetProof);
+    const candidate='a fictional oversized phrase '.repeat(50);
     for(const selector of ['#reset-password','#reset-confirm-password']){await expect.poll(()=>page.locator(selector).isEnabled()).toBe(true);await page.locator(selector).focus();await expect.poll(()=>page.locator(selector).evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);await page.locator(selector).press('ControlOrMeta+A');await page.keyboard.insertText(candidate);await expect.poll(()=>page.locator(selector).inputValue()).toBe(candidate);}
     await page.locator('button[type="submit"]').click();await expect.poll(()=>page.locator('#reset-error').innerText()).toContain(passwordRejectionMessage('es','too_long'));
    }
    for(const [candidate,reason] of [['NorthHarborFoods2026!','company_name'],['qwertyuiopasdfgh','breached']] as const){
-    await page.locator('#reset-password').fill(candidate);await page.locator('#reset-confirm-password').fill(candidate);await page.locator('button[type="submit"]').click();await expect.poll(()=>page.locator('#reset-error').innerText()).toContain(passwordRejectionMessage('es',reason));
+    step=engine+' reset '+reason+' refusal';
+    await page.locator('#reset-password').fill(candidate);await page.locator('#reset-confirm-password').fill(candidate);
+    const [refusal]=await Promise.all([page.waitForResponse(origin+'/api/auth/reset-access'),page.locator('button[type="submit"]').click()]);
+    expect(refusal.status()).toBe(400);
+    expect(await refusal.json()).toEqual({state:'invalid',passwordReason:reason});
+    await expect.poll(()=>page.locator('#reset-error').innerText()).toContain(passwordRejectionMessage('es',reason));
     expect(await page.locator('#reset-error').evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);
    }
    await page.screenshot({path:evidence+'/'+engine+'-reset-es.png',fullPage:true});
-   const next='a distant orchestra carries through the winter valley';await page.locator('#reset-password').fill(next);await page.locator('#reset-confirm-password').fill(next);await page.locator('button[type="submit"]').click();await page.locator('a[href="/login"]').first().waitFor();
+   step=engine+' successful reset and single-use proof';
+   const next='a distant orchestra carries through the winter valley';await page.locator('#reset-password').fill(next);await page.locator('#reset-confirm-password').fill(next);
+   const [saved]=await Promise.all([page.waitForResponse(origin+'/api/auth/reset-access'),page.locator('button[type="submit"]').click()]);
+   expect(saved.status()).toBe(200);expect(await saved.json()).toEqual({state:'reset'});
+   await page.getByRole('heading',{name:'Contraseña actualizada',exact:true,level:1}).waitFor();
+   const signIn=page.getByRole('link',{name:'Iniciar sesión',exact:true});
+   await signIn.waitFor();expect(await signIn.getAttribute('href')).toBe('/login');
    const replay=await context.request.post(origin+'/api/auth/reset-access',{headers:{Origin:origin,'x-nevora-recovery':'1'},data:{proof:resetProof,password:next}});expect(replay.status()).toBe(400);
-   await page.goto(origin+'/login');await page.locator('#login-employee-id').fill(id);await page.locator('#login-password').fill(next);await page.locator('button[type="submit"]').click();await page.waitForURL('**/app',{timeout:45000});
+   await signIn.click();await page.waitForURL(origin+'/login');await page.locator('#login-employee-id').fill(id);await page.locator('#login-password').fill(next);await page.locator('button[type="submit"]').click();await page.waitForURL('**/app',{timeout:45000});
    await expect.poll(()=>smtp.messages.filter((m:{recipient:string})=>m.recipient.includes(engine+'@example.invalid')).length).toBe(3);
    const captured=readAccountEmailSet(smtp.messages,engine+'@example.invalid');
    expect(()=>readAccountEmailSet(smtp.messages.filter(m=>!decodeAccountEmail(m.body).text.includes('/login')),engine+'@example.invalid')).toThrow();

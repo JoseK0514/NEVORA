@@ -1,4 +1,5 @@
 import * as rstestOriginal0 from "@/lib/company-access/operational-scope.server" with { rstest: 'importActual' };
+import * as actualAuthority from '@/lib/workforce/authority.server' with { rstest: 'importActual' };
 import { describe, expect, it, rs } from '@rstest/core';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import type { SessionMutationProof } from '../shift-changes/types';
@@ -22,8 +23,8 @@ function executor(result: Record<string, unknown>) {
   const db: SqlExecutor = {
     async query<T>(statement: SqlStatement) {
       if (statement.text.includes('FROM workspaces WHERE singleton=true')) return [workspace] as T[];
-      if (statement.text.includes('FROM time_correction_requests WHERE id=')) {
-        return [{ employeeId: 'worker', workspaceId: workspace.id }] as T[];
+      if (statement.text.includes('footprint."locationIds"')) {
+        return [{ employeeId: 'worker', requestedByEmployeeId: 'worker', locationIds: ['loc-1'] }] as T[];
       }
       return [] as T[];
     },
@@ -127,4 +128,12 @@ describe('D2 correction transaction service', () => {
 
 // Business-unit admission I/O only; keep real transaction guard assembly.
 // Current Company/lifecycle/replay/rollback use owned SQL in time-review cases.
-rs.mock('@/lib/company-access/operational-scope.server', ()=>({...rstestOriginal0,assertOperationalAccess:async()=>({workspace,authority:'a'.repeat(64),scope:{mode:'COMPANY',locationIds:[]}})}));
+rs.mock('@/lib/company-access/operational-scope.server', () => ({ ...rstestOriginal0,assertOperationalAccess:async()=>({workspace,authority:'a'.repeat(64),scope:{mode:'COMPANY',locationIds:[]}})}));
+
+rs.mock('@/lib/workforce/authority.server', () => ({ ...actualAuthority,
+  listWorkforcePermissions: async () => ({
+    access: { workspace, authority: 'a'.repeat(64) },
+    permissions: [{ permission:'REVIEW_TIME_EXCEPTION', locationId:'loc-1' }],
+  }),
+  assertWorkforcePermission: async () => ({ workspace, authority: 'a'.repeat(64) }),
+}));

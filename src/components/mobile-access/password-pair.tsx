@@ -8,5 +8,5 @@ import {MOBILE_ACCESS_COPY} from './copy';
  * error style. The field ids are unchanged, so a breakpoint change still restores what was typed. */
 export function AccessPasswordPair({prefix,lang,mismatch=false,newLabel}:{prefix:'activation'|'reset';lang:AuthLang;mismatch?:boolean;newLabel?:string}) {
  const t=MOBILE_ACCESS_COPY[lang];
- return <PasswordPair prefix={prefix} lang={lang} mismatch={mismatch} newLabel={newLabel??t.newPassword} confirmLabel={t.confirmPassword} className="ma-passwords"/>;
+ return <PasswordPair prefix={prefix} lang={lang} mismatch={mismatch} errorId={prefix==='activation'&&mismatch?'activation-error':undefined} newLabel={newLabel??t.newPassword} confirmLabel={t.confirmPassword} className="ma-passwords"/>;
 }

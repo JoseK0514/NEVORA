@@ -3,8 +3,9 @@ import {test} from 'node:test';
 import {measureRenderedContrast} from './browser-contrast.mjs';
 const base={color:'rgb(255, 255, 255)',backgroundColor:'rgba(0, 0, 0, 0)',backgroundImage:'none',opacity:'1',mixBlendMode:'normal',filter:'none'};
 const bounds={left:0,top:0,right:100,bottom:100,width:100,height:100,toJSON(){return {...this,toJSON:undefined};}};
-function measure(background,foreground={}) {
- const parent={tagName:'SECTION',getBoundingClientRect:()=>bounds,parentElement:null,style:{...base,...background}},link={tagName:'A',getBoundingClientRect:()=>bounds,parentElement:parent,style:{...base,...foreground}};
+function measure(background,foreground={},backdrop) {
+ const canvas=backdrop?{tagName:'BODY',getBoundingClientRect:()=>bounds,parentElement:null,style:{...base,...backdrop}}:null;
+ const parent={tagName:'SECTION',getBoundingClientRect:()=>bounds,parentElement:canvas,style:{...base,...background}},link={tagName:'A',getBoundingClientRect:()=>bounds,parentElement:parent,style:{...base,...foreground}};
  globalThis.getComputedStyle=(node,pseudo)=>pseudo?{content:'none'}:node.style;
  try{return measureRenderedContrast(link);}finally{delete globalThis.getComputedStyle;}
 }
@@ -57,7 +58,15 @@ test('nonzero, compound and unknown filters still fail closed',()=>{
  for(const filter of ['blur(0.001px)','blur(4px)','blur(0px) brightness(0.5)','brightness(1)','url("unmeasured.svg")'])
   assert.throws(()=>measure({backgroundColor:'rgb(0, 0, 0)',filter}),/Unsupported compositing/);
 });
-test('zero blur cannot hide opacity or blend compositing',()=>{
+test('zero blur cannot hide unsupported opacity or blend compositing',()=>{
  for(const extra of [{opacity:'0.5'},{mixBlendMode:'overlay'}])
   assert.throws(()=>measure({backgroundColor:'rgb(0, 0, 0)',filter:'blur(0px)',...extra}),/Unsupported compositing/);
+});
+
+test('group opacity reduces the contrast of black text against a known white backdrop',()=>{
+ const canvas={backgroundColor:'rgb(255, 255, 255)'};
+ const result=measure({backgroundColor:'rgb(255, 255, 255)',opacity:'.5'},{color:'rgb(0, 0, 0)'},canvas);
+ const identity=measure({backgroundColor:'rgb(255, 255, 255)',opacity:'.5',filter:'blur(0px)'},{color:'rgb(0, 0, 0)'},canvas);
+ assert.equal(identity.ratio,result.ratio);
+ assert(result.ratio>3.97&&result.ratio<3.98);
 });

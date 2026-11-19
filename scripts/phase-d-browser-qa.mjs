@@ -1,4 +1,4 @@
-import {showClockerSetupCode} from './clocker-qa-setup-code.mjs';
+import {registerTestTablet, saveClockerPin} from './clocker-browser-setup.mjs';
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
 import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
 import {observePinReadiness,pinFailureCategory,runPinDiagnosticObservation} from './clocker-pin-readiness-diagnostic.mjs';
@@ -26,7 +26,7 @@ import {homedir} from 'node:os';
 import {join,resolve} from 'node:path';
 import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {createOwnedNextApp} from '../src/test/integration/owned-next-app.ts';
-import {seedOwnedApp,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
+import {seedOwnedApp,assignOwnedManagerCompanyAccess,grantOwnedManagerWorkforcePermission,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {hashPassword} from '../src/lib/auth/password.ts';
 import {createOwnedSmtp} from '../src/test/integration/owned-smtp.ts';
 const evidence=resolve(process.env.PHASE_D_EVIDENCE_DIR??join(homedir(),'.codex/visualizations/nevora-phase-d-d3-d8'));
@@ -65,6 +65,8 @@ try{
   }
   await q("INSERT INTO clocker_devices(id,location_id,name,active) VALUES('d3-device','loc-1','Fictional D3 tablet',true)");
   await assignOwnedManagerCompanyAccess(app.database.executor,'D3-M');
+  await grantOwnedManagerWorkforcePermission(app.database.executor,'D3-M','loc-1','REVIEW_TIME_EXCEPTION');
+  await grantOwnedManagerWorkforcePermission(app.database.executor,'D3-M','loc-1','APPROVE_LEAVE');
   await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES('D3-UI','D3-E','loc-1','d3-device','2026-09-22T12:00:00Z','2026-09-22T20:00:00Z','CLOCKED_OUT',1)");
   await q("INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at) VALUES('D3-UI-B','D3-UI','2026-09-22T16:00:00Z','2026-09-22T16:30:00Z')");
   // Current Weeks rows link only when a week actually has recorded time. Seed the later-week navigation fixture.
@@ -293,6 +295,10 @@ try{
     for(const width of [320,375,390,430,768,1024,1440]){await mp.setViewportSize({width,height:1000});const geometry=await mp.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,scrollX:window.scrollX,inner:window.innerWidth,overflow:[...document.querySelectorAll('*')].filter(e=>(e.getBoundingClientRect().right+window.scrollX>document.documentElement.clientWidth+2||e.scrollWidth>e.clientWidth+2)&&getComputedStyle(e).display!=='none').map(e=>({tag:e.tagName,class:e.className,width:e.getBoundingClientRect().width,right:e.getBoundingClientRect().right,scroll:e.scrollWidth,client:e.clientWidth,minWidth:getComputedStyle(e).minWidth,overflow:getComputedStyle(e).overflow,caption:e.tagName==='LABEL'?e.textContent.slice(0,140):null,children:e.tagName==='LABEL'?[...e.children].map(child=>({tag:child.tagName,width:child.getBoundingClientRect().width,scroll:child.scrollWidth,overflow:getComputedStyle(child).overflow})):undefined})).slice(-25)}));if(geometry.scroll>geometry.width+2){console.log(JSON.stringify(geometry));await mp.screenshot({path:join(evidence,`${engine}-mapping-overflow.png`),fullPage:true});}assert(geometry.scroll<=geometry.width+2,`${engine}: mapping overflow ${width}`);checked(`${engine}: mapping geometry ${width}`);}
     currentPage=mp;await openPeriodReports(mp,app.url,engine,report);
     await verifyReportRecoveryNavigation(mp,app,engine,report,'D3-M');
+    // Restoring the Manager role creates a new lifecycle generation. Restore
+    // the explicit fixture grants before entering the next review scenario.
+    await grantOwnedManagerWorkforcePermission(app.database.executor,'D3-M','loc-1','REVIEW_TIME_EXCEPTION');
+    await grantOwnedManagerWorkforcePermission(app.database.executor,'D3-M','loc-1','APPROVE_LEAVE');
     // Insights (board O-Insights): the screen shows the board's cards. With no published plan the Hours worked card shows the
     // canonical recorded total alone, with no planned figure or over/under-plan pill; the full report (print) keeps the
     // "Scheduled vs recorded" section with its unavailable-plan status, checked under print below.
@@ -454,12 +460,12 @@ try{
     await op.bringToFront();currentPage=op;
     for(const [id,first,pin] of [['UX5-A-'+engine,'FictionalAlpha',pinA],['UX5-B-'+engine,'FictionalBeta',pinB]]){
       await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,$2,'Recovery QA','555-0500','EMPLOYEE','loc-1')",[id,first]);await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1')",[id]);
-      await op.goto(app.url+'/app/employees/'+id+'/clocker-pin');await op.getByLabel('New PIN',{exact:true}).fill(pin);await op.getByLabel('Type it again',{exact:true}).fill(pin);const savePin=op.getByRole('button',{name:'Save PIN',exact:true});assert.equal(await savePin.evaluate(button=>button.form?.id),'clocker-pin-form');await savePin.click();await op.getByRole('status').filter({hasText:'PIN set for'}).waitFor();await op.waitForLoadState('networkidle');
+      await op.goto(app.url+'/app/employees/'+id+'/clocker-pin');await saveClockerPin(op,pin);await op.waitForLoadState('networkidle');
     }
-    const devicesNavigation=await op.goto(app.url+'/app/settings/clocker',{waitUntil:'domcontentloaded'});assert(devicesNavigation?.ok());await op.getByRole('heading',{name:'Clocker tablets',exact:true}).waitFor();await op.getByRole('button',{name:/^Add (?:a )?tablet$/}).click();const dialog=op.getByRole('dialog');await dialog.getByLabel('Tablet name',{exact:true}).fill('UX5 '+engine+' tablet');await dialog.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await dialog.getByRole('button',{name:'Get setup code',exact:true}).click();await dialog.waitFor({state:'hidden'});
+    const devicesNavigation=await op.goto(app.url+'/app/settings/clocker',{waitUntil:'domcontentloaded'});assert(devicesNavigation?.ok());const setupCode=await registerTestTablet(op,'UX5 '+engine+' tablet');
     const clockerEvidence={engine,pinAttempts:[],responses:[]};(report.clockerSetup??=[]).push(clockerEvidence);
     cp.on('response',response=>{if(new URL(response.url()).pathname!=='/api/clocker/2/pin')return;let action;try{action=response.request().postDataJSON()?.action;}catch{}if(clockerEvidence.responses.length===50)clockerEvidence.responses.shift();clockerEvidence.responses.push({action:['clear','verify','status'].includes(action)?action:'other',status:response.status()});});
-    const displayedSetup=await showClockerSetupCode(op);assert.equal(await displayedSetup.getAttribute('readonly'),'');const setupCode=await displayedSetup.inputValue();assert(setupCode);currentPage=cp;await cp.bringToFront();await cp.goto(app.url+'/clocker/2');await cp.getByRole('textbox',{name:'Setup code',exact:true}).fill(setupCode);await cp.getByRole('button',{name:'Connect tablet',exact:true}).click();
+    currentPage=cp;await cp.bringToFront();await cp.goto(app.url+'/clocker/2');await cp.getByRole('textbox',{name:'Setup code',exact:true}).fill(setupCode);await cp.getByRole('button',{name:'Connect tablet',exact:true}).click();
     async function pin(employeeId,value){
       currentPage=cp;pinDiagnostic.phase('readiness','before');await cp.bringToFront();await cp.waitForFunction(()=>document.hasFocus()&&document.visibilityState==='visible'&&navigator.onLine);
       await cp.getByRole('heading',{name:'Enter your Employee ID',exact:true}).waitFor();await cp.waitForFunction(()=>{const i=document.querySelector('input[name=employeeId]');return i&&!i.matches(':disabled');});assert.equal(await cp.getByLabel('Employee ID',{exact:true}).inputValue(),'','Each identity starts from a cleared ID');await cp.getByLabel('Employee ID',{exact:true}).fill(employeeId);await cp.getByRole('button',{name:'Continue',exact:true}).click();
@@ -537,22 +543,48 @@ try{
     fp.on('request',request=>{const path=new URL(request.url()).pathname;if(!['/api/auth/recovery','/api/auth/reset-access'].includes(path))return;const call={path,startedAt:Date.now()};calls.set(request,call);recovery.calls.push(call);});
     fp.on('response',async response=>{const call=calls.get(response.request());if(!call)return;call.status=response.status();call.elapsedMs=Date.now()-call.startedAt;try{const data=await response.json();call.state=['accepted','reset','invalid','unavailable'].includes(data.state)?data.state:'unclassified';}catch{call.state='unreadable';}});
     fp.on('requestfailed',request=>{const call=calls.get(request);if(!call)return;call.elapsedMs=Date.now()-call.startedAt;call.failure=/aborted|cancelled/i.test(request.failure()?.errorText??'')?'cancelled':'failed';});
-    const openReset=async path=>{await fp.bringToFront();currentPage=fp;if(new URL(fp.url()).pathname==='/reset-access')await fp.goto('about:blank');const response=await fp.goto(app.url+path,{waitUntil:'domcontentloaded'});assert(response?.ok());await fp.locator('#reset-proof').waitFor({state:'attached'});await fp.waitForFunction(()=>window.location.hash==='');};
+    const openReset=async path=>{
+      await fp.bringToFront();currentPage=fp;
+      if(new URL(fp.url()).pathname==='/reset-access')await fp.goto('about:blank');
+      const response=await fp.goto(app.url+path,{waitUntil:'domcontentloaded'});assert(response?.ok());
+      await fp.locator('#reset-password:enabled').waitFor();
+      if(path.includes('#proof='))await fp.getByRole('status').getByText('Reset link accepted',{exact:true}).waitFor();
+      else await fp.getByLabel('Reset code',{exact:true}).waitFor();
+      await fp.waitForFunction(()=>window.location.hash==='');
+    };
+    const submitReset=async(password,success)=>{
+      await fp.getByLabel('New password',{exact:true}).fill(password);
+      await fp.getByLabel('Confirm password',{exact:true}).fill(password);
+      const [response]=await Promise.all([fp.waitForResponse(app.url+'/api/auth/reset-access'),fp.getByRole('button',{name:'Save new password',exact:true}).click()]);
+      assert.equal(response.status(),success?200:400);
+      if(success){
+        assert.deepEqual(await response.json(),{state:'reset'});
+        await fp.getByRole('heading',{name:'Password updated',level:1,exact:true}).waitFor();
+        await fp.getByRole('status').getByText('For your safety, we signed you out on every device.',{exact:true}).waitFor();
+      }else{
+        assert.equal((await response.json()).state,'invalid');
+        const refusal=fp.getByRole('alert').filter({hasText:'This link can’t be used'});
+        await refusal.getByText('This link has expired or was already used. Reset links last 15 minutes.',{exact:true}).waitFor();
+        assert.equal(await refusal.getByRole('link',{name:'Get a new reset link',exact:true}).getAttribute('href'),'/forgot-access');
+      }
+    };
     const boundaryHeaders={origin:app.url,'x-nevora-recovery':'1'},unknownReply=await fp.request.post(app.url+'/api/auth/recovery',{headers:boundaryHeaders,data:{employeeId:'UNKNOWN-'+engine,email:'unknown@example.invalid'}});assert.equal(unknownReply.status(),202);const unknownBody=await unknownReply.json();
-    await fp.goto(app.url+'/login');await fp.getByRole('link',{name:'Forgot password?',exact:true}).click();await fp.getByRole('heading',{name:/* B4/B7 wording (NV-057, NV-021) */'Reset your password',exact:true}).waitFor();await fp.getByLabel('Employee ID',{exact:true}).fill(recoveryId);await fp.getByLabel('Email',{exact:true}).fill(recoveryEmail);
+    await fp.goto(app.url+'/login');await fp.getByRole('link',{name:'Forgot password?',exact:true}).click();await fp.getByRole('heading',{name:'Reset your password',exact:true}).waitFor();await fp.getByLabel('Employee ID',{exact:true}).fill(recoveryId);await fp.getByLabel('Email',{exact:true}).fill(recoveryEmail);
     for(const width of [320,390,768,1440]){await fp.setViewportSize({width,height:1000});assert(await fp.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+2));checked(engine+': UX-01 recovery geometry '+width);}
     assert(await fp.locator('form').evaluate(form=>form.checkValidity()),'Recovery form validity');assert.equal(await fp.getByLabel('Email',{exact:true}).inputValue(),recoveryEmail);
     const sent=fp.waitForResponse(response=>response.url().endsWith('/api/auth/recovery')); await fp.getByRole('button',{name:'Email me a reset link',exact:true}).click();const knownReply=await sent;assert.equal(knownReply.status(),202);assert.deepEqual(await knownReply.json(),unknownBody);await waitUntil(()=>smtp.messages.some(m=>m.recipient.includes(recoveryEmail)));checked(engine+': UX-01 known/unknown identical response and fictional registered-channel delivery');
     const mail=smtp.messages.find(m=>m.recipient.includes(recoveryEmail)).body.replace(/=\r\n/g,'').replace(/=3D/g,'='),emailProof=mail.match(/reset-access#proof=([A-Za-z0-9_-]{43})/)?.[1];assert(emailProof);
-    await openReset('/reset-access#proof='+emailProof);await fp.locator('#reset-proof').waitFor({state:'attached'});await fp.waitForFunction(()=>window.location.hash==='');assert.equal(await fp.locator('#reset-proof').inputValue(),emailProof);checked(engine+': UX-01 fragment proof consumed into form without URL/query exposure');
-    await fp.getByLabel('New password',{exact:true}).fill('Fictional Reset Password '+engine);await fp.locator('#reset-confirm-password').fill('Fictional Reset Password '+engine);await fp.getByRole('button',{name:'Save new password',exact:true}).click();await fp.getByText('For your safety, we signed you out on every device.',{exact:true}).waitFor();
+    await openReset('/reset-access#proof='+emailProof);assert.equal(await fp.locator('#reset-proof').inputValue(),emailProof);checked(engine+': UX-01 fragment proof consumed into form without URL/query exposure');
+    await submitReset('Fictional Reset Password '+engine,true);
     const staleSession=await rp.request.post(app.url+'/api/timecards',{headers:{origin:app.url,'x-nevora-timecards':'1','x-nevora-actor':recoveryId},data:{startDate:'2026-09-21',endDate:'2026-09-27'}});assert([401,403].includes(staleSession.status()));assert.equal((await q("SELECT count(*)::int AS n FROM employee_sessions WHERE employee_id=$1",[recoveryId]))[0].n,0);checked(engine+': UX-01 reset invalidates current portal authority');
-    await openReset('/reset-access#proof='+emailProof);await fp.getByLabel('New password',{exact:true}).fill('Fictional Attempt Reuse');await fp.locator('#reset-confirm-password').fill('Fictional Attempt Reuse');await fp.getByRole('button',{name:'Save new password',exact:true}).click();await fp.getByText(/expired.*already used/).waitFor();checked(engine+': UX-01 reused proof rejected with recovery path');
+    await openReset('/reset-access#proof='+emailProof);await submitReset('Fictional Attempt Reuse',false);checked(engine+': UX-01 reused proof rejected with recovery path');
     await mp.bringToFront();currentPage=mp;await mp.goto(app.url+'/app/account-recovery');const assisted=await issueAssistedRecovery(mp,recoveryId,'Fictional in-person identity confirmed through established workplace process.');
-    await openReset('/reset-access');await fp.getByLabel('Reset code',{exact:true}).fill(assisted);await fp.getByLabel('New password',{exact:true}).fill(TEST_PASSWORD);await fp.locator('#reset-confirm-password').fill(TEST_PASSWORD);recovery.assistedSubmit=await fp.evaluate(()=>({focused:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine}));await fp.getByRole('button',{name:'Save new password',exact:true}).click();await fp.getByText('For your safety, we signed you out on every device.',{exact:true}).waitFor();checked(engine+': UX-01 inaccessible-channel assisted proof resets through the same protocol');
-    await fp.locator('.ar-done').getByRole('link',{name:'Sign in',exact:true}).click();await fp.getByLabel('Employee ID',{exact:true}).fill(recoveryId);await fp.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([fp.waitForURL(u=>u.pathname==='/app'),fp.getByRole('button',{name:'Sign in',exact:true}).click()]);checked(engine+': UX-01 normal new-password sign-in after reset');
+    await openReset('/reset-access');await fp.getByLabel('Reset code',{exact:true}).fill(assisted);
+    recovery.assistedSubmit=await fp.evaluate(()=>({focused:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine}));
+    await submitReset(TEST_PASSWORD,true);checked(engine+': UX-01 inaccessible-channel assisted proof resets through the same protocol');
+    await fp.getByRole('link',{name:'Sign in',exact:true}).click();await fp.getByLabel('Employee ID',{exact:true}).fill(recoveryId);await fp.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([fp.waitForURL(u=>u.pathname==='/app'),fp.getByRole('button',{name:'Sign in',exact:true}).click()]);checked(engine+': UX-01 normal new-password sign-in after reset');
     await mp.bringToFront();currentPage=mp;await mp.goto(app.url+'/app/account-recovery');const expiring=await issueAssistedRecovery(mp,recoveryId,'Fictional established verification for expiry regression.');
-    await q("UPDATE password_recovery_proofs SET created_at=clock_timestamp()-interval '16 minutes',expires_at=clock_timestamp()-interval '1 minute' WHERE token_hash=$1",[createHash('sha256').update(expiring).digest('hex')]);await openReset('/reset-access#proof='+expiring);await fp.getByLabel('New password',{exact:true}).fill('Fictional Expired Reset');await fp.locator('#reset-confirm-password').fill('Fictional Expired Reset');await fp.getByRole('button',{name:'Save new password',exact:true}).click();await fp.getByText(/expired.*already used/).waitFor();checked(engine+': UX-01 expired proof gives the safe recovery path');
+    await q("UPDATE password_recovery_proofs SET created_at=clock_timestamp()-interval '16 minutes',expires_at=clock_timestamp()-interval '1 minute' WHERE token_hash=$1",[createHash('sha256').update(expiring).digest('hex')]);await openReset('/reset-access#proof='+expiring);await submitReset('Fictional Expired Reset',false);checked(engine+': UX-01 expired proof gives the safe recovery path');
     lifecycle='context-close';
     for(const context of [recoveree,publicContext,clockContext,ownerContext,lead,employee,management]){
       for(const page of context.pages())await page.waitForLoadState('networkidle');

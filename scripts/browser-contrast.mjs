@@ -14,13 +14,9 @@ export function measureRenderedContrast(element) {
   const layers = [], targetBounds = element.getBoundingClientRect();
   for (let node = element; node; node = node.parentElement) {
     const style = getComputedStyle(node);
-    // The current entrance animation ends at blur(0). Its retained computed
-    // blur(0px) is the identity filter, not unmeasured paint. Every nonzero or
-    // compound filter still fails closed, as do opacity and blend effects.
-    if (style.opacity !== '1' || style.mixBlendMode !== 'normal' || !['none', 'blur(0px)'].includes(style.filter)) {
-      throw Error('Unsupported compositing: ' + JSON.stringify({tag:node.tagName,opacity:style.opacity,mixBlendMode:style.mixBlendMode,filter:style.filter}));
-    }
-    const layer = {tag: node.tagName, color: style.backgroundColor, image: style.backgroundImage, bounds:node.getBoundingClientRect().toJSON(), overlays: []};
+    const opacity = Number(style.opacity);
+    if (!Number.isFinite(opacity) || opacity < 0 || opacity > 1 || style.mixBlendMode !== 'normal' || !['none', 'blur(0px)'].includes(style.filter)) throw Error('Unsupported compositing on ' + node.tagName);
+    const layer = {tag: node.tagName, opacity, color: style.backgroundColor, image: style.backgroundImage, bounds:node.getBoundingClientRect().toJSON(), overlays: []};
     for (const pseudo of ['::before', '::after']) {
       const p = getComputedStyle(node, pseudo);
       if (p.content === 'none' || p.display === 'none') continue;
@@ -66,7 +62,16 @@ export function measureRenderedContrast(element) {
     return layer.image === 'none' ? base : colors(layer).flatMap(front => base.map(back => over(front, back)));
   };
   let backgrounds = [[255,255,255,1]];
+  const groups = [];
+  let opaqueBackdrop = false;
   for (const layer of layers.slice().reverse()) {
+    // Opacity is applied to the entire painted group, including its text, against the parent's backdrop.
+    if (layer.opacity < 1) {
+      // The default canvas color is insufficient evidence for a translucent group.
+      if (!opaqueBackdrop) throw Error('Unsupported compositing without an opaque backdrop on ' + layer.tag);
+      groups.push({opacity: layer.opacity, backdrops: backgrounds});
+    }
+    if (rgba(layer.color)[3] === 1 && layer.opacity === 1) opaqueBackdrop = true;
     backgrounds = paint(layer, backgrounds);
     for (const overlay of layer.overlays) backgrounds = [ ...backgrounds, ...paint(overlay, backgrounds) ];
     // All sRGB interpolants lie within these channel bounds. Their extreme
@@ -74,12 +79,26 @@ export function measureRenderedContrast(element) {
     backgrounds = [0,1].map(high => [0,1,2].map(i => Math[high?'max':'min'](...backgrounds.map(c => c[i]))).concat(1));
   }
   const foreground = rgba(getComputedStyle(element).color);
-  const samples = backgrounds.map(background => {
-    const rendered = over(foreground, background), a = luminance(rendered), b = luminance(background);
-    return {foreground:rendered,background,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};
+  let pairs = backgrounds.map(background => ({foreground: over(foreground, background), background}));
+  for (const {opacity, backdrops} of groups.reverse()) {
+    pairs = pairs.flatMap(pair => backdrops.map(backdrop => ({
+      foreground: over([...pair.foreground.slice(0, 3), opacity], backdrop),
+      background: over([...pair.background.slice(0, 3), opacity], backdrop),
+    })));
+  }
+  const samples = pairs.map(pair => {
+    const a = luminance(pair.foreground), b = luminance(pair.background);
+    return {...pair,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};
   });
   const lighter=samples.every(s=>luminance(s.foreground)>luminance(s.background));
   const darker=samples.every(s=>luminance(s.foreground)<luminance(s.background));
   if (!lighter&&!darker) throw Error('Foreground crosses background bounds; measurement unsupported');
-  return {ratio:Math.min(...samples.map(s=>s.ratio)),samples,layers,method:'conservative sRGB gradient bounds with alpha compositing'};
+  let ratio = Math.min(...samples.map(s => s.ratio));
+  if (groups.length) {
+    // Independent extrema also bound intermediate gradient colors and nested translucent groups.
+    const lights = samples.map(s => luminance(lighter ? s.foreground : s.background));
+    const darks = samples.map(s => luminance(lighter ? s.background : s.foreground));
+    ratio = Math.max(1, (Math.min(...lights) + .05) / (Math.max(...darks) + .05));
+  }
+  return {ratio,samples,layers,method:'conservative sRGB gradient bounds with alpha compositing'};
 }

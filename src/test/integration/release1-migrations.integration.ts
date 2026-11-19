@@ -39,11 +39,16 @@ it('refuses an actual interrupted concurrent index without silently dropping or 
  }finally{await blocker.query('ROLLBACK').catch(()=>{});await blocker.end();await builder.end();}
 }));
 
-it('upgrades the existing full chain by exact filename, preserves rows and keeps setup records immutable',async()=>{
+it.each([
+ ['release 1 indexes', ['0038_read_path_indexes.sql','0039_native_payroll_setup_records.sql']],
+ ['published 30-day Development through 0069', ['0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql']],
+ ['Development through 0067', ['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql','0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql']],
+ ['workforce installed before the 30-day work', ['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql']],
+] as const)('upgrades %s by exact filename, preserves rows and keeps setup records immutable',async(_label,additions)=>{
  const database=await createDisposableFoundationDatabase({mode:'empty'}),client=new Client({connectionString:database.connectionString});
  try{
-  await client.connect();const additions=['0038_read_path_indexes.sql','0039_native_payroll_setup_records.sql'];
-  const legacy=BASE_MIGRATIONS.filter(file=>!additions.includes(file));
+  await client.connect();
+  const legacy=BASE_MIGRATIONS.filter(file=>!additions.some(missing=>missing===file));
   for(const file of legacy)await client.query(await readFile('db/migrations/'+file,'utf8'));
   await client.query("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('R1-OWNER','Fictional','Upgrade','2025550141','OWNER','loc-1')");
   for(const file of FINAL_MIGRATIONS)await client.query(await readFile('db/migrations/'+file,'utf8'));
@@ -52,6 +57,8 @@ it('upgrades the existing full chain by exact filename, preserves rows and keeps
   for(const file of missing){await client.query(await readFile('db/migrations/'+file,'utf8'));applied.push(file as typeof applied[number]);}
   expect(missingMigrationFiles([...BASE_MIGRATIONS,...FINAL_MIGRATIONS],applied)).toEqual([]);
   expect((await client.query('SELECT id,name FROM workspaces ORDER BY id')).rows).toEqual(before);
+  expect((await client.query("SELECT active,hire_date,termination_date,birth_date FROM employees WHERE id='R1-OWNER'")).rows).toEqual([{active:true,hire_date:null,termination_date:null,birth_date:null}]);
+  expect((await client.query("SELECT count(*)::int AS count FROM clocker_schedule_match_policy")).rows).toEqual([{count:0}]);
   const hash='a'.repeat(64),payload={factsSha256:hash,revision:1,kind:'COMPANY_DEFAULTS',subjectId:'COMPANY'};
   await client.query("INSERT INTO native_payroll_setup_records(workspace_id,kind,subject_id,revision,operation_id,actor_employee_id,facts_sha256,payload) VALUES('workspace-fuel','COMPANY_DEFAULTS','COMPANY',1,$1,'R1-OWNER',$2,$3)",[randomUUID(),hash,JSON.stringify(payload)]);
   for(const sql of ["UPDATE native_payroll_setup_records SET revision=2","DELETE FROM native_payroll_setup_records","TRUNCATE native_payroll_setup_records"]){await expect(client.query(sql)).rejects.toThrow('immutable ledger');}
@@ -98,13 +105,15 @@ it('upgrades the recorded Development schema and restores both its rollback back
   const before=await state(client),oldBackup=join(directory,'development.dump');
   tool('pg_dump',['--format=custom','--no-owner','--file',oldBackup,'--dbname',database.connectionString]);
   const additions=BASE_MIGRATIONS.slice(baseline.base.length);
-  expect(additions).toEqual(['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql']);
+  expect(additions).toEqual(['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql','0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql']);
   for(const file of additions)await client.query(await readFile('db/migrations/'+file,'utf8'));
   expect(await state(client)).toEqual(before);
   expect((await client.query("SELECT hire_date,termination_date,birth_date FROM employees WHERE id='R1-RESTORE'")).rows).toEqual([{hire_date:null,termination_date:null,birth_date:null}]);
   expect((await client.query('SELECT count(*)::int n FROM clocker_schedule_match_policy')).rows).toEqual([{n:0}]);
   await client.query("UPDATE employees SET hire_date='2016-01-01',birth_date='1990-01-01' WHERE id='R1-RESTORE'");
   await client.query("INSERT INTO clocker_schedule_match_policy(workspace_id,version,early_clock_in_grace_minutes,updated_by) VALUES('workspace-fuel',1,10,'R1-RESTORE')");
+  await client.query("INSERT INTO user_language_preferences(employee_id,language) VALUES('R1-RESTORE','es')");
+  await client.query("INSERT INTO workforce_permission_revisions(workspace_id,employee_id,location_id,permission,revision,role_generation,granted,actor_employee_id) VALUES('workspace-fuel','R1-RESTORE','loc-1','PUBLISH_SCHEDULE',1,1,true,'R1-RESTORE')");
   const finalBackup=join(directory,'final.dump');tool('pg_dump',['--format=custom','--no-owner','--file',finalBackup,'--dbname',database.connectionString]);
   await client.end();await database.dispose();sourceDisposed=true;
   const {restored:old,target:oldTarget}=await restore(oldBackup);
@@ -112,6 +121,8 @@ it('upgrades the recorded Development schema and restores both its rollback back
   const {restored:final,target:finalTarget}=await restore(finalBackup);
   try{
    expect(await state(final)).toEqual(before);
+   expect((await final.query("SELECT language FROM user_language_preferences WHERE employee_id='R1-RESTORE'")).rows).toEqual([{language:'es'}]);
+   expect((await final.query("SELECT permission,revision,granted FROM workforce_permission_revisions WHERE workspace_id='workspace-fuel' AND employee_id='R1-RESTORE' AND location_id='loc-1'")).rows).toEqual([{permission:'PUBLISH_SCHEDULE',revision:1,granted:true}]);
    expect((await final.query("SELECT hire_date::text,birth_date::text FROM employees WHERE id='R1-RESTORE'")).rows).toEqual([{hire_date:'2016-01-01',birth_date:'1990-01-01'}]);
    expect((await final.query('SELECT version,previous_grace_minutes,early_clock_in_grace_minutes FROM clocker_schedule_match_policy_revisions')).rows).toEqual([{version:1,previous_grace_minutes:0,early_clock_in_grace_minutes:10}]);
    await expect(final.query('DELETE FROM native_payroll_setup_records')).rejects.toThrow('immutable ledger');

@@ -33,12 +33,15 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=fals
   setIssued(null);setMessage('');setReference(null);setBusy(false);sending.current=false;
  },[]);
  useEffect(()=>{
-  const receiveProof=()=>{if(kind!=='reset')return;const token=new URLSearchParams(window.location.hash.slice(1)).get('proof');if(!token)return;
-   // A new link owns a new observer and draft. Aborting A does not prove its
-   // already-issued command was undone; even an unabortable late reply is fenced.
+  const receiveProof=()=>{
+   if(kind!=='reset')return;
+   const token=new URLSearchParams(window.location.hash.slice(1)).get('proof');if(!token)return;
+   // A replacement link owns its draft and response. An earlier request may already have reached the server.
    retire();proofInput.current?.form?.reset();
    setLinkProof(isPublicAccountProof(token));incomingProof.current=token;setDone(false);
-   if(proofInput.current){proofInput.current.value=token;incomingProof.current=null;}history.replaceState(null,'',window.location.pathname);};
+   if(proofInput.current){proofInput.current.value=token;incomingProof.current=null;}
+   history.replaceState(null,'',window.location.pathname);
+  };
   const frame=requestAnimationFrame(receiveProof);window.addEventListener('hashchange',receiveProof);
   const stop=()=>{generation.current++;active.current?.abort();};
   const clear=retire;
@@ -72,6 +75,6 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=fals
  }
  if(kind==='request')return <RecoveryRequest workspaceName={workspaceName} supportReference={reference} onReview={()=>{setDone(false);setMessage('');setReference(null);}} draft={requestDraft} mobileAccess={mobileAccess} lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}/>;
  if(kind==='assisted')return <AssistedRecovery supportReference={reference} hydrated={hydrated} busy={busy} message={message} issued={issued} employeeId={employeeId} from={from} timeZone={timeZone} pins={pins} onSubmit={submit} onStartAgain={()=>{setIssued(null);setMessage('');setReference(null);}}/>;
- return <RecoveryReset workspaceName={workspaceName} supportReference={reference} mobileAccess={mobileAccess} linkProof={linkProof} onDifferentCode={()=>{retire();proofInput.current?.form?.reset();setLinkProof(false);if(proofInput.current){proofInput.current.value='';proofInput.current.focus();}}} lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}
+ return <RecoveryReset workspaceName={workspaceName} supportReference={reference} mobileAccess={mobileAccess} linkProof={linkProof} onDifferentCode={()=>{retire();incomingProof.current=null;proofInput.current?.form?.reset();setLinkProof(false);if(proofInput.current){proofInput.current.value='';proofInput.current.focus();}}} lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}
   proofRef={input=>{proofInput.current=input;if(input&&incomingProof.current){input.value=incomingProof.current;incomingProof.current=null;}}}/>;
 }

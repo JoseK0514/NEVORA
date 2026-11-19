@@ -3,7 +3,7 @@ import {randomUUID} from 'node:crypto';
 import {Client} from 'pg';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
-import {companyAccessFixture} from './company-access-fixture';
+import {companyAccessFixture,grantFixtureWorkforcePermission} from './company-access-fixture';
 import {assignOperationalScope,readOwnerOperationalScope,isOperationalAuthorizationError} from '../../lib/company-access/operational-scope.server';
 import {isManagementAuthorizationError} from '../../lib/data/management-session';
 import {createTimeOffRequest,reviewTimeOffRequest,withdrawTimeOffRequest,getTimeOffRequest} from '../../lib/data/requests';
@@ -27,6 +27,7 @@ async function choose(f:Awaited<ReturnType<typeof companyAccessFixture>>,mode:'C
  expect((await assignOperationalScope(f.owner,'manager',mode==='REVOKE'?{...base,action:'REVOKE'}:{...base,action:'ASSIGN',scope:mode==='COMPANY'?{mode,locationIds:[]}:{mode,locationIds:['loc-1']}},f.db.executor)).state).toBe('saved');
 }
 async function setup(){const f=await companyAccessFixture();ctx.ex=f.db.executor;ctx.proof=f.manager;try{
+ await grantFixtureWorkforcePermission(f,'APPROVE_LEAVE','loc-1','loc-2');
  await f.q("INSERT INTO employee_location_eligibility VALUES('target','loc-1'),('target','loc-2');INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'target',clock_timestamp()+interval '1 hour')");
  const employee:SessionMutationProof={...f.manager,employee:{...f.manager.employee,id:'target',role:'EMPLOYEE'},sessionTokenHash:'d'.repeat(64)},requestId=randomUUID();
  await createTimeOffRequest({requestId,employeeId:'target',proof:employee,startDate:'2030-10-21',endDate:'2030-10-22',reason:'Owned private request'},f.db.executor);

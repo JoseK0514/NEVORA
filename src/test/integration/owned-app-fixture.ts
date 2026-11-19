@@ -6,9 +6,11 @@ import { fictionalProfile } from '../fixtures/shift-changes';
 import {installFixtureCompanyAccess} from './fixture-company-access';
 import {fixtureProof} from './shift-change-api';
 import {readOwnerOperationalScope,assignOperationalScope} from '../../lib/company-access/operational-scope.server';
+import {applyWorkforceCommand} from '../../lib/workforce/settings.server';
 import {randomUUID} from 'node:crypto';
 
 import type { SqlExecutor } from '../../lib/notifications/types';
+import type { WorkforcePermission } from '../../lib/workforce/permissions';
 
 // Explicit fictional credentials used only in ownership-marked disposable data.
 export const TEST_PASSWORD = 'Fictional-Phase-A-only!';
@@ -36,6 +38,21 @@ export async function assignOwnedManagerCompanyAccess(executor:SqlExecutor,emplo
   const result=await assignOperationalScope(owner,employeeId,{action:'ASSIGN',operationId:randomUUID(),expectedEmployeeVersion:current.employeeUpdatedAt,expectedRoleGeneration:current.roleGeneration,expectedScopeRevision:current.scopeRevision,scope:{mode:'COMPANY',locationIds:[]}},executor);
   if(result.state!=='saved')throw Error('Owned Manager Company scope assignment failed.');
   return result.receipt;
+}
+
+export async function grantOwnedManagerWorkforcePermission(
+  executor: SqlExecutor, employeeId: string, locationId: string, permission: WorkforcePermission,
+) {
+  const owner = await fixtureProof(executor, 'QAOWNER');
+  const [previous] = await executor.query<{ revision: number }>({
+    text: `SELECT g.revision FROM workforce_permissions_current g JOIN workspaces w ON w.id=g.workspace_id AND w.singleton
+      WHERE g.employee_id=$1 AND g.location_id=$2 AND g.permission=$3`,
+    values: [employeeId,locationId,permission],
+  });
+  const result = await applyWorkforceCommand(owner, {
+    kind:'PERMISSION',operationId:randomUUID(),employeeId,locationId,permission,granted:true,expectedRevision:previous?.revision??0,
+  }, executor);
+  if (result.state !== 'saved') throw Error('Owned Manager workforce permission assignment failed.');
 }
 
 export async function seedOwnedScenarioOwner(executor: SqlExecutor, label: string) {

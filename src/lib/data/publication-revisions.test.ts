@@ -1,4 +1,8 @@
 import * as rstestOriginal0 from "@/lib/company-access/operational-scope.server" with { rstest: 'importActual' };
+import * as actualAuthority from '@/lib/workforce/authority.server' with { rstest: 'importActual' };
+rs.mock('@/lib/workforce/authority.server', () => ({ ...actualAuthority,
+  assertWorkforcePermission: async () => ({ authority: 'a'.repeat(64) }),
+}));
 import { managementProof, schedulingSourceFixture } from '../../test/fixtures/management';
 import {assignmentFacts} from './assignment-facts.test-support';
 import { beforeEach, expect, it, rs } from '@rstest/core';

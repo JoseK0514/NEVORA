@@ -242,7 +242,11 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  await next().getByText('On shift now',{exact:true}).filter({visible:true}).waitFor();
  assert.equal(homeResponse.state,'partial');assert.equal(homeResponse.allSet,false);assert.equal(homeResponse.snapshot.sources.communications.state,'complete');assert.equal(homeResponse.snapshot.nextShift.shiftId,scenario.sourceId);assert.equal(homeResponse.snapshot.currentShift.shiftId,label+'-ongoing');
  assert.equal(await page.getByRole('heading',{level:1}).count(),1);assert.equal(await page.getByRole('heading',{level:1,name:'Welcome back, QA '+label,exact:true}).count(),1);assert.equal(homeResponse.snapshot.publicationState,'partial');assert.equal(await page.locator('[data-home-state="ready"]').count(),1,'complete source reads are ready while the publication note explains unpublished locations');
- const publicationNote=page.locator('.employee-home :is(.c-note,.b-note,.eb-cardnote):visible').filter({hasText:/published this week yet\./});assert(await publicationNote.isVisible());const publicationCopy=(await publicationNote.innerText()).replace(/\s+/g,' ');assert(publicationCopy.includes('Your '+homeResponse.snapshot.currentShift.locationLabel+' shifts are published.'));for(const waiting of homeResponse.snapshot.unpublishedLocations)assert(publicationCopy.includes(waiting+' hasn’t published this week yet.'));assert(await next().evaluate((card,note)=>!!(card.compareDocumentPosition(note)&Node.DOCUMENT_POSITION_FOLLOWING),await publicationNote.elementHandle()),'The publication note follows the shift card');assert.equal(await allSet().count(),0);
+ const {currentShift,nextShift,unpublishedLocations}=homeResponse.snapshot;
+ assert.equal(currentShift.locationLabel,nextShift.locationLabel);
+ assert.equal(unpublishedLocations.length,1);
+ const publicationText=`Your ${currentShift.locationLabel} shifts are published. ${unpublishedLocations[0]} hasn’t published this week yet.`;
+ const publicationNote=page.locator('.employee-home :is(.c-note,.b-note,.eb-cardnote):visible').filter({hasText:publicationText});assert.equal((await publicationNote.innerText()).trim(),publicationText);assert(await publicationNote.isVisible());assert(await next().evaluate((card,note)=>!!(card.compareDocumentPosition(note)&Node.DOCUMENT_POSITION_FOLLOWING),await publicationNote.elementHandle()),'The publication note follows the shift card');assert.equal(await allSet().count(),0);
  assert.equal(await page.getByText('Some Home sections could not be fully checked. Counts show known items. Refresh Home below to check again.',{exact:true}).count(),0,'an unpublished location is explained by publication state, not a failed read');
  assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE HOME SENTINEL'));assert(await next().getByText('On shift now',{exact:true}).filter({visible:true}).isVisible());assert.equal(await assignments().count(),1);
  const hierarchy=await page.locator(HOME_SHIFT_CARD+',:is(#employee-home-todo,#b-home-todo):visible').evaluateAll(es=>({tops:es.map(e=>e.getBoundingClientRect().top),nextBeforeActions:es.length===2&&!!(es[0].compareDocumentPosition(es[1])&Node.DOCUMENT_POSITION_FOLLOWING)}));assert.equal(hierarchy.tops.length,2);assert(hierarchy.nextBeforeActions);assert(hierarchy.tops[0]<=hierarchy.tops[1]);details.homeHierarchy=hierarchy;
@@ -352,11 +356,12 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   overflowEvidence.phase='notifications-list';
   // The Employee messages reader and visible Notifications title are current at every width.
   await page.waitForFunction(()=>document.querySelector('.em-messages[data-messages-view="notifications"]')?.getAttribute('data-messages-state')==='ready');await page.getByRole('heading',{name:'Notifications',exact:true,level:1}).waitFor();
-  // Delivered Notifications folds related notices. Opening a group must expose
-  // every member; verify the same canonical IDs after using its actual control.
-  const notificationFolds=page.locator('main button.eb-fold[aria-expanded="false"]:visible');
-  overflowEvidence.notificationGroupsOpened=await notificationFolds.count();
-  while(await notificationFolds.count())await notificationFolds.first().click();
+  // Repeated notifications are grouped on the approved screen. Open the groups before checking each actual notification.
+  overflowEvidence.notificationGroupsOpened=await page.locator('main button.eb-fold[aria-expanded="false"]:visible').count();
+  for(const group of await page.locator('main button.eb-fold:visible').all()){
+   if(await group.getAttribute('aria-expanded')==='false'){await group.focus();await page.keyboard.press('Enter');}
+   assert.equal(await group.getAttribute('aria-expanded'),'true');
+  }
   overflowEvidence.notificationRows=await page.locator('main :is(a.em-notif-row,a.eb-notif):visible').evaluateAll(rows=>rows.map(row=>row.id));page.off('response',notificationRead);
   overflowEvidence.notificationRowsSql=await q("SELECT id,source_kind,due_at<=clock_timestamp() AS due,expires_at>clock_timestamp() AS current,environment,cancelled_at IS NULL AS active FROM notifications WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 30",[actor]);
   const notices=[];
