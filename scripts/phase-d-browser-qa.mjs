@@ -292,6 +292,10 @@ try{
     for(const width of [320,375,390,430,768,1024,1440]){await mp.setViewportSize({width,height:1000});const geometry=await mp.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,scrollX:window.scrollX,inner:window.innerWidth,overflow:[...document.querySelectorAll('*')].filter(e=>(e.getBoundingClientRect().right+window.scrollX>document.documentElement.clientWidth+2||e.scrollWidth>e.clientWidth+2)&&getComputedStyle(e).display!=='none').map(e=>({tag:e.tagName,class:e.className,width:e.getBoundingClientRect().width,right:e.getBoundingClientRect().right,scroll:e.scrollWidth,client:e.clientWidth,minWidth:getComputedStyle(e).minWidth,overflow:getComputedStyle(e).overflow,caption:e.tagName==='LABEL'?e.textContent.slice(0,140):null,children:e.tagName==='LABEL'?[...e.children].map(child=>({tag:child.tagName,width:child.getBoundingClientRect().width,scroll:child.scrollWidth,overflow:getComputedStyle(child).overflow})):undefined})).slice(-25)}));if(geometry.scroll>geometry.width+2){console.log(JSON.stringify(geometry));await mp.screenshot({path:join(evidence,`${engine}-mapping-overflow.png`),fullPage:true});}assert(geometry.scroll<=geometry.width+2,`${engine}: mapping overflow ${width}`);checked(`${engine}: mapping geometry ${width}`);}
     currentPage=mp;await openPeriodReports(mp,app.url,engine,report);
     await verifyReportRecoveryNavigation(mp,app,engine,report,'D3-M');
+    // Restoring the Manager role creates a new lifecycle generation. Restore
+    // the explicit fixture grants before entering the next review scenario.
+    await grantOwnedManagerWorkforcePermission(app.database.executor,'D3-M','loc-1','REVIEW_TIME_EXCEPTION');
+    await grantOwnedManagerWorkforcePermission(app.database.executor,'D3-M','loc-1','APPROVE_LEAVE');
     // Insights (board O-Insights): the screen shows the board's cards. With no published plan the Hours worked card shows the
     // canonical recorded total alone, with no planned figure or over/under-plan pill; the full report (print) keeps the
     // "Scheduled vs recorded" section with its unavailable-plan status, checked under print below.

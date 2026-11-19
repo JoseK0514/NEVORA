@@ -44,8 +44,13 @@ export async function grantOwnedManagerWorkforcePermission(
   executor: SqlExecutor, employeeId: string, locationId: string, permission: WorkforcePermission,
 ) {
   const owner = await fixtureProof(executor, 'QAOWNER');
+  const [previous] = await executor.query<{ revision: number }>({
+    text: `SELECT g.revision FROM workforce_permissions_current g JOIN workspaces w ON w.id=g.workspace_id AND w.singleton
+      WHERE g.employee_id=$1 AND g.location_id=$2 AND g.permission=$3`,
+    values: [employeeId,locationId,permission],
+  });
   const result = await applyWorkforceCommand(owner, {
-    kind:'PERMISSION',operationId:randomUUID(),employeeId,locationId,permission,granted:true,expectedRevision:0,
+    kind:'PERMISSION',operationId:randomUUID(),employeeId,locationId,permission,granted:true,expectedRevision:previous?.revision??0,
   }, executor);
   if (result.state !== 'saved') throw Error('Owned Manager workforce permission assignment failed.');
 }
