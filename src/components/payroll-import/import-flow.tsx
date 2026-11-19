@@ -16,6 +16,7 @@ import { correct, freezeImport, initialMatches, isCorrection, periodMismatch, pl
 import { AddFileStep, ChangedNotice, ConfirmStep, MatchStep, ResultStep, ReviewStep } from "./import-views";
 import { IDLE, retireWrite, classifyPayrollAnswer, classifyReceiptLook, holdsCustody, writeReducer, type PayrollReceiptLike, type WriteEvent, type WriteState } from "./recovery";
 
+const foreground=()=>document.visibilityState!=="hidden"&&navigator.onLine&&document.hasFocus();
 const TITLE_ID = "payroll-import-title", HEADING_ID = "payroll-import-step";
 type Work = {
   step: 1 | 2 | 3 | 4 | 5; draft: ImportDraft | null; problem: FileProblem | null; source: ImportSource; reason: string;
@@ -50,16 +51,16 @@ export function PayrollImportFlow({ lang = "en", runId, recoveryScope, actorId }
 
   const active=useRef(false),focused=useRef(true),generation=useRef(0),readSequence=useRef(0),validUntil=useRef(0);
   const timers=useRef<{end?:ReturnType<typeof setTimeout>;renew?:ReturnType<typeof setTimeout>}>({});
-  const hasLease=()=>active.current&&focused.current&&document.visibilityState!=="hidden"&&navigator.onLine&&performance.now()<validUntil.current;
+  const hasLease=()=>active.current&&focused.current&&foreground()&&performance.now()<validUntil.current;
   const retire=useCallback(()=>{
     generation.current++;readSequence.current++;validUntil.current=0;clearTimeout(timers.current.end);clearTimeout(timers.current.renew);timers.current={};
     const next=retireWork(latest.current);latest.current=next;setWork(next);setLoaded({state:"loading"});setEditing(null);setReading(false);setTouched(false);
   },[setWork]);
   const load=useCallback(async()=>{
-    if(!active.current||!focused.current||document.visibilityState==="hidden"||!navigator.onLine)return;
+    if(!active.current||!focused.current||!foreground())return;
     const sequence=++readSequence.current,began=performance.now();
     const [runs,settings,authority]=await Promise.all([ask("/api/payroll/runs"),ask("/api/payroll/settings"),fetch("/api/company-access/operational-authority",{cache:"no-store",credentials:"same-origin",headers:{"x-nevora-company-access":"1"}}).then(async response=>({status:response.status,body:await response.json()})).catch(()=>({status:0,body:null}))]);
-    if(!active.current||!focused.current||sequence!==readSequence.current)return;
+    if(!active.current||!focused.current||sequence!==readSequence.current||!foreground())return;
     const status=[runs.status,settings.status,authority.status];
     if(status.includes(401)||status.includes(403)){retire();setLoaded({state:"failed",why:status.includes(401)?"signed_out":"denied"});return;}
     try{
@@ -80,9 +81,9 @@ export function PayrollImportFlow({ lang = "en", runId, recoveryScope, actorId }
     }catch{retire();setLoaded({state:"failed",why:"network"});}
   },[actorId,runId,retire,setWork]);
   useEffect(()=>{
-    active.current=true;focused.current=document.visibilityState!=="hidden";queueMicrotask(()=>{if(active.current)void load();});
+    active.current=true;focused.current=foreground();queueMicrotask(()=>{if(active.current)void load();});
     const away=()=>{focused.current=false;retire();};
-    const back=()=>{if(document.visibilityState!=="hidden"&&navigator.onLine){focused.current=true;void load();}};
+    const back=()=>{if(foreground()){focused.current=true;void load();}};
     const visible=()=>document.visibilityState==="hidden"?away():back();
     window.addEventListener("blur",away);window.addEventListener("offline",away);window.addEventListener("pagehide",away);window.addEventListener("focus",back);window.addEventListener("online",back);window.addEventListener("pageshow",back);document.addEventListener("visibilitychange",visible);
     return()=>{active.current=false;generation.current++;readSequence.current++;validUntil.current=0;clearTimeout(timers.current.end);clearTimeout(timers.current.renew);window.removeEventListener("blur",away);window.removeEventListener("offline",away);window.removeEventListener("pagehide",away);window.removeEventListener("focus",back);window.removeEventListener("online",back);window.removeEventListener("pageshow",back);document.removeEventListener("visibilitychange",visible);};

@@ -16,8 +16,9 @@ import { batchStatus, breakGate, describePlan, exportReadiness, finishState, kee
   type BatchState, type Decisions, type ExportSource } from "./export-model";
 import { BreaksStep, ExportChangedNotice, FinishStep, PlanStep, RunStep } from "./export-views";
 import { type StepAction, FlowHead, OfflineNote, Skeleton, StepActions, StopCard, download, periodText, useHeld, useLeaveGuard, useOffline, useStepFocus } from "./flow-kit";
-import { IDLE, retireWrite, classifyExportAnswer, holdsCustody, writeReducer, type Custody, type WriteEvent, type WriteState } from "./recovery";
+import { IDLE, EXPORT_REFUSALS, retireWrite, classifyExportAnswer, holdsCustody, writeReducer, type Custody, type WriteEvent, type WriteState, type ExportRefusal } from "./recovery";
 
+const foreground=()=>document.visibilityState!=="hidden"&&navigator.onLine&&document.hasFocus();
 const TITLE_ID = "paid-export-title", HEADING_ID = "paid-export-step";
 type Work = {
   step: 1 | 2 | 3 | 4; decisions: Decisions; plan: PaidExportBatchPlan | null; planFor: string | null; planProblem: "tooBig" | "coverage" | null;
@@ -50,7 +51,7 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
     expiry.current = null;if(renewal.current)clearTimeout(renewal.current);renewal.current=null;
   }, []);
   const pausePrivate=useCallback(()=>{generation.current++;cancelRead();const next=retireWork(latest.current);latest.current=next;setWork(next);setLoaded({state:"loading"});},[cancelRead,setWork]);
-  const hasLease = () => active.current && focused.current && document.visibilityState !== "hidden" && navigator.onLine && performance.now() < validUntil.current;
+  const hasLease = () => active.current && focused.current && foreground() && performance.now() < validUntil.current;
   const started = Object.keys(work.states).length > 0;
   const unresolved = Object.values(work.states).some(holdsCustody) || holdsCustody(work.record);
   useLeaveGuard(unresolved || (started && work.record.phase !== "saved"));
@@ -58,13 +59,13 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
   useEffect(() => () => { if (latest.current.record.phase === "saved") dropWork(); }, [dropWork]);
 
   const load = useCallback(async () => {
-    if (!active.current || !focused.current || document.visibilityState === "hidden" || !navigator.onLine) return;
+    if (!active.current || !focused.current || !foreground()) return;
     const sequence = ++readSequence.current, began = performance.now();
     const [close, time] = await Promise.all([
       post("/api/period-close", { "x-nevora-period-close": "1", "x-nevora-actor": actorId }, JSON.stringify({ action: "READ", command: period })),
       post("/api/timecards", { "x-nevora-timecards": "1", "x-nevora-actor": actorId }, JSON.stringify(period)),
     ]);
-    if (!active.current || !focused.current || sequence !== readSequence.current) return;
+    if (!active.current || !focused.current || sequence !== readSequence.current || !foreground()) return;
     const status = [close.status, time.status];
     if (status.includes(401)) { pausePrivate(); setLoaded({ state: "failed", why: "signed_out" }); return; }
     if (status.includes(403)) { pausePrivate(); setLoaded({ state: "failed", why: "denied" }); return; }
@@ -89,10 +90,10 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
     } catch { pausePrivate(); setLoaded({ state: "failed", why: "network" }); }
   }, [actorId, period, setWork, pausePrivate]);
   useEffect(() => {
-    active.current = true; focused.current = document.visibilityState !== "hidden";
+    active.current = true; focused.current = foreground();
     queueMicrotask(() => { if (active.current) void load(); });
     const hide = (event?: Event) => { if (event?.type === "blur" && event.target !== window) return; focused.current = false; pausePrivate(); };
-    const again = () => { if (document.visibilityState !== "hidden" && navigator.onLine) { focused.current = true; void load(); } };
+    const again = () => { if (foreground()) { focused.current = true; void load(); } };
     const visible = () => document.visibilityState === "hidden" ? hide() : again();
 
     window.addEventListener("online", again); window.addEventListener("focus", again); window.addEventListener("pageshow", again);
@@ -208,18 +209,34 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
     if(running.current||!hasLease())return;
     const original=manifest?latest.current.record:latest.current.states[key];
     if(!original||original.phase!=="unknown")return;
-    const currentGeneration=generation.current,custody=original.custody;running.current=true;setBusy(true);
+    const currentGeneration=generation.current,custody=original.custody;
+    const settle=(event:WriteEvent<unknown>)=>{
+      if(!manifest){applyBatch(key,event);return;}
+      const record=writeReducer(latest.current.record,event);
+      latest.current={...latest.current,record};setWork(latest.current);
+    };
+    settle({type:"send",custody});running.current=true;setBusy(true);
     try{
       const answer=await post(manifest?"/api/period-close":"/api/payroll-export",{[manifest?"x-nevora-period-close":"x-nevora-payroll-export"]:"1","x-nevora-actor":actorId},custody.body);
       if(currentGeneration!==generation.current||!hasLease())return;
       if(answer.status===401||answer.status===403){pausePrivate();void load();return;}
-      if(answer.status!==200)return;
-      if(manifest){const body=answer.body as {state?:string;result?:{state?:string;id?:string}};if(body?.state!=="ready"||body.result?.state!=="MANIFEST_PREPARED"||body.result.id!==custody.key)return;}
-      else {const verified=await verifyExportReply(answer.body,parseExportCommand(JSON.parse(custody.body)));if(verified.model.workspaceId!==workspaceId)return;}
-      if(currentGeneration!==generation.current||!hasLease())return;
+      let confirmed=false;
+      if(manifest){
+        const body=answer.body as {state?:string;result?:{state?:string;id?:string}}|null;
+        confirmed=answer.status===200&&body?.state==="ready"&&body.result?.state==="MANIFEST_PREPARED"&&body.result.id===custody.key;
+        if(!confirmed)settle(answer.status===400&&body?.state==="invalid"?{type:"refused",reason:"INVALID"}:answer.status===409&&body?.state==="conflict"?{type:"blocked",reason:"conflict"}:{type:"unknown"});
+      }else{
+        const result=classifyExportAnswer(answer.status,answer.body);
+        if(result.kind==="generated"){
+          const verified=await verifyExportReply(result.reply,parseExportCommand(JSON.parse(custody.body)));
+          confirmed=verified.model.workspaceId===workspaceId;
+          if(!confirmed)throw Error("foreign");
+        }else settle(result.kind==="refused"?{type:"refused",reason:result.reason}:result.kind==="conflict"?{type:"blocked",reason:"conflict"}:result.kind==="already_generated"?{type:"blocked",reason:"duplicate"}:{type:"unknown"});
+      }
+      if(!confirmed||currentGeneration!==generation.current||!hasLease())return;
       setWork(value=>{const states={...value.states};if(!manifest)delete states[key];return {...value,states,record:manifest?IDLE:value.record};});
       void load();
-    }catch{/* The original remains uncertain, with its exact identity and bytes. */}
+    }catch{if(currentGeneration===generation.current&&hasLease())settle({type:"unknown"});}
     finally{running.current=false;setBusy(false);}
   }
 
@@ -234,10 +251,18 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
   if (loaded.state === "failed") return frame(0, null, loaded.why === "network"
     ? <StopCard kind={offline ? "offline" : "failed"} alert title={offline ? copy.common.offlineTitle : copy.common.loadFailedTitle} line={offline ? copy.common.offlineLine : copy.common.loadFailedLine} action={{ label: copy.common.tryAgain, onClick: () => { setLoaded({ state: "loading" }); void load(); } }} />
     : <StopCard title={loaded.why === "denied" ? copy.common.deniedTitle : copy.common.signedOutTitle} line={loaded.why === "denied" ? copy.common.deniedLine : copy.common.signedOutLine} action={loaded.why === "denied" ? { label: copy.exp.finish.openExports, href: exportsHref } : { label: copy.common.signIn, href: "/login" }} />);
-  if(!work.plan&&unresolved)return frame(0,null,<>
-    {Object.entries(work.states).filter(([,state])=>holdsCustody(state)).map(([key,state])=><StopCard key={key} kind="paused" alert title={copy.exp.run.status.unknown} line={copy.exp.run.unknownLine} action={state.phase==="blocked"?{label:copy.exp.finish.openExports,href:exportsHref}:{label:copy.exp.run.checkBatch,busy,onClick:()=>void recoverOriginal(key)}}><p className="pim-receipt"><code>{key.slice(0,8)}</code></p>{state.phase==="blocked"?<p>{copy.exp.run.status.blocked}</p>:null}</StopCard>)}
-    {holdsCustody(work.record)?<StopCard kind="paused" alert title={copy.exp.finish.incompleteTitle} line={copy.exp.run.unknownLine} action={{label:copy.exp.finish.check,onClick:()=>void recoverOriginal("",true)}}/>:null}
-  </>);
+  if(!work.plan&&(Object.keys(work.states).length||work.record.phase!=="idle")){
+    const recovery=(key:string,state:WriteState<unknown>,manifest=false)=>{
+      const stopped=state.phase==="blocked"||state.phase==="refused";
+      const refusal=state.phase==="refused"&&(state.reason==="INVALID"||(EXPORT_REFUSALS as readonly string[]).includes(state.reason))?copy.exp.run.refusal[state.reason as ExportRefusal]:null;
+      const line=manifest?(stopped?copy.exp.finish.refusedLine:copy.exp.finish.unknownLine):refusal??(state.phase==="blocked"?(state.reason==="duplicate"?copy.exp.run.duplicateLine:copy.exp.run.conflictLine):copy.exp.run.unknownLine);
+      return <StopCard key={key} kind={state.phase==="refused"?"failed":"paused"} alert title={stopped?copy.exp.run.status.blocked:copy.exp.run.status.unknown} line={line}
+        action={stopped?{label:copy.exp.finish.openExports,href:exportsHref}:{label:manifest?copy.exp.finish.check:copy.exp.run.checkBatch,busy,onClick:()=>void recoverOriginal(key,manifest)}}>
+        {"custody" in state?<p className="pim-receipt"><code>{state.custody.key.slice(0,8)}</code></p>:null}
+      </StopCard>;
+    };
+    return frame(0,null,<>{Object.entries(work.states).map(([key,state])=>recovery(key,state))}{work.record.phase!=="idle"?recovery("manifest",work.record,true):null}</>);
+  }
   if (ready && "hold" in ready && !started) {
     const hold = ready.hold, href = hold.kind === "notFinalized" ? `/app/timecards?start=${period.startDate}&end=${period.endDate}` : hold.kind === "tooManyPeople" ? "/app/payroll" : hold.kind === "alreadyComplete" ? exportsHref : `${exportsHref}#who-is-included`;
     return frame(0, null, <StopCard kind="paused" title={copy.exp.hold.title(hold)} line={copy.exp.hold.line(hold)} action={{ label: copy.exp.hold.action(hold), href }} />);

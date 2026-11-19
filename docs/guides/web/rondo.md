@@ -170,6 +170,12 @@ not transfer to changed content or another destructive action. Withdrawal remove
 eligibility; deletion erases local structured source content and retires dependent
 evidence. Ordinary chat/provider prose has separate retention.
 
+A failed refresh clears the previous private list or answer. A review that
+changes or expires must be opened and acknowledged again; refreshing its rows
+does not extend the original publication window. **Check figures** keeps the
+last submitted type, period and selections until you choose **Show figures**
+again. Editing the form alone does not change the answer being refreshed.
+
 A write may commit before its final response reports a conflict or becomes
 unavailable. **Not confirmed yet** keeps the original content-free operation
 reference. Use **Check again** or the exact in-memory retry. No completed receipt

@@ -136,3 +136,8 @@ When explicitly granted payroll review access, **Import pay** opens the same
 file/matching/review workflow as the Owner guide. Time-export access and financial
 payroll access remain different permissions. Lead uses the Employee workflow and
 does not gain management authority from these screens.
+
+Private import work and export files clear when you step away, the current view
+expires or access ends. Reopen with current access and upload an unsaved file
+again. Keep an uncertain original operation for its check or unchanged retry;
+fresh access does not bring back an old CSV download.

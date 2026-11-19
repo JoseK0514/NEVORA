@@ -55,7 +55,7 @@ export type BusinessCtx = Ctx;
 type Ctx = { authority?: string; client: BusinessClient; t: BusinessCopy; locale: string; timeZone: string; catalog: BusinessCatalog; now: number; busy: boolean; locked: boolean;
   send: (command: BusinessWrite) => Promise<boolean>; revoke: () => void };
 
-const catalogForeground=()=>document.visibilityState!=="hidden"&&navigator.onLine;
+const catalogForeground=()=>document.visibilityState!=="hidden"&&navigator.onLine&&document.hasFocus();
 const sessionStore = () => { try { return typeof window === "undefined" ? null : window.sessionStorage; } catch { return null; } };
 
 
@@ -103,12 +103,12 @@ export function BusinessPage({ timeZone, view, importsEnabled, retrievalEnabled,
     return catalog;
   },[client,importsEnabled,revoke,retireCatalog]);
   useEffect(()=>{
-    mounted.current=true;focused.current=document.visibilityState!=="hidden"&&navigator.onLine;
+    mounted.current=true;focused.current=catalogForeground();
     if(initial)return()=>{mounted.current=false;retireCatalog();};
     const generation=catalogGeneration.current;
     queueMicrotask(()=>{if(!mounted.current||generation!==catalogGeneration.current)return;const kept=loadPending(sessionStore());if(kept)setPending(old=>old??{meta:kept,payload:null,status:"uncertain"});void reload();});
     const away=()=>{focused.current=false;retireCatalog(navigator.onLine?"loading":"offline");};
-    const back=()=>{if(document.visibilityState!=="hidden"&&navigator.onLine){focused.current=true;void reload();}};
+    const back=()=>{if(catalogForeground()){focused.current=true;void reload();}};
     const visible=()=>document.visibilityState==="hidden"?away():back();
     document.addEventListener("visibilitychange",visible);window.addEventListener("online",back);window.addEventListener("focus",back);window.addEventListener("pageshow",back);
     window.addEventListener("blur",away);window.addEventListener("offline",away);window.addEventListener("pagehide",away);

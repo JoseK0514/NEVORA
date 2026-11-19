@@ -27,6 +27,11 @@ Keep your invitation, password, recovery code and passkeys private. Use the
 **Forgot password?** to request a reset link. Open it on **Choose a new password**, enter and confirm a new phrase, then choose **Save new password**. Your manager can help through an authorized
 recovery process without learning your password.
 
+Opening another reset link in the same tab clears the earlier password draft.
+An earlier request's delayed reply cannot finish the new link's screen. If an
+earlier reset was not confirmed, check sign-in with that password before asking
+for another code; leaving its screen does not undo an issued reset.
+
 ## Find your work
 
 Employee navigation offers **Home**, **Schedule**, **Time**, **Requests** and,

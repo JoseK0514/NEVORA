@@ -227,6 +227,12 @@ payment. This guided export uses the exact neutral format. It does not offer
 a saved rounding profile; values requiring rounding are refused. Payroll treatment
 and legal suitability remain employer review matters.
 
+Private import drafts, break choices, plans and CSV replies clear when their
+current view expires, you step away, or access ends. Read current access again
+and re-upload an unsaved file. An uncertain save retains only its original
+request for checking or an unchanged retry; do not start a replacement while it
+is unresolved. Downloading a batch checks current access with the server again.
+
 ## Agreed scheduling times
 
 From a person's Team page, **When they can be scheduled** shows current and future
