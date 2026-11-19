@@ -289,7 +289,7 @@ export type PayrollRunCommand = {
 });
 export type PayrollReceipt = {
     operationId: string;
-    action: PayrollSettingsCommand["action"] | PayrollRunCommand["action"] | import("./native/contracts").NativeProfileCommand["action"];
+    action: "SAVE_WAGES" | PayrollSettingsCommand["action"] | PayrollRunCommand["action"] | import("./native/contracts").NativeProfileCommand["action"];
     runId?: string;
     revision?: number;
     jobId?: string;
