@@ -250,7 +250,7 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
     expect(await page.locator('.wk').getByText(/Fictional Avery|Fictional Blair/).count()).toBe(0);
     expect(await page.evaluate(() => sessionStorage.getItem('nevora.rondo.weekly.pendingApply.v1'))).toBeNull();
     checks.push(engine + ': revoked real session clears private review DOM and pending custody');
-    await beforeHardNavigation();expect(visualFailures).toEqual([]); expect(responseWaitErrors).toEqual([]); expect(external).toEqual([]); expect(errors).toEqual([]); completedEngines++;
+    expect(visualFailures).toEqual([]); expect(responseWaitErrors).toEqual([]); expect(external).toEqual([]); expect(errors).toEqual([]); completedEngines++;
   } catch (error) {
     await writeFile(resolve(evidence, `${engine}-failure.json`), JSON.stringify({ phase, message: String(error), observed }, null, 2));
     await page.screenshot({ path: resolve(evidence, `${engine}-failed.png`), fullPage: true, timeout: 5000 }).catch(() => {}); throw error;
