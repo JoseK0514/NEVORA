@@ -36,6 +36,7 @@ import { financeFigures, salesFigures } from "./figures";
 import { viewHref, type BusinessView } from "./views";
 import { FiguresPanel, MapReview, MapView } from "./business-map";
 import "./business.css";
+import {useBusinessReview} from "./use-business-read";
 
 /* Rondo business records (Nov 17, 2026). The Owner's sales and cash records that Rondo may cite: what exists, its period,
  * whether it is in use, and the same Draft → Review the exact rows → Publish rhythm as company knowledge, on the corporate
@@ -51,11 +52,12 @@ export type BusinessIssue = { code: Exclude<RefusedCode, "forbidden">; op: Op; d
 export type BusinessPending = { meta: PendingOperation; payload: BusinessWrite | null; status: "sending" | "uncertain" | "checking" | "unconfirmed" | "foreign" };
 export type BusinessLoad = { state: "loading" } | { state: "ready"; catalog: BusinessCatalog; authority: string } | { state: "failed" } | { state: "offline" } | { state: "revoked" } | { state: "off" };
 export type BusinessCtx = Ctx;
-type Ctx = { client: BusinessClient; t: BusinessCopy; locale: string; timeZone: string; catalog: BusinessCatalog; now: number; busy: boolean; locked: boolean;
+type Ctx = { authority?: string; client: BusinessClient; t: BusinessCopy; locale: string; timeZone: string; catalog: BusinessCatalog; now: number; busy: boolean; locked: boolean;
   send: (command: BusinessWrite) => Promise<boolean>; revoke: () => void };
 
+const catalogForeground=()=>document.visibilityState!=="hidden"&&navigator.onLine;
 const sessionStore = () => { try { return typeof window === "undefined" ? null : window.sessionStorage; } catch { return null; } };
-const stepAway = () => document.visibilityState === "hidden" || !document.hasFocus();
+
 
 export function BusinessPage({ timeZone, view, importsEnabled, retrievalEnabled, client: given, lang = "en", initial, initialPending = null, initialIssue = null }: {
   timeZone: string; view: BusinessView; importsEnabled: boolean; retrievalEnabled: boolean; client?: BusinessClient; lang?: BusinessLang;
@@ -73,36 +75,45 @@ export function BusinessPage({ timeZone, view, importsEnabled, retrievalEnabled,
   const shownView = useRef(viewKey);
   const authority = load.state === "ready" ? load.authority : null;
 
-  const revoke = useCallback(() => { setLoad({ state: "revoked" }); setIssue(null); }, []);
-  const reload = useCallback(async (signal?: AbortSignal) => {
-    if (!importsEnabled) return null;
-    const outcome = await client.catalog(signal);
-    if (signal?.aborted) return null;
-    if (outcome.kind === "refused" && outcome.code === "forbidden") { revoke(); return null; }
-    if (outcome.kind === "refused" && outcome.code === "disabled") { setLoad({ state: "off" }); return null; }
-    if (outcome.kind !== "ok" || !outcome.result.catalog) {
-      setLoad(old => old.state === "ready" ? old : { state: typeof navigator !== "undefined" && navigator.onLine === false ? "offline" : "failed" });
-      return null;
-    }
-    const catalog = outcome.result.catalog, by = outcome.result.authority;
-    setNow(Date.now());
-    setLoad(old => old.state === "revoked" ? old : { state: "ready", catalog, authority: by });
-    // A change kept from another sign-in is not this Owner's to check.
-    setPending(old => old && old.status !== "sending" && old.meta.authority !== by ? { ...old, status: "foreign" } : old);
+  const catalogDeadline=useRef(0),catalogGeneration=useRef(0),mounted=useRef(false),focused=useRef(true),catalogRequest=useRef<AbortController|null>(null);
+  const catalogTimers=useRef<{end?:ReturnType<typeof setTimeout>;renew?:ReturnType<typeof setTimeout>}>({});
+  const retireCatalog=useCallback((state:BusinessLoad["state"]="loading")=>{
+    catalogGeneration.current++;catalogDeadline.current=0;catalogRequest.current?.abort();catalogRequest.current=null;
+    clearTimeout(catalogTimers.current.end);clearTimeout(catalogTimers.current.renew);catalogTimers.current={};
+    if(mounted.current){setLoad({state} as BusinessLoad);setIssue(null);}
+  },[]);
+  const revoke=useCallback(()=>retireCatalog("revoked"),[retireCatalog]);
+  const reload=useCallback(async()=>{
+    if(!importsEnabled||!mounted.current||!focused.current||!catalogForeground())return null;
+    const generation=++catalogGeneration.current,controller=new AbortController();catalogRequest.current?.abort();catalogRequest.current=controller;
+    clearTimeout(catalogTimers.current.renew);
+    const outcome=await client.catalog(controller.signal);
+    if(!mounted.current||generation!==catalogGeneration.current||!focused.current||!catalogForeground())return null;
+    catalogRequest.current=null;
+    if(outcome.kind==="refused"&&outcome.code==="forbidden"){revoke();return null;}
+    if(outcome.kind==="refused"&&outcome.code==="disabled"){retireCatalog("off");return null;}
+    if(outcome.kind!=="ok"||!outcome.result.catalog){retireCatalog(navigator.onLine?"failed":"offline");return null;}
+    const catalog=outcome.result.catalog,by=outcome.result.authority;
+    clearTimeout(catalogTimers.current.end);
+    catalogDeadline.current=performance.now()+outcome.result.validForMs;
+    catalogTimers.current.end=setTimeout(()=>retireCatalog(),outcome.result.validForMs);
+    catalogTimers.current.renew=setTimeout(()=>void reload(),Math.max(1,outcome.result.validForMs*.7));
+    setNow(Date.now());setLoad({state:"ready",catalog,authority:by});
+    setPending(old=>old&&old.status!=="sending"&&old.meta.authority!==by?{...old,status:"foreign"}:old);
     return catalog;
-  }, [client, importsEnabled, revoke]);
-
-  useEffect(() => {
-    if (initial) return;
-    const controller = new AbortController();
-    // A change kept from before a reload comes back as "not confirmed yet": identifiers only, never resent on its own.
-    void Promise.resolve(loadPending(sessionStore())).then(kept => { if (kept && !controller.signal.aborted) setPending(old => old ?? { meta: kept, payload: null, status: "uncertain" }); });
-    void Promise.resolve().then(() => reload(controller.signal));
-    const back = () => { if (document.visibilityState === "visible") void reload(); };
-    document.addEventListener("visibilitychange", back);
-    window.addEventListener("online", back);
-    return () => { controller.abort(); document.removeEventListener("visibilitychange", back); window.removeEventListener("online", back); };
-  }, [initial, reload]);
+  },[client,importsEnabled,revoke,retireCatalog]);
+  useEffect(()=>{
+    mounted.current=true;focused.current=document.visibilityState!=="hidden"&&navigator.onLine;
+    if(initial)return()=>{mounted.current=false;retireCatalog();};
+    const generation=catalogGeneration.current;
+    queueMicrotask(()=>{if(!mounted.current||generation!==catalogGeneration.current)return;const kept=loadPending(sessionStore());if(kept)setPending(old=>old??{meta:kept,payload:null,status:"uncertain"});void reload();});
+    const away=()=>{focused.current=false;retireCatalog(navigator.onLine?"loading":"offline");};
+    const back=()=>{if(document.visibilityState!=="hidden"&&navigator.onLine){focused.current=true;void reload();}};
+    const visible=()=>document.visibilityState==="hidden"?away():back();
+    document.addEventListener("visibilitychange",visible);window.addEventListener("online",back);window.addEventListener("focus",back);window.addEventListener("pageshow",back);
+    window.addEventListener("blur",away);window.addEventListener("offline",away);window.addEventListener("pagehide",away);
+    return()=>{mounted.current=false;retireCatalog();document.removeEventListener("visibilitychange",visible);window.removeEventListener("online",back);window.removeEventListener("focus",back);window.removeEventListener("pageshow",back);window.removeEventListener("blur",away);window.removeEventListener("offline",away);window.removeEventListener("pagehide",away);};
+  },[initial,reload,retireCatalog]);
   // An unconfirmed write's exact command lives only on this page: leaving would lose the one way to send it again unchanged.
   const holding = !!pending?.payload && pending.status !== "foreign";
   useEffect(() => {
@@ -161,12 +172,13 @@ export function BusinessPage({ timeZone, view, importsEnabled, retrievalEnabled,
   }, [client, finish, reload, revoke]);
   const send = useCallback(async (command: BusinessWrite) => {
     if (pending || !authority) return false;
+    if(!mounted.current||!focused.current||!catalogForeground()||performance.now()>=catalogDeadline.current){retireCatalog();return false;}
     setIssue(null);
     const meta = pendingFor(command, authority);
     // Kept before the request leaves, so a reload mid-flight can still check it. Identifiers only.
     savePending(sessionStore(), meta);
     return deliver(command, meta);
-  }, [authority, deliver, pending]);
+  }, [authority, deliver, pending,retireCatalog]);
   const check = useCallback(async () => {
     if (!pending || pending.status === "sending" || pending.status === "checking") return;
     const { meta, payload } = pending;
@@ -208,10 +220,10 @@ export function BusinessPage({ timeZone, view, importsEnabled, retrievalEnabled,
   </CorpPage>;
 
   const catalog = load.catalog;
-  const ctx: Ctx = { client, t, locale, timeZone: catalog.timeZone || timeZone, catalog, now, busy: pending?.status === "sending", locked: !!pending, send, revoke };
+  const ctx: Ctx = { authority: load.authority, client, t, locale, timeZone: catalog.timeZone || timeZone, catalog, now, busy: pending?.status === "sending", locked: !!pending, send, revoke };
   const source = "sourceId" in view && view.sourceId ? catalog.sources.find(item => item.sourceId === view.sourceId) ?? null : null;
   const problem = <>{pendingCard}{issue ? <IssueCard t={t} issue={issue} /> : null}</>;
-  return <CorpPage className={frame} labelledBy="be-title">
+  return <CorpPage key={load.authority} className={frame} labelledBy="be-title">
     {head.node}
     {view.name === "library" ? <Library ctx={ctx} problem={problem} />
       : view.name === "new" ? (view.sourceId && !source ? <Gone t={t} /> : <RecordForm key={view.sourceId ?? "new"} ctx={ctx} source={source} problem={problem} />)
@@ -431,67 +443,31 @@ export function RecordDetail({ ctx, source, problem, initialConfirm = null }: { 
 }
 
 /* ---------- Review the exact rows ---------- */
-type ReviewState = { kind: "loading" } | { kind: "ready"; result: BusinessApiResult; until: number } | { kind: "hidden" } | { kind: "failed" } | { kind: "gone" };
-const ACTIVE_FOR = 120000;
 function VersionReview({ ctx, source, versionId, problem }: { ctx: Ctx; source: BusinessSourceView; versionId: string; problem: ReactNode }) {
-  const { t, client, revoke } = ctx;
-  const [state, setState] = useState<ReviewState>({ kind: "loading" });
-  const [acknowledged, setAcknowledged] = useState(false);
-  const [confirmDiscard, setConfirmDiscard] = useState(false);
-  const reviewed = useRef<string | null>(null), lastActive = useRef(0), reading = useRef(false), requestId = useRef<string | null>(null);
-  const sourceId = source.sourceId;
-  const read = useCallback(async (quiet = false) => {
-    if (reading.current) return;
-    reading.current = true;
-    if (!quiet) setState({ kind: "loading" });
-    // A fresh request every time: a full read is its own operation and issues its own review receipt.
-    const outcome = await client.send({ op: "read_source_version", requestId: newRequestId(), sourceId, versionId });
-    reading.current = false;
-    if (outcome.kind === "refused" && outcome.code === "forbidden") { revoke(); return; }
-    if (outcome.kind === "refused" && outcome.code === "invalid") { setState({ kind: "gone" }); return; }
-    if (outcome.kind !== "ok" || !outcome.result.version || !outcome.result.receipt || !outcome.result.readReceiptId) { setState(old => quiet && old.kind === "ready" ? { kind: "hidden" } : { kind: "failed" }); return; }
-    if (stepAway()) { setState({ kind: "hidden" }); return; }
-    // New content is a new decision: the acknowledgement belongs to one exact version and revision.
-    const identity = `${outcome.result.version.digest}:${outcome.result.receipt.revision}`;
-    if (reviewed.current !== identity) { reviewed.current = identity; setAcknowledged(false); requestId.current = null; }
-    setState({ kind: "ready", result: outcome.result, until: outcome.receivedAt + outcome.result.validForMs });
-  }, [client, revoke, sourceId, versionId]);
-
-  useEffect(() => {
-    lastActive.current = Date.now();
-    void Promise.resolve().then(() => read(true));
-    const active = () => { lastActive.current = Date.now(); };
-    const away = () => { if (stepAway()) setState(old => old.kind === "ready" ? { kind: "hidden" } : old); };
-    window.addEventListener("pointerdown", active, true); window.addEventListener("keydown", active, true); window.addEventListener("scroll", active, true);
-    document.addEventListener("visibilitychange", away); window.addEventListener("blur", away);
-    return () => { window.removeEventListener("pointerdown", active, true); window.removeEventListener("keydown", active, true); window.removeEventListener("scroll", active, true);
-      document.removeEventListener("visibilitychange", away); window.removeEventListener("blur", away); };
-  }, [read]);
-  // The rows are private for the server's short lease. While the Owner is here and working, the lease is renewed with a
-  // fresh full read; otherwise the rows are cleared when it ends.
-  const until = state.kind === "ready" ? state.until : null, lease = state.kind === "ready" ? state.result.validForMs : 0;
-  useEffect(() => {
-    if (until === null) return;
-    const renew = window.setTimeout(() => { if (!stepAway() && Date.now() - lastActive.current < ACTIVE_FOR && !ctx.busy) void read(true); }, Math.max(1000, until - lease * 0.3 - Date.now()));
-    const end = window.setTimeout(() => setState(old => old.kind === "ready" && old.until <= Date.now() ? { kind: "hidden" } : old), Math.max(0, until - Date.now()));
-    return () => { window.clearTimeout(renew); window.clearTimeout(end); };
-  }, [until, lease, read, ctx.busy]);
-
+  const { t } = ctx;
+  const [acknowledged,setAcknowledged]=useState(false),[confirmDiscard,setConfirmDiscard]=useState(false);
+  const reviewed=useRef<string|null>(null),requestId=useRef<string|null>(null),sourceId=source.sourceId;
+  const reset=()=>{reviewed.current=null;requestId.current=null;setAcknowledged(false);setConfirmDiscard(false);};
+  const {state,read,publishable}=useBusinessReview(ctx,id=>({op:"read_source_version",requestId:id,sourceId,versionId}),
+    result=>!!result.version&&!!result.receipt&&!!result.readReceiptId,result=>{
+      const identity=`${result.version!.digest}:${result.receipt!.revision}:${result.readReceiptId}`;
+      if(reviewed.current!==identity){reset();reviewed.current=identity;}
+    },reset);
   const meta = ctx.catalog.versions.find(item => item.versionId === versionId && item.sourceId === sourceId) ?? null;
   if (state.kind === "gone" || (!meta && state.kind !== "loading" && state.kind !== "ready")) return <>{problem}<Gone t={t} /></>;
-  if (state.kind === "loading") return <>{problem}<Skeleton label={t.loadingRows} /></>;
+  if (state.kind === "loading" || state.kind === "idle") return <>{problem}<Skeleton label={t.loadingRows} /></>;
   if (state.kind === "hidden") return <>{problem}<CorpCard as="div"><BState kind="locked" icon={<EyeSlashIcon weight="bold" />} title={t.hidden} line={t.hiddenLine} action={{ label: t.showAgain, onClick: () => void read() }} /></CorpCard></>;
   if (state.kind === "failed") return <>{problem}<CorpCard as="div"><BState kind="failed" alert title={t.rowsFailed} line={t.checkConnection} action={{ label: t.tryAgain, onClick: () => void read() }} /></CorpCard></>;
   const result = state.result, version = result.version!;
   const exactCommand = { sourceId, versionId, expectedRevision: result.receipt!.revision, digest: version.digest, acknowledged: true as const };
   const publish = async () => {
     // The receipt's own expiry, with room for the trip. An expired review is read again, never sent.
-    if (Date.parse(result.readReceiptExpiresAt!) - 3000 <= Date.now()) { void read(); return; }
+    if (!publishable()) { void read(); return; }
     requestId.current ??= newRequestId();
     const ok = await ctx.send({ op: "publish_source_version", requestId: requestId.current, readReceiptId: result.readReceiptId!, ...exactCommand });
     // Not published: whatever the reason, the next publish is a new decision on a fresh read (a new receipt, digest and
     // revision). The acknowledgement is never carried over to get past a conflict.
-    if (!ok) { requestId.current = null; reviewed.current = null; setAcknowledged(false); void read(true); }
+    if (!ok) { requestId.current = null; reviewed.current = null; setAcknowledged(false); void read(); }
   };
   const discard = async () => { await ctx.send({ op: "discard_source_version", requestId: newRequestId(), ...exactCommand }); };
   return <ReviewContent ctx={ctx} source={source} result={result} eligible={meta?.publishEligible ?? version.publishEligible ?? false} acknowledged={acknowledged} setAcknowledged={setAcknowledged}

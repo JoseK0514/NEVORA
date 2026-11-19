@@ -40,13 +40,13 @@ it.each(['chromium','webkit'])('%s fences business observations and preserves su
   });
   const visit=async(path:string)=>{await page.goto(origin+path,{waitUntil:'domcontentloaded'});};
   await visit('/login');await page.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(origin+'/app');
-  const send=(command:unknown)=>page.evaluate(async command=>{const response=await fetch('/api/owner/advisor/business',{method:'POST',headers:{'content-type':'application/json','x-nevora-business-evidence':'1'},body:JSON.stringify(command)});if(!response.ok)throw Error('Fixture command refused '+response.status);return response.json();},command);
+  const send=(command:unknown)=>page.evaluate(async (command:unknown)=>{const response=await fetch('/api/owner/advisor/business',{method:'POST',headers:{'content-type':'application/json','x-nevora-business-evidence':'1'},body:JSON.stringify(command)});if(!response.ok)throw Error('Fixture command refused '+response.status);return response.json();},command);
   const input=fictionalBusinessInput();input.source.name='Private lifetime fixture';input.window={fromAt:'2026-01-01T04:00:00.000Z',toAt:'2026-02-01T04:00:00.000Z'};input.sourceAsOf=input.window.toAt;
   for(const row of input.records){if(row.kind==='BALANCE')row.at=row.recordId==='opening'?input.window.fromAt:input.window.toAt;if('recordedAt' in row)row.recordedAt=input.window.fromAt;}
   const staged=await send({op:'stage_source_version',requestId:randomUUID(),format:'JSON',input}),sourceId=staged.receipt.sourceId,versionId=staged.receipt.versionId;
   const library='/app/ai-manager/business',version=library+'?view=version&record='+sourceId+'&version='+versionId;
   const privateName=()=>page.locator('.be').getByText(input.source.name,{exact:true});
-  const wire=async(mode:string,event?:string)=>page.evaluate(({mode,event})=>{(window as any).__businessWire.mode=mode;if(event)window.dispatchEvent(new Event(event));},{mode,event});
+  const wire=async(mode:string,event?:string)=>page.evaluate(({mode,event}:{mode:string;event?:string})=>{(window as any).__businessWire.mode=mode;if(event)window.dispatchEvent(new Event(event));},{mode,event});
   const release=()=>page.evaluate(()=>{const wire=(window as any).__businessWire;wire.mode='normal';wire.held.splice(0).forEach((done:()=>void)=>done());});
   const settle=()=>page.evaluate(()=>new Promise<void>(done=>requestAnimationFrame(()=>requestAnimationFrame(()=>done()))));
   await visit(library);await privateName().first().waitFor();await wire('hold-catalog','blur');await settle();check('blur clears catalog',await privateName().count()===0);

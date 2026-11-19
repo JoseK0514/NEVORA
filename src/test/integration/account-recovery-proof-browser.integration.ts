@@ -43,7 +43,7 @@ it('retires reset A drafts and replies when proof B replaces it in the same tab'
      await password().fill('Fictional original password 123!');await confirm().fill('Fictional original password 123!');
      await page.locator('form button[type="submit"]:visible').click();
      await page.waitForFunction(()=>((window as Window&{__resetWire?:{calls:unknown[]}}).__resetWire?.calls.length)===1);
-     await page.evaluate(token=>{location.hash='proof='+token;},b);
+     await page.evaluate((token:string)=>{location.hash='proof='+token;},b);
      await expect.poll(()=>proof().inputValue()).toBe(b);
      expect(await password().inputValue(),'Selecting B clears the original password draft').toBe('');
      expect(await confirm().inputValue(),'Selecting B clears the original confirmation draft').toBe('');
@@ -51,7 +51,7 @@ it('retires reset A drafts and replies when proof B replaces it in the same tab'
      await password().fill('Fictional replacement password 456!');await confirm().fill('Fictional replacement password 456!');
      await page.locator('form button[type="submit"]:visible').click();
      await page.waitForFunction(()=>((window as Window&{__resetWire?:{calls:unknown[]}}).__resetWire?.calls.length)===2);
-     await page.evaluate(async state=>{
+     await page.evaluate(async (state:string)=>{
       (window as Window&{__resetWire?:{calls:{finish:(state:string)=>void}[]}}).__resetWire!.calls[0].finish(state);
       await new Promise<void>(done=>requestAnimationFrame(()=>requestAnimationFrame(()=>done())));
      },oldOutcome);

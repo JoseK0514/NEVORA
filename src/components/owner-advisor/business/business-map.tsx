@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
 import { PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr/PencilSimple";
@@ -9,14 +9,15 @@ import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle"
 import { CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpEmptyRow, CorpField, CorpFormFooter, CorpPill, CorpRow, CorpRows, CorpSection } from "@/components/corp/corp";
 import { BState } from "@/components/owner-b/b-kit";
 import type {
-  BusinessAccount, BusinessApiResult, BusinessCoverageMap, BusinessDomain, BusinessFinanceQuery, BusinessMapCell, BusinessMetricFamily, BusinessQuery, BusinessReadResult,
+  BusinessAccount, BusinessApiResult, BusinessCoverageMap, BusinessDomain, BusinessFinanceQuery, BusinessMapCell, BusinessMetricFamily, BusinessQuery, BusinessReadResult, BusinessCommand,
 } from "@/lib/owner-advisor/business/contracts";
 import { formatBusinessMinor } from "@/lib/owner-advisor/business/metrics";
-import { clockText, newRequestId, periodText, versionState, windowFromDays, type BusinessOutcome } from "./business-client";
+import { clockText, newRequestId, periodText, versionState, windowFromDays } from "./business-client";
 import type { BusinessCopy } from "./copy";
 import { financeFigures, salesFigures } from "./figures";
 import { viewHref } from "./views";
 import type { BusinessCtx } from "./business-page";
+import {useBusinessRead as useLeased,useBusinessReview} from "./use-business-read";
 
 /* Main records (the coverage map) and the figures check (Nov 17, 2026 follow-up). The map says which published records
  * Rondo counts as the whole picture: accounts (the company's, or one location's) and entries (a record, what it covers,
@@ -25,50 +26,6 @@ import type { BusinessCtx } from "./business-page";
  * with exactly the choices it allows and shows what the server answered; nothing is calculated here. */
 
 const MAP = viewHref({ name: "map" });
-const stepAway = () => document.visibilityState === "hidden" || !document.hasFocus();
-const ACTIVE_FOR = 120000;
-type Leased = { kind: "idle" } | { kind: "loading" } | { kind: "hidden" } | { kind: "failed" } | { kind: "gone" } | { kind: "ready"; result: BusinessApiResult; until: number };
-
-/** A private answer kept for the server's short lease: renewed by a fresh request while the Owner is here and working,
- * cleared when the lease ends or the Owner steps away. `accept` says whether an answer is the one this view shows. */
-function useLeased(ctx: BusinessCtx, request: (() => Promise<BusinessOutcome>) | null, accept: (result: BusinessApiResult) => boolean, auto: boolean, onFresh?: (result: BusinessApiResult) => void) {
-  const [state, setState] = useState<Leased>({ kind: auto ? "loading" : "idle" });
-  const reading = useRef(false), lastActive = useRef(0), latest = useRef({ request, accept, onFresh });
-  useEffect(() => { latest.current = { request, accept, onFresh }; });
-  const { revoke } = ctx;
-  const read = useCallback(async (quiet = false) => {
-    const now = latest.current;
-    if (reading.current || !now.request) return;
-    reading.current = true;
-    if (!quiet) setState({ kind: "loading" });
-    const outcome = await now.request();
-    reading.current = false;
-    if (outcome.kind === "refused" && outcome.code === "forbidden") { revoke(); return; }
-    if (outcome.kind === "refused" && outcome.code === "invalid") { setState({ kind: "gone" }); return; }
-    if (outcome.kind !== "ok" || !now.accept(outcome.result)) { setState(old => quiet && old.kind === "ready" ? { kind: "hidden" } : { kind: "failed" }); return; }
-    if (stepAway()) { setState({ kind: "hidden" }); return; }
-    now.onFresh?.(outcome.result);
-    setState({ kind: "ready", result: outcome.result, until: outcome.receivedAt + outcome.result.validForMs });
-  }, [revoke]);
-  useEffect(() => {
-    lastActive.current = Date.now();
-    if (auto) void Promise.resolve().then(() => read(true));
-    const active = () => { lastActive.current = Date.now(); };
-    const away = () => { if (stepAway()) setState(old => old.kind === "ready" ? { kind: "hidden" } : old); };
-    window.addEventListener("pointerdown", active, true); window.addEventListener("keydown", active, true); window.addEventListener("scroll", active, true);
-    document.addEventListener("visibilitychange", away); window.addEventListener("blur", away);
-    return () => { window.removeEventListener("pointerdown", active, true); window.removeEventListener("keydown", active, true); window.removeEventListener("scroll", active, true);
-      document.removeEventListener("visibilitychange", away); window.removeEventListener("blur", away); };
-  }, [auto, read]);
-  const until = state.kind === "ready" ? state.until : null, lease = state.kind === "ready" ? state.result.validForMs : 0;
-  useEffect(() => {
-    if (until === null) return;
-    const renew = window.setTimeout(() => { if (!stepAway() && Date.now() - lastActive.current < ACTIVE_FOR && !ctx.busy) void read(true); }, Math.max(1000, until - lease * 0.3 - Date.now()));
-    const end = window.setTimeout(() => setState(old => old.kind === "ready" && old.until <= Date.now() ? { kind: "hidden" } : old), Math.max(0, until - Date.now()));
-    return () => { window.clearTimeout(renew); window.clearTimeout(end); };
-  }, [until, lease, read, ctx.busy]);
-  return { state, read, clear: () => setState({ kind: "idle" }) };
-}
 function ErrorText({ children }: { children: ReactNode }) { return <><WarningCircleIcon weight="bold" className="be-error__ic" aria-hidden="true" />{children}</>; }
 function Skeleton({ label }: { label: string }) {
   return <section className="c-card be-skel" aria-busy="true" aria-label={label}>
@@ -241,16 +198,16 @@ function MapEditor({ ctx, problem, from, onCancel }: { ctx: BusinessCtx; problem
 
 /* ---------- Review a staged map, then publish or discard it ---------- */
 export function MapReview({ ctx, mapVersionId, problem }: { ctx: BusinessCtx; mapVersionId: string; problem?: ReactNode }) {
-  const { t, client } = ctx;
+  const { t } = ctx;
   const [acknowledged, setAcknowledged] = useState(false);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
   const reviewed = useRef<string | null>(null), requestId = useRef<string | null>(null);
-  const { state, read } = useLeased(ctx, () => client.send({ op: "read_coverage_map", requestId: newRequestId(), mapVersionId }),
-    result => !!result.map?.input && !!result.receipt && !!result.readReceiptId, true, result => {
-      // New content is a new decision: the acknowledgement belongs to one exact map and revision.
-      const identity = `${result.map!.digest}:${result.receipt!.revision}`;
-      if (reviewed.current !== identity) { reviewed.current = identity; setAcknowledged(false); requestId.current = null; }
-    });
+  const reset=()=>{reviewed.current=null;requestId.current=null;setAcknowledged(false);setConfirmDiscard(false);};
+  const {state,read,publishable}=useBusinessReview(ctx,id=>({op:"read_coverage_map",requestId:id,mapVersionId}),
+    result=>!!result.map?.input&&!!result.receipt&&!!result.readReceiptId,result=>{
+      const identity=`${result.map!.digest}:${result.receipt!.revision}:${result.readReceiptId}`;
+      if(reviewed.current!==identity){reset();reviewed.current=identity;}
+    },reset);
   const back = <CorpCard as="div"><BState kind="empty" title={t.gone} line={t.goneLine} action={{ label: t.mainRecords, href: MAP }} /></CorpCard>;
   if (state.kind === "gone") return <>{problem}{back}</>;
   if (state.kind === "loading" || state.kind === "idle") return <>{problem}<Skeleton label={t.loading} /></>;
@@ -260,10 +217,10 @@ export function MapReview({ ctx, mapVersionId, problem }: { ctx: BusinessCtx; ma
   // The full map read's own revision, fingerprint and receipt (answer 4): never the staged draft's expected revision.
   const exactCommand = { mapVersionId, expectedRevision: result.receipt!.revision, digest: map.digest, acknowledged: true as const };
   const publish = async () => {
-    if (Date.parse(result.readReceiptExpiresAt!) - 3000 <= Date.now()) { void read(); return; }
+    if (!publishable()) { void read(); return; }
     requestId.current ??= newRequestId();
     const ok = await ctx.send({ op: "publish_coverage_map", requestId: requestId.current, readReceiptId: result.readReceiptId!, ...exactCommand });
-    if (!ok) { requestId.current = null; reviewed.current = null; setAcknowledged(false); void read(true); }
+    if (!ok) { requestId.current = null; reviewed.current = null; setAcknowledged(false); void read(); }
   };
   return <MapReviewContent ctx={ctx} result={result} acknowledged={acknowledged} setAcknowledged={setAcknowledged} confirmDiscard={confirmDiscard} setConfirmDiscard={setConfirmDiscard}
     onPublish={() => void publish()} onDiscard={() => void ctx.send({ op: "discard_coverage_map", requestId: newRequestId(), ...exactCommand })} problem={problem} />;
@@ -305,13 +262,9 @@ export function FiguresPanel({ ctx, problem, initialResult = null }: { ctx: Busi
   const { t, catalog, client } = ctx;
   const [ask, setAsk] = useState<Ask>({ domain: "SALES", first: "", last: "", use: "main", sourceId: "", time: "CURRENT", places: "ALL", locationIds: [] });
   const [tried, setTried] = useState(false);
-  const sent = useRef<BusinessQuery | null>(null);
+  const sent = useRef<Extract<BusinessCommand,{op:"query_finance"|"query_sales"}> | null>(null);
   const form = useRef<HTMLFormElement>(null);
-  const { state, read } = useLeased(ctx, () => {
-    const query = sent.current!;
-    // Finance starts with no scenario (the contract); a fresh request every time.
-    return client.send(ask.domain === "FINANCE" ? { op: "query_finance", requestId: newRequestId(), query: { ...query, scenario: null } as BusinessFinanceQuery } : { op: "query_sales", requestId: newRequestId(), query });
-  }, result => !!result.result, false);
+  const {state,read}=useLeased(ctx,(signal)=>sent.current?client.send(sent.current,signal):Promise.resolve({kind:"unavailable"}),result=>!!result.result,false);
   const period = ask.first && ask.last ? windowFromDays(ask.first, ask.last, ctx.timeZone) : null;
   const records = catalog.sources.filter(source => source.active && !source.deleted && source.domain === ask.domain);
   const errors: Partial<Record<"days" | "record" | "places", string>> = {};
@@ -324,11 +277,12 @@ export function FiguresPanel({ ctx, problem, initialResult = null }: { ctx: Busi
     event.preventDefault();
     setTried(true);
     if (Object.keys(errors).length || !period) { requestAnimationFrame(() => form.current?.querySelector<HTMLElement>("[aria-invalid='true']")?.focus()); return; }
-    sent.current = { window: period, selection: ask.use === "one" ? { kind: "SOURCE", sourceId: ask.sourceId } : { kind: "PRIMARY_PERIMETER" },
+    const query:BusinessQuery = { window: period, selection: ask.use === "one" ? { kind: "SOURCE", sourceId: ask.sourceId } : { kind: "PRIMARY_PERIMETER" },
       locationScope: ask.places === "ALL" ? { kind: "ALL" } : { kind: "SELECTED", locationIds: [...ask.locationIds].sort() }, temporalUse: ask.time };
+    sent.current=ask.domain==="FINANCE"?{op:"query_finance",requestId:newRequestId(),query:{...query,scenario:null} as BusinessFinanceQuery}:{op:"query_sales",requestId:newRequestId(),query};
     void read();
   };
-  const answer = state.kind === "ready" ? state.result.result : initialResult;
+  const answer = state.kind === "ready" ? state.result.result : state.kind==="idle"?initialResult:null;
   return <>
     {problem}
     <CorpCard as="div"><CorpBody><form ref={form} className="c-teamform be-form be-askform" onSubmit={submit} noValidate aria-labelledby="be-title">
