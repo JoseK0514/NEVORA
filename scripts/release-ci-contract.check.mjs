@@ -10,8 +10,10 @@ const workflow=require('js-yaml').load(readFileSync('.github/workflows/ci.yml','
 const attendanceCondition=group=>"${{ !cancelled() && steps.attendance_runtime.outcome == 'success' && matrix.group == '"+group+"' }}";
 const mandatory=['validate','clocker-postgres','release-postgres','phase-d-attendance-ui','management-review-ui','phase-e-postgres','phase-e-ui'];
 
-test('the collaboration branch receives the same CI push gates as development',()=>{
- assert(workflow.on.push.branches.includes('claude-codex-collab-nevora'));
+test('the collaboration branch receives CI on pushes and pull requests',()=>{
+ const branch='claude-codex-collab-nevora';
+ assert(workflow.on.push.branches.includes(branch));
+ assert(workflow.on.pull_request.branches.includes(branch));
  assert(workflow.on.push.branches.includes('development'));
  assert(workflow.on.push.branches.includes('main'));
 });
@@ -395,9 +397,16 @@ test('management review and complete payroll sources are mandatory candidate gat
 
 test('the same immutable candidate runs the existing web Mobile Access gate',()=>{
  const mobile=require('js-yaml').load(readFileSync('.github/workflows/mobile-access.yml','utf8'));
+ const branch='claude-codex-collab-nevora';
+ assert(mobile.on.push.branches.includes(branch));
+ assert(mobile.on.pull_request.branches.includes(branch));
  assert.deepEqual(mobile.on.push.tags,['candidate/backend-completion/**']);
  const job=mobile.jobs['mobile-access'];assert(job);assert.equal(job.if,undefined);assert.equal(job['continue-on-error'],undefined);
- assert(job.steps.some(s=>s.name==='Checkout exact candidate'&&s.with.ref==='${{ github.sha }}'));
+ assert.equal(job.env.MOBILE_ACCESS_EXPECTED_SHA,'${{ github.event.pull_request.head.sha || github.sha }}');
+ assert.equal(job.steps.find(s=>s.name==='Checkout exact candidate').with.ref,'${{ env.MOBILE_ACCESS_EXPECTED_SHA }}');
+ const verify=job.steps.find(s=>s.name==='Verify real Access, rotation and Quick guide');
+ assert(verify.run.startsWith('test "$(git rev-parse HEAD)" = "$MOBILE_ACCESS_EXPECTED_SHA"\n'));
+ assert.equal(job.steps.find(s=>s.name==='Upload viewport captures and result receipts').with.name,'mobile-access-${{ env.MOBILE_ACCESS_EXPECTED_SHA }}');
  for(const step of job.steps)assert.equal(step['continue-on-error'],undefined);
 });
 

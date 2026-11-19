@@ -7,7 +7,7 @@ on:
     branches: [development, main, claude-codex-collab-nevora]
     tags: ["candidate/backend-completion/**"]
   pull_request:
-    branches: [development, main, "phase-c/**", "release/**", "codex/verify-preview-33"]
+    branches: [development, main, claude-codex-collab-nevora, "phase-c/**", "release/**", "codex/verify-preview-33"]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
