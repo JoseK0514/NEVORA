@@ -71,7 +71,7 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
       const shown=await leasePage.locator('.pim-person').count();expect(shown).toBeGreaterThan(0);
       await leasePage.clock.runFor(1001);await expect.poll(()=>leasePage.locator('.pim-person').count()).toBe(0);expect(await leasePage.locator('.pim').count()).toBe(1);
       leaseControl={realApiRows:true,separateContext:true,controlledClock:true,validForMs:1000,warmupMs:20,advancedMs:1001,shown,retired:0};
-    }finally{await leaseContext.close();}
+    }finally{await leaseContext.unrouteAll({behavior:'wait'});await leaseContext.close();}
     checks.push('A shortened real data observation expires under controlled time while its operational frame remains current; genuine write journey has an unmodified clock');
     await visit(exportPath);await page.locator('.pim-person').first().waitFor();
     // Private timecards must leave the DOM immediately on loss of focus; a pending refresh cannot extend the lease.

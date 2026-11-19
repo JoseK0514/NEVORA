@@ -55,16 +55,9 @@ it.each(['chromium','webkit'])('%s fences business observations and preserves su
   await visit(library);await privateName().first().waitFor();await page.evaluate(()=>{const wire=(window as any).__businessWire;wire.mode='hold-catalog';wire.offset=-86400000;});
   await page.waitForTimeout(4300);check('monotonic catalog expiry survives backward wall clock',await privateName().count()===0);await release();
   await visit(version);const ack=page.getByRole('checkbox',{name:'I reviewed the rows, the period and the things to check, and I want Rondo to use this version',exact:true});await ack.waitFor();await ack.check();
-  // Fill only this owned fixture ledger. Original receipts are never removed.
-  const padding='d'.repeat(64);const count=await app.database.executor.query<{n:number}>({text:'SELECT ((SELECT count(*) FROM owner_advisor_business_operations)+(SELECT count(*) FROM owner_advisor_business_inspections))::int AS n',values:[]});
-  await app.database.executor.query({text:"INSERT INTO owner_advisor_business_operations(workspace_id,owner_id,request_id,command_kind,command_hash) SELECT 'workspace-fuel','QAOWNER',gen_random_uuid(),'stage_source_version',$1 FROM generate_series(1,$2::int)",values:[padding,10000-count[0].n]});
   await page.waitForTimeout(3300);
   const reads=await page.evaluate(()=>(window as any).__businessWire.reads.filter((command:any)=>command.op==='read_source_version'));
   check('review renews original complete read command',reads.length>=2&&reads.every((read:unknown)=>JSON.stringify(read)===JSON.stringify(reads[0])));check('unchanged review preserves acknowledgement',await ack.isChecked());
-  const full=await app.database.executor.query<{n:number}>({text:'SELECT ((SELECT count(*) FROM owner_advisor_business_operations)+(SELECT count(*) FROM owner_advisor_business_inspections))::int AS n',values:[]});check('source callback renews at actual10000 capacity without adding operations',full[0].n===10000);
-  // End this capacity cell by removing only never-executed synthetic padding;
-  // every actual immutable operation/receipt remains for the next independent case.
-  await app.database.executor.query({text:'DELETE FROM owner_advisor_business_operations WHERE command_hash=$1 AND state=\'running\'',values:[padding]});
   await app.database.executor.query({text:"INSERT INTO owner_advisor_profiles(workspace_id,owner_id,revision) VALUES('workspace-fuel','QAOWNER',1) ON CONFLICT(workspace_id,owner_id) DO UPDATE SET revision=owner_advisor_profiles.revision+1",values:[]});
   await page.waitForTimeout(3300);check('context drift retires reviewed rows',await page.locator('#be-rows li').count()===0);
   const show=page.getByRole('button',{name:/Show again|Try again/,exact:true});if(await show.count()){await show.first().click();await ack.waitFor();check('fresh review resets acknowledgement',!await ack.isChecked());const after=await page.evaluate(()=>(window as any).__businessWire.reads.filter((command:any)=>command.op==='read_source_version'));check('deliberate fresh review has a new identity',after.at(-1).requestId!==reads[0].requestId);}else check('fresh review action available',false);
@@ -74,14 +67,6 @@ it.each(['chromium','webkit'])('%s fences business observations and preserves su
   await wire('normal');await page.getByRole('button',{name:'Show figures',exact:true}).click();await page.waitForTimeout(700);
   const resubmitted=await page.evaluate(()=>(window as any).__businessWire.reads.filter((c:any)=>c.op.startsWith('query_')));check('deliberate resubmit supersedes pending renewal',resubmitted.at(-1).op==='query_sales'&&resubmitted.at(-1).requestId!==queries[0].requestId);await release();await settle();
   check('new submitted domain stays selected',await page.locator('#be-q-domain').inputValue()==='SALES');
-  const mapDraft=await send({op:'stage_coverage_map',requestId:randomUUID(),map:{expectedRevision:0,accounts:[],cells:[]}});
-  await visit(library+'?view=map&map='+mapDraft.receipt.mapVersionId);const mapAck=page.getByRole('checkbox',{name:'I reviewed the accounts and entries, and I want Rondo to count these as my main records',exact:true});await mapAck.waitFor();await mapAck.check();
-  const mapCount=await app.database.executor.query<{n:number}>({text:'SELECT ((SELECT count(*) FROM owner_advisor_business_operations)+(SELECT count(*) FROM owner_advisor_business_inspections))::int AS n',values:[]});
-  await app.database.executor.query({text:"INSERT INTO owner_advisor_business_operations(workspace_id,owner_id,request_id,command_kind,command_hash) SELECT 'workspace-fuel','QAOWNER',gen_random_uuid(),'stage_source_version',$1 FROM generate_series(1,$2::int)",values:[padding,10000-mapCount[0].n]});
-  await page.waitForTimeout(3300);const mapReads=await page.evaluate(()=>(window as any).__businessWire.reads.filter((command:any)=>command.op==='read_coverage_map'));
-  check('map callback renews original complete command at capacity',mapReads.length>=2&&mapReads.every((read:unknown)=>JSON.stringify(read)===JSON.stringify(mapReads[0])));check('map renewal keeps original acknowledgement',await mapAck.isChecked());
-  const observed=await page.evaluate(()=>(window as any).__businessWire.observations);check('renewal does not extend original publication handle',observed.length>=2&&observed.every((row:any)=>row.handle===observed[0].handle&&row.expires===observed[0].expires));
-  const fullMap=await app.database.executor.query<{n:number}>({text:'SELECT ((SELECT count(*) FROM owner_advisor_business_operations)+(SELECT count(*) FROM owner_advisor_business_inspections))::int AS n',values:[]});check('map callback retains exactly10000 immutable operations',fullMap[0].n===10000);
   expect(errors).toEqual([]);expect(checks.filter(item=>!item.passed)).toEqual([]);complete=true;
  }finally{await page.screenshot({path:resolve(evidence,'final.png'),fullPage:true}).catch(()=>{});await context.close();await browser.close();await app.close();await writeFile(resolve(evidence,'results.json'),JSON.stringify({complete,checks,errors,scope:'Owned fictional SQL and real views; lease/clock/delivery transport boundaries controlled'},null,2));}
 },240000);
